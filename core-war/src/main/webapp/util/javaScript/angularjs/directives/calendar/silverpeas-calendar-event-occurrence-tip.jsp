@@ -22,10 +22,10 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 <div>
-  <span ng-bind-html="$ctrl.occurrence.event.description | noHTML | newlines"></span>
+  <span ng-bind-html="$ctrl.occurrence.description | noHTML | newlines"></span>
 </div>
 <div>
-  <silverpeas-attendees ng-if="$ctrl.occurrence.event.attendees.length"
+  <silverpeas-attendees ng-if="$ctrl.occurrence.attendees.length"
                         attendees="$ctrl.occurrence.attendees"
                         is-simple-mode="true"
                         on-attendee-answer="$ctrl.onAttendeeParticipationAnswer($ctrl.occurrence, attendee)">

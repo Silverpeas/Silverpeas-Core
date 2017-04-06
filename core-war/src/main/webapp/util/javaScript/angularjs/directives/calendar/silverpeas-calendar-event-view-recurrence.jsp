@@ -57,7 +57,7 @@
     <div class="field" ng-if="$ctrl.isRecurrence()">
       <span class="txtlibform">${frequencyLabel}</span>
       <div class="champs">
-        <span>{{$ctrl.ceo.event.recurrence.frequency.interval}}</span>
+        <span>{{$ctrl.ceo.recurrence.frequency.interval}}</span>
         <span>{{$ctrl.recurrence.shortLabel}}</span>
       </div>
     </div>
@@ -81,11 +81,11 @@
       <div class="champs">
         <span ng-switch="$ctrl.endType">
           <span ng-switch-when="THE">
-            <span>${theLabel} </span><span>{{$ctrl.ceo.event.recurrence.endDate | displayAsDate}}</span>
+            <span>${theLabel} </span><span>{{$ctrl.ceo.recurrence.endDate | displayAsDate}}</span>
           </span>
           <span ng-switch-when="AFTER">
             <span>${afterLabel} </span>
-            <span>{{$ctrl.ceo.event.recurrence.count}}</span>
+            <span>{{$ctrl.ceo.recurrence.count}}</span>
             <span> ${fn:toLowerCase(countLabel)}</span>
           </span>
           <span ng-switch-default>${neverLabel}</span>

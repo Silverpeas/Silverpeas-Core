@@ -33,6 +33,7 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.security.SecurableRequestCache;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
@@ -136,6 +137,18 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    */
   public static CalendarEvents getEvents() {
     return new CalendarEvents();
+  }
+
+  @Override
+  protected void performBeforePersist() {
+    super.performBeforePersist();
+    SecurableRequestCache.clear(getId());
+  }
+
+  @Override
+  protected void performBeforeUpdate() {
+    super.performBeforeUpdate();
+    SecurableRequestCache.clear(getId());
   }
 
   /**
@@ -316,22 +329,25 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
 
   @Override
   public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
+    return SecurableRequestCache.canBeAccessedBy(user, getId(), u -> {
+      AccessController<String> accessController =
+          AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+      return accessController.isUserAuthorized(u.getId(), getComponentInstanceId());
+    });
   }
 
   @Override
   public boolean canBeModifiedBy(final User user) {
-    SilverpeasComponentInstance instance =
-        SilverpeasComponentInstanceProvider.get().getById(getComponentInstanceId()).get();
-    if (instance.isPersonal()) {
-      return getCreator().getId().equals(user.getId()) &&
-          !getTitle().equals(user.getDisplayedName());
-    }
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId(),
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+    return SecurableRequestCache.canBeModifiedBy(user, getId(), u -> {
+      SilverpeasComponentInstance instance =
+          SilverpeasComponentInstanceProvider.get().getById(getComponentInstanceId()).get();
+      if (instance.isPersonal()) {
+        return getCreator().getId().equals(u.getId()) && !getTitle().equals(u.getDisplayedName());
+      }
+      AccessController<String> accessController =
+          AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+      return accessController.isUserAuthorized(u.getId(), getComponentInstanceId(),
+          AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+    });
   }
 }

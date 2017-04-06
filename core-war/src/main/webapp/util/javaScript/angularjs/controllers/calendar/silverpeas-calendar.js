@@ -24,19 +24,6 @@
 
 (function() {
 
-  var NavigationCache = SilverpeasSessionCache.extend({
-    setCalendarEventOccurrence : function(ceo) {
-      var cachedCeo = ceo;
-      if (cachedCeo) {
-        cachedCeo = SilverpeasCalendarTools.extractEventOccurrenceEntityData(ceo);
-      }
-      this.put('calendarEventOccurrence', cachedCeo);
-    },
-    getCalendarEventOccurrence : function() {
-      return this.get('calendarEventOccurrence');
-    }
-  });
-
   var ParticipationCache = SilverpeasCache.extend({
     setParticipants : function(participants) {
       this.put('participants', participants);
@@ -51,7 +38,6 @@
         $scope.getCalendarService = function() {
           alert('Please implement this method into the child controller.')
         };
-        $scope.navigation = new NavigationCache(context.componentUriBase + "_navigation");
         $scope.participation = new ParticipationCache(context.componentUriBase + "_participation");
 
         $scope.loadCalendarsFromContext = function() {
@@ -62,43 +48,26 @@
         };
 
         $scope.goToPage = function(uri, context) {
-          context = extendsObject(false, {}, context);
-          context.eventOccurrence = extendsObject({
-            startDate : '',
-            endDate : '',
-            event : {
-              onAllDay : false,
-              title : '',
-              description : '',
-              startDate : '',
-              endDate : '',
-              location : ''
-            }
-          }, SilverpeasCalendarTools.extractEventOccurrenceEntityData(context.eventOccurrence));
-          if (context.startMoment) {
-            context.eventOccurrence.startDate = context.startMoment.format();
-            if (!context.startMoment.hasTime()) {
-              context.eventOccurrence.event.onAllDay = true;
-            }
+          var formConfig = sp.formConfig(uri);
+          if (context && context.startMoment) {
+            formConfig.withParam("occurrenceStartDate", context.startMoment.format())
           }
-          $scope.navigation.setCalendarEventOccurrence(context.eventOccurrence);
-          silverpeasFormSubmit(sp.formConfig(uri));
+          silverpeasFormSubmit(formConfig);
         };
 
-        $scope.reloadEventOccurrence = function(occurrenceToReload) {
-          if (occurrenceToReload && occurrenceToReload.event && occurrenceToReload.event.id &&
-              occurrenceToReload.startDate) {
-            var eventUri = occurrenceToReload.event.uri;
-            var calendarUri = occurrenceToReload.event.calendarUri;
-            return CalendarService.getEventOccurrenceAt(eventUri,
-                occurrenceToReload.startDate).then(function(reloadedOccurrence) {
-              return CalendarService.getByUri(calendarUri).then(function(calendar) {
-                reloadedOccurrence.event.calendar = calendar;
-                return reloadedOccurrence;
-              })
-            });
+        $scope.reloadEventOccurrence = function(occurrenceUri) {
+          if (occurrenceUri) {
+            return CalendarService.getEventOccurrenceByUri(occurrenceUri)
+                .then(function(reloadedOccurrence) {
+                  return CalendarService.getByUri(reloadedOccurrence.calendarUri).then(
+                      function(calendar) {
+                        reloadedOccurrence.calendar = calendar;
+                        return reloadedOccurrence;
+                      })
+                });
           } else {
-            return sp.promise.resolveDirectlyWith(occurrenceToReload);
+            return sp.promise.resolveDirectlyWith(
+                SilverpeasCalendarTools.extractEventOccurrenceEntityData());
           }
         };
 

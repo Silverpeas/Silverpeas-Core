@@ -42,10 +42,12 @@ import org.silverpeas.core.test.rule.DbSetupRule;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.TimeZone;
 
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
@@ -57,6 +59,12 @@ public class CalendarEventOccurrencePersistenceIntegrationTest extends BaseCalen
   private static final String CALENDAR_ID = "ID_1";
   private CalendarEvent event;
   private List<CalendarEventOccurrence> expectedOccurrences = new ArrayList<>();
+
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
+  }
 
   @Deployment
   public static Archive<?> createTestArchive() {

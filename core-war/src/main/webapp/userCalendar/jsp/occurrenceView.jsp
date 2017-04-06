@@ -47,7 +47,7 @@
 <c:set var="timeWindowViewContext"  value="${requestScope.timeWindowViewContext}"/>
 <jsp:useBean id="timeWindowViewContext" type="org.silverpeas.web.usercalendar.UserCalendarTimeWindowViewContext"/>
 
-<c:set var="event" value="${requestScope.event}"/>
+<c:set var="occurrenceUri" value="${requestScope.occurrence.occurrenceUri}"/>
 
 <fmt:message var="back" key="GML.back"/>
 <fmt:message var="modifyLabel" key="GML.modify"/>
@@ -109,7 +109,8 @@
     component : '${componentId}',
     componentUriBase : '${componentUriBase}',
     userRole : '${highestUserRole}',
-    zoneId : '${timeWindowViewContext.zoneId.toString()}'
+    zoneId : '${timeWindowViewContext.zoneId.toString()}',
+    occurrenceUri : '${occurrenceUri}'
   });
 </script>
 </body>

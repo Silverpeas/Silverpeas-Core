@@ -75,30 +75,26 @@ public class CalendarEventOccurrenceUpdateEntity extends CalendarEventOccurrence
    * @return a {@link CalendarEventOccurrence} instance.
    */
   @XmlTransient
-  CalendarEvent getMergedPersistentEventModel() {
-    final CalendarEvent event = super.getMergedPersistentEventModel();
-    event.setPeriod(getPeriod());
-    if (getCalendar() != null && !getCalendar().getId().equals(event.getCalendar().getId())) {
+  CalendarEventOccurrence getMergedOccurrence() {
+    final CalendarEventOccurrence occurrence = super.getMergedOccurrence();
+    if (getCalendar() != null &&
+        !getCalendar().getId().equals(occurrence.getCalendarEvent().getCalendar().getId())) {
       try {
         Method method = CalendarEvent.class.getDeclaredMethod("setCalendar", Calendar.class);
         method.setAccessible(true);
-        method.invoke(event, Calendar.getById(getCalendar().getId()));
+        method.invoke(occurrence.getCalendarEvent(), Calendar.getById(getCalendar().getId()));
       } catch (Exception e) {
         throw new SilverpeasRuntimeException(e);
       }
     }
-    return event;
+    return occurrence;
   }
 
   @Override
-  public String toString() {
-    ToStringBuilder builder = new ToStringBuilder(this);
+  protected ToStringBuilder toStringBuilder() {
+    ToStringBuilder builder = super.toStringBuilder();
     builder.append("calendar", getCalendar());
     builder.append("updateMethodType", getUpdateMethodType());
-    builder.append("occurrenceId", getId());
-    builder.append("event", getEvent().toString());
-    builder.append("startDate", getStartDate());
-    builder.append("endDate", getEndDate());
-    return builder.toString();
+    return builder;
   }
 }

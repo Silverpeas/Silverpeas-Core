@@ -26,6 +26,7 @@ package org.silverpeas.core.calendar;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEventNotifier;
+import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -33,6 +34,7 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.security.SecurableRequestCache;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
@@ -47,6 +49,7 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -270,6 +273,18 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         .withCategories(occurrence.getCategories().asArray());
   }
 
+  @Override
+  protected void performBeforePersist() {
+    super.performBeforePersist();
+    SecurableRequestCache.clear(getId());
+  }
+
+  @Override
+  protected void performBeforeUpdate() {
+    super.performBeforeUpdate();
+    SecurableRequestCache.clear(getId());
+  }
+
   /**
    * This event is created by the specified user.
    * @param user the user to set as the creator of this event.
@@ -323,6 +338,16 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   @Override
   public Calendar getCalendar() {
     return this.component.getCalendar();
+  }
+
+  /**
+   * Sets a new calendar to this event. This moves the event from its initial calendar to the
+   * specified calendar. This will be effective once the {@link CalendarEvent#update()} method
+   * invoked.
+   * @param calendar the new calendar into which the event has to move.
+   */
+  protected void setCalendar(final Calendar calendar) {
+    this.component.setCalendar(calendar);
   }
 
   @Override
@@ -608,18 +633,6 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   /**
    * Changes the planning of this event in the calendar.
    * The change will be effective only once the {@code update} method invoked.
-   * @param newPeriod a new period of time on which this event will occur or has actually occurred.
-   */
-  public void setPeriod(final Period newPeriod) {
-    this.component.setPeriod(newPeriod);
-    if (this.recurrence != null) {
-      this.recurrence = this.recurrence.startingAt(newPeriod.getStartDate());
-    }
-  }
-
-  /**
-   * Changes the planning of this event in the calendar.
-   * The change will be effective only once the {@code update} method invoked.
    * @param newDay the new day at which this event will occur or has actually occurred.
    */
   public void setDay(final LocalDate newDay) {
@@ -706,6 +719,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   public EventOperationResult delete() {
     return Transaction.performInOne(() -> {
       if (isPlanned()) {
+        // Deletes all persisted occurrences belonging to this event
+        deleteAllOccurrencesFromPersistence();
+        // Deletes the event from persistence
         this.deleteFromPersistence();
       }
       return new EventOperationResult();
@@ -810,6 +826,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         this.getAttendees().forEach(Attendee::resetParticipation);
       }
 
+      // Deletes all persisted occurrences belonging to this event
+      deleteAllOccurrencesFromPersistence();
+
       if (!previousState.getCalendar().equals(this.getCalendar())) {
         // New event is created on other calendar
         CalendarEvent newEvent = this.clone();
@@ -898,23 +917,28 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   @Override
   public boolean canBeAccessedBy(final User user) {
-    boolean canBeAccessed = getCalendar().canBeAccessedBy(user) || isUserParticipant(user);
-    if (!canBeAccessed && PUBLIC == getVisibilityLevel()) {
-      SilverpeasComponentInstance componentInstance =
-          SilverpeasComponentInstance.getById(getCalendar().getComponentInstanceId()).orElse(null);
-      if (componentInstance != null) {
-        canBeAccessed = componentInstance.isPublic() || componentInstance.isPersonal();
+    return SecurableRequestCache.canBeAccessedBy(user, getId(), u -> {
+      boolean canBeAccessed = getCalendar().canBeAccessedBy(u) || isUserParticipant(u);
+      if (!canBeAccessed && PUBLIC == getVisibilityLevel()) {
+        SilverpeasComponentInstance componentInstance =
+            SilverpeasComponentInstance.getById(getCalendar().getComponentInstanceId())
+                .orElse(null);
+        if (componentInstance != null) {
+          canBeAccessed = componentInstance.isPublic() || componentInstance.isPersonal();
+        }
       }
-    }
-    return canBeAccessed;
+      return canBeAccessed;
+    });
   }
 
   @Override
   public boolean canBeModifiedBy(final User user) {
-    AccessController<String> accessController =
-        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getCalendar().getComponentInstanceId(),
-        AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+    return SecurableRequestCache.canBeModifiedBy(user, getId(), u -> {
+      AccessController<String> accessController =
+          AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+      return accessController.isUserAuthorized(u.getId(), getCalendar().getComponentInstanceId(),
+          AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+    });
   }
 
   /**
@@ -925,16 +949,6 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    */
   public CalendarComponent asCalendarComponent() {
     return this.component;
-  }
-
-  /**
-   * Sets a new calendar to this event. This moves the event from its initial calendar to the
-   * specified calendar. This will be effective once the {@link CalendarEvent#update()} method
-   * invoked.
-   * @param calendar the new calendar into which the event has to move.
-   */
-  protected void setCalendar(final Calendar calendar) {
-    this.component.setCalendar(calendar);
   }
 
   @PostLoad
@@ -970,8 +984,27 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return this;
   }
 
+  private long deleteAllOccurrencesFromPersistence() {
+    return Transaction.performInOne(() -> {
+      CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
+      return repository.deleteAllByEvent(this);
+    });
+  }
+
   private Period getPeriod() {
     return this.component.getPeriod();
+  }
+
+  /**
+   * Changes the planning of this event in the calendar.
+   * The change will be effective only once the {@code update} method invoked.
+   * @param newPeriod a new period of time on which this event will occur or has actually occurred.
+   */
+  public void setPeriod(final Period newPeriod) {
+    this.component.setPeriod(newPeriod);
+    if (this.recurrence != null) {
+      this.recurrence = this.recurrence.startingAt(newPeriod.getStartDate());
+    }
   }
 
   private void notify(ResourceEvent.Type type, CalendarEvent... events) {
@@ -1055,6 +1088,19 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return false;
   }
 
+  /**
+   * This method executes the given operation if, and only if following conditions are verified:
+   * <ul>
+   * <li>the event has recurrence set</li>
+   * <li>it exists only one occurrence of the event without taking into account the exception
+   * dates registered of the recurrence</li>
+   * </ul>
+   * If above conditions are not verified, then the operation given to {@link
+   * OrElse#orElse(Supplier)} method of the returned {@link OrElse} instance is performed.
+   * @param operation the operation to execute if it exists only one occurrence.
+   * @return {@link OrElse} instance which will starts the process after the {@link
+   * OrElse#orElse(Supplier)} call.
+   */
   private OrElse doIfSingleOccurrence(Supplier<EventOperationResult> operation) {
     return new OrElse(operation);
   }
@@ -1069,23 +1115,22 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
     public EventOperationResult orElse(
         Supplier<EventOperationResult> operationForSeveralOccurrences) {
+      final CalendarEvent previousEvent = getEventPreviousState();
       return Transaction.performInOne(() -> {
-        long occurrenceCount = generator().countOccurrencesOf(CalendarEvent.this, null);
+        long occurrenceCount = generator().countOccurrencesOf(previousEvent, null);
         if (occurrenceCount > 1) {
           return operationForSeveralOccurrences.get();
         } else if (occurrenceCount == 1) {
           return operationForSingleOccurrence.get();
         }
-        throw new IllegalStateException("The event " + CalendarEvent.this.getId() +
+        throw new IllegalStateException("The event " + previousEvent.getId() +
             " is either not planned or it doesn't occur in the calendar " +
-            CalendarEvent.this.getCalendar().getId());
+            previousEvent.getCalendar().getId());
       });
     }
   }
 
   public static class EventOperationResult
       extends OperationResult<CalendarEvent, CalendarEventOccurrence> {
-
   }
-
 }

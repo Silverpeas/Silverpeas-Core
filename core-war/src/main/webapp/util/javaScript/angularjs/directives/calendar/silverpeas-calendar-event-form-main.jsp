@@ -68,8 +68,8 @@
     <div class="field" ng-if="$ctrl.calendars">
       <label class="txtlibform" for="sp_cal_event_form_main_c">{{$ctrl.labels.calendar}}</label>
       <div class="champs">
-        <span class="txtnav" ng-if="$ctrl.calendars.length == 1">{{$ctrl.data.event.calendar.title}}</span>
-        <select ng-if="$ctrl.calendars.length > 1" ng-model="$ctrl.data.event.calendar"
+        <span class="txtnav" ng-if="$ctrl.calendars.length == 1 || !$ctrl.isFirstEventOccurrence()">{{$ctrl.data.calendar.title}}</span>
+        <select ng-if="$ctrl.calendars.length > 1 && $ctrl.isFirstEventOccurrence()" ng-model="$ctrl.data.calendar"
                 ng-options="calendar as calendar.title for calendar in $ctrl.calendars | orderBy: 'createdDate' track by calendar.id"
                 id="sp_cal_event_form_main_c" class="txtnav">
         </select>
@@ -79,14 +79,14 @@
       <label class="txtlibform" for="sp_cal_event_form_main_title">{{$ctrl.labels.title}}</label>
       <div class="champs">
         <input id="sp_cal_event_form_main_title" name="title" size="50" maxlength="2000"
-               ng-model="$ctrl.data.event.title">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5">
+               ng-model="$ctrl.data.title">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5">
       </div>
     </div>
     <div class="field">
       <label class="txtlibform" for="sp_cal_event_form_main_ad">{{$ctrl.labels.onAllDay}}</label>
       <div class="champs">
         <input id="sp_cal_event_form_main_ad" name="allDay" type="checkbox"
-               ng-model="$ctrl.data.event.onAllDay"/>
+               ng-model="$ctrl.data.onAllDay"/>
       </div>
     </div>
     <div class="field">
@@ -105,7 +105,7 @@
                                 status="$ctrl.data.startDateStatus"
                                 mandatory="true">
         </silverpeas-date-picker>
-        <silverpeas-time-picker ng-if="!$ctrl.data.event.onAllDay"
+        <silverpeas-time-picker ng-if="!$ctrl.data.onAllDay"
                                 time-id="sp_cal_event_form_main_sdt"
                                 name="startTime"
                                 zone-id="$ctrl.zoneId"
@@ -126,7 +126,7 @@
                                 status="$ctrl.data.endDateStatus"
                                 mandatory="true">
         </silverpeas-date-picker>
-        <silverpeas-time-picker ng-if="!$ctrl.data.event.onAllDay"
+        <silverpeas-time-picker ng-if="!$ctrl.data.onAllDay"
                                 time-id="sp_cal_event_form_main_edt"
                                 name="endTime"
                                 zone-id="$ctrl.zoneId"
@@ -141,30 +141,30 @@
       <label class="txtlibform" for="sp_cal_event_form_main_loc">{{$ctrl.labels.location}}</label>
       <div class="champs">
         <input id="sp_cal_event_form_main_loc" name="title" size="50" maxlength="255"
-               ng-model="$ctrl.data.event.location">
+               ng-model="$ctrl.data.location">
       </div>
     </div>
     <div class="field">
       <label class="txtlibform" for="sp_cal_event_form_main_desc">{{$ctrl.labels.description}}</label>
       <div class="champs">
         <textarea id="sp_cal_event_form_main_desc" name="description" rows="6" cols="50" maxlength="4000"
-                  ng-model="$ctrl.data.event.description"></textarea>
+                  ng-model="$ctrl.data.description"></textarea>
       </div>
     </div>
-    <div class="field" ng-if="$ctrl.data.event.visibility">
+    <div class="field" ng-if="$ctrl.data.visibility">
       <label class="txtlibform">{{$ctrl.labels.visibility}}</label>
       <div class="champs">
         <label ng-repeat="visibility in $ctrl.visibilities">
-          <input type="radio" ng-model="$ctrl.data.event.visibility" ng-value="visibility.name">
+          <input type="radio" ng-model="$ctrl.data.visibility" ng-value="visibility.name">
           {{visibility.label}}
         </label>
       </div>
     </div>
-    <div class="field" ng-if="$ctrl.data.event.priority">
+    <div class="field" ng-if="$ctrl.data.priority">
       <label class="txtlibform">{{$ctrl.labels.priority}}</label>
       <div class="champs">
         <label ng-repeat="priority in $ctrl.priorities">
-          <input type="radio" ng-model="$ctrl.data.event.priority" ng-value="priority.name">
+          <input type="radio" ng-model="$ctrl.data.priority" ng-value="priority.name">
           {{priority.label}}
         </label>
       </div>

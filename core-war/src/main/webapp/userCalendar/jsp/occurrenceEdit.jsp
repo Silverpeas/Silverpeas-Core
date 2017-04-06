@@ -47,10 +47,10 @@
 <c:set var="timeWindowViewContext"  value="${requestScope.timeWindowViewContext}"/>
 <jsp:useBean id="timeWindowViewContext" type="org.silverpeas.web.usercalendar.UserCalendarTimeWindowViewContext"/>
 
-<c:set var="event" value="${requestScope.event}"/>
-<c:set var="target" value="add"/>
-<c:if test="${event != null}">
-  <c:set var="target" value="${event.id}"/>
+<c:set var="occurrenceStartDate" value="${requestScope.occurrenceStartDate}"/>
+<c:set var="occurrenceUri" value=""/>
+<c:if test="${requestScope.occurrence != null}">
+  <c:set var="occurrenceUri" value="${requestScope.occurrence.occurrenceUri}"/>
 </c:if>
 
 <c:if test="${not highestUserRole.isGreaterThanOrEquals(adminRole)}">
@@ -60,7 +60,7 @@
 <c:url var="backUri" value="${requestScope.navigationContext.previousNavigationStep.uri}"/>
 
 <c:choose>
-  <c:when test="${event == null}">
+  <c:when test="${empty occurrenceUri}">
     <fmt:message var="browseBarPathLabel" key="calendar.menu.item.event.add" bundle="${calendarBundle}"/>
   </c:when>
   <c:otherwise>
@@ -89,7 +89,7 @@
                                         on-occurrence-updated="goToPage('${backUri}')"
                                         on-occurrence-deleted="goToPage('${backUri}')">
   </silverpeas-calendar-event-management>
-  <c:if test="${event != null}">
+  <c:if test="${empty occurrenceUri}">
     <view:operation action="angularjs:eventMng.removeOccurrence(ceo)" altText="${deleteLabel}"/>
   </c:if>
 </view:operationPane>
@@ -138,7 +138,9 @@
     component : '${componentId}',
     componentUriBase : '${componentUriBase}',
     userRole : '${highestUserRole}',
-    zoneId : '${timeWindowViewContext.zoneId.toString()}'
+    zoneId : '${timeWindowViewContext.zoneId.toString()}',
+    occurrenceUri : '${occurrenceUri}',
+    occurrenceStartDate : '${occurrenceStartDate}'
   });
 </script>
 </body>

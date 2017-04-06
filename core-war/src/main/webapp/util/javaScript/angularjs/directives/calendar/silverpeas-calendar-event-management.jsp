@@ -32,10 +32,11 @@
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle"/>
 
-<c:set var="deleteMessage"><fmt:message key='GML.confirmation.delete'><fmt:param value="{{$ctrl.occurrence.event.title}}"/></fmt:message></c:set>
-<c:set var="deleteChoiceMessage"><fmt:message key='calendar.message.event.delete'><fmt:param value="{{$ctrl.occurrence.event.title}}"/></fmt:message></c:set>
-<c:set var="updateChoiceMessage"><fmt:message key='calendar.message.event.update'><fmt:param value="{{$ctrl.occurrence.event.title}}"/></fmt:message></c:set>
-<c:set var="attendeeAnswerChoiceMessage"><fmt:message key='calendar.message.event.attendee.participation.update'><fmt:param value="{{$ctrl.occurrence.event.title}}"/></fmt:message></c:set>
+<c:set var="deleteMessage"><fmt:message key='GML.confirmation.delete'><fmt:param value="{{$ctrl.occurrence.title}}"/></fmt:message></c:set>
+<c:set var="deleteChoiceMessage"><fmt:message key='calendar.message.event.delete'><fmt:param value="{{$ctrl.occurrence.title}}"/></fmt:message></c:set>
+<c:set var="updateChoiceMessage"><fmt:message key='calendar.message.event.update'><fmt:param value="{{$ctrl.occurrence.title}}"/></fmt:message></c:set>
+<c:set var="calendarUpdateMessage"><fmt:message key='calendar.message.event.update.calendar.changed'><fmt:param value="{{$ctrl.occurrence.title}}"/></fmt:message></c:set>
+<c:set var="attendeeAnswerChoiceMessage"><fmt:message key='calendar.message.event.attendee.participation.update'><fmt:param value="{{$ctrl.occurrence.title}}"/></fmt:message></c:set>
 <c:set var="allOccurrenceMessage"><fmt:message key='calendar.message.event.recurrence.occurrence.all'/></c:set>
 <c:set var="allOccurrencePartMessage"><fmt:message key='calendar.message.event.recurrence.occurrence.attendee.participation.all'/></c:set>
 <c:set var="fromOccurrenceMessage"><fmt:message key='calendar.message.event.recurrence.occurrence.from'><fmt:param value="{{$ctrl.displayLastStartDate()}}"/></fmt:message></c:set>

@@ -109,19 +109,10 @@
             var _decorateSpCalEventOccurrences = function(calendar, occurrences, callback) {
               occurrences.forEach(function(occurrence) {
                 // FullCalendar attributes
-                occurrence.title = occurrence.event.title;
-                occurrence.allDay = occurrence.event.onAllDay;
+                occurrence.allDay = occurrence.onAllDay;
                 occurrence.start = occurrence.startDate;
-                if (!occurrence.allDay) {
-                  occurrence.end = occurrence.endDate;
-                } else {
-                  // When it is an all day event, end date in fullcalendar is handled like a,
-                  // ICALENDAR VEVENT : if the event is on several day, the end date must be the
-                  // date after the last day.
-                  occurrence.end =
-                      SilverpeasCalendarTools.moment(occurrence.endDate).add(1, 'days').format();
-                }
-                occurrence.editable = occurrence.event.canBeModified;
+                occurrence.end = occurrence.endDate;
+                occurrence.editable = occurrence.canBeModified;
                 if (callback) {
                   callback(occurrence);
                 }
@@ -176,7 +167,7 @@
               occurrence.$element = $element;
             };
             var _eventOccurrenceClick = function(occurrence) {
-              if (!occurrence.event.canBeAccessed) {
+              if (!occurrence.canBeAccessed) {
                 return false;
               }
               var promise  = new Promise(function(resolve, reject) {
@@ -240,7 +231,7 @@
                       event : 'hideEventDetails'
                     }
                   };
-                  if (!occurrence.event.onAllDay) {
+                  if (!occurrence.onAllDay) {
                     qTipOptions.position = {
                       viewport : $occurrenceContainer,
                       container : $occurrenceContainer
@@ -282,25 +273,24 @@
                   occurrence.startDate = startWithOffset.format();
                   occurrence.endDate = endWithOffset.format();
                 }
-                occurrence.event.onAllDay = occurrence.allDay;
+                occurrence.onAllDay = occurrence.allDay;
                 // New recurrence end if any
-                if (occurrence.event.recurrence && occurrence.event.recurrence.endDate) {
+                if (occurrence.recurrence && occurrence.recurrence.endDate) {
                   var $endDate;
-                  if (occurrence.event.onAllDay) {
-                    $endDate = sp.moment.make(occurrence.event.recurrence.endDate);
+                  if (occurrence.onAllDay) {
+                    $endDate = sp.moment.make(occurrence.recurrence.endDate);
                     $endDate = SilverpeasCalendarTools.moment($endDate).stripTime();
                   } else {
-                    $endDate = sp.moment.atZoneIdSimilarLocal(occurrence.event.recurrence.endDate,
+                    $endDate = sp.moment.atZoneIdSimilarLocal(occurrence.recurrence.endDate,
                         occurrence.calendarZoneId);
-                    $endDate = $endDate.startOf('day');
                   }
-                  occurrence.event.recurrence.endDate = $endDate.format();
+                  occurrence.recurrence.endDate = $endDate.format();
                 }
                 occurrence.revertToPreviousState = function() {
                   occurrence.startDate = previousOccurrence.startDate;
                   occurrence.endDate = previousOccurrence.endDate;
-                  occurrence.event.onAllDay = previousOccurrence.event.onAllDay;
-                  occurrence.event.recurrence = previousOccurrence.event.recurrence;
+                  occurrence.onAllDay = previousOccurrence.onAllDay;
+                  occurrence.recurrence = previousOccurrence.recurrence;
                   revertFunc();
                 }
                 this.eventMng.modifyOccurrence(occurrence, previousOccurrence);
@@ -522,7 +512,7 @@
 
                 var occurrencesToRefresh = [];
                 this.spCalendar.forEachEvent(function(occurrence) {
-                  if (occurrence.event.id === _eventId) {
+                  if (occurrence.eventId === _eventId) {
                     occurrencesToRefresh.push(occurrence);
                   }
                 }.bind(this));
@@ -534,8 +524,7 @@
                         for (var i = 0; i < occurrencesToRefresh.length; i++) {
                           var occurrenceToRefresh = occurrencesToRefresh[i];
                           if (occurrenceToRefresh.id === occurrence.id) {
-                            occurrenceToRefresh.event = occurrence.event;
-                            occurrenceToRefresh.attendees = occurrence.attendees;
+                            extendsObject(occurrenceToRefresh, occurrence);
                           }
                         }
                       });

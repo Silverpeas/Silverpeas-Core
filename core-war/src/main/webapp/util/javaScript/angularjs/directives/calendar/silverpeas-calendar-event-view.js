@@ -60,8 +60,8 @@
           controller : function($scope, $element, $attrs, $transclude) {
             this.$onInit = function() {
               this.zoneId = context.zoneId;
-              this.visibility = SilverpeasCalendarConst.visibilities.getElement(this.ceo.event, 'name=visibility');
-              this.priority = SilverpeasCalendarConst.priorities.getElement(this.ceo.event, 'name=priority');
+              this.visibility = SilverpeasCalendarConst.visibilities.getElement(this.ceo, 'name=visibility');
+              this.priority = SilverpeasCalendarConst.priorities.getElement(this.ceo, 'name=priority');
             }
           }
         };
@@ -97,7 +97,7 @@
             this.$onInit = function() {
               this.recurrence = SilverpeasCalendarConst.recurrences[0];
               this.endType = 'NEVER';
-              var recurrenceData = this.ceo.event.recurrence;
+              var recurrenceData = this.ceo.recurrence;
               if (recurrenceData) {
                 this.recurrence =
                     SilverpeasCalendarConst.recurrences.getElement(recurrenceData.frequency,

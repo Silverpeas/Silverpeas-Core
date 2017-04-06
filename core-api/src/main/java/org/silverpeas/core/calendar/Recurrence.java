@@ -530,7 +530,7 @@ public class Recurrence implements Cloneable {
   private void clearsUnnecessaryExceptionDates() {
     if (!this.exceptionDates.isEmpty()) {
       getEndDate().ifPresent(e -> exceptionDates.removeIf(
-          exceptionDate -> !Period.asOffsetDateTime(e).isAfter(exceptionDate)));
+          exceptionDate -> Period.asOffsetDateTime(e).isBefore(exceptionDate)));
     }
   }
 

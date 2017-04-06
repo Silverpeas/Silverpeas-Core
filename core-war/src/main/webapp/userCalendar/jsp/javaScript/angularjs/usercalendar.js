@@ -35,26 +35,17 @@ userCalendar.controller('mainController',
     $scope.getCalendarService = function() {
       return CalendarService;
     };
-    $scope.newEvent = function(calendars, startMoment) {
+    $scope.newEvent = function(startMoment) {
       var uri = context.componentUriBase + 'calendars/events/new';
-      $scope.goToPage(uri, {
-        calendars : calendars,
-        startMoment : startMoment
-      });
+      $scope.goToPage(uri, {startMoment : startMoment});
     };
-    var _goToOccurrencePage = function(uri, calendars, occurrence) {
-      $scope.goToPage(uri, {
-        calendars : calendars,
-        eventOccurrence : occurrence
-      });
+    $scope.viewEventOccurrence = function(occurrence) {
+      var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id;
+      $scope.goToPage(uri);
     };
-    $scope.viewEventOccurrence = function(calendars, occurrence) {
-      var uri = context.componentUriBase + 'calendars/events/' + occurrence.event.id;
-      _goToOccurrencePage(uri, calendars, occurrence);
-    };
-    $scope.editEventOccurrence = function(calendars, occurrence) {
-      var uri = context.componentUriBase + 'calendars/events/' + occurrence.event.id + '/edit';
-      _goToOccurrencePage(uri, calendars, occurrence);
+    $scope.editEventOccurrence = function(occurrence) {
+      var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id + '/edit';
+      $scope.goToPage(uri);
     };
     $scope.getVisibleCalendars = function(calendars) {
       var visibleCalendars = visibleFilter(calendars, true);
@@ -97,16 +88,18 @@ userCalendar.controller('editController',
 
         $scope.loadCalendarsFromContext().then(function(calendars) {
           $scope.calendars = $scope.getVisibleCalendars(calendars);
-          $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
-              function(reloadedOccurrence) {
-                if (!reloadedOccurrence.event.calendar && $scope.calendars &&
-                    $scope.calendars.length) {
-                  reloadedOccurrence.event.calendar = $scope.calendars[0];
-                }
-                $timeout(function() {
-                  $scope.ceo = reloadedOccurrence;
-                }, 0);
-              });
+          $scope.reloadEventOccurrence(context.occurrenceUri).then(function(reloadedOccurrence) {
+            if (!reloadedOccurrence.uri && context.occurrenceStartDate) {
+              reloadedOccurrence.startDate = context.occurrenceStartDate;
+              reloadedOccurrence.onAllDay = context.occurrenceStartDate.indexOf('T') < 0;
+            }
+            if (!reloadedOccurrence.calendar && $scope.calendars && $scope.calendars.length) {
+              reloadedOccurrence.calendar = $scope.calendars[0];
+            }
+            $timeout(function() {
+              $scope.ceo = reloadedOccurrence;
+            }, 0);
+          });
         });
       }]);
 
@@ -116,7 +109,7 @@ userCalendar.controller('viewController',
       function($controller, context, CalendarService, $scope, $timeout) {
         $controller('mainController', {$scope : $scope});
         $scope.reloadView = function() {
-          $scope.reloadEventOccurrence($scope.navigation.getCalendarEventOccurrence()).then(
+          $scope.reloadEventOccurrence(context.occurrenceUri).then(
               function(reloadedOccurrence) {
                 $timeout(function() {
                   $scope.ceo = reloadedOccurrence;

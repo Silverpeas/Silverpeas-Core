@@ -87,7 +87,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
   @Before
   public void verifyInitialData() throws Exception {
     // JPA and Basic SQL query must show that it exists no data
-    assertThat(getCalendarEventTableLines(), hasSize(5));
+    assertThat(getCalendarEventTableLines(), hasSize(6));
   }
 
   @Test
@@ -353,10 +353,12 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     List<DbSetupRule.TableLine> allRecurrences = getRecurrenceTableLines();
     List<DbSetupRule.TableLine> allRecurrenceDayOfWeeks = getRecurrenceDayOfWeekTableLines();
     List<DbSetupRule.TableLine> allRecurrenceExceptions = getRecurrenceExceptionTableLines();
+    List<DbSetupRule.TableLine> allOccurrences = getOccurrenceTableLines();
 
-    assertThat(allRecurrences.isEmpty(), is(false));
+    assertThat(allRecurrences, hasSize(2));
     assertThat(allRecurrenceDayOfWeeks.isEmpty(), is(false));
     assertThat(allRecurrenceExceptions.isEmpty(), is(false));
+    assertThat(allOccurrences, hasSize(1));
 
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = calendar.event("ID_E_5").get();
@@ -366,9 +368,40 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
     allRecurrences = getRecurrenceTableLines();
     allRecurrenceDayOfWeeks = getRecurrenceDayOfWeekTableLines();
     allRecurrenceExceptions = getRecurrenceExceptionTableLines();
-    assertThat(allRecurrences.isEmpty(), is(true));
+    allOccurrences = getOccurrenceTableLines();
+    assertThat(allRecurrences, hasSize(1));
     assertThat(allRecurrenceDayOfWeeks.isEmpty(), is(true));
     assertThat(allRecurrenceExceptions.isEmpty(), is(true));
+    assertThat(allOccurrences, hasSize(1));
+  }
+
+  @Test
+  public void
+  deleteAnEventWithPersistedOccurrenceShouldDeleteItsRecurrenceRuleAndPersistedOccurrence()
+      throws Exception {
+    List<DbSetupRule.TableLine> allRecurrences = getRecurrenceTableLines();
+    List<DbSetupRule.TableLine> allRecurrenceDayOfWeeks = getRecurrenceDayOfWeekTableLines();
+    List<DbSetupRule.TableLine> allRecurrenceExceptions = getRecurrenceExceptionTableLines();
+    List<DbSetupRule.TableLine> allOccurrences = getOccurrenceTableLines();
+
+    assertThat(allRecurrences, hasSize(2));
+    assertThat(allRecurrenceDayOfWeeks.isEmpty(), is(false));
+    assertThat(allRecurrenceExceptions.isEmpty(), is(false));
+    assertThat(allOccurrences, hasSize(1));
+
+    Calendar calendar = Calendar.getById(CALENDAR_ID);
+    CalendarEvent event = calendar.event("ID_E_6").get();
+    OperationResult result = event.delete();
+    assertEventIsDeleted(result);
+
+    allRecurrences = getRecurrenceTableLines();
+    allRecurrenceDayOfWeeks = getRecurrenceDayOfWeekTableLines();
+    allRecurrenceExceptions = getRecurrenceExceptionTableLines();
+    allOccurrences = getOccurrenceTableLines();
+    assertThat(allRecurrences, hasSize(1));
+    assertThat(allRecurrenceDayOfWeeks.isEmpty(), is(false));
+    assertThat(allRecurrenceExceptions.isEmpty(), is(false));
+    assertThat(allOccurrences, hasSize(0));
   }
 
   @Test
@@ -532,6 +565,11 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
   protected List<DbSetupRule.TableLine> getRecurrenceTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("* from SB_Cal_Recurrence"));
+  }
+
+  protected List<DbSetupRule.TableLine> getOccurrenceTableLines() throws Exception {
+    return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from SB_Cal_Occurrences"));
   }
 
   protected List<DbSetupRule.TableLine> getRecurrenceDayOfWeekTableLines() throws Exception {

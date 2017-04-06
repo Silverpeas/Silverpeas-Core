@@ -53,9 +53,9 @@
             name: '@',
             zoneId : '=',
             date : '=',
-            mandatory : '=',
             status : '=?',
-            disabled : '=?'
+            mandatory : '=',
+            isDisabled : '=?'
           },
           controllerAs : '$ctrl',
           bindToController : true,
@@ -95,9 +95,9 @@
               }
             }.bind(this)) ;
 
-            $scope.$watch('$ctrl.disabled', function(disabled) {
+            $scope.$watch('$ctrl.isDisabled', function(isDisabled) {
               if (this.$dateInput) {
-                this.$dateInput.datepicker("option", "showOn", (disabled ? "" : "button"));
+                this.$dateInput.datepicker("option", "showOn", (isDisabled ? "" : "button"));
               }
             }.bind(this)) ;
 
@@ -114,7 +114,7 @@
               whenSilverpeasReady(function() {
                 this.$dateInput = jQuery(angular.element(".dateToPick", $element));
                 this.$dateInput.datepicker({
-                  showOn: (this.disabled ? '' : 'button'),
+                  showOn: (this.isDisabled ? '' : 'button'),
                   buttonImage: webContext + '/util/icons/calendar_1.png',
                   buttonImageOnly: true,
                   showOtherMonths: true,

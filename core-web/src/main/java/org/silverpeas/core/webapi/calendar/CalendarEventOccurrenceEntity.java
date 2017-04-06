@@ -26,26 +26,24 @@ package org.silverpeas.core.webapi.calendar;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.CalendarEventOccurrenceReference;
-import org.silverpeas.core.date.Period;
-import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.util.StringUtil;
 
+import javax.ws.rs.WebApplicationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatDateWithOffset;
+import static org.silverpeas.core.calendar.CalendarEventUtil.formatTitle;
 
 /**
  * It represents the state of a calendar event in a calendar as transmitted within the
@@ -55,15 +53,13 @@ import static org.silverpeas.core.calendar.CalendarEventUtil.formatDateWithOffse
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class CalendarEventOccurrenceEntity implements WebEntity {
+public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
+
+  private URI occurrenceUri;
 
   private String occurrenceId;
-  private String calendarZoneId;
   private String lastStartDate;
-  private CalendarEventEntity event;
-  private String startDate;
-  private String endDate;
-  private List<CalendarEventAttendeeEntity> attendees = new ArrayList<>();
+  private boolean firstEventOccurrence;
 
   protected CalendarEventOccurrenceEntity() {
   }
@@ -73,8 +69,30 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
     return new CalendarEventOccurrenceEntity().decorate(occurrence, zoneId);
   }
 
-  public CalendarEventOccurrenceEntity withEventEntity(CalendarEventEntity eventEntity) {
-    this.event = eventEntity;
+  public static String decodeId(String occurrenceId) {
+    return new String(StringUtil.fromBase64(occurrenceId));
+  }
+
+  /**
+   * Sets a URI of occurrence entity. With this URI, it can then be accessed through the Web.
+   * @param occurrenceUri the occurrence web entity URI.
+   * @return itself.
+   */
+  @SuppressWarnings("unchecked")
+  public CalendarEventOccurrenceEntity withOccurrenceURI(final URI occurrenceUri) {
+    this.occurrenceUri = occurrenceUri;
+    return this;
+  }
+
+  @Override
+  public CalendarEventOccurrenceEntity withEventURI(final URI eventUri) {
+    super.withEventURI(eventUri);
+    return this;
+  }
+
+  @Override
+  public CalendarEventOccurrenceEntity withCalendarURI(final URI calendarUri) {
+    super.withCalendarURI(calendarUri);
     return this;
   }
 
@@ -83,33 +101,41 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
    * @param attendees the attendees entity to set.
    * @return itself.
    */
-  @SuppressWarnings("unchecked")
-  public <T extends CalendarEventOccurrenceEntity> T withAttendees(
+  @Override
+  public CalendarEventOccurrenceEntity withAttendees(
       final List<CalendarEventAttendeeEntity> attendees) {
-    this.attendees = attendees;
-    return (T) this;
+    super.withAttendees(attendees);
+    return this;
   }
 
   @Override
   @XmlElement(defaultValue = "")
   public URI getURI() {
-    return URI.create("");
+    return getOccurrenceUri();
+  }
+
+  public URI getOccurrenceUri() {
+    return occurrenceUri;
+  }
+
+  protected void setOccurrenceUri(final URI occurrenceUri) {
+    this.occurrenceUri = occurrenceUri;
   }
 
   public String getId() {
-    return occurrenceId;
+    return getOccurrenceId();
   }
 
   protected void setId(String occurrenceId) {
+    setOccurrenceId(occurrenceId);
+  }
+
+  public String getOccurrenceId() {
+    return occurrenceId;
+  }
+
+  public void setOccurrenceId(final String occurrenceId) {
     this.occurrenceId = occurrenceId;
-  }
-
-  public String getCalendarZoneId() {
-    return calendarZoneId;
-  }
-
-  public void setCalendarZoneId(final String calendarZoneId) {
-    this.calendarZoneId = calendarZoneId;
   }
 
   public String getLastStartDate() {
@@ -120,76 +146,12 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
     this.lastStartDate = lastStartDate;
   }
 
-  public CalendarEventEntity getEvent() {
-    return event;
+  public boolean isFirstEventOccurrence() {
+    return firstEventOccurrence;
   }
 
-  protected void setEvent(final CalendarEventEntity event) {
-    this.event = event;
-  }
-
-  public String getStartDate() {
-    return startDate;
-  }
-
-  protected void setStartDate(final String startDate) {
-    this.startDate = startDate;
-  }
-
-  public String getEndDate() {
-    return endDate;
-  }
-
-  protected void setEndDate(final String endDate) {
-    this.endDate = endDate;
-  }
-
-  public List<CalendarEventAttendeeEntity> getAttendees() {
-    return attendees;
-  }
-
-  public void setAttendees(final List<CalendarEventAttendeeEntity> attendees) {
-    withAttendees(attendees);
-  }
-
-  @XmlElement
-  public String getOwnerName() {
-    return event.getOwnerName();
-  }
-
-  @XmlElement
-  public Date getCreateDate() {
-    return event.getCreateDate();
-  }
-
-  @XmlElement
-  public Date getLastUpdateDate() {
-    return event.getLastUpdateDate();
-  }
-
-  /**
-   * Gets the period of the occurrence.
-   * @return a period instance.
-   */
-  @XmlTransient
-  Period getPeriod() {
-    final Period occurrencePeriod;
-    if (getEvent().isOnAllDay()) {
-      occurrencePeriod = Period.between(LocalDate.parse(startDate), LocalDate.parse(endDate));
-    } else {
-      occurrencePeriod =
-          Period.between(OffsetDateTime.parse(startDate), OffsetDateTime.parse(endDate));
-    }
-    return occurrencePeriod;
-  }
-
-  /**
-   * Gets the reference data of the occurrence, previous start datetime and new period.
-   * @return an instance of {@link CalendarEventOccurrenceReference}.
-   */
-  @XmlTransient
-  CalendarEventOccurrenceReference getReferenceData() {
-    return CalendarEventOccurrenceReference.fromOccurrenceId(getId()).withPeriod(getPeriod());
+  protected void setFirstEventOccurrence(final boolean firstEventOccurrence) {
+    this.firstEventOccurrence = firstEventOccurrence;
   }
 
   /**
@@ -198,30 +160,47 @@ public class CalendarEventOccurrenceEntity implements WebEntity {
    * @return a {@link CalendarEvent} instance.
    */
   @XmlTransient
-  CalendarEvent getMergedPersistentEventModel() {
-    return getEvent().getMergedPersistentModel(getPeriod());
+  CalendarEventOccurrence getMergedOccurrence() {
+    final CalendarEventOccurrence occurrence =
+        CalendarEventOccurrence.getById(decodeId(getOccurrenceId())).orElse(null);
+    if (occurrence == null) {
+      throw new WebApplicationException(NOT_FOUND);
+    }
+    applyOn(occurrence.getCalendarEvent());
+    applyOn(occurrence.asCalendarComponent());
+    return occurrence;
   }
 
   protected CalendarEventOccurrenceEntity decorate(
       final CalendarEventOccurrence calendarEventOccurrence, final ZoneId zoneId) {
-    final CalendarEvent event = calendarEventOccurrence.getCalendarEvent();
-    this.occurrenceId = calendarEventOccurrence.getId();
-    this.calendarZoneId = event.getCalendar().getZoneId().toString();
+    final CalendarEvent calEvent = calendarEventOccurrence.getCalendarEvent();
+    decorate(calEvent, calEvent.getCalendar().getComponentInstanceId(), zoneId);
+    this.occurrenceId = StringUtil.asBase64(calendarEventOccurrence.getId().getBytes());
     this.lastStartDate = calendarEventOccurrence.getOriginalStartDate().toString();
-    this.startDate = formatDateWithOffset(event, calendarEventOccurrence.getStartDate(), zoneId);
-    this.endDate = formatDateWithOffset(event, calendarEventOccurrence.getEndDate(), zoneId);
+    setFirstEventOccurrence(calendarEventOccurrence.getOriginalStartDate()
+        .equals(calendarEventOccurrence.getCalendarEvent().getStartDate()));
+    final CalendarComponent component = calendarEventOccurrence.asCalendarComponent();
+    setOnAllDay(calendarEventOccurrence.isOnAllDay());
+    setStartDate(formatDateWithOffset(calEvent, calendarEventOccurrence.getStartDate(), zoneId));
+    setEndDate(formatDateWithOffset(calEvent, calendarEventOccurrence.getEndDate(), zoneId));
+    setLastUpdateDate(component.getLastUpdateDate());
+    setTitle(
+        formatTitle(component, calEvent.getCalendar().getComponentInstanceId(), canBeAccessed()));
+    if (canBeAccessed()) {
+      setDescription(component.getDescription());
+      setLocation(component.getLocation());
+      setPriority(component.getPriority());
+    }
     return this;
   }
 
   @Override
-  public String toString() {
-    ToStringBuilder builder = new ToStringBuilder(this);
+  protected ToStringBuilder toStringBuilder() {
+    ToStringBuilder builder = super.toStringBuilder();
     builder.append("occurrenceId", getId());
     builder.append("calendarZoneId", getCalendarZoneId());
-    builder.append("event", getEvent().toString());
     builder.append("lastStartDate", getLastStartDate());
-    builder.append("startDate", getStartDate());
-    builder.append("endDate", getEndDate());
-    return builder.toString();
+    builder.append("firstEventOccurrence", isFirstEventOccurrence());
+    return builder;
   }
 }

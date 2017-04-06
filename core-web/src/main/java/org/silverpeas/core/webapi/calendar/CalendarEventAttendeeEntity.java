@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
 import org.silverpeas.core.calendar.Attendee.PresenceStatus;
+import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.WebEntity;
@@ -122,9 +123,9 @@ public class CalendarEventAttendeeEntity implements WebEntity {
    * @return a {@link CalendarEvent} instance.
    */
   @XmlTransient
-  Attendee addTo(CalendarEvent event) {
+  Attendee addTo(CalendarComponent component) {
     Attendee attendee = null;
-    for (Attendee anAttendee : event.getAttendees()) {
+    for (Attendee anAttendee : component.getAttendees()) {
       if (getId().equals(anAttendee.getId())) {
         attendee = anAttendee;
         break;
@@ -133,10 +134,10 @@ public class CalendarEventAttendeeEntity implements WebEntity {
     if (attendee == null) {
       // Attendee has not been found from the existing set
       if (StringUtil.isLong(getId())) {
-        attendee = event.getAttendees().add(User.getById(getId()))
+        attendee = component.getAttendees().add(User.getById(getId()))
             .withPresenceStatus(getPresenceStatus());
       } else {
-        attendee = event.getAttendees().add(getId())
+        attendee = component.getAttendees().add(getId())
             .withPresenceStatus(getPresenceStatus());
       }
     }

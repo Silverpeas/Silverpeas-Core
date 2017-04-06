@@ -36,7 +36,7 @@
 
 <span ng-transclude></span>
 <input type="text" id="{{$ctrl.timeId}}" name="{{$ctrl.name}}"
-       class="inputHour" size="5" maxlength="5" ng-disabled="$ctrl.disabled"
+       class="inputHour" size="5" maxlength="5" ng-disabled="$ctrl.isDisabled"
        ng-model="$ctrl.formattedTime" ng-change="$ctrl.valueChanged()">
 <span ng-if="$ctrl.mandatory">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5"></span>
 <span class="txtnote">(hh:mm)</span>

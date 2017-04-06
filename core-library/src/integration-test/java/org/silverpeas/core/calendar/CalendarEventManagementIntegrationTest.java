@@ -85,7 +85,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
   @Before
   public void verifyInitialData() throws Exception {
     // JPA and Basic SQL query must show that it exists no data
-    assertThat(getCalendarEventTableLines(), hasSize(5));
+    assertThat(getCalendarEventTableLines(), hasSize(6));
   }
 
   @Test
@@ -104,7 +104,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
   public void getAllEvents() {
     try(Stream<CalendarEvent> events = Calendar.getEvents().stream()) {
       List<CalendarEvent> allEvents = events.collect(Collectors.toList());
-      assertThat(allEvents, hasSize(5));
+      assertThat(allEvents, hasSize(6));
 
       String previousComponentInstanceId = "";
       String previousCalendarId = "";
@@ -151,7 +151,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     try (Stream<CalendarEvent> events = Calendar.getEvents()
         .filter(f -> f.onParticipants(User.getById("0"), User.getById(USER_ID))).stream()) {
       List<CalendarEvent> allEvents = events.collect(Collectors.toList());
-      assertThat(allEvents, hasSize(5));
+      assertThat(allEvents, hasSize(6));
     }
   }
 
@@ -160,7 +160,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     try (Stream<CalendarEvent> events = Calendar.getEvents()
         .filter(f -> f.onCalendar(Calendar.getById(CALENDAR_ID))).stream()) {
       List<CalendarEvent> allEvents = events.collect(Collectors.toList());
-      assertThat(allEvents, hasSize(2));
+      assertThat(allEvents, hasSize(3));
     }
   }
 
@@ -170,7 +170,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
         .filter(f -> f.onCalendar(Calendar.getById(CALENDAR_ID), Calendar.getById("ID_2")))
         .stream()) {
       List<CalendarEvent> allEvents = events.collect(Collectors.toList());
-      assertThat(allEvents, hasSize(3));
+      assertThat(allEvents, hasSize(4));
     }
   }
 
@@ -335,7 +335,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
   public void deleteAllExistingEventOfACalendar() throws Exception {
     List<TableLine> beforeDeletion = getCalendarEventTableLines();
 
-    assertThat(beforeDeletion, hasSize(5));
+    assertThat(beforeDeletion, hasSize(6));
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     Optional<CalendarEvent> mayBeEvent = calendar.event("ID_E_5");
     assertThat(mayBeEvent.isPresent(), is(true));

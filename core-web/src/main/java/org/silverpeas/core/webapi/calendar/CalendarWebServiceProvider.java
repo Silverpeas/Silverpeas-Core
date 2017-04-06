@@ -28,17 +28,18 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
+import org.silverpeas.core.calendar.AttendeeSet;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.CalendarEventOccurrenceReference;
 import org.silverpeas.core.calendar.InternalAttendee;
 import org.silverpeas.core.calendar.icalendar.ICalendarException;
 import org.silverpeas.core.calendar.icalendar.ICalendarImport;
 import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.Entity;
+import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
@@ -69,6 +70,9 @@ import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodTyp
  */
 @Singleton
 public class CalendarWebServiceProvider {
+
+  private CalendarWebServiceProvider() {
+  }
 
   /**
    * Gets the singleton instance of the provider.
@@ -131,19 +135,20 @@ public class CalendarWebServiceProvider {
    * @param componentInstanceId the identifier of current handled component instance.
    * @param originalCalendar the calendar to check against the other data.
    * @param previousOne the previous event data to check against the others.
-   * @param newOne the new event data to check against the others.
+   * @param occurrence the occurrence data to check against the others.
    */
   static void assertDataConsistency(final String componentInstanceId,
       final Calendar originalCalendar, final CalendarEvent previousOne,
-      final CalendarEvent newOne) {
+      final CalendarEventOccurrence occurrence) {
     assertDataConsistency(componentInstanceId, originalCalendar, previousOne);
-    assertEntityIsDefined(newOne.asCalendarComponent());
+    assertEntityIsDefined(occurrence);
     // Checking the component instance id with the new event data.
-    if (!newOne.getCalendar().getComponentInstanceId().equals(componentInstanceId)) {
+    if (!occurrence.getCalendarEvent().getCalendar().getComponentInstanceId()
+        .equals(componentInstanceId)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
     // Checking previous and old event data
-    if (!previousOne.getId().equals(newOne.getId())) {
+    if (!previousOne.getId().equals(occurrence.getCalendarEvent().getId())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }
@@ -152,13 +157,10 @@ public class CalendarWebServiceProvider {
    * Asserts the specified entity is well defined, otherwise an HTTP 404 error is sent back.
    * @param entity the entity to check.
    */
-  static void assertEntityIsDefined(final Entity entity) {
+  static void assertEntityIsDefined(final IdentifiableEntity entity) {
     if (entity == null || isNotDefined(entity.getId())) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
-  }
-
-  private CalendarWebServiceProvider() {
   }
 
   /**
@@ -284,35 +286,34 @@ public class CalendarWebServiceProvider {
   }
 
   /**
-   * Saves an event from the given calendar event occurrence.<br/>
+   * Saves an event occurrence.<br/>
    * This method handles also a common behavior the UI must have between each way an event is
    * saved (from a controller, a WEB service...)
-   * @param event the event reference from which the update is performed.
-   * @param data the occurrence necessary data to perform the operation.
+   * @param occurrence the occurrence to save.
    * @param updateMethodType indicates the method of the occurrence update.
-   * @param zoneId the zoneId into which dates are displayed (optional).
-   * @return the calendar event.
+   * @param zoneId the zoneId into which dates are displayed (optional).  @return the calendar
+   * event.
    */
-  List<CalendarEvent> saveEventFromAnOccurrence(CalendarEvent event,
-      CalendarEventOccurrenceReference data, OccurrenceEventActionMethodType updateMethodType,
-      final ZoneId zoneId) {
+  List<CalendarEvent> saveOccurrence(final CalendarEventOccurrence occurrence,
+      OccurrenceEventActionMethodType updateMethodType, final ZoneId zoneId) {
     User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, event.asCalendarComponent());
+    checkUserIsCreator(owner, occurrence.getCalendarEvent().asCalendarComponent());
     OccurrenceEventActionMethodType methodType = updateMethodType == null ? ALL : updateMethodType;
+
+    final String originalTitle = occurrence.getCalendarEvent().getTitle();
+    final Temporal originalStartDate = occurrence.getOriginalStartDate();
 
     final EventOperationResult result;
     switch (methodType) {
       case FROM:
-        // TODO CALENDAR update the event since the given occurrence
-        //result = event.updateSince(data);
-        result = null;
+        result = occurrence.updateSinceMe();
         break;
       case UNIQUE:
-        // TODO CALENDAR update the event occurrence itself
-        //result = event.update(data);
-        result = null;
+        result = occurrence.update();
         break;
       default:
+        final CalendarEvent event = occurrence.getCalendarEvent();
+        occurrence.asCalendarComponent().copyTo(event.asCalendarComponent());
         result = event.update();
         break;
     }
@@ -320,23 +321,23 @@ public class CalendarWebServiceProvider {
     final List<CalendarEvent> events = new ArrayList<>();
     Optional<CalendarEvent> createdEvent = result.created();
     Optional<CalendarEvent> updatedEvent = result.updated();
+    Optional<CalendarEventOccurrence> updatedOccurrence = result.instance();
+
+    updatedOccurrence.ifPresent(o -> {
+      final CalendarEvent event = o.getCalendarEvent();
+      successMessage("calendar.message.event.occurrence.updated.unique", originalTitle,
+          getMessager().formatDate(getDateWithOffset(event, originalStartDate, zoneId)));
+      events.add(event);
+    });
 
     updatedEvent.ifPresent(e -> {
-      if (!createdEvent.isPresent() || e.isRecurrent()) {
+      if (!createdEvent.isPresent()) {
         successMessage("calendar.message.event.updated", e.getTitle());
       } else {
-        final String bundleKey;
-        final Temporal endDate;
-        if (methodType == UNIQUE) {
-          bundleKey = "calendar.message.event.occurrence.updated.unique";
-          endDate = data.getOriginalStartDate();
-        } else {
-          bundleKey = "calendar.message.event.occurrence.updated.from";
-          //noinspection OptionalGetWithoutIsPresent
-          endDate = e.getRecurrence().getRecurrenceEndDate().get();
-        }
-        successMessage(bundleKey, e.getTitle(),
-            getMessager().formatDate(getDateWithOffset(event, endDate, zoneId)));
+        //noinspection OptionalGetWithoutIsPresent
+        final Temporal endDate = e.getRecurrence().getRecurrenceEndDate().get();
+        successMessage("calendar.message.event.occurrence.updated.from", e.getTitle(),
+            getMessager().formatDate(getDateWithOffset(e, endDate, zoneId)));
       }
       events.add(e);
     });
@@ -350,57 +351,51 @@ public class CalendarWebServiceProvider {
   }
 
   /**
-   * Deletes an event or occurrences of an event from the given occurrence.<br/>
+   * Deletes occurrences of an event from the given occurrence.<br/>
    * This method handles also a common behavior the UI must have between each way an event is
    * deleted (from a controller, a WEB service...)
-   * @param event the event reference from which the deletion is performed.
-   * @param data the occurrence necessary data to perform the operation.
+   * @param occurrence the occurrence to delete.
    * @param deleteMethodType indicates the method of the occurrence deletion.
    * @param zoneId the zoneId into which dates are displayed (optional).
    */
-  CalendarEvent deleteEventFromAnOccurrence(CalendarEvent event,
-      CalendarEventOccurrenceReference data, OccurrenceEventActionMethodType deleteMethodType,
-      final ZoneId zoneId) {
+  CalendarEvent deleteOccurrence(CalendarEventOccurrence occurrence,
+      OccurrenceEventActionMethodType deleteMethodType, final ZoneId zoneId) {
     User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, event.asCalendarComponent());
+    checkUserIsCreator(owner, occurrence.getCalendarEvent().asCalendarComponent());
     OccurrenceEventActionMethodType methodType = deleteMethodType == null ? ALL : deleteMethodType;
 
     final EventOperationResult result;
     switch (methodType) {
       case FROM:
-        // TODO CALENDAR delete the event since the given occurrence
-        //result = event.deleteSince(data);
-        result = null;
+        result = occurrence.deleteSinceMe();
         break;
       case UNIQUE:
-        // TODO CALENDAR delete the event occurrence itself
-        //result = event.deleteOnly(data);
-        result = null;
+        result = occurrence.delete();
         break;
       default:
-        result = event.delete();
+        result = occurrence.getCalendarEvent().delete();
         break;
     }
 
     Optional<CalendarEvent> updatedEvent = result.updated();
     if (!updatedEvent.isPresent() || !updatedEvent.get().isRecurrent()) {
-      successMessage("calendar.message.event.deleted", event.getTitle());
+      successMessage("calendar.message.event.deleted", occurrence.getTitle());
     } else {
       final String bundleKey;
       final Temporal endDate;
       if (methodType == UNIQUE) {
         bundleKey = "calendar.message.event.occurrence.deleted.unique";
-        endDate = data.getOriginalStartDate();
+        endDate = occurrence.getOriginalStartDate();
       } else {
         bundleKey = "calendar.message.event.occurrence.deleted.from";
         //noinspection OptionalGetWithoutIsPresent
         endDate = updatedEvent.get().getRecurrence().getRecurrenceEndDate().get();
       }
-      successMessage(bundleKey, event.getTitle(),
-          getMessager().formatDate(getDateWithOffset(event, endDate, zoneId)));
+      successMessage(bundleKey, occurrence.getTitle(), getMessager()
+          .formatDate(getDateWithOffset(occurrence.getCalendarEvent(), endDate, zoneId)));
     }
 
-    return updatedEvent.get();
+    return updatedEvent.orElse(null);
   }
 
   /**
@@ -408,76 +403,58 @@ public class CalendarWebServiceProvider {
    * the given data.<br/>
    * This method handles also a common behavior the UI must have between each way an event is
    * deleted (from a controller, a WEB service...)
-   * @param event the event reference.
-   * @param data the occurrence necessary data to perform the operation.
+   * @param occurrence the occurrence.
    * @param attendeeId the identifier of the attendee which answered.
    * @param participationStatus the participation answer of the attendee.
    * @param answerMethodType indicates the method of the occurrence deletion.
    * @param zoneId the zoneId into which dates are displayed (optional).
    */
-  CalendarEvent updateEventAttendeeParticipationFromAnOccurrence(CalendarEvent event,
-      CalendarEventOccurrenceReference data, String attendeeId,
-      ParticipationStatus participationStatus, OccurrenceEventActionMethodType answerMethodType,
-      final ZoneId zoneId) {
+  CalendarEvent updateOccurrenceAttendeeParticipation(CalendarEventOccurrence occurrence,
+      String attendeeId, ParticipationStatus participationStatus,
+      OccurrenceEventActionMethodType answerMethodType, final ZoneId zoneId) {
     OccurrenceEventActionMethodType methodType = answerMethodType == null ? ALL : answerMethodType;
-    Temporal participationOnDate = null;
+    final AttendeeSet attendees;
     if (methodType == UNIQUE) {
-      participationOnDate = data.getOriginalStartDate();
-    } else if (methodType != ALL) {
+      attendees = occurrence.getAttendees();
+    } else if (methodType == ALL) {
+      attendees = occurrence.getCalendarEvent().getAttendees();
+    } else {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
 
-    for (Attendee attendee : event.getAttendees()) {
-      if (attendee.getId().equals(attendeeId)) {
-        if (participationOnDate == null) {
-          switch (participationStatus) {
-            case ACCEPTED:
-              attendee.accept();
-              break;
-            case DECLINED:
-              attendee.decline();
-              break;
-            case TENTATIVE:
-              attendee.tentativelyAccept();
-              break;
-            default:
-              throw new WebApplicationException(Response.Status.FORBIDDEN);
-          }
-        } else {
-          switch (participationStatus) {
-            case ACCEPTED:
-              attendee.acceptOn(participationOnDate);
-              break;
-            case DECLINED:
-              attendee.declineOn(participationOnDate);
-              break;
-            case TENTATIVE:
-              attendee.tentativelyAcceptOn(participationOnDate);
-              break;
-            default:
-              throw new WebApplicationException(Response.Status.FORBIDDEN);
-          }
-        }
+    Optional<Attendee> attendee =
+        attendees.stream().filter(a -> a.getId().equals(attendeeId)).findFirst();
 
-        final EventOperationResult result = event.update();
-        switch (methodType) {
-          case ALL:
-            successMessage("calendar.message.event.attendee.participation.updated",
-                event.getTitle());
-            break;
-          case UNIQUE:
-            successMessage(
-                "calendar.message.event.occurrence.attendee.participation.updated.unique",
-                event.getTitle(), getMessager()
-                    .formatDate(getDateWithOffset(event, data.getOriginalStartDate(), zoneId)));
-            break;
-        }
-
-        return result.updated().get();
-      }
+    if (!attendee.isPresent()) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
 
-    throw new WebApplicationException(Response.Status.FORBIDDEN);
+    switch (participationStatus) {
+      case ACCEPTED:
+        attendee.get().accept();
+        break;
+      case DECLINED:
+        attendee.get().decline();
+        break;
+      case TENTATIVE:
+        attendee.get().tentativelyAccept();
+        break;
+      default:
+        throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+
+    final EventOperationResult result = occurrence.update();
+    if (methodType == OccurrenceEventActionMethodType.ALL) {
+      successMessage("calendar.message.event.attendee.participation.updated",
+          occurrence.getCalendarEvent().getTitle());
+    } else {
+      successMessage("calendar.message.event.occurrence.attendee.participation.updated.unique",
+          occurrence.getTitle(), getMessager().formatDate(
+              getDateWithOffset(occurrence.getCalendarEvent(), occurrence.getOriginalStartDate(),
+                  zoneId)));
+    }
+
+    return result.updated().get();
   }
 
   /**

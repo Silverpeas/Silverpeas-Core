@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.date.Period;
@@ -30,6 +31,7 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalStringIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.util.Mutable;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -42,8 +44,10 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.Temporal;
 import java.util.List;
+import java.util.Optional;
 
 
 /**
@@ -117,8 +121,72 @@ public class CalendarEventOccurrence
     this.component.setPeriod(Period.between(startDate, endDate));
   }
 
-  static CalendarEventOccurrence getById(final String id) {
-    return Transaction.performInOne(() -> {
+  /**
+   * Gets optionally an event occurrence from the specified data.
+   * @param event an event.
+   * @param occurrenceStartDate a start date.
+   * @return the computed occurrence identifier.
+   */
+  public static Optional<CalendarEventOccurrence> getBy(CalendarEvent event, String occurrenceStartDate) {
+    return getBy(event, getDate(occurrenceStartDate));
+  }
+
+  /**
+   * Gets optionally an event occurrence from the specified data.
+   * @param event an event.
+   * @param occurrenceStartDate a start date.
+   * @return the computed occurrence identifier.
+   */
+  public static Optional<CalendarEventOccurrence> getBy(CalendarEvent event, Temporal occurrenceStartDate) {
+    Temporal startDate = occurrenceStartDate;
+    if (startDate instanceof OffsetDateTime) {
+      startDate = ((OffsetDateTime) occurrenceStartDate).atZoneSameInstant(ZoneOffset.UTC)
+          .toOffsetDateTime();
+    }
+    return getById(generateId(event, startDate));
+  }
+
+  /**
+   * Gets optionally an event occurrence by its identifier.
+   * <p>If the occurrence exists into the persistence, it is returned. Otherwise it is generated.
+   * <p>Otherwise and if start date is valid, the occurrence is generated.
+   * @param id the identifier of the aimed occurrence.
+   * @return an optional calendar event occurrence.
+   */
+  public static Optional<CalendarEventOccurrence> getById(final String id) {
+    CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
+    Mutable<CalendarEventOccurrence> occurrence = Mutable.of(repository.getById(id));
+    if (!occurrence.isPresent()) {
+      Pair<String, Temporal> explodedId = explodeId(id);
+      final String eventId = explodedId.getLeft();
+      final Temporal startDate = explodedId.getRight();
+      CalendarEvent event = CalendarEvent.getById(eventId);
+      if (event != null) {
+        final LocalDate occStartDate;
+        final LocalDate occEndDate;
+        if (startDate instanceof LocalDate) {
+          LocalDate date = (LocalDate) startDate;
+          occStartDate = date.minusDays(1);
+          occEndDate = date.plusDays(1);
+        } else {
+          OffsetDateTime dateTime = (OffsetDateTime) startDate;
+          occStartDate = dateTime.minusDays(1).toLocalDate();
+          occEndDate = dateTime.plusDays(1).toLocalDate();
+        }
+        List<CalendarEventOccurrence> occurrences =
+            event.getCalendar().between(occStartDate, occEndDate).getEventOccurrences();
+        occurrences.removeIf(o -> !o.getCalendarEvent().getId().equals(eventId) ||
+            (!o.getStartDate().equals(startDate)));
+        if (occurrences.size() == 1) {
+          occurrence.set(occurrences.get(0));
+        }
+      }
+    }
+    return Optional.ofNullable(occurrence.orElse(null));
+  }
+
+  static CalendarEventOccurrence getByIdFromPersistence(final String id) {
+    return Transaction.performInNew(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
       return repository.getById(id);
     });
@@ -141,7 +209,11 @@ public class CalendarEventOccurrence
         .getAll(timeWindow.getEvents(), timeWindow.getPeriod());
     modified.forEach(o -> {
       int idx = occurrences.indexOf(o);
-      occurrences.set(idx, o);
+      if (idx < 0) {
+        occurrences.add(o);
+      } else {
+        occurrences.set(idx, o);
+      }
     });
     return occurrences;
   }
@@ -178,12 +250,7 @@ public class CalendarEventOccurrence
    * @return the original start date of this occurrence of calendar event.
    */
   public Temporal getOriginalStartDate() {
-    String temporal = this.getId().split("@")[1];
-    if (temporal.contains("T")) {
-      return OffsetDateTime.parse(temporal);
-    } else {
-      return LocalDate.parse(temporal);
-    }
+    return explodeId(this.getId()).getRight();
   }
 
   /**
@@ -502,12 +569,31 @@ public class CalendarEventOccurrence
    * @return true if the date of this occurrence has just modified. False otherwise.
    */
   boolean isDateChanged() {
-    CalendarEventOccurrence previous = CalendarEventOccurrence.getById(this.getId());
+    CalendarEventOccurrence previous = CalendarEventOccurrence.getByIdFromPersistence(this.getId());
     return (previous != null && !previous.getPeriod().equals(this.getPeriod())) ||
         (previous == null && !this.getOriginalStartDate().equals(this.getStartDate()));
   }
 
-  private String generateId(CalendarEvent event, Temporal occurrenceStartDate) {
+  /**
+   * Generates an event occurrence identifier from the necessary data.
+   * @param event an event.
+   * @param occurrenceStartDate a start date.
+   * @return the computed occurrence identifier.
+   */
+  private static String generateId(CalendarEvent event, Temporal occurrenceStartDate) {
     return event.getId() + "@" + occurrenceStartDate;
+  }
+
+  private static Pair<String, Temporal> explodeId(String id) {
+    final String[] explodedId = id.split("@");
+    return Pair.of(explodedId[0], getDate(explodedId[1]));
+  }
+
+  private static Temporal getDate(String temporal) {
+    if (temporal.contains("T")) {
+      return OffsetDateTime.parse(temporal);
+    } else {
+      return LocalDate.parse(temporal);
+    }
   }
 }

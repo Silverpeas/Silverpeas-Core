@@ -171,7 +171,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
     TableLine beforeDeletion = getCalendarTableLineById("ID_3");
     List<TableLine> eventsBeforeDeletion = getCalendarEventTableLines();
     assertThat(beforeDeletion, notNullValue());
-    assertThat(eventsBeforeDeletion, hasSize(5));
+    assertThat(eventsBeforeDeletion, hasSize(6));
 
     Calendar calendarToDelete = Calendar.getById("ID_3");
     calendarToDelete.delete();
@@ -182,7 +182,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
     TableLine afterDeletion = getCalendarTableLineById("ID_3");
     List<TableLine> eventsAfterDeletion = getCalendarEventTableLines();
     assertThat(afterDeletion, nullValue());
-    assertThat(eventsAfterDeletion, hasSize(3));
+    assertThat(eventsAfterDeletion, hasSize(4));
 
     thrown.expect(IllegalStateException.class);
     calendarToDelete.event("ID_E_3");

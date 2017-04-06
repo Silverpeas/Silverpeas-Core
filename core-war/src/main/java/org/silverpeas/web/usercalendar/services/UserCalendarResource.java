@@ -27,14 +27,9 @@ package org.silverpeas.web.usercalendar.services;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.webapi.calendar.CalendarEntity;
-import org.silverpeas.core.webapi.calendar.CalendarEventAttendeeEntity;
-import org.silverpeas.core.webapi.calendar.CalendarEventEntity;
 import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
 import org.silverpeas.core.webapi.calendar.CalendarResource;
 
@@ -45,7 +40,6 @@ import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
-import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.*;
 import static org.silverpeas.web.usercalendar.services.UserCalendarResource.USER_CALENDAR_BASE_URI;
 
 /**
@@ -58,11 +52,10 @@ import static org.silverpeas.web.usercalendar.services.UserCalendarResource.USER
 @Authorized
 public class UserCalendarResource extends CalendarResource {
 
-  static final String USER_CALENDAR_BASE_URI = "usercalendar";
+  public static final String USER_CALENDAR_BASE_URI = "usercalendar";
 
   @Override
-  public void validateUserAuthorization(final UserPrivilegeValidation validation)
-      throws WebApplicationException {
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
     if (!PersonalComponentInstance.from(getComponentId()).isPresent()) {
       throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
@@ -92,21 +85,7 @@ public class UserCalendarResource extends CalendarResource {
     return result;
   }
 
-  @Override
-  public <T extends CalendarEntity> T asWebEntity(final Calendar calendar) {
-    return super.asWebEntity(calendar).withURI(buildCalendarURI(USER_CALENDAR_BASE_URI, calendar));
-  }
-
-  @Override
-  public <T extends CalendarEventEntity> T asEventWebEntity(final CalendarEvent event) {
-    return super.asEventWebEntity(event)
-        .withURI(buildCalendarEventURI(USER_CALENDAR_BASE_URI, event))
-        .withCalendarURI(buildCalendarURI(USER_CALENDAR_BASE_URI, event.getCalendar()));
-  }
-
-  @Override
-  public <T extends CalendarEventAttendeeEntity> T asAttendeeWebEntity(final Attendee attendee) {
-    return super.asAttendeeWebEntity(attendee)
-        .withURI(buildCalendarEventAttendeeURI(USER_CALENDAR_BASE_URI, attendee));
+  protected String getServiceBaseUri() {
+    return USER_CALENDAR_BASE_URI;
   }
 }

@@ -170,12 +170,33 @@
       occurrence = occurrence ? occurrence : {};
       return {
         id : occurrence.id,
+        uri : occurrence.uri,
+        occurrenceId : occurrence.occurrenceId,
+        occurrenceUri : occurrence.occurrenceUri,
+        calendarUri : occurrence.calendarUri,
         calendarZoneId : occurrence.calendarZoneId,
         lastStartDate : occurrence.lastStartDate,
+        firstEventOccurrence : occurrence.firstEventOccurrence,
         startDate : occurrence.startDate,
         endDate : occurrence.endDate,
-        event : occurrence.event,
-        attendees : occurrence.attendees
+        eventId : occurrence.eventId,
+        eventUri : occurrence.eventUri,
+        calendarId : occurrence.calendarId,
+        calendar : occurrence.calendar,
+        title : occurrence.title,
+        description : occurrence.description,
+        location : occurrence.location,
+        onAllDay : occurrence.onAllDay,
+        visibility : occurrence.visibility,
+        priority : occurrence.priority,
+        recurrence : occurrence.recurrence,
+        attendees : occurrence.attendees,
+        ownerName : occurrence.ownerName,
+        createDate : occurrence.createDate,
+        lastUpdateDate : occurrence.lastUpdateDate,
+        canBeAccessed : occurrence.canBeAccessed,
+        canBeModified : occurrence.canBeModified,
+        canBeDeleted : occurrence.canBeDeleted
       }
     };
 

@@ -35,7 +35,7 @@
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
 
 <input type="text" id="{{$ctrl.dateId}}" name="{{$ctrl.name}}"
-       class="dateToPick" size="14" maxlength="10" ng-disabled="$ctrl.disabled"
+       class="dateToPick" size="14" maxlength="10" ng-disabled="$ctrl.isDisabled"
        ng-model="$ctrl.formattedDate" ng-change="$ctrl.valueChanged()">
 <span ng-if="$ctrl.mandatory">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5"></span>
 <span class="txtnote">(<fmt:message key='GML.dateFormatExemple'/>)</span>

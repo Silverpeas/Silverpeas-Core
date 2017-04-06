@@ -683,7 +683,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
             .add(ComponentItem.of(URLUtil.CMP_AGENDA).withLabel(message.getString("Diary")));
       }
       if (settings.getBoolean("todoVisible", true)) {
-        componentItems.add(ComponentItem.of(URLUtil.CMP_AGENDA).withLabel(message.getString("ToDo"))
+        componentItems.add(ComponentItem.of(URLUtil.CMP_TODO).withLabel(message.getString("ToDo"))
             .andComponentUrlSuffix("todo.jsp"));
       }
       if (settings.getBoolean("notificationVisible", true)) {

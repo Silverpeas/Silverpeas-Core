@@ -74,26 +74,19 @@
           };
 
           /**
-           * Gets the occurrence of an event represented by the given uri.
-           * @param eventUri uri of calendar to get.
-           * @param startDate the start date or start date time of the requested occurrence.
+           * Gets the occurrence by its uri.
+           * @param occurrenceUri uri of occurrence to get.
            * @returns {promise|a.fn.promise|*} a promise with the asked calendar as callbck
            *     parameter.
            */
-          this.getEventOccurrenceAt = function(eventUri, startDate) {
-            var adapter = RESTAdapter.get(eventUri + '/occurrences', CalendarEventOccurrence);
+          this.getEventOccurrenceByUri = function(occurrenceUri) {
+            var adapter = RESTAdapter.get(occurrenceUri, CalendarEventOccurrence);
             var criteria = {
-              startDate: SilverpeasCalendarTools.moment(startDate).toISOString(),
               zoneid : context.zoneId
             }
             return adapter.find({
               url : adapter.url,
               criteria : adapter.criteria(criteria)
-            }).then(function(occurrences) {
-              if (occurrences.length > 0) {
-                return occurrences[0];
-              }
-              return undefined;
             });
           };
 
@@ -127,6 +120,51 @@
               sp.promise.rejectDirectlyWith(msgError);
             }
           };
+
+          /**
+           * Updates an event occurrence.
+           * @param occurrence the occurrence to update.
+           * @returns {promise|a.fn.promise|*}
+           */
+          this.updateOccurrence = function(occurrence, actionMethodType) {
+            var occurrenceCopy = angular.copy(occurrence);
+            occurrenceCopy.calendar = occurrence.calendar;
+            occurrenceCopy.updateMethodType = actionMethodType;
+            var adapter = RESTAdapter.get(
+                occurrence.occurrenceUri + '?zoneid=' + context.zoneId,
+                CalendarEvent);
+            return adapter.put(occurrenceCopy);
+          };
+
+          /**
+           * Removes the event occurrence.
+           * @param occurrence the occurrence to delete (indeed delete/update events).
+           * @returns {promise|a.fn.promise|*}
+           */
+          this.removeOccurrence = function(occurrence, actionMethodType) {
+            var occurrenceCopy = angular.copy(occurrence);
+            occurrenceCopy.deleteMethodType = actionMethodType;
+            var adapter = RESTAdapter.get(
+                occurrence.occurrenceUri + '?zoneid=' + context.zoneId,
+                CalendarEvent);
+            return adapter["delete"](occurrenceCopy);
+          };
+
+          /**
+           * Updates th particpation status of attendee linked to given event occurrence.
+           * @param occurrence the occurrence reference.
+           * @returns {promise|a.fn.promise|*}
+           */
+          this.updateOccurrenceAttendeeParticipation =
+              function(occurrence, attendee, actionMethodType) {
+                var answerData = angular.copy(attendee);
+                answerData.answerMethodType = actionMethodType;
+                answerData.occurrence = angular.copy(occurrence);
+                var adapter = RESTAdapter.get(
+                    occurrence.occurrenceUri + '/attendees/' +
+                    attendee.id + '?zoneid=' + context.zoneId, CalendarEvent);
+                return adapter.put(answerData);
+              };
 
           /**
            * Gets the event occurrence collector for the calendar identified by the specified URI.
@@ -165,53 +203,6 @@
                 var adapter = RESTAdapter.get(calendarUri + '/events', CalendarEvent);
                 return adapter.post(event);
               }.bind(this);
-
-              /**
-               * Updates an event occurrence.
-               * @param occurrence the occurrence to update.
-               * @returns {promise|a.fn.promise|*}
-               */
-              this.updateOccurrence = function(occurrence, actionMethodType) {
-                var occurrenceCopy = angular.copy(occurrence);
-                occurrenceCopy.calendar = occurrence.event.calendar;
-                occurrenceCopy.updateMethodType = actionMethodType;
-                var eventId = occurrenceCopy.event.id;
-                var adapter = RESTAdapter.get(
-                    calendarUri + '/events/' + eventId + '/occurrences?zoneid=' + context.zoneId,
-                    CalendarEvent);
-                return adapter.put(occurrenceCopy);
-              };
-
-              /**
-               * Removes the event occurrence.
-               * @param occurrence the occurrence to delete (indeed delete/update events).
-               * @returns {promise|a.fn.promise|*}
-               */
-              this.removeOccurrence = function(occurrence, actionMethodType) {
-                var occurrenceCopy = angular.copy(occurrence);
-                occurrenceCopy.deleteMethodType = actionMethodType;
-                var eventId = occurrenceCopy.event.id;
-                var adapter = RESTAdapter.get(
-                    calendarUri + '/events/' + eventId + '/occurrences?zoneid=' + context.zoneId,
-                    CalendarEvent);
-                return adapter["delete"](occurrenceCopy);
-              };
-              /**
-               * Updates th particpation status of attendee linked to given event occurrence.
-               * @param occurrence the occurrence reference.
-               * @returns {promise|a.fn.promise|*}
-               */
-              this.updateOccurrenceAttendeeParticipation =
-                  function(occurrence, attendee, actionMethodType) {
-                    var answerData = angular.copy(attendee);
-                    answerData.answerMethodType = actionMethodType;
-                    answerData.occurrence = angular.copy(occurrence);
-                    var eventId = answerData.occurrence.event.id;
-                    var adapter = RESTAdapter.get(
-                        calendarUri + '/events/' + eventId + '/occurrences/attendees/' +
-                        attendee.id + '?zoneid=' + context.zoneId, CalendarEvent);
-                    return adapter.put(answerData);
-                  };
             };
           };
         };
@@ -277,14 +268,13 @@
         };
 
         /**
-         * Gets the occurrence of an event represented by the given uri.
-         * @param eventUri uri of calendar to get.
-         * @param startDate the start date or start date time of the requested occurrence.
+         * Gets the occurrence by its uri.
+         * @param occurrenceUri uri of occurrence to get.
          * @returns {promise|a.fn.promise|*} a promise with the asked calendar as callbck
          *     parameter.
          */
-        this.getEventOccurrenceAt = function(eventUri, startDate) {
-          return CalendarEventOccurrence.getEventOccurrenceAt(eventUri, startDate);
+        this.getEventOccurrenceByUri = function(occurrenceUri) {
+          return CalendarEventOccurrence.getEventOccurrenceByUri(occurrenceUri);
         };
 
         /**
@@ -351,10 +341,7 @@
         this.updateEventOccurrence = function(occurrence, actionMethodType) {
           var occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
               occurrence);
-          var originalCalendarUri = occurrenceEntity.event.calendarUri;
-          return this.getByUri(originalCalendarUri).then(function(originalCalendar) {
-            return originalCalendar.events.updateOccurrence(occurrenceEntity, actionMethodType);
-          });
+          return CalendarEventOccurrence.updateOccurrence(occurrenceEntity, actionMethodType);
         };
 
         /**
@@ -364,10 +351,7 @@
         this.removeEventOccurrence = function(occurrence, actionMethodType) {
           var occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
               occurrence);
-          var originalCalendarUri = occurrenceEntity.event.calendarUri;
-          return this.getByUri(originalCalendarUri).then(function(originalCalendar) {
-            return originalCalendar.events.removeOccurrence(occurrenceEntity, actionMethodType);
-          });
+          return CalendarEventOccurrence.removeOccurrence(occurrenceEntity, actionMethodType);
         };
 
         /**
@@ -378,11 +362,8 @@
             function(occurrence, attendee, actionMethodType) {
               var occurrenceEntity = SilverpeasCalendarTools.extractEventOccurrenceEntityData(
                   occurrence);
-              var originalCalendarUri = occurrenceEntity.event.calendarUri;
-              return this.getByUri(originalCalendarUri).then(function(originalCalendar) {
-                return originalCalendar.events.updateOccurrenceAttendeeParticipation(
-                    occurrenceEntity, attendee, actionMethodType);
-              });
+              return CalendarEventOccurrence.updateOccurrenceAttendeeParticipation(occurrenceEntity,
+                  attendee, actionMethodType);
             };
       };
     }]);

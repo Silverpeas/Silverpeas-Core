@@ -37,7 +37,7 @@
 <silverpeas-attendees
     id="attendees"
     label="${attendeeListLabel}"
-    attendees="$ctrl.data.event.attendees"
+    attendees="$ctrl.data.attendees"
     is-write-mode="true"
     init-user-panel-url="{{$ctrl.initUserPanelUrl}}"></silverpeas-attendees>
 

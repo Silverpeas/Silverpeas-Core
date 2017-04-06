@@ -51,10 +51,25 @@ public class CalendarEventUtil {
    */
   public static String formatTitle(final CalendarEvent event,
       final String componentInstanceId, boolean canBeAccessed) {
-    String title = canBeAccessed ? event.getTitle() : null;
-    if (!componentInstanceId.equals(event.getCalendar().getComponentInstanceId())) {
+    return formatTitle(event.asCalendarComponent(),componentInstanceId, canBeAccessed);
+  }
+
+  /**
+   * Centralizes the format treatment of title display, according the given parameters, which
+   * determine the context, the title is modified.
+   * @param component the component data.
+   * @param componentInstanceId the identifier of component instance into which the component is
+   * handled.
+   * @param canBeAccessed indicates if the component is accessible for the current user into the current
+   * context.
+   * @return the display title as string.
+   */
+  public static String formatTitle(final CalendarComponent component,
+      final String componentInstanceId, boolean canBeAccessed) {
+    String title = canBeAccessed ? component.getTitle() : null;
+    if (!componentInstanceId.equals(component.getCalendar().getComponentInstanceId())) {
       title = '#' + (title != null ? (title + '\n') : "");
-      title += '(' + event.getCalendar().getTitle() + ')';
+      title += '(' + component.getCalendar().getTitle() + ')';
     }
     return title;
   }

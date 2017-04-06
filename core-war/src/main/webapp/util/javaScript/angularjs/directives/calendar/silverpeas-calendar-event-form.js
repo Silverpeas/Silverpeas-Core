@@ -78,9 +78,9 @@
                 notyReset();
                 if (_validate()) {
                   _updateData();
-                  var originalCalendarUri = this.calendarEventOccurrence.event.calendarUri;
+                  var originalCalendarUri = this.calendarEventOccurrence.calendarUri;
                   if (!originalCalendarUri) {
-                    this.onAddValidated({event : this.calendarEventOccurrence.event});
+                    this.onAddValidated({event : this.calendarEventOccurrence});
                   } else {
                     this.onModifyOccurrenceValidated({
                       occurrence : this.calendarEventOccurrence,
@@ -110,6 +110,7 @@
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form-main.jsp',
           restrict : 'E',
+          require: 'silverpeasCalendarEventForm',
           scope : {
             calendars : '=',
             calendarEventApi : '=',
@@ -124,6 +125,9 @@
             this.getMessages = function() {
               return this.calendarEventApi.messages;
             }.bind(this);
+            this.isFirstEventOccurrence = function() {
+              return this.data.firstEventOccurrence || !this.data.uri;
+            }.bind(this);
 
             this.api = {
               getFormValidationPriority : function() {
@@ -131,8 +135,8 @@
               }.bind(this),
               validate : function() {
                 // Title
-                var title = this.data.event.title;
-                if (title.isNotDefined()) {
+                var title = this.data.title;
+                if (!title || title.isNotDefined()) {
                   SilverpeasError.add(
                       this.getMessages().mandatory.replace('@name@', this.labels.title));
                 } else if (title.nbChars() > 2000) {
@@ -140,14 +144,14 @@
                       this.labels.description).replace('@length@', '2000'));
                 }
                 // Description
-                var description = this.data.event.description;
-                if (description.isDefined() && description.nbChars() > 4000) {
+                var description = this.data.description;
+                if (description && description.isDefined() && description.nbChars() > 4000) {
                   SilverpeasError.add(this.getMessages().nbMax.replace('@name@',
                       this.labels.description).replace('@length@', '4000'));
                 }
                 // Location
-                var location = this.data.event.location;
-                if (location.isDefined() && location.nbChars() > 255) {
+                var location = this.data.location;
+                if (location && location.isDefined() && location.nbChars() > 255) {
                   SilverpeasError.add(this.getMessages().nbMax.replace('@name@',
                       this.labels.location).replace('@length@', '255'));
                 }
@@ -157,7 +161,7 @@
                   label : this.labels.startDate,
                   unknownMsg : this.getMessages().date.correct
                 }];
-                if (!this.data.event.onAllDay) {
+                if (!this.data.onAllDay) {
                   dateTimeValidations.push({
                     status : this.data.startTimeStatus,
                     label : this.labels.startDate,
@@ -194,24 +198,22 @@
                 return !SilverpeasError.existsAtLeastOne();
               }.bind(this),
               updateData : function(ceo) {
-                if (this.data.event.onAllDay) {
-                  ceo.startDate =  SilverpeasCalendarTools.moment(this.data.startDate).stripTime().format();
-                  ceo.endDate =  SilverpeasCalendarTools.moment(this.data.endDate).stripTime().format();
+                if (this.data.onAllDay) {
+                  var startDate = SilverpeasCalendarTools.moment.parseZone(this.data.startDate);
+                  var endDate = SilverpeasCalendarTools.moment.parseZone(this.data.endDate);
+                  ceo.startDate = startDate.stripTime().format();
+                  ceo.endDate = endDate.add(1, 'days').stripTime().format();
                 } else {
                   ceo.startDate = this.data.startDate;
                   ceo.endDate = this.data.endDate;
                 }
-                if (!ceo.event.id) {
-                  ceo.event.startDate = ceo.startDate;
-                  ceo.event.endDate = ceo.endDate;
-                }
-                ceo.event.calendar = this.data.event.calendar;
-                ceo.event.title = this.data.event.title;
-                ceo.event.description = this.data.event.description;
-                ceo.event.location = this.data.event.location;
-                ceo.event.onAllDay = this.data.event.onAllDay;
-                ceo.event.visibility = this.data.event.visibility;
-                ceo.event.priority = this.data.event.priority;
+                ceo.calendar = this.data.calendar;
+                ceo.title = this.data.title;
+                ceo.description = this.data.description;
+                ceo.location = this.data.location;
+                ceo.onAllDay = this.data.onAllDay;
+                ceo.visibility = this.data.visibility;
+                ceo.priority = this.data.priority;
               }.bind(this)
             };
 
@@ -220,7 +222,7 @@
             $scope.$watch('$ctrl.data.startDate', function(dateTime) {
               if (dateTime) {
                 if (_fromOnAllDayListener) {
-                  if (this.data.event.onAllDay) {
+                  if (this.data.onAllDay) {
                     this.data.endDate =
                          sp.moment.make(this.data.endDate).startOf('day').format();
                   } else {
@@ -238,7 +240,7 @@
 
             $scope.$watch('$ctrl.data.endDate', function(dateTime) {
               if (dateTime && this.data.startDate) {
-                if (!this.data.event.onAllDay) {
+                if (!this.data.onAllDay) {
                   var $startDate =  sp.moment.make(this.data.startDate);
                   var $endDate =  sp.moment.make(dateTime);
                   if ($endDate.isSameOrBefore($startDate) &&
@@ -251,7 +253,7 @@
               }
             }.bind(this));
 
-            $scope.$watch('$ctrl.data.event.onAllDay', function(onAllDay, previousOnAllDay) {
+            $scope.$watch('$ctrl.data.onAllDay', function(onAllDay, previousOnAllDay) {
               if (previousOnAllDay !== onAllDay && this.data.startDate) {
                 var startDate = sp.moment.make(this.data.startDate);
                 if (onAllDay) {
@@ -265,11 +267,11 @@
             }.bind(this)) ;
 
             var initialize = function() {
-              var _zoneId = this.data.event.calendar.zoneId;
+              var _zoneId = this.data.calendar.zoneId;
               var _defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), _zoneId);
-              if (this.data.event.onAllDay) {
+              if (this.data.onAllDay) {
                 var startDate = this.data.startDate ?  sp.moment.make(this.data.startDate) :  _defaultMoment;
-                var endDate = this.data.endDate ?  sp.moment.make(this.data.endDate) :  sp.moment.make(startDate);
+                var endDate = this.data.endDate ?  sp.moment.make(this.data.endDate).add(-1, 'days') :  sp.moment.make(startDate);
                 this.data.startDate = sp.moment.atZoneIdSimilarLocal(startDate, _zoneId).startOf('day').format();
                 this.data.endDate = sp.moment.atZoneIdSimilarLocal(endDate, _zoneId).startOf('day').format();
                 this.offsetDateTime =
@@ -288,11 +290,11 @@
                       sp.moment.make(this.data.startDate), 'milliseconds');
                 }
               }
-              if (this.defaultVisibility && !this.data.event.visibility) {
-                this.data.event.visibility = this.defaultVisibility;
+              if (this.defaultVisibility && !this.data.visibility) {
+                this.data.visibility = this.defaultVisibility;
               }
-              if (this.defaultPriority && !this.data.event.priority) {
-                this.data.event.priority = this.defaultPriority;
+              if (this.defaultPriority && !this.data.priority) {
+                this.data.priority = this.defaultPriority;
               }
             }.bind(this);
 
@@ -307,7 +309,7 @@
 
             this.$postLink = function() {
               $timeout(function() {
-                var focusSelector = !this.data.event.title ?
+                var focusSelector = !this.data.title ?
                     '#sp_cal_event_form_main_title' :
                     '#sp_cal_event_form_main_sd';
                 angular.element(focusSelector, $element).focus();
@@ -324,6 +326,7 @@
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form-recurrence.jsp',
           restrict : 'E',
+          require: 'silverpeasCalendarEventForm',
           scope : {
             calendarEventApi : '=',
             data : '=',
@@ -345,13 +348,13 @@
               return this.recurrenceType  === 'MONTH';
             }.bind(this);
             this.getDefaultMonthDayNumber = function() {
-              var defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), this.data.event.calendar.zoneId);
+              var defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), this.data.calendar.zoneId);
               var startDate = this.data.startDate ?
                   sp.moment.make(this.data.startDate, 'YYYY-MM-DD') :  defaultMoment;
               return  sp.moment.make(startDate).date();
             }.bind(this);
             this.getDefaultMonthNthDay = function() {
-              var defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), this.data.event.calendar.zoneId);
+              var defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), this.data.calendar.zoneId);
               var startDate = this.data.startDate ?
                   sp.moment.make(this.data.startDate, 'YYYY-MM-DD') :  defaultMoment;
               var nth = sp.moment.nthDayOfMonth(startDate);
@@ -363,7 +366,7 @@
                 return this.formValidationPriority ? this.formValidationPriority : 0
               }.bind(this),
               validate : function() {
-                var dataRecurrence = this.data.event.recurrence;
+                var dataRecurrence = this.data.recurrence;
                 var fieldLabel = this.labels.recurrence + ' (' +
                     this.labels.frequency.toLowerCase() + ')';
                 // Frequency
@@ -410,26 +413,26 @@
               updateData : function(ceo) {
                 if (this.recurrenceType === 'NONE') {
                   // No recurrence
-                  ceo.event.recurrence = undefined;
+                  ceo.recurrence = undefined;
                 } else {
-                  var dataRecurrence = this.data.event.recurrence;
+                  var dataRecurrence = this.data.recurrence;
                   // Recurrence is set
-                  if (!ceo.event.recurrence) {
-                    ceo.event.recurrence = {
+                  if (!ceo.recurrence) {
+                    ceo.recurrence = {
                       frequency: {}
                     };
                   }
                   // --> Frequency
                   dataRecurrence.frequency.timeUnit = this.recurrenceType;
-                  extendsObject(ceo.event.recurrence.frequency, dataRecurrence.frequency);
+                  extendsObject(ceo.recurrence.frequency, dataRecurrence.frequency);
 
                   // --> Days of week
-                  ceo.event.recurrence.daysOfWeek = [];
+                  ceo.recurrence.daysOfWeek = [];
                   switch (this.recurrenceType) {
                     case 'WEEK' :
                       this.weekDaysOfWeek.forEach(function(dayOfWeek) {
                         if (dayOfWeek.checked) {
-                          ceo.event.recurrence.daysOfWeek.push({
+                          ceo.recurrence.daysOfWeek.push({
                             nth: 0,
                             dayOfWeek : dayOfWeek.name
                           });
@@ -438,41 +441,43 @@
                       break;
                     case 'MONTH' :
                       if (this.month.rule === 'DAYOFWEEK') {
-                        ceo.event.recurrence.daysOfWeek.push(this.month);
+                        ceo.recurrence.daysOfWeek.push(this.month);
                       }
                       break;
                   }
                   // --> Ending
                   switch (this.endType) {
                     case 'AFTER' :
-                      ceo.event.recurrence.count = dataRecurrence.count;
-                      ceo.event.recurrence.endDate = '';
+                      ceo.recurrence.count = dataRecurrence.count;
+                      ceo.recurrence.endDate = '';
                       break;
                     case 'THE' :
                       var $endDate = SilverpeasCalendarTools.moment.parseZone(dataRecurrence.endDate);
-                      if (ceo.event.onAllDay) {
+                      if (ceo.onAllDay) {
                         $endDate = $endDate.stripTime();
                       } else {
-                        $endDate = $endDate.startOf('day');
+                        var $ceoStartDate = sp.moment.make(ceo.startDate);
+                        $endDate.hour($ceoStartDate.hour());
+                        $endDate.minute($ceoStartDate.minute());
                       }
-                      ceo.event.recurrence.count = '';
-                      ceo.event.recurrence.endDate = $endDate.format();
+                      ceo.recurrence.count = '';
+                      ceo.recurrence.endDate = $endDate.format();
                       break;
                     default :
-                      ceo.event.recurrence.count = '';
-                      ceo.event.recurrence.endDate = '';
+                      ceo.recurrence.count = '';
+                      ceo.recurrence.endDate = '';
                   }
                 }
               }.bind(this)
             };
 
             var initialize = function() {
-              var defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), this.data.event.calendar.zoneId);
+              var defaultMoment = sp.moment.atZoneIdSimilarLocal(moment(), this.data.calendar.zoneId);
               var startDate = this.data.startDate ?  sp.moment.make(this.data.startDate) :  defaultMoment;
               var endDate = this.data.endDate ?  sp.moment.make(this.data.endDate) :  sp.moment.make(startDate);
 
-              var dataRecurrence = this.data.event.recurrence ? this.data.event.recurrence : {};
-              this.data.event.recurrence = dataRecurrence;
+              var dataRecurrence = this.data.recurrence ? this.data.recurrence : {};
+              this.data.recurrence = dataRecurrence;
 
               // Periodicity & Frequency
               if (!dataRecurrence.frequency) {
@@ -559,6 +564,7 @@
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form-attendees.jsp',
           restrict : 'E',
+          require: 'silverpeasCalendarEventForm',
           scope : {
             calendarEventApi : '=',
             data : '=',
@@ -579,13 +585,13 @@
                 return !SilverpeasError.existsAtLeastOne();
               }.bind(this),
               updateData : function(ceo) {
-                ceo.event.attendees = this.data.event.attendees;
+                ceo.attendees = this.data.attendees;
               }.bind(this)
             };
 
-            $scope.$watchCollection('$ctrl.data.event.attendees', function() {
+            $scope.$watchCollection('$ctrl.data.attendees', function() {
               if (this.data && this.data.attendees) {
-                this.data.event.attendees.forEach(function(attendee) {
+                this.data.attendees.forEach(function(attendee) {
                   // Reajusting status if necessary
                   var attendeePart = this.data.attendees.getElement(attendee, 'id');
                   if (attendeePart) {
@@ -614,6 +620,7 @@
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form-attachments.jsp',
           restrict : 'E',
+          require: 'silverpeasCalendarEventForm',
           scope : {
             calendarEventApi : '=',
             data : '=',
@@ -640,7 +647,7 @@
                 }
               }.bind(this),
               updateData : function(ceo) {
-                ceo.event.uploadedFileParameters = this.fileUpload.serializeArray();
+                ceo.uploadedFileParameters = this.fileUpload.serializeArray();
               }.bind(this)
             };
 

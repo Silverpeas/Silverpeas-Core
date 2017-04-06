@@ -37,7 +37,7 @@
 <silverpeas-attendees
     id="attendees"
     label="${attendeeListLabel}"
-    attendees="$ctrl.ceo.event.attendees"
+    attendees="$ctrl.ceo.attendees"
     is-write-mode="false"
     on-attendee-answer="$ctrl.onParticipationAnswer({occurrence:$ctrl.ceo,attendee:attendee})"></silverpeas-attendees>
 

@@ -85,8 +85,7 @@ public abstract class RESTWebService implements WebResource {
   private LocalizationBundle bundle = null;
 
   @Override
-  public void validateUserAuthentication(final UserPrivilegeValidation validation) throws
-      WebApplicationException {
+  public void validateUserAuthentication(final UserPrivilegeValidation validation) {
     HttpServletRequest request = getHttpServletRequest();
     SessionInfo session = validation.validateUserAuthentication(request);
     // Sent back the identifier of the spawned session in the HTTP response
@@ -110,8 +109,7 @@ public abstract class RESTWebService implements WebResource {
   }
 
   @Override
-  public void validateUserAuthorization(final UserPrivilegeValidation validation) throws
-      WebApplicationException {
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
     validation.validateUserAuthorizationOnComponentInstance(getUserDetail(), getComponentId());
   }
 
@@ -245,18 +243,17 @@ public abstract class RESTWebService implements WebResource {
   /**
    * This method permits to start the setting of a {@link RESTWebService.WebTreatment}.
    * @param webTreatment
-   * @param <RETURN_VALUE>
+   * @param <R>
    * @return
    */
-  protected <RETURN_VALUE> WebProcess<RETURN_VALUE> process(
-      WebTreatment<RETURN_VALUE> webTreatment) {
-    WebProcess<RETURN_VALUE> process = new WebProcess<>(webTreatment);
-    switch (getHttpRequest().getMethod().toUpperCase()) {
-      case "GET":
-        // No lowest role as the access of the component has been already computed
-        break;
-      default:
-        process.lowestAccessRole(SilverpeasRole.writer);
+  protected <R> WebProcess<R> process(
+      WebTreatment<R> webTreatment) {
+    WebProcess<R> process = new WebProcess<>(webTreatment);
+    final String httpMethod = getHttpRequest().getMethod().toUpperCase();
+    if ("GET".equals(httpMethod)) {
+      // No lowest role as the access of the component has been already computed
+    } else {
+      process.lowestAccessRole(SilverpeasRole.writer);
     }
     return process;
   }
@@ -265,18 +262,18 @@ public abstract class RESTWebService implements WebResource {
    * This class handles the execution of a {@link RESTWebService.WebTreatment}.
    * It provides the centralization of exception catches and handles the lowest role access that
    * must the user verify.
-   * @param <RETURN_VALUE> the type of the value returned by the web treatment.
+   * @param <R> the type of the value returned by the web treatment.
    * @return the value computed by the specified web treatment.
    */
-  protected final class WebProcess<RETURN_VALUE> {
-    private final WebTreatment<RETURN_VALUE> webTreatment;
+  protected final class WebProcess<R> {
+    private final WebTreatment<R> webTreatment;
     private SilverpeasRole lowestRoleAccess = null;
 
     /**
      * Default constructor.
      * @param webTreatment
      */
-    protected WebProcess(final WebTreatment<RETURN_VALUE> webTreatment) {
+    protected WebProcess(final WebTreatment<R> webTreatment) {
       this.webTreatment = webTreatment;
     }
 
@@ -285,7 +282,7 @@ public abstract class RESTWebService implements WebResource {
      * @param lowestRoleAccess
      * @return
      */
-    public WebProcess<RETURN_VALUE> lowestAccessRole(SilverpeasRole lowestRoleAccess) {
+    public WebProcess<R> lowestAccessRole(SilverpeasRole lowestRoleAccess) {
       this.lowestRoleAccess = lowestRoleAccess;
       return this;
     }
@@ -300,7 +297,7 @@ public abstract class RESTWebService implements WebResource {
      * If a problem occurs when processing the request, a 503 HTTP code is returned.
      * @return the value computed by the specified web treatment.
      */
-    public RETURN_VALUE execute() {
+    public R execute() {
       try {
         if (lowestRoleAccess != null && (getHighestUserRole() == null ||
             !getHighestUserRole().isGreaterThanOrEquals(lowestRoleAccess))) {
@@ -317,10 +314,10 @@ public abstract class RESTWebService implements WebResource {
 
   /**
    * Inner class handled by
-   * @param <RETURN_VALUE>
+   * @param <R>
    */
   @FunctionalInterface
-  protected interface WebTreatment<RETURN_VALUE> {
-    RETURN_VALUE execute();
+  protected interface WebTreatment<R> {
+    R execute();
   }
 }

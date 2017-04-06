@@ -34,9 +34,9 @@
             name: '@',
             zoneId : '=',
             time : '=',
-            mandatory : '=',
             status : '=?',
-            disabled : '=?'
+            mandatory : '=',
+            isDisabled : '=?'
           },
           transclude : true,
           controllerAs : '$ctrl',

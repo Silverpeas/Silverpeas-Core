@@ -30,20 +30,29 @@ import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.calendar.AttendeeSet;
-import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.icalendar.ICalendarException;
 import org.silverpeas.core.calendar.icalendar.ICalendarExport;
 import org.silverpeas.core.calendar.icalendar.ICalendarImport;
 import org.silverpeas.core.io.upload.FileUploadManager;
+import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
-import javax.ws.rs.*;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.StreamingOutput;
@@ -51,9 +60,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -65,8 +72,7 @@ import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity.decodeId;
 import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.*;
 import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertDataConsistency;
 import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertEntityIsDefined;
@@ -214,6 +220,7 @@ public class CalendarResource extends AbstractCalendarResource {
               .to(() -> output);
         }
       } catch (ICalendarException e) {
+        SilverLogger.getLogger(this).error(e);
         throw new WebApplicationException(INTERNAL_SERVER_ERROR);
       }
     })
@@ -237,18 +244,10 @@ public class CalendarResource extends AbstractCalendarResource {
     final Calendar calendar = process(() -> Calendar.getById(calendarId)).execute();
     assertDataConsistency(getComponentId(), calendar);
     try {
-      FileUploadManager.getUploadedFiles(getHttpRequest(), getUserDetail()).forEach(uploadedFile -> {
-        try (final BufferedInputStream bis = new BufferedInputStream(new FileInputStream
-            (uploadedFile.getFile()))) {
-          getCalendarWebServiceProvider()
-              .importEventsAsICalendarFormat(ICalendarImport.from(calendar, () -> bis));
-        } catch (IOException | ICalendarException e) {
-          throw new WebApplicationException(e, INTERNAL_SERVER_ERROR);
-        } finally {
-          uploadedFile.getUploadSession().clear();
-        }
-      });
+      FileUploadManager.getUploadedFiles(getHttpRequest(), getUserDetail())
+          .forEach(uploadedFile -> performImportEventAsICalendarFormat(calendar, uploadedFile));
     } catch (WebApplicationException e) {
+      SilverLogger.getLogger(this).error(e);
       Response.ResponseBuilder response = Response.fromResponse(e.getResponse());
       if (e.getCause() != null && StringUtil.isDefined(e.getCause().getMessage())) {
         response.entity(e.getCause().getMessage());
@@ -258,6 +257,19 @@ public class CalendarResource extends AbstractCalendarResource {
       return response.build();
     }
     return Response.ok().build();
+  }
+
+  private void performImportEventAsICalendarFormat(final Calendar calendar,
+      final UploadedFile uploadedFile) {
+    try (final BufferedInputStream bis = new BufferedInputStream(new FileInputStream
+        (uploadedFile.getFile()))) {
+      getCalendarWebServiceProvider()
+          .importEventsAsICalendarFormat(ICalendarImport.from(calendar, () -> bis));
+    } catch (IOException | ICalendarException e) {
+      throw new WebApplicationException(e, INTERNAL_SERVER_ERROR);
+    } finally {
+      uploadedFile.getUploadSession().clear();
+    }
   }
 
   /**
@@ -291,11 +303,9 @@ public class CalendarResource extends AbstractCalendarResource {
             .getAllEventOccurrencesByUserIds(Pair.of(getComponentId(), getUserDetail()), startDate,
                 endDate, users)).execute();
     List<ParticipantCalendarEventOccurrencesEntity> webEntities = new ArrayList<>();
-    users.forEach(user -> {
-      webEntities.add(ParticipantCalendarEventOccurrencesEntity.from(user).withOccurrences(
-          asOccurrenceWebEntities(
-              Optional.ofNullable(occurrences.get(user.getId())).orElse(Collections.emptyList()))));
-    });
+    users.forEach(user -> webEntities.add(ParticipantCalendarEventOccurrencesEntity.from(user)
+        .withOccurrences(asOccurrenceWebEntities(
+            Optional.ofNullable(occurrences.get(user.getId())).orElse(Collections.emptyList())))));
     return webEntities;
   }
 
@@ -339,8 +349,6 @@ public class CalendarResource extends AbstractCalendarResource {
    * If it doesn't exist, a 404 HTTP code is returned.
    * @param calendarId the identifier of calendar the event must belong with
    * @param eventId the identifier of event the returned occurrences must be linked with
-   * @param startDate optional. If it exists, it represents  an occurrence, and so, the
-   * service will return only the requested occurrence.
    * @return the response to the HTTP GET request with the JSON representation of the asked
    * occurrences.
    * @see WebProcess#execute()
@@ -350,41 +358,17 @@ public class CalendarResource extends AbstractCalendarResource {
       CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART)
   @Produces(MediaType.APPLICATION_JSON)
   public List<CalendarEventOccurrenceEntity> getEventOccurrencesOf(
-      @PathParam("calendarId") String calendarId, @PathParam("eventId") String eventId,
-      @QueryParam("startDate") String startDate) {
+      @PathParam("calendarId") String calendarId, @PathParam("eventId") String eventId) {
     final Calendar calendar = Calendar.getById(calendarId);
     final CalendarEvent event = CalendarEvent.getById(eventId);
     assertDataConsistency(calendar.getComponentInstanceId(), calendar, event);
     CalendarEventOccurrenceRequestParameters params = RequestParameterDecoder
         .decode(getHttpRequest(), CalendarEventOccurrenceRequestParameters.class);
-    final Temporal temporalStart;
-    final LocalDate occStartDate;
-    final LocalDate occEndDate;
-    if (isDefined(startDate)) {
-      if (event.isOnAllDay()) {
-        LocalDate date = LocalDate.parse(startDate);
-        temporalStart = date;
-        occStartDate = date.minusDays(1);
-        occEndDate = date.plusDays(1);
-      } else {
-        ZoneId zoneId = getZoneId() != null ? getZoneId() : calendar.getZoneId();
-        OffsetDateTime dateTime = OffsetDateTime.parse(startDate);
-        temporalStart = dateTime.atZoneSameInstant(zoneId).toOffsetDateTime();
-        occStartDate = dateTime.minusDays(1).toLocalDate();
-        occEndDate = dateTime.plusDays(1).toLocalDate();
-      }
-    } else {
-      temporalStart = null;
-      occStartDate = params.getStartDateOfWindowTime().toLocalDate();
-      occEndDate = params.getEndDateOfWindowTime().toLocalDate();
-    }
+    final LocalDate occStartDate = params.getStartDateOfWindowTime().toLocalDate();
+    final LocalDate occEndDate = params.getEndDateOfWindowTime().toLocalDate();
     List<CalendarEventOccurrenceEntity> occurrences =
         getEventOccurrencesOf(calendar, occStartDate, occEndDate);
-    occurrences.removeIf(occurrence -> !occurrence.getEvent().getId().equals(eventId) ||
-        (temporalStart != null && !occurrence.getStartDate().equals(temporalStart.toString())));
-    if (temporalStart != null && occurrences.isEmpty()) {
-      throw new WebApplicationException(NOT_FOUND);
-    }
+    occurrences.removeIf(occurrence -> !occurrence.getEventId().equals(eventId));
     return occurrences;
   }
 
@@ -406,35 +390,64 @@ public class CalendarResource extends AbstractCalendarResource {
     final Calendar calendar = Calendar.getById(calendarId);
     assertDataConsistency(getComponentId(), calendar);
     CalendarEvent createdEvent = process(() -> getCalendarWebServiceProvider()
-        .createEvent(calendar, eventEntity.getMergedPersistentModel(null)))
+        .createEvent(calendar, eventEntity.getMergedEvent()))
         .execute();
     return asEventWebEntity(createdEvent);
   }
 
   /**
-   * Updates an event from the JSON representation of an occurrence and returns the list of
+   * Gets the JSON representation of a list of calendar event occurrence of an aimed event.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * @param calendarId the identifier of calendar the event must belong with.
+   * @param eventId the identifier of event the returned occurrence must be linked with.
+   * @param occurrenceId the identifier of the aimed occurrence.
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   * occurrence.
+   * @see WebProcess#execute()
+   */
+  @GET
+  @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/{eventId}/" +
+      CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART + "/{occurrenceId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public CalendarEventOccurrenceEntity getEventOccurrence(
+      @PathParam("calendarId") String calendarId, @PathParam("eventId") String eventId,
+      @PathParam("occurrenceId") String occurrenceId) {
+    final Calendar calendar = Calendar.getById(calendarId);
+    final CalendarEvent event = CalendarEvent.getById(eventId);
+    final CalendarEventOccurrence occurrence =
+        CalendarEventOccurrence.getById(decodeId(occurrenceId)).orElse(null);
+    assertDataConsistency(calendar.getComponentInstanceId(), calendar, event, occurrence);
+    return asOccurrenceWebEntity(occurrence);
+  }
+
+  /**
+   * Updates a occurrence from its JSON representation and returns the list of
    * updated and created events.<br/> If the user isn't authenticated, a 401 HTTP code is
    * returned. If the user isn't authorized to save the calendar, a 403 is returned. If a problem
    * occurs when processing the request, a 503 HTTP code is returned.
-   * @param calendarId the identifier of calendar the event must belong with
-   * @param eventId the identifier of updated event
+   * @param calendarId the identifier of calendar the event must belong with.
+   * @param eventId the identifier of updated event.
+   * @param occurrenceId the identifier of the aimed occurrence.
    * @param occurrenceEntity the calendar event data given threw an occurrence structure
    * @return the response to the HTTP POST request with the JSON representation of the
    * updated/created events.
    */
   @PUT
   @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/{eventId}/" +
-      CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART)
+      CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART + "/{occurrenceId}")
   @Produces(MediaType.APPLICATION_JSON)
   public List<CalendarEventEntity> updateEventOccurrence(@PathParam("calendarId") String calendarId,
-      @PathParam("eventId") String eventId, CalendarEventOccurrenceUpdateEntity occurrenceEntity) {
+      @PathParam("eventId") String eventId, @PathParam("occurrenceId") String occurrenceId,
+      CalendarEventOccurrenceUpdateEntity occurrenceEntity) {
     final Calendar originalCalendar = Calendar.getById(calendarId);
     final CalendarEvent previousEventData = CalendarEvent.getById(eventId);
-    final CalendarEvent eventDataToUpdate = occurrenceEntity.getMergedPersistentEventModel();
-    assertDataConsistency(getComponentId(), originalCalendar, previousEventData, eventDataToUpdate);
+    final CalendarEventOccurrence occToUpdate = occurrenceEntity.getMergedOccurrence();
+    assertDataConsistency(getComponentId(), originalCalendar, previousEventData, occToUpdate);
+    if (!occToUpdate.getId().equals(decodeId(occurrenceId))) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
     List<CalendarEvent> updatedEvents = process(() -> getCalendarWebServiceProvider()
-        .saveEventFromAnOccurrence(eventDataToUpdate, occurrenceEntity.getReferenceData(),
-            occurrenceEntity.getUpdateMethodType(), getZoneId()))
+        .saveOccurrence(occToUpdate, occurrenceEntity.getUpdateMethodType(), getZoneId()))
         .execute();
     return asEventWebEntities(updatedEvents);
   }
@@ -444,25 +457,29 @@ public class CalendarResource extends AbstractCalendarResource {
    * any.<br/> If the user isn't authenticated, a 401 HTTP code is returned. If the user isn't
    * authorized to save the calendar, a 403 is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
-   * @param calendarId the identifier of calendar the event must belong with
-   * @param eventId the identifier of deleted event
+   * @param calendarId the identifier of calendar the event must belong with.
+   * @param eventId the identifier of deleted event.
+   * @param occurrenceId the identifier of the aimed occurrence.
    * @param occurrenceEntity the calendar event data given threw an occurrence structure
    * @return the response to the HTTP POST request with the JSON representation of an updated
    * event if any.
    */
   @DELETE
   @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/{eventId}/" +
-      CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART)
+      CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART + "/{occurrenceId}")
   @Produces(MediaType.APPLICATION_JSON)
   public CalendarEventEntity deleteEventOccurrence(@PathParam("calendarId") String calendarId,
-      @PathParam("eventId") String eventId, CalendarEventOccurrenceDeleteEntity occurrenceEntity) {
+      @PathParam("eventId") String eventId, @PathParam("occurrenceId") String occurrenceId,
+      CalendarEventOccurrenceDeleteEntity occurrenceEntity) {
     final Calendar originalCalendar = Calendar.getById(calendarId);
     final CalendarEvent previousEventData = CalendarEvent.getById(eventId);
-    final CalendarEvent eventDataToDelete = occurrenceEntity.getMergedPersistentEventModel();
-    assertDataConsistency(getComponentId(), originalCalendar, previousEventData, eventDataToDelete);
+    final CalendarEventOccurrence occToDelete = occurrenceEntity.getMergedOccurrence();
+    assertDataConsistency(getComponentId(), originalCalendar, previousEventData, occToDelete);
+    if (!occToDelete.getId().equals(decodeId(occurrenceId))) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
     CalendarEvent updatedEvent = process(() -> getCalendarWebServiceProvider()
-        .deleteEventFromAnOccurrence(eventDataToDelete, occurrenceEntity.getReferenceData(),
-            occurrenceEntity.getDeleteMethodType(), getZoneId()))
+        .deleteOccurrence(occToDelete, occurrenceEntity.getDeleteMethodType(), getZoneId()))
         .execute();
     return updatedEvent != null ? asEventWebEntity(updatedEvent) : null;
   }
@@ -481,22 +498,25 @@ public class CalendarResource extends AbstractCalendarResource {
    */
   @PUT
   @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/{eventId}/" +
-      CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART + "/" +
+      CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART + "/{occurrenceId}/" +
       CalendarResourceURIs.CALENDAR_EVENT_ATTENDEE_URI_PART + "/{attendeeId}")
   @Produces(MediaType.APPLICATION_JSON)
   public CalendarEventEntity updateEventAttendeeParticipation(
       @PathParam("calendarId") String calendarId, @PathParam("eventId") String eventId,
-      @PathParam("attendeeId") String attendeeId, CalendarEventAttendeeAnswerEntity answerEntity) {
+      @PathParam("occurrenceId") String occurrenceId, @PathParam("attendeeId") String attendeeId,
+      CalendarEventAttendeeAnswerEntity answerEntity) {
     if(StringUtil.isLong(attendeeId) && !getUserDetail().getId().equals(attendeeId)) {
       throw new WebApplicationException(FORBIDDEN);
     }
     final Calendar originalCalendar = Calendar.getById(calendarId);
     final CalendarEvent event = CalendarEvent.getById(eventId);
-    assertDataConsistency(originalCalendar.getComponentInstanceId(), originalCalendar, event);
+    final CalendarEventOccurrence occurrence =
+        CalendarEventOccurrence.getById(decodeId(occurrenceId)).orElse(null);
+    assertDataConsistency(originalCalendar.getComponentInstanceId(), originalCalendar, event,
+        occurrence);
     answerEntity.setId(attendeeId);
     CalendarEvent updatedEvent = process(() -> getCalendarWebServiceProvider()
-        .updateEventAttendeeParticipationFromAnOccurrence(event,
-            answerEntity.getOccurrence().getReferenceData(), answerEntity.getId(),
+        .updateOccurrenceAttendeeParticipation(occurrence, answerEntity.getId(),
             answerEntity.getParticipationStatus(), answerEntity.getAnswerMethodType(), getZoneId()))
         .lowestAccessRole(null)
         .execute();
@@ -508,10 +528,8 @@ public class CalendarResource extends AbstractCalendarResource {
    * @param calendars the calendars to convert.
    * @return the calendar web entities.
    */
-  @SuppressWarnings("unchecked")
-  public <T extends CalendarEntity> List<T> asWebEntities(Collection<Calendar> calendars) {
-    return calendars.stream().map(calendar -> (T) asWebEntity(calendar))
-        .collect(Collectors.toList());
+  public List<CalendarEntity> asWebEntities(Collection<Calendar> calendars) {
+    return calendars.stream().map(this::asWebEntity).collect(Collectors.toList());
   }
 
   /**
@@ -521,11 +539,10 @@ public class CalendarResource extends AbstractCalendarResource {
    * @param calendar the calendar to convert.
    * @return the corresponding calendar entity.
    */
-  @SuppressWarnings("unchecked")
-  public <T extends CalendarEntity> T asWebEntity(Calendar calendar) {
+  public CalendarEntity asWebEntity(Calendar calendar) {
     assertEntityIsDefined(calendar);
-    return (T) CalendarEntity.fromCalendar(calendar)
-        .withURI(buildCalendarURI(CALENDAR_BASE_URI, calendar));
+    return CalendarEntity.fromCalendar(calendar)
+        .withURI(buildCalendarURI(getServiceBaseUri(), calendar));
   }
 
   /**
@@ -533,10 +550,9 @@ public class CalendarResource extends AbstractCalendarResource {
    * @param events the calendar events to convert.
    * @return the calendar event web entities.
    */
-  @SuppressWarnings("unchecked")
-  public <T extends CalendarEventEntity> List<T> asEventWebEntities(
+  public List<CalendarEventEntity> asEventWebEntities(
       Collection<CalendarEvent> events) {
-    return events.stream().map(event -> (T) asEventWebEntity(event)).collect(Collectors.toList());
+    return events.stream().map(this::asEventWebEntity).collect(Collectors.toList());
   }
 
   /**
@@ -546,19 +562,17 @@ public class CalendarResource extends AbstractCalendarResource {
    * @param event the calendar event  to convert.
    * @return the corresponding calendar event  entity.
    */
-  @SuppressWarnings("unchecked")
-  public <T extends CalendarEventEntity> T asEventWebEntity(CalendarEvent event) {
+  public CalendarEventEntity asEventWebEntity(CalendarEvent event) {
     assertEntityIsDefined(event.asCalendarComponent());
     SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
     CalendarEventEntity entity = cache.get(event.getId(), CalendarEventEntity.class);
     if (entity == null) {
       entity = CalendarEventEntity.fromEvent(event, getComponentId(), getZoneId())
-          .withURI(buildCalendarEventURI(CALENDAR_BASE_URI, event))
-          .withCalendarURI(buildCalendarURI(CALENDAR_BASE_URI, event.getCalendar()))
-          .withAttendees(asAttendeeWebEntities(event.getAttendees()));
+          .withEventURI(buildEventURI(getServiceBaseUri(), event))
+          .withCalendarURI(buildCalendarURI(getServiceBaseUri(), event.getCalendar()));
       cache.put(event.getId(), entity);
     }
-    return (T) entity;
+    return entity;
   }
 
   /**
@@ -567,11 +581,9 @@ public class CalendarResource extends AbstractCalendarResource {
    * @param occurrences the calendar event occurrences to convert.
    * @return the calendar event occurrence web entities.
    */
-  @SuppressWarnings("unchecked")
-  public <T extends CalendarEventOccurrenceEntity> List<T> asOccurrenceWebEntities(
+  public List<CalendarEventOccurrenceEntity> asOccurrenceWebEntities(
       Collection<CalendarEventOccurrence> occurrences) {
-    return occurrences.stream().map(occurrence -> (T) asOccurrenceWebEntity(occurrence))
-        .collect(Collectors.toList());
+    return occurrences.stream().map(this::asOccurrenceWebEntity).collect(Collectors.toList());
   }
 
   /**
@@ -581,49 +593,37 @@ public class CalendarResource extends AbstractCalendarResource {
    * @param occurrence the calendar event occurrence to convert.
    * @return the corresponding calendar event occurrence entity.
    */
-  @SuppressWarnings("unchecked")
-  public <T extends CalendarEventOccurrenceEntity> T asOccurrenceWebEntity(
+  public CalendarEventOccurrenceEntity asOccurrenceWebEntity(
       CalendarEventOccurrence occurrence) {
     assertEntityIsDefined(occurrence.getCalendarEvent().asCalendarComponent());
-    List<CalendarEventAttendeeEntity> attendeeEntities =
-        occurrence.getCalendarEvent().getAttendees().stream().map(attendee -> {
-          CalendarEventAttendeeEntity entity = asAttendeeWebEntity(attendee);
-          final Optional<Attendee.ParticipationStatus> participationStatusOptional =
-              attendee.getParticipationOn().get(occurrence.getStartDate());
-          participationStatusOptional.ifPresent(entity::setParticipationStatus);
-          return entity;
-        }).collect(Collectors.toList());
-    return (T) CalendarEventOccurrenceEntity.fromOccurrence(occurrence, getZoneId())
-        .withEventEntity(asEventWebEntity(occurrence.getCalendarEvent()))
-        .withAttendees(attendeeEntities);
-  }
-
-  /**
-   * Converts the list of calendar event attendee into list of calendar event attendee web
-   * entities.
-   * @param attendees the calendar event attendees to convert.
-   * @return the calendar event attendees web entities.
-   */
-  @SuppressWarnings("unchecked")
-  public <T extends CalendarEventAttendeeEntity> List<T> asAttendeeWebEntities(
-      final AttendeeSet attendees) {
-    return attendees.stream()
-        .map(attendee -> (T) asAttendeeWebEntity(attendee))
+    List<CalendarEventAttendeeEntity> attendeeEntities = occurrence.getAttendees().stream()
+        .map(attendee -> asAttendeeWebEntity(occurrence, attendee))
         .collect(Collectors.toList());
+    return CalendarEventOccurrenceEntity.fromOccurrence(occurrence, getZoneId())
+        .withCalendarURI(buildCalendarURI(getServiceBaseUri(), occurrence.getCalendarEvent().getCalendar()))
+        .withEventURI(buildEventURI(getServiceBaseUri(), occurrence.getCalendarEvent()))
+        .withOccurrenceURI(buildOccurrenceURI(getServiceBaseUri(), occurrence))
+        .withAttendees(attendeeEntities);
   }
 
   /**
    * Converts the calendar event attendee into its corresponding web entity. If the specified
    * calendar event attendee isn't defined, then an HTTP 404 error is sent back instead of the
    * entity representation of the calendar event occurrence.
+   *
+   * @param occurrence the occurrence the attendees belongs to.
    * @param attendee the calendar event attendee to convert.
    * @return the corresponding calendar event attendee entity.
    */
-  @SuppressWarnings("unchecked")
-  public <T extends CalendarEventAttendeeEntity> T asAttendeeWebEntity(Attendee attendee) {
-    assertEntityIsDefined(attendee.getCalendarComponent());
-    return (T) CalendarEventAttendeeEntity.from(attendee)
-        .withURI(buildCalendarEventAttendeeURI(CALENDAR_BASE_URI, attendee));
+  public CalendarEventAttendeeEntity asAttendeeWebEntity(
+      final CalendarEventOccurrence occurrence, Attendee attendee) {
+    assertEntityIsDefined(attendee);
+    return CalendarEventAttendeeEntity.from(attendee)
+        .withURI(buildOccurrenceAttendeeURI(getServiceBaseUri(), occurrence, attendee));
+  }
+
+  protected String getServiceBaseUri() {
+    return CALENDAR_BASE_URI;
   }
 
   private CalendarWebServiceProvider getCalendarWebServiceProvider() {

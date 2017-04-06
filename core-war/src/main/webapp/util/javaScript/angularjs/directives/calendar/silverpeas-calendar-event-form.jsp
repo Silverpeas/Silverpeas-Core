@@ -50,7 +50,7 @@
   <span ng-init="$ctrl.api.messages.time.correct = '${silfn:escapeJs(correctHourMessage)}'"></span>
   <span ng-init="$ctrl.api.messages.period.correct = '${silfn:escapeJs(correctPeriodMessage)}'"></span>
 </div>
-<div ng-transclude></div>
+<div ng-if="$ctrl.data" ng-transclude></div>
 
 <div class="legend">
   <img alt="mandatory" src="${mandatoryIcons}" width="5" height="5"/>&nbsp;

@@ -107,8 +107,7 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
     List<String> ids = listFromJpqlString(idQuery, params, String.class);
     for(Collection<String> batchIds : split(ids)) {
       params = newNamedParameters().add("eventIds", batchIds);
-      List<CalendarEvent> events = listFromJpqlString(eventBatchQuery, params);
-      delete(events);
+      listFromJpqlString(eventBatchQuery, params).forEach(CalendarEvent::delete);
     }
   }
 }

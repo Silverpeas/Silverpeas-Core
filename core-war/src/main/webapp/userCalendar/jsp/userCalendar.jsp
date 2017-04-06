@@ -72,7 +72,7 @@
     <view:operation action="angularjs:calMng.add()" altText="${createCalendarLabel}"/>
     <fmt:message key="userCalendar.icons.addEvent" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
-    <view:operationOfCreation action="angularjs:newEvent(userCalendar.getCalendars())"
+    <view:operationOfCreation action="angularjs:newEvent()"
                               altText="${addEventLabel}" icon="${opIcon}"/>
     <view:operationSeparator />
     <view:operation action="${userMainCalendar.getURI()}/export/ical"
@@ -94,9 +94,10 @@
     <view:areaOfOperationOfCreation/>
     <silverpeas-calendar api="userCalendar"
                          participation-user-ids="participationIds"
-                         on-day-click="newEvent(userCalendar.getCalendars(), startMoment)"
-                         on-event-occurrence-view="viewEventOccurrence(userCalendar.getCalendars(), occurrence)"
-                         on-event-occurrence-modify="editEventOccurrence(userCalendar.getCalendars(), occurrence)"></silverpeas-calendar>
+                         on-day-click="newEvent(startMoment)"
+                         on-event-occurrence-view="viewEventOccurrence(occurrence)"
+                         on-event-occurrence-modify="editEventOccurrence(occurrence)">
+    </silverpeas-calendar>
   </view:frame>
 </view:window>
 

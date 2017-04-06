@@ -37,10 +37,13 @@ import org.silverpeas.core.test.CalendarWarBuilder;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.Matchers.*;
@@ -56,6 +59,7 @@ import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.AWAITING
 public class CalendarEventOccurrenceIntegrationTest extends BaseCalendarTest {
 
   private static final String CALENDAR_ID = "ID_1";
+  private static final String CALENDAR_EVENT_ID = "ID_E_5";
   private static final LocalDate TODAY = LocalDate.now();
   private static final int OCCURRENCE_COUNT = 16;
   private static final String INITIAL_ATTENDEE = "renard@dans-le-poulailler@fr";
@@ -63,6 +67,12 @@ public class CalendarEventOccurrenceIntegrationTest extends BaseCalendarTest {
 
   private CalendarEvent recurrentEvent;
   private CalendarEvent event;
+
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
+  }
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -92,6 +102,30 @@ public class CalendarEventOccurrenceIntegrationTest extends BaseCalendarTest {
         .inLocation("Room Chartreuse");
     event.getAttendees().add(INITIAL_ATTENDEE).accept();
     event.planOn(Calendar.getById(CALENDAR_ID));
+  }
+
+  @Test
+  public void getOccurrenceByIdShouldWork() {
+    // First date
+    Optional<CalendarEventOccurrence> optionalOccurrence =
+        CalendarEventOccurrence.getById(CALENDAR_EVENT_ID + "@2016-01-09");
+    assertThat(optionalOccurrence.isPresent(), is(true));
+    // Not the right date type
+    optionalOccurrence =
+        CalendarEventOccurrence.getById(CALENDAR_EVENT_ID + "@2016-01-09T00:00:00Z");
+    assertThat(optionalOccurrence.isPresent(), is(false));
+    // Not Exists
+    optionalOccurrence =
+        CalendarEventOccurrence.getById(CALENDAR_EVENT_ID + "@2016-01-10");
+    assertThat(optionalOccurrence.isPresent(), is(false));
+    // Exception
+    optionalOccurrence =
+        CalendarEventOccurrence.getById(CALENDAR_EVENT_ID + "@2016-01-16");
+    assertThat(optionalOccurrence.isPresent(), is(false));
+    // No exception
+    optionalOccurrence =
+        CalendarEventOccurrence.getById(CALENDAR_EVENT_ID + "@2016-01-23");
+    assertThat(optionalOccurrence.isPresent(), is(true));
   }
 
   @Test

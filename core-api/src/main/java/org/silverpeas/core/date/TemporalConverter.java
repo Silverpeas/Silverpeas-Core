@@ -25,6 +25,7 @@ package org.silverpeas.core.date;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -57,7 +58,7 @@ public class TemporalConverter {
     if (temporal instanceof LocalDate) {
       return dateFunction.apply(LocalDate.from(temporal));
     } else if (temporal instanceof OffsetDateTime) {
-      return dateTimeFunction.apply(OffsetDateTime.from(temporal));
+      return dateTimeFunction.apply(OffsetDateTime.from(temporal).withOffsetSameInstant(ZoneOffset.UTC));
     } else {
       throw new IllegalArgumentException(
           "Temporal parameters must be both of type LocalDate or OffsetDateTime");

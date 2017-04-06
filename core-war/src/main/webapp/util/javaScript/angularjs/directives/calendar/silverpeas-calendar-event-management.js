@@ -50,15 +50,13 @@
 
             this.isRecurrence = function() {
               if (this.previousOccurrence) {
-                return this.previousOccurrence && this.previousOccurrence.event.recurrence
+                return this.previousOccurrence && this.previousOccurrence.recurrence
               }
-              return this.occurrence && this.occurrence.event.recurrence;
+              return this.occurrence && this.occurrence.recurrence;
             }.bind(this);
             this.isFirstEventOccurrence = function() {
               if (this.occurrence) {
-                var lastStartDate = sp.moment.make(this.occurrence.lastStartDate);
-                var startDate = sp.moment.make(this.occurrence.event.startDate);
-                return lastStartDate.isSame(startDate);
+                return this.occurrence.firstEventOccurrence;
               }
               return false;
             }.bind(this);
@@ -86,16 +84,16 @@
                 }.bind(this));
               }.bind(this),
               /**
-               * Modify an event from one of its occurrences.
+               * Modify an event occurrence.
                * The system asks to the user some stuffs if necessary and calls the persistence
                * service methods at the end when all is validated by the user.
                */
               modifyOccurrence : function(occurrenceToUpdate, previousOccurrence) {
                 var __confirmed;
                 notyReset();
-                this.updateMethodType = 'UNIQUE';
                 this.occurrence = occurrenceToUpdate;
                 this.previousOccurrence = previousOccurrence;
+                this.updateMethodType = 'UNIQUE';
 
                 var _previousDataOnNoUpdate = function() {
                   if (typeof this.occurrence.revertToPreviousState === 'function') {
@@ -138,7 +136,7 @@
                 }
               }.bind(this),
               /**
-               * Removes an event from one of its occurrences.
+               * Removes an event occurrence.
                * The system asks to the user some stuffs if necessary and calls the persistence
                * service methods at the end when all is validated by the user.
                */

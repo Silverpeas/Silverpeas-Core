@@ -50,18 +50,14 @@ public class CalendarEventOccurrenceDeleteEntity extends CalendarEventOccurrence
     return deleteMethodType;
   }
 
-  public void setDeleteMethodType(final OccurrenceEventActionMethodType deleteMethodType) {
+  protected void setDeleteMethodType(final OccurrenceEventActionMethodType deleteMethodType) {
     this.deleteMethodType = deleteMethodType;
   }
 
   @Override
-  public String toString() {
-    ToStringBuilder builder = new ToStringBuilder(this);
+  protected ToStringBuilder toStringBuilder() {
+    ToStringBuilder builder = super.toStringBuilder();
     builder.append("deleteMethodType", getDeleteMethodType());
-    builder.append("occurrenceId", getId());
-    builder.append("event", getEvent().toString());
-    builder.append("startDate", getStartDate());
-    builder.append("endDate", getEndDate());
-    return builder.toString();
+    return builder;
   }
 }

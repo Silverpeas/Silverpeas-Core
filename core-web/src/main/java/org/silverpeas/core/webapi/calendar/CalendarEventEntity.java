@@ -27,9 +27,10 @@ package org.silverpeas.core.webapi.calendar;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.CalendarComponent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.VisibilityLevel;
-import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.webapi.base.WebEntity;
 
@@ -60,10 +61,12 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class CalendarEventEntity implements WebEntity {
 
-  private URI uri;
+  private URI eventUri;
   private URI calendarUri;
 
-  private String id;
+  private String eventId;
+  private String calendarId;
+  private String calendarZoneId;
   private String title;
   private String description;
   private String location;
@@ -91,13 +94,13 @@ public class CalendarEventEntity implements WebEntity {
 
   /**
    * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
-   * @param uri the web entity URI.
+   * @param eventUri the web entity URI.
    * @return itself.
    */
   @SuppressWarnings("unchecked")
-  public <T extends CalendarEventEntity> T withURI(final URI uri) {
-    this.uri = uri;
-    return (T) this;
+  public CalendarEventEntity withEventURI(final URI eventUri) {
+    this.eventUri = eventUri;
+    return this;
   }
 
   /**
@@ -106,9 +109,9 @@ public class CalendarEventEntity implements WebEntity {
    * @return itself.
    */
   @SuppressWarnings("unchecked")
-  public <T extends CalendarEventEntity> T withCalendarURI(final URI calendarUri) {
+  public CalendarEventEntity withCalendarURI(final URI calendarUri) {
     this.calendarUri = calendarUri;
-    return (T) this;
+    return this;
   }
 
   /**
@@ -116,20 +119,27 @@ public class CalendarEventEntity implements WebEntity {
    * @param attendees the linked calendar event attendees web entity URI.
    * @return itself.
    */
-  @SuppressWarnings("unchecked")
-  public <T extends CalendarEventEntity> T withAttendees(
+  public CalendarEventEntity withAttendees(
       final List<CalendarEventAttendeeEntity> attendees) {
     this.attendees = attendees;
-    return (T) this;
+    return this;
   }
 
   @Override
   public URI getURI() {
-    return uri;
+    return getEventUri();
   }
 
   protected void setURI(final URI uri) {
-    withURI(uri);
+    setEventUri(uri);
+  }
+
+  public URI getEventUri() {
+    return eventUri;
+  }
+
+  protected void setEventUri(final URI eventUri) {
+    this.eventUri = eventUri;
   }
 
   public URI getCalendarUri() {
@@ -141,11 +151,35 @@ public class CalendarEventEntity implements WebEntity {
   }
 
   public String getId() {
-    return id;
+    return getEventId();
   }
 
-  protected void setId(final String id) {
-    this.id = id;
+  protected void setId(String eventId) {
+    setEventId(eventId);
+  }
+
+  public String getEventId() {
+    return eventId;
+  }
+
+  protected void setEventId(final String eventId) {
+    this.eventId = eventId;
+  }
+
+  public String getCalendarId() {
+    return calendarId;
+  }
+
+  protected void setCalendarId(final String calendarId) {
+    this.calendarId = calendarId;
+  }
+
+  public String getCalendarZoneId() {
+    return calendarZoneId;
+  }
+
+  protected void setCalendarZoneId(final String calendarZoneId) {
+    this.calendarZoneId = calendarZoneId;
   }
 
   public String getTitle() {
@@ -238,9 +272,12 @@ public class CalendarEventEntity implements WebEntity {
     return createDate;
   }
 
-  @XmlElement
   public Date getLastUpdateDate() {
     return lastUpdateDate;
+  }
+
+  protected void setLastUpdateDate(final Date lastUpdateDate) {
+    this.lastUpdateDate = lastUpdateDate;
   }
 
   @XmlElement
@@ -276,40 +313,61 @@ public class CalendarEventEntity implements WebEntity {
   /**
    * Get the persistent data representation of an event merged with the entity data.
    * The data of the entity are applied to the returned instance.
-   * @param occurrencePeriod the occurrence period if the entity is get from an occurrence entity.
    * @return a {@link CalendarEvent} instance.
    */
   @XmlTransient
-  CalendarEvent getMergedPersistentModel(final Period occurrencePeriod) {
+  CalendarEvent getMergedEvent() {
     final CalendarEvent event;
-    if (isDefined(getId())) {
-      event = CalendarEvent.getById(getId());
+    if (isDefined(getEventId())) {
+      event = CalendarEvent.getById(getEventId());
     } else {
       event = CalendarEvent.on(getPeriod());
     }
-    event.withTitle(getTitle());
-    event.withDescription(getDescription());
-    event.setLocation(getLocation());
+    applyOn(event);
+    applyOn(event.asCalendarComponent());
+    return event;
+  }
+
+  /**
+   * Get the persistent data representation of an event merged with the entity data.
+   * The data of the entity are applied to the returned instance.
+   * @param event the event aimed to apply modification.
+   */
+  @XmlTransient
+  void applyOn(final CalendarEvent event) {
     event.withVisibilityLevel(getVisibility());
-    event.withPriority(getPriority());
     if (getRecurrence() != null) {
-      getRecurrence().applyOn(event, occurrencePeriod);
+      getRecurrence().applyOn(event, getPeriod());
     } else {
       event.unsetRecurrence();
     }
+  }
+
+  /**
+   * Applies to the given calendar component the data of the WEB entity.
+   * @param component the component aimed to apply modification.
+   */
+  @XmlTransient
+  void applyOn(final CalendarComponent component) {
+    component.setPeriod(getPeriod());
+    component.setTitle(getTitle());
+    component.setDescription(getDescription());
+    component.setLocation(getLocation());
+    component.setPriority(getPriority());
     List<String> newAttendeeIds = new ArrayList<>(getAttendees().size());
     for (CalendarEventAttendeeEntity attendeeEntity : getAttendees()) {
-      attendeeEntity.addTo(event);
+      attendeeEntity.addTo(component);
       newAttendeeIds.add(attendeeEntity.getId());
     }
-    event.getAttendees().removeIf(attendee -> !newAttendeeIds.contains(attendee.getId()));
-    return event;
+    component.getAttendees().removeIf(attendee -> !newAttendeeIds.contains(attendee.getId()));
   }
 
   protected CalendarEventEntity decorate(final CalendarEvent calendarEvent,
       final String componentInstanceId, final ZoneId zoneId) {
     User currentUser = User.getCurrentRequester();
-    id = calendarEvent.getId();
+    eventId = calendarEvent.getId();
+    calendarId = calendarEvent.getCalendar().getId();
+    calendarZoneId = calendarEvent.getCalendar().getZoneId().toString();
     onAllDay = calendarEvent.isOnAllDay();
     startDate = formatDateWithOffset(calendarEvent, calendarEvent.getStartDate(), zoneId);
     endDate = formatDateWithOffset(calendarEvent, calendarEvent.getEndDate(), zoneId);
@@ -335,9 +393,15 @@ public class CalendarEventEntity implements WebEntity {
 
   @Override
   public String toString() {
+    return toStringBuilder().toString();
+  }
+
+  protected ToStringBuilder toStringBuilder() {
     ToStringBuilder builder = new ToStringBuilder(this);
-    builder.append("uri", getURI());
-    builder.append("id", getId());
+    builder.append("eventUri", getURI());
+    builder.append("eventId", getEventId());
+    builder.append("calendarId", getCalendarId());
+    builder.append("calendarZoneId", getCalendarZoneId());
     builder.append("title", getTitle());
     builder.append("description", getDescription());
     builder.append("startDate", getStartDate());
@@ -349,6 +413,6 @@ public class CalendarEventEntity implements WebEntity {
     builder.append("ownerName", getOwnerName());
     builder.append("createDate", getCreateDate());
     builder.append("lastUpdateDate", getLastUpdateDate());
-    return builder.toString();
+    return builder;
   }
 }

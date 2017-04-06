@@ -50,16 +50,16 @@
 <fieldset class="skinFieldset">
   <legend>${mainInfoLabel}</legend>
   <div class="fields">
-    <div class="field" ng-if="$ctrl.calendars">
+    <div class="field">
       <span class="txtlibform">${calendarLabel}</span>
       <div class="champs">
-        <span class="txtnav">{{$ctrl.ceo.event.calendar.title}}</span>
+        <span class="txtnav">{{$ctrl.ceo.calendar.title}}</span>
       </div>
     </div>
     <div class="field">
       <span class="txtlibform">${titleLabel}</span>
       <div class="champs">
-        <span>{{$ctrl.ceo.event.title}}</span>
+        <span>{{$ctrl.ceo.title}}</span>
       </div>
     </div>
     <div class="field">
@@ -87,22 +87,22 @@
     <div class="field">
       <span class="txtlibform">${locationLabel}</span>
       <div class="champs">
-        <span>{{$ctrl.ceo.event.location}}</span>
+        <span>{{$ctrl.ceo.location}}</span>
       </div>
     </div>
     <div class="field">
       <span class="txtlibform">${descriptionLabel}</span>
       <div class="champs">
-        <span ng-bind-html="$ctrl.ceo.event.description | noHTML | newlines"></span>
+        <span ng-bind-html="$ctrl.ceo.description | noHTML | newlines"></span>
       </div>
     </div>
-    <div class="field" ng-if="$ctrl.ceo.event.visibility">
+    <div class="field" ng-if="$ctrl.ceo.visibility">
       <span class="txtlibform">${visibilityLabel}</span>
       <div class="champs">
         <span>{{$ctrl.visibility.label}}</span>
       </div>
     </div>
-    <div class="field" ng-if="$ctrl.ceo.event.priority">
+    <div class="field" ng-if="$ctrl.ceo.priority">
       <span class="txtlibform">${priorityLabel}</span>
       <div class="champs">
         <span>{{$ctrl.priority.label}}</span>

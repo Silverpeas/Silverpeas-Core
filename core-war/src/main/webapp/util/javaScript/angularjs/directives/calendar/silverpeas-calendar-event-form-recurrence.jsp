@@ -73,7 +73,7 @@
       <label class="txtlibform" for="sp_cal_event_form_rec_p_f">{{$ctrl.labels.frequency}}</label>
       <div class="champs">
         <input id="sp_cal_event_form_rec_p_f" name="interval" size="3" maxlength="3"
-               ng-model="$ctrl.data.event.recurrence.frequency.interval">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5">
+               ng-model="$ctrl.data.recurrence.frequency.interval">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5">
         <span> {{$ctrl.recurrenceType.shortLabel}}</span>
       </div>
     </div>
@@ -123,18 +123,18 @@
         <label>
           <input type="radio" name="end" ng-model="$ctrl.endType" ng-value="'AFTER'">
           <span>{{$ctrl.labels.after}}&#160;</span><input id="sp_cal_event_form_rec_p_e" name="count" size="3" maxlength="3"
-                                        ng-model="$ctrl.data.event.recurrence.count" ng-disabled="$ctrl.endType != 'AFTER'">
+                                        ng-model="$ctrl.data.recurrence.count" ng-disabled="$ctrl.endType != 'AFTER'">
           <span>&#160;{{$ctrl.labels.count.toLowerCase()}}</span>
           <span ng-if="$ctrl.endType == 'AFTER'">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5"></span>
         </label>
         <label>
           <input type="radio" name="end" ng-model="$ctrl.endType" ng-value="'THE'">
           <span>{{$ctrl.labels.the}}&#160;
-            <silverpeas-date-picker name="endDate"
+            <silverpeas-date-picker name="recurrenceEndDate"
                                     zone-id="$ctrl.zoneId"
-                                    date="$ctrl.data.event.recurrence.endDate"
-                                    status="$ctrl.data.event.recurrence.endDateStatus"
-                                    disabled="$ctrl.endType != 'THE'"
+                                    date="$ctrl.data.recurrence.endDate"
+                                    status="$ctrl.data.recurrence.endDateStatus"
+                                    is-disabled="$ctrl.endType != 'THE'"
                                     mandatory="$ctrl.endType == 'THE'">
             </silverpeas-date-picker>
           </span>

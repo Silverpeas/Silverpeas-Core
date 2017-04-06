@@ -40,8 +40,8 @@
 
 <p>
   <silverpeas-button-pane>
-    <silverpeas-button ng-if="$ctrl.occurrence.event.canBeAccessed" ng-click="$ctrl.onView({occurrence:$ctrl.occurrence})">${viewLabel}</silverpeas-button>
-    <silverpeas-button ng-if="$ctrl.occurrence.event.canBeModified" ng-click="$ctrl.onModify({occurrence:$ctrl.occurrence})">${modifyLabel}</silverpeas-button>
-    <silverpeas-button ng-if="$ctrl.occurrence.event.canBeDeleted" ng-click="$ctrl.onDelete({occurrence:$ctrl.occurrence})">${deleteLabel}</silverpeas-button>
+    <silverpeas-button ng-if="$ctrl.occurrence.canBeAccessed" ng-click="$ctrl.onView({occurrence:$ctrl.occurrence})">${viewLabel}</silverpeas-button>
+    <silverpeas-button ng-if="$ctrl.occurrence.canBeModified" ng-click="$ctrl.onModify({occurrence:$ctrl.occurrence})">${modifyLabel}</silverpeas-button>
+    <silverpeas-button ng-if="$ctrl.occurrence.canBeDeleted" ng-click="$ctrl.onDelete({occurrence:$ctrl.occurrence})">${deleteLabel}</silverpeas-button>
   </silverpeas-button-pane>
 </p>
