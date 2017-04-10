@@ -1,4 +1,4 @@
-<%--
+<%@ page import="org.silverpeas.core.chat.servers.ChatServer" %><%--
 
     Copyright (C) 2000 - 2013 Silverpeas
 
@@ -37,12 +37,28 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel/>
+  <script type="application/javascript">
+    function syncIM() {
+      $.ajax(webContext + '/chat/users/register',{
+        type: 'POST',
+        data: '',
+        dataType: 'text'
+      }).then(function(message) {
+        notySuccess(message);
+      }, function(xhr, error) {
+        notyError(error);
+      });
+    }
+  </script>
 </head>
 <body>
 <%
   if (displayOperations) {
     operationPane.addOperationOfCreation(resource.getIcon("JDP.domainAdd"), resource.getString("JDP.domainAdd"), "displayDomainCreate");
     operationPane.addOperationOfCreation(resource.getIcon("JDP.domainSqlAdd"), resource.getString("JDP.domainSQLAdd"), "displayDomainSQLCreate");
+    if (ChatServer.isEnabled()) {
+      operationPane.addOperationOfCreation(resource.getIcon("JDP.IMUserRegistering"), resource.getString("JDP.IMUserRegistering"), "javascript:syncIM();");
+    }
   }
 
   out.println(window.printBefore());

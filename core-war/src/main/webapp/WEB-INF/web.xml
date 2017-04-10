@@ -641,6 +641,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
     <servlet-name>ChatUserSelection</servlet-name>
     <servlet-class>org.silverpeas.web.chat.ChatUserSelectionServlet</servlet-class>
   </servlet>
+  <servlet>
+    <servlet-name>ChatUserRegistration</servlet-name>
+    <servlet-class>org.silverpeas.web.chat.ChatUserRegistrationServlet</servlet-class>
+    <async-supported>true</async-supported>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>LoginDispatcher</servlet-name>
@@ -1039,7 +1044,11 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>ChatUserSelection</servlet-name>
-    <url-pattern>/selectChatUser</url-pattern>
+    <url-pattern>/chat/users/select</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>ChatUserRegistration</servlet-name>
+    <url-pattern>/chat/users/register</url-pattern>
   </servlet-mapping>
 
   <jsp-config>

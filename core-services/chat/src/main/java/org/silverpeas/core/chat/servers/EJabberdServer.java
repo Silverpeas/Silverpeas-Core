@@ -53,7 +53,6 @@ public class EJabberdServer implements ChatServer {
   private static final String USERNAME_ATTR = "username";
   private static final String NAME_ATTR = "name";
   private static final String CONTENT_ATTR = "content";
-  private static final String SUBSCRIPTION_VALUE = "both";
 
   private SilverLogger logger = SilverLogger.getLogger(this);
 
@@ -76,15 +75,15 @@ public class EJabberdServer implements ChatServer {
     SilverLogger.getLogger(this)
         .info("Register user {0} ({1})", user.getDisplayedName(), user.getId());
     ChatUser chatUser = ChatUser.fromUser(user);
-    request("register",
-        o -> o.put(USER_ATTR, chatUser.getChatLogin())
-        .put(HOST_ATTR, chatUser.getChatDomain())
-        .put(PASSWORD_ATTR, chatUser.getChatPassword()));
-    request("set_vcard",
-        o -> o.put(USER_ATTR, chatUser.getChatLogin())
-        .put(HOST_ATTR, chatUser.getChatDomain())
-        .put(NAME_ATTR, "FN")
-        .put(CONTENT_ATTR, chatUser.getDisplayedName()));
+    request("register", o ->
+        o.put(USER_ATTR, chatUser.getChatLogin())
+            .put(HOST_ATTR, chatUser.getChatDomain())
+            .put(PASSWORD_ATTR, chatUser.getChatPassword()));
+    request("set_vcard", o ->
+        o.put(USER_ATTR, chatUser.getChatLogin())
+            .put(HOST_ATTR, chatUser.getChatDomain())
+            .put(NAME_ATTR, "FN")
+            .put(CONTENT_ATTR, chatUser.getDisplayedName()));
   }
 
   @Override
@@ -104,20 +103,34 @@ public class EJabberdServer implements ChatServer {
     ChatUser chatUser1 = ChatUser.fromUser(user1);
     ChatUser chatUser2 = ChatUser.fromUser(user2);
     final String command = "add_rosteritem";
-    request(command,
-        o -> o.put(LOCAL_USER_ATTR, chatUser2.getChatLogin())
-        .put(LOCAL_SERVER_ATTR, chatUser2.getChatDomain())
-        .put(USER_ATTR, chatUser1.getChatLogin())
-        .put(SERVER_ATTR, chatUser1.getChatDomain())
-        .put(NICK_ATTR, chatUser1.getDisplayedName())
-        .put(SUBSCRIPTION_ATTR, SUBSCRIPTION_VALUE));
-    request(command,
-        o -> o.put(LOCAL_USER_ATTR, chatUser1.getChatLogin())
-        .put(LOCAL_SERVER_ATTR, chatUser1.getChatDomain())
-        .put(USER_ATTR, chatUser2.getChatLogin())
-        .put(SERVER_ATTR, chatUser2.getChatDomain())
-        .put(NICK_ATTR, chatUser2.getDisplayedName())
-        .put(SUBSCRIPTION_ATTR, SUBSCRIPTION_VALUE));
+    request(command, o ->
+        o.put(LOCAL_USER_ATTR, chatUser2.getChatLogin())
+            .put(LOCAL_SERVER_ATTR, chatUser2.getChatDomain())
+            .put(USER_ATTR, chatUser1.getChatLogin())
+            .put(SERVER_ATTR, chatUser1.getChatDomain())
+            .put(NICK_ATTR, chatUser1.getDisplayedName())
+            .put(SUBSCRIPTION_ATTR, "to"));
+    request(command, o ->
+        o.put(LOCAL_USER_ATTR, chatUser1.getChatLogin())
+            .put(LOCAL_SERVER_ATTR, chatUser1.getChatDomain())
+            .put(USER_ATTR, chatUser2.getChatLogin())
+            .put(SERVER_ATTR, chatUser2.getChatDomain())
+            .put(NICK_ATTR, chatUser2.getDisplayedName())
+            .put(SUBSCRIPTION_ATTR, "to"));
+    request(command, o ->
+        o.put(LOCAL_USER_ATTR, chatUser2.getChatLogin())
+            .put(LOCAL_SERVER_ATTR, chatUser2.getChatDomain())
+            .put(USER_ATTR, chatUser1.getChatLogin())
+            .put(SERVER_ATTR, chatUser1.getChatDomain())
+            .put(NICK_ATTR, chatUser1.getDisplayedName())
+            .put(SUBSCRIPTION_ATTR, "both"));
+    request(command, o ->
+        o.put(LOCAL_USER_ATTR, chatUser1.getChatLogin())
+            .put(LOCAL_SERVER_ATTR, chatUser1.getChatDomain())
+            .put(USER_ATTR, chatUser2.getChatLogin())
+            .put(SERVER_ATTR, chatUser2.getChatDomain())
+            .put(NICK_ATTR, chatUser2.getDisplayedName())
+            .put(SUBSCRIPTION_ATTR, "both"));
   }
 
   @Override
@@ -130,22 +143,21 @@ public class EJabberdServer implements ChatServer {
     final String command = "delete_rosteritem";
     request(command,
         o -> o.put(LOCAL_USER_ATTR, chatUser2.getChatLogin())
-        .put(LOCAL_SERVER_ATTR, chatUser2.getChatDomain())
-        .put(USER_ATTR, chatUser1.getChatLogin())
-        .put(SERVER_ATTR, chatUser1.getChatDomain()));
+            .put(LOCAL_SERVER_ATTR, chatUser2.getChatDomain())
+            .put(USER_ATTR, chatUser1.getChatLogin())
+            .put(SERVER_ATTR, chatUser1.getChatDomain()));
     request(command,
         o -> o.put(LOCAL_USER_ATTR, chatUser1.getChatLogin())
-        .put(LOCAL_SERVER_ATTR, chatUser1.getChatDomain())
-        .put(USER_ATTR, chatUser2.getChatLogin())
-        .put(SERVER_ATTR, chatUser2.getChatDomain()));
+            .put(LOCAL_SERVER_ATTR, chatUser1.getChatDomain())
+            .put(USER_ATTR, chatUser2.getChatLogin())
+            .put(SERVER_ATTR, chatUser2.getChatDomain()));
   }
 
   @Override
   public boolean isUserExisting(final User user) {
     ChatUser chatUser = ChatUser.fromUser(user);
-    return request("check_account",
-        o -> o.put(USER_ATTR, chatUser.getChatLogin())
-            .put(HOST_ATTR, chatUser.getChatDomain()),
+    return request("check_account", o ->
+            o.put(USER_ATTR, chatUser.getChatLogin()).put(HOST_ATTR, chatUser.getChatDomain()),
         r -> r.readEntity(Integer.class) == 0);
   }
 

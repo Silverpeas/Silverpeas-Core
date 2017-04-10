@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.user.builder;
 
+import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.client.ExternalRecipient;
 import org.silverpeas.core.notification.user.client.GroupRecipient;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
@@ -90,7 +91,9 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * Create the user notification container
    * @return
    */
-  protected abstract UserNotification createNotification();
+  protected UserNotification createNotification() {
+    return new DefaultUserNotification(getTitle(), getContent());
+  }
 
   /**
    * Is the specified

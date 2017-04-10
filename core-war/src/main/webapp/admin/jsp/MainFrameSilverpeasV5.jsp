@@ -256,7 +256,7 @@
             });
           }
         });
-        SP_openUserPanel(webContext + '/selectChatUser', '', 'menubar=no,scrollbars=no,statusbar=no');
+        SP_openUserPanel(webContext + '/chat/users/select', '', 'menubar=no,scrollbars=no,statusbar=no');
       }
     }).start();
     </c:when>

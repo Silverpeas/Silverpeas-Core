@@ -23,15 +23,13 @@
  */
 package org.silverpeas.core.notification.user.builder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
-import org.silverpeas.core.notification.user.DefaultUserNotification;
-import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.util.URLUtil;
 
 /**
  * @author Yohann Chastagnier
@@ -77,11 +75,6 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   protected final void performBuild() {
     performBuild(resource);
     performNotificationResource(resource);
-  }
-
-  @Override
-  protected UserNotification createNotification() {
-    return new DefaultUserNotification(getTitle(), getContent());
   }
 
   @Override
