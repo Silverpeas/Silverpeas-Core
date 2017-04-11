@@ -40,7 +40,6 @@ import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.admin.user.model.AdminGroupInst;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
@@ -78,19 +77,6 @@ public class AdminController implements java.io.Serializable {
   // Start the processes
   public void startServer() throws Exception {
     admin.startServer();
-  }
-
-  // ----------------------------------------------
-  // Space Instances related functions
-  // ----------------------------------------------
-  public String getGeneralSpaceId() {
-
-    try {
-      return admin.getGeneralSpaceId();
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return "";
-    }
   }
 
   /* Return true if the given space name exists */
@@ -243,14 +229,6 @@ public class AdminController implements java.io.Serializable {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
     }
-  }
-
-  public Map<String, SpaceTemplate> getAllSpaceTemplates() {
-    return admin.getAllSpaceTemplates();
-  }
-
-  public SpaceInst getSpaceInstFromTemplate(String templateName) {
-    return admin.getSpaceInstFromTemplate(templateName);
   }
 
   /** Return all the spaces Id available in webactiv */

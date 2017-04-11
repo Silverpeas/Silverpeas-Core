@@ -38,7 +38,6 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.SpaceSelection;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
-import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.user.model.Group;
@@ -91,7 +90,16 @@ import java.util.*;
  */
 public class JobStartPagePeasSessionController extends AbstractComponentSessionController {
 
+  public static final int SCOPE_BACKOFFICE = 0;
+  public static final int SCOPE_FRONTOFFICE = 1;
+  public static final int MAINTENANCE_OFF = 0;
+  public static final int MAINTENANCE_PLATFORM = 1;
+  public static final int MAINTENANCE_ONEPARENT = 2;
+  public static final int MAINTENANCE_THISSPACE = 3;
+  private static final Properties templateConfiguration = new Properties();
+
   private final AdminController adminController;
+  private int scope = SCOPE_BACKOFFICE;
   NavBarManager m_NavBarMgr = new NavBarManager();
   String m_ManagedSpaceId = null;
   boolean m_isManagedSpaceRoot = true;
@@ -105,9 +113,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   String m_desc = "";
   String currentLanguage = "";
   String m_look = null;
-  String m_spaceTemplate = "";
-  String[][] currentSpaceTemplateProfilesGroups = new String[0][0];
-  String[][] m_TemplateProfilesUsers = new String[0][0];
   String m_componentSpaceQuotaMaxCount = "";
   String m_dataStorageQuotaMaxCount = "";
   // Order space / component b
@@ -115,14 +120,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   // Space sort buffers
   SpaceInst[] m_BrothersSpaces = new SpaceInst[0];
   ComponentInst[] m_BrothersComponents = new ComponentInst[0];
-  public static final int SCOPE_BACKOFFICE = 0;
-  public static final int SCOPE_FRONTOFFICE = 1;
-  private int scope = SCOPE_BACKOFFICE;
-  public static final int MAINTENANCE_OFF = 0;
-  public static final int MAINTENANCE_PLATFORM = 1;
-  public static final int MAINTENANCE_ONEPARENT = 2;
-  public static final int MAINTENANCE_THISSPACE = 3;
-  private static final Properties templateConfiguration = new Properties();
 
   public JobStartPagePeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -212,15 +209,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       return spaceId.substring(SpaceInst.SPACE_KEY_PREFIX.length());
     }
     return (spaceId == null) ? "" : spaceId;
-  }
-
-  // method get
-  public SpaceInst getSpaceInstFromTemplate(String templateName) {
-    return adminController.getSpaceInstFromTemplate(templateName);
-  }
-
-  public Map<String, SpaceTemplate> getAllSpaceTemplates() {
-    return adminController.getAllSpaceTemplates();
   }
 
   @Override
@@ -421,7 +409,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     m_name = name;
     m_desc = desc;
     currentLanguage = language;
-    m_spaceTemplate = spaceTemplate;
     m_look = look;
     m_componentSpaceQuotaMaxCount = componentSpaceQuotaMaxCount;
     m_dataStorageQuotaMaxCount = dataStorageQuotaMaxCount;
@@ -431,17 +418,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public String createSpace() {
-    SpaceInst spaceInst;
+    SpaceInst spaceInst = new SpaceInst();
 
     if (m_desc == null) {
       m_desc = "";
-    }
-
-    // Create the space
-    if (m_spaceTemplate != null && m_spaceTemplate.length() > 0) {
-      spaceInst = getSpaceInstFromTemplate(m_spaceTemplate);
-    } else {
-      spaceInst = new SpaceInst();
     }
 
     SpaceInst spaceint1 = getSpaceInstById();
@@ -489,7 +469,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     spaceInst.setDescription(m_desc);
     spaceInst.setLanguage(currentLanguage);
     spaceInst.setCreatorUserId(getUserId());
-    String sSpaceInstId = addSpaceInst(spaceInst, m_spaceTemplate);
+    String sSpaceInstId = addSpaceInst(spaceInst);
     if (sSpaceInstId != null && sSpaceInstId.length() > 0) {
       SilverTrace.spy("jobStartPagePeas",
           "JobStartPagePeasSessionController.createSpace()",
@@ -511,27 +491,12 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     return sSpaceInstId;
   }
 
-  public String addSpaceInst(SpaceInst spaceInst, String templateName) {
+  public String addSpaceInst(SpaceInst spaceInst) {
     String res = adminController.addSpaceInst(spaceInst);
     if (res == null || res.length() == 0) {
       return res;
     }
 
-    if (templateName != null && templateName.length() > 0) {
-      SpaceInst si = adminController.getSpaceInstById(res);
-
-      // Apply the Template profiles
-      ArrayList<ComponentInst> acl = si.getAllComponentsInst();
-      if (acl != null) {
-        for (ComponentInst ci : acl) {
-          Map<String, ProfileInst> componentProfilesToCreate = new HashMap<String, ProfileInst>();
-          // Add profiles
-          for (ProfileInst profileInst : componentProfilesToCreate.values()) {
-            adminController.addProfileInst(profileInst);
-          }
-        }
-      }
-    }
     // Finally refresh the cache
     m_NavBarMgr.addSpaceInCache(res);
 

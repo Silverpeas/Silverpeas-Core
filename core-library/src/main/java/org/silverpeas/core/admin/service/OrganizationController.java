@@ -60,14 +60,6 @@ public interface OrganizationController extends java.io.Serializable {
   SpaceInstLight getSpaceInstLightById(String spaceId);
 
   /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
-  String getGeneralSpaceId();
-
-  /**
    * Return the space Instance corresponding to the given space id
    */
   SpaceInst getSpaceInstById(String sSpaceId);

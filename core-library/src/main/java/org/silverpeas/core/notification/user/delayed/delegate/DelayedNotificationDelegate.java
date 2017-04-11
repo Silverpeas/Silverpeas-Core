@@ -685,7 +685,8 @@ public class DelayedNotificationDelegate extends AbstractNotification {
       } else {
         userDetail = new UserDetail();
         userDetail.setId(Integer.toString(userId));
-        userDetail.seteMail(AdministrationServiceProvider.getAdminService().getAdministratorEmail());
+        userDetail.setLastName(AdministrationServiceProvider.getAdminService().getSilverpeasName());
+        userDetail.seteMail(AdministrationServiceProvider.getAdminService().getSilverpeasEmail());
       }
       if (userDetailCache.size() >= MAX_USER_DETAIL_ITEMS) {
         userDetailCache.remove(userDetailCache.keySet().iterator().next());

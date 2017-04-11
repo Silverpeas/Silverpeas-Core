@@ -512,7 +512,6 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       setSpacesNameInRequest(jobStartPageSC, request);
 
       request.setAttribute("SousEspace", request.getParameter("SousEspace"));
-      request.setAttribute("spaceTemplates", jobStartPageSC.getAllSpaceTemplates());
       request.setAttribute("brothers", jobStartPageSC.getBrotherSpaces(true));
       request.setAttribute("isUserAdmin", jobStartPageSC.isUserAdmin());
       destination = "/jobStartPagePeas/jsp/createSpace.jsp";

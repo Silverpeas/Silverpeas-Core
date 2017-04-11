@@ -25,6 +25,7 @@
 package org.silverpeas.core.security.authentication.password;
 
 import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.mail.MailSending;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -46,18 +47,14 @@ public class ForgottenPasswordMailManager {
   // SMTP parameters
   private String fromAddress;
   private String fromName;
-  private String adminEmail;
 
   public ForgottenPasswordMailManager() {
     initFromAddress();
   }
 
   private void initFromAddress() {
-    SettingBundle mailSettings = ResourceLocator.getSettingBundle(
-        "org.silverpeas.authentication.settings.forgottenPasswordMail");
-    adminEmail = mailSettings.getString("admin.mail", Administration.get().getAdministratorEmail());
-    fromAddress = mailSettings.getString("fromAddress", adminEmail);
-    fromName = mailSettings.getString("fromName", "Silverpeas");
+    fromAddress = Administration.get().getSilverpeasEmail();
+    fromName = Administration.get().getSilverpeasName();
   }
 
   public void sendResetPasswordRequestMail(ForgottenPasswordMailParameters parameters)
@@ -72,13 +69,15 @@ public class ForgottenPasswordMailManager {
 
   public void sendErrorMail(ForgottenPasswordMailParameters parameters)
       throws MessagingException {
-    parameters.setToAddress(adminEmail);
+    User admin = User.getMainAdministrator();
+    parameters.setToAddress(admin.geteMail());
     sendMail(parameters, PREFIX_ERROR);
   }
 
   public void sendAdminMail(ForgottenPasswordMailParameters parameters)
       throws MessagingException {
-    parameters.setToAddress(adminEmail);
+    User admin = User.getMainAdministrator();
+    parameters.setToAddress(admin.geteMail());
     sendMail(parameters, PREFIX_ADMIN);
   }
 

@@ -138,16 +138,6 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public String getGeneralSpaceId() {
-    try {
-      return getAdminService().getGeneralSpaceId();
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return "";
-    }
-  }
-
-  @Override
   public SpaceInst getSpaceInstById(String sSpaceId) {
     try {
       return getAdminService().getSpaceInstById(sSpaceId);

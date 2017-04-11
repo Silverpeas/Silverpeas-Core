@@ -69,6 +69,15 @@ public interface User extends Serializable, Comparable<User> {
   }
 
   /**
+   * Gets the main administrator of Silverpeas. It is the root administrator of the platform (the
+   * first administrator created at Silverpeas installation).
+   * @return the main administrator of Silverpeas.
+   */
+  static User getMainAdministrator() {
+    return UserProvider.get().getMainAdministrator();
+  }
+
+  /**
    * The unique identifier of the user into Silverpeas.
    * @return identifier as string.
    */

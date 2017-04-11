@@ -32,11 +32,11 @@ import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.admin.user.model.AdminGroupInst;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
@@ -46,7 +46,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -72,12 +71,6 @@ public interface Administration {
   // Start Server actions
   // -------------------------------------------------------------------------
   void startServer();
-
-  /**
-   * Get Enterprise space id.
-   * @return The general space id
-   */
-  String getGeneralSpaceId();
 
   void createSpaceIndex(int spaceId);
 
@@ -221,10 +214,6 @@ public interface Administration {
    * @throws AdminException
    */
   String[] getSpaceNames(String[] asClientSpaceIds) throws AdminException;
-
-  Map<String, SpaceTemplate> getAllSpaceTemplates();
-
-  SpaceInst getSpaceInstFromTemplate(String templateName);
 
   /**
    * Return all the components of silverpeas read in the xmlComponent directory.
@@ -1118,10 +1107,17 @@ public interface Administration {
   String[] getAdministratorUserIds(String fromUserId) throws AdminException;
 
   /**
-   * Get administrator Email
-   * @return String
+   * Gets the email of Silverpeas. This email is dedicated to be used when Silverpeas sends emails
+   * to users.
+   * @return a non-reply address email with which Silverpeas sent emails to users.
    */
-  String getAdministratorEmail();
+  String getSilverpeasEmail();
+
+  /**
+   * Gets the name of Silverpeas to use when it sends notifications to users.
+   * @return the name to use when the system (Silverpeas) sends notifications to users.
+   */
+  String getSilverpeasName();
 
   /**
    * Get the administrator email

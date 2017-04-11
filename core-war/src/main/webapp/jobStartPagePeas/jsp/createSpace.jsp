@@ -30,7 +30,6 @@
 
 <%
 String 		m_SousEspace 		= (String) request.getAttribute("SousEspace");
-Map     	m_SpaceTemplates 	= (Map) request.getAttribute("spaceTemplates");
 SpaceInst[] brothers 			= (SpaceInst[]) request.getAttribute("brothers");
 String 		spaceId				= (String) request.getAttribute("CurrentSpaceId");
 boolean isUserAdmin = ((Boolean)request.getAttribute("isUserAdmin")).booleanValue();
@@ -141,22 +140,6 @@ out.println(board.printBefore());
                             }
                         %>
                         <option value="-1" selected="selected"><%=resource.getString("JSPP.PlaceLast")%></option>
-                    </select>
-				</td>
-			</tr>
-            <tr>
-				<td class="txtlibform"><%=resource.getString("JSPP.SpaceTemplate")%> :</td>
-				<td>
-                    <select name="SpaceTemplate" id="SpaceTemplate">
-                        <option value=""><%=resource.getString("JSPP.NoTemplate")%></option>
-                        <%
-                            Iterator<String> it = m_SpaceTemplates.keySet().iterator();
-                            while (it.hasNext()) {
-                                String theKey = it.next();
-                                SpaceTemplate st = (SpaceTemplate)m_SpaceTemplates.get(theKey);
-                                out.println("<option value=\"" + theKey + "\">" + st.getDefaultName() + "</option>");
-                            }
-                        %>
                     </select>
 				</td>
 			</tr>

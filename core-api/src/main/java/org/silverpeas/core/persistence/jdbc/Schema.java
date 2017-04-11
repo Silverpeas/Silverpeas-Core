@@ -24,12 +24,11 @@
 
 package org.silverpeas.core.persistence.jdbc;
 
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -58,7 +57,7 @@ public abstract class Schema {
     }
   }
 
-  protected final synchronized void createConnection() throws UtilException {
+  protected final synchronized void createConnection() {
 
     try {
       if (this.connection != null) {
@@ -74,31 +73,28 @@ public abstract class Schema {
       isLocalConnection = true;
 
     } catch (SQLException e) {
-      throw new UtilException("Schema.createConnection",
-          SilverpeasException.ERROR, "root.EX_DATASOURCE_INVALID", e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
-  public synchronized void commit() throws UtilException {
+  public synchronized void commit() {
 
     if (!isManaged()) {
       try {
         this.connection.commit();
       } catch (SQLException e) {
-        throw new UtilException("Schema.commit", SilverpeasException.ERROR,
-            "root.EX_ERR_COMMIT", e);
+        throw new SilverpeasRuntimeException(e);
       }
     }
   }
 
-  public synchronized void rollback() throws UtilException {
+  public synchronized void rollback() {
 
     if (!isManaged()) {
       try {
         this.connection.rollback();
       } catch (SQLException e) {
-        throw new UtilException("Schema.rollback", SilverpeasException.ERROR,
-            "root.EX_ERR_ROLLBACK", e);
+        throw new SilverpeasRuntimeException(e);
       }
     }
   }
@@ -157,14 +153,11 @@ public abstract class Schema {
 
   public synchronized Connection getConnection() {
     if (!isOk() && isLocalConnection) {
-
       try {
         createConnection();
-      } catch (UtilException e) {
-        SilverTrace.error("util", "Schema.getConnection", "util.CAN_T_CLOSE_CONNECTION", e);
+      } catch (SilverpeasRuntimeException e) {
+        SilverLogger.getLogger(this).error(e);
       }
-    } else {
-
     }
 
     return connection;

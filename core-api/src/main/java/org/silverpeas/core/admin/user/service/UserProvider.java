@@ -65,4 +65,14 @@ public interface UserProvider {
     }
     return requester;
   }
+
+  /**
+   * Gets the main administrator of Silverpeas. It is a system account created during the
+   * installation of Silverpeas. This is by this system account that all the setting up of
+   * Silverpeas is performed (spaces, domains, application instances, ...).
+   * @return the main administrator of Silverpeas.
+   */
+  default User getMainAdministrator() {
+    return getUser("0");
+  }
 }

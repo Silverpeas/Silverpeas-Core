@@ -54,12 +54,10 @@ import org.silverpeas.core.admin.service.cache.TreeCache;
 import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.space.SpaceInstanciator;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.SpaceProfileInstManager;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.Space;
-import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.admin.space.notification.SpaceEventNotifier;
 import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
@@ -80,7 +78,6 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ListSlice;
@@ -103,7 +100,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
-import static org.silverpeas.core.silvertrace.SilverTrace.MODULE_ADMIN;
 
 /**
  * The class Admin is the main class of the Administrator.
@@ -114,15 +110,10 @@ import static org.silverpeas.core.silvertrace.SilverTrace.MODULE_ADMIN;
 class Admin implements Administration {
 
   /**
-   * Identifier of the administration component in Silverpeas. It identifies any administrative tool
-   * or service belonging to the administration component. It can be then passed where an identifier
-   * of a component or of an application instance (named also component instance) is expected.
-   * </p>
-   * Each administrative tool have the same identifier and this identifier refers the administration
-   * component.
+   * The unique identifier of the main administrator (root) in Silverpeas. It is hard configured in
+   * Silverpeas.
    */
-  private static final String PARAM_MSG_KEY = "root.MSG_GEN_PARAM_VALUE";
-  private static final String START_SERVER_MSG = "Admin.startServer";
+  private static final String ADMIN_ID = "0";
 
   // Divers
   private static final Object semaphore = new Object();
@@ -133,11 +124,8 @@ class Admin implements Administration {
   private static String m_domainSynchroCron = "";
   // Helpers
   private static final GroupProfileInstManager groupProfileManager = new GroupProfileInstManager();
-  private static SpaceInstanciator spaceInstanciator = null;
-  // Entreprise client space Id
-  private static int m_nEntrepriseClientSpaceId = 0;
-  private static String administratorMail = null;
-  private static String m_sDAPIGeneralAdminId = null;
+  private static String senderEmail = null;
+  private static String senderName = null;
   // Cache management
   private static final AdminCache cache = new AdminCache();
   private static SynchroGroupScheduler groupSynchroScheduler = null;
@@ -172,9 +160,8 @@ class Admin implements Administration {
     SettingBundle resources = ResourceLocator.getSettingBundle("org.silverpeas.admin.admin");
     roleMapping = ResourceLocator.getSettingBundle("org.silverpeas.admin.roleMapping");
     useProfileInheritance = resources.getBoolean("UseProfileInheritance", false);
-    m_nEntrepriseClientSpaceId = resources.getInteger("EntrepriseClientSpaceId", 0);
-    administratorMail = resources.getString("AdministratorEMail");
-    m_sDAPIGeneralAdminId = resources.getString("DAPIGeneralAdminId");
+    senderEmail = resources.getString("SenderEmail");
+    senderName = resources.getString("SenderName");
     final ScheduledDBReset scheduledDBReset = new ScheduledDBReset();
     scheduledDBReset.initialize(resources.getString("DBConnectionResetScheduler", ""));
 
@@ -216,7 +203,7 @@ class Admin implements Administration {
       }
 
     } catch (Exception e) {
-      SilverTrace.error("admin", "Constructor", "ERROR_WHEN_INITIALIZING_ADMIN", e);
+      SilverLogger.getLogger(this).error(e);
     }
     cacheLoaded = true;
   }
@@ -233,8 +220,7 @@ class Admin implements Administration {
     try {
       domains = ddm.getAllDomains();
     } catch (AdminException e) {
-      SilverTrace.error("admin", START_SERVER_MSG,
-          "admin.CANT_LOAD_DOMAINS_DURING_INITIALIZATION", e);
+      SilverLogger.getLogger(this).error(e);
     }
     if (domains != null) {
       for (Domain domain : domains) {
@@ -245,8 +231,7 @@ class Admin implements Administration {
             synchroDomainIds.add(domain.getId());
           }
         } catch (Exception e) {
-          SilverTrace.error("admin", START_SERVER_MSG,
-              "admin.CANT_LOAD_DOMAIN_DURING_INITIALIZATION", "domainId = " + domain.getId(), e);
+          SilverLogger.getLogger(this).error(e);
         }
       }
     }
@@ -258,8 +243,7 @@ class Admin implements Administration {
     try {
       groups = getSynchronizedGroups();
     } catch (AdminException e) {
-      SilverTrace.error("admin", START_SERVER_MSG,
-          "admin.CANT_LOAD_SYNCHRONIZED_GROUPS_DURING_INITIALIZATION", e);
+      SilverLogger.getLogger(this).error(e);
     }
     List<String> synchronizedGroupIds = new ArrayList<>();
     if (groups != null) {
@@ -299,10 +283,6 @@ class Admin implements Administration {
   // -------------------------------------------------------------------------
   // SPACE RELATED FUNCTIONS
   // -------------------------------------------------------------------------
-  @Override
-  public String getGeneralSpaceId() {
-    return SpaceInst.SPACE_KEY_PREFIX + m_nEntrepriseClientSpaceId;
-  }
 
   @Override
   public void createSpaceIndex(int spaceId) {
@@ -310,8 +290,7 @@ class Admin implements Administration {
       SpaceInstLight space = getSpaceInstLight(spaceId);
       createSpaceIndex(space);
     } catch (AdminException e) {
-      SilverTrace.error(MODULE_ADMIN, "admin.createSpaceIndex", PARAM_MSG_KEY,
-          "spaceId = " + spaceId);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -388,7 +367,7 @@ class Admin implements Administration {
         connectionProd.rollback();
         cache.resetCache();
       } catch (Exception e1) {
-        SilverTrace.error(MODULE_ADMIN, "Admin.addSpaceInst", "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e);
       }
       throw new AdminException(failureOnAdding("space", spaceInst.getName()), e);
     } finally {
@@ -826,16 +805,6 @@ class Admin implements Administration {
     }
   }
 
-  @Override
-  public Map<String, SpaceTemplate> getAllSpaceTemplates() {
-    return getSpaceInstanciator().getAllSpaceTemplates();
-  }
-
-  @Override
-  public SpaceInst getSpaceInstFromTemplate(String templateName) {
-    return getSpaceInstanciator().getSpaceToInstanciate(templateName);
-  }
-
   // -------------------------------------------------------------------------
   // COMPONENT RELATED FUNCTIONS
   // -------------------------------------------------------------------------
@@ -903,8 +872,7 @@ class Admin implements Administration {
     try {
       return componentManager.getParameters(domainDriverManager, getDriverComponentId(componentId));
     } catch (Exception e) {
-      SilverTrace.error(MODULE_ADMIN, "Admin.getComponentParameters",
-          "admin.EX_ERR_GET_COMPONENT_PARAMS", "sComponentId: '" + componentId + "'", e);
+      SilverLogger.getLogger(this).error(e);
       return Collections.emptyList();
     }
   }
@@ -914,15 +882,12 @@ class Admin implements Administration {
     try {
       ComponentInst component = getComponentInst(componentId);
       if (component == null) {
-        SilverTrace.error(MODULE_ADMIN, "Admin.getComponentParameterValue",
-            "admin.EX_ERR_GET_COMPONENT_PARAMS", "Component not found - sComponentId: '"
-            + componentId + "'");
+        SilverLogger.getLogger(this).error("Component " + componentId + " not found!");
         return StringUtil.EMPTY;
       }
       return component.getParameterValue(parameterName);
     } catch (Exception e) {
-      SilverTrace.error(MODULE_ADMIN, "Admin.getComponentParameterValue",
-          "admin.EX_ERR_GET_COMPONENT_PARAMS", "sComponentId: '" + componentId + "'", e);
+      SilverLogger.getLogger(this).error(e);
       return "";
     }
   }
@@ -966,8 +931,7 @@ class Admin implements Administration {
       ComponentInstLight component = getComponentInstLight(componentId);
       createComponentIndex(component);
     } catch (AdminException e) {
-      SilverTrace.error(MODULE_ADMIN, "Admin.createComponentIndex",
-          "admin.EX_ERR_GET_COMPONENT_PARAMS", "componentId: '" + componentId + "'", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -1078,7 +1042,7 @@ class Admin implements Administration {
         }
         connectionProd.rollback();
       } catch (Exception e1) {
-        SilverTrace.error(MODULE_ADMIN, "Admin.addComponentInst", "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e1);
       }
       if (e instanceof QuotaException) {
         throw (QuotaException) e;
@@ -1212,8 +1176,7 @@ class Admin implements Administration {
           connectionProd.rollback();
         }
       } catch (Exception e1) {
-        SilverTrace.error(MODULE_ADMIN, "Admin.deleteComponentInst",
-            "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e1);
       }
       throw new AdminException(failureOnDeleting("component", componentId), e);
     } finally {
@@ -1878,10 +1841,6 @@ class Admin implements Administration {
       throws AdminException {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
-    if (StringUtil.isDefined(userId)) {
-      SilverTrace.spy(MODULE_ADMIN, "Admin.updateProfileInst", "unknown", newProfile.
-          getComponentFatherId(), newProfile.getName(), userId, SilverTrace.SPY_ACTION_UPDATE);
-    }
     try {
       if (startNewTransaction) {
         domainDriverManager.startTransaction(false);
@@ -2330,7 +2289,7 @@ class Admin implements Administration {
           domainDriverManager.rollback(group.getDomainId());
         }
       } catch (Exception e1) {
-        SilverTrace.error("admin", "Admin.addGroup", "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e1);
       }
       throw new AdminException(failureOnAdding("group", group.getName()), e);
     } finally {
@@ -2389,7 +2348,7 @@ class Admin implements Administration {
           domainDriverManager.rollback(group.getDomainId());
         }
       } catch (Exception e1) {
-        SilverTrace.error("admin", "Admin.deleteGroupById", "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e1);
       }
       throw new AdminException(failureOnDeleting("group", group.getId()), e);
     } finally {
@@ -2432,7 +2391,7 @@ class Admin implements Administration {
           domainDriverManager.rollback(group.getDomainId());
         }
       } catch (Exception e1) {
-        SilverTrace.error("admin", "Admin.updateGroup", "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e1);
       }
       throw new AdminException(failureOnUpdate("group", group.getId()), e);
     } finally {
@@ -2464,7 +2423,7 @@ class Admin implements Administration {
         // Roll back the transactions
         domainDriverManager.rollback();
       } catch (Exception e1) {
-        SilverTrace.error("admin", "Admin.removeUserFromGroup", "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e1);
       }
       throw new AdminException(failureOnDeleting("user " + sUserId, "in group " + sGroupId), e);
     } finally {
@@ -2493,7 +2452,7 @@ class Admin implements Administration {
         // Roll back the transactions
         domainDriverManager.rollback();
       } catch (Exception e1) {
-        SilverTrace.error("admin", "Admin.addUserInGroup", "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e1);
       }
       throw new AdminException(failureOnAdding("user " + sUserId, "in group " + sGroupId), e);
     } finally {
@@ -2664,8 +2623,7 @@ class Admin implements Administration {
       try {
         indexGroups(domain.getId());
       } catch (Exception e) {
-        SilverTrace.error("admin", "Admin.indexAllGroups", "admin.CANT_INDEX_GROUPS",
-            "domainId = " + domain.getId(), e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
 
@@ -2673,8 +2631,7 @@ class Admin implements Administration {
     try {
       indexGroups("-1");
     } catch (Exception e) {
-      SilverTrace.error("admin", "Admin.indexAllGroups", "admin.CANT_INDEX_GROUPS",
-          "domainId = -1", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -2727,8 +2684,7 @@ class Admin implements Administration {
       try {
         users.add(getUserDetail(userId));
       } catch (AdminException e) {
-        SilverTrace.error("admin", "Admin.getUserDetails", "admin.EX_ERR_GET_USER_DETAILS",
-            "user id: '" + userId + "'", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
     return users.toArray(new UserDetail[users.size()]);
@@ -2848,7 +2804,7 @@ class Admin implements Administration {
           domainDriverManager.rollback(userDetail.getDomainId());
         }
       } catch (Exception e1) {
-        SilverTrace.error("admin", "Admin.addUser", "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e1);
       }
       throw new AdminException(failureOnAdding("user", userDetail.getDisplayedName()), e);
     } finally {
@@ -2882,8 +2838,7 @@ class Admin implements Administration {
         domainDriverManager.rollback();
         domainDriverManager.rollback(targetDomainId);
       } catch (Exception e1) {
-        SilverTrace.error("admin", "Admin.migrateUserFromSilverpeasToAnotherDomain",
-            "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e1);
       }
       throw new AdminException(
           failureOnAdding("user " + userDetail.getId(), "in domain " + targetDomainId), e);
@@ -2957,9 +2912,10 @@ class Admin implements Administration {
   @Override
   public String deleteUser(String sUserId) throws AdminException {
     try {
-      if (m_sDAPIGeneralAdminId.equals(sUserId)) {
-        SilverTrace.warn("admin", "Admin.deleteUser",
-            "admin.MSG_WARN_TRY_TO_DELETE_GENERALADMIN");
+      if (ADMIN_ID.equals(sUserId)) {
+        SilverLogger.getLogger(this)
+            .warn("Attempt to delete the main administrator account by user " +
+                User.getCurrentRequester().getId());
         return null;
       }
 
@@ -3010,7 +2966,7 @@ class Admin implements Administration {
           domainDriverManager.rollback(user.getDomainId());
         }
       } catch (Exception e1) {
-        SilverTrace.error("admin", "Admin.deleteUser", "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e1);
       }
       throw new AdminException(failureOnDeleting("user", sUserId), e);
     } finally {
@@ -3076,7 +3032,7 @@ class Admin implements Administration {
           domainDriverManager.rollback(user.getDomainId());
         }
       } catch (Exception e1) {
-        SilverTrace.error("admin", "Admin.updateUserFull", "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e1);
       }
       throw new AdminException(failureOnUpdate("user", user.getId()), e);
     } finally {
@@ -3426,8 +3382,8 @@ class Admin implements Administration {
             sDomainId);
       } catch (Exception ex) {
         if (synchroDomain.isSynchroOnLoginEnabled() && !isAppInMaintenance) {//Try to import new user
-          SilverTrace.warn("admin", "Admin.authenticate",
-              "admin.EX_ERR_USER_NOT_FOUND", "Login: '" + sLogin + "', Domain: " + sDomainId, ex);
+          SilverLogger.getLogger(this).warn("User with login {0} in domain {1} not found",
+              sLogin, sDomainId);
           sUserId = synchronizeImportUserByLogin(sDomainId, sLogin,
               synchroDomain.isSynchroOnLoginRecursToGroups());
         } else {
@@ -3439,9 +3395,7 @@ class Admin implements Administration {
         try {
           synchronizeUser(sUserId, synchroDomain.isSynchroOnLoginRecursToGroups());
         } catch (Exception ex) {
-          SilverTrace.warn("admin", "Admin.authenticate",
-              "admin.MSG_ERR_SYNCHRONIZE_USER", "UserId=" + sUserId + " Login: '" + sLogin
-              + "', Domain: " + sDomainId, ex);
+          SilverLogger.getLogger(this).error(ex);
         }
       }
 
@@ -4322,8 +4276,7 @@ class Admin implements Administration {
 
       return arrayListToString(removeTuples(alProfiles));
     } catch (Exception e) {
-      SilverTrace.error("admin", "Admin.getCurrentProfiles", "admin.MSG_ERR_GET_CURRENT_PROFILE",
-          e);
+      SilverLogger.getLogger(this).error(e);
       return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
@@ -4455,8 +4408,13 @@ class Admin implements Administration {
   }
 
   @Override
-  public String getAdministratorEmail() {
-    return administratorMail;
+  public String getSilverpeasEmail() {
+    return senderEmail;
+  }
+
+  @Override
+  public String getSilverpeasName() {
+    return senderName;
   }
 
   @Override
@@ -4685,7 +4643,7 @@ class Admin implements Administration {
           // Roll back the transactions
           domainDriverManager.rollback();
         } catch (Exception e1) {
-          SilverTrace.error("admin", "Admin.synchronizeGroup", "root.EX_ERR_ROLLBACK", e1);
+          SilverLogger.getLogger(this).error(e1);
         }
         SynchroGroupReport.error("admin.synchronizeGroup",
             "Error during the processing of synchronization rule of group '" + groupId + "': " +
@@ -4716,16 +4674,15 @@ class Admin implements Administration {
       } catch (AdminException e) {
         // The group doesn't exist -> Synchronize him
         groupId = null;
-        SilverTrace.warn("admin", "Admin.translateGroupIds",
-            "admin.EX_ERR_GROUP_NOT_FOUND", "SpecId=" + groupSpecificId, e);
+        SilverLogger.getLogger(this).warn("Group {0} not found. Synchronize it",
+            groupSpecificId);
         if (recursGroups) {
           try {
             groupId = synchronizeImportGroup(sDomainId, groupSpecificId,
                 null, true, true);
           } catch (AdminException ex) {
             // The group's synchro failed -> ignore him
-            SilverTrace.warn("admin", "Admin.translateGroupIds",
-                "admin.MSG_ERR_SYNCHRONIZE_GROUP", "SpecId=" + groupSpecificId, ex);
+            SilverLogger.getLogger(this).error(ex);
             groupId = null;
           }
         }
@@ -4750,15 +4707,13 @@ class Admin implements Administration {
             sDomainId);
       } catch (AdminException e) {
         // The user doesn't exist -> Synchronize him
-        SilverTrace.warn("admin", "Admin.translateUserIds",
-            "admin.EX_ERR_USER_NOT_FOUND", "SpecId=" + userSpecificId, e);
+        SilverLogger.getLogger(this).warn("The user {0} doesn't exist. Synchronize it",
+            userSpecificId);
         try {
           userId = synchronizeImportUser(sDomainId, userSpecificId, false);
         } catch (AdminException ex) {
           // The user's synchro failed -> Ignore him
-          SilverTrace.warn("admin", "Admin.translateUserIds",
-              "admin.MSG_ERR_SYNCHRONIZE_USER", "SpecId=" + userSpecificId,
-              ex);
+          SilverLogger.getLogger(this).error(ex);
           userId = null;
         }
       }
@@ -5102,8 +5057,7 @@ class Admin implements Administration {
           domainDriverManager.rollback();
           domainDriverManager.rollback(sDomainId);
         } catch (Exception e1) {
-          SilverTrace.error("admin", "Admin.synchronizeSilverpeasWithDomain",
-              "root.EX_ERR_ROLLBACK", e1);
+          SilverLogger.getLogger(this).error(e1);
         }
         SynchroDomainReport.error("admin.synchronizeSilverpeasWithDomain",
             "Problème lors de la synchronisation : " + e.getMessage(), null);
@@ -5350,8 +5304,7 @@ class Admin implements Administration {
           synchroUser.processUsers(added, updated, removed);
         }
       } catch (Exception e) {
-        SilverTrace.warn("admin", "admin.synchronizeOnlyExistingUsers",
-            PARAM_MSG_KEY, "Pb Loading class traitement Users ! ", e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
   }
@@ -5580,8 +5533,8 @@ class Admin implements Administration {
       if (allIncluededGroups.get(subGroup.getSpecificId()) == null) {
         cleanSubGroups.add(subGroup);
       } else {
-        SilverTrace.warn("admin", "Admin.removeCrossReferences", PARAM_MSG_KEY,
-            "Cross removed for child : " + subGroup.getSpecificId() + " of father : " + fatherId);
+        SilverLogger.getLogger(this).warn("Cross deletion for child {0} of the father {1}",
+            subGroup.getSpecificId(), fatherId);
       }
     }
     return cleanSubGroups.toArray(new GroupDetail[cleanSubGroups.size()]);
@@ -5880,7 +5833,7 @@ class Admin implements Administration {
       // Roll back the transactions
       domainDriverManager.rollback();
     } catch (Exception e1) {
-      SilverTrace.error("admin", "Admin.rollback", "root.EX_ERR_ROLLBACK", e1);
+      SilverLogger.getLogger(this).error(e1);
     }
   }
 
@@ -5894,8 +5847,7 @@ class Admin implements Administration {
       try {
         indexUsers(domain.getId());
       } catch (Exception e) {
-        SilverTrace.error("admin", "Admin.indexAllUsers", "admin.CANT_INDEX_USERS",
-            "domainId = " + domain.getId(), e);
+        SilverLogger.getLogger(this).error(e);
       }
     }
   }
@@ -5960,7 +5912,7 @@ class Admin implements Administration {
       componentPaste.paste(pasteDetail);
     } catch (IllegalStateException e) {
     } catch (Exception e) {
-      SilverTrace.warn("admin", "Admin.copyAndPasteComponent()", "root.GEN_EXIT_METHOD", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return sComponentId;
   }
@@ -6417,7 +6369,7 @@ class Admin implements Administration {
         ddManager.rollback();
         cache.resetCache();
       } catch (Exception e1) {
-        SilverTrace.error(MODULE_ADMIN, "Admin.addSpaceInst", "root.EX_ERR_ROLLBACK", e1);
+        SilverLogger.getLogger(this).error(e);
       }
       throw new AdminException("Fail to assign rights", e);
     } finally {
@@ -6490,13 +6442,6 @@ class Admin implements Administration {
     return context.setAuthor(authorId);
   }
 
-  private SpaceInstanciator getSpaceInstanciator() {
-    if (spaceInstanciator == null) {
-      spaceInstanciator = new SpaceInstanciator(getAllComponents());
-    }
-    return spaceInstanciator;
-  }
-
   /**
    * @param userId the user identifier
    * @param domainId the domain identifier
@@ -6508,7 +6453,7 @@ class Admin implements Administration {
     try {
       userDetail = getUserDetail(userId);
     } catch (AdminException e) {
-      SilverTrace.error("admin", "Admin.isDomainManagerUser", "cannot load user " + userId, e);
+      SilverLogger.getLogger(this).error(e);
     }
     return userDetail != null && userDetail.getDomainId().equals(domainId) &&
         UserAccessLevel.DOMAIN_ADMINISTRATOR.equals(userDetail.getAccessLevel());

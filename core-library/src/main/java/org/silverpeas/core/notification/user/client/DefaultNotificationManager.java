@@ -1365,7 +1365,7 @@ public class DefaultNotificationManager extends AbstractNotification
       if (!StringUtil.isValidEmailAddress(fromEmail) || params.iFromUserId >= 0) {
         fromEmail = getUserEmail(params.iFromUserId);
         if (!StringUtil.isDefined(fromEmail)) {
-          fromEmail = AdministrationServiceProvider.getAdminService().getAdministratorEmail();
+          fromEmail = AdministrationServiceProvider.getAdminService().getSilverpeasEmail();
         }
       }
       theExtraParams.put(FROM, fromEmail);
@@ -1486,7 +1486,7 @@ public class DefaultNotificationManager extends AbstractNotification
     if (!StringUtil.isValidEmailAddress(fromEmail) || params.iFromUserId >= 0) {
       fromEmail = getUserEmail(params.iFromUserId);
       if (!StringUtil.isDefined(fromEmail)) {
-        fromEmail = AdministrationServiceProvider.getAdminService().getAdministratorEmail();
+        fromEmail = AdministrationServiceProvider.getAdminService().getSilverpeasEmail();
       }
     }
     theExtraParams.put(FROM, fromEmail);
@@ -1604,7 +1604,7 @@ public class DefaultNotificationManager extends AbstractNotification
         if (!StringUtil.isValidEmailAddress(fromEmail) || params.iFromUserId >= 0) {
           fromEmail = getUserEmail(params.iFromUserId);
           if (!StringUtil.isDefined(fromEmail)) {
-            fromEmail = AdministrationServiceProvider.getAdminService().getAdministratorEmail();
+            fromEmail = AdministrationServiceProvider.getAdminService().getSilverpeasEmail();
           }
         }
         theExtraParams.put(FROM, fromEmail);

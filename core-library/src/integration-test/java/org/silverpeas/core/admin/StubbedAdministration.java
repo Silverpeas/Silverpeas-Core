@@ -32,6 +32,7 @@ import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.RightAssignationContext;
@@ -40,7 +41,6 @@ import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.admin.user.model.AdminGroupInst;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
@@ -50,7 +50,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.util.ListSlice;
 
 import javax.inject.Singleton;
@@ -75,11 +74,6 @@ public class StubbedAdministration implements Administration {
   @Override
   public void startServer() {
 
-  }
-
-  @Override
-  public String getGeneralSpaceId() {
-    return null;
   }
 
   @Override
@@ -183,16 +177,6 @@ public class StubbedAdministration implements Administration {
   @Override
   public String[] getSpaceNames(final String[] asClientSpaceIds) throws AdminException {
     return new String[0];
-  }
-
-  @Override
-  public Map<String, SpaceTemplate> getAllSpaceTemplates() {
-    return null;
-  }
-
-  @Override
-  public SpaceInst getSpaceInstFromTemplate(final String templateName) {
-    return null;
   }
 
   @Override
@@ -1024,7 +1008,12 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String getAdministratorEmail() {
+  public String getSilverpeasEmail() {
+    return null;
+  }
+
+  @Override
+  public String getSilverpeasName() {
     return null;
   }
 

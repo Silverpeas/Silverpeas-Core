@@ -191,7 +191,7 @@ public class SMTPListener extends AbstractListener implements MessageListener {
     MailSending mail = MailSending.from(fromMailAddress).to(eMail(to)).withSubject(subject);
     try {
       InternetAddress fromAddress = fromMailAddress.getAuthorizedInternetAddress();
-      if (!Administration.get().getAdministratorEmail().equals(from) &&
+      if (!Administration.get().getSilverpeasEmail().equals(from) &&
           (!fromAddress.getAddress().equals(from) || isForceReplyToSenderField())) {
         mail.setReplyToRequired();
       }
