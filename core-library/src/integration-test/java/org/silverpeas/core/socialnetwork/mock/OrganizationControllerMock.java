@@ -87,11 +87,6 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public String getGeneralSpaceId() {
-    return null;
-  }
-
-  @Override
   public SpaceInst getSpaceInstById(final String sSpaceId) {
     return null;
   }
