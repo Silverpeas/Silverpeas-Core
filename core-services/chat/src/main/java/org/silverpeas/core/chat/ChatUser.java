@@ -34,7 +34,7 @@ public class ChatUser extends UserDetail {
   }
 
   /**
-   * Gets the user behing the current request to Silverpeas and that have an account in the chat
+   * Gets the user behind the current request to Silverpeas and that have an account in the chat
    * service.
    * @return the current requester as a {@link ChatUser}.
    */

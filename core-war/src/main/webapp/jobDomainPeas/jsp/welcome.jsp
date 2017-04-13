@@ -39,15 +39,10 @@
 <view:looknfeel/>
   <script type="application/javascript">
     function syncIM() {
-      $.ajax(webContext + '/chat/users/register',{
-        type: 'POST',
-        data: '',
-        dataType: 'text'
-      }).then(function(message) {
-        notySuccess(message);
-      }, function(xhr, error) {
-        notyError(error);
-      });
+      silverpeasAjax(sp.ajaxConfig(webContext + '/chat/users/register').byPostMethod())
+        .catch(function(request) {
+          notyError(request.responseText);
+        });
     }
   </script>
 </head>
@@ -57,7 +52,7 @@
     operationPane.addOperationOfCreation(resource.getIcon("JDP.domainAdd"), resource.getString("JDP.domainAdd"), "displayDomainCreate");
     operationPane.addOperationOfCreation(resource.getIcon("JDP.domainSqlAdd"), resource.getString("JDP.domainSQLAdd"), "displayDomainSQLCreate");
     if (ChatServer.isEnabled()) {
-      operationPane.addOperationOfCreation(resource.getIcon("JDP.IMUserRegistering"), resource.getString("JDP.IMUserRegistering"), "javascript:syncIM();");
+      operationPane.addOperation(resource.getIcon("JDP.IMUserRegistering"), resource.getString("JDP.IMUserRegistering"), "javascript:syncIM();");
     }
   }
 

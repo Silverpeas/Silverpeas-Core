@@ -26,32 +26,26 @@ package org.silverpeas.web.chat;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.chat.ChatUsersRegistration;
-import org.silverpeas.core.notification.user.UserNotification;
-import org.silverpeas.core.notification.user.builder.AbstractUserNotificationBuilder;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
+import org.silverpeas.core.notification.user.SimpleUserNotification;
+import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
-import javax.annotation.Resource;
-import javax.enterprise.concurrent.ManagedExecutorService;
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.io.PrintWriter;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.MissingResourceException;
 
 /**
  * Registers all the Silverpeas users in the remote chat server.
  * @author mmoquillon
  */
-public class ChatUserRegistrationServlet extends HttpServlet {
+public class ChatUserRegistrationServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private static final String CHAT_I18N_BUNDLE = "org.silverpeas.chat.multilang.chat";
   private static final String REGISTRATION_STATUS = "chat.registration.status";
@@ -61,31 +55,25 @@ public class ChatUserRegistrationServlet extends HttpServlet {
 
   @Inject
   private ChatUsersRegistration registration;
-  @Resource
-  private ManagedExecutorService executor;
-  private LocalizationBundle messages = ResourceLocator.getLocalizationBundle(CHAT_I18N_BUNDLE);
 
   @Override
   protected void doPost(final HttpServletRequest req, final HttpServletResponse resp)
       throws ServletException, IOException {
-
     final User requester = User.getCurrentRequester();
-    executor.execute(() -> {
+    final LocalizationBundle messages =
+        getLocalizedBundle(requester.getUserPreferences().getLanguage());
+    ManagedThreadPool.invoke(() -> {
       try {
         registerAllUsers();
-        notify(requester, messages.getString(SUCCESS_MESSAGE));
+        notify(requester, SUCCESS_MESSAGE);
       } catch (MissingResourceException e) {
         throw e;
       } catch (Exception e) {
         SilverLogger.getLogger(ChatUserRegistrationServlet.class).error(e);
-        notify(requester, messages.getString(FAILURE_MESSAGE));
+        notify(requester, FAILURE_MESSAGE);
       }
     });
-
-    resp.setStatus(HttpServletResponse.SC_ACCEPTED);
-    PrintWriter body = resp.getWriter();
-    body.println(messages.getString(REGISTRATION_ACCEPTED));
-    body.flush();
+    WebMessager.getInstance().addInfo(messages.getString(REGISTRATION_ACCEPTED));
   }
 
   private void registerAllUsers() {
@@ -94,57 +82,15 @@ public class ChatUserRegistrationServlet extends HttpServlet {
         .forEach(user -> registration.registerUser(user));
   }
 
-  private void notify(final User user, final String message) {
-    UserNotification notification = new RegistrationStatusNotificationBuilder(
-        messages.getString(REGISTRATION_STATUS),
-        message,
-        user).build();
-    notification.send(NotifMediaType.DEFAULT);
+  private void notify(final User receiver, final String messageKey) {
+    SimpleUserNotification.fromSystem()
+        .withTitle(l -> getLocalizedBundle(l).getString(REGISTRATION_STATUS))
+        .andMessage(l -> getLocalizedBundle(l).getString(messageKey))
+        .toUsers(receiver)
+        .send();
   }
 
-  private static class RegistrationStatusNotificationBuilder extends AbstractUserNotificationBuilder {
-
-    private final User requester;
-
-    public RegistrationStatusNotificationBuilder(final String title, final String content,
-        final User requester) {
-      super(title, content);
-      this.requester = requester;
-    }
-
-    @Override
-    protected boolean isUserSubscriptionNotificationEnabled() {
-      return false;
-    }
-
-    @Override
-    protected NotifAction getAction() {
-      return NotifAction.REPORT;
-    }
-
-    @Override
-    protected String getComponentInstanceId() {
-      return null;
-    }
-
-    @Override
-    protected String getSender() {
-      return this.requester.getId();
-    }
-
-    @Override
-    protected Collection<String> getUserIdsToNotify() {
-      return Arrays.asList(this.requester.getId());
-    }
-
-    @Override
-    protected void performBuild() {
-      // nothing specific to build
-    }
-
-    @Override
-    protected boolean isSendImmediatly() {
-      return true;
-    }
+  private LocalizationBundle getLocalizedBundle(final String language) {
+    return ResourceLocator.getLocalizationBundle(CHAT_I18N_BUNDLE, language);
   }
 }

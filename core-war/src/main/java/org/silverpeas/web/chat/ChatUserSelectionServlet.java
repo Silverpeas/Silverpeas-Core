@@ -2,13 +2,13 @@ package org.silverpeas.web.chat;
 
 import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 
 import javax.inject.Inject;
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -22,7 +22,7 @@ import static org.silverpeas.core.web.mvc.controller.MainSessionController
  * passed the control to the user selection panel.
  * @author mmoquillon
  */
-public class ChatUserSelectionServlet extends HttpServlet {
+public class ChatUserSelectionServlet extends SilverpeasHttpServlet {
 
   @Inject
   private SynchronizerTokenService tokenService;

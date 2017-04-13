@@ -49,8 +49,6 @@ public class EJabberdServer implements ChatServer {
   private static final String LOCAL_USER_ATTR = "localuser";
   private static final String NICK_ATTR = "nick";
   private static final String SUBSCRIPTION_ATTR = "subs";
-  private static final String HOSTNAME_ATTR = "hostname";
-  private static final String USERNAME_ATTR = "username";
   private static final String NAME_ATTR = "name";
   private static final String CONTENT_ATTR = "content";
 
@@ -91,8 +89,8 @@ public class EJabberdServer implements ChatServer {
     SilverLogger.getLogger(this)
         .info("Unregister user {0} ({1})", user.getDisplayedName(), user.getId());
     ChatUser chatUser = ChatUser.fromUser(user);
-    request("unregister", o -> o.put(USERNAME_ATTR, chatUser.getChatLogin())
-        .put(HOSTNAME_ATTR, chatUser.getChatDomain()));
+    request("unregister", o -> o.put(USER_ATTR, chatUser.getChatLogin())
+        .put(HOST_ATTR, chatUser.getChatDomain()));
   }
 
   @Override

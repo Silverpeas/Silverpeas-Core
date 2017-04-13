@@ -31,7 +31,8 @@ function handlePasswordForm(params) {
   var settings = $.extend({
     passwordFormId: '',
     passwordInputId: '',
-    passwordFormAction: ''
+    passwordFormAction: '',
+    extraValidations: undefined
   }, params);
   if (!settings.passwordFormId || !settings.passwordInputId || !settings.passwordFormAction) {
     return false;
@@ -46,29 +47,38 @@ function handlePasswordForm(params) {
   var $pwdInput = $('#' + settings.passwordInputId);
   $pwdInput.password();
   $('#' + settings.passwordFormId).on("submit", function() {
-    var errorMsg = [];
+    var errorStack = [];
     var _self = this;
-    var nonAjaxValidation = function() {
+    var nextValidations = function() {
       if ($pwdInput.val() === $('#oldPassword').val()) {
-        errorMsg.push(window.i18n.prop('authentication.password.newMustBeDifferentToOld'));
+        errorStack.push(window.i18n.prop('authentication.password.newMustBeDifferentToOld'));
       }
       if ($pwdInput.val() !== $('#confirmPassword').val()) {
-        errorMsg.push(window.i18n.prop('authentication.password.different'));
+        errorStack.push(window.i18n.prop('authentication.password.different'));
       }
-      if (errorMsg.length) {
-        jQuery.popup.error(errorMsg.join("\n"));
+      var $submit = function() {
+        if (errorStack.length) {
+          jQuery.popup.error(errorStack.join("\n"));
+        } else {
+          _self.action = settings.passwordFormAction;
+          _self.submit();
+        }
+      };
+      if (typeof settings.extraValidations === 'function') {
+        settings.extraValidations(errorStack).then(function() {
+          $submit();
+        });
       } else {
-        _self.action = settings.passwordFormAction;
-        _self.submit();
+        $submit();
       }
     };
     $pwdInput.password('verify', {
       onSuccess: function() {
-        nonAjaxValidation();
+        nextValidations();
       },
       onError: function() {
-        errorMsg.push(window.i18n.prop('authentication.password.error'));
-        nonAjaxValidation();
+        errorStack.push(window.i18n.prop('authentication.password.error'));
+        nextValidations();
       }
     });
     return false;

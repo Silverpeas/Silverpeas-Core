@@ -361,13 +361,14 @@ class Admin implements Administration {
 
       return spaceInst.getId();
     } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
       try {
         // Roll back the transactions
         domainDriverManager.rollback();
         connectionProd.rollback();
         cache.resetCache();
       } catch (Exception e1) {
-        SilverLogger.getLogger(this).error(e);
+        SilverLogger.getLogger(this).error(e1);
       }
       throw new AdminException(failureOnAdding("space", spaceInst.getName()), e);
     } finally {
@@ -4698,24 +4699,22 @@ class Admin implements Administration {
   private String[] translateUserIds(String sDomainId, String[] userSpecificIds)
       throws Exception {
     List<String> convertedUserIds = new ArrayList<>();
-    String userId;
+    String userId = null;
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
     for (String userSpecificId : userSpecificIds) {
       try {
-        userId = userManager.getUserIdBySpecificIdAndDomainId(domainDriverManager, userSpecificId,
-            sDomainId);
-      } catch (AdminException e) {
-        // The user doesn't exist -> Synchronize him
-        SilverLogger.getLogger(this).warn("The user {0} doesn't exist. Synchronize it",
-            userSpecificId);
-        try {
+        userId = userManager
+            .getUserIdBySpecificIdAndDomainId(domainDriverManager, userSpecificId, sDomainId);
+        if (userId == null) {
+          // The user doesn't exist -> Synchronize him
+          SilverLogger.getLogger(this)
+              .warn("The user {0} doesn't exist. Synchronize it", userSpecificId);
           userId = synchronizeImportUser(sDomainId, userSpecificId, false);
-        } catch (AdminException ex) {
-          // The user's synchro failed -> Ignore him
-          SilverLogger.getLogger(this).error(ex);
-          userId = null;
         }
+      } catch (AdminException e) {
+        // The user's synchro failed -> Ignore him
+        SilverLogger.getLogger(this).error(e);
       }
       if (userId != null) {
         convertedUserIds.add(userId);
@@ -6364,12 +6363,13 @@ class Admin implements Administration {
       ddManager.commit();
 
     } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
       // Roll back the transactions
       try {
         ddManager.rollback();
         cache.resetCache();
       } catch (Exception e1) {
-        SilverLogger.getLogger(this).error(e);
+        SilverLogger.getLogger(this).error(e1);
       }
       throw new AdminException("Fail to assign rights", e);
     } finally {

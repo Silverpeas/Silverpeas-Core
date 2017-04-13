@@ -643,6 +643,10 @@ Style Utilise par le ViewGenerator
   z-index:3000;
 }
 
+.sp-layout-part-on-top-element-drag {
+  pointer-events: none;
+}
+
 /****************************************/
 /****************TopBar ****************/
 /****************************************/

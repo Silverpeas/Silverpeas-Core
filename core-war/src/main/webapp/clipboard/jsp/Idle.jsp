@@ -34,7 +34,6 @@
 %>
 
 <%@ page import="org.owasp.encoder.Encode" %>
-<%@ page import="org.silverpeas.core.notification.user.server.channel.popup.PopupMessageService" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.web.clipboard.control.ClipboardSessionController" %>
 
@@ -98,23 +97,6 @@
         }
         out.println(javascripTask);
       }
-      %>
-    }
-
-    //--------------------------------------------------------------------------------------OpenDiscussion
-    var discussionPopup;
-    function OpenDiscussion(page, nom, largeur, hauteur, options) {
-      if (!discussionPopup || (discussionPopup.closed)) {
-        discussionPopup = SP_openWindow(page, nom, largeur, hauteur, options);
-      }
-      discussionPopup.focus();
-
-      <%
-       String messageId = (String) request.getAttribute("MessageID");
-
-       if(messageId != null) {
-         PopupMessageService.get().deleteById(messageId);
-       }
       %>
     }
 
