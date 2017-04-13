@@ -207,33 +207,33 @@ public class ICal4JExchange implements ICalendarExchange {
                     mutableStatus.set(Status.VEVENT_TENTATIVE);
                   }
                   if (event.isRecurrent()) {
-                    attendee.getParticipationOn().getAll().entrySet().stream()
-                        .sorted(Comparator.comparing(Map.Entry::getKey)).forEach(entry -> {
-                      OffsetDateTime date = entry.getKey();
-                      ParticipationStatus status = entry.getValue();
-                      if (ACCEPTED != status) {
-                        mutableStatus.set(Status.VEVENT_TENTATIVE);
-                      }
-                      participationRecurrence.computeIfAbsent(date, dateTime -> {
-                        List<Pair<org.silverpeas.core.calendar.Attendee, ParticipationStatus>>
-                            attSts = new ArrayList<>();
-                        event.getAttendees().stream().sorted(Comparator
-                            .comparing(org.silverpeas.core.calendar.Attendee::getId))
-                            .forEach(a -> attSts.add(Pair.of(a, a.getParticipationStatus())));
-                        return attSts;
-                      });
-                      participationRecurrence.computeIfPresent(date, (dateTime, pairs) -> {
-                        ListIterator<Pair<org.silverpeas.core.calendar.Attendee, ParticipationStatus>>
-                            it = pairs.listIterator();
-                        while (it.hasNext()) {
-                          if (it.next().getFirst().equals(attendee)) {
-                            it.set(Pair.of(attendee, status));
-                            break;
-                          }
-                        }
-                        return pairs;
-                      });
-                    });
+//                    attendee.getParticipationOn().getAll().entrySet().stream()
+//                        .sorted(Comparator.comparing(Map.Entry::getKey)).forEach(entry -> {
+//                      OffsetDateTime date = entry.getKey();
+//                      ParticipationStatus status = entry.getValue();
+//                      if (ACCEPTED != status) {
+//                        mutableStatus.set(Status.VEVENT_TENTATIVE);
+//                      }
+//                      participationRecurrence.computeIfAbsent(date, dateTime -> {
+//                        List<Pair<org.silverpeas.core.calendar.Attendee, ParticipationStatus>>
+//                            attSts = new ArrayList<>();
+//                        event.getAttendees().stream().sorted(Comparator
+//                            .comparing(org.silverpeas.core.calendar.Attendee::getId))
+//                            .forEach(a -> attSts.add(Pair.of(a, a.getParticipationStatus())));
+//                        return attSts;
+//                      });
+//                      participationRecurrence.computeIfPresent(date, (dateTime, pairs) -> {
+//                        ListIterator<Pair<org.silverpeas.core.calendar.Attendee, ParticipationStatus>>
+//                            it = pairs.listIterator();
+//                        while (it.hasNext()) {
+//                          if (it.next().getFirst().equals(attendee)) {
+//                            it.set(Pair.of(attendee, status));
+//                            break;
+//                          }
+//                        }
+//                        return pairs;
+//                      });
+//                    });
                   }
                 });
             iCalEvent.getProperties().add(mutableStatus.get());

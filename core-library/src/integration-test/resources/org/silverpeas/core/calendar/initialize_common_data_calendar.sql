@@ -86,6 +86,3 @@ VALUES
                 '2016-07-29T16:50:00Z', '0', '2016-07-29T16:50:00Z', '0', 0),
   ('ID_A_E5_1', '1', 'ID_C_5', 0, 'AWAITING', 'OPTIONAL',
                 '2016-07-29T16:50:00Z', '0', '2016-07-29T16:50:00Z', '0', 0);
-
-INSERT INTO SB_Cal_Attendees_PartDate (id, startDate, participation) VALUES
-  ('ID_A_E5_1', '2016-01-16T00:00:00Z', 'DECLINED');

@@ -54,6 +54,7 @@ public class CalendarEventMockBuilder {
     when(event.getAttendees()).thenReturn(attendees);
     when(event.getAttributes()).thenReturn(attributes);
     when(event.getCategories()).thenReturn(categories);
+    when(event.asCalendarComponent()).thenReturn(component);
   }
 
   public static CalendarEventMockBuilder from(Period period) {
@@ -71,6 +72,7 @@ public class CalendarEventMockBuilder {
     when(event.getStartDate()).thenReturn(period.getStartDate());
     when(event.getEndDate()).thenReturn(period.getEndDate());
     when(event.isOnAllDay()).thenReturn(period.isInDays());
+    when(component.getPeriod()).thenReturn(period);
     return this;
   }
 
@@ -81,21 +83,25 @@ public class CalendarEventMockBuilder {
 
   public CalendarEventMockBuilder plannedOn(Calendar calendar) {
     when(event.getCalendar()).thenReturn(calendar);
+    when(component.getCalendar()).thenReturn(calendar);
     return this;
   }
 
   public CalendarEventMockBuilder withTitle(String title) {
     when(event.getTitle()).thenReturn(title);
+    when(component.getTitle()).thenReturn(title);
     return this;
   }
 
   public CalendarEventMockBuilder withDescription(String description) {
     when(event.getDescription()).thenReturn(description);
+    when(component.getDescription()).thenReturn(description);
     return this;
   }
 
   public CalendarEventMockBuilder withPriority(Priority priority) {
     when(event.getPriority()).thenReturn(priority);
+    when(component.getPriority()).thenReturn(priority);
     return this;
   }
 
@@ -152,7 +158,6 @@ public class CalendarEventMockBuilder {
     when(mockedAttendee.getFullName()).thenReturn(userDisplayedName);
     when(mockedAttendee.getPresenceStatus()).thenReturn(REQUIRED);
     when(mockedAttendee.getParticipationStatus()).thenReturn(AWAITING);
-    when(mockedAttendee.getParticipationOn()).thenReturn(new ParticipationStatusException());
     mockedAttendeeConfigurer.accept(mockedAttendee);
     attendees.add(mockedAttendee);
     return this;
@@ -166,7 +171,6 @@ public class CalendarEventMockBuilder {
     when(mockedAttendee.getFullName()).thenReturn(email);
     when(mockedAttendee.getPresenceStatus()).thenReturn(REQUIRED);
     when(mockedAttendee.getParticipationStatus()).thenReturn(AWAITING);
-    when(mockedAttendee.getParticipationOn()).thenReturn(new ParticipationStatusException());
     mockedAttendeeConfigurer.accept(mockedAttendee);
     attendees.add(mockedAttendee);
     return this;

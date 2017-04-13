@@ -32,7 +32,6 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
 import javax.persistence.*;
-import java.time.temporal.Temporal;
 import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -63,8 +62,6 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   @Column(name = "participation", nullable = false)
   @Enumerated(EnumType.STRING)
   private ParticipationStatus participationStatus = ParticipationStatus.AWAITING;
-  @Embedded
-  private ParticipationStatusException participationOn = new ParticipationStatusException();
   @Column(name = "presence", nullable = false)
   @Enumerated(EnumType.STRING)
   private PresenceStatus presenceStatus = PresenceStatus.REQUIRED;
@@ -141,14 +138,6 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   }
 
   /**
-   * Gets the participation on specified dates.
-   * @return participation on specific dates.
-   */
-  public ParticipationStatusException getParticipationOn() {
-    return participationOn;
-  }
-
-  /**
    * The delegate to whom or from whom the attendance as been delegated.
    * If the participation status of this attendee is {@link ParticipationStatus#DELEGATED} then
    * this method returns the attendee to whom the delegation has been done. Otherwise, it returns
@@ -188,12 +177,15 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
     this.component.getAttendees().add(this.delegate);
   }
 
+  void setParticipationStatus(final ParticipationStatus participationStatus) {
+    this.participationStatus = participationStatus;
+  }
+
   /**
    * Resets the attendance.
    */
   void resetParticipation() {
     this.participationStatus = ParticipationStatus.AWAITING;
-    this.participationOn.clear();
   }
 
   /**
@@ -201,7 +193,6 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    */
   public void accept() {
     this.participationStatus = ParticipationStatus.ACCEPTED;
-    this.participationOn.clear();
   }
 
   /**
@@ -209,7 +200,6 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    */
   public void decline() {
     this.participationStatus = ParticipationStatus.DECLINED;
-    this.participationOn.clear();
   }
 
   /**
@@ -217,62 +207,6 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    */
   public void tentativelyAccept() {
     this.participationStatus = ParticipationStatus.TENTATIVE;
-    this.participationOn.clear();
-  }
-
-  /**
-   * Resets the attendance on the specified date.
-   * @param temporal a date
-   * @deprecated
-   * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
-   */
-  @Deprecated
-  void resetParticipationOn(Temporal temporal) {
-    this.participationOn.clearOn(temporal);
-  }
-
-  /**
-   * Resets the attendance from the specified date.
-   * @param temporal a date
-   * @deprecated
-   * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
-   */
-  @Deprecated
-  void resetParticipationFrom(Temporal temporal) {
-    this.participationOn.clearFrom(temporal);
-  }
-
-  /**
-   * Accepts the attendance on specified date only.
-   * @param date a date
-   * @deprecated
-   * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
-   */
-  @Deprecated
-  public void acceptOn(Temporal date) {
-    this.participationOn.set(date, ParticipationStatus.ACCEPTED);
-  }
-
-  /**
-   * Declines the attendance on specified date only.
-   * @param date a date
-   * @deprecated
-   * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
-   */
-  @Deprecated
-  public void declineOn(Temporal date) {
-    this.participationOn.set(date, ParticipationStatus.DECLINED);
-  }
-
-  /**
-   * Tentatively accepts the attendance on specified date only.
-   * @param date a date
-   * @deprecated
-   * TODO CALENDAR this method will be deleted soon. Update the occurrence itself instead
-   */
-  @Deprecated
-  public void tentativelyAcceptOn(Temporal date) {
-    this.participationOn.set(date, ParticipationStatus.TENTATIVE);
   }
 
   /**
@@ -344,7 +278,6 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   Attendee cloneFor(CalendarComponent calendarComponent) {
     Attendee clone = clone();
     clone.component = calendarComponent;
-    clone.participationOn = participationOn.clone();
     calendarComponent.getAttendees().add(clone);
     return clone;
   }

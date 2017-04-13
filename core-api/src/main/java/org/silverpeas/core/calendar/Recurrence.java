@@ -471,8 +471,10 @@ public class Recurrence implements Cloneable {
     if (recurrence == null) {
       return false;
     }
+    final boolean sameFrequency = recurrence.frequency.getUnit() == this.frequency.getUnit() &&
+        recurrence.frequency.getInterval() == this.frequency.getInterval();
     if (recurrence.count != this.count || !recurrence.daysOfWeek.equals(this.daysOfWeek) ||
-        !recurrence.startDate.equals(this.startDate)) {
+        !recurrence.startDate.equals(this.startDate) || !sameFrequency) {
       return false;
     }
     return (recurrence.endDateTime == NO_RECURRENCE_END_DATE &&

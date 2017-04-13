@@ -525,6 +525,7 @@
                           var occurrenceToRefresh = occurrencesToRefresh[i];
                           if (occurrenceToRefresh.id === occurrence.id) {
                             extendsObject(occurrenceToRefresh, occurrence);
+                            break;
                           }
                         }
                       });

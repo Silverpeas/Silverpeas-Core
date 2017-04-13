@@ -47,12 +47,14 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
-import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static org.silverpeas.core.calendar.CalendarComponentDiffDescriptor.diffBetween;
 import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
 
 /**
@@ -813,34 +815,28 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     if (!isPlanned()) {
       throw new IllegalStateException("The event " + this.getId() + " is not yet planned");
     }
+    CalendarEvent previousState = getEventPreviousState();
     return Transaction.performInOne(() -> {
-      CalendarEvent previousState = getEventPreviousState();
-
-      // Clears exception dates when switching on all day data
-      if (getRecurrence() != null && previousState.isOnAllDay() != isOnAllDay()) {
-        getRecurrence().clearsAllExceptionDates();
-      }
-
-      // If it exists date or recurrence changes, participation of attendees are reset.
-      if (isDateOrRecurrenceChangedWith(previousState)) {
-        this.getAttendees().forEach(Attendee::resetParticipation);
-      }
-
-      // Deletes all persisted occurrences belonging to this event
-      deleteAllOccurrencesFromPersistence();
-
+      removeObsoleteData(previousState);
+      List<CalendarEventOccurrence> previousOccurrences = getPersistedOccurrences(this);
+      final EventOperationResult result;
       if (!previousState.getCalendar().equals(this.getCalendar())) {
+        // Deletes all persisted occurrences belonging to this event (recreated after from
+        // previousOccurrences list by adjustOccurrences method)
+        deleteAllOccurrencesFromPersistence();
         // New event is created on other calendar
         CalendarEvent newEvent = this.clone();
         newEvent.planOn(this.getCalendar());
         // Deleting previous event
         previousState.deleteFromPersistence();
-        return new EventOperationResult().withCreated(newEvent);
+        result = new EventOperationResult().withCreated(newEvent);
       } else {
         this.component.markAsModified();
         this.updateIntoPersistence();
-        return new EventOperationResult().withUpdated(this);
+        result = new EventOperationResult().withUpdated(this);
       }
+      adjustOccurrences(previousState, previousOccurrences, result);
+      return result;
     });
   }
 
@@ -985,6 +981,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   private long deleteAllOccurrencesFromPersistence() {
+    if (!isRecurrent()) {
+      return 0;
+    }
     return Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
       return repository.deleteAllByEvent(this);
@@ -1005,6 +1004,18 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     if (this.recurrence != null) {
       this.recurrence = this.recurrence.startingAt(newPeriod.getStartDate());
     }
+  }
+
+  /**
+   * Gets all the occurrences linked to this event and explicitly persisted into persistence
+   * context. So, an occurrence which provides from a computation (instead of the persistence
+   * context) is not included into result list.
+   * <p> Please notice that the occurrences are retrieved on the demand and the returned list is not
+   * coming from an attribute of this event entity</p>
+   * @return a list of persisted occurrences linked to this event.
+   */
+  public List<CalendarEventOccurrence> getPersistedOccurrences() {
+    return getPersistedOccurrences(this);
   }
 
   private void notify(ResourceEvent.Type type, CalendarEvent... events) {
@@ -1067,10 +1078,24 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   private boolean isUserParticipant(final User user) {
-    return !getAttendees().stream()
-        .filter(attendee -> attendee.getId().equals(user.getId()))
+    return !getAttendees().stream().filter(attendee -> attendee.getId().equals(user.getId()))
         .collect(Collectors.toList())
         .isEmpty();
+  }
+
+  private void removeObsoleteData(final CalendarEvent previousState) {
+    // Clears exception dates when switching on all day data
+    if (getRecurrence() != null && previousState.isOnAllDay() != isOnAllDay()) {
+      getRecurrence().clearsAllExceptionDates();
+    }
+
+    // If it exists date or recurrence changes, participation of attendees are reset.
+    if (isDateOrRecurrenceChangedWith(previousState)) {
+      this.getAttendees().forEach(Attendee::resetParticipation);
+
+      // Deletes all persisted occurrences belonging to this event
+      deleteAllOccurrencesFromPersistence();
+    }
   }
 
   private boolean isDateOrRecurrenceChangedWith(final CalendarEvent previousState) {
@@ -1086,6 +1111,47 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       return true;
     }
     return false;
+  }
+
+  private void adjustOccurrences(final CalendarEvent previousState,
+      final List<CalendarEventOccurrence> previousOccurrences, final EventOperationResult result) {
+    if (!previousOccurrences.isEmpty()) {
+      final CalendarComponent savedComponent;
+      if (result.created().isPresent()) {
+        final CalendarEvent newEvent = result.created().get();
+        savedComponent = newEvent.asCalendarComponent();
+      } else if (result.updated().isPresent()) {
+        savedComponent = result.updated().get().asCalendarComponent();
+      } else {
+        // No adjustment is necessary
+        return;
+      }
+      CalendarComponentDiffDescriptor diffDescriptor =
+          diffBetween(savedComponent, previousState.asCalendarComponent());
+      if (result.created().isPresent()) {
+        final CalendarEvent newEvent = result.created().get();
+        previousOccurrences.stream()
+            .map(o -> {
+              CalendarEventOccurrence newOccurrence = o.cloneWithEvent(newEvent);
+              diffDescriptor.mergeInto(newOccurrence.asCalendarComponent());
+              return newOccurrence;
+            })
+            .forEach(CalendarEventOccurrence::saveIntoPersistence);
+      } else if (diffDescriptor.existsDiff()) {
+        previousOccurrences.stream()
+            .filter(o -> diffDescriptor.mergeInto(o.asCalendarComponent()))
+            .forEach(CalendarEventOccurrence::saveIntoPersistence);
+      }
+    }
+  }
+
+  private static List<CalendarEventOccurrence> getPersistedOccurrences(final CalendarEvent event) {
+    if (!event.isRecurrent()) {
+      return Collections.emptyList();
+    }
+    CalendarEventOccurrenceRepository occurrenceRepository =
+        CalendarEventOccurrenceRepository.get();
+    return occurrenceRepository.getAllByEvent(event);
   }
 
   /**
@@ -1104,6 +1170,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private OrElse doIfSingleOccurrence(Supplier<EventOperationResult> operation) {
     return new OrElse(operation);
   }
+
+  public static class EventOperationResult
+      extends OperationResult<CalendarEvent, CalendarEventOccurrence> {}
 
   private class OrElse {
 
@@ -1128,9 +1197,5 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
             previousEvent.getCalendar().getId());
       });
     }
-  }
-
-  public static class EventOperationResult
-      extends OperationResult<CalendarEvent, CalendarEventOccurrence> {
   }
 }

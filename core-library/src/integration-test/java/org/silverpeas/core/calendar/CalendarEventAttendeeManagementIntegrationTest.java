@@ -32,11 +32,9 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.test.CalendarWarBuilder;
 
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
@@ -105,11 +103,6 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
     assertThat(actualAttendee.getDelegate().isPresent(), is(false));
     assertThat(actualAttendee.getParticipationStatus(), is(Attendee.ParticipationStatus.AWAITING));
     assertThat(actualAttendee.getPresenceStatus(), is(Attendee.PresenceStatus.OPTIONAL));
-    assertThat(actualAttendee.getParticipationOn().getAll().size(), is(1));
-    final Map.Entry<OffsetDateTime, Attendee.ParticipationStatus> entry =
-        actualAttendee.getParticipationOn().getAll().entrySet().iterator().next();
-    assertThat(entry.getKey().toLocalDate().toString(), is("2016-01-16"));
-    assertThat(entry.getValue(), is(Attendee.ParticipationStatus.DECLINED));
   }
 
   @Test

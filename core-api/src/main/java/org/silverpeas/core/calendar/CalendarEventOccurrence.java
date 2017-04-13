@@ -75,16 +75,16 @@ import java.util.Optional;
 @Entity
 @Table(name = "sb_cal_occurrences")
 @NamedQueries({
-    @NamedQuery(name = "byEventsAndByPeriod", query =
+    @NamedQuery(name = "occurrenceByEventsAndByPeriod", query =
         "SELECT o FROM CalendarEventOccurrence o WHERE o.event in :events AND " +
             "((o.component.period.startDateTime <= :startDateTime AND " +
             "  o.component.period.endDateTime > :startDateTime) OR " +
             "(o.component.period.startDateTime >= :startDateTime AND " +
             "  o.component.period.startDateTime < :endDateTime))"),
-    @NamedQuery(name = "byEventSince", query =
+    @NamedQuery(name = "occurrenceByEventSince", query =
         "SELECT o FROM CalendarEventOccurrence o WHERE o.event = :event AND " +
             "o.component.period.startDateTime >= :date"),
-    @NamedQuery(name = "byEvent", query = "SELECT o FROM CalendarEventOccurrence o WHERE o.event " +
+    @NamedQuery(name = "occurrenceByEvent", query = "SELECT o FROM CalendarEventOccurrence o WHERE o.event " +
         "= :event")})
 public class CalendarEventOccurrence
     extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
@@ -485,6 +485,15 @@ public class CalendarEventOccurrence
    */
   public EventOperationResult delete() {
     return getCalendarEvent().deleteOnly(this);
+  }
+
+  CalendarEventOccurrence cloneWithEvent(final CalendarEvent event) {
+    CalendarEventOccurrence newOccurrence = new CalendarEventOccurrence();
+    newOccurrence.setId(generateId(event, getOriginalStartDate()));
+    newOccurrence.event = event;
+    newOccurrence.component = this.component.clone();
+    newOccurrence.component.setCalendar(event.getCalendar());
+    return newOccurrence;
   }
 
   /**

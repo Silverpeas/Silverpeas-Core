@@ -138,7 +138,7 @@ public class AttendeeSet implements Iterable<Attendee> {
    * @param attendee the attendee to remove.
    * @return the updated attendees in this calendar component.
    */
-  public AttendeeSet remove(final Attendee attendee) {
+  AttendeeSet remove(final Attendee attendee) {
     attendees.remove(attendee);
     return this;
   }

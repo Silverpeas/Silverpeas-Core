@@ -548,16 +548,12 @@ public class ICal4JExchangeExportTest {
         .withAttendee(user, mockedAttendee -> {
           when(mockedAttendee.getPresenceStatus()).thenReturn(OPTIONAL);
           when(mockedAttendee.getParticipationStatus()).thenReturn(ACCEPTED);
-          mockedAttendee.getParticipationOn().set(LocalDate.parse("2016-12-06"), DECLINED);
-          mockedAttendee.getParticipationOn().set(LocalDate.parse("2016-12-09"), TENTATIVE);
         })
         .withAttendee("external.1@silverpeas.org", mockedAttendee -> {
           when(mockedAttendee.getPresenceStatus()).thenReturn(INFORMATIVE);
-          mockedAttendee.getParticipationOn().set(LocalDate.parse("2016-12-06"), DECLINED);
         })
         .withAttendee("external.2@silverpeas.org", mockedAttendee -> {
           when(mockedAttendee.getParticipationStatus()).thenReturn(DECLINED);
-          mockedAttendee.getParticipationOn().set(LocalDate.parse("2016-12-10"), ACCEPTED);
         })
         .withCreationDate(OffsetDateTime.parse("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(OffsetDateTime.parse("2016-12-02T09:00:00Z"))

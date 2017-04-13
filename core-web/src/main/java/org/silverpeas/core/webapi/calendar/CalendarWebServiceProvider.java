@@ -28,7 +28,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
-import org.silverpeas.core.calendar.AttendeeSet;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
@@ -413,48 +412,89 @@ public class CalendarWebServiceProvider {
       String attendeeId, ParticipationStatus participationStatus,
       OccurrenceEventActionMethodType answerMethodType, final ZoneId zoneId) {
     OccurrenceEventActionMethodType methodType = answerMethodType == null ? ALL : answerMethodType;
-    final AttendeeSet attendees;
+    CalendarEvent modifiedEvent = null;
     if (methodType == UNIQUE) {
-      attendees = occurrence.getAttendees();
+      Optional<EventOperationResult> optionalResult =
+          updateSingleOccurrenceAttendeeParticipation(occurrence, attendeeId, participationStatus);
+      if (optionalResult.isPresent()) {
+        modifiedEvent = optionalResult.get().instance().get().getCalendarEvent();
+        successMessage("calendar.message.event.occurrence.attendee.participation.updated.unique",
+            occurrence.getTitle(), getMessager().formatDate(
+                getDateWithOffset(occurrence.getCalendarEvent(), occurrence.getOriginalStartDate(),
+                    zoneId)));
+      }
     } else if (methodType == ALL) {
-      attendees = occurrence.getCalendarEvent().getAttendees();
+      Optional<EventOperationResult> optionalResult =
+          updateEventAttendeeParticipation(occurrence, attendeeId, participationStatus);
+      if (optionalResult.isPresent()) {
+        if (optionalResult.get().updated().isPresent()) {
+          modifiedEvent = optionalResult.get().updated().get();
+        } else {
+          modifiedEvent = optionalResult.get().instance().get().getCalendarEvent();
+        }
+        successMessage("calendar.message.event.attendee.participation.updated",
+            occurrence.getCalendarEvent().getTitle());
+      }
+    }
+    if (modifiedEvent == null) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+    return modifiedEvent;
+  }
+
+  private Optional<EventOperationResult> updateEventAttendeeParticipation(
+      final CalendarEventOccurrence occurrence, final String attendeeId,
+      final ParticipationStatus participationStatus) {
+    EventOperationResult result = null;
+    final Optional<Attendee> attendee = occurrence.getCalendarEvent().getAttendees().stream()
+        .filter(a -> a.getId().equals(attendeeId)).findFirst();
+    if (attendee.isPresent()) {
+      setAttendeeStatus(participationStatus, attendee.get());
+      result = occurrence.getCalendarEvent().update();
     } else {
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
+      // It is the particular case where the attendee is set on occurrences but not on the
+      // original event.
+      List<CalendarEventOccurrence> allOccurrences =
+          occurrence.getCalendarEvent().getPersistedOccurrences();
+      for (CalendarEventOccurrence eventOccurrence : allOccurrences) {
+        Optional<EventOperationResult> optionalResult =
+            updateSingleOccurrenceAttendeeParticipation(eventOccurrence, attendeeId,
+                participationStatus);
+        if (result == null && optionalResult.isPresent()) {
+          result = optionalResult.get();
+        }
+      }
     }
+    return Optional.ofNullable(result);
+  }
 
-    Optional<Attendee> attendee =
-        attendees.stream().filter(a -> a.getId().equals(attendeeId)).findFirst();
-
-    if (!attendee.isPresent()) {
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
+  private Optional<EventOperationResult> updateSingleOccurrenceAttendeeParticipation(
+      final CalendarEventOccurrence occurrence, final String attendeeId,
+      final ParticipationStatus participationStatus) {
+    final Optional<Attendee> attendee =
+        occurrence.getAttendees().stream().filter(a -> a.getId().equals(attendeeId)).findFirst();
+    if (attendee.isPresent()) {
+      setAttendeeStatus(participationStatus, attendee.get());
+      return Optional.of(occurrence.update());
     }
+    return Optional.empty();
+  }
 
+  private void setAttendeeStatus(final ParticipationStatus participationStatus,
+      final Attendee attendee) {
     switch (participationStatus) {
       case ACCEPTED:
-        attendee.get().accept();
+        attendee.accept();
         break;
       case DECLINED:
-        attendee.get().decline();
+        attendee.decline();
         break;
       case TENTATIVE:
-        attendee.get().tentativelyAccept();
+        attendee.tentativelyAccept();
         break;
       default:
         throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
-
-    final EventOperationResult result = occurrence.update();
-    if (methodType == OccurrenceEventActionMethodType.ALL) {
-      successMessage("calendar.message.event.attendee.participation.updated",
-          occurrence.getCalendarEvent().getTitle());
-    } else {
-      successMessage("calendar.message.event.occurrence.attendee.participation.updated.unique",
-          occurrence.getTitle(), getMessager().formatDate(
-              getDateWithOffset(occurrence.getCalendarEvent(), occurrence.getOriginalStartDate(),
-                  zoneId)));
-    }
-
-    return result.updated().get();
   }
 
   /**

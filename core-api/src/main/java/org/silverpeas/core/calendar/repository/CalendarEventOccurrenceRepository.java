@@ -49,6 +49,13 @@ public interface CalendarEventOccurrenceRepository
   }
 
   /**
+   * Gets all the persisted occurrences of the specified event.
+   * @return a list of the persisted occurrences of the given event. If no occurrences, then an
+   * empty list is returned.
+   */
+  List<CalendarEventOccurrence> getAllByEvent(final CalendarEvent event);
+
+  /**
    * Gets all the persisted occurrences of the specified events occurring in the specified period
    * of time.
    * @param period the period of time into which the instances of the event should occur.

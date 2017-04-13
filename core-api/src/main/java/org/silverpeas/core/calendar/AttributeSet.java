@@ -141,4 +141,8 @@ public class AttributeSet implements Cloneable {
     }
     return clone;
   }
+
+  Map<String, String> getData() {
+    return attributes;
+  }
 }

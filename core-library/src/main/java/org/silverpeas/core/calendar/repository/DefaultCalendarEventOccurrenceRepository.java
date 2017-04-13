@@ -42,6 +42,14 @@ public class DefaultCalendarEventOccurrenceRepository
     extends BasicJpaEntityRepository<CalendarEventOccurrence>
     implements CalendarEventOccurrenceRepository {
 
+  private static final String EVENT_PARAM = "event";
+
+  @Override
+  public List<CalendarEventOccurrence> getAllByEvent(final CalendarEvent event) {
+    NamedParameters parameters = newNamedParameters().add(EVENT_PARAM, event);
+    return findByNamedQuery("occurrenceByEvent", parameters);
+  }
+
   @Override
   public List<CalendarEventOccurrence> getAll(final Collection<CalendarEvent> events,
       final Period period) {
@@ -51,22 +59,23 @@ public class DefaultCalendarEventOccurrenceRepository
     NamedParameters parameters = newNamedParameters().add("events", events)
         .add("startDateTime", Period.asOffsetDateTime(period.getStartDate()))
         .add("endDateTime", Period.asOffsetDateTime(period.getEndDate()));
-    return findByNamedQuery("byEventsAndByPeriod", parameters);
+    return findByNamedQuery("occurrenceByEventsAndByPeriod", parameters);
   }
 
   @Override
   public long deleteSince(final CalendarEventOccurrence occurrence) {
-    NamedParameters parameters = newNamedParameters().add("event", occurrence.getCalendarEvent())
-        .add("date", Period.asOffsetDateTime(occurrence.getStartDate()));
-    List<CalendarEventOccurrence> occurrences = findByNamedQuery("byEventSince", parameters);
+    NamedParameters parameters =
+        newNamedParameters().add(EVENT_PARAM, occurrence.getCalendarEvent())
+            .add("date", Period.asOffsetDateTime(occurrence.getStartDate()));
+    List<CalendarEventOccurrence> occurrences =
+        findByNamedQuery("occurrenceByEventSince", parameters);
     occurrences.forEach(o -> getEntityManager().remove(o));
     return occurrences.size();
   }
 
   @Override
   public long deleteAllByEvent(final CalendarEvent event) {
-    NamedParameters parameters = newNamedParameters().add("event", event);
-    List<CalendarEventOccurrence> occurrences = findByNamedQuery("byEvent", parameters);
+    List<CalendarEventOccurrence> occurrences = getAllByEvent(event);
     occurrences.forEach(o -> getEntityManager().remove(o));
     return occurrences.size();
   }
