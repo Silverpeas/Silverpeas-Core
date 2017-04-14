@@ -60,6 +60,55 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   private static final long serialVersionUID = -5011846708353591604L;
 
   private ServletContext context = ServiceProvider.getService(ServletContext.class);
+  private UserDetail user = null;
+  @XmlElement(required = true)
+  private URI uri;
+  @XmlElement
+  private URI contactsUri;
+  @XmlElement
+  private String webPage;
+  @XmlElement(required = true)
+  @NotNull
+  @Size(min = 1)
+  private String avatar;
+  @XmlElement
+  private String domainName;
+  @XmlElement(required = true, defaultValue = "")
+  @NotNull
+  private String fullName = "";
+  @XmlElement(defaultValue = "")
+  private String language = "";
+  @XmlElement(defaultValue = "false")
+  private boolean connected = false;
+  @XmlElement(defaultValue = "false")
+  private boolean anonymous = false;
+  @XmlElement
+  private String apiToken;
+
+  protected UserProfileEntity() {
+    user = new UserDetail();
+  }
+
+  protected UserProfileEntity(UserDetail user) {
+    this.user = user;
+    UserPreferences prefs = getUserPreferences();
+    if (prefs != null) {
+      this.language = prefs.getLanguage();
+    } else {
+      this.language = DisplayI18NHelper.getDefaultLanguage();
+    }
+    if (user.getDomain() == null) {
+      this.domainName = "";
+    } else {
+      this.domainName = user.getDomain().getName();
+    }
+    this.fullName = user.getDisplayedName();
+    this.avatar = getAvatarURI();
+    this.connected = this.user.isConnected();
+    this.webPage = getUserProfileWebPageURI();
+    this.anonymous = user.isAnonymous();
+    this.apiToken = user.getToken();
+  }
 
   /**
    * Decorates the specified user details with the required WEB exposition features.
@@ -86,54 +135,6 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
       selectableUsers[i++] = fromUser(aUser).withAsUri(uriOfUser(aUser, fromUsersUri));
     }
     return selectableUsers;
-  }
-  private UserDetail user = null;
-  @XmlElement(required = true)
-  private URI uri;
-  @XmlElement
-  private URI contactsUri;
-  @XmlElement
-  private String webPage;
-  @XmlElement
-  private String tchatPage;
-  @XmlElement(required = true)
-  @NotNull
-  @Size(min = 1)
-  private String avatar;
-  @XmlElement
-  private String domainName;
-  @XmlElement(required = true, defaultValue = "")
-  @NotNull
-  private String fullName = "";
-  @XmlElement(defaultValue = "")
-  private String language = "";
-  @XmlElement(defaultValue = "false")
-  private boolean connected = false;
-  @XmlElement(defaultValue = "false")
-  private boolean anonymous = false;
-  @XmlElement
-  private String apiToken;
-
-  protected UserProfileEntity(UserDetail user) {
-    this.user = user;
-    UserPreferences prefs = getUserPreferences();
-    if (prefs != null) {
-      this.language = prefs.getLanguage();
-    } else {
-      this.language = DisplayI18NHelper.getDefaultLanguage();
-    }
-    if (user.getDomain() == null) {
-      this.domainName = "";
-    } else {
-      this.domainName = user.getDomain().getName();
-    }
-    this.fullName = user.getDisplayedName();
-    this.avatar = getAvatarURI();
-    this.connected = this.user.isConnected();
-    this.webPage = getUserProfileWebPageURI();
-    this.tchatPage = getTchatWebPageURI();
-    this.anonymous = user.isAnonymous();
-    this.apiToken = user.getToken();
   }
 
   @Override
@@ -250,18 +251,6 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   }
 
   /**
-   * Gets the URL of the tchat WEB page opened to discuss with this user.
-   *
-   * @return the URL of the user tchat page.
-   */
-  public String getTchatPage() {
-    if (!isDefined(tchatPage)) {
-      tchatPage = getUserProfileWebPageURI();
-    }
-    return tchatPage;
-  }
-
-  /**
    * Gets the full name of the user. The full name is made up of its firstname and of its lastname.
    *
    * @return the user fullname.
@@ -309,6 +298,11 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
   }
 
   public void setStatus(String newStatus) {
+    // nothing to do. This method is required for the decoding from JSON
+  }
+
+  public String getApiToken() {
+    return this.apiToken;
   }
 
   public String getDomainName() {
@@ -332,10 +326,6 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
 
   public UserDetail toUserDetail() {
     return this.user;
-  }
-
-  protected UserProfileEntity() {
-    user = new UserDetail();
   }
 
   @Override
@@ -376,16 +366,6 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
 
   private String getUserProfileWebPageURI() {
     String pageUri = "/Rprofil/jsp/Main?userId=" + this.user.getId();
-    if (context != null) {
-      pageUri = context.getContextPath() + pageUri;
-    } else {
-      pageUri = URLUtil.getApplicationURL() + pageUri;
-    }
-    return pageUri;
-  }
-
-  private String getTchatWebPageURI() {
-    String pageUri = "/RcommunicationUser/jsp/OpenDiscussion?userId=" + this.user.getId();
     if (context != null) {
       pageUri = context.getContextPath() + pageUri;
     } else {

@@ -50,7 +50,6 @@ public class URLUtil {
   public final static String CMP_SCHEDULE_EVENT = "scheduleEvent";
   public final static String CMP_CLIPBOARD = "clipboard";
   public final static String CMP_NOTIFICATIONUSER = "notificationUser";
-  public final static String CMP_COMMUNICATIONUSER = "communicationUser";
   public final static String CMP_JOBMANAGERPEAS = "jobManagerPeas";
   public final static String CMP_JOBDOMAINPEAS = "jobDomainPeas";
   public final static String CMP_JOBSTARTPAGEPEAS = "jobStartPagePeas";

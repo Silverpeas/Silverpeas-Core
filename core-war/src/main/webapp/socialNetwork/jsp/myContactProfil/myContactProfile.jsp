@@ -28,7 +28,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<%@ page import="org.silverpeas.core.web.directory.model.Member"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
@@ -41,7 +40,7 @@
 
     String language = request.getLocale().getLanguage();
     UserFull userFull = (UserFull) request.getAttribute("UserFull");
-    Member member = (Member) request.getAttribute("Member");
+    UserDetail userDetail = (UserDetail) request.getAttribute("UserDetail");
     String view = (String) request.getAttribute("View");
 
     List contacts = (List) request.getAttribute("Contacts");
@@ -69,8 +68,9 @@
 	<div class="info tableBoard">
 		<h2 class="userName"><%=userFull.getFirstName() %> <br /><%=userFull.getLastName() %></h2>
 		<p class="infoConnection">
-		<% if (member.isConnected()) { %>
-      <img src="<%=m_context%>/util/icons/online.gif" alt="connected"/> <fmt:message key="GML.user.online.for" /> <%=member.getDuration()%>
+		<% if (userDetail.isConnected()) { %>
+      <img src="<%=m_context%>/util/icons/online.gif" alt="connected"/> <fmt:message key="GML.user.online.for" /> <%=userDetail
+				.getDurationOfCurrentSession()%>
     <% } else { %>
 		  <img src="<%=m_context%>/util/icons/offline.gif" alt="deconnected"/> <fmt:message key="GML.user.offline" />
     <% } %>

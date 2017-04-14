@@ -55,7 +55,7 @@ public class ChatUsersRegistration {
    * chat service. False otherwise.
    */
   public boolean isChatServiceEnabled() {
-    return chatServer.isAvailable();
+    return ChatServer.isEnabled();
   }
 
   /**
@@ -82,7 +82,7 @@ public class ChatUsersRegistration {
    * @throws ChatServerException if the registration fails.
    */
   public void registerUser(final User user) throws ChatServerException {
-    if (chatServer.isAvailable() && !chatServer.isUserExisting(user)) {
+    if (isChatServiceEnabled() && !chatServer.isUserExisting(user)) {
       logger.info("Register user {0}", user.getDisplayedName());
       chatServer.createUser(user);
       try {

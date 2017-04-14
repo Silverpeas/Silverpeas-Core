@@ -50,10 +50,10 @@
   }
 
 #silverchat_roster_menu #jsxc_notice {
-  height: auto;
-  width: auto;
-  float: none;
-  text-align: left;
+  height: auto; 
+  width: auto; 
+  float: none; 
+  text-align: left; 
   line-height: 30px;
 }
 

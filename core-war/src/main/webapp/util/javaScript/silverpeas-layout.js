@@ -255,6 +255,14 @@
       $window.MyMain.location.href = url;
       return promise;
     },
+    muteMouseEvents : function() {
+      var $iframe = this.getContainer().querySelector('iframe');
+      $iframe.classList.add('sp-layout-part-on-top-element-drag');
+    },
+    unmuteMouseEvents : function() {
+      var $iframe = this.getContainer().querySelector('iframe');
+      $iframe.classList.remove('sp-layout-part-on-top-element-drag');
+    },
     forceOnBackground : function() {
       this.getContainer().style.zIndex = -1;
     },

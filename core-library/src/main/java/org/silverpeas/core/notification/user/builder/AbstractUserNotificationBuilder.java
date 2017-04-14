@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.notification.user.builder;
 
+import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.notification.user.NullUserNotification;
+import org.silverpeas.core.notification.user.UserNotification;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.notification.user.client.ExternalRecipient;
 import org.silverpeas.core.notification.user.client.GroupRecipient;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
@@ -30,16 +35,11 @@ import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
-import org.silverpeas.core.notification.user.NullUserNotification;
-import org.silverpeas.core.notification.user.UserNotification;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 
 import java.util.Collection;
 

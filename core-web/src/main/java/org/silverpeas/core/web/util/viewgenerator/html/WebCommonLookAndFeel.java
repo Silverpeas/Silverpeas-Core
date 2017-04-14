@@ -204,6 +204,8 @@ class WebCommonLookAndFeel {
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/jquery.cookie.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/silverpeas-jquery.js"));
 
+    code.append(includeChat(new ElementContainer()).toString()).append(STR_NEW_LINE);
+
     code.append(includeLayout(new ElementContainer(),
         LookHelper.getLookHelper(controller.getHttpSession())).toString()).append(STR_NEW_LINE);
 

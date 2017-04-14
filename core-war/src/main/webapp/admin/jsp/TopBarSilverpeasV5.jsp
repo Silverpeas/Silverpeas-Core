@@ -129,7 +129,7 @@ connectedUsersPromise.then(function(){
 			</div>
 		<% } %>
 		<div class="userNav">
-			<a href="#" onclick="javascript:onClick=openConnectedUsers();" style="visibility:hidden" id="connectedUsers"></a>
+			<a href="<%=m_sContext%>/Rdirectory/jsp/connected" target="MyMain" style="visibility:hidden" id="connectedUsers"></a>
 		        <% if (!isAnonymousAccess && helper.getSettings("directoryVisible", true)) {
 				    outilDisplayed = true;
 				%>

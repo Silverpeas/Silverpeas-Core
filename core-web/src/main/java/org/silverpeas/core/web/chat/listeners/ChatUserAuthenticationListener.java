@@ -27,7 +27,6 @@ package org.silverpeas.core.web.chat.listeners;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.ChatUsersRegistration;
 import org.silverpeas.core.security.authentication.UserAuthenticationListener;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -53,20 +52,10 @@ public class ChatUserAuthenticationListener implements UserAuthenticationListene
   @Override
   public String firstHomepageAccessAfterAuthentication(HttpServletRequest request, User user,
       String finalURL) {
-    if (user != null && !user.isAnonymous()) {
       HttpSession session = request.getSession();
-      User currentUser = User.getCurrentRequester();
-      boolean chatServiceEnabled = chatUsersRegistration.isChatServiceEnabled();
-      if (chatServiceEnabled) {
-        try {
-          chatUsersRegistration.registerUser(currentUser);
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-          chatServiceEnabled = false;
-        }
-      }
-      session.setAttribute(CHAT_ATTRIBUTE, chatServiceEnabled);
-    }
+    session.setAttribute(CHAT_ATTRIBUTE,
+        chatUsersRegistration.isChatServiceEnabled() && user != null && !user.isAnonymous() &&
+            !user.isAccessGuest());
     return null;
   }
 }

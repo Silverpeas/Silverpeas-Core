@@ -141,7 +141,6 @@
   <title><%=generalMessage.getString("GML.popupTitle")%></title>
   <link rel="SHORTCUT ICON" href="<%=request.getContextPath()%>/util/icons/favicon.ico"/>
   <view:looknfeel/>
-  <view:includePlugin name="chat"/>
   <style type="text/css">
     body {
       margin: 0;
@@ -245,7 +244,7 @@
       <% } %>
       language : '<%= user.getUserPreferences().getLanguage() %>',
       avatar: webContext + '/display/avatar/60x/',
-      debug: true,
+      debug: false,
       selectUser: function(openChatWith) {
         $('#userId').off('change').on('change', function() {
           var id = $(this).val();
@@ -257,7 +256,7 @@
             });
           }
         });
-        SP_openUserPanel(webContext + '/selectChatUser', '', 'menubar=no,scrollbars=no,statusbar=no');
+        SP_openUserPanel(webContext + '/chat/users/select', '', 'menubar=no,scrollbars=no,statusbar=no');
       }
     }).start();
     </c:when>

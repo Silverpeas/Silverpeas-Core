@@ -140,19 +140,15 @@
 <script type="text/javascript">
   var webContext = '<%=m_context%>';
   loadScriptPromise.then(function() {
-    handlePasswordForm({
-      passwordFormId : 'changePwdForm',
-      passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordFromLogin"/>',
-      passwordInputId : 'newPassword'
-    });
+    var extraValidations;
     <c:if test="${isEmailAddress}">
-    $('#changePwdForm').on("submit", function() {
+    extraValidations = function(errorStack) {
       if (!$.trim($('#emailAddress').val())) {
-        alert("- <fmt:message key="authentication.email.error" bundle="${authenticationBundle}"/>\n");
-        return false;
+        errorStack.push(
+            '<fmt:message key="authentication.email.error" bundle="${authenticationBundle}"/>');
       }
-      return true;
-    });
+      return sp.promise.resolveDirectlyWith();
+    };
     var $emailMessage = $('#emailAddressMessage');
     if ($emailMessage.length > 0 && $.trim($emailMessage.html())) {
       var $emailAddress = $('#emailAddress');
@@ -183,6 +179,12 @@
       $emailAddress.trigger("displayQTip");
     }
     </c:if>
+    handlePasswordForm({
+      passwordFormId : 'changePwdForm',
+      passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePasswordFromLogin"/>',
+      passwordInputId : 'newPassword',
+      extraValidations : extraValidations
+    });
   });
 </script>
 </body>

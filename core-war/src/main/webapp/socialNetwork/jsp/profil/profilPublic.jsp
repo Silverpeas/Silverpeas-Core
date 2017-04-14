@@ -33,9 +33,9 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 <%@page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@page import="org.silverpeas.core.web.directory.model.Member"%>
 <%@page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@page import="org.silverpeas.core.util.URLUtil"%>
+<%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 
@@ -44,7 +44,7 @@
 	MultiSilverpeasBundle resource = (MultiSilverpeasBundle) request.getAttribute("resources");
 
     UserFull userFull = (UserFull) request.getAttribute("userFull");
-    Member member = (Member) request.getAttribute("Member");
+    UserDetail userDetail = (UserDetail) request.getAttribute("UserDetail");
 
     String m_context = URLUtil.getApplicationURL();
 %>
@@ -62,10 +62,11 @@
 
 	<!-- info  -->
 	<div class="info tableBoard">
-	<h2 class="userName"><%=member.getFirstName() %> <br /><%=member.getLastName() %></h2>
+	<h2 class="userName"><%=userDetail.getFirstName() %> <br /><%=userDetail.getLastName() %></h2>
         <p class="infoConnection">
-		<% if (member.isConnected()) { %>
-				<img src="<%=m_context%>/util/icons/online.gif" alt="connected"/> <fmt:message key="GML.user.online.for" /> <%=member.getDuration()%>
+		<% if (userDetail.isConnected()) { %>
+				<img src="<%=m_context%>/util/icons/online.gif" alt="connected"/> <fmt:message key="GML.user.online.for" /> <%=userDetail
+						.getDurationOfCurrentSession()%>
 			<% } else { %>
 		<img src="<%=m_context%>/util/icons/offline.gif" alt="deconnected"/> <fmt:message key="GML.user.offline" />
             <% } %>
@@ -73,14 +74,14 @@
 
 	    <!-- action  -->
     <div class="action">
-		  <a href="#" class="link invitation" rel="<%=member.getId() %>,<%=member.getUserDetail().getDisplayedName() %>"><fmt:message key="invitation.send" /></a>
+		  <a href="#" class="link invitation" rel="<%=userDetail.getId() %>,<%=userDetail.getDisplayedName() %>"><fmt:message key="invitation.send" /></a>
       <br />
-      <a href="#" class="link notification" rel="<%=member.getId() %>,'<%=member.getUserDetail().getDisplayedName()%>"><fmt:message key="GML.notification.send" /></a>
+      <a href="#" class="link notification" rel="<%=userDetail.getId() %>,'<%=userDetail.getDisplayedName()%>"><fmt:message key="GML.notification.send" /></a>
     </div> <!-- /action  -->
 
         <!-- profilPhoto  -->
 		<div class="profilPhoto">
-			<view:image src="<%=member.getUserDetail().getAvatar()%>" type="avatar.profil" alt="viewUser" css="avatar"/>
+			<view:image src="<%=userDetail.getAvatar()%>" type="avatar.profil" alt="viewUser" css="avatar"/>
         </div>
 
         <p class="statut">

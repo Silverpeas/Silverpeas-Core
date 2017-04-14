@@ -4,6 +4,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.chat.ChatServerException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * This interface represents a Chat server. An implementation of this interface has to implement
@@ -22,6 +23,20 @@ public interface ChatServer {
    */
   static SettingBundle getChatSettings() {
     return ResourceLocator.getSettingBundle("org.silverpeas.chat.settings.chat");
+  }
+
+  /**
+   * Is a chat server enabled? A chat server is enabled if there is a chat server defined
+   * for Silverpeas and the chat service is explicitly enabled. The definition of a chat server and
+   * the activation of the chat service are both done through the properties file
+   * {@code org/silverpeas/chat/settings/chat.properties}.
+   * @return true if both the chat service is enabled and a chat server is defined in the
+   * Silverpeas configuration. False otherwise.
+   */
+  static boolean isEnabled() {
+    return getChatSettings().getBoolean("chat.enable", false) &&
+        StringUtil.isDefined(getChatSettings().getString("chat.xmpp.httpBindUrl", null)) &&
+        StringUtil.isDefined(getChatSettings().getString("chat.xmpp.restUrl", null));
   }
 
   /**
@@ -71,13 +86,4 @@ public interface ChatServer {
    */
   boolean isUserExisting(User user);
 
-  /**
-   * Is a chat server is available ? If no chat server is defined for Silverpeas, then the
-   * chat service must be disabled.
-   * @return true if a chat server is available. False if no chat server is defined in the
-   * {@code org/silverpeas/chat/settings/chat.properties} properties file.
-   */
-  default boolean isAvailable() {
-    return getChatSettings().getBoolean("chat.enable", false);
-  }
 }
