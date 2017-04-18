@@ -26,7 +26,6 @@ package org.silverpeas.core.admin.user.model;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -128,12 +127,12 @@ public interface Group extends Serializable, Comparable<Group> {
    * @return a list with its direct subgroups. If this group hasn't children group, then the
    * returned list is empty.
    */
-  List<? extends Group> getSubGroups();
+  List<Group> getSubGroups();
 
   /**
    * Gets the detail about all the users that are in this group (and in the subgroups of this
    * group).
    * @return a list of all the user details in this group.
    */
-  List<? extends User> getAllUsers();
+  List<User> getAllUsers();
 }

@@ -50,12 +50,17 @@ public class GroupDetail implements Group {
   private int nbTotalUsers = -1;
 
   /**
-   * Constructor
+   * Constructs an empty group detail.
    */
   public GroupDetail() {
-
+   // an empty group detail
   }
 
+  /**
+   * Constructs a group detail from the specified one. The given group detail is cloned to the
+   * new group detail.
+   * @param toClone a group to clone.
+   */
   public GroupDetail(GroupDetail toClone) {
     id = toClone.id;
     specificId = toClone.specificId;
@@ -263,12 +268,12 @@ public class GroupDetail implements Group {
   }
 
   @Override
-  public List<? extends Group> getSubGroups() {
+  public List<Group> getSubGroups() {
     return Arrays.asList(getOrganisationController().getAllSubGroups(getId()));
   }
 
   @Override
-  public List<? extends UserDetail> getAllUsers() {
+  public List<User> getAllUsers() {
     return Arrays.asList(getOrganisationController().getAllUsersOfGroup(getId()));
   }
 }

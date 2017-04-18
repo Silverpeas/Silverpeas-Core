@@ -280,6 +280,7 @@ public class GraphicElementFactory {
   /**
    * Use {@link LookAndStyleTag} instead
    * @return HTML header fragment
+   * @deprecated
    */
   @Deprecated
   public String getLookStyleSheet(final HttpRequest request) {

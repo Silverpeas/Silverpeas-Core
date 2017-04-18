@@ -515,14 +515,12 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       request.setAttribute("brothers", jobStartPageSC.getBrotherSpaces(true));
       request.setAttribute("isUserAdmin", jobStartPageSC.isUserAdmin());
       destination = "/jobStartPagePeas/jsp/createSpace.jsp";
-    } else if (function.equals("SetSpaceTemplateProfile")) {
-      String spaceTemplate = request.getParameter("SpaceTemplate");
-
+    } else if (function.equals("SetSpaceProfile")) {
       if (request.getParameter("NameObject") != null
           && request.getParameter("NameObject").length() > 0) {
         jobStartPageSC.setCreateSpaceParameters(request.getParameter("NameObject"), request.
             getParameter("Description"),
-            request.getParameter("SousEspace"), spaceTemplate, I18NHelper.getSelectedContentLanguage(
+            request.getParameter("SousEspace"), I18NHelper.getSelectedContentLanguage(
                 request),
             request.getParameter("SelectedLook"),
             request.getParameter("ComponentSpaceQuota"),

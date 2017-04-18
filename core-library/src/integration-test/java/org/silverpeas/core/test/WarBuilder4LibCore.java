@@ -61,7 +61,6 @@ import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceImpl;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
-import org.silverpeas.core.admin.space.model.SpaceTemplate;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceBean;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.user.DefaultUserProvider;
@@ -499,7 +498,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(StubbedAdministration.class);
       addCommonUserBeans();
       addClasses(AdministrationServiceProvider.class, Administration.class, Parameter.class,
-          PasteDetail.class, WAComponent.class, SpaceTemplate.class, ComponentInst.class,
+          PasteDetail.class, WAComponent.class, ComponentInst.class,
           ComponentInstLight.class, SpaceInst.class, SpaceInstLight.class, CompoSpace.class,
           QuotaException.class, ProfileInst.class, SpaceAndChildren.class, SpaceProfileInst.class,
           Group.class, GroupProfileInst.class, AdminGroupInst.class, SearchCriteria.class,

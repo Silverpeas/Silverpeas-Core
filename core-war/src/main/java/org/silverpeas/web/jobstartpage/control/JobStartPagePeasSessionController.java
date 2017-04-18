@@ -403,7 +403,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public void setCreateSpaceParameters(String name, String desc, String ssEspace,
-      String spaceTemplate, String language, String look, String componentSpaceQuotaMaxCount,
+      String language, String look, String componentSpaceQuotaMaxCount,
       String dataStorageQuotaMaxCount) {
     m_ssEspace = ssEspace;
     m_name = name;

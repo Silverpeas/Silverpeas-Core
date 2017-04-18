@@ -72,8 +72,6 @@ public class AuthenticationParameters {
   private AuthenticationCredential credential;
 
   public AuthenticationParameters(HttpServletRequest request) {
-    SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
-        "org.silverpeas.authentication.settings.authenticationSettings");
     HttpSession session = request.getSession();
     boolean cookieEnabled = authenticationSettings.getBoolean(
         "cookieEnabled", false);
@@ -89,17 +87,18 @@ public class AuthenticationParameters {
     domainIdParam = request.getParameter("DomainId");
     secured = request.isSecure();
 
+    final String noTakenIntoAccount = "";
     if (userByInternalAuthToken != null) {
       userByInternalAuthTokenMode = true;
       login = userByInternalAuthToken.getLogin();
       domainId = userByInternalAuthToken.getDomainId();
-      password = "";
+      password = noTakenIntoAccount;
     } else if (ssoMode) {
       login = getSSOUser(request);
-      password = "";
+      password = noTakenIntoAccount;
     } else if (casMode) {
       login = getCASUser(session);
-      password = "";
+      password = noTakenIntoAccount;
     } else if (socialNetworkMode) {
       // nothing else to do
     } else if (useNewEncryptionMode) {

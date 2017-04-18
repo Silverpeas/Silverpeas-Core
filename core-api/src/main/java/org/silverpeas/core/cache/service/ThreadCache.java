@@ -62,23 +62,25 @@ class ThreadCache extends AbstractSimpleCache {
   @Override
   public Object remove(final Object key) {
     Object value = get(key);
-    if (value != null) {
-      getCache().remove(key);
-    }
+    removeIfPresent(key, value);
     return value;
   }
 
   @Override
   public <T> T remove(final Object key, final Class<T> classType) {
     T value = get(key, classType);
-    if (value != null) {
-      getCache().remove(key);
-    }
+    removeIfPresent(key, value);
     return value;
   }
 
   @Override
   public void put(final Object key, final Object value) {
     getCache().put(key, value);
+  }
+
+  private void removeIfPresent(Object key, Object value) {
+    if (value != null) {
+      getCache().remove(key);
+    }
   }
 }

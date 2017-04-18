@@ -111,7 +111,7 @@ function ifCorrectFormExecute(callback) {
 </script>
 </head>
 <body onload="document.infoSpace.NameObject.focus();">
-<form name="infoSpace" action="SetSpaceTemplateProfile" method="post">
+<form name="infoSpace" action="SetSpaceProfile" method="post">
 <input type="hidden" name="SousEspace" value="<%=m_SousEspace%>"/>
 
 <%

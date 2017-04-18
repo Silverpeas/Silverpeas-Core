@@ -734,9 +734,7 @@ public class UserDetail implements User {
     try {
       return relation.isInRelationShip(Integer.parseInt(userId), Integer.parseInt(getId()));
     } catch (Exception e) {
-      SilverLogger.getLogger(this)
-          .warn("not possible to verify relation with ''{0}'' ({0})",
-              userId, e.getMessage());
+      SilverLogger.getLogger(this).error(e);
     }
     return false;
   }
@@ -756,9 +754,7 @@ public class UserDetail implements User {
       invitation =
           invitationService.getInvitation(Integer.parseInt(fromUserId), Integer.parseInt(toUserId));
     } catch (Exception e) {
-      SilverLogger.getLogger(this)
-          .warn("not possible to verify relation invitation from userId ''{0}'' and ''{1}''",
-              fromUserId, toUserId, e);
+      SilverLogger.getLogger(this).error(e);
     }
     return invitation;
   }

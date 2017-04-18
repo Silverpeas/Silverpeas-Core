@@ -23,20 +23,21 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.*;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.core.admin.user.model.Group;
-import java.net.URI;
-import java.util.List;
+
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.URI;
+import java.util.List;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.*;
 
 /**
  * The profile of the user group web entity in the WEB. It is a web entity representing a group of
@@ -218,7 +219,7 @@ public class UserGroupProfileEntity extends GroupDetail implements WebEntity {
   }
 
   @Override
-  public List<? extends Group> getSubGroups() {
+  public List<Group> getSubGroups() {
     return this.group.getSubGroups();
   }
 

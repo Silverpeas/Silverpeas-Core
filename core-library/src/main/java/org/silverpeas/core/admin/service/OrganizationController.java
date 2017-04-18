@@ -162,6 +162,7 @@ public interface OrganizationController extends java.io.Serializable {
    * @deprecated use getAllUsers(String componentId) Return all the users allowed to access the
    * given component of the given space
    */
+  @Deprecated
   <T extends User> T[] getAllUsers(String sPrefixTableName, String sComponentName);
 
   /**
