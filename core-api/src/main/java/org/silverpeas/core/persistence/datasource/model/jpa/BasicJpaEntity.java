@@ -26,8 +26,6 @@ package org.silverpeas.core.persistence.datasource.model.jpa;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 
-import javax.persistence.Inheritance;
-import javax.persistence.InheritanceType;
 import javax.persistence.MappedSuperclass;
 
 /**
@@ -39,34 +37,26 @@ import javax.persistence.MappedSuperclass;
  * annotations. In most of cases you don't need to use them, but to override {@link
  * BasicJpaEntity#performBeforePersist} or {@link BasicJpaEntity#performBeforeUpdate} methods
  * without forgetting to invoke the super call.
- * @param <ENTITY> the class name of the represented entity.
- * @param <IDENTIFIER_TYPE> the unique identifier class used by the entity to identify it
+ * @param <E> the class name of the represented entity.
+ * @param <I> the unique identifier class used by the entity to identify it
  * uniquely in the persistence context.
  * @author ebonnet
  */
 @MappedSuperclass
-public abstract class BasicJpaEntity<ENTITY extends IdentifiableEntity, IDENTIFIER_TYPE extends
-    EntityIdentifier>
-    extends AbstractJpaEntity<ENTITY, IDENTIFIER_TYPE> {
+public abstract class BasicJpaEntity<E extends IdentifiableEntity, I extends EntityIdentifier>
+    extends AbstractJpaEntity<E, I> {
 
   private static final long serialVersionUID = 3955905287437500278L;
 
-  /**
-   * Performs some treatments before this entity is persisted into a repository. Don't forget to
-   * invoke {@code super.performBeforePersist()} before any additional statements.
-   */
   @Override
   protected void performBeforePersist() {
-
   }
 
-  /**
-   * Performs some treatments before its counterpart in a repository is updated with the changes in
-   * this entity. Don't forget to * invoke {@code super.performBeforePersist()} before any
-   * additional statements.
-   */
   @Override
   protected void performBeforeUpdate() {
+  }
 
+  @Override
+  protected void performBeforeRemove() {
   }
 }

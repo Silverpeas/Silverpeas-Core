@@ -23,14 +23,15 @@
  */
 package org.silverpeas.core.notification.user;
 
-import org.silverpeas.core.template.SilverpeasTemplate;
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Map;
 
@@ -79,9 +80,9 @@ public class DefaultUserNotification implements UserNotification {
           sender.notifyUser(notification);
         }
       } catch (final NotificationManagerException e) {
-        SilverTrace.warn("notification", "IUserNotification.send()",
-            "notification.EX_IMPOSSIBLE_DALERTER_LES_UTILISATEURS",
-            "componentId=" + notification.getComponentId(), e);
+        SilverLogger.getLogger(this).warn(e);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
       }
     }
   }

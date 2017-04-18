@@ -56,6 +56,8 @@ import java.util.stream.Collectors;
 
 import static org.silverpeas.core.calendar.CalendarComponentDiffDescriptor.diffBetween;
 import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
+import static org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier
+    .notifyAttendees;
 
 /**
  * An event planned in a calendar.
@@ -655,6 +657,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       return this;
     });
     notify(ResourceEvent.Type.CREATION, event);
+    notifyAttendees(null, event.getAttendees());
     return event;
   }
 
@@ -719,12 +722,13 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    */
   @Override
   public EventOperationResult delete() {
+    CalendarEventRepository repository = CalendarEventRepository.get();
     return Transaction.performInOne(() -> {
       if (isPlanned()) {
         // Deletes all persisted occurrences belonging to this event
-        deleteAllOccurrencesFromPersistence();
+        deleteAllOccurrencesFromPersistence(true);
         // Deletes the event from persistence
-        this.deleteFromPersistence();
+        repository.delete(this);
       }
       return new EventOperationResult();
     });
@@ -750,7 +754,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   public EventOperationResult deleteOnly(CalendarEventOccurrence occurrence) {
     checkOccurrence(occurrence);
     return doIfSingleOccurrence(() -> {
-      this.deleteFromPersistence();
+      this.deleteFromPersistence(true);
       return new EventOperationResult();
     }).orElse(() -> {
       this.getRecurrence().excludeEventOccurrencesStartingAt(occurrence.getOriginalStartDate());
@@ -778,7 +782,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   public EventOperationResult deleteSince(CalendarEventOccurrence occurrence) {
     checkOccurrence(occurrence);
     return doIfSingleOccurrence(() -> {
-      this.deleteFromPersistence();
+      this.deleteFromPersistence(true);
       return new EventOperationResult();
     }).orElse(() -> {
       final Temporal endDate = occurrence.getOriginalStartDate().minus(1, ChronoUnit.DAYS);
@@ -823,12 +827,12 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       if (!previousState.getCalendar().equals(this.getCalendar())) {
         // Deletes all persisted occurrences belonging to this event (recreated after from
         // previousOccurrences list by adjustOccurrences method)
-        deleteAllOccurrencesFromPersistence();
+        deleteAllOccurrencesFromPersistence(false);
         // New event is created on other calendar
         CalendarEvent newEvent = this.clone();
         newEvent.planOn(this.getCalendar());
         // Deleting previous event
-        previousState.deleteFromPersistence();
+        previousState.deleteFromPersistence(false);
         result = new EventOperationResult().withCreated(newEvent);
       } else {
         this.component.markAsModified();
@@ -954,7 +958,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     }
   }
 
-  private void deleteFromPersistence() {
+  private void deleteFromPersistence(final boolean notify) {
     if (isPersisted()) {
       Transaction.getTransaction().perform(() -> {
         CalendarEventRepository repository = CalendarEventRepository.get();
@@ -962,7 +966,10 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         return null;
       });
     }
-    notify(ResourceEvent.Type.DELETION, this);
+    if (notify) {
+      notify(ResourceEvent.Type.DELETION, this);
+      notifyAttendees(this.getAttendees(), null);
+    }
   }
 
   private CalendarEvent updateIntoPersistence() {
@@ -974,19 +981,20 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
           return repository.save(this);
         });
         notify(ResourceEvent.Type.UPDATE, before.get(), event);
+        notifyAttendees(before.get().getAttendees(), this.getAttendees());
         return event;
       }
     }
     return this;
   }
 
-  private long deleteAllOccurrencesFromPersistence() {
+  private long deleteAllOccurrencesFromPersistence(final boolean notify) {
     if (!isRecurrent()) {
       return 0;
     }
     return Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      return repository.deleteAllByEvent(this);
+      return repository.deleteAllByEvent(this, notify);
     });
   }
 
@@ -1019,11 +1027,8 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   private void notify(ResourceEvent.Type type, CalendarEvent... events) {
-    Transaction.performInNew(() -> {
-      CalendarEventLifeCycleEventNotifier notifier = CalendarEventLifeCycleEventNotifier.get();
-      notifier.notifyEventOn(type, events);
-      return null;
-    });
+    CalendarEventLifeCycleEventNotifier notifier = CalendarEventLifeCycleEventNotifier.get();
+    notifier.notifyEventOn(type, events);
   }
 
   private CalendarEvent createNewEventSince(final CalendarEventOccurrence occurrence) {
@@ -1094,7 +1099,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       this.getAttendees().forEach(Attendee::resetParticipation);
 
       // Deletes all persisted occurrences belonging to this event
-      deleteAllOccurrencesFromPersistence();
+      deleteAllOccurrencesFromPersistence(true);
     }
   }
 

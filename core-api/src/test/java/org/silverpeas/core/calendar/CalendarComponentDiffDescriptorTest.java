@@ -29,9 +29,7 @@ import org.silverpeas.core.date.Period;
 
 import static java.time.LocalDate.parse;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.isEmptyString;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.ACCEPTED;
 import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.AWAITING;
 import static org.silverpeas.core.calendar.Attendee.PresenceStatus.INFORMATIVE;
@@ -426,11 +424,6 @@ public class CalendarComponentDiffDescriptorTest {
     @Override
     public String getFullName() {
       return null;
-    }
-
-    @Override
-    Attendee reload() {
-      return this;
     }
   }
 }

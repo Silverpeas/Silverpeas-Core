@@ -240,8 +240,12 @@ public class DefaultOrganizationController implements OrganizationController {
   public Optional<SilverpeasComponentInstance> getComponentInstance(
       final String componentInstanceIdentifier) {
     try {
-      return Optional
-          .ofNullable(getAdminService().getComponentInstance(componentInstanceIdentifier));
+      if (StringUtil.isDefined(componentInstanceIdentifier)) {
+        return Optional
+            .ofNullable(getAdminService().getComponentInstance(componentInstanceIdentifier));
+      } else {
+        return Optional.empty();
+      }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return Optional.empty();

@@ -34,6 +34,9 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import static org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier
+    .notifyAttendees;
+
 /**
  * @author mmoquillon
  */
@@ -63,20 +66,30 @@ public class DefaultCalendarEventOccurrenceRepository
   }
 
   @Override
-  public long deleteSince(final CalendarEventOccurrence occurrence) {
+  public long deleteSince(final CalendarEventOccurrence occurrence, final boolean notify) {
     NamedParameters parameters =
         newNamedParameters().add(EVENT_PARAM, occurrence.getCalendarEvent())
             .add("date", Period.asOffsetDateTime(occurrence.getStartDate()));
     List<CalendarEventOccurrence> occurrences =
         findByNamedQuery("occurrenceByEventSince", parameters);
-    occurrences.forEach(o -> getEntityManager().remove(o));
+    occurrences.forEach(o -> {
+      getEntityManager().remove(o);
+      if (notify) {
+        notifyAttendees(o.getAttendees(), null);
+      }
+    });
     return occurrences.size();
   }
 
   @Override
-  public long deleteAllByEvent(final CalendarEvent event) {
+  public long deleteAllByEvent(final CalendarEvent event, final boolean notify) {
     List<CalendarEventOccurrence> occurrences = getAllByEvent(event);
-    occurrences.forEach(o -> getEntityManager().remove(o));
+    occurrences.forEach(o -> {
+      getEntityManager().remove(o);
+      if (notify) {
+        notifyAttendees(o.getAttendees(), null);
+      }
+    });
     return occurrences.size();
   }
 }

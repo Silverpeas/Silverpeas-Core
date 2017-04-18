@@ -24,9 +24,13 @@
 package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.calendar.AttendeeSet;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A notifier of lifecycle events of {@link Attendee}s.
@@ -43,5 +47,27 @@ public class AttendeeLifeCycleEventNotifier
   protected AttendeeLifeCycleEvent createResourceEventFrom(final ResourceEvent.Type type,
       final Attendee... attendees) {
     return new AttendeeLifeCycleEvent(type, attendees);
+  }
+
+  public static void notifyAttendees(AttendeeSet before, AttendeeSet after) {
+    AttendeeLifeCycleEventNotifier notifier = AttendeeLifeCycleEventNotifier.get();
+    Set<String> allIds = new HashSet<>();
+    if (before != null) {
+      before.forEach(a -> allIds.add(a.getId()));
+    }
+    if (after != null) {
+      after.forEach(a -> allIds.add(a.getId()));
+    }
+    allIds.forEach(i -> {
+      Attendee attendeeOnLeft = before != null ? before.get(i).orElse(null) : null;
+      Attendee attendeeOnRight = after != null ? after.get(i).orElse(null) : null;
+      if (attendeeOnLeft != null && attendeeOnRight != null) {
+        notifier.notifyEventOn(ResourceEvent.Type.UPDATE, attendeeOnLeft, attendeeOnRight);
+      } else if (attendeeOnRight != null) {
+        notifier.notifyEventOn(ResourceEvent.Type.CREATION, attendeeOnRight);
+      } else {
+        notifier.notifyEventOn(ResourceEvent.Type.DELETION, attendeeOnLeft);
+      }
+    });
   }
 }

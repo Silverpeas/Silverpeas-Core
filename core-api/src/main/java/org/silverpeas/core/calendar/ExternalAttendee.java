@@ -23,12 +23,8 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
-
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
-import javax.persistence.EntityManager;
 
 /**
  * An attendee that is a person external to Silverpeas. It can only be notified, and hence
@@ -66,13 +62,5 @@ public class ExternalAttendee extends Attendee {
   @Override
   public String getFullName() {
     return this.getId();
-  }
-
-  @Override
-  protected Attendee reload() {
-    return Transaction.performInNew(() -> {
-      EntityManager entityManager = EntityManagerProvider.get().getEntityManager();
-      return entityManager.find(ExternalAttendee.class, getNativeId());
-    });
   }
 }

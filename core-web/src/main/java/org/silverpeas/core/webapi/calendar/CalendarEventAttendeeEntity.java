@@ -134,13 +134,12 @@ public class CalendarEventAttendeeEntity implements WebEntity {
     if (attendee == null) {
       // Attendee has not been found from the existing set
       if (StringUtil.isLong(getId())) {
-        attendee = component.getAttendees().add(User.getById(getId()))
-            .withPresenceStatus(getPresenceStatus());
+        attendee = component.getAttendees().add(User.getById(getId()));
       } else {
-        attendee = component.getAttendees().add(getId())
-            .withPresenceStatus(getPresenceStatus());
+        attendee = component.getAttendees().add(getId());
       }
     }
+    attendee.withPresenceStatus(getPresenceStatus());
     return attendee;
   }
 

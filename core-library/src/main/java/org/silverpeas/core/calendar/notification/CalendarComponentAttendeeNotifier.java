@@ -81,7 +81,7 @@ public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<Attendee
               .about(UpdateCause.ATTENDEE_PRESENCE, after)
               .build();
       notification.send();
-    } else {
+    } else if (before.getParticipationStatus() != after.getParticipationStatus()) {
       UserNotification notification =
           new AttendeeNotificationBuilder(after.getCalendarComponent(), NotifAction.UPDATE).from(
               User.getCurrentRequester()).to(concernedAttendeesIn(after.getCalendarComponent()))

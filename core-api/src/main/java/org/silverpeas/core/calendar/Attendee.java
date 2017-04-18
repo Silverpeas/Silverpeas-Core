@@ -25,9 +25,6 @@ package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier;
-import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
@@ -65,8 +62,6 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   @Column(name = "presence", nullable = false)
   @Enumerated(EnumType.STRING)
   private PresenceStatus presenceStatus = PresenceStatus.REQUIRED;
-  @Transient
-  private Attendee beforeUpdate = null;
 
   /**
    * Constructs an empty attendee. This constructor is dedicated to the persistence engine.
@@ -288,43 +283,6 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    */
   void setCalendarComponent(final CalendarComponent calendarComponent) {
     this.component = calendarComponent;
-  }
-
-  /**
-   * Reloads this attendee from the persistence context and returns it. If this attendee is
-   * modified and the modification is not yet saved, then the reloaded attendee state will differ
-   * from this instance.
-   * @return this attendee reloaded from the persistence context.
-   */
-  abstract Attendee reload();
-
-  @Override
-  protected void performBeforeUpdate() {
-    super.performBeforeUpdate();
-    this.beforeUpdate = reload();
-  }
-
-  @PostPersist
-  private void notifyAttendeeAdded() {
-    notify(ResourceEvent.Type.CREATION, this);
-  }
-
-  @PostRemove
-  private void notifyAttendeeRemoved() {
-    notify(ResourceEvent.Type.DELETION, this);
-  }
-
-  @PostUpdate
-  private void notifyAttendeeUpdated() {
-    notify(ResourceEvent.Type.UPDATE, this.beforeUpdate, this);
-  }
-
-  private void notify(final ResourceEvent.Type type, final Attendee... states) {
-    Transaction.performInNew(() -> {
-      AttendeeLifeCycleEventNotifier notifier = AttendeeLifeCycleEventNotifier.get();
-      notifier.notifyEventOn(type, states);
-      return null;
-    });
   }
 
   /**

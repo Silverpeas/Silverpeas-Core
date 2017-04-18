@@ -33,21 +33,16 @@ import org.silverpeas.core.persistence.datasource.model.identifier.ExternalStrin
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.util.Mutable;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.Temporal;
 import java.util.List;
 import java.util.Optional;
+
+import static org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier
+    .notifyAttendees;
 
 
 /**
@@ -98,6 +93,8 @@ public class CalendarEventOccurrence
       true)
   @JoinColumn(name = "componentId", referencedColumnName = "id", unique = true)
   private CalendarComponent component;
+  @Transient
+  private CalendarEventOccurrence previousState;
 
   /**
    * Constructor for only persistence context.
@@ -183,13 +180,6 @@ public class CalendarEventOccurrence
       }
     }
     return Optional.ofNullable(occurrence.orElse(null));
-  }
-
-  static CalendarEventOccurrence getByIdFromPersistence(final String id) {
-    return Transaction.performInNew(() -> {
-      CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      return repository.getById(id);
-    });
   }
 
   private static CalendarEventOccurrenceGenerator generator() {
@@ -541,11 +531,14 @@ public class CalendarEventOccurrence
    * @return the persisted event occurrence.
    */
   CalendarEventOccurrence saveIntoPersistence() {
-    return Transaction.performInOne(() -> {
+    final CalendarEventOccurrence previous = getPreviousState();
+    CalendarEventOccurrence saved = Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
       this.component.incrementSequence();
       return repository.save(this);
     });
+    notifyAttendees(previous != null ? previous.getAttendees() : null, saved.getAttendees());
+    return saved;
   }
 
   /**
@@ -559,6 +552,7 @@ public class CalendarEventOccurrence
       repository.delete(this);
       return null;
     });
+    notifyAttendees(this.getAttendees(), null);
   }
 
   /**
@@ -569,7 +563,7 @@ public class CalendarEventOccurrence
   long deleteAllSinceMeFromThePersistence() {
     return Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      return repository.deleteSince(this);
+      return repository.deleteSince(this, true);
     });
   }
 
@@ -578,9 +572,19 @@ public class CalendarEventOccurrence
    * @return true if the date of this occurrence has just modified. False otherwise.
    */
   boolean isDateChanged() {
-    CalendarEventOccurrence previous = CalendarEventOccurrence.getByIdFromPersistence(this.getId());
+    CalendarEventOccurrence previous = getPreviousState();
     return (previous != null && !previous.getPeriod().equals(this.getPeriod())) ||
         (previous == null && !this.getOriginalStartDate().equals(this.getStartDate()));
+  }
+
+  private CalendarEventOccurrence getPreviousState() {
+    if (previousState == null && this.getId() != null) {
+      previousState = Transaction.performInNew(() -> {
+        CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
+        return repository.getById(this.getId());
+      });
+    }
+    return previousState;
   }
 
   /**

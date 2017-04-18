@@ -36,6 +36,7 @@ import javax.persistence.EmbeddedId;
 import javax.persistence.EntityManager;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.PrePersist;
+import javax.persistence.PreRemove;
 import javax.persistence.PreUpdate;
 import javax.persistence.Table;
 import java.lang.reflect.ParameterizedType;
@@ -120,6 +121,7 @@ public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends 
       entity = (AbstractJpaEntity) super.clone();
       entity.setId(null);
     } catch (final CloneNotSupportedException e) {
+      SilverLogger.getLogger(this).error(e);
       entity = null;
     }
     return (T) entity;
@@ -156,13 +158,18 @@ public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends 
   /**
    * Performs some treatments before this entity is persisted into a repository.
    */
-  abstract protected void performBeforePersist();
+  protected abstract void performBeforePersist();
 
   /**
    * Performs some treatments before its counterpart in a repository is updated with the changes in
    * this entity.
    */
-  abstract protected void performBeforeUpdate();
+  protected abstract void performBeforeUpdate();
+
+  /**
+   * Performs some treatments before this entity is removed from a repository.
+   */
+  protected abstract void performBeforeRemove();
 
   private U newIdentifierInstance() {
     try {
@@ -195,6 +202,11 @@ public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends 
   @PreUpdate
   private void beforeUpdate() {
     performBeforeUpdate();
+  }
+
+  @PreRemove
+  private void beforeRemove() {
+    performBeforeRemove();
   }
 
   @SuppressWarnings("unchecked")

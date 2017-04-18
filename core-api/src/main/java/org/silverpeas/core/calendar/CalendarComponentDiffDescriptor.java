@@ -84,6 +84,14 @@ class CalendarComponentDiffDescriptor {
   }
 
   /**
+   * Indicates if it concerns an attendee status diff.
+   * @return true if it exists differences, false if there is not.
+   */
+  boolean isAttendeeStatusDiff() {
+    return diff.size() == 1 && diff.containsKey(UPDATE_ATTENDEE_STATUS_ATTR);
+  }
+
+  /**
    * Merges the detected differences into the given component.
    * @param component the component to merge.
    * @return true if something has been merged, false otherwise.
@@ -125,7 +133,7 @@ class CalendarComponentDiffDescriptor {
         if (attendee.isPresent()) {
           attendee.get().setPresenceStatus(a.getPresenceStatus());
         } else {
-          component.getAttendees().add(a);
+          component.getAttendees().add(a.cloneFor(component));
         }
       });
       dataMerged.set(true);

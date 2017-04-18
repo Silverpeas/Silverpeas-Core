@@ -25,6 +25,7 @@ package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.CalendarComponent;
+import org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
@@ -38,7 +39,7 @@ import static org.silverpeas.core.calendar.CalendarEventUtil.asAttendee;
  * @author mmoquillon
  */
 public abstract class AttendeeNotifier<T extends ResourceEvent>
-    extends CDIResourceEventListener<T> {
+    extends CDIAfterSuccessfulTransactionResourceEventListener<T> {
 
   protected List<Attendee> concernedAttendeesIn(final CalendarComponent calendarComponent) {
     List<Attendee> attendees = calendarComponent.getAttendees().stream().

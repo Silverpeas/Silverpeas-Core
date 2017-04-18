@@ -119,7 +119,7 @@ public class CalendarEventOccurrencePersistenceIntegrationTest extends BaseCalen
   public void deleteAllPersistedOccurrencesOfAGivenEvent() throws SQLException {
     long count = Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      return repository.deleteAllByEvent(event);
+      return repository.deleteAllByEvent(event, true);
     });
 
     assertThat(count, is((long) expectedOccurrences.size()));
@@ -143,7 +143,7 @@ public class CalendarEventOccurrencePersistenceIntegrationTest extends BaseCalen
   public void deleteAllPersistedOccurrencesSinceAGivenEventOccurrence() throws SQLException {
     long count = Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      return repository.deleteSince(expectedOccurrences.get(1));
+      return repository.deleteSince(expectedOccurrences.get(1), true);
     });
 
     assertThat(count, is((long) 2));
