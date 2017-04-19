@@ -465,4 +465,10 @@ public interface OrganisationController extends java.io.Serializable {
    * @throws AdminException
    */
   SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) throws AdminException;
+
+  public SpaceWithSubSpacesAndComponents getFullTreeview(String userId) throws AdminException;
+
+  public List<SpaceInstLight> getPathToSpace(String spaceId);
+
+  public List<SpaceInstLight> getPathToComponent(String componentId);
 }

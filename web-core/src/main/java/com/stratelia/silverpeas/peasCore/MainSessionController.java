@@ -297,16 +297,9 @@ public class MainSessionController implements Clipboard {
     if (userSpace == null) {
       userSpace = userPreferences.getPersonalWorkSpaceId();
       boolean allowed = false;
-      String[] availableSpaces = getUserAvailSpaceIds();
       if (StringUtil.isDefined(userSpace)) {
         // check if this space always exist and if the user have the right to access to it
-        for (String availableSpaceId : availableSpaces) {
-          if (userSpace.equals(availableSpaceId)) {
-            // the user is allowed to access to this space
-            allowed = true;
-            break;
-          }
-        }
+        allowed = getOrganisationController().isSpaceAvailable(userSpace, getUserId());
       }
       if (!allowed) {
         getPersonalization().setPersonalWorkSpaceId("");

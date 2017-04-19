@@ -1293,4 +1293,36 @@ public class OrganizationController implements OrganisationController {
   public SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role) throws AdminException {
     return getAdminService().getSpaceProfile(spaceId, role);
   }
+
+  public SpaceWithSubSpacesAndComponents getFullTreeview(String userId) throws AdminException {
+    return getAdminService().getAllowedFullTreeview(userId);
+  }
+
+  public List<SpaceInstLight> getPathToSpace(String spaceId) {
+    return getPathToSpace(new ArrayList<SpaceInstLight>(), spaceId);
+  }
+
+  private List<SpaceInstLight> getPathToSpace(List<SpaceInstLight> path, String spaceId) {
+    try {
+      SpaceInstLight spaceInst = getAdminService().getSpaceInstLightById(spaceId);
+      if (spaceInst != null) {
+        path.add(0, spaceInst);
+        if (!spaceInst.isRoot()) {
+          path = getPathToSpace(path, spaceInst.getFatherId());
+        }
+      }
+    } catch (Exception e) {
+      SilverTrace.error("admin", "OrganizationController.getPathToSpace",
+          "admin.MSG_ERR_GET_SPACE", "spaceId = '" + spaceId + "'", e);
+    }
+    return path;
+  }
+
+  public List<SpaceInstLight> getPathToComponent(String componentId) {
+    ComponentInstLight componentInstLight = getComponentInstLight(componentId);
+    if (componentInstLight != null) {
+      return getPathToSpace(componentInstLight.getDomainFatherId());
+    }
+    return new ArrayList<SpaceInstLight>();
+  }
 }

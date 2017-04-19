@@ -43,7 +43,6 @@ import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.silverpeas.peasCore.servlets.SilverpeasAuthenticatedHttpServlet;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
 import com.stratelia.webactiv.beans.admin.PersonalSpaceController;
 import com.stratelia.webactiv.beans.admin.SpaceInst;
@@ -228,22 +227,18 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
   private List<String> getSpaceIdsPath(String spaceId, String componentId,
           OrganisationController orgaController) {
-    List<SpaceInst> spacePath = new ArrayList<SpaceInst>();
+    List<SpaceInstLight> spacePath = new ArrayList<SpaceInstLight>();
     if (StringUtil.isDefined(spaceId)) {
-      spacePath = orgaController.getSpacePath(spaceId);
+      spacePath = orgaController.getPathToSpace(spaceId);
     } else if (StringUtil.isDefined(componentId)) {
-      spacePath = orgaController.getSpacePathToComponent(componentId);
+      spacePath = orgaController.getPathToComponent(componentId);
     }
     List<String> spaceIdsPath = new ArrayList<String>();
-    for (SpaceInst space : spacePath) {
+    for (SpaceInstLight space : spacePath) {
       if (spaceIdsPath == null) {
         spaceIdsPath = new ArrayList<String>();
       }
-      if (!space.getId().startsWith(Admin.SPACE_KEY_PREFIX)) {
-        spaceIdsPath.add(Admin.SPACE_KEY_PREFIX + space.getId());
-      } else {
-        spaceIdsPath.add(space.getId());
-      }
+      spaceIdsPath.add(space.getFullId());
     }
     return spaceIdsPath;
   }

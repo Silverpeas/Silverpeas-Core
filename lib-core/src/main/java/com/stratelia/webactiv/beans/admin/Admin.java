@@ -1122,20 +1122,13 @@ public class Admin {
    * @return the value of the parameter for the given component and the given name of parameter
    */
   public String getComponentParameterValue(String componentId, String parameterName) {
-    try {
-      ComponentInst component = getComponentInst(componentId);
-      if (component == null) {
-        SilverTrace.error(MODULE_ADMIN, "Admin.getComponentParameterValue",
-            "admin.EX_ERR_GET_COMPONENT_PARAMS", "Component not found - sComponentId: '"
-            + componentId + "'");
-        return StringUtil.EMPTY;
+    List<Parameter> parameters = getComponentParameters(componentId);
+    for (Parameter parameter : parameters) {
+      if (parameter.getName().equalsIgnoreCase(parameterName)) {
+        return parameter.getValue();
       }
-      return component.getParameterValue(parameterName);
-    } catch (Exception e) {
-      SilverTrace.error(MODULE_ADMIN, "Admin.getComponentParameterValue",
-          "admin.EX_ERR_GET_COMPONENT_PARAMS", "sComponentId: '" + componentId + "'", e);
-      return "";
     }
+    return "";
   }
 
   public void restoreComponentFromBasket(String componentId) throws AdminException {
@@ -4208,18 +4201,9 @@ public class Admin {
    */
   public String[] getUserRootSpaceIds(String sUserId) throws AdminException {
     try {
-      List<String> result = new ArrayList<String>();
       // getting all components availables
       List<String> componentIds = getAllowedComponentIds(sUserId);
-      // getting all root spaces (sorted)
-      String[] rootSpaceIds = getAllRootSpaceIds();
-      // retain only allowed root spaces
-      for (String rootSpaceId : rootSpaceIds) {
-        if (isSpaceContainsOneComponent(componentIds, getDriverSpaceId(rootSpaceId), true)) {
-          result.add(rootSpaceId);
-        }
-      }
-      return result.toArray(new String[result.size()]);
+      return getUserRootSpaceIds(componentIds);
     } catch (Exception e) {
       throw new AdminException("Admin.getUserRootSpaceIds",
           SilverpeasException.ERROR,
@@ -4227,11 +4211,29 @@ public class Admin {
     }
   }
 
+  private String[] getUserRootSpaceIds(List<String> componentIds) throws AdminException {
+    List<String> result = new ArrayList<String>();
+    // getting all root spaces (sorted)
+    String[] rootSpaceIds = getAllRootSpaceIds();
+    // retain only allowed root spaces
+    for (String rootSpaceId : rootSpaceIds) {
+      if (isSpaceContainsOneComponent(componentIds, getDriverSpaceId(rootSpaceId), true)) {
+        result.add(rootSpaceId);
+      }
+    }
+    return result.toArray(new String[result.size()]);
+  }
+
   public String[] getUserSubSpaceIds(String sUserId, String spaceId) throws AdminException {
+    // getting all components availables
+    List<String> componentIds = getAllowedComponentIds(sUserId);
+    return getUserSubSpaceIds(componentIds, spaceId);
+  }
+
+  private String[] getUserSubSpaceIds(List<String> componentIds, String spaceId)
+      throws AdminException {
     try {
       List<String> result = new ArrayList<String>();
-      // getting all components availables
-      List<String> componentIds = getAllowedComponentIds(sUserId);
       // getting all subspaces
       List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
       for (SpaceInstLight subspace : subspaces) {
@@ -4240,11 +4242,10 @@ public class Admin {
         }
       }
       return result.toArray(new String[result.size()]);
-
     } catch (Exception e) {
-      throw new AdminException("Admin.getUserRootSpaceIds",
+      throw new AdminException("Admin.getUserSubSpaceIds",
           SilverpeasException.ERROR,
-          "admin.EX_ERR_GET_USER_ALLOWED_ROOTSPACE_IDS", "user Id : '" + sUserId + "'", e);
+          "admin.EX_ERR_GET_USER_ALLOWED_SUBSPACE_IDS", "spaceId : " + spaceId, e);
     }
   }
 
@@ -4259,6 +4260,10 @@ public class Admin {
    */
   public boolean isSpaceAvailable(String userId, String spaceId) throws AdminException {
     List<String> componentIds = getAllowedComponentIds(userId);
+    return isSpaceAvailable(componentIds, getDriverSpaceId(spaceId));
+  }
+
+  private boolean isSpaceAvailable(List<String> componentIds, String spaceId) throws AdminException {
     return isSpaceContainsOneComponent(componentIds, getDriverSpaceId(spaceId), true);
   }
 
@@ -4266,8 +4271,7 @@ public class Admin {
       boolean checkInSubspaces) {
     boolean find = false;
 
-    List<ComponentInstLight> components = new ArrayList<ComponentInstLight>(TreeCache.getComponents(
-        spaceId));
+    List<ComponentInstLight> components = new ArrayList<ComponentInstLight>(TreeCache.getComponents(spaceId));
 
     // Is there at least one component available ?
     for (int c = 0; !find && c < components.size(); c++) {
@@ -4498,6 +4502,47 @@ public class Admin {
     }
   }
 
+  public SpaceWithSubSpacesAndComponents getAllowedFullTreeview(String userId)
+      throws AdminException {
+    SpaceWithSubSpacesAndComponents root =
+        new SpaceWithSubSpacesAndComponents(new SpaceInstLight());
+    List<String> componentIds = getAllowedComponentIds(userId);
+    String[] spaceIds = getUserRootSpaceIds(componentIds);
+    List<SpaceWithSubSpacesAndComponents> spaces = new ArrayList<SpaceWithSubSpacesAndComponents>();
+    for (String spaceId : spaceIds) {
+      SpaceWithSubSpacesAndComponents space = getAllowedTreeview(componentIds, spaceId);
+      spaces.add(space);
+    }
+    root.setSubSpaces(spaces);
+    return root;
+  }
+
+  private SpaceWithSubSpacesAndComponents getAllowedTreeview(List<String> componentIds,
+      String spaceId) throws AdminException {
+    SpaceInstLight spaceInst = getSpaceInstLight(spaceId);
+    SpaceWithSubSpacesAndComponents space = new SpaceWithSubSpacesAndComponents(spaceInst);
+
+    // process subspaces
+    List<SpaceWithSubSpacesAndComponents> subSpaces =
+        new ArrayList<SpaceWithSubSpacesAndComponents>();
+    for (String subSpaceId : getUserSubSpaceIds(componentIds, spaceId)) {
+      subSpaces.add(getAllowedTreeview(componentIds, subSpaceId));
+    }
+    space.setSubSpaces(subSpaces);
+
+    // process components
+    List<ComponentInstLight> allowedComponents = new ArrayList<ComponentInstLight>();
+    List<ComponentInstLight> allComponents = TreeCache.getComponents(getDriverSpaceId(spaceId));
+    for (ComponentInstLight component : allComponents) {
+      if (componentIds.contains(component.getId())) {
+        allowedComponents.add(component);
+      }
+    }
+    space.setComponents(allowedComponents);
+
+    return space;
+  }
+
   public String[] getAllowedSubSpaceIds(String userId, String spaceFatherId) throws AdminException {
     return getUserSubSpaceIds(userId, spaceFatherId);
   }
@@ -4506,7 +4551,7 @@ public class Admin {
       throws AdminException {
     SilverTrace.info("admin", "Admin.getSpaceInstLight",
         "root.MSG_GEN_ENTER_METHOD", "spaceId = " + spaceId);
-    return getSpaceInstLight(spaceId, -1);
+    return getSpaceInstLight(getDriverSpaceId(spaceId), -1);
   }
 
   private SpaceInstLight getSpaceInstLight(String spaceId, int level) throws AdminException {

@@ -511,4 +511,16 @@ public class OrganizationControllerMockWrapper implements OrganisationController
       throws AdminException {
     return mock.getSpaceProfile(spaceId, role);
   }
+
+  public SpaceWithSubSpacesAndComponents getFullTreeview(String userId) throws AdminException {
+    return mock.getFullTreeview(userId);
+  }
+
+  public List<SpaceInstLight> getPathToSpace(String spaceId) {
+    return mock.getPathToSpace(spaceId);
+  }
+
+  public List<SpaceInstLight> getPathToComponent(String componentId) {
+    return mock.getPathToComponent(componentId);
+  }
 }
