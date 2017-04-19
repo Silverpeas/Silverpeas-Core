@@ -40,15 +40,34 @@ function setConnectedUsers(nb) {
 }
 
 (function() {
+  // do the specified logout function
+  function doLogout(logout) {
+    var win = window.top;
+    if (win.SilverChat) {
+      win.SilverChat.stop().then(logout);
+    } else {
+      logout();
+    }
+  }
+
   whenSilverpeasReady(function() {
+    // the session of the user is expired: logout him automatically
     spServerEventSource.addEventListener('USER_SESSION_EXPIRED', function(serverEvent) {
       var data = extendsObject({redirectUrl : location.href}, JSON.parse(serverEvent.data));
-      silverpeasFormSubmit(sp.formConfig(data.redirectUrl));
+      doLogout(function() {
+        silverpeasFormSubmit(sp.formConfig(data.redirectUrl));
+      });
     }, 'expiredUserSessionListener');
-    document.querySelector("#logout").addEventListener('click', function() {
+
+    // the user terminates explicitly its session
+    document.querySelector("#logout").addEventListener('click', function(evt) {
       spServerEventSource.removeEventListener('USER_SESSION_EXPIRED', 'expiredUserSessionListener');
+      doLogout(function() {
+        window.top.location = webContext + '/LogoutServlet';
+      });
     });
 
+    // a new user session is opened
     spServerEventSource.addEventListener('USER_SESSION', function(serverEvent) {
       var data = extendsObject({
         nbConnectedUsers : 0,

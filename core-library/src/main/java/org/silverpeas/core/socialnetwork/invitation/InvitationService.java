@@ -48,6 +48,22 @@ import java.util.List;
 @Singleton
 public class InvitationService {
 
+  /**
+   * Predefined status code for an invitation already existing at relationship invitation.
+   */
+  public static final int INVITATION_ALREADY_EXISTING = -1;
+
+  /**
+   * Predefined status code for a relationship already existing between two users at invitation
+   * acceptance.
+   */
+  public static final int RELATIONSHIP_ALREADY_EXISTING = -2;
+
+  /**
+   * Predefined status code for a non existing invitation at invitation acceptance.
+   */
+  public static final int INVITATION_NOT_EXISTING = -1;
+
   @Inject
   private InvitationDao invitationDao;
   @Inject
@@ -55,14 +71,14 @@ public class InvitationService {
   @Inject
   private RelationShipEventNotifier relationShipEventNotifier;
 
-  public static InvitationService get() {
-    return ServiceProvider.getService(InvitationService.class);
-  }
-
   /**
    * Default Constructor
    */
   private InvitationService() {
+  }
+
+  public static InvitationService get() {
+    return ServiceProvider.getService(InvitationService.class);
   }
 
   /**
@@ -83,11 +99,11 @@ public class InvitationService {
       boolean alreadySent =
           invitationDao.isExists(connection, invitation.getSenderId(), invitation.getReceiverId());
       if (alreadySent) {
-        invitationRslt = -1;
+        invitationRslt = INVITATION_ALREADY_EXISTING;
       } else {
         if (relationShipDao.isInRelationShip(connection, invitation.getSenderId(), invitation
             .getReceiverId())) {
-          invitationRslt = -2;
+          invitationRslt = RELATIONSHIP_ALREADY_EXISTING;
         } else {
           invitationRslt = invitationDao.createInvitation(connection, invitation);
           notifyGuest(invitation);
@@ -133,10 +149,10 @@ public class InvitationService {
       RelationShip ship1 = null;
       RelationShip ship2 = null;
       if (invitation == null) {
-        resultAcceptInvitation = -1;
+        resultAcceptInvitation = INVITATION_NOT_EXISTING;
       } else if (relationShipDao.isInRelationShip(connection, invitation.getSenderId(), invitation.
           getReceiverId())) {
-        resultAcceptInvitation = -2;
+        resultAcceptInvitation = RELATIONSHIP_ALREADY_EXISTING;
       } else {
         ship1 = new RelationShip();
         ship1.setUser1Id(invitation.getSenderId());
@@ -252,6 +268,18 @@ public class InvitationService {
       DBUtil.close(connection);
     }
     return null;
+  }
+
+  /**
+   * Deletes all the invitations both sent and received of the specified user.
+   * @param userId the unique identifier of the user.
+   */
+  public void deleteAllMyInvitations(String userId) {
+    try (Connection connection = getConnection()) {
+      invitationDao.deleteAllInvitations(connection, Integer.valueOf(userId));
+    } catch (SQLException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
   }
 
   private Connection getConnection() throws SQLException {

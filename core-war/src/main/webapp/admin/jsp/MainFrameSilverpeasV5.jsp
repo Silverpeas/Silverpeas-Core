@@ -225,50 +225,52 @@
         };
       }
       initializeSilverpeasLayout(<%=frameBottomParams.append('}')%>);
+
       spLayout.getBody().ready(function() {
         spLayout.getBody().getContent().addEventListener('load', top.window.mainFrameOnLoad);
       });
+
+      <c:choose>
+      <c:when test="${sessionScope.get('Silverpeas.Chat')}">
+      SilverChat.init({
+        url : '<%= chatSettings.getString("chat.xmpp.httpBindUrl") %>',
+        id : '<%= user.getChatLogin() %>',
+        password : '<%= user.getChatPassword() %>',
+        domain : '<%= user.getChatDomain() %>',
+        <% if (!iceServer.isEmpty()) { %>
+        ice : {
+          server: '<%= iceServer %>',
+          auth: true
+        },
+        <% } %>
+        language : '<%= user.getUserPreferences().getLanguage() %>',
+        avatar: webContext + '/display/avatar/60x/',
+        debug: false,
+        selectUser: function(openChatWith) {
+          $('#userId').off('change').on('change', function() {
+            var id = $(this).val();
+            if (id && id !== '<%= user.getId() %>') {
+              User.get(id).then(function(user) {
+                if (user) {
+                  openChatWith(user.chatId, user.fullName);
+                }
+              });
+            }
+          });
+          SP_openUserPanel(webContext + '/chat/users/select', '', 'menubar=no,scrollbars=no,statusbar=no');
+        }
+      }).start();
+      </c:when>
+      <c:otherwise>
+      <%
+      LocalizationBundle chatBundle = ChatLocalizationProvider.getLocalizationBundle(
+          User.getCurrentRequester().getUserPreferences().getLanguage());
+      String errorMessage = chatBundle.getString("chat.server.notAvailable");
+      %>
+      sp.log.error("<%= errorMessage %>");
+      </c:otherwise>
+      </c:choose>
     });
-    <c:choose>
-    <c:when test="${sessionScope.get('Silverpeas.Chat')}">
-    SilverChat.init({
-      url : '<%= chatSettings.getString("chat.xmpp.httpBindUrl") %>',
-      id : '<%= user.getChatLogin() %>',
-      password : '<%= user.getChatPassword() %>',
-      domain : '<%= user.getChatDomain() %>',
-      <% if (!iceServer.isEmpty()) { %>
-      ice : {
-        server: '<%= iceServer %>',
-        auth: true
-      },
-      <% } %>
-      language : '<%= user.getUserPreferences().getLanguage() %>',
-      avatar: webContext + '/display/avatar/60x/',
-      debug: false,
-      selectUser: function(openChatWith) {
-        $('#userId').off('change').on('change', function() {
-          var id = $(this).val();
-          if (id && id !== '<%= user.getId() %>') {
-            User.get(id).then(function(user) {
-              if (user) {
-                openChatWith(user.chatId, user.fullName);
-              }
-            });
-          }
-        });
-        SP_openUserPanel(webContext + '/chat/users/select', '', 'menubar=no,scrollbars=no,statusbar=no');
-      }
-    }).start();
-    </c:when>
-    <c:otherwise>
-    <%
-    LocalizationBundle chatBundle = ChatLocalizationProvider.getLocalizationBundle(
-        User.getCurrentRequester().getUserPreferences().getLanguage());
-    String errorMessage = chatBundle.getString("chat.server.notAvailable");
-    %>
-    sp.log.error("<%= errorMessage %>");
-    </c:otherwise>
-    </c:choose>
   })();
 </script>
 <form id="chat_selected_user">

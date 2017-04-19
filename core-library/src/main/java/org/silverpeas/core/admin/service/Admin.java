@@ -2934,10 +2934,6 @@ class Admin implements Administration {
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
-      // removes all social network external account associated to this user account
-      // TODO: use based JMS system notification instead of explicit call
-      // SocialNetworkService.getInstance().removeAllExternalAccount(sUserId);
-
       user = getUserDetail(sUserId);
       if (user == null) {
         throw new AdminException(unknown("user", sUserId));

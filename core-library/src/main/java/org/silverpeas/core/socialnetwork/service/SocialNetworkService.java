@@ -31,7 +31,6 @@ import org.silverpeas.core.socialnetwork.model.ExternalAccountIdentifier;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
 import org.silverpeas.core.socialnetwork.qualifiers.Facebook;
 import org.silverpeas.core.socialnetwork.qualifiers.LinkedIn;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
@@ -43,8 +42,10 @@ import java.util.List;
 
 @Singleton
 public class SocialNetworkService {
-  static private String AUTHORIZATION_TOKEN_SESSION_ATTR = "socialnetwork_authorization_token_";
-  static private String SOCIALNETWORK_ID_SESSION_ATTR = "socialnetwork_id";
+
+  private static final String AUTHORIZATION_TOKEN_SESSION_ATTR =
+      "socialnetwork_authorization_token_";
+  private static final String SOCIALNETWORK_ID_SESSION_ATTR = "socialnetwork_id";
 
   @Inject
   @Facebook
@@ -67,7 +68,8 @@ public class SocialNetworkService {
   /**
    * Get social network service implementation specific to given social network
    * @param networkId enum representing network id
-   * @return
+   * @return a connector to the specified social network or null if no such social network is
+   * supported.
    */
   public SocialNetworkConnector getSocialNetworkConnector(SocialNetworkID networkId) {
     switch (networkId) {
@@ -76,40 +78,25 @@ public class SocialNetworkService {
 
       case LINKEDIN:
         return linkedIn;
-    }
 
-    return null;
+      default:
+        return null;
+    }
   }
 
   /**
    * Get social network service implementation specific to given social network
    * @param networkIdAsString network id as String
-   * @return
+   * @return a connector to the specified social network or null if no such social network is
+   * supported.
    */
   public SocialNetworkConnector getSocialNetworkConnector(String networkIdAsString) {
     SocialNetworkID networkId = SocialNetworkID.valueOf(networkIdAsString);
-    switch (networkId) {
-      case FACEBOOK:
-        return facebook;
-
-      case LINKEDIN:
-        return linkedIn;
-    }
-
-    return null;
+    return getSocialNetworkConnector(networkId);
   }
 
   public ExternalAccount getExternalAccount(SocialNetworkID networkId, String profileId) {
-    ExternalAccount externalAccount =
-        dao.getById(new ExternalAccountIdentifier(networkId, profileId).asString());
-    if (externalAccount != null) {
-      UserDetail user = UserDetail.getById(externalAccount.getSilverpeasUserId());
-      if (user == null || user.isDeletedState()) {
-        removeExternalAccount(externalAccount.getSilverpeasUserId(), networkId);
-        externalAccount = null;
-      }
-    }
-    return externalAccount;
+    return dao.getById(new ExternalAccountIdentifier(networkId, profileId).asString());
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
@@ -149,15 +136,11 @@ public class SocialNetworkService {
   }
 
   public AccessToken getStoredAuthorizationToken(HttpSession session, SocialNetworkID networkId) {
-    AccessToken token =
-        (AccessToken) session.getAttribute(AUTHORIZATION_TOKEN_SESSION_ATTR + networkId);
-    return token;
+    return (AccessToken) session.getAttribute(AUTHORIZATION_TOKEN_SESSION_ATTR + networkId);
   }
 
   public SocialNetworkID getSocialNetworkIDUsedForLogin(HttpSession session) {
-    SocialNetworkID networkId =
-        (SocialNetworkID) session.getAttribute(SOCIALNETWORK_ID_SESSION_ATTR);
-    return networkId;
+    return (SocialNetworkID) session.getAttribute(SOCIALNETWORK_ID_SESSION_ATTR);
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
@@ -173,4 +156,16 @@ public class SocialNetworkService {
       }
     }
   }
+
+  @Transactional(Transactional.TxType.REQUIRED)
+  public void removeAllExternalAccount(String userId) {
+    List<ExternalAccount> accounts = dao.findBySilverpeasUserId(userId);
+    if (accounts != null) {
+      for (ExternalAccount account : accounts) {
+        dao.delete(account);
+      }
+    }
+
+  }
+
 }
