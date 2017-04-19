@@ -211,12 +211,12 @@ public class CalendarResource extends AbstractCalendarResource {
         if (calendar.isMainPersonalOf(getUserDetail())) {
           ICalendarExport
               .from(calendar, () -> Calendar.getEvents()
-                                    .filter(f -> f.onParticipants(getUserDetail())).stream())
+              .filter(f -> f.onParticipants(getUserDetail())).stream())
               .to(() -> output);
         } else {
           ICalendarExport
               .from(calendar, () -> Calendar.getEvents()
-                                    .filter(f -> f.onCalendar(calendar)).stream())
+              .filter(f -> f.onCalendar(calendar)).stream())
               .to(() -> output);
         }
       } catch (ICalendarException e) {

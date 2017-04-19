@@ -365,17 +365,18 @@ public class CalendarEventEntity implements WebEntity {
   protected CalendarEventEntity decorate(final CalendarEvent calendarEvent,
       final String componentInstanceId, final ZoneId zoneId) {
     User currentUser = User.getCurrentRequester();
+    final CalendarComponent component = calendarEvent.asCalendarComponent();
     eventId = calendarEvent.getId();
     calendarId = calendarEvent.getCalendar().getId();
     calendarZoneId = calendarEvent.getCalendar().getZoneId().toString();
     onAllDay = calendarEvent.isOnAllDay();
-    startDate = formatDateWithOffset(calendarEvent, calendarEvent.getStartDate(), zoneId);
-    endDate = formatDateWithOffset(calendarEvent, calendarEvent.getEndDate(), zoneId);
+    startDate = formatDateWithOffset(component, calendarEvent.getStartDate(), zoneId);
+    endDate = formatDateWithOffset(component, calendarEvent.getEndDate(), zoneId);
     createDate = calendarEvent.getCreationDate();
     lastUpdateDate = calendarEvent.getLastUpdateDate();
     ownerName = calendarEvent.getCreator().getDisplayedName();
     canBeAccessed = calendarEvent.canBeAccessedBy(currentUser);
-    title = formatTitle(calendarEvent, componentInstanceId, canBeAccessed);
+    title = formatTitle(component, componentInstanceId, canBeAccessed);
     if (canBeAccessed) {
       description = calendarEvent.getDescription();
       location = calendarEvent.getLocation();

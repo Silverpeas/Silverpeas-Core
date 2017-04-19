@@ -56,17 +56,17 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 public class SilverpeasJpaEntityRepository<E extends SilverpeasJpaEntity<E, ?>>
     extends AbstractJpaEntityRepository<E> {
 
+  @SuppressWarnings("unchecked")
   @Override
   public SilverpeasList<E> save(final List<E> entities) {
+    OperationContext context = OperationContext.fromCurrentRequester();
     SilverpeasList<E> savedEntities = new SilverpeasArrayList<>(entities.size());
-    final OperationContext context = OperationContext.fromCurrentRequester();
     for (E entity : entities) {
       if (isCreatedBySetManually(entity)) {
         context.withUser(isDefined(entity.getCreatedBy()) ? entity.getCreator() : null);
       } else if (isLastUpdatedBySetManually(entity)) {
         context.withUser(isDefined(entity.getLastUpdatedBy()) ? entity.getLastUpdater() : null);
       }
-      context.putIntoCache();
       if (entity.isPersisted()) {
         savedEntities.add(getEntityManager().merge(entity));
       } else {

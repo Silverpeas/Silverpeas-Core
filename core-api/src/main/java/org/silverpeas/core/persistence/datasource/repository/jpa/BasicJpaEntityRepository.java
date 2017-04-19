@@ -47,8 +47,7 @@ import java.util.List;
  * This interface is dedicated to be implemented by abstract repositories that providing each an
  * implementation of the persistence technology used to manage the persistence of the entities
  * in a data source.
- * @param <E> specify the class name of the entity which is handled by the repository
- * entity.
+ * @param <E> specify the class name of the entity which is handled by the repository entity.
  * @author ebonnet
  */
 public class BasicJpaEntityRepository<E extends BasicJpaEntity>
@@ -63,10 +62,9 @@ public class BasicJpaEntityRepository<E extends BasicJpaEntity>
 
   @Override
   public SilverpeasList<E> save(final List<E> entities) {
+    OperationContext.fromCurrentRequester();
     SilverpeasList<E> savedEntities = new SilverpeasArrayList<>(entities.size());
-    final OperationContext context = OperationContext.fromCurrentRequester();
     for (E entity : entities) {
-      context.putIntoCache();
       if (entity.isPersisted()) {
         savedEntities.add(getEntityManager().merge(entity));
       } else {

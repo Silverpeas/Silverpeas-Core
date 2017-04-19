@@ -28,6 +28,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.internal.util.MockUtil;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.lang.SystemWrapper;

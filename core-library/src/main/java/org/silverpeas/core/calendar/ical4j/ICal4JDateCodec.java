@@ -30,7 +30,7 @@ import net.fortuna.ical4j.model.TimeZone;
 import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.TemporalConverter;
 
@@ -58,12 +58,14 @@ public class ICal4JDateCodec {
   private static final String ICAL_DATE_PATTERN = "yyyyMMdd";
 
   /**
-   * Indicates if the date of an event must be encoded in UTC.
-   * @param event the event data from which to verify the conditions.
+   * Indicates if the date of an component must be encoded in UTC.
+   * @param eventRecurrent true if event is recurrent, false otherwise.
+   * @param component the component data from which to verify the conditions.
    * @return true if dates must be encoded into UTC, false otherwise.
    */
-  public boolean isEventDateToBeEncodedIntoUtc(final CalendarEvent event) {
-    return event.isOnAllDay() || !event.isRecurrent();
+  public boolean isEventDateToBeEncodedIntoUtc(final boolean eventRecurrent,
+      final CalendarComponent component) {
+    return component.getPeriod().isInDays() || !eventRecurrent;
   }
 
   /**
@@ -78,14 +80,17 @@ public class ICal4JDateCodec {
 
   /**
    * Encodes a temporal data into an iCal4J date.
-   * @param event the event data to use to encode the given temporal.
-   * @param aTemporal the temporal data to encode which have to be extracted from the given event.
+   * @param eventRecurrent true if event is recurrent, false otherwise.
+   * @param component the component data to use to encode the given temporal.
+   * @param aTemporal the temporal data to encode which have to be extracted from the given component.
    * @return an iCal4J date.
    * @throws SilverpeasRuntimeException if the encoding fails.
    */
-  public Date encode(final CalendarEvent event, final java.time.temporal.Temporal aTemporal) {
-    final java.time.temporal.Temporal temporal = isEventDateToBeEncodedIntoUtc(event) ? aTemporal :
-        OffsetDateTime.from(aTemporal).atZoneSameInstant(event.getCalendar().getZoneId());
+  public Date encode(final boolean eventRecurrent, final CalendarComponent component,
+      final java.time.temporal.Temporal aTemporal) {
+    final java.time.temporal.Temporal temporal =
+        isEventDateToBeEncodedIntoUtc(eventRecurrent, component) ? aTemporal :
+            OffsetDateTime.from(aTemporal).atZoneSameInstant(component.getCalendar().getZoneId());
     return encode(temporal);
   }
 

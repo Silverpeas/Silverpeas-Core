@@ -370,7 +370,7 @@ public class CalendarEventOccurrence
    * @return true if this event occurrence is occurring on all its day(s).
    */
   public boolean isOnAllDay() {
-    return getCalendarEvent().isOnAllDay();
+    return getPeriod().isInDays();
   }
 
   /**

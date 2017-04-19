@@ -26,6 +26,7 @@ package org.silverpeas.core.calendar;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -34,8 +35,11 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+
+import static org.silverpeas.core.persistence.datasource.repository.OperationContext.State.IMPORT;
 
 /**
  * A calendar component is a set of properties that express a common semantic for all objects
@@ -80,6 +84,9 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
 
   @Column(nullable = false)
   private long sequence = 0L;
+
+  @Transient
+  private boolean sequenceUpdated = false;
 
   @Embedded
   private AttendeeSet attendees = new AttendeeSet(this);
@@ -268,6 +275,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
   @Override
   public CalendarComponent clone() {
     CalendarComponent clone = super.clone();
+    clone.sequenceUpdated = false;
     return copyTo(clone);
   }
 
@@ -286,21 +294,34 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     anotherComponent.period = period.clone();
     anotherComponent.priority = priority;
     anotherComponent.attributes = attributes.clone();
-    anotherComponent.attendees = new AttendeeSet(anotherComponent);
-    attendees.forEach(a -> a.cloneFor(anotherComponent));
+    if (!OperationContext.statesOf(IMPORT)) {
+      anotherComponent.attendees = new AttendeeSet(anotherComponent);
+      attendees.forEach(a -> a.cloneFor(anotherComponent));
+    }
     return anotherComponent;
+  }
+
+  void setSequence(final long sequence) {
+    this.sequence = sequence;
+    this.sequenceUpdated = true;
   }
 
   /**
    * Increments the current sequence number of this calendar component by one.
+   * <p>In case of import, the sequence is not incremented. Please consult
+   * {@link OperationContext#statesOf(OperationContext.State...)}</p>
    */
   void incrementSequence() {
-    this.sequence += 1;
+    if (!sequenceUpdated) {
+      setSequence(this.sequence + 1);
+    }
   }
 
   @Override
   protected void performBeforeUpdate() {
-    this.sequence += 1L;
+    if (!OperationContext.statesOf(IMPORT)) {
+      incrementSequence();
+    }
     super.performBeforeUpdate();
   }
 

@@ -24,8 +24,10 @@
 
 package org.silverpeas.core.calendar.icalendar;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.util.Mutable;
 
 import java.io.InputStream;
@@ -44,7 +46,7 @@ public class ICalendarImport {
 
   private final Calendar calendar;
   private final Supplier<InputStream> inputSupplier;
-  private Consumer<List<CalendarEvent>> eventListConsumer;
+  private Consumer<List<Pair<CalendarEvent, List<CalendarEventOccurrence>>>> eventListConsumer;
 
   /**
    * Hidden constructor.
@@ -67,15 +69,17 @@ public class ICalendarImport {
   }
 
   /**
-   * Executes the treatment of importation and gets.
+   * Executes the treatment of importation.
    * @return the stream of calendar events. The calendar event stream
    * provides events each one representing the conversion of an event from iCalendar file. The
    * stream does not provide a persisted {@link CalendarEvent} and so the id is never filled
    * whereas the external id is.
-   * @throws ICalendarException
+   * @throws ICalendarException on error.
    */
-  public Stream<CalendarEvent> streamEvents() throws ICalendarException {
-    Mutable<List<CalendarEvent>> result = Mutable.of(Collections.emptyList());
+  public Stream<Pair<CalendarEvent, List<CalendarEventOccurrence>>> streamEvents()
+      throws ICalendarException {
+    Mutable<List<Pair<CalendarEvent, List<CalendarEventOccurrence>>>> result =
+        Mutable.of(Collections.emptyList());
     this.eventListConsumer = result::set;
     ICalendarExchange exchange = ICalendarExchange.get();
     exchange.doImportOf(this);
@@ -86,7 +90,7 @@ public class ICalendarImport {
     return inputSupplier;
   }
 
-  Consumer<List<CalendarEvent>> getEventListConsumer() {
+  Consumer<List<Pair<CalendarEvent, List<CalendarEventOccurrence>>>> getEventListConsumer() {
     return eventListConsumer;
   }
 

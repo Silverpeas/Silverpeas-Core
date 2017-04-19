@@ -169,8 +169,9 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
   }
 
   private VEvent fromCalendarEvent(CalendarEvent event) {
-    Date dtStart = iCal4JDateCodec.encode(event, event.getStartDate());
-    Date dtEnd = iCal4JDateCodec.encode(event, event.getEndDate());
+    final CalendarComponent component = event.asCalendarComponent();
+    Date dtStart = iCal4JDateCodec.encode(event.isRecurrent(), component, event.getStartDate());
+    Date dtEnd = iCal4JDateCodec.encode(event.isRecurrent(), component, event.getEndDate());
     VEvent vEvent = new VEvent(dtStart, dtEnd, event.getTitle());
     vEvent.getProperties().add(new Uid(event.getId()));
     if (event.isRecurrent()) {

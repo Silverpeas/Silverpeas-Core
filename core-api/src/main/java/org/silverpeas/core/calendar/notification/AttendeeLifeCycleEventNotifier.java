@@ -62,12 +62,20 @@ public class AttendeeLifeCycleEventNotifier
       Attendee attendeeOnLeft = before != null ? before.get(i).orElse(null) : null;
       Attendee attendeeOnRight = after != null ? after.get(i).orElse(null) : null;
       if (attendeeOnLeft != null && attendeeOnRight != null) {
-        notifier.notifyEventOn(ResourceEvent.Type.UPDATE, attendeeOnLeft, attendeeOnRight);
+        if (areDifferent(attendeeOnLeft, attendeeOnRight)) {
+          notifier.notifyEventOn(ResourceEvent.Type.UPDATE, attendeeOnLeft, attendeeOnRight);
+        }
       } else if (attendeeOnRight != null) {
         notifier.notifyEventOn(ResourceEvent.Type.CREATION, attendeeOnRight);
       } else {
         notifier.notifyEventOn(ResourceEvent.Type.DELETION, attendeeOnLeft);
       }
     });
+  }
+
+  private static boolean areDifferent(final Attendee attendeeOnLeft,
+      final Attendee attendeeOnRight) {
+    return attendeeOnLeft.getPresenceStatus() != attendeeOnRight.getPresenceStatus() ||
+        attendeeOnLeft.getParticipationStatus() != attendeeOnRight.getParticipationStatus();
   }
 }

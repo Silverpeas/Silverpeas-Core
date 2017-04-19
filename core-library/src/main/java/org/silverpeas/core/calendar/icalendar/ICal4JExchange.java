@@ -43,11 +43,14 @@ import net.fortuna.ical4j.model.parameter.Role;
 import net.fortuna.ical4j.model.parameter.Rsvp;
 import net.fortuna.ical4j.model.property.*;
 import net.fortuna.ical4j.util.CompatibilityHints;
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
 import org.silverpeas.core.calendar.Attendee.PresenceStatus;
+import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.InternalAttendee;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.VisibilityLevel;
@@ -57,7 +60,6 @@ import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection;
 import org.silverpeas.core.util.Mutable;
-import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.html.HtmlCleaner;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -65,22 +67,20 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -96,6 +96,10 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 @Singleton
 public class ICal4JExchange implements ICalendarExchange {
 
+  private static final Constructor<CalendarEventOccurrence> occurrenceConstructor;
+  private static final Comparator<CalendarEventOccurrence> OCCURRENCE_COMPARATOR_DESC =
+      (o1, o2) -> o2.getStartDate().toString().compareTo(o1.getStartDate().toString());
+  private static final String MAILTO = "mailto:";
   private final ICal4JDateCodec iCal4JDateCodec;
   private final ICal4JRecurrenceCodec iCal4JRecurrenceCodec;
 
@@ -124,175 +128,156 @@ public class ICal4JExchange implements ICalendarExchange {
 
       try (Stream<CalendarEvent> events = anExport.streamCalendarEvents()) {
         events.forEach(event -> {
-
-          // ICal4J period
-          final Date startDate = iCal4JDateCodec.encode(event, event.getStartDate());
-          final Date endDate = iCal4JDateCodec.encode(event, event.getEndDate());
-          long durationInSeconds = (endDate.getTime() - startDate.getTime()) / 1000;
-
-          DateTime createdDate =
-              iCal4JDateCodec.encode(event.getCreationDate().toInstant().atOffset(ZoneOffset.UTC));
-          DateTime lastUpdateDate = iCal4JDateCodec
-              .encode(event.getLastUpdateDate().toInstant().atOffset(ZoneOffset.UTC));
-
-          // ICal4J event
-          final String title =
-              formatTitle(event, anExport.getCalendar().getComponentInstanceId(), true);
-          VEvent iCalEvent = event.isOnAllDay() && startDate.equals(endDate) ?
-              new VEvent(startDate, title) :
-              new VEvent(startDate, endDate, title);
-          iCalEvent.getProperties().add(new Created(createdDate));
-          iCalEvent.getProperties().add(new LastModified(lastUpdateDate));
-          iCalEvent.getProperties().add(new Sequence(0));
-
-          // Set UID which is the one of the event
-          final String eventId =
-              event.getExternalId() != null ? event.getExternalId() : event.getId();
-          iCalEvent.getProperties().add(new Uid(eventId));
-
-          // Add Description if any
-          if (StringUtil.isDefined(event.getDescription())) {
-            HtmlCleaner cleaner = new HtmlCleaner();
-            String plainText = "";
-            try {
-              plainText = cleaner.cleanHtmlFragment(event.getDescription());
-            } catch (Exception e) {
-              // do nothing
-            }
-            iCalEvent.getProperties().add(new Description(plainText));
-            iCalEvent.getProperties().add(new HtmlProperty(event.getDescription()));
-          }
-
-          // Add Classification
-          iCalEvent.getProperties().add(new Clazz(event.getVisibilityLevel().name()));
-
-          // Add Priority
-          iCalEvent.getProperties().add(new Priority(event.getPriority().ordinal()));
-
-          // Add location if any
-          if (isDefined(event.getLocation())) {
-            iCalEvent.getProperties().add(new Location(event.getLocation()));
-          }
-
-          // Add event URL if any
-          Optional<String> url = event.getAttributes().get("url");
-          if (url.isPresent()) {
-            try {
-              iCalEvent.getProperties().add(new Url(new URI(url.get())));
-            } catch (URISyntaxException ex) {
-              throw new SilverpeasRuntimeException(ex.getMessage(), ex);
-            }
-          }
-
-          // Add Categories
-          TextList categoryList = new TextList(event.getCategories().asArray());
-          if (!categoryList.isEmpty()) {
-            iCalEvent.getProperties().add(new Categories(categoryList));
-          }
-          // Add attendees
-          Map<OffsetDateTime, List<Pair<org.silverpeas.core.calendar.Attendee,
-              ParticipationStatus>>>
-              participationRecurrence = new HashMap<>();
-          if (event.getAttendees().isEmpty()) {
-            iCalEvent.getProperties().add(Status.VEVENT_CONFIRMED);
-          } else {
-            iCalEvent.getProperties().add(convertOrganizer(event.getCreator()));
-            final Mutable<Status> mutableStatus = Mutable.of(Status.VEVENT_CONFIRMED);
-            event.getAttendees().stream()
-                .sorted(Comparator.comparing(org.silverpeas.core.calendar.Attendee::getId))
-                .forEach(attendee -> {
-                  iCalEvent.getProperties().add(convertAttendee(attendee));
-
-                  if (ACCEPTED != attendee.getParticipationStatus()) {
-                    mutableStatus.set(Status.VEVENT_TENTATIVE);
-                  }
-                  if (event.isRecurrent()) {
-//                    attendee.getParticipationOn().getAll().entrySet().stream()
-//                        .sorted(Comparator.comparing(Map.Entry::getKey)).forEach(entry -> {
-//                      OffsetDateTime date = entry.getKey();
-//                      ParticipationStatus status = entry.getValue();
-//                      if (ACCEPTED != status) {
-//                        mutableStatus.set(Status.VEVENT_TENTATIVE);
-//                      }
-//                      participationRecurrence.computeIfAbsent(date, dateTime -> {
-//                        List<Pair<org.silverpeas.core.calendar.Attendee, ParticipationStatus>>
-//                            attSts = new ArrayList<>();
-//                        event.getAttendees().stream().sorted(Comparator
-//                            .comparing(org.silverpeas.core.calendar.Attendee::getId))
-//                            .forEach(a -> attSts.add(Pair.of(a, a.getParticipationStatus())));
-//                        return attSts;
-//                      });
-//                      participationRecurrence.computeIfPresent(date, (dateTime, pairs) -> {
-//                        ListIterator<Pair<org.silverpeas.core.calendar.Attendee, ParticipationStatus>>
-//                            it = pairs.listIterator();
-//                        while (it.hasNext()) {
-//                          if (it.next().getFirst().equals(attendee)) {
-//                            it.set(Pair.of(attendee, status));
-//                            break;
-//                          }
-//                        }
-//                        return pairs;
-//                      });
-//                    });
-                  }
-                });
-            iCalEvent.getProperties().add(mutableStatus.get());
-          }
-
-          participationRecurrence.entrySet().stream()
-              .sorted((o1, o2) -> o2.getKey().compareTo(o1.getKey())).forEach(entry -> {
-            try {
-              VEvent iCalAttPartRec = (VEvent) iCalEvent.copy();
-              final OffsetDateTime dateKey = entry.getKey();
-              final Date startDateAttPartRec;
-              final Date endDateAttPartRec;
-              if (event.isOnAllDay()) {
-                startDateAttPartRec = iCal4JDateCodec.encode(dateKey.toLocalDate());
-                endDateAttPartRec =
-                    iCal4JDateCodec.encode(dateKey.plusSeconds(durationInSeconds).toLocalDate());
-              } else {
-                startDateAttPartRec = iCal4JDateCodec.encode(event, dateKey);
-                endDateAttPartRec = iCal4JDateCodec.encode(event, dateKey.plusSeconds(durationInSeconds));
-              }
-              iCalAttPartRec.getProperties().add(new RecurrenceId(startDateAttPartRec));
-              ((DtStart) iCalAttPartRec.getProperty(Property.DTSTART)).setDate(startDateAttPartRec);
-              if (!startDate.equals(endDate)) {
-                ((DtEnd) iCalAttPartRec.getProperty(Property.DTEND)).setDate(endDateAttPartRec);
-              }
-              iCalAttPartRec.getProperties()
-                  .removeIf(property -> property.getName().equals(Property.ATTENDEE));
-              entry.getValue().forEach(
-                  p -> iCalAttPartRec.getProperties().add(convertAttendee(p.getFirst(), p.getSecond())));
-              calendarIcs.getComponents().add(iCalAttPartRec);
-            } catch (ParseException | IOException | URISyntaxException e) {
-              throw new SilverpeasRuntimeException(e);
-            }
-          });
-
-          // Add recurring data if any
+          VEvent iCalEvent = convertToICalEvent(anExport, event, event.asCalendarComponent());
           if (event.isRecurrent()) {
-            Recur recur = iCal4JRecurrenceCodec.encode(event);
-            iCalEvent.getProperties().add(new RRule(recur));
-            if (!event.getRecurrence().getExceptionDates().isEmpty()) {
-              iCalEvent.getProperties()
-                  .add(new ExDate(iCal4JRecurrenceCodec.convertExceptionDates(event)));
-            }
+            setICalRecurrence(event, iCalEvent);
           }
-
+          if (event.isRecurrent()) {
+            event.getPersistedOccurrences().stream()
+              .sorted(OCCURRENCE_COMPARATOR_DESC)
+              .forEach(occurrence -> {
+                VEvent occICalEvent = convertToICalEvent(anExport, occurrence);
+                calendarIcs.getComponents().add(occICalEvent);
+              });
+          }
           calendarIcs.getComponents().add(iCalEvent);
         });
       }
 
-      CalendarOutputter outputter = new CalendarOutputter();
-      try {
-        outputter.output(calendarIcs, anExport.getOutput());
-      } catch (Exception ex) {
-        throw new SilverpeasRuntimeException(
-            "The encoding of the events in iCal formatted text has failed!", ex);
-      }
-    } catch (SilverpeasRuntimeException se) {
-      throw new ICalendarException(se);
+      CalendarOutputter writer = new CalendarOutputter();
+      writer.output(calendarIcs, anExport.getOutput());
+    } catch (Exception e) {
+      throw new ICalendarException("The encoding of the events in iCal formatted text has failed!",
+          e);
     }
+  }
+
+  private VEvent convertToICalEvent(final ICalendarExport anExport,
+      CalendarEventOccurrence occurrence) {
+    final CalendarComponent occComponent = occurrence.asCalendarComponent();
+    final CalendarComponent evtComponent = occurrence.getCalendarEvent().asCalendarComponent();
+    VEvent occICalEvent = convertToICalEvent(anExport, occurrence.getCalendarEvent(), occComponent);
+    final Date occOrigStartDate =
+        iCal4JDateCodec.encode(true, evtComponent, occurrence.getOriginalStartDate());
+    occICalEvent.getProperties().add(new RecurrenceId(occOrigStartDate));
+    return occICalEvent;
+  }
+
+  private VEvent convertToICalEvent(final ICalendarExport anExport, CalendarEvent event,
+      final CalendarComponent component) {
+    VEvent iCalEvent = initICalEvent(anExport, event, component);
+    setICalUuid(event, iCalEvent);
+    setICalDescription(component, iCalEvent);
+    setICalVisibility(event, iCalEvent);
+    setICalPriority(component, iCalEvent);
+    setICalLocation(component, iCalEvent);
+    setICalUrl(component, iCalEvent);
+    setICalCategories(event, iCalEvent);
+    setICalAttendees(component, iCalEvent);
+    return iCalEvent;
+  }
+
+  private void setICalRecurrence(final CalendarEvent event, final VEvent iCalEvent) {
+    Recur recur = iCal4JRecurrenceCodec.encode(event);
+    iCalEvent.getProperties().add(new RRule(recur));
+    if (!event.getRecurrence().getExceptionDates().isEmpty()) {
+      iCalEvent.getProperties()
+          .add(new ExDate(iCal4JRecurrenceCodec.convertExceptionDates(event)));
+    }
+  }
+
+  private void setICalPriority(final CalendarComponent component, final VEvent iCalEvent) {
+    iCalEvent.getProperties().add(new Priority(component.getPriority().ordinal()));
+  }
+
+  private void setICalVisibility(final CalendarEvent event, final VEvent iCalEvent) {
+    iCalEvent.getProperties().add(new Clazz(event.getVisibilityLevel().name()));
+  }
+
+  private void setICalLocation(final CalendarComponent component, final VEvent iCalEvent) {
+    if (isDefined(component.getLocation())) {
+      iCalEvent.getProperties().add(new Location(component.getLocation()));
+    }
+  }
+
+  private void setICalAttendees(final CalendarComponent component, final VEvent iCalEvent) {
+    if (component.getAttendees().isEmpty()) {
+      iCalEvent.getProperties().add(Status.VEVENT_CONFIRMED);
+    } else {
+      iCalEvent.getProperties().add(convertOrganizer(component.getCreator()));
+      final Mutable<Status> mutableStatus = Mutable.of(Status.VEVENT_CONFIRMED);
+      component.getAttendees().stream()
+          .sorted(Comparator.comparing(org.silverpeas.core.calendar.Attendee::getId))
+          .forEach(attendee -> {
+            iCalEvent.getProperties().add(convertAttendee(attendee));
+            if (ACCEPTED != attendee.getParticipationStatus()) {
+              mutableStatus.set(Status.VEVENT_TENTATIVE);
+            }
+          });
+      iCalEvent.getProperties().add(mutableStatus.get());
+    }
+  }
+
+  private void setICalCategories(final CalendarEvent event, final VEvent iCalEvent) {
+    TextList categoryList = new TextList(event.getCategories().asArray());
+    if (!categoryList.isEmpty()) {
+      iCalEvent.getProperties().add(new Categories(categoryList));
+    }
+  }
+
+  private void setICalUrl(final CalendarComponent component, final VEvent iCalEvent) {
+    Optional<String> url = component.getAttributes().get("url");
+    if (url.isPresent()) {
+      try {
+        iCalEvent.getProperties().add(new Url(new URI(url.get())));
+      } catch (URISyntaxException ex) {
+        throw new SilverpeasRuntimeException(ex.getMessage(), ex);
+      }
+    }
+  }
+
+  private VEvent initICalEvent(final ICalendarExport anExport, final CalendarEvent event,
+      final CalendarComponent component) {
+    // ICal4J period
+    final Date startDate = iCal4JDateCodec
+        .encode(event.isRecurrent(), component, component.getPeriod().getStartDate());
+    final Date endDate =
+        iCal4JDateCodec.encode(event.isRecurrent(), component, component.getPeriod().getEndDate());
+
+    DateTime createdDate =
+        iCal4JDateCodec.encode(component.getCreateDate().toInstant().atOffset(ZoneOffset.UTC));
+    DateTime lastUpdateDate =
+        iCal4JDateCodec.encode(component.getLastUpdateDate().toInstant().atOffset(ZoneOffset.UTC));
+
+    // ICal4J event
+    final String title =
+        formatTitle(component, anExport.getCalendar().getComponentInstanceId(), true);
+    VEvent iCalEvent = component.getPeriod().isInDays() && startDate.equals(endDate) ?
+        new VEvent(startDate, title) : new VEvent(startDate, endDate, title);
+    iCalEvent.getProperties().add(new Created(createdDate));
+    iCalEvent.getProperties().add(new LastModified(lastUpdateDate));
+    iCalEvent.getProperties().add(new Sequence((int) component.getSequence()));
+    return iCalEvent;
+  }
+
+  private void setICalDescription(final CalendarComponent component, final VEvent iCalEvent) {
+    final String description = component.getDescription();
+    if (StringUtil.isDefined(description)) {
+      HtmlCleaner cleaner = new HtmlCleaner();
+      String plainText = "";
+      try {
+        plainText = cleaner.cleanHtmlFragment(description);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).warn(e);
+      }
+      iCalEvent.getProperties().add(new Description(plainText));
+      iCalEvent.getProperties().add(new HtmlProperty(description));
+    }
+  }
+
+  private void setICalUuid(final CalendarEvent event, final VEvent iCalEvent) {
+    final String eventId = event.getExternalId() != null ? event.getExternalId() : event.getId();
+    iCalEvent.getProperties().add(new Uid(eventId));
   }
 
   /**
@@ -303,7 +288,7 @@ public class ICal4JExchange implements ICalendarExchange {
   private Organizer convertOrganizer(final User user) {
     try {
       final Organizer iCalEventOrganizer =
-          isDefined(user.geteMail()) ? new Organizer("mailto:" + user.geteMail()) : new Organizer();
+          isDefined(user.geteMail()) ? new Organizer(MAILTO + user.geteMail()) : new Organizer();
       iCalEventOrganizer.getParameters().add(new Cn(user.getDisplayedName()));
       return iCalEventOrganizer;
     } catch (URISyntaxException ex) {
@@ -333,11 +318,11 @@ public class ICal4JExchange implements ICalendarExchange {
       if (attendee instanceof InternalAttendee) {
         InternalAttendee internalAttendee = (InternalAttendee) attendee;
         iCalEventAttendee = isDefined(internalAttendee.getUser().geteMail()) ?
-            new Attendee("mailto:" + internalAttendee.getUser().geteMail()) : new Attendee();
+            new Attendee(MAILTO + internalAttendee.getUser().geteMail()) : new Attendee();
         iCalEventAttendee.getParameters()
             .add(new Cn(internalAttendee.getUser().getDisplayedName()));
       } else {
-        iCalEventAttendee = new Attendee("mailto:" + attendee.getId());
+        iCalEventAttendee = new Attendee(MAILTO + attendee.getId());
         iCalEventAttendee.getParameters().add(new Cn(attendee.getId()));
       }
       iCalEventAttendee.getParameters().add(CuType.INDIVIDUAL);
@@ -416,93 +401,25 @@ public class ICal4JExchange implements ICalendarExchange {
               .debug("iCalendar component ''{0}'' is not handled", component.getName());
         }
       });
-      List<CalendarEvent> events = new ArrayList<>(readEvents.size());
+      List<Pair<CalendarEvent, List<CalendarEventOccurrence>>> events =
+          new ArrayList<>(readEvents.size());
       readEvents.forEach((vEventId, vEvents) -> {
+
         // For now the following stuffs are not handled:
         // - the attendees
         // - triggers
         VEvent vEvent = vEvents.remove(0);
+        CalendarEvent event = eventFromICalEvent(zoneId, vEventId, vEvent);
 
-        // The period
-        final Date startDate = vEvent.getStartDate().getDate();
-        Date endDate = vEvent.getEndDate().getDate();
-        if (endDate == null && !(startDate instanceof DateTime)) {
-          endDate = startDate;
-        }
-        Temporal startTemporal = iCal4JDateCodec.decode(startDate, zoneId.get());
-        Temporal endTemporal = iCal4JDateCodec.decode(endDate, zoneId.get());
-        if (endTemporal instanceof LocalDate) {
-          if (!startTemporal.equals(endTemporal)) {
-            endTemporal = endTemporal.minus(1, ChronoUnit.DAYS);
-          }
-        } else if (startTemporal.equals(endTemporal)) {
-          endTemporal = endTemporal.plus(1, ChronoUnit.HOURS);
-        }
-        Period period = Period.between(startTemporal, endTemporal);
-        CalendarEvent event = CalendarEvent.on(period);
-
-        // External Id
-        event.withExternalId(vEventId);
-
-        // Title
-        if (vEvent.getSummary() != null) {
-          event.withTitle(vEvent.getSummary().getValue());
-        }
-
-        // Description
-        Property description = vEvent.getProperty(HtmlProperty.X_ALT_DESC);
-        if (description == null) {
-          description =
-              vEvent.getDescription() != null ? vEvent.getDescription() : new Description("");
-        }
-        event.withDescription(description.getValue());
-
-        // Location
-        if (vEvent.getLocation() != null) {
-          event.setLocation(vEvent.getLocation().getValue());
-        }
-
-        // URL
-        if (vEvent.getUrl() != null) {
-          event.getAttributes().set("url", vEvent.getUrl().getValue());
-        }
-
-        // Categories
-        if (vEvent.getProperty(Categories.CATEGORIES) != null) {
-          Categories categories = (Categories) vEvent.getProperty(Categories.CATEGORIES);
-          Iterator<String> categoriesIt = categories.getCategories().iterator();
-          while (categoriesIt.hasNext()) {
-            event.getCategories().add(categoriesIt.next());
-          }
-        }
-
-        // Recurrence
-        if (vEvent.getProperty(Property.RRULE) != null) {
-          Recurrence recurrence = iCal4JRecurrenceCodec.decode(vEvent, zoneId.get());
-          event.recur(recurrence);
-        }
-
-        // Priority
-        if(vEvent.getPriority() != null) {
-          event.withPriority(
-              org.silverpeas.core.calendar.Priority.valueOf(vEvent.getPriority().getLevel()));
-        }
-
-        // Visibility
-        if (vEvent.getClassification() != null) {
-          event.withVisibilityLevel(VisibilityLevel.valueOf(vEvent.getClassification().getValue()));
-        }
-
-        // Technical data
-        if (vEvent.getCreated() != null) {
-          JpaEntityReflection.setCreateDate(event.asCalendarComponent(), vEvent.getCreated().getDate());
-        }
-        if (vEvent.getLastModified() != null) {
-          JpaEntityReflection.setLastUpdateDate(event.asCalendarComponent(), vEvent.getLastModified().getDate());
-        }
+        // Occurrences
+        List<CalendarEventOccurrence> occurrences = new ArrayList<>(vEvents.size());
+        vEvents.forEach(v -> {
+          CalendarEventOccurrence occurrence = occurrenceFromICalEvent(zoneId, event, v);
+          occurrences.add(occurrence);
+        });
 
         // New event to perform
-        events.add(event);
+        events.add(Pair.of(event, occurrences));
       });
 
       // The events will be performed by the caller
@@ -510,6 +427,125 @@ public class ICal4JExchange implements ICalendarExchange {
 
     } catch (IOException | ParserException e) {
       throw new ICalendarException(e);
+    }
+  }
+
+  private CalendarEventOccurrence occurrenceFromICalEvent(final Mutable<ZoneId> zoneId,
+      final CalendarEvent event, final VEvent vEvent) {
+    try {
+      // The original start date
+      Temporal originalStartDate = iCal4JDateCodec.decode(vEvent.getRecurrenceId().getDate());
+      // The occurrence
+      CalendarEventOccurrence occurrence =
+          occurrenceConstructor.newInstance(event, originalStartDate, originalStartDate);
+      // The period
+      occurrence.setPeriod(extractPeriod(zoneId, vEvent));
+      // Component data
+      copyICalEventToComponent(vEvent, occurrence.asCalendarComponent());
+      return occurrence;
+    } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
+
+  private CalendarEvent eventFromICalEvent(final Mutable<ZoneId> zoneId, final String vEventId,
+      final VEvent vEvent) {
+    // The period
+    Period period = extractPeriod(zoneId, vEvent);
+    CalendarEvent event = CalendarEvent.on(period);
+
+    // External Id
+    event.withExternalId(vEventId);
+
+    // Visibility
+    if (vEvent.getClassification() != null) {
+      event.withVisibilityLevel(VisibilityLevel.valueOf(vEvent.getClassification().getValue()));
+    }
+
+    // Categories
+    if (vEvent.getProperty(Categories.CATEGORIES) != null) {
+      Categories categories = (Categories) vEvent.getProperty(Categories.CATEGORIES);
+      Iterator<String> categoriesIt = categories.getCategories().iterator();
+      while (categoriesIt.hasNext()) {
+        event.getCategories().add(categoriesIt.next());
+      }
+    }
+
+    // Recurrence
+    if (vEvent.getProperty(Property.RRULE) != null) {
+      Recurrence recurrence = iCal4JRecurrenceCodec.decode(vEvent, zoneId.get());
+      event.recur(recurrence);
+    }
+
+    // Component data
+    copyICalEventToComponent(vEvent, event.asCalendarComponent());
+    return event;
+  }
+
+  private void copyICalEventToComponent(final VEvent vEvent, final CalendarComponent component) {
+    // Title
+    if (vEvent.getSummary() != null) {
+      component.setTitle(vEvent.getSummary().getValue());
+    }
+
+    // Description
+    Property description = vEvent.getProperty(HtmlProperty.X_ALT_DESC);
+    if (description == null) {
+      description =
+          vEvent.getDescription() != null ? vEvent.getDescription() : new Description("");
+    }
+    component.setDescription(description.getValue());
+
+    // Location
+    if (vEvent.getLocation() != null) {
+      component.setLocation(vEvent.getLocation().getValue());
+    }
+
+    // URL
+    if (vEvent.getUrl() != null) {
+      component.getAttributes().set("url", vEvent.getUrl().getValue());
+    }
+
+    // Priority
+    if (vEvent.getPriority() != null) {
+      component.setPriority(
+          org.silverpeas.core.calendar.Priority.valueOf(vEvent.getPriority().getLevel()));
+    }
+
+    // Technical data
+    if (vEvent.getCreated() != null) {
+      JpaEntityReflection.setCreateDate(component, vEvent.getCreated().getDate());
+    }
+    if (vEvent.getLastModified() != null) {
+      JpaEntityReflection.setLastUpdateDate(component, vEvent.getLastModified().getDate());
+    }
+  }
+
+  private Period extractPeriod(final Mutable<ZoneId> zoneId, final VEvent vEvent) {
+    final Date startDate = vEvent.getStartDate().getDate();
+    Date endDate = vEvent.getEndDate().getDate();
+    if (endDate == null && !(startDate instanceof DateTime)) {
+      endDate = startDate;
+    }
+    Temporal startTemporal = iCal4JDateCodec.decode(startDate, zoneId.get());
+    Temporal endTemporal = iCal4JDateCodec.decode(endDate, zoneId.get());
+    if (endTemporal instanceof LocalDate) {
+      if (!startTemporal.equals(endTemporal)) {
+        endTemporal = endTemporal.minus(1, ChronoUnit.DAYS);
+      }
+    } else if (startTemporal.equals(endTemporal)) {
+      endTemporal = endTemporal.plus(1, ChronoUnit.HOURS);
+    }
+    return Period.between(startTemporal, endTemporal);
+  }
+
+  static {
+    try {
+      occurrenceConstructor = CalendarEventOccurrence.class
+          .getDeclaredConstructor(CalendarEvent.class, Temporal.class, Temporal.class);
+      occurrenceConstructor.setAccessible(true);
+    } catch (NoSuchMethodException e) {
+      throw new SilverpeasRuntimeException(e);
     }
   }
 }

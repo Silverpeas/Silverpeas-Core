@@ -153,7 +153,7 @@ public class CalendarEventRecurrenceEntity implements Serializable {
     endDate = null;
     optionalDateTime.ifPresent(t ->
         endDate = TemporalConverter.applyByType(t, LocalDate::toString,
-            dateTime -> formatDateWithOffset(event, dateTime, zoneId)));
+            dateTime -> formatDateWithOffset(event.asCalendarComponent(), dateTime, zoneId)));
     daysOfWeek = recurrence.getDaysOfWeek().stream().map(DayOfWeekOccurrenceEntity::from)
         .collect(Collectors.toList());
     return this;

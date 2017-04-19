@@ -28,7 +28,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.sql.Timestamp;
 import java.util.Date;
 
 /**
@@ -42,6 +41,12 @@ public class JpaEntityReflection {
   private static Method lastUpdateDateMethod = null;
   private static Field createdBySetManuallyField = null;
   private static Field lastUpdatedBySetManuallyField = null;
+
+  /**
+   * Hidden constructor.
+   */
+  private JpaEntityReflection() {
+  }
 
   public static void setCreateDate(final SilverpeasJpaEntity entity, final Date timestamp) {
     try {

@@ -89,7 +89,8 @@ public class ICal4JRecurrenceCodec {
       .collect(Collectors.toCollection(() -> {
         Value type = event.isOnAllDay() ? Value.DATE : Value.DATE_TIME;
         final DateList list = new DateList(type);
-        if (iCal4JDateCodec.isEventDateToBeEncodedIntoUtc(event)) {
+        if (iCal4JDateCodec
+            .isEventDateToBeEncodedIntoUtc(event.isRecurrent(), event.asCalendarComponent())) {
           list.setUtc(true);
         } else {
           list.setUtc(false);

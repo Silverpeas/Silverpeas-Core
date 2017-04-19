@@ -181,8 +181,8 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
         .equals(calendarEventOccurrence.getCalendarEvent().getStartDate()));
     final CalendarComponent component = calendarEventOccurrence.asCalendarComponent();
     setOnAllDay(calendarEventOccurrence.isOnAllDay());
-    setStartDate(formatDateWithOffset(calEvent, calendarEventOccurrence.getStartDate(), zoneId));
-    setEndDate(formatDateWithOffset(calEvent, calendarEventOccurrence.getEndDate(), zoneId));
+    setStartDate(formatDateWithOffset(component, calendarEventOccurrence.getStartDate(), zoneId));
+    setEndDate(formatDateWithOffset(component, calendarEventOccurrence.getEndDate(), zoneId));
     setLastUpdateDate(component.getLastUpdateDate());
     setTitle(
         formatTitle(component, calEvent.getCalendar().getComponentInstanceId(), canBeAccessed()));

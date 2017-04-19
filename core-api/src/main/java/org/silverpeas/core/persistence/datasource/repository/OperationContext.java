@@ -24,9 +24,14 @@
 package org.silverpeas.core.persistence.datasource.repository;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.util.ArgumentAssertion;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This class permits to give details about operation actions (save action for now), especially the
@@ -42,6 +47,8 @@ import org.silverpeas.core.util.ArgumentAssertion;
 public class OperationContext {
 
   private static final String CACHE_KEY = OperationContext.class.getName();
+
+  private List<State> states = new ArrayList<>();
   private boolean updatingInCaseOfCreation = false;
 
   // The user
@@ -51,8 +58,8 @@ public class OperationContext {
    * Creates an empty instance.
    * @return a new {@link OperationContext} instance.
    */
-  public static OperationContext createInstance() {
-    return new OperationContext();
+  private OperationContext() {
+    // Nothing.
   }
 
   /**
@@ -70,7 +77,7 @@ public class OperationContext {
    * @return a new {@link OperationContext} for the specified user.
    */
   public static OperationContext fromUser(User user) {
-    return new OperationContext().withUser(user);
+    return getFromCache().withUser(user);
   }
 
   /**
@@ -78,7 +85,7 @@ public class OperationContext {
    * @return a new {@link OperationContext} for the current user.
    */
   public static OperationContext fromCurrentRequester() {
-    return new OperationContext().withUser(User.getCurrentRequester());
+    return getFromCache().withUser(User.getCurrentRequester());
   }
 
   /**
@@ -88,16 +95,53 @@ public class OperationContext {
    * @return the current {@link OperationContext} instance from the cache.
    */
   public static OperationContext getFromCache() {
-    return CacheServiceProvider.getRequestCacheService()
-        .getCache()
-        .get(CACHE_KEY, OperationContext.class);
+    final SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+    OperationContext context = cache.get(CACHE_KEY, OperationContext.class);
+    if (context == null) {
+      context = new OperationContext();
+      cache.put(CACHE_KEY, context);
+    }
+    return context;
   }
 
   /**
-   * Default hidden constructor.
+   * Indicates if the given states are well set into context.
+   * @param states the states to verify.
+   * @return true if the specified states exists into the context, false otherwise.
    */
-  private OperationContext() {
-    // Nothing.
+  public static boolean statesOf(final State... states) {
+    final OperationContext context = getFromCache();
+    if (context.states.isEmpty()) {
+      return false;
+    }
+    for (State state : states) {
+      if (!context.states.contains(state)) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Adds states into context.
+   * @param states the states to add.
+   * @return itself.
+   */
+  public static OperationContext addStates(final State... states) {
+    final OperationContext context = getFromCache();
+    context.states.addAll(Arrays.asList(states));
+    return context;
+  }
+
+  /**
+   * Removes states from context.
+   * @param states the states to remove.
+   * @return itself.
+   */
+  public static OperationContext removeStates(final State... states) {
+    final OperationContext context = getFromCache();
+    context.states.removeAll(Arrays.asList(states));
+    return context;
   }
 
   /**
@@ -121,6 +165,14 @@ public class OperationContext {
   }
 
   /**
+   * Indicates if the date update is performed in a case of creation.
+   * @return true if the date is updated, false otherwise.
+   */
+  public boolean isUpdatingInCaseOfCreation() {
+    return updatingInCaseOfCreation;
+  }
+
+  /**
    * Calling this method to indicates that the current data update is performed in a case of a
    * creation or not. Indeed, in some cases, the creation of a resource into database is done by a
    * chaining of inserts and updates.
@@ -134,28 +186,11 @@ public class OperationContext {
   }
 
   /**
-   * Indicates if the date update is performed in a case of creation.
-   * @return true if the date is updated, false otherwise.
-   */
-  public boolean isUpdatingInCaseOfCreation() {
-    return updatingInCaseOfCreation;
-  }
-
-  /**
    * Gets the user behind the operation.
    * @return the user concerned by the operation.
    */
   public User getUser() {
     return user;
-  }
-
-  /**
-   * Put the current instance into a cache (thread cache (request cache exactly)) to be retrieved
-   * from @PrePersist or @PreUpdate operations.
-   * The call of this method is automatically done by technical JPA tools.
-   */
-  public void putIntoCache() {
-    CacheServiceProvider.getRequestCacheService().getCache().put(CACHE_KEY, this);
   }
 
   /**
@@ -179,5 +214,9 @@ public class OperationContext {
     ArgumentAssertion.assertNotNull(user, errorMessage);
     ArgumentAssertion.assertDefined(user.getId(), errorMessage);
     entity.setLastUpdater(user);
+  }
+
+  public enum State {
+    EXPORT, IMPORT
   }
 }

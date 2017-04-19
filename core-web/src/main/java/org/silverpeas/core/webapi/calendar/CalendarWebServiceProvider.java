@@ -32,7 +32,6 @@ import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.InternalAttendee;
 import org.silverpeas.core.calendar.icalendar.ICalendarException;
 import org.silverpeas.core.calendar.icalendar.ICalendarImport;
 import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
@@ -257,31 +256,25 @@ public class CalendarWebServiceProvider {
    */
   void importEventsAsICalendarFormat(final ICalendarImport eventImport)
       throws ICalendarException {
-    final Stream<CalendarEvent> events = eventImport.streamEvents();
+    final Stream<Pair<CalendarEvent, List<CalendarEventOccurrence>>> events =
+        eventImport.streamEvents();
     Transaction.performInOne(() -> {
-      events.forEach(event -> {
+      events.forEach(e -> {
+        CalendarEvent event = e.getLeft();
+        List<CalendarEventOccurrence> occurrences = e.getRight();
         // Adjustments
-        if (StringUtil.isNotDefined(event.getTitle())) {
-          event.withTitle("N/A");
-        }
+        importAdjustments(event);
         // Persist operation
-        Optional<CalendarEvent> optionalPersistedEvent =
-            eventImport.getCalendar().externalEvent(event.getExternalId());
-        if (!optionalPersistedEvent.isPresent()) {
-          optionalPersistedEvent = eventImport.getCalendar().event(event.getExternalId());
-        }
-        if (optionalPersistedEvent.isPresent()) {
-          optionalPersistedEvent.get().getAttendees().forEach(a -> a.ifMatches(
-              a1 -> a1 instanceof InternalAttendee,
-              a1 -> event.getAttendees().add(((InternalAttendee)a1).getUser()),
-              a1 -> event.getAttendees().add(a1.getId())));
-          optionalPersistedEvent.get().merge(event);
-        } else {
-          event.planOn(eventImport.getCalendar());
-        }
+        event.importWith(eventImport, occurrences);
       });
       return null;
     });
+  }
+
+  private void importAdjustments(final CalendarEvent event) {
+    if (StringUtil.isNotDefined(event.getTitle())) {
+      event.withTitle("N/A");
+    }
   }
 
   /**
@@ -325,7 +318,8 @@ public class CalendarWebServiceProvider {
     updatedOccurrence.ifPresent(o -> {
       final CalendarEvent event = o.getCalendarEvent();
       successMessage("calendar.message.event.occurrence.updated.unique", originalTitle,
-          getMessager().formatDate(getDateWithOffset(event, originalStartDate, zoneId)));
+          getMessager().formatDate(
+              getDateWithOffset(event.asCalendarComponent(), originalStartDate, zoneId)));
       events.add(event);
     });
 
@@ -336,7 +330,7 @@ public class CalendarWebServiceProvider {
         //noinspection OptionalGetWithoutIsPresent
         final Temporal endDate = e.getRecurrence().getRecurrenceEndDate().get();
         successMessage("calendar.message.event.occurrence.updated.from", e.getTitle(),
-            getMessager().formatDate(getDateWithOffset(e, endDate, zoneId)));
+            getMessager().formatDate(getDateWithOffset(e.asCalendarComponent(), endDate, zoneId)));
       }
       events.add(e);
     });
@@ -391,7 +385,7 @@ public class CalendarWebServiceProvider {
         endDate = updatedEvent.get().getRecurrence().getRecurrenceEndDate().get();
       }
       successMessage(bundleKey, occurrence.getTitle(), getMessager()
-          .formatDate(getDateWithOffset(occurrence.getCalendarEvent(), endDate, zoneId)));
+          .formatDate(getDateWithOffset(occurrence.asCalendarComponent(), endDate, zoneId)));
     }
 
     return updatedEvent.orElse(null);
@@ -420,7 +414,7 @@ public class CalendarWebServiceProvider {
         modifiedEvent = optionalResult.get().instance().get().getCalendarEvent();
         successMessage("calendar.message.event.occurrence.attendee.participation.updated.unique",
             occurrence.getTitle(), getMessager().formatDate(
-                getDateWithOffset(occurrence.getCalendarEvent(), occurrence.getOriginalStartDate(),
+                getDateWithOffset(occurrence.asCalendarComponent(), occurrence.getOriginalStartDate(),
                     zoneId)));
       }
     } else if (methodType == ALL) {

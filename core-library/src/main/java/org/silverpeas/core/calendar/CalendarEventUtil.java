@@ -35,23 +35,10 @@ import java.time.temporal.Temporal;
  */
 public class CalendarEventUtil {
 
-  private CalendarEventUtil() {
-
-  }
-
   /**
-   * Centralizes the format treatment of title display, according the given parameters, which
-   * determine the context, the title is modified.
-   * @param event the event data.
-   * @param componentInstanceId the identifier of component instance into which the event is
-   * handled.
-   * @param canBeAccessed indicates if the event is accessible for the current user into the current
-   * context.
-   * @return the display title as string.
+   * Hidden constructor.
    */
-  public static String formatTitle(final CalendarEvent event,
-      final String componentInstanceId, boolean canBeAccessed) {
-    return formatTitle(event.asCalendarComponent(),componentInstanceId, canBeAccessed);
+  private CalendarEventUtil() {
   }
 
   /**
@@ -75,33 +62,33 @@ public class CalendarEventUtil {
   }
 
   /**
-   * Gets the given temporal according to the calendar event data.<br/>
-   * If the event is on all days, no offset is applied.
+   * Gets the given temporal according to the calendar component data.<br/>
+   * If the component is on all days, no offset is applied.
    * If a specific zoneId is given, then the date is set to the offset of the given zoneId
    * instead of the one linked to the calendar.
-   * @param event the event data.
+   * @param component the component data.
    * @param temporal the temporal to format.
    * @param zoneId the zoneId requested (optional).
-   * @return the date, with offset if the event is not on all days.
+   * @return the date, with offset if the component is not on all days.
    */
-  public static Temporal getDateWithOffset(final CalendarEvent event, final Temporal temporal,
+  public static Temporal getDateWithOffset(final CalendarComponent component, final Temporal temporal,
       final ZoneId zoneId) {
-    final ZoneId toZoneId = zoneId != null ? zoneId : event.getCalendar().getZoneId();
-    return event.isOnAllDay() ? temporal :
+    final ZoneId toZoneId = zoneId != null ? zoneId : component.getCalendar().getZoneId();
+    return component.getPeriod().isInDays() ? temporal :
         ((OffsetDateTime) temporal).atZoneSameInstant(toZoneId).toOffsetDateTime();
   }
 
   /**
-   * Formats the given temporal according to the calendar event data and given zoneId.
-   * @param event the event data.
+   * Formats the given temporal according to the calendar component data and given zoneId.
+   * @param component the component data.
    * @param temporal the temporal to format.
    * @param zoneId the zoneId requested (optional).
    * @return the formatted date.
-   * @see #getDateWithOffset(CalendarEvent, Temporal, ZoneId)
+   * @see #getDateWithOffset(CalendarComponent, Temporal, ZoneId)
    */
-  public static String formatDateWithOffset(final CalendarEvent event, final Temporal temporal,
+  public static String formatDateWithOffset(final CalendarComponent component, final Temporal temporal,
       final ZoneId zoneId) {
-    return getDateWithOffset(event, temporal, zoneId).toString();
+    return getDateWithOffset(component, temporal, zoneId).toString();
   }
 
   /**

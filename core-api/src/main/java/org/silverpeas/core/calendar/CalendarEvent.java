@@ -23,8 +23,10 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.icalendar.ICalendarImport;
 import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
@@ -33,6 +35,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.SecurableRequestCache;
 import org.silverpeas.core.security.authorization.AccessControlContext;
@@ -47,17 +50,20 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static org.silverpeas.core.calendar.CalendarComponentDiffDescriptor.diffBetween;
 import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
 import static org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier
     .notifyAttendees;
+import static org.silverpeas.core.persistence.datasource.repository.OperationContext.State.IMPORT;
 
 /**
  * An event planned in a calendar.
@@ -175,6 +181,8 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized, Securable {
 
   private static final long serialVersionUID = 1L;
+  private static final Comparator<CalendarEventOccurrence> EVENT_OCCURRENCE_COMPARATOR =
+      Comparator.comparing(o -> o.getOriginalStartDate().toString());
 
   @Column(name = "externalId")
   private String externalId;
@@ -722,13 +730,12 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    */
   @Override
   public EventOperationResult delete() {
-    CalendarEventRepository repository = CalendarEventRepository.get();
     return Transaction.performInOne(() -> {
       if (isPlanned()) {
         // Deletes all persisted occurrences belonging to this event
         deleteAllOccurrencesFromPersistence(true);
         // Deletes the event from persistence
-        repository.delete(this);
+        deleteFromPersistence(true);
       }
       return new EventOperationResult();
     });
@@ -798,13 +805,117 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * It is not possible to merge the data of calendar which represents the repository of the event.
    * @param event the event to merge into current one.
    */
-  public EventOperationResult merge(CalendarEvent event) {
+  private void merge(CalendarEvent event) {
+    event.component.copyTo(this.component);
     this.externalId = event.getExternalId();
-    this.component = event.component;
     this.visibilityLevel = event.visibilityLevel;
     this.recurrence = event.recurrence;
     this.categories = event.categories;
-    return update();
+  }
+
+  /**
+   * Imports the data of the current instance into the persistence context.
+   * <p>The current instance does not represents the data into persistence but the data to merge (or
+   * persist) into</p>.
+   * <p>The given occurrences are just carrying the data to merge (or persist) into the
+   * persistence.</p>
+   * @param eventImport the import context.
+   * @param occurrences the data of the occurrences to persist.
+   *
+   * @return the result of importation. It has the updated event.
+   */
+  public EventOperationResult importWith(final ICalendarImport eventImport,
+      final List<CalendarEventOccurrence> occurrences) {
+    OperationContext.addStates(IMPORT);
+    try {
+      return Transaction.performInOne(() -> {
+        final Pair<CalendarEvent, EventOperationResult> importEventResult =
+            importEvent(eventImport);
+        if (!occurrences.isEmpty()) {
+          importOccurrences(importEventResult, occurrences);
+        }
+        return importEventResult.getRight();
+      });
+    } finally {
+      OperationContext.removeStates(IMPORT);
+    }
+  }
+
+  private Pair<CalendarEvent, EventOperationResult> importEvent(final ICalendarImport eventImport) {
+
+    // Searching the existence of the event first onto the external identifier data
+    Optional<CalendarEvent> optionalPersistedEvent =
+        eventImport.getCalendar().externalEvent(getExternalId());
+    if (!optionalPersistedEvent.isPresent()) {
+      // If none, searching the existence of the event on the id data
+      optionalPersistedEvent = eventImport.getCalendar().event(getExternalId());
+    }
+    EventOperationResult result = null;
+    final CalendarEvent persistedEvent;
+    if (optionalPersistedEvent.isPresent()) {
+
+      // Case of the event is existing into Silverpeas persistence context.
+      final CalendarEvent existing = optionalPersistedEvent.get();
+      persistedEvent = existing;
+      if (getLastUpdateDate().after(existing.getLastUpdateDate())) {
+        // Save is performed only if it has been updated from the external repository
+        existing.merge(this);
+        existing.asCalendarComponent().setSequence(asCalendarComponent().getSequence());
+        result = existing.update();
+      }
+    } else {
+
+      // Case of the event does not exist into Silverpeas persistence context.
+      result = new EventOperationResult().withCreated(planOn(eventImport.getCalendar()));
+      persistedEvent = result.created().get();
+    }
+    return Pair.of(persistedEvent, result);
+  }
+
+  private void importOccurrences(final Pair<CalendarEvent, EventOperationResult> eventImportResult,
+      final List<CalendarEventOccurrence> occToImport) {
+    final CalendarEvent event = eventImportResult.getLeft();
+    EventOperationResult eventSaveResult = eventImportResult.getRight();
+    // Getting existing occurrences if any
+    List<CalendarEventOccurrence> persistedOccurrences =
+        eventSaveResult != null && eventSaveResult.created().isPresent() ? emptyList() :
+            event.getPersistedOccurrences();
+    // Preparing iterators in order to avoid to perform several queries
+    final Iterator<CalendarEventOccurrence> toSaveIt =
+        occToImport.stream().sorted(EVENT_OCCURRENCE_COMPARATOR).iterator();
+    final Iterator<CalendarEventOccurrence> existingIt =
+        persistedOccurrences.stream().sorted(EVENT_OCCURRENCE_COMPARATOR).iterator();
+    CalendarEventOccurrence existing = existingIt.hasNext() ? existingIt.next() : null;
+    // Performing each occurrence to import
+    while (toSaveIt.hasNext()) {
+      CalendarEventOccurrence toSave = toSaveIt.next();
+      // Trying to get this occurrence into Silverpeas persistence context
+      while (existing != null && existing.getOriginalStartDate().toString()
+          .compareTo(toSave.getOriginalStartDate().toString()) < 0) {
+        existing = existingIt.next();
+      }
+      // Saving the occurrence
+      if (existing != null &&
+          existing.getOriginalStartDate().equals(toSave.getOriginalStartDate())) {
+        // Case of the occurrence is already existing into Silverpeas persitence context.
+        // It is updated with the data of the occurrence to import
+        final CalendarComponent componentToMerge = toSave.asCalendarComponent();
+        final CalendarComponent componentToSave = existing.asCalendarComponent();
+        if (componentToMerge.getLastUpdateDate().after(componentToSave.getLastUpdateDate())) {
+          // Save is performed only if it has been updated from the external repository
+          componentToMerge.copyTo(componentToSave);
+          existing.saveIntoPersistence();
+        }
+      } else {
+        // Case of the occurrence does not exist into Silverpeas persistence context.
+        // The occurrence to import is directly saved.
+        CalendarEventOccurrence toPersist =
+            new CalendarEventOccurrence(event, toSave.getOriginalStartDate(),
+                toSave.getOriginalStartDate());
+        toPersist.setPeriod(toSave.getPeriod());
+        toPersist.saveIntoPersistence();
+      }
+    }
   }
 
   /**
@@ -839,7 +950,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         this.updateIntoPersistence();
         result = new EventOperationResult().withUpdated(this);
       }
-      adjustOccurrences(previousState, previousOccurrences, result);
+      if (!OperationContext.statesOf(IMPORT)) {
+        adjustOccurrences(previousState, previousOccurrences, result);
+      }
       return result;
     });
   }
@@ -1152,7 +1265,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   private static List<CalendarEventOccurrence> getPersistedOccurrences(final CalendarEvent event) {
     if (!event.isRecurrent()) {
-      return Collections.emptyList();
+      return emptyList();
     }
     CalendarEventOccurrenceRepository occurrenceRepository =
         CalendarEventOccurrenceRepository.get();
