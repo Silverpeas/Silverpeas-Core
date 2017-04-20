@@ -110,6 +110,7 @@ public interface ServerEvent {
     response.setContentType("text/event-stream");
     response.setHeader("Cache-Control", "no-cache");
     response.setHeader("Connection", "keep-alive");
+    response.setHeader("X-Accel-Buffering", "no");
     response.setCharacterEncoding("UTF-8");
 
     final String eventName = defaultStringIfNotDefined(getName().asString());
@@ -125,12 +126,10 @@ public interface ServerEvent {
     if (StringUtil.isDefined(eventData)) {
       for (int i = 0; i < eventData.length(); i++) {
         char currentChar = eventData.charAt(i);
-        switch (currentChar) {
-          case '\n':
-            sb.append("\ndata: ");
-            break;
-          default:
-            sb.append(currentChar);
+        if (currentChar == '\n') {
+          sb.append("\ndata: ");
+        } else {
+          sb.append(currentChar);
         }
       }
     }

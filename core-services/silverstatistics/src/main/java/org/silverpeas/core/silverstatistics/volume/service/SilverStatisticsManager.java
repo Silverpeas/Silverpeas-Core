@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.silverstatistics.volume.service;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
@@ -31,27 +32,23 @@ import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConfigException;
-import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
 import org.silverpeas.core.silverstatistics.volume.model.StatType;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import java.io.File;
-import java.lang.reflect.Method;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
+import java.util.function.Consumer;
 
 import static org.silverpeas.core.silverstatistics.volume.model.SilverStatisticsConstants.SEPARATOR;
-
-
 import static org.silverpeas.core.silverstatistics.volume.model.StatType.*;
 
 
@@ -87,29 +84,24 @@ public class SilverStatisticsManager {
     directoryToScan = new ArrayList<>();
     try {
       statsConfig = new StatisticsConfig();
-      try {
-        statsConfig.init();
-        if (!statsConfig.isValidConfigFile()) {
-          SilverTrace.error("silverstatistics", "SilverStatisticsManager.initSilverStatistics",
-              "silverstatistics.MSG_CONFIG_FILE");
-        }
-      } catch (SilverStatisticsConfigException e) {
-        SilverTrace.error("silverstatistics", "SilverStatisticsManager.initSilverStatistics",
-            "silverstatistics.MSG_CONFIG_FILE", e);
+      statsConfig.init();
+      if (!statsConfig.isValidConfigFile()) {
+        SilverLogger.getLogger(this).error("Statistics configuration is not valid");
       }
       SettingBundle settings =
           ResourceLocator.getSettingBundle("org.silverpeas.silverstatistics.SilverStatistics");
-      initSchedulerStatistics(settings.getString("scheduledGetStatVolumeTimeStamp"),
-          STAT_VOLUME_JOB_NAME, "doGetStatVolume");
-      initSchedulerStatistics(settings.getString("scheduledGetStatSizeTimeStamp"),
-          STAT_SIZE_JOB_NAME, "doGetStatSize");
-      initSchedulerStatistics(settings.getString("scheduledCumulStatTimeStamp"),
-          STAT_CUMUL_JOB_NAME, "doCumulStat");
+      final String sizeStatCron = settings.getString("scheduledGetStatSizeTimeStamp");
+      final String volumeStatCron = settings.getString("scheduledGetStatVolumeTimeStamp");
+      final String consolidationStatCron = settings.getString("scheduledCumulStatTimeStamp");
+      initSchedulerStatistics(sizeStatCron, STAT_SIZE_JOB_NAME, this::doGetStatSize);
+      initSchedulerStatistics(volumeStatCron, STAT_VOLUME_JOB_NAME, this::doGetStatVolume);
+      initSchedulerStatistics(consolidationStatCron, STAT_CUMUL_JOB_NAME,
+          this::doConsolidationStat);
       initDirectoryToScan(settings);
-
+    } catch (SilverStatisticsConfigException e) {
+      SilverLogger.getLogger(this).error("Initialization of statistics configuration failed", e);
     } catch (Exception ex) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsManager.initSilverStatistics",
-          "root.EX_CLASS_NOT_INITIALIZED", ex);
+      SilverLogger.getLogger(this).error(ex);
     }
   }
 
@@ -126,56 +118,65 @@ public class SilverStatisticsManager {
    * specified by the Unix-like cron expression.
    * @param aCronString the cron expression.
    * @param jobName the name of the computation to schedule.
-   * @param methodeName the name of the method that performs the computation.
-   * @throws SchedulerException if the computation scheduling failed.
-   * @throws ParseException if the cron expression is malformed.
+   * @param jobOperation the job operation.
+   * @throws SilverpeasException if the computation scheduling failed or  if the cron expression
+   * is malformed.
    */
-  public void initSchedulerStatistics(String aCronString, String jobName, String methodeName)
-      throws SchedulerException, ParseException {
-    Scheduler scheduler = SchedulerProvider.getScheduler();
-    scheduler.unscheduleJob(jobName);
+  private void initSchedulerStatistics(String aCronString, String jobName,
+      Consumer<Date> jobOperation) throws SilverpeasException {
+    try {
+      Scheduler scheduler = SchedulerProvider.getScheduler();
+      scheduler.unscheduleJob(jobName);
 
-    JobTrigger trigger = JobTrigger.triggerAt(aCronString);
-    Job job = createJobWith(jobName, methodeName);
-    scheduler.scheduleJob(job, trigger);
+      JobTrigger trigger = JobTrigger.triggerAt(aCronString);
+      Job job = createJobWith(jobName, jobOperation);
+      scheduler.scheduleJob(job, trigger);
+    } catch (Exception e) {
+      throw new SilverpeasException(e);
+    }
   }
 
   /**
-   * @param currentDate
+   * @param currentDate the date at which the method is called.
    */
-  public void doGetStatVolume(Date currentDate) {
+  private void doGetStatVolume(Date currentDate) {
     try {
       getSilverStatistics().makeVolumeAlimentationForAllComponents();
     } catch (Exception ex) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsManager.doGetStatVolume",
-          "root.EX_NO_MESSAGE", ex);
+      SilverLogger.getLogger(this).error("error during volume statistic computing started at {0}",
+          new Object[]{currentDate}, ex);
     }
 
   }
 
   /**
-   * For each directory compute the size of all its files and the size of all its subdirectories
+   * For each directory computes the size of all its files and the size of all its subdirectories
    * recursively.
-   * @param currentDate
+   * @param currentDate the date at which the method is called.
    */
-  public void doGetStatSize(Date currentDate) throws ExecutionException, InterruptedException {
-    for (String aDirectoryToScan : directoryToScan) {
-      DirectoryVolumeService service = new DirectoryVolumeService(new File(aDirectoryToScan));
-      addStatSize(currentDate, aDirectoryToScan, service.getTotalSize(null));
+  private void doGetStatSize(Date currentDate) {
+    try {
+      for (String aDirectoryToScan : directoryToScan) {
+        DirectoryVolumeService service = new DirectoryVolumeService(new File(aDirectoryToScan));
+        addStatSize(currentDate, aDirectoryToScan, service.getTotalSize(null));
+      }
+    } catch (Exception ex) {
+      SilverLogger.getLogger(this)
+          .error("error during size statistic computing started at {0}", new Object[]{currentDate},
+              ex);
     }
-
   }
 
   /**
-   * @param currentDate
+   * @param currentDate the date at which the method is called.
    */
-  public void doCumulStat(Date currentDate) {
+  private void doConsolidationStat(Date currentDate) {
     try {
       getSilverStatistics().makeStatAllCumul();
     } catch (Exception ex) {
-      SilverTrace
-          .error("silverstatistics", "SilverStatisticsManager.doCumulStat", "root.EX_NO_MESSAGE",
-              ex);
+      SilverLogger.getLogger(this)
+          .error("error during statistic consolidation computing started at {0}",
+              new Object[]{currentDate}, ex);
     }
   }
 
@@ -192,15 +193,14 @@ public class SilverStatisticsManager {
         // Test existence
         File dir = new File(directoryPath);
         if (!dir.isDirectory()) {
-          throw new Exception("silverstatistics initDirectoryToScan" + directoryPath);
+          throw new SilverpeasException("SilverStatistics initDirectoryToScan " + directoryPath);
         }
         directoryToScan.add(directoryPath);
         i++;
         directoryPath = resource.getString("SilverPeasDataPath" + Integer.toString(i), null);
       }
     } catch (Exception e) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsManager.initDirectoryToScan()",
-          "silvertrace.ERR_INIT_APPENDER_FROM_PROP", e);
+      SilverLogger.getLogger(this).error("Statistics directory scanning in error", e);
     }
   }
 
@@ -226,7 +226,7 @@ public class SilverStatisticsManager {
       stat.append(SEPARATOR);
       stat.append(componentId);
       stat.append(SEPARATOR);
-      stat.append((String.valueOf(volume)));
+      stat.append(String.valueOf(volume));
       sendStatistic(Volume, stat);
     }
   }
@@ -235,15 +235,12 @@ public class SilverStatisticsManager {
     if (isAsynchronStats(type)) {
       SilverStatisticsSender mySilverStatisticsSender = SilverStatisticsSender.get();
       try {
-
         mySilverStatisticsSender.send(type, stat.toString());
       } catch (Exception e) {
-        SilverTrace.error("silverstatistics", "SilverStatisticsManager.sendStatistic",
-            "SilverStatisticsSender ", e);
+        SilverLogger.getLogger(this).error(e);
       }
-    } // synchrone
-    else {
-
+    } else {
+      // Synchronised way
       getSilverStatistics().putStats(type, stat.toString());
     }
   }
@@ -330,8 +327,7 @@ public class SilverStatisticsManager {
         return statsConfig.isAsynchron(typeStats);
       }
     } catch (SilverStatisticsConfigException e) {
-      SilverTrace.error("silverstatistics", "SilverStatisticsManager.isRun",
-          "silverstatistics.MSG_CONFIG_FILE", e);
+      SilverLogger.getLogger(this).error(e);
     }
 
     return false;
@@ -349,21 +345,19 @@ public class SilverStatisticsManager {
    * @throws SchedulerException if an error occurs while creating the job to schedule (for example,
    * the operation doesn't exist).
    */
-  private Job createJobWith(final String jobName, final String jobOperation)
+  private Job createJobWith(final String jobName, final Consumer<Date> jobOperation)
       throws SchedulerException {
     try {
-      final Method operation = getClass().getMethod(jobOperation, Date.class);
       return new Job(jobName) {
 
         @Override
         public void execute(JobExecutionContext context) throws Exception {
           Date date = context.getFireTime();
-          operation.invoke(this, date);
+          jobOperation.accept(date);
         }
       };
     } catch (Exception ex) {
-      SilverTrace
-          .error("silverstatistics", "SilverStatisticsManager.createJobWith", ex.getMessage(), ex);
+      SilverLogger.getLogger(this).error(ex);
       throw new SchedulerException(ex.getMessage());
     }
   }
