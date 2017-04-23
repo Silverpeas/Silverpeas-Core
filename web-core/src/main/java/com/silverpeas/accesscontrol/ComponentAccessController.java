@@ -30,6 +30,7 @@ import com.silverpeas.util.StringUtil;
 import com.stratelia.webactiv.SilverpeasRole;
 import com.stratelia.webactiv.beans.admin.Admin;
 import com.stratelia.webactiv.beans.admin.ComponentInst;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
 import com.stratelia.webactiv.beans.admin.UserDetail;
 import org.apache.commons.collections.CollectionUtils;
 import org.silverpeas.core.admin.OrganisationController;
@@ -143,7 +144,8 @@ public class ComponentAccessController extends AbstractAccessController<String> 
       return;
     }
 
-    ComponentInst componentInst = getOrganisationController().getComponentInst(componentId);
+    ComponentInstLight componentInst =
+        getOrganisationController().getComponentInstLight(componentId);
     if (componentInst == null) {
       return;
     }

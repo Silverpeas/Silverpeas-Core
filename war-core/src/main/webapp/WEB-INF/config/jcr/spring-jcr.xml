@@ -64,7 +64,6 @@
   <bean id="basicDaoFactory" class="com.silverpeas.jcrutil.BasicDaoFactory" factory-method="getInstance" />
 
   <bean id="jcrLoginModule" scope="prototype" class="com.stratelia.webactiv.jaas.SilverpeasLoginModule">
-    <property name="controller" ref="organizationController" />
     <property name="administrator" ref="adminController" />
     <property name="authenticator" ref="authenticator" />
   </bean>
