@@ -66,7 +66,7 @@
   var MESSAGE_2 = $window.ProgressMessageBundle.get("progress.message.2");
 
   /**
-   * Handling the rendering of the Silverpeas's layout.
+   * Handling the rendering of the Silverpeas's progress message.
    * @constructor
    */
   $window.spProgressMessage = new function() {

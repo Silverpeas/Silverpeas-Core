@@ -63,6 +63,10 @@ if (wallPaper == null) {
 boolean outilDisplayed = false;
 %>
 
+<c:set var="labelConnectedUser" value='<%=helper.getString("lookSilverpeasV5.connectedUser")%>'/>
+<c:set var="labelConnectedUsers" value='<%=helper.getString("lookSilverpeasV5.connectedUsers")%>'/>
+
+<view:includePlugin name="connectedUsers"/>
 <view:includePlugin name="ticker" />
 <style type="text/css">
 #shortcuts {
@@ -84,7 +88,6 @@ body {
 </style>
 <view:loadScript src="/util/javaScript/lookV5/tools.js"/>
 <view:loadScript src="/util/javaScript/lookV5/topBar.js"/>
-<view:loadScript src="/util/javaScript/lookV5/connectedUsers.js" jsPromiseName="connectedUsersPromise"/>
 <script type="text/javascript">
 function goToHome() {
   var params = {};
@@ -93,14 +96,6 @@ function goToHome() {
   params.SpaceId = "<%=m_MainSessionCtrl.getFavoriteSpace()%>";
   <%}%>
   spLayout.getBody().load(params);
-}
-
-function getConnectedUsersLabel(nb) {
-  if (nb == 1) {
-    return " <%=helper.getString("lookSilverpeasV5.connectedUser")%>";
-  } else {
-    return " <%=helper.getString("lookSilverpeasV5.connectedUsers")%>";
-  }
 }
 
 function getContext() {
@@ -114,8 +109,21 @@ function getFooterHeight() {
 	return "<%=helper.getSettings("footerHeight", "26")%>";
 }
 
-connectedUsersPromise.then(function(){
-  setConnectedUsers(<%=helper.getNBConnectedUsers()%>);
+window.CONNECTEDUSERS_PROMISE.then(function() {
+  spConnectedUsers.addEventListener('changed', function(event) {
+    var nb = event.detail.data.nb;
+    var $container = jQuery("#connectedUsers");
+    if (nb <= 0) {
+      $container.hide();
+    } else {
+      var label = " ${labelConnectedUsers}";
+      if (nb === 1) {
+        label = " ${labelConnectedUser}";
+      }
+      $container.show();
+      jQuery("a", $container).text(nb + label);
+    }
+  });
 });
 </script>
 <div id="topBar">
@@ -129,10 +137,13 @@ connectedUsersPromise.then(function(){
 			</div>
 		<% } %>
 		<div class="userNav">
-			<a href="<%=m_sContext%>/Rdirectory/jsp/connected" target="MyMain" style="visibility:hidden" id="connectedUsers"></a>
-		        <% if (!isAnonymousAccess && helper.getSettings("directoryVisible", true)) {
-				    outilDisplayed = true;
-				%>
+      <span id="connectedUsers" style="display:none">
+        <a href="#" onclick="javascript:onClick=spConnectedUsers.view();"></a>
+        <span> | </span>
+      </span>
+      <% if (!isAnonymousAccess && helper.getSettings("directoryVisible", true)) {
+        outilDisplayed = true;
+      %>
 				<a href="<%=m_sContext%>/Rdirectory/jsp/Main" target="MyMain"><%=helper.getString("lookSilverpeasV5.directory")%></a>
 		<% } %>
 		<% if (helper.getSettings("glossaryVisible", false)) {
