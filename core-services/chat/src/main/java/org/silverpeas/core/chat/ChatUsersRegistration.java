@@ -70,7 +70,7 @@ public class ChatUsersRegistration {
   }
 
   /**
-   * Registers the specified user into the remote chat server. If the server is already registered
+   * Registers the specified user into the remote chat server. If the user is already registered
    * into the remote chat server, then nothing is performed. If the chat service isn't enabled then
    * nothing is performed.
    *

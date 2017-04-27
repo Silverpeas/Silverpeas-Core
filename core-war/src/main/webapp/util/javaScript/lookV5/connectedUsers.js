@@ -67,7 +67,7 @@ function setConnectedUsers(nb) {
       });
     });
 
-    // a new user session is opened
+    // a new user session is opened or a user session is closed
     spServerEventSource.addEventListener('USER_SESSION', function(serverEvent) {
       var data = extendsObject({
         nbConnectedUsers : 0,

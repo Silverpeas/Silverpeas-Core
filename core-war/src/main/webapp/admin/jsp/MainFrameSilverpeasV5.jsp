@@ -36,14 +36,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/chat" prefix="chatTags" %>
 <%@ include file="importFrameSet.jsp" %>
-<%@ page import="org.silverpeas.core.admin.user.model.User" %>
-<%@ page import="org.silverpeas.core.chat.ChatLocalizationProvider" %>
-<%@ page import="org.silverpeas.core.chat.ChatUser" %>
-<%@ page import="org.silverpeas.core.chat.servers.ChatServer" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.web.look.LookHelper" %>
-<%@ page import="org.silverpeas.core.util.file.FileServerUtils" %>
 
 <%
   String componentIdFromRedirect = (String) session.getAttribute("RedirectToComponentId");
@@ -69,10 +65,6 @@
     helper.setMainFrame("MainFrameSilverpeasV5.jsp");
     login = true;
   }
-
-  SettingBundle chatSettings = ChatServer.getChatSettings();
-  ChatUser user = ChatUser.getCurrentRequester();
-  String iceServer = chatSettings.getString("chat.servers.ice", "");
 
   boolean componentExists = false;
   if (StringUtil.isDefined(componentIdFromRedirect)) {
@@ -229,55 +221,10 @@
       spLayout.getBody().ready(function() {
         spLayout.getBody().getContent().addEventListener('load', top.window.mainFrameOnLoad);
       });
-
-      <c:choose>
-      <c:when test="${sessionScope.get('Silverpeas.Chat')}">
-      SilverChat.init({
-        url : '<%= chatSettings.getString("chat.xmpp.httpBindUrl") %>',
-        id : '<%= user.getChatLogin() %>',
-        password : '<%= user.getChatPassword() %>',
-        domain : '<%= user.getChatDomain() %>',
-        <% if (!iceServer.isEmpty()) { %>
-        ice : {
-          server: '<%= iceServer %>',
-          auth: true
-        },
-        <% } %>
-        language : '<%= user.getUserPreferences().getLanguage() %>',
-        avatar: webContext + '/display/avatar/60x/',
-        debug: false,
-        selectUser: function(openChatWith) {
-          $('#userId').off('change').on('change', function() {
-            var id = $(this).val();
-            if (id && id !== '<%= user.getId() %>') {
-              User.get(id).then(function(user) {
-                if (user) {
-                  openChatWith(user.chatId, user.fullName);
-                }
-              });
-            }
-          });
-          SP_openUserPanel(webContext + '/chat/users/select', '', 'menubar=no,scrollbars=no,statusbar=no');
-        }
-      }).start();
-      </c:when>
-      <c:otherwise>
-      <%
-      LocalizationBundle chatBundle = ChatLocalizationProvider.getLocalizationBundle(
-          User.getCurrentRequester().getUserPreferences().getLanguage());
-      String errorMessage = chatBundle.getString("chat.server.notAvailable");
-      %>
-      sp.log.error("<%= errorMessage %>");
-      </c:otherwise>
-      </c:choose>
     });
   })();
 </script>
-<form id="chat_selected_user">
-  <input type="hidden" name="userId" id="userId"/>
-  <input type="hidden" name="userName" id="userName"/>
-</form>
-
+<chatTags:silverChatInitialization/>
 </body>
 </html>
 <% } %>
