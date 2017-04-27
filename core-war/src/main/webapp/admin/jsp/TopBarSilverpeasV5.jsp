@@ -66,7 +66,7 @@ boolean outilDisplayed = false;
 <c:set var="labelConnectedUser" value='<%=helper.getString("lookSilverpeasV5.connectedUser")%>'/>
 <c:set var="labelConnectedUsers" value='<%=helper.getString("lookSilverpeasV5.connectedUsers")%>'/>
 
-<view:includePlugin name="connectedUsers"/>
+<view:includePlugin name="userSession"/>
 <view:includePlugin name="ticker" />
 <style type="text/css">
 #shortcuts {
@@ -109,8 +109,8 @@ function getFooterHeight() {
 	return "<%=helper.getSettings("footerHeight", "26")%>";
 }
 
-window.CONNECTEDUSERS_PROMISE.then(function() {
-  spConnectedUsers.addEventListener('changed', function(event) {
+window.USERSESSION_PROMISE.then(function() {
+  spUserSession.addEventListener('connectedUsersChanged', function(event) {
     var nb = event.detail.data.nb;
     var $container = jQuery("#connectedUsers");
     if (nb <= 0) {
@@ -138,7 +138,7 @@ window.CONNECTEDUSERS_PROMISE.then(function() {
 		<% } %>
 		<div class="userNav">
       <span id="connectedUsers" style="display:none">
-        <a href="#" onclick="javascript:onClick=spConnectedUsers.view();"></a>
+        <a href="#" onclick="javascript:onClick=spUserSession.viewConnectedUsers();"></a>
         <span> | </span>
       </span>
       <% if (!isAnonymousAccess && helper.getSettings("directoryVisible", true)) {
@@ -172,7 +172,7 @@ window.CONNECTEDUSERS_PROMISE.then(function() {
 			out.print(" | ");
 			}
 		%>
-			<a id="logout" href="#" target="_top"><%=helper.getString("lookSilverpeasV5.logout")%></a>
+			<a id="logout" href="javascript:onClick=spUserSession.logout();"><%=helper.getString("lookSilverpeasV5.logout")%></a>
 		<% } %>
 		</div>
         </div>

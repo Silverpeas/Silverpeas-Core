@@ -185,7 +185,7 @@ public enum SupportedWebPlugins {
    */
   LAYOUT,
   /**
-   * External plugin to centralize the management of Silverpeas's connected users
+   * External plugin to centralize the management of Silverpeas's user session
    */
-  CONNECTEDUSERS
+  USERSESSION
 }

@@ -63,8 +63,8 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
       xhtml = WebPlugin.get().getHtml(jsPlugin, getLanguage());
       if (LAYOUT == jsPlugin) {
         includeLayout(xhtml, getLookHelper());
-      } else if (CONNECTEDUSERS == jsPlugin) {
-        includeConnectedUsers(xhtml, getLookHelper());
+      } else if (USERSESSION == jsPlugin) {
+        includeUserSession(xhtml, getLookHelper());
       }
     } catch (IllegalArgumentException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
