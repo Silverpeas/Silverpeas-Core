@@ -2,6 +2,8 @@ CREATE TABLE SB_Cal_Calendar (
   id             VARCHAR(40)   NOT NULL,
   instanceId     VARCHAR(30)   NOT NULL,
   title          VARCHAR(2000) NOT NULL,
+  zoneId         VARCHAR(40)   NOT NULL,
+  externalUrl    VARCHAR(40),
   createDate     DATETIME      NOT NULL,
   createdBy      VARCHAR(40)   NOT NULL,
   lastUpdateDate DATETIME      NOT NULL,
@@ -32,7 +34,7 @@ CREATE TABLE SB_Cal_Recurrence_Exception (
   CONSTRAINT FK_Recurrence_Exception FOREIGN KEY (recurrenceId) REFERENCES SB_Cal_Recurrence(id)
 );
 
-CREATE TABLE SB_Cal_Event (
+CREATE TABLE SB_Cal_Components (
   id             VARCHAR(40)   NOT NULL,
   calendarId     VARCHAR(40)   NOT NULL,
   inDays         BIT           NOT NULL,
@@ -42,17 +44,35 @@ CREATE TABLE SB_Cal_Event (
   description    VARCHAR(6000) NOT NULL,
   location       VARCHAR(255)  NULL,
   attributes     VARCHAR(40)   NULL,
-  visibility     VARCHAR(50)   NOT NULL,
   priority       INTEGER       NOT NULL,
-  recurrenceId   VARCHAR(40)   NULL,
-  createDate     DATETIME      NOT NULL,
+  sequence       BIGINT        NOT NULL DEFAULT 0,
+  createDate     TIMESTAMP     NOT NULL,
   createdBy      VARCHAR(40)   NOT NULL,
-  lastUpdateDate DATETIME      NOT NULL,
+  lastUpdateDate TIMESTAMP     NOT NULL,
   lastUpdatedBy  VARCHAR(40)   NOT NULL,
   version        BIGINT        NOT NULL,
+  CONSTRAINT PK_CalComponent PRIMARY KEY (id),
+  CONSTRAINT FK_Calendar     FOREIGN KEY (calendarId) REFERENCES SB_Cal_Calendar(id)
+);
+
+CREATE TABLE SB_Cal_Event (
+  id             VARCHAR(40)   NOT NULL,
+  externalId     VARCHAR(100)  NULL,
+  componentId    VARCHAR(40)   NOT NULL,
+  visibility     VARCHAR(50)   NOT NULL,
+  recurrenceId   VARCHAR(40)   NULL,
   CONSTRAINT PK_Event PRIMARY KEY (id),
-  CONSTRAINT FK_Calendar FOREIGN KEY (calendarId) REFERENCES SB_Cal_Calendar(id),
-  CONSTRAINT FK_Recurrence FOREIGN KEY (recurrenceId) REFERENCES SB_Cal_Recurrence(id)
+  CONSTRAINT FK_Event_Component  FOREIGN KEY (componentId)  REFERENCES SB_Cal_Components(id),
+  CONSTRAINT FK_Event_Recurrence FOREIGN KEY (recurrenceId) REFERENCES SB_Cal_Recurrence(id)
+);
+
+CREATE TABLE SB_Cal_Occurrences (
+  id             VARCHAR(60)   NOT NULL,
+  eventId        VARCHAR(40)   NOT NULL,
+  componentId    VARCHAR(40)   NOT NULL,
+  CONSTRAINT PK_Occurrence           PRIMARY KEY (id),
+  CONSTRAINT FK_Occurrence_Event     FOREIGN KEY (eventId)     REFERENCES SB_Cal_Event,
+  CONSTRAINT FK_Occurrence_Component FOREIGN KEY (componentId) REFERENCES SB_Cal_Components(id)
 );
 
 CREATE TABLE SB_Cal_Attributes (
@@ -71,7 +91,7 @@ CREATE TABLE SB_Cal_Categories (
 CREATE TABLE SB_Cal_Attendees (
   id                VARCHAR(40) NOT NULL,
   attendeeId        VARCHAR(40) NOT NULL,
-  eventId           VARCHAR(40) NOT NULL,
+  componentId       VARCHAR(40) NOT NULL,
   type              INTEGER     NOT NULL,
   participation     VARCHAR(12) NOT NULL DEFAULT 'AWAITING',
   presence          VARCHAR(12) NOT NULL DEFAULT 'REQUIRED',
@@ -82,6 +102,6 @@ CREATE TABLE SB_Cal_Attendees (
   lastUpdatedBy     VARCHAR(40) NOT NULL,
   version           BIGINT      NOT NULL,
   CONSTRAINT PK_Attendee PRIMARY KEY (id),
-  CONSTRAINT FK_Event    FOREIGN KEY (eventId) REFERENCES SB_Cal_Event(id),
+  CONSTRAINT FK_Attendee_Component FOREIGN KEY (componentId) REFERENCES SB_Cal_Components(id),
   CONSTRAINT FK_Delegate FOREIGN KEY (delegate) REFERENCES SB_Cal_Attendees(id)
 );

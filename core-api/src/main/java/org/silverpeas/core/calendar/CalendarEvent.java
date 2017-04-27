@@ -373,9 +373,13 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   /**
-   * Gets the external identifier.<br/>
-   * This identifier is set when an event is coming outside from Silverpeas.<br/>
-   * This data is typically processed during export/import treatments.
+   * Gets the external identifier.
+   * <p>
+   *   Any events coming from a calendar external to Silverpeas are identified by an unique
+   *   identifier for this external calendar. The external identifier is this identifier and it
+   *   is null for events in a Silverpeas calendar. This identifier is typically processed by the
+   *   calendar import/export mechanism of Silverpeas.
+   * </p>
    * @return the external identifier as string.
    */
   public String getExternalId() {

@@ -44,6 +44,8 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.Year;
 import java.time.YearMonth;
@@ -79,6 +81,9 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
 
   @Column(name = "zoneId")
   private String zoneId;
+
+  @Column(name = "externalUrl")
+  private String externalUrl;
 
   /**
    * Necessary for JPA management.
@@ -180,6 +185,37 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
+   * Gets the URL of the external calendar with which this calendar is synchronized. This URL is
+   * used in the synchronization to fetch the content of the external calendar.
+   * @return either the URL of an external calendar or null if this calendar isn't synchronized with
+   * such an external calendar.
+   */
+  public URL getExternalCalendarUrl() {
+    try {
+      return new URL(this.externalUrl);
+    } catch (MalformedURLException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Sets the URL of an external calendar with which this calendar will be synchronized. The URL
+   * will be used to get the content of the external calendar.
+   * @param calendarUrl the URL of a calendar external to Silverpeas.
+   */
+  public void setExternalCalendarUrl(final URL calendarUrl) {
+    this.externalUrl = calendarUrl.toString();
+  }
+
+  /**
+   * Is this calendar synchronized with the events from an external calendar.
+   * @return true if this calendar is synchronized with an external calendar.
+   */
+  public boolean isSynchronized() {
+    return this.externalUrl != null;
+  }
+
+  /**
    * Saves the calendar into the Silverpeas data source and set up for it a persistence collection
    * of planned event. Once saved, the calendar will be then ready to be used to plan events and
    * activities.
@@ -273,9 +309,10 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
 
   /**
    * Gets either the calendar external event with the specified external identifier or nothing if no
-   * such event exists with the given external identifier.
-   * @param externalEventId the unique external identifier into context of calendar of the event
-   * to get.
+   * such event exists with the given external identifier. Such events come from either an external
+   * calendar with which this calendar is synchronized or from an import of an ics file (iCalendar
+   * document containing a collection of calendar component definitions).
+   * @param externalEventId the unique external identifier of the event to get.
    * @return optionally an event with the specified identifier.
    */
   public Optional<CalendarEvent> externalEvent(String externalEventId) {
