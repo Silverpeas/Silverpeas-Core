@@ -38,8 +38,9 @@ public class SocialNetworkServiceTest {
   public static final Operation CLEAN_UP = Operations.deleteAllFrom("sb_sn_externalaccount");
 
   public static final Operation INSERT_DATA = Operations.insertInto("sb_sn_externalaccount")
-      .columns("profileId", "networkId", "silverpeasUserId").values("1233", "LINKEDIN", "10")
-      .values("1234", "LINKEDIN", "11").values("1235", "LINKEDIN", "12").build();
+      .columns("profileId", "networkId", "silverpeasUserId")
+      .values("1234", "LINKEDIN", "11")
+      .build();
 
   @Rule
   public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("")
@@ -81,16 +82,6 @@ public class SocialNetworkServiceTest {
     ExternalAccount account = service.getExternalAccount(SocialNetworkID.LINKEDIN, "1234");
     assertThat(account.getSilverpeasUserId(), is("11"));
     assertThat(account.getNetworkId(), is(SocialNetworkID.LINKEDIN));
-  }
-
-  @Test
-  @Transactional
-  public void testReadByPrimaryKeyDeletedUser() throws Exception {
-    Transaction.performInOne(() -> {
-      ExternalAccount account = service.getExternalAccount(SocialNetworkID.LINKEDIN, "1235");
-      assertThat(account, nullValue());
-      return null;
-    });
   }
 
   @Test

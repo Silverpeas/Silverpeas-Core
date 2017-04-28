@@ -53,7 +53,6 @@
   <view:includePlugin name="popup"/>
   <view:script src="/util/javaScript/silverpeas.js" />
   <view:script src="/password.js"/>
-  <view:loadScript src="/util/javaScript/silverpeas-password.js" jsPromiseName="loadScriptPromise"/>
   <c:if test="${isEmailAddress}">
     <view:includePlugin name="qtip"/>
   </c:if>
@@ -120,7 +119,7 @@
         <div class="submit">
           <p>
             <input type="submit" style="width:0; height:0; border:0; padding:0"/>
-            <a style="cursor: pointer" class="<%=submitClass%>" onclick="$('#changePwdForm').submit()"><span><span>LOGIN</span></span></a>
+            <a href="#" style="cursor: pointer" class="<%=submitClass%>" onclick="$('#changePwdForm').submit()"><span><span>LOGIN</span></span></a>
           </p>
 
           <p>
@@ -139,7 +138,7 @@
 </c:if>
 <script type="text/javascript">
   var webContext = '<%=m_context%>';
-  loadScriptPromise.then(function() {
+  setTimeout(function() {
     var extraValidations;
     <c:if test="${isEmailAddress}">
     extraValidations = function(errorStack) {
@@ -185,7 +184,8 @@
       passwordInputId : 'newPassword',
       extraValidations : extraValidations
     });
-  });
+  }, 0);
 </script>
+<view:script src="/util/javaScript/silverpeas-password.js"/>
 </body>
 </html>

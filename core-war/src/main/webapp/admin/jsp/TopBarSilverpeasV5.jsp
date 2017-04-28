@@ -161,7 +161,7 @@ connectedUsersPromise.then(function(){
 			out.print(" | ");
 			}
 		%>
-			<a id="logout" href="<%=m_sContext + "/LogoutServlet"%>" target="_top"><%=helper.getString("lookSilverpeasV5.logout")%></a>
+			<a id="logout" href="#" target="_top"><%=helper.getString("lookSilverpeasV5.logout")%></a>
 		<% } %>
 		</div>
         </div>

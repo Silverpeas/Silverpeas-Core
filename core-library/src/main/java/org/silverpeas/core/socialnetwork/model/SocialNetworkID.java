@@ -56,6 +56,7 @@ public enum SocialNetworkID {
 
     return false;
   }
+
   public static SocialNetworkID from(String socialNetworkId) {
     if (StringUtil.isDefined(socialNetworkId)) {
       if (socialNetworkId.equalsIgnoreCase(FACEBOOK.name())) {
@@ -66,4 +67,6 @@ public enum SocialNetworkID {
     }
     return UNKNOWN;
   }
+
+
 }

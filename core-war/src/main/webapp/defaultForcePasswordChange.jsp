@@ -50,7 +50,6 @@
   <view:includePlugin name="popup"/>
   <view:script src="/util/javaScript/silverpeas.js" />
   <view:script src="/password.js"/>
-  <view:loadScript src="/util/javaScript/silverpeas-password.js" jsPromiseName="loadScriptPromise"/>
   <!--[if lt IE 8]>
   <style type="text/css">
     input {
@@ -116,14 +115,15 @@
 </form>
 <script type="text/javascript">
   var webContext = '<%=m_context%>';
-  loadScriptPromise.then(function() {
+  setTimeout(function() {
     $('#oldPassword').focus();
     handlePasswordForm({
       passwordFormId : 'changePwdForm',
       passwordFormAction : '<c:url value="/CredentialsServlet/EffectiveChangePassword"/>',
       passwordInputId : 'newPassword'
     });
-  });
+  }, 0);
 </script>
+<view:script src="/util/javaScript/silverpeas-password.js"/>
 </body>
 </html>

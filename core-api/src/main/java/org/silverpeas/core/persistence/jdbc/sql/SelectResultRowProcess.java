@@ -28,9 +28,9 @@ import java.sql.SQLException;
 
 /**
  * Result Set Row Processor
- * @param <ROW_ENTITY>
+ * @param <R>
  */
 @FunctionalInterface
-public interface SelectResultRowProcess<ROW_ENTITY> {
-  ROW_ENTITY currentRow(final ResultSetWrapper row) throws SQLException;
+public interface SelectResultRowProcess<R> {
+  R currentRow(final ResultSetWrapper row) throws SQLException;
 }

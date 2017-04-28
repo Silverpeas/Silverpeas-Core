@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.persistence.jdbc.sql;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -39,34 +40,72 @@ public interface JdbcSqlExecutor {
    * Select count SQL query executor.
    * @param selectCountQueryBuilder the select count SQL query.
    * @return the select count result.
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException on SQL error.
    */
   long selectCount(JdbcSqlQuery selectCountQueryBuilder) throws SQLException;
 
   /**
+   * Select count SQL query executor.
+   * @param connection an existing connection.
+   * @param selectCountQueryBuilder the select count SQL query.
+   * @return the select count result.
+   * @throws java.sql.SQLException on SQL error.
+   */
+  long selectCount(Connection connection, JdbcSqlQuery selectCountQueryBuilder) throws SQLException;
+
+  /**
    * Select query executor.
-   *
    * @param selectQuery the select SQL query.
    * @param process the row processor.
-   *  @return the list of entities.
-   * @throws java.sql.SQLException
+   * @return the list of entities.
+   * @throws java.sql.SQLException on SQL error.
    */
-  <ROW_ENTITY> List<ROW_ENTITY> select(JdbcSqlQuery selectQuery,
-      SelectResultRowProcess<ROW_ENTITY> process) throws SQLException;
+  <R> List<R> select(JdbcSqlQuery selectQuery, SelectResultRowProcess<R> process)
+      throws SQLException;
+
+  /**
+   * Select query executor.
+   * @param connection an existing connection.
+   * @param selectQuery the select SQL query.
+   * @param process the row processor.
+   * @return the list of entities.
+   * @throws java.sql.SQLException on SQL error.
+   */
+  <R> List<R> select(Connection connection, JdbcSqlQuery selectQuery,
+      SelectResultRowProcess<R> process) throws SQLException;
 
   /**
    * Modify query executor.
    * @param modifySqlQueries the list of SQL query to execute. An SQL query is represented by a
    * string (SQL) and an Object (parameters).
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException on SQL error.
    */
   long executeModify(JdbcSqlQuery... modifySqlQueries) throws SQLException;
 
   /**
    * Modify query executor.
+   * @param connection an existing connection.
    * @param modifySqlQueries the list of SQL query to execute. An SQL query is represented by a
    * string (SQL) and an Object (parameters).
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException on SQL error.
+   */
+  long executeModify(Connection connection, JdbcSqlQuery... modifySqlQueries) throws SQLException;
+
+  /**
+   * Modify query executor.
+   * @param modifySqlQueries the list of SQL query to execute. An SQL query is represented by a
+   * string (SQL) and an Object (parameters).
+   * @throws java.sql.SQLException on SQL error.
    */
   long executeModify(List<JdbcSqlQuery> modifySqlQueries) throws SQLException;
+
+  /**
+   * Modify query executor.
+   * @param connection an existing connection.
+   * @param modifySqlQueries the list of SQL query to execute. An SQL query is represented by a
+   * string (SQL) and an Object (parameters).
+   * @throws java.sql.SQLException on SQL error.
+   */
+  long executeModify(Connection connection, List<JdbcSqlQuery> modifySqlQueries)
+      throws SQLException;
 }
