@@ -25,15 +25,14 @@
 package org.silverpeas.core.socialnetwork.invitation;
 
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.persistence.jdbc.sql.SelectResultRowProcess;
 
 import javax.inject.Singleton;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -56,6 +55,16 @@ public class InvitationDao {
   private static final String DELETE_ALL_INVITATIONS =
       "DELETE FROM sb_sn_invitation WHERE senderID = ? OR receiverId = ?";
 
+  private static final SelectResultRowProcess<Invitation> INVITATION_MAPPER = row -> {
+    Invitation invitation = new Invitation();
+    invitation.setId(row.getInt("id"));
+    invitation.setSenderId(row.getInt("senderID"));
+    invitation.setReceiverId(row.getInt("receiverId"));
+    invitation.setMessage(row.getString("message"));
+    invitation.setInvitationDate(new Date(row.getTimestamp("invitationDate").getTime()));
+    return invitation;
+  };
+
   /**
    * Create new invitation
    * @param connection
@@ -63,24 +72,17 @@ public class InvitationDao {
    * @return int the id of invitation
    * @throws SQLException
    */
-  public int createInvitation(Connection connection, Invitation invitation) throws SQLException {
-
+  int createInvitation(Connection connection, Invitation invitation) throws SQLException {
     int id = DBUtil.getNextId("sb_sn_invitation", "id");
-    PreparedStatement pstmt = null;
-    try {
-      pstmt = connection.prepareStatement(INSERT_INVITATION);
-
-      pstmt.setInt(1, id);
-      pstmt.setInt(2, invitation.getSenderId());
-      pstmt.setInt(3, invitation.getReceiverId());
-      pstmt.setString(4, invitation.getMessage());
-      pstmt.setTimestamp(5, Timestamp.from(Instant.now()));
-      pstmt.executeUpdate();
-    } finally {
-      DBUtil.close(pstmt);
-    }
+    JdbcSqlQuery
+      .create(INSERT_INVITATION,
+        id,
+        invitation.getSenderId(),
+        invitation.getReceiverId(),
+        invitation.getMessage(),
+        Timestamp.from(Instant.now()))
+      .executeWith(connection);
     return id;
-
   }
 
   /**
@@ -91,7 +93,7 @@ public class InvitationDao {
    * @throws SQLException
    */
   public boolean deleteInvitation(Connection connection, int invitationId) throws SQLException {
-    return executeUpdateStatement(connection, DELETE_INVITATION, invitationId);
+    return JdbcSqlQuery.create(DELETE_INVITATION, invitationId).executeWith(connection) > 0;
   }
 
   /**
@@ -108,11 +110,11 @@ public class InvitationDao {
    * @throws SQLException
    */
   public boolean deleteSameInvitations(Connection connection, int invitationId) throws SQLException {
-    return executeUpdateStatement(connection, DELETE_SAME_INVITATIONS, invitationId);
+    return JdbcSqlQuery.create(DELETE_SAME_INVITATIONS, invitationId).executeWith(connection) > 0;
   }
 
   public boolean deleteAllInvitations(Connection connection, int userId) throws SQLException {
-    return executeUpdateStatement(connection, DELETE_ALL_INVITATIONS, userId, userId);
+    return JdbcSqlQuery.create(DELETE_ALL_INVITATIONS, userId, userId).executeWith(connection) > 0;
   }
 
   /**
@@ -124,9 +126,9 @@ public class InvitationDao {
    */
   public Invitation getInvitation(Connection connection, int senderId, int receiverId) throws
       SQLException {
-    List<Invitation> invitations =
-        executeQueryStatement(connection, SELECT_INVITATION, senderId, receiverId);
-    return invitations.isEmpty() ? null : invitations.get(0);
+    return JdbcSqlQuery
+        .create(SELECT_INVITATION, senderId, receiverId)
+        .executeUniqueWith(connection, INVITATION_MAPPER);
   }
 
   /**
@@ -139,8 +141,9 @@ public class InvitationDao {
    */
 
   public Invitation getInvitation(Connection connection, int id) throws SQLException {
-    List<Invitation> invitations = executeQueryStatement(connection, SELECT_INVITATION_BY_ID, id);
-    return invitations.isEmpty() ? null : invitations.get(0);
+    return JdbcSqlQuery
+        .create(SELECT_INVITATION_BY_ID, id)
+        .executeUniqueWith(connection, INVITATION_MAPPER);
   }
 
   /**
@@ -166,7 +169,9 @@ public class InvitationDao {
 
   public List<Invitation> getAllMyInvitationsSent(Connection connection, int myId) throws
       SQLException {
-    return executeQueryStatement(connection, SELECT_ALL_INVITATIONS_SENT, myId);
+    return JdbcSqlQuery
+        .create(SELECT_ALL_INVITATIONS_SENT, myId)
+        .executeWith(connection, INVITATION_MAPPER);
   }
 
   /**
@@ -178,38 +183,8 @@ public class InvitationDao {
    */
   public List<Invitation> getAllMyInvitationsReceive(Connection connection, int myId) throws
       SQLException {
-    return executeQueryStatement(connection, SELECT_ALL_INVITATIONS_RECEIVE, myId);
-  }
-
-  private List<Invitation> executeQueryStatement(final Connection connection,
-      final String statement, final int... ids) throws SQLException {
-    List<Invitation> invitations = new ArrayList<>();
-    try (PreparedStatement pstmt = connection.prepareStatement(statement)) {
-      for (int i = 0; i < ids.length; i++) {
-        pstmt.setInt(i + 1, ids[i]);
-      }
-      ResultSet rs = pstmt.executeQuery();
-      while (rs.next()) {
-        Invitation invitation = new Invitation();
-        invitation.setId(rs.getInt("id"));
-        invitation.setSenderId(rs.getInt("senderID"));
-        invitation.setReceiverId(rs.getInt("receiverId"));
-        invitation.setMessage(rs.getString("message"));
-        invitation.setInvitationDate(new Date(rs.getTimestamp("invitationDate").getTime()));
-        invitations.add(invitation);
-      }
-    }
-    return invitations;
-  }
-
-  private boolean executeUpdateStatement(final Connection connection, final String statement,
-      final int... ids) throws SQLException {
-    try (PreparedStatement pstmt = connection.prepareStatement(statement)) {
-      for (int i = 0; i < ids.length; i++) {
-        pstmt.setInt(i + 1, ids[i]);
-      }
-      pstmt.executeUpdate();
-    }
-    return true;
+    return JdbcSqlQuery
+        .create(SELECT_ALL_INVITATIONS_RECEIVE, myId)
+        .executeWith(connection, INVITATION_MAPPER);
   }
 }

@@ -330,6 +330,39 @@ public class JdbcSqlQueryTest {
   }
 
   @Test
+  public void updateTwoRowsFromThreeUpdatesUsingAppendSaveParameterWithExistingConnection() {
+    assertThat(getTableLines().get(0), is("0@value_0"));
+    assertThat(getTableLines().get(26), is("26@value_26"));
+    assertThat(getTableLines().get(38), is("38@value_38"));
+
+    JdbcSqlQuery firstInsertSqlQuery = createUpdateFor("a_table");
+    firstInsertSqlQuery.addUpdateParam("value", "value_26_updated");
+    firstInsertSqlQuery.where("id = ?", 26);
+
+    JdbcSqlQuery secondInsertSqlQuery = createUpdateFor("a_table");
+    secondInsertSqlQuery.addUpdateParam("value", "value_38_updated");
+    secondInsertSqlQuery.where("id = ?", 38);
+
+    JdbcSqlQuery thirdInsertSqlQuery = createUpdateFor("a_table");
+    thirdInsertSqlQuery.addUpdateParam("value", "value_200_updated");
+    thirdInsertSqlQuery.where("id = ?", 200);
+
+    Transaction.performInOne(() -> {
+      try (Connection connection = dbSetupRule.getSafeConnectionFromDifferentThread()) {
+        long updateCount = JdbcSqlExecutorProvider.getJdbcSqlExecutor()
+            .executeModify(connection, firstInsertSqlQuery, secondInsertSqlQuery,
+                thirdInsertSqlQuery);
+        assertThat(updateCount, is(2L));
+        return null;
+      }
+    });
+
+    assertThat(getTableLines().get(0), is("0@value_0"));
+    assertThat(getTableLines().get(26), is("26@value_26_updated"));
+    assertThat(getTableLines().get(38), is("38@value_38_updated"));
+  }
+
+  @Test
   public void deleteRows() {
     assertThat(getTableLines(), hasSize(100));
     Transaction.performInOne(() -> {

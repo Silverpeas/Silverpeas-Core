@@ -26,6 +26,7 @@ package org.silverpeas.core.persistence.jdbc.sql;
 
 import org.silverpeas.core.util.StringUtil;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +34,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlExecutorProvider.getJdbcSqlExecutor;
 
@@ -43,9 +45,15 @@ import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlExecutorProvider.g
  */
 public class JdbcSqlQuery {
 
+  private static final int SPACE_OFFSET_DETECTION = 2;
+  private static final int OPEN_PARENTHESIS_OFFSET_DETECTION = 1;
   private final Configuration configuration = new Configuration();
   private final StringBuilder sqlQuery = new StringBuilder();
   private final Collection<Object> allParameters = new ArrayList<>();
+
+  private JdbcSqlQuery() {
+    // Hidden constructor
+  }
 
   /**
    * Indicates if the specified value is defined in point of view of SQL.
@@ -53,8 +61,8 @@ public class JdbcSqlQuery {
    * @return true if defined, false otherwise.
    */
   public static boolean isSqlDefined(String sqlValue) {
-    return StringUtil.isDefined(sqlValue) && !sqlValue.trim().equals("-1") &&
-        !sqlValue.trim().equals("unknown");
+    return StringUtil.isDefined(sqlValue) && !"-1".equals(sqlValue.trim()) &&
+        !"unknown".equals(sqlValue.trim());
   }
 
   /**
@@ -64,7 +72,7 @@ public class JdbcSqlQuery {
    * @throws IllegalArgumentException if it exists more than one entity in the specified
    * list.
    */
-  public static <ENTITY> ENTITY unique(List<ENTITY> entities) {
+  public static <E> E unique(List<E> entities) {
     if (entities.isEmpty()) {
       return null;
     }
@@ -169,11 +177,6 @@ public class JdbcSqlQuery {
     return new JdbcSqlQuery().addSqlPart("drop table").addSqlPart(tableName);
   }
 
-
-  private JdbcSqlQuery() {
-    // Hidden constructor
-  }
-
   /**
    * Gets the built SQL query.
    * @return the SQL query.
@@ -186,7 +189,7 @@ public class JdbcSqlQuery {
    * Gets the parameters to apply to the SQL query.
    * @return the parameters to apply to the SQL query.
    */
-  public Collection<?> getParameters() {
+  public Collection<Object> getParameters() {
     return allParameters;
   }
 
@@ -215,8 +218,8 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery addField(String fieldName, String definition) {
-    if (sqlQuery.charAt(sqlQuery.length() - 2) != ' ' &&
-        sqlQuery.charAt(sqlQuery.length() - 1) != '(') {
+    if (sqlQuery.charAt(sqlQuery.length() - SPACE_OFFSET_DETECTION) != ' ' &&
+        sqlQuery.charAt(sqlQuery.length() - OPEN_PARENTHESIS_OFFSET_DETECTION) != '(') {
       sqlQuery.append(", ");
     }
     return addSqlPart(fieldName).addSqlPart(definition);
@@ -353,19 +356,14 @@ public class JdbcSqlQuery {
 
   private JdbcSqlQuery addListOfParameters(Collection<?> parameters,
       final boolean addToParameters) {
-    StringBuilder params = new StringBuilder();
+    String params = "";
     if (parameters != null) {
-      for (Object ignored : parameters) {
-        if (params.length() > 0) {
-          params.append(",");
-        }
-        params.append("?");
-      }
+      params = parameters.stream().map(p -> "?").collect(Collectors.joining(","));
       if (addToParameters) {
         allParameters.addAll(parameters);
       }
     }
-    sqlQuery.append(" (").append(params.toString()).append(")");
+    sqlQuery.append(" (").append(params).append(")");
     return this;
   }
 
@@ -397,7 +395,7 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery addSaveParam(String paramName, Object paramValue, final boolean isInsert) {
-    if (allParameters.size() > 0) {
+    if (!allParameters.isEmpty()) {
       sqlQuery.append(", ");
     } else if (!isInsert) {
       sqlQuery.append(" ");
@@ -412,20 +410,44 @@ public class JdbcSqlQuery {
 
   /**
    * Select executor.
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException on SQL error.
    */
-  public <ROW_ENTITY> List<ROW_ENTITY> execute(SelectResultRowProcess<ROW_ENTITY> process)
+  public <R> List<R> execute(SelectResultRowProcess<R> process)
       throws SQLException {
-    return getJdbcSqlExecutor().select(this, process);
+    return executeWith(null, process);
   }
 
   /**
    * Select executor.
-   * @throws java.sql.SQLException
+   * @param connection existing connection.
+   * @throws java.sql.SQLException on SQL error.
    */
-  public <ROW_ENTITY> ROW_ENTITY executeUnique(SelectResultRowProcess<ROW_ENTITY> process)
+  public <R> List<R> executeWith(Connection connection, SelectResultRowProcess<R> process)
       throws SQLException {
-    return unique(execute(process));
+    if (connection == null) {
+      return getJdbcSqlExecutor().select(this, process);
+    } else {
+      return getJdbcSqlExecutor().select(connection, this, process);
+    }
+  }
+
+  /**
+   * Select executor.
+   * @throws java.sql.SQLException on SQL error.
+   */
+  public <R> R executeUnique(SelectResultRowProcess<R> process)
+      throws SQLException {
+    return executeUniqueWith(null, process);
+  }
+
+  /**
+   * Select executor.
+   * @param connection existing connection.
+   * @throws java.sql.SQLException on SQL error.
+   */
+  public <R> R executeUniqueWith(Connection connection, SelectResultRowProcess<R> process)
+      throws SQLException {
+    return unique(executeWith(connection, process));
   }
 
   /**
@@ -442,14 +464,31 @@ public class JdbcSqlQuery {
 
   /**
    * Modify executor.
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException on SQL error.
    */
   public long execute() throws SQLException {
-    String sqlQuery = getSqlQuery();
-    if (sqlQuery.startsWith("select count(*)")) {
-      return getJdbcSqlExecutor().selectCount(this);
+    return executeWith(null);
+  }
+
+  /**
+   * Modify executor.
+   * @param connection existing connection.
+   * @throws java.sql.SQLException on SQL error.
+   */
+  public long executeWith(Connection connection) throws SQLException {
+    String builtSqlQuery = getSqlQuery();
+    if (builtSqlQuery.startsWith("select count(*)")) {
+      if (connection == null) {
+        return getJdbcSqlExecutor().selectCount(this);
+      } else {
+        return getJdbcSqlExecutor().selectCount(connection, this);
+      }
     }
-    return getJdbcSqlExecutor().executeModify(Collections.singletonList(this));
+    if (connection == null) {
+      return getJdbcSqlExecutor().executeModify(Collections.singletonList(this));
+    } else {
+      return getJdbcSqlExecutor().executeModify(connection, Collections.singletonList(this));
+    }
   }
 
   /**

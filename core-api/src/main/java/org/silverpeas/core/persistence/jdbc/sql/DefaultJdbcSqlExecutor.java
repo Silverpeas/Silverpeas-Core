@@ -57,46 +57,59 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
   @Override
   public long selectCount(JdbcSqlQuery selectCountQueryBuilder) throws SQLException {
     try (Connection con = ConnectionPool.getConnection()) {
-      try (PreparedStatement st = con.prepareStatement(selectCountQueryBuilder.getSqlQuery())) {
-        setParameters(st, selectCountQueryBuilder.getParameters());
-        try (ResultSet rs = st.executeQuery()) {
-          rs.next();
-          long count = rs.getLong(1);
-          if (rs.next()) {
-            throw new IllegalArgumentException("select count execution error");
-          }
-          return count;
+      return selectCount(con, selectCountQueryBuilder);
+    }
+  }
+
+  @Override
+  public long selectCount(final Connection con, final JdbcSqlQuery selectCountQueryBuilder)
+      throws SQLException {
+    try (PreparedStatement st = con.prepareStatement(selectCountQueryBuilder.getSqlQuery())) {
+      setParameters(st, selectCountQueryBuilder.getParameters());
+      try (ResultSet rs = st.executeQuery()) {
+        rs.next();
+        long count = rs.getLong(1);
+        if (rs.next()) {
+          throw new IllegalArgumentException("select count execution error");
         }
+        return count;
       }
     }
   }
 
   @Override
-  public <ROW_ENTITY> List<ROW_ENTITY> select(JdbcSqlQuery selectQueryBuilder,
-      SelectResultRowProcess<ROW_ENTITY> process) throws SQLException {
+  public <R> List<R> select(JdbcSqlQuery selectQuery, SelectResultRowProcess<R> process)
+      throws SQLException {
     try (Connection con = ConnectionPool.getConnection()) {
-      try (PreparedStatement st = con.prepareStatement(selectQueryBuilder.getSqlQuery())) {
-        setParameters(st, selectQueryBuilder.getParameters());
-        try (ResultSet rs = st.executeQuery()) {
-          List<ROW_ENTITY> entities = new ArrayList<>();
-          int i = 0;
-          while (rs.next()) {
-            int resultLimit = selectQueryBuilder.getConfiguration().getResultLimit();
-            if (resultLimit > 0 && entities.size() >= resultLimit) {
-              break;
-            }
-            ROW_ENTITY entity = process.currentRow(new ResultSetWrapper(rs, i));
-            if (entity != null) {
-              entities.add(entity);
-            }
-            i++;
+      return select(con, selectQuery, process);
+    }
+  }
+
+  @Override
+  public <R> List<R> select(final Connection con, final JdbcSqlQuery selectQuery,
+      final SelectResultRowProcess<R> process) throws SQLException {
+    try (PreparedStatement st = con.prepareStatement(selectQuery.getSqlQuery())) {
+      setParameters(st, selectQuery.getParameters());
+      try (ResultSet rs = st.executeQuery()) {
+        List<R> entities = new ArrayList<>();
+        int i = 0;
+        while (rs.next()) {
+          int resultLimit = selectQuery.getConfiguration().getResultLimit();
+          if (resultLimit > 0 && entities.size() >= resultLimit) {
+            break;
           }
-          return entities;
+          R entity = process.currentRow(new ResultSetWrapper(rs, i));
+          if (entity != null) {
+            entities.add(entity);
+          }
+          i++;
         }
+        return entities;
       }
     }
   }
 
+  @Transactional(Transactional.TxType.MANDATORY)
   @Override
   public long executeModify(final JdbcSqlQuery... modifySqlQueries) throws SQLException {
     return executeModify(Arrays.asList(modifySqlQueries));
@@ -104,15 +117,29 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
 
   @Transactional(Transactional.TxType.MANDATORY)
   @Override
+  public long executeModify(final Connection con, final JdbcSqlQuery... modifySqlQueries)
+      throws SQLException {
+    return executeModify(con, Arrays.asList(modifySqlQueries));
+  }
+
+  @Transactional(Transactional.TxType.MANDATORY)
+  @Override
   public long executeModify(List<JdbcSqlQuery> modifySqlQueries) throws SQLException {
-    long nbUpdate = 0;
     try (Connection con = ConnectionPool.getConnection()) {
-      for (JdbcSqlQuery modifyQuery : modifySqlQueries) {
-        modifyQuery.finalizeBeforeExecution();
-        try (PreparedStatement prepStmt = con.prepareStatement(modifyQuery.getSqlQuery())) {
-          setParameters(prepStmt, modifyQuery.getParameters());
-          nbUpdate += prepStmt.executeUpdate();
-        }
+      return executeModify(con, modifySqlQueries);
+    }
+  }
+
+  @Transactional(Transactional.TxType.MANDATORY)
+  @Override
+  public long executeModify(final Connection con, final List<JdbcSqlQuery> modifySqlQueries)
+      throws SQLException {
+    long nbUpdate = 0;
+    for (JdbcSqlQuery modifyQuery : modifySqlQueries) {
+      modifyQuery.finalizeBeforeExecution();
+      try (PreparedStatement prepStmt = con.prepareStatement(modifyQuery.getSqlQuery())) {
+        setParameters(prepStmt, modifyQuery.getParameters());
+        nbUpdate += prepStmt.executeUpdate();
       }
     }
     return nbUpdate;
@@ -122,21 +149,11 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
    * Centralization in order to sets the parameters on a prepare statement.
    * @param preparedStatement a prepared statement which parameters must be set.
    * @param statementParameters the parameters to set.
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException on SQL error.
    */
-  @SuppressWarnings("unchecked")
   private static void setParameters(PreparedStatement preparedStatement, Object statementParameters)
       throws SQLException {
-    final Collection<Object> parameters;
-    if (statementParameters instanceof Object[]) {
-      parameters = Arrays.asList((Object[]) statementParameters);
-    } else if (statementParameters instanceof Collection) {
-      parameters = (Collection) statementParameters;
-    } else if (statementParameters != null) {
-      parameters = Arrays.asList(statementParameters);
-    } else {
-      parameters = Collections.EMPTY_LIST;
-    }
+    final Collection<Object> parameters = getParameters(statementParameters);
     int paramIndex = 1;
     for (Object parameter : parameters) {
       if (parameter == null) {
@@ -163,10 +180,25 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
           preparedStatement.setString(paramIndex, id);
         } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
           throw new IllegalArgumentException(
-              "SQL parameter type not handled: " + parameter.getClass());
+              "SQL parameter type not handled: " + parameter.getClass(), e);
         }
       }
       paramIndex++;
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  private static Collection<Object> getParameters(final Object statementParameters) {
+    final Collection<Object> parameters;
+    if (statementParameters instanceof Object[]) {
+      parameters = Arrays.asList((Object[]) statementParameters);
+    } else if (statementParameters instanceof Collection) {
+      parameters = (Collection) statementParameters;
+    } else if (statementParameters != null) {
+      parameters = Collections.singletonList(statementParameters);
+    } else {
+      parameters = Collections.emptyList();
+    }
+    return parameters;
   }
 }

@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.persistence.jdbc.sql;
 
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -54,9 +55,21 @@ public class JdbcSqlQueries extends ArrayList<JdbcSqlQuery> {
 
   /**
    * Executes all the queries contained into the list.
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   public long execute() throws SQLException {
-    return getJdbcSqlExecutor().executeModify(this);
+    return executeWith(null);
+  }
+
+  /**
+   * Executes all the queries contained into the list.
+   * @throws SQLException on SQL error
+   */
+  public long executeWith(Connection connection) throws SQLException {
+    if (connection == null) {
+      return getJdbcSqlExecutor().executeModify(this);
+    } else {
+      return getJdbcSqlExecutor().executeModify(connection, this);
+    }
   }
 }
