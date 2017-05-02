@@ -58,6 +58,18 @@
           controllerAs : '$ctrl',
           bindToController : true,
           controller : function($scope, $element, $attrs, $transclude) {
+
+            this.startDate = function() {
+              return this.ceo.startDate;
+            }
+            
+            this.endDate = function() {
+              if (this.ceo.onAllDay) {
+                return sp.moment.make(this.ceo.endDate).add(-1, 'days').format();
+              }
+              return this.ceo.endDate;
+            }
+            
             this.$onInit = function() {
               this.zoneId = context.zoneId;
               this.visibility = SilverpeasCalendarConst.visibilities.getElement(this.ceo, 'name=visibility');

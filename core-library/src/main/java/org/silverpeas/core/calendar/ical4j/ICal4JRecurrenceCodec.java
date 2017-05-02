@@ -184,9 +184,6 @@ public class ICal4JRecurrenceCodec {
       recurrence.until(recur.getCount());
     } else if (recur.getUntil() != null) {
       Temporal temporalUntil = iCal4JDateCodec.decode(recur.getUntil(), defaultZoneId);
-      if (!isOnAllDay) {
-        temporalUntil = temporalUntil.minus(1, ChronoUnit.DAYS);
-      }
       recurrence.until(temporalUntil);
     }
     if (recur.getDayList() != null && !recur.getDayList().isEmpty()) {

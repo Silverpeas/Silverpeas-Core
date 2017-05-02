@@ -132,7 +132,7 @@ public class ICal4JExchangeImportTest {
   @Test
   public void verifyDateConversions() throws ICalendarException {
     CalendarEvent event1 = CalendarEventStubBuilder
-        .from(Period.between(date("2016-12-14"), date("2016-12-15")))
+        .from(Period.between(date("2016-12-14"), date("2016-12-16")))
         .withExternalId("EVENT-UUID-LOCAL-DATE")
         .withTitle("EVENT-TITLE")
         .withCreationDate(datetime("2016-12-01T14:30:00Z"))
@@ -166,21 +166,21 @@ public class ICal4JExchangeImportTest {
         .withLastUpdateDate(datetime("2016-12-02T09:00:00Z")).build();
 
     CalendarEvent event5 = CalendarEventStubBuilder
-        .from(Period.between(date("2016-12-16"), date("2016-12-16")))
+        .from(Period.between(date("2016-12-16"), date("2016-12-17")))
         .withExternalId("EVENT-UUID-LOCAL-DATE-ONE-DAY-WITH-START-AND-END")
         .withTitle("EVENT-TITLE")
         .withCreationDate(datetime("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(datetime("2016-12-02T09:00:00Z")).build();
 
     CalendarEvent event6 = CalendarEventStubBuilder
-        .from(Period.between(date("2016-12-16"), date("2016-12-16")))
+        .from(Period.between(date("2016-12-16"), date("2016-12-17")))
         .withExternalId("EVENT-UUID-LOCAL-DATE-ONE-DAY-WITH-START-AND-END-RELAXED")
         .withTitle("EVENT-TITLE")
         .withCreationDate(datetime("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(datetime("2016-12-02T09:00:00Z")).build();
 
     CalendarEvent event7 = CalendarEventStubBuilder
-        .from(Period.between(date("2016-12-16"), date("2016-12-16")))
+        .from(Period.between(date("2016-12-16"), date("2016-12-17")))
         .withExternalId("EVENT-UUID-LOCAL-DATE-ONE-DAY-START-ONLY")
         .withTitle("EVENT-TITLE")
         .withCreationDate(datetime("2016-12-01T14:30:00Z"))
@@ -193,7 +193,7 @@ public class ICal4JExchangeImportTest {
   @Test
   public void simpleOneOfTwoDaysDuration() throws ICalendarException {
     CalendarEvent event = CalendarEventStubBuilder
-        .from(Period.between(date("2016-12-14"), date("2016-12-15")))
+        .from(Period.between(date("2016-12-14"), date("2016-12-16")))
         .withExternalId("EVENT-UUID").withTitle("EVENT-TITLE")
         .withDescription("EVENT-DESCRIPTION <a href=\"#\">Click me...</a> !!!")
         .withLocation("Grenoble")
@@ -378,7 +378,7 @@ public class ICal4JExchangeImportTest {
     when(user.getDisplayedName()).thenReturn("User Test");
     when(user.geteMail()).thenReturn("user.test@silverpeas.org");
     CalendarEvent event = CalendarEventStubBuilder
-        .from(Period.between(date("2016-12-14"), date("2016-12-15")))
+        .from(Period.between(date("2016-12-14"), date("2016-12-16")))
         .withExternalId("EVENT-UUID-ATTENDEES")
         .withTitle("EVENT-TITLE")
         .withCreator(creator)

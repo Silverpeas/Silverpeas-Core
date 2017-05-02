@@ -830,15 +830,22 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    */
   public EventOperationResult importWith(final ICalendarImport eventImport,
       final List<CalendarEventOccurrence> occurrences) {
+    OperationContext.fromCurrentRequester();
     OperationContext.addStates(IMPORT);
     try {
       return Transaction.performInOne(() -> {
         final Pair<CalendarEvent, EventOperationResult> importEventResult =
             importEvent(eventImport);
+        EventOperationResult result = importEventResult.getRight();
         if (!occurrences.isEmpty()) {
-          importOccurrences(importEventResult, occurrences);
+          EventOperationResult occurrenceResult = importOccurrences(importEventResult, occurrences);
+          occurrenceResult.updated().ifPresent(e ->  {
+            if (!result.created().isPresent()) {
+              result.withUpdated(e);
+            }
+          });
         }
-        return importEventResult.getRight();
+        return result;
       });
     } finally {
       OperationContext.removeStates(IMPORT);
@@ -847,14 +854,10 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   private Pair<CalendarEvent, EventOperationResult> importEvent(final ICalendarImport eventImport) {
 
-    // Searching the existence of the event first onto the external identifier data
-    Optional<CalendarEvent> optionalPersistedEvent =
-        eventImport.getCalendar().externalEvent(getExternalId());
-    if (!optionalPersistedEvent.isPresent()) {
-      // If none, searching the existence of the event on the id data
-      optionalPersistedEvent = eventImport.getCalendar().event(getExternalId());
-    }
-    EventOperationResult result = null;
+    // Searching the existence of the event first into the external identifier data
+    Optional<CalendarEvent> optionalPersistedEvent = getExistingCalendarEvent(eventImport);
+    // Importing
+    EventOperationResult result = new EventOperationResult();
     final CalendarEvent persistedEvent;
     if (optionalPersistedEvent.isPresent()) {
 
@@ -876,14 +879,24 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return Pair.of(persistedEvent, result);
   }
 
-  private void importOccurrences(final Pair<CalendarEvent, EventOperationResult> eventImportResult,
+  private Optional<CalendarEvent> getExistingCalendarEvent(final ICalendarImport eventImport) {
+    Optional<CalendarEvent> optionalPersistedEvent =
+        eventImport.getCalendar().externalEvent(getExternalId());
+    if (!optionalPersistedEvent.isPresent()) {
+      // If none, searching the existence of the event on the id data
+      optionalPersistedEvent = eventImport.getCalendar().event(getExternalId());
+    }
+    return optionalPersistedEvent;
+  }
+
+  private EventOperationResult importOccurrences(final Pair<CalendarEvent, EventOperationResult> eventImportResult,
       final List<CalendarEventOccurrence> occToImport) {
+    EventOperationResult result = new EventOperationResult();
     final CalendarEvent event = eventImportResult.getLeft();
     EventOperationResult eventSaveResult = eventImportResult.getRight();
     // Getting existing occurrences if any
     List<CalendarEventOccurrence> persistedOccurrences =
-        eventSaveResult != null && eventSaveResult.created().isPresent() ? emptyList() :
-            event.getPersistedOccurrences();
+        eventSaveResult.created().isPresent() ? emptyList() : event.getPersistedOccurrences();
     // Preparing iterators in order to avoid to perform several queries
     final Iterator<CalendarEventOccurrence> toSaveIt =
         occToImport.stream().sorted(EVENT_OCCURRENCE_COMPARATOR).iterator();
@@ -896,7 +909,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       // Trying to get this occurrence into Silverpeas persistence context
       while (existing != null && existing.getOriginalStartDate().toString()
           .compareTo(toSave.getOriginalStartDate().toString()) < 0) {
-        existing = existingIt.next();
+        existing = existingIt.hasNext() ? existingIt.next() : null;
       }
       // Saving the occurrence
       if (existing != null &&
@@ -909,17 +922,21 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
           // Save is performed only if it has been updated from the external repository
           componentToMerge.copyTo(componentToSave);
           existing.saveIntoPersistence();
+          result.withUpdated(existing.getCalendarEvent());
         }
       } else {
         // Case of the occurrence does not exist into Silverpeas persistence context.
         // The occurrence to import is directly saved.
         CalendarEventOccurrence toPersist =
             new CalendarEventOccurrence(event, toSave.getOriginalStartDate(),
-                toSave.getOriginalStartDate());
+                toSave.getOriginalStartDate().plus(1, ChronoUnit.DAYS));
+        toSave.asCalendarComponent().copyTo(toPersist.asCalendarComponent());
         toPersist.setPeriod(toSave.getPeriod());
         toPersist.saveIntoPersistence();
+        result.withUpdated(toPersist.getCalendarEvent());
       }
     }
+    return result;
   }
 
   /**

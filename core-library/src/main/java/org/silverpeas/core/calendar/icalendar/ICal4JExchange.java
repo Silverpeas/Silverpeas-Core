@@ -72,6 +72,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
@@ -434,10 +435,11 @@ public class ICal4JExchange implements ICalendarExchange {
       final CalendarEvent event, final VEvent vEvent) {
     try {
       // The original start date
-      Temporal originalStartDate = iCal4JDateCodec.decode(vEvent.getRecurrenceId().getDate());
+      Temporal originalStartDate =
+          iCal4JDateCodec.decode(vEvent.getRecurrenceId().getDate(), zoneId.get());
       // The occurrence
-      CalendarEventOccurrence occurrence =
-          occurrenceConstructor.newInstance(event, originalStartDate, originalStartDate);
+      CalendarEventOccurrence occurrence = occurrenceConstructor
+          .newInstance(event, originalStartDate, originalStartDate.plus(1, ChronoUnit.DAYS));
       // The period
       occurrence.setPeriod(extractPeriod(zoneId, vEvent));
       // Component data
@@ -529,11 +531,7 @@ public class ICal4JExchange implements ICalendarExchange {
     }
     Temporal startTemporal = iCal4JDateCodec.decode(startDate, zoneId.get());
     Temporal endTemporal = iCal4JDateCodec.decode(endDate, zoneId.get());
-    if (endTemporal instanceof LocalDate) {
-      if (!startTemporal.equals(endTemporal)) {
-        endTemporal = endTemporal.minus(1, ChronoUnit.DAYS);
-      }
-    } else if (startTemporal.equals(endTemporal)) {
+    if (endTemporal instanceof OffsetDateTime && startTemporal.equals(endTemporal)) {
       endTemporal = endTemporal.plus(1, ChronoUnit.HOURS);
     }
     return Period.between(startTemporal, endTemporal);

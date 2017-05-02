@@ -71,17 +71,17 @@
     <div class="field">
       <span class="txtlibform">${startDateLabel}</span>
       <span class="champs">
-        <span>{{$ctrl.ceo.startDate | displayAsDate}}</span>
-        <span class="txtlibform">${atTimeLabel}</span>
-        <span>{{$ctrl.ceo.startDate | displayAsTime}}</span>
+        <span>{{$ctrl.startDate() | displayAsDate}}</span>
+        <span ng-if="!$ctrl.ceo.onAllDay" class="txtlibform">${atTimeLabel}</span>
+        <span ng-if="!$ctrl.ceo.onAllDay">{{$ctrl.startDate() | displayAsTime}}</span>
       </span>
     </div>
     <div class="field">
       <span class="txtlibform">${endDateLabel}</span>
       <span class="champs">
-        <span>{{$ctrl.ceo.endDate | displayAsDate}}</span>
-        <span class="txtlibform">${atTimeLabel}</span>
-        <span>{{$ctrl.ceo.endDate | displayAsTime}}</span>
+        <span>{{$ctrl.endDate() | displayAsDate}}</span>
+        <span ng-if="!$ctrl.ceo.onAllDay" class="txtlibform">${atTimeLabel}</span>
+        <span ng-if="!$ctrl.ceo.onAllDay">{{$ctrl.endDate() | displayAsTime}}</span>
       </span>
     </div>
     <div class="field">

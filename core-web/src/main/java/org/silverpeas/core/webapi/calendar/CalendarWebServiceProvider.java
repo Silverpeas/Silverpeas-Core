@@ -32,6 +32,7 @@ import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.Plannable;
 import org.silverpeas.core.calendar.icalendar.ICalendarException;
 import org.silverpeas.core.calendar.icalendar.ICalendarImport;
 import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
@@ -39,10 +40,12 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
 import javax.inject.Singleton;
@@ -68,6 +71,8 @@ import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodTyp
  */
 @Singleton
 public class CalendarWebServiceProvider {
+
+  private final SilverLogger silverLogger = SilverLogger.getLogger(Plannable.class);
 
   private CalendarWebServiceProvider() {
   }
@@ -256,8 +261,13 @@ public class CalendarWebServiceProvider {
    */
   void importEventsAsICalendarFormat(final ICalendarImport eventImport)
       throws ICalendarException {
+    final String calendarTitle = eventImport.getCalendar().getTitle();
+    final String calendarId = eventImport.getCalendar().getId();
+    silverLogger.info("start event import into calendar {0} (id={1})", calendarTitle, calendarId);
     final Stream<Pair<CalendarEvent, List<CalendarEventOccurrence>>> events =
         eventImport.streamEvents();
+    final Mutable<Integer> added = Mutable.of(0);
+    final Mutable<Integer> updated = Mutable.of(0);
     Transaction.performInOne(() -> {
       events.forEach(e -> {
         CalendarEvent event = e.getLeft();
@@ -265,10 +275,16 @@ public class CalendarWebServiceProvider {
         // Adjustments
         importAdjustments(event);
         // Persist operation
-        event.importWith(eventImport, occurrences);
+        EventOperationResult result = event.importWith(eventImport, occurrences);
+        result.created().ifPresent(ce -> added.set(added.get() + 1));
+        result.updated().ifPresent(ue -> updated.set(updated.get() + 1));
       });
       return null;
     });
+    silverLogger.info(
+        "end event import into calendar {0} (id={1}), with {2} created events and {3} updated " +
+            "events", calendarTitle, calendarId, added.get(), updated.get());
+    successMessage("calendar.message.event.imported", calendarTitle, added.get(), updated.get());
   }
 
   private void importAdjustments(final CalendarEvent event) {
@@ -559,7 +575,7 @@ public class CalendarWebServiceProvider {
    * @param messageKey the key of the message.
    * @param params the message parameters.
    */
-  private void successMessage(String messageKey, String... params) {
+  private void successMessage(String messageKey, Object... params) {
     User owner = User.getCurrentRequester();
     String userLanguage = owner.getUserPreferences().getLanguage();
     getMessager().addSuccess(

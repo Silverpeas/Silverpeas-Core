@@ -27,6 +27,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Embedded;
@@ -294,7 +295,14 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     anotherComponent.period = period.clone();
     anotherComponent.priority = priority;
     anotherComponent.attributes = attributes.clone();
-    if (!OperationContext.statesOf(IMPORT)) {
+    if (OperationContext.statesOf(IMPORT)) {
+      if (StringUtil.isNotDefined(anotherComponent.getId())) {
+        // In case of import, the attendees are not modified
+        AttendeeSet existingAttendees = anotherComponent.attendees;
+        anotherComponent.attendees = new AttendeeSet(anotherComponent);
+        existingAttendees.forEach(a -> a.cloneFor(anotherComponent));
+      }
+    } else {
       anotherComponent.attendees = new AttendeeSet(anotherComponent);
       attendees.forEach(a -> a.cloneFor(anotherComponent));
     }
