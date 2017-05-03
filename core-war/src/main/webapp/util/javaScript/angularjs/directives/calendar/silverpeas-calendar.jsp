@@ -54,6 +54,7 @@
                             on-calendar-updated="$ctrl.api.updateCalendar(calendar)"
                             on-calendar-deleted="$ctrl.api.deleteCalendar(calendar)"
                             on-calendar-removed="$ctrl.api.removeCalendar(calendar)"
+                            on-calendar-synchronized="$ctrl.api.refetchCalendars()"
                             calendar-potential-colors="$ctrl.api.getCalendarPotentialColors()"
                             calendars="$ctrl.calendars"
                             participation-calendars="$ctrl.participationCalendars">

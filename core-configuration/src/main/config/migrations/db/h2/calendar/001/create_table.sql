@@ -3,7 +3,7 @@ CREATE TABLE SB_Cal_Calendar (
   instanceId     VARCHAR(30)   NOT NULL,
   title          VARCHAR(2000) NOT NULL,
   zoneId         VARCHAR(40)   NOT NULL,
-  externalUrl    VARCHAR(40),
+  externalUrl    VARCHAR(250),
   createDate     TIMESTAMP     NOT NULL,
   createdBy      VARCHAR(40)   NOT NULL,
   lastUpdateDate TIMESTAMP     NOT NULL,

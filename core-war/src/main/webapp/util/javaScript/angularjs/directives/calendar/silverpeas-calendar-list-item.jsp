@@ -28,9 +28,10 @@
                            on-select="$ctrl.onCalendarColorSelect({calendar:$ctrl.calendar,color:color})"
                            ng-if="$ctrl.calendar.color"></silverpeas-color-picker>
   <div>
-    <span>{{$ctrl.calendar.title}}</span>
+    <span ng-class="{'synchronized':$ctrl.calendar.isSynchronized}">{{$ctrl.calendar.title}}</span>
     <a href="#" ng-click="$ctrl.onCalendarVisibilityToggle({calendar:$ctrl.calendar})">V</a>
     <a href="{{$ctrl.calendar.uri}}/export/ical" target="_blank" ng-if="(!$ctrl.calendar.userPersonal || $ctrl.calendar.canBeDeleted) && !$ctrl.calendar.canBeRemoved">E</a>
+    <a href="#" ng-click="$ctrl.synchronize({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.isSynchronized">S</a>
     <a href="#" ng-click="$ctrl.modify({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeModified">U</a>
     <a href="#" ng-click="$ctrl.remove({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeRemoved">R</a>
     <a href="#" ng-click="$ctrl.delete({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeDeleted">X</a>

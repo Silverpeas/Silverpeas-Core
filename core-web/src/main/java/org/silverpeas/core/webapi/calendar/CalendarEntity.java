@@ -29,13 +29,17 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.base.WebEntity;
 
+import javax.ws.rs.WebApplicationException;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.util.Date;
 
@@ -53,6 +57,7 @@ public class CalendarEntity implements WebEntity {
   private String id;
   private String title;
   private String zoneId;
+  private URI externalUrl;
   private boolean userMainPersonal;
   private boolean userPersonal;
   private String ownerName;
@@ -60,6 +65,9 @@ public class CalendarEntity implements WebEntity {
   private Date lastUpdateDate;
   private boolean canBeModified;
   private boolean canBeDeleted;
+
+  protected CalendarEntity() {
+  }
 
   public static CalendarEntity fromCalendar(final Calendar calendar) {
     return new CalendarEntity().decorate(calendar);
@@ -109,6 +117,14 @@ public class CalendarEntity implements WebEntity {
     this.zoneId = zoneId;
   }
 
+  public URI getExternalUrl() {
+    return externalUrl;
+  }
+
+  public void setExternalUrl(final URI externalUrl) {
+    this.externalUrl = externalUrl;
+  }
+
   @XmlElement
   public boolean isUserMainPersonal() {
     return userMainPersonal;
@@ -144,15 +160,19 @@ public class CalendarEntity implements WebEntity {
     return canBeDeleted;
   }
 
-  protected CalendarEntity() {
-  }
-
   @SuppressWarnings("unchecked")
   protected <T extends CalendarEntity> T decorate(final Calendar calendar) {
     User currentUser = User.getCurrentRequester();
     this.id = calendar.getId();
     this.title = calendar.getTitle();
     this.zoneId = calendar.getZoneId().toString();
+    try {
+      this.externalUrl =
+          calendar.getExternalCalendarUrl() != null ? calendar.getExternalCalendarUrl().toURI() :
+              null;
+    } catch (URISyntaxException e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
     this.userMainPersonal = calendar.isMainPersonalOf(currentUser);
     this.userPersonal = calendar.isPersonalOf(currentUser);
     this.ownerName = calendar.getCreator().getDisplayedName();
@@ -170,6 +190,7 @@ public class CalendarEntity implements WebEntity {
     builder.append("id", getId());
     builder.append("title", getTitle());
     builder.append("zoneId", getZoneId());
+    builder.append("externalUrl", getExternalUrl());
     return builder.toString();
   }
 
@@ -182,6 +203,11 @@ public class CalendarEntity implements WebEntity {
    */
   public Calendar merge(Calendar calendar) {
     calendar.setTitle(getTitle());
+    try {
+      calendar.setExternalCalendarUrl(getExternalUrl().toURL());
+    } catch (MalformedURLException e) {
+      throw new WebApplicationException(e);
+    }
     if(PersonalComponentInstance.from(calendar.getComponentInstanceId()).isPresent()) {
       calendar.setZoneId(User.getCurrentRequester().getUserPreferences().getZoneId());
     } else {

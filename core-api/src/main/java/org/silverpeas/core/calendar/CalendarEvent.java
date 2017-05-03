@@ -1068,10 +1068,12 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   @Override
   public boolean canBeModifiedBy(final User user) {
     return SecurableRequestCache.canBeModifiedBy(user, getId(), u -> {
+      boolean isCalendarSynchronized = getCalendar().getExternalCalendarUrl() != null;
       AccessController<String> accessController =
           AccessControllerProvider.getAccessController(ComponentAccessControl.class);
-      return accessController.isUserAuthorized(u.getId(), getCalendar().getComponentInstanceId(),
-          AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+      return !isCalendarSynchronized && accessController
+          .isUserAuthorized(u.getId(), getCalendar().getComponentInstanceId(),
+              AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
     });
   }
 

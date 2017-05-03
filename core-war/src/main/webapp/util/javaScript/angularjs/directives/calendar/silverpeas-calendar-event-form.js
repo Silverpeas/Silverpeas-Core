@@ -104,8 +104,8 @@
       }]);
 
   angular.module('silverpeas.directives').directive('silverpeasCalendarEventFormMain',
-      ['$timeout', 'context',
-        function($timeout, context) {
+      ['$timeout', 'context', 'synchronizedFilter', 'defaultFilter',
+        function($timeout, context, synchronizedFilter, defaultFilter) {
           return {
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form-main.jsp',
@@ -128,6 +128,16 @@
             this.isFirstEventOccurrence = function() {
               return this.data.firstEventOccurrence || !this.data.uri;
             }.bind(this);
+
+            $scope.$watchCollection('$ctrl.calendars', function() {
+              if (this.calendars) {
+                var potentialCalendars = synchronizedFilter(this.calendars, false);
+                if (potentialCalendars && !potentialCalendars.length) {
+                  potentialCalendars = defaultFilter(this.calendars, true);
+                }
+                this.potentialCalendars = potentialCalendars;
+              }
+            }.bind(this));
 
             this.api = {
               getFormValidationPriority : function() {

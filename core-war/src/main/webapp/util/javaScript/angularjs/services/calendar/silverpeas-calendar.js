@@ -228,6 +228,7 @@
         var Calendar = function() {
           this.$onInit = function() {
             this.events = CalendarEventOccurrence.occurrences(this.uri);
+            this.isSynchronized = StringUtil.isDefined(this.externalUrl);
           }
         };
 
@@ -322,6 +323,16 @@
          */
         this["delete"] = function(calendar) {
           return adapter.remove(calendar.id);
+        };
+
+        /**
+         * Synchronizes a calendar.
+         * @param calendar the calendar to synchronize.
+         * @returns {promise|a.fn.promise|*}
+         */
+        this.synchronize = function(calendar) {
+          var adapter = RESTAdapter.get(calendar.uri + '/synchronization', Calendar);
+          return adapter.put({});
         };
 
         /**

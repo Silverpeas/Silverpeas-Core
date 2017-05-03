@@ -49,6 +49,7 @@
 
 <fmt:message key="usercalendar.name" var="userCalendarLabel"/>
 <fmt:message key="calendar.menu.item.calendar.create" var="createCalendarLabel" bundle="${calendarBundle}"/>
+<fmt:message key="calendar.menu.item.calendar.synchronized.create" var="createSynchronizedCalendarLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.event.add" var="addEventLabel" bundle="${calendarBundle}"/>
 <fmt:message key="usercalendar.menu.item.exportyourevents" var="exportYourEventLabel"/>
 <fmt:message key="calendar.menu.item.event.import" var="importEventLabel" bundle="${calendarBundle}"/>
@@ -70,6 +71,7 @@
                                     on-created="userCalendar.addCalendar(calendar)"
                                     on-imported-events="userCalendar.refetchCalendars()"></silverpeas-calendar-management>
     <view:operation action="angularjs:calMng.add()" altText="${createCalendarLabel}"/>
+    <view:operation action="angularjs:calMng.add(true)" altText="${createSynchronizedCalendarLabel}"/>
     <fmt:message key="userCalendar.icons.addEvent" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
     <view:operationOfCreation action="angularjs:newEvent()"

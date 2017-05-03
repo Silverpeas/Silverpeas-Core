@@ -256,6 +256,32 @@ public class CalendarWebServiceProvider {
   }
 
   /**
+   * Synchronizes the given calendar.
+   * <p>Throws a forbidden WEB application exception if the calendar is not a synchronized one</p>
+   * @param calendar the calendar to synchronize.
+   */
+  void synchronizeCalendar(final Calendar calendar) {
+    if (calendar.getExternalCalendarUrl() == null) {
+      throw new WebApplicationException("aimed calendar is not a synchronized one",
+          Response.Status.FORBIDDEN);
+    }
+    final String calendarTitle = calendar.getTitle();
+    final String calendarId = calendar.getId();
+    silverLogger
+        .info("start event synchronization of calendar {0} (id={1})", calendarTitle, calendarId);
+    final Mutable<Integer> added = Mutable.of(0);
+    final Mutable<Integer> updated = Mutable.of(0);
+
+    // TODO CALENDAR wiring or writing here the synchronization process
+
+    silverLogger.info(
+        "end event synchronization of calendar {0} (id={1}), with {2} created events and {3} " +
+            "updated events", calendarTitle, calendarId, added.get(), updated.get());
+    successMessage("calendar.message.calendar.synchronized", calendar.getTitle(), added.get(),
+        updated.get());
+  }
+
+  /**
    * Imports events as ICalendar format.
    * @param eventImport the import to perform.
    */

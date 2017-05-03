@@ -27,6 +27,7 @@ package org.silverpeas.core.webapi.calendar;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
@@ -365,10 +366,11 @@ public class CalendarEventEntity implements WebEntity {
   protected CalendarEventEntity decorate(final CalendarEvent calendarEvent,
       final String componentInstanceId, final ZoneId zoneId) {
     User currentUser = User.getCurrentRequester();
+    final Calendar calendar = calendarEvent.getCalendar();
     final CalendarComponent component = calendarEvent.asCalendarComponent();
     eventId = calendarEvent.getId();
-    calendarId = calendarEvent.getCalendar().getId();
-    calendarZoneId = calendarEvent.getCalendar().getZoneId().toString();
+    calendarId = calendar.getId();
+    calendarZoneId = calendar.getZoneId().toString();
     onAllDay = calendarEvent.isOnAllDay();
     startDate = formatDateWithOffset(component, calendarEvent.getStartDate(), zoneId);
     endDate = formatDateWithOffset(component, calendarEvent.getEndDate(), zoneId);

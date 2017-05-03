@@ -38,7 +38,8 @@
         onCalendarCreated : '&',
         onCalendarUpdated : '&',
         onCalendarRemoved : '&',
-        onCalendarDeleted : '&'
+        onCalendarDeleted : '&',
+        onCalendarSynchronized : '&'
       },
       controllerAs : '$ctrl',
       bindToController : true,
@@ -57,6 +58,7 @@
         onCalendarColorSelect : '&?',
         onCalendarVisibilityToggle : '&?',
         calendar : '=',
+        "synchronize" : '&?',
         "modify" : '&?',
         "remove" : '&?',
         "delete" : '&?'

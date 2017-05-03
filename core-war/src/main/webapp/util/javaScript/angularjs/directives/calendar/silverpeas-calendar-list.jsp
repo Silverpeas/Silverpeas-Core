@@ -23,6 +23,7 @@
   --%>
 
 <silverpeas-calendar-management api="$ctrl.calMng"
+                                on-synchronized="$ctrl.onCalendarSynchronized({calendar:calendar})"
                                 on-updated="$ctrl.onCalendarUpdated({calendar:calendar})"
                                 on-deleted="$ctrl.onCalendarDeleted({calendar:calendar})">
 </silverpeas-calendar-management>
@@ -33,6 +34,7 @@
                                      calendar-potential-colors="$ctrl.calendarPotentialColors"
                                      on-calendar-color-select="$ctrl.onCalendarColorSelect({calendar:calendar,color:color})"
                                      on-calendar-visibility-toggle="$ctrl.onCalendarVisibilityToggle({calendar:calendar})"
+                                     synchronize="$ctrl.calMng.synchronize(calendar)"
                                      modify="$ctrl.calMng.modify(calendar)"
                                      delete="$ctrl.calMng.delete(calendar)">
       </silverpeas-calendar-list-item>

@@ -273,6 +273,21 @@ public class CalendarResource extends AbstractCalendarResource {
   }
 
   /**
+   * Permits to synchronize manually a calendar for which an external url is set.
+   * If the user isn't authenticated, a 401 HTTP code is returned.
+   * If a problem occurs when processing the request, a 503 HTTP code is returned.
+   */
+  @PUT
+  @Path("{calendarId}/synchronization")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response synchronizeCalendar(@PathParam("calendarId") String calendarId) {
+    final Calendar calendar = process(() -> Calendar.getById(calendarId)).execute();
+    assertDataConsistency(getComponentId(), calendar);
+    getCalendarWebServiceProvider().synchronizeCalendar(calendar);
+    return Response.ok(asWebEntity(calendar)).build();
+  }
+
+  /**
    * Gets the JSON representation of a list of calendar event occurrence.
    * If it doesn't exist, a 404 HTTP code is returned.
    * @return the response to the HTTP GET request with the JSON representation of the asked

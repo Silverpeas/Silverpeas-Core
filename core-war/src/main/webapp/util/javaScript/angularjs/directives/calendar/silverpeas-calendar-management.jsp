@@ -34,32 +34,50 @@
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
 
 <fmt:message var="createCalendarLabel" key="calendar.menu.item.calendar.create"/>
+<fmt:message var="createSynchronizedCalendarLabel" key="calendar.menu.item.calendar.synchronized.create"/>
 <fmt:message var="modifyCalendarLabel" key="calendar.menu.item.calendar.modify"/>
+<fmt:message var="modifySynchronizedCalendarLabel" key="calendar.menu.item.calendar.synchronized.modify"/>
 <fmt:message var="deleteCalendarMessage" key="calendar.message.calendar.delete"><fmt:param>@name@</fmt:param></fmt:message>
+<fmt:message var="synchronizeCalendarMessage" key="calendar.message.calendar.synchronize"><fmt:param>@name@</fmt:param></fmt:message>
 <fmt:message var="titleLabel" key="GML.title"/>
+<fmt:message var="externalUrlLabel" key="calendar.label.externalUrl"/>
 
 <fmt:message key="calendar.menu.item.event.import" var="importEventLabel"/>
 <fmt:message key="calendar.label.event.import.ical" var="icalFileImportLabel"/>
 <fmt:message key="calendar.label.event.import.into" var="icalFileImportIntoLabel"/>
 
 <c:set var="mandatoryMessage"><b>@name@</b> <fmt:message key='GML.MustBeFilled'/></c:set>
-<c:set var="nbMaxMessage"><b>@name@</b> <fmt:message key='GML.data.error.message.string.limit'><fmt:param value="2000"/></fmt:message></c:set>
+<c:set var="nbMaxMessage"><b>@name@</b> <fmt:message key='GML.data.error.message.string.limit'><fmt:param value="@length@"/></fmt:message></c:set>
 
 <div style="display: none">
   <view:loadScript src="/util/javaScript/checkForm.js"/>
   <span ng-init="$ctrl.messages.mandatory = '${silfn:escapeJs(mandatoryMessage)}'"></span>
   <span ng-init="$ctrl.messages.nbMax = '${silfn:escapeJs(nbMaxMessage)}'"></span>
   <span ng-init="$ctrl.messages.create= '${silfn:escapeJs(createCalendarLabel)}'"></span>
+  <span ng-init="$ctrl.messages.createSynchronized= '${silfn:escapeJs(createSynchronizedCalendarLabel)}'"></span>
   <span ng-init="$ctrl.messages.update= '${silfn:escapeJs(modifyCalendarLabel)}'"></span>
+  <span ng-init="$ctrl.messages.updateSynchronized= '${silfn:escapeJs(modifySynchronizedCalendarLabel)}'"></span>
   <span ng-init="$ctrl.messages.delete= '${silfn:escapeJs(deleteCalendarMessage)}'"></span>
+  <span ng-init="$ctrl.messages.synchronize= '${silfn:escapeJs(synchronizeCalendarMessage)}'"></span>
   <span ng-init="$ctrl.labels.title = '${silfn:escapeJs(titleLabel)}'"></span>
+  <span ng-init="$ctrl.labels.externalUrl = '${silfn:escapeJs(externalUrlLabel)}'"></span>
 </div>
 
-<div class="silverpeas-calendar-management-save-popin" style="display: none" title="{{$ctrl.creating ? $ctrl.messages.create : $ctrl.messages.update}}">
-  <p>
-    <span class="txtlibform">{{$ctrl.labels.title}}</span>
-    <input name="title" size="50" maxlength="2000" ng-model="$ctrl.calendar.title">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5"/>
-  </p>
+<div class="silverpeas-calendar-management-save-popin" style="display: none" title="{{$ctrl.getTitle()}}">
+  <div class="fields">
+    <div class="field">
+      <label class="txtlibform" for="sp_cal_title">{{$ctrl.labels.title}}</label>
+      <div class="champs">
+        <input name="title" id="sp_cal_title" size="50" maxlength="2000" ng-model="$ctrl.calendar.title">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5"/>
+      </div>
+    </div>
+    <div class="field" ng-if="$ctrl.calendar.isSynchronized">
+      <label class="txtlibform" for="sp_cal_externalUrl">{{$ctrl.labels.externalUrl}}</label>
+      <div class="champs">
+        <input name="externalUrl" id="sp_cal_externalUrl" size="50" maxlength="2000" ng-model="$ctrl.calendar.externalUrl">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5"/>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="silverpeas-calendar-management-import-popin" style="display: none" title="${importEventLabel}">

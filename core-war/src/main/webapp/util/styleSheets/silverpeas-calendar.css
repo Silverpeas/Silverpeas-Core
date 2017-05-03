@@ -65,6 +65,10 @@ silverpeas-calendar-list ul li {
   margin-right: 10px;
 }
 
+silverpeas-calendar-list ul li .synchronized {
+  font-style: italic;
+}
+
 .silverpeas-calendar-management-import-popin .champs {
   padding-top: 5px;
   display: inline-flex;
