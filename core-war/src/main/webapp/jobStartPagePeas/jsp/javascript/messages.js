@@ -64,6 +64,20 @@ messageTriggers = {
                   });
                   return false;
                 }
+              } else if (event.target.type == "select-one") {
+                if (event.target.value != "0") {
+                  var newValue = event.target.value;
+                  var previousValue = $('#warning-'+event.target.name).attr('initialParamValue');
+                  event.stopPropagation();
+                  event.target.value = previousValue;
+                  $('#warning-' + event.target.name).popup('confirmation', {
+                    callback : function() {
+                      event.target.value = newValue;
+                      return true;
+                    }
+                  });
+                  return false;
+                }
               }
               return true;
             });

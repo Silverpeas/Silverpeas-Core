@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.node.model.NodeRuntimeException;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.ObjectType;
@@ -31,7 +32,6 @@ import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -68,18 +68,20 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
 
     boolean sharingOperation = context.getOperations().contains(AccessControlOperation.sharing);
 
+    Set<SilverpeasRole> userRoles = getUserRoles(userId, nodePK, context);
+
     if (sharingOperation) {
-      authorized = StringUtil.getBooleanValue(getOrganisationController()
-          .getComponentParameterValue(nodePK.getInstanceId(), "useFolderSharing"));
-      isRoleVerificationRequired = authorized;
+      SilverpeasRole greatestUserRole = SilverpeasRole.getGreatestFrom(userRoles);
+      if (greatestUserRole == null) {
+        greatestUserRole = SilverpeasRole.reader;
+      }
+      User user = User.getById(userId);
+      authorized = !user.isAnonymous() && componentAccessController
+          .isFolderSharingEnabledForRole(nodePK.getInstanceId(), greatestUserRole);
+      isRoleVerificationRequired = false;
     }
 
     if (isRoleVerificationRequired) {
-      Set<SilverpeasRole> userRoles = getUserRoles(userId, nodePK, context);
-      if (sharingOperation) {
-        SilverpeasRole greaterUserRole = SilverpeasRole.getGreaterFrom(userRoles);
-        return greaterUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
-      }
       return isUserAuthorized(userRoles);
     }
 

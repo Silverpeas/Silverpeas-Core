@@ -24,6 +24,7 @@
 package org.silverpeas.web.sharing.control;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -55,7 +56,17 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
   }
 
   public List<Ticket> getTicketsByUser() throws RemoteException {
-    return getFileSharingService().getTicketsByUser(getUserId());
+    List<Ticket> allTickets = getFileSharingService().getTicketsByUser(getUserId());
+    List<Ticket> tickets = new ArrayList<>();
+    for (Ticket ticket : allTickets) {
+      if (ticket.getResource() == null) {
+        // delete obsolete ticket associated to deleted resource
+        deleteTicket(ticket.getToken());
+      } else {
+        tickets.add(ticket);
+      }
+    }
+    return tickets;
   }
 
   public void updateTicket(Ticket ticket) {

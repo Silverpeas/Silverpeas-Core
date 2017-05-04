@@ -62,33 +62,31 @@
   <view:browseBar path="${browseBar}"/>
   <view:window>
     <view:frame>
-      <view:arrayPane var="ticketList" routingAddress="ViewTickets">
-        <fmt:message key="GML.nom" var="ticketName"></fmt:message>
-        <view:arrayColumn title="${ticketName}"></view:arrayColumn>
+      <view:arrayPane var="ticketList" routingAddress="ViewTickets" numberLinesPerPage="15">
+        <fmt:message key="GML.creationDate" var="creationLabel"/>
+        <view:arrayColumn title="${creationLabel}"/>
 
-        <fmt:message key="sharing.ticket" var="sharingTicket"></fmt:message>
-        <view:arrayColumn title="${sharingTicket}" sortable="false"></view:arrayColumn>
+        <fmt:message key="GML.nom" var="ticketName"/>
+        <view:arrayColumn title="${ticketName}"/>
 
-        <fmt:message key="sharing.endDate" var="endDateTicket"></fmt:message>
-        <view:arrayColumn title="${endDateTicket}"></view:arrayColumn>
+        <fmt:message key="sharing.ticket" var="sharingTicket"/>
+        <view:arrayColumn title="${sharingTicket}" sortable="false"/>
 
-        <fmt:message key="sharing.nbAccess" var="nbAccessTicket"></fmt:message>
-        <view:arrayColumn title="${nbAccessTicket}"></view:arrayColumn>
+        <fmt:message key="sharing.endDate" var="endDateTicket"/>
+        <view:arrayColumn title="${endDateTicket}"/>
 
-        <fmt:message key="sharing.operation" var="operationTicket"></fmt:message>
-        <view:arrayColumn title="${operationTicket}" sortable="false"></view:arrayColumn>
+        <fmt:message key="sharing.nbAccess" var="nbAccessTicket"/>
+        <view:arrayColumn title="${nbAccessTicket}"/>
+
+        <fmt:message key="sharing.operation" var="operationTicket"/>
+        <view:arrayColumn title="${operationTicket}" sortable="false"/>
         <c:forEach items="${requestScope.Tickets}" var="ticket">
           <c:set var="endDate" value=""/>
           <c:set var="accessCount" value="${ticket.nbAccess}"/>
+          <c:set var="creationDate"><view:formatDate value="${ticket.creationDate}" language="${language}"/></c:set>
           <view:arrayLine>
-            <c:choose>
-              <c:when test="${ticket.resource ne null && ticket.resource.URL ne null}">
-                <c:set var="lien" value="${ticket.resource.URL}"/>
-              </c:when>
-              <c:otherwise>
-                <c:set var="lien" value="''" />
-              </c:otherwise>
-            </c:choose>
+            <view:arrayCellText text="${creationDate}" compareOn="${ticket.creationDate}"/>
+            <c:set var="lien" value="${ticket.resource.URL}"/>
             <view:arrayCellText text="<a href=\'${lien}\' class=\'${ticket.sharedObjectType}\' target=\'_blank\'>${ticket.resource.name}</a>" />
             <%
               IconPane iconPane = gef.getIconPane();
@@ -110,8 +108,8 @@
               <fmt:message key="sharing.access.unlimited" var="sharingUnlimited"></fmt:message>
               <c:set var="accessCount" value="${ticket.nbAccess} / ${sharingUnlimited}"/>
             </c:if>
-            <view:arrayCellText text="${endDate}" />
-            <view:arrayCellText text="${accessCount}" />
+            <view:arrayCellText text="${endDate}" compareOn="${ticket.endDate}"/>
+            <view:arrayCellText text="${accessCount}" compareOn="${ticket.nbAccess}"/>
             <%
               iconPane = gef.getIconPane();
               Icon updateIcon = iconPane.addIcon();

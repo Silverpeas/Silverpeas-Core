@@ -1207,6 +1207,12 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>The comparable object to use to sort lines</description>
+      <name>compareOn</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Comparable</type>
+    </attribute>
   </tag>
   <tag>
     <description>Simple tag to define a pagination navigation bar.</description>

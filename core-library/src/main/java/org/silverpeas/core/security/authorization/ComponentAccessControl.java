@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.security.authorization;
 
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+
 /**
  * This interface extends access controller interface for a Component resource.
  * @author Yohann Chastagnier
@@ -40,10 +42,12 @@ public interface ComponentAccessControl extends AccessController<String> {
   /**
    * Indicates if publication sharing is enabled on the component instance represented by the given
    * identifier.
-   * @param instanceId the identifier of the component instance.
-   * @return true if file sharing is enabled, false otherwise.
+   * @param componentId the identifier of the component instance.
+   * @param greatestUserRole the greatest role of user
+   * @return true if publication sharing is enabled, false otherwise.
    */
-  boolean isPublicationSharingEnabled(String instanceId);
+  public boolean isPublicationSharingEnabledForRole(String componentId,
+      SilverpeasRole greatestUserRole);
 
   /**
    * Indicates that the rights are set on node as well as the component.
@@ -56,9 +60,19 @@ public interface ComponentAccessControl extends AccessController<String> {
    * Indicates if file sharing is enabled on the component instance represented by the given
    * identifier.
    * @param instanceId the identifier of the component instance.
+   * @param greatestUserRole the greatest role of user
    * @return true if file sharing is enabled, false otherwise.
    */
-  boolean isFileSharingEnabled(String instanceId);
+  boolean isFileSharingEnabledForRole(String instanceId, SilverpeasRole greatestUserRole);
+
+  /**
+   * Indicates if folder sharing is enabled on the component instance represented by the given
+   * identifier.
+   * @param instanceId the identifier of the component instance.
+   * @param greatestUserRole the greatest role of user
+   * @return true if folder sharing is enabled, false otherwise.
+   */
+  boolean isFolderSharingEnabledForRole(String instanceId, SilverpeasRole greatestUserRole);
 
   /**
    *  Indicates if the specified component instance satisfy the topic tracking behavior.

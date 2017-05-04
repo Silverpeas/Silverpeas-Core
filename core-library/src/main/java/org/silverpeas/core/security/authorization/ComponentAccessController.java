@@ -28,7 +28,6 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationController;
 
 import javax.inject.Inject;
@@ -67,15 +66,35 @@ public class ComponentAccessController extends AbstractAccessController<String>
   }
 
   @Override
-  public boolean isFileSharingEnabled(String componentId) {
-    return isTopicTrackerSupported(componentId) &&
-        isComponentInstanceParameterEnabled(componentId, "useFileSharing");
+  public boolean isFileSharingEnabledForRole(String componentId, SilverpeasRole greatestUserRole) {
+    return isSharingEnabledForRole(componentId, greatestUserRole, "useFileSharing");
   }
 
   @Override
-  public boolean isPublicationSharingEnabled(String componentId) {
-    return isTopicTrackerSupported(componentId) &&
-        isComponentInstanceParameterEnabled(componentId, "usePublicationSharing");
+  public boolean isPublicationSharingEnabledForRole(String componentId,
+      SilverpeasRole greatestUserRole) {
+    return isSharingEnabledForRole(componentId, greatestUserRole, "usePublicationSharing");
+  }
+
+  @Override
+  public boolean isFolderSharingEnabledForRole(String componentId,
+      SilverpeasRole greatestUserRole) {
+    return isSharingEnabledForRole(componentId, greatestUserRole, "useFolderSharing");
+  }
+
+  private boolean isSharingEnabledForRole(String componentId, SilverpeasRole greatestUserRole,
+      String parameterName) {
+    if (!isTopicTrackerSupported(componentId)) {
+      return false;
+    }
+    String value =
+        getOrganisationController().getComponentParameterValue(componentId, parameterName);
+    if ("1".equals(value)) {
+      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
+    } else if ("2".equals(value)) {
+      return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.writer);
+    }
+    return "3".equals(value);
   }
 
   private boolean isComponentInstanceParameterEnabled(String componentId,

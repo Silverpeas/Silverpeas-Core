@@ -24,6 +24,7 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -117,6 +118,11 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     boolean authorized = !userRoles.isEmpty();
     boolean isRoleVerificationRequired = false;
 
+    SilverpeasRole greatestUserRole = SilverpeasRole.getGreatestFrom(userRoles);
+    if (greatestUserRole == null) {
+      greatestUserRole = SilverpeasRole.reader;
+    }
+
     boolean downloadOperation = isDownloadActionFrom(context.getOperations());
     boolean sharingOperation = isSharingActionFrom(context.getOperations());
 
@@ -133,8 +139,10 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
 
     // Verifying sharing is possible
     if (authorized && sharingOperation) {
-      authorized = getComponentAccessController().isFileSharingEnabled(object.getInstanceId());
-      isRoleVerificationRequired = authorized;
+      User user = User.getById(userId);
+      authorized = !user.isAnonymous() && getComponentAccessController()
+          .isFileSharingEnabledForRole(object.getInstanceId(), greatestUserRole);
+      isRoleVerificationRequired = false;
     }
 
     // Verifying persist actions are possible
@@ -144,11 +152,6 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
 
     // Verifying roles if necessary
     if (isRoleVerificationRequired) {
-      SilverpeasRole greatestUserRole = SilverpeasRole.getGreatestFrom(userRoles);
-      if (greatestUserRole == null) {
-        greatestUserRole = SilverpeasRole.reader;
-      }
-
       if (isNodeAttachmentCase) {
         if (downloadOperation) {
           authorized = greatestUserRole.isGreaterThan(SilverpeasRole.writer);
@@ -156,9 +159,6 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
           authorized = greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
         }
       } else {
-        if (sharingOperation) {
-          return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
-        }
         if (SilverpeasRole.writer.equals(greatestUserRole)) {
           authorized = userId.equals(foreignUserAuthor) ||
               getComponentAccessController().isCoWritingEnabled(object.getInstanceId());

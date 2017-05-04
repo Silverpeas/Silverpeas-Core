@@ -20,25 +20,22 @@
  */
 package org.silverpeas.core.web.attachment.tag;
 
-import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.StringEscapeUtils;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
-import static org.silverpeas.core.admin.service.OrganizationControllerProvider.getOrganisationController;
 import static org.silverpeas.core.util.StringUtil.newline;
 
 /**
@@ -50,7 +47,12 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   private boolean useXMLForm;
   private boolean useWebDAV;
   private boolean showMenuNotif;
-  private boolean useContextualMenu;
+
+  private static final String TEMPLATE = "oMenu%s.getItem(%s).cfg.setProperty(\"disabled\", %s);";
+
+  private static final String MENU_ITEM_TEMPLATE = "<li class=\"yuimenuitem\">"
+      + "<a class=\"yuimenuitemlabel\" href=\"javascript:%1$s\">%2$s</a></li>%n";
+  private static final long serialVersionUID = 1L;
 
   public void setAttachment(SimpleDocument attachment) {
     this.attachment = attachment;
@@ -68,16 +70,6 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     this.showMenuNotif = showMenuNotif;
   }
 
-  public void setUseContextualMenu(boolean useContextualMenu) {
-    this.useContextualMenu = useContextualMenu;
-  }
-
-  private static final String template = "oMenu%s.getItem(%s).cfg.setProperty(\"disabled\", %s);";
-
-  private static final String menuItemTemplate = "<li class=\"yuimenuitem\">"
-      + "<a class=\"yuimenuitemlabel\" href=\"javascript:%1$s\">%2$s</a></li>%n";
-  private static final long serialVersionUID = 1L;
-
   @Override
   public int doStartTag() throws JspException {
     try {
@@ -86,13 +78,15 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       String favoriteLanguage = mainSessionController.getFavoriteLanguage();
       LocalizationBundle messages = ResourceLocator.getLocalizationBundle(
           "org.silverpeas.util.attachment.multilang.attachment", favoriteLanguage);
-      SettingBundle settings =
-          ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
-      String httpServerBase =
-          URLUtil.getServerURL((HttpServletRequest) pageContext.getRequest());
-      pageContext.getOut().print(prepareActions(attachment, useXMLForm, useWebDAV,
-          mainSessionController.getUserId(), favoriteLanguage, messages,
-          httpServerBase, showMenuNotif, useContextualMenu, settings));
+      UserDetail user = mainSessionController.getCurrentUserDetail();
+      if (attachment.canBeModifiedBy(user)) {
+        pageContext.getOut().print(
+            prepareActions(attachment, useXMLForm, useWebDAV, user,
+                favoriteLanguage, messages, showMenuNotif));
+      } else {
+        pageContext.getOut()
+            .print(prepareReadOnlyActions(attachment, user, messages, showMenuNotif));
+      }
       return EVAL_BODY_INCLUDE;
     } catch (IOException ioex) {
       throw new JspException(ioex);
@@ -104,8 +98,8 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     return EVAL_PAGE;
   }
 
-  boolean isAdmin(String userId) {
-    return getOrganisationController().getUserDetail(userId).isAccessAdmin();
+  boolean isAdmin(User user) {
+    return user.isAccessAdmin();
   }
 
   boolean isWorker(String userId, SimpleDocument attachment) {
@@ -119,15 +113,13 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   String prepareActions(SimpleDocument attachment, boolean useXMLForm, boolean useWebDAV,
-      String userId, final String userLanguage, LocalizationBundle resources,
-      String httpServerBase, boolean showMenuNotif, boolean useContextualMenu,
-      SettingBundle settings) throws UnsupportedEncodingException {
+      UserDetail user, final String userLanguage, LocalizationBundle resources,
+      boolean showMenuNotif) throws UnsupportedEncodingException {
+    String userId = user.getId();
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
     StringBuilder builder = new StringBuilder(2048);
-    builder.append("<div id=\"basicmenu").append(attachmentId).append("\" class=\"yuimenu\">").
-        append(newline);
-    builder.append("<div class=\"bd\">").append(newline);
+
     builder.append("<ul class=\"first-of-type\">").append(newline);
     prepareMenuItem(builder, "checkout('" + attachment.getId() + "'," + attachmentId + ','
         + webDavOK + ");", resources.getString("checkOut"));
@@ -182,32 +174,17 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     prepareMenuItem(builder, "notifyAttachment('" + attachmentId + "');", resources.getString(
         "GML.notify"));
     builder.append("</ul>").append(newline);
-    builder.append("</div>").append(newline);
-    builder.append("</div>").append(newline);
-    builder.append("<script type=\"text/javascript\">");
-    String oMenuId = "oMenu" + attachmentId;
 
-    builder.append("var ").append(oMenuId).append(";");
-    builder.append("YAHOO.util.Event.onContentReady(\"basicmenu").append(attachmentId).append(
-        "\", function () {");
-    if (useContextualMenu) {
-      builder.append(oMenuId).append(" = new YAHOO.widget.ContextMenu(\"basicmenu").append(
-          attachmentId).append("\"");
-      builder.append(", { trigger: \"img_").append(attachmentId).append("\", ");
-    } else {
-      builder.append(oMenuId).append(" = new YAHOO.widget.Menu(\"basicmenu").append(attachmentId).
-          append("\"").append(", {");
-    }
-    builder.append("hidedelay: 100, ");
-    builder.append("effect: {effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
-    builder.append(oMenuId).append(".render();");
+    String menuItems = builder.toString();
+
+    builder = new StringBuilder();
     if (attachment.isReadOnly()) {
       configureCheckout(builder, attachmentId, true);
       builder.append(configureCheckoutAndDownload(attachmentId, !isWorker(userId, attachment)));
       builder.append(configureCheckoutAndEdit(attachmentId,
           !isEditable(userId, attachment, useWebDAV)));
       builder.append(configureCheckin(attachmentId,
-          !isWorker(userId, attachment) && !isAdmin(userId)));
+          !isWorker(userId, attachment) && !isAdmin(user)));
       builder.append(configureUpdate(attachmentId, !isWorker(userId, attachment)));
       builder.append(configureDelete(attachmentId, true));
       builder.append(configureForbidDownloadForReaders(attachmentId, true));
@@ -220,29 +197,84 @@ public class SimpleDocumentContextualMenu extends TagSupport {
       builder.append(configureCheckoutAndEdit(attachmentId, !useWebDAV || !attachment.
           isOpenOfficeCompatible()));
     }
-    builder.append(configureFileSharing(attachmentId,
-        !attachment.isSharingAllowedForRolesFrom(UserDetail.getById(userId))));
+    builder.append(configureFileSharing(attachmentId, !attachment.isSharingAllowedForRolesFrom(user)));
     builder.append(configureSwitchState(attachmentId, (!attachment.isVersioned() &&
         isComponentPublicationAlwaysVisible(attachment.getInstanceId())) ||
         attachment.isReadOnly()));
     builder.append(configureNotify(attachmentId, !showMenuNotif));
-    builder.append("YAHOO.util.Event.addListener(\"basicmenu").append(attachmentId);
-    builder.append("\", \"mouseover\", oMenu").append(attachmentId).append(".show);");
-    builder.append("YAHOO.util.Event.addListener(\"basicmenu").append(attachmentId);
-    builder.append("\", \"mouseout\", oMenu").append(attachmentId).append(".hide);");
 
-    if (!useContextualMenu) {
-      builder.append("YAHOO.util.Event.on(\"edit_").append(attachmentId);
-      builder.append("\", \"click\", function (event) {");
-      builder.append("var xy = YAHOO.util.Event.getXY(event);");
-      builder.append(oMenuId).append(".cfg.setProperty(\"x\", xy[0]);");
-      builder.append(oMenuId).append(".cfg.setProperty(\"y\", xy[1]+10);");
-      builder.append(oMenuId).append(".show();");
-      builder.append("  })");
+    String itemsConfig = builder.toString();
+
+    return getMenu(attachmentId, menuItems, itemsConfig);
+  }
+
+  String prepareReadOnlyActions(SimpleDocument attachment, UserDetail user,
+      LocalizationBundle resources, boolean showMenuNotif) throws UnsupportedEncodingException {
+    String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
+    StringBuilder itemsBuilder = new StringBuilder(2048);
+    itemsBuilder.append("<ul>").append(newline);
+
+    boolean sharingAllowed = attachment.isSharingAllowedForRolesFrom(user);
+
+    if (sharingAllowed) {
+      prepareMenuItem(itemsBuilder, "ShareAttachment('" + attachmentId + "');",
+          resources.getString("GML.share.file"));
     }
+    prepareMenuItem(itemsBuilder, "notifyAttachment('" + attachmentId + "');", resources.getString(
+        "GML.notify"));
+    itemsBuilder.append("</ul>").append(newline);
+
+    StringBuilder configBuilder = new StringBuilder();
+    configBuilder.append(String.format(TEMPLATE, attachmentId, "0", !showMenuNotif));
+    if (sharingAllowed) {
+      configBuilder.append(String.format(TEMPLATE, attachmentId, "1", false));
+    }
+
+    return getMenu(attachmentId, itemsBuilder.toString(), configBuilder.toString());
+  }
+
+  private String getMenu(String attachmentId, String items, String config) {
+    StringBuilder builder = new StringBuilder(2048);
+    String oMenuId = "oMenu" + attachmentId;
+    String basicMenuId = "basicmenu" + attachmentId;
+    builder.append("<div id=\"").append(basicMenuId).append("\" class=\"yuimenu\">").
+        append(newline);
+    builder.append("<div class=\"bd\">").append(newline);
+
+    // adding menu items
+    builder.append(items);
+
+    builder.append("</div>").append(newline);
+    builder.append("</div>").append(newline);
+    builder.append("<script type=\"text/javascript\">");
+    builder.append("var ").append(oMenuId).append(";");
+    builder.append("YAHOO.util.Event.onContentReady(\"").append(basicMenuId).append(
+        "\", function () {");
+    builder.append(oMenuId).append(" = new YAHOO.widget.Menu(\"").append(basicMenuId).
+        append("\"").append(", {");
+    builder.append("hidedelay: 100, ");
+    builder.append("effect: {effect: YAHOO.widget.ContainerEffect.FADE, duration: 0.30}});");
+    builder.append(oMenuId).append(".render();");
+
+    // adding configuration of menu items
+    builder.append(config);
+
+    builder.append("YAHOO.util.Event.addListener(\"").append(basicMenuId);
+    builder.append("\", \"mouseover\", ").append(oMenuId).append(".show);");
+    builder.append("YAHOO.util.Event.addListener(\"").append(basicMenuId);
+    builder.append("\", \"mouseout\", ").append(oMenuId).append(".hide);");
+
+    builder.append("YAHOO.util.Event.on(\"edit_").append(attachmentId);
+    builder.append("\", \"click\", function (event) {");
+    builder.append("var xy = YAHOO.util.Event.getXY(event);");
+    builder.append(oMenuId).append(".cfg.setProperty(\"x\", xy[0]);");
+    builder.append(oMenuId).append(".cfg.setProperty(\"y\", xy[1]+10);");
+    builder.append(oMenuId).append(".show();");
+    builder.append("  })");
 
     builder.append("});");
     builder.append("</script>");
+
     return builder.toString();
   }
 
@@ -259,50 +291,50 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   StringBuilder prepareMenuItem(StringBuilder buffer, String javascript, String label) {
-    return buffer.append(String.format(menuItemTemplate, javascript, label));
+    return buffer.append(String.format(MENU_ITEM_TEMPLATE, javascript, label));
   }
 
   StringBuilder configureCheckout(StringBuilder buffer, String attachmentId, boolean disable) {
-    return buffer.append(String.format(template, attachmentId, "0", disable));
+    return buffer.append(String.format(TEMPLATE, attachmentId, "0", disable));
   }
 
   String configureCheckoutAndDownload(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "1", disable);
+    return String.format(TEMPLATE, attachmentId, "1", disable);
   }
 
   String configureCheckoutAndEdit(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "2", disable);
+    return String.format(TEMPLATE, attachmentId, "2", disable);
   }
 
   String configureCheckin(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "3", disable);
+    return String.format(TEMPLATE, attachmentId, "3", disable);
   }
 
   String configureUpdate(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "0, 1", disable);
+    return String.format(TEMPLATE, attachmentId, "0, 1", disable);
   }
 
   String configureDelete(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "3, 1", disable);
+    return String.format(TEMPLATE, attachmentId, "3, 1", disable);
   }
 
   String configureForbidDownloadForReaders(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "4, 1", disable);
+    return String.format(TEMPLATE, attachmentId, "4, 1", disable);
   }
 
   String configureXmlForm(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "1, 1", disable);
+    return String.format(TEMPLATE, attachmentId, "1, 1", disable);
   }
 
   String configureFileSharing(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "0, 2", disable);
+    return String.format(TEMPLATE, attachmentId, "0, 2", disable);
   }
 
   String configureSwitchState(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "2, 1", disable);
+    return String.format(TEMPLATE, attachmentId, "2, 1", disable);
   }
 
   String configureNotify(String attachmentId, boolean disable) {
-    return String.format(template, attachmentId, "0, 3", disable);
+    return String.format(TEMPLATE, attachmentId, "0, 3", disable);
   }
 }
