@@ -35,13 +35,18 @@ public class ArrayCellTextTag extends BodyTagSupport {
 
   private static final long serialVersionUID = -719577480679901247L;
   private String text;
+  private Comparable toCompare;
 
   @Override
   public int doEndTag() throws JspException {
+    ArrayCellText cell = null;
     if (bodyContent != null && bodyContent.getString() != null) {
-      getArrayLine().addArrayCellText(bodyContent.getString());
+      cell = getArrayLine().addArrayCellText(bodyContent.getString());
     } else {
-      getArrayLine().addArrayCellText(text);
+      cell= getArrayLine().addArrayCellText(text);
+    }
+    if (toCompare != null) {
+      cell.setCompareOn(toCompare);
     }
     return EVAL_PAGE;
   }
@@ -53,6 +58,10 @@ public class ArrayCellTextTag extends BodyTagSupport {
 
   public void setText(final String text) {
     this.text = text;
+  }
+
+  public void setCompareOn(final Comparable toCompare) {
+    this.toCompare = toCompare;
   }
 
   public ArrayLine getArrayLine() {

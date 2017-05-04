@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.node.model;
 
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.util.URLUtil;
@@ -594,5 +596,12 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
     AccessController<NodePK> accessController =
         AccessControllerProvider.getAccessController(NodeAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), this.getNodePK());
+  }
+
+  public boolean canBeSharedBy(final UserDetail user) {
+    AccessController<NodePK> accessController =
+        AccessControllerProvider.getAccessController(NodeAccessControl.class);
+    return accessController.isUserAuthorized(user.getId(), this.getNodePK(),
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
   }
 }

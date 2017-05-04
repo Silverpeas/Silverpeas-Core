@@ -25,6 +25,7 @@ package org.silverpeas.core.contribution.publication.model;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -62,8 +63,10 @@ import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
+import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.URLUtil;
@@ -1249,5 +1252,23 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public String getPermalink() {
     return URLUtil.getSimpleURL(URLUtil.URL_PUBLI, getId());
+  }
+
+  public boolean isSharingAllowedForRolesFrom(final UserDetail user) {
+    if (!isValid()) {
+      // a not valid publication can not be shared
+      return false;
+    }
+
+    if (user == null || StringUtil.isNotDefined(user.getId()) || !user.isValidState()) {
+      // In that case, from point of security view if no user data exists, sharing is forbidden.
+      return false;
+    }
+
+    // Access is verified for sharing context
+    AccessController<PublicationPK> accessController = AccessControllerProvider
+        .getAccessController(PublicationAccessControl.class);
+    return accessController.isUserAuthorized(user.getId(), getPK(),
+        AccessControlContext.init().onOperationsOf(AccessControlOperation.sharing));
   }
 }

@@ -55,7 +55,4 @@
       ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
   MultiSilverpeasBundle attResources =
       new MultiSilverpeasBundle(messages, null, attSettings, language);
-
-	boolean useContextualMenu = attSettings.getBoolean("ui.useContextualMenu", false);
-  pageContext.setAttribute("useContextualMenu", useContextualMenu);
 %>
