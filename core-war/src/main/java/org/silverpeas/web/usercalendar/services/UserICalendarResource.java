@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,29 +21,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.security.token.annotation;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Inherited;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import org.silverpeas.core.security.token.TokenGeneratorProvider;
+package org.silverpeas.web.usercalendar.services;
+
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.webapi.calendar.ICalendarResource;
+
+import javax.ws.rs.Path;
+
+import static org.silverpeas.web.usercalendar.services.UserCalendarResource.USER_CALENDAR_BASE_URI;
 
 /**
- * An annotation to inform the generator a token is mapped with.
- *
- * This annotation is scanned by the {@link TokenGeneratorProvider} to identify the concrete token
- * generator for a given implementation of a token.
- *
- * @author mmoquillon
+ * A REST Web resource giving calendar data.
+ * @author Yohann Chastagnier
  */
-@Documented
-@Inherited
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface TokenGenerator {
-
-  Class<? extends org.silverpeas.core.security.token.TokenGenerator> value();
-}
+@Service
+@RequestScoped
+@Path(USER_CALENDAR_BASE_URI + "/ical")
+public class UserICalendarResource extends ICalendarResource {}

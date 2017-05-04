@@ -73,7 +73,7 @@
   </silverpeas-calendar-event-management>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
     <view:operation
-        action="angularjs:editEventOccurrence(calendars, ceo)"
+        action="angularjs:editEventOccurrence(ceo)"
         altText="${modifyLabel}"/>
     <view:operation
         action="angularjs:eventMng.removeOccurrence(ceo)"

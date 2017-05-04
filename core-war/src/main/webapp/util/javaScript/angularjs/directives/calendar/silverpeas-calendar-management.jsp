@@ -41,6 +41,8 @@
 <fmt:message var="synchronizeCalendarMessage" key="calendar.message.calendar.synchronize"><fmt:param>@name@</fmt:param></fmt:message>
 <fmt:message var="titleLabel" key="GML.title"/>
 <fmt:message var="externalUrlLabel" key="calendar.label.externalUrl"/>
+<fmt:message var="icalPublicUriLabel" key="calendar.label.externalUrl"/>
+<fmt:message var="icalPrivateUriLabel" key="calendar.label.externalUrl"/>
 
 <fmt:message key="calendar.menu.item.event.import" var="importEventLabel"/>
 <fmt:message key="calendar.label.event.import.ical" var="icalFileImportLabel"/>
@@ -61,6 +63,37 @@
   <span ng-init="$ctrl.messages.synchronize= '${silfn:escapeJs(synchronizeCalendarMessage)}'"></span>
   <span ng-init="$ctrl.labels.title = '${silfn:escapeJs(titleLabel)}'"></span>
   <span ng-init="$ctrl.labels.externalUrl = '${silfn:escapeJs(externalUrlLabel)}'"></span>
+  <span ng-init="$ctrl.labels.icalPublicUri = '${silfn:escapeJs(icalPublicUriLabel)}'"></span>
+  <span ng-init="$ctrl.labels.icalPrivateUri = '${silfn:escapeJs(icalPrivateUriLabel)}'"></span>
+</div>
+
+<div class="silverpeas-calendar-management-view-popin" style="display: none" title="{{$ctrl.getTitle()}}">
+  <div class="fields">
+    <div class="field">
+      <span class="txtlibform" >{{$ctrl.labels.title}}</span>
+      <div class="champs">
+        <span>{{$ctrl.calendar.title}}</span>
+      </div>
+    </div>
+    <div class="field" ng-if="$ctrl.calendar.isSynchronized">
+      <label class="txtlibform">{{$ctrl.labels.externalUrl}}</label>
+      <div class="champs">
+        <silverpeas-permalink link="$ctrl.calendar.externalUrl"></silverpeas-permalink>
+      </div>
+    </div>
+    <div class="field">
+      <label class="txtlibform">{{$ctrl.labels.icalPublicUri}}</label>
+      <div class="champs">
+        <silverpeas-permalink link="$ctrl.calendar.icalPublicUri"></silverpeas-permalink>
+      </div>
+    </div>
+    <div class="field">
+      <label class="txtlibform">{{$ctrl.labels.icalPrivateUri}}</label>
+      <div class="champs">
+        <silverpeas-permalink link="$ctrl.calendar.icalPrivateUri"></silverpeas-permalink>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="silverpeas-calendar-management-save-popin" style="display: none" title="{{$ctrl.getTitle()}}">
@@ -77,7 +110,18 @@
         <input name="externalUrl" id="sp_cal_externalUrl" size="50" maxlength="2000" ng-model="$ctrl.calendar.externalUrl">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5"/>
       </div>
     </div>
-  </div>
+    <div class="field" ng-if="$ctrl.calendar.icalPublicUri">
+      <label class="txtlibform">{{$ctrl.labels.icalPublicUri}}</label>
+      <div class="champs">
+        <silverpeas-permalink link="$ctrl.calendar.icalPublicUri"></silverpeas-permalink>
+      </div>
+    </div>
+    <div class="field" ng-if="$ctrl.calendar.icalPrivateUri">
+      <label class="txtlibform">{{$ctrl.labels.icalPrivateUri}}</label>
+      <div class="champs">
+        <silverpeas-permalink link="$ctrl.calendar.icalPrivateUri"></silverpeas-permalink>
+      </div>
+    </div>
 </div>
 
 <div class="silverpeas-calendar-management-import-popin" style="display: none" title="${importEventLabel}">

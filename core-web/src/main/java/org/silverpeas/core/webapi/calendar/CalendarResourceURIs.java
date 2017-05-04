@@ -25,13 +25,14 @@
 package org.silverpeas.core.webapi.calendar;
 
 
-import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Base64;
@@ -65,6 +66,36 @@ public final class CalendarResourceURIs {
       return null;
     }
     return getCalendarUriBuilder(baseUri, calendar).build();
+  }
+
+  /**
+   * Centralizes the build of a ical private URI.
+   * @param request the current request.
+   * @param baseUri the base URI of the service.
+   * @param calendar the aimed calendar.
+   * @return the URI of specified calendar.
+   */
+  public static URI buildIcalPrivateURI(final HttpServletRequest request, String baseUri,
+      Calendar calendar) {
+    if (calendar == null || !calendar.isPersisted()) {
+      return null;
+    }
+    return getICalUriBuilder(request, baseUri).path("private").path(calendar.getToken()).build();
+  }
+
+  /**
+   * Centralizes the build of a ical public URI.
+   * @param request the current request.
+   * @param baseUri the base URI of the service.
+   * @param calendar the aimed calendar.
+   * @return the URI of specified calendar.
+   */
+  public static URI buildIcalPublicURI(final HttpServletRequest request, String baseUri,
+      Calendar calendar) {
+    if (calendar == null || !calendar.isPersisted()) {
+      return null;
+    }
+    return getICalUriBuilder(request, baseUri).path("public").path(calendar.getId()).build();
   }
 
   /**
@@ -109,9 +140,22 @@ public final class CalendarResourceURIs {
         .build();
   }
 
-  private static UriBuilder getCalendarUriBuilder(final String baseUri, final Calendar calendar) {
+  private static UriBuilder getBaseUri(final HttpServletRequest request, final String baseUri) {
+    return UriBuilder.fromUri(URLUtil.getFullApplicationURL(request))
+        .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(baseUri);
+  }
+
+  private static UriBuilder getBaseUri(final String baseUri) {
     return UriBuilder.fromUri(URLUtil.getApplicationURL())
-        .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(baseUri)
+        .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(baseUri);
+  }
+
+  private static UriBuilder getICalUriBuilder(final HttpServletRequest request, final String baseUri) {
+    return getBaseUri(request, baseUri).path("ical");
+  }
+
+  private static UriBuilder getCalendarUriBuilder(final String baseUri, final Calendar calendar) {
+    return getBaseUri(baseUri)
         .path(calendar.getComponentInstanceId())
         .path(calendar.getId());
   }

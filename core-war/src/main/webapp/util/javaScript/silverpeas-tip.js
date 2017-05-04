@@ -178,10 +178,10 @@
         },
         position : {
           adjust : {
-            method : "flip flip"
+            method : "flip"
           },
-          at : "top right",
-          my : "bottom right"
+          my : "bottom left",
+          at : "top left"
         }
       }));
       return _performQTip(element, content, options, qtipOptions);

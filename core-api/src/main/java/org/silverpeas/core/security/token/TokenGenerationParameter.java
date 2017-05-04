@@ -33,8 +33,19 @@ import java.util.List;
  */
 public class TokenGenerationParameter<T> {
 
-  private final String _key;
-  private final T _value;
+  private final String key;
+  private final T value;
+
+  /**
+   * Constructs the generation parameter with the specified key (the parameter name) and value.
+   *
+   * @param key the parameter key.
+   * @param value the parameter value.
+   */
+  TokenGenerationParameter(String key, T value) {
+    this.key = key;
+    this.value = value;
+  }
 
   /**
    * Gets a builder of a chain of generation parameter.
@@ -57,19 +68,8 @@ public class TokenGenerationParameter<T> {
     return new TokenGenerationParameter<T>(key, value);
   }
 
-  /**
-   * Constructs the generation parameter with the specified key (the parameter name) and value.
-   *
-   * @param key the parameter key.
-   * @param value the parameter value.
-   */
-  public TokenGenerationParameter(String key, T value) {
-    this._key = key;
-    this._value = value;
-  }
-
   public String key() {
-    return _key;
+    return key;
   }
 
   /**
@@ -78,7 +78,7 @@ public class TokenGenerationParameter<T> {
    * @return the value of this parameter.
    */
   public T value() {
-    return _value;
+    return value;
   }
 
   /**

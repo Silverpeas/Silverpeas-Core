@@ -24,38 +24,39 @@
 package org.silverpeas.core.security.token.exception;
 
 /**
- * The exception for all abnormal errors occuring with the Token API and for which the client
- * doesn't need to perform a dedicated action.
+ * The exception for all normal errors occuring with the Token API and for which the client requires
+ * to perform a dedicated action.
  *
  * @author Yohann Chastagnier
  */
-public class TokenRuntimeException extends RuntimeException {
+public class TokenException extends Exception {
 
-  private static final long serialVersionUID = -2707813079770996304L;
+  private static final long serialVersionUID = 815728200596150161L;
 
   /**
-   * Creates a new instance of <code>TokenRuntimeException</code> without detail message.
+   * Creates a new instance of <code>TokenException</code> without detail message.
    */
-  public TokenRuntimeException() {
+  public TokenException() {
+    // Nothing to do.
   }
 
   /**
-   * Constructs an instance of <code>TokenRuntimeException</code> with the specified detail message.
+   * Constructs an instance of <code>TokenException</code> with the specified detail message.
    *
    * @param msg the detail message.
    */
-  public TokenRuntimeException(String msg) {
+  public TokenException(String msg) {
     super(msg);
   }
 
   /**
-   * Constructs an instance of <code>TokenRuntimeException</code> with the specified detail message
-   * and with the specified cause.
+   * Constructs an instance of <code>TokenException</code> with the specified detail message and
+   * with the specified cause.
    *
    * @param message the detail message.
    * @param cause the cause of this exception.
    */
-  public TokenRuntimeException(String message, Throwable cause) {
+  public TokenException(String message, Throwable cause) {
     super(message, cause);
   }
 }

@@ -30,10 +30,6 @@ import org.silverpeas.core.util.ArrayUtil;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import org.silverpeas.core.admin.user.UserReference;
-import org.silverpeas.core.security.token.exception.TokenException;
-import org.silverpeas.core.security.token.exception.TokenRuntimeException;
-import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 
 public class UserFull extends UserDetail {
 

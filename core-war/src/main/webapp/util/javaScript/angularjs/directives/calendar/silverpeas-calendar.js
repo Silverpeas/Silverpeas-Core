@@ -235,7 +235,11 @@
                   }
                 }
                 $timeout(function() {
-                  var $occurrenceContainer = angular.element('.fc-scroller', $element);
+                  var $occContainer = occurrence.$element;
+                  var contentWidth = $content.outerWidth() + 30;
+                  var contentLimit = $occContainer.position().left + contentWidth;
+                  var bodyLimit = angular.element(document.body).width();
+                  var $occurrenceContainer = angular.element('.silverpeas-calendar', $element);
                   var qTipOptions = {
                     content : {
                       title : {
@@ -252,15 +256,18 @@
                     },
                     hide : {
                       event : 'hideEventDetails'
+                    },
+                    position : {
+                      at : (contentLimit < bodyLimit ? "top left" : "top right")
                     }
                   };
                   if (!occurrence.onAllDay) {
-                    qTipOptions.position = {
+                    qTipOptions.position = extendsObject(qTipOptions.position, {
                       viewport : $occurrenceContainer,
                       container : $occurrenceContainer
-                    }
+                    });
                   }
-                  TipManager.simpleDetails(occurrence.$element, function() {
+                  TipManager.simpleDetails($occContainer, function() {
                     return $content
                   }, qTipOptions);
                   resolve();

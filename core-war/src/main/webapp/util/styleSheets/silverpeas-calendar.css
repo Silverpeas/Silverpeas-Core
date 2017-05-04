@@ -89,6 +89,15 @@ silverpeas-calendar-list ul li .synchronized {
   opacity: 0.2;
 }
 
+.silverpeas-calendar-list-item-menu ul {
+  padding: 0px;
+}
+
+.silverpeas-calendar-list-item-menu li {
+  list-style: none;
+  padding: 2px;
+}
+
 silverpeas-calendar-event-occurrence-tip-actions .sp_buttonPane {
   display: inline-flex;
 }

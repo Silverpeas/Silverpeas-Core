@@ -312,6 +312,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(ANGULARJS_PATH + SILVERPEAS_ANGULAR_JS));
     xhtml.addElement(script(ANGULARJS_PATH + SILVERPEAS_ADAPTERS_ANGULAR_JS));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + SILVERPEAS_BUTTON_ANGULAR_JS));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "silverpeas-permalink.js"));
     return xhtml;
   }
 

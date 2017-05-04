@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,21 +21,28 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.security.token.persistent.service;
+package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.persistence.EntityReference;
 
 /**
- * A provider of a {@link PersistentResourceTokenService} instance.
+ * A reference to a given calendar in Silverpeas, such calendar being represented by a
+ * {@link Calendar} instance.
  *
  * @author Yohann Chastagnier
  */
-public class TokenServiceProvider {
+public class CalendarReference extends EntityReference<Calendar> {
 
-  /**
-   * @return an instance of {@link PersistentResourceTokenService}.
-   */
-  public static PersistentResourceTokenService getTokenService() {
-    return ServiceProvider.getService(PersistentResourceTokenService.class);
+  public CalendarReference(String id) {
+    super(id);
+  }
+
+  public static CalendarReference fromCalendar(final Calendar calendar) {
+    return new CalendarReference(calendar.getId());
+  }
+
+  @Override
+  public Calendar getEntity() {
+    return Calendar.getById(getId());
   }
 }

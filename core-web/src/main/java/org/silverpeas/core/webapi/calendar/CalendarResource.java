@@ -569,7 +569,9 @@ public class CalendarResource extends AbstractCalendarResource {
   public CalendarEntity asWebEntity(Calendar calendar) {
     assertEntityIsDefined(calendar);
     return CalendarEntity.fromCalendar(calendar)
-        .withURI(buildCalendarURI(getServiceBaseUri(), calendar));
+        .withURI(buildCalendarURI(getServiceBaseUri(), calendar))
+        .withICalPrivateURI(buildIcalPrivateURI(getHttpRequest(), getServiceBaseUri(), calendar))
+        .withICalPublicURI(buildIcalPublicURI(getHttpRequest(), getServiceBaseUri(), calendar));
   }
 
   /**

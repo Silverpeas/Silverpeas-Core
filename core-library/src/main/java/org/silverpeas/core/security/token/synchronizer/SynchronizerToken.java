@@ -23,13 +23,11 @@
  */
 package org.silverpeas.core.security.token.synchronizer;
 
+import org.silverpeas.core.security.token.Token;
+import org.silverpeas.core.security.token.annotation.TokenGenerator;
+
 import java.util.ArrayList;
 import java.util.List;
-
-import org.silverpeas.core.security.token.Token;
-import org.silverpeas.core.security.token.annotation.TokenGenerator;
-import org.silverpeas.core.security.token.Token;
-import org.silverpeas.core.security.token.annotation.TokenGenerator;
 
 /**
  * A synchronizer token is for protecting a user session or a Web resource. The token is used to
@@ -67,7 +65,7 @@ public class SynchronizerToken implements Token {
    */
   protected SynchronizerToken(String value) {
     this.value = value;
-    this.parameters = new ArrayList<String>();
+    this.parameters = new ArrayList<>();
   }
 
   /**
@@ -79,7 +77,7 @@ public class SynchronizerToken implements Token {
    */
   protected SynchronizerToken(String value, List<String> parameters) {
     this.value = value;
-    this.parameters = (parameters == null ? new ArrayList<String>() : parameters);
+    this.parameters = parameters == null ? new ArrayList<>() : parameters;
   }
 
   /**

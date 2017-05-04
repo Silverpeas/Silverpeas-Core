@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -24,38 +24,39 @@
 package org.silverpeas.core.security.token.exception;
 
 /**
- * The exception for all normal errors occuring with the Token API and for which the client requires
- * to perform a dedicated action.
+ * The exception for all abnormal errors occuring with the Token API and for which the client
+ * doesn't need to perform a dedicated action.
  *
  * @author Yohann Chastagnier
  */
-public class TokenException extends Exception {
+public class TokenRuntimeException extends RuntimeException {
 
-  private static final long serialVersionUID = 815728200596150161L;
+  private static final long serialVersionUID = -2707813079770996304L;
 
   /**
-   * Creates a new instance of <code>TokenException</code> without detail message.
+   * Creates a new instance of <code>TokenRuntimeException</code> without detail message.
    */
-  public TokenException() {
+  public TokenRuntimeException() {
+    // Nothing to do
   }
 
   /**
-   * Constructs an instance of <code>TokenException</code> with the specified detail message.
+   * Constructs an instance of <code>TokenRuntimeException</code> with the specified detail message.
    *
    * @param msg the detail message.
    */
-  public TokenException(String msg) {
+  public TokenRuntimeException(String msg) {
     super(msg);
   }
 
   /**
-   * Constructs an instance of <code>TokenException</code> with the specified detail message and
-   * with the specified cause.
+   * Constructs an instance of <code>TokenRuntimeException</code> with the specified detail message
+   * and with the specified cause.
    *
    * @param message the detail message.
    * @param cause the cause of this exception.
    */
-  public TokenException(String message, Throwable cause) {
+  public TokenRuntimeException(String message, Throwable cause) {
     super(message, cause);
   }
 }

@@ -54,6 +54,10 @@ import java.util.Date;
 public class CalendarEntity implements WebEntity {
 
   private URI uri;
+  @XmlElement
+  private URI icalPublicUri;
+  @XmlElement
+  private URI icalPrivateUri;
   private String id;
   private String title;
   private String zoneId;
@@ -78,10 +82,29 @@ public class CalendarEntity implements WebEntity {
    * @param uri the web entity URI.
    * @return itself.
    */
-  @SuppressWarnings("unchecked")
-  public <T extends CalendarEntity> T withURI(final URI uri) {
+  public CalendarEntity withURI(final URI uri) {
     this.uri = uri;
-    return (T) this;
+    return this;
+  }
+
+  /**
+   * Sets a ical public URI to this entity.
+   * @param uri the web entity URI.
+   * @return itself.
+   */
+  public CalendarEntity withICalPublicURI(final URI uri) {
+    this.icalPublicUri = uri;
+    return this;
+  }
+
+  /**
+   * Sets a ical public URI to this entity.
+   * @param uri the web entity URI.
+   * @return itself.
+   */
+  public CalendarEntity withICalPrivateURI(final URI uri) {
+    this.icalPrivateUri = uri;
+    return this;
   }
 
   @Override
@@ -203,10 +226,12 @@ public class CalendarEntity implements WebEntity {
    */
   public Calendar merge(Calendar calendar) {
     calendar.setTitle(getTitle());
-    try {
-      calendar.setExternalCalendarUrl(getExternalUrl().toURL());
-    } catch (MalformedURLException e) {
-      throw new WebApplicationException(e);
+    if (getExternalUrl() != null) {
+      try {
+        calendar.setExternalCalendarUrl(getExternalUrl().toURL());
+      } catch (MalformedURLException e) {
+        throw new WebApplicationException(e);
+      }
     }
     if(PersonalComponentInstance.from(calendar.getComponentInstanceId()).isPresent()) {
       calendar.setZoneId(User.getCurrentRequester().getUserPreferences().getZoneId());

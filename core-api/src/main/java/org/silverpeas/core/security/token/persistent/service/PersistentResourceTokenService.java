@@ -26,8 +26,7 @@ package org.silverpeas.core.security.token.persistent.service;
 import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
-import org.silverpeas.core.security.token.exception.TokenException;
-import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A service on the persistent token for Silverpeas entities. It wraps the mechanism to compute and
@@ -36,6 +35,10 @@ import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
  * @author Yohann Chastagnier
  */
 public interface PersistentResourceTokenService {
+
+  static PersistentResourceTokenService get() {
+    return ServiceProvider.getService(PersistentResourceTokenService.class);
+  }
 
   /**
    * Initializes the token of the resource referred by the specified {@link EntityReference}. If the

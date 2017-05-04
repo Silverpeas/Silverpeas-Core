@@ -38,6 +38,12 @@ import org.silverpeas.core.security.token.exception.TokenGenerationException;
 public class TokenGeneratorProvider {
 
   /**
+   * Hidden constructor.
+   */
+  private TokenGeneratorProvider() {
+  }
+
+  /**
    * Gets the generator mapped with the specified token type.
    *
    * @param type the type of the token.

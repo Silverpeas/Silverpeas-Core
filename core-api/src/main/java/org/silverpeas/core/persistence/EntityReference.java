@@ -108,15 +108,16 @@ public abstract class EntityReference<T> {
    * @return the meaningful name in upper case of the type of the referred entity.
    */
   public static String getType(String classSimpleName) {
+    String type = classSimpleName;
     for (String term : TechnicalTerms) {
-      if (classSimpleName.contains(term)) {
-        classSimpleName = classSimpleName.replace(term, "");
+      if (type.contains(term)) {
+        type = type.replace(term, "");
       }
     }
-    if (classSimpleName.isEmpty()) {
-      classSimpleName = UNKNOWN_TYPE;
+    if (type.isEmpty()) {
+      type = UNKNOWN_TYPE;
     }
-    return classSimpleName.toUpperCase();
+    return type.toUpperCase();
   }
 
   /**

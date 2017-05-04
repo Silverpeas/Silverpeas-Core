@@ -67,7 +67,7 @@
                 };
                 this.qtipApi = TipManager.simpleSelect(this.dom.result, this.dom.popin);
               }.bind(this), 200);
-            }.bind(this);
+            }
           }
         };
       }]);

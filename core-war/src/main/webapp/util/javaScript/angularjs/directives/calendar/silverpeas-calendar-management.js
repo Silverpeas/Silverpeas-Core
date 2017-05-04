@@ -43,6 +43,7 @@
           controller : function($scope, $element, $attrs, $transclude) {
             this.$postLink = function() {
               this.dom = {
+                viewPopin : angular.element('.silverpeas-calendar-management-view-popin', $element),
                 savePopin : angular.element('.silverpeas-calendar-management-save-popin', $element),
                 importPopin : angular.element('.silverpeas-calendar-management-import-popin', $element)
               }
@@ -60,6 +61,15 @@
             };
 
             this.api = {
+              "view" : function(calendarToView) {
+                notyReset();
+                this.calendar = calendarToView;
+                this.creating = false;
+                $timeout(function() {
+                  var $view = jQuery(this.dom.viewPopin);
+                  $view.popup('information');
+                }.bind(this), 0);
+              }.bind(this),
               "add" : function(isSynchronized) {
                 this.api.modify({isSynchronized : isSynchronized});
               }.bind(this),

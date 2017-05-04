@@ -35,6 +35,7 @@
                                      on-calendar-color-select="$ctrl.onCalendarColorSelect({calendar:calendar,color:color})"
                                      on-calendar-visibility-toggle="$ctrl.onCalendarVisibilityToggle({calendar:calendar})"
                                      synchronize="$ctrl.calMng.synchronize(calendar)"
+                                     view="$ctrl.calMng.view(calendar)"
                                      modify="$ctrl.calMng.modify(calendar)"
                                      delete="$ctrl.calMng.delete(calendar)">
       </silverpeas-calendar-list-item>

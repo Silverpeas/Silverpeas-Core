@@ -39,6 +39,9 @@ import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.token.exception.TokenException;
+import org.silverpeas.core.security.token.exception.TokenRuntimeException;
+import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -253,6 +256,7 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    */
   public void delete() {
     Transaction.performInOne(() -> {
+      PersistentResourceToken.removeToken(CalendarReference.fromCalendar(this));
       this.clear();
       CalendarRepository calendarRepository = CalendarRepository.get();
       calendarRepository.delete(this);
@@ -380,6 +384,19 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
     Optional<SilverpeasPersonalComponentInstance> instance =
         SilverpeasPersonalComponentInstance.getById(getComponentInstanceId());
     return instance.isPresent() && instance.get().getUser().getId().equals(user.getId());
+  }
+
+  /**
+   * Gets the token associated to the calendar.
+   * @return the token as string.
+   */
+  public String getToken() {
+    try {
+      CalendarReference ref = CalendarReference.fromCalendar(this);
+      return PersistentResourceToken.getOrCreateToken(ref).getValue();
+    } catch (TokenException e) {
+      throw new TokenRuntimeException(e.getMessage(), e);
+    }
   }
 
   @Override

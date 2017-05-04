@@ -6284,6 +6284,24 @@ THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
 }
 
 /**
+ * AngularJS silverpeas-permalink component.
+ */
+
+silverpeas-permalink {
+  white-space:nowrap;
+}
+
+silverpeas-permalink input {
+  width: 90%;
+  border: 1px solid #cacaca;
+  color: #333;
+}
+
+silverpeas-permalink .simple input {
+  width: 55%;
+}
+
+/**
  * AngularJS silverpeas-color-picker component.
  */
 

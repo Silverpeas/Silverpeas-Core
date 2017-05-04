@@ -27,13 +27,32 @@
                            potential-colors="$ctrl.calendarPotentialColors"
                            on-select="$ctrl.onCalendarColorSelect({calendar:$ctrl.calendar,color:color})"
                            ng-if="$ctrl.calendar.color"></silverpeas-color-picker>
-  <div>
-    <span ng-class="{'synchronized':$ctrl.calendar.isSynchronized}">{{$ctrl.calendar.title}}</span>
-    <a href="#" ng-click="$ctrl.onCalendarVisibilityToggle({calendar:$ctrl.calendar})">V</a>
-    <a href="{{$ctrl.calendar.uri}}/export/ical" target="_blank" ng-if="(!$ctrl.calendar.userPersonal || $ctrl.calendar.canBeDeleted) && !$ctrl.calendar.canBeRemoved">E</a>
-    <a href="#" ng-click="$ctrl.synchronize({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.isSynchronized">S</a>
-    <a href="#" ng-click="$ctrl.modify({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeModified">U</a>
-    <a href="#" ng-click="$ctrl.remove({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeRemoved">R</a>
-    <a href="#" ng-click="$ctrl.delete({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeDeleted">X</a>
+  <div class="item-detail">
+    <a href="#" ng-click="$ctrl.onCalendarVisibilityToggle({calendar:$ctrl.calendar})" ng-class="{'synchronized':$ctrl.calendar.isSynchronized}">{{$ctrl.calendar.title}}</a>
+    <div class="silverpeas-calendar-list-item-menu" style="display: none">
+      <ul>
+        <li ng-if="!$ctrl.calendar.canBeRemoved">
+          <a href="#" ng-click="$ctrl.view({calendar:$ctrl.calendar})">Info</a>
+        </li>
+        <li>
+          <a href="#" ng-click="$ctrl.onCalendarVisibilityToggle({calendar:$ctrl.calendar})">{{$ctrl.calendar.notVisible ? 'Afficher' : 'Cacher'}}</a>
+        </li>
+        <li ng-if="(!$ctrl.calendar.userPersonal || $ctrl.calendar.canBeDeleted) && !$ctrl.calendar.canBeRemoved">
+          <a href="{{$ctrl.calendar.uri}}/export/ical" target="_blank" >Exporter</a>
+        </li>
+        <li ng-if="$ctrl.calendar.isSynchronized">
+          <a href="#" ng-click="$ctrl.synchronize({calendar: $ctrl.calendar})">Synchroniser</a>
+        </li>
+        <li ng-if="$ctrl.calendar.canBeModified">
+          <a href="#" ng-click="$ctrl.modify({calendar: $ctrl.calendar})">Modifier</a>
+        </li>
+        <li ng-if="$ctrl.calendar.canBeRemoved">
+          <a href="#" ng-click="$ctrl.remove({calendar: $ctrl.calendar})">Retirer</a>
+        </li>
+        <li ng-if="$ctrl.calendar.canBeDeleted">
+          <a href="#" ng-click="$ctrl.delete({calendar: $ctrl.calendar})">Supprimer</a>
+        </li>
+      </ul>
+    </div>
   </div>
 </div>

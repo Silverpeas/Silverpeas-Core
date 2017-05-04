@@ -48,25 +48,49 @@
     };
   });
 
-  angular.module('silverpeas.directives').directive('silverpeasCalendarListItem', function() {
-    return {
-      templateUrl : webContext +
-      '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-list-item.jsp',
-      restrict : 'E',
-      scope : {
-        calendarPotentialColors : '=?',
-        onCalendarColorSelect : '&?',
-        onCalendarVisibilityToggle : '&?',
-        calendar : '=',
-        "synchronize" : '&?',
-        "modify" : '&?',
-        "remove" : '&?',
-        "delete" : '&?'
-      },
-      controllerAs : '$ctrl',
-      bindToController : true,
-      controller : function($scope, $element, $attrs, $transclude) {
-      }
-    };
-  });
+  angular.module('silverpeas.directives').directive('silverpeasCalendarListItem',
+      ['$timeout', function($timeout) {
+        return {
+          templateUrl : webContext +
+          '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-list-item.jsp',
+          restrict : 'E',
+          scope : {
+            calendarPotentialColors : '=?',
+            onCalendarColorSelect : '&?',
+            onCalendarVisibilityToggle : '&?',
+            calendar : '=',
+            "synchronize" : '&?',
+            "view" : '&?',
+            "modify" : '&?',
+            "remove" : '&?',
+            "delete" : '&?'
+          },
+          controllerAs : '$ctrl',
+          bindToController : true,
+          controller : function($scope, $element, $attrs, $transclude) {
+
+            /**
+             * Just after template compilation
+             */
+            this.$postLink = function() {
+              $timeout(function() {
+                this.dom = {
+                  colorContainer : angular.element(angular.element('silverpeas-color-picker', $element)),
+                  menuTarget : angular.element(angular.element('.item-detail', $element)),
+                  menuPopin : angular.element('.silverpeas-calendar-list-item-menu', $element)
+                };
+                this.qtipApi = TipManager.simpleSelect(this.dom.menuTarget[0], this.dom.menuPopin, {
+                  show : {
+                    event : 'mouseenter'
+                  },
+                  position : {
+                    my : "top center",
+                    at : "bottom center"
+                  }
+                });
+              }.bind(this), 200);
+            }
+          }
+        };
+      }]);
 })();

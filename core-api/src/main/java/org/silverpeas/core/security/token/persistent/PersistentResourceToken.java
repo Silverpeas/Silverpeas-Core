@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -26,12 +26,11 @@ package org.silverpeas.core.security.token.persistent;
 import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.security.token.annotation.TokenGenerator;
 import org.silverpeas.core.security.token.Token;
+import org.silverpeas.core.security.token.annotation.TokenGenerator;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenValidationException;
 import org.silverpeas.core.security.token.persistent.service.PersistentResourceTokenService;
-import org.silverpeas.core.security.token.persistent.service.TokenServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -114,7 +113,7 @@ public class PersistentResourceToken
    */
   public static PersistentResourceToken createToken(final EntityReference resource) throws
       TokenException {
-    PersistentResourceTokenService service = TokenServiceProvider.getTokenService();
+    PersistentResourceTokenService service = PersistentResourceTokenService.get();
     return service.initialize(resource);
   }
 
@@ -130,7 +129,7 @@ public class PersistentResourceToken
    */
   public static PersistentResourceToken getOrCreateToken(final EntityReference resource) throws
       TokenException {
-    PersistentResourceTokenService service = TokenServiceProvider.getTokenService();
+    PersistentResourceTokenService service = PersistentResourceTokenService.get();
     PersistentResourceToken token = service.get(resource);
     if (!token.isDefined()) {
       token = service.initialize(resource);
@@ -146,8 +145,19 @@ public class PersistentResourceToken
    * @return the token that matches the specified value.
    */
   public static PersistentResourceToken getToken(String token) {
-    PersistentResourceTokenService service = TokenServiceProvider.getTokenService();
+    PersistentResourceTokenService service = PersistentResourceTokenService.get();
     return service.get(token);
+  }
+
+  /**
+   * Removes the token for the specified resource.
+   *
+   * @param resource the resource for which the token has to be removed.
+   * @throws TokenException
+   */
+  public static void removeToken(final EntityReference resource) {
+    PersistentResourceTokenService service = PersistentResourceTokenService.get();
+    service.remove(resource);
   }
 
   @Override
