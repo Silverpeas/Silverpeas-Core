@@ -404,29 +404,14 @@ function initializeSilverpeasLayout(bodyLoadParameters) {
     };
     window.spServerEventSource = new function() {
       var serverEventSource = new EventSource(webContext + '/sse/common');
-      var listeners = {};
-      this.addEventListener = function(serverEventName, listener, listenerId) {
-        if (listenerId) {
-          this.removeEventListener(serverEventName, listenerId);
-          listeners[listenerId] = listener;
-        } else {
-          this.removeEventListener(serverEventName, listener);
+      applyEventListenerBehaviorOn(this, {
+        onAdd : function(serverEventName, listener) {
+          serverEventSource.addEventListener(serverEventName, listener);
+        },
+        onRemove : function(serverEventName, listener) {
+          serverEventSource.removeEventListener(serverEventName, listener);
         }
-        serverEventSource.addEventListener(serverEventName, listener);
-      };
-      this.removeEventListener = function(serverEventName, listenerOrListenerId) {
-        var oldListener;
-        var listenerType = typeof listenerOrListenerId;
-        if (listenerType === 'function') {
-          oldListener = listenerOrListenerId;
-        } else if (listenerType === 'string') {
-          oldListener = listeners[listenerOrListenerId];
-          delete listeners[listenerOrListenerId];
-        }
-        if (oldListener) {
-          serverEventSource.removeEventListener(serverEventName, oldListener);
-        }
-      };
+      });
     };
     window.spLayout = new SilverpeasLayout(partSelectors);
     spLayout.getHeader().load();

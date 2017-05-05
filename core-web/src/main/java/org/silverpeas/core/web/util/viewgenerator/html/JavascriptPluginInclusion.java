@@ -47,6 +47,7 @@ import java.text.MessageFormat;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
+import static org.silverpeas.core.html.SupportedWebPlugins.USERSESSION;
 import static org.silverpeas.core.html.SupportedWebPlugins.TICKER;
 
 /**
@@ -141,6 +142,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_IDENTITYCARD = "silverpeas-identitycard.js";
   private static final String SILVERPEAS_MYLINKS = "silverpeas-mylinks.js";
   private static final String SILVERPEAS_LANG = "silverpeas-lang.js";
+  private static final String SILVERPEAS_USER_SESSION_JS = "silverpeas-user-session.js";
   private static final String TICKER_JS = "ticker/jquery.ticker.js";
   private static final String TICKER_CSS = "ticker/ticker-style.css";
   private static final String HTML2CANVAS_JS = "html2canvas.js";
@@ -355,6 +357,19 @@ public class JavascriptPluginInclusion {
         .produce()));
     xhtml.addElement(scriptContent(generatePromise(TICKER,
         generateDynamicPluginLoading(JQUERY_PATH + TICKER_JS, "tickerPlugin", "resolve();", null))));
+    return xhtml;
+  }
+
+  public static ElementContainer includeUserSession(final ElementContainer xhtml,
+      final LookHelper lookHelper) {
+    xhtml.addElement(scriptContent(JavascriptSettingProducer
+        .settingVariableName("ConnectedUsersSettings")
+        .add("us.cu.nb.i", lookHelper.getNBConnectedUsers())
+        .add("us.cu.v.u", URLUtil.getApplicationURL() + "/Rdirectory/jsp/connected")
+        .produce()));
+    xhtml.addElement(scriptContent(generatePromise(USERSESSION,
+        generateDynamicPluginLoading(JAVASCRIPT_PATH + SILVERPEAS_USER_SESSION_JS, "userSessionPlugin",
+            "resolve();", null))));
     return xhtml;
   }
 

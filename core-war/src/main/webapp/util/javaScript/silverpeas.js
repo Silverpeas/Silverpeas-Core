@@ -661,6 +661,16 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
     }
   }
 
+  /**
+   * Applies a "ready" behaviour on the given instance.
+   * After that it is possible to write :
+   *    instance.ready(function() {
+   *      ...
+   *    });
+   * Functions given to the ready method will be executed after the instance notifies its ready.
+   * @param instance
+   * @returns {Promise}
+   */
   function applyReadyBehaviorOn(instance) {
     var promise = new Promise(function(resolve, reject) {
       this.notifyReady = resolve;
@@ -672,6 +682,77 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
       }.bind(instance));
     };
     return promise;
+  }
+
+  /**
+   * Applies an event listener behaviour to the given instance.
+   * After that, the instance exposes following methods :
+   * - addEventListener(eventName, listener, listenerId) where listenerId permits to identify a
+   * callback by an id instead of by its function instance.
+   * - removeEventListener(eventName, listenerOrListenerId) where listenerOrListenerId permits to
+   * aim the listener by its function instance or by an id given to addEventListener() method.
+   * - dispatchEvent(eventName) : permits to the instance to dispatch an event when it is necessary
+   * @param instance
+   * @param options
+   */
+  function applyEventListenerBehaviorOn(instance, options) {
+    var $document = window.document;
+    var __id = $document['__sp_event_uuid'];
+    if (typeof __id === 'undefined') {
+      __id = 0;
+    } else {
+      __id = __id + 1;
+    }
+    $document['__sp_event_uuid'] = __id;
+    var __normalizeEventName = function(eventName) {
+      return "__sp_event_" + __id + "_" + eventName;
+    };
+
+    var __listeners = {};
+    var __options = extendsObject({onAdd : false, onRemove : false}, options);
+
+    instance.dispatchEvent = function(eventName, data) {
+      var normalizedEventName = __normalizeEventName(eventName);
+      $document.body.dispatchEvent(new CustomEvent(normalizedEventName, {
+        detail : {
+          from : this,
+          data : data
+        },
+        bubbles : true,
+        cancelable : true
+      }));
+    };
+    instance.addEventListener = function(eventName, listener, listenerId) {
+      if (listenerId) {
+        instance.removeEventListener(eventName, listenerId);
+        __listeners[listenerId] = listener;
+      } else {
+        instance.removeEventListener(eventName, listener);
+      }
+
+      var normalizedEventName = __normalizeEventName(eventName);
+      $document.addEventListener(normalizedEventName, listener);
+      if (typeof __options.onAdd === 'function') {
+        __options.onAdd.call(instance, eventName, listener);
+      }
+    };
+    instance.removeEventListener = function(eventName, listenerOrListenerId) {
+      var oldListener;
+      var listenerType = typeof listenerOrListenerId;
+      if (listenerType === 'function') {
+        oldListener = listenerOrListenerId;
+      } else if (listenerType === 'string') {
+        oldListener = __listeners[listenerOrListenerId];
+        delete __listeners[listenerOrListenerId];
+      }
+      if (oldListener) {
+        var normalizedEventName = __normalizeEventName(eventName);
+        $document.removeEventListener(normalizedEventName, oldListener);
+        if (typeof __options.onRemove === 'function') {
+          __options.onRemove.call(instance, eventName, oldListener);
+        }
+      }
+    };
   }
 }
 
