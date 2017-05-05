@@ -87,14 +87,14 @@ Silverpeas plugin which handles the behaviour about the connected users informat
 
     // do the specified logout function
     var __doLogout = function(logout) {
-      if (SilverChat) {
+      if ($window.SilverChat) {
         spProgressMessage.show();
         // creating a timeout for critical network cases
         var __timeout = setTimeout(function() {
           logout.call(this);
         }.bind(this), 5000);
         // stopping the silver chat
-        SilverChat.stop().then(function() {
+        $window.SilverChat.stop().then(function() {
           // removing the timeout
           clearTimeout(__timeout);
           // performing the logout
