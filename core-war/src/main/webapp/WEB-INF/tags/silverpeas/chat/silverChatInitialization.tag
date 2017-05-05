@@ -29,6 +29,7 @@
 
 <%@ tag language="java" pageEncoding="UTF-8" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <c:set var="chatUser" value="<%=ChatUser.getCurrentRequester()%>"/>
 <jsp:useBean id="chatUser" type="org.silverpeas.core.chat.ChatUser"/>
@@ -76,7 +77,7 @@
       }).start();
       </c:when>
       <c:otherwise>
-      sp.log.error('${chatBundle.getString("chat.server.notAvailable")}');
+      sp.log.error('${silfn:escapeJs(chatBundle.getString("chat.server.notAvailable"))}');
       </c:otherwise>
       </c:choose>
     });

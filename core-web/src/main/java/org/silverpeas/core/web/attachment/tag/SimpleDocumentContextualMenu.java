@@ -43,6 +43,7 @@ import static org.silverpeas.core.util.StringUtil.newline;
  */
 public class SimpleDocumentContextualMenu extends TagSupport {
 
+  private static final int HTML_BUFFER_CAPACITY = 2048;
   private SimpleDocument attachment;
   private boolean useXMLForm;
   private boolean useWebDAV;
@@ -118,7 +119,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     String userId = user.getId();
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
     boolean webDavOK = useWebDAV && attachment.isOpenOfficeCompatible();
-    StringBuilder builder = new StringBuilder(2048);
+    StringBuilder builder = new StringBuilder(HTML_BUFFER_CAPACITY);
 
     builder.append("<ul class=\"first-of-type\">").append(newline);
     prepareMenuItem(builder, "checkout('" + attachment.getId() + "'," + attachmentId + ','
@@ -211,7 +212,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   String prepareReadOnlyActions(SimpleDocument attachment, UserDetail user,
       LocalizationBundle resources, boolean showMenuNotif) throws UnsupportedEncodingException {
     String attachmentId = String.valueOf(attachment.getOldSilverpeasId());
-    StringBuilder itemsBuilder = new StringBuilder(2048);
+    StringBuilder itemsBuilder = new StringBuilder(HTML_BUFFER_CAPACITY);
     itemsBuilder.append("<ul>").append(newline);
 
     boolean sharingAllowed = attachment.isSharingAllowedForRolesFrom(user);
@@ -234,7 +235,7 @@ public class SimpleDocumentContextualMenu extends TagSupport {
   }
 
   private String getMenu(String attachmentId, String items, String config) {
-    StringBuilder builder = new StringBuilder(2048);
+    StringBuilder builder = new StringBuilder(HTML_BUFFER_CAPACITY);
     String oMenuId = "oMenu" + attachmentId;
     String basicMenuId = "basicmenu" + attachmentId;
     builder.append("<div id=\"").append(basicMenuId).append("\" class=\"yuimenu\">").

@@ -120,7 +120,8 @@ public class ComponentAccessController extends AbstractAccessController<String>
 
     // If userId corresponds to nothing or to a deleted or deactivated user, then no role is
     // retrieved.
-    if (!User.isActivatedStateFor(userId)) {
+    User user = User.getById(userId);
+    if (user == null || (!user.isActivatedState() && !user.isAnonymous())) {
       return;
     }
 

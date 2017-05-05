@@ -67,6 +67,7 @@ public class TestPublicationAccessController {
   private NodeAccessControl nodeAccessController;
   private PublicationAccessControl testInstance;
   private TestContext testContext;
+  private User user;
 
   @Rule
   public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
@@ -79,10 +80,8 @@ public class TestPublicationAccessController {
     testInstance = new PublicationAccessController();
     testContext = new TestContext();
 
-    User user = mock(User.class);
-    when(user.getId()).thenReturn(userId);
+    user = mock(User.class);
     when(UserProvider.get().getUser(userId)).thenReturn(user);
-
     componentAccessController = reflectionRule
         .mockField(testInstance, ComponentAccessControl.class, "componentAccessController");
     nodeAccessController =
@@ -105,6 +104,36 @@ public class TestPublicationAccessController {
     testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
         .verifyCallOfComponentAccessControllerIsUserAuthorized();
     assertIsUserAuthorized(true);
+
+    // User has USER role on component
+    // User rights are verified for sharing action on the document, sharing is enabled
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user)
+        .onOperationsOf(AccessControlOperation.sharing).enablePublicationSharingRole(SilverpeasRole.admin);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(false);
+
+    // User has USER role on component
+    // User rights are verified for sharing action on the document, sharing is enabled
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user)
+        .onOperationsOf(AccessControlOperation.sharing)
+        .enablePublicationSharingRole(SilverpeasRole.reader);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(true);
+
+    // User has USER role on component but it is anonymous
+    // User rights are verified for sharing action on the document, sharing is enabled
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user)
+        .userIsAnonymous()
+        .onOperationsOf(AccessControlOperation.sharing)
+        .enablePublicationSharingRole(SilverpeasRole.reader);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized();
+    assertIsUserAuthorized(false);
 
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
@@ -1182,6 +1211,7 @@ public class TestPublicationAccessController {
   }
 
   private class TestContext {
+    private boolean userIsAnonymous;
     private boolean isGED;
     private boolean isCoWriting;
     private SilverpeasRole publicationSharingRole;
@@ -1198,13 +1228,14 @@ public class TestPublicationAccessController {
     private boolean isUserThePublicationAuthor;
 
     public void clear() {
-      Mockito.reset(componentAccessController, nodeAccessController, publicationService);
+      Mockito.reset(user, componentAccessController, nodeAccessController, publicationService);
       when(componentAccessController.isTopicTrackerSupported(anyString())).thenAnswer(
           invocation -> {
             String instanceId = (String) invocation.getArguments()[0];
             return instanceId.startsWith("kmelia") || instanceId.startsWith("kmax") ||
                 instanceId.startsWith("toolbox");
           });
+      userIsAnonymous = false;
       isGED = false;
       isCoWriting = false;
       publicationSharingRole = null;
@@ -1219,6 +1250,11 @@ public class TestPublicationAccessController {
       nodeNotInheritedUserRoles = null;
       testVerifyResults = new TestVerifyResults();
       isUserThePublicationAuthor = false;
+    }
+
+    public TestContext userIsAnonymous() {
+      userIsAnonymous = true;
+      return this;
     }
 
     public TestContext onGEDComponent() {
@@ -1298,6 +1334,8 @@ public class TestPublicationAccessController {
 
     @SuppressWarnings("unchecked")
     public void setup() {
+      when(user.getId()).thenReturn(userId);
+      when(user.isAnonymous()).thenReturn(userIsAnonymous);
       when(componentAccessController.isTopicTrackerSupported(anyString())).thenAnswer(
           invocation -> {
             String instanceId = (String) invocation.getArguments()[0];

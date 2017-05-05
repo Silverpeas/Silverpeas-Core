@@ -63,22 +63,23 @@ import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.PublicationAccessControl;
-import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.StringUtil.split;
 
@@ -112,7 +113,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   private String cloneId;
   private String cloneStatus;
   private Date draftOutDate;
-  private String silverObjectId; // added for the components - PDC integration
+  // added for the components - PDC integration
+  private String silverObjectId;
   private String iconUrl;
   private int explicitRank = -1;
   // added for the taglib
@@ -140,6 +142,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
    * Default contructor, required for castor mapping in importExport.
    */
   public PublicationDetail() {
+    // Nothing to do
   }
 
   public PublicationDetail(String name, String description, Period visibilityPeriod,
@@ -820,15 +823,15 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
           .getPublicationTemplate(getPK().getInstanceId() + ":" + getInfoId());
       data = pub.getRecordSet().getRecord(pk.getId());
     } catch (Exception e) {
-      SilverTrace.warn("publication", "PublicationDetail.getFormValues", "CANT_GET_FORM_RECORD",
-          "pubId = " + getPK().getId() + "infoId = " + getInfoId());
+      SilverLogger.getLogger(this).warn(failureOnGetting("form record with",
+          MessageFormat.format("pubid {0} and infoId {1}", getPK().getId(), getInfoId())), e);
     }
 
     if (data == null) {
       return formValues;
     }
 
-    String fieldNames[] = data.getFieldNames();
+    String[] fieldNames = data.getFieldNames();
     PagesContext pageContext = new PagesContext();
     pageContext.setLanguage(language);
     for (String fieldName : fieldNames) {
@@ -843,8 +846,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
         fieldDisplayer.display(out, field, fieldTemplate, pageContext);
         formValues.put(fieldName, sw.toString());
       } catch (Exception e) {
-        SilverTrace.warn("publication", "PublicationDetail.getFormValues", "CANT_GET_FIELD_VALUE",
-            "pubId = " + getPK().getId() + "fieldName = " + fieldName, e);
+        SilverLogger.getLogger(this).warn(failureOnGetting("field value with",
+            MessageFormat.format("pubid {0} and fieldName {1}", getPK().getId(), fieldName)), e);
       }
 
     }
@@ -852,10 +855,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public String getFieldValue(String fieldNameAndLanguage) {
-    SilverTrace
-        .info("publication", "PublicationDetail.getModelContent()", "root.MSG_GEN_ENTER_METHOD",
-            "fieldNameAndLanguage = " + fieldNameAndLanguage);
-
     String[] params = fieldNameAndLanguage.split(",");
 
     String fieldName = params[0];
@@ -937,6 +936,9 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
           WysiwygController.load(getPK().getComponentName(), getPK().getId(), getLanguage());
     } catch (Exception e) {
       wysiwygContent = "Erreur lors du chargement du wysiwyg !";
+      SilverLogger.getLogger(this)
+          .warn("can not load wysiwyg of publication {0} into {1} language", getId(), getLanguage(),
+              e);
     }
     return wysiwygContent;
   }
@@ -994,11 +996,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     StringBuilder validatorNames = new StringBuilder();
     String[] validatorIds = getTargetValidatorIds();
     if (validatorIds != null) {
-      for (String validatorId : validatorIds) {
+      for (String valId : validatorIds) {
         if (validatorNames.length() > 0) {
           validatorNames.append(", ");
         }
-        validatorNames.append(User.getById(validatorId).getDisplayedName());
+        validatorNames.append(User.getById(valId).getDisplayedName());
       }
     }
     return validatorNames.toString();
@@ -1017,8 +1019,8 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public boolean haveGotClone() {
-    return (cloneId != null && !"-1".equals(cloneId) && !"null".equals(cloneId) &&
-        cloneId.length() > 0);
+    return cloneId != null && !"-1".equals(cloneId) && !"null".equals(cloneId) &&
+        cloneId.length() > 0;
   }
 
   public boolean isClone() {

@@ -67,6 +67,7 @@ public class TestSimpleDocumentAccessController {
   private NodeAccessControl nodeAccessController;
   private SimpleDocumentAccessControl testInstance;
   private TestContext testContext;
+  private User user;
 
   @Rule
   public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
@@ -79,8 +80,7 @@ public class TestSimpleDocumentAccessController {
     testInstance = new SimpleDocumentAccessController();
     testContext = new TestContext();
 
-    User user = mock(User.class);
-    when(user.getId()).thenReturn(userId);
+    user = mock(User.class);
     when(UserProvider.get().getUser(userId)).thenReturn(user);
 
     componentAccessController = reflectionRule
@@ -946,6 +946,37 @@ public class TestSimpleDocumentAccessController {
         .verifyCallOfPublicationBmGetAllFatherPK();
     assertIsUserAuthorized(true);
 
+    // User has USER role on component
+    // User rights are verified for sharing action on the document, sharing is enabled
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .documentAttachedToPublication().publicationOnRootDirectory()
+        .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.sharing)
+        .enableFileSharingRole(SilverpeasRole.reader);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetail()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetAllFatherPK();
+    assertIsUserAuthorized(true);
+
+    // User has USER role on component but it is anonymous
+    // User rights are verified for sharing action on the document, sharing is enabled
+    testContext.clear();
+    testContext.withComponentUserRoles(SilverpeasRole.user).onGEDComponent()
+        .userIsAnonymous()
+        .documentAttachedToPublication().publicationOnRootDirectory()
+        .withRightsActivatedOnDirectory().userIsThePublicationAuthor()
+        .onOperationsOf(AccessControlOperation.sharing)
+        .enableFileSharingRole(SilverpeasRole.reader);
+    testContext.results().verifyCallOfComponentAccessControllerGetUserRoles()
+        .verifyCallOfComponentAccessControllerIsUserAuthorized()
+        .verifyCallOfPublicationBmGetDetail()
+        .verifyCallOfComponentAccessControllerIsRightOnTopicsEnabled()
+        .verifyCallOfPublicationBmGetAllFatherPK();
+    assertIsUserAuthorized(false);
+
     // User has PUBLISHER role on component
     // User rights are verified for sharing action on the document, but sharing is not enabled
     testContext.clear();
@@ -1690,6 +1721,7 @@ public class TestSimpleDocumentAccessController {
   }
 
   private class TestContext {
+    private boolean userIsAnonymous;
     private boolean isGED;
     private boolean isCoWriting;
     private SilverpeasRole fileSharingRole;
@@ -1705,7 +1737,8 @@ public class TestSimpleDocumentAccessController {
     private boolean isUserThePublicationAuthor;
 
     public void clear() {
-      reset(componentAccessController, nodeAccessController, publicationService);
+      reset(user, componentAccessController, nodeAccessController, publicationService);
+      userIsAnonymous = false;
       isGED = false;
       isCoWriting = false;
       fileSharingRole = null;
@@ -1719,6 +1752,11 @@ public class TestSimpleDocumentAccessController {
       testVerifyResults = new TestVerifyResults();
       isDownloadAllowedForReaders = true;
       isUserThePublicationAuthor = false;
+    }
+
+    public TestContext userIsAnonymous() {
+      userIsAnonymous = true;
+      return this;
     }
 
     public TestContext onGEDComponent() {
@@ -1790,6 +1828,8 @@ public class TestSimpleDocumentAccessController {
 
     @SuppressWarnings("unchecked")
     public void setup() {
+      when(user.getId()).thenReturn(userId);
+      when(user.isAnonymous()).thenReturn(userIsAnonymous);
       when(componentAccessController.isTopicTrackerSupported(anyString())).thenAnswer(invocation -> {
         String instanceId = (String) invocation.getArguments()[0];
         return instanceId.startsWith("kmelia") || instanceId.startsWith("kmax") ||

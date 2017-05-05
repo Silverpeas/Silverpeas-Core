@@ -97,9 +97,9 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
     assertThat(asyncContextMap.size(), is(2));
     ServerEventDispatcherTask.registerAsyncContext(newMockedAsyncContext("OTHER_SESSION_ID"));
     assertThat(asyncContextMap.size(), is(3));
-    ServerEventDispatcherTask.unregisterBySessionId(SESSION_ID);
+    ServerEventDispatcherTask.unregisterBySessionId(SESSION_ID, false);
     assertThat(asyncContextMap.size(), is(1));
-    ServerEventDispatcherTask.unregisterBySessionId("OTHER_SESSION_ID");
+    ServerEventDispatcherTask.unregisterBySessionId("OTHER_SESSION_ID", false);
     assertThat(asyncContextMap.size(), is(0));
     pause();
   }

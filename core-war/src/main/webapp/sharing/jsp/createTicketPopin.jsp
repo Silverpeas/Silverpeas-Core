@@ -172,8 +172,8 @@ function createTicket() {
     success: function(result) {
       $("#message-content-url").html($('<a>',
       { text: result.url,
-        //title: 'some title',
-        href: result.url
+        href: result.url,
+        target: '_blank'
       }));
       showInformation();
       cleanForm();
