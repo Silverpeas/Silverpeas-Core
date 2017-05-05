@@ -46,7 +46,7 @@ import java.util.List;
 @NamedQueries({@NamedQuery(name = "Ticket.findAllTicketForSharedObjectId",
     query = "SELECT t FROM Ticket t WHERE t.sharedObjectId = :sharedObjectId AND t" +
         ".sharedObjectType = :ticketType"), @NamedQuery(name = "Ticket.findAllReservationsForUser",
-    query = "SELECT DISTINCT ticket FROM Ticket ticket WHERE ticket.creatorId = :userId")})
+    query = "SELECT DISTINCT ticket FROM Ticket ticket WHERE ticket.creatorId = :userId ORDER by ticket.creationDate DESC")})
 public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
     implements Serializable {
 

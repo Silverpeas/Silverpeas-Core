@@ -231,15 +231,11 @@
           <c:if test="${isAttachmentPositionRight}">
             <li id='attachment_<c:out value="${currentAttachment.oldSilverpeasId}"/>' class='attachmentListItem' <c:out value="${iconStyle}" escapeXml="false"/> >
           </c:if>
-          <c:if test="${contextualMenuEnabled}">
-            <menu:simpleDocument attachment="${currentAttachment}"
-                                 showMenuNotif="${showMenuNotif}" useContextualMenu="${useContextualMenu}"
-                                 useWebDAV="${webdavEditingEnable}" useXMLForm="${useXMLForm}" />
-          </c:if>
+          <menu:simpleDocument attachment="${currentAttachment}"
+                               showMenuNotif="${showMenuNotif}"
+                               useWebDAV="${webdavEditingEnable}" useXMLForm="${useXMLForm}" />
           <span class="lineMain ${forbiddenDownloadClass}">
-              <c:if test="${contextualMenuEnabled && !pageScope.useContextualMenu}">
-                <img id='edit_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:url value="/util/icons/arrow/menuAttachment.gif" />' class="moreActions"/>
-              </c:if>
+              <img id='edit_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:url value="/util/icons/arrow/menuAttachment.gif" />' class="moreActions"/>
               <c:if test="${showIcon}">
                 <img id='img_<c:out value="${currentAttachment.oldSilverpeasId}"/>' src='<c:out value="${currentAttachment.displayIcon}" />' class="icon" />
               </c:if>
@@ -575,10 +571,6 @@
       if (pageMustBeReloadingAfterSorting) {
         reloadIncludingPage();
       }
-    }
-
-    function notifyAttachment(attachmentId) {
-      alertUsersAttachment(attachmentId); //dans publication.jsp
     }
 
     function addAttachment(foreignId) {
@@ -1154,16 +1146,6 @@
         reloadIncludingPage();
       }
 
-      function ShareAttachment(id) {
-        var sharingObject = {
-            componentId: "${param.ComponentId}",
-            type       : "Attachment",
-            id         : id,
-            name   : $("#url_" + id).text()
-        };
-        createSharingTicketPopup(sharingObject);
-      }
-
   </c:if>
 
   function displayAttachment(attachment) {
@@ -1203,7 +1185,6 @@
     } catch (e) {
       // in case elements are not in DOM
     }
-
   }
 
   function clearCheckin() {
@@ -1252,6 +1233,20 @@
       lang: '${contentLanguage}'
     });
     return false;
+  }
+
+  function ShareAttachment(id) {
+    var sharingObject = {
+      componentId: "${param.ComponentId}",
+      type       : "Attachment",
+      id         : id,
+      name   : $("#url_" + id).text()
+    };
+    createSharingTicketPopup(sharingObject);
+  }
+
+  function notifyAttachment(attachmentId) {
+    alertUsersAttachment(attachmentId); //dans publication.jsp
   }
 
   var customProtocolCookieName = "Silverpeas_OnlineEditing_CustomProtocol";
