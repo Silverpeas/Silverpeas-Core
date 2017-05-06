@@ -116,14 +116,15 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
   /**
    * Unregister an {@link SilverpeasAsyncContext} instance.
    * @param sessionId an identifier od a session.
+   * @param isAnonymous indicates if the session is the one of an anonymous user.
    */
-  public static void unregisterBySessionId(String sessionId) {
+  public static void unregisterBySessionId(String sessionId, final boolean isAnonymous) {
     List<SilverpeasAsyncContext> contextsToRemove;
     synchronized (contexts) {
       contextsToRemove = contexts.stream().filter(c -> sessionId.equals(c.getSessionId()))
           .collect(Collectors.toList());
     }
-    contextsToRemove.forEach(c -> unregisterAsyncContext(c, true));
+    contextsToRemove.forEach(c -> unregisterAsyncContext(c, !isAnonymous));
   }
 
   /**

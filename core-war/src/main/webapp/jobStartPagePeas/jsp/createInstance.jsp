@@ -57,9 +57,9 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 			checked = "checked=\"checked\"";
 		}
 		out.println("<input type=\"checkbox\" name=\""+parameter.getName()+"\" value=\""+parameter.getValue()+"\" "+checked+" "+disabled+">");
-	    if (StringUtil.isDefined(parameter.getWarning())) {
-	      out.println("<div style=\"display: none;\" id=\"warning-"+parameter.getName()+"\">"+parameter.getWarning()+"</div>");
-	    }
+    if (StringUtil.isDefined(parameter.getWarning())) {
+      out.println("<div style=\"display: none;\" id=\"warning-"+parameter.getName()+"\">"+parameter.getWarning()+"</div>");
+    }
 	} else if (parameter.isSelect() || parameter.isXmlTemplate()) {
 		List<LocalizedOption> options = parameter.getOptions();
 		if (options != null) {
@@ -78,6 +78,10 @@ void displayParameter(LocalizedParameter parameter, MultiSilverpeasBundle resour
 				out.println("<option value=\""+value+"\" "+selected+">"+name+"</option>");
 			}
 			out.println("</select>");
+      if (StringUtil.isDefined(parameter.getWarning())) {
+        out.println("<div style=\"display: none;\" id=\"warning-"+parameter.getName()+"\" initialParamValue=\"" +
+            parameter.getValue() + "\">"+parameter.getWarning()+"</div>");
+      }
 		}
 	} else if (parameter.isRadio()) {
 		List<LocalizedOption> radios = parameter.getOptions();

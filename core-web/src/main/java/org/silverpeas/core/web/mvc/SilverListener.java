@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.web.mvc;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
@@ -104,7 +105,8 @@ public class SilverListener
               (MainSessionController) httpSession.getAttribute(
                   MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
           if (mainSessionController != null &&
-              mainSessionController.getCurrentUserDetail() != null) {
+              mainSessionController.getCurrentUserDetail() != null &&
+              mainSessionController.getCurrentUserDetail().isAnonymous()) {
             ((SessionCacheService)CacheServiceProvider.getSessionCacheService())
                 .newSessionCache(mainSessionController.getCurrentUserDetail());
           }
@@ -113,13 +115,15 @@ public class SilverListener
     }
   }
 
-  // Clear session informations
+  // Clear session information
   private void remove(HttpSessionEvent event) {
+    final User currentRequester = User.getCurrentRequester();
+    final boolean isAnonymous = currentRequester != null && currentRequester.isAnonymous();
     final String sessionId = event.getSession().getId();
     SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
     sessionManagement.closeSession(sessionId);
     SilverLogger.getLogger(this).info("Session with id {0} has just been closed", sessionId);
-    ServerEventDispatcherTask.unregisterBySessionId(sessionId);
+    ServerEventDispatcherTask.unregisterBySessionId(sessionId, isAnonymous);
   }
 
   /**

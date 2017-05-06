@@ -48,7 +48,7 @@ public class SessionCacheService implements CacheService {
   public SimpleCache newSessionCache(User user) {
     InMemoryCache sessionCache = new InMemoryCache();
     sessionCache.put(CURRENT_REQUESTER_KEY, user);
-    CacheServiceProvider.getRequestCacheService().getCache().put(CURRENT_SESSION_KEY, sessionCache);
+    setCurrentSessionCache(sessionCache);
     return sessionCache;
   }
 

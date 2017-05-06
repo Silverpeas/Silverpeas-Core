@@ -25,6 +25,7 @@
 package org.silverpeas.core.security.authorization;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -81,14 +82,19 @@ public class PublicationAccessController extends AbstractAccessController<Public
       final AccessControlContext context, Set<SilverpeasRole> userRoles) {
     boolean authorized = !userRoles.isEmpty();
     boolean isRoleVerificationRequired = false;
+    SilverpeasRole greatestUserRole = SilverpeasRole.getGreatestFrom(userRoles);
+    if (greatestUserRole == null) {
+      greatestUserRole = SilverpeasRole.reader;
+    }
 
     boolean sharingOperation = isSharingActionFrom(context.getOperations());
 
     // Verifying sharing is possible
     if (authorized && sharingOperation) {
-      authorized =
-          getComponentAccessController().isPublicationSharingEnabled(pubPk.getInstanceId());
-      isRoleVerificationRequired = authorized;
+      User user = User.getById(userId);
+      authorized = !user.isAnonymous() && getComponentAccessController()
+          .isPublicationSharingEnabledForRole(pubPk.getInstanceId(), greatestUserRole);
+      isRoleVerificationRequired = false;
     }
 
     // Verifying persist actions are possible
@@ -98,15 +104,6 @@ public class PublicationAccessController extends AbstractAccessController<Public
 
     // Verifying roles if necessary
     if (isRoleVerificationRequired) {
-      SilverpeasRole greatestUserRole = SilverpeasRole.getGreatestFrom(userRoles);
-      if (greatestUserRole == null) {
-        greatestUserRole = SilverpeasRole.reader;
-      }
-
-      if (sharingOperation) {
-        return greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
-      }
-
       if (SilverpeasRole.writer.equals(greatestUserRole)) {
         PublicationDetail publicationDetail =
             context.get(PUBLICATION_DETAIL_KEY, PublicationDetail.class);
@@ -134,63 +131,59 @@ public class PublicationAccessController extends AbstractAccessController<Public
       componentAccessAuthorized = false;
     }
 
-    if (componentAccessController.isTopicTrackerSupported(publicationPK.getInstanceId())) {
-      if (StringUtil.isInteger(publicationPK.getId())) {
-        final PublicationDetail pubDetail;
+    if (componentAccessController.isTopicTrackerSupported(publicationPK.getInstanceId()) &&
+      StringUtil.isInteger(publicationPK.getId())) {
+      final PublicationDetail pubDetail;
+      try {
+        pubDetail =
+            getActualForeignPublication(publicationPK.getId(), publicationPK.getInstanceId());
+        context.put(PUBLICATION_DETAIL_KEY, pubDetail);
+      } catch (Exception e) {
+        SilverTrace.error("authorization", getClass().getSimpleName() + ".isUserAuthorized()",
+            "root.NO_EX_MESSAGE", e);
+        return;
+      }
+
+      // Check if an alias of publication is authorized
+      // (special treatment in case of the user has no access right on component instance)
+      if (!componentAccessAuthorized) {
         try {
-          pubDetail =
-              getActualForeignPublication(publicationPK.getId(), publicationPK.getInstanceId());
-          context.put(PUBLICATION_DETAIL_KEY, pubDetail);
+          Collection<Alias> aliases = getPublicationService().getAlias(pubDetail.getPK());
+          for (Alias alias : aliases) {
+
+            final Set<SilverpeasRole> nodeUserRoles = getNodeAccessController()
+                .getUserRoles(userId, new NodePK(alias.getId(), alias.getInstanceId()), context);
+            if (getNodeAccessController().isUserAuthorized(nodeUserRoles)) {
+              userRoles.addAll(nodeUserRoles);
+              return;
+            }
+          }
+          return;
         } catch (Exception e) {
           SilverTrace.error("authorization", getClass().getSimpleName() + ".isUserAuthorized()",
               "root.NO_EX_MESSAGE", e);
           return;
         }
-
-        // Check if an alias of publication is authorized
-        // (special treatment in case of the user has no access right on component instance)
-        if (!componentAccessAuthorized) {
-          try {
-            Collection<Alias> aliases = getPublicationService().getAlias(pubDetail.getPK());
-            for (Alias alias : aliases) {
-
-              final Set<SilverpeasRole> nodeUserRoles = getNodeAccessController()
-                  .getUserRoles(userId, new NodePK(alias.getId(), alias.getInstanceId()), context);
+      } else if (getComponentAccessController().isRightOnTopicsEnabled(publicationPK.getInstanceId())) {
+        // If rights are not handled on folders, folder rights are not checked !
+        try {
+          Collection<NodePK> nodes = getPublicationService().getAllFatherPK(
+              new PublicationPK(pubDetail.getId(), publicationPK.getInstanceId()));
+          if (!nodes.isEmpty()) {
+            for (NodePK nodePk : nodes) {
+              final Set<SilverpeasRole> nodeUserRoles =
+                  getNodeAccessController().getUserRoles(userId, nodePk, context);
               if (getNodeAccessController().isUserAuthorized(nodeUserRoles)) {
                 userRoles.addAll(nodeUserRoles);
                 return;
               }
             }
             return;
-          } catch (Exception e) {
-            SilverTrace.error("authorization", getClass().getSimpleName() + ".isUserAuthorized()",
-                "root.NO_EX_MESSAGE", e);
-            return;
           }
-        }
-
-        // If rights are not handled on directories, directory rights are not checked !
-        else if (getComponentAccessController()
-            .isRightOnTopicsEnabled(publicationPK.getInstanceId())) {
-          try {
-            Collection<NodePK> nodes = getPublicationService().getAllFatherPK(
-                new PublicationPK(pubDetail.getId(), publicationPK.getInstanceId()));
-            if (!nodes.isEmpty()) {
-              for (NodePK nodePk : nodes) {
-                final Set<SilverpeasRole> nodeUserRoles =
-                    getNodeAccessController().getUserRoles(userId, nodePk, context);
-                if (getNodeAccessController().isUserAuthorized(nodeUserRoles)) {
-                  userRoles.addAll(nodeUserRoles);
-                  return;
-                }
-              }
-              return;
-            }
-          } catch (Exception ex) {
-            SilverTrace.error("authorization", getClass().getSimpleName() + ".isUserAuthorized()",
-                "root.NO_EX_MESSAGE", ex);
-            return;
-          }
+        } catch (Exception ex) {
+          SilverTrace.error("authorization", getClass().getSimpleName() + ".isUserAuthorized()",
+              "root.NO_EX_MESSAGE", ex);
+          return;
         }
       }
     }

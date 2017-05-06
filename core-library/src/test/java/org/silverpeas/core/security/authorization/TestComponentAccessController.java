@@ -30,7 +30,9 @@ import org.junit.Test;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
@@ -63,7 +65,8 @@ public class TestComponentAccessController {
   private static final String componentIdWithTopicRigths = "kmelia200";
   private static final String componentIdWithoutTopicRigths = "kmelia201";
 
-  private static final String userId = "bart";
+  private static final String USER_ID = "bart";
+  private static final String ANONYMOUS_ID = "26598";
 
   @Rule
   public LibCoreCommonAPI4Test commonAPI4Test = new LibCoreCommonAPI4Test();
@@ -95,9 +98,6 @@ public class TestComponentAccessController {
       return componentInst;
     });
 
-    final UserDetail user = new UserDetail();
-    when(UserProvider.get().getUser(anyString())).thenReturn(user);
-    when(controller.getUserDetail(anyString())).thenReturn(user);
     when(controller.isToolAvailable(toolId)).thenReturn(true);
     when(controller.getComponentParameterValue(publicFilesComponentId, "publicFiles"))
         .thenReturn("true");
@@ -112,18 +112,18 @@ public class TestComponentAccessController {
     when(controller.getComponentParameterValue(componentIdWithoutTopicRigths, "rightsOnTopics")).
         thenReturn("false");
 
-    when(controller.isComponentAvailable(componentId, userId)).thenReturn(Boolean.TRUE);
-    when(controller.isComponentAvailable(publicComponentId, userId)).thenReturn(Boolean.TRUE);
-    when(controller.isComponentAvailable(publicComponentIdWithUserRole, userId))
+    when(controller.isComponentAvailable(componentId, USER_ID)).thenReturn(Boolean.TRUE);
+    when(controller.isComponentAvailable(publicComponentId, USER_ID)).thenReturn(Boolean.TRUE);
+    when(controller.isComponentAvailable(publicComponentIdWithUserRole, USER_ID))
         .thenReturn(Boolean.TRUE);
-    when(controller.isComponentAvailable(componentIdWithTopicRigths, userId))
+    when(controller.isComponentAvailable(componentIdWithTopicRigths, USER_ID))
         .thenReturn(Boolean.TRUE);
-    when(controller.isComponentAvailable(componentIdWithoutTopicRigths, userId))
+    when(controller.isComponentAvailable(componentIdWithoutTopicRigths, USER_ID))
         .thenReturn(Boolean.TRUE);
-    when(controller.isComponentAvailable(publicFilesComponentId, userId)).thenReturn(Boolean.FALSE);
-    when(controller.isComponentAvailable(publicFilesComponentIdWithUserRole, userId))
+    when(controller.isComponentAvailable(publicFilesComponentId, USER_ID)).thenReturn(Boolean.FALSE);
+    when(controller.isComponentAvailable(publicFilesComponentIdWithUserRole, USER_ID))
         .thenReturn(Boolean.TRUE);
-    when(controller.isComponentAvailable(forbiddenComponent, userId)).thenReturn(Boolean.FALSE);
+    when(controller.isComponentAvailable(forbiddenComponent, USER_ID)).thenReturn(Boolean.FALSE);
   }
 
   /**
@@ -147,19 +147,40 @@ public class TestComponentAccessController {
    */
   @Test
   public void testIsUserAuthorized() throws Exception {
-    boolean result = instance.isUserAuthorized(userId, null);
+
+    // USER DOES NOT EXIST
+
+    boolean result = instance.isUserAuthorized(USER_ID, null);
+    assertEquals(false, result);
+
+    result = instance.isUserAuthorized(USER_ID, publicComponentId);
+    assertEquals(false, result);
+
+    result = instance.isUserAuthorized(USER_ID, publicFilesComponentId);
+    assertEquals(false, result);
+
+    result = instance.isUserAuthorized(USER_ID, componentId);
+    assertEquals(false, result);
+
+    result = instance.isUserAuthorized(USER_ID, forbiddenComponent);
+    assertEquals(false, result);
+
+    // USER EXIST
+    setupUser(null);
+
+    result = instance.isUserAuthorized(USER_ID, null);
     assertEquals(true, result);
 
-    result = instance.isUserAuthorized(userId, publicComponentId);
+    result = instance.isUserAuthorized(USER_ID, publicComponentId);
     assertEquals(true, result);
 
-    result = instance.isUserAuthorized(userId, publicFilesComponentId);
+    result = instance.isUserAuthorized(USER_ID, publicFilesComponentId);
     assertEquals(true, result);
 
-    result = instance.isUserAuthorized(userId, componentId);
+    result = instance.isUserAuthorized(USER_ID, componentId);
     assertEquals(true, result);
 
-    result = instance.isUserAuthorized(userId, forbiddenComponent);
+    result = instance.isUserAuthorized(USER_ID, forbiddenComponent);
     assertEquals(false, result);
   }
 
@@ -463,6 +484,559 @@ public class TestComponentAccessController {
   }
 
   /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndUnknownContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.BLOCKED);
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, true, SilverpeasRole.user);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndPersistContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.BLOCKED);
+    accessControlContext.onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, true, SilverpeasRole.user);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndDownloadContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.BLOCKED);
+    accessControlContext.onOperationsOf(AccessControlOperation.download);
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, true, SilverpeasRole.user);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButBlockedAndSharingContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.BLOCKED);
+    accessControlContext.onOperationsOf(AccessControlOperation.sharing);
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, true, SilverpeasRole.user);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndUnknownContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.EXPIRED);
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, true, SilverpeasRole.user);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndPersistContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.EXPIRED);
+    accessControlContext.onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, true, SilverpeasRole.user);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndDownloadContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.EXPIRED);
+    accessControlContext.onOperationsOf(AccessControlOperation.download);
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, true, SilverpeasRole.user);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButExpiredAndSharingContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.EXPIRED);
+    accessControlContext.onOperationsOf(AccessControlOperation.sharing);
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, true, SilverpeasRole.user);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndAnonymousUserButExpiredAndUnknownContext()
+      throws Exception {
+    setupAnonymousUser();
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndAnonymousUserButExpiredAndPersistContext()
+      throws Exception {
+    setupAnonymousUser();
+    accessControlContext.onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndAnonymousUserButExpiredAndDownloadContext()
+      throws Exception {
+    setupAnonymousUser();
+    accessControlContext.onOperationsOf(AccessControlOperation.download);
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndAnonymousUserButExpiredAndSharingContext()
+      throws Exception {
+    setupAnonymousUser();
+    accessControlContext.onOperationsOf(AccessControlOperation.sharing);
+
+    assertGetUserRolesAndIsUserAuthorized(null, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(toolId, true, SilverpeasRole.admin);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, true, SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, true,
+        SilverpeasRole.user);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndUnknownContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.DELETED);
+
+    assertGetUserRolesAndIsUserAuthorized(null, false);
+    assertGetUserRolesAndIsUserAuthorized(toolId, false);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndPersistContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.DELETED);
+    accessControlContext.onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
+
+    assertGetUserRolesAndIsUserAuthorized(null, false);
+    assertGetUserRolesAndIsUserAuthorized(toolId, false);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndDownloadContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.DELETED);
+    accessControlContext.onOperationsOf(AccessControlOperation.download);
+
+    assertGetUserRolesAndIsUserAuthorized(null, false);
+    assertGetUserRolesAndIsUserAuthorized(toolId, false);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeletedAndSharingContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.DELETED);
+    accessControlContext.onOperationsOf(AccessControlOperation.sharing);
+
+    assertGetUserRolesAndIsUserAuthorized(null, false);
+    assertGetUserRolesAndIsUserAuthorized(toolId, false);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndUnknownContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.DEACTIVATED);
+
+    assertGetUserRolesAndIsUserAuthorized(null, false);
+    assertGetUserRolesAndIsUserAuthorized(toolId, false);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndPersistContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.DEACTIVATED);
+    accessControlContext.onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
+
+    assertGetUserRolesAndIsUserAuthorized(null, false);
+    assertGetUserRolesAndIsUserAuthorized(toolId, false);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndDownloadContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.DEACTIVATED);
+    accessControlContext.onOperationsOf(AccessControlOperation.download);
+
+    assertGetUserRolesAndIsUserAuthorized(null, false);
+    assertGetUserRolesAndIsUserAuthorized(toolId, false);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesAndIsUserAuthorizedWithReaderUserRoleButDeactivatedAndSharingContext()
+      throws Exception {
+    setupUser(SilverpeasRole.user, UserState.DEACTIVATED);
+    accessControlContext.onOperationsOf(AccessControlOperation.sharing);
+
+    assertGetUserRolesAndIsUserAuthorized(null, false);
+    assertGetUserRolesAndIsUserAuthorized(toolId, false);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesWithoutUserAndUnknownContext()
+      throws Exception {
+    assertGetUserRolesAndIsUserAuthorized(null, false);
+    assertGetUserRolesAndIsUserAuthorized(toolId, false);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesWithoutUserAndPersistContext()
+      throws Exception {
+    accessControlContext.onOperationsOf(AccessControlOperation.PERSIST_ACTIONS.iterator().next());
+
+    assertGetUserRolesAndIsUserAuthorized(null, false);
+    assertGetUserRolesAndIsUserAuthorized(toolId, false);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesWithoutUserAndDownloadContext()
+      throws Exception {
+    accessControlContext.onOperationsOf(AccessControlOperation.download);
+
+    assertGetUserRolesAndIsUserAuthorized(null, false);
+    assertGetUserRolesAndIsUserAuthorized(toolId, false);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
+   * Test of getUserRoles and isUserAuthorized methods, of class ComponentAccessController.
+   * @throws Exception
+   */
+  @Test
+  public void testGetUserRolesWithoutUserAndSharingContext()
+      throws Exception {
+    accessControlContext.onOperationsOf(AccessControlOperation.sharing);
+
+    assertGetUserRolesAndIsUserAuthorized(null, false);
+    assertGetUserRolesAndIsUserAuthorized(toolId, false);
+    assertGetUserRolesAndIsUserAuthorized(componentAdminId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentId, false);
+    assertGetUserRolesAndIsUserAuthorized(publicFilesComponentIdWithUserRole, false);
+    assertGetUserRolesAndIsUserAuthorized(componentId, false);
+    assertGetUserRolesAndIsUserAuthorized(forbiddenComponent, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithTopicRigths, false);
+    assertGetUserRolesAndIsUserAuthorized(componentIdWithoutTopicRigths, false);
+  }
+
+  /**
    * Centralization.
    * @param instanceId
    * @param expectedUserAuthorization
@@ -471,6 +1045,12 @@ public class TestComponentAccessController {
   private void assertGetUserRolesAndIsUserAuthorized(String instanceId,
       boolean expectedUserAuthorization, SilverpeasRole... expectedUserRoles) {
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
+    final String userId;
+    if (User.getById(ANONYMOUS_ID) != null) {
+      userId = ANONYMOUS_ID;
+    } else {
+      userId = USER_ID;
+    }
     Set<SilverpeasRole> componentUserRole =
         instance.getUserRoles(userId, instanceId, accessControlContext);
     if (expectedUserRoles.length > 0) {
@@ -483,20 +1063,40 @@ public class TestComponentAccessController {
   }
 
   private void setupUser(SilverpeasRole componentRole) {
+    setupUser(componentRole, UserState.VALID);
+  }
+
+  private void setupUser(SilverpeasRole componentRole, UserState userState) {
+    UserDetail user = prepareUser(componentRole, userState);
+    when(UserProvider.get().getUser(USER_ID)).thenReturn(user);
+    when(controller.getUserDetail(USER_ID)).thenReturn(user);
+    if (componentRole != null) {
+      for (String instanceId : new String[]{publicComponentIdWithUserRole,
+          publicFilesComponentIdWithUserRole, componentId, componentIdWithTopicRigths,
+          componentIdWithoutTopicRigths}) {
+        when(controller.getUserProfiles(USER_ID, instanceId))
+            .thenReturn(new String[]{componentRole.name()});
+      }
+    }
+  }
+
+  private void setupAnonymousUser() {
+    UserDetail user = prepareUser(null, UserState.VALID);
+    user.setId(ANONYMOUS_ID);
+    user.setAccessLevel(UserAccessLevel.GUEST);
+    when(UserProvider.get().getUser(ANONYMOUS_ID)).thenReturn(user);
+    when(controller.getUserDetail(ANONYMOUS_ID)).thenReturn(user);
+  }
+
+  private UserDetail prepareUser(final SilverpeasRole componentRole, final UserState userState) {
     UserDetail user = new UserDetail();
-    user.setId(userId);
+    user.setId(USER_ID);
     if (SilverpeasRole.admin == componentRole) {
       user.setAccessLevel(UserAccessLevel.ADMINISTRATOR);
     } else {
       user.setAccessLevel(UserAccessLevel.USER);
     }
-    when(UserProvider.get().getUser(userId)).thenReturn(user);
-    when(controller.getUserDetail(userId)).thenReturn(user);
-    for (String instanceId : new String[]{publicComponentIdWithUserRole,
-        publicFilesComponentIdWithUserRole, componentId, componentIdWithTopicRigths,
-        componentIdWithoutTopicRigths}) {
-      when(controller.getUserProfiles(userId, instanceId))
-          .thenReturn(new String[]{componentRole.name()});
-    }
+    user.setState(userState);
+    return user;
   }
 }
