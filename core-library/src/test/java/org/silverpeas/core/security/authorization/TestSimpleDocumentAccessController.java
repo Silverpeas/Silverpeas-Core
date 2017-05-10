@@ -33,6 +33,8 @@ import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -96,6 +98,8 @@ public class TestSimpleDocumentAccessController {
         .setField(publicationAccessController, nodeAccessController, "nodeAccessController");
     publicationService = reflectionRule
         .mockField(publicationAccessController, PublicationService.class, "publicationService");
+
+    ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
   }
 
   @Test

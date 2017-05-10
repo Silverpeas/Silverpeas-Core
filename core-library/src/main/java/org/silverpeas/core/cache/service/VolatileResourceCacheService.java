@@ -28,6 +28,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.thread.ManagedThreadPool;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.HashMap;
@@ -110,6 +111,19 @@ public class VolatileResourceCacheService {
     return componentResources
         .put(new ForeignPK(contribution.getId(), contribution.getComponentInstanceId()),
             contribution);
+  }
+
+  /**
+   * Indicates if a contribution exists into the cache.
+   * @param resourceId the identifier of the resource into the component instance.
+   * @param componentInstanceId the identifier of the component which holds the resource.
+   * @return true if the contribution exists into the cache, false otherwise.
+   */
+  public boolean contains(String resourceId, String componentInstanceId) {
+    if (StringUtil.isDefined(resourceId) && StringUtil.isDefined(componentInstanceId)) {
+      return componentResources.containsKey(new ForeignPK(resourceId, componentInstanceId));
+    }
+    return false;
   }
 
   /**
