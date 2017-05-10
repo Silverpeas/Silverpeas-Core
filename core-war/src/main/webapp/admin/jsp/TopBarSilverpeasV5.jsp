@@ -65,8 +65,12 @@ boolean outilDisplayed = false;
 
 <c:set var="labelConnectedUser" value='<%=helper.getString("lookSilverpeasV5.connectedUser")%>'/>
 <c:set var="labelConnectedUsers" value='<%=helper.getString("lookSilverpeasV5.connectedUsers")%>'/>
+<c:set var="labelUserNotifications" value='<%=helper.getString("lookSilverpeasV5.userNotifications")%>'/>
+<c:set var="labelUnreadUserNotification" value='<%=helper.getString("lookSilverpeasV5.unreadUserNotification")%>'/>
+<c:set var="labelUnreadUserNotifications" value='<%=helper.getString("lookSilverpeasV5.unreadUserNotifications")%>'/>
 
 <view:includePlugin name="userSession"/>
+<view:includePlugin name="userNotification"/>
 <view:includePlugin name="ticker" />
 <style type="text/css">
 #shortcuts {
@@ -79,6 +83,9 @@ boolean outilDisplayed = false;
 <% } %>
 	height: 20px;
 	width: auto;
+}
+.new-user-notification a {
+  background-color: #EC7501;
 }
 body {
 	background-image: url(<%=wallPaper%>);
@@ -125,6 +132,21 @@ window.USERSESSION_PROMISE.then(function() {
     }
   });
 });
+window.USERNOTIFICATION_PROMISE.then(function() {
+  var $container = jQuery("#userNotifications");
+  spUserNotification.addEventListener('newUserNotificationsChanged', function(event) {
+    var unreadUserNotificationCount = event.detail.data.nbUnread;
+    $container.addClass("new-user-notification");
+    var label = unreadUserNotificationCount + " ${labelUnreadUserNotifications}";
+    if (unreadUserNotificationCount === 1) {
+      label = unreadUserNotificationCount + " ${labelUnreadUserNotification}";
+    } else if (unreadUserNotificationCount === 0) {
+      label = "${labelUserNotifications}";
+      $container.removeClass("new-user-notification");
+    }
+    jQuery("a", $container).text(label);
+  });
+});
 </script>
 <div id="topBar">
     <div id="backHome">
@@ -139,6 +161,10 @@ window.USERSESSION_PROMISE.then(function() {
 		<div class="userNav">
       <span id="connectedUsers" style="display:none">
         <a href="#" onclick="javascript:onClick=spUserSession.viewConnectedUsers();"></a>
+        <span> | </span>
+      </span>
+      <span id="userNotifications">
+        <a href="#" onclick="javascript:onClick=spUserNotification.view();">${labelUserNotifications}</a>
         <span> | </span>
       </span>
       <% if (!isAnonymousAccess && helper.getSettings("directoryVisible", true)) {

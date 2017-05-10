@@ -33,4 +33,4 @@ import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
  * stored (see {@link StoreLastOnly}).
  * @author Yohann Chastagnier
  */
-public interface KeepAlwaysStoring extends StoreLastOnly {}
+public interface KeepAlwaysLastStored extends StoreLastOnly {}

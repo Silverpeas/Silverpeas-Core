@@ -48,59 +48,18 @@ function __getTime(news) {
   return label;
 }
 
-jQuery(document).ready(function() {
-  if (!("Notification" in window) || (Notification && Notification.permission === "granted")) {
-    jQuery("#desktop-notifications-permission").remove();
-  } else {
-    jQuery("#desktop-notifications-permission").text(TickerBundle.get("lookSilverpeasV5.ticker.notifications.permission.request"));
-  }
-});
-
-function requestNotificationPermission() {
-  if (Notification && Notification.permission !== "denied") {
-    Notification.requestPermission(function (status) {
-      if (Notification.permission !== status) {
-        Notification.permission = status;
-      }
-      if (status === "granted") {
-        jQuery("#desktop-notifications-permission").remove();
-      }
-    })
-  }
-}
-
-function __newsToNotification(news) {
-  var notification = new Notification(news.title, {
+function __notifyUser(news) {
+  spUserNotification.notifyOnDesktop(news.title, {
     body: news.description,
     tag: news.publicationId,
     icon: webContext + '/util/icons/component/quickinfoBig.png'
+  }, function(desktopNotification) {
+    desktopNotification.onclick = function() {
+      top.location.href = webContext + '/Publication/' + desktopNotification.tag;
+      // do not work with Chrome
+      window.focus();
+    };
   });
-  notification.onclick = function() {
-    top.location.href = webContext + '/Publication/' + notification.tag;
-    window.focus();  // do not work with Chrome
-  };
-}
-
-function __notifyUser(news) {
-  // Check if browser supports notifications
-  if (!("Notification" in window)) {
-    //alert("Ce navigateur ne supporte pas les notifications desktop");
-  } else if (Notification.permission === "granted") {
-    // browser supports desktop notifications and user accepts it
-    __newsToNotification(news);
-  } else if (Notification.permission !== 'denied') {
-    // notifications are not yet accepted or denied, ask permission to user
-    Notification.requestPermission(function (permission) {
-      // Whatever user decision, store it
-      if(!('permission' in Notification)) {
-        Notification.permission = permission;
-      }
-      // if user decides to accept notifications, send it...
-      if (permission === "granted") {
-        __newsToNotification(news);
-      }
-    });
-  }
 }
 
 function __isNewNews(id) {
@@ -173,12 +132,28 @@ var tickerNews = [];
     });
   }
 
-  window.TICKER_PROMISE.then(function() {
+  var _tickerPromiseDepencies = [window.TICKER_PROMISE, window.USERNOTIFICATION_PROMISE];
+  sp.promise.whenAllResolved(_tickerPromiseDepencies).then(function() {
+    $(document).ready(function() {
+      var __removeDesktopNotificationUserRequest = function() {
+        $("#desktop-notifications-permission").remove();
+      };
+      if (spUserNotification.desktopPermissionAvailable() &&
+          !spUserNotification.desktopPermissionAuthorized() &&
+          !spUserNotification.desktopPermissionDenied()) {
+        $("#desktop-notifications-permission").text(TickerBundle.get("lookSilverpeasV5.ticker.notifications.permission.request"));
+        $("#desktop-notifications-permission").show();
+        spUserNotification.addEventListener('desktopNotificationPermissionAccepted', __removeDesktopNotificationUserRequest);
+        spUserNotification.addEventListener('desktopNotificationPermissionDenied', __removeDesktopNotificationUserRequest);
+      } else {
+        __removeDesktopNotificationUserRequest();
+      }
+    });
     worker();
   });
 })(jQuery);
 </script>
 <div id="ticker" style="display: none">
   <span id="sp-ticker"></span>
-  <a href="#" onclick="requestNotificationPermission()" id="desktop-notifications-permission"></a>
+  <a href="#" style="display: none;" onclick="spUserNotification.requestDesktopPermission()" id="desktop-notifications-permission"></a>
 </div>

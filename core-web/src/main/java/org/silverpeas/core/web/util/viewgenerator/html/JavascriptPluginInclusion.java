@@ -23,20 +23,21 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.chat.servers.ChatServer;
-import org.silverpeas.core.html.SupportedWebPlugins;
-import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.URLUtil;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.chat.servers.ChatServer;
+import org.silverpeas.core.html.SupportedWebPlugins;
 import org.silverpeas.core.notification.message.MessageManager;
+import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.look.LayoutConfiguration;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.util.security.SecuritySettings;
@@ -47,8 +48,8 @@ import java.text.MessageFormat;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
-import static org.silverpeas.core.html.SupportedWebPlugins.USERSESSION;
-import static org.silverpeas.core.html.SupportedWebPlugins.TICKER;
+import static org.silverpeas.core.html.SupportedWebPlugins.*;
+import static org.silverpeas.core.notification.user.UserNotificationServerEvent.getNbUnreadFor;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -143,6 +144,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_MYLINKS = "silverpeas-mylinks.js";
   private static final String SILVERPEAS_LANG = "silverpeas-lang.js";
   private static final String SILVERPEAS_USER_SESSION_JS = "silverpeas-user-session.js";
+  private static final String SILVERPEAS_USER_NOTIFICATION_JS = "silverpeas-user-notification.js";
   private static final String TICKER_JS = "ticker/jquery.ticker.js";
   private static final String TICKER_CSS = "ticker/ticker-style.css";
   private static final String HTML2CANVAS_JS = "html2canvas.js";
@@ -184,6 +186,19 @@ public class JavascriptPluginInclusion {
     } else {
       return new ElementContainer();
     }
+  }
+
+  /**
+   * Centralization of dynamic script instantiation with promise resolve after load.
+   * @param plugin the plugin using the tool.
+   * @param src the source of plugin file.
+   * @return the promise as string.
+   */
+  private static String generateDynamicPluginLoadingPromise(final SupportedWebPlugins plugin,
+      final String src) {
+    return generatePromise(plugin,
+        generateDynamicPluginLoading(src, plugin.name().toLowerCase() + "Plugin", "resolve();",
+            null));
   }
 
   /**
@@ -355,21 +370,32 @@ public class JavascriptPluginInclusion {
             "lookSilverpeasV5.ticker.date.daysAgo",
             "lookSilverpeasV5.ticker.notifications.permission.request")
         .produce()));
-    xhtml.addElement(scriptContent(generatePromise(TICKER,
-        generateDynamicPluginLoading(JQUERY_PATH + TICKER_JS, "tickerPlugin", "resolve();", null))));
+    xhtml.addElement(
+        scriptContent(generateDynamicPluginLoadingPromise(TICKER, JQUERY_PATH + TICKER_JS)));
     return xhtml;
   }
 
   public static ElementContainer includeUserSession(final ElementContainer xhtml,
       final LookHelper lookHelper) {
     xhtml.addElement(scriptContent(JavascriptSettingProducer
-        .settingVariableName("ConnectedUsersSettings")
+        .settingVariableName("UserSessionSettings")
         .add("us.cu.nb.i", lookHelper.getNBConnectedUsers())
         .add("us.cu.v.u", URLUtil.getApplicationURL() + "/Rdirectory/jsp/connected")
         .produce()));
-    xhtml.addElement(scriptContent(generatePromise(USERSESSION,
-        generateDynamicPluginLoading(JAVASCRIPT_PATH + SILVERPEAS_USER_SESSION_JS, "userSessionPlugin",
-            "resolve();", null))));
+    xhtml.addElement(scriptContent(generateDynamicPluginLoadingPromise(USERSESSION,
+        JAVASCRIPT_PATH + SILVERPEAS_USER_SESSION_JS)));
+    return xhtml;
+  }
+
+  public static ElementContainer includeUserNotification(final ElementContainer xhtml) {
+    final String myNotificationUrl = URLUtil.getURL(URLUtil.CMP_SILVERMAIL, null, null) + "Main";
+    xhtml.addElement(scriptContent(JavascriptSettingProducer
+        .settingVariableName("UserNotificationSettings")
+        .add("un.nbu.i", getNbUnreadFor(User.getCurrentRequester().getId()))
+        .add("un.v.u", URLUtil.getApplicationURL() + myNotificationUrl)
+        .produce()));
+    xhtml.addElement(scriptContent(generateDynamicPluginLoadingPromise(USERNOTIFICATION,
+        JAVASCRIPT_PATH + SILVERPEAS_USER_NOTIFICATION_JS)));
     return xhtml;
   }
 

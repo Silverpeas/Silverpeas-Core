@@ -25,107 +25,91 @@
 --%>
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
-<%@ page isELIgnored="false"%>
+<%@ page isELIgnored="false" %>
 <%@ include file="graphicBox.jsp" %>
 <%@ include file="checkSilvermail.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
-<c:set var="componentId" value="${requestScope.componentId}" />
-<c:set var="sessionController" value="${requestScope.SILVERMAIL}" />
-<c:set var="from" value="${param.from}" />
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<c:set var="componentId" value="${requestScope.componentId}"/>
+<c:set var="sessionController" value="${requestScope.SILVERMAIL}"/>
+<c:set var="from" value="${param.from}"/>
 <c:set var="msg" value="${sessionController.currentMessage}"/>
-<fmt:setLocale value="${sessionScope[sessionController].language}" />
-<view:setBundle bundle="${requestScope.resources.multilangBundle}" />
-<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
+<fmt:setLocale value="${sessionScope[sessionController].language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
 <c:set var="senderName" value="${silfn:defaultEmptyString(msg.senderName)}"/>
 <c:set var="msgSource" value="${(msg.source eq msg.senderName) ? '' : msg.source}"/>
 
 <%
-      response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-      response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-      response.setDateHeader("Expires", -1); //prevents caching at the proxy server
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache"); //HTTP 1.0
+  response.setDateHeader("Expires", -1); //prevents caching at the proxy server
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <title></title>
-    <view:looknfeel />
-    <script type="text/javascript">
-      function deleteMessage( pID ) {
-        if (window.opener.deleteMessage) {
-          window.opener.deleteMessage(pID, true, '${param.SpaceId}', '${from}');
-          window.close();
-        } else {
-          var $form = jQuery('#genericForm');
-          jQuery('#ID', $form).val(pID);
-          jQuery('#SpaceId', $form).val('${param.SpaceId}');
-          jQuery('#from', $form).val('${from}');
-          $form.attr('action', "DeleteMessage.jsp").submit();
-          closeWindow();
-        }
-      }
-
-      <c:if test="${!empty msg.url}">
-      function goTo() {
-        window.opener.top.location = "<c:url value="${msg.url}" />";
+<head>
+  <title></title>
+  <view:looknfeel/>
+  <script type="text/javascript">
+    function deleteMessage(id) {
+      var ajaxConfig = sp.ajaxConfig("DeleteMessage").byPostMethod();
+      ajaxConfig.withParam("ID", id);
+      ajaxConfig.withParam("SpaceId", '${param.SpaceId}');
+      ajaxConfig.withParam("from", '${from}');
+      silverpeasAjax(ajaxConfig).then(function() {
         window.close();
-      }
-      </c:if>
+      });
+    }
 
-      function closeWindow() {
-      <c:choose>
-        <c:when test="${'homePage' eq from}">window.opener.location.reload();</c:when>
-        <c:otherwise>window.opener.location = "Main.jsp";</c:otherwise>
-      </c:choose>
-          window.close();
-        }
-    </script>
-  </head>
+    <c:if test="${!empty msg.url}">
+    function goTo() {
+      window.opener.top.location = "<c:url value="${msg.url}" />";
+      window.close();
+    }
+    </c:if>
+  </script>
+</head>
 <body>
-	<fmt:message key="silverMail" var="browseLabel" />
-    <view:browseBar>
-      <view:browseBarElt link="" label="${browseLabel}" />
-      <view:browseBarElt link="" label="${msg.subject}" />
-    </view:browseBar>
-    <view:window popup="true">
-    <div class="popup-read-notification">
+<fmt:message key="silverMail" var="browseLabel"/>
+<view:browseBar>
+  <view:browseBarElt link="" label="${browseLabel}"/>
+  <view:browseBarElt link="" label="${msg.subject}"/>
+</view:browseBar>
+<view:window popup="true">
+  <div class="popup-read-notification">
     <div class="entete">
       <div class="from">
         <c:if test="${!empty senderName}">
-        <span class="label"><fmt:message key="from" /> : </span>
+          <span class="label"><fmt:message key="from"/> : </span>
         </c:if>
-        <c:out value="${senderName}" />${silfn:isDefined(senderName) ? '' : '&#160;'}
+        <c:out value="${senderName}"/>${silfn:isDefined(senderName) ? '' : '&#160;'}
       </div>
-        <div class="date"><view:formatDateTime value="${msg.date}" /></div>
-      </div>
-      <c:if test="${!empty msgSource}">
-      <div class="source"> <span class="label"><fmt:message key="source" /> :</span> <c:out value="${msgSource}" /> </div>
-      </c:if>
-      <c:if test="${!empty msg.url}">
-	<div class="link"> <a href="javaScript:goTo();"><fmt:message key="silvermail.link.text" /></a> </div>
-      </c:if>
-      <div class="content-notification">
-        ${msg.body}
-      </div>
-
-      <view:buttonPane>
-            <fmt:message var="closeLabel" key="close" />
-            <fmt:message var="deleteLabel" key="delete" />
-            <c:set var="deleteAction">javascript:onClick=deleteMessage(<c:out value="${sessionController.currentMessageId}"/>);</c:set>
-            <view:button label="${deleteLabel}" action="${deleteAction}"/>
-            <view:button label="${closeLabel}" action="javascript:onClick=closeWindow();"/>
-      </view:buttonPane>
+      <div class="date"><view:formatDateTime value="${msg.date}"/></div>
     </div>
-    </view:window>
-    <form id="genericForm" action="" method="post">
-      <input id="ID" name="ID" type="hidden"/>
-      <input id="folder" name="folder" type="hidden"/>
-      <input id="SpaceId" name="SpaceId" type="hidden"/>
-      <input id="from" name="from" type="hidden"/>
-    </form>
-  </body>
+    <c:if test="${!empty msgSource}">
+      <div class="source"><span class="label"><fmt:message key="source"/> :</span>
+        <c:out value="${msgSource}"/></div>
+    </c:if>
+    <c:if test="${!empty msg.url}">
+      <div class="link"><a href="javaScript:goTo();"><fmt:message key="silvermail.link.text"/></a>
+      </div>
+    </c:if>
+    <div class="content-notification">
+        ${msg.body}
+    </div>
+
+    <view:buttonPane>
+      <fmt:message var="closeLabel" key="close"/>
+      <fmt:message var="deleteLabel" key="delete"/>
+      <c:set var="deleteAction">javascript:onClick=deleteMessage(<c:out value="${sessionController.currentMessageId}"/>);</c:set>
+      <view:button label="${deleteLabel}" action="${deleteAction}"/>
+      <view:button label="${closeLabel}" action="javascript:onClick=window.close();"/>
+    </view:buttonPane>
+  </div>
+</view:window>
+</body>
 </html>

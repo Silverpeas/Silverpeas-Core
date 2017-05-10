@@ -46,9 +46,6 @@ import java.util.Map;
 @TransactionAttribute(TransactionAttributeType.NOT_SUPPORTED)
 public class SILVERMAILListener extends AbstractListener implements MessageListener {
 
-  public SILVERMAILListener() {
-  }
-
   /**
    * listener of NotificationServer JMS message
    * @param msg
@@ -63,22 +60,25 @@ public class SILVERMAILListener extends AbstractListener implements MessageListe
   }
 
   @Override
-  public void send(NotificationData p_Message) throws NotificationServerException {
+  public void send(NotificationData data) throws NotificationServerException {
     try {
-      Map<String, Object> keyValue = p_Message.getTargetParam();
-      String tmpSubjectString = (String) keyValue.get("SUBJECT"); // retrieves the SUBJECT key
-      // value.
-      String tmpSourceString = (String) keyValue.get("SOURCE"); // retrieves the SOURCE key value.
-      String tmpUrlString = (String) keyValue.get("URL"); // retrieves the URL key value.
-      Date tmpDate = (Date) keyValue.get("DATE"); // retrieves the DATE key value.
+      Map<String, Object> keyValue = data.getTargetParam();
+      // retrieves the SUBJECT key value.
+      String tmpSubjectString = (String) keyValue.get("SUBJECT");
+      // retrieves the SOURCE key value.
+      String tmpSourceString = (String) keyValue.get("SOURCE");
+      // retrieves the URL key value.
+      String tmpUrlString = (String) keyValue.get("URL");
+      // retrieves the DATE key value.
+      Date tmpDate = (Date) keyValue.get("DATE");
       SILVERMAILMessage sm = new SILVERMAILMessage();
-      sm.setUserId(Integer.parseInt(p_Message.getTargetReceipt()));
-      sm.setSenderName(p_Message.getSenderName());
+      sm.setUserId(Integer.parseInt(data.getTargetReceipt()));
+      sm.setSenderName(data.getSenderName());
       sm.setSubject(tmpSubjectString);
       sm.setUrl(tmpUrlString);
       sm.setSource(tmpSourceString);
       sm.setDate(tmpDate);
-      sm.setBody(p_Message.getMessage());
+      sm.setBody(data.getMessage());
       SILVERMAILPersistence.addMessage(sm);
     } catch (Exception e) {
       throw new NotificationServerException("SILVERMAILListener.send()", SilverpeasException.ERROR,

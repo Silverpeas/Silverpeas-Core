@@ -26,7 +26,7 @@ package org.silverpeas.core.notification.sse;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
-import org.silverpeas.core.notification.sse.behavior.KeepAlwaysStoring;
+import org.silverpeas.core.notification.sse.behavior.KeepAlwaysLastStored;
 import org.silverpeas.core.notification.sse.behavior.StoreLastOnly;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
@@ -53,6 +53,7 @@ import static java.text.MessageFormat.format;
  */
 public class ServerEventDispatcherTask extends AbstractRequestTask {
 
+  private static final int MIN_LIFE_TIME = 40000;
   private static final Set<SilverpeasAsyncContext> contexts = new LinkedHashSet<>(2000);
 
   /**
@@ -224,7 +225,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
     List<SilverpeasAsyncContext> getSafeContexts() {
       final List<SilverpeasAsyncContext> safeContexts;
       synchronized (contexts) {
-        safeContexts = contexts.stream().collect(Collectors.toList());
+        safeContexts = new ArrayList<>(contexts);
       }
       return safeContexts;
     }
@@ -281,13 +282,13 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
      */
     void cleanExpired() {
       long currentTime = System.currentTimeMillis();
-      long maxLifeTime = Math.max(ServerEvent.CLIENT_RETRY * 4, 40000);
+      long maxLifeTime = Math.max(ServerEvent.CLIENT_RETRY * 4, MIN_LIFE_TIME);
       synchronized (store) {
         Iterator<StoredServerEvent> it = store.iterator();
         boolean done = false;
         while (it.hasNext() && !done) {
           StoredServerEvent item = it.next();
-          if (item.getServerEvent() instanceof KeepAlwaysStoring) {
+          if (item.getServerEvent() instanceof KeepAlwaysLastStored) {
             continue;
           }
           final long lifetime = currentTime - item.getStoreTime();
@@ -331,7 +332,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
       synchronized (store) {
         if (serverEvent.getId() != null && !(serverEvent instanceof IgnoreStoring)) {
           if (serverEvent instanceof StoreLastOnly) {
-            removeAll(((StoreLastOnly) serverEvent));
+            removeAll((StoreLastOnly) serverEvent);
           }
           store.add(new StoredServerEvent(serverEvent));
           SilverLogger.getLogger(this)

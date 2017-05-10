@@ -26,7 +26,7 @@ package org.silverpeas.core.web.session;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.CommonServerEvent;
-import org.silverpeas.core.notification.sse.behavior.KeepAlwaysStoring;
+import org.silverpeas.core.notification.sse.behavior.KeepAlwaysLastStored;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
@@ -36,7 +36,7 @@ import org.silverpeas.core.util.JSONCodec;
  * This server event is sent on successful user session opening and on user session ending.
  * @author Yohann Chastagnier.
  */
-public class UserSessionServerEvent extends CommonServerEvent implements KeepAlwaysStoring {
+public class UserSessionServerEvent extends CommonServerEvent implements KeepAlwaysLastStored {
 
   private static final String IS_OPENING_ATTR_NAME = "isOpening";
   private static final String IS_CLOSING_ATTR_NAME = "isClosing";

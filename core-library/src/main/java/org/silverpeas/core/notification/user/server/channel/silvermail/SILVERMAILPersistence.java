@@ -24,15 +24,17 @@
 
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
-import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.persistence.jdbc.LongText;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
+import org.silverpeas.core.notification.user.UserNotificationServerEvent;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.jdbc.LongText;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -52,7 +54,8 @@ public class SILVERMAILPersistence {
       try {
         smb.setUserId(silverMsg.getUserId());
         smb.setSenderName(silverMsg.getSenderName());
-        smb.setFolderId(0); // 0 = INBOX
+        // 0 = INBOX
+        smb.setFolderId(0);
         smb.setSubject(silverMsg.getSubject());
         smb.setBody(Integer.toString(LongText.addLongText(silverMsg.getBody())));
         smb.setUrl(silverMsg.getUrl());
@@ -60,6 +63,9 @@ public class SILVERMAILPersistence {
         smb.setDateMsg(DateUtil.date2SQLDate(silverMsg.getDate()));
         smb.setReaden(0);
         Transaction.performInOne(() -> getRepository().save(smb));
+        DefaultServerEventNotifier.get().notify(UserNotificationServerEvent
+            .creationOf(String.valueOf(smb.getUserId()), smb.getId(), smb.getSubject(),
+                smb.getSenderName()));
       } catch (Exception e) {
         throw new SILVERMAILException("SILVERMAILPersistence.addMessage()",
             SilverpeasException.ERROR, "silvermail.EX_CANT_WRITE_MESSAGE", e);
@@ -166,7 +172,7 @@ public class SILVERMAILPersistence {
         result.setSource(smb.getSource());
         result.setDate(DateUtil.parse(smb.getDateMsg()));
       }
-      markMessageAsReaden(smb);
+      markMessageAsRead(smb, true);
     } catch (Exception e) {
       throw new SILVERMAILException("SILVERMAILPersistence.getMessage()",
           SilverpeasException.ERROR, "silvermail.EX_CANT_READ_MSG", "MsgId="
@@ -179,6 +185,14 @@ public class SILVERMAILPersistence {
    *
    */
   public static void deleteMessage(long msgId, String userId) throws SILVERMAILException {
+    deleteMessage(msgId, userId, true);
+  }
+
+  /**
+   *
+   */
+  private static void deleteMessage(long msgId, String userId, boolean notify)
+      throws SILVERMAILException {
     try {
       Transaction.performInOne(() -> {
         SILVERMAILMessageBeanRepository repository = getRepository();
@@ -200,6 +214,10 @@ public class SILVERMAILPersistence {
         }
         return null;
       });
+      if(notify) {
+        DefaultServerEventNotifier.get()
+            .notify(UserNotificationServerEvent.deletionOf(userId, String.valueOf(msgId)));
+      }
     } catch (Exception e) {
       throw new SILVERMAILException("SILVERMAILPersistence.deleteMessage()",
           SilverpeasException.ERROR, "silvermail.EX_CANT_DEL_MSG", "MsgId="
@@ -213,17 +231,45 @@ public class SILVERMAILPersistence {
     Collection<SILVERMAILMessage> messages = getMessageOfFolder(userId, folderName);
     Transaction.performInOne(() -> {
       for (SILVERMAILMessage message : messages) {
-        deleteMessage(message.getId(), currentUserId);
+        deleteMessage(message.getId(), currentUserId, false);
       }
       return null;
     });
+
+    if(!messages.isEmpty() && ("0".equals(folderName) || "INBOX".equals(folderName))) {
+      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clear(currentUserId));
+    }
   }
 
-  private static void markMessageAsReaden(SILVERMAILMessageBean smb)
+  public static void markAllMessagesAsRead(String currentUserId) throws SILVERMAILException {
+    // find all unread message
+    long folderId = convertFolderNameToId("0");
+    List<SILVERMAILMessageBean> messageBeans =
+        getRepository().findMessageByUserIdAndFolderId(currentUserId, String.valueOf(folderId), 0);
+    Transaction.performInOne(() -> {
+      for (SILVERMAILMessageBean smb : messageBeans) {
+        markMessageAsRead(smb, false);
+      }
+      return null;
+    });
+    if (!messageBeans.isEmpty()) {
+      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clear(currentUserId));
+    }
+  }
+
+  private static void markMessageAsRead(SILVERMAILMessageBean smb, boolean notify)
       throws SILVERMAILException {
     try {
-      smb.setReaden(1);
-      Transaction.performInOne(() -> getRepository().save(smb));
+      boolean hasToUpdate = smb.getReaden() != 1;
+      if (hasToUpdate) {
+        smb.setReaden(1);
+        Transaction.performInOne(() -> getRepository().save(smb));
+        if (notify) {
+          DefaultServerEventNotifier.get().notify(UserNotificationServerEvent
+              .readOf(String.valueOf(smb.getUserId()), smb.getId(), smb.getSubject(), smb
+                  .getSenderName()));
+        }
+      }
     } catch (Exception e) {
       throw new SILVERMAILException(
           "SILVERMAILPersistence.markMessageAsReaden()",
@@ -234,11 +280,11 @@ public class SILVERMAILPersistence {
   /**
    * @param folderName
    * @return
-   * @throws SILVERMAILException
    */
   protected static long convertFolderNameToId(String folderName) {
     // pas de gestion de folder pour l'instant
-    return 0; // 0 = INBOX
+    // 0 = INBOX
+    return 0;
   }
 
   /**

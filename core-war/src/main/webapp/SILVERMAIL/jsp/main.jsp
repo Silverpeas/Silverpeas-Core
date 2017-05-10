@@ -52,44 +52,51 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <head>
   <title></title>
   <view:looknfeel/>
+  <view:includePlugin name="userNotification"/>
 <script type="text/javascript">
-function readMessage(id){
-	SP_openWindow("ReadMessage.jsp?ID=" + id,"readMessage","600","380","scrollable=yes,scrollbars=yes");
-}
 
-function deleteMessage(id, skipConfirmation, spaceId, from) {
-    if(skipConfirmation){
-      reallyDeleteMessage(id, spaceId, from);
-    } else {
-      jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>", function() {
-        reallyDeleteMessage(id, spaceId, from);
-      });
-    }
-}
-
-function reallyDeleteMessage(id, spaceId, from) {
-  var $form = jQuery('#genericForm');
-  jQuery('#ID', $form).val(id);
-  if (spaceId) {
-    jQuery('#SpaceId', $form).val(spaceId);
+  function newMessage() {
+    SP_openWindow("<%=m_Context%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes", 'notifyUserPopup', '700', '430', 'menubar=no,scrollbars=yes,statusbar=no');
   }
-  if (from) {
-    jQuery('#from', $form).val(from);
-  }
-  $form.attr('action', "DeleteMessage.jsp").submit();
-}
 
-function deleteAllMessages() {
-  jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteAllNotif")%>", function() {
-    var $form = jQuery('#genericForm');
-    jQuery('#folder', $form).val('INBOX');
-    $form.attr('action', "DeleteAllMessages.jsp").submit();
+  var _reloadList = function() {
+    var ajaxConfig = sp.ajaxConfig("Main");
+    sp.load('#silvermail-list', ajaxConfig, true);
+  };
+
+  function markAllMessagesAsRead() {
+    jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmReadAllNotif")%>", function() {
+      var ajaxConfig = sp.ajaxConfig("MarkAllMessagesAsRead").byPostMethod();
+      silverpeasAjax(ajaxConfig);
+    });
+  }
+
+  function deleteMessage(id) {
+    jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>", function() {
+      var ajaxConfig = sp.ajaxConfig("DeleteMessage").byPostMethod();
+      ajaxConfig.withParam("ID", id);
+      silverpeasAjax(ajaxConfig);
+    });
+  }
+
+  function deleteAllMessages() {
+    jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteAllNotif")%>", function() {
+      var ajaxConfig = sp.ajaxConfig("DeleteAllMessages").byPostMethod();
+      ajaxConfig.withParam("folder", "INBOX");
+      silverpeasAjax(ajaxConfig);
+    });
+  }
+
+  window.USERNOTIFICATION_PROMISE.then(function() {
+    spUserNotification.addEventListener('userNotificationRead', _reloadList,
+        "SILVERMAIL_UserNotificationRead");
+    spUserNotification.addEventListener('userNotificationDeleted', _reloadList,
+        "SILVERMAIL_UserNotificationDeleted");
+    spUserNotification.addEventListener('userNotificationReceived', _reloadList,
+        "SILVERMAIL_UserNotificationReceived");
+    spUserNotification.addEventListener('userNotificationCleared', _reloadList,
+        "SILVERMAIL_UserNotificationCleared");
   });
-}
-
-function newMessage() {
-	SP_openWindow("<%=m_Context%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes", 'notifyUserPopup', '700', '430', 'menubar=no,scrollbars=yes,statusbar=no');
-}
 
 </script>
 </head>
@@ -99,6 +106,8 @@ function newMessage() {
 
   OperationPane operationPane = window.getOperationPane();
   operationPane.addOperationOfCreation(addNotif, silvermailScc.getString("Notifier"), "javascript:newMessage()");
+  operationPane.addLine();
+  operationPane.addOperation(deleteAllNotif, silvermailScc.getString("MarkAllNotifAsRead"), "javascript:markAllMessagesAsRead()");
   operationPane.addOperation(deleteAllNotif, silvermailScc.getString("DeleteAllNotif"), "javascript:deleteAllMessages()");
 
   BrowseBar browseBar = window.getBrowseBar();
@@ -117,6 +126,7 @@ function newMessage() {
 %>
 <view:frame>
 <view:areaOfOperationOfCreation/>
+  <div id="silvermail-list">
 <%
   // Arraypane
   ArrayPane list = gef.getArrayPane( "silvermail", "Main.jsp", request,session );
@@ -139,7 +149,7 @@ function newMessage() {
       hasBeenReadenOrNotBegin = "<b>";
       hasBeenReadenOrNotEnd = "</b>";
     }
-    String link = "<a href=\"javascript:onClick=readMessage(" + message.getId() + ");\">";
+    String link = "<a href=\"javascript:onClick=spUserNotification.view(" + message.getId() + ");\">";
     ArrayLine line = list.addArrayLine();
     Date date = message.getDate();
     ArrayCellText cell = line.addArrayCellText(hasBeenReadenOrNotBegin + resource.getOutputDate(date) + hasBeenReadenOrNotEnd);
@@ -165,15 +175,10 @@ function newMessage() {
 
   out.println(list.print());
  %>
+  </div>
 </view:frame>
 <%
 out.println(window.printAfter());
 %>
-<form id="genericForm" action="" method="post">
-  <input id="ID" name="ID" type="hidden"/>
-  <input id="folder" name="folder" type="hidden"/>
-  <input id="SpaceId" name="SpaceId" type="hidden"/>
-  <input id="from" name="from" type="hidden"/>
-</form>
 </body>
 </html>

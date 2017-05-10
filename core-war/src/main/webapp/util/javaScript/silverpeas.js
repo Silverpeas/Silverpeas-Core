@@ -23,28 +23,98 @@
  */
 
 /* some web navigators (like IE < 9) doesn't support completely the javascript standard (ECMA) */
+
 if (!Array.prototype.indexOf) {
-  Array.prototype.indexOf = function(elt /*, from*/) {
-    var len = this.length >>> 0;
+  Object.defineProperty(Array.prototype, 'add', {
+    enumerable : false, value : function(elt /*, from*/) {
+      var len = this.length >>> 0;
 
-    var from = Number(arguments[1]) || 0;
-    from = (from < 0) ? Math.ceil(from) : Math.floor(from);
-    if (from < 0) {
-      from += len;
-    }
-
-    for (; from < len; from++) {
-      if (from in this && this[from] === elt) {
-        return from;
+      var from = Number(arguments[1]) || 0;
+      from = (from < 0) ? Math.ceil(from) : Math.floor(from);
+      if (from < 0) {
+        from += len;
       }
+
+      for (; from < len; from++) {
+        if (from in this && this[from] === elt) {
+          return from;
+        }
+      }
+      return -1;
     }
-    return -1;
-  };
+  });
+}
+
+if (!Array.prototype.addElement) {
+  Object.defineProperty(Array.prototype, 'indexOfElement', {
+    enumerable : false, value : function(elt /*, discriminator*/) {
+      var discriminator = arguments.length > 1 ? arguments[1] : undefined;
+      var discLeft = discriminator, discRight = discriminator;
+      var isPos = typeof discriminator === 'number';
+      var isDisc = typeof discriminator === 'string';
+      if (isDisc) {
+        var discParts = discriminator.split('=', 2);
+        if (discParts.length > 1) {
+          discLeft = discParts[0];
+          discRight = discParts[1];
+        }
+      }
+      for (var i = 0; i < this.length; i++) {
+        var element = this[i];
+        if ((element === elt) || (isPos && discriminator === i) ||
+            (isDisc && element[discLeft] === elt[discRight])) {
+          return i;
+        }
+      }
+      return -1;
+    }
+  });
+  Object.defineProperty(Array.prototype, 'getElement', {
+    enumerable : false, value : function(elt /*, discriminator*/) {
+      var index = this.indexOfElement.apply(this, arguments);
+      if (index >= 0) {
+        return this[index];
+      }
+      return undefined;
+    }
+  });
+  Object.defineProperty(Array.prototype, 'addElement', {
+    enumerable : false, value : function(elt) {
+      this.push(elt);
+    }
+  });
+  Object.defineProperty(Array.prototype, 'updateElement', {
+    enumerable : false, value : function(elt /*, discriminator*/) {
+      var index = this.indexOfElement.apply(this, arguments);
+      if (index >= 0) {
+        this[index] = elt;
+        return true;
+      }
+      return false;
+    }
+  });
+  Object.defineProperty(Array.prototype, 'removeElement', {
+    enumerable : false, value : function(elt /*, discriminator*/) {
+      var index = this.indexOfElement.apply(this, arguments);
+      if (index >= 0) {
+        this.splice(index, 1);
+        return true;
+      }
+      return false;
+    }
+  });
 }
 
 if (!String.prototype.startsWith) {
   String.prototype.startsWith = function(str) {
     return this.indexOf(str) === 0;
+  };
+}
+
+if (!String.prototype.endsWith) {
+  String.prototype.endsWith = function(str) {
+    var endIndex = this.indexOf(str) + str.length;
+    return endIndex === this.length;
   };
 }
 
@@ -68,11 +138,32 @@ if (!String.prototype.isNotDefined) {
   };
 }
 
+if (!String.prototype.nbChars) {
+  String.prototype.nbChars = function() {
+    return this.split(/\n/).length + this.length;
+  };
+}
+
 if (!String.prototype.unescapeHTML) {
   String.prototype.unescapeHTML = function() {
     var div = document.createElement("div");
     div.innerHTML = this;
     return div.innerText || div.textContent || '';
+  };
+}
+
+if (!String.prototype.convertNewLineAsHtml) {
+  String.prototype.convertNewLineAsHtml = function() {
+    return this.replace(/\n/g, '<br/>');
+  };
+}
+
+if (!String.prototype.noHTML) {
+  String.prototype.noHTML = function() {
+    return this
+        .replace(/&/g, '&amp;')
+        .replace(/>/g, '&gt;')
+        .replace(/</g, '&lt;');
   };
 }
 
@@ -135,6 +226,9 @@ if (!window.StringUtil) {
     };
     this.isNotDefined = function(aString) {
       return !_self.isDefined(aString);
+    };
+    this.nbChars = function(aString) {
+      return (typeof aString === 'string') ? aString.nbChars() : 0;
     };
   };
 }
@@ -376,22 +470,22 @@ if (!window.SilverpeasPluginSettings) {
 
 if (typeof extendsObject === 'undefined') {
   /**
-   * Extends an object.
+   * Merge the contents of two or more objects together into the first object.
+   * By default it performs a deep copy (recursion). To perform light copy (no recursion), please
+   * give false as first argument. Giving true as first argument as no side effect and perform a
+   * deep copy.
    * @returns {*}
    */
   function extendsObject() {
-    var target, key, object, val;
-    target = arguments[0];
-    object = arguments[1];
-    for (key in object) {
-      val = object[key];
-      if (typeof target[key] === 'object' && typeof val === 'object') {
-        extendsObject(target[key], val);
-      } else {
-        target[key] = val;
-      }
+    var params = [];
+    Array.prototype.push.apply(params, arguments);
+    var firstArgumentType = params[0];
+    if (typeof firstArgumentType === 'object') {
+      params.splice(0, 0, true);
+    } else if (typeof firstArgumentType === 'boolean' && !params[0]) {
+      params.shift();
     }
-    return target;
+    return jQuery.extend.apply(this, params);
   }
 }
 
@@ -444,7 +538,7 @@ if (!window.SilverpeasAjaxConfig) {
       return this;
     },
     withParam : function(name, value) {
-      this.parameters[name] = encodeURIComponent(value);
+      this.parameters[name] = value;
       return this;
     },
     byPostMethod : function() {
@@ -487,7 +581,7 @@ if (!window.SilverpeasAjaxConfig) {
       return this;
     },
     withHeader : function(name, value) {
-      this.headers[name] = encodeURIComponent(value);
+      this.headers[name] = value;
       return this;
     },
     getHeaders : function() {
@@ -534,6 +628,15 @@ if (typeof window.silverpeasAjax === 'undefined') {
     }
     if (params.method === 'GET') {
       params.headers['If-Modified-Since'] = 0;
+    } else {
+      var form = document.createElement('form');
+      var formContainer = document.createElement('div');
+      formContainer.appendChild(form);
+      applyTokenSecurity(formContainer);
+      var $input = form.querySelector('input');
+      if ($input) {
+        params.headers[$input.name] = $input.value;
+      }
     }
     return new Promise(function(resolve, reject) {
 

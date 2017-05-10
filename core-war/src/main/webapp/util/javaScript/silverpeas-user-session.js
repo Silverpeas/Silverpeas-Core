@@ -48,8 +48,8 @@ Silverpeas plugin which handles the behaviour about the connected users informat
 
   var CONNECTED_USERS_CHANGED_EVENT_NAME = "connectedUsersChanged";
 
-  var NB_CONNECTED_USERS_AT_INIT = $window.ConnectedUsersSettings.get("us.cu.nb.i");
-  var CONNECTED_USERS_URL = $window.ConnectedUsersSettings.get("us.cu.v.u");
+  var NB_CONNECTED_USERS_AT_INIT = $window.UserSessionSettings.get("us.cu.nb.i");
+  var CONNECTED_USERS_URL = $window.UserSessionSettings.get("us.cu.v.u");
 
 
   /**

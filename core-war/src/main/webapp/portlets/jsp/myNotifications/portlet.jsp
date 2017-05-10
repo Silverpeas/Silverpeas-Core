@@ -42,13 +42,26 @@
 <portlet:defineObjects/>
 <portlet:actionURL var="actionURL"/>
 
+<view:includePlugin name="userNotification"/>
 <script type="text/javascript">
-function readMessage(id)
-{
-	SP_openWindow("<%=m_sContext%>/RSILVERMAIL/jsp/ReadMessage.jsp?ID="+id+"&from=homePage","readMessage","600","380","scrollable=yes,scrollbars=yes");
-}
-</script>
 
+  var _reloadList = function() {
+    var ajaxConfig = sp.ajaxConfig(window.location.href);
+    sp.load('#silvermail-portlet-list', ajaxConfig, true);
+  };
+
+  window.USERNOTIFICATION_PROMISE.then(function() {
+    spUserNotification.addEventListener('userNotificationRead', _reloadList,
+        "SILVERMAIL_portlet_UserNotificationRead");
+    spUserNotification.addEventListener('userNotificationDeleted', _reloadList,
+        "SILVERMAIL_portlet_UserNotificationDeleted");
+    spUserNotification.addEventListener('userNotificationReceived', _reloadList,
+        "SILVERMAIL_portlet_UserNotificationReceived");
+    spUserNotification.addEventListener('userNotificationCleared', _reloadList,
+        "SILVERMAIL_portlet_UserNotificationCleared");
+  });
+</script>
+<div id="silvermail-portlet-list">
 <%
 RenderRequest 	pReq 			= (RenderRequest)request.getAttribute("javax.portlet.request");
 Iterator 		messageIterator = (Iterator) pReq.getAttribute("Messages");
@@ -74,7 +87,7 @@ while(messageIterator.hasNext())
 		hasBeenReadenOrNotEnd = "</b>";
 	}
 
-	String link = "<A HREF =\"javascript:onClick=readMessage(" + smMessage.getId() + ");\">";
+	String link = "<A HREF =\"javascript:onClick=spUserNotification.view(" + smMessage.getId() + ");\">";
 	ArrayLine line = list.addArrayLine();
 	Date date = smMessage.getDate();
 	ArrayCellText cell1 = line.addArrayCellText(hasBeenReadenOrNotBegin + DateUtil
@@ -97,3 +110,4 @@ while(messageIterator.hasNext())
 out.println(list.print());
 out.flush();
 %>
+</div>

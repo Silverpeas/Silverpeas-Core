@@ -23,28 +23,29 @@
  ---*/
 package org.silverpeas.web.notificationserver.channel.silvermail;
 
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.model.SentNotificationDetail;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterfaceImpl;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import org.silverpeas.core.admin.service.OrganizationController;
 
 /**
  * Class declaration
@@ -164,14 +165,15 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     String source = m_Multilang.getString("UserNotification");
     if (StringUtil.isDefined(componentId)) {
       OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
-      ComponentInst instance = orga.getComponentInst(componentId);
+      ComponentInstLight instance = orga.getComponentInstLight(componentId);
+      source = m_Multilang.getString("UnknownSource");
 
       // Sometimes, source could not be found
-      SpaceInst space = orga.getSpaceInstById(instance.getDomainFatherId());
-      if (space != null) {
-        source = space.getName() + " - " + instance.getLabel();
-      } else {
-        source = m_Multilang.getString("UnknownSource");
+      if (instance != null) {
+        SpaceInstLight space = orga.getSpaceInstLightById(instance.getDomainFatherId());
+        if (space != null) {
+          source = space.getName() + " - " + instance.getLabel();
+        }
       }
     }
 

@@ -76,6 +76,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     WebPluginConsumerRegistry.add(CHART, (xhtml, language) -> includeChart(xhtml, language));
     WebPluginConsumerRegistry.add(CHAT, (xhtml, language) -> includeChat(xhtml));
     WebPluginConsumerRegistry.add(LISTOFUSERSANDGROUPS, (xhtml, language) -> includeListOfUsersAndGroups(xhtml, language));
+    WebPluginConsumerRegistry.add(USERNOTIFICATION, (xhtml, language) -> includeUserNotification(xhtml));
   }
 
   @Override
