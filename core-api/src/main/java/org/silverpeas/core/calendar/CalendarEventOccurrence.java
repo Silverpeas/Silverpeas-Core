@@ -38,6 +38,8 @@ import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.temporal.Temporal;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -84,6 +86,9 @@ import static org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNo
 public class CalendarEventOccurrence
     extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
     implements IdentifiableEntity, Occurrence {
+
+  public static final Comparator<CalendarEventOccurrence> COMPARATOR_BY_DATE =
+      (o1, o2) -> o2.getStartDate().toString().compareTo(o1.getStartDate().toString());
 
   @ManyToOne(optional = false, fetch = FetchType.EAGER)
   @JoinColumn(name = "eventId", referencedColumnName = "id")
@@ -386,6 +391,37 @@ public class CalendarEventOccurrence
   }
 
   /**
+   * Gets the last date at which this occurrence has been updated.
+   * @return the last update date.
+   */
+  public Date getLastUpdateDate() {
+    return this.component.getLastUpdateDate();
+  }
+
+  /**
+   * Is this occurrence occurs originally before the specified occurrence? If the start date of
+   * these occurrences weren't modified from their event, then this method behaves like
+   * {@link CalendarEventOccurrence#isBefore(CalendarEventOccurrence)}.
+   * @param occurrence the occurrence with which the original start date is compared.
+   * @return true if this occurrence originally starts before the specified another occurrence.
+   * False otherwise.
+   */
+  public boolean isOriginallyBefore(final CalendarEventOccurrence occurrence) {
+    return
+        getOriginalStartDate().toString().compareTo(occurrence.getOriginalStartDate().toString()) <
+            0;
+  }
+
+  /**
+   * Is this occurrence actually occurs before the specified occurrence?
+   * @param occurrence another occurrence with which the start date is compared.
+   * @return true if this occurrence starts before the specified another one. False otherwise.
+   */
+  public boolean isBefore(final CalendarEventOccurrence occurrence) {
+    return getStartDate().toString().compareTo(occurrence.getStartDate().toString()) < 0;
+  }
+
+  /**
    * Gets the {@link CalendarComponent} representation of this occurrence. Any change to the
    * returned calendar component will change also the related occurrence.
    * @return a {@link CalendarComponent} instance representing this event occurrence (without the
@@ -437,6 +473,16 @@ public class CalendarEventOccurrence
    */
   public EventOperationResult update() {
     return getCalendarEvent().updateOnly(this);
+  }
+
+  /**
+   * Updates this occurrence with the state of the specified occurrence.
+   * @param occurrence an event occurrence from which this occurrence will be updated.
+   * @return the result of the update.
+   */
+  public EventOperationResult updateFrom(final CalendarEventOccurrence occurrence) {
+    occurrence.asCalendarComponent().copyTo(this.component);
+    return update();
   }
 
   /**
@@ -518,6 +564,17 @@ public class CalendarEventOccurrence
       newEvent.recur(recurrence);
     }
     return newEvent;
+  }
+
+  /**
+   * Sets the event from which this occurrence comes from. This method is used for internal
+   * mechanisms of the Silverpeas Calendar Engine when working with copies of calendar event
+   * occurrences.
+   * @param event the event of this occurrence.
+   */
+  final void setCalendarEvent(final CalendarEvent event) {
+    this.event = event;
+    this.component.setCalendar(event.getCalendar());
   }
 
   /**

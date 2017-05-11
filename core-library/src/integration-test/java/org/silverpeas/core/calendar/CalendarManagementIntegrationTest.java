@@ -116,8 +116,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
   public void createCalendarIntoPersistenceShouldWork() throws Exception{
     final Date testStartingDate = new Date();
 
-    Calendar newCalendar = new Calendar(INSTANCE_ID);
-    newCalendar.setTitle("a title");
+    Calendar newCalendar = new Calendar(INSTANCE_ID, "a title");
     newCalendar.setZoneId(ZoneId.systemDefault());
 
     assertThat(newCalendar.getId(), nullValue());

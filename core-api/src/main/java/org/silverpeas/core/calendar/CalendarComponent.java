@@ -276,6 +276,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
   @Override
   public CalendarComponent clone() {
     CalendarComponent clone = super.clone();
+    clone.sequence = sequence;
     clone.sequenceUpdated = false;
     return copyTo(clone);
   }
@@ -309,6 +310,13 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     return anotherComponent;
   }
 
+  /**
+   * Sets explicitly the sequence number to this calendar component. This method is to be used
+   * by the internal mechanisms of the Silverpeas Calendar Engine when working with components
+   * detached from any persistence context or with copies of calendar components.
+   *
+   * @param sequence
+   */
   void setSequence(final long sequence) {
     this.sequence = sequence;
     this.sequenceUpdated = true;

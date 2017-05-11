@@ -66,7 +66,11 @@ import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
-import org.silverpeas.core.calendar.ICal4JCalendarEventOccurrenceGenerator;
+import org.silverpeas.core.calendar.ical4j.ICal4JCalendarEventOccurrenceGenerator;
+import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
+import org.silverpeas.core.calendar.ical4j.ICal4JExporter;
+import org.silverpeas.core.calendar.ical4j.ICal4JImporter;
+import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.calendar.repository.DefaultCalendarEventOccurrenceRepository;
 import org.silverpeas.core.calendar.repository.DefaultCalendarEventRepository;
 import org.silverpeas.core.calendar.repository.DefaultCalendarRepository;
@@ -739,7 +743,11 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
         ICal4JCalendarEventOccurrenceGenerator.class,
         DefaultCalendarEventOccurrenceRepository.class,
         DefaultCalendarRepository.class,
-        DefaultCalendarEventRepository.class);
+        DefaultCalendarEventRepository.class,
+        ICal4JImporter.class,
+        ICal4JExporter.class,
+        ICal4JDateCodec.class,
+        ICal4JRecurrenceCodec.class);
     return this;
   }
 

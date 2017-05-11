@@ -28,9 +28,12 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.test.BasicWarBuilder;
+import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
+import org.silverpeas.core.calendar.ical4j.ICal4JImporter;
+import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.EncodingException;
+import org.silverpeas.core.test.BasicWarBuilder;
 
 import javax.json.Json;
 import javax.json.JsonArray;
@@ -63,6 +66,7 @@ public class JSONCodecIntegrationTest {
     return BasicWarBuilder.onWarForTestClass(JSONCodecIntegrationTest.class).testFocusedOn(
         war -> war.addClasses(TestSerializableBean.class, TestBean.class, DecodingException.class,
             EncodingException.class, JSONCodec.class))
+        .addClasses(ICal4JImporter.class, ICal4JDateCodec.class, ICal4JRecurrenceCodec.class)
         .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF").build();
   }
 

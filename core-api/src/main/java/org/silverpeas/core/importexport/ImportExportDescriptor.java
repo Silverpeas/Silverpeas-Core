@@ -32,41 +32,41 @@ import java.util.Map;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
- * An import export descriptor is an object that provides useful information to exporters and
+ * An import-export descriptor is an object that provides useful information to exporters and
  * importers for performing their tasks. Information is carried through import and export process
  * parameters.
  */
 public abstract class ImportExportDescriptor {
 
   /**
-   * A specific value for the export-import resource format indicating that no explicit format is
-   * defined. In general, this specific value means the exporter or importer processes for a single
-   * predefined defined format and thus it is useless to specify it.
+   * A specific value for the export-import format MIME type indicating that the MIME type isn't
+   * specified. In general, this specific value means the exporter or importer works only with a
+   * serialization format in a single well-known MIME type and thus it is useless to specify it.
    */
-  public static final String NO_FORMAT = "";
+  public static final String NO_MIMETYPE = "";
 
-  private String format = NO_FORMAT;
+  private String mimeType = NO_MIMETYPE;
   private Map<String, Serializable> parameters = new HashMap<String, Serializable>();
 
   /**
-   * Gets the format in (or from) which the resource has to be exported (or imported). If no format
-   * is defined, then NO_FORMAT is returned.
-   * @return the format for export and import.
+   * Gets the MIME type of the serialized resource. If no MIME type is defined, then
+   * {@link ImportExportDescriptor#NO_MIMETYPE} is returned.
+   * @return the MIME type of the serialized resource.
    */
-  public String getFormat() {
-    return format;
+  public String getMimeType() {
+    return mimeType;
   }
 
   /**
-   * Sets a format in which the resource to export will be or the resource to import is.
-   * @param format the export/import format to set.
+   * Sets a MIME type for the serialized resource to export or to import.
+   * @param mimeType the export/import mimeType to set.
    * @return itself.
    */
-  public <O extends ImportExportDescriptor> O inFormat(String format) {
-    if (!isDefined(format)) {
-      this.format = NO_FORMAT;
+  public <O extends ImportExportDescriptor> O inMimeType(String mimeType) {
+    if (!isDefined(mimeType)) {
+      this.mimeType = NO_MIMETYPE;
     }
-    this.format = format;
+    this.mimeType = mimeType;
     return (O) this;
   }
 

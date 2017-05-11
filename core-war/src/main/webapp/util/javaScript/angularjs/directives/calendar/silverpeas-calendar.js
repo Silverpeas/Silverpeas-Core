@@ -32,12 +32,12 @@
    * If no attribute is found for an item, it is not taken into account for filtering result.
    */
   angular.module('silverpeas.directives').filter('synchronized', function() {
-    return function(items, synchronized) {
+    return function(items, value) {
       var filteredItems = [];
       items.forEach(function(item) {
         var isSynchronized = false;
         if (typeof item['isSynchronized'] === 'boolean') {
-          isSynchronized = item['isSynchronized'] === synchronized;
+          isSynchronized = item['isSynchronized'] === value;
         }
         if (isSynchronized) {
           filteredItems.push(item);
@@ -45,7 +45,7 @@
       });
       return filteredItems;
     };
-  })
+  });
 
   /**
    * Custom AngularJS filter in charge of filtering the given array of items on an attribute of
@@ -71,7 +71,7 @@
       });
       return filteredItems;
     };
-  })
+  });
 
   /**
    * Custom AngularJS filter in charge of filtering the given array of items in order to keep
@@ -98,7 +98,7 @@
       });
       return filteredItems;
     };
-  })
+  });
 
   angular.module('silverpeas.directives').directive('silverpeasCalendar',
       ['$compile', '$timeout', 'context', 'CalendarService',

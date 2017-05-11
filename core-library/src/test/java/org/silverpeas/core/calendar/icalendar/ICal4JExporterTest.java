@@ -42,9 +42,11 @@ import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.VisibilityLevel;
-import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
+import org.silverpeas.core.calendar.ical4j.ICal4JExporter;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.importexport.ExportDescriptor;
+import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.StringUtil;
 
@@ -73,14 +75,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.core.calendar.Attendee.PresenceStatus.INFORMATIVE;
 import static org.silverpeas.core.calendar.Attendee.PresenceStatus.OPTIONAL;
+import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.CALENDAR;
 import static org.silverpeas.core.util.CollectionUtil.asList;
 
 /**
  * @author Yohann Chastagnier
  */
 @RunWith(CdiRunner.class)
-@AdditionalPackages({ICal4JExchange.class, ICal4JDateCodec.class})
-public class ICal4JExchangeExportTest {
+@AdditionalPackages({ICal4JExporter.class})
+public class ICal4JExporterTest {
 
   private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
@@ -88,8 +91,9 @@ public class ICal4JExchangeExportTest {
       .atZoneId(ZoneId.of("Europe/Paris")).build();
 
   @Inject
-  private Provider<ICalendarExchange> iCalendarExchangeProvider;
+  private Provider<ICalendarExporter> iCalendarExporterProvider;
 
+  private ICalendarExporter iCalendarExporter;
   private User creator;
 
   @Rule
@@ -100,9 +104,9 @@ public class ICal4JExchangeExportTest {
   @SuppressWarnings("Duplicates")
   @Before
   public void setup() {
-    final ICalendarExchange iCalendarExchange = iCalendarExchangeProvider.get();
-    assertThat(iCalendarExchange, instanceOf(ICal4JExchange.class));
-    commonAPI4Test.injectIntoMockedBeanContainer(iCalendarExchange);
+    iCalendarExporter = iCalendarExporterProvider.get();
+    assertThat(iCalendarExporter, instanceOf(ICal4JExporter.class));
+    commonAPI4Test.injectIntoMockedBeanContainer(iCalendarExporterProvider);
 
     creator = mock(User.class);
     when(creator.getId()).thenReturn("creatorId");
@@ -111,18 +115,27 @@ public class ICal4JExchangeExportTest {
     when(UserProvider.get().getUser(creator.getId())).thenReturn(creator);
   }
 
-  @Test(expected = ICalendarException.class)
-  public void undefinedListOfEvents() throws ICalendarException {
-    ICalendarExport.from(calendar, () -> null).to(ByteArrayOutputStream::new);
+  @Test(expected = ExportException.class)
+  public void undefinedListOfEvents() throws ExportException {
+    iCalendarExporter.exports(ExportDescriptor.withOutputStream(new ByteArrayOutputStream())
+        .withParameter(CALENDAR, calendar), () -> null);
+  }
+
+  @Test(expected = ExportException.class)
+  public void undefinedCalendar() throws ExportException {
+    iCalendarExporter.exports(ExportDescriptor.withOutputStream(new ByteArrayOutputStream()), () -> {
+      List<CalendarEvent> calendarEvents = emptyList();
+      return calendarEvents.stream();
+    });
   }
 
   @Test
-  public void emptyListOfEvents() throws ICalendarException {
+  public void emptyListOfEvents() throws ExportException {
     exportAndVerifyResult(emptyList(), "ical4j_export_no_event.txt");
   }
 
   @Test
-  public void simpleOneOfTwoDaysDuration() throws ICalendarException {
+  public void simpleOneOfTwoDaysDuration() throws ExportException {
     // between December 14 and December 15 == [December 14, December 16[
     CalendarEvent event = CalendarEventStubBuilder.from(Period
         .between(date("2016-12-14"), date("2016-12-16")))
@@ -140,7 +153,7 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void simpleOneWithTwoHoursDuration() throws ICalendarException {
+  public void simpleOneWithTwoHoursDuration() throws ExportException {
     // between December 14, 12H30 and December 14, 14:30 ==  December 14 [12H30, 14H30[
     CalendarEvent event = CalendarEventStubBuilder.from(Period
         .between(datetime("2016-12-14T12:30:00Z"), datetime("2016-12-14T14:30:00Z")))
@@ -158,7 +171,7 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void categorizedOneOfOneDayDuration() throws ICalendarException {
+  public void categorizedOneOfOneDayDuration() throws ExportException {
     CalendarEvent event = CalendarEventStubBuilder.from(Period
         .between(date("2016-12-25"), date("2016-12-25")))
         .plannedOn(calendar)
@@ -173,7 +186,7 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void oneOfTwoHoursDurationAndDailyRecurrence() throws ICalendarException {
+  public void oneOfTwoHoursDurationAndDailyRecurrence() throws ExportException {
     CalendarEvent event = CalendarEventStubBuilder.from(Period
         .between(datetime("2016-12-14T12:30:00Z"), datetime("2016-12-14T14:30:00Z")))
         .plannedOn(calendar)
@@ -191,7 +204,7 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void oneOfTwoHoursDurationAndDailyRecurrenceUntil10Days() throws ICalendarException {
+  public void oneOfTwoHoursDurationAndDailyRecurrenceUntil10Days() throws ExportException {
     CalendarEvent event = CalendarEventStubBuilder.from(Period
         .between(datetime("2016-12-14T12:30:00Z"),datetime("2016-12-14T14:30:00Z")))
         .plannedOn(calendar)
@@ -211,7 +224,7 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void oneOfTwoHoursDurationAndDailyRecurrenceWithExceptions() throws ICalendarException {
+  public void oneOfTwoHoursDurationAndDailyRecurrenceWithExceptions() throws ExportException {
     CalendarEvent event = CalendarEventStubBuilder.from(Period
         .between(datetime("2016-12-14T12:30:00Z"), datetime("2016-12-14T14:30:00Z")))
         .plannedOn(calendar)
@@ -231,7 +244,7 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void oneOfOneDayDurationAndDailyRecurrenceUntil10Days() throws ICalendarException {
+  public void oneOfOneDayDurationAndDailyRecurrenceUntil10Days() throws ExportException {
     CalendarEvent event = CalendarEventStubBuilder.from(Period
         .between(date("2016-12-14"), date("2016-12-15")))
         .plannedOn(calendar)
@@ -250,7 +263,7 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void severalOfOneHourDurationAndDailyRecurrence() throws ICalendarException {
+  public void severalOfOneHourDurationAndDailyRecurrence() throws ExportException {
     CalendarEvent event1 = CalendarEventStubBuilder.from(Period
         .between(datetime("2016-12-15T12:32:00Z"), datetime("2016-12-15T13:32:00Z")))
         .plannedOn(calendar)
@@ -345,7 +358,7 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void severalOnAllDaysAndDailyRecurrence() throws ICalendarException {
+  public void severalOnAllDaysAndDailyRecurrence() throws ExportException {
     CalendarEvent event1 = CalendarEventStubBuilder.from(Period
         .between(date("2016-12-15"), date("2016-12-16")))
         .plannedOn(calendar)
@@ -439,7 +452,7 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void simpleOneOfTwoDayDurationWithAttendees() throws ICalendarException {
+  public void simpleOneOfTwoDayDurationWithAttendees() throws ExportException {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
@@ -459,8 +472,7 @@ public class ICal4JExchangeExportTest {
         })
         .withAttendee("external.1@silverpeas.org", a ->
             a.setPresenceStatus(INFORMATIVE))
-        .withAttendee("external.2@silverpeas.org", a ->
-            a.decline())
+        .withAttendee("external.2@silverpeas.org", Attendee::decline)
         .build();
 
     exportAndVerifyResult(singletonList(event),
@@ -468,7 +480,7 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void oneWithRecurrenceAndWithAttendees() throws ICalendarException {
+  public void oneWithRecurrenceAndWithAttendees() throws ExportException {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
@@ -489,8 +501,7 @@ public class ICal4JExchangeExportTest {
         })
         .withAttendee("external.1@silverpeas.org", a ->
             a.setPresenceStatus(INFORMATIVE))
-        .withAttendee("external.2@silverpeas.org", a ->
-            a.decline())
+        .withAttendee("external.2@silverpeas.org", Attendee::decline)
         .build();
 
     exportAndVerifyResult(singletonList(event),
@@ -498,7 +509,7 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void oneWithRecurrenceAndWithAttendeesWhichAnsweredOnDate() throws ICalendarException {
+  public void oneWithRecurrenceAndWithAttendeesWhichAnsweredOnDate() throws ExportException {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
@@ -521,8 +532,7 @@ public class ICal4JExchangeExportTest {
         })
         .withAttendee(externalAttendeeId_1, a ->
             a.setPresenceStatus(INFORMATIVE))
-        .withAttendee(externalAttendeeId_2, a ->
-            a.decline())
+        .withAttendee(externalAttendeeId_2, Attendee::decline)
         .withOccurrenceOn(Period.between(date("2016-12-06"), date("2016-12-06")),
             o -> {
               o.getAttendees().get(user.getId()).ifPresent(Attendee::decline);
@@ -539,7 +549,7 @@ public class ICal4JExchangeExportTest {
   }
 
   @Test
-  public void oneWithRecurrenceAndWithAttendeesDifferences() throws ICalendarException {
+  public void oneWithRecurrenceAndWithAttendeesDifferences() throws ExportException {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
@@ -562,8 +572,7 @@ public class ICal4JExchangeExportTest {
         })
         .withAttendee(externalAttendeeId_1, a ->
             a.setPresenceStatus(INFORMATIVE))
-        .withAttendee(externalAttendeeId_2, a ->
-            a.decline())
+        .withAttendee(externalAttendeeId_2, Attendee::decline)
         .withOccurrenceOn(Period
             .between(datetime("2016-12-06T17:30:00Z"), datetime("2016-12-06T18:30:00Z")),
             o -> {
@@ -598,16 +607,19 @@ public class ICal4JExchangeExportTest {
    */
   @SuppressWarnings({"unchecked", "Duplicates"})
   private void exportAndVerifyResult(List<CalendarEvent> calendarEvents,
-      String fileNameOfExpectedResult) throws ICalendarException {
+      String fileNameOfExpectedResult) throws ExportException {
     try {
 
       ByteArrayOutputStream emptyExportResult = new ByteArrayOutputStream();
-      ICalendarExport.from(calendar, Stream::<CalendarEvent>empty).to(() -> emptyExportResult);
+      iCalendarExporter.exports(ExportDescriptor.withOutputStream(emptyExportResult)
+          .withParameter(CALENDAR, calendar), Stream::<CalendarEvent>empty);
+
       List<String> empty = IOUtils.readLines(new StringReader(emptyExportResult.toString()));
       empty.remove(empty.size() - 1);
 
       ByteArrayOutputStream exportResult = new ByteArrayOutputStream();
-      ICalendarExport.from(calendar, calendarEvents::stream).to(() -> exportResult);
+      iCalendarExporter.exports(ExportDescriptor.withOutputStream(exportResult)
+          .withParameter(CALENDAR, calendar), calendarEvents::stream);
 
       StringReader current = new StringReader(exportResult.toString());
       StringReader expected = new StringReader(getFileContent(fileNameOfExpectedResult));

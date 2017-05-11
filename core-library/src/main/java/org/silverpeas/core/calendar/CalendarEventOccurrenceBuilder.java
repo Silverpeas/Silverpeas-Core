@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,25 +21,40 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.silverpeas.core.calendar;
 
-package org.silverpeas.core.calendar.icalendar;
-
-import org.silverpeas.core.SilverpeasException;
+import java.time.temporal.Temporal;
 
 /**
- * @author Yohann Chastagnier
+ * A builder of event occurrences dedicated to the implementation of the services defined in the
+ * Silverpeas Calendar API.
+ * @author mmoquillon
  */
-public class ICalendarException extends SilverpeasException {
+public class CalendarEventOccurrenceBuilder {
 
-  public ICalendarException(final String message, final String... parameters) {
-    super(message, parameters);
+  private CalendarEvent event;
+  private Temporal start;
+  private Temporal end;
+
+  private CalendarEventOccurrenceBuilder(final CalendarEvent event)  {
+    this.event = event;
   }
 
-  public ICalendarException(final String message, final Throwable cause) {
-    super(message, cause);
+  public static CalendarEventOccurrenceBuilder forEvent(final CalendarEvent event) {
+    return new CalendarEventOccurrenceBuilder(event);
   }
 
-  public ICalendarException(final Throwable cause) {
-    super(cause);
+  public CalendarEventOccurrenceBuilder startingAt(final Temporal temporal) {
+    this.start = temporal;
+    return this;
+  }
+
+  public CalendarEventOccurrenceBuilder endingAt(final Temporal temporal) {
+    this.end = temporal;
+    return this;
+  }
+
+  public CalendarEventOccurrence build() {
+    return new CalendarEventOccurrence(this.event, this.start, this.end);
   }
 }

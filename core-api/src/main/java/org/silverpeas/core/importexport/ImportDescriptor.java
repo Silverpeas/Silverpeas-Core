@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.importexport;
 
+import org.apache.commons.io.input.ReaderInputStream;
+
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
-import org.apache.commons.io.input.ReaderInputStream;
 
 /**
  * It represents a descriptor about the import of resources from a reader or an input stream. As

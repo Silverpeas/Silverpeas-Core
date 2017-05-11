@@ -23,21 +23,40 @@
  */
 package org.silverpeas.core.importexport;
 
-import org.silverpeas.core.importexport.ical.ExportableCalendar;
-import org.silverpeas.core.importexport.ical.ICalExporter;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 /**
- * A factory of exporters in Silverpeas. The factory hides the concrete implementation used in the
- * exporting process and it wraps the life-cycle of the exporter objects.
+ * A runtime exception that is thrown when an error occurs while encoding a Silverpeas object into a
+ * formatted string or stream. It is a runtime exception because such exceptions shouldn't occur in
+ * an usual way.
  */
-public class ExporterProvider {
+public class EncodingException extends SilverpeasRuntimeException {
+
+  private static final long serialVersionUID = -2690487094203535737L;
 
   /**
-   * Gets an exporter of a calendar in iCal format.
-   * @return an exporter of a calendar.
+   * Constructs a new encoding exception with the specified cause.
+   * @param thrwbl the cause of this exception.
    */
-  public static Exporter<ExportableCalendar> getICalExporter() {
-    return ServiceProvider.getService(ICalExporter.class);
+  public EncodingException(final Throwable thrwbl) {
+    super(thrwbl);
   }
+
+  /**
+   * Constructs a new encoding exception with the specified message and the specified cause.
+   * @param message the message.
+   * @param thrwbl the cause.
+   */
+  public EncodingException(String message, final Throwable thrwbl) {
+    super(message, thrwbl);
+  }
+
+  /**
+   * Constructs a new encoding exception with the specified message.
+   * @param message the message.
+   */
+  public EncodingException(String message) {
+    super(message);
+  }
+
 }

@@ -34,9 +34,10 @@ import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.icalendar.ICalendarException;
-import org.silverpeas.core.calendar.icalendar.ICalendarExport;
-import org.silverpeas.core.calendar.icalendar.ICalendarImport;
+import org.silverpeas.core.calendar.icalendar.ICalendarExporter;
+import org.silverpeas.core.importexport.ExportDescriptor;
+import org.silverpeas.core.importexport.ExportException;
+import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.StringUtil;
@@ -44,6 +45,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
+import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -72,6 +74,7 @@ import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.CALENDAR;
 import static org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity.decodeId;
 import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.*;
 import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertDataConsistency;
@@ -89,6 +92,9 @@ public class CalendarResource extends AbstractCalendarResource {
 
   @QueryParam("zoneid")
   private String zoneId;
+
+  @Inject
+  private ICalendarExporter iCalendarExporter;
 
   /**
    * Gets the zoneId into which dates must be set.
@@ -142,7 +148,7 @@ public class CalendarResource extends AbstractCalendarResource {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public CalendarEntity createCalendar(CalendarEntity calendarEntity) {
-    final Calendar calendar = new Calendar(getComponentId());
+    final Calendar calendar = new Calendar(getComponentId(), calendarEntity.getTitle());
     calendarEntity.merge(calendar);
     Calendar createdCalendar =
         process(() -> getCalendarWebServiceProvider().saveCalendar(calendar)).execute();
@@ -209,17 +215,23 @@ public class CalendarResource extends AbstractCalendarResource {
     return Response.ok((StreamingOutput) output -> {
       try {
         if (calendar.isMainPersonalOf(getUserDetail())) {
-          ICalendarExport
-              .from(calendar, () -> Calendar.getEvents()
-              .filter(f -> f.onParticipants(getUserDetail())).stream())
-              .to(() -> output);
+          iCalendarExporter.exports(
+              ExportDescriptor
+                  .withOutputStream(output)
+                  .withParameter(CALENDAR, calendar),
+              () -> Calendar.getEvents()
+                  .filter(f -> f.onParticipants(getUserDetail()))
+                  .stream());
         } else {
-          ICalendarExport
-              .from(calendar, () -> Calendar.getEvents()
-              .filter(f -> f.onCalendar(calendar)).stream())
-              .to(() -> output);
+          iCalendarExporter.exports(
+              ExportDescriptor
+                  .withOutputStream(output)
+                  .withParameter(CALENDAR, calendar),
+              () -> Calendar.getEvents()
+                  .filter(f -> f.onCalendar(calendar))
+                  .stream());
         }
-      } catch (ICalendarException e) {
+      } catch (ExportException e) {
         SilverLogger.getLogger(this).error(e);
         throw new WebApplicationException(INTERNAL_SERVER_ERROR);
       }
@@ -264,8 +276,8 @@ public class CalendarResource extends AbstractCalendarResource {
     try (final BufferedInputStream bis = new BufferedInputStream(new FileInputStream
         (uploadedFile.getFile()))) {
       getCalendarWebServiceProvider()
-          .importEventsAsICalendarFormat(ICalendarImport.from(calendar, () -> bis));
-    } catch (IOException | ICalendarException e) {
+          .importEventsAsICalendarFormat(calendar, bis);
+    } catch (IOException | ImportException e) {
       throw new WebApplicationException(e, INTERNAL_SERVER_ERROR);
     } finally {
       uploadedFile.getUploadSession().clear();

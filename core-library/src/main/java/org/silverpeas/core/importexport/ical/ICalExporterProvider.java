@@ -21,28 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.importexport;
+package org.silverpeas.core.importexport.ical;
 
-import java.io.Serializable;
+import org.silverpeas.core.importexport.Exporter;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
- * This interface defines the features an immporter of serializable resources in Silverpeas have to
- * satisfy. All importer in Silverpeas should implement this interface. An importer in Silverpeas is
- * defined for a specific type of serializable resources and it has the responsability to know how
- * to import them from a specific or a specified format.
- * @param <T> The type of the serializable resources to import.
+ * A provider of the iCal exporter.
  */
-public interface Importer<T extends Serializable> {
+public class ICalExporterProvider {
 
   /**
-   * Imports a serialized resource from either the reader or the input stream and according to the
-   * import parameters carried by the specified descriptor. The resource is deserialized in an
-   * instance of T.
-   * @param descriptor the import descriptor in which information about the import process is
-   * indicated.
-   * @throws ImportException when an unexpected error occurs while importing the resource.
-   * @return an instance of T corresponfding to the imported resource.
+   * Gets an exporter of a calendar in iCal format.
+   * @return an exporter of a calendar.
    */
-  T importFrom(final ImportDescriptor descriptor) throws ImportException;
-
+  public static Exporter<ExportableCalendar> getICalExporter() {
+    return ServiceProvider.getService(ICalExporter.class);
+  }
 }

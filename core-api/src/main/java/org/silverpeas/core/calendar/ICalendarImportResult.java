@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -21,33 +21,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-package org.silverpeas.core.calendar.icalendar;
-
-import org.silverpeas.core.util.ServiceProvider;
+package org.silverpeas.core.calendar;
 
 /**
- * Provides some services around ICALENDAR data exchange.
- * @author Yohann Chastagnier
+ * Result of an import processing of calendar events into Silverpeas.
+ * @author mmoquillon
  */
-public interface ICalendarExchange {
+public class ICalendarImportResult {
 
-  static ICalendarExchange get() {
-    return ServiceProvider.getService(ICalendarExchange.class);
+  private int added = 0;
+  private int updated = 0;
+
+  public int added() {
+    return this.added;
   }
 
-  /**
-   * Exports events according to the given settings.
-   * @param anExport the export settings.
-   * @throws ICalendarException if an error occurs during the export.
-   */
-  void doExportOf(ICalendarExport anExport) throws ICalendarException;
+  public int updated() {
+    return this.updated;
+  }
 
-  /**
-   * Imports events according to the given settings.<br/>
-   * Events are never deleted.
-   * @param anImport the anImport settings.
-   * @throws ICalendarException if an error occurs during the import.
-   */
-  void doImportOf(ICalendarImport anImport) throws ICalendarException;
+  void incAdded() {
+    added += 1;
+  }
+
+  void incUpdated() {
+    updated += 1;
+  }
 }

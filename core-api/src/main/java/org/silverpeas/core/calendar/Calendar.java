@@ -76,10 +76,10 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   @Column(name = "instanceId", nullable = false)
   private String componentInstanceId;
 
-  @Column(name = "title")
+  @Column(name = "title", nullable = false)
   private String title;
 
-  @Column(name = "zoneId")
+  @Column(name = "zoneId", nullable = false)
   private String zoneId;
 
   @Column(name = "externalUrl")
@@ -92,13 +92,31 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
-   * Creates a new calendar with the specified component instance identifier.
-   * @param instanceId an identifier identifying an instance of a component in Silverpeas.
+   * Creates in the specified component instance a new calendar with the given title. The timezone
+   * identifier of the calendar is set to the default zone id of the platform on which runs
+   * Silverpeas.
+   * @param instanceId the identifier identifying an instance of a component in Silverpeas.
    * Usually, this identifier is the identifier of the component instance to which it belongs
    * (for example almanach32) or the identifier of the user personal calendar.
+   * @param title the title of the calendar.
    */
-  public Calendar(String instanceId) {
+  public Calendar(String instanceId, String title) {
     this.componentInstanceId = instanceId;
+    this.title = title;
+  }
+
+  /**
+   * Creates in the specified component instance a new calendar with the given title and for the
+   * specified zone ID.
+   * @param instanceId the identifier of an instance of a component in Silverpeas.
+   * Usually, this identifier is the identifier of the component instance to which it belongs
+   * (for example almanach32) or the identifier of the user personal calendar.
+   * @param title the title of the calendar.
+   * @param zoneId the identifier of a timezone.
+   */
+  public Calendar(String instanceId, String title, ZoneId zoneId) {
+    this(instanceId, title);
+    this.zoneId = zoneId.toString();
   }
 
   /**

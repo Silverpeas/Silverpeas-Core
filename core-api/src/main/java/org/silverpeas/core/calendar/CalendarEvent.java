@@ -23,10 +23,8 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.icalendar.ICalendarImport;
 import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
@@ -52,7 +50,6 @@ import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -183,6 +180,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private static final long serialVersionUID = 1L;
   private static final Comparator<CalendarEventOccurrence> EVENT_OCCURRENCE_COMPARATOR =
       Comparator.comparing(o -> o.getOriginalStartDate().toString());
+  public static final String THE_EVENT = "The event ";
 
   @Column(name = "externalId")
   private String externalId;
@@ -805,141 +803,6 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   /**
-   * Merges the data of the given event into the data of current event.<br/>
-   * It is not possible to merge the data of calendar which represents the repository of the event.
-   * @param event the event to merge into current one.
-   */
-  private void merge(CalendarEvent event) {
-    event.component.copyTo(this.component);
-    this.externalId = event.getExternalId();
-    this.visibilityLevel = event.visibilityLevel;
-    this.recurrence = event.recurrence;
-    this.categories = event.categories;
-  }
-
-  /**
-   * Imports the data of the current instance into the persistence context.
-   * <p>The current instance does not represents the data into persistence but the data to merge (or
-   * persist) into</p>.
-   * <p>The given occurrences are just carrying the data to merge (or persist) into the
-   * persistence.</p>
-   * @param eventImport the import context.
-   * @param occurrences the data of the occurrences to persist.
-   *
-   * @return the result of importation. It has the updated event.
-   */
-  public EventOperationResult importWith(final ICalendarImport eventImport,
-      final List<CalendarEventOccurrence> occurrences) {
-    OperationContext.fromCurrentRequester();
-    OperationContext.addStates(IMPORT);
-    try {
-      return Transaction.performInOne(() -> {
-        final Pair<CalendarEvent, EventOperationResult> importEventResult =
-            importEvent(eventImport);
-        EventOperationResult result = importEventResult.getRight();
-        if (!occurrences.isEmpty()) {
-          EventOperationResult occurrenceResult = importOccurrences(importEventResult, occurrences);
-          occurrenceResult.updated().ifPresent(e ->  {
-            if (!result.created().isPresent()) {
-              result.withUpdated(e);
-            }
-          });
-        }
-        return result;
-      });
-    } finally {
-      OperationContext.removeStates(IMPORT);
-    }
-  }
-
-  private Pair<CalendarEvent, EventOperationResult> importEvent(final ICalendarImport eventImport) {
-
-    // Searching the existence of the event first into the external identifier data
-    Optional<CalendarEvent> optionalPersistedEvent = getExistingCalendarEvent(eventImport);
-    // Importing
-    EventOperationResult result = new EventOperationResult();
-    final CalendarEvent persistedEvent;
-    if (optionalPersistedEvent.isPresent()) {
-
-      // Case of the event is existing into Silverpeas persistence context.
-      final CalendarEvent existing = optionalPersistedEvent.get();
-      persistedEvent = existing;
-      if (getLastUpdateDate().after(existing.getLastUpdateDate())) {
-        // Save is performed only if it has been updated from the external repository
-        existing.merge(this);
-        existing.asCalendarComponent().setSequence(asCalendarComponent().getSequence());
-        result = existing.update();
-      }
-    } else {
-
-      // Case of the event does not exist into Silverpeas persistence context.
-      result = new EventOperationResult().withCreated(planOn(eventImport.getCalendar()));
-      persistedEvent = result.created().get();
-    }
-    return Pair.of(persistedEvent, result);
-  }
-
-  private Optional<CalendarEvent> getExistingCalendarEvent(final ICalendarImport eventImport) {
-    Optional<CalendarEvent> optionalPersistedEvent =
-        eventImport.getCalendar().externalEvent(getExternalId());
-    if (!optionalPersistedEvent.isPresent()) {
-      // If none, searching the existence of the event on the id data
-      optionalPersistedEvent = eventImport.getCalendar().event(getExternalId());
-    }
-    return optionalPersistedEvent;
-  }
-
-  private EventOperationResult importOccurrences(final Pair<CalendarEvent, EventOperationResult> eventImportResult,
-      final List<CalendarEventOccurrence> occToImport) {
-    EventOperationResult result = new EventOperationResult();
-    final CalendarEvent event = eventImportResult.getLeft();
-    EventOperationResult eventSaveResult = eventImportResult.getRight();
-    // Getting existing occurrences if any
-    List<CalendarEventOccurrence> persistedOccurrences =
-        eventSaveResult.created().isPresent() ? emptyList() : event.getPersistedOccurrences();
-    // Preparing iterators in order to avoid to perform several queries
-    final Iterator<CalendarEventOccurrence> toSaveIt =
-        occToImport.stream().sorted(EVENT_OCCURRENCE_COMPARATOR).iterator();
-    final Iterator<CalendarEventOccurrence> existingIt =
-        persistedOccurrences.stream().sorted(EVENT_OCCURRENCE_COMPARATOR).iterator();
-    CalendarEventOccurrence existing = existingIt.hasNext() ? existingIt.next() : null;
-    // Performing each occurrence to import
-    while (toSaveIt.hasNext()) {
-      CalendarEventOccurrence toSave = toSaveIt.next();
-      // Trying to get this occurrence into Silverpeas persistence context
-      while (existing != null && existing.getOriginalStartDate().toString()
-          .compareTo(toSave.getOriginalStartDate().toString()) < 0) {
-        existing = existingIt.hasNext() ? existingIt.next() : null;
-      }
-      // Saving the occurrence
-      if (existing != null &&
-          existing.getOriginalStartDate().equals(toSave.getOriginalStartDate())) {
-        // Case of the occurrence is already existing into Silverpeas persitence context.
-        // It is updated with the data of the occurrence to import
-        final CalendarComponent componentToMerge = toSave.asCalendarComponent();
-        final CalendarComponent componentToSave = existing.asCalendarComponent();
-        if (componentToMerge.getLastUpdateDate().after(componentToSave.getLastUpdateDate())) {
-          // Save is performed only if it has been updated from the external repository
-          componentToMerge.copyTo(componentToSave);
-          existing.saveIntoPersistence();
-          result.withUpdated(existing.getCalendarEvent());
-        }
-      } else {
-        // Case of the occurrence does not exist into Silverpeas persistence context.
-        // The occurrence to import is directly saved.
-        CalendarEventOccurrence toPersist =
-            new CalendarEventOccurrence(event, toSave.getOriginalStartDate(),
-                toSave.getOriginalStartDate().plus(1, ChronoUnit.DAYS));
-        toSave.asCalendarComponent().copyTo(toPersist.asCalendarComponent());
-        toPersist.setPeriod(toSave.getPeriod());
-        toPersist.saveIntoPersistence();
-        result.withUpdated(toPersist.getCalendarEvent());
-      }
-    }
-    return result;
-  }
-
-  /**
    * Updates this event. The modifications to this event are saved for all its occurrences.
    * Its sequence number is incremented by one. If the event isn't yet planned, an
    * {@link IllegalStateException} exception is thrown.
@@ -949,33 +812,49 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   @Override
   public EventOperationResult update() {
     if (!isPlanned()) {
-      throw new IllegalStateException("The event " + this.getId() + " is not yet planned");
+      throw new IllegalStateException(THE_EVENT + this.getId() + " is not yet planned");
     }
     CalendarEvent previousState = getEventPreviousState();
     return Transaction.performInOne(() -> {
-      removeObsoleteData(previousState);
-      List<CalendarEventOccurrence> previousOccurrences = getPersistedOccurrences(this);
+      applyChanges(previousState);
       final EventOperationResult result;
       if (!previousState.getCalendar().equals(this.getCalendar())) {
-        // Deletes all persisted occurrences belonging to this event (recreated after from
-        // previousOccurrences list by adjustOccurrences method)
-        deleteAllOccurrencesFromPersistence(false);
-        // New event is created on other calendar
-        CalendarEvent newEvent = this.clone();
-        newEvent.planOn(this.getCalendar());
-        // Deleting previous event
-        previousState.deleteFromPersistence(false);
-        result = new EventOperationResult().withCreated(newEvent);
+        result = moveToAnotherCalendar(previousState);
       } else {
         this.component.markAsModified();
         this.updateIntoPersistence();
         result = new EventOperationResult().withUpdated(this);
       }
       if (!OperationContext.statesOf(IMPORT)) {
-        adjustOccurrences(previousState, previousOccurrences, result);
+        CalendarEvent updatedEvent =
+            result.created().orElseGet(() -> result.updated().orElse(null));
+        CalendarComponentDiffDescriptor diffDescriptor =
+            diffBetween(updatedEvent.asCalendarComponent(), previousState.asCalendarComponent());
+        applyToPersistedOccurrences(updatedEvent, diffDescriptor, result.created().isPresent());
       }
       return result;
     });
+  }
+
+  /**
+   * Updates this event with the state of the specified calendar event.
+   * @param event the event from which this event should be updated. It must represent this event
+   * but with a new state, otherwise an {@link IllegalStateException} exception is thrown.
+   * @return the result of the update. It has the updated event.
+   */
+  public EventOperationResult updateFrom(final CalendarEvent event) {
+    if (!this.getId().equals(event.getId()) &&
+        (this.externalId == null || !this.externalId.equals(event.externalId))) {
+      throw new IllegalStateException(
+          THE_EVENT + this.getId() + " cannot be updated from another event");
+    }
+    event.component.copyTo(this.component);
+    this.externalId = event.getExternalId();
+    this.visibilityLevel = event.visibilityLevel;
+    this.recurrence = event.recurrence;
+    this.categories = event.categories;
+    this.component.setSequence(event.component.getSequence());
+    return this.update();
   }
 
   /**
@@ -1152,11 +1031,12 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   /**
    * Gets all the occurrences linked to this event and explicitly persisted into persistence
-   * context. So, an occurrence which provides from a computation (instead of the persistence
+   * context. So, an occurrence providing by a computation (instead of the persistence
    * context) is not included into result list.
    * <p> Please notice that the occurrences are retrieved on the demand and the returned list is not
    * coming from an attribute of this event entity</p>
-   * @return a list of persisted occurrences linked to this event.
+   * @return a list of persisted occurrences linked to this event. If the event isn't recurrent or
+   * the event isn't yet planned on a calendar, then an empty list is returned.
    */
   public List<CalendarEventOccurrence> getPersistedOccurrences() {
     return getPersistedOccurrences(this);
@@ -1224,7 +1104,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         .isEmpty();
   }
 
-  private void removeObsoleteData(final CalendarEvent previousState) {
+  private void applyChanges(final CalendarEvent previousState) {
     // Clears exception dates when switching on all day data
     if (getRecurrence() != null && previousState.isOnAllDay() != isOnAllDay()) {
       getRecurrence().clearsAllExceptionDates();
@@ -1237,6 +1117,19 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       // Deletes all persisted occurrences belonging to this event
       deleteAllOccurrencesFromPersistence(true);
     }
+  }
+
+  private EventOperationResult moveToAnotherCalendar(final CalendarEvent previousState) {
+    // Deletes all persisted occurrences belonging to this event (recreated after from
+    // previousOccurrences list by applyToPersistedOccurrences method)
+    deleteAllOccurrencesFromPersistence(false);
+    // New event is created on other calendar
+    CalendarEvent newEvent = this.clone();
+    newEvent.component.setSequence(0);
+    newEvent.planOn(this.getCalendar());
+    // Deleting previous event
+    previousState.deleteFromPersistence(false);
+    return new EventOperationResult().withCreated(newEvent);
   }
 
   private boolean isDateOrRecurrenceChangedWith(final CalendarEvent previousState) {
@@ -1254,40 +1147,28 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return false;
   }
 
-  private void adjustOccurrences(final CalendarEvent previousState,
-      final List<CalendarEventOccurrence> previousOccurrences, final EventOperationResult result) {
-    if (!previousOccurrences.isEmpty()) {
-      final CalendarComponent savedComponent;
-      if (result.created().isPresent()) {
-        final CalendarEvent newEvent = result.created().get();
-        savedComponent = newEvent.asCalendarComponent();
-      } else if (result.updated().isPresent()) {
-        savedComponent = result.updated().get().asCalendarComponent();
-      } else {
-        // No adjustment is necessary
-        return;
-      }
-      CalendarComponentDiffDescriptor diffDescriptor =
-          diffBetween(savedComponent, previousState.asCalendarComponent());
-      if (result.created().isPresent()) {
-        final CalendarEvent newEvent = result.created().get();
+  private void applyToPersistedOccurrences(final CalendarEvent updatedEvent,
+      final CalendarComponentDiffDescriptor diff, boolean plannedIntoAnotherCalendar) {
+    List<CalendarEventOccurrence> previousOccurrences = getPersistedOccurrences(this);
+    if (!previousOccurrences.isEmpty() && updatedEvent != null) {
+      if (plannedIntoAnotherCalendar) {
         previousOccurrences.stream()
             .map(o -> {
-              CalendarEventOccurrence newOccurrence = o.cloneWithEvent(newEvent);
-              diffDescriptor.mergeInto(newOccurrence.asCalendarComponent());
+              CalendarEventOccurrence newOccurrence = o.cloneWithEvent(updatedEvent);
+              diff.mergeInto(newOccurrence.asCalendarComponent());
               return newOccurrence;
             })
             .forEach(CalendarEventOccurrence::saveIntoPersistence);
-      } else if (diffDescriptor.existsDiff()) {
+      } else if (diff.existsDiff()) {
         previousOccurrences.stream()
-            .filter(o -> diffDescriptor.mergeInto(o.asCalendarComponent()))
+            .filter(o -> diff.mergeInto(o.asCalendarComponent()))
             .forEach(CalendarEventOccurrence::saveIntoPersistence);
       }
     }
   }
 
   private static List<CalendarEventOccurrence> getPersistedOccurrences(final CalendarEvent event) {
-    if (!event.isRecurrent()) {
+    if (!event.isPersisted() || !event.isRecurrent()) {
       return emptyList();
     }
     CalendarEventOccurrenceRepository occurrenceRepository =
@@ -1333,7 +1214,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         } else if (occurrenceCount == 1) {
           return operationForSingleOccurrence.get();
         }
-        throw new IllegalStateException("The event " + previousEvent.getId() +
+        throw new IllegalStateException(THE_EVENT + previousEvent.getId() +
             " is either not planned or it doesn't occur in the calendar " +
             previousEvent.getCalendar().getId());
       });

@@ -123,6 +123,20 @@ public abstract class BaseCalendarTest extends DataSetTest {
 
   /**
    * Returns the calendar event persisted into sb_cal_event table corresponding to the given
+   * identifier of a calendar.
+   * @param id the id of a calendar.
+   * @return List of lines represented by a map between column name and value.
+   */
+  protected List<TableLine> getCalendarEventTableLinesByCalendarId(String id) throws Exception {
+    return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("ce.*, co.* from sb_cal_event ce")
+            .addSqlPart("join sb_cal_components co on co.id = ce.componentId")
+            .addSqlPart("join sb_cal_calendar c on c.id = co.calendarId")
+            .where("co.calendarId = ?", id));
+  }
+
+  /**
+   * Returns the calendar event persisted into sb_cal_event table corresponding to the given
    * identifier.
    * @param id the id searched for.
    * @return List of lines represented by a map between column name and value.

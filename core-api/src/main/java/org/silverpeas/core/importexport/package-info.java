@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -23,12 +23,15 @@
  */
 
 /**
- * Provides the services dedicated to the export and the import of {@link
- * org.silverpeas.core.calendar.CalendarEvent} instances into and from iCalendar sources. They
- * know how to read or to write {@link org.silverpeas.core.calendar.CalendarEvent} from or to an
- * iCalendar source.
- * The treatment of what are the calendar events in Silverpeas to export and how to process the
- * import of calendar events into Silverpeas aren't addressed here but let to the clients to the
- * services.
+ * Provides an API for exporters and importers of Silverpeas resources into and from a serializable
+ * form in a given format (PDF, iCal, JSON, and so on).
+ * <p>
+ * An exporter is a processor aimed to take a given type of a Silverpeas resource for serializing
+ * it in a dedicated format into an output stream.
+ * An importer is a processor aimed to take an input stream from which is deserialized a Silverpeas
+ * resource.
+ * Exporters and importers aren't for data source access purpose. Prefer the use of the Silverpeas
+ * Persistence API for doing.
+ * </p>
  */
-package org.silverpeas.core.calendar.icalendar;
+package org.silverpeas.core.importexport;

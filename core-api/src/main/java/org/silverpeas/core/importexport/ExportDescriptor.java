@@ -23,17 +23,21 @@
  */
 package org.silverpeas.core.importexport;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.io.Writer;
 import org.apache.commons.io.output.WriterOutputStream;
 import org.silverpeas.core.util.Charsets;
 
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+
 /**
- * It represents a descriptor about the export of resources into a writer or an output stream. As
- * such it defines the writer, the output stream and the format into which the resources have to be
- * exported. With the descriptor parameters, additional information about the export process can be
- * passed to the exporter.
+ * It represents a descriptor for the export of a resource into a writer or an output stream.
+ *
+ * <p>
+ * It provides the writer or the output stream to use in the export, the MIME type of the format
+ * into which the resources have to be exported, and additional properties that can be required by
+ * an exporter.
+ * </p>
  */
 public class ExportDescriptor extends ImportExportDescriptor {
 

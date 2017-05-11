@@ -44,7 +44,7 @@ public class OperationResult<T extends Plannable, U extends Occurrence> {
    * @return itself.
    */
   @SuppressWarnings("unchecked")
-  <R extends OperationResult<T, U>> R withUpdated(T updated) {
+  public <R extends OperationResult<T, U>> R withUpdated(T updated) {
     this.updated = updated;
     return (R) this;
   }
@@ -55,7 +55,7 @@ public class OperationResult<T extends Plannable, U extends Occurrence> {
    * @return itself.
    */
   @SuppressWarnings("unchecked")
-  <R extends OperationResult<T, U>> R withCreated(T created) {
+  public <R extends OperationResult<T, U>> R withCreated(T created) {
     this.created = created;
     return (R) this;
   }
@@ -66,7 +66,7 @@ public class OperationResult<T extends Plannable, U extends Occurrence> {
    * @return itself.
    */
   @SuppressWarnings("unchecked")
-  <R extends OperationResult<T, U>> R withInstance(U instance) {
+  public <R extends OperationResult<T, U>> R withInstance(U instance) {
     this.instance = instance;
     return (R) this;
   }

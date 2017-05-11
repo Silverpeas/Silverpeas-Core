@@ -23,38 +23,28 @@
  */
 package org.silverpeas.core.importexport;
 
+import java.util.function.Consumer;
+
 /**
- * A runtime exception that is thrown when an error occurs while encoding a Silverpeas object into a
- * formatted string or stream. It is a runtime exception because such exceptions shouldn't occur in
- * an usual way.
+ * An importer of a resource encoded into a format of a given MIME type.
+ * <p>
+ * All importers in Silverpeas should implement this interface. An importer in Silverpeas is
+ * defined for a specific type of resources and it has the responsibility to process the import
+ * of such types of resources from a specific format of given MIME type.
+ * </p>
+ * @param <T> The type of the resource to import.
  */
-public class EncodingException extends RuntimeException {
-
-  private static final long serialVersionUID = -2690487094203535737L;
+public interface Importer<T> {
 
   /**
-   * Constructs a new encoding exception with the specified cause.
-   * @param thrwbl the cause of this exception.
+   * Imports a resource of Silverpeas serialized into a specific format of a given MIME type from
+   * either the reader or the input stream provided by the specified descriptor.
+   * The result of the import is then passed to the specified consumer.
+   * @param descriptor the import descriptor that describes how the import has to be done.
+   * @param consumer the consumer that takes the resource that was decoded. It ends the import
+   * process by, for example, saving it into Silverpeas.
+   * @throws ImportException when an unexpected error occurs while importing the resource.
    */
-  public EncodingException(final Throwable thrwbl) {
-    super(thrwbl);
-  }
-
-  /**
-   * Constructs a new encoding exception with the specified message and the specified cause.
-   * @param message the message.
-   * @param thrwbl the cause.
-   */
-  public EncodingException(String message, final Throwable thrwbl) {
-    super(message, thrwbl);
-  }
-
-  /**
-   * Constructs a new encoding exception with the specified message.
-   * @param message the message.
-   */
-  public EncodingException(String message) {
-    super(message);
-  }
+  void imports(final ImportDescriptor descriptor, Consumer<T> consumer) throws ImportException;
 
 }
