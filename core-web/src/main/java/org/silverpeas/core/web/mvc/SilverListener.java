@@ -30,12 +30,12 @@ import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
-import org.silverpeas.core.security.session.SessionManagementProvider;
-import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.session.HTTPSessionInfo;
 
+import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequest;
@@ -51,6 +51,10 @@ import javax.servlet.http.HttpSessionListener;
  */
 public class SilverListener
     implements HttpSessionListener, ServletContextListener, ServletRequestListener {
+
+  @Inject
+  private SessionManagement sessionManager;
+
   // HttpSessionListener methods
   @Override
   public void sessionCreated(HttpSessionEvent event) {
@@ -91,8 +95,7 @@ public class SilverListener
       URLUtil.setCurrentServerUrl(httpRequest);
       HttpSession httpSession = httpRequest.getSession(false);
       if (httpSession != null) {
-        SessionInfo sessionInfo = SessionManagementProvider.getSessionManagement()
-            .getSessionInfo(httpSession.getId());
+        SessionInfo sessionInfo = sessionManager.getSessionInfo(httpSession.getId());
         if (sessionInfo instanceof HTTPSessionInfo) {
           ((HTTPSessionInfo) sessionInfo).setHttpSession(httpSession);
         }
@@ -120,8 +123,7 @@ public class SilverListener
     final User currentRequester = User.getCurrentRequester();
     final boolean isAnonymous = currentRequester != null && currentRequester.isAnonymous();
     final String sessionId = event.getSession().getId();
-    SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
-    sessionManagement.closeSession(sessionId);
+    sessionManager.closeSession(sessionId);
     SilverLogger.getLogger(this).info("Session with id {0} has just been closed", sessionId);
     ServerEventDispatcherTask.unregisterBySessionId(sessionId, isAnonymous);
   }

@@ -67,6 +67,11 @@ public class SilverpeasExceptionMessages {
   private static final MessageFormat CLOSING_FILE_FAILURE =
       new MessageFormat("Fail to close file {0}");
 
+  private static final MessageFormat SUBSCRIPTION_FAILURE =
+      new MessageFormat("Fail to subscribe to {0} {1}");
+  private static final MessageFormat UNSUBSCRIPTION_FAILURE =
+      new MessageFormat("Fail to unsubscribe to {0} {1}");
+
 
   private SilverpeasExceptionMessages() {
 
@@ -275,6 +280,27 @@ public class SilverpeasExceptionMessages {
    */
   public static String failureOnClosingFile(String resource) {
     return CLOSING_FILE_FAILURE.format(new Object[]{resource});
+  }
+
+  /**
+   * Computes a message about the failure on the subscription of a user to a given resource.
+   * @param resource the resource concerned by the subscription attempt.
+   * @param id the unique identifier of the resource.
+   * @return an exception message.
+   */
+  public static String failureOnSubscribing(String resource, String id) {
+    return SUBSCRIPTION_FAILURE.format(new Object[]{resource, id});
+  }
+
+  /**
+   * Computes a message about the failure on the subscription cancelling of a user to a given
+   * resource.
+   * @param resource the resource concerned by the unsubscription attempt.
+   * @param id the unique identifier of the resource.
+   * @return an exception message.
+   */
+  public static String failureOnUnsubscribing(String resource, String id) {
+    return UNSUBSCRIPTION_FAILURE.format(new Object[]{resource, id});
   }
 
   /**
