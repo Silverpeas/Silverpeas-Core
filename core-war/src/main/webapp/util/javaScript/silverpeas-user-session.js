@@ -43,6 +43,11 @@ Silverpeas plugin which handles the behaviour about the connected users informat
     if (!window.spUserSession) {
       window.spUserSession = $window.spUserSession;
     }
+    whenSilverpeasReady(function() {
+      setTimeout(function() {
+        spUserSession.afterReload();
+      }, 0);
+    });
     return;
   }
 
@@ -57,7 +62,7 @@ Silverpeas plugin which handles the behaviour about the connected users informat
    * @constructor
    */
   $window.spUserSession = new function() {
-    applyEventListenerBehaviorOn(this);
+    applyEventDispatchingBehaviorOn(this);
 
     /**
      * Views the connected users.
@@ -69,16 +74,28 @@ Silverpeas plugin which handles the behaviour about the connected users informat
     /**
      * Logout the current user.
      */
-    this.logout = function() {
-      spServerEventSource.removeEventListener('USER_SESSION_EXPIRED', 'expiredUserSessionListener');
+    this.logout = function(options) {
+      var params = extendsObject({
+        logoutDestination : webContext + '/LogoutServlet'
+      }, options);
+      spServerEventSource.close();
       __doLogout(function() {
-        silverpeasFormSubmit(sp.formConfig(webContext + '/LogoutServlet'));
+        silverpeasFormSubmit(sp.formConfig(params.logoutDestination));
       });
     };
 
+    /**
+     * Do the necessary after a reload.
+     */
+    this.afterReload = function() {
+      __changeConnectedUsersWith(__lastNb);
+    };
+
     // dispatch the changed event
+    var __lastNb;
     var __changeConnectedUsersWith = function(nb) {
       try {
+        __lastNb = nb;
         this.dispatchEvent(CONNECTED_USERS_CHANGED_EVENT_NAME, {nb : nb});
       } catch (e) {
         sp.log.error('connected users', e);
@@ -110,14 +127,6 @@ Silverpeas plugin which handles the behaviour about the connected users informat
       setTimeout(function() {
         __changeConnectedUsersWith(NB_CONNECTED_USERS_AT_INIT);
       }.bind(this), 0);
-
-      // the session of the user is expired: logout him automatically
-      spServerEventSource.addEventListener('USER_SESSION_EXPIRED', function(serverEvent) {
-        var data = extendsObject({redirectUrl : location.href}, JSON.parse(serverEvent.data));
-        __doLogout(function() {
-          silverpeasFormSubmit(sp.formConfig(data.redirectUrl));
-        });
-      }, 'expiredUserSessionListener');
 
       // a new user session is opened or a user session is closed
       spServerEventSource.addEventListener('USER_SESSION', function(serverEvent) {

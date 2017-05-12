@@ -46,6 +46,7 @@ public class UserSessionServerEvent extends CommonServerEvent implements KeepAlw
 
   private final SessionInfo emitterSession;
   private final boolean opening;
+  private final SessionManagement sessionManagement;
 
   /**
    * Hidden constructor.
@@ -55,6 +56,7 @@ public class UserSessionServerEvent extends CommonServerEvent implements KeepAlw
   private UserSessionServerEvent(final boolean opening, final SessionInfo emitterSession) {
     this.emitterSession = emitterSession;
     this.opening = opening;
+    sessionManagement = SessionManagementProvider.getSessionManagement();
   }
 
   static UserSessionServerEvent anOpeningOneFor(final SessionInfo sessionInfo) {
@@ -83,7 +85,6 @@ public class UserSessionServerEvent extends CommonServerEvent implements KeepAlw
    */
   private UserSessionServerEvent initializeData() {
     withData((receiverSessionId, receiver) -> {
-      SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
       final int nbConnectedUsers = sessionManagement.getNbConnectedUsersList(receiver) - 1;
       return JSONCodec.encodeObject(jsonObject -> jsonObject
           .put(IS_OPENING_ATTR_NAME, this.opening)

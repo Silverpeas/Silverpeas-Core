@@ -75,7 +75,7 @@ public abstract class AbstractServerEvent implements ServerEvent {
   }
 
   @Override
-  public void send(final HttpServletRequest request, final HttpServletResponse response,
+  public boolean send(final HttpServletRequest request, final HttpServletResponse response,
       final String receiverSessionId, final User receiver) throws IOException {
     List<String> eventSourceURIs = getEventSourceURIs();
     boolean aimedEventSource = eventSourceURIs.isEmpty();
@@ -87,9 +87,8 @@ public abstract class AbstractServerEvent implements ServerEvent {
         }
       }
     }
-    if (aimedEventSource) {
-      ServerEvent.super.send(request, response, receiverSessionId, receiver);
-    }
+    return aimedEventSource &&
+        ServerEvent.super.send(request, response, receiverSessionId, receiver);
   }
 
   @Override

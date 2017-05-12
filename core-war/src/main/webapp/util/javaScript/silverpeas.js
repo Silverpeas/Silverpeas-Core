@@ -557,8 +557,23 @@ if (!window.SilverpeasAjaxConfig) {
   });
   SilverpeasFormConfig = SilverpeasRequestConfig.extend({
     initialize : function(url) {
-      this._super(url);
       this.target = '';
+      var pivotIndex = url.indexOf("?");
+      if (pivotIndex > 0) {
+        var splitParams = url.substring(pivotIndex + 1).split("&");
+        var urlWithoutParam = url.substring(0, pivotIndex);
+        this._super(urlWithoutParam);
+        splitParams.forEach(function(param) {
+          var splitParam = param.split("=");
+          if (splitParam.length === 2) {
+            var key = splitParam[0];
+            var value = splitParam[1];
+            this.withParam(key, value);
+          }
+        }.bind(this));
+      } else {
+        this._super(url);
+      }
     },
     getUrl : function() {
       return this.url;
@@ -788,7 +803,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
   }
 
   /**
-   * Applies an event listener behaviour to the given instance.
+   * Applies an event dispatching behaviour on the given instance.
    * After that, the instance exposes following methods :
    * - addEventListener(eventName, listener, listenerId) where listenerId permits to identify a
    * callback by an id instead of by its function instance.
@@ -798,7 +813,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
    * @param instance
    * @param options
    */
-  function applyEventListenerBehaviorOn(instance, options) {
+  function applyEventDispatchingBehaviorOn(instance, options) {
     var $document = window.document;
     var __id = $document['__sp_event_uuid'];
     if (typeof __id === 'undefined') {

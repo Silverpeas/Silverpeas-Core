@@ -61,7 +61,6 @@
   <view:includePlugin name="jquery"/>
   <view:includePlugin name="tkn"/>
   <%}%>
-  <view:script src="/util/javaScript/polyfill/eventsource.min.js"/>
   <view:script src="/util/javaScript/silverpeas.js"/>
   <script type="text/javascript">
     var counter = 0;

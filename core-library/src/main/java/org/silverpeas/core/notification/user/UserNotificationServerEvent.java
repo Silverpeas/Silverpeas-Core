@@ -28,10 +28,10 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.notification.sse.CommonServerEvent;
+import org.silverpeas.core.notification.sse.SseLogger;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
 import org.silverpeas.core.util.JSONCodec;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
 
@@ -133,7 +133,7 @@ public class UserNotificationServerEvent extends CommonServerEvent {
           nbUnread = 0;
         }
       } catch (final Exception e) {
-        SilverLogger.getLogger(UserNotificationServerEvent.class).error(e);
+        SseLogger.get().error(e);
         nbUnread = 0;
       }
       cache.put(NB_UNREAD_CACHE_KEY, nbUnread);

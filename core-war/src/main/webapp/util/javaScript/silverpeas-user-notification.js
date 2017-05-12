@@ -43,12 +43,17 @@ Silverpeas plugin which handles the behaviour about the user notification.
     if (!window.spUserNotification) {
       window.spUserNotification = $window.spUserNotification;
     }
+    whenSilverpeasReady(function() {
+      setTimeout(function() {
+        spUserNotification.afterReload();
+      }, 0);
+    });
     return;
   }
 
   var DESKTOP_NOTIFICATION_PERMISSION_ACCEPTED = "desktopNotificationPermissionAccepted";
   var DESKTOP_NOTIFICATION_PERMISSION_DENIED = "desktopNotificationPermissionDenied";
-  var NEW_USER_NOTIFICATIONS_CHANGED_EVENT_NAME = "newUserNotificationsChanged";
+  var UNREAD_USER_NOTIFICATIONS_CHANGED_EVENT_NAME = "unreadUserNotificationsChanged";
   var USER_NOTIFICATION_RECEIVED_EVENT_NAME = "userNotificationReceived";
   var USER_NOTIFICATION_READ_EVENT_NAME = "userNotificationRead";
   var USER_NOTIFICATION_DELETED_EVENT_NAME = "userNotificationDeleted";
@@ -56,8 +61,7 @@ Silverpeas plugin which handles the behaviour about the user notification.
 
   var NB_UNREAD_USER_NOTIFICATIONS_AT_INIT = $window.UserNotificationSettings.get("un.nbu.i");
   var USER_NOTIFICATION_URL = $window.UserNotificationSettings.get("un.v.u");
-
-
+  var DESKTOP_USER_NOTIFICATION_ICON_URL = $window.UserNotificationSettings.get("un.d.i.u");
 
   var NotificationMonitor = function(userNotificationApi) {
     var __getNotificationId = function(userNotification) {
@@ -67,10 +71,15 @@ Silverpeas plugin which handles the behaviour about the user notification.
       }
       return notificationId;
     };
+    var __lastUserNotification;
     var __changeNbNewUserNotification = function(userNotification) {
-      userNotificationApi.dispatchEvent(NEW_USER_NOTIFICATIONS_CHANGED_EVENT_NAME, {
+      __lastUserNotification = userNotification;
+      userNotificationApi.dispatchEvent(UNREAD_USER_NOTIFICATIONS_CHANGED_EVENT_NAME, {
         nbUnread : userNotification.nbUnread
       });
+    };
+    this.afterReload = function() {
+      __changeNbNewUserNotification(__lastUserNotification);
     };
     this.newOne = function(userNotification) {
       userNotificationApi.dispatchEvent(USER_NOTIFICATION_RECEIVED_EVENT_NAME, {
@@ -99,7 +108,7 @@ Silverpeas plugin which handles the behaviour about the user notification.
    * @constructor
    */
   $window.spUserNotification = new function() {
-    applyEventListenerBehaviorOn(this);
+    applyEventDispatchingBehaviorOn(this);
     var __notificationMonitor = new NotificationMonitor(this);
 
     /**
@@ -196,6 +205,13 @@ Silverpeas plugin which handles the behaviour about the user notification.
     };
 
     /**
+     * Do the necessary after a reload.
+     */
+    this.afterReload = function() {
+      __notificationMonitor.afterReload();
+    };
+
+    /**
      * Clears the user notification monitoring.
      */
     this.clear = function() {
@@ -218,7 +234,7 @@ Silverpeas plugin which handles the behaviour about the user notification.
         this.notifyOnDesktop(userNotification.sender, {
           body : userNotification.subject,
           tag : userNotification.id,
-          icon : webContext + '/util/icons/email.gif'
+          icon : DESKTOP_USER_NOTIFICATION_ICON_URL
         }, function(desktopNotification) {
           desktopNotification.onclick = function() {
             this.view(userNotification.id);

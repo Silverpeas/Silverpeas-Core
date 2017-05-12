@@ -61,13 +61,16 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 
   var _reloadList = function() {
     var ajaxConfig = sp.ajaxConfig("Main");
-    sp.load('#silvermail-list', ajaxConfig, true);
+    sp.load('#silvermail-list', ajaxConfig, true).then(function() {
+      spProgressMessage.hide();
+    });
   };
 
   function markAllMessagesAsRead() {
     jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmReadAllNotif")%>", function() {
       var ajaxConfig = sp.ajaxConfig("MarkAllMessagesAsRead").byPostMethod();
-      silverpeasAjax(ajaxConfig);
+      spProgressMessage.show();
+      silverpeasAjax(ajaxConfig).then(_reloadList);
     });
   }
 
@@ -75,7 +78,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
     jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>", function() {
       var ajaxConfig = sp.ajaxConfig("DeleteMessage").byPostMethod();
       ajaxConfig.withParam("ID", id);
-      silverpeasAjax(ajaxConfig);
+      spProgressMessage.show();
+      silverpeasAjax(ajaxConfig).then(_reloadList);
     });
   }
 
@@ -83,7 +87,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
     jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteAllNotif")%>", function() {
       var ajaxConfig = sp.ajaxConfig("DeleteAllMessages").byPostMethod();
       ajaxConfig.withParam("folder", "INBOX");
-      silverpeasAjax(ajaxConfig);
+      spProgressMessage.show();
+      silverpeasAjax(ajaxConfig).then(_reloadList);
     });
   }
 
@@ -180,5 +185,6 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <%
 out.println(window.printAfter());
 %>
+<view:progressMessage/>
 </body>
 </html>

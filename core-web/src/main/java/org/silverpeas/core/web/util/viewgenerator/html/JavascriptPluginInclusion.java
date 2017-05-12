@@ -50,6 +50,8 @@ import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAs
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
 import static org.silverpeas.core.html.SupportedWebPlugins.*;
 import static org.silverpeas.core.notification.user.UserNotificationServerEvent.getNbUnreadFor;
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
+    .getUserNotificationDesktopIconUrl;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -265,7 +267,7 @@ public class JavascriptPluginInclusion {
    * @param content
    * @return
    */
-  private static Element scriptContent(String content) {
+  public static Element scriptContent(String content) {
     String key =
         "$jsPlugin$scriptContent$" + StringUtil.truncate(content, SCRIPT_CONTENT_KEY_LENGTH);
     SimpleCache cache = getRequestCacheService().getCache();
@@ -393,6 +395,7 @@ public class JavascriptPluginInclusion {
         .settingVariableName("UserNotificationSettings")
         .add("un.nbu.i", getNbUnreadFor(User.getCurrentRequester().getId()))
         .add("un.v.u", URLUtil.getApplicationURL() + myNotificationUrl)
+        .add("un.d.i.u", URLUtil.getApplicationURL() + getUserNotificationDesktopIconUrl())
         .produce()));
     xhtml.addElement(scriptContent(generateDynamicPluginLoadingPromise(USERNOTIFICATION,
         JAVASCRIPT_PATH + SILVERPEAS_USER_NOTIFICATION_JS)));

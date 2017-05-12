@@ -50,13 +50,19 @@ public class SilverpeasAsyncContext implements AsyncContext {
   private final AsyncContext wrappedInstance;
   private final String sessionId;
   private final User user;
+  private final Object mutex;
   private Long lastServerEventId;
+  private boolean heartbeat = false;
+  private boolean complete = false;
+  private boolean timeout = false;
+  private boolean error = false;
 
   /**
    * Hidden constructor.
    */
   private SilverpeasAsyncContext(final AsyncContext wrappedInstance, final String sessionId,
       final User user) {
+    this.mutex = this;
     this.wrappedInstance = wrappedInstance;
     this.sessionId = sessionId;
     this.user = user;
@@ -64,45 +70,40 @@ public class SilverpeasAsyncContext implements AsyncContext {
 
   /**
    * Wraps the given instance. Nothing is wrapped if the given instance is a wrapped one.
+   * @param silverLogger the sse silverpeas logger.
    * @param asyncContext the instance to wrap.
    * @param userSessionId the identifier or the user session.
    * @param user the identifier of th user linked to the async request.
    * @return the wrapped given instance.
    */
-  public static SilverpeasAsyncContext wrap(AsyncContext asyncContext, final String userSessionId,
-      User user) {
+  public static SilverpeasAsyncContext wrap(final SilverLogger silverLogger,
+      AsyncContext asyncContext, final String userSessionId, User user) {
     if (asyncContext instanceof SilverpeasAsyncContext) {
       return (SilverpeasAsyncContext) asyncContext;
     }
 
     final SilverpeasAsyncContext context =
         new SilverpeasAsyncContext(asyncContext, userSessionId, user);
-    context.addListener(new AsyncListener() {
-      @Override
-      public void onComplete(final AsyncEvent event) throws IOException {
-        SilverLogger.getLogger(this).debug("Async context is completed ({0})", context.toString());
-        unregisterAsyncContext(context);
-      }
-
-      @Override
-      public void onTimeout(final AsyncEvent event) throws IOException {
-        SilverLogger.getLogger(this).debug("Async context is timed out ({0})", context.toString());
-        unregisterAsyncContext(context);
-      }
-
-      @Override
-      public void onError(final AsyncEvent event) throws IOException {
-        SilverLogger.getLogger(this)
-            .debug("Async context thrown an error ({0})", context.toString());
-        unregisterAsyncContext(context);
-      }
-
-      @Override
-      public void onStartAsync(final AsyncEvent event) throws IOException {
-        SilverLogger.getLogger(this).debug("Async context is starting ({0})", context.toString());
-      }
-    });
+    final ServletRequest request = asyncContext.getRequest();
+    final ServletResponse response = asyncContext.getResponse();
+    context.addListener(new SilverpeasAsyncListener(silverLogger, context), request, response);
     return context;
+  }
+
+  /**
+   * Gets the mutex which is the instance itself.
+   * @return the mutex.
+   */
+  public Object getMutex() {
+    return mutex;
+  }
+
+  /**
+   * Indicates if the send is possible according to the state of the context.
+   * @return true if send is possible, false otherwise.
+   */
+  boolean isSendPossible() {
+    return !isComplete() && !isTimeout() && !isError();
   }
 
   /**
@@ -133,8 +134,10 @@ public class SilverpeasAsyncContext implements AsyncContext {
    * Gets the last server event identifier known before a network breakdown.
    * @return an identifier as string.
    */
-  public Long getLastServerEventId() {
-    return lastServerEventId;
+  Long getLastServerEventId() {
+    synchronized (this) {
+      return lastServerEventId;
+    }
   }
 
   /**
@@ -142,7 +145,9 @@ public class SilverpeasAsyncContext implements AsyncContext {
    * @param lastServerEventId a last event identifier as long, can be null.
    */
   public void setLastServerEventId(final Long lastServerEventId) {
-    this.lastServerEventId = lastServerEventId;
+    synchronized (this) {
+      this.lastServerEventId = lastServerEventId;
+    }
   }
 
   @Override
@@ -177,7 +182,57 @@ public class SilverpeasAsyncContext implements AsyncContext {
 
   @Override
   public void complete() {
+    setComplete(true);
     wrappedInstance.complete();
+    unregisterAsyncContext(this);
+  }
+
+  boolean isHeartbeat() {
+    synchronized (this) {
+      return heartbeat;
+    }
+  }
+
+  public void setHeartbeat(final boolean heartbeat) {
+    synchronized (this) {
+      this.heartbeat = heartbeat;
+    }
+  }
+
+  boolean isComplete() {
+    synchronized (this) {
+      return complete;
+    }
+  }
+
+  void setComplete(final boolean complete) {
+    synchronized (this) {
+      this.complete = complete;
+    }
+  }
+
+  boolean isTimeout() {
+    synchronized (this) {
+      return timeout;
+    }
+  }
+
+  void setTimeout(final boolean timeout) {
+    synchronized (this) {
+      this.timeout = timeout;
+    }
+  }
+
+  boolean isError() {
+    synchronized (this) {
+      return error;
+    }
+  }
+
+  void setError(final boolean error) {
+    synchronized (this) {
+      this.error = error;
+    }
   }
 
   @Override
@@ -232,5 +287,41 @@ public class SilverpeasAsyncContext implements AsyncContext {
       tsb.append("lastServerEventId", getLastServerEventId());
     }
     return tsb.toString();
+  }
+
+  private static class SilverpeasAsyncListener implements AsyncListener {
+    private SilverLogger silverLogger;
+    private final SilverpeasAsyncContext context;
+
+    SilverpeasAsyncListener(final SilverLogger silverLogger, final SilverpeasAsyncContext context) {
+      this.silverLogger = silverLogger;
+      this.context = context;
+    }
+
+    @Override
+    public void onComplete(final AsyncEvent event) throws IOException {
+      context.setComplete(true);
+      silverLogger.debug("Async context is completed ({0})", context);
+      unregisterAsyncContext(context);
+    }
+
+    @Override
+    public void onTimeout(final AsyncEvent event) throws IOException {
+      context.setTimeout(true);
+      silverLogger.debug("Async context is timed out ({0})", context);
+      unregisterAsyncContext(context);
+    }
+
+    @Override
+    public void onError(final AsyncEvent event) throws IOException {
+      context.setError(true);
+      silverLogger.debug("Async context thrown an error ({0})", context);
+      unregisterAsyncContext(context);
+    }
+
+    @Override
+    public void onStartAsync(final AsyncEvent event) throws IOException {
+      silverLogger.debug("Async context is starting ({0})", context);
+    }
   }
 }

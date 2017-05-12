@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2016 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have recieved a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,22 +24,22 @@
 
 package org.silverpeas.core.notification.sse;
 
-import javax.enterprise.event.Observes;
+import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
- * A synchronous {@link ServerEvent} listener using the notification bus of CDI. This bus is
- * based on the Observer pattern but by using the annotations in place of code lines to setup
- * listeners and so on.
- * <p>
- * Synchronous events are carried within a specific CDI event and are collected by this
- * abstract class. All concrete listeners have just to extend this abstract class and to do
- * some parametrization.
  * @author Yohann Chastagnier
  */
-public abstract class CDIServerEventListener<T extends AbstractServerEvent>
-    implements ServerEventListener<T> {
+public class SseLogger implements Initialization {
 
-  public void onEvent(@Observes T event) {
-    on(event);
+  private static SilverLogger silverLogger;
+
+  public static SilverLogger get() {
+    return silverLogger;
+  }
+
+  @Override
+  public void init() throws Exception {
+    silverLogger = SilverLogger.getLogger(this);
   }
 }

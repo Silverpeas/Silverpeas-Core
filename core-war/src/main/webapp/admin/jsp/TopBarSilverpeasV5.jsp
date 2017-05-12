@@ -62,6 +62,7 @@ if (wallPaper == null) {
 
 boolean outilDisplayed = false;
 %>
+<c:set var="isAnonymousAccess" value="<%=helper.isAnonymousAccess()%>"/>
 
 <c:set var="labelConnectedUser" value='<%=helper.getString("lookSilverpeasV5.connectedUser")%>'/>
 <c:set var="labelConnectedUsers" value='<%=helper.getString("lookSilverpeasV5.connectedUsers")%>'/>
@@ -85,7 +86,8 @@ boolean outilDisplayed = false;
 	width: auto;
 }
 .new-user-notification a {
-  background-color: #EC7501;
+  background-color: #7eb73b;
+  padding: 1px 5px 0 5px;
 }
 body {
 	background-image: url(<%=wallPaper%>);
@@ -130,11 +132,11 @@ window.USERSESSION_PROMISE.then(function() {
       $container.show();
       jQuery("a", $container).text(nb + label);
     }
-  });
+  }, 'connectedUsersChanged@TopBar');
 });
 window.USERNOTIFICATION_PROMISE.then(function() {
   var $container = jQuery("#userNotifications");
-  spUserNotification.addEventListener('newUserNotificationsChanged', function(event) {
+  spUserNotification.addEventListener('unreadUserNotificationsChanged', function(event) {
     var unreadUserNotificationCount = event.detail.data.nbUnread;
     $container.addClass("new-user-notification");
     var label = unreadUserNotificationCount + " ${labelUnreadUserNotifications}";
@@ -145,7 +147,7 @@ window.USERNOTIFICATION_PROMISE.then(function() {
       $container.removeClass("new-user-notification");
     }
     jQuery("a", $container).text(label);
-  });
+  }, 'unreadUserNotificationsChanged@TopBar');
 });
 </script>
 <div id="topBar">
@@ -159,6 +161,7 @@ window.USERNOTIFICATION_PROMISE.then(function() {
 			</div>
 		<% } %>
 		<div class="userNav">
+      <c:if test="${not isAnonymousAccess}">
       <span id="connectedUsers" style="display:none">
         <a href="#" onclick="javascript:onClick=spUserSession.viewConnectedUsers();"></a>
         <span> | </span>
@@ -167,6 +170,7 @@ window.USERNOTIFICATION_PROMISE.then(function() {
         <a href="#" onclick="javascript:onClick=spUserNotification.view();">${labelUserNotifications}</a>
         <span> | </span>
       </span>
+      </c:if>
       <% if (!isAnonymousAccess && helper.getSettings("directoryVisible", true)) {
         outilDisplayed = true;
       %>

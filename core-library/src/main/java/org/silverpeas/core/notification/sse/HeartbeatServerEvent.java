@@ -24,31 +24,38 @@
 
 package org.silverpeas.core.notification.sse;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
-import org.silverpeas.core.util.JSONCodec;
-
-import static org.silverpeas.core.util.ResourceLocator.getGeneralSettingBundle;
 
 /**
- * This server event is sent on successful user session opening and on user session ending.
- * @author Yohann Chastagnier.
+ * @author Yohann Chastagnier
  */
-public class UserSessionExpiredServerEvent extends CommonServerEvent implements IgnoreStoring {
+class HeartbeatServerEvent extends AbstractServerEvent implements IgnoreStoring {
 
-  private static final ServerEventName EVENT_NAME = () -> "USER_SESSION_EXPIRED";
+  private static ServerEventName EVENT_NAME = () -> "HEARTBEAT_EVENT_SOURCE";
+
+  private final String emitterSessionId;
 
   /**
    * Hidden constructor.
+   * @param emitterSessionId the emitter session id of the event.
    */
-  UserSessionExpiredServerEvent() {
-    final String appURL = getGeneralSettingBundle().getString("ApplicationURL", "/silverpeas");
-    final String sessionTimeoutUrl = getGeneralSettingBundle().getString("sessionTimeout");
-    withData(JSONCodec
-        .encodeObject(jsonObject -> jsonObject.put("redirectUrl", appURL + sessionTimeoutUrl)));
+  private HeartbeatServerEvent(final String emitterSessionId) {
+    this.emitterSessionId = emitterSessionId;
+    withData("Event source heartbeat.");
+  }
+
+  static HeartbeatServerEvent createFor(final String emitterSessionId) {
+    return new HeartbeatServerEvent(emitterSessionId);
   }
 
   @Override
   public ServerEventName getName() {
     return EVENT_NAME;
+  }
+
+  @Override
+  public boolean isConcerned(final String receiverSessionId, final User receiver) {
+    return emitterSessionId.equals(receiverSessionId);
   }
 }
