@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.workflow.engine;
 
+import org.exolab.castor.jdo.Database;
+import org.exolab.castor.jdo.PersistenceException;
+import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.TaskManager;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
@@ -45,14 +48,9 @@ import org.silverpeas.core.workflow.engine.instance.LockingUser;
 import org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl;
 import org.silverpeas.core.workflow.engine.jdo.WorkflowJDOManager;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
-import org.silverpeas.core.thread.ManagedThreadPool;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
-
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.PersistenceException;
-
 import java.util.Date;
 
 /**
@@ -64,7 +62,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   @PostConstruct
   public void start() {
     // Use the ManagedThreadPool in order to access container context (JPA and Transaction)
-    ManagedThreadPool.invoke(new WorkflowEngineTask());
+    ManagedThreadPool.getPool().invoke(new WorkflowEngineTask());
   }
 
   /**

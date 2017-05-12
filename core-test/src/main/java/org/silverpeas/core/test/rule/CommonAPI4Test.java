@@ -24,25 +24,28 @@
 
 package org.silverpeas.core.test.rule;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.service.GroupProvider;
-import org.silverpeas.core.admin.user.service.UserProvider;
-import org.silverpeas.core.silvertrace.SilverpeasTrace;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.reflect.FieldUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.internal.util.MockUtil;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.GroupProvider;
+import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.silvertrace.SilverpeasTrace;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.util.lang.TestSystemWrapper;
 import org.silverpeas.core.test.util.log.TestSilverpeasTrace;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager;
+import org.silverpeas.core.util.logging.SilverLoggerProvider;
 
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 import static org.mockito.Mockito.*;
 
@@ -51,23 +54,25 @@ import static org.mockito.Mockito.*;
  */
 public class CommonAPI4Test implements TestRule {
 
+  private TestContext testContext;
+
   @Override
   public Statement apply(final Statement base, final Description description) {
 
     File testTempData = new File(new File(
         description.getTestClass().getProtectionDomain().getCodeSource().getLocation().getFile()),
         "test-temp-data");
+    testContext = new TestContext(description, testTempData);
 
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
-        TestContext testContext = new TestContext(description, testTempData);
         try {
-          beforeEvaluate(testContext);
+          beforeEvaluate();
           base.evaluate();
         } finally {
           try {
-            afterEvaluate(testContext);
+            afterEvaluate();
           } finally {
             FileUtils.deleteQuietly(testTempData);
           }
@@ -76,7 +81,7 @@ public class CommonAPI4Test implements TestRule {
     };
   }
 
-  protected void beforeEvaluate(final TestContext context) {
+  protected void beforeEvaluate() {
     reset(TestBeanContainer.getMockedBeanContainer());
     userProvider();
     groupProvider();
@@ -86,7 +91,12 @@ public class CommonAPI4Test implements TestRule {
     managedThreadFactory();
   }
 
-  protected void afterEvaluate(final TestContext context) {
+  protected void afterEvaluate() {
+    // nothing to do
+  }
+
+  public TestContext getTestContext() {
+    return testContext;
   }
 
   @SuppressWarnings("unchecked")
@@ -137,21 +147,32 @@ public class CommonAPI4Test implements TestRule {
   }
 
   private void loggerConfigurationManager() {
-    StubbedLoggerConfigurationManager stub = new StubbedLoggerConfigurationManager();
+    StubbedLoggerConfigurationManager configurationManager =
+        new StubbedLoggerConfigurationManager();
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(LoggerConfigurationManager.class))
-        .thenReturn(stub);
+        .thenReturn(configurationManager);
+
+    StubbedSilverLoggerProvider loggerProvider =
+        new StubbedSilverLoggerProvider(configurationManager);
+    when(TestBeanContainer.getMockedBeanContainer()
+        .getBeanByType(SilverLoggerProvider.class)).thenReturn(loggerProvider);
   }
 
   private void managedThreadFactory() {
-    ManagedThreadPool managedThreadPool = new ManagedThreadPool();
     try {
+      Constructor<ManagedThreadPool> managedThreadPoolConstructor =
+          ManagedThreadPool.class.getDeclaredConstructor();
+      managedThreadPoolConstructor.setAccessible(true);
+      ManagedThreadPool managedThreadPool = managedThreadPoolConstructor.newInstance();
       ManagedThreadFactory managedThreadFactory = Thread::new;
-      FieldUtils.writeField(managedThreadPool, "managedThreadFactory", managedThreadFactory, true);
-    } catch (IllegalAccessException e) {
+      FieldUtils.writeField(managedThreadPool, "managedThreadFactory",
+          managedThreadFactory, true);
+      when(TestBeanContainer.getMockedBeanContainer()
+          .getBeanByType(ManagedThreadPool.class)).thenReturn(managedThreadPool);
+    } catch (IllegalAccessException | NoSuchMethodException | InstantiationException |
+        InvocationTargetException e) {
       throw new RuntimeException(e);
     }
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(ManagedThreadPool.class))
-        .thenReturn(managedThreadPool);
   }
 
   protected class TestContext {
@@ -176,6 +197,14 @@ public class CommonAPI4Test implements TestRule {
     public StubbedLoggerConfigurationManager() {
       super();
       loadAllConfigurationFiles();
+    }
+  }
+
+  private class StubbedSilverLoggerProvider extends SilverLoggerProvider {
+
+    protected StubbedSilverLoggerProvider(
+        final LoggerConfigurationManager loggerConfigurationManager) {
+      super(loggerConfigurationManager);
     }
   }
 

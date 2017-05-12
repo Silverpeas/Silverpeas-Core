@@ -26,6 +26,7 @@ package org.silverpeas.core.util.logging.sys;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.logging.SilverLoggerFactory;
+import org.silverpeas.core.util.logging.SilverLoggerProvider;
 
 import java.text.MessageFormat;
 import java.util.function.Supplier;
@@ -38,7 +39,7 @@ import java.util.logging.Logger;
  */
 public class SysLogger implements SilverLogger {
 
-  private static final Logger ROOT_LOGGER = Logger.getLogger(ROOT_NAMESPACE);
+  private static final Logger ROOT_LOGGER = Logger.getLogger(SilverLoggerProvider.ROOT_NAMESPACE);
 
   private final Logger logger;
   private volatile SilverLogger parent; // to keep strong ref to the parent and hence its config
@@ -50,7 +51,7 @@ public class SysLogger implements SilverLogger {
 
   protected SysLogger(String namespace) {
     this.logger = Logger.getLogger(namespace);
-    if (this.logger.getParent() != null && !namespace.equals(ROOT_NAMESPACE)) {
+    if (this.logger.getParent() != null && !namespace.equals(SilverLoggerProvider.ROOT_NAMESPACE)) {
       this.parent = getLoggerByNamespace(this.logger.getParent().getName());
     }
   }
@@ -97,7 +98,7 @@ public class SysLogger implements SilverLogger {
   @Override
   public void setLevel(final Level level) {
     this.logger.setLevel(fromLoggingLevel(level));
-    if (!this.getNamespace().equals(ROOT_NAMESPACE)) {
+    if (!this.getNamespace().equals(SilverLoggerProvider.ROOT_NAMESPACE)) {
       if (level == null && this.logger.getHandlers().length > 0) {
         this.logger.setUseParentHandlers(true);
         Handler[] silverpeasRootHandlers = ROOT_LOGGER.getHandlers();

@@ -113,7 +113,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
       public DocumentView performAfterSuccess(final DocumentView result) {
         if (isSilentConversionEnabled() && viewerContext.isProcessingCache() &&
             PreviewService.get().isPreviewable(viewerContext.getOriginalSourceFile())) {
-          ManagedThreadPool.invoke(() -> {
+          ManagedThreadPool.getPool().invoke(() -> {
             PreviewService.get().getPreview(viewerContext.clone());
           });
         }

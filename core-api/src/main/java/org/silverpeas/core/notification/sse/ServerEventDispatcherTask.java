@@ -83,8 +83,12 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
   private static void startIfNotAlreadyDone() {
     if (!running) {
       running = true;
-      ManagedThreadPool.invoke(new ServerEventDispatcherTask());
+      ManagedThreadPool.getPool().invoke(new ServerEventDispatcherTask());
     }
+  }
+
+  private static void stop() {
+    running = false;
   }
 
   /**
@@ -103,7 +107,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
     synchronized (contexts) {
       if (contexts.remove(context)) {
         SilverLogger.getLogger(ServerEventDispatcherTask.class).debug(
-            () -> format("Unregistering {0}, handling now {1} async context(s)", context.toString(),
+            () -> format("Unregistering {0}, handling now {1} async context(s)", context,
                 contexts.size()));
         if (sendSessionClose) {
           ServerEvent event = new UserSessionExpiredServerEvent();
@@ -137,7 +141,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
     synchronized (contexts) {
       contexts.add(context);
       SilverLogger.getLogger(ServerEventDispatcherTask.class).debug(
-          () -> format("Registering {0}, handling now {1} async contexts", context.toString(),
+          () -> format("Registering {0}, handling now {1} async contexts", context,
               contexts.size()));
     }
   }
@@ -161,7 +165,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
     }
     for (ServerEvent serverEventToSendAgain : serverEventsToSendAgain) {
       SilverLogger.getLogger(ServerEventDispatcherTask.class)
-          .debug(() -> format("Sending not consumed {0}", serverEventToSendAgain.toString()));
+          .debug(() -> format("Sending not consumed {0}", serverEventToSendAgain));
       serverEventToSendAgain.send(request, response, receiverSessionInfoId, receiver);
     }
     return serverEventsToSendAgain.get(serverEventsToSendAgain.size() - 1).getId();
@@ -190,28 +194,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
 
   @Override
   protected void taskIsEnding() {
-    running = false;
-  }
-
-  private static void push(final ServerEvent serverEventToDispatch,
-      final SilverpeasAsyncContext asyncContext) {
-    try {
-      HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
-      HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
-      final Long lastServerEventId = asyncContext.getLastServerEventId();
-      final Long serverEventId = serverEventToDispatch.getId();
-      if (lastServerEventId != null && serverEventId != null &&
-          lastServerEventId < (serverEventId - 1)) {
-        sendLastServerEventsFromId(request, response, lastServerEventId,
-            asyncContext.getSessionId(), asyncContext.getUser());
-        asyncContext.setLastServerEventId(null);
-      }
-      serverEventToDispatch
-          .send(request, response, asyncContext.getSessionId(), asyncContext.getUser());
-    } catch (IOException e) {
-      SilverLogger.getLogger(ServerEventDispatcherTask.class).error("Can not send SSE", e);
-      unregisterAsyncContext(asyncContext);
-    }
+    stop();
   }
 
   /**
@@ -229,7 +212,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
 
     @Override
     public void process(Object context) throws InterruptedException {
-      SilverLogger.getLogger(this).debug(() -> format("Sending {0}", serverEventToDispatch.toString()));
+      SilverLogger.getLogger(this).debug(() -> format("Sending {0}", serverEventToDispatch));
       getSafeContexts().forEach(asyncContext -> push(this.serverEventToDispatch, asyncContext));
       serverEventStore.add(serverEventToDispatch);
     }
@@ -244,6 +227,27 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
         safeContexts = contexts.stream().collect(Collectors.toList());
       }
       return safeContexts;
+    }
+
+    private static void push(final ServerEvent serverEventToDispatch,
+        final SilverpeasAsyncContext asyncContext) {
+      try {
+        HttpServletRequest request = (HttpServletRequest) asyncContext.getRequest();
+        HttpServletResponse response = (HttpServletResponse) asyncContext.getResponse();
+        final Long lastServerEventId = asyncContext.getLastServerEventId();
+        final Long serverEventId = serverEventToDispatch.getId();
+        if (lastServerEventId != null && serverEventId != null &&
+            lastServerEventId < (serverEventId - 1)) {
+          sendLastServerEventsFromId(request, response, lastServerEventId,
+              asyncContext.getSessionId(), asyncContext.getUser());
+          asyncContext.setLastServerEventId(null);
+        }
+        serverEventToDispatch
+            .send(request, response, asyncContext.getSessionId(), asyncContext.getUser());
+      } catch (IOException e) {
+        SilverLogger.getLogger(ServerEventDispatcherTask.class).error("Can not send SSE", e);
+        unregisterAsyncContext(asyncContext);
+      }
     }
   }
 
@@ -280,7 +284,8 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
       long maxLifeTime = Math.max(ServerEvent.CLIENT_RETRY * 4, 40000);
       synchronized (store) {
         Iterator<StoredServerEvent> it = store.iterator();
-        while (it.hasNext()) {
+        boolean done = false;
+        while (it.hasNext() && !done) {
           StoredServerEvent item = it.next();
           if (item.getServerEvent() instanceof KeepAlwaysStoring) {
             continue;
@@ -290,9 +295,9 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
             it.remove();
             SilverLogger.getLogger(this).debug(
                 () -> format("Removing expired {0} lifetime of {1}ms",
-                    item.getServerEvent().toString(), lifetime));
+                    item.getServerEvent(), lifetime));
           } else {
-            break;
+            done = true;
           }
         }
         SilverLogger.getLogger(this)

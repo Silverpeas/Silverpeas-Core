@@ -43,9 +43,14 @@ import java.util.stream.Collectors;
 import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.defaultConfig;
 
 /**
+ * A pool of threads that are managed by the underlying application server in which runs Silverpeas.
+ * This pool manages the life-cycle of threads and distributes over them the different tasks that
+ * are passed to it.
+ * <p>
  * This useful managed thread pool permits to invoke instances of {@link java.lang.Runnable} or
  * {@link java.util.concurrent.Callable} by using the managed thread pools provided by the
  * application server.
+ * </p>
  * @author Yohann Chastagnier
  */
 @Singleton
@@ -53,6 +58,19 @@ public class ManagedThreadPool {
 
   @Resource
   private ManagedThreadFactory managedThreadFactory;
+
+  protected ManagedThreadPool() {
+    // constructor to be used only by the IoD container
+  }
+
+  /**
+   * Gets a pool of managed threads.
+   * @return a {@link ManagedThreadPool} instance ready to take in charge the passed executions
+   * in different the threads of the pool.
+   */
+  public static ManagedThreadPool getPool() {
+    return ServiceProvider.getService(ManagedThreadPool.class);
+  }
 
   /**
    * Invokes the given {@link java.lang.Runnable} instances into a managed thread.<br/>
@@ -62,11 +80,10 @@ public class ManagedThreadPool {
    * @param runnables the {@link java.lang.Runnable} instances to invoke.
    * @return the list of threads that have been invoked.
    */
-  public static List<Thread> invoke(Runnable... runnables) {
-    ManagedThreadPool me = ServiceProvider.getService(ManagedThreadPool.class);
+  public List<Thread> invoke(Runnable... runnables) {
     List<Thread> threads = new ArrayList<>();
     for (Runnable runnable : runnables) {
-      Thread thread = me.managedThreadFactory.newThread(runnable);
+      Thread thread = this.managedThreadFactory.newThread(runnable);
       threads.add(thread);
       thread.start();
     }
@@ -82,7 +99,7 @@ public class ManagedThreadPool {
    * @param runnables the {@link java.lang.Runnable} instances to invoke.
    * @throws ManagedThreadPoolException
    */
-  public static void invokeAndAwaitTermination(List<? extends Runnable> runnables)
+  public void invokeAndAwaitTermination(List<? extends Runnable> runnables)
       throws ManagedThreadPoolException {
     invokeAndAwaitTermination(runnables, defaultConfig());
   }
@@ -97,7 +114,7 @@ public class ManagedThreadPool {
    * @param config the {@link java.lang.Runnable} instances execution configuration.
    * @throws ManagedThreadPoolException
    */
-  public static void invokeAndAwaitTermination(List<? extends Runnable> runnables,
+  public void invokeAndAwaitTermination(List<? extends Runnable> runnables,
       ExecutionConfig config) throws ManagedThreadPoolException {
     try {
       ExecutorService executorService = getExecutorService(config);
@@ -138,7 +155,7 @@ public class ManagedThreadPool {
    * {@link java.util.concurrent.Callable} instance.
    * @throws InterruptedException
    */
-  public static <V> Future<V> invoke(Callable<V> callable) throws InterruptedException {
+  public <V> Future<V> invoke(Callable<V> callable) throws InterruptedException {
     return invoke(callable, defaultConfig());
   }
 
@@ -153,7 +170,7 @@ public class ManagedThreadPool {
    * {@link java.util.concurrent.Callable} instance.
    * @throws InterruptedException
    */
-  public static <V> Future<V> invoke(Callable<V> callable, ExecutionConfig config) throws InterruptedException {
+  public <V> Future<V> invoke(Callable<V> callable, ExecutionConfig config) throws InterruptedException {
     return invoke(Collections.singletonList(callable), config).get(0);
   }
 
@@ -168,7 +185,7 @@ public class ManagedThreadPool {
    * given {@link java.util.concurrent.Callable} instances.
    * @throws InterruptedException
    */
-  public static <V> List<Future<V>> invoke(List<? extends Callable<V>> callables)
+  public <V> List<Future<V>> invoke(List<? extends Callable<V>> callables)
       throws InterruptedException {
     return invoke(callables, defaultConfig());
   }
@@ -188,7 +205,7 @@ public class ManagedThreadPool {
    * given {@link java.util.concurrent.Callable} instances.
    * @throws InterruptedException
    */
-  public static <V> List<Future<V>> invoke(List<? extends Callable<V>> callables,
+  public <V> List<Future<V>> invoke(List<? extends Callable<V>> callables,
       ExecutionConfig config) throws InterruptedException {
     ExecutorService executorService = getExecutorService(config);
     List<Future<V>> futures = new ArrayList<>();
@@ -218,18 +235,17 @@ public class ManagedThreadPool {
    * @param config the configuration of thread execution.
    * @return the new {@link ExecutorService} instance.
    */
-  private static ExecutorService getExecutorService(ExecutionConfig config) {
-    ManagedThreadPool me = ServiceProvider.getService(ManagedThreadPool.class);
+  private ExecutorService getExecutorService(ExecutionConfig config) {
     final ExecutorService executorService;
     if (config.getMaxThreadPoolSize() > 0) {
       int maxThreadPoolSize = config.getMaxThreadPoolSize();
       if (maxThreadPoolSize == 1) {
-        executorService = Executors.newSingleThreadExecutor(me.managedThreadFactory);
+        executorService = Executors.newSingleThreadExecutor(this.managedThreadFactory);
       } else {
-        executorService = Executors.newFixedThreadPool(maxThreadPoolSize, me.managedThreadFactory);
+        executorService = Executors.newFixedThreadPool(maxThreadPoolSize, this.managedThreadFactory);
       }
     } else {
-      executorService = Executors.newCachedThreadPool(me.managedThreadFactory);
+      executorService = Executors.newCachedThreadPool(this.managedThreadFactory);
     }
     return executorService;
   }

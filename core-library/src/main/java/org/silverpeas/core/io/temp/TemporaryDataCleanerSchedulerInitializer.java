@@ -63,7 +63,7 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
     final TemporaryDataCleanerJob temporaryDataCleanerJob = new TemporaryDataCleanerJob();
 
     // Cleaning temporary data at start if requested
-    startTask = ManagedThreadPool.invoke(() -> {
+    startTask = ManagedThreadPool.getPool().invoke(() -> {
       temporaryDataCleanerJob.clean(
           TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeletedAtServerStart());
     }).iterator().next();

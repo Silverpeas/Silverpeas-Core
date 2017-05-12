@@ -135,7 +135,7 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
       public Preview performAfterSuccess(final Preview result) {
         if (isSilentConversionEnabled() && viewerContext.isProcessingCache() &&
             ViewService.get().isViewable(viewerContext.getOriginalSourceFile())) {
-          ManagedThreadPool.invoke(() -> {
+          ManagedThreadPool.getPool().invoke(() -> {
             ViewService.get().getDocumentView(viewerContext.clone());
           });
         }

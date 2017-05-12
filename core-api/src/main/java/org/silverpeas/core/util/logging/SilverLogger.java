@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.util.logging;
 
-import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
-
 import java.util.function.Supplier;
 
 /**
@@ -44,54 +42,30 @@ import java.util.function.Supplier;
 public interface SilverLogger {
 
   /**
-   * The namespace of the root logger in Silverpeas. This namespace is predefined and each logger
-   * taken in charge by the Logging Engine should be a descendant of its logger.
-   */
-  String ROOT_NAMESPACE = "silverpeas";
-
-  /**
-   * Gets the logger that is defined for the specified logging namespace.
-   * </p>
-   * A logging namespace is the name or a category under which the messages will be log. The
-   * messages will be logged only if the logging level satisfies the logger's level. If no level is
-   * set for the logger, then the level from its nearest ancestor with a specific
-   * (non-null) level value is taken into account.
-   * </p>
-   * The logger instance is obtained from the logging namespace by using the
-   * {@link org.silverpeas.core.util.logging.SilverLoggerFactory} factory. The factory
-   * has also the responsibility of the initialization mechanism of the logger from its logging
-   * configuration parameters before returning it.
-   * @return a logger instance, manufactured by a SilverLoggerFactory instance.
+   * Gets the logger that is defined for the specified logging namespace. The logger getting is
+   * delegated to a {@link SilverLoggerProvider} instance.
+   * @param module a logging namespace. It is the name or a category under which the messages will
+   * be log.
+   * @see SilverLoggerProvider#getLogger(String)
+   * @return a logger instance provided by a {@link SilverLoggerProvider} instance.
    */
   static SilverLogger getLogger(String module) {
-    LoggerConfiguration configuration =
-        LoggerConfigurationManager.get().getLoggerConfiguration(module);
-    return SilverLoggerFactory.get().getLogger(configuration.getNamespace(), configuration);
+    return SilverLoggerProvider.getLoggerProvider().getLogger(module);
   }
 
   /**
-   * Gets a logger for the specified object. The logger is found from the package name of the
-   * specified object.
-   * </p>
-   * In Silverpeas, each logger namespace matches a package name, starting from the
-   * <code>silverpeas</code> subpackage: for a package <code>org.silverpeas.core.io</code>, there
-   * is a logger with the namespace <code>silverpeas.core.io</code>.
-   * </p>
-   * @see SilverLogger#getLogger(String)
-   * @return a logger instance, manufactured by a SilverLoggerFactory instance.
+   * Gets a logger for the specified object. The logger getting is delegated to a
+   * {@link SilverLoggerProvider} instance.
+   * @param object the object from which the logging namespace is determined. The logging namespace
+   * is found from the package name of the object. In Silverpeas, each logger namespace matches a
+   * package name, starting from the * <code>silverpeas</code> subpackage: for a package
+   * <code>org.silverpeas.core.io</code>, there is a logger with the namespace
+   * <code>silverpeas.core.io</code>.
+   * @see SilverLoggerProvider#getLogger(Object)
+   * @return a logger instance provided by a {@link SilverLoggerProvider} instance.
    */
   static SilverLogger getLogger(Object object) {
-    Package pkg = (object instanceof Class ? ((Class) object).getPackage() :
-        object.getClass().getPackage());
-    String namespace = pkg.getName();
-    if (namespace.startsWith("org.silverpeas")) {
-      namespace = namespace.substring(namespace.indexOf('.') + 1);
-    }
-    Logger annotation = pkg.getAnnotation(Logger.class);
-    if (annotation != null) {
-      namespace = annotation.value();
-    }
-    return getLogger(namespace);
+    return SilverLoggerProvider.getLoggerProvider().getLogger(object);
   }
 
   /**

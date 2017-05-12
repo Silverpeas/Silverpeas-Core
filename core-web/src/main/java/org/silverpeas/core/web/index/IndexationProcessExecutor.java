@@ -103,7 +103,7 @@ public class IndexationProcessExecutor {
         return;
       }
       Future<Void> future =
-          ManagedThreadPool.invoke(indexationProcess, defaultConfig().withMaxThreadPoolSizeOf(1));
+          ManagedThreadPool.getPool().invoke(indexationProcess, defaultConfig().withMaxThreadPoolSizeOf(1));
       cache.put(INDEXATION_PROCESS_EXECUTOR_KEY, Pair.of(indexationProcess, future), 0, 0);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("starting indexation process failed", e);

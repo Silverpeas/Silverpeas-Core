@@ -26,11 +26,11 @@ package org.silverpeas.core.util.logging.sys;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.logging.SilverLoggerFactory;
+import org.silverpeas.core.util.logging.SilverLoggerProvider;
 
 import java.lang.ref.WeakReference;
 import java.util.Hashtable;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implementation of the {@code org.silverpeas.core.util.logging.LoggerFactory} interface to provide
@@ -55,7 +55,7 @@ public class SysLoggerFactory implements SilverLoggerFactory {
 
       weakRef = loggers.computeIfAbsent(namespace, n -> {
         SysLogger logger = new SysLogger(namespace);
-        if (!configuration.getNamespace().equals(SilverLogger.ROOT_NAMESPACE) ||
+        if (!configuration.getNamespace().equals(SilverLoggerProvider.ROOT_NAMESPACE) ||
             configuration.getLevel() != null) {
           // we take care to not erase the root logger level
           logger.setLevel(configuration.getLevel());

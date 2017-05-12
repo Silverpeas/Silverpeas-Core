@@ -62,7 +62,7 @@ public class ChatUserRegistrationServlet extends SilverpeasAuthenticatedHttpServ
     final User requester = User.getCurrentRequester();
     final LocalizationBundle messages =
         getLocalizedBundle(requester.getUserPreferences().getLanguage());
-    ManagedThreadPool.invoke(() -> {
+    ManagedThreadPool.getPool().invoke(() -> {
       try {
         registerAllUsers();
         notify(requester, SUCCESS_MESSAGE);

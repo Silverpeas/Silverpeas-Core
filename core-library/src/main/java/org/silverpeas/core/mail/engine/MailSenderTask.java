@@ -72,8 +72,12 @@ public class MailSenderTask extends AbstractRequestTask<MailProcessContext> {
   private static void startIfNotAlreadyDone() {
     if (!running) {
       running = true;
-      ManagedThreadPool.invoke(new MailSenderTask());
+      ManagedThreadPool.getPool().invoke(new MailSenderTask());
     }
+  }
+
+  private static void stop() {
+    running = false;
   }
 
   /**
@@ -104,7 +108,7 @@ public class MailSenderTask extends AbstractRequestTask<MailProcessContext> {
 
   @Override
   protected void taskIsEnding() {
-    running = false;
+    stop();
   }
 
   @Override

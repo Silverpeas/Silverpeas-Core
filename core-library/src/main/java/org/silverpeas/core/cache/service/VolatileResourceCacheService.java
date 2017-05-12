@@ -129,7 +129,7 @@ public class VolatileResourceCacheService {
   public void clear() {
     final VolatileResourceCacheService current = this;
     try {
-      ManagedThreadPool.invoke(() -> {
+      ManagedThreadPool.getPool().invoke(() -> {
         try {
           current.deleteAllAttachments();
         } catch (RuntimeException e) {

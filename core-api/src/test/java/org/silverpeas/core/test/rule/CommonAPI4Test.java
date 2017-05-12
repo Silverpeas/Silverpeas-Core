@@ -33,8 +33,11 @@ import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager;
+import org.silverpeas.core.util.logging.SilverLoggerProvider;
 
 import javax.enterprise.concurrent.ManagedThreadFactory;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
@@ -104,27 +107,45 @@ public class CommonAPI4Test implements TestRule {
   }
 
   private void loggerConfigurationManager() {
-    StubbedLoggerConfigurationManager stub = new StubbedLoggerConfigurationManager();
+    StubbedLoggerConfigurationManager configurationManager =
+        new StubbedLoggerConfigurationManager();
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(LoggerConfigurationManager.class))
-        .thenReturn(stub);
+        .thenReturn(configurationManager);
+
+    StubbedSilverLoggerProvider loggerProvider =
+        new StubbedSilverLoggerProvider(configurationManager);
+    when(TestBeanContainer.getMockedBeanContainer()
+        .getBeanByType(SilverLoggerProvider.class)).thenReturn(loggerProvider);
   }
 
   private void managedThreadFactory() {
-    ManagedThreadPool managedThreadPool = new ManagedThreadPool();
     try {
+      Constructor<ManagedThreadPool> managedThreadPoolConstructor =
+          ManagedThreadPool.class.getDeclaredConstructor();
+      managedThreadPoolConstructor.setAccessible(true);
+      ManagedThreadPool managedThreadPool = managedThreadPoolConstructor.newInstance();
       ManagedThreadFactory managedThreadFactory = Thread::new;
       FieldUtils.writeField(managedThreadPool, "managedThreadFactory", managedThreadFactory, true);
-    } catch (IllegalAccessException e) {
+      when(TestBeanContainer.getMockedBeanContainer()
+          .getBeanByType(ManagedThreadPool.class)).thenReturn(managedThreadPool);
+    } catch (IllegalAccessException | NoSuchMethodException | InstantiationException |
+        InvocationTargetException e) {
       throw new RuntimeException(e);
     }
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(ManagedThreadPool.class))
-        .thenReturn(managedThreadPool);
   }
 
   private class StubbedLoggerConfigurationManager extends LoggerConfigurationManager {
     public StubbedLoggerConfigurationManager() {
       super();
       loadAllConfigurationFiles();
+    }
+  }
+
+  private class StubbedSilverLoggerProvider extends SilverLoggerProvider {
+
+    protected StubbedSilverLoggerProvider(
+        final LoggerConfigurationManager loggerConfigurationManager) {
+      super(loggerConfigurationManager);
     }
   }
 

@@ -74,6 +74,7 @@ public class SilverpeasAsyncContext implements AsyncContext {
     if (asyncContext instanceof SilverpeasAsyncContext) {
       return (SilverpeasAsyncContext) asyncContext;
     }
+
     final SilverpeasAsyncContext context =
         new SilverpeasAsyncContext(asyncContext, userSessionId, user);
     context.addListener(new AsyncListener() {

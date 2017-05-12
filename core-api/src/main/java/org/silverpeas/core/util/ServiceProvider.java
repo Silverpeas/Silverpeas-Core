@@ -1,7 +1,5 @@
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.util.BeanContainer;
-
 import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.ServiceLoader;

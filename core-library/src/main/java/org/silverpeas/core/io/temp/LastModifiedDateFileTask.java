@@ -28,6 +28,7 @@ import org.apache.commons.io.filefilter.FileFilterUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.thread.ManagedThreadPool;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -38,7 +39,7 @@ import java.util.Map;
  */
 public class LastModifiedDateFileTask implements Runnable {
 
-  private static final Map<File, Long> requestMap = new LinkedHashMap<File, Long>();
+  private static final Map<File, Long> requestMap = new LinkedHashMap<>();
 
   /**
    * All the requests are processed by a single background thread. This thread is built and
@@ -54,7 +55,7 @@ public class LastModifiedDateFileTask implements Runnable {
   private static void startIfNotAlreadyDone() {
     if (!isRunning()) {
       running = true;
-      ManagedThreadPool.invoke(new LastModifiedDateFileTask());
+      ManagedThreadPool.getPool().invoke(new LastModifiedDateFileTask());
     }
   }
 
@@ -115,7 +116,8 @@ public class LastModifiedDateFileTask implements Runnable {
             file.setLastModified(lastModifiedDate);
           }
         }
-      } catch (Exception ignore) {
+      } catch (Exception e) {
+        SilverLogger.getLogger(e);
       }
 
       // Getting the next request if any.

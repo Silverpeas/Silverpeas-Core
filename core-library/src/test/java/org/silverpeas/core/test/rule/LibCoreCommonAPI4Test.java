@@ -8,8 +8,8 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 public class LibCoreCommonAPI4Test extends CommonAPI4Test {
 
   @Override
-  protected void beforeEvaluate(final TestContext context) {
-    super.beforeEvaluate(context);
+  protected void beforeEvaluate() {
+    super.beforeEvaluate();
     clearCacheData();
   }
 
