@@ -959,7 +959,8 @@ Style Utilise par le ViewGenerator
 #globalResult form .sp_button,
 #directory form .sp_button,
 #directory #indexAndSearch .sp_button,
-#searchLine  .sp_button{
+#searchLine  .sp_button,
+.container-filter #search .sp_button {
 	 padding: 1px 10px;
 	 font-size:9pt !important;
 	 height:17px;
@@ -2276,7 +2277,8 @@ caption {
 }
 
 #directory #indexAndSearch #index a,
-#directory #indexAndSearch #sort a {
+#directory #indexAndSearch #sort a,
+.container-filter .listing-filter a{
   border:1px solid #CECECE;
   padding:2px 4px;
   margin-right:3px;
@@ -2287,13 +2289,15 @@ caption {
   line-height:2em;
 }
 #directory #indexAndSearch #index a.active,
-#directory #indexAndSearch #sort a.active {
+#directory #indexAndSearch #sort a.active,
+.container-filter .listing-filter a.active {
   background-color:#B5B5B5;
   color:#FFF;
 }
 
 #directory #indexAndSearch #index a:hover, #directory #indexAndSearch #index a:focus,
-#directory #indexAndSearch #sort a:hover, #directory #indexAndSearch #sort a:focus {
+#directory #indexAndSearch #sort a:hover, #directory #indexAndSearch #sort a:focus,
+.container-filter .listing-filter a:hover {
   background-color:#BFBFBF;
   color:#FFF;
 }
@@ -2656,6 +2660,10 @@ caption {
 .sousNavBulle p, .content-container-filter {
   margin:0;
   padding:0 5px 0;
+}
+
+.container-filter .content-container-filter {
+  padding:5px;
 }
 
 #publicProfile #publicProfileFiche #allContact, #publicProfile #publicProfileFiche #contactCommun {
@@ -4616,7 +4624,7 @@ input.search:focus {
   vertical-align:middle;
   text-align:center;
   height:auto;
-  margin:0.5em;
+  margin:0.5em 0;
 }
 
 #attachment-creation-actions {

@@ -228,6 +228,11 @@ input.inputHour{
   margin-left: 195px;
 }
 
+.cell .skinFieldset .forms .fields .fieldInput {
+    display: inline-block;
+    margin-left: 0;
+}
+
 .skinFieldset .forms .fields .fieldInput select{
   max-width:200px;
 }
