@@ -98,7 +98,7 @@ public class SilverLoggerProvider {
    */
   public SilverLogger getLogger(Object object) {
     Package pkg =
-        (object instanceof Class ? ((Class) object).getPackage() : object.getClass().getPackage());
+        object instanceof Class ? ((Class) object).getPackage() : object.getClass().getPackage();
     String namespace = pkg.getName();
     if (namespace.startsWith("org.silverpeas")) {
       namespace = namespace.substring(namespace.indexOf('.') + 1);
