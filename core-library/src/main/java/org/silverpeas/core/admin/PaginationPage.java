@@ -29,6 +29,9 @@ package org.silverpeas.core.admin;
  */
 public class PaginationPage {
 
+  public static final int DEFAULT_NB_ITEMS_PER_PAGE = 10;
+  public static final PaginationPage DEFAULT = new PaginationPage(1, DEFAULT_NB_ITEMS_PER_PAGE);
+
   private final int page;
   private final int count;
 

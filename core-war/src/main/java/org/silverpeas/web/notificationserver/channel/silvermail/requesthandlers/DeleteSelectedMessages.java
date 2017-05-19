@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2015 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,19 +11,25 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
  *
  * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
+/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
+ ---*/
+
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
@@ -31,36 +37,38 @@ import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessio
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.AbstractArrayPane
-    .getOrderByFrom;
-import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.AbstractArrayPane
-    .getPaginationPageFrom;
-import static org.silverpeas.web.notificationserver.channel.silvermail
-    .SILVERMAILSessionController.INBOX_ORDER_BIES;
-
 /**
  * Class declaration
+ * @author
+ * @version %I%, %G%
  */
-public class Main implements SILVERMAILRequestHandler {
+public class DeleteSelectedMessages implements SILVERMAILRequestHandler {
 
   /**
-   * Handles the Main request.
+   * Method declaration
+   * @param componentSC
+   * @param request
+   * @return
+   * @throws SILVERMAILException
+   * @see
    */
-  public String handleRequest(ComponentSessionController componentSC, HttpServletRequest request)
-      throws SILVERMAILException {
+  public String handleRequest(ComponentSessionController componentSC,
+      HttpServletRequest request) throws SILVERMAILException {
     HttpRequest httpRequest = HttpRequest.decorate(request);
     SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
 
     // Selection
     httpRequest.mergeSelectedItemsInto(silvermailScc.getSelectedUserNotificationIds());
 
-    // Pagination
-    silvermailScc.setPagination(getPaginationPageFrom(request, silvermailScc.getPagination()));
+    try {
+      SILVERMAILPersistence
+          .deleteMessages(componentSC.getUserId(), silvermailScc.getSelectedUserNotificationIds());
+    } catch (NumberFormatException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
 
-    // Order by
-    silvermailScc.setOrderBy(getOrderByFrom(request, INBOX_ORDER_BIES));
-
-    // Destination
+    silvermailScc.getSelectedUserNotificationIds().clear();
     return "/SILVERMAIL/jsp/main.jsp";
   }
+
 }

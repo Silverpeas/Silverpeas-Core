@@ -231,22 +231,26 @@ Silverpeas plugin which handles the behaviour about the user notification.
     var __receiveUserNotification = function(userNotification) {
       if (userNotification.isCreation) {
         __notificationMonitor.newOne(userNotification);
-        this.notifyOnDesktop(userNotification.sender, {
-          body : userNotification.subject,
-          tag : userNotification.id,
-          icon : DESKTOP_USER_NOTIFICATION_ICON_URL
-        }, function(desktopNotification) {
-          desktopNotification.onclick = function() {
-            this.view(userNotification.id);
-            desktopNotification.close();
-            try {
-              // do not work with Chrome
-              $window.focus();
-            } catch (e) {
-              sp.log.error(e);
-            }
-          }.bind(this);
-        });
+        try {
+          this.notifyOnDesktop(userNotification.sender, {
+            body : userNotification.subject,
+            tag : userNotification.id,
+            icon : DESKTOP_USER_NOTIFICATION_ICON_URL
+          }, function(desktopNotification) {
+            desktopNotification.onclick = function() {
+              this.view(userNotification.id);
+              desktopNotification.close();
+              try {
+                // do not work with Chrome
+                $window.focus();
+              } catch (e) {
+                sp.log.error(e);
+              }
+            }.bind(this);
+          });
+        } catch (error) {
+          sp.log.error(error);
+        }
       } else if (userNotification.isDeletion) {
         __notificationMonitor.deletedOne(userNotification);
       } else if (userNotification.isRead) {

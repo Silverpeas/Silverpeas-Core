@@ -541,6 +541,19 @@ if (!window.SilverpeasAjaxConfig) {
       this.parameters[name] = value;
       return this;
     },
+    addParam : function(name, value) {
+      var currentValue = this.parameters[name];
+      if (!currentValue) {
+        this.withParam(name, value);
+      } else {
+        if (typeof currentValue === 'object') {
+          currentValue.push(value);
+        } else {
+          this.parameters[name] = [currentValue, value];
+        }
+      }
+      return this;
+    },
     byPostMethod : function() {
       this.method = 'POST';
       return this;
@@ -957,7 +970,7 @@ if (typeof window.sp === 'undefined') {
           if (!paramList) {
             continue;
           }
-          if (typeof paramList === 'string') {
+          if (typeof paramList !== 'object') {
             paramList = [paramList];
           }
           if (paramPart.length > 1) {
@@ -969,27 +982,126 @@ if (typeof window.sp === 'undefined') {
       return url + (paramPart.length === 1 ? '' : paramPart);
     },
     load : function(targetOrArrayOfTargets, ajaxConfig, isGettingFullHtmlContent) {
-      return new Promise(function(resolve, reject) {
-        silverpeasAjax(ajaxConfig).then(function(request) {
-          var targetIsArrayOfCssSelector = typeof targetOrArrayOfTargets === 'object' && Array.isArray(targetOrArrayOfTargets);
-          var targets = !targetIsArrayOfCssSelector ? [targetOrArrayOfTargets] : targetOrArrayOfTargets;
-          targets.forEach(function(target) {
-            var targetIsCssSelector = typeof target === 'string';
-            if (!isGettingFullHtmlContent || !targetIsCssSelector) {
-              jQuery(target).html(request.responseText);
-            } else {
-              var $container = jQuery('<div>');
-              $container.html(request.responseText);
-              var $content = jQuery(target, $container);
-              jQuery(target).replaceWith($content);
-            }
-          });
-          resolve()
-        }, function(request) {
-          sp.log.error(request.status + " " + request.statusText);
-          reject();
-        });
+      return silverpeasAjax(ajaxConfig).then(function(request) {
+        return sp.updateTargetWithHtmlContent(targetOrArrayOfTargets, request.responseText, isGettingFullHtmlContent);
+      }, function(request) {
+        sp.log.error(request.status + " " + request.statusText);
       });
+    },
+    updateTargetWithHtmlContent : function(targetOrArrayOfTargets, html, isGettingFullHtmlContent) {
+      var targetIsArrayOfCssSelector = typeof targetOrArrayOfTargets === 'object' && Array.isArray(targetOrArrayOfTargets);
+      var targets = !targetIsArrayOfCssSelector ? [targetOrArrayOfTargets] : targetOrArrayOfTargets;
+      targets.forEach(function(target) {
+        var targetIsCssSelector = typeof target === 'string';
+        if (!isGettingFullHtmlContent || !targetIsCssSelector) {
+          jQuery(target).html(html);
+        } else {
+          var $container = jQuery('<div>');
+          $container.html(html);
+          var $content = jQuery(target, $container);
+          jQuery(target).replaceWith($content);
+        }
+      });
+      return sp.promise.resolveDirectlyWith(html);
+    },
+    selection : {
+      newCheckboxMonitor : function(cssSelector) {
+        return new function() {
+          var __selectedAtStart = [];
+          var __selected = [];
+          var __unselected = [];
+          var __init = function() {
+            __selectedAtStart = [];
+            __selected = [];
+            __unselected = [];
+            var checkboxes = document.querySelectorAll(cssSelector);
+            [].slice.call(checkboxes, 0).forEach(function(checkbox) {
+              if (checkbox.checked) {
+                __selectedAtStart.addElement(checkbox.value);
+              }
+              checkbox.addEventListener('change', __handler);
+            });
+          };
+          var __handler = function(e) {
+            var checkbox = e.target;
+            if (checkbox.checked) {
+              if (__selectedAtStart.indexOf(checkbox.value) < 0) {
+                __selected.addElement(checkbox.value);
+              }
+              __unselected.removeElement(checkbox.value);
+            } else {
+              if (__selectedAtStart.indexOf(checkbox.value) >= 0) {
+                __unselected.addElement(checkbox.value);
+              }
+              __selected.removeElement(checkbox.value);
+            }
+          };
+          this.pageChanged = function() {
+            __init();
+          };
+          this.applyToAjaxConfig = function(ajaxConfig, options) {
+            var params = extendsObject({
+              clear : true,
+              paramSelectedIds : 'selectedIds',
+              paramUnselectedIds : 'unselectedIds'
+            }, options);
+            __selected.forEach(function(value) {
+              ajaxConfig.addParam(params.paramSelectedIds, value);
+            });
+            __unselected.forEach(function(value) {
+              ajaxConfig.addParam(params.paramUnselectedIds, value);
+            });
+            if (params.clear) {
+              __init();
+            }
+          };
+          __init();
+        };
+      }
+    },
+    arrayPane : {
+      ajaxControls : function(containerCssSelector, options) {
+        var params = {
+          before : false,
+          success : false
+        };
+        if (typeof options === 'function') {
+          params.success = options;
+        } else if (typeof options === 'object') {
+          params = extendsObject(params, options);
+        }
+        var $container = jQuery(containerCssSelector);
+        var __ajaxRequest = function(url) {
+          var ajaxConfig = sp.ajaxConfig(url);
+          ajaxConfig.withParam("ajaxRequest", true);
+          if (typeof params.before === 'function') {
+            params.before(ajaxConfig);
+          }
+          return silverpeasAjax(ajaxConfig).then(function(request) {
+            if (typeof params.success === 'function') {
+              var result = params.success(request);
+              if (sp.promise.isOne(result)) {
+                return result;
+              }
+            }
+            return sp.promise.resolveDirectlyWith();
+          });
+        };
+        var __clickHandler = function(index, linkElement) {
+          var url = linkElement.href;
+          if (url && '#' !== url && !url.startsWith('javascript')) {
+            linkElement.href = 'javascript:void(0)';
+            linkElement.addEventListener('click', function() {
+              __ajaxRequest(url);
+            }, false);
+          }
+        };
+        jQuery('thead a', $container).each(__clickHandler);
+        jQuery('tfoot a', $container).each(__clickHandler);
+        jQuery('.pageJumper input', $container).each(function(index, jumperInput) {
+          jumperInput.ajax = __ajaxRequest;
+        });
+      }
     }
   };
 }

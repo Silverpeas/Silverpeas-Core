@@ -85,10 +85,6 @@ boolean outilDisplayed = false;
 	height: 20px;
 	width: auto;
 }
-.new-user-notification a {
-  background-color: #7eb73b;
-  padding: 1px 5px 0 5px;
-}
 body {
 	background-image: url(<%=wallPaper%>);
 	background-repeat: no-repeat;
@@ -138,13 +134,13 @@ window.USERNOTIFICATION_PROMISE.then(function() {
   var $container = jQuery("#userNotifications");
   spUserNotification.addEventListener('unreadUserNotificationsChanged', function(event) {
     var unreadUserNotificationCount = event.detail.data.nbUnread;
-    $container.addClass("new-user-notification");
+    $container.addClass("unread-user-notification");
     var label = unreadUserNotificationCount + " ${labelUnreadUserNotifications}";
     if (unreadUserNotificationCount === 1) {
       label = unreadUserNotificationCount + " ${labelUnreadUserNotification}";
     } else if (unreadUserNotificationCount === 0) {
       label = "${labelUserNotifications}";
-      $container.removeClass("new-user-notification");
+      $container.removeClass("unread-user-notification");
     }
     jQuery("a", $container).text(label);
   }, 'unreadUserNotificationsChanged@TopBar');

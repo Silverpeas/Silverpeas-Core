@@ -33,6 +33,8 @@ import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
  * @author neysseri
  */
 public interface Pagination extends SimpleGraphicElement {
+  String ITEMS_PER_PAGE_PARAM = "ItemsPerPage";
+
   public void init(int nbItems, int nbItemsPerPage, int firstItemIndex);
 
   public void setAltPreviousPage(String text);

@@ -32,6 +32,7 @@ import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAI
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
+import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -52,16 +53,15 @@ public class MarkAllMessagesAsRead implements SILVERMAILRequestHandler {
    */
   public String handleRequest(ComponentSessionController componentSC, HttpServletRequest request)
       throws SILVERMAILException {
+    SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
+
     try {
       SILVERMAILPersistence.markAllMessagesAsRead(componentSC.getUserId());
     } catch (NumberFormatException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
-    if (request.getParameter("from") == null) {
-      return "/SILVERMAIL/jsp/main.jsp";
-    } else if ("homePage".equals(request.getParameter("from"))) {
-      return "/SILVERMAIL/jsp/redirect.jsp?SpaceId=" + request.getParameter("SpaceId");
-    }
+
+    silvermailScc.getSelectedUserNotificationIds().clear();
     return "/SILVERMAIL/jsp/main.jsp";
   }
 

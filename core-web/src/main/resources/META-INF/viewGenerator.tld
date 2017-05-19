@@ -1183,6 +1183,96 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
     </attribute>
+    <attribute>
+      <description>If the column is sortable</description>
+      <name>width</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
+      MANDATORY in case of optimized pagination rendering.
+      The basic iteration tag, accepting many different
+      collection types and supporting subsetting and other
+      functionality.
+    </description>
+    <name>arrayLines</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLinesTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        Collection of items to iterate over.
+      </description>
+      <name>items</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Object</type>
+      <deferred-value>
+        <type>java.lang.Object</type>
+      </deferred-value>
+    </attribute>
+    <attribute>
+      <description>
+        If items specified:
+        Iteration begins at the item located at the
+        specified index. First item of the collection has
+        index 0.
+        If items not specified:
+        Iteration begins with index set at the value
+        specified.
+      </description>
+      <name>begin</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>int</type>
+    </attribute>
+    <attribute>
+      <description>
+        If items specified:
+        Iteration ends at the item located at the
+        specified index (inclusive).
+        If items not specified:
+        Iteration ends when index reaches the value
+        specified.
+      </description>
+      <name>end</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>int</type>
+    </attribute>
+    <attribute>
+      <description>
+        Iteration will only process every step items of
+        the collection, starting with the first one.
+      </description>
+      <name>step</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>int</type>
+    </attribute>
+    <attribute>
+      <description>
+        Name of the exported scoped variable for the
+        current item of the iteration. This scoped
+        variable has nested visibility. Its type depends
+        on the object of the underlying collection.
+      </description>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>
+        Name of the exported scoped variable for the
+        status of the iteration. Object exported is of type
+        javax.servlet.jsp.jstl.core.LoopTagStatus. This scoped variable has nested
+        visibility.
+      </description>
+      <name>varStatus</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
   </tag>
   <tag>
     <description>Tag to create a new line in the ArrayPane</description>
@@ -1192,6 +1282,12 @@
     <attribute>
       <description>The String to identified this line</description>
       <name>id</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Permits to define css classes</description>
+      <name>classes</name>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
@@ -1212,6 +1308,44 @@
       <name>compareOn</name>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Comparable</type>
+    </attribute>
+    <attribute>
+      <description>Permits to define css classes</description>
+      <name>classes</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>Tag to create a new cell in the current line of the ArrayPane.</description>
+    <name>arrayCellCheckbox</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellCheckboxTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>The name of the checkbox</description>
+      <name>name</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The value of the checkbox (can be passed by the body)</description>
+      <name>value</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The status of the checkbox</description>
+      <name>checked</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
+    <attribute>
+      <description>Permits to define css classes</description>
+      <name>classes</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
     </attribute>
   </tag>
   <tag>

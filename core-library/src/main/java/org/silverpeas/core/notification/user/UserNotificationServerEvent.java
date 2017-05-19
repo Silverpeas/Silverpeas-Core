@@ -25,24 +25,17 @@
 package org.silverpeas.core.notification.user;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.notification.sse.CommonServerEvent;
-import org.silverpeas.core.notification.sse.SseLogger;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
 import org.silverpeas.core.util.JSONCodec;
 
-import java.util.Collection;
+import static org.silverpeas.core.notification.user.server.channel.silvermail
+    .SILVERMAILPersistence.countNotReadMessagesOfFolder;
 
 /**
  * This server event is sent on the reception of a user notification.
  * @author Yohann Chastagnier.
  */
 public class UserNotificationServerEvent extends CommonServerEvent {
-
-  private static final String NB_UNREAD_CACHE_KEY =
-      UserNotificationServerEvent.class + "@@@nbUnread";
 
   private static final String ID_ATTR_NAME = "id";
   private static final String SUBJECT_ATTR_NAME = "subject";
@@ -121,24 +114,7 @@ public class UserNotificationServerEvent extends CommonServerEvent {
    * @return a number of unread message.
    */
   public static int getNbUnreadFor(String userId) {
-    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
-    Integer nbUnread = cache.get(NB_UNREAD_CACHE_KEY, Integer.class);
-    if (nbUnread == null) {
-      try {
-        final Collection<SILVERMAILMessage> notifications =
-            SILVERMAILPersistence.getNotReadMessagesOfFolder(Integer.parseInt(userId), "INBOX");
-        if (notifications != null) {
-          nbUnread = notifications.size();
-        } else {
-          nbUnread = 0;
-        }
-      } catch (final Exception e) {
-        SseLogger.get().error(e);
-        nbUnread = 0;
-      }
-      cache.put(NB_UNREAD_CACHE_KEY, nbUnread);
-    }
-    return nbUnread;
+    return (int) countNotReadMessagesOfFolder(userId, "INBOX");
   }
 
   @Override

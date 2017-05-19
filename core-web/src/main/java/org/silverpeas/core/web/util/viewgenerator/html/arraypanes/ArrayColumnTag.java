@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
+import org.silverpeas.core.util.StringUtil;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.tagext.Tag;
@@ -38,6 +40,7 @@ public class ArrayColumnTag extends BodyTagSupport {
   private String title;
   private ArrayPane arrayPane;
   private Boolean sortable;
+  private String width;
 
   @Override
   public void setParent(final Tag tag) {
@@ -53,6 +56,13 @@ public class ArrayColumnTag extends BodyTagSupport {
     if (sortable != null) {
       column.setSortable(sortable);
     }
+    if (StringUtil.isDefined(width)) {
+      if (StringUtil.isInteger(width)) {
+        column.setWidth(width + "px");
+      } else {
+        column.setWidth(width);
+      }
+    }
     return SKIP_BODY;
   }
 
@@ -62,5 +72,9 @@ public class ArrayColumnTag extends BodyTagSupport {
 
   public void setSortable(boolean sortable) {
     this.sortable = sortable;
+  }
+
+  public void setWidth(final String width) {
+    this.width = width;
   }
 }

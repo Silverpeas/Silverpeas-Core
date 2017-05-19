@@ -38,6 +38,7 @@ public class PaginationSP extends AbstractPagination {
   private static final int NUMBERPERPAGE_THRESHOLD = 25;
   private static final int NUMBERPERPAGE_ALL = 100000;
   private static final int JUMPER_THRESHOLD = 12;
+  private static final String INDEX_PARAM = "?Index=";
 
   public PaginationSP() {
     super();
@@ -226,7 +227,7 @@ public class PaginationSP extends AbstractPagination {
     StringBuilder link = new StringBuilder();
     if (StringUtil.isNotDefined(javascriptFunc)) {
       if (getBaseURL() != null) {
-        link.append(getBaseURL()).append("0").append("&ItemsPerPage=").append(nbItems);
+        link.append(getBaseURL()).append("0").append("&" + ITEMS_PER_PAGE_PARAM + "=").append(nbItems);
       }
     } else {
       link.append("javascript:onclick=").append(javascriptFunc).append("(0, ").append(nbItems).append(")");
@@ -244,7 +245,7 @@ public class PaginationSP extends AbstractPagination {
         link.append(getBaseURL()).append(index);
       } else {
         // action pagination
-        link.append(action).append("?Index=").append(index);
+        link.append(action).append(INDEX_PARAM).append(index);
       }
     } else {
       link.append("javascript:onClick=").append(javascriptFunc).append("(").append(index).append(")");
@@ -289,10 +290,14 @@ public class PaginationSP extends AbstractPagination {
       result.append(javascriptFunc).append("(index);");
     } else {
       if (getBaseURL() != null) {
-        result.append("location.href=\"").append(getBaseURL()).append("\"+index;");
+        result.append("if (typeof ").append(jumperName).append(".ajax === 'function') {");
+        result.append(jumperName).append(".ajax('").append(getBaseURL()).append("'+index").append(")");
+        result.append("} else {location.href=\"").append(getBaseURL()).append("\"+index;}");
       } else {
         String action = "Pagination" + getActionSuffix();
-        result.append("location.href=\"").append(action).append("?Index=").append("\"+index;");
+        result.append("if (typeof ").append(jumperName).append(".ajax === 'function') {");
+        result.append(jumperName).append(".ajax('").append(action).append(INDEX_PARAM).append("'+index").append(")");
+        result.append("} else {location.href=\"").append(action).append(INDEX_PARAM).append("\"+index;}");
       }
     }
     result.append("}");

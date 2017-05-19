@@ -27,12 +27,12 @@
 
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
+import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * Class declaration
@@ -49,21 +49,13 @@ public class DeleteMessage implements SILVERMAILRequestHandler {
    * @throws SILVERMAILException
    * @see
    */
-  public String handleRequest(ComponentSessionController componentSC,
-      HttpServletRequest request) throws SILVERMAILException {
-      SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
-      String sId = request.getParameter("ID");
+  public String handleRequest(ComponentSessionController componentSC, HttpServletRequest request)
+      throws SILVERMAILException {
+    SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
+    String sId = request.getParameter("ID");
 
-      silvermailScc.deleteMessage(sId);
+    silvermailScc.deleteMessage(sId);
 
-      if (request.getParameter("from") == null) {
-        return "/SILVERMAIL/jsp/main.jsp";
-      } else if (request.getParameter("from").equals("homePage")) {
-        return "/SILVERMAIL/jsp/redirect.jsp?SpaceId="
-          + request.getParameter("SpaceId");
-      } else {
-        return "/SILVERMAIL/jsp/main.jsp";
-      }
+    return "/SILVERMAIL/jsp/main.jsp";
   }
-
 }

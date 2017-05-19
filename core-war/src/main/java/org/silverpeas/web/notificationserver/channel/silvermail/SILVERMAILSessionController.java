@@ -23,6 +23,8 @@
  ---*/
 package org.silverpeas.web.notificationserver.channel.silvermail;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -35,7 +37,10 @@ import org.silverpeas.core.notification.user.client.model.SentNotificationInterf
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
+    .QUERY_ORDER_BY;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -45,7 +50,15 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
+    .QUERY_ORDER_BY.*;
 
 /**
  * Class declaration
@@ -55,8 +68,16 @@ import java.util.List;
  */
 public class SILVERMAILSessionController extends AbstractComponentSessionController {
 
-  protected String currentFunction;
-  protected long currentMessageId = -1;
+  public static final Map<Integer, Pair<QUERY_ORDER_BY,QUERY_ORDER_BY>> INBOX_ORDER_BIES;
+  private static final int RECEPTION_DATE_INDEX = 2;
+  private static final int SUBJECT_INDEX = 4;
+  private static final int FROM_INDEX = 5;
+  private static final int SOURCE_INDEX = 6;
+  private String currentFunction;
+  private long currentMessageId = -1;
+  private Set<String> selectedUserNotificationIds = new HashSet<>();
+  private PaginationPage pagination;
+  private QUERY_ORDER_BY orderBy;
 
   /**
    * Constructor declaration
@@ -77,14 +98,18 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     return URLUtil.CMP_SILVERMAIL;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param currentFunction
-   * @see
-   */
-  public void setCurrentFunction(String currentFunction) {
-    this.currentFunction = currentFunction;
+  public PaginationPage getPagination() {
+    return pagination;
+  }
+
+  public void setPagination(PaginationPage pagination) {
+    this.pagination = pagination;
+  }
+
+  public void setOrderBy(final QUERY_ORDER_BY orderBy) {
+    if (orderBy != null) {
+      this.orderBy = orderBy;
+    }
   }
 
   /**
@@ -100,15 +125,40 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   /**
    * Method declaration
    *
+   * @param currentFunction
+   * @see
+   */
+  public void setCurrentFunction(String currentFunction) {
+    this.currentFunction = currentFunction;
+  }
+
+  public Set<String> getSelectedUserNotificationIds() {
+    return selectedUserNotificationIds;
+  }
+
+  /**
+   * Method declaration
+   *
    * @param folderName
    * @return
    * @see
    */
-  public Collection<SILVERMAILMessage> getFolderMessageList(String folderName)
-      throws SILVERMAILException {
-    Collection<SILVERMAILMessage> messages = SILVERMAILPersistence.getMessageOfFolder(Integer
-        .parseInt(getUserId()), folderName);
-    return messages;
+  public Collection<UserNotificationItem> getFolderMessageList(String folderName) {
+    final Collection<SILVERMAILMessage> messages;
+    try {
+      messages =
+          SILVERMAILPersistence.getMessageOfFolder(getUserId(), folderName, pagination, orderBy);
+    } catch (SILVERMAILException e) {
+      throw new org.silverpeas.core.SilverpeasRuntimeException(e);
+    }
+    final Collection<UserNotificationItem> result =  messages
+        .stream().map(n -> {
+          UserNotificationItem item = new UserNotificationItem(n);
+          item.setSelected(selectedUserNotificationIds.contains(item.getId()));
+          return item;
+        }).collect(Collectors.toList());
+    return messages instanceof PaginationList ?
+        PaginationList.from(result, ((PaginationList) messages).maxSize()) : result;
   }
 
   /**
@@ -159,14 +209,14 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   }
 
   private String getSource(String componentId) {
-    LocalizationBundle m_Multilang = ResourceLocator.getLocalizationBundle(
+    LocalizationBundle multilang = ResourceLocator.getLocalizationBundle(
         "org.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
         getLanguage());
-    String source = m_Multilang.getString("UserNotification");
+    String source = multilang.getString("UserNotification");
     if (StringUtil.isDefined(componentId)) {
       OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
       ComponentInstLight instance = orga.getComponentInstLight(componentId);
-      source = m_Multilang.getString("UnknownSource");
+      source = multilang.getString("UnknownSource");
 
       // Sometimes, source could not be found
       if (instance != null) {
@@ -228,8 +278,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
    */
   public SILVERMAILMessage getMessage(long messageId)
       throws SILVERMAILException {
-    SILVERMAILMessage msg = SILVERMAILPersistence.getMessage(messageId);
-    return msg;
+    return SILVERMAILPersistence.getMessage(messageId);
   }
 
   /**
@@ -271,5 +320,13 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
           "SILVERMAILSessionController.deleteMessage()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
+  }
+
+  static {
+    INBOX_ORDER_BIES = new HashMap<>();
+    INBOX_ORDER_BIES.put(RECEPTION_DATE_INDEX, Pair.of(RECEPTION_DATE_ASC, RECEPTION_DATE_DESC));
+    INBOX_ORDER_BIES.put(SUBJECT_INDEX, Pair.of(SUBJECT_ASC, SUBJECT_DESC));
+    INBOX_ORDER_BIES.put(FROM_INDEX, Pair.of(FROM_ASC, FROM_DESC));
+    INBOX_ORDER_BIES.put(SOURCE_INDEX, Pair.of(SOURCE_ASC, SOURCE_DESC));
   }
 }

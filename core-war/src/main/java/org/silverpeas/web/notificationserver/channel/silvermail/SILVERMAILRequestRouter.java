@@ -27,12 +27,13 @@ package org.silverpeas.web.notificationserver.channel.silvermail;
  * Titre : SILVERMAILRequestRouter.java
  * @author eDurand
  */
+
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.HashMap;
 
@@ -40,7 +41,6 @@ import java.util.HashMap;
  * Class declaration
  */
 public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSessionController> {
-
   private static final long serialVersionUID = -1666867964822716456L;
 
   /**
@@ -156,5 +156,4 @@ public class SILVERMAILRequestRouter extends ComponentRequestRouter<SILVERMAILSe
     }
     return result;
   }
-
 }

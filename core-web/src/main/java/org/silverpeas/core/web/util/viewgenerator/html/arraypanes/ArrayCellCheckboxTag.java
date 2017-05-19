@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2016 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -28,26 +28,26 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
  * Create a new cell in an ArrayPane
  * @author cdm
  */
-public class ArrayCellTextTag extends AbstractArrayCellTag {
+public class ArrayCellCheckboxTag extends AbstractArrayCellTag {
 
-  private static final long serialVersionUID = -719577480679901247L;
-  private String text;
-  private Comparable toCompare;
+  private String name;
+  private String value;
+  private boolean checked;
 
   @Override
   ArrayCell doCreateCell() {
-    final ArrayCellText cell = getArrayLine().addArrayCellText(getContentValue(text));
-    if (toCompare != null) {
-      cell.setCompareOn(toCompare);
-    }
-    return cell;
+    return getArrayLine().addArrayCellCheckbox(name, getContentValue(value), checked);
   }
 
-  public void setText(final String text) {
-    this.text = text;
+  public void setName(final String name) {
+    this.name = name;
   }
 
-  public void setCompareOn(final Comparable toCompare) {
-    this.toCompare = toCompare;
+  public void setValue(final String value) {
+    this.value = value;
+  }
+
+  public void setChecked(final boolean checked) {
+    this.checked = checked;
   }
 }

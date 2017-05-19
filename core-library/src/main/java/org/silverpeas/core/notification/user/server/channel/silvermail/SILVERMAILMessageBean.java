@@ -37,12 +37,18 @@ import javax.validation.constraints.NotNull;
 @Entity
 @Table(name = "ST_SilverMailMessage")
 @NamedQueries({
-    @NamedQuery(name = "findByUserIdAndFolderIdAndReadState",
-        query = "select m from SILVERMAILMessageBean m where m.userId = :userId and m.folderId = " +
-            ":folderId and m.readen = :readState order by m.id desc"),
-    @NamedQuery(name = "findByUserIdAndFolderId",
-        query = "select m from SILVERMAILMessageBean m where m.userId = :userId and m.folderId = " +
-            ":folderId order by m.id desc")})
+    @NamedQuery(name = "markAllMessagesAsReadByUserIdAndIds",
+        query = "update SILVERMAILMessageBean m set m.readen = 1 where m.userId = :userId " +
+            "and m.readen != 1 and m.id in :ids"),
+    @NamedQuery(name = "deleteAllMessagesByUserIdAndIds",
+        query = "delete SILVERMAILMessageBean m where m.userId = :userId " +
+            "and m.id in :ids"),
+    @NamedQuery(name = "markAllMessagesAsReadByUserIdAndFolderId",
+        query = "update SILVERMAILMessageBean m set m.readen = 1 where m.userId = :userId " +
+            "and m.folderId = :folderId and m.readen != 1"),
+    @NamedQuery(name = "deleteAllMessagesByUserIdAndFolderId",
+        query = "delete SILVERMAILMessageBean m where m.userId = :userId " +
+            "and m.folderId = :folderId")})
 public class SILVERMAILMessageBean
     extends BasicJpaEntity<SILVERMAILMessageBean, UniqueLongIdentifier> {
   private static final long serialVersionUID = -3073514330044912996L;
@@ -50,8 +56,9 @@ public class SILVERMAILMessageBean
   @Column(nullable = false)
   @NotNull
   private long userId = -1;
+  // 0 = INBOX
   @Column
-  private long folderId = 0; // 0 = INBOX
+  private long folderId = 0;
   @Column
   private String senderName = "";
   @Column(length = 1024)
@@ -70,6 +77,7 @@ public class SILVERMAILMessageBean
   private String header;
 
   public SILVERMAILMessageBean() {
+    // For JPA
   }
 
   public long getUserId() {

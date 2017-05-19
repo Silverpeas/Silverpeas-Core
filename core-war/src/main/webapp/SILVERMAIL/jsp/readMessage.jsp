@@ -58,8 +58,6 @@
     function deleteMessage(id) {
       var ajaxConfig = sp.ajaxConfig("DeleteMessage").byPostMethod();
       ajaxConfig.withParam("ID", id);
-      ajaxConfig.withParam("SpaceId", '${param.SpaceId}');
-      ajaxConfig.withParam("from", '${from}');
       silverpeasAjax(ajaxConfig).then(function() {
         window.close();
       });

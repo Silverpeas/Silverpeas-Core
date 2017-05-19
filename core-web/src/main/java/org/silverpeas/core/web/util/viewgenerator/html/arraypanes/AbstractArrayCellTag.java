@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2016 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,30 +24,47 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.tagext.BodyTagSupport;
+
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
+
 /**
  * Create a new cell in an ArrayPane
  * @author cdm
  */
-public class ArrayCellTextTag extends AbstractArrayCellTag {
+public abstract class AbstractArrayCellTag extends BodyTagSupport {
 
-  private static final long serialVersionUID = -719577480679901247L;
-  private String text;
-  private Comparable toCompare;
+  private String classes;
 
   @Override
-  ArrayCell doCreateCell() {
-    final ArrayCellText cell = getArrayLine().addArrayCellText(getContentValue(text));
-    if (toCompare != null) {
-      cell.setCompareOn(toCompare);
+  public final int doEndTag() throws JspException {
+    ArrayCell cell = doCreateCell();
+    if (isDefined(classes)) {
+      cell.setStyleSheet(classes);
     }
-    return cell;
+    return EVAL_PAGE;
   }
 
-  public void setText(final String text) {
-    this.text = text;
+  public void setClasses(final String classes) {
+    this.classes = classes;
   }
 
-  public void setCompareOn(final Comparable toCompare) {
-    this.toCompare = toCompare;
+  abstract ArrayCell doCreateCell();
+
+  protected String getContentValue(String valueIfNoBodyContent) {
+    String value = defaultStringIfNotDefined(valueIfNoBodyContent);
+    if (bodyContent != null) {
+      final String bodyContentString = bodyContent.getString();
+      if (isDefined(bodyContentString)) {
+        value = bodyContentString;
+      }
+    }
+    return value;
+  }
+
+  protected ArrayLine getArrayLine() {
+    return (ArrayLine) pageContext.getAttribute(ArrayLineTag.ARRAY_LINE_PAGE_ATT);
   }
 }

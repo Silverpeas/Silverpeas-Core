@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2016 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -24,30 +24,26 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-/**
- * Create a new cell in an ArrayPane
- * @author cdm
- */
-public class ArrayCellTextTag extends AbstractArrayCellTag {
+import org.apache.taglibs.standard.tag.rt.core.ForEachTag;
+import org.silverpeas.core.util.PaginationList;
 
-  private static final long serialVersionUID = -719577480679901247L;
-  private String text;
-  private Comparable toCompare;
+import javax.servlet.jsp.JspTagException;
+
+/**
+ * Iterate over lines.
+ * @author Yohann Chastagnier
+ */
+public class ArrayLinesTag extends ForEachTag {
 
   @Override
-  ArrayCell doCreateCell() {
-    final ArrayCellText cell = getArrayLine().addArrayCellText(getContentValue(text));
-    if (toCompare != null) {
-      cell.setCompareOn(toCompare);
+  public void setItems(final Object items) throws JspTagException {
+    super.setItems(items);
+    if (items instanceof PaginationList) {
+      getArrayPane().setPaginationList((PaginationList) items);
     }
-    return cell;
   }
 
-  public void setText(final String text) {
-    this.text = text;
-  }
-
-  public void setCompareOn(final Comparable toCompare) {
-    this.toCompare = toCompare;
+  public ArrayPane getArrayPane() {
+    return (ArrayPane) pageContext.getAttribute(ArrayPaneTag.ARRAY_PANE_PAGE_ATT);
   }
 }

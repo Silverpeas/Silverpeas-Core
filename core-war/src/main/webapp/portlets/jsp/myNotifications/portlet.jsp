@@ -24,30 +24,44 @@
 
 --%>
 
-<%@page import="org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane" %>
-<%@ page import="org.silverpeas.core.util.DateUtil" %>
 
 <%@ include file="../portletImport.jsp"%>
 
 <%@ taglib uri="http://java.sun.com/portlet" prefix="portlet" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
 <portlet:defineObjects/>
 <portlet:actionURL var="actionURL"/>
+
+<c:set var="_userLanguage" value="<%=language%>" scope="request"/>
+<jsp:useBean id="_userLanguage" type="java.lang.String" scope="request"/>
+<fmt:setLocale value="${_userLanguage}"/>
+<view:setBundle basename="org.silverpeas.notificationserver.channel.silvermail.multilang.silvermail"/>
+<view:setBundle basename="org.silverpeas.notificationserver.channel.silvermail.settings.silvermailIcons" var="icons"/>
+
+<fmt:message var="dateLabel" key="date"/>
+<fmt:message var="sourceLabel" key="source"/>
+<fmt:message var="fromLabel" key="from"/>
+<fmt:message var="urlLabel" key="url"/>
+<fmt:message var="subjectLabel" key="subject"/>
+
+<fmt:message var="linkIconUrl" key="silvermail.link" bundle="${icons}"/>
 
 <view:includePlugin name="userNotification"/>
 <script type="text/javascript">
 
   var _reloadList = function() {
-    var ajaxConfig = sp.ajaxConfig(window.location.href);
-    sp.load('#silvermail-portlet-list', ajaxConfig, true);
+    var ajaxConfig = sp.ajaxConfig('${actionURL}');
+    return sp.load('#silvermail-portlet-list', ajaxConfig, true);
+  };
+
+  var _updateFromRequest = function(request) {
+    return sp.updateTargetWithHtmlContent('#silvermail-portlet-list', request.responseText, true);
   };
 
   window.USERNOTIFICATION_PROMISE.then(function() {
@@ -62,52 +76,39 @@
   });
 </script>
 <div id="silvermail-portlet-list">
-<%
-RenderRequest 	pReq 			= (RenderRequest)request.getAttribute("javax.portlet.request");
-Iterator 		messageIterator = (Iterator) pReq.getAttribute("Messages");
-
-//Arraypane
-ArrayPane list = gef.getArrayPane("silvermail", actionURL, request, session);
-ArrayColumn col = list.addArrayColumn(message.getString("notification.date"));
-col = list.addArrayColumn(message.getString("notification.source"));
-col = list.addArrayColumn(message.getString("notification.from"));
-col = list.addArrayColumn(message.getString("notification.url"));
-col = list.addArrayColumn(message.getString("notification.subject"));
-
-String	hasBeenReadenOrNotBegin	= "";
-String	hasBeenReadenOrNotEnd	= "";
-
-while(messageIterator.hasNext())
-{
-	hasBeenReadenOrNotBegin = "";
-	hasBeenReadenOrNotEnd 	= "";
-	SILVERMAILMessage smMessage = (SILVERMAILMessage)messageIterator.next();
-	if (smMessage.getReaden() == 0) {
-		hasBeenReadenOrNotBegin = "<b>";
-		hasBeenReadenOrNotEnd = "</b>";
-	}
-
-	String link = "<A HREF =\"javascript:onClick=spUserNotification.view(" + smMessage.getId() + ");\">";
-	ArrayLine line = list.addArrayLine();
-	Date date = smMessage.getDate();
-	ArrayCellText cell1 = line.addArrayCellText(hasBeenReadenOrNotBegin + DateUtil
-      .getOutputDate(date, language) + hasBeenReadenOrNotEnd );
-	cell1.setCompareOn(date);
-
-	ArrayCellText cell2 = line.addArrayCellText(hasBeenReadenOrNotBegin + WebEncodeHelper.javaStringToHtmlString(smMessage.getSource()) + "</A>" + hasBeenReadenOrNotEnd );
-	cell2.setCompareOn(smMessage.getSource());
-
-	ArrayCellText cell3 = line.addArrayCellText(hasBeenReadenOrNotBegin + link + WebEncodeHelper.javaStringToHtmlString(smMessage.getSenderName()) + "</A>" + hasBeenReadenOrNotEnd );
-	cell3.setCompareOn(smMessage.getSenderName());
-
-	if ( smMessage.getUrl()!=null && smMessage.getUrl().length()>0 )
-		line.addArrayCellText(hasBeenReadenOrNotBegin + "<A HREF =\"" + WebEncodeHelper.javaStringToHtmlString(smMessage.getUrl()) + "\" target=_top><img src=\""+m_sContext+"/util/icons/Lien.gif\" border=\"0\"></A>" + hasBeenReadenOrNotEnd );
-	else
-		line.addArrayCellText( "" );
-	ArrayCellText cell5 = line.addArrayCellText(hasBeenReadenOrNotBegin + link + WebEncodeHelper.javaStringToHtmlString(smMessage.getSubject()) + "</A>" + hasBeenReadenOrNotEnd );
-	cell5.setCompareOn(smMessage.getSubject());
-}
-out.println(list.print());
-out.flush();
-%>
+  <view:arrayPane var="userNotificationPortlet" routingAddress="${actionURL}">
+    <view:arrayColumn title="${dateLabel}" sortable="true"/>
+    <view:arrayColumn title="${urlLabel}" sortable="false"/>
+    <view:arrayColumn title="${subjectLabel}" sortable="true"/>
+    <view:arrayColumn title="${fromLabel}" sortable="true"/>
+    <view:arrayColumn title="${sourceLabel}" sortable="true"/>
+    <view:arrayLines var="userNotification" items="${requestScope.Messages}">
+      <c:set var="unreadClasses" value="${userNotification.readen eq 0 ? 'unread-user-notification-inbox' : ''}"/>
+      <view:arrayLine classes="ArrayCell ${unreadClasses}">
+        <c:set var="viewUrl" value="javascript:onClick=spUserNotification.view(${userNotification.id})"/>
+        <view:arrayCellText compareOn="${userNotification.id}">
+          ${silfn:formatDate(userNotification.date, _userLanguage)}
+        </view:arrayCellText>
+        <view:arrayCellText>
+          <c:if test="${not empty userNotification.url}">
+            <a href="${userNotification.url}" target="_top"><img src="<c:url value="${linkIconUrl}"/>" alt="" border="0"/></a>
+          </c:if>
+        </view:arrayCellText>
+        <view:arrayCellText compareOn="${fn:toLowerCase(userNotification.subject)}">
+          <a href="${viewUrl}">${silfn:escapeHtml(userNotification.subject)}</a>
+        </view:arrayCellText>
+        <view:arrayCellText compareOn="${fn:toLowerCase(userNotification.senderName)}">
+          <a href="${viewUrl}">${silfn:escapeHtml(userNotification.senderName)}</a>
+        </view:arrayCellText>
+        <view:arrayCellText compareOn="${fn:toLowerCase(userNotification.source)}">
+          ${silfn:escapeHtml(userNotification.source)}
+        </view:arrayCellText>
+      </view:arrayLine>
+    </view:arrayLines>
+  </view:arrayPane>
+  <script type="text/javascript">
+    whenSilverpeasReady(function() {
+      sp.arrayPane.ajaxControls('#silvermail-portlet-list', _updateFromRequest);
+    });
+  </script>
 </div>

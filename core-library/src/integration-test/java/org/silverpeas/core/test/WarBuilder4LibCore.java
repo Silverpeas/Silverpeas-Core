@@ -379,6 +379,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addCommonBasicUtilities();
     addBundleBaseFeatures();
     addCommonUserBeans();
+    addClasses(PaginationPage.class);
     return this;
   }
 

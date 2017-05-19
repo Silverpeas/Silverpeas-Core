@@ -28,9 +28,11 @@ import org.silverpeas.core.persistence.datasource.model.EntityIdentifierConverte
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.datasource.repository.QueryCriteria;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.PaginationList;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -43,8 +45,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import static org.silverpeas.core.util.annotation.ClassAnnotationUtil
-    .searchClassThatDeclaresAnnotation;
+import static org.silverpeas.core.persistence.datasource.repository.PaginationCriterion
+    .NO_PAGINATION;
 
 /**
  * Abstract implementation of the {@link EntityRepository} interface that uses the JPA API.
@@ -61,7 +63,9 @@ import static org.silverpeas.core.util.annotation.ClassAnnotationUtil
 public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
     implements EntityRepository<T> {
 
-  private int maximumItemsInClause = 500;
+  private static final int DEFAULT_MAXIMUM_ITEMS_IN_CLAUSE = 500;
+  private static final String FROM_CLAUSE = "from ";
+  private int maximumItemsInClause = DEFAULT_MAXIMUM_ITEMS_IN_CLAUSE;
   private EntityIdentifierConverter identifierConverter =
       new EntityIdentifierConverter(getEntityIdentifierClass());
 
@@ -110,21 +114,17 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
     return deleteByIdentifier(getIdentifierConverter().convertToEntityIdentifiers(ids));
   }
 
+  protected long countByCriteria(final QueryCriteria criteria) {
+    String jpqlQuery = toJPQLQuery(criteria);
+    NamedParameters parameters = criteria.clause().parameters();
+    return countFromJpqlString(jpqlQuery, parameters);
+  }
+
   @Override
   public List<T> findByCriteria(final QueryCriteria criteria) {
     String jpqlQuery = toJPQLQuery(criteria);
     NamedParameters parameters = criteria.clause().parameters();
-    TypedQuery<T> query = getEntityManager().createQuery(jpqlQuery, getEntityClass());
-    long count = -1;
-    if (criteria.pagination().isDefined()) {
-      String jpqlCountQuery = "select count(*) " + jpqlQuery.replaceFirst("order by.*", "");
-      count = getFromJpqlString(jpqlCountQuery, parameters, Long.class);
-      query.setFirstResult((criteria.pagination().getPageNumber() - 1) * criteria.pagination().
-          getItemCount());
-      query.setMaxResults(criteria.pagination().getItemCount());
-    }
-    List<T> listOfEntities = getAllFromQuery(query, parameters);
-    return (count >= 1 ? PaginationList.from(listOfEntities, count) : listOfEntities);
+    return listFromJpqlString(jpqlQuery, parameters, criteria.pagination());
   }
 
   /**
@@ -174,6 +174,19 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
    * @return the required entity if exists, null otherwise
    * @throws IllegalArgumentException if it exists more than one entity from the query result.
    */
+  protected long countFromJpqlString(String query, NamedParameters parameters) {
+    String countQuery = "select count(*) " +
+        query.replaceFirst("select .*from ", FROM_CLAUSE).replaceFirst("order by.*", "");
+    return getFromJpqlString(countQuery, parameters, Long.class);
+  }
+
+  /**
+   * Gets an entity from the specified query written in JPQL and with the specified parameters.
+   * @param query the JPQL query.
+   * @param parameters the parameters to apply to the query.
+   * @return the required entity if exists, null otherwise
+   * @throws IllegalArgumentException if it exists more than one entity from the query result.
+   */
   protected T getFromJpqlString(String query, NamedParameters parameters) {
     return getFromJpqlString(query, parameters, getEntityClass());
   }
@@ -206,6 +219,18 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
   }
 
   /**
+   * Lists entities from the specified JPQL query and with the specified parameters.
+   * @param query the JPQL query.
+   * @param parameters the parameters to apply to the query.
+   * @return a list of entities matching the query and the parameters. If no entities match the
+   * query then an empty list is returned.
+   */
+  protected List<T> listFromJpqlString(String query, NamedParameters parameters,
+      PaginationCriterion pagination) {
+    return listFromJpqlString(query, parameters, pagination, getEntityClass());
+  }
+
+  /**
    * Lists entities from a the specified JPQL query and with the specified parameters.
    * This method is for fetching any information about the entities stored into this repository; it
    * can be the entities themselves or some of their properties or relationships, and so on.
@@ -218,7 +243,36 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
    */
   protected <U> List<U> listFromJpqlString(String query, NamedParameters parameters,
       Class<U> returnEntityType) {
-    return getAllFromQuery(getEntityManager().createQuery(query, returnEntityType), parameters);
+    return listFromJpqlString(query, parameters, NO_PAGINATION, returnEntityType);
+  }
+
+  /**
+   * Lists entities from a the specified JPQL query and with the specified parameters.
+   * This method is for fetching any information about the entities stored into this repository; it
+   * can be the entities themselves or some of their properties or relationships, and so on.
+   * @param <U> the type of the returned entities.
+   * @param jpqlQuery the JPQL query.
+   * @param parameters the parameters to apply to the query.
+   * @param returnEntityType the class of the returned entities.
+   * @return a list of entities matching the query and the parameters. If no entities match the
+   * query then an empty list is returned.
+   */
+  protected <U> List<U> listFromJpqlString(String jpqlQuery, NamedParameters parameters,
+      PaginationCriterion pagination, Class<U> returnEntityType) {
+    final TypedQuery<U> query = getEntityManager().createQuery(jpqlQuery, returnEntityType);
+    long count = applyPaginationOnQuery(jpqlQuery, query, parameters, pagination);
+    List<U> listOfEntities = getAllFromQuery(query, parameters);
+    return count >= 1 ? PaginationList.from(listOfEntities, count) : listOfEntities;
+  }
+
+  /**
+   * Updates entities from a JPQL query and with the specified parameters.
+   * @param query the JPQL query.
+   * @param parameters the parameters to apply to the query.
+   * @return the number of deleted entities.
+   */
+  protected long updateFromJpqlQuery(String query, NamedParameters parameters) {
+    return updateFromQuery(getEntityManager().createQuery(query), parameters);
   }
 
   /**
@@ -285,6 +339,16 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
   }
 
   /**
+   * Updates the entities from a named query and with the specified parameters.
+   * @param namedQuery the name of the query.
+   * @param parameters the parameters to apply to the query.
+   * @return the count of entities updated by the named query.
+   */
+  protected long updateFromNamedQuery(String namedQuery, NamedParameters parameters) {
+    return updateFromQuery(getEntityManager().createNamedQuery(namedQuery), parameters);
+  }
+
+  /**
    * Deletes the entities from a named query and with the specified parameters.
    * @param namedQuery the name of the query.
    * @param parameters the parameters to apply to the query.
@@ -334,8 +398,8 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
   }
 
   protected Class<T> getEntityClass() {
-    return ((Class<T>) ((ParameterizedType) this.getClass()
-        .getGenericSuperclass()).getActualTypeArguments()[0]);
+    return (Class<T>) ((ParameterizedType) this.getClass()
+        .getGenericSuperclass()).getActualTypeArguments()[0];
   }
 
   private T getByIdentifier(final EntityIdentifier id) {
@@ -364,8 +428,8 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
     if (queryInLowerCase.startsWith("select")) {
       query = query.substring(queryInLowerCase.indexOf("from"));
     }
-    if (!queryInLowerCase.startsWith("from ")) {
-      query = "from " + getEntityClass().getSimpleName() + " where " + query;
+    if (!queryInLowerCase.startsWith(FROM_CLAUSE)) {
+      query = FROM_CLAUSE + getEntityClass().getSimpleName() + " where " + query;
     }
     return query;
   }
@@ -379,9 +443,10 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
     try {
       return parameters.applyTo(query).getSingleResult();
     } catch (NoResultException e) {
+      SilverLogger.getLogger(this).debug(e.getMessage(), e);
       return null;
     } catch (NonUniqueResultException e) {
-      throw new IllegalArgumentException(e.getMessage());
+      throw new IllegalArgumentException(e.getMessage(), e);
     }
   }
 
@@ -400,6 +465,10 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
     return parameters.applyTo(deleteQuery).executeUpdate();
   }
 
+  private long updateFromQuery(Query updateQuery, NamedParameters parameters) {
+    return parameters.applyTo(updateQuery).executeUpdate();
+  }
+
   private <E> Collection<Collection<E>> split(Collection<E> collection) {
     return CollectionUtil.split(collection, getMaximumItemsInClause());
   }
@@ -413,7 +482,27 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
   }
 
   private <U extends EntityIdentifier> Class<U> getEntityIdentifierClass() {
-    return ((Class<U>) ((ParameterizedType) getEntityClass().getGenericSuperclass())
-        .getActualTypeArguments()[1]);
+    return (Class<U>) ((ParameterizedType) getEntityClass().getGenericSuperclass())
+        .getActualTypeArguments()[1];
+  }
+
+  /**
+   * Applies the pagination to the query.
+   * @param jpqlQuery the jpql query.
+   * @param query the query as object instance.
+   * @param parameters the parameters.
+   * @param pagination the pagination.
+   * @return the total number of item of the paginated result.
+   */
+  private <U> long applyPaginationOnQuery(final String jpqlQuery, final TypedQuery<U> query,
+      final NamedParameters parameters, final PaginationCriterion pagination) {
+    long count = 0;
+    if (pagination != null && pagination.isDefined()) {
+      count = countFromJpqlString(jpqlQuery, parameters);
+      query.setFirstResult((pagination.getPageNumber() - 1) * pagination.
+          getItemCount());
+      query.setMaxResults(pagination.getItemCount());
+    }
+    return count;
   }
 }
