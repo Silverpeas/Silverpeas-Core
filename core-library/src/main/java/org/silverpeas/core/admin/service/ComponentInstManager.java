@@ -202,7 +202,7 @@ public class ComponentInstManager {
     Integer fatherLocalId = spaceLocalId;
     if (fatherLocalId == null) {
       try {
-        ddManager.getOrganizationSchema();
+        ddManager.holdOrganizationSchema();
         SpaceRow space = ddManager.getOrganization().space.getSpaceOfInstance(localComponentId);
         if (space == null) {
           space = new SpaceRow();
@@ -232,7 +232,7 @@ public class ComponentInstManager {
   public List<ComponentInstLight> getRemovedComponents(DomainDriverManager ddManager)
       throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       ComponentInstanceRow[] componentRows = ddManager.getOrganization().instance
           .getRemovedComponents();
 
@@ -256,7 +256,7 @@ public class ComponentInstManager {
       throws AdminException {
     ComponentInstLight compoLight = null;
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       ComponentInstanceRow compo = ddManager.getOrganization().instance.getComponentInstance(
           compLocalId);
       if (compo != null) {
@@ -289,7 +289,7 @@ public class ComponentInstManager {
   public void setComponentInst(ComponentInst componentInst, DomainDriverManager ddManager,
       int compLocalId, int fatherId) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
 
       // Load the component detail
       ComponentInstanceRow instance = ddManager.getOrganization().instance.getComponentInstance(
@@ -390,7 +390,7 @@ public class ComponentInstManager {
   public void updateComponentOrder(DomainDriverManager ddManager, int compLocalId, int orderNum)
       throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       ddManager.getOrganization().instance.updateComponentOrder(compLocalId, orderNum);
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate("order of component", compLocalId), e);
@@ -405,7 +405,7 @@ public class ComponentInstManager {
   public void updateComponentInheritance(DomainDriverManager ddManager,
       int compLocalId, boolean inheritanceBlocked) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       ddManager.getOrganization().instance.updateComponentInheritance(compLocalId,
           inheritanceBlocked);
     } catch (Exception e) {
@@ -505,7 +505,7 @@ public class ComponentInstManager {
   public String[] getAllCompoIdsByComponentName(DomainDriverManager ddManager, String sComponentName)
       throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
 
       // Initialize a ComponentInstanceRow for search
       ComponentInstanceRow cir = new ComponentInstanceRow();
@@ -601,7 +601,7 @@ public class ComponentInstManager {
   public List<Parameter> getParameters(DomainDriverManager ddManager, int compLocalId)
       throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
 
       // Get the parameters if any
       List<Parameter> parameters = ddManager.getOrganization().instanceData

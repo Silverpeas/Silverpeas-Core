@@ -36,6 +36,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -168,11 +173,12 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
         preparedStatement.setLong(paramIndex, (Long) parameter);
       } else if (parameter instanceof Timestamp) {
         preparedStatement.setTimestamp(paramIndex, (Timestamp) parameter);
-      } else if (parameter instanceof DateTime) {
-        preparedStatement
-            .setTimestamp(paramIndex, new java.sql.Timestamp(((Date) parameter).getTime()));
-      } else if (parameter instanceof Date) {
-        preparedStatement.setDate(paramIndex, new java.sql.Date(((Date) parameter).getTime()));
+      } else if (isADateTime(parameter)) {
+        preparedStatement.setTimestamp(paramIndex,
+            new java.sql.Timestamp(toInstant(parameter).toEpochMilli()));
+      } else if (isADate(parameter)) {
+        preparedStatement.setDate(paramIndex,
+            new java.sql.Date(toInstant(parameter).toEpochMilli()));
       } else {
         try {
           Method idGetter = parameter.getClass().getDeclaredMethod("getId");
@@ -184,6 +190,42 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
         }
       }
       paramIndex++;
+    }
+  }
+
+  private static boolean isADate(final Object parameter) {
+    return parameter instanceof Date || parameter instanceof LocalDate;
+  }
+
+  private static boolean isADateTime(final Object parameter) {
+    if (parameter instanceof DateTime) {
+      return true;
+    }
+    if (parameter instanceof Instant) {
+      return true;
+    }
+    if (parameter instanceof LocalDateTime) {
+      return true;
+    }
+    if (parameter instanceof OffsetDateTime) {
+      return true;
+    }
+    if (parameter instanceof ZonedDateTime) {
+      return true;
+    }
+    return false;
+  }
+
+  private static Instant toInstant(final Object parameter) {
+    try {
+      if (parameter instanceof Instant) {
+        return (Instant) parameter;
+      }
+      Method toInstant = parameter.getClass().getMethod("toInstant");
+      return (Instant) toInstant.invoke(parameter);
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      throw new IllegalArgumentException(
+          "Date or date time parameter expected. But is " + parameter.getClass(), e);
     }
   }
 

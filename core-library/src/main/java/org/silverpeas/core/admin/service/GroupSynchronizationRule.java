@@ -30,15 +30,12 @@ import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.synchro.SynchroGroupReport;
-import org.silverpeas.core.admin.persistence.AdminPersistenceException;
-import org.silverpeas.core.admin.persistence.UserRow;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.exception.WithNested;
-import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine;
@@ -46,6 +43,7 @@ import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine.Oper
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -53,6 +51,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static java.util.Arrays.asList;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
@@ -297,7 +296,7 @@ class GroupSynchronizationRule {
       }
     }
     // Add all users belonging to any group in the list
-    return getUserManager().getAllUserIdsOfGroups(new ArrayList<>(allGroupIds));
+    return getUserManager().getAllUserIdsInGroups(new ArrayList<>(allGroupIds));
   }
 
   /**
@@ -305,17 +304,13 @@ class GroupSynchronizationRule {
    * This method returns user identifiers only into the context of shared domain search.
    * @param domainId the identifier of the aimed domain.
    * @return a list of user identifiers.
-   * @throws AdminPersistenceException
+   * @throws AdminException
    */
-  private List<String> getUserIdsByDomain(String domainId) throws AdminPersistenceException {
-    DomainDriverManager domainDriverManager =
-        DomainDriverManagerProvider.getCurrentDomainDriverManager();
-    List<String> userIds = Collections.emptyList();
+  private List<String> getUserIdsByDomain(String domainId) throws AdminException {
     if (isSharedDomain) {
-      userIds = asList(domainDriverManager.getOrganization().user
-          .getUserIdsOfDomain(Integer.parseInt(domainId)));
+      return getUserManager().getAllUserIdsInDomain(domainId);
     }
-    return userIds;
+    return Collections.EMPTY_LIST;
   }
 
   /**
@@ -332,19 +327,17 @@ class GroupSynchronizationRule {
       // In case of "Shared domain" then retrieving all users of all domains
       // Otherwise getting only users of group's domain
       if (isSharedDomain) {
-        userIds = asList(getUserManager().getAllUsersIds(domainDriverManager));
+        userIds = getUserManager().getAllUsersIds();
       } else {
-        userIds =
-            asList(getUserManager().getUserIdsOfDomain(domainDriverManager, group.getDomainId()));
+        userIds = getUserManager().getAllUserIdsInDomain(group.getDomainId());
       }
     } else {
       // All users by access level
       if (isSharedDomain) {
-        userIds = asList(domainDriverManager.getOrganization().user
-            .getUserIdsByAccessLevel(UserAccessLevel.fromCode(accessLevel)));
+        userIds =
+            asList(getUserManager().getUserIdsByAccessLevel(UserAccessLevel.fromCode(accessLevel)));
       } else {
-        userIds = asList(getUserManager()
-            .getUserIdsOfDomainAndAccessLevel(domainDriverManager, group.getDomainId(),
+        userIds = asList(getUserManager().getUserIdsByDomainAndByAccessLevel(group.getDomainId(),
                 UserAccessLevel.fromCode(accessLevel)));
       }
     }
@@ -383,13 +376,12 @@ class GroupSynchronizationRule {
    */
   private List<String> getUserIdsBySpecificProperty(String domainId, String propertyName,
       String propertyValue) throws AdminException {
-    final int domainIdAsInteger = Integer.parseInt(domainId);
     UserDetail[] users = new UserDetail[0];
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     DomainDriver domainDriver = null;
     try {
-      domainDriver = domainDriverManager.getDomainDriver(domainIdAsInteger);
+      domainDriver = domainDriverManager.getDomainDriver(domainId);
     } catch (Exception e) {
       reportInfo("admin.getUserIdsBySpecificProperty",
           "Erreur ! Domaine " + domainId + " inaccessible !");
@@ -419,24 +411,13 @@ class GroupSynchronizationRule {
       }
     }
 
-    List<String> specificIds = new ArrayList<>();
-    if (users != null) {
-      for (UserDetail user : users) {
-        specificIds.add(user.getSpecificId());
-      }
-    }
-
     // We have to find users according to theirs specificIds
-    UserRow[] usersInDomain = domainDriverManager.getOrganization().user
-        .getUsersBySpecificIds(domainIdAsInteger, specificIds);
-    List<String> userIds = new ArrayList<>();
-    if (usersInDomain != null) {
-      for (UserRow userInDomain : usersInDomain) {
-        userIds.add(Integer.toString(userInDomain.id));
-      }
-    }
+    List<String> specificIds = users == null ? Collections.EMPTY_LIST :
+        Arrays.stream(users).map(UserDetail::getSpecificId).collect(Collectors.toList());
+    List<UserDetail> usersInDomain =
+        getUserManager().getUsersBySpecificIdsAndDomainId(specificIds, domainId);
 
-    return userIds;
+    return usersInDomain.stream().map(UserDetail::getId).collect(Collectors.toList());
   }
 
   /**
@@ -452,10 +433,9 @@ class GroupSynchronizationRule {
       DomainDriverManager domainDriverManager =
           DomainDriverManagerProvider.getCurrentDomainDriverManager();
       if (isSharedDomain) {
-        cacheOfAllUserIds = asList(getUserManager().getAllUsersIds(domainDriverManager));
+        cacheOfAllUserIds = getUserManager().getAllUsersIds();
       } else {
-        cacheOfAllUserIds =
-            asList(getUserManager().getUserIdsOfDomain(domainDriverManager, group.getDomainId()));
+        cacheOfAllUserIds = getUserManager().getAllUserIdsInDomain(group.getDomainId());
       }
     }
     return new ArrayList<>(cacheOfAllUserIds);

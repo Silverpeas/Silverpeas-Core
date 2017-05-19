@@ -58,7 +58,7 @@ public class ProfiledObjectManager {
 
     String[] asProfileIds = null;
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       // Get the profiles
       asProfileIds = ddManager.getOrganization().userRole.getAllUserRoleIdsOfObject(
           objectId, objectType, componentId);
@@ -143,7 +143,7 @@ public class ProfiledObjectManager {
 
     String[] asProfileIds = null;
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       // Get the profiles
       asProfileIds = ddManager.getOrganization().userRole
           .getAllObjectUserRoleIdsOfInstance(componentId);

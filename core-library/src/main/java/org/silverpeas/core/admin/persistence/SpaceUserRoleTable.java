@@ -258,10 +258,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
     if (isUserDirectlyInRole(userId, spaceUserRoleId)) {
       return;
     }
-    UserRow user = organization.user.getUser(userId);
-    if (user == null) {
-      throw new AdminPersistenceException(unknown("user", String.valueOf(spaceUserRoleId)));
-    }
+    checkUserExistence(userId);
 
     SpaceUserRoleRow spaceUserRole = getSpaceUserRole(spaceUserRoleId);
     if (spaceUserRole == null) {

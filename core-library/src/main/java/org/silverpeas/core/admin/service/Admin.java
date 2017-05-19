@@ -57,7 +57,10 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.SpaceProfileInstManager;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
+import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
+import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.Space;
+import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.space.notification.SpaceEventNotifier;
 import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
@@ -226,7 +229,7 @@ class Admin implements Administration {
       for (Domain domain : domains) {
         DomainDriver synchroDomain;
         try {
-          synchroDomain = ddm.getDomainDriver(Integer.parseInt(domain.getId()));
+          synchroDomain = ddm.getDomainDriver(domain.getId());
           if (synchroDomain != null && synchroDomain.isSynchroThreaded()) {
             synchroDomainIds.add(domain.getId());
           }
@@ -387,7 +390,8 @@ class Admin implements Administration {
   @Override
   public String deleteSpaceInstById(String userId, String spaceId, boolean startNewTransaction,
       boolean definitive) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       if (startNewTransaction) {
         domainDriverManager.startTransaction(false);
@@ -505,7 +509,8 @@ class Admin implements Administration {
 
   @Override
   public void restoreSpaceFromBasket(String spaceId) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     domainDriverManager.startTransaction(false);
     try {
       // Start transaction
@@ -557,7 +562,8 @@ class Admin implements Administration {
    */
   private SpaceInst getSpaceInstById(int spaceId)
       throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       SpaceInst spaceInst = cache.getSpaceInst(spaceId);
       if (spaceInst == null) {
@@ -576,13 +582,15 @@ class Admin implements Administration {
 
   @Override
   public SpaceInst getPersonalSpace(String userId) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     return spaceManager.getPersonalSpace(domainDriverManager, userId);
   }
 
   @Override
   public String[] getAllSubSpaceIds(String domainFatherId) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       // get all sub space ids
       String[] asDriverSpaceIds = spaceManager.getAllSubSpaceIds(domainDriverManager,
@@ -598,7 +606,8 @@ class Admin implements Administration {
 
   @Override
   public String updateSpaceInst(SpaceInst spaceInstNew) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
 
     domainDriverManager.startTransaction(false);
     try {
@@ -637,7 +646,8 @@ class Admin implements Administration {
 
   @Override
   public void updateSpaceOrderNum(String spaceId, int orderNum) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       int driverSpaceId = getDriverSpaceId(spaceId);
       // Open the connections with auto-commit to false
@@ -705,7 +715,8 @@ class Admin implements Administration {
 
   @Override
   public boolean isSpaceInstExist(String spaceId) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       return spaceManager.isSpaceInstExist(domainDriverManager, getDriverSpaceId(spaceId));
     } catch (AdminException e) {
@@ -715,7 +726,8 @@ class Admin implements Administration {
 
   @Override
   public String[] getAllRootSpaceIds() throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       String[] driverSpaceIds = spaceManager.getAllRootSpaceIds(domainDriverManager);
       // Convert all the driver space ids in client space ids
@@ -757,7 +769,8 @@ class Admin implements Administration {
 
   @Override
   public String[] getAllSpaceIds() throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       String[] driverSpaceIds = spaceManager.getAllSpaceIds(domainDriverManager);
       // Convert all the driver space ids in client space ids
@@ -770,7 +783,8 @@ class Admin implements Administration {
 
   @Override
   public List<SpaceInstLight> getRemovedSpaces() throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       return spaceManager.getRemovedSpaces(domainDriverManager);
     } catch (Exception e) {
@@ -780,7 +794,8 @@ class Admin implements Administration {
 
   @Override
   public List<ComponentInstLight> getRemovedComponents() throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       return componentManager.getRemovedComponents(domainDriverManager);
     } catch (Exception e) {
@@ -829,7 +844,8 @@ class Admin implements Administration {
 
   @Override
   public ComponentInstLight getComponentInstLight(String componentId) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       int driverComponentId = getDriverComponentId(componentId);
       return componentManager.getComponentInstLight(domainDriverManager, driverComponentId);
@@ -848,7 +864,8 @@ class Admin implements Administration {
    */
   private ComponentInst getComponentInst(int componentId,
       Integer fatherDriverSpaceId) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     String driverComponentId;
     try {
       // Get the component instance
@@ -869,7 +886,8 @@ class Admin implements Administration {
 
   @Override
   public List<Parameter> getComponentParameters(String componentId) {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       return componentManager.getParameters(domainDriverManager, getDriverComponentId(componentId));
     } catch (Exception e) {
@@ -895,7 +913,8 @@ class Admin implements Administration {
 
   @Override
   public void restoreComponentFromBasket(String componentId) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
 
     try {
       // Start transaction
@@ -977,7 +996,8 @@ class Admin implements Administration {
   public String addComponentInst(String userId, ComponentInst componentInst,
       boolean startNewTransaction) throws AdminException, QuotaException {
     Connection connectionProd = null;
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       connectionProd = openConnection(false);
 
@@ -1091,7 +1111,8 @@ class Admin implements Administration {
   private String deleteComponentInst(String userId, String componentId, boolean definitive,
       boolean startNewTransaction) throws AdminException {
     Connection connectionProd = null;
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       if (startNewTransaction) {
         // Open the connections with auto-commit to false
@@ -1190,7 +1211,8 @@ class Admin implements Administration {
 
   @Override
   public void updateComponentOrderNum(String componentId, int orderNum) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       int driverComponentId = getDriverComponentId(componentId);
       // Open the connections with auto-commit to false
@@ -1211,7 +1233,8 @@ class Admin implements Administration {
 
   @Override
   public String updateComponentInst(ComponentInst component) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       ComponentInst oldComponent = getComponentInst(component.getId());
       String componentClientId = getClientComponentId(oldComponent);
@@ -1434,7 +1457,8 @@ class Admin implements Administration {
 
   @Override
   public void moveSpace(String spaceId, String fatherId) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
 
     if (isParent(getDriverSpaceId(spaceId), getDriverSpaceId(fatherId))) {
       // space cannot be moved in one of its descendants
@@ -1538,7 +1562,8 @@ class Admin implements Administration {
   @Override
   public void moveComponentInst(String spaceId, String componentId, String idComponentBefore,
       ComponentInst[] componentInsts) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.getDomainDriverManager();
+    DomainDriverManager domainDriverManager =
+        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
 
       int sDriverComponentId = getDriverComponentId(componentId);
@@ -2652,9 +2677,8 @@ class Admin implements Administration {
   // -------------------------------------------------------------------------
   @Override
   public String[] getAllUsersIds() throws AdminException {
-    DomainDriverManager domainDriverManager =
-        DomainDriverManagerProvider.getCurrentDomainDriverManager();
-    return userManager.getAllUsersIds(domainDriverManager);
+    List<String> userIds = userManager.getAllUsersIds();
+    return userIds.toArray(new String[userIds.size()]);
   }
 
   @Override
@@ -2662,11 +2686,10 @@ class Admin implements Administration {
     if (!StringUtil.isDefined(sUserId) || "-1".equals(sUserId)) {
       return null;
     }
-    DomainDriverManager domainDriverManager =
-        DomainDriverManagerProvider.getCurrentDomainDriverManager();
+
     UserDetail ud = cache.getUserDetail(sUserId);
     if (ud == null) {
-      ud = userManager.getUserDetail(domainDriverManager, sUserId);
+      ud = userManager.getUserDetail(sUserId);
       if (ud != null) {
         cache.putUserDetail(sUserId, ud);
       }
@@ -2703,9 +2726,7 @@ class Admin implements Administration {
 
   @Override
   public boolean isEmailExisting(String email) throws AdminException {
-    DomainDriverManager domainDriverManager =
-        DomainDriverManagerProvider.getCurrentDomainDriverManager();
-    return userManager.isEmailExisting(domainDriverManager, email);
+    return userManager.isEmailExisting(email);
   }
 
   @Override
@@ -2723,8 +2744,7 @@ class Admin implements Administration {
       }
       for (int i = 0; i < theDomains.length && valret == null; i++) {
         try {
-          valret = userManager.getUserIdByLoginAndDomain(domainDriverManager, sLogin,
-              theDomains[i].getId());
+          valret = userManager.getUserIdByLoginAndDomain(sLogin, theDomains[i].getId());
         } catch (Exception e) {
           throw new AdminException(
               failureOnGetting("user by login and domain:", sLogin + "/" + sDomainId), e);
@@ -2734,7 +2754,7 @@ class Admin implements Administration {
         throw new AdminException(unknown("in all domains user with login", sLogin));
       }
     } else {
-      valret = userManager.getUserIdByLoginAndDomain(domainDriverManager, sLogin, sDomainId);
+      valret = userManager.getUserIdByLoginAndDomain(sLogin, sDomainId);
     }
     return valret;
   }
@@ -2746,14 +2766,12 @@ class Admin implements Administration {
     Map<String, String> userParameters = domainDriverManager.authenticate(authenticationKey);
     String login = userParameters.get("login");
     String domainId = userParameters.get("domainId");
-    return userManager.getUserIdByLoginAndDomain(domainDriverManager, login, domainId);
+    return userManager.getUserIdByLoginAndDomain(login, domainId);
   }
 
   @Override
   public UserFull getUserFull(String sUserId) throws AdminException {
-    DomainDriverManager domainDriverManager =
-        DomainDriverManagerProvider.getCurrentDomainDriverManager();
-    return userManager.getUserFull(domainDriverManager, sUserId);
+    return userManager.getUserFull(sUserId);
   }
 
   @Override
@@ -2761,7 +2779,7 @@ class Admin implements Administration {
 
     DomainDriverManager domainDriverManager =
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
-    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(domainId));
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     return synchroDomain.getUserFull(specificId);
   }
 
@@ -2786,7 +2804,7 @@ class Admin implements Administration {
       }
 
       // add user
-      String sUserId = userManager.addUser(domainDriverManager, userDetail, addOnlyInSilverpeas);
+      String sUserId = userManager.addUser(userDetail, addOnlyInSilverpeas);
 
       // Commit the transaction
       domainDriverManager.commit();
@@ -2794,7 +2812,7 @@ class Admin implements Administration {
         domainDriverManager.commit(userDetail.getDomainId());
       }
 
-      cache.opAddUser(userManager.getUserDetail(domainDriverManager, sUserId));
+      cache.opAddUser(userManager.getUserDetail(sUserId));
       // return group id
       return sUserId;
     } catch (Exception e) {
@@ -2818,33 +2836,12 @@ class Admin implements Administration {
 
   @Override
   public void migrateUser(UserDetail userDetail, String targetDomainId) throws AdminException {
-    DomainDriverManager domainDriverManager =
-        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
-      // Start transaction
-      domainDriverManager.startTransaction(false);
-      domainDriverManager.startTransaction(targetDomainId, false);
-
-      // migrate user
-      userManager.migrateUser(domainDriverManager, userDetail, targetDomainId);
-
-      // Commit the transaction
-      domainDriverManager.commit();
-      domainDriverManager.commit(targetDomainId);
-
+      userManager.migrateUser(userDetail, targetDomainId);
       cache.opUpdateUser(userDetail);
     } catch (Exception e) {
-      try {
-        // Roll back the transactions
-        domainDriverManager.rollback();
-        domainDriverManager.rollback(targetDomainId);
-      } catch (Exception e1) {
-        SilverLogger.getLogger(this).error(e1);
-      }
       throw new AdminException(
           failureOnAdding("user " + userDetail.getId(), "in domain " + targetDomainId), e);
-    } finally {
-      domainDriverManager.releaseOrganizationSchema();
     }
   }
 
@@ -2945,8 +2942,33 @@ class Admin implements Administration {
         domainDriverManager.startTransaction(user.getDomainId(), false);
       }
 
+      SynchroDomainReport.info("Admin.deleteUser()",
+          "Suppression de " + user.getLogin() + " des groupes dans la base");
+      String[] groups = groupManager.getDirectGroupsOfUser(domainDriverManager, user.getId());
+      for (String groupId : groups) {
+        groupManager.removeUserFromGroup(domainDriverManager, user.getId(), groupId);
+      }
+
+      SynchroDomainReport.info("Admin.deleteUser()",
+          "Suppression de " + user.getLogin() + " en tant que manager d'espace dans la base");
+      String[] profiles =
+          spaceProfileManager.getSpaceProfileIdsOfUserType(domainDriverManager, user.getId());
+      for (String profileId : profiles) {
+        spaceProfileManager.removeUserFromSpaceProfileInst(user.getId(), profileId,
+            domainDriverManager);
+      }
+
+      SynchroDomainReport.info("Admin.deleteUser()",
+          "Delete " + user.getLogin() + " from user favorite space table");
+      UserFavoriteSpaceService ufsDAO =
+          UserFavoriteSpaceServiceProvider.getUserFavoriteSpaceService();
+      if (!ufsDAO.removeUserFavoriteSpace(
+          new UserFavoriteSpaceVO(Integer.parseInt(user.getId()), -1))) {
+        throw new AdminPersistenceException(failureOnDeleting("user", user.getId()));
+      }
+
       // Delete the user
-      String sReturnUserId = userManager.deleteUser(domainDriverManager, user, onlyInSilverpeas);
+      String sReturnUserId = userManager.deleteUser(user, onlyInSilverpeas);
 
       // Commit the transaction
       domainDriverManager.commit();
@@ -2983,12 +3005,12 @@ class Admin implements Administration {
       domainDriverManager.startTransaction(false);
 
       // Update user
-      String sUserId = userManager.updateUser(domainDriverManager, user);
+      String sUserId = userManager.updateUser(user);
 
       // Commit the transaction
       domainDriverManager.commit();
 
-      cache.opUpdateUser(userManager.getUserDetail(domainDriverManager, sUserId));
+      cache.opUpdateUser(userManager.getUserDetail(sUserId));
 
       return sUserId;
     } catch (Exception e) {
@@ -3011,14 +3033,14 @@ class Admin implements Administration {
       }
 
       // Update user
-      String sUserId = userManager.updateUserFull(domainDriverManager, user);
+      String sUserId = userManager.updateUserFull(user);
 
       // Commit the transaction
       domainDriverManager.commit();
       if (user.getDomainId() != null) {
         domainDriverManager.commit(user.getDomainId());
       }
-      cache.opUpdateUser(userManager.getUserDetail(domainDriverManager, sUserId));
+      cache.opUpdateUser(userManager.getUserDetail(sUserId));
 
       return sUserId;
     } catch (Exception e) {
@@ -3146,7 +3168,7 @@ class Admin implements Administration {
       String id = domainDriverManager.createDomain(theDomain);
 
       // Update the synchro scheduler
-      DomainDriver domainDriver = domainDriverManager.getDomainDriver(Integer.parseInt(id));
+      DomainDriver domainDriver = domainDriverManager.getDomainDriver(id);
       if (domainDriver.isSynchroThreaded()) {
         domainSynchroScheduler.addDomain(id);
       }
@@ -3177,8 +3199,7 @@ class Admin implements Administration {
         DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       // Remove all users
-      UserDetail[] toRemoveUDs = userManager.getUsersOfDomain(domainDriverManager,
-          domainId);
+      UserDetail[] toRemoveUDs = userManager.getAllUsersInDomain(domainId);
       if (toRemoveUDs != null) {
         for (UserDetail user : toRemoveUDs) {
           try {
@@ -3225,7 +3246,7 @@ class Admin implements Administration {
 
   @Override
   public List<String> getAllDomainIdsForLogin(String login) throws AdminException {
-    return userManager.getDomainsOfUser(login);
+    return userManager.getDomainsByUserLogin(login);
   }
 
   @Override
@@ -3300,7 +3321,7 @@ class Admin implements Administration {
       groupIds.add(groupId);
       groupIds.addAll(groupManager.getAllSubGroupIdsRecursively(groupId));
 
-      return userManager.getAllUsersOfGroups(groupIds);
+      return userManager.getAllUsersInGroups(groupIds);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all users in group", groupId), e);
     }
@@ -3308,13 +3329,11 @@ class Admin implements Administration {
 
   @Override
   public UserDetail[] getUsersOfDomain(String domainId) throws AdminException {
-    DomainDriverManager domainDriverManager =
-        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       if (domainId != null && "-1".equals(domainId)) {
         return new UserDetail[0];
       }
-      return userManager.getUsersOfDomain(domainDriverManager, domainId);
+      return userManager.getAllUsersInDomain(domainId);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all users in domain", domainId), e);
     }
@@ -3333,13 +3352,12 @@ class Admin implements Administration {
 
   @Override
   public String[] getUserIdsOfDomain(String domainId) throws AdminException {
-    DomainDriverManager domainDriverManager =
-        DomainDriverManagerProvider.getCurrentDomainDriverManager();
     try {
       if (domainId != null && "-1".equals(domainId)) {
         return ArrayUtil.EMPTY_STRING_ARRAY;
       }
-      return userManager.getUserIdsOfDomain(domainDriverManager, domainId);
+      List<String> userIds = userManager.getAllUserIdsInDomain(domainId);
+      return userIds.toArray(new String[userIds.size()]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all users in domain", domainId), e);
     }
@@ -3371,12 +3389,10 @@ class Admin implements Administration {
       String sLogin = loginDomain.get("login");
       String sDomainId = loginDomain.get("domainId");
 
-      DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
-          sDomainId));
+      DomainDriver synchroDomain = domainDriverManager.getDomainDriver(sDomainId);
       // Get the user Id or import it if the domain accept it
       try {
-        sUserId = userManager.getUserIdByLoginAndDomain(domainDriverManager, sLogin,
-            sDomainId);
+        sUserId = userManager.getUserIdByLoginAndDomain(sLogin, sDomainId);
       } catch (Exception ex) {
         if (synchroDomain.isSynchroOnLoginEnabled() && !isAppInMaintenance) {//Try to import new user
           SilverLogger.getLogger(this).warn("User with login {0} in domain {1} not found",
@@ -3413,18 +3429,6 @@ class Admin implements Administration {
       return groupManager.getDirectGroupsOfUser(domainDriverManager, userId);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("direct groups of user", userId), e);
-    }
-  }
-
-  @Override
-  public UserDetail[] searchUsers(UserDetail modelUser, boolean isAnd)
-      throws AdminException {
-    DomainDriverManager domainDriverManager =
-        DomainDriverManagerProvider.getCurrentDomainDriverManager();
-    try {
-      return userManager.searchUsers(domainDriverManager, modelUser, isAnd);
-    } catch (Exception e) {
-      throw new AdminException("Fail to search users", e);
     }
   }
 
@@ -4307,7 +4311,7 @@ class Admin implements Administration {
               // add current group
               subGroupIds.add(groupId);
               if (subGroupIds != null && subGroupIds.size() > 0) {
-                UserDetail[] users = userManager.getAllUsersOfGroups(subGroupIds);
+                UserDetail[] users = userManager.getAllUsersInGroups(subGroupIds);
                 for (UserDetail user : users) {
                   alUserIds.add(user.getId());
                 }
@@ -4369,11 +4373,8 @@ class Admin implements Administration {
 
   @Override
   public int getAllSubUsersNumber(String sGroupId) throws AdminException {
-    DomainDriverManager domainDriverManager =
-        DomainDriverManagerProvider.getCurrentDomainDriverManager();
-
     if (!StringUtil.isDefined(sGroupId)) {
-      return userManager.getUserNumber(domainDriverManager);
+      return userManager.getUserCount();
     } else {
 
       return groupManager.getTotalUserCountInGroup("", sGroupId);
@@ -4382,16 +4383,14 @@ class Admin implements Administration {
 
   @Override
   public int getUsersNumberOfDomain(String domainId) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
-        getCurrentDomainDriverManager();
     try {
       if (!StringUtil.isDefined(domainId)) {
-        return userManager.getUserNumber(domainDriverManager);
+        return userManager.getUserCount();
       }
       if ("-1".equals(domainId)) {
         return 0;
       }
-      return userManager.getUsersNumberOfDomain(domainDriverManager, domainId);
+      return userManager.getNumberOfUsersInDomain(domainId);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("user count in domain", domainId), e);
     }
@@ -4399,9 +4398,7 @@ class Admin implements Administration {
 
   @Override
   public String[] getAdministratorUserIds(String fromUserId) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
-        getCurrentDomainDriverManager();
-    return userManager.getAllAdminIds(domainDriverManager, getUserDetail(fromUserId));
+    return userManager.getAllAdminIds(getUserDetail(fromUserId));
   }
 
   @Override
@@ -4696,12 +4693,9 @@ class Admin implements Administration {
       throws Exception {
     List<String> convertedUserIds = new ArrayList<>();
     String userId = null;
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
-        getCurrentDomainDriverManager();
     for (String userSpecificId : userSpecificIds) {
       try {
-        userId = userManager
-            .getUserIdBySpecificIdAndDomainId(domainDriverManager, userSpecificId, sDomainId);
+        userId = userManager.getUserIdBySpecificIdAndDomainId(userSpecificId, sDomainId);
         if (userId == null) {
           // The user doesn't exist -> Synchronize him
           SilverLogger.getLogger(this)
@@ -4728,8 +4722,7 @@ class Admin implements Administration {
     if (theGroup.isSynchronized()) {
       synchronizeGroupByRule(groupId, false);
     } else {
-      DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(theGroup
-          .getDomainId()));
+      DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theGroup.getDomainId());
       GroupDetail gr = synchroDomain.synchroGroup(theGroup.getSpecificId());
 
       gr.setId(groupId);
@@ -4746,8 +4739,7 @@ class Admin implements Administration {
 
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
-    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
-        domainId));
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     GroupDetail gr;
 
     if (isIdKey) {
@@ -4809,8 +4801,7 @@ class Admin implements Administration {
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
     GroupDetail theGroup = getGroup(groupId);
-    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(
-        Integer.parseInt(theGroup.getDomainId()));
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theGroup.getDomainId());
     synchroDomain.removeGroup(theGroup.getSpecificId());
     return deleteGroupById(groupId, true);
   }
@@ -4858,8 +4849,7 @@ class Admin implements Administration {
       domainDriverManager.startTransaction(false);
 
       UserDetail theUserDetail = getUserDetail(userId);
-      DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
-          theUserDetail.getDomainId()));
+      DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theUserDetail.getDomainId());
       // Synchronize the user's infos
       UserDetail ud = synchroDomain.synchroUser(theUserDetail.getSpecificId());
       ud.setId(userId);
@@ -4868,8 +4858,8 @@ class Admin implements Administration {
       if (!ud.equals(theUserDetail) ||
           (ud.getState() != UserState.UNKNOWN && ud.getState() != theUserDetail.getState())) {
         copyDistantUserIntoSilverpeasUser(ud, theUserDetail);
-        userManager.updateUser(domainDriverManager, theUserDetail);
-        cache.opUpdateUser(userManager.getUserDetail(domainDriverManager, userId));
+        userManager.updateUser(theUserDetail);
+        cache.opUpdateUser(userManager.getUserDetail(userId));
       }
       // Synchro manuelle : Ajoute ou Met à jour l'utilisateur
       listUsersUpdate.add(ud);
@@ -4922,8 +4912,7 @@ class Admin implements Administration {
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
 
-    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
-        domainId));
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     UserDetail ud = synchroDomain.importUser(userLogin);
     ud.setDomainId(domainId);
     String userId = addUser(ud, true);
@@ -4938,8 +4927,7 @@ class Admin implements Administration {
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
 
-    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
-        domainId));
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     UserDetail ud = synchroDomain.getUser(specificId);
 
     ud.setDomainId(domainId);
@@ -4955,8 +4943,7 @@ class Admin implements Administration {
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
 
-    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(
-        domainId));
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     return synchroDomain.getPropertiesToImport(language);
   }
 
@@ -4966,7 +4953,7 @@ class Admin implements Administration {
     DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
         getCurrentDomainDriverManager();
 
-    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(domainId));
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
     return synchroDomain.getUsersByQuery(query);
   }
 
@@ -4976,8 +4963,7 @@ class Admin implements Administration {
         getCurrentDomainDriverManager();
 
     UserDetail theUserDetail = getUserDetail(userId);
-    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(Integer.parseInt(theUserDetail.
-        getDomainId()));
+    DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theUserDetail.getDomainId());
     synchroDomain.removeUser(theUserDetail.getSpecificId());
     deleteUser(userId, true);
     List<UserDetail> listUsersRemove = new ArrayList<>();
@@ -5011,8 +4997,7 @@ class Admin implements Administration {
         // Start synchronization
         domainDriverManager.beginSynchronization(sDomainId);
 
-        DomainDriver synchroDomain = domainDriverManager
-            .getDomainDriver(Integer.parseInt(sDomainId));
+        DomainDriver synchroDomain = domainDriverManager.getDomainDriver(sDomainId);
         Domain theDomain = domainDriverManager.getDomain(sDomainId);
         String fromTimeStamp = theDomain.getTheTimeStamp();
         String toTimeStamp = synchroDomain.getTimeStamp(fromTimeStamp);
@@ -5026,7 +5011,7 @@ class Admin implements Administration {
 
         // Synchronize groups
         // Get all users of the domain from Silverpeas
-        UserDetail[] silverpeasUDs = userManager.getUsersOfDomain(domainDriverManager, sDomainId);
+        UserDetail[] silverpeasUDs = userManager.getAllUsersInDomain(sDomainId);
         HashMap<String, String> userIdsMapping = getUserIdsMapping(silverpeasUDs);
         sReport += "\n" + synchronizeGroups(sDomainId, userIdsMapping, fromTimeStamp, toTimeStamp);
 
@@ -5108,7 +5093,7 @@ class Admin implements Administration {
     SynchroDomainReport.warn("admin.synchronizeUsers", "Starting users synchronization...");
     try {
       // Get all users of the domain from distant datasource
-      DomainDriver domainDriver = domainDriverManager.getDomainDriver(Integer.parseInt(domainId));
+      DomainDriver domainDriver = domainDriverManager.getDomainDriver(domainId);
       UserDetail[] distantUDs = domainDriver.getAllChangedUsers(fromTimeStamp, toTimeStamp);
 
       message = distantUDs.length
@@ -5117,7 +5102,7 @@ class Admin implements Administration {
       SynchroDomainReport.info("admin.synchronizeUsers", message);
 
       // Get all users of the domain from Silverpeas
-      UserDetail[] silverpeasUDs = userManager.getUsersOfDomain(domainDriverManager, domainId);
+      UserDetail[] silverpeasUDs = userManager.getAllUsersInDomain(domainId);
       SynchroDomainReport.info("admin.synchronizeUsers", "Adding or updating users in database...");
 
       // Add new users or update existing ones from distant datasource
@@ -5207,7 +5192,7 @@ class Admin implements Administration {
       UserDetail distantUD, Collection<UserDetail> updatedUsers, String sReport) {
     String specificId = distantUD.getSpecificId();
     try {
-      String silverpeasId = userManager.updateUser(domainDriverManager, distantUD);
+      String silverpeasId = userManager.updateUser(distantUD);
       updatedUsers.add(distantUD);
       String message = "user " + distantUD.getDisplayedName() + " updated (id:" + silverpeasId
           + " / specificId:" + specificId + ")";
@@ -5226,7 +5211,7 @@ class Admin implements Administration {
       UserDetail distantUD, Collection<UserDetail> addedUsers, String sReport) {
     String specificId = distantUD.getSpecificId();
     try {
-      String silverpeasId = userManager.addUser(domainDriverManager, distantUD, true);
+      String silverpeasId = userManager.addUser(distantUD, true);
       if (silverpeasId.equals("")) {
         String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:"
             + specificId + ") - Login and LastName must be set !!!";
@@ -5255,7 +5240,7 @@ class Admin implements Administration {
       UserDetail silverpeasUD, Collection<UserDetail> deletedUsers, String sReport) {
     String specificId = silverpeasUD.getSpecificId();
     try {
-      userManager.deleteUser(domainDriverManager, silverpeasUD, true);
+      userManager.deleteUser(silverpeasUD, true);
       deletedUsers.add(silverpeasUD);
       String message = "user " + silverpeasUD.getDisplayedName() + " deleted (id:" + specificId
           + ")";
@@ -5535,63 +5520,37 @@ class Admin implements Administration {
     return cleanSubGroups.toArray(new GroupDetail[cleanSubGroups.size()]);
   }
 
+  @Override
+  public List<String> searchUserIdsByProfile(final List<String> profileIds) throws AdminException {
+    Set<String> userIds = new HashSet<>();
+    // search users in profiles
+    try {
+      DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
+          getCurrentDomainDriverManager();
+      for (String profileId : profileIds) {
+        ProfileInst profile = profileManager.getProfileInst(domainDriverManager, profileId);
+        // add users directly attach to profile
+        userIds.addAll(profile.getAllUsers());
+
+        // add users indirectly attach to profile (groups attached to profile)
+        List<String> groupIds = profile.getAllGroups();
+        List<String> allGroupIds = new ArrayList<>();
+        for (String groupId : groupIds) {
+          allGroupIds.add(groupId);
+          allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(groupId));
+        }
+        userIds.addAll(userManager.getAllUserIdsInGroups(allGroupIds));
+      }
+    } catch (Exception e) {
+      throw new AdminException("Fail to search user ids by some profiles", e);
+    }
+
+    return new ArrayList<>(userIds);
+  }
+
   // -------------------------------------------------------------------------
   // For SelectionPeas
   // -------------------------------------------------------------------------
-  @Override
-  public String[] searchUsersIds(String sGroupId, String componentId, String[] profileIds,
-      UserDetail modelUser) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
-        getCurrentDomainDriverManager();
-    try {
-      List<String> userIds = new ArrayList<>();
-      if (StringUtil.isDefined(sGroupId)) {
-        // search users in group and subgroups
-        UserDetail[] users = getAllUsersOfGroup(sGroupId);
-        for (UserDetail user : users) {
-          userIds.add(user.getId());
-        }
-        if (userIds.isEmpty()) {
-          userIds = null;
-        }
-      } else if (profileIds != null && profileIds.length > 0) {
-        // search users in profiles
-        for (String profileId : profileIds) {
-          ProfileInst profile = profileManager.getProfileInst(domainDriverManager, profileId);
-          // add users directly attach to profile
-          userIds.addAll(profile.getAllUsers());
-
-          // add users indirectly attach to profile (groups attached to profile)
-          List<String> groupIds = profile.getAllGroups();
-          List<String> allGroupIds = new ArrayList<>();
-          for (String groupId : groupIds) {
-            allGroupIds.add(groupId);
-            allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(groupId));
-          }
-          userIds.addAll(userManager.getAllUserIdsOfGroups(allGroupIds));
-        }
-        if (userIds.isEmpty()) {
-          userIds = null;
-        }
-      } else if (StringUtil.isDefined(componentId)) {
-        // search users in component
-        userIds.addAll(getUserIdsForComponent(componentId));
-        if (userIds.isEmpty()) {
-          userIds = null;
-        }
-      } else {
-        // get all users
-        userIds = new ArrayList<>();
-      }
-
-      if (userIds == null) {
-        return ArrayUtil.EMPTY_STRING_ARRAY;
-      }
-      return userManager.searchUsersIds(domainDriverManager, userIds, modelUser);
-    } catch (Exception e) {
-      throw new AdminException("Fail to search users", e);
-    }
-  }
 
   private List<String> getUserIdsForComponent(String componentId) throws AdminException {
     List<String> userIds = new ArrayList<>();
@@ -5625,7 +5584,7 @@ class Admin implements Administration {
       allGroupIds.add(groupId);
       allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(groupId));
     }
-    userIds.addAll(userManager.getAllUserIdsOfGroups(allGroupIds));
+    userIds.addAll(userManager.getAllUserIdsInGroups(allGroupIds));
 
     return userIds;
   }
@@ -5660,7 +5619,7 @@ class Admin implements Administration {
               allGroupIds.add(aGroupId);
               allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
             }
-            userIds.addAll(userManager.getAllUserIdsOfGroups(allGroupIds));
+            userIds.addAll(userManager.getAllUserIdsInGroups(allGroupIds));
           }
         }
         if (userIds.isEmpty()) {
@@ -5713,6 +5672,13 @@ class Admin implements Administration {
     }
     if (searchCriteria.isCriterionOnNameSet()) {
       criteria.and().onName(searchCriteria.getCriterionOnName());
+    } else {
+      if (searchCriteria.isCriterionOnFirstNameSet()) {
+        criteria.and().onFirstName(searchCriteria.getCriterionOnFirstName());
+      }
+      if (searchCriteria.isCriterionOnFirstNameSet()) {
+        criteria.and().onLastName(searchCriteria.getCriterionOnLastName());
+      }
     }
     if (searchCriteria.isCriterionOnPaginationSet()) {
       criteria.onPagination(searchCriteria.getCriterionOnPagination());
@@ -5787,26 +5753,6 @@ class Admin implements Administration {
     }
 
     return groupManager.getGroupsMatchingCriteria(criteria);
-  }
-
-  @Override
-  public String[] searchGroupsIds(boolean isRootGroup, String componentId, String[] profileId,
-      GroupDetail modelGroup) throws AdminException {
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
-        getCurrentDomainDriverManager();
-    try {
-      ComponentInst component = getComponentInst(componentId);
-      if (component != null) {
-        if (component.isPublic()) {
-          // component is public, all groups are allowed to access it
-          componentId = null;
-        }
-      }
-      return groupManager.searchGroupsIds(domainDriverManager, isRootGroup,
-          getDriverComponentId(componentId), profileId, modelGroup);
-    } catch (Exception e) {
-      throw new AdminException("Fail to search groups", e);
-    }
   }
 
   // -------------------------------------------------------------------------

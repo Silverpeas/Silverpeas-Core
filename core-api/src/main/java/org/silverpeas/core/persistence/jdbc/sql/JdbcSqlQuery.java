@@ -110,7 +110,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createSelect(String sqlPart, Object... paramValue) {
-    return new JdbcSqlQuery().addSqlPart("select").addSqlPart(sqlPart, paramValue);
+    return new JdbcSqlQuery().addSqlPart("SELECT").addSqlPart(sqlPart, paramValue);
   }
 
   /**
@@ -120,7 +120,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createSelect(String sqlPart, Collection<?> paramValue) {
-    return new JdbcSqlQuery().addSqlPart("select").addSqlPart(sqlPart, paramValue);
+    return new JdbcSqlQuery().addSqlPart("SELECT").addSqlPart(sqlPart, paramValue);
   }
 
   /**
@@ -129,7 +129,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createCountFor(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("select count(*) from").addSqlPart(tableName);
+    return new JdbcSqlQuery().addSqlPart("SELECT COUNT(*) FROM").addSqlPart(tableName);
   }
 
   /**
@@ -138,7 +138,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createTable(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("create table").addSqlPart(tableName).addSqlPart(" (");
+    return new JdbcSqlQuery().addSqlPart("CREATE TABLE").addSqlPart(tableName).addSqlPart(" (");
   }
 
   /**
@@ -147,7 +147,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createInsertFor(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("insert into").addSqlPart(tableName).addSqlPart(" (");
+    return new JdbcSqlQuery().addSqlPart("INSERT INTO").addSqlPart(tableName).addSqlPart(" (");
   }
 
   /**
@@ -156,7 +156,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createUpdateFor(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("update ").addSqlPart(tableName).addSqlPart(" set");
+    return new JdbcSqlQuery().addSqlPart("UPDATE ").addSqlPart(tableName).addSqlPart(" set");
   }
 
   /**
@@ -165,7 +165,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createDeleteFor(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("delete from").addSqlPart(tableName);
+    return new JdbcSqlQuery().addSqlPart("DELETE FROM").addSqlPart(tableName);
   }
 
   /**
@@ -174,7 +174,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createDropFor(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("drop table").addSqlPart(tableName);
+    return new JdbcSqlQuery().addSqlPart("DROP TABLE").addSqlPart(tableName);
   }
 
   /**
@@ -242,7 +242,16 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery where(String sqlPart, Collection<?> paramValues) {
-    return addSqlPart("where " + sqlPart, paramValues);
+    return addSqlPart("WHERE " + sqlPart, paramValues);
+  }
+
+  /**
+   * The query is about the concerned SQL table.
+   * @param tableNames the name of the table(s) concerned by the query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery from(String... tableNames) {
+    return addSqlPart("FROM " + Arrays.stream(tableNames).collect(Collectors.joining(",")));
   }
 
   /**
@@ -262,7 +271,7 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery and(String sqlPart, Collection<?> paramValues) {
-    return addSqlPart("and " + sqlPart, paramValues);
+    return addSqlPart("AND " + sqlPart, paramValues);
   }
 
   /**
@@ -282,7 +291,11 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery or(String sqlPart, Collection<?> paramValues) {
-    return addSqlPart("or " + sqlPart, paramValues);
+    return addSqlPart("OR " + sqlPart, paramValues);
+  }
+
+  public JdbcSqlQuery orderBy(String sqlPart) {
+    return addSqlPart("ORDER BY " + sqlPart);
   }
 
   /**
@@ -455,9 +468,9 @@ public class JdbcSqlQuery {
    */
   void finalizeBeforeExecution() {
     String computedSqlQuery = getSqlQuery();
-    if (computedSqlQuery.startsWith("insert into ")) {
+    if (computedSqlQuery.startsWith("INSERT INTO ")) {
       valuesForInsert();
-    } else if (computedSqlQuery.startsWith("create table ")) {
+    } else if (computedSqlQuery.startsWith("CREATE TABLE ")) {
       finalizeTableCreation();
     }
   }
@@ -476,8 +489,8 @@ public class JdbcSqlQuery {
    * @throws java.sql.SQLException on SQL error.
    */
   public long executeWith(Connection connection) throws SQLException {
-    String builtSqlQuery = getSqlQuery();
-    if (builtSqlQuery.startsWith("select count(*)")) {
+    String builtSqlQuery = getSqlQuery().trim();
+    if (builtSqlQuery.substring(0, 13).equalsIgnoreCase("SELECT COUNT(")) {
       if (connection == null) {
         return getJdbcSqlExecutor().selectCount(this);
       } else {

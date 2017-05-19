@@ -21,10 +21,10 @@
 package org.silverpeas.core.admin.space;
 
 import org.silverpeas.core.admin.domain.DomainDriverManager;
-import org.silverpeas.core.admin.persistence.AdminPersistenceException;
 import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.UserManager;
 
 import javax.inject.Singleton;
 import java.util.ArrayList;
@@ -51,7 +51,7 @@ public class SpaceProfileInstManager {
   public String[] getSpaceProfileIdsOfUserType(DomainDriverManager domainManager, String sUserId)
       throws AdminException {
     try {
-      domainManager.getOrganizationSchema();
+      domainManager.holdOrganizationSchema();
 
       List<String> roleIds = new ArrayList<String>();
 
@@ -81,7 +81,7 @@ public class SpaceProfileInstManager {
   public String[] getSpaceProfileIdsOfGroupType(DomainDriverManager domainManager, String groupId)
       throws AdminException {
     try {
-      domainManager.getOrganizationSchema();
+      domainManager.holdOrganizationSchema();
 
       List<String> roleIds = new ArrayList<String>();
 
@@ -149,7 +149,7 @@ public class SpaceProfileInstManager {
       String spaceProfileId, Integer parentSpaceLocalId) throws AdminException {
     if (parentSpaceLocalId == null) {
       try {
-        ddManager.getOrganizationSchema();
+        ddManager.holdOrganizationSchema();
         SpaceRow space = ddManager.getOrganization().space.getSpaceOfSpaceUserRole(idAsInt(
             spaceProfileId));
         if (space == null) {
@@ -164,7 +164,7 @@ public class SpaceProfileInstManager {
     }
 
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
 
       // Load the profile detail
       SpaceUserRoleRow spaceUserRole = ddManager.getOrganization().spaceUserRole.
@@ -205,7 +205,7 @@ public class SpaceProfileInstManager {
   private SpaceProfileInst getSpaceProfileInst(DomainDriverManager ddManager,
       int spaceLocalId, String roleName, boolean isInherited) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       int inherited = 0;
       if (isInherited) {
         inherited = 1;
@@ -229,7 +229,7 @@ public class SpaceProfileInstManager {
   }
 
   private void setUsersAndGroups(DomainDriverManager ddManager, SpaceProfileInst spaceProfileInst)
-      throws AdminPersistenceException {
+      throws AdminException {
     // Get the groups
     String[] asGroupIds = ddManager.getOrganization().group.
         getDirectGroupIdsInSpaceUserRole(idAsInt(spaceProfileInst.getId()));
@@ -240,16 +240,8 @@ public class SpaceProfileInstManager {
         spaceProfileInst.addGroup(groupId);
       }
     }
-    // Get the Users
-    String[] asUsersIds = ddManager.getOrganization().user.getDirectUserIdsOfSpaceUserRole(idAsInt(
-        spaceProfileInst.getId()));
-
-    // Set the Users to the space profile
-    if (asUsersIds != null) {
-      for (String userId : asUsersIds) {
-        spaceProfileInst.addUser(userId);
-      }
-    }
+    List<String> userIds = UserManager.get().getDirectUserIdsInSpaceRole(spaceProfileInst.getId());
+    userIds.forEach(spaceProfileInst::addUser);
   }
 
   private SpaceProfileInst spaceUserRoleRow2SpaceProfileInst(SpaceUserRoleRow spaceUserRole) {
@@ -281,6 +273,16 @@ public class SpaceProfileInstManager {
           .getId()));
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting("space profile", spaceProfileInst.getId()), e);
+    }
+  }
+
+  public void removeUserFromSpaceProfileInst(String userId, String spaceProdileId,
+      DomainDriverManager ddManager) throws AdminException {
+    try {
+      ddManager.getOrganization().spaceUserRole.removeUserFromSpaceUserRole(idAsInt(userId),
+          idAsInt(spaceProdileId));
+    } catch (Exception e) {
+      throw new AdminException(failureOnDeleting("user from space profile", spaceProdileId), e);
     }
   }
 

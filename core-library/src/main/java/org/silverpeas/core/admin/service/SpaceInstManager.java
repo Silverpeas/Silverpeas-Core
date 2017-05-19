@@ -164,7 +164,7 @@ public class SpaceInstManager {
   public SpaceInst getSpaceInstById(DomainDriverManager ddManager, int spaceInstLocalId)
       throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       // Load the space detail
       SpaceRow space = ddManager.getOrganization().space.getSpace(spaceInstLocalId);
 
@@ -238,7 +238,7 @@ public class SpaceInstManager {
   public SpaceInst getPersonalSpace(DomainDriverManager ddManager, String userId)
       throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       // Load the space detail
       SpaceRow space = ddManager.getOrganization().space.getPersonalSpace(userId);
 
@@ -321,7 +321,7 @@ public class SpaceInstManager {
   public SpaceInstLight getSpaceInstLightById(DomainDriverManager ddManager,
       int spaceLocalId) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
 
       // Load the space detail
       SpaceRow spaceRow = ddManager.getOrganization().space.getSpace(spaceLocalId);
@@ -351,7 +351,7 @@ public class SpaceInstManager {
   public void updateSpaceOrder(DomainDriverManager ddManager, int spaceLocalId,
       int orderNum) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       ddManager.getOrganization().space.updateSpaceOrder(spaceLocalId, orderNum);
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate("order of space", String.valueOf(spaceLocalId)), e);
@@ -369,7 +369,7 @@ public class SpaceInstManager {
    */
   public String[] getAllRootSpaceIds(DomainDriverManager ddManager) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       String[] asSpaceIds = ddManager.getOrganization().space.getAllRootSpaceIds();
       if (asSpaceIds != null) {
         return asSpaceIds;
@@ -387,7 +387,7 @@ public class SpaceInstManager {
    */
   public String[] getAllSpaceIds(DomainDriverManager ddManager) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       String[] asSpaceIds = ddManager.getOrganization().space.getAllSpaceIds();
       if (asSpaceIds != null) {
         return asSpaceIds;
@@ -406,7 +406,7 @@ public class SpaceInstManager {
   public List<SpaceInstLight> getRemovedSpaces(DomainDriverManager ddManager)
       throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       SpaceRow[] spaceRows = ddManager.getOrganization().space.getRemovedSpaces();
 
       return spaceRows2SpaceInstLights(ddManager, spaceRows);
@@ -425,7 +425,7 @@ public class SpaceInstManager {
   public List<SpaceInstLight> getSubSpaces(DomainDriverManager ddManager, int spaceLocalId) throws
       AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       List<SpaceRow> rows = ddManager.getOrganization().space.getDirectSubSpaces(spaceLocalId);
 
       return spaceRows2SpaceInstLights(ddManager, rows.toArray(new SpaceRow[rows.size()]));
@@ -492,7 +492,7 @@ public class SpaceInstManager {
   public String[] getAllSpaceProfileIds(DomainDriverManager ddManager,
       int spaceLocalId) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       String[] asSpaceProfileIds = ddManager.getOrganization().spaceUserRole.
           getAllSpaceUserRoleIdsOfSpace(spaceLocalId);
       if (asSpaceProfileIds != null) {
@@ -514,7 +514,7 @@ public class SpaceInstManager {
   public String[] getAllSubSpaceIds(DomainDriverManager ddManager,
       int sDomainFatherId) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       String[] asSpaceIds = ddManager.getOrganization().space.getDirectSubSpaceIds(sDomainFatherId);
       if (asSpaceIds != null) {
         return asSpaceIds;
@@ -688,7 +688,7 @@ public class SpaceInstManager {
   public boolean isSpaceInstExist(DomainDriverManager ddManager, int spaceLocalId) throws
       AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       return ddManager.getOrganization().space.isSpaceInstExist(spaceLocalId);
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
@@ -700,7 +700,7 @@ public class SpaceInstManager {
   public List<SpaceInstLight> getAllSpaces(DomainDriverManager ddManager) throws AdminException {
     List<SpaceInstLight> spaces = new ArrayList<>();
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
       SpaceRow[] spaceRows = ddManager.getOrganization().space.getAllSpaces();
       spaces.addAll(spaceRows2SpaceInstLights(ddManager, spaceRows));
     } catch (Exception e) {

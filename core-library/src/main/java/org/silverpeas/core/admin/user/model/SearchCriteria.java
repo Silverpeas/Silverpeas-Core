@@ -100,7 +100,7 @@ public interface SearchCriteria {
    * of the resources to fetch have to satisfy this criterion.
    *
    * @param name a pattern on the name the resources to fetch must have.
-   * @return the criteria enriched with a criterion on the user name.
+   * @return the criteria enriched with a criterion on the resource name.
    */
   SearchCriteria onName(String name);
 

@@ -53,6 +53,7 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
 
 import javax.inject.Singleton;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -766,12 +767,6 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public UserDetail[] searchUsers(final UserDetail modelUser, final boolean isAnd)
-      throws AdminException {
-    return new UserDetail[0];
-  }
-
-  @Override
   public GroupDetail[] searchGroups(final GroupDetail modelGroup, final boolean isAnd) throws AdminException {
     return new GroupDetail[0];
   }
@@ -1122,9 +1117,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String[] searchUsersIds(final String sGroupId, final String componentId,
-      final String[] profileIds, final UserDetail modelUser) throws AdminException {
-    return new String[0];
+  public List<String> searchUserIdsByProfile(final List<String> profileIds) throws AdminException {
+    return Collections.emptyList();
   }
 
   @Override
@@ -1137,12 +1131,6 @@ public class StubbedAdministration implements Administration {
   public ListSlice<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria)
       throws AdminException {
     return null;
-  }
-
-  @Override
-  public String[] searchGroupsIds(final boolean isRootGroup, final String componentId,
-      final String[] profileId, final GroupDetail modelGroup) throws AdminException {
-    return new String[0];
   }
 
   @Override

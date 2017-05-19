@@ -24,6 +24,8 @@
 package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.Schema;
 
@@ -40,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -118,6 +121,17 @@ public abstract class Table<T> {
       return 1;
     }
     return nextId;
+  }
+
+  protected void checkUserExistence(final int userId) throws AdminPersistenceException {
+    UserManager userManager = UserManager.get();
+    try {
+      if (!userManager.isUserExisting(String.valueOf(userId))) {
+        throw new AdminPersistenceException(unknown("user", String.valueOf(userId)));
+      }
+    } catch (AdminException e) {
+      throw new AdminPersistenceException(e);
+    }
   }
 
   /**

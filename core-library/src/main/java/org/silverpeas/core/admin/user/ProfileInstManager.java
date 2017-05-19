@@ -103,7 +103,7 @@ public class ProfileInstManager {
       throws AdminException {
     ProfileInst profileInst = null;
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
 
       // Load the profile detail
       UserRoleRow userRole = ddManager.getOrganization().userRole.getUserRole(idAsInt(sProfileId));
@@ -156,14 +156,11 @@ public class ProfileInstManager {
     }
 
     // Get the Users
-    String[] asUsersIds = ddManager.getOrganization().user.getDirectUserIdsOfUserRole(idAsInt(
-        profileInst.getId()));
-
-    // Set the Users to the space profile
-    if (asUsersIds != null) {
-      for (String userId : asUsersIds) {
-        profileInst.addUser(userId);
-      }
+    try {
+      List<String> userIds = UserManager.get().getDirectUserIdsInRole(profileInst.getId());
+      userIds.forEach(profileInst::addUser);
+    } catch (AdminException e) {
+      throw new AdminPersistenceException(e);
     }
   }
 
@@ -171,7 +168,7 @@ public class ProfileInstManager {
       int instanceLocalId, String roleName)
       throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
 
       // Load the profile detail
       UserRoleRow userRole =

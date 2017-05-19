@@ -24,9 +24,11 @@
 
 package org.silverpeas.core.contribution.contentcontainer.content;
 
+import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.JoinStatement;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
@@ -44,6 +46,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
  * This class represents the ContentManager API It is the gateway to all the silverpeas contents
@@ -122,9 +127,9 @@ public class ContentManager implements Serializable {
       addMapping(sComponentId, newInstanceId);
       return newInstanceId;
     } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.registerNewContentInstance",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_REGISTER_CONTENT_INSTANCE",
-          "sComponentId: " + sComponentId + "    sContentType: " + sContentType, e);
+      throw new ContentManagerException(
+          "Cannot register content instance for component " + sComponentId +
+              "  and with content type " + sContentType, e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
@@ -180,9 +185,9 @@ public class ContentManager implements Serializable {
 
       removeMapping(sComponentId);
     } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.unregisterNewContentInstance",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_UNREGISTER_CONTENT_INSTANCE",
-          "sComponentId: " + sComponentId + "    sContentType: " + sContentType, e);
+      throw new ContentManagerException(
+          "Cannot unregister content instance for component " + sComponentId +
+              " and with content type " + sContentType, e);
     } finally {
       if (bCloseConnection) {
         closeConnection(theConnection);
@@ -274,9 +279,8 @@ public class ContentManager implements Serializable {
 
       return newSilverContentId;
     } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.addSilverContent",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_ADD_SILVER_CONTENT",
-          "sInternalContentId: " + sInternalContentId + "    sComponentId: " + sComponentId, e);
+      throw new ContentManagerException(
+          SilverpeasExceptionMessages.failureOnAdding("content", sInternalContentId), e);
     } finally {
       DBUtil.close(prepStmt);
       if (bCloseConnection) {
@@ -301,9 +305,7 @@ public class ContentManager implements Serializable {
       prepStmt = connection.prepareStatement(sSQLStatement);
       prepStmt.executeUpdate();
     } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.removeSilverContent",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_REMOVE_SILVER_CONTENT",
-          "nSilverContentId: " + nSilverContentId + "   sComponentId: " + sComponentId, e);
+      throw new ContentManagerException(failureOnDeleting("content", nSilverContentId), e);
     } finally {
       DBUtil.close(prepStmt);
     }
@@ -360,9 +362,7 @@ public class ContentManager implements Serializable {
 
       return silverContentId;
     } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.getSilverContentId",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_GET_SILVERCONTENTID",
-          "sComponentId: " + sComponentId + "    sInternalContentId: " + sInternalContentId, e);
+      throw new ContentManagerException(failureOnGetting("content", sInternalContentId), e);
     } finally {
       DBUtil.close(stmt);
       closeConnection(connection);
@@ -403,9 +403,7 @@ public class ContentManager implements Serializable {
 
       return alSilverContentId;
     } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.getSilverContentId",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_GET_SILVERCONTENTID",
-          "sComponentId: " + sComponentId + "    sInternalContentId: " + sInternalContentId, e);
+      throw new ContentManagerException(failureOnGetting("content", sInternalContentId), e);
     } finally {
       try {
         DBUtil.close(stmt);
@@ -457,9 +455,8 @@ public class ContentManager implements Serializable {
 
         putInternalContentIdIntoCache(sSilverContentId, sInternalContentId);
       } catch (Exception e) {
-        throw new ContentManagerException("ContentManager.getInternalContentId",
-            SilverpeasException.ERROR, "contentManager.EX_CANT_GET_INTERNALCONTENTID",
-            "nSilverContentId: " + nSilverContentId, e);
+        throw new ContentManagerException(failureOnGetting("internal content id", nSilverContentId),
+            e);
       } finally {
         DBUtil.close(resSet, prepStmt);
         closeConnection(connection);
@@ -567,8 +564,8 @@ public class ContentManager implements Serializable {
 
       return alInstanceIds;
     } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.getInstanceId", SilverpeasException.ERROR,
-          "contentManager.EX_CANT_GET_INSTANCEID", "", e);
+      throw new ContentManagerException(
+          failureOnGetting("instance id for content", alSilverContentId), e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(connection);
@@ -610,8 +607,8 @@ public class ContentManager implements Serializable {
 
       return allSilverContentIds;
     } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.getSilverContentIdByInstanceId",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_GET_INSTANCEID", "", e);
+      throw new ContentManagerException(
+          failureOnGetting("silverpeas content id for instance", instanceId), e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(con);
@@ -641,8 +638,7 @@ public class ContentManager implements Serializable {
         prepStmt.executeUpdate();
       }
     } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.updateSilverContentVisibilityAttributes",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_UPDATE_SILVER_CONTENT", e);
+      throw new ContentManagerException(failureOnUpdate("silverpeas content", silverObjectId), e);
     } finally {
       DBUtil.close(prepStmt);
       closeConnection(con);
@@ -678,9 +674,8 @@ public class ContentManager implements Serializable {
         scv = new SilverContentVisibility(beginDate, endDate, isVisible);
       }
     } catch (SQLException e) {
-      throw new ContentManagerException("ContentManager.getSilverContentVisibility",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_QUERY_DATABASE",
-          "sSQLStatement: " + sSQLStatement, e);
+      throw new ContentManagerException(
+          failureOnGetting("visibility of silverpeas content", silverObjectId), e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(connection);
@@ -775,8 +770,7 @@ public class ContentManager implements Serializable {
         tempAsso.put(resSet.getString(2), String.valueOf(resSet.getInt(1)));
       }
     } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.loadMapping", SilverpeasException.ERROR,
-          "contentManager.EX_CANT_LOAD_ASSO_CACHE", "", e);
+      throw new ContentManagerException("Cannot load content mapping cache", e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       try {
@@ -811,40 +805,18 @@ public class ContentManager implements Serializable {
   private void checkParameters(String sComponentId, String sContainerType, String sContentType)
       throws ContentManagerException {
     // Check if the given componentId is not null
-    final String module = "ContentManager.checkParameters";
-    if (sComponentId == null) {
-      throw new ContentManagerException(module, SilverpeasException.ERROR,
-          "contentManager.EX_COMPONENTID_NULL");
-    }
-
-    // Check if the given componentId is not empty
-    if (sComponentId.length() == 0) {
-      throw new ContentManagerException(module, SilverpeasException.ERROR,
-          "contentManager.EX_COMPONENTID_EMPTY");
+    if (isNotDefined(sComponentId)) {
+      throw new ContentManagerException("The component instance id should be defined");
     }
 
     // Check if the given containerType is not null
-    if (sContainerType == null) {
-      throw new ContentManagerException(module, SilverpeasException.ERROR,
-          "contentManager.EX_CONTAINERTYPE_NULL");
-    }
-
-    // Check if the given containerType is not empty
-    if (sContainerType.length() == 0) {
-      throw new ContentManagerException(module, SilverpeasException.ERROR,
-          "contentManager.EX_CONTAINERTYPE_EMPTY");
+    if (isNotDefined(sContainerType)) {
+      throw new ContentManagerException("The type of the content container should be defined");
     }
 
     // Check if the given contentType is not null
-    if (sContentType == null) {
-      throw new ContentManagerException(module, SilverpeasException.ERROR,
-          "contentManager.EX_CONTENTTYPE_NULL");
-    }
-
-    // Check if the given contentType is not empty
-    if (sContentType.length() == 0) {
-      throw new ContentManagerException(module, SilverpeasException.ERROR,
-          "contentManager.EX_CONTENTTYPE_EMPTY");
+    if (isNotDefined(sContentType)) {
+      throw new ContentManagerException("The content type should be defined");
     }
   }
 
@@ -869,9 +841,7 @@ public class ContentManager implements Serializable {
 
       return sValue;
     } catch (Exception e) {
-      throw new ContentManagerException("ContentManager.getFirstStringValue",
-          SilverpeasException.ERROR, "contentManager.EX_CANT_QUERY_DATABASE",
-          "sSQLStatement: " + sSQLStatement, e);
+      throw new ContentManagerException(e.getMessage(), e);
     } finally {
       DBUtil.close(resSet, prepStmt);
       closeConnection(connection);
