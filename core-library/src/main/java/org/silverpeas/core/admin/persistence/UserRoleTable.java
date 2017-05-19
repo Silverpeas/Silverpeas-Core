@@ -317,10 +317,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
     if (isUserDirectlyInRole(userId, userRoleId)) {
       return;
     }
-    UserRow user = organization.user.getUser(userId);
-    if (user == null) {
-      throw new AdminPersistenceException(unknown("user", String.valueOf(userId)));
-    }
+    checkUserExistence(userId);
 
     UserRoleRow userRole = getUserRole(userRoleId);
     if (userRole == null) {

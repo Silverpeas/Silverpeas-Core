@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.user.dao;
 
+import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.SearchCriteria;

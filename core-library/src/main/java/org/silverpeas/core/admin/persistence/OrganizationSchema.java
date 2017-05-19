@@ -44,7 +44,6 @@ public class OrganizationSchema extends Schema {
   public final void init() {
     domain = new DomainTable(this);
     keyStore = new KeyStoreTable(this);
-    user = new UserTable(this);
     group = new GroupTable(this);
     space = new SpaceTable(this);
     spaceI18N = new SpaceI18NTable(this);
@@ -59,7 +58,6 @@ public class OrganizationSchema extends Schema {
 
   public DomainTable domain = null;
   public KeyStoreTable keyStore = null;
-  public UserTable user = null;
   public GroupTable group = null;
   public SpaceTable space = null;
   public SpaceI18NTable spaceI18N = null;

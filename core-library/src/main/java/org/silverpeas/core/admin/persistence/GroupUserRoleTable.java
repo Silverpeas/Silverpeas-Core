@@ -25,11 +25,14 @@
 package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.util.StringUtil;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
@@ -127,9 +130,13 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
       return;
     }
 
-    UserRow[] users = organization.user.getDirectUsersOfGroupUserRole(id);
-    for (UserRow user : users) {
-      removeUserFromGroupUserRole(user.id, id);
+    try {
+      List<String> userIds = UserManager.get().getDirectUserIdsInGroupRole(String.valueOf(id));
+      for(String userId: userIds) {
+        removeUserFromGroupUserRole(Integer.parseInt(userId), id);
+      }
+    } catch (AdminException e) {
+      throw new AdminPersistenceException(e);
     }
 
     GroupRow[] groups = organization.group.getDirectGroupsInGroupUserRole(id);
@@ -167,10 +174,7 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
       return;
     }
 
-    UserRow user = organization.user.getUser(userId);
-    if (user == null) {
-      throw new AdminPersistenceException(unknown("user", String.valueOf(userId)));
-    }
+    checkUserExistence(userId);
 
     GroupUserRoleRow groupUserRole = getGroupUserRole(groupUserRoleId);
     if (groupUserRole == null) {

@@ -828,8 +828,6 @@ public interface Administration {
   // ---------------------------------------------------------------------------------------------
   String[] getDirectGroupsIdsOfUser(String userId) throws AdminException;
 
-  UserDetail[] searchUsers(UserDetail modelUser, boolean isAnd) throws AdminException;
-
   GroupDetail[] searchGroups(GroupDetail modelGroup, boolean isAnd) throws AdminException;
 
   /**
@@ -1221,15 +1219,12 @@ public interface Administration {
   // -------------------------------------------------------------------------
   // For SelectionPeas
   // -------------------------------------------------------------------------
-  String[] searchUsersIds(String sGroupId, String componentId, String[] profileIds,
-      UserDetail modelUser) throws AdminException;
+
+  List<String> searchUserIdsByProfile(final List<String> profileIds) throws AdminException;
 
   ListSlice<UserDetail> searchUsers(UserDetailsSearchCriteria searchCriteria) throws AdminException;
 
   ListSlice<GroupDetail> searchGroups(GroupsSearchCriteria searchCriteria) throws AdminException;
-
-  String[] searchGroupsIds(boolean isRootGroup, String componentId, String[] profileId,
-      GroupDetail modelGroup) throws AdminException;
 
   // -------------------------------------------------------------------------
   // For DB connection reset

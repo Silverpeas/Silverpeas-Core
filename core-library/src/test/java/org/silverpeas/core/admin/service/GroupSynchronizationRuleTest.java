@@ -29,14 +29,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
-import org.silverpeas.core.admin.persistence.UserRow;
-import org.silverpeas.core.admin.persistence.UserTable;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
@@ -49,7 +46,6 @@ import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -132,58 +128,39 @@ public class GroupSynchronizationRuleTest {
     UserManager userManager = commonAPI4Test.injectIntoMockedBeanContainer(mock(UserManager.class));
     GroupManager groupManager = commonAPI4Test.injectIntoMockedBeanContainer(mock(GroupManager.class));
 
-    UserTable userTable = mock(UserTable.class);
     OrganizationSchema organizationSchema = new OrganizationSchema(mock(Connection.class));
-    organizationSchema.user = userTable;
     final DomainDriverManager domainDriverManager = mock(DomainDriverManager.class);
     when(domainDriverManager.getOrganization()).thenReturn(organizationSchema);
-    ThreadLocal<DomainDriverManager> domainDriverManagerRef =
-        new ThreadLocal<DomainDriverManager>() {
-          @Override
-          protected DomainDriverManager initialValue() {
-            return domainDriverManager;
-          }
-        };
     DomainDriverManagerProvider domainDriverManagerProvider =
         commonAPI4Test.injectIntoMockedBeanContainer(mock(DomainDriverManagerProvider.class));
-    when(domainDriverManagerProvider.getDomainDriverManagerRef())
-        .thenReturn(domainDriverManagerRef);
+    when(domainDriverManagerProvider.getDomainDriverManager())
+        .thenReturn(domainDriverManager);
 
-    when(userManager.getAllUsersIds(any(DomainDriverManager.class)))
-        .then((Answer<String[]>) invocation -> extractUserIds(ALL_USERS));
+    when(userManager.getAllUsersIds())
+        .then(invocation -> Arrays.asList(extractUserIds(ALL_USERS)));
 
-    when(userManager.getUserIdsOfDomain(any(DomainDriverManager.class), anyString()))
-        .then((Answer<String[]>) invocation -> {
-          String domainId = (String) invocation.getArguments()[1];
+    when(userManager.getAllUserIdsInDomain(anyString()))
+        .then(invocation -> {
+          String domainId = (String) invocation.getArguments()[0];
+          Integer.parseInt(domainId); // the domain should be an integer
           List<UserDetail> users = new ArrayList<>(ALL_USERS);
-          Iterator<UserDetail> userIt = users.iterator();
-          while (userIt.hasNext()) {
-            UserDetail user = userIt.next();
-            if (!user.getDomainId().equals(domainId)) {
-              userIt.remove();
-            }
-          }
+          users.removeIf(user -> !user.getDomainId().equals(domainId));
+          return Arrays.asList(extractUserIds(users));
+        });
+
+    when(userManager.getUserIdsByDomainAndByAccessLevel(anyString(), any(UserAccessLevel.class)))
+        .then(invocation -> {
+          String domainId = (String) invocation.getArguments()[0];
+          Integer.parseInt(domainId); // the domain should be an integer
+          UserAccessLevel accessLevel = (UserAccessLevel) invocation.getArguments()[1];
+          List<UserDetail> users = new ArrayList<>(ALL_USERS);
+          users.removeIf(
+              user -> !user.getDomainId().equals(domainId) || user.getAccessLevel() != accessLevel);
           return extractUserIds(users);
         });
 
-    when(userManager.getUserIdsOfDomainAndAccessLevel(any(DomainDriverManager.class), anyString(), any(
-        UserAccessLevel.class)))
-        .then((Answer<String[]>) invocation -> {
-          String domainId = (String) invocation.getArguments()[1];
-          UserAccessLevel accessLevel = (UserAccessLevel) invocation.getArguments()[2];
-          List<UserDetail> users = new ArrayList<>(ALL_USERS);
-          Iterator<UserDetail> userIt = users.iterator();
-          while (userIt.hasNext()) {
-            UserDetail user = userIt.next();
-            if (!user.getDomainId().equals(domainId) || user.getAccessLevel() != accessLevel) {
-              userIt.remove();
-            }
-          }
-          return extractUserIds(users);
-        });
-
-    when(userManager.getAllUserIdsOfGroups(anyListOf(String.class)))
-        .then((Answer<List<String>>) invocation -> {
+    when(userManager.getAllUserIdsInGroups(anyListOf(String.class)))
+        .then(invocation -> {
           List<String> groupIds = (List<String>) invocation.getArguments()[0];
           List<String> userIds = new ArrayList<>();
           ALL_GROUPS.stream().filter(group -> groupIds.contains(group.getId()))
@@ -191,36 +168,16 @@ public class GroupSynchronizationRuleTest {
           return userIds.stream().distinct().collect(Collectors.toList());
         });
 
-    when(userTable.getUserIdsByAccessLevel(any(UserAccessLevel.class)))
-        .then((Answer<String[]>) invocation -> {
+    when(userManager.getUserIdsByAccessLevel(any(UserAccessLevel.class)))
+        .then(invocation -> {
           UserAccessLevel accessLevel = (UserAccessLevel) invocation.getArguments()[0];
           List<UserDetail> users = new ArrayList<>(ALL_USERS);
-          Iterator<UserDetail> userIt = users.iterator();
-          while (userIt.hasNext()) {
-            UserDetail user = userIt.next();
-            if (user.getAccessLevel() != accessLevel) {
-              userIt.remove();
-            }
-          }
-          return extractUserIds(users);
-        });
-
-    when(userTable.getUserIdsOfDomain(anyInt()))
-        .then((Answer<String[]>) invocation -> {
-          Integer domainId = (Integer) invocation.getArguments()[0];
-          List<UserDetail> users = new ArrayList<>(ALL_USERS);
-          Iterator<UserDetail> userIt = users.iterator();
-          while (userIt.hasNext()) {
-            UserDetail user = userIt.next();
-            if (Integer.parseInt(user.getDomainId()) != domainId) {
-              userIt.remove();
-            }
-          }
+          users.removeIf(user -> user.getAccessLevel() != accessLevel);
           return extractUserIds(users);
         });
 
     when(groupManager.getAllSubGroupIdsRecursively(anyString()))
-        .then((Answer<List<String>>) invocation -> {
+        .then(invocation -> {
           String groupId = (String) invocation.getArguments()[0];
           if (DOMAIN_A_GROUP_1.getId().equals(groupId)) {
             return Arrays.asList(DOMAIN_A_GROUP_11.getId(), DOMAIN_A_GROUP_111.getId());
@@ -230,72 +187,52 @@ public class GroupSynchronizationRuleTest {
           return Collections.emptyList();
         });
 
-    /**
-     * Property name / property value part
-     */
-
     Administration admin = commonAPI4Test.injectIntoMockedBeanContainer(mock(Administration.class));
     final DomainDriver domainDriverA = mock(DomainDriver.class);
     final DomainDriver domainDriverB = mock(DomainDriver.class);
 
     when(admin.getAllDomains()).thenReturn(new Domain[]{DOMAIN_A, DOMAIN_B});
 
-    when(domainDriverManager.getDomainDriver(anyInt())).then((Answer<DomainDriver>) invocation -> {
-      Integer domainId = (Integer) invocation.getArguments()[0];
-      if (domainId == Integer.parseInt(DOMAIN_A.getId())) {
+    when(domainDriverManager.getDomainDriver(anyString())).then(invocation -> {
+      String domainId = (String) invocation.getArguments()[0];
+      Integer.parseInt(domainId); // the domain should be an integer
+      if (DOMAIN_A.getId().equals(domainId)) {
         return domainDriverA;
-      } else if (domainId == Integer.parseInt(DOMAIN_B.getId())) {
+      } else if (DOMAIN_B.getId().equals(domainId)) {
         return domainDriverB;
       }
       return null;
     });
 
     when(domainDriverA.getUsersBySpecificProperty(anyString(), anyString()))
-        .then((Answer<UserDetail[]>) invocation -> {
+        .then(invocation -> {
           String propertyName = (String) invocation.getArguments()[0];
           String propertyValue = (String) invocation.getArguments()[1];
           String specificSuffix = "_" + propertyName + "=" + propertyValue;
           List<UserDetail> users = new ArrayList<>(DOMAIN_A_USERS);
-          Iterator<UserDetail> userIt = users.iterator();
-          while (userIt.hasNext()) {
-            UserDetail user = userIt.next();
-            if (!user.getSpecificId().endsWith(specificSuffix)) {
-              userIt.remove();
-            }
-          }
+          users.removeIf(user -> !user.getSpecificId().endsWith(specificSuffix));
           return users.toArray(new UserDetail[users.size()]);
         });
 
     when(domainDriverB.getUsersBySpecificProperty(anyString(), anyString()))
-        .then((Answer<UserDetail[]>) invocation -> {
+        .then(invocation -> {
           String propertyName = (String) invocation.getArguments()[0];
           String propertyValue = (String) invocation.getArguments()[1];
           String specificSuffix = "_" + propertyName + "=" + propertyValue;
           List<UserDetail> users = new ArrayList<>(DOMAIN_B_USERS);
-          Iterator<UserDetail> userIt = users.iterator();
-          while (userIt.hasNext()) {
-            UserDetail user = userIt.next();
-            if (!user.getSpecificId().endsWith(specificSuffix)) {
-              userIt.remove();
-            }
-          }
+          users.removeIf(user -> !user.getSpecificId().endsWith(specificSuffix));
           return users.toArray(new UserDetail[users.size()]);
         });
 
-    when(userTable.getUsersBySpecificIds(anyInt(), anyListOf(String.class)))
-        .then((Answer<UserRow[]>) invocation -> {
-          Integer domainId = (Integer) invocation.getArguments()[0];
-          List<String> specificIds = (List<String>) invocation.getArguments()[1];
+    when(userManager.getUsersBySpecificIdsAndDomainId(anyListOf(String.class), anyString()))
+        .then(invocation -> {
+          List<String> specificIds = (List<String>) invocation.getArguments()[0];
+          String domainId = (String) invocation.getArguments()[1];
+          Integer.parseInt(domainId); // the domain should be an integer
           List<UserDetail> users = new ArrayList<>(
-              String.valueOf(domainId).equals(DOMAIN_A.getId()) ? DOMAIN_A_USERS : DOMAIN_B_USERS);
-          List<UserRow> userRows = new ArrayList<>();
-          users.stream().filter(user -> specificIds.contains(user.getSpecificId()))
-              .forEach(user -> {
-                UserRow userRow = new UserRow();
-                userRow.id = Integer.valueOf(user.getId());
-                userRows.add(userRow);
-              });
-          return userRows.toArray(new UserRow[userRows.size()]);
+              domainId.equals(DOMAIN_A.getId()) ? DOMAIN_A_USERS : DOMAIN_B_USERS);
+          return users.stream().filter(user -> specificIds.contains(user.getSpecificId())).collect(
+              Collectors.toList());
         });
   }
 

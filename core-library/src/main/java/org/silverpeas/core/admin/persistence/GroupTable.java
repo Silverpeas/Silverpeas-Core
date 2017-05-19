@@ -25,6 +25,8 @@ package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.domain.synchro.SynchroGroupReport;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.model.GroupCache;
 import org.silverpeas.core.util.StringUtil;
 
@@ -643,12 +645,18 @@ public class GroupTable extends Table<GroupRow> {
       removeGroup(subGroup.id);
     }
     // remove from the group any user.
-    UserRow[] users = organization.user.getDirectUsersOfGroup(id);
-    for (UserRow user : users) {
-      removeUserFromGroup(user.id, id);
+    List<String> userIds;
+    try {
+      userIds = UserManager.get().getDirectUserIdsInGroup(String.valueOf(id));
+    } catch (AdminException e) {
+      throw new AdminPersistenceException(e);
     }
+    for(String userId: userIds) {
+      removeUserFromGroup(Integer.valueOf(userId), id);
+    }
+
     SynchroDomainReport.info("GroupTable.removeGroup()",
-        "Suppression de " + users.length + " utilisateurs inclus directement dans le groupe " +
+        "Suppression de " + userIds.size() + " utilisateurs inclus directement dans le groupe " +
             group.name + " dans la base");
 
     // remove the empty group.
@@ -682,10 +690,8 @@ public class GroupTable extends Table<GroupRow> {
     if (isUserDirectlyInGroup(userId, groupId)) {
       return;
     }
-    UserRow user = organization.user.getUser(userId);
-    if (user == null) {
-      throw new AdminPersistenceException(unknown("user", String.valueOf(userId)));
-    }
+
+    checkUserExistence(userId);
 
     GroupRow group = getGroup(groupId);
     if (group == null) {
@@ -725,10 +731,7 @@ public class GroupTable extends Table<GroupRow> {
       }
 
       if (!userInGroup) {
-        UserRow user = organization.user.getUser(userId);
-        if (user == null) {
-          throw new AdminPersistenceException(unknown("user", String.valueOf(userId)));
-        }
+        checkUserExistence(userId);
 
         int[] params = new int[]{groupId, userId};
         SynchroGroupReport.debug("GroupTable.addUsersInGroup()",

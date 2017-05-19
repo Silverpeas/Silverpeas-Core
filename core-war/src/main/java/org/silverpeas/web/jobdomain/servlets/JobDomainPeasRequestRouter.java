@@ -23,6 +23,7 @@ package org.silverpeas.web.jobdomain.servlets;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
+import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminController;
@@ -34,7 +35,6 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.SilverpeasTrappedException;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
@@ -569,9 +569,10 @@ public class JobDomainPeasRequestRouter extends
           destination = jobDomainSC.initSelectionPeasForGroups((String) request.getAttribute(
               "myComponentURL"));
         } else if (function.startsWith("displayUserCreate")) {
-          DomainDriverManager domainDriverManager = new DomainDriverManager();
+          DomainDriverManager domainDriverManager =
+              DomainDriverManagerProvider.getCurrentDomainDriverManager();
           DomainDriver domainDriver = domainDriverManager.getDomainDriver(
-              Integer.parseInt(jobDomainSC.getTargetDomain().getId()));
+              jobDomainSC.getTargetDomain().getId());
           UserFull newUser = new UserFull(domainDriver);
           newUser.setPasswordAvailable(true);
 

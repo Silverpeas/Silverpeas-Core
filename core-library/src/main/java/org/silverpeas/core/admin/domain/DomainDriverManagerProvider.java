@@ -26,36 +26,26 @@ package org.silverpeas.core.admin.domain;
 
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.inject.Singleton;
+import javax.inject.Inject;
 
 /**
- * Provider that provides a DomainDriverManager per thread using ThreadLocal.
+ * Provider that provides a {@link DomainDriverManager} instance.
  */
-@Singleton
 public class DomainDriverManagerProvider {
-  private ThreadLocal<DomainDriverManager> domainDriverManagerRef =
-      new ThreadLocal<DomainDriverManager>() {
-    @Override
-    protected DomainDriverManager initialValue() {
-      return new DomainDriverManager();
-    }
-  };
 
-  public static DomainDriverManager getDomainDriverManager() {
-    DomainDriverManagerProvider provider =
-        ServiceProvider.getService(DomainDriverManagerProvider.class);
-    return provider.getDomainDriverManagerRef().get();
-  }
+  @Inject
+  private DomainDriverManager domainDriverManager;
 
   public static DomainDriverManager getCurrentDomainDriverManager() {
-    return getDomainDriverManager();
+    DomainDriverManagerProvider domainDriverManagerProvider =
+        ServiceProvider.getService(DomainDriverManagerProvider.class);
+    return domainDriverManagerProvider.getDomainDriverManager();
   }
 
-  // Don't let outsiders create new factories directly
+  public DomainDriverManager getDomainDriverManager() {
+    return domainDriverManager;
+  }
+
   private DomainDriverManagerProvider() {
-  }
-
-  public ThreadLocal<DomainDriverManager> getDomainDriverManagerRef() {
-    return domainDriverManagerRef;
   }
 }

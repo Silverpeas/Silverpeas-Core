@@ -27,11 +27,9 @@ package org.silverpeas.core.date;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.core.util.DateUtil;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
-import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.TimeZone;

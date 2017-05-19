@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.persistence.GroupRow;
 import org.silverpeas.core.admin.persistence.GroupUserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.UserManager;
 
 import java.util.ArrayList;
 
@@ -76,7 +77,7 @@ public class GroupProfileInstManager {
       String sProfileId, String sGroupId) throws AdminException {
     if (sGroupId == null) {
       try {
-        ddManager.getOrganizationSchema();
+        ddManager.holdOrganizationSchema();
         GroupRow group = ddManager.getOrganization().group
             .getGroupOfGroupUserRole(idAsInt(sProfileId));
         if (group == null) {
@@ -106,7 +107,7 @@ public class GroupProfileInstManager {
       DomainDriverManager ddManager, String sProfileId, String sGroupId)
       throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
+      ddManager.holdOrganizationSchema();
 
       // Load the profile detail
       GroupUserRoleRow groupUserRole = ddManager.getOrganization().groupUserRole
@@ -131,13 +132,9 @@ public class GroupProfileInstManager {
         }
 
         // Get the Users
-        String[] asUsersIds = ddManager.getOrganization().user
-            .getDirectUserIdsOfGroupUserRole(idAsInt(sProfileId));
-
-        // Set the Users to the space profile
-        for (int nI = 0; asUsersIds != null && nI < asUsersIds.length; nI++) {
-          groupProfileInst.addUser(asUsersIds[nI]);
-        }
+        UserManager.get()
+            .getDirectUserIdsInGroupRole(sProfileId)
+            .forEach(groupProfileInst::addUser);
       }
     } catch (Exception e) {
       throw new AdminException("Fail to set profile " + sProfileId + " to group " + sGroupId, e);

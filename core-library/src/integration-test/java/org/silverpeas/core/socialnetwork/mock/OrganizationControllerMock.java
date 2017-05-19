@@ -223,11 +223,6 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public UserDetail[] searchUsers(final User modelUser, final boolean isAnd) {
-    return new UserDetail[0];
-  }
-
-  @Override
   public ListSlice<Group> searchGroups(final GroupsSearchCriteria criteria) {
     return null;
   }
@@ -426,12 +421,6 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public String[] searchUsersIds(final String groupId, final String componentId,
-      final String[] profileId, final User filterUser) {
-    return new String[0];
-  }
-
-  @Override
   public String[] getUsersIdsByRoleNames(final String componentId,
       final List<String> profileNames) {
     return new String[0];
@@ -440,12 +429,6 @@ public class OrganizationControllerMock implements OrganizationController {
   @Override
   public String[] getUsersIdsByRoleNames(final String componentId, final String objectId,
       final ObjectType objectType, final List<String> profileNames) {
-    return new String[0];
-  }
-
-  @Override
-  public String[] searchGroupsIds(final boolean isRootGroup, final String componentId,
-      final String[] profileId, final Group modelGroup) {
     return new String[0];
   }
 

@@ -24,9 +24,9 @@
 package org.silverpeas.core.admin.user.dao;
 
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.user.model.SearchCriteria;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.model.SearchCriteria;
 
 import java.text.MessageFormat;
 import java.util.Collections;
@@ -74,12 +74,46 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   public UserSearchCriteriaForDAO onName(String name) {
     if (isDefined(name)) {
       tables.add("st_user");
-      String normalizedName = name.replaceAll("'", "''");
+      String normalizedName = name.replaceAll("'", "''").replaceAll("\\*", "%");
       getFixedQuery().append("(lower(st_user.firstName) like lower('").
               append(normalizedName).
               append("') or lower(st_user.lastName) like lower('").
               append(normalizedName).
               append("'))");
+    }
+    return this;
+  }
+
+  /**
+   * Appends a criterion on the first name of the users for which the search must be constrained to.
+   * The users to fetch have to satisfy this criterion.
+   * @param firstName a pattern on the first name of the users to fetch.
+   * @return the criteria enriched with a criterion on the user first name.
+   */
+  public UserSearchCriteriaForDAO onFirstName(final String firstName) {
+    if (isDefined(firstName)) {
+      tables.add("st_user");
+      String normalizedName = firstName.replaceAll("'", "''").replaceAll("\\*", "%");
+      getFixedQuery().append("(lower(st_user.firstName) like lower('").
+          append(normalizedName).
+          append("'))");
+    }
+    return this;
+  }
+
+  /**
+   * Appends a criterion on the last name of the users for which the search must be constrained to.
+   * The users to fetch have to satisfy this criterion.
+   * @param lastName a pattern on the last name of the users to fetch.
+   * @return the criteria enriched with a criterion on the user last name.
+   */
+  public UserSearchCriteriaForDAO onLastName(final String lastName) {
+    if (isDefined(lastName)) {
+      tables.add("st_user");
+      String normalizedName = lastName.replaceAll("'", "''").replaceAll("\\*", "%");
+      getFixedQuery().append("(lower(st_user.firstName) like lower('").
+          append(normalizedName).
+          append("'))");
     }
     return this;
   }
@@ -134,7 +168,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   }
 
   @Override
-  public SearchCriteria onUserIds(String... userIds) {
+  public UserSearchCriteriaForDAO onUserIds(String... userIds) {
     if (userIds != ANY) {
       tables.add("st_user");
       StringBuilder[] sqlLists = asSQLList(userIds);
