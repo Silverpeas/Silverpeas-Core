@@ -22,7 +22,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.util.PaginationList;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
@@ -547,8 +547,12 @@ public class AbstractArrayPane implements ArrayPane {
   }
 
   @Override
-  public void setPaginationList(final PaginationList paginationList) {
-    this.maxCountOfPaginationList = (int) paginationList.maxSize();
+  public void setPaginationList(final SilverpeasList paginationList) {
+    if (paginationList.isPageWindow()) {
+      this.maxCountOfPaginationList = (int) paginationList.maxSize();
+    } else {
+      this.maxCountOfPaginationList = -1;
+    }
   }
 
   /**

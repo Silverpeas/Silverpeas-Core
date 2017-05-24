@@ -25,15 +25,23 @@
 package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.MissingResourceException;
+
+import static org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory.getSettings;
 
 public abstract class AbstractPagination implements Pagination {
 
-  private int nbItems = -1; // the total number of items to paginate
-  private int nbItemsPerPage = -1; // the number of items displayed by page
-  private int firstItemIndex = -1; // the first item's index displayed
+  // the total number of items to paginate
+  private int nbItems = -1;
+  // the number of items displayed by page
+  private int nbItemsPerPage = -1;
+  // the first item's index displayed
+  private int firstItemIndex = -1;
   private String actionSuffix = "";
   private String altPreviousPage = "";
   private String altNextPage = "";
@@ -99,7 +107,7 @@ public abstract class AbstractPagination implements Pagination {
   }
 
   public int getNbPage() {
-    int nbPage = (getNbItems() / getNbItemsPerPage());
+    int nbPage = getNbItems() / getNbItemsPerPage();
     if ((getNbItems() % getNbItemsPerPage()) != 0) {
       nbPage++;
     }
@@ -176,18 +184,56 @@ public abstract class AbstractPagination implements Pagination {
     return this.altNextPage;
   }
 
-  public int getNumberOfPagesAround() {
+  protected int getNumberOfPagesAround() {
     if (nbPagesAround == -1) {
       nbPagesAround =
-          Integer.parseInt(GraphicElementFactory.getSettings().getString(
-          "Pagination.NumberOfPagesAround", "3"));
+          Integer.parseInt(getSettings().getString("Pagination.NumberOfPagesAround", "3"));
     }
     return nbPagesAround;
   }
 
-  public boolean displayTotalNumberOfPages() {
-    return GraphicElementFactory.getSettings().getBoolean("Pagination.DisplayTotalNumberOfPages",
-        false);
+  protected boolean displayTotalNumberOfPages() {
+    return getSettings().getBoolean("Pagination.DisplayTotalNumberOfPages", false);
+  }
+
+  protected List<Integer> getNbItemPerPageList() {
+    List<Integer> result = new ArrayList<>();
+    for (int i = 1; true; i++) {
+      int nbItemPerPage = getSettings().getInteger("Pagination.NbItemPerPage." + i, 0);
+      if (nbItemPerPage > 0) {
+        result.add(nbItemPerPage);
+      } else {
+        break;
+      }
+    }
+    return result;
+  }
+
+  protected int getIndexThreshold() {
+    int value = getSettings().getInteger("Pagination.IndexThreshold");
+    return defaultValueIfNotDefined(value);
+  }
+
+  protected int getNumberPerPageThreshold() {
+    int value = getSettings().getInteger("Pagination.NumberPerPageThreshold");
+    return defaultValueIfNotDefined(value);
+  }
+
+  protected int getJumperThreshold() {
+    int value = getSettings().getInteger("Pagination.JumperThreshold");
+    return defaultValueIfNotDefined(value);
+  }
+
+  protected int getPaginationAllThreshold() {
+    int value = getSettings().getInteger("Pagination.PaginationAllThreshold");
+    return defaultValueIfNotDefined(value);
+  }
+
+  private int defaultValueIfNotDefined(int value) {
+    if (value <= 0) {
+      return Integer.MAX_VALUE;
+    }
+    return value;
   }
 
   @Override
@@ -212,6 +258,7 @@ public abstract class AbstractPagination implements Pagination {
     try {
       translation = getMultilang().getString(key);
     } catch (MissingResourceException ex) {
+      SilverLogger.getLogger(this).debug(ex.getMessage(), ex);
       translation = defaultValue;
     }
     return translation;

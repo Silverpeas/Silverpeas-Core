@@ -40,8 +40,8 @@ import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAI
 import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
     .QUERY_ORDER_BY;
 import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -49,13 +49,11 @@ import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
     .QUERY_ORDER_BY.*;
@@ -143,22 +141,19 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
    * @return
    * @see
    */
-  public Collection<UserNotificationItem> getFolderMessageList(String folderName) {
-    final Collection<SILVERMAILMessage> messages;
+  public SilverpeasList<UserNotificationItem> getFolderMessageList(String folderName) {
+    final SilverpeasList<SILVERMAILMessage> messages;
     try {
       messages =
           SILVERMAILPersistence.getMessageOfFolder(getUserId(), folderName, pagination, orderBy);
     } catch (SILVERMAILException e) {
       throw new org.silverpeas.core.SilverpeasRuntimeException(e);
     }
-    final Collection<UserNotificationItem> result =  messages
-        .stream().map(n -> {
-          UserNotificationItem item = new UserNotificationItem(n);
-          item.setSelected(selectedUserNotificationIds.contains(item.getId()));
-          return item;
-        }).collect(Collectors.toList());
-    return messages instanceof PaginationList ?
-        PaginationList.from(result, ((PaginationList) messages).maxSize()) : result;
+    return messages.stream().map(n -> {
+      UserNotificationItem item = new UserNotificationItem(n);
+      item.setSelected(selectedUserNotificationIds.contains(item.getId()));
+      return item;
+    }).collect(SilverpeasList.collector(messages));
   }
 
   /**

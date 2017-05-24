@@ -35,8 +35,10 @@ import java.util.ListIterator;
  * @author mmoquillon
  * @param <T> the type of the items in the list.
  */
-public class PaginationList<T> implements List<T> {
+public class PaginationList<T> implements SilverpeasList<T> {
 
+  private static final IllegalArgumentException MORE_THAN_MAXSIZE_EXCEPTION =
+      new IllegalArgumentException("No more than maxsize items can be added to this pagination");
   private final List<T> wrappedList;
   private final long maxsize;
 
@@ -76,10 +78,7 @@ public class PaginationList<T> implements List<T> {
     return new PaginationList<T>(new ArrayList<T>(aCollection), maxItems);
   }
 
-  /**
-   * Gets the maximum number of items the pagination contain.
-   * @return the maximum size of the pagination.
-   */
+  @Override
   public long maxSize() {
     return maxsize;
   }
@@ -117,8 +116,7 @@ public class PaginationList<T> implements List<T> {
   @Override
   public boolean add(T e) {
     if (wrappedList.size() + 1 > maxSize()) {
-      throw new IllegalArgumentException(
-          "No more than maxsize items can be added to this pagination");
+      throw MORE_THAN_MAXSIZE_EXCEPTION;
     }
     return wrappedList.add(e);
   }
@@ -137,8 +135,7 @@ public class PaginationList<T> implements List<T> {
   @Override
   public boolean addAll(Collection<? extends T> c) {
     if (wrappedList.size() + c.size() > maxSize()) {
-      throw new IllegalArgumentException(
-          "No more than maxsize items can be added to this pagination");
+      throw MORE_THAN_MAXSIZE_EXCEPTION;
     }
     return wrappedList.addAll(c);
   }
@@ -147,8 +144,7 @@ public class PaginationList<T> implements List<T> {
   public boolean addAll(int index,
       Collection<? extends T> c) {
     if (wrappedList.size() + c.size() > maxSize()) {
-      throw new IllegalArgumentException(
-          "No more than maxsize items can be added to this pagination");
+      throw MORE_THAN_MAXSIZE_EXCEPTION;
     }
     return wrappedList.addAll(index, c);
   }
@@ -193,8 +189,7 @@ public class PaginationList<T> implements List<T> {
   @Override
   public void add(int index, T element) {
     if (wrappedList.size() + 1 > maxSize()) {
-      throw new IllegalArgumentException(
-          "No more than maxsize items can be added to this pagination");
+      throw MORE_THAN_MAXSIZE_EXCEPTION;
     }
     wrappedList.add(index, element);
   }
@@ -282,8 +277,7 @@ public class PaginationList<T> implements List<T> {
     @Override
     public void add(T e) {
       if (list.maxSize() + 1 > 0) {
-        throw new IllegalArgumentException(
-            "No more than maxsize items can be added to this pagination");
+        throw MORE_THAN_MAXSIZE_EXCEPTION;
       }
       iterator.add(e);
     }

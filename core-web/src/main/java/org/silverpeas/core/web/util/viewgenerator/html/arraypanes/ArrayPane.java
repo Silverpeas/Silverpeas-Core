@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import org.silverpeas.core.util.PaginationList;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 import javax.servlet.ServletRequest;
@@ -235,5 +235,5 @@ public interface ArrayPane extends SimpleGraphicElement {
    * <p>For now, the elements of the pagination are not used, only max items is used</p>
    * @param paginationList the pagination list.
    */
-  void setPaginationList(PaginationList paginationList);
+  void setPaginationList(SilverpeasList paginationList);
 }

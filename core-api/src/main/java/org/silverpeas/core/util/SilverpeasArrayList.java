@@ -22,28 +22,30 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
+package org.silverpeas.core.util;
 
-import org.apache.taglibs.standard.tag.rt.core.ForEachTag;
-import org.silverpeas.core.util.SilverpeasList;
-
-import javax.servlet.jsp.JspTagException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
- * Iterate over lines.
  * @author Yohann Chastagnier
  */
-public class ArrayLinesTag extends ForEachTag {
+public class SilverpeasArrayList<T> extends ArrayList<T> implements SilverpeasList<T> {
 
-  @Override
-  public void setItems(final Object items) throws JspTagException {
-    super.setItems(items);
-    if (items instanceof SilverpeasList) {
-      getArrayPane().setPaginationList((SilverpeasList) items);
-    }
+  public SilverpeasArrayList(final int initialCapacity) {
+    super(initialCapacity);
   }
 
-  public ArrayPane getArrayPane() {
-    return (ArrayPane) pageContext.getAttribute(ArrayPaneTag.ARRAY_PANE_PAGE_ATT);
+  public SilverpeasArrayList() {
+    super();
+  }
+
+  public SilverpeasArrayList(final Collection<? extends T> c) {
+    super(c);
+  }
+
+  @Override
+  public long maxSize() {
+    return size();
   }
 }

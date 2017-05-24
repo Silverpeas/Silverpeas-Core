@@ -216,6 +216,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(GlobalContext.class)) {
       addClasses(GlobalContext.class);
     }
+    if (!contains(SilverpeasList.class)) {
+      addClasses(SilverpeasList.class, SilverpeasListWrapper.class, SilverpeasArrayList.class);
+    }
     return this;
   }
 

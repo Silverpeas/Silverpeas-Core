@@ -23,9 +23,9 @@ package org.silverpeas.core.notification.user.server.channel.silvermail;
 
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
+import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * JPA repository of <code>SILVERMAILMessageBean</code> instances.
@@ -53,7 +53,7 @@ public class SILVERMAILMessageBeanRepository
    * @param criteria the user notification criteria.
    * @return the list corresponding to the given criteria.
    */
-  public List<SILVERMAILMessageBean> findByCriteria(final SilvermailCriteria criteria) {
+  public SilverpeasList<SILVERMAILMessageBean> findByCriteria(final SilvermailCriteria criteria) {
     NamedParameters params = newNamedParameters();
     JPQLQueryBuilder queryBuilder = new JPQLQueryBuilder(params);
     criteria.processWith(queryBuilder);
