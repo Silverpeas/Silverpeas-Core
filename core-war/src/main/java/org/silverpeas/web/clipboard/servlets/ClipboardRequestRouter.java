@@ -20,36 +20,34 @@
  */
 package org.silverpeas.web.clipboard.servlets;
 
+import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.web.clipboard.control.ClipboardSessionController;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.web.clipboard.control.ClipboardSessionController;
+
 import javax.servlet.http.HttpSession;
-import org.silverpeas.core.web.http.HttpRequest;
 
 /**
- * Class declaration
- *
- * @author
+ * Clipboard request router.
  */
 public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSessionController> {
-
   private static final long serialVersionUID = 1L;
 
+  private static final String SPACE_FROM_PARAM = "SpaceFrom";
+  private static final String COMPONENT_FROM_PARAM = "ComponentFrom";
+  private static final String CLIPBOARD_JSP = "/clipboard/jsp/clipboard.jsp";
+  private static final String SUFFIX_OF_PASTE_JSP = "paste.jsp";
+
   /**
-   * Method declaration
-   *
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   * @see
+   * Called in order to get an instance of clipboard session controller.
    */
   @Override
   public ClipboardSessionController createComponentSessionController(
@@ -60,8 +58,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
   /**
    * This method has to be implemented in the component request rooter class. returns the session
    * control bean name to be put in the request object ex : for almanach, returns "almanach"
-   *
-   * @return
+   * @return the name of the controller.
    */
   @Override
   public String getSessionControlBeanName() {
@@ -74,7 +71,7 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
    *
    * @param function The entering request function (ex : "Main.jsp")
    * @param clipboardSC The component Session Control, build and initialised.
-   * @param request
+   * @param request the current request.
    * @return The complete destination URL for a forward (ex :
    * "/almanach/jsp/almanach.jsp?flag=user")
    */
@@ -85,83 +82,17 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
     if (function.startsWith("copyForm")) {
       destination = "/clipboard/jsp/copyForm.jsp";
     } else if (function.startsWith("paste")) {
-      clipboardSC.setComponentRooterName(request.getParameter("compR"));
-      clipboardSC.setSpaceId(request.getParameter("SpaceFrom"));
-      clipboardSC.setComponentId(request.getParameter("ComponentFrom"));
-      clipboardSC.setJSPPage(request.getParameter("JSPPage"));
-      clipboardSC.setTargetFrame(request.getParameter("TargetFrame"));
-      if (StringUtil.isDefined(clipboardSC.getComponentRooterName())) {
-
-        if (StringUtil.isDefined(clipboardSC.getComponentId())) {
-          destination = URLUtil.getURL(null, request.getParameter("SpaceFrom"),
-              clipboardSC.getComponentId()) + "paste.jsp";
-        } else {
-          destination = URLUtil.getURL(URLUtil.CMP_JOBSTARTPAGEPEAS) + "paste.jsp";
-        }
-      } else {
-
-        destination = "/clipboard/jsp/clipboard.jsp";
-      }
+      destination = performPaste(request, clipboardSC);
     } else if (function.startsWith("clipboardRefresh")) {
-      destination = "/clipboard/jsp/clipboard.jsp";
+      destination = CLIPBOARD_JSP;
     } else if (function.startsWith("clipboard")) {
-      clipboardSC.setComponentRooterName(request.getParameter("compR"));
-      clipboardSC.setSpaceId(request.getParameter("SpaceFrom"));
-      clipboardSC.setComponentId(request.getParameter("ComponentFrom"));
-      clipboardSC.setJSPPage(request.getParameter("JSPPage"));
-      clipboardSC.setTargetFrame(request.getParameter("TargetFrame"));
-      destination = "/clipboard/jsp/clipboard.jsp";
+      destination = performClipboard(request, clipboardSC);
     } else if (function.startsWith("delete")) {
-      try {
-        int max = clipboardSC.getClipboardSize();
-        int removed = 0;
-        for (int i = 0; i < max; i++) {
-          String removedValue = request.getParameter("clipboardId" + i);
-          if (removedValue != null) {
-
-            clipboardSC.removeClipboardElement(i - removed);
-            removed++;
-          }
-        }
-      } catch (ClipboardException e) {
-        SilverTrace.error("clipboardPeas", "ClipboardRequestRooter.getDestination()",
-            "clipboardPeas.EX_CANT_WRITE", "delete.jsp", e);
-      }
-      destination = "/clipboard/jsp/clipboard.jsp";
+      destination = performDelete(request, clipboardSC);
     } else if (function.startsWith("selectObject")) {
-      try {
-        String objectIndex = request.getParameter("Id");
-        String objectStatus = request.getParameter("Status");
-        if ((objectIndex != null) && (objectStatus != null)) {
-
-          clipboardSC.setClipboardSelectedElement(Integer.parseInt(objectIndex),
-              Boolean.parseBoolean(objectStatus));
-        }
-      } catch (Exception e) {
-        SilverTrace.error("clipboardPeas", "ClipboardRequestRooter.getDestination()",
-            "clipboardPeas.EX_CANT_WRITE", "delete.jsp", e);
-      }
-      destination = "/clipboard/jsp/Idle.jsp";
+      destination = performSelectObject(request, clipboardSC);
     } else if (function.startsWith("selectionpaste")) {
-      try {
-        int max = clipboardSC.getClipboardSize();
-        for (int i = 0; i < max; i++) {
-          String removedValue = request.getParameter("clipboardId" + i);
-          clipboardSC.setClipboardSelectedElement(i, removedValue != null);
-        }
-      } catch (ClipboardException e) {
-        SilverTrace.error("clipboardPeas", "ClipboardRequestRooter.getDestination()",
-            "clipboardPeas.EX_CANT_WRITE", "selectionpaste.jsp", e);
-      }
-      String componentName = clipboardSC.getComponentRooterName();
-      if (componentName != null) {
-
-        destination = URLUtil.getURL(null, request.getParameter("SpaceFrom"),
-            request.getParameter("ComponentFrom")) + "paste.jsp";
-      } else {
-
-        destination = "/clipboard/jsp/clipboard.jsp";
-      }
+      destination = performSelectionPaste(request, clipboardSC);
     } else {
       destination = "/clipboard/jsp/" + function;
     }
@@ -183,5 +114,100 @@ public class ClipboardRequestRouter extends ComponentRequestRouter<ClipboardSess
         sessionInfo.updateLastAccess();
       }
     }
+  }
+
+  private String performClipboard(final HttpRequest request,
+      final ClipboardSessionController clipboardSC) {
+    final String destination;
+    clipboardSC.setComponentRooterName(request.getParameter("compR"));
+    clipboardSC.setSpaceId(request.getParameter(SPACE_FROM_PARAM));
+    clipboardSC.setComponentId(request.getParameter(COMPONENT_FROM_PARAM));
+    clipboardSC.setJSPPage(request.getParameter("JSPPage"));
+    clipboardSC.setTargetFrame(request.getParameter("TargetFrame"));
+    destination = CLIPBOARD_JSP;
+    return destination;
+  }
+
+  private String performDelete(final HttpRequest request,
+      final ClipboardSessionController clipboardSC) {
+    final String destination;
+    try {
+      int max = clipboardSC.getClipboardSize();
+      int removed = 0;
+      for (int i = 0; i < max; i++) {
+        String removedValue = request.getParameter("clipboardId" + i);
+        if (removedValue != null) {
+
+          clipboardSC.removeClipboardElement(i - removed);
+          removed++;
+        }
+      }
+    } catch (ClipboardException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    destination = CLIPBOARD_JSP;
+    return destination;
+  }
+
+  private String performSelectObject(final HttpRequest request,
+      final ClipboardSessionController clipboardSC) {
+    final String destination;
+    try {
+      String objectIndex = request.getParameter("Id");
+      String objectStatus = request.getParameter("Status");
+      if ((objectIndex != null) && (objectStatus != null)) {
+
+        clipboardSC.setClipboardSelectedElement(Integer.parseInt(objectIndex),
+            Boolean.parseBoolean(objectStatus));
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    destination = "/clipboard/jsp/Idle.jsp";
+    return destination;
+  }
+
+  private String performSelectionPaste(final HttpRequest request,
+      final ClipboardSessionController clipboardSC) {
+    final String destination;
+    try {
+      int max = clipboardSC.getClipboardSize();
+      for (int i = 0; i < max; i++) {
+        String removedValue = request.getParameter("clipboardId" + i);
+        clipboardSC.setClipboardSelectedElement(i, removedValue != null);
+      }
+    } catch (ClipboardException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    String componentName = clipboardSC.getComponentRooterName();
+    if (componentName != null) {
+      destination = URLUtil.getURL(null, request.getParameter(SPACE_FROM_PARAM),
+          request.getParameter(COMPONENT_FROM_PARAM)) + SUFFIX_OF_PASTE_JSP;
+    } else {
+      destination = CLIPBOARD_JSP;
+    }
+    return destination;
+  }
+
+  private String performPaste(final HttpRequest request,
+      final ClipboardSessionController clipboardSC) {
+    final String destination;
+    clipboardSC.setComponentRooterName(request.getParameter("compR"));
+    clipboardSC.setSpaceId(request.getParameter(SPACE_FROM_PARAM));
+    clipboardSC.setComponentId(request.getParameter(COMPONENT_FROM_PARAM));
+    clipboardSC.setJSPPage(request.getParameter("JSPPage"));
+    clipboardSC.setTargetFrame(request.getParameter("TargetFrame"));
+    if (StringUtil.isDefined(clipboardSC.getComponentRooterName())) {
+      if (StringUtil.isDefined(clipboardSC.getComponentId())) {
+        destination = URLUtil.getURL(null, request.getParameter(SPACE_FROM_PARAM),
+            clipboardSC.getComponentId()) + SUFFIX_OF_PASTE_JSP;
+      } else {
+        destination =
+            URLUtil.getURL(URLUtil.CMP_JOBSTARTPAGEPEAS, null, null) + SUFFIX_OF_PASTE_JSP;
+      }
+    } else {
+      destination = CLIPBOARD_JSP;
+    }
+    return destination;
   }
 }

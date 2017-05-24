@@ -35,6 +35,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
@@ -51,6 +52,8 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import static java.util.Arrays.stream;
 
 /**
  * An HTTP request decorating an HTTP servlet request with some additional methods and by changing
@@ -308,6 +311,7 @@ public class HttpRequest extends HttpServletRequestWrapper {
           try {
             value = new String[]{item.getString(getCharacterEncoding())};
           } catch (UnsupportedEncodingException ex) {
+            SilverLogger.getLogger(this).warn(ex);
             value = new String[]{item.getString()};
           }
           map.put(item.getFieldName(), value);
@@ -316,6 +320,41 @@ public class HttpRequest extends HttpServletRequestWrapper {
       map = Collections.unmodifiableMap(map);
     }
     return map;
+  }
+
+  /**
+   * Merges into given collection of identifiers the selected and unselected identifiers
+   * extracted from the current request.
+   * <p>
+   * Default parameter names are used:
+   * <ul>
+   * <li>selectedIds: parameter name to retrieve selected identifiers.</li>
+   * <li>unselectedIds: parameter name to retrieve unselected identifiers.</li>
+   * </ul>
+   * </p>
+   * @param selectedIds the collection of selected identifiers.
+   */
+  public void mergeSelectedItemsInto(Collection<String> selectedIds) {
+    mergeSelectedItemsInto(selectedIds, "selectedIds", "unselectedIds");
+  }
+
+  /**
+   * Merges into given collection of identifiers the selected and unselected identifiers
+   * extracted from the current request.
+   * @param selectedIds the collection of selected identifiers.
+   * @param selectedParamName the parameter name of selected identifiers.
+   * @param unselectedParamName the parameter name of unselected identifiers.
+   */
+  public void mergeSelectedItemsInto(Collection<String> selectedIds, String selectedParamName,
+      String unselectedParamName) {
+    final String[] selected = getParameterMap().get(selectedParamName);
+    final String[] unselected = getParameterMap().get(unselectedParamName);
+    if (selected != null) {
+      stream(selected).flatMap(i -> stream(i.split(","))).forEach(selectedIds::add);
+    }
+    if (unselected != null) {
+      stream(unselected).flatMap(i -> stream(i.split(","))).forEach(selectedIds::remove);
+    }
   }
 
   /**
@@ -511,8 +550,8 @@ public class HttpRequest extends HttpServletRequestWrapper {
 
     try {
       return (E) fromMethod.invoke(null, enumValue);
-    } catch (Exception ignore) {
-      // ignore this exception as it should never occur
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
     }
 
     return null;

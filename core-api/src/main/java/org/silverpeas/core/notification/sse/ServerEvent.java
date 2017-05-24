@@ -99,11 +99,12 @@ public interface ServerEvent {
    * @param response the response on which the event will be pushed.
    * @param receiverSessionId the identifier of the receiver session.
    * @param receiver the receiver instance.
+   * @return true if send has been performed, false otherwise.
    */
-  default void send(final HttpServletRequest request, HttpServletResponse response,
+  default boolean send(final HttpServletRequest request, HttpServletResponse response,
       final String receiverSessionId, final User receiver) throws IOException {
     if (!isConcerned(receiverSessionId, receiver)) {
-      return;
+      return false;
     }
 
     // Configuring the response
@@ -136,6 +137,7 @@ public interface ServerEvent {
     sb.append("\n\n");
     response.getWriter().append(sb.toString());
     response.flushBuffer();
+    return true;
   }
 
   @FunctionalInterface

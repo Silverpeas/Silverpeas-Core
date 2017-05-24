@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.notification.user.client;
 
-import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.notification.user.delayed.constant.DelayedNotificationFrequency;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -42,8 +42,21 @@ import java.util.TreeSet;
  */
 public class NotificationManagerSettings {
 
+  private static final int DEFAULT_SSE_JOB_TRIGGER = 45;
+  private static final int DEFAULT_SSE_ASYNC_TIMEOUT = 180;
+  private static final int DEFAULT_SSE_STORE_EVENT_LIFETIME = 40;
+  private static final int MS = 1000;
   private static SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.notificationManager.settings.notificationManagerSettings");
+
+  private static SettingBundle silvermailIconsSettings = ResourceLocator.getSettingBundle(
+      "org.silverpeas.notificationserver.channel.silvermail.settings.silvermailIcons");
+
+  /**
+   * Hidden constructor.
+   */
+  private NotificationManagerSettings() {
+  }
 
   /**
    * Gets the default delayed notification frequency of the server.
@@ -207,6 +220,40 @@ public class NotificationManagerSettings {
    */
   public static boolean isSubscriptionNotificationConfirmationEnabled() {
     return settings.getBoolean("notification.subscription.confirmation.enabled", true);
+  }
 
+  /**
+   * Gets the trigger of SSE communication jobs.
+   * @return the timeout as long (seconds).
+   */
+  public static int getSseAsyncJobTrigger() {
+    return settings.getInteger("notification.see.job.trigger", DEFAULT_SSE_JOB_TRIGGER);
+  }
+
+  /**
+   * Gets the timeout of asynchronous context cleanup of SSE communication.
+   * @return the timeout as long (milliseconds).
+   */
+  public static int getSseAsyncTimeout() {
+    return settings.getInteger("notification.see.async.timeout", DEFAULT_SSE_ASYNC_TIMEOUT) * MS;
+  }
+
+
+  /**
+   * Gets The lifetime of an event stored into memory of SSE communication.
+   * @return the timeout as long (milliseconds).
+   */
+  public static int getSseStoreEventLifeTime() {
+    return settings
+        .getInteger("notification.see.store.event.lifetime", DEFAULT_SSE_STORE_EVENT_LIFETIME) * MS;
+  }
+
+  /**
+   * Gets the icon url of desktop user notification.
+   * @return url as string without the application context.
+   */
+  public static String getUserNotificationDesktopIconUrl() {
+    return silvermailIconsSettings
+        .getString("silvermail.desktop.url", "/util/icons/desktop-user-notification.png");
   }
 }

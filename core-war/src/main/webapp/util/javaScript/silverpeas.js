@@ -23,28 +23,98 @@
  */
 
 /* some web navigators (like IE < 9) doesn't support completely the javascript standard (ECMA) */
+
 if (!Array.prototype.indexOf) {
-  Array.prototype.indexOf = function(elt /*, from*/) {
-    var len = this.length >>> 0;
+  Object.defineProperty(Array.prototype, 'add', {
+    enumerable : false, value : function(elt /*, from*/) {
+      var len = this.length >>> 0;
 
-    var from = Number(arguments[1]) || 0;
-    from = (from < 0) ? Math.ceil(from) : Math.floor(from);
-    if (from < 0) {
-      from += len;
-    }
-
-    for (; from < len; from++) {
-      if (from in this && this[from] === elt) {
-        return from;
+      var from = Number(arguments[1]) || 0;
+      from = (from < 0) ? Math.ceil(from) : Math.floor(from);
+      if (from < 0) {
+        from += len;
       }
+
+      for (; from < len; from++) {
+        if (from in this && this[from] === elt) {
+          return from;
+        }
+      }
+      return -1;
     }
-    return -1;
-  };
+  });
+}
+
+if (!Array.prototype.addElement) {
+  Object.defineProperty(Array.prototype, 'indexOfElement', {
+    enumerable : false, value : function(elt /*, discriminator*/) {
+      var discriminator = arguments.length > 1 ? arguments[1] : undefined;
+      var discLeft = discriminator, discRight = discriminator;
+      var isPos = typeof discriminator === 'number';
+      var isDisc = typeof discriminator === 'string';
+      if (isDisc) {
+        var discParts = discriminator.split('=', 2);
+        if (discParts.length > 1) {
+          discLeft = discParts[0];
+          discRight = discParts[1];
+        }
+      }
+      for (var i = 0; i < this.length; i++) {
+        var element = this[i];
+        if ((element === elt) || (isPos && discriminator === i) ||
+            (isDisc && element[discLeft] === elt[discRight])) {
+          return i;
+        }
+      }
+      return -1;
+    }
+  });
+  Object.defineProperty(Array.prototype, 'getElement', {
+    enumerable : false, value : function(elt /*, discriminator*/) {
+      var index = this.indexOfElement.apply(this, arguments);
+      if (index >= 0) {
+        return this[index];
+      }
+      return undefined;
+    }
+  });
+  Object.defineProperty(Array.prototype, 'addElement', {
+    enumerable : false, value : function(elt) {
+      this.push(elt);
+    }
+  });
+  Object.defineProperty(Array.prototype, 'updateElement', {
+    enumerable : false, value : function(elt /*, discriminator*/) {
+      var index = this.indexOfElement.apply(this, arguments);
+      if (index >= 0) {
+        this[index] = elt;
+        return true;
+      }
+      return false;
+    }
+  });
+  Object.defineProperty(Array.prototype, 'removeElement', {
+    enumerable : false, value : function(elt /*, discriminator*/) {
+      var index = this.indexOfElement.apply(this, arguments);
+      if (index >= 0) {
+        this.splice(index, 1);
+        return true;
+      }
+      return false;
+    }
+  });
 }
 
 if (!String.prototype.startsWith) {
   String.prototype.startsWith = function(str) {
     return this.indexOf(str) === 0;
+  };
+}
+
+if (!String.prototype.endsWith) {
+  String.prototype.endsWith = function(str) {
+    var endIndex = this.indexOf(str) + str.length;
+    return endIndex === this.length;
   };
 }
 
@@ -68,11 +138,32 @@ if (!String.prototype.isNotDefined) {
   };
 }
 
+if (!String.prototype.nbChars) {
+  String.prototype.nbChars = function() {
+    return this.split(/\n/).length + this.length;
+  };
+}
+
 if (!String.prototype.unescapeHTML) {
   String.prototype.unescapeHTML = function() {
     var div = document.createElement("div");
     div.innerHTML = this;
     return div.innerText || div.textContent || '';
+  };
+}
+
+if (!String.prototype.convertNewLineAsHtml) {
+  String.prototype.convertNewLineAsHtml = function() {
+    return this.replace(/\n/g, '<br/>');
+  };
+}
+
+if (!String.prototype.noHTML) {
+  String.prototype.noHTML = function() {
+    return this
+        .replace(/&/g, '&amp;')
+        .replace(/>/g, '&gt;')
+        .replace(/</g, '&lt;');
   };
 }
 
@@ -135,6 +226,9 @@ if (!window.StringUtil) {
     };
     this.isNotDefined = function(aString) {
       return !_self.isDefined(aString);
+    };
+    this.nbChars = function(aString) {
+      return (typeof aString === 'string') ? aString.nbChars() : 0;
     };
   };
 }
@@ -376,22 +470,22 @@ if (!window.SilverpeasPluginSettings) {
 
 if (typeof extendsObject === 'undefined') {
   /**
-   * Extends an object.
+   * Merge the contents of two or more objects together into the first object.
+   * By default it performs a deep copy (recursion). To perform light copy (no recursion), please
+   * give false as first argument. Giving true as first argument as no side effect and perform a
+   * deep copy.
    * @returns {*}
    */
   function extendsObject() {
-    var target, key, object, val;
-    target = arguments[0];
-    object = arguments[1];
-    for (key in object) {
-      val = object[key];
-      if (typeof target[key] === 'object' && typeof val === 'object') {
-        extendsObject(target[key], val);
-      } else {
-        target[key] = val;
-      }
+    var params = [];
+    Array.prototype.push.apply(params, arguments);
+    var firstArgumentType = params[0];
+    if (typeof firstArgumentType === 'object') {
+      params.splice(0, 0, true);
+    } else if (typeof firstArgumentType === 'boolean' && !params[0]) {
+      params.shift();
     }
-    return target;
+    return jQuery.extend.apply(this, params);
   }
 }
 
@@ -444,7 +538,20 @@ if (!window.SilverpeasAjaxConfig) {
       return this;
     },
     withParam : function(name, value) {
-      this.parameters[name] = encodeURIComponent(value);
+      this.parameters[name] = value;
+      return this;
+    },
+    addParam : function(name, value) {
+      var currentValue = this.parameters[name];
+      if (!currentValue) {
+        this.withParam(name, value);
+      } else {
+        if (typeof currentValue === 'object') {
+          currentValue.push(value);
+        } else {
+          this.parameters[name] = [currentValue, value];
+        }
+      }
       return this;
     },
     byPostMethod : function() {
@@ -463,8 +570,23 @@ if (!window.SilverpeasAjaxConfig) {
   });
   SilverpeasFormConfig = SilverpeasRequestConfig.extend({
     initialize : function(url) {
-      this._super(url);
       this.target = '';
+      var pivotIndex = url.indexOf("?");
+      if (pivotIndex > 0) {
+        var splitParams = url.substring(pivotIndex + 1).split("&");
+        var urlWithoutParam = url.substring(0, pivotIndex);
+        this._super(urlWithoutParam);
+        splitParams.forEach(function(param) {
+          var splitParam = param.split("=");
+          if (splitParam.length === 2) {
+            var key = splitParam[0];
+            var value = splitParam[1];
+            this.withParam(key, value);
+          }
+        }.bind(this));
+      } else {
+        this._super(url);
+      }
     },
     getUrl : function() {
       return this.url;
@@ -487,7 +609,7 @@ if (!window.SilverpeasAjaxConfig) {
       return this;
     },
     withHeader : function(name, value) {
-      this.headers[name] = encodeURIComponent(value);
+      this.headers[name] = value;
       return this;
     },
     getHeaders : function() {
@@ -534,6 +656,15 @@ if (typeof window.silverpeasAjax === 'undefined') {
     }
     if (params.method === 'GET') {
       params.headers['If-Modified-Since'] = 0;
+    } else {
+      var form = document.createElement('form');
+      var formContainer = document.createElement('div');
+      formContainer.appendChild(form);
+      applyTokenSecurity(formContainer);
+      var $input = form.querySelector('input');
+      if ($input) {
+        params.headers[$input.name] = $input.value;
+      }
     }
     return new Promise(function(resolve, reject) {
 
@@ -685,7 +816,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
   }
 
   /**
-   * Applies an event listener behaviour to the given instance.
+   * Applies an event dispatching behaviour on the given instance.
    * After that, the instance exposes following methods :
    * - addEventListener(eventName, listener, listenerId) where listenerId permits to identify a
    * callback by an id instead of by its function instance.
@@ -695,7 +826,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
    * @param instance
    * @param options
    */
-  function applyEventListenerBehaviorOn(instance, options) {
+  function applyEventDispatchingBehaviorOn(instance, options) {
     var $document = window.document;
     var __id = $document['__sp_event_uuid'];
     if (typeof __id === 'undefined') {
@@ -839,7 +970,7 @@ if (typeof window.sp === 'undefined') {
           if (!paramList) {
             continue;
           }
-          if (typeof paramList === 'string') {
+          if (typeof paramList !== 'object') {
             paramList = [paramList];
           }
           if (paramPart.length > 1) {
@@ -851,27 +982,126 @@ if (typeof window.sp === 'undefined') {
       return url + (paramPart.length === 1 ? '' : paramPart);
     },
     load : function(targetOrArrayOfTargets, ajaxConfig, isGettingFullHtmlContent) {
-      return new Promise(function(resolve, reject) {
-        silverpeasAjax(ajaxConfig).then(function(request) {
-          var targetIsArrayOfCssSelector = typeof targetOrArrayOfTargets === 'object' && Array.isArray(targetOrArrayOfTargets);
-          var targets = !targetIsArrayOfCssSelector ? [targetOrArrayOfTargets] : targetOrArrayOfTargets;
-          targets.forEach(function(target) {
-            var targetIsCssSelector = typeof target === 'string';
-            if (!isGettingFullHtmlContent || !targetIsCssSelector) {
-              jQuery(target).html(request.responseText);
-            } else {
-              var $container = jQuery('<div>');
-              $container.html(request.responseText);
-              var $content = jQuery(target, $container);
-              jQuery(target).replaceWith($content);
-            }
-          });
-          resolve()
-        }, function(request) {
-          sp.log.error(request.status + " " + request.statusText);
-          reject();
-        });
+      return silverpeasAjax(ajaxConfig).then(function(request) {
+        return sp.updateTargetWithHtmlContent(targetOrArrayOfTargets, request.responseText, isGettingFullHtmlContent);
+      }, function(request) {
+        sp.log.error(request.status + " " + request.statusText);
       });
+    },
+    updateTargetWithHtmlContent : function(targetOrArrayOfTargets, html, isGettingFullHtmlContent) {
+      var targetIsArrayOfCssSelector = typeof targetOrArrayOfTargets === 'object' && Array.isArray(targetOrArrayOfTargets);
+      var targets = !targetIsArrayOfCssSelector ? [targetOrArrayOfTargets] : targetOrArrayOfTargets;
+      targets.forEach(function(target) {
+        var targetIsCssSelector = typeof target === 'string';
+        if (!isGettingFullHtmlContent || !targetIsCssSelector) {
+          jQuery(target).html(html);
+        } else {
+          var $container = jQuery('<div>');
+          $container.html(html);
+          var $content = jQuery(target, $container);
+          jQuery(target).replaceWith($content);
+        }
+      });
+      return sp.promise.resolveDirectlyWith(html);
+    },
+    selection : {
+      newCheckboxMonitor : function(cssSelector) {
+        return new function() {
+          var __selectedAtStart = [];
+          var __selected = [];
+          var __unselected = [];
+          var __init = function() {
+            __selectedAtStart = [];
+            __selected = [];
+            __unselected = [];
+            var checkboxes = document.querySelectorAll(cssSelector);
+            [].slice.call(checkboxes, 0).forEach(function(checkbox) {
+              if (checkbox.checked) {
+                __selectedAtStart.addElement(checkbox.value);
+              }
+              checkbox.addEventListener('change', __handler);
+            });
+          };
+          var __handler = function(e) {
+            var checkbox = e.target;
+            if (checkbox.checked) {
+              if (__selectedAtStart.indexOf(checkbox.value) < 0) {
+                __selected.addElement(checkbox.value);
+              }
+              __unselected.removeElement(checkbox.value);
+            } else {
+              if (__selectedAtStart.indexOf(checkbox.value) >= 0) {
+                __unselected.addElement(checkbox.value);
+              }
+              __selected.removeElement(checkbox.value);
+            }
+          };
+          this.pageChanged = function() {
+            __init();
+          };
+          this.applyToAjaxConfig = function(ajaxConfig, options) {
+            var params = extendsObject({
+              clear : true,
+              paramSelectedIds : 'selectedIds',
+              paramUnselectedIds : 'unselectedIds'
+            }, options);
+            __selected.forEach(function(value) {
+              ajaxConfig.addParam(params.paramSelectedIds, value);
+            });
+            __unselected.forEach(function(value) {
+              ajaxConfig.addParam(params.paramUnselectedIds, value);
+            });
+            if (params.clear) {
+              __init();
+            }
+          };
+          __init();
+        };
+      }
+    },
+    arrayPane : {
+      ajaxControls : function(containerCssSelector, options) {
+        var params = {
+          before : false,
+          success : false
+        };
+        if (typeof options === 'function') {
+          params.success = options;
+        } else if (typeof options === 'object') {
+          params = extendsObject(params, options);
+        }
+        var $container = jQuery(containerCssSelector);
+        var __ajaxRequest = function(url) {
+          var ajaxConfig = sp.ajaxConfig(url);
+          ajaxConfig.withParam("ajaxRequest", true);
+          if (typeof params.before === 'function') {
+            params.before(ajaxConfig);
+          }
+          return silverpeasAjax(ajaxConfig).then(function(request) {
+            if (typeof params.success === 'function') {
+              var result = params.success(request);
+              if (sp.promise.isOne(result)) {
+                return result;
+              }
+            }
+            return sp.promise.resolveDirectlyWith();
+          });
+        };
+        var __clickHandler = function(index, linkElement) {
+          var url = linkElement.href;
+          if (url && '#' !== url && !url.startsWith('javascript')) {
+            linkElement.href = 'javascript:void(0)';
+            linkElement.addEventListener('click', function() {
+              __ajaxRequest(url);
+            }, false);
+          }
+        };
+        jQuery('thead a', $container).each(__clickHandler);
+        jQuery('tfoot a', $container).each(__clickHandler);
+        jQuery('.pageJumper input', $container).each(function(index, jumperInput) {
+          jumperInput.ajax = __ajaxRequest;
+        });
+      }
     }
   };
 }

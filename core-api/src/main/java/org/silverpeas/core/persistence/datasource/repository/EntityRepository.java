@@ -25,6 +25,7 @@ package org.silverpeas.core.persistence.datasource.repository;
 
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.util.PaginationList;
+import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,7 +57,7 @@ public interface EntityRepository<T extends IdentifiableEntity> {
    * WARNING: we don't recommend to use this method with a lot of persisted entities.
    * @return a list of all the persisted entities.
    */
-  List<T> getAll();
+  SilverpeasList<T> getAll();
 
   /**
    * Gets a persisted entity by its unique identifier.
@@ -70,7 +71,7 @@ public interface EntityRepository<T extends IdentifiableEntity> {
    * Gets persisted entities by their ids.
    * @return
    */
-  default List<T> getById(String... ids) {
+  default SilverpeasList<T> getById(String... ids) {
     return getById(Arrays.asList(ids));
   }
 
@@ -78,7 +79,7 @@ public interface EntityRepository<T extends IdentifiableEntity> {
    * Gets persisted entities by their ids.
    * @return
    */
-  List<T> getById(Collection<String> ids);
+  SilverpeasList<T> getById(Collection<String> ids);
 
   /**
    * Finds all the entities that match the specified criteria.
@@ -87,7 +88,7 @@ public interface EntityRepository<T extends IdentifiableEntity> {
    * @return a list of entities matching the specified criteria. If a pagination criterion is
    * defined in the criteria, then the returned list is a {@link PaginationList} instance.
    */
-  List<T> findByCriteria(final QueryCriteria criteria);
+  SilverpeasList<T> findByCriteria(final QueryCriteria criteria);
 
   /**
    * Persists entity : create (if id is null or empty) or update.
@@ -103,7 +104,7 @@ public interface EntityRepository<T extends IdentifiableEntity> {
    * @param entities the entities to save.
    * @return the created or updated entity.
    */
-  default List<T> save(T... entities) {
+  default SilverpeasList<T> save(T... entities) {
     return save(Arrays.asList(entities));
   }
 
@@ -112,7 +113,7 @@ public interface EntityRepository<T extends IdentifiableEntity> {
    * @param entities the entities to save.
    * @return the created or updated entity.
    */
-  List<T> save(List<T> entities);
+  SilverpeasList<T> save(List<T> entities);
 
   /**
    * Deletes entities.

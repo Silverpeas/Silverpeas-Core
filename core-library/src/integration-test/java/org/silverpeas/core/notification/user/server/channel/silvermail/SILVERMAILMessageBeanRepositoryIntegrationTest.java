@@ -26,19 +26,22 @@ import com.ninja_squad.dbsetup.operation.Operation;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
 import javax.inject.Inject;
 import java.util.List;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static java.util.Arrays.asList;
+import static java.util.Collections.emptyList;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
@@ -59,6 +62,10 @@ public class SILVERMAILMessageBeanRepositoryIntegrationTest {
           "Espace collaboratif - Boite à idées",
           "http://localhost:8000/silverpeas/autoRedirect.jsp?domainId=0&goto=bidule", "2014/04/06",
           1)
+      .values(360, 26, 0, null, "Toto Loufoc", "Validation d'une idée", "1139",
+          "Espace collaboratif - Boite à idées",
+          "http://localhost:8000/silverpeas/autoRedirect.jsp?domainId=0&goto=bidule", "2014/04/06",
+          0)
       .build();
   private static final Operation UNIQUE_ID_SETUP = Operations.insertInto("UniqueId")
       .columns("maxId", "tableName")
@@ -79,8 +86,15 @@ public class SILVERMAILMessageBeanRepositoryIntegrationTest {
         .addDatabaseToolFeatures()
         .addJpaPersistenceFeatures()
         .testFocusedOn(war -> war.addClasses(SILVERMAILMessageBean.class,
-            SILVERMAILMessageBeanRepository.class))
+            SILVERMAILMessageBeanRepository.class, SilvermailCriteria.class,
+            SilvermailCriteriaProcessor.class, JPQLQueryBuilder.class))
         .build();
+  }
+
+  @Before
+  public void verifyData() throws Exception {
+    assertThat(getUserNotificationTableLines(), hasSize(4));
+    assertThat(getUserNotificationReadTableLines(), hasSize(2));
   }
 
   @Test
@@ -90,7 +104,9 @@ public class SILVERMAILMessageBeanRepositoryIntegrationTest {
 
   @Test
   public void findMessagesByUserIdAndFolderId() {
-    List<SILVERMAILMessageBean> msgs = repository.findMessageByUserIdAndFolderId("109", "0", -1);
+    SilvermailCriteria criteria = SilvermailCriteria.get();
+    criteria.aboutUser("109").into("0");
+    List<SILVERMAILMessageBean> msgs = repository.findByCriteria(criteria);
     assertThat(msgs.size(), is(2));
 
     assertThat(msgs.get(0).getId(), is("315"));
@@ -117,8 +133,18 @@ public class SILVERMAILMessageBeanRepositoryIntegrationTest {
   }
 
   @Test
+  public void countMessagesByUserIdAndFolderId() {
+    SilvermailCriteria criteria = SilvermailCriteria.get();
+    criteria.aboutUser("109").into("0");
+    long count = repository.countByCriteria(criteria);
+    assertThat(count, is(2L));
+  }
+
+  @Test
   public void findMessagesByUserIdAndFolderIdAndByRead() {
-    List<SILVERMAILMessageBean> msgs = repository.findMessageByUserIdAndFolderId("109", "0", 1);
+    SilvermailCriteria criteria = SilvermailCriteria.get();
+    criteria.aboutUser("109").into("0").read();
+    List<SILVERMAILMessageBean> msgs = repository.findByCriteria(criteria);
     assertThat(msgs.size(), is(1));
 
     assertThat(msgs.get(0).getId(), is("315"));
@@ -134,19 +160,48 @@ public class SILVERMAILMessageBeanRepositoryIntegrationTest {
   }
 
   @Test
-  public void findMessagesByNonexisingUserIdAndFolderId() {
-    List<SILVERMAILMessageBean> msgs = repository.findMessageByUserIdAndFolderId("42", "0", -1);
+  public void countMessagesByUserIdAndFolderIdAndByRead() {
+    SilvermailCriteria criteria = SilvermailCriteria.get();
+    criteria.aboutUser("109").into("0").read();
+    long count = repository.countByCriteria(criteria);
+    assertThat(count, is(1L));
+  }
+
+  @Test
+  public void findMessagesByNonExistingUserIdAndFolderId() {
+    SilvermailCriteria criteria = SilvermailCriteria.get();
+    criteria.aboutUser("42").into("0");
+    List<SILVERMAILMessageBean> msgs = repository.findByCriteria(criteria);
+    assertThat(msgs.isEmpty(), is(true));
+  }
+
+
+  @Test
+  public void countMessagesByNonExistingUserIdAndFolderId() {
+    SilvermailCriteria criteria = SilvermailCriteria.get();
+    criteria.aboutUser("42").into("0");
+    long count = repository.countByCriteria(criteria);
+    assertThat(count, is(0L));
+  }
+
+  @Test
+  public void findMessagesByUserIdAnNonExistingFolderId() {
+    SilvermailCriteria criteria = SilvermailCriteria.get();
+    criteria.aboutUser("109").into("3");
+    List<SILVERMAILMessageBean> msgs = repository.findByCriteria(criteria);
     assertThat(msgs.isEmpty(), is(true));
   }
 
   @Test
-  public void findMessagesByUserIdAnNonExistingdFolderId() {
-    List<SILVERMAILMessageBean> msgs = repository.findMessageByUserIdAndFolderId("109", "3", -1);
-    assertThat(msgs.isEmpty(), is(true));
+  public void countMessagesByUserIdAnNonExistingFolderId() {
+    SilvermailCriteria criteria = SilvermailCriteria.get();
+    criteria.aboutUser("109").into("3");
+    long count = repository.countByCriteria(criteria);
+    assertThat(count, is(0L));
   }
 
   @Test
-  public void persistANewMessage() {
+  public void persistANewMessage() throws Exception {
     SILVERMAILMessageBean expected = new SILVERMAILMessageBean();
     expected.setUserId(100);
     expected.setSenderName("Boloo");
@@ -159,10 +214,69 @@ public class SILVERMAILMessageBeanRepositoryIntegrationTest {
     expected.setReaden(0);
     Transaction.performInOne(() -> repository.save(expected));
 
+    assertThat(getUserNotificationTableLines(), hasSize(5));
     SILVERMAILMessageBean actual =
         SILVERMAILMessageBeanFinder.getById(Long.parseLong(expected.getId()));
     assertThat(actual, notNullValue());
     assertThat(actual, is(expected));
   }
 
+  @Test
+  public void markAsReadAllMessagesByUserIdAndFolderId() throws Exception {
+    long nbUpdated = Transaction
+        .performInOne(() -> repository.markAsReadAllMessagesByUserIdAndFolderId("109", "0"));
+    assertThat(nbUpdated, is(1L));
+    assertThat(getUserNotificationReadTableLines(), hasSize(3));
+  }
+
+  @Test
+  public void markAsReadMessagesByUserIdAndById() throws Exception {
+    long nbUpdated = Transaction.performInOne(() -> repository
+        .markAsReadMessagesByUserIdAndByIds("109", asList("314", "315", "322", "360")));
+    assertThat(nbUpdated, is(1L));
+    assertThat(getUserNotificationReadTableLines(), hasSize(3));
+  }
+
+  @Test
+  public void markAsReadMessagesByUserIdAndByIdButNoIdGiven() throws Exception {
+    long nbUpdated = Transaction.performInOne(() -> repository
+        .markAsReadMessagesByUserIdAndByIds("109", emptyList()));
+    assertThat(nbUpdated, is(0L));
+    assertThat(getUserNotificationReadTableLines(), hasSize(2));
+  }
+
+  @Test
+  public void deleteAllMessagesByUserIdAndFolderId() throws Exception {
+    long nbDeleted = Transaction
+        .performInOne(() -> repository.deleteAllMessagesByUserIdAndFolderId("109", "0"));
+    assertThat(nbDeleted, is(2L));
+    assertThat(getUserNotificationTableLines(), hasSize(2));
+    assertThat(getUserNotificationReadTableLines(), hasSize(1));
+  }
+
+  @Test
+  public void deleteMessagesByUserIdAndById() throws Exception {
+    long nbDeleted = Transaction.performInOne(
+        () -> repository.deleteMessagesByUserIdAndByIds("109", asList("315", "322", "360")));
+    assertThat(nbDeleted, is(1L));
+    assertThat(getUserNotificationTableLines(), hasSize(3));
+  }
+
+  @Test
+  public void deleteMessagesByUserIdAndByIdButNoIdGiven() throws Exception {
+    long nbDeleted = Transaction.performInOne(
+        () -> repository.deleteMessagesByUserIdAndByIds("109", emptyList()));
+    assertThat(nbDeleted, is(0L));
+    assertThat(getUserNotificationTableLines(), hasSize(4));
+  }
+
+  private List<DbSetupRule.TableLine> getUserNotificationTableLines() throws Exception {
+    return dbSetupRule.mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from ST_SilverMailMessage"));
+  }
+
+  private List<DbSetupRule.TableLine> getUserNotificationReadTableLines() throws Exception {
+    return dbSetupRule.mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from ST_SilverMailMessage where readen = 1"));
+  }
 }

@@ -187,5 +187,9 @@ public enum SupportedWebPlugins {
   /**
    * External plugin to centralize the management of Silverpeas's user session
    */
-  USERSESSION
+  USERSESSION,
+  /**
+   * External plugin to centralize the management of Silverpeas's user notification
+   */
+  USERNOTIFICATION
 }

@@ -403,8 +403,12 @@ function initializeSilverpeasLayout(bodyLoadParameters) {
       "footer" : "#sp-layout-footer-part"
     };
     window.spServerEventSource = new function() {
-      var serverEventSource = new EventSource(webContext + '/sse/common');
-      applyEventListenerBehaviorOn(this, {
+      var commonSseUrl = webContext + '/sse/common';
+      if (window.EVENT_SOURCE_POLYFILL_ACTIVATED) {
+        commonSseUrl += '?heartbeat=true';
+      }
+      var serverEventSource = new EventSource(commonSseUrl);
+      applyEventDispatchingBehaviorOn(this, {
         onAdd : function(serverEventName, listener) {
           serverEventSource.addEventListener(serverEventName, listener);
         },
@@ -412,6 +416,9 @@ function initializeSilverpeasLayout(bodyLoadParameters) {
           serverEventSource.removeEventListener(serverEventName, listener);
         }
       });
+      this.close = function() {
+        serverEventSource.close();
+      };
     };
     window.spLayout = new SilverpeasLayout(partSelectors);
     spLayout.getHeader().load();

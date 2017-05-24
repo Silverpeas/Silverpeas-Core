@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2016 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,15 +22,28 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.notification.sse.behavior;
+package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import org.silverpeas.core.notification.sse.ServerEvent;
-import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
+import org.apache.taglibs.standard.tag.rt.core.ForEachTag;
+import org.silverpeas.core.util.SilverpeasList;
+
+import javax.servlet.jsp.JspTagException;
 
 /**
- * If an event implements this interface, it is never removed from the store handled by {@link
- * ServerEventDispatcherTask} in charge of dispatching all {@link ServerEvent} until a new one is
- * stored (see {@link StoreLastOnly}).
+ * Iterate over lines.
  * @author Yohann Chastagnier
  */
-public interface KeepAlwaysStoring extends StoreLastOnly {}
+public class ArrayLinesTag extends ForEachTag {
+
+  @Override
+  public void setItems(final Object items) throws JspTagException {
+    super.setItems(items);
+    if (items instanceof SilverpeasList) {
+      getArrayPane().setPaginationList((SilverpeasList) items);
+    }
+  }
+
+  public ArrayPane getArrayPane() {
+    return (ArrayPane) pageContext.getAttribute(ArrayPaneTag.ARRAY_PANE_PAGE_ATT);
+  }
+}

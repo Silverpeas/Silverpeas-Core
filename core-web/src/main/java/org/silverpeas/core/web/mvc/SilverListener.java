@@ -24,16 +24,15 @@
 
 package org.silverpeas.core.web.mvc;
 
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
-import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.session.HTTPSessionInfo;
+import org.silverpeas.core.webapi.notification.sse.SilverpeasServerSentEventServlet;
 
 import javax.inject.Inject;
 import javax.servlet.ServletContextEvent;
@@ -90,42 +89,52 @@ public class SilverListener
     clearRequestCache();
     // Managing the session cache.
     ServletRequest request = sre.getServletRequest();
-    if (request instanceof HttpServletRequest) {
-      HttpServletRequest httpRequest = (HttpServletRequest) request;
-      URLUtil.setCurrentServerUrl(httpRequest);
-      HttpSession httpSession = httpRequest.getSession(false);
-      if (httpSession != null) {
-        SessionInfo sessionInfo = sessionManager.getSessionInfo(httpSession.getId());
-        if (sessionInfo instanceof HTTPSessionInfo) {
-          ((HTTPSessionInfo) sessionInfo).setHttpSession(httpSession);
+    // Check an http servlet request
+    if (!(request instanceof HttpServletRequest)) {
+      return;
+    }
+    HttpServletRequest httpRequest = (HttpServletRequest) request;
+    URLUtil.setCurrentServerUrl(httpRequest);
+    if (SilverpeasServerSentEventServlet.isSseRequest(httpRequest)) {
+      // Server Sent Event request are detached from Silverpeas HTTP tools
+      return;
+    }
+    // Check HTTP session available
+    HttpSession httpSession = httpRequest.getSession(false);
+    if (httpSession == null) {
+      return;
+    }
+    // Setting the context according to the Silverpeas session state
+    SessionInfo sessionInfo = sessionManager.getSessionInfo(httpSession.getId());
+    if (sessionInfo.isDefined()) {
+      if (sessionInfo instanceof HTTPSessionInfo && sessionInfo != SessionInfo.AnonymousSession) {
+        ((HTTPSessionInfo) sessionInfo).setHttpSession(httpSession);
+      }
+      ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+          .setCurrentSessionCache(sessionInfo.getCache());
+    } else {
+      try {
+        // Anonymous management
+        MainSessionController mainSessionController = (MainSessionController) httpSession
+            .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+        if (mainSessionController != null && mainSessionController.getCurrentUserDetail() != null &&
+            mainSessionController.getCurrentUserDetail().isAnonymous()) {
+          ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+              .newSessionCache(mainSessionController.getCurrentUserDetail());
         }
-        if (sessionInfo.isDefined()) {
-          ((SessionCacheService)CacheServiceProvider.getSessionCacheService())
-              .setCurrentSessionCache(sessionInfo.getCache());
-        } else {
-          // Anonymous management
-          MainSessionController mainSessionController =
-              (MainSessionController) httpSession.getAttribute(
-                  MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-          if (mainSessionController != null &&
-              mainSessionController.getCurrentUserDetail() != null &&
-              mainSessionController.getCurrentUserDetail().isAnonymous()) {
-            ((SessionCacheService)CacheServiceProvider.getSessionCacheService())
-                .newSessionCache(mainSessionController.getCurrentUserDetail());
-          }
-        }
+      } catch (IllegalStateException e) {
+        SilverLogger.getLogger(this)
+            .warn("request ''{0}'' accessing attributes on closed session ({1})",
+                httpRequest.getRequestURI(), e.getMessage(), e);
       }
     }
   }
 
   // Clear session information
   private void remove(HttpSessionEvent event) {
-    final User currentRequester = User.getCurrentRequester();
-    final boolean isAnonymous = currentRequester != null && currentRequester.isAnonymous();
     final String sessionId = event.getSession().getId();
     sessionManager.closeSession(sessionId);
     SilverLogger.getLogger(this).info("Session with id {0} has just been closed", sessionId);
-    ServerEventDispatcherTask.unregisterBySessionId(sessionId, isAnonymous);
   }
 
   /**

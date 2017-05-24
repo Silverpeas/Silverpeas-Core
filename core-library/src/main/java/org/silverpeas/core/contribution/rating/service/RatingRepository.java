@@ -26,14 +26,9 @@ import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
 import org.silverpeas.core.contribution.rating.model.RaterRatingPK;
 import org.silverpeas.core.contribution.rating.model.Rating;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
-import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameter;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
-import org.silverpeas.core.util.StringUtil;
 
-import javax.persistence.Query;
-import java.sql.Timestamp;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -97,13 +92,4 @@ public class RatingRepository extends BasicJpaEntityRepository<Rating> {
         .add("newInstanceId", instanceId);
     updateFromNamedQuery("updateInstanceId", parameters);
   }
-
-  private long updateFromNamedQuery(String namedQuery, NamedParameters parameters) {
-    return updateFromQuery(getEntityManager().createNamedQuery(namedQuery), parameters);
-  }
-
-  private long updateFromQuery(Query updateQuery, NamedParameters parameters) {
-    return parameters.applyTo(updateQuery).executeUpdate();
-  }
-
 }

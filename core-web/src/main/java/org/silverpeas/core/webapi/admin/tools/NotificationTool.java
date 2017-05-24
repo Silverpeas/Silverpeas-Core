@@ -23,20 +23,14 @@
  */
 package org.silverpeas.core.webapi.admin.tools;
 
-import java.util.Collection;
-
-import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
+import org.silverpeas.core.notification.user.UserNotificationServerEvent;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.web.look.LookHelper;
 
 /**
  * @author Yohann Chastagnier
  */
 public class NotificationTool extends AbstractTool {
-
-  private int nbNotifications = -1;
 
   public NotificationTool(final String language, final LookHelper lookHelper) {
     super(language, lookHelper, "notificationVisible", "notification", "Mail",
@@ -49,21 +43,6 @@ public class NotificationTool extends AbstractTool {
    */
   @Override
   public int getNb() {
-    if (nbNotifications == -1) {
-      try {
-        final Collection<SILVERMAILMessage> notifications =
-            SILVERMAILPersistence.getNotReadMessagesOfFolder(
-                Integer.parseInt(getLookHelper().getUserId()), "INBOX");
-        if (notifications != null) {
-          nbNotifications = notifications.size();
-        } else {
-          nbNotifications = 0;
-        }
-      } catch (final Exception e) {
-        SilverTrace.error("admin", "NotificationTool.getNb", "root.CANT_GET_NOTIFICATIONS", e);
-        return super.getNb();
-      }
-    }
-    return nbNotifications;
+    return UserNotificationServerEvent.getNbUnreadFor(getLookHelper().getUserId());
   }
 }

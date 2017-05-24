@@ -24,156 +24,203 @@
 
 --%>
 
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
 <%
-response.setHeader("Cache-Control","no-store"); //HTTP 1.1
-response.setHeader("Pragma","no-cache");        //HTTP 1.0
-response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
+  response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
+  response.setHeader("Pragma", "no-cache");        //HTTP 1.0
+  response.setDateHeader("Expires", -1);          //prevents caching at the proxy server
 %>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@ include file="graphicBox.jsp" %>
 <%@ include file="checkSilvermail.jsp" %>
-<%@ include file="tabManager.jsp" %>
-<%@ page import="org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage"%>
-<%@ page import="org.silverpeas.core.util.URLUtil"%>
-<%@ page import="java.util.Date"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
+<%@ page import="org.silverpeas.core.util.URLUtil" %>
+
+<c:set var="_userLanguage" value="${requestScope.resources.language}" scope="request"/>
+<jsp:useBean id="_userLanguage" type="java.lang.String" scope="request"/>
+<fmt:setLocale value="${_userLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
+
+<c:url var="newUserNotificationUrl" value="/RnotificationUser/jsp/Main.jsp?popupMode=Yes"/>
+<c:url var="notifyIconUrl" value="/util/icons/create-action/send-notification.png"/>
+<c:url var="userSettingUrl" value='<%=URLUtil.getURL(URLUtil.CMP_PERSONALIZATION, null, null) + "ParametrizeNotification"%>'/>
+<fmt:message var="linkIconUrl" key="silvermail.link" bundle="${icons}"/>
+
+<fmt:message var="componentName" key="silverMail"/>
+<fmt:message var="inboxLabel" key="bbar1_inbox"/>
+<fmt:message var="notyfyLabel" key="Notifier"/>
+<fmt:message var="markSelectedReadLabel" key="MarkSelectedNotifAsRead"/>
+<fmt:message var="markSelectedReadConfirm" key="MarkSelectedNotifAsReadConfirmation"/>
+<fmt:message var="deleteSelectedLabel" key="DeleteSelectedNotif"/>
+<fmt:message var="deleteSelectedConfirm" key="DeleteSelectedNotifConfirmation"/>
+<fmt:message var="markAllReadLabel" key="MarkAllNotifAsRead"/>
+<fmt:message var="markAllReadConfirm" key="ConfirmReadAllNotif"/>
+<fmt:message var="deleteAllLabel" key="DeleteAllNotif"/>
+<fmt:message var="deleteAllConfirm" key="ConfirmDeleteAllNotif"/>
+<fmt:message var="inboxLabel" key="LireNotification"/>
+<fmt:message var="outboxLabel" key="SentUserNotifications"/>
+<fmt:message var="userSettingLabel" key="ParametrerNotification"/>
+<fmt:message var="dateLabel" key="date"/>
+<fmt:message var="sourceLabel" key="source"/>
+<fmt:message var="fromLabel" key="from"/>
+<fmt:message var="urlLabel" key="url"/>
+<fmt:message var="subjectLabel" key="subject"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title></title>
   <view:looknfeel/>
-<script type="text/javascript">
-function readMessage(id){
-	SP_openWindow("ReadMessage.jsp?ID=" + id,"readMessage","600","380","scrollable=yes,scrollbars=yes");
-}
+  <view:includePlugin name="userNotification"/>
+  <script type="text/javascript">
 
-function deleteMessage(id, skipConfirmation, spaceId, from) {
-    if(skipConfirmation){
-      reallyDeleteMessage(id, spaceId, from);
-    } else {
-      jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>", function() {
-        reallyDeleteMessage(id, spaceId, from);
+    var checkBoxMonitor = sp.selection.newCheckboxMonitor('#silvermail-list input[name=selection]');
+
+    function newMessage() {
+      SP_openWindow("${newUserNotificationUrl}", 'notifyUserPopup', '700', '430', 'menubar=no,scrollbars=yes,statusbar=no');
+    }
+
+    var _reloadList = function(checkSelected) {
+      var ajaxConfig = sp.ajaxConfig("Main");
+      if (checkSelected) {
+        checkBoxMonitor.applyToAjaxConfig(ajaxConfig);
+      }
+      return sp.load('#silvermail-list', ajaxConfig, true).then(function() {
+        spProgressMessage.hide();
+      });
+    };
+
+    var _updateFromRequest = function(request) {
+      return sp.updateTargetWithHtmlContent('#silvermail-list', request.responseText, true).then(
+          function() {
+            spProgressMessage.hide();
+          });
+    };
+
+    function markAllMessagesAsRead() {
+      jQuery.popup.confirm("${silfn:escapeJs(markAllReadConfirm)}", function() {
+        var ajaxConfig = sp.ajaxConfig("MarkAllMessagesAsRead").byPostMethod();
+        spProgressMessage.show();
+        silverpeasAjax(ajaxConfig).then(_updateFromRequest);
       });
     }
-}
 
-function reallyDeleteMessage(id, spaceId, from) {
-  var $form = jQuery('#genericForm');
-  jQuery('#ID', $form).val(id);
-  if (spaceId) {
-    jQuery('#SpaceId', $form).val(spaceId);
-  }
-  if (from) {
-    jQuery('#from', $form).val(from);
-  }
-  $form.attr('action', "DeleteMessage.jsp").submit();
-}
+    function markSelectedMessagesAsRead() {
+      jQuery.popup.confirm("${silfn:escapeJs(markSelectedReadConfirm)}", function() {
+        var ajaxConfig = sp.ajaxConfig("MarkSelectedMessagesAsRead").byPostMethod();
+        checkBoxMonitor.applyToAjaxConfig(ajaxConfig);
+        spProgressMessage.show();
+        silverpeasAjax(ajaxConfig).then(_updateFromRequest);
+      });
+    }
 
-function deleteAllMessages() {
-  jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteAllNotif")%>", function() {
-    var $form = jQuery('#genericForm');
-    jQuery('#folder', $form).val('INBOX');
-    $form.attr('action', "DeleteAllMessages.jsp").submit();
-  });
-}
+    function deleteAllMessages() {
+      jQuery.popup.confirm("${silfn:escapeJs(deleteAllConfirm)}", function() {
+        var ajaxConfig = sp.ajaxConfig("DeleteAllMessages").byPostMethod();
+        ajaxConfig.withParam("folder", "INBOX");
+        spProgressMessage.show();
+        silverpeasAjax(ajaxConfig).then(_updateFromRequest);
+      });
+    }
 
-function newMessage() {
-	SP_openWindow("<%=m_Context%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes", 'notifyUserPopup', '700', '430', 'menubar=no,scrollbars=yes,statusbar=no');
-}
+    function deleteSelectedMessages() {
+      jQuery.popup.confirm("${silfn:escapeJs(deleteSelectedConfirm)}", function() {
+        var ajaxConfig = sp.ajaxConfig("DeleteSelectedMessages").byPostMethod();
+        ajaxConfig.withParam("folder", "INBOX");
+        checkBoxMonitor.applyToAjaxConfig(ajaxConfig);
+        spProgressMessage.show();
+        silverpeasAjax(ajaxConfig).then(_updateFromRequest);
+      });
+    }
 
-</script>
+    window.USERNOTIFICATION_PROMISE.then(function() {
+      spUserNotification.addEventListener('userNotificationRead', function() {
+        _reloadList(true);
+      }, "SILVERMAIL_UserNotificationRead");
+      spUserNotification.addEventListener('userNotificationDeleted', _reloadList,
+          "SILVERMAIL_UserNotificationDeleted");
+      spUserNotification.addEventListener('userNotificationReceived', _reloadList,
+          "SILVERMAIL_UserNotificationReceived");
+      spUserNotification.addEventListener('userNotificationCleared', _reloadList,
+          "SILVERMAIL_UserNotificationCleared");
+    });
+  </script>
 </head>
 <body>
-<%
-  Window window = gef.getWindow();
-
-  OperationPane operationPane = window.getOperationPane();
-  operationPane.addOperationOfCreation(addNotif, silvermailScc.getString("Notifier"), "javascript:newMessage()");
-  operationPane.addOperation(deleteAllNotif, silvermailScc.getString("DeleteAllNotif"), "javascript:deleteAllMessages()");
-
-  BrowseBar browseBar = window.getBrowseBar();
-  browseBar.setComponentName(silvermailScc.getString("silverMail"));
-  browseBar.setPath(silvermailScc.getString("bbar1_inbox"));
-
-  // Barre d'onglet
-  TabbedPane tabbedPane = gef.getTabbedPane();
-  tabbedPane.addTab(silvermailScc.getString("LireNotification"), "Main", true);
-  tabbedPane.addTab(silvermailScc.getString("SentUserNotifications"), "SentUserNotifications", false);
-  tabbedPane.addTab(silvermailScc.getString("ParametrerNotification"), m_Context + URLUtil.getURL(
-      URLUtil.CMP_PERSONALIZATION) + "ParametrizeNotification", false);
-
-  out.println(window.printBefore());
-  out.println(tabbedPane.print());
-%>
-<view:frame>
-<view:areaOfOperationOfCreation/>
-<%
-  // Arraypane
-  ArrayPane list = gef.getArrayPane( "silvermail", "Main.jsp", request,session );
-  list.addArrayColumn( silvermailScc.getString("date") );
-  list.addArrayColumn( silvermailScc.getString("source") );
-  list.addArrayColumn( silvermailScc.getString("from") );
-  list.addArrayColumn( silvermailScc.getString("url") ).setSortable(false);
-  list.addArrayColumn( silvermailScc.getString("subject") );
-  list.addArrayColumn( silvermailScc.getString("operation") ).setSortable(false);
-
-  Iterator	messageIterator = silvermailScc.getFolderMessageList( "INBOX" ).iterator();
-  String	hasBeenReadenOrNotBegin	= "";
-  String	hasBeenReadenOrNotEnd	= "";
-  while( messageIterator.hasNext() == true )
-  {
-    hasBeenReadenOrNotBegin = "";
-    hasBeenReadenOrNotEnd = "";
-    SILVERMAILMessage message = (SILVERMAILMessage)messageIterator.next();
-    if (message.getReaden() == 0) {
-      hasBeenReadenOrNotBegin = "<b>";
-      hasBeenReadenOrNotEnd = "</b>";
-    }
-    String link = "<a href=\"javascript:onClick=readMessage(" + message.getId() + ");\">";
-    ArrayLine line = list.addArrayLine();
-    Date date = message.getDate();
-    ArrayCellText cell = line.addArrayCellText(hasBeenReadenOrNotBegin + resource.getOutputDate(date) + hasBeenReadenOrNotEnd);
-    cell.setCompareOn(date);
-    ArrayCellText cell1 = line.addArrayCellText(hasBeenReadenOrNotBegin + WebEncodeHelper.javaStringToHtmlString(message.getSource()) + "</a>" + hasBeenReadenOrNotEnd);
-    cell1.setCompareOn(message.getSource());
-    ArrayCellText cell2 = line.addArrayCellText(hasBeenReadenOrNotBegin + link + WebEncodeHelper.javaStringToHtmlString(message.getSenderName()) + "</a>" + hasBeenReadenOrNotEnd);
-    cell2.setCompareOn(message.getSenderName());
-    if ( message.getUrl()!=null && message.getUrl().length()>0 )
-	line.addArrayCellText(hasBeenReadenOrNotBegin + "<a href =\"" + WebEncodeHelper.javaStringToHtmlString(message.getUrl()) + "\" target=\"_top\"><img src=\""+resource.getIcon("silvermail.link")+"\" border=\"0\"/></a>" + hasBeenReadenOrNotEnd);
-    else
-		  line.addArrayCellText( "" );
-
-    ArrayCellText cell3 = line.addArrayCellText(hasBeenReadenOrNotBegin + link + message.getSubject() + "</a>" + hasBeenReadenOrNotEnd);
-    cell3.setCompareOn(message.getSubject());
-
-    // Ajout des icones de modification et de suppression
-    IconPane actions = gef.getIconPane();
-    Icon del = actions.addIcon();
-	  del.setProperties(delete, silvermailScc.getString("delete") , "javascript:onClick=deleteMessage('" + message.getId() +"');");
-    line.addArrayCellIconPane(actions);
-  }
-
-  out.println(list.print());
- %>
-</view:frame>
-<%
-out.println(window.printAfter());
-%>
-<form id="genericForm" action="" method="post">
-  <input id="ID" name="ID" type="hidden"/>
-  <input id="folder" name="folder" type="hidden"/>
-  <input id="SpaceId" name="SpaceId" type="hidden"/>
-  <input id="from" name="from" type="hidden"/>
-</form>
+<view:browseBar clickable="false">
+  <view:browseBarElt link="#" label="${componentName}"/>
+  <view:browseBarElt link="#" label="${inboxLabel}"/>
+</view:browseBar>
+<view:operationPane>
+  <view:operationOfCreation icon="${notifyIconUrl}" action="javascript:newMessage()" altText="${notyfyLabel}"/>
+  <view:operationSeparator/>
+  <view:operation action="javascript:markSelectedMessagesAsRead()" altText="${markSelectedReadLabel}"/>
+  <view:operation action="javascript:deleteSelectedMessages()" altText="${deleteSelectedLabel}"/>
+  <view:operationSeparator/>
+  <view:operation action="javascript:markAllMessagesAsRead()" altText="${markAllReadLabel}"/>
+  <view:operation action="javascript:deleteAllMessages()" altText="${deleteAllLabel}"/>
+</view:operationPane>
+<view:window>
+  <view:tabs>
+    <view:tab label="${inboxLabel}" action="Main" selected="true"/>
+    <view:tab label="${outboxLabel}" action="SentUserNotifications" selected="false"/>
+    <view:tab label="${userSettingLabel}" action="${userSettingUrl}" selected="false"/>
+  </view:tabs>
+  <view:frame>
+    <view:areaOfOperationOfCreation/>
+    <div id="silvermail-list">
+      <view:arrayPane var="userNotificationInbox" routingAddress="Main">
+        <view:arrayColumn width="10" title="" sortable="false"/>
+        <view:arrayColumn width="80" title="${dateLabel}" sortable="true"/>
+        <view:arrayColumn width="30" title="${urlLabel}" sortable="false"/>
+        <view:arrayColumn title="${subjectLabel}" sortable="true"/>
+        <view:arrayColumn width="200" title="${fromLabel}" sortable="true"/>
+        <view:arrayColumn title="${sourceLabel}" sortable="true"/>
+        <view:arrayLines var="userNotification" items='<%=silvermailScc.getFolderMessageList("INBOX")%>'>
+          <c:set var="unreadClasses" value="${userNotification.data.readen eq 0 ? 'unread-user-notification-inbox' : ''}"/>
+          <view:arrayLine classes="ArrayCell ${unreadClasses}">
+            <c:set var="viewUrl" value="javascript:onClick=spUserNotification.view(${userNotification.data.id})"/>
+            <view:arrayCellCheckbox name="selection"
+                                    checked="${userNotification.selected}"
+                                    value="${userNotification.id}"/>
+            <view:arrayCellText compareOn="${userNotification.data.id}">
+              ${silfn:formatDate(userNotification.data.date, _userLanguage)}
+            </view:arrayCellText>
+            <view:arrayCellText>
+              <c:if test="${not empty userNotification.data.url}">
+                <a href="${userNotification.data.url}" target="_top"><img src="<c:url value="${linkIconUrl}"/>" alt="" border="0"/></a>
+              </c:if>
+            </view:arrayCellText>
+            <view:arrayCellText compareOn="${fn:toLowerCase(userNotification.data.subject)}">
+              <a href="${viewUrl}">${silfn:escapeHtml(userNotification.data.subject)}</a>
+            </view:arrayCellText>
+            <view:arrayCellText compareOn="${fn:toLowerCase(userNotification.data.senderName)}">
+              <a href="${viewUrl}">${silfn:escapeHtml(userNotification.data.senderName)}</a>
+            </view:arrayCellText>
+            <view:arrayCellText compareOn="${fn:toLowerCase(userNotification.data.source)}">
+              ${silfn:escapeHtml(userNotification.data.source)}
+            </view:arrayCellText>
+          </view:arrayLine>
+        </view:arrayLines>
+      </view:arrayPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          checkBoxMonitor.pageChanged();
+          sp.arrayPane.ajaxControls('#silvermail-list', {
+            before : checkBoxMonitor.applyToAjaxConfig,
+            success : _updateFromRequest
+          });
+        });
+      </script>
+    </div>
+  </view:frame>
+</view:window>
+<view:progressMessage/>
 </body>
 </html>

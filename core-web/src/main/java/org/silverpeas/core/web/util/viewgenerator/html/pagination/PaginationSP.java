@@ -28,16 +28,12 @@ import org.apache.ecs.html.IMG;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.Date;
+import java.util.List;
 
 public class PaginationSP extends AbstractPagination {
 
-  private static final int NB_ITEMS_PER_PAGE_2 = 50;
-  private static final int NB_ITEMS_PER_PAGE_1 = 25;
-  private static final int NB_ITEMS_PER_PAGE_3 = 100;
-  private static final int INDEX_THRESHOLD = 5;
-  private static final int NUMBERPERPAGE_THRESHOLD = 25;
   private static final int NUMBERPERPAGE_ALL = 100000;
-  private static final int JUMPER_THRESHOLD = 12;
+  private static final String INDEX_PARAM = "?Index=";
 
   public PaginationSP() {
     super();
@@ -63,7 +59,7 @@ public class PaginationSP extends AbstractPagination {
   public String printIndex(String javascriptFunc, boolean nbItemsPerPage) {
     StringBuilder result = new StringBuilder();
 
-    if (getNbItems() > INDEX_THRESHOLD) {
+    if (getNbItems() > getIndexThreshold()) {
       result.append("<div class=\"pageNav\">");
       result.append("<div class=\"pageNavContent\">");
 
@@ -164,7 +160,7 @@ public class PaginationSP extends AbstractPagination {
 
   private String getJumperFragment(String beforeScript, String javascriptFunc) {
     StringBuilder fragment = new StringBuilder();
-    boolean displayJumper = getNbPage() > JUMPER_THRESHOLD;
+    boolean displayJumper = getNbPage() > getJumperThreshold();
     long timeStamp = new Date().getTime();
     String jumperName = "jumper" + timeStamp;
     if (displayJumper) {
@@ -191,12 +187,12 @@ public class PaginationSP extends AbstractPagination {
 
   private String getNbItemsPerPageFragment(boolean nbItemsPerPage, String javascriptFunc) {
     StringBuilder fragment = new StringBuilder();
-    if (nbItemsPerPage && getNbItems() > NUMBERPERPAGE_THRESHOLD) {
+    if (nbItemsPerPage && getNbItems() > getNumberPerPageThreshold()) {
       fragment.append("<div class=\"pageIndex numberPerPage\">");
-      int[] values = new int[]{NB_ITEMS_PER_PAGE_1, NB_ITEMS_PER_PAGE_2, NB_ITEMS_PER_PAGE_3};
-      for (int i=0; i<values.length; i++) {
-        int value = values[i];
-        if (getNbItems() > value || (i != 0 && getNbItems() > values[i-1])) {
+      List<Integer> values = getNbItemPerPageList();
+      for (int i = 0; i < values.size(); i++) {
+        int value = values.get(i);
+        if (getNbItems() > value || (i != 0 && getNbItems() > values.get(i - 1))) {
           if (getNbItemsPerPage() == value) {
             fragment.append("<a class=\"selected\">").append(value).append("</a>");
           } else {
@@ -207,14 +203,17 @@ public class PaginationSP extends AbstractPagination {
           }
         }
       }
-      // add special feature : All
-      int specialValue = NUMBERPERPAGE_ALL;
-      if (getNbItemsPerPage() == specialValue) {
-        fragment.append("<a class=\"selected\">").append(getString("GEF.pagination.all")).append("</a>");
-      } else {
-        fragment.append("<a href=\"").append(getNbItemsPerPageLink(javascriptFunc, specialValue))
-            .append("\" title=\"").append(getString("GEF.pagination.all.title")).append("\">")
-            .append(getString("GEF.pagination.all")).append("</a>");
+      if (getNbItems() < getPaginationAllThreshold()) {
+        // add special feature : All
+        int specialValue = NUMBERPERPAGE_ALL;
+        if (getNbItemsPerPage() == specialValue) {
+          fragment.append("<a class=\"selected\">").append(getString("GEF.pagination.all"))
+              .append("</a>");
+        } else {
+          fragment.append("<a href=\"").append(getNbItemsPerPageLink(javascriptFunc, specialValue))
+              .append("\" title=\"").append(getString("GEF.pagination.all.title")).append("\">")
+              .append(getString("GEF.pagination.all")).append("</a>");
+        }
       }
       fragment.append("</div>");
     }
@@ -226,7 +225,7 @@ public class PaginationSP extends AbstractPagination {
     StringBuilder link = new StringBuilder();
     if (StringUtil.isNotDefined(javascriptFunc)) {
       if (getBaseURL() != null) {
-        link.append(getBaseURL()).append("0").append("&ItemsPerPage=").append(nbItems);
+        link.append(getBaseURL()).append("0").append("&" + ITEMS_PER_PAGE_PARAM + "=").append(nbItems);
       }
     } else {
       link.append("javascript:onclick=").append(javascriptFunc).append("(0, ").append(nbItems).append(")");
@@ -244,7 +243,7 @@ public class PaginationSP extends AbstractPagination {
         link.append(getBaseURL()).append(index);
       } else {
         // action pagination
-        link.append(action).append("?Index=").append(index);
+        link.append(action).append(INDEX_PARAM).append(index);
       }
     } else {
       link.append("javascript:onClick=").append(javascriptFunc).append("(").append(index).append(")");
@@ -289,10 +288,14 @@ public class PaginationSP extends AbstractPagination {
       result.append(javascriptFunc).append("(index);");
     } else {
       if (getBaseURL() != null) {
-        result.append("location.href=\"").append(getBaseURL()).append("\"+index;");
+        result.append("if (typeof ").append(jumperName).append(".ajax === 'function') {");
+        result.append(jumperName).append(".ajax('").append(getBaseURL()).append("'+index").append(")");
+        result.append("} else {location.href=\"").append(getBaseURL()).append("\"+index;}");
       } else {
         String action = "Pagination" + getActionSuffix();
-        result.append("location.href=\"").append(action).append("?Index=").append("\"+index;");
+        result.append("if (typeof ").append(jumperName).append(".ajax === 'function') {");
+        result.append(jumperName).append(".ajax('").append(action).append(INDEX_PARAM).append("'+index").append(")");
+        result.append("} else {location.href=\"").append(action).append(INDEX_PARAM).append("\"+index;}");
       }
     }
     result.append("}");

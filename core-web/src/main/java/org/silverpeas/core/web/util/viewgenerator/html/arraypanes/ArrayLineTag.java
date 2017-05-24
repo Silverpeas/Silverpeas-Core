@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
+import org.silverpeas.core.util.StringUtil;
+
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
@@ -37,6 +39,7 @@ public class ArrayLineTag extends TagSupport {
   public static final String ARRAY_LINE_PAGE_ATT = "pageContextArrayLine";
 
   private String id = null;
+  private String classes;
 
   public String getId() {
     return id;
@@ -46,10 +49,17 @@ public class ArrayLineTag extends TagSupport {
     this.id = id;
   }
 
+  public void setClasses(final String classes) {
+    this.classes = classes;
+  }
+
   @Override
   public int doStartTag() throws JspException {
     ArrayLine arrayLine = getArrayPane().addArrayLine();
     arrayLine.setId(getId());
+    if (StringUtil.isDefined(classes)) {
+      arrayLine.setStyleSheet(classes);
+    }
     pageContext.setAttribute(ARRAY_LINE_PAGE_ATT, arrayLine);
     return EVAL_BODY_INCLUDE;
   }

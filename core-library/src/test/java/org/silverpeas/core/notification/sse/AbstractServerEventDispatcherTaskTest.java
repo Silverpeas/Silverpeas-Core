@@ -65,12 +65,13 @@ class AbstractServerEventDispatcherTaskTest {
   @SuppressWarnings("unchecked")
   public void setup() throws Exception {
     asyncContextMap = (Set<AsyncContext>) FieldUtils
-        .readDeclaredStaticField(ServerEventDispatcherTask.class, "contexts", true);
+        .readDeclaredStaticField(ServerEventDispatcherTask.class, "synchronizedContexts", true);
     serverEventStore = (ServerEventStore) FieldUtils
         .readDeclaredStaticField(ServerEventDispatcherTask.class, "serverEventStore", true);
     asyncContextMap.clear();
     serverEventStore.clear();
     FieldUtils.writeDeclaredStaticField(AbstractServerEvent.class, "idCounter", 0L, true);
+    new SseLogger().init();
   }
 
   ServerEvent newMockedServerEvent(String name, String data) throws Exception {
@@ -89,6 +90,7 @@ class AbstractServerEventDispatcherTaskTest {
     HttpServletRequest mockedRequest = mock(HttpServletRequest.class);
     HttpServletResponse mockedResponse = mock(HttpServletResponse.class);
     PrintWriter mockedPrintWriter = mock(PrintWriter.class);
+    when(mock.isSendPossible()).thenReturn(true);
     when(mock.getRequest()).thenReturn(mockedRequest);
     when(mock.getResponse()).thenReturn(mockedResponse);
     when(mock.getSessionId()).thenReturn(sessionId);
@@ -99,12 +101,14 @@ class AbstractServerEventDispatcherTaskTest {
     return mock;
   }
 
-  String getSentServerEventStream(final AsyncContext mockedAsyncContext) throws IOException {
+  String getSentServerEventStream(final SilverpeasAsyncContext mockedAsyncContext)
+      throws IOException {
     return getSentServerEventStream(mockedAsyncContext, 1);
   }
 
-  String getSentServerEventStream(final AsyncContext mockedAsyncContext, final int nbPerform)
-      throws IOException {
+  String getSentServerEventStream(final SilverpeasAsyncContext mockedAsyncContext,
+      final int nbPerform) throws IOException {
+    verify(mockedAsyncContext, atLeast(nbPerform)).isSendPossible();
     verify(mockedAsyncContext, atLeast(nbPerform)).getRequest();
     verify(mockedAsyncContext, atLeast(nbPerform)).getResponse();
     verify(mockedAsyncContext.getResponse(), atLeast(nbPerform)).getWriter();
@@ -115,6 +119,13 @@ class AbstractServerEventDispatcherTaskTest {
     StringBuilder result = new StringBuilder();
     requestContentCaptor.getAllValues().forEach(result::append);
     return result.toString();
+  }
+
+  void verifyNotSent(final SilverpeasAsyncContext mockedAsyncContext) throws IOException {
+    verify(mockedAsyncContext, atLeast(1)).isSendPossible();
+    verify(mockedAsyncContext, never()).getRequest();
+    verify(mockedAsyncContext, never()).getResponse();
+    verify(mockedAsyncContext.getResponse(), never()).getWriter();
   }
 
   void pause() throws Exception {

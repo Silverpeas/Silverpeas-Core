@@ -5726,6 +5726,13 @@ iframe.embed {
 }
 
 /*********************** Presentation pop up des notifications *********************/
+.unread-user-notification a {
+  background-color: #7eb73b;
+  padding: 1px 5px 0 5px;
+}
+.unread-user-notification-inbox {
+  font-weight: bold;
+}
 .popup-read-notification {
   padding:15px;
 }

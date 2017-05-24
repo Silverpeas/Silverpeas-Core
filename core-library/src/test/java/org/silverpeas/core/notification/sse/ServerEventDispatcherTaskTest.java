@@ -97,9 +97,9 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
     assertThat(asyncContextMap.size(), is(2));
     ServerEventDispatcherTask.registerAsyncContext(newMockedAsyncContext("OTHER_SESSION_ID"));
     assertThat(asyncContextMap.size(), is(3));
-    ServerEventDispatcherTask.unregisterBySessionId(SESSION_ID, false);
+    ServerEventDispatcherTask.unregisterBySessionId(SESSION_ID);
     assertThat(asyncContextMap.size(), is(1));
-    ServerEventDispatcherTask.unregisterBySessionId("OTHER_SESSION_ID", false);
+    ServerEventDispatcherTask.unregisterBySessionId("OTHER_SESSION_ID");
     assertThat(asyncContextMap.size(), is(0));
     pause();
   }
@@ -116,6 +116,19 @@ public class ServerEventDispatcherTaskTest extends AbstractServerEventDispatcher
     String eventStream = getSentServerEventStream(mockedAsyncContext);
     assertThat(eventStream,
         is("retry: 5000\nid: 0\nevent: EVENT_ONE_LINE\ndata: This is a line of data\n\n"));
+  }
+
+  @Test
+  public void handleEventWithDataOnOneLineWhenOneAsyncContextButClosed() throws Exception {
+    final SilverpeasAsyncContext mockedAsyncContext = newMockedAsyncContext(SESSION_ID);
+    when(mockedAsyncContext.isSendPossible()).thenReturn(false);
+    ServerEventDispatcherTask.registerAsyncContext(mockedAsyncContext);
+    ServerEvent mockedServerEvent =
+        newMockedServerEvent("EVENT_ONE_LINE", "This is a line of data");
+    ServerEventDispatcherTask.dispatch(mockedServerEvent);
+    pause();
+    assertThat(getStoredServerEvents(), contains(mockedServerEvent));
+    verifyNotSent(mockedAsyncContext);
   }
 
   @Test

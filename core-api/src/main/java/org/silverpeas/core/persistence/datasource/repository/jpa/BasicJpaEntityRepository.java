@@ -2,9 +2,10 @@ package org.silverpeas.core.persistence.datasource.repository.jpa;
 
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
+import org.silverpeas.core.util.SilverpeasArrayList;
+import org.silverpeas.core.util.SilverpeasList;
 
 import javax.persistence.Query;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -22,24 +23,24 @@ import java.util.List;
  * This interface is dedicated to be implemented by abstract repositories that providing each an
  * implementation of the persistence technology used to manage the persistence of the entities
  * in a data source.
- * @param <ENTITY> specify the class name of the entity which is handled by the repository
+ * @param <E> specify the class name of the entity which is handled by the repository
  * entity.
  * @author ebonnet
  */
-public class BasicJpaEntityRepository<ENTITY extends IdentifiableEntity>
-    extends AbstractJpaEntityRepository<ENTITY> implements WithSaveAndFlush<ENTITY> {
+public class BasicJpaEntityRepository<E extends IdentifiableEntity>
+    extends AbstractJpaEntityRepository<E> implements WithSaveAndFlush<E> {
 
   @Override
-  public ENTITY saveAndFlush(final ENTITY entity) {
-    ENTITY curEntity = save(entity);
+  public E saveAndFlush(final E entity) {
+    E curEntity = save(entity);
     flush();
     return curEntity;
   }
 
   @Override
-  public List<ENTITY> save(final List<ENTITY> entities) {
-    List<ENTITY> savedEntities = new ArrayList<>(entities.size());
-    for (ENTITY entity : entities) {
+  public SilverpeasList<E> save(final List<E> entities) {
+    SilverpeasList<E> savedEntities = new SilverpeasArrayList<>(entities.size());
+    for (E entity : entities) {
       if (entity.isPersisted()) {
         savedEntities.add(getEntityManager().merge(entity));
       } else {

@@ -28,10 +28,10 @@
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -54,13 +54,12 @@ public class ReadMessage implements SILVERMAILRequestHandler {
       HttpServletRequest request) throws SILVERMAILException {
     try {
       String sId = request.getParameter("ID");
-      long ID = Long.parseLong(sId);
+      long id = Long.parseLong(sId);
 
-      ((SILVERMAILSessionController) componentSC).setCurrentMessageId(ID);
+      ((SILVERMAILSessionController) componentSC).setCurrentMessageId(id);
     } catch (NumberFormatException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return "/SILVERMAIL/jsp/readMessage.jsp";
   }
-
 }

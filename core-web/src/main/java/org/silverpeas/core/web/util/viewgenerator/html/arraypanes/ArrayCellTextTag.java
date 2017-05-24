@@ -24,36 +24,23 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import javax.servlet.jsp.JspException;
-import javax.servlet.jsp.tagext.BodyTagSupport;
-
 /**
  * Create a new cell in an ArrayPane
  * @author cdm
  */
-public class ArrayCellTextTag extends BodyTagSupport {
+public class ArrayCellTextTag extends AbstractArrayCellTag {
 
   private static final long serialVersionUID = -719577480679901247L;
   private String text;
   private Comparable toCompare;
 
   @Override
-  public int doEndTag() throws JspException {
-    ArrayCellText cell = null;
-    if (bodyContent != null && bodyContent.getString() != null) {
-      cell = getArrayLine().addArrayCellText(bodyContent.getString());
-    } else {
-      cell= getArrayLine().addArrayCellText(text);
-    }
+  ArrayCell doCreateCell() {
+    final ArrayCellText cell = getArrayLine().addArrayCellText(getContentValue(text));
     if (toCompare != null) {
       cell.setCompareOn(toCompare);
     }
-    return EVAL_PAGE;
-  }
-
-  @Override
-  public int doStartTag() throws JspException {
-    return EVAL_BODY_INCLUDE;
+    return cell;
   }
 
   public void setText(final String text) {
@@ -62,9 +49,5 @@ public class ArrayCellTextTag extends BodyTagSupport {
 
   public void setCompareOn(final Comparable toCompare) {
     this.toCompare = toCompare;
-  }
-
-  public ArrayLine getArrayLine() {
-    return (ArrayLine) pageContext.getAttribute(ArrayLineTag.ARRAY_LINE_PAGE_ATT);
   }
 }

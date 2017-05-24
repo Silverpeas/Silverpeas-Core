@@ -23,11 +23,20 @@
  */
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
+import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
+import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
+
 import javax.servlet.http.HttpServletRequest;
 
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
-import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
-import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
+import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.AbstractArrayPane
+    .getOrderByFrom;
+import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.AbstractArrayPane
+    .getPaginationPageFrom;
+import static org.silverpeas.web.notificationserver.channel.silvermail
+    .SILVERMAILSessionController.INBOX_ORDER_BIES;
 
 /**
  * Class declaration
@@ -35,15 +44,23 @@ import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 public class Main implements SILVERMAILRequestHandler {
 
   /**
-   * Method declaration
-   * @param componentSC
-   * @param request
-   * @return
-   * @throws SILVERMAILException
+   * Handles the Main request.
    */
   public String handleRequest(ComponentSessionController componentSC, HttpServletRequest request)
       throws SILVERMAILException {
+    HttpRequest httpRequest = HttpRequest.decorate(request);
+    SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
+
+    // Selection
+    httpRequest.mergeSelectedItemsInto(silvermailScc.getSelectedUserNotificationIds());
+
+    // Pagination
+    silvermailScc.setPagination(getPaginationPageFrom(request, silvermailScc.getPagination()));
+
+    // Order by
+    silvermailScc.setOrderBy(getOrderByFrom(request, INBOX_ORDER_BIES));
+
+    // Destination
     return "/SILVERMAIL/jsp/main.jsp";
   }
-
 }

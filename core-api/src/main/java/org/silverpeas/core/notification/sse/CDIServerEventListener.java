@@ -24,8 +24,6 @@
 
 package org.silverpeas.core.notification.sse;
 
-import org.silverpeas.core.util.logging.SilverLogger;
-
 import javax.enterprise.event.Observes;
 
 /**
@@ -40,8 +38,6 @@ import javax.enterprise.event.Observes;
  */
 public abstract class CDIServerEventListener<T extends AbstractServerEvent>
     implements ServerEventListener<T> {
-
-  protected final SilverLogger logger = SilverLogger.getLogger(this);
 
   public void onEvent(@Observes T event) {
     on(event);

@@ -20,24 +20,32 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
+import javax.portlet.RenderRequest;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.web.portlets.PortletUtil.getHttpServletRequest;
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
+    .ITEMS_PER_PAGE_PARAM;
 
 public class AbstractArrayPane implements ArrayPane {
 
+  protected static final String EXPORT_URL_SERVLET_MAPPING = "/Export/ArrayPane";
   private static final int DEFAULT_SPACING = 2;
   private static final int DEFAULT_PADDING = 2;
-
   private List<ArrayColumn> columns;
   private List<ArrayLine> lines;
   private String title = null;
@@ -50,6 +58,7 @@ public class AbstractArrayPane implements ArrayPane {
   private ServletRequest request = null;
   private HttpSession session = null;
   private int mSortMode = 0;
+  private int maxCountOfPaginationList = -1;
   /**
    * configurable values for cells spacing and padding (of the internal table).
    */
@@ -68,8 +77,115 @@ public class AbstractArrayPane implements ArrayPane {
    */
   private boolean exportData = false;
   private String exportDataURL = null;
-  protected static final String EXPORT_URL_SERVLET_MAPPING = "/Export/ArrayPane";
   private boolean sortableLines = false;
+
+  /**
+   * Gets a new pagination page instance from given request and current pagination.
+   * <p>If current pagination is null, a default one is taken into account</p>
+   * @param request the request.
+   * @param currentPagination the current pagination.
+   * @return the new pagination page.
+   */
+  public static PaginationPage getPaginationPageFrom(HttpServletRequest request,
+      PaginationPage currentPagination) {
+    final String pageSizeAsString = request.getParameter(ITEMS_PER_PAGE_PARAM);
+    final String itemIndexAsString = request.getParameter(INDEX_PARAMETER_NAME);
+    return getPaginationPageFrom(pageSizeAsString, itemIndexAsString, currentPagination);
+  }
+
+  /**
+   * Gets a new pagination page instance from given request and current pagination.
+   * <p>If current pagination is null, a default one is taken into account</p>
+   * @param request the request.
+   * @param currentPagination the current pagination.
+   * @return the new pagination page.
+   */
+  public static PaginationPage getPaginationPageFrom(RenderRequest request,
+      PaginationPage currentPagination) {
+    final String pageSizeAsString = request.getParameter(ITEMS_PER_PAGE_PARAM);
+    final String itemIndexAsString = request.getParameter(INDEX_PARAMETER_NAME);
+    return getPaginationPageFrom(pageSizeAsString, itemIndexAsString, currentPagination);
+  }
+
+  private static PaginationPage getPaginationPageFrom(final String pageSizeAsString,
+      final String itemIndexAsString, final PaginationPage currentPagination) {
+    PaginationPage pagination =
+        currentPagination != null ? currentPagination : PaginationPage.DEFAULT;
+    int pageNumber = pagination.getPageNumber();
+    int pageSize = pagination.getPageSize();
+    if (StringUtil.isInteger(pageSizeAsString)) {
+      pageSize = Integer.valueOf(pageSizeAsString);
+    }
+    if (StringUtil.isInteger(itemIndexAsString)) {
+      pageNumber = (Integer.valueOf(itemIndexAsString) / pageSize) + 1;
+    }
+    return new PaginationPage(pageNumber, pageSize);
+  }
+
+  /**
+   * Gets order by from given request and possible orderBies.
+   * @param request the request.
+   * @param orderBiesByColumnIndex the possible order by indexed by the column index which starts
+   * at 1.
+   * @return the order by.
+   */
+  public static <O> O getOrderByFrom(RenderRequest request,
+      Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
+    final String name = request.getParameter(TARGET_PARAMETER_NAME);
+    final String action = request.getParameter(ACTION_PARAMETER_NAME);
+    final String column = request.getParameter(COLUMN_PARAMETER_NAME);
+    if (name == null || !"Sort".equals(action)) {
+      return null;
+    }
+    ArrayPaneStatusBean state =
+        (ArrayPaneStatusBean) getHttpServletRequest(request).getSession(false).getAttribute(name);
+    if (state == null) {
+      return null;
+    }
+    return getOrderByFrom(state, column, orderBiesByColumnIndex);
+  }
+
+  /**
+   * Gets order by from given request and possible orderBies.
+   * @param request the request.
+   * @param orderBiesByColumnIndex the possible order by indexed by the column index which starts
+   * at 1.
+   * @return the order by.
+   */
+  public static <O> O getOrderByFrom(HttpServletRequest request,
+      Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
+    final String name = request.getParameter(TARGET_PARAMETER_NAME);
+    final String action = request.getParameter(ACTION_PARAMETER_NAME);
+    final String column = request.getParameter(COLUMN_PARAMETER_NAME);
+    if (name == null || !"Sort".equals(action)) {
+      return null;
+    }
+    ArrayPaneStatusBean state = (ArrayPaneStatusBean) request.getSession(false).getAttribute(name);
+    if (state == null) {
+      return null;
+    }
+    return getOrderByFrom(state, column, orderBiesByColumnIndex);
+  }
+
+  private static <O> O getOrderByFrom(final ArrayPaneStatusBean state, final String column,
+      final Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
+    O result = null;
+    int columnIndex = StringUtil.isInteger(column) ? Integer.parseInt(column) : 0;
+    if (columnIndex > 0) {
+      Pair<O, O> orderBy = orderBiesByColumnIndex.get(columnIndex);
+      if (orderBy != null) {
+        if (state.getSortColumn() > 0) {
+          result = orderBy.getRight();
+        } else {
+          result = orderBy.getLeft();
+        }
+      }
+    } else {
+      Pair<O, O> orderBy = orderBiesByColumnIndex.get(null);
+      result = orderBy != null ? orderBy.getLeft() : null;
+    }
+    return result;
+  }
 
   @Override
   public void init(String name, PageContext pageContext) {
@@ -163,13 +279,13 @@ public class AbstractArrayPane implements ArrayPane {
   }
 
   @Override
-  public void setTitle(String title) {
-    this.title = title;
+  public String getTitle() {
+    return title;
   }
 
   @Override
-  public String getTitle() {
-    return title;
+  public void setTitle(String title) {
+    this.title = title;
   }
 
   @Override
@@ -183,27 +299,17 @@ public class AbstractArrayPane implements ArrayPane {
   }
 
   @Override
-  public void setColumnToSort(int columnNumber) {
-
-    state.setSortColumn(columnNumber);
-  }
-
-  @Override
-  public void setColumnBehaviour(int columnNumber, int mode) {
-    if (columns == null || columnNumber <= 0 || columnNumber > columns.size()) {
-      return;
-    }
-    ArrayColumn col = columns.get(columnNumber - 1);
-    col.setSortable(mode == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT);
-  }
-
-  @Override
   public int getColumnToSort() {
     if (state != null) {
       return state.getSortColumn();
     } else {
       return 0;
     }
+  }
+
+  @Override
+  public void setColumnToSort(int columnNumber) {
+    state.setSortColumn(columnNumber);
   }
 
   @Override
@@ -232,6 +338,11 @@ public class AbstractArrayPane implements ArrayPane {
     mRoutingAddress = address;
   }
 
+  @Override
+  public boolean getSortable() {
+    return getSortMode() == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT;
+  }
+
   /**
    * Set all array columns to be sortable or not. By default, all colums are sortable.
    *
@@ -247,8 +358,8 @@ public class AbstractArrayPane implements ArrayPane {
   }
 
   @Override
-  public boolean getSortable() {
-    return getSortMode() == ArrayColumn.COLUMN_BEHAVIOUR_DEFAULT;
+  public int getSortMode() {
+    return mSortMode;
   }
 
   /**
@@ -258,11 +369,6 @@ public class AbstractArrayPane implements ArrayPane {
   @Override
   public void setSortMode(int mode) {
     mSortMode = mode;
-  }
-
-  @Override
-  public int getSortMode() {
-    return mSortMode;
   }
 
   /**
@@ -298,18 +404,13 @@ public class AbstractArrayPane implements ArrayPane {
     return mCellsBorderWidth;
   }
 
-  @Override
-  public void setPaginationJavaScriptCallback(String callback) {
-    paginationJavaScriptCallback = callback;
-  }
-
   public String getPaginationJavaScriptCallback() {
     return paginationJavaScriptCallback;
   }
 
   @Override
-  public void setSummary(String summary) {
-    this.summary = summary;
+  public void setPaginationJavaScriptCallback(String callback) {
+    paginationJavaScriptCallback = callback;
   }
 
   @Override
@@ -318,12 +419,17 @@ public class AbstractArrayPane implements ArrayPane {
   }
 
   @Override
-  public void setXHTML(boolean xhtml) {
-    this.xhtml = xhtml;
+  public void setSummary(String summary) {
+    this.summary = summary;
   }
 
   public boolean isXHTML() {
     return xhtml;
+  }
+
+  @Override
+  public void setXHTML(boolean xhtml) {
+    this.xhtml = xhtml;
   }
 
   @Override
@@ -362,13 +468,13 @@ public class AbstractArrayPane implements ArrayPane {
     return exportUrl.toString();
   }
 
+  public boolean isSortableLines() {
+    return sortableLines;
+  }
+
   @Override
   public void setSortableLines(boolean sortableLines) {
     this.sortableLines = sortableLines;
-  }
-
-  public boolean isSortableLines() {
-    return sortableLines;
   }
 
   public String getUrl() {
@@ -438,5 +544,31 @@ public class AbstractArrayPane implements ArrayPane {
 
   public void setUpdateSortJavascriptCallback(String callback) {
     this.updateSortJavascriptCallback = callback;
+  }
+
+  @Override
+  public void setPaginationList(final SilverpeasList paginationList) {
+    if (paginationList.isPageWindow()) {
+      this.maxCountOfPaginationList = (int) paginationList.maxSize();
+    } else {
+      this.maxCountOfPaginationList = -1;
+    }
+  }
+
+  /**
+   * Indicates if the pagination is optimized, the is to say if the array contains only the lines
+   * which will be printed to the user whereas the array could provides many other pages.
+   * @return true if the pagination is optimized.
+   */
+  protected boolean isPaginationOptimized() {
+    return maxCountOfPaginationList >= 0;
+  }
+
+  /**
+   * Gets the number of items the list can provides.
+   * @return the total number of items.
+   */
+  protected int getNbItems() {
+    return isPaginationOptimized() ? maxCountOfPaginationList : getLines().size();
   }
 }

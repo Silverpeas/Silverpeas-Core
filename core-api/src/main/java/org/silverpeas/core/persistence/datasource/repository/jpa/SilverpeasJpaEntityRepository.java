@@ -25,9 +25,10 @@ package org.silverpeas.core.persistence.datasource.repository.jpa;
 
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.util.SilverpeasArrayList;
+import org.silverpeas.core.util.SilverpeasList;
 
 import javax.persistence.Query;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection
@@ -49,17 +50,17 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * entities. If the different parts of an entity are persisted into several data source
  * beside a SQL-based one, then this repository should be used within a delegation of JPA related
  * operations.
- * @param <ENTITY> the class name of the entity which is handled by the repository.
+ * @param <E> the class name of the entity which is handled by the repository.
  * @author Yohann Chastagnier
  */
-public class SilverpeasJpaEntityRepository<ENTITY extends SilverpeasJpaEntity<ENTITY, ?>>
-    extends AbstractJpaEntityRepository<ENTITY> {
+public class SilverpeasJpaEntityRepository<E extends SilverpeasJpaEntity<E, ?>>
+    extends AbstractJpaEntityRepository<E> {
 
   @Override
-  public List<ENTITY> save(final List<ENTITY> entities) {
-    List<ENTITY> savedEntities = new ArrayList<>(entities.size());
+  public SilverpeasList<E> save(final List<E> entities) {
+    SilverpeasList<E> savedEntities = new SilverpeasArrayList<>(entities.size());
     final OperationContext context = OperationContext.fromCurrentRequester();
-    for (ENTITY entity : entities) {
+    for (E entity : entities) {
       if (isCreatedBySetManually(entity)) {
         context.withUser(isDefined(entity.getCreatedBy()) ? entity.getCreator() : null);
       } else if (isLastUpdatedBySetManually(entity)) {

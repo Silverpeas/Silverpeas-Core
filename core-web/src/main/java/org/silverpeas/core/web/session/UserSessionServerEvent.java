@@ -26,7 +26,7 @@ package org.silverpeas.core.web.session;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.CommonServerEvent;
-import org.silverpeas.core.notification.sse.behavior.KeepAlwaysStoring;
+import org.silverpeas.core.notification.sse.behavior.KeepAlwaysLastStored;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
@@ -36,7 +36,7 @@ import org.silverpeas.core.util.JSONCodec;
  * This server event is sent on successful user session opening and on user session ending.
  * @author Yohann Chastagnier.
  */
-public class UserSessionServerEvent extends CommonServerEvent implements KeepAlwaysStoring {
+public class UserSessionServerEvent extends CommonServerEvent implements KeepAlwaysLastStored {
 
   private static final String IS_OPENING_ATTR_NAME = "isOpening";
   private static final String IS_CLOSING_ATTR_NAME = "isClosing";
@@ -46,6 +46,7 @@ public class UserSessionServerEvent extends CommonServerEvent implements KeepAlw
 
   private final SessionInfo emitterSession;
   private final boolean opening;
+  private final SessionManagement sessionManagement;
 
   /**
    * Hidden constructor.
@@ -55,6 +56,7 @@ public class UserSessionServerEvent extends CommonServerEvent implements KeepAlw
   private UserSessionServerEvent(final boolean opening, final SessionInfo emitterSession) {
     this.emitterSession = emitterSession;
     this.opening = opening;
+    sessionManagement = SessionManagementProvider.getSessionManagement();
   }
 
   static UserSessionServerEvent anOpeningOneFor(final SessionInfo sessionInfo) {
@@ -83,7 +85,6 @@ public class UserSessionServerEvent extends CommonServerEvent implements KeepAlw
    */
   private UserSessionServerEvent initializeData() {
     withData((receiverSessionId, receiver) -> {
-      SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
       final int nbConnectedUsers = sessionManagement.getNbConnectedUsersList(receiver) - 1;
       return JSONCodec.encodeObject(jsonObject -> jsonObject
           .put(IS_OPENING_ATTR_NAME, this.opening)

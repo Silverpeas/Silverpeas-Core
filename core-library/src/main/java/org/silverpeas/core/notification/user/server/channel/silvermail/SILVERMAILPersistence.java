@@ -24,24 +24,89 @@
 
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
-import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.persistence.jdbc.LongText;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
+import org.silverpeas.core.notification.user.UserNotificationServerEvent;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
+    .QUERY_ORDER_BY;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.jdbc.LongText;
+import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SilverpeasList;
 
-import java.util.ArrayList;
+import java.text.ParseException;
 import java.util.Collection;
-import java.util.List;
+import java.util.Date;
+import java.util.Objects;
 
 /**
  * Class declaration
  */
 public class SILVERMAILPersistence {
+
+  /**
+   * Hidden constructor.
+   */
+  private SILVERMAILPersistence() {
+  }
+
+  private static void markMessageAsRead(SILVERMAILMessageBean smb)
+      throws SILVERMAILException {
+    try {
+      boolean hasToUpdate = smb.getReaden() != 1;
+      if (hasToUpdate) {
+        smb.setReaden(1);
+        Transaction.performInOne(() -> getRepository().save(smb));
+        DefaultServerEventNotifier.get().notify(UserNotificationServerEvent
+            .readOf(String.valueOf(smb.getUserId()), smb.getId(), smb.getSubject(), smb
+                .getSenderName()));
+      }
+    } catch (Exception e) {
+      throw new SILVERMAILException(
+          "SILVERMAILPersistence.markMessageAsReaden()",
+          SilverpeasException.ERROR, "silvermail.EX_CANT_READ_MSG", "MsgId=" + smb.getId(), e);
+    }
+  }
+
+  private static SILVERMAILMessageBeanRepository getRepository() {
+    return ServiceProvider.getService(SILVERMAILMessageBeanRepository.class);
+  }
+
+  /**
+   * @param criteria the criteria with which the search is parametrized.
+   * @return the list of {@link SILVERMAILMessage} instances.
+   * @throws SILVERMAILException
+   */
+  private static SilverpeasList<SILVERMAILMessage> findByCriteria(SilvermailCriteria criteria)
+      throws SILVERMAILException {
+    final long userId = criteria.getUserId();
+    final String userLogin = getUserLogin(userId);
+    final SilverpeasList<SILVERMAILMessageBean> messageBeans =
+        getRepository().findByCriteria(criteria);
+    return messageBeans.stream()
+        .map(e->convertToSilvermailMessage(e, userLogin))
+        .filter(Objects::nonNull)
+        .collect(SilverpeasList.collector(messageBeans));
+  }
+
+  /**
+   * @param userId
+   * @return
+   * @throws SILVERMAILException
+   */
+  private static String getUserLogin(long userId) throws SILVERMAILException {
+    String result = "";
+    User user = User.getById(Long.toString(userId));
+    if (user != null) {
+      result = user.getLogin();
+    }
+    return result;
+  }
 
   /**
    *
@@ -52,7 +117,8 @@ public class SILVERMAILPersistence {
       try {
         smb.setUserId(silverMsg.getUserId());
         smb.setSenderName(silverMsg.getSenderName());
-        smb.setFolderId(0); // 0 = INBOX
+        // 0 = INBOX
+        smb.setFolderId(0);
         smb.setSubject(silverMsg.getSubject());
         smb.setBody(Integer.toString(LongText.addLongText(silverMsg.getBody())));
         smb.setUrl(silverMsg.getUrl());
@@ -60,6 +126,9 @@ public class SILVERMAILPersistence {
         smb.setDateMsg(DateUtil.date2SQLDate(silverMsg.getDate()));
         smb.setReaden(0);
         Transaction.performInOne(() -> getRepository().save(smb));
+        DefaultServerEventNotifier.get().notify(UserNotificationServerEvent
+            .creationOf(String.valueOf(smb.getUserId()), smb.getId(), smb.getSubject(),
+                smb.getSenderName()));
       } catch (Exception e) {
         throw new SILVERMAILException("SILVERMAILPersistence.addMessage()",
             SilverpeasException.ERROR, "silvermail.EX_CANT_WRITE_MESSAGE", e);
@@ -67,112 +136,75 @@ public class SILVERMAILPersistence {
     }
   }
 
-  public static Collection<SILVERMAILMessage> getNotReadMessagesOfFolder(int userId,
-      String folderName)
-      throws SILVERMAILException {
-    return getMessageOfFolder(userId, folderName, 0);
+  public static long countNotReadMessagesOfFolder(String userId, String folderName) {
+    return getRepository().countByCriteria(SilvermailCriteria.get()
+        .aboutUser(userId)
+        .into(folderName)
+        .unread());
   }
 
-  public static Collection<SILVERMAILMessage> getReadMessagesOfFolder(int userId,
-      String folderName)
-      throws SILVERMAILException {
-    return getMessageOfFolder(userId, folderName, 1);
+  public static long countReadMessagesOfFolder(String userId, String folderName) {
+    return getRepository().countByCriteria(SilvermailCriteria.get()
+        .aboutUser(userId)
+        .into(folderName)
+        .read());
   }
 
-  public static Collection<SILVERMAILMessage> getMessageOfFolder(int userId, String folderName)
-      throws SILVERMAILException {
-    return getMessageOfFolder(userId, folderName, -1);
+  public static long countMessagesOfFolder(String userId, String folderName) {
+    return getRepository().countByCriteria(SilvermailCriteria.get()
+        .aboutUser(userId)
+        .into(folderName));
   }
 
-  /**
-   * @param userId
-   * @param folderName
-   * @param readState not read only (0) , read only (1), all messages (-1)
-   * @return
-   * @throws SILVERMAILException
-   */
-  public static Collection<SILVERMAILMessage> getMessageOfFolder(int userId, String folderName,
-      int readState) throws SILVERMAILException {
-    List<SILVERMAILMessage> folderMessageList = new ArrayList<>();
-    try {
-      // find all message
-      long folderId = convertFolderNameToId(folderName);
-      List<SILVERMAILMessageBean> messageBeans = getRepository()
-          .findMessageByUserIdAndFolderId(String.valueOf(userId), String.valueOf(folderId),
-              readState);
-      // if any
-      if (!messageBeans.isEmpty()) {
-        String userLogin = getUserLogin(userId);
-        for (SILVERMAILMessageBean pmb : messageBeans) {
-          String body = "";
-          SILVERMAILMessage silverMailMessage = new SILVERMAILMessage();
-          silverMailMessage.setId(Long.parseLong(pmb.getId()));
-          silverMailMessage.setUserId(userId);
-          silverMailMessage.setUserLogin(userLogin);
-          silverMailMessage.setSenderName(pmb.getSenderName());
-          silverMailMessage.setSubject(pmb.getSubject());
-          // Look if it is a LongText ID
-          try {
-            int longTextId = -1;
-            longTextId = Integer.parseInt(pmb.getBody());
-            body = LongText.getLongText(longTextId);
-          } catch (Exception e) {
-            body = pmb.getBody();
-          }
-          silverMailMessage.setBody(body);
-          silverMailMessage.setUrl(pmb.getUrl());
-          silverMailMessage.setSource(pmb.getSource());
-          silverMailMessage.setDate(DateUtil.parseDate(pmb.getDateMsg()));
-          silverMailMessage.setReaden(pmb.getReaden());
-          folderMessageList.add(silverMailMessage);
-        }
-      }
-    } catch (Exception e) {
-      throw new SILVERMAILException(
-          "SILVERMAILPersistence.getMessageOfFolder()",
-          SilverpeasException.ERROR, "silvermail.EX_CANT_READ_MSG", "UserId="
-          + Long.toString(userId) + ";Folder=" + folderName, e);
+  public static SilverpeasList<SILVERMAILMessage> getNotReadMessagesOfFolder(String userId,
+      String folderName, final PaginationPage pagination, final QUERY_ORDER_BY orderBy)
+      throws SILVERMAILException {
+    final SilvermailCriteria criteria =
+        SilvermailCriteria.get().aboutUser(userId).into(folderName).unread()
+            .paginatedBy(pagination);
+    if (orderBy != null) {
+      criteria.orderedBy(orderBy);
     }
+    return findByCriteria(criteria);
+  }
 
-    return folderMessageList;
+  public static SilverpeasList<SILVERMAILMessage> getReadMessagesOfFolder(String userId,
+      String folderName, final PaginationPage pagination, final QUERY_ORDER_BY orderBy)
+      throws SILVERMAILException {
+    final SilvermailCriteria criteria =
+        SilvermailCriteria.get().aboutUser(userId).into(folderName).read().paginatedBy(pagination);
+    if (orderBy != null) {
+      criteria.orderedBy(orderBy);
+    }
+    return findByCriteria(criteria);
+  }
+
+  public static SilverpeasList<SILVERMAILMessage> getMessageOfFolder(String userId, String folderName,
+      final PaginationPage pagination, final QUERY_ORDER_BY orderBy) throws SILVERMAILException {
+    final SilvermailCriteria criteria =
+        SilvermailCriteria.get().aboutUser(userId).into(folderName).paginatedBy(pagination);
+    if (orderBy != null) {
+      criteria.orderedBy(orderBy);
+    }
+    return findByCriteria(criteria);
   }
 
   /**
-   *
+   * Gets a message by its identifier.
+   * @param msgId the message identifier.
    */
   public static SILVERMAILMessage getMessage(long msgId) throws SILVERMAILException {
-    SILVERMAILMessage result = null;
-    try {
-      SILVERMAILMessageBean smb = getRepository().getById(String.valueOf(msgId));
-      if (smb != null) {
-        String body = "";
-        result = new SILVERMAILMessage();
-        result.setId(Long.valueOf(smb.getId()));
-        result.setUserId(smb.getUserId());
-        result.setUserLogin(getUserLogin(smb.getUserId()));
-        result.setSenderName(smb.getSenderName());
-        result.setSubject(smb.getSubject());
-        // Look if it is a LongText ID
-        try {
-          int longTextId = -1;
-
-          longTextId = Integer.parseInt(smb.getBody());
-          body = LongText.getLongText(longTextId);
-        } catch (Exception e) {
-          body = smb.getBody();
-        }
-        result.setBody(body);
-        result.setUrl(smb.getUrl());
-        result.setSource(smb.getSource());
-        result.setDate(DateUtil.parse(smb.getDateMsg()));
+    SILVERMAILMessage silverMailMessage = null;
+    SILVERMAILMessageBean smb = getRepository().getById(String.valueOf(msgId));
+    if (smb != null) {
+      final long userId = smb.getUserId();
+      final String userLogin = getUserLogin(userId);
+      silverMailMessage = convertToSilvermailMessage(smb, userLogin);
+      if (silverMailMessage != null) {
+        markMessageAsRead(smb);
       }
-      markMessageAsReaden(smb);
-    } catch (Exception e) {
-      throw new SILVERMAILException("SILVERMAILPersistence.getMessage()",
-          SilverpeasException.ERROR, "silvermail.EX_CANT_READ_MSG", "MsgId="
-          + Long.toString(msgId), e);
     }
-    return result;
+    return silverMailMessage;
   }
 
   /**
@@ -200,6 +232,8 @@ public class SILVERMAILPersistence {
         }
         return null;
       });
+      DefaultServerEventNotifier.get()
+          .notify(UserNotificationServerEvent.deletionOf(userId, String.valueOf(msgId)));
     } catch (Exception e) {
       throw new SILVERMAILException("SILVERMAILPersistence.deleteMessage()",
           SilverpeasException.ERROR, "silvermail.EX_CANT_DEL_MSG", "MsgId="
@@ -209,61 +243,74 @@ public class SILVERMAILPersistence {
 
   public static void deleteAllMessagesInFolder(String currentUserId, String folderName)
       throws SILVERMAILException {
-    int userId = Integer.parseInt(currentUserId);
-    Collection<SILVERMAILMessage> messages = getMessageOfFolder(userId, folderName);
-    Transaction.performInOne(() -> {
-      for (SILVERMAILMessage message : messages) {
-        deleteMessage(message.getId(), currentUserId);
-      }
-      return null;
-    });
+    String folderId = "INBOX".equals(folderName) ? "0" : "0";
+    long nbDeleted = Transaction.performInOne(() -> getRepository()
+        .deleteAllMessagesByUserIdAndFolderId(currentUserId, folderId));
+
+    if (nbDeleted > 0) {
+      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clear(currentUserId));
+    }
   }
 
-  private static void markMessageAsReaden(SILVERMAILMessageBean smb)
+  public static void markAllMessagesAsRead(String currentUserId) throws SILVERMAILException {
+    long nbUpdated = Transaction.performInOne(() -> getRepository()
+        .markAsReadAllMessagesByUserIdAndFolderId(currentUserId, "0"));
+    if (nbUpdated > 0) {
+      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clear(currentUserId));
+    }
+  }
+
+  public static void deleteMessages(String currentUserId, Collection<String> ids)
       throws SILVERMAILException {
-    try {
-      smb.setReaden(1);
-      Transaction.performInOne(() -> getRepository().save(smb));
-    } catch (Exception e) {
-      throw new SILVERMAILException(
-          "SILVERMAILPersistence.markMessageAsReaden()",
-          SilverpeasException.ERROR, "silvermail.EX_CANT_READ_MSG", "MsgId=" + smb.getId(), e);
+    long nbDeleted = Transaction.performInOne(() -> getRepository()
+        .deleteMessagesByUserIdAndByIds(currentUserId, ids));
+
+    if (nbDeleted > 0) {
+      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clear(currentUserId));
     }
   }
 
-  /**
-   * @param folderName
-   * @return
-   * @throws SILVERMAILException
-   */
-  protected static long convertFolderNameToId(String folderName) {
-    // pas de gestion de folder pour l'instant
-    return 0; // 0 = INBOX
+  public static void markMessagesAsRead(String currentUserId, Collection<String> ids)
+      throws SILVERMAILException {
+    long nbUpdated = Transaction.performInOne(() -> getRepository()
+        .markAsReadMessagesByUserIdAndByIds(currentUserId, ids));
+    if (nbUpdated > 0) {
+      DefaultServerEventNotifier.get().notify(UserNotificationServerEvent.clear(currentUserId));
+    }
   }
 
-  /**
-   * @param userId
-   * @return
-   * @throws SILVERMAILException
-   */
-  protected static String getUserLogin(long userId) throws SILVERMAILException {
-    String result = "";
-
+  private static SILVERMAILMessage convertToSilvermailMessage(final SILVERMAILMessageBean smb,
+      final String userLogin) {
+    String msg;
+    // Look if it is a LongText ID
     try {
-      UserDetail ud =  OrganizationControllerProvider
-          .getOrganisationController().getUserDetail(Long.toString(userId));
-      if (ud != null) {
-        result = ud.getLogin();
+      int longTextId = Integer.parseInt(smb.getBody());
+      msg = LongText.getLongText(longTextId);
+    } catch (NumberFormatException nfe) {
+      msg = smb.getBody();
+    } catch (Exception e) {
+      throw new org.silverpeas.core.SilverpeasRuntimeException(e);
+    }
+    if (msg != null) {
+      final Date msgDate;
+      try {
+        msgDate = DateUtil.parseDate(smb.getDateMsg());
+      } catch (ParseException e) {
+        throw new org.silverpeas.core.SilverpeasRuntimeException(e);
       }
-    } catch (Exception e) {
-      throw new SILVERMAILException("SILVERMAILPersistence.getUserLogin()",
-          SilverpeasException.ERROR, "silvermail.EX_CANT_GET_USER_LOGIN",
-          "UserId=" + Long.toString(userId), e);
+      SILVERMAILMessage silverMailMessage = new SILVERMAILMessage();
+      silverMailMessage.setId(Long.parseLong(smb.getId()));
+      silverMailMessage.setUserId(smb.getUserId());
+      silverMailMessage.setUserLogin(userLogin);
+      silverMailMessage.setSenderName(smb.getSenderName());
+      silverMailMessage.setSubject(smb.getSubject());
+      silverMailMessage.setBody(msg);
+      silverMailMessage.setUrl(smb.getUrl());
+      silverMailMessage.setSource(smb.getSource());
+      silverMailMessage.setDate(msgDate);
+      silverMailMessage.setReaden(smb.getReaden());
+      return silverMailMessage;
     }
-    return result;
-  }
-
-  private static SILVERMAILMessageBeanRepository getRepository() {
-    return ServiceProvider.getService(SILVERMAILMessageBeanRepository.class);
+    return null;
   }
 }

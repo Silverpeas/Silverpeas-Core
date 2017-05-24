@@ -51,7 +51,7 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
    * @see
    */
   private String printPseudoColumn() {
-    return ("<td><img src=\"" + GraphicElementFactory.getIconsPath() + "/1px.gif\" width=\"2\" height=\"2\" alt=\"\"/></td>");
+    return "<td><img src=\"" + GraphicElementFactory.getIconsPath() + "/1px.gif\" width=\"2\" height=\"2\" alt=\"\"/></td>";
   }
 
   /**
@@ -63,8 +63,9 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
   public String print() {
     GraphicElementFactory gef =
         (GraphicElementFactory) getSession().getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    Pagination pagination =
-        gef.getPagination(getLines().size(), getState().getMaximumVisibleLine(), getState().getFirstVisibleLine());
+    
+    Pagination pagination = gef.getPagination(getNbItems(), getState().getMaximumVisibleLine(),
+        getState().getFirstVisibleLine());
 
     String sep = "&";
     if (isXHTML()) {
@@ -85,7 +86,7 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
 
     int columnsCount = getColumns().size();
 
-    if (getLines().size() > 0 && (getColumnToSort() != 0) && (getColumnToSort() <= columnsCount)) {
+    if (!getLines().isEmpty() && (getColumnToSort() != 0) && (getColumnToSort() <= columnsCount)) {
       Collections.sort(getLines());
     }
 
@@ -134,18 +135,21 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
       } else {
         // Paginate ArrayPane result
         getState().setFirstVisibleLine(pagination.getIndexForCurrentPage());
-        int first = pagination.getIndexForCurrentPage();
-        int lastIndex;
-        if (pagination.isLastPage()) {
-          lastIndex = pagination.getLastItemIndex();
+        if (isPaginationOptimized()) {
+          getLines().forEach(l -> printArrayPaneLine(result, l));
         } else {
-          lastIndex = pagination.getIndexForNextPage();
-        }
-        for (int i = first; i < lastIndex; i++) {
-          printArrayPaneLine(result, getLines().get(i));
+          final int first = pagination.getIndexForCurrentPage();
+          final int lastIndex;
+          if (pagination.isLastPage()) {
+            lastIndex = pagination.getLastItemIndex();
+          } else {
+            lastIndex = pagination.getIndexForNextPage();
+          }
+          for (int i = first; i < lastIndex; i++) {
+            printArrayPaneLine(result, getLines().get(i));
+          }
         }
       }
-
     }
     result.append("</tbody>\n");
 

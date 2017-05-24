@@ -133,7 +133,7 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
     testServerEventNotifier.notify(serverEventA);
     pause();
     assertThat(getStoredServerEvents(), contains(serverEventA));
-    for (AsyncContext asyncContext : mockedAsyncContexts) {
+    for (SilverpeasAsyncContext asyncContext : mockedAsyncContexts) {
       String eventStream = getSentServerEventStream(asyncContext);
       assertThat(eventStream, is("retry: 5000\nid: 0\nevent: EVENT_A\ndata: Some data!\n\n"));
     }
@@ -172,7 +172,7 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
     pause();
     assertThat(getStoredServerEvents(), contains(
         expectedLastServerEvents.toArray(new ServerEvent[expectedLastServerEvents.size()])));
-    for (AsyncContext asyncContext : mockedAsyncContexts) {
+    for (SilverpeasAsyncContext asyncContext : mockedAsyncContexts) {
       String eventStream = getSentServerEventStream(asyncContext, nbSend);
       assertThat(eventStream, is(expectedEventStreamForOneAsyncContext.toString()));
     }
@@ -212,7 +212,7 @@ public class ServerEventListenerPushingServerEventDispatcherTaskTest
     pause();
     assertThat(getStoredServerEvents(), contains(
         expectedLastServerEvents.toArray(new ServerEvent[expectedLastServerEvents.size()])));
-    for (AsyncContext asyncContext : mockedAsyncContexts) {
+    for (SilverpeasAsyncContext asyncContext : mockedAsyncContexts) {
       String eventStream = getSentServerEventStream(asyncContext, nbSend);
       assertThat(eventStream, is(expectedEventStreamForOneAsyncContext.toString()));
     }

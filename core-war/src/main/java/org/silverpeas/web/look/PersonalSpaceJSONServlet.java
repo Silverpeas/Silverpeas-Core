@@ -20,25 +20,24 @@
  */
 package org.silverpeas.web.look;
 
-import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
-import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.sharing.services.SharingServiceProvider;
-import org.silverpeas.core.sharing.services.SharingTicketService;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.PersonalSpaceController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.notification.user.UserNotificationServerEvent;
+import org.silverpeas.core.sharing.services.SharingServiceProvider;
+import org.silverpeas.core.sharing.services.SharingTicketService;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
+import org.silverpeas.core.web.look.LookHelper;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -265,19 +264,9 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
   private void addNotificationsAsTool(JSONCodec.JSONArray jsonArray, LookHelper helper,
       LocalizationBundle message) {
     if (helper.getSettings("notificationVisible", true)) {
+
       // get number of notifications
-      int nbNotifications = 0;
-      try {
-        Collection<SILVERMAILMessage> notifications =
-            SILVERMAILPersistence.getNotReadMessagesOfFolder(Integer.parseInt(helper.getUserId()),
-            "INBOX");
-        if (notifications != null) {
-          nbNotifications = notifications.size();
-        }
-      } catch (Exception e) {
-        SilverTrace.error("admin", "PersonalSpaceJSONServlet.getToolsAsJSONArray",
-            "root.CANT_GET_NOTIFICATIONS", e);
-      }
+      int nbNotifications = UserNotificationServerEvent.getNbUnreadFor(helper.getUserId());
 
       addTool(jsonArray, helper, "notificationVisible", "notification", message.getString("Mail"),
           URLUtil.getURL(URLUtil.CMP_SILVERMAIL) + "Main", nbNotifications);

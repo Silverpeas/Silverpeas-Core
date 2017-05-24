@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2017 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -22,33 +22,15 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.notification.sse;
+package org.silverpeas.core.notification.sse.behavior;
 
-import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
-import org.silverpeas.core.util.JSONCodec;
-
-import static org.silverpeas.core.util.ResourceLocator.getGeneralSettingBundle;
+import org.silverpeas.core.notification.sse.ServerEvent;
+import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
 
 /**
- * This server event is sent on successful user session opening and on user session ending.
- * @author Yohann Chastagnier.
+ * If an event implements this interface, it is never removed from the store handled by {@link
+ * ServerEventDispatcherTask} in charge of dispatching all {@link ServerEvent} until a new one is
+ * stored (see {@link StoreLastOnly}).
+ * @author Yohann Chastagnier
  */
-public class UserSessionExpiredServerEvent extends CommonServerEvent implements IgnoreStoring {
-
-  private static final ServerEventName EVENT_NAME = () -> "USER_SESSION_EXPIRED";
-
-  /**
-   * Hidden constructor.
-   */
-  UserSessionExpiredServerEvent() {
-    final String appURL = getGeneralSettingBundle().getString("ApplicationURL", "/silverpeas");
-    final String sessionTimeoutUrl = getGeneralSettingBundle().getString("sessionTimeout");
-    withData(JSONCodec
-        .encodeObject(jsonObject -> jsonObject.put("redirectUrl", appURL + sessionTimeoutUrl)));
-  }
-
-  @Override
-  public ServerEventName getName() {
-    return EVENT_NAME;
-  }
-}
+public interface KeepAlwaysLastStored extends StoreLastOnly {}
