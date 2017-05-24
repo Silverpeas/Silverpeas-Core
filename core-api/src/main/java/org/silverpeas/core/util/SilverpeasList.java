@@ -68,12 +68,16 @@ public interface SilverpeasList<T> extends List<T> {
   /**
    * Gets a wrapper of any kind of implementation of {@link List} in order to get a {@link
    * SilverpeasList} behaviour.
+   * <p>If the given list is already a {@link SilverpeasList} one, no wrap is done and the given
+   * instance is returned immediately.</p>
    * @param listToWrap the list to wrap.
    * @param <T> the type of the elements into the list.
    * @return the {@link SilverpeasList} instance.
    */
   static <T> SilverpeasList<T> wrap(final List<T> listToWrap) {
-    return new SilverpeasListWrapper<>(listToWrap);
+    return listToWrap instanceof SilverpeasList ?
+        (SilverpeasList<T>) listToWrap :
+        new SilverpeasListWrapper<>(listToWrap);
   }
 
   /**
