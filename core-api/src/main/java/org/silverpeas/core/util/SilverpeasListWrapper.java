@@ -24,8 +24,6 @@
 
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
-
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -85,15 +83,6 @@ public class SilverpeasListWrapper<E> implements SilverpeasList<E> {
 
   public int lastIndexOf(Object o) {
     return wrappedList.lastIndexOf(o);
-  }
-
-  @SuppressWarnings("unchecked")
-  public SilverpeasList<E> clone() {
-    try {
-      return (SilverpeasList) super.clone();
-    } catch (CloneNotSupportedException e) {
-      throw new SilverpeasRuntimeException(e);
-    }
   }
 
   public Object[] toArray() {
