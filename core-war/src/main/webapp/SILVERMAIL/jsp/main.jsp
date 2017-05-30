@@ -80,16 +80,20 @@
   <view:includePlugin name="userNotification"/>
   <script type="text/javascript">
 
-    var checkBoxMonitor = sp.selection.newCheckboxMonitor('#silvermail-list input[name=selection]');
+    var checkboxMonitor = sp.selection.newCheckboxMonitor('#silvermail-list input[name=selection]');
 
     function newMessage() {
       SP_openWindow("${newUserNotificationUrl}", 'notifyUserPopup', '700', '430', 'menubar=no,scrollbars=yes,statusbar=no');
     }
 
+    var _handleCheckboxesAndReloadList = function() {
+      _reloadList(true);
+    };
+
     var _reloadList = function(checkSelected) {
       var ajaxConfig = sp.ajaxConfig("Main");
-      if (checkSelected) {
-        checkBoxMonitor.applyToAjaxConfig(ajaxConfig);
+      if (typeof checkSelected === 'boolean') {
+        checkboxMonitor.applyToAjaxConfig(ajaxConfig);
       }
       return sp.load('#silvermail-list', ajaxConfig, true).then(function() {
         spProgressMessage.hide();
@@ -114,7 +118,7 @@
     function markSelectedMessagesAsRead() {
       jQuery.popup.confirm("${silfn:escapeJs(markSelectedReadConfirm)}", function() {
         var ajaxConfig = sp.ajaxConfig("MarkSelectedMessagesAsRead").byPostMethod();
-        checkBoxMonitor.applyToAjaxConfig(ajaxConfig);
+        checkboxMonitor.applyToAjaxConfig(ajaxConfig);
         spProgressMessage.show();
         silverpeasAjax(ajaxConfig).then(_updateFromRequest);
       });
@@ -133,19 +137,18 @@
       jQuery.popup.confirm("${silfn:escapeJs(deleteSelectedConfirm)}", function() {
         var ajaxConfig = sp.ajaxConfig("DeleteSelectedMessages").byPostMethod();
         ajaxConfig.withParam("folder", "INBOX");
-        checkBoxMonitor.applyToAjaxConfig(ajaxConfig);
+        checkboxMonitor.applyToAjaxConfig(ajaxConfig);
         spProgressMessage.show();
         silverpeasAjax(ajaxConfig).then(_updateFromRequest);
       });
     }
 
     window.USERNOTIFICATION_PROMISE.then(function() {
-      spUserNotification.addEventListener('userNotificationRead', function() {
-        _reloadList(true);
-      }, "SILVERMAIL_UserNotificationRead");
-      spUserNotification.addEventListener('userNotificationDeleted', _reloadList,
+      spUserNotification.addEventListener('userNotificationRead', _handleCheckboxesAndReloadList,
+          "SILVERMAIL_UserNotificationRead");
+      spUserNotification.addEventListener('userNotificationDeleted', _handleCheckboxesAndReloadList,
           "SILVERMAIL_UserNotificationDeleted");
-      spUserNotification.addEventListener('userNotificationReceived', _reloadList,
+      spUserNotification.addEventListener('userNotificationReceived', _handleCheckboxesAndReloadList,
           "SILVERMAIL_UserNotificationReceived");
       spUserNotification.addEventListener('userNotificationCleared', _reloadList,
           "SILVERMAIL_UserNotificationCleared");
@@ -211,9 +214,9 @@
       </view:arrayPane>
       <script type="text/javascript">
         whenSilverpeasReady(function() {
-          checkBoxMonitor.pageChanged();
+          checkboxMonitor.pageChanged();
           sp.arrayPane.ajaxControls('#silvermail-list', {
-            before : checkBoxMonitor.applyToAjaxConfig,
+            before : checkboxMonitor.applyToAjaxConfig,
             success : _updateFromRequest
           });
         });

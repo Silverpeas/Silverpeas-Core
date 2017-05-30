@@ -69,7 +69,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
    */
   private static String SUBJECT_COMMENT_ADDING = "commentAddingSubject";
 
-  private Map<String, ApplicationService> services = new ConcurrentHashMap<>();
+  private static Map<String, ApplicationService> services = new ConcurrentHashMap<>();
 
   @Inject
   private CommentService commentService;
@@ -114,6 +114,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
       try {
         service[0] = ServiceProvider.getService(componentServiceName);
       } catch (IllegalStateException ex) {
+        SilverLogger.getLogger(this).debug(ex.getMessage(), ex);
         applicationServiceInstances.forEach(applicationService -> {
           if (service[0] == null && applicationService.isRelatedTo(instanceId)) {
             service[0] = applicationService;
