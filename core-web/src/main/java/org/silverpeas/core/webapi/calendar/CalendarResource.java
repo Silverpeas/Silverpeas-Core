@@ -34,7 +34,6 @@ import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.icalendar.ICalendarExporter;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportException;
@@ -45,7 +44,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
-import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -92,9 +90,6 @@ public class CalendarResource extends AbstractCalendarResource {
 
   @QueryParam("zoneid")
   private String zoneId;
-
-  @Inject
-  private ICalendarExporter iCalendarExporter;
 
   /**
    * Gets the zoneId into which dates must be set.
@@ -214,23 +209,10 @@ public class CalendarResource extends AbstractCalendarResource {
     assertDataConsistency(getComponentId(), calendar);
     return Response.ok((StreamingOutput) output -> {
       try {
-        if (calendar.isMainPersonalOf(getUserDetail())) {
-          iCalendarExporter.exports(
-              ExportDescriptor
-                  .withOutputStream(output)
-                  .withParameter(CALENDAR, calendar),
-              () -> Calendar.getEvents()
-                  .filter(f -> f.onParticipants(getUserDetail()))
-                  .stream());
-        } else {
-          iCalendarExporter.exports(
-              ExportDescriptor
-                  .withOutputStream(output)
-                  .withParameter(CALENDAR, calendar),
-              () -> Calendar.getEvents()
-                  .filter(f -> f.onCalendar(calendar))
-                  .stream());
-        }
+        final ExportDescriptor descriptor = ExportDescriptor
+            .withOutputStream(output)
+            .withParameter(CALENDAR, calendar);
+        getCalendarWebServiceProvider().exportCalendarAsICalendarFormat(calendar, descriptor);
       } catch (ExportException e) {
         SilverLogger.getLogger(this).error(e);
         throw new WebApplicationException(INTERNAL_SERVER_ERROR);

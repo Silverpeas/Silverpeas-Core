@@ -54,6 +54,12 @@ public interface SilverpeasComponentInstance extends Serializable {
   String getId();
 
   /**
+   * Gets the identifier of the space which the component instance belong to.
+   * @return an identifier as string.
+   */
+  String getSpaceId();
+
+  /**
    * Gets the component name of the component instance.
    * @return the name of the component instance.
    */

@@ -41,8 +41,8 @@
 <fmt:message var="synchronizeCalendarMessage" key="calendar.message.calendar.synchronize"><fmt:param>@name@</fmt:param></fmt:message>
 <fmt:message var="titleLabel" key="GML.title"/>
 <fmt:message var="externalUrlLabel" key="calendar.label.externalUrl"/>
-<fmt:message var="icalPublicUriLabel" key="calendar.label.externalUrl"/>
-<fmt:message var="icalPrivateUriLabel" key="calendar.label.externalUrl"/>
+<fmt:message var="icalPublicUriLabel" key="calendar.label.publicUrl"/>
+<fmt:message var="icalPrivateUriLabel" key="calendar.label.privateUrl"/>
 
 <fmt:message key="calendar.menu.item.event.import" var="importEventLabel"/>
 <fmt:message key="calendar.label.event.import.ical" var="icalFileImportLabel"/>

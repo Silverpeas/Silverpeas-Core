@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.admin.component.model;
 
+import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -39,9 +40,11 @@ import static org.silverpeas.core.util.StringUtil.isNotDefined;
  */
 public class PersonalComponentInstance implements SilverpeasPersonalComponentInstance {
 
-  private final static String INSTANCE_SUFFIX = "_PCI";
-  private final static Pattern INSTANCE_IDENTIFIER_PATTERN =
+  private static final String INSTANCE_SUFFIX = "_PCI";
+  private static final Pattern INSTANCE_IDENTIFIER_PATTERN =
       Pattern.compile("^([a-zA-Z]+)([0-9]+)" + INSTANCE_SUFFIX + "$");
+  private static final int USER_ID_INDEX = 2;
+  private static final int COMPONENT_NAME_INDEX = 1;
 
   private final User user;
   private final PersonalComponent personalComponent;
@@ -68,8 +71,9 @@ public class PersonalComponentInstance implements SilverpeasPersonalComponentIns
     PersonalComponentInstance instance = null;
     Matcher matcher = INSTANCE_IDENTIFIER_PATTERN.matcher(personalComponentInstanceId);
     if (matcher.find()) {
-      Optional<PersonalComponent> personalComponent = PersonalComponent.get(matcher.group(1));
-      User user = User.getById(matcher.group(2));
+      Optional<PersonalComponent> personalComponent =
+          PersonalComponent.get(matcher.group(COMPONENT_NAME_INDEX));
+      User user = User.getById(matcher.group(USER_ID_INDEX));
       if (personalComponent.isPresent() && user != null) {
         instance = from(user, personalComponent.get());
       }
@@ -104,6 +108,12 @@ public class PersonalComponentInstance implements SilverpeasPersonalComponentIns
   @Override
   public String getId() {
     return getName() + getUser().getId() + INSTANCE_SUFFIX;
+  }
+
+  @Override
+  public String getSpaceId() {
+    // TODO as for component instances, SpaceInstance interface must be coded...
+    throw new NotSupportedException("The personal space identifier is not yet handled...");
   }
 
   @Override

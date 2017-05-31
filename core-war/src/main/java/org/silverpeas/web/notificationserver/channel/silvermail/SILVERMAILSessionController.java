@@ -27,9 +27,8 @@ package org.silverpeas.web.notificationserver.channel.silvermail;
 
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
@@ -40,8 +39,7 @@ import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAI
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
     .QUERY_ORDER_BY;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -202,25 +200,21 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   }
 
   private String getSource(String componentId) {
-    LocalizationBundle multilang = ResourceLocator.getLocalizationBundle(
-        "org.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
-        getLanguage());
-    String source = multilang.getString("UserNotification");
+    final Mutable<String> source = Mutable.of(null);
     if (StringUtil.isDefined(componentId)) {
-      OrganizationController orga = OrganizationControllerProvider.getOrganisationController();
-      ComponentInstLight instance = orga.getComponentInstLight(componentId);
-      source = multilang.getString("UnknownSource");
-
-      // Sometimes, source could not be found
-      if (instance != null) {
-        SpaceInstLight space = orga.getSpaceInstLightById(instance.getDomainFatherId());
+      SilverpeasComponentInstance.getById(componentId).filter(i -> !i.isPersonal()).ifPresent(i -> {
+        SpaceInstLight space = OrganizationController.get().getSpaceInstLightById(i.getSpaceId());
         if (space != null) {
-          source = space.getName() + " - " + instance.getLabel();
+          source.set(space.getName() + " - " + i.getLabel());
         }
-      }
+      });
+    } else {
+      source.set(getString("UserNotification"));
     }
-
-    return source;
+    if (!source.isPresent()) {
+      source.set(getString("UnknownSource"));
+    }
+    return source.get();
   }
 
   /**

@@ -44,6 +44,7 @@ import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.InternalAttendee;
+import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.calendar.icalendar.ICalendarExporter;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
@@ -74,6 +75,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 public class ICal4JExporter implements ICalendarExporter {
 
   private static final String MAILTO = "mailto:";
+  private static final String HIDDEN_DATA = "";
 
   @Inject
   private ICal4JDateCodec iCal4JDateCodec;
@@ -104,13 +106,14 @@ public class ICal4JExporter implements ICalendarExporter {
 
       try (Stream<CalendarEvent> events = supplier.get()) {
         events.forEach(event -> {
-          VEvent iCalEvent = convertToICalEvent(calendar, event, event.asCalendarComponent());
+          VEvent iCalEvent =
+              convertToICalEvent(descriptor, calendar, event, event.asCalendarComponent());
           if (event.isRecurrent()) {
             setICalRecurrence(event, iCalEvent);
             event.getPersistedOccurrences().stream()
-                .sorted(CalendarEventOccurrence.COMPARATOR_BY_DATE)
+                .sorted(CalendarEventOccurrence.COMPARATOR_BY_DATE_DESC)
                 .forEach(occurrence -> {
-                  VEvent occICalEvent = convertToICalEvent(calendar, occurrence);
+                  VEvent occICalEvent = convertToICalEvent(descriptor, calendar, occurrence);
                   iCalCalendar.getComponents().add(occICalEvent);
                 });
           }
@@ -126,27 +129,30 @@ public class ICal4JExporter implements ICalendarExporter {
     }
   }
 
-  private VEvent convertToICalEvent(final Calendar calendar, CalendarEventOccurrence occurrence) {
+  private VEvent convertToICalEvent(final ExportDescriptor descriptor, final Calendar calendar,
+      CalendarEventOccurrence occurrence) {
     final CalendarComponent occComponent = occurrence.asCalendarComponent();
     final CalendarComponent evtComponent = occurrence.getCalendarEvent().asCalendarComponent();
-    VEvent occICalEvent = convertToICalEvent(calendar, occurrence.getCalendarEvent(), occComponent);
+    VEvent occICalEvent =
+        convertToICalEvent(descriptor, calendar, occurrence.getCalendarEvent(), occComponent);
     final Date occOrigStartDate =
         iCal4JDateCodec.encode(true, evtComponent, occurrence.getOriginalStartDate());
     occICalEvent.getProperties().add(new RecurrenceId(occOrigStartDate));
     return occICalEvent;
   }
 
-  private VEvent convertToICalEvent(final Calendar calendar, CalendarEvent event,
-      final CalendarComponent component) {
-    VEvent iCalEvent = initICalEvent(calendar, event, component);
+  private VEvent convertToICalEvent(final ExportDescriptor descriptor, final Calendar calendar,
+      CalendarEvent event, final CalendarComponent component) {
+    boolean mustHideData = mustHideData(descriptor, event);
+    VEvent iCalEvent = initICalEvent(calendar, event, component, mustHideData);
     setICalUuid(event, iCalEvent);
-    setICalDescription(component, iCalEvent);
+    setICalDescription(component, iCalEvent, mustHideData);
     setICalVisibility(event, iCalEvent);
     setICalPriority(component, iCalEvent);
-    setICalLocation(component, iCalEvent);
-    setICalUrl(component, iCalEvent);
-    setICalCategories(event, iCalEvent);
-    setICalAttendees(component, iCalEvent);
+    setICalLocation(component, iCalEvent, mustHideData);
+    setICalUrl(component, iCalEvent, mustHideData);
+    setICalCategories(event, iCalEvent, mustHideData);
+    setICalAttendees(component, iCalEvent, mustHideData);
     return iCalEvent;
   }
 
@@ -167,16 +173,18 @@ public class ICal4JExporter implements ICalendarExporter {
     iCalEvent.getProperties().add(new Clazz(event.getVisibilityLevel().name()));
   }
 
-  private void setICalLocation(final CalendarComponent component, final VEvent iCalEvent) {
-    if (isDefined(component.getLocation())) {
+  private void setICalLocation(final CalendarComponent component, final VEvent iCalEvent,
+      final boolean hideData) {
+    if (!hideData && isDefined(component.getLocation())) {
       iCalEvent.getProperties().add(new Location(component.getLocation()));
     }
   }
 
-  private void setICalAttendees(final CalendarComponent component, final VEvent iCalEvent) {
-    if (component.getAttendees().isEmpty()) {
+  private void setICalAttendees(final CalendarComponent component, final VEvent iCalEvent,
+      final boolean hideData) {
+    if (!hideData && component.getAttendees().isEmpty()) {
       iCalEvent.getProperties().add(Status.VEVENT_CONFIRMED);
-    } else {
+    } else if (!hideData) {
       iCalEvent.getProperties().add(convertOrganizer(component.getCreator()));
       final Mutable<Status> mutableStatus = Mutable.of(Status.VEVENT_CONFIRMED);
       component.getAttendees().stream()
@@ -191,15 +199,19 @@ public class ICal4JExporter implements ICalendarExporter {
     }
   }
 
-  private void setICalCategories(final CalendarEvent event, final VEvent iCalEvent) {
-    TextList categoryList = new TextList(event.getCategories().asArray());
-    if (!categoryList.isEmpty()) {
-      iCalEvent.getProperties().add(new Categories(categoryList));
+  private void setICalCategories(final CalendarEvent event, final VEvent iCalEvent,
+      final boolean hideData) {
+    if (!hideData) {
+      TextList categoryList = new TextList(event.getCategories().asArray());
+      if (!categoryList.isEmpty()) {
+        iCalEvent.getProperties().add(new Categories(categoryList));
+      }
     }
   }
 
-  private void setICalUrl(final CalendarComponent component, final VEvent iCalEvent) {
-    Optional<String> url = component.getAttributes().get("url");
+  private void setICalUrl(final CalendarComponent component, final VEvent iCalEvent,
+      final boolean hideData) {
+    Optional<String> url = hideData ? Optional.empty() : component.getAttributes().get("url");
     if (url.isPresent()) {
       try {
         iCalEvent.getProperties().add(new Url(new URI(url.get())));
@@ -210,7 +222,7 @@ public class ICal4JExporter implements ICalendarExporter {
   }
 
   private VEvent initICalEvent(final Calendar calendar, final CalendarEvent event,
-      final CalendarComponent component) {
+      final CalendarComponent component, final boolean hideData) {
     // ICal4J period
     final Date startDate = iCal4JDateCodec
         .encode(event.isRecurrent(), component, component.getPeriod().getStartDate());
@@ -223,7 +235,7 @@ public class ICal4JExporter implements ICalendarExporter {
         iCal4JDateCodec.encode(component.getLastUpdateDate().toInstant().atOffset(ZoneOffset.UTC));
 
     // ICal4J event
-    final String title =
+    final String title = hideData ? HIDDEN_DATA :
         formatTitle(component, calendar.getComponentInstanceId(), true);
     VEvent iCalEvent = component.getPeriod().isInDays() && startDate.equals(endDate) ?
         new VEvent(startDate, title) : new VEvent(startDate, endDate, title);
@@ -233,8 +245,9 @@ public class ICal4JExporter implements ICalendarExporter {
     return iCalEvent;
   }
 
-  private void setICalDescription(final CalendarComponent component, final VEvent iCalEvent) {
-    final String description = component.getDescription();
+  private void setICalDescription(final CalendarComponent component, final VEvent iCalEvent,
+      final boolean hideData) {
+    final String description = hideData ? HIDDEN_DATA : component.getDescription();
     if (StringUtil.isDefined(description)) {
       HtmlCleaner cleaner = new HtmlCleaner();
       String plainText = "";
@@ -346,5 +359,18 @@ public class ICal4JExporter implements ICalendarExporter {
       default:
         return Optional.of(PartStat.NEEDS_ACTION);
     }
+  }
+
+  /**
+   * Indicates from the descriptor data and the event if data must be hidden.
+   * @param descriptor the descriptor data.
+   * @param event the event data.
+   * @return true if data must be hidden, false otherwise.
+   */
+  private boolean mustHideData(ExportDescriptor descriptor, CalendarEvent event) {
+    final Object value = descriptor.getParameter(HIDE_PRIVATE_DATA);
+    final boolean required = (value instanceof Boolean && (Boolean) value) ||
+        (value instanceof String && StringUtil.getBooleanValue((String) value));
+    return required && VisibilityLevel.PRIVATE == event.getVisibilityLevel();
   }
 }

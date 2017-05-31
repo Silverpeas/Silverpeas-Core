@@ -48,13 +48,13 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
   private static final long serialVersionUID = 4859368422448142768L;
 
   /* Unique identifier of the instance */
-  private String m_sId;
+  private String id;
 
   /* Unique identifier of the father of the space */
-  private String m_sDomainFatherId;
+  private String domainFatherId;
 
   /* instance Type */
-  private String m_sName;
+  private String name;
   private Date createDate = null;
   private Date updateDate = null;
   private Date removeDate = null;
@@ -75,20 +75,20 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
    * Constructor
    */
   public ComponentInstLight() {
-    m_sId = "";
-    m_sDomainFatherId = "";
-    m_sName = "";
+    id = "";
+    domainFatherId = "";
+    name = "";
   }
 
   /**
    * Constructor
    */
   public ComponentInstLight(ComponentInstanceRow compo) {
-    m_sId = Integer.toString(compo.id);
-    m_sDomainFatherId = Integer.toString(compo.spaceId);
+    id = Integer.toString(compo.id);
+    domainFatherId = Integer.toString(compo.spaceId);
     setLabel(compo.name);
     setDescription(compo.description);
-    m_sName = compo.componentName;
+    name = compo.componentName;
 
     if (compo.createTime != null) {
       createDate = new Date(Long.parseLong(compo.createTime));
@@ -114,22 +114,27 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
 
   @Override
   public String getId() {
-    return m_sName + m_sId;
+    return name + id;
+  }
+
+  @Override
+  public String getSpaceId() {
+    return domainFatherId;
   }
 
   public int getLocalId() {
-    return Integer.parseInt(m_sId);
+    return Integer.parseInt(id);
   }
 
   public void setLocalId(int id) {
-    this.m_sId = String.valueOf(id);
+    this.id = String.valueOf(id);
   }
 
   /**
    * Set the domain father id
    */
   public void setDomainFatherId(String sDomainFatherId) {
-    this.m_sDomainFatherId = sDomainFatherId;
+    this.domainFatherId = sDomainFatherId;
   }
 
   /**
@@ -138,7 +143,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
    * returns an empty string.
    */
   public String getDomainFatherId() {
-    return m_sDomainFatherId;
+    return domainFatherId;
   }
 
   /**
@@ -148,7 +153,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
    * @return true if this component has a domain father, false otherwise.
    */
   public boolean hasDomainFather() {
-    return StringUtil.isDefined(m_sDomainFatherId);
+    return StringUtil.isDefined(domainFatherId);
   }
 
   /**
@@ -158,7 +163,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
    */
   @Override
   public String getName() {
-    return m_sName;
+    return name;
   }
 
   /**
@@ -259,14 +264,14 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
    */
   @Override
   public void setName(String name) {
-    m_sName = name;
+    this.name = name;
   }
 
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
-    result = prime * result + ((m_sId == null) ? 0 : m_sId.hashCode());
+    result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
   }
 
@@ -334,11 +339,11 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
       return false;
     }
     ComponentInstLight other = (ComponentInstLight) obj;
-    if (m_sId == null) {
-      if (other.m_sId != null) {
+    if (id == null) {
+      if (other.id != null) {
         return false;
       }
-    } else if (!m_sId.equals(other.m_sId)) {
+    } else if (!id.equals(other.id)) {
       return false;
     }
     return true;

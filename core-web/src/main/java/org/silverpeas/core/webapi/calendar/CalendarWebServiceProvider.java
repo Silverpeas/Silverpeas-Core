@@ -35,7 +35,10 @@ import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.ICalendarEventImportProcessor;
 import org.silverpeas.core.calendar.ICalendarImportResult;
 import org.silverpeas.core.calendar.Plannable;
+import org.silverpeas.core.calendar.icalendar.ICalendarExporter;
 import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
+import org.silverpeas.core.importexport.ExportDescriptor;
+import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
@@ -72,6 +75,9 @@ import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodTyp
 public class CalendarWebServiceProvider {
 
   private final SilverLogger silverLogger = SilverLogger.getLogger(Plannable.class);
+
+  @Inject
+  private ICalendarExporter iCalendarExporter;
 
   @Inject
   private ICalendarEventImportProcessor iCalendarEventImportProcessor;
@@ -255,6 +261,24 @@ public class CalendarWebServiceProvider {
     String userLanguage = owner.getUserPreferences().getLanguage();
     getMessager().addSuccess(getLocalizationBundle(userLanguage)
         .getStringWithParams("calendar.message.calendar.deleted", calendar.getTitle()));
+  }
+
+  /**
+   * Exports the given calendar into ICalendar format.
+   * @param calendar the calendar to export.
+   * @param descriptor the export descriptor.
+   * @throws ExportException on export exception.
+   */
+  void exportCalendarAsICalendarFormat(final Calendar calendar, final ExportDescriptor descriptor)
+      throws ExportException {
+    final User currentRequester = User.getCurrentRequester();
+    if (calendar.isMainPersonalOf(currentRequester)) {
+      iCalendarExporter.exports(descriptor,
+          () -> Calendar.getEvents().filter(f -> f.onParticipants(currentRequester)).stream());
+    } else {
+      iCalendarExporter.exports(descriptor,
+          () -> Calendar.getEvents().filter(f -> f.onCalendar(calendar)).stream());
+    }
   }
 
   /**

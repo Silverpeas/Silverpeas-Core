@@ -117,8 +117,7 @@ class CalendarComponentDiffDescriptor {
     }
     if (diff.containsKey(SAVE_ATTRIBUTE_ATTR)) {
       Map<String, String> attributesToSave = (Map) diff.get(SAVE_ATTRIBUTE_ATTR);
-      attributesToSave.entrySet()
-          .forEach(e -> component.getAttributes().set(e.getKey(), e.getValue()));
+      attributesToSave.forEach((key, value) -> component.getAttributes().set(key, value));
       dataMerged.set(true);
     }
     if (diff.containsKey(REMOVE_ATTRIBUTE_ATTR)) {

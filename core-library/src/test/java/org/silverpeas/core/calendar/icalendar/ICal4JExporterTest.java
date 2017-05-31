@@ -41,7 +41,6 @@ import org.silverpeas.core.calendar.CalendarMockBuilder;
 import org.silverpeas.core.calendar.DayOfWeekOccurrence;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
-import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.calendar.ical4j.ICal4JExporter;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
@@ -75,7 +74,9 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.core.calendar.Attendee.PresenceStatus.INFORMATIVE;
 import static org.silverpeas.core.calendar.Attendee.PresenceStatus.OPTIONAL;
+import static org.silverpeas.core.calendar.VisibilityLevel.PRIVATE;
 import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.CALENDAR;
+import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.HIDE_PRIVATE_DATA;
 import static org.silverpeas.core.util.CollectionUtil.asList;
 
 /**
@@ -131,13 +132,38 @@ public class ICal4JExporterTest {
 
   @Test
   public void emptyListOfEvents() throws ExportException {
-    exportAndVerifyResult(emptyList(), "ical4j_export_no_event.txt");
+    exportAndVerifyResult(newExportDescriptor(), emptyList(), "ical4j_export_no_event.txt");
   }
 
   @Test
   public void simpleOneOfTwoDaysDuration() throws ExportException {
     // between December 14 and December 15 == [December 14, December 16[
-    CalendarEvent event = CalendarEventStubBuilder.from(Period
+    CalendarEvent event = withTwoDaysDuration().build();
+
+    exportAndVerifyResult(newExportDescriptor(), singletonList(event),
+        "ical4j_export_simple_two_days_duration.txt");
+  }
+
+  @Test
+  public void simpleOneOfTwoDaysDurationButHiddenDataWhenPrivate() throws ExportException {
+    // between December 14 and December 15 == [December 14, December 16[
+    CalendarEvent event = withTwoDaysDuration().build();
+
+    exportAndVerifyResult(newHiddenDataExportDescriptor(),
+        singletonList(event), "ical4j_export_simple_two_days_duration.txt");
+  }
+
+  @Test
+  public void simplePrivateOneOfTwoDaysDurationButHiddenDataWhenPrivate() throws ExportException {
+    // between December 14 and December 15 == [December 14, December 16[
+    CalendarEvent event = withTwoDaysDuration().withVisibilityLevel(PRIVATE).build();
+
+    exportAndVerifyResult(newHiddenDataExportDescriptor(),
+        singletonList(event), "ical4j_export_simple_two_days_duration_hidden_data.txt");
+  }
+
+  public CalendarEventStubBuilder withTwoDaysDuration() {
+    return CalendarEventStubBuilder.from(Period
         .between(date("2016-12-14"), date("2016-12-16")))
         .plannedOn(calendar)
         .withId("EVENT-UUID")
@@ -146,10 +172,7 @@ public class ICal4JExporterTest {
         .withLocation("Grenoble")
         .withAttribute("url", "http://www.silverpeas.org/events/EVENT-UUID")
         .withCreationDate(datetime("2016-12-01T14:30:00Z"))
-        .withLastUpdateDate(datetime("2016-12-02T09:00:00Z"))
-        .build();
-
-    exportAndVerifyResult(singletonList(event), "ical4j_export_simple_two_days_duration.txt");
+        .withLastUpdateDate(datetime("2016-12-02T09:00:00Z"));
   }
 
   @Test
@@ -167,7 +190,8 @@ public class ICal4JExporterTest {
         .withLastUpdateDate(datetime("2016-12-02T09:00:00Z"))
         .build();
 
-    exportAndVerifyResult(singletonList(event), "ical4j_export_simple_two_hours_duration.txt");
+    exportAndVerifyResult(newExportDescriptor(), singletonList(event),
+        "ical4j_export_simple_two_hours_duration.txt");
   }
 
   @Test
@@ -182,7 +206,8 @@ public class ICal4JExporterTest {
         .withLastUpdateDate(datetime("2016-12-02T09:00:00Z"))
         .build();
 
-    exportAndVerifyResult(singletonList(event), "ical4j_export_categorized_one_day_duration.txt");
+    exportAndVerifyResult(newExportDescriptor(), singletonList(event),
+        "ical4j_export_categorized_one_day_duration.txt");
   }
 
   @Test
@@ -200,7 +225,8 @@ public class ICal4JExporterTest {
         .withRecurrence(Recurrence.every(TimeUnit.DAY))
         .build();
 
-    exportAndVerifyResult(singletonList(event), "ical4j_export_recurrent_two_hours_duration.txt");
+    exportAndVerifyResult(newExportDescriptor(), singletonList(event),
+        "ical4j_export_recurrent_two_hours_duration.txt");
   }
 
   @Test
@@ -219,7 +245,7 @@ public class ICal4JExporterTest {
             .until(datetime("2016-12-24T09:30:00Z")))
         .build();
 
-    exportAndVerifyResult(singletonList(event),
+    exportAndVerifyResult(newExportDescriptor(), singletonList(event),
         "ical4j_export_recurrent_two_hours_duration_until_10_days.txt");
   }
 
@@ -239,7 +265,7 @@ public class ICal4JExporterTest {
             date("2016-12-21"), datetime("2016-12-27T11:00:00Z")))
         .build();
 
-    exportAndVerifyResult(singletonList(event),
+    exportAndVerifyResult(newExportDescriptor(), singletonList(event),
         "ical4j_export_recurrent_with_exceptions_two_hours_duration.txt");
   }
 
@@ -258,7 +284,7 @@ public class ICal4JExporterTest {
         .withRecurrence(Recurrence.every(TimeUnit.DAY).until(datetime("2016-12-24T09:00:00Z")))
         .build();
 
-    exportAndVerifyResult(singletonList(event),
+    exportAndVerifyResult(newExportDescriptor(), singletonList(event),
         "ical4j_export_recurrent_one_day_duration_until_10_days.txt");
   }
 
@@ -271,7 +297,7 @@ public class ICal4JExporterTest {
         .withExternalId("EXT-EVENT-UUID-1")
         .withTitle("EVENT-TITLE-1")
         .withPriority(Priority.HIGH)
-        .withVisibilityLevel(VisibilityLevel.PRIVATE)
+        .withVisibilityLevel(PRIVATE)
         .withCreationDate(datetime("2016-12-01T14:30:00Z"))
         .withLastUpdateDate(datetime("2016-12-02T09:00:00Z"))
         .withRecurrence(Recurrence.every(TimeUnit.DAY))
@@ -352,7 +378,7 @@ public class ICal4JExporterTest {
         .withRecurrence(Recurrence.every(TimeUnit.YEAR))
         .build();
 
-    exportAndVerifyResult(
+    exportAndVerifyResult(newExportDescriptor(),
         asList(event1, event2, event3, event4, event5, event6, event7, event8, event9),
         "ical4j_export_several_with_recurrence.txt");
   }
@@ -446,7 +472,7 @@ public class ICal4JExporterTest {
         .withRecurrence(Recurrence.every(TimeUnit.YEAR))
         .build();
 
-    exportAndVerifyResult(
+    exportAndVerifyResult(newExportDescriptor(),
         asList(event1, event2, event3, event4, event5, event6, event7, event8, event9),
         "ical4j_export_several_with_recurrence_on_all_day.txt");
   }
@@ -475,7 +501,7 @@ public class ICal4JExporterTest {
         .withAttendee("external.2@silverpeas.org", Attendee::decline)
         .build();
 
-    exportAndVerifyResult(singletonList(event),
+    exportAndVerifyResult(newExportDescriptor(), singletonList(event),
         "ical4j_export_simple_two_days_duration_with_attendees.txt");
   }
 
@@ -504,12 +530,38 @@ public class ICal4JExporterTest {
         .withAttendee("external.2@silverpeas.org", Attendee::decline)
         .build();
 
-    exportAndVerifyResult(singletonList(event),
+    exportAndVerifyResult(newExportDescriptor(), singletonList(event),
         "ical4j_export_one_with_recurrence_and_with_attendees.txt");
   }
 
   @Test
   public void oneWithRecurrenceAndWithAttendeesWhichAnsweredOnDate() throws ExportException {
+    CalendarEvent event = withRecurrenceAndWithAttendeesWhichAnsweredOnDate().build();
+
+    exportAndVerifyResult(newExportDescriptor(), singletonList(event),
+        "ical4j_export_one_with_recurrence_and_with_attendees_which_answered_on_date.txt");
+  }
+
+  @Test
+  public void oneWithRecurrenceAndWithAttendeesWhichAnsweredOnDateButHiddenDataWhenPrivate()
+      throws ExportException {
+    CalendarEvent event = withRecurrenceAndWithAttendeesWhichAnsweredOnDate().build();
+
+    exportAndVerifyResult(newHiddenDataExportDescriptor(), singletonList(event),
+        "ical4j_export_one_with_recurrence_and_with_attendees_which_answered_on_date.txt");
+  }
+
+  @Test
+  public void onePrivateWithRecurrenceAndWithAttendeesWhichAnsweredOnDateButHiddenDataWhenPrivate()
+      throws ExportException {
+    CalendarEvent event =
+        withRecurrenceAndWithAttendeesWhichAnsweredOnDate().withVisibilityLevel(PRIVATE).build();
+
+    exportAndVerifyResult(newHiddenDataExportDescriptor(), singletonList(event),
+        "ical4j_export_one_with_recurrence_and_with_attendees_which_answered_on_date_hidden_data.txt");
+  }
+
+  public CalendarEventStubBuilder withRecurrenceAndWithAttendeesWhichAnsweredOnDate() {
     User user = mock(User.class);
     when(user.getId()).thenReturn("userId");
     when(user.getDisplayedName()).thenReturn("User Test");
@@ -517,7 +569,7 @@ public class ICal4JExporterTest {
     when(UserProvider.get().getUser(user.getId())).thenReturn(user);
     final String externalAttendeeId_1 = "external.1@silverpeas.org";
     final String externalAttendeeId_2 = "external.2@silverpeas.org";
-    CalendarEvent event = CalendarEventStubBuilder.from(Period
+    return CalendarEventStubBuilder.from(Period
         .between(date("2016-11-30"), date("2016-11-30")))
         .plannedOn(calendar)
         .withId("EVENT-UUID-RECURRENCE-ATTENDEES-ON-DATE-ANSWER")
@@ -541,11 +593,7 @@ public class ICal4JExporterTest {
         .withOccurrenceOn(Period.between(date("2016-12-09"), date("2016-12-10")),
             o -> o.getAttendees().get(user.getId()).ifPresent(Attendee::tentativelyAccept))
         .withOccurrenceOn(Period.between(date("2016-12-10"), date("2016-12-11")),
-            o -> o.getAttendees().get(externalAttendeeId_2).ifPresent(Attendee::accept))
-        .build();
-
-    exportAndVerifyResult(singletonList(event),
-        "ical4j_export_one_with_recurrence_and_with_attendees_which_answered_on_date.txt");
+            o -> o.getAttendees().get(externalAttendeeId_2).ifPresent(Attendee::accept));
   }
 
   @Test
@@ -586,7 +634,7 @@ public class ICal4JExporterTest {
             })
         .build();
 
-    exportAndVerifyResult(singletonList(event),
+    exportAndVerifyResult(newExportDescriptor(), singletonList(event),
         "ical4j_export_one_with_recurrence_and_with_attendees_differences.txt");
   }
 
@@ -603,11 +651,12 @@ public class ICal4JExporterTest {
    * console.<br/>
    * Only event parts are verified from the contents.
    * </p>
+   * @param descriptor
    * @param fileNameOfExpectedResult the name of the file that contains the expected export result.
    */
   @SuppressWarnings({"unchecked", "Duplicates"})
-  private void exportAndVerifyResult(List<CalendarEvent> calendarEvents,
-      String fileNameOfExpectedResult) throws ExportException {
+  private void exportAndVerifyResult(final ExportDescriptor descriptor,
+      List<CalendarEvent> calendarEvents, String fileNameOfExpectedResult) throws ExportException {
     try {
 
       ByteArrayOutputStream emptyExportResult = new ByteArrayOutputStream();
@@ -617,11 +666,9 @@ public class ICal4JExporterTest {
       List<String> empty = IOUtils.readLines(new StringReader(emptyExportResult.toString()));
       empty.remove(empty.size() - 1);
 
-      ByteArrayOutputStream exportResult = new ByteArrayOutputStream();
-      iCalendarExporter.exports(ExportDescriptor.withOutputStream(exportResult)
-          .withParameter(CALENDAR, calendar), calendarEvents::stream);
+      iCalendarExporter.exports(descriptor, calendarEvents::stream);
 
-      StringReader current = new StringReader(exportResult.toString());
+      StringReader current = new StringReader(descriptor.getOutputStream().toString());
       StringReader expected = new StringReader(getFileContent(fileNameOfExpectedResult));
 
       final List<String> currentContentLines = IOUtils.readLines(current);
@@ -649,6 +696,15 @@ public class ICal4JExporterTest {
     } catch (IOException e) {
       throw new RuntimeException(e);
     }
+  }
+
+  private ExportDescriptor newExportDescriptor() {
+    return ExportDescriptor.withOutputStream(new ByteArrayOutputStream())
+        .withParameter(CALENDAR, calendar);
+  }
+
+  public ExportDescriptor newHiddenDataExportDescriptor() {
+    return newExportDescriptor().withParameter(HIDE_PRIVATE_DATA, true);
   }
 
   private String getFileContent(String fileName) {

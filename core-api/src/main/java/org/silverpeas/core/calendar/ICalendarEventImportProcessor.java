@@ -166,27 +166,31 @@ public class ICalendarEventImportProcessor {
 
     List<CalendarEventOccurrence> persistedOccurrences = event.getPersistedOccurrences();
 
-    final Iterator<CalendarEventOccurrence> existingOccurrences =
-        persistedOccurrences.stream().sorted(CalendarEventOccurrence.COMPARATOR_BY_DATE).iterator();
+    final Iterator<CalendarEventOccurrence> existingOccurrences = persistedOccurrences.stream()
+        .sorted(CalendarEventOccurrence.COMPARATOR_BY_ORIGINAL_DATE_ASC).iterator();
     final Mutable<CalendarEventOccurrence> currentExistingOccurrence =
         Mutable.of(existingOccurrences.hasNext() ? existingOccurrences.next() : null);
 
-    occurrencesToImport.stream().sorted(CalendarEventOccurrence.COMPARATOR_BY_DATE).forEach(o -> {
-      o.setCalendarEvent(event);
-      Optional<CalendarEventOccurrence> existingOccurrence = currentExistingOccurrence.isPresent() ?
-          findMatching(o, existingOccurrences, currentExistingOccurrence.get()):Optional.empty();
-      if (existingOccurrence.isPresent()) {
-        currentExistingOccurrence.set(existingOccurrence.get());
-        if (wasUpdated(o, currentExistingOccurrence.get())) {
-          result.set(currentExistingOccurrence.get().updateFrom(o));
-        }
-      } else {
-        // we save it directly into the persistence engine as the event could be not yet saved
-        // (hence the update method is meaningless; the event could be into the transactional cache)
-        o.saveIntoPersistence();
-        result.get().withUpdated(o.getCalendarEvent());
-      }
-    });
+    occurrencesToImport.stream().sorted(CalendarEventOccurrence.COMPARATOR_BY_ORIGINAL_DATE_ASC)
+        .forEach(o -> {
+          o.setCalendarEvent(event);
+          Optional<CalendarEventOccurrence> existingOccurrence =
+              currentExistingOccurrence.isPresent() ?
+                  findMatching(o, existingOccurrences, currentExistingOccurrence.get()) :
+                  Optional.empty();
+          if (existingOccurrence.isPresent()) {
+            currentExistingOccurrence.set(existingOccurrence.get());
+            if (wasUpdated(o, currentExistingOccurrence.get())) {
+              result.set(currentExistingOccurrence.get().updateFrom(o));
+            }
+          } else {
+            // we save it directly into the persistence engine as the event could be not yet saved
+            // (hence the update method is meaningless; the event could be into the transactional
+            // cache)
+            o.saveIntoPersistence();
+            result.get().withUpdated(o.getCalendarEvent());
+          }
+        });
 
     return result.get();
   }

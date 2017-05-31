@@ -48,7 +48,6 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -178,8 +177,6 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized, Securable {
 
   private static final long serialVersionUID = 1L;
-  private static final Comparator<CalendarEventOccurrence> EVENT_OCCURRENCE_COMPARATOR =
-      Comparator.comparing(o -> o.getOriginalStartDate().toString());
   public static final String THE_EVENT = "The event ";
 
   @Column(name = "externalId")

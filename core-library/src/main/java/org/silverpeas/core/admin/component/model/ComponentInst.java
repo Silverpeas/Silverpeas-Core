@@ -107,15 +107,6 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return ci;
   }
 
-  protected String[] cloneStringArray(String[] src) {
-    if (src == null) {
-      return null;
-    }
-    String[] clonedArray = new String[src.length];
-    System.arraycopy(src, 0, clonedArray, 0, src.length);
-    return clonedArray;
-  }
-
   @Override
   public String getId() {
     return name + id;
@@ -232,6 +223,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     profiles.add(profileInst);
   }
 
+  @Override
   public String getSpaceId() {
     return domainFatherId;
   }

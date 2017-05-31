@@ -28,14 +28,12 @@ import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarReference;
-import org.silverpeas.core.calendar.icalendar.ICalendarExporter;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
-import javax.inject.Inject;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -47,7 +45,7 @@ import javax.ws.rs.core.StreamingOutput;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.CALENDAR;
-import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.PUBLIC;
+import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.HIDE_PRIVATE_DATA;
 import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.CALENDAR_BASE_URI;
 import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertEntityIsDefined;
 
@@ -59,9 +57,6 @@ import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.ass
 @RequestScoped
 @Path(CALENDAR_BASE_URI + "/ical")
 public class ICalendarResource extends RESTWebService {
-
-  @Inject
-  private ICalendarExporter iCalendarExporter;
 
   /**
    * Gets the JSON representation of a calendar represented by the given identifier.
@@ -104,31 +99,17 @@ public class ICalendarResource extends RESTWebService {
   /**
    * Exports the given calendar into the body of the response.
    * @param calendar the calendar to export.
-   * @param isPublic indicates if the export is a public (true) or private one.
+   * @param hidePrivateData indicates if private data must be hidden.
    * @return the configured response.
    */
-  private Response export(final Calendar calendar, final boolean isPublic) {
+  private Response export(final Calendar calendar, final boolean hidePrivateData) {
     return Response.ok((StreamingOutput) output -> {
       try {
-        if (calendar.isMainPersonalOf(getUserDetail())) {
-          iCalendarExporter.exports(
-              ExportDescriptor
-                  .withOutputStream(output)
-                  .withParameter(CALENDAR, calendar)
-                  .withParameter(PUBLIC, isPublic),
-              () -> Calendar.getEvents()
-                  .filter(f -> f.onParticipants(getUserDetail()))
-                  .stream());
-        } else {
-          iCalendarExporter.exports(
-              ExportDescriptor
-                  .withOutputStream(output)
-                  .withParameter(CALENDAR, calendar)
-                  .withParameter(PUBLIC, isPublic),
-              () -> Calendar.getEvents()
-                  .filter(f -> f.onCalendar(calendar))
-                  .stream());
-        }
+        final ExportDescriptor descriptor = ExportDescriptor
+            .withOutputStream(output)
+            .withParameter(CALENDAR, calendar)
+            .withParameter(HIDE_PRIVATE_DATA, hidePrivateData);
+        getCalendarWebServiceProvider().exportCalendarAsICalendarFormat(calendar, descriptor);
       } catch (ExportException e) {
         SilverLogger.getLogger(this).error(e);
         throw new WebApplicationException(INTERNAL_SERVER_ERROR);
@@ -142,5 +123,9 @@ public class ICalendarResource extends RESTWebService {
   @Override
   public String getComponentId() {
     return null;
+  }
+
+  private CalendarWebServiceProvider getCalendarWebServiceProvider() {
+    return CalendarWebServiceProvider.get();
   }
 }

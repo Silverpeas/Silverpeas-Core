@@ -44,7 +44,7 @@ public interface ICalendarExporter extends Exporter<Stream<CalendarEvent>> {
    * the export.
    */
   String CALENDAR = "calendar";
-  String PUBLIC = "public";
+  String HIDE_PRIVATE_DATA = "hidePrivateData";
 
   /**
    * Gets an instance of the implementation of the {@link ICalendarExporter} interface.

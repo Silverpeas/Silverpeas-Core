@@ -87,7 +87,9 @@ public class CalendarEventOccurrence
     extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
     implements IdentifiableEntity, Occurrence {
 
-  public static final Comparator<CalendarEventOccurrence> COMPARATOR_BY_DATE =
+  public static final Comparator<CalendarEventOccurrence> COMPARATOR_BY_ORIGINAL_DATE_ASC =
+      Comparator.comparing(o -> o.getOriginalStartDate().toString());
+  public static final Comparator<CalendarEventOccurrence> COMPARATOR_BY_DATE_DESC =
       (o1, o2) -> o2.getStartDate().toString().compareTo(o1.getStartDate().toString());
 
   @ManyToOne(optional = false, fetch = FetchType.EAGER)
@@ -573,6 +575,7 @@ public class CalendarEventOccurrence
    * @param event the event of this occurrence.
    */
   final void setCalendarEvent(final CalendarEvent event) {
+    setId(generateId(event, getOriginalStartDate()));
     this.event = event;
     this.component.setCalendar(event.getCalendar());
   }
