@@ -20,7 +20,6 @@
  */
 package org.silverpeas.core.admin.user.dao;
 
-import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -31,11 +30,9 @@ import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Instant;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -94,7 +91,7 @@ public class UserDAO {
             toInstance(user.getLastLoginCredentialUpdateDate()))
         .addInsertParam("expirationDate", toInstance(user.getExpirationDate()))
         .addInsertParam(STATE, user.getState())
-        .addInsertParam("stateSaveDate", toInstance(user.getStateSaveDate()))
+        .addInsertParam("stateSaveDate", now)
         .addInsertParam("notifManualReceiverLimit", user.getNotifManualReceiverLimit())
         .executeWith(connection);
 
@@ -102,13 +99,15 @@ public class UserDAO {
   }
 
   public void deleteUser(final Connection connection, final UserDetail user) throws SQLException {
-    user.setLogin("???REM???" + user.getId());
-    user.setSpecificId("???REM???" + user.getId());
-    if (!UserState.DELETED.equals(user.getState())) {
-      user.setState(UserState.DELETED);
-      user.setStateSaveDate(new Date());
-    }
-    updateUser(connection, user);
+    Instant now = new Date().toInstant();
+    JdbcSqlQuery.createUpdateFor(USER_TABLE)
+        .addUpdateParam("login", "???REM???" + user.getId())
+        .addUpdateParam(SPECIFIC_ID, "???REM???" + user.getId())
+        .addUpdateParam(STATE, UserState.DELETED)
+        .addUpdateParam("stateSaveDate", now)
+        .addUpdateParam("saveDate", now)
+        .where(ID_PARAM, Integer.parseInt(user.getId()))
+        .executeWith(connection);
   }
 
   /**
@@ -215,10 +214,10 @@ public class UserDAO {
         .addUpdateParam("lastLoginCredentialUpdateDate",
             toInstance(user.getLastLoginCredentialUpdateDate()))
         .addUpdateParam("expirationDate", toInstance(user.getExpirationDate()))
-        .addUpdateParam(STATE, user.getState().getName())
+        .addUpdateParam(STATE, user.getState())
         .addUpdateParam("stateSaveDate", toInstance(user.getStateSaveDate()))
         .addUpdateParam("notifManualReceiverLimit", user.getNotifManualReceiverLimit())
-        .where(ID_PARAM, user.getId())
+        .where(ID_PARAM, Integer.parseInt(user.getId()))
         .executeWith(connection);
   }
 
@@ -226,33 +225,14 @@ public class UserDAO {
    * Gets the user details that match the specified criteria. The criteria are provided by an
    * UserSearchCriteriaBuilder instance that was used to create them.
    *
-   * @param connection the connetion with a data source to use.
+   * @param connection the connection with a data source to use.
    * @param criteria a builder with which the criteria the user details must satisfy has been built.
    * @return a list of user details matching the criteria or an empty list if no such user details
    * are found.
    */
   public ListSlice<UserDetail> getUsersByCriteria(Connection connection,
       UserSearchCriteriaForDAO criteria) throws SQLException {
-    ListSlice<UserDetail> users;
-    PreparedStatement statement = null;
-    ResultSet resultSet = null;
-    try {
-      String query = criteria.toSQLQuery(USER_COLUMNS);
-      statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE,
-          ResultSet.CONCUR_READ_ONLY);
-      resultSet = statement.executeQuery();
-      if (criteria.isPaginationSet()) {
-        PaginationPage page = criteria.getPagination();
-        int start = (page.getPageNumber() - 1) * page.getPageSize();
-        int end = start + page.getPageSize();
-        users = theUserDetailsFrom(resultSet, start, end);
-      } else {
-        users = new ListSlice<>(theUserDetailsFrom(resultSet));
-      }
-    } finally {
-      DBUtil.close(resultSet, statement);
-    }
-    return users;
+      return criteria.toSQLQuery(USER_COLUMNS).executeWith(connection, UserDAO::fetchUser);
   }
 
   /**
@@ -266,16 +246,17 @@ public class UserDAO {
    */
   public int getUserCountByCriteria(Connection connection, UserSearchCriteriaForDAO criteria) throws
       SQLException {
-    return JdbcSqlQuery.createSelect(criteria.toSQLQuery("COUNT(DISTINCT id)"))
+    return criteria.toSQLQuery("COUNT(DISTINCT id)")
         .executeUniqueWith(connection, row -> row.getInt(1));
   }
 
   public List<UserDetail> getUsersInGroups(Connection con, List<String> groupIds)
       throws SQLException {
+    List<Integer> groupIdsAsInt =
+        groupIds.stream().map(Integer::parseInt).collect(Collectors.toList());
     return JdbcSqlQuery.createSelect(USER_COLUMNS)
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
-        .where(USER_ID_JOINTURE)
-        .and("groupid").in(groupIds)
+        .where(USER_ID_JOINTURE).and("groupid").in(groupIdsAsInt)
         .and(STATE_CONDITION, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(con, UserDAO::fetchUser);
@@ -296,7 +277,7 @@ public class UserDAO {
     if (fromUser.isAccessAdmin() || fromUser.isAccessDomainManager()) {
       query.and("accessLevel = ?", UserAccessLevel.ADMINISTRATOR.code());
     } else {
-      query.and(DOMAIN_ID, fromUser.getDomainId())
+      query.and(DOMAIN_ID, Integer.parseInt(fromUser.getDomainId()))
           .and("(accessLevel = ? or accessLevel = ?)", UserAccessLevel.ADMINISTRATOR.code(),
               UserAccessLevel.DOMAIN_ADMINISTRATOR.code());
     }
@@ -308,7 +289,7 @@ public class UserDAO {
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
         .where(USER_ID_JOINTURE)
-        .and("groupId = ?", groupId)
+        .and("groupId = ?", Integer.parseInt(groupId))
         .and(STATE_CONDITION, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
@@ -316,10 +297,11 @@ public class UserDAO {
 
   public List<String> getUserIdsInGroups(Connection con, List<String> groupIds)
       throws SQLException {
+    List<Integer> groupIdsAsInt =
+        groupIds.stream().map(Integer::parseInt).collect(Collectors.toList());
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
-        .where(USER_ID_JOINTURE)
-        .and("groupid").in(groupIds)
+        .where(USER_ID_JOINTURE).and("groupid").in(groupIdsAsInt)
         .and(STATE_CONDITION, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(con, row -> Integer.toString(row.getInt(1)));
@@ -425,33 +407,6 @@ public class UserDAO {
   public List<UserDetail> getUsersOfDomainsFromNewestToOldest(Connection con, List<String> domainIds)
       throws SQLException {
     return getAllUsers(con, domainIds, "id DESC");
-  }
-
-  private static List<UserDetail> theUserDetailsFrom(final ResultSet resultSet)
-      throws SQLException {
-    List<UserDetail> users = new ArrayList<>();
-    while (resultSet.next()) {
-      users.add(fetchUser(resultSet));
-    }
-    return users;
-  }
-
-  @SuppressWarnings("empty-statement")
-  private static ListSlice<UserDetail> theUserDetailsFrom(ResultSet rs, int start, int end) throws
-      SQLException {
-    ListSlice<UserDetail> users = new ListSlice<>(start, end);
-    if(start > 0) {
-      rs.next();
-      rs.relative(start - 1);
-    }
-    int i = start;
-    while (rs.next()) {
-      if (i++ < end) {
-        users.add(fetchUser(rs));
-      }
-    }
-    users.setOriginalListSize(i);
-    return users;
   }
 
   /**

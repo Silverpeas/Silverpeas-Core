@@ -170,8 +170,6 @@ public class SubscriptionDao {
    */
   public void removeBySubscriber(Connection con, SubscriptionSubscriber subscriber)
       throws SQLException {
-    SilverTrace
-        .info("subscribe", "SubscriptionDao.removeBySubscriber", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(REMOVE_SUBSCRIPTIONS_BY_SUBSCRIBER);

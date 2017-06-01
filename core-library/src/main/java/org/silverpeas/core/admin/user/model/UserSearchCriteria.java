@@ -28,10 +28,15 @@ package org.silverpeas.core.admin.user.model;
  */
 public interface UserSearchCriteria {
 
-  /**
-   * The whatever value to be used as criterion value if you don't care of a given criterion.
-   */
-  static final String[] ANY = null;
+  class Criterion {
+    /**
+     * The whatever value to be used as criterion value if you don't care of a given criterion.
+     */
+    public static final String[] ANY = null;
+
+    private Criterion() {
+    }
+  }
 
   /**
    * Appends a criteria conjonction.

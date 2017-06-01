@@ -453,11 +453,6 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public void reloadAdminCache() {
-
-  }
-
-  @Override
   public boolean isAnonymousAccessActivated() {
     return false;
   }

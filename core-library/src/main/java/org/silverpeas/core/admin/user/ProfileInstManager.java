@@ -35,6 +35,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -45,12 +46,13 @@ import java.util.Set;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Singleton
+@Transactional(Transactional.TxType.MANDATORY)
 public class ProfileInstManager {
 
   /**
    * Constructor
    */
-  public ProfileInstManager() {
+  protected ProfileInstManager() {
   }
 
   /**

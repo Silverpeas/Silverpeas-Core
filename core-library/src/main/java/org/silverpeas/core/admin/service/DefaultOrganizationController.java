@@ -1027,11 +1027,6 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public void reloadAdminCache() {
-    getAdminService().reloadCache();
-  }
-
-  @Override
   public boolean isAnonymousAccessActivated() {
     return UserDetail.isAnonymousUserExist();
   }

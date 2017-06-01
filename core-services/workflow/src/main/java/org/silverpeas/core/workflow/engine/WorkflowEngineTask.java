@@ -68,7 +68,7 @@ public class WorkflowEngineTask implements Runnable {
     synchronized (requestList) {
       TaskDoneRequest request = new TaskDoneRequest(event);
       SilverLogger.getLogger(WorkflowEngineTask.class)
-          .info("Add task done request: {0}", request.toString());
+          .debug("Add task done request: {0}", request.toString());
       requestList.add(request);
       requestList.notify();
     }
@@ -81,7 +81,7 @@ public class WorkflowEngineTask implements Runnable {
     synchronized (requestList) {
       TaskSavedRequest request = new TaskSavedRequest(event);
       SilverLogger.getLogger(WorkflowEngineTask.class)
-          .info("Add task saved request: {0}", request.toString());
+          .debug("Add task saved request: {0}", request.toString());
       requestList.add(request);
       requestList.notify();
     }
@@ -94,7 +94,7 @@ public class WorkflowEngineTask implements Runnable {
     synchronized (requestList) {
       QuestionRequest request = new QuestionRequest(event);
       SilverLogger.getLogger(WorkflowEngineTask.class)
-          .info("Add question request: {0}", request.toString());
+          .debug("Add question request: {0}", request.toString());
       requestList.add(request);
       requestList.notify();
     }
@@ -107,7 +107,7 @@ public class WorkflowEngineTask implements Runnable {
     synchronized (requestList) {
       ResponseRequest request = new ResponseRequest(event);
       SilverLogger.getLogger(WorkflowEngineTask.class)
-          .info("Add response request: {0}", request.toString());
+          .debug("Add response request: {0}", request.toString());
       requestList.add(request);
       requestList.notify();
     }
@@ -120,7 +120,7 @@ public class WorkflowEngineTask implements Runnable {
     synchronized (requestList) {
       TimeoutRequest request = new TimeoutRequest(event);
       SilverLogger.getLogger(WorkflowEngineTask.class)
-          .info("Add timeout request: {0}", request.toString());
+          .debug("Add timeout request: {0}", request.toString());
       requestList.add(request);
       requestList.notify();
     }

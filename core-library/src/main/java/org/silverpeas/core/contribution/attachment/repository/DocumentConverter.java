@@ -94,7 +94,7 @@ class DocumentConverter extends AbstractJcrConverter {
       }
       VersionIterator versionsIterator = history.getAllVersions();
       List<SimpleDocumentVersion> documentHistory =
-          new ArrayList<SimpleDocumentVersion>((int) versionsIterator.
+          new ArrayList<>((int) versionsIterator.
               getSize());
 
       int versionIndex = 0;
@@ -163,7 +163,7 @@ class DocumentConverter extends AbstractJcrConverter {
   public SimpleDocumentList<SimpleDocument> convertNodeIterator(NodeIterator iter, String language)
       throws RepositoryException {
     SimpleDocumentList<SimpleDocument> result =
-        new SimpleDocumentList<SimpleDocument>((int) iter.getSize()).setQueryLanguage(language);
+        new SimpleDocumentList<>((int) iter.getSize()).setQueryLanguage(language);
     while (iter.hasNext()) {
       result.add(convertNode(iter.nextNode(), language));
     }

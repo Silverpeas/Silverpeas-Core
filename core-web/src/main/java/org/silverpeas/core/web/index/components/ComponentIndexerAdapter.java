@@ -41,6 +41,6 @@ public class ComponentIndexerAdapter implements ComponentIndexation {
   @Override
   public void index(ComponentInst componentInst) throws
       Exception {
-    SilverLogger.getLogger(this).info("Fake indexer when we have problems loading a real one.");
+    SilverLogger.getLogger(this).debug("Fake indexer when we have problems loading a real one.");
   }
 }

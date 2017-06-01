@@ -24,6 +24,16 @@
 
 package org.silverpeas.core.silverstatistics.access.dao;
 
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
+import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -35,16 +45,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
-import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 
 /**
  *
@@ -198,8 +198,6 @@ public class HistoryObjectDAO {
    */
   public static void deleteHistoryByObject(Connection con, ForeignPK foreignPK, String objectType)
       throws SQLException {
-    SilverTrace
-        .info("statistic", "HistoryObjectDAO.deleteHistoryByObject", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(QUERY_STATISTIC_DELETE_BY_RESOURCE);
@@ -290,8 +288,6 @@ public class HistoryObjectDAO {
   public static int getCountByPeriodAndUser(Connection con, WAPrimaryKey primaryKey,
       String objectType, Date startDate, Date endDate, String userId) throws SQLException {
     int nb = 0;
-    SilverTrace
-        .info("statistic", "HistoryObjectDAO.getCountByPeriodAndUser", "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {

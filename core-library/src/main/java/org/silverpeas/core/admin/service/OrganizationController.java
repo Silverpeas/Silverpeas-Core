@@ -394,8 +394,6 @@ public interface OrganizationController extends java.io.Serializable {
 
   String[] getAllGroupIdsOfUser(String userId);
 
-  void reloadAdminCache();
-
   /**
    * Is the anonymous access is activated for the running Silverpeas? When the anonymous access is
    * activated, then a specific user for anonymous access should be set; all anonym accesses to the

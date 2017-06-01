@@ -43,7 +43,6 @@ import org.silverpeas.core.util.StringUtil;
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -120,7 +119,6 @@ public class SQLDriver extends AbstractDomainDriver {
    */
   private void openConnection() throws AdminException {
     if (openedConnection == null) {
-
       try {
         DataSource dataSource = InitialContext.doLookup(drvSettings.getDataSourceJNDIName());
         openedConnection = dataSource.getConnection();
@@ -134,7 +132,7 @@ public class SQLDriver extends AbstractDomainDriver {
    * Release the DomainSQL schema.
    */
   public void closeConnection() throws AdminException {
-    if ((openedConnection != null) && (!inTransaction)) {
+    if (openedConnection != null) {
       try {
         openedConnection.close();
       } catch (Exception e) {
@@ -619,12 +617,12 @@ public class SQLDriver extends AbstractDomainDriver {
   @Override
   public void startTransaction(boolean bAutoCommit) {
     try {
-      inTransaction = true;
+      //inTransaction = true;
       openConnection();
-      if (openedConnection != null) {
-        openedConnection.setAutoCommit(bAutoCommit);
-      }
-    } catch (AdminException | SQLException ex) {
+      //if (openedConnection != null) {
+      //  openedConnection.setAutoCommit(bAutoCommit);
+      //}
+    } catch (AdminException ex) {
       throw new UtilException("SQLDriver", "startTransaction", ex);
     }
   }
@@ -634,10 +632,10 @@ public class SQLDriver extends AbstractDomainDriver {
    */
   public void commit() throws Exception {
     try {
-      if (openedConnection != null) {
-        openedConnection.commit();
-      }
-      inTransaction = false;
+      //if (openedConnection != null) {
+      //  openedConnection.commit();
+      //}
+      //inTransaction = false;
       closeConnection();
     } catch (AdminPersistenceException e) {
       throw new AdminException("SQL Driver Transaction commit failure", e);
@@ -649,10 +647,10 @@ public class SQLDriver extends AbstractDomainDriver {
    */
   public void rollback() throws Exception {
     try {
-      if (openedConnection != null) {
+      /*if (openedConnection != null) {
         openedConnection.rollback();
       }
-      inTransaction = false;
+      inTransaction = false;*/
       closeConnection();
     } catch (AdminPersistenceException e) {
       throw new AdminException("SQL Driver Transaction rollback failure", e);

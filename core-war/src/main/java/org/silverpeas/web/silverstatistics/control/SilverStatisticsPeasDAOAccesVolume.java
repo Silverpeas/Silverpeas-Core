@@ -143,10 +143,6 @@ public class SilverStatisticsPeasDAOAccesVolume {
    */
   public static Map<String, String[]> getStatsUserVentil(String dateStat, String filterIdGroup,
       String filterIdUser) throws SQLException {
-    SilverTrace
-        .info("silverStatisticsPeas", "SilverStatisticsPeasDAOAccessVolume.getStatsUserVentil",
-            "root.MSG_GEN_ENTER_METHOD");
-
     Map<String, String[]> resultat = new HashMap<String, String[]>();
     // key=componentId,value = new String[3] {tout, groupe, user}
 

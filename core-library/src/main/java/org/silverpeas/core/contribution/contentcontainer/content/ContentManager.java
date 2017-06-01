@@ -33,6 +33,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -66,6 +67,36 @@ public class ContentManager implements Serializable {
   private Map<String, String> mapBetweenComponentIdAndInstanceId = null;
   // Association SilverContentId (the key) internalContentId (the value) (cache)
   private HashMap<String, String> mapBetweenSilverContentIdAndInternalComponentId = new HashMap<>();
+
+  private ContentManager() {
+    // -------------------------------------------------
+    // We don't have enough time to do the parsing !!!
+    // We hard coded for this time !!!!
+    // -------------------------------------------------
+
+    // Put all the existing contents in the array of contents
+    acContentPeas.add(new ContentPeas("whitePages"));
+    acContentPeas.add(new ContentPeas("questionReply"));
+    acContentPeas.add(new ContentPeas("kmelia"));
+    acContentPeas.add(new ContentPeas("survey"));
+    acContentPeas.add(new ContentPeas("toolbox"));
+    acContentPeas.add(new ContentPeas("quickinfo"));
+    acContentPeas.add(new ContentPeas("almanach"));
+    acContentPeas.add(new ContentPeas("quizz"));
+    acContentPeas.add(new ContentPeas("forums"));
+    acContentPeas.add(new ContentPeas("pollingStation"));
+    acContentPeas.add(new ContentPeas("bookmark"));
+    acContentPeas.add(new ContentPeas("infoLetter"));
+    acContentPeas.add(new ContentPeas("webSites"));
+    acContentPeas.add(new ContentPeas("gallery"));
+    acContentPeas.add(new ContentPeas("blog"));
+
+    try {
+      mapBetweenComponentIdAndInstanceId = new HashMap<>(loadMapping(null));
+    } catch (ContentManagerException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+  }
 
   /**
    * return a list of identifiers of the resources matching the specified identifiers of
@@ -681,36 +712,6 @@ public class ContentManager implements Serializable {
       closeConnection(connection);
     }
     return scv;
-  }
-
-  private ContentManager() {
-    // -------------------------------------------------
-    // We don't have enough time to do the parsing !!!
-    // We hard coded for this time !!!!
-    // -------------------------------------------------
-
-    // Put all the existing contents in the array of contents
-    acContentPeas.add(new ContentPeas("whitePages"));
-    acContentPeas.add(new ContentPeas("questionReply"));
-    acContentPeas.add(new ContentPeas("kmelia"));
-    acContentPeas.add(new ContentPeas("survey"));
-    acContentPeas.add(new ContentPeas("toolbox"));
-    acContentPeas.add(new ContentPeas("quickinfo"));
-    acContentPeas.add(new ContentPeas("almanach"));
-    acContentPeas.add(new ContentPeas("quizz"));
-    acContentPeas.add(new ContentPeas("forums"));
-    acContentPeas.add(new ContentPeas("pollingStation"));
-    acContentPeas.add(new ContentPeas("bookmark"));
-    acContentPeas.add(new ContentPeas("infoLetter"));
-    acContentPeas.add(new ContentPeas("webSites"));
-    acContentPeas.add(new ContentPeas("gallery"));
-    acContentPeas.add(new ContentPeas("blog"));
-
-    try {
-      mapBetweenComponentIdAndInstanceId = new HashMap<>(loadMapping(null));
-    } catch (ContentManagerException e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
   }
 
   private String extractComponentNameFromInstanceId(String instanceId) {

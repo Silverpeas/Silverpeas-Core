@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -37,7 +38,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class UserDetailsSearchCriteria implements SearchCriteria {
 
-  public static String[] ANY_GROUPS = ANY;
+  public static final String[] ANY_GROUPS = ANY;
   private static final String USER_ACCESS_LEVELS = "userAccessLevels";
   private static final String USER_STATES_TO_EXCLUDE = "userStatesToExclude";
 
@@ -97,7 +98,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onRoleNames(String[] roleIds) {
-    if (roleIds != null && roleIds.length > 0) {
+    if (isNotEmpty(roleIds)) {
       criteria.put(ROLE_NAMES, roleIds);
     }
     return this;
@@ -105,7 +106,9 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onGroupIds(String... groupIds) {
-    criteria.put(GROUP_IDS, groupIds);
+    if (isNotEmpty(groupIds)) {
+      criteria.put(GROUP_IDS, groupIds);
+    }
     return this;
   }
 
@@ -119,13 +122,17 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onAccessLevels(final UserAccessLevel... accessLevels) {
-    criteria.put(USER_ACCESS_LEVELS, accessLevels);
+    if (isNotEmpty(accessLevels)) {
+      criteria.put(USER_ACCESS_LEVELS, accessLevels);
+    }
     return this;
   }
 
   @Override
   public UserDetailsSearchCriteria onUserStatesToExclude(final UserState... userStates) {
-    criteria.put(USER_STATES_TO_EXCLUDE, userStates);
+    if (isNotEmpty(userStates)) {
+      criteria.put(USER_STATES_TO_EXCLUDE, userStates);
+    }
     return null;
   }
 
@@ -139,8 +146,16 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onUserIds(String[] userIds) {
-    if (userIds != null && userIds.length > 0) {
+    if (isNotEmpty(userIds)) {
       criteria.put(USER_IDS, userIds);
+    }
+    return this;
+  }
+
+  @Override
+  public UserDetailsSearchCriteria onPagination(PaginationPage page) {
+    if (page != null) {
+      criteria.put(PAGINATION, page);
     }
     return this;
   }
@@ -335,11 +350,5 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   @Override
   public boolean isEmpty() {
     return criteria.isEmpty();
-  }
-
-  @Override
-  public UserDetailsSearchCriteria onPagination(PaginationPage page) {
-    criteria.put(PAGINATION, page);
-    return this;
   }
 }

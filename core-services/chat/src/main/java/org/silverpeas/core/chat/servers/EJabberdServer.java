@@ -71,7 +71,7 @@ public class EJabberdServer implements ChatServer {
   @Override
   public void createUser(final User user) {
     SilverLogger.getLogger(this)
-        .info("Register user {0} ({1})", user.getDisplayedName(), user.getId());
+        .debug("Register user {0} ({1})", user.getDisplayedName(), user.getId());
     ChatUser chatUser = ChatUser.fromUser(user);
     request("register", o ->
         o.put(USER_ATTR, chatUser.getChatLogin())
@@ -87,7 +87,7 @@ public class EJabberdServer implements ChatServer {
   @Override
   public void deleteUser(final User user) {
     SilverLogger.getLogger(this)
-        .info("Unregister user {0} ({1})", user.getDisplayedName(), user.getId());
+        .debug("Unregister user {0} ({1})", user.getDisplayedName(), user.getId());
     ChatUser chatUser = ChatUser.fromUser(user);
     request("unregister", o -> o.put(USER_ATTR, chatUser.getChatLogin())
         .put(HOST_ATTR, chatUser.getChatDomain()));
@@ -96,7 +96,7 @@ public class EJabberdServer implements ChatServer {
   @Override
   public void createRelationShip(final User user1, final User user2) {
     SilverLogger.getLogger(this)
-        .info("Add relationships between {0} ({1}) and {2} ({3})", user1.getDisplayedName(),
+        .debug("Add relationships between {0} ({1}) and {2} ({3})", user1.getDisplayedName(),
             user1.getId(), user2.getDisplayedName(), user2.getId());
     ChatUser chatUser1 = ChatUser.fromUser(user1);
     ChatUser chatUser2 = ChatUser.fromUser(user2);
@@ -134,7 +134,7 @@ public class EJabberdServer implements ChatServer {
   @Override
   public void deleteRelationShip(final User user1, final User user2) {
     SilverLogger.getLogger(this)
-        .info("Delete relationships between {0} ({1}) and {2} ({3})", user1.getDisplayedName(),
+        .debug("Delete relationships between {0} ({1}) and {2} ({3})", user1.getDisplayedName(),
             user1.getId(), user2.getDisplayedName(), user2.getId());
     ChatUser chatUser1 = ChatUser.fromUser(user1);
     ChatUser chatUser2 = ChatUser.fromUser(user2);

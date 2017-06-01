@@ -24,13 +24,12 @@
 
 package org.silverpeas.web.jobsearch.servlets;
 
-import org.silverpeas.web.jobsearch.SearchResult;
-import org.silverpeas.web.jobsearch.JobSearchPeasSessionController;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.web.jobsearch.JobSearchPeasSessionController;
+import org.silverpeas.web.jobsearch.SearchResult;
 
 import java.util.List;
 
@@ -82,11 +81,6 @@ public class JobSearchPeasRequestRouter extends
   public String getDestination(String function, JobSearchPeasSessionController jobSearchPeasSC,
       HttpRequest request) {
     String destination = "";
-    SilverTrace
-        .info("jobSearchPeas", "JobSearchPeasRequestRouter.getDestination()",
-        "root.MSG_GEN_PARAM_VALUE", "User=" + jobSearchPeasSC.getUserId() + " Function=" +
-        function);
-
     try {
       if (function.equals("Main")) {
         request.setAttribute("IdOrName", jobSearchPeasSC.getSearchField());

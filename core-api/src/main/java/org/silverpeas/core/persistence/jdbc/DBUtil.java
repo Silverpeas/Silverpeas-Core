@@ -199,7 +199,7 @@ public class DBUtil {
             } else {
               // Another server process has just updated the next unique identifier value, so the
               // returned value indicates to the caller to retry to compute one
-              SilverLogger.getLogger(DBUtil.class.getSimpleName()).info(
+              SilverLogger.getLogger(DBUtil.class.getSimpleName()).debug(
                   "The next unique identifier value '" + nextUniqueValue + "' for identifier '" +
                       identifierNameLowerCase +
                       "' has been computed by another server process call at the same time, " +
@@ -262,7 +262,7 @@ public class DBUtil {
           }
 
           SilverLogger.getLogger(DBUtil.class)
-              .info("A new entry has been registered into UniqueId table for '" +
+              .debug("A new entry has been registered into UniqueId table for '" +
                   identifierNameLowerCase + "' table");
         }
         return null;

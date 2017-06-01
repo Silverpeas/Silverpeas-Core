@@ -21,24 +21,25 @@
 package org.silverpeas.core.admin.space;
 
 import org.silverpeas.core.admin.domain.DomainDriverManager;
-import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.UserManager;
 
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Singleton
+@Transactional(Transactional.TxType.MANDATORY)
 public class SpaceProfileInstManager {
 
   /**
    * Constructor
    */
-  public SpaceProfileInstManager() {
+  protected SpaceProfileInstManager() {
   }
 
   /**
@@ -141,28 +142,11 @@ public class SpaceProfileInstManager {
    *
    * @param ddManager
    * @param spaceProfileId
-   * @param parentSpaceLocalId
    * @return
    * @throws AdminException
    */
   public SpaceProfileInst getSpaceProfileInst(DomainDriverManager ddManager,
-      String spaceProfileId, Integer parentSpaceLocalId) throws AdminException {
-    if (parentSpaceLocalId == null) {
-      try {
-        ddManager.holdOrganizationSchema();
-        SpaceRow space = ddManager.getOrganization().space.getSpaceOfSpaceUserRole(idAsInt(
-            spaceProfileId));
-        if (space == null) {
-          space = new SpaceRow();
-        }
-        parentSpaceLocalId = space.id;
-      } catch (Exception e) {
-        throw new AdminException(failureOnGetting("space profile", spaceProfileId), e);
-      } finally {
-        ddManager.releaseOrganizationSchema();
-      }
-    }
-
+      String spaceProfileId) throws AdminException {
     try {
       ddManager.holdOrganizationSchema();
 

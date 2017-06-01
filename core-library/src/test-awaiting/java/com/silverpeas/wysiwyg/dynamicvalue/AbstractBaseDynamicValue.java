@@ -64,7 +64,7 @@ abstract class AbstractBaseDynamicValue extends JdbcBasedDBTestCase {
       try {
         statement.executeUpdate("DROP TABLE val_dyn1");
       } catch (SQLException e) {
-        logger.info("Couldn't drop the table val_dyn1", e);
+        logger.debug("Couldn't drop the table val_dyn1", e);
       }
       String sql = "CREATE TABLE val_dyn1 ( \"value\" character varying(256) NOT NULL,"
           + "keyword character varying(100) NOT NULL, start_date date NOT NULL, end_date date )"
