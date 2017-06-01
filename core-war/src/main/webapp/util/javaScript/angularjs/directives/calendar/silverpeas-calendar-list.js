@@ -76,7 +76,7 @@
               $timeout(function() {
                 this.dom = {
                   colorContainer : angular.element(angular.element('silverpeas-color-picker', $element)),
-                  menuTarget : angular.element(angular.element('.item-detail', $element)),
+                  menuTarget : angular.element(angular.element('.show-menu', $element)),
                   menuPopin : angular.element('.silverpeas-calendar-list-item-menu', $element)
                 };
                 this.qtipApi = TipManager.simpleSelect(this.dom.menuTarget[0], this.dom.menuPopin, {

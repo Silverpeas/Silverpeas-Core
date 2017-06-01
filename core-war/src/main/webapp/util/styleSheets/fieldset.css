@@ -118,11 +118,11 @@ fieldset.skinFieldset {
 	max-width:100%;
 }
 
+/* suppr. float:left; doublon avec inline-table 05/06/2017*/
 .field {
 	height: auto;
 	display: inline-table;
 	position:relative;
-	float:left;
 	width:46%;
 	padding:0;
 }
@@ -137,7 +137,8 @@ label.txtlibform {
 padding-right:0;
 }
 
-.field label {
+.field label,
+.field .label{
   display: table-cell;
   padding: 5px 15px 5px 0;
   width: 180px;

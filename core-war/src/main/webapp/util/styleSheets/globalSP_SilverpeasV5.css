@@ -6022,7 +6022,7 @@ a.navigation-button {
 .access-list li .operation {
   position:absolute;
   right:0.25em;
-  top:10px;
+  top:2px;
 }
 
 .access-list li:first-child{
@@ -6298,7 +6298,26 @@ silverpeas-permalink input {
 }
 
 silverpeas-permalink .simple input {
-  width: 55%;
+  height:26px;
+  width:80%;
+}
+
+silverpeas-permalink .copy-to-clipboard .sp_button  {
+  background:transparent url();
+  border-radius: 5px;
+  border: 0;
+  padding:0;
+}
+
+silverpeas-permalink .copy-to-clipboard .sp_button span {
+  display:inline-block;
+  text-indent:-30em;
+  overflow:hidden;
+  background:transparent url(../../admin/jsp/icons/icoOutilsClipboard.gif) 0.5em 0 no-repeat;
+  width: 16px;
+  height: 16px;
+  padding-left:0.5em;
+  vertical-align: middle;
 }
 
 /**
@@ -6310,7 +6329,8 @@ silverpeas-permalink .simple input {
   display: inline-block;
   width: 20px;
   height: 20px;
-  margin-right: 8px;
+  margin-right: 1em;
+  margin-bottom: 1em;
   cursor: pointer;
   box-shadow: 0 0 0 1px #bbb;
   border: 2px solid #fff;
@@ -6339,8 +6359,42 @@ silverpeas-attendees legend {
 }
 
 silverpeas-attendee .participation {
-  font-weight: bolder;
-  font-size: 0.8em;
+  font-size: 100%;
+  font-style:italic;
+}
+
+silverpeas-attendees .simple-list {
+  padding:0 1em;
+  margin:1em 0 0 ;
+}
+
+silverpeas-attendee span.DECLINED  {
+  color:#AAA;
+}
+
+
+silverpeas-attendee .participation .ACCEPTED,
+silverpeas-attendee .participation .DECLINED  {
+  display:none;
+}
+
+silverpeas-attendee .participation > a{
+  margin:0 0.25em;
+}
+
+silverpeas-attendee .participation img{
+  vertical-align:middle;
+  width: 14px;
+}
+
+.participation .AWAITING {
+  background: transparent url(../icons/question_en_cours.gif) 0 0 no-repeat;
+  display: inline-block;
+  text-indent: -30em;
+  overflow: hidden;
+  width: 18px;
+  height: 16px;
+  vertical-align: middle;
 }
 
 silverpeas-attendee .presence {

@@ -28,14 +28,21 @@
                            on-select="$ctrl.onCalendarColorSelect({calendar:$ctrl.calendar,color:color})"
                            ng-if="$ctrl.calendar.color"></silverpeas-color-picker>
   <div class="item-detail">
-    <a href="#" ng-click="$ctrl.onCalendarVisibilityToggle({calendar:$ctrl.calendar})" ng-class="{'synchronized':$ctrl.calendar.isSynchronized}">{{$ctrl.calendar.title}}</a>
-    <div class="silverpeas-calendar-list-item-menu" style="display: none">
+  <div class="item-title">
+     <div ng-if="$ctrl.calendar.canBeModified">
+       <a href="#" ng-click="$ctrl.modify({calendar: $ctrl.calendar})">{{$ctrl.calendar.title}}</a>
+     </div>
+     <div>
+        <a href="#" ng-click="$ctrl.view({calendar:$ctrl.calendar})">{{$ctrl.calendar.title}}</a>
+      </div>
+    </div>
+    <a class="check-visibility" href="#" ng-click="$ctrl.onCalendarVisibilityToggle({calendar:$ctrl.calendar})" title="{{$ctrl.calendar.notVisible ? 'Afficher' : 'Cacher'}}">{{$ctrl.calendar.notVisible ? 'Afficher' : 'Cacher'}}</a> 
+    <a class="show-menu" ng-if="!$ctrl.calendar.canBeRemoved && $ctrl.calendar.canBeModified"> v </a>
+    <a class="remove-calendar "href="#" ng-click="$ctrl.remove({calendar: $ctrl.calendar})" ng-if="$ctrl.calendar.canBeRemoved" title="Retirer">Retirer</a>
+   <div class="silverpeas-calendar-list-item-menu" style="display: none">
       <ul>
         <li ng-if="!$ctrl.calendar.canBeRemoved">
           <a href="#" ng-click="$ctrl.view({calendar:$ctrl.calendar})">Info</a>
-        </li>
-        <li>
-          <a href="#" ng-click="$ctrl.onCalendarVisibilityToggle({calendar:$ctrl.calendar})">{{$ctrl.calendar.notVisible ? 'Afficher' : 'Cacher'}}</a>
         </li>
         <li ng-if="(!$ctrl.calendar.userPersonal || $ctrl.calendar.canBeDeleted) && !$ctrl.calendar.canBeRemoved">
           <a href="{{$ctrl.calendar.uri}}/export/ical" target="_blank" >Exporter</a>
@@ -45,9 +52,6 @@
         </li>
         <li ng-if="$ctrl.calendar.canBeModified">
           <a href="#" ng-click="$ctrl.modify({calendar: $ctrl.calendar})">Modifier</a>
-        </li>
-        <li ng-if="$ctrl.calendar.canBeRemoved">
-          <a href="#" ng-click="$ctrl.remove({calendar: $ctrl.calendar})">Retirer</a>
         </li>
         <li ng-if="$ctrl.calendar.canBeDeleted">
           <a href="#" ng-click="$ctrl.delete({calendar: $ctrl.calendar})">Supprimer</a>

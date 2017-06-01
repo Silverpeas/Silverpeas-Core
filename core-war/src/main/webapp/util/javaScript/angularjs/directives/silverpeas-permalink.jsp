@@ -52,7 +52,7 @@
 <script type="text/ng-template" id="###silverpeas.permalink.simple">
   <a href="{{$ctrl.link}}" title="${permalinkLabel}"><img src="${linkIconUrl}" alt="${permalinkLabel}" /></a>
   <input type="text" value="{{$ctrl.link}}" />
-  <silverpeas-button ng-click="$ctrl.copyLink()">${permalinkCopyLabel}</silverpeas-button>
+  <silverpeas-button title="${permalinkCopyLabel}" ng-click="$ctrl.copyLink()" class="copy-to-clipboard">${permalinkCopyLabel}</silverpeas-button>
 </script>
 
 <div class="permalink" ng-class="{'simple' : $ctrl.simple}" ng-include="$ctrl.getTemplate()"></div>

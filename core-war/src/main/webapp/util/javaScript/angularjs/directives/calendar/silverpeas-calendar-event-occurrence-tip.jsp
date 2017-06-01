@@ -21,8 +21,11 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
+<div class="occurrence-location"  ng-if="$ctrl.occurrence.location">
+  <span  ng-bind-html="$ctrl.occurrence.location | noHTML | newlines"></span>
+</div>
 <div>
-  <span ng-bind-html="$ctrl.occurrence.description | noHTML | newlines"></span>
+  <span class="occurrence-description" ng-bind-html="$ctrl.occurrence.description | noHTML | newlines"></span>
 </div>
 <div>
   <silverpeas-attendees ng-if="$ctrl.occurrence.attendees.length"

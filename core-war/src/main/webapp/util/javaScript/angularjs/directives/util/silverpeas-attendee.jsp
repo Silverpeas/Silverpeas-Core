@@ -53,10 +53,10 @@
   <span ng-init="$ctrl.labels.informative = '${silfn:escapeJs(informativeLabel)}'"></span>
 </div>
 
-<span ng-class="{userToZoom:$ctrl.isUserZoom()}"
+<span class="{{$ctrl.attendee.participationStatus}}" ng-class="{userToZoom:$ctrl.isUserZoom()}"
       rel="{{$ctrl.attendee.id}}">{{$ctrl.attendee.fullName}}</span>
 <span class="participation" ng-if="$ctrl.isWriteMode || $ctrl.isUserZoom()">
-  <span>{{$ctrl.getParticipationStatusLabel()}}</span>
+  <span class="{{$ctrl.attendee.participationStatus}}" title="{{$ctrl.getParticipationStatusLabel()}}">{{$ctrl.getParticipationStatusLabel()}}</span>
   <span ng-if="$ctrl.attendee.participationStatus != 'AWAITING'">
     <img ng-init="p = $ctrl.getParticipationStatusDefinition($ctrl.attendee.participationStatus)"
          src="{{'${iconPrefixUrl}' + p.icon}}" alt="{{p.label}}">

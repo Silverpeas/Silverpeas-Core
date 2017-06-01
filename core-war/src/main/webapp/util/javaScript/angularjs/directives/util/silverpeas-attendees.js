@@ -198,9 +198,9 @@
             this.$postLink = function() {
               this.participationStatuses = [
                 {name : 'AWAITING', label : this.labels.awaiting, icon : 'help.png'},
-                {name : 'DECLINED', label : this.labels.declined, icon : 'buletRed.gif'},
-                {name : 'TENTATIVE', label : this.labels.tentative, icon : 'buletGrey.gif'},
-                {name : 'ACCEPTED', label : this.labels.accepted, icon : 'buletColoredGreen.gif'}
+                {name : 'DECLINED', label : this.labels.declined, icon : 'wrong.gif'},
+                {name : 'TENTATIVE', label : this.labels.tentative, icon : 'question.gif'},
+                {name : 'ACCEPTED', label : this.labels.accepted, icon : 'ok.gif'}
               ];
               this.presenceStatuses = [
                 {name : 'REQUIRED', label : this.labels.required},

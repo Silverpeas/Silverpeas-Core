@@ -51,25 +51,25 @@
   <legend>${mainInfoLabel}</legend>
   <div class="fields">
     <div class="field">
-      <span class="txtlibform">${calendarLabel}</span>
+      <span class="label txtlibform">${calendarLabel}</span>
       <div class="champs">
         <span class="txtnav">{{$ctrl.ceo.calendar.title}}</span>
       </div>
     </div>
     <div class="field">
-      <span class="txtlibform">${titleLabel}</span>
+      <span class="label txtlibform">${titleLabel}</span>
       <div class="champs">
         <span>{{$ctrl.ceo.title}}</span>
       </div>
     </div>
     <div class="field">
-      <span class="txtlibform">${timezoneLabel}</span>
+      <span class="label txtlibform">${timezoneLabel}</span>
       <div class="champs">
         <span>{{$ctrl.zoneId}}</span>
       </div>
     </div>
     <div class="field">
-      <span class="txtlibform">${startDateLabel}</span>
+      <span class="label txtlibform">${startDateLabel}</span>
       <span class="champs">
         <span>{{$ctrl.startDate() | displayAsDate}}</span>
         <span ng-if="!$ctrl.ceo.onAllDay" class="txtlibform">${atTimeLabel}</span>
@@ -77,7 +77,7 @@
       </span>
     </div>
     <div class="field">
-      <span class="txtlibform">${endDateLabel}</span>
+      <span class="label txtlibform">${endDateLabel}</span>
       <span class="champs">
         <span>{{$ctrl.endDate() | displayAsDate}}</span>
         <span ng-if="!$ctrl.ceo.onAllDay" class="txtlibform">${atTimeLabel}</span>
@@ -85,25 +85,25 @@
       </span>
     </div>
     <div class="field">
-      <span class="txtlibform">${locationLabel}</span>
+      <span class="label txtlibform">${locationLabel}</span>
       <div class="champs">
         <span>{{$ctrl.ceo.location}}</span>
       </div>
     </div>
     <div class="field">
-      <span class="txtlibform">${descriptionLabel}</span>
+      <span class="label txtlibform">${descriptionLabel}</span>
       <div class="champs">
         <span ng-bind-html="$ctrl.ceo.description | noHTML | newlines"></span>
       </div>
     </div>
     <div class="field" ng-if="$ctrl.ceo.visibility">
-      <span class="txtlibform">${visibilityLabel}</span>
+      <span class="label txtlibform">${visibilityLabel}</span>
       <div class="champs">
         <span>{{$ctrl.visibility.label}}</span>
       </div>
     </div>
     <div class="field" ng-if="$ctrl.ceo.priority">
-      <span class="txtlibform">${priorityLabel}</span>
+      <span class="label txtlibform">${priorityLabel}</span>
       <div class="champs">
         <span>{{$ctrl.priority.label}}</span>
       </div>

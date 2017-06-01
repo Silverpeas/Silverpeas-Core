@@ -53,9 +53,9 @@
     <div id="navigation">
       <div id="currentScope">
         <span id="today"> <a href="#" ng-click="$ctrl.timeWindow({type:'today'})" onfocus="this.blur()"><fmt:message key="GML.Today"/></a></span>
-        <a href="#" ng-click="$ctrl.timeWindow({type:'previous'})" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowLeft.gif"/>"></a>
-        <a href="#" ng-click="$ctrl.timeWindow({type:'next'})" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowRight.gif"/>"></a>
-        <span class="txtnav">{{$ctrl.timeWindowViewContext.referencePeriodLabel}}</span>
+        <a class="btn_navigation previous" href="#" ng-click="$ctrl.timeWindow({type:'previous'})" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowLeft.gif"/>"></a>
+        <span class="period-label">{{$ctrl.timeWindowViewContext.referencePeriodLabel}}</span>
+        <a class="btn_navigation next" href="#" ng-click="$ctrl.timeWindow({type:'next'})" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowRight.gif"/>"></a>
       </div>
     </div>
     <div id="calendar-timezone">
