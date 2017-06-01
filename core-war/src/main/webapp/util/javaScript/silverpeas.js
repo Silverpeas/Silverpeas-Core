@@ -25,7 +25,7 @@
 /* some web navigators (like IE < 9) doesn't support completely the javascript standard (ECMA) */
 
 if (!Array.prototype.indexOf) {
-  Object.defineProperty(Array.prototype, 'add', {
+  Object.defineProperty(Array.prototype, 'indexOf', {
     enumerable : false, value : function(elt /*, from*/) {
       var len = this.length >>> 0;
 
@@ -656,15 +656,6 @@ if (typeof window.silverpeasAjax === 'undefined') {
     }
     if (params.method === 'GET') {
       params.headers['If-Modified-Since'] = 0;
-    } else {
-      var form = document.createElement('form');
-      var formContainer = document.createElement('div');
-      formContainer.appendChild(form);
-      applyTokenSecurity(formContainer);
-      var $input = form.querySelector('input');
-      if ($input) {
-        params.headers[$input.name] = $input.value;
-      }
     }
     return new Promise(function(resolve, reject) {
 

@@ -77,7 +77,9 @@ if (!window.XMLHttpRequest.prototype) {
   if ('$SESSION_TOKEN_NAME$') {
     XMLHttpRequest.prototype.onsend = function(data) {
       // set the security token only if the request is against Silverpeas
-      if (this.url.startsWith(window.silverpeasUrl) || this.url.startsWith(window.webContext)) {
+      if (this.url.startsWith(window.silverpeasUrl)
+          || this.url.startsWith(window.webContext)
+          || (this.url.indexOf('/') < 0 && this.url.indexOf('?') < 0)) {
         this.setRequestHeader("$SESSION_TOKEN_NAME$", "$SESSION_TOKEN_VALUE$");
       }
     };
