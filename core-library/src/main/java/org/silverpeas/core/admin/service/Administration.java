@@ -70,7 +70,7 @@ public interface Administration {
   // -------------------------------------------------------------------------
   // Start Server actions
   // -------------------------------------------------------------------------
-  void startServer();
+  void initSynchronization();
 
   void createSpaceIndex(int spaceId);
 

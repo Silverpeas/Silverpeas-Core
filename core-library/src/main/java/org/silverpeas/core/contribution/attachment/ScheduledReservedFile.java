@@ -59,7 +59,7 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
   public void init() {
     try {
       String cron = settings.getString("cronScheduledReservedFile");
-      SilverLogger.getLogger(this).info("Reserved File Processor scheduled with cron ''{0}''", cron);
+      SilverLogger.getLogger(this).debug("Reserved File Processor scheduled with cron ''{0}''", cron);
       Scheduler scheduler = SchedulerProvider.getScheduler();
       scheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PROCESS);
       JobTrigger trigger = JobTrigger.triggerAt(cron);

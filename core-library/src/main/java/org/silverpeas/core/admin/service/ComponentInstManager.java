@@ -39,6 +39,7 @@ import org.silverpeas.core.util.ArrayUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
@@ -49,6 +50,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.UPDATE;
 
 @Singleton
+@Transactional(Transactional.TxType.MANDATORY)
 public class ComponentInstManager {
 
   @Inject
@@ -56,7 +58,7 @@ public class ComponentInstManager {
   @Inject
   private ComponentInstanceEventNotifier notifier;
 
-  public ComponentInstManager() {
+  protected ComponentInstManager() {
   }
 
   /**

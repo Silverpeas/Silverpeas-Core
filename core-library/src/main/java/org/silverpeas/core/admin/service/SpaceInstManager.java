@@ -42,6 +42,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,6 +52,7 @@ import java.util.Map;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Singleton
+@Transactional(Transactional.TxType.MANDATORY)
 public class SpaceInstManager {
 
   @Inject
@@ -60,7 +62,7 @@ public class SpaceInstManager {
   @Inject
   private SpaceEventNotifier notifier;
 
-  public SpaceInstManager() {
+  protected SpaceInstManager() {
   }
 
   /**
@@ -208,7 +210,7 @@ public class SpaceInstManager {
       if (asProfIds != null) {
         for (String profileId : asProfIds) {
           SpaceProfileInst spaceProfileInst =
-              spaceProfileInstManager.getSpaceProfileInst(ddManager, profileId, spaceInstLocalId);
+              spaceProfileInstManager.getSpaceProfileInst(ddManager, profileId);
           spaceInst.addSpaceProfileInst(spaceProfileInst);
         }
       }

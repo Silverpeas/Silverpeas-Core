@@ -83,7 +83,7 @@ public class ChatUsersRegistration {
    */
   public void registerUser(final User user) throws ChatServerException {
     if (isChatServiceEnabled() && !chatServer.isUserExisting(user)) {
-      logger.info("Register user {0}", user.getDisplayedName());
+      logger.debug("Register user {0}", user.getDisplayedName());
       chatServer.createUser(user);
       try {
         List<String> contactIds =
@@ -91,7 +91,7 @@ public class ChatUsersRegistration {
         for (String contactId : contactIds) {
           User friend = User.getById(contactId);
           registerUser(friend);
-          logger.info("Register relationship {0} - {1}", user.getDisplayedName(),
+          logger.debug("Register relationship {0} - {1}", user.getDisplayedName(),
               friend.getDisplayedName());
           chatServer.createRelationShip(user, friend);
         }

@@ -73,7 +73,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public void startServer() {
+  public void initSynchronization() {
 
   }
 

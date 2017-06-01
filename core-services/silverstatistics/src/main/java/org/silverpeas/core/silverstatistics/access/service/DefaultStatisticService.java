@@ -142,8 +142,6 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   @Override
   public Collection<HistoryObjectDetail> getHistoryByObjectAndUser(ForeignPK foreignPK, int action,
       String objectType, String userId) {
-    SilverTrace
-        .info("statistic", "DefaultStatisticService.getHistoryByObjectAndUser", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
       return HistoryObjectDAO.getHistoryDetailByObjectAndUser(con, foreignPK, objectType, userId);
@@ -267,9 +265,6 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
     // Sort list to get readers first
     LastAccessComparatorDesc comparator = new LastAccessComparatorDesc();
     Collections.sort((List<HistoryByUser>) statByUser, comparator);
-
-    SilverTrace
-        .info("statistic", "DefaultStatisticService.getHistoryByObject()", "root.MSG_GEN_EXIT_METHOD");
     return statByUser;
   }
 

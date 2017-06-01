@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -32,13 +33,11 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.ExplorerField;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -81,9 +80,8 @@ public class ExplorerFieldDisplayer extends AbstractFieldDisplayer<ExplorerField
     String language = pageContext.getLanguage();
 
     if (!ExplorerField.TYPE.equals(template.getTypeName())) {
-      SilverTrace
-          .info("form", "ExplorerFieldDisplayer.displayScripts", "form.INFO_NOT_CORRECT_TYPE",
-              ExplorerField.TYPE);
+      SilverLogger.getLogger(this).warn("The expected type of the explorer field is invalid: "
+        + template.getTypeName());
     }
     if (template.isMandatory() && pageContext.useMandatory()) {
       out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");

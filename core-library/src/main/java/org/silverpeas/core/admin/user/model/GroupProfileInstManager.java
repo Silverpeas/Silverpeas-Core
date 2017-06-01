@@ -30,15 +30,19 @@ import org.silverpeas.core.admin.persistence.GroupUserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.UserManager;
 
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
+@Singleton
+@Transactional(Transactional.TxType.MANDATORY)
 public class GroupProfileInstManager {
   /**
    * Constructor
    */
-  public GroupProfileInstManager() {
+  protected GroupProfileInstManager() {
 
   }
 

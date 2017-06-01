@@ -67,6 +67,7 @@ public abstract class Schema {
       if (!this.connection.getAutoCommit()) {
         managed = true;
       } else {
+        SilverLogger.getLogger(this).debug("UNMANAGED CONNECTION: we take control of it");
         managed = false;
         this.connection.setAutoCommit(false);
       }

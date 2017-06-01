@@ -33,6 +33,7 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,6 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 @Singleton
+@Transactional(Transactional.TxType.MANDATORY)
 public class ProfiledObjectManager {
 
   @Inject
@@ -49,7 +51,7 @@ public class ProfiledObjectManager {
   /**
    * Constructor
    */
-  public ProfiledObjectManager() {
+  protected ProfiledObjectManager() {
   }
 
   public List<ProfileInst> getProfiles(DomainDriverManager ddManager, int objectId,

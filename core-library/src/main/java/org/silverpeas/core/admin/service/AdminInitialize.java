@@ -24,9 +24,8 @@
 
 package org.silverpeas.core.admin.service;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 
@@ -36,18 +35,17 @@ import javax.inject.Inject;
 public class AdminInitialize implements Initialization {
 
   @Inject
-  private AdminController adminController;
+  private Administration admin;
 
   public AdminInitialize() {
   }
 
   @Override
   public void init() {
-    // Initialize SilverTrace
     try {
-      adminController.startServer();
+      admin.initSynchronization();
     } catch (Exception e) {
-      SilverTrace.error("admin", "AdminInitialize.Initialize()", "admin.MSG_ERR_GET_DOMAIN", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 

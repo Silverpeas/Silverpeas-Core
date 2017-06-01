@@ -97,11 +97,11 @@ public class SynchronizerTokenService {
       Token token = session.getAttribute(SESSION_TOKEN_KEY);
       TokenGenerator generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
       if (token != null) {
-        logger.info("Renew the session token for the user {0} ({1})",
+        logger.debug("Renew the session token for the user {0} ({1})",
             user.getId(), user.getDisplayedName());
         token = generator.renew(token);
       } else {
-        logger.info("Create the session token for the user {0} ({1})",
+        logger.debug("Create the session token for the user {0} ({1})",
             user.getId(), user.getDisplayedName());
         token = generator.generate();
       }
@@ -120,7 +120,7 @@ public class SynchronizerTokenService {
    */
   public void setUpNavigationTokens(HttpServletRequest request) {
     if (SecuritySettings.isWebSecurityByTokensEnabled()) {
-      logger.info("Create a navigation token for path {0}", getRequestPath(request));
+      logger.debug("Create a navigation token for path {0}", getRequestPath(request));
       HttpSession session = request.getSession();
       TokenGenerator generator = TokenGeneratorProvider.getTokenGenerator(SynchronizerToken.class);
       Token token = generator.generate();
@@ -143,7 +143,7 @@ public class SynchronizerTokenService {
    */
   public void validate(HttpServletRequest request) throws TokenValidationException {
     if (SecuritySettings.isWebSecurityByTokensEnabled() && isAProtectedResource(request)) {
-      logger.info("Validate the request for path {0}", getRequestPath(request));
+      logger.debug("Validate the request for path {0}", getRequestPath(request));
       Token expectedToken = getSessionToken(request);
       // is there a user session opened?
       if (expectedToken.isDefined()) {
@@ -155,7 +155,7 @@ public class SynchronizerTokenService {
       // the token is popped from the current session.
       expectedToken = getTokenInSession(NAVIGATION_TOKEN_KEY, request, true);
       if (expectedToken.isDefined()) {
-        logger.info("Validate the request origin for path {0}", getRequestPath(request));
+        logger.debug("Validate the request origin for path {0}", getRequestPath(request));
         String actualToken = getTokenInRequest(NAVIGATION_TOKEN_KEY, request);
         validate(actualToken, expectedToken);
       }

@@ -965,7 +965,7 @@ class WorkflowTools {
       }
 
       SilverLogger.getLogger(WorkflowTools.class)
-          .info("Process action {0}: item = {1}, operator = {2}, value = {3}",
+          .debug("Process action {0}: item = {1}, operator = {2}, value = {3}",
               event.getActionName(), consequence.getItem(), consequence.getOperator(),
               consequence.getValue());
 

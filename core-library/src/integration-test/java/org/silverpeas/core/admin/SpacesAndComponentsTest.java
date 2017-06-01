@@ -110,7 +110,7 @@ public class SpacesAndComponentsTest {
   public void reloadCache() throws Exception {
     File silverpeasHome = mavenTargetDirectoryRule.getResourceTestDirFile();
     SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
-    adminController.reloadAdminCache();
+    admin.reloadCache();
     registry.init();
   }
 

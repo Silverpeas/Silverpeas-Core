@@ -36,7 +36,7 @@ public interface SearchCriteria {
   /**
    * The whatever value to be used as criterion value if you don't care of a given criterion.
    */
-  static final String[] ANY = null;
+  String[] ANY = null;
 
   /**
    * Appends a criteria conjonction.

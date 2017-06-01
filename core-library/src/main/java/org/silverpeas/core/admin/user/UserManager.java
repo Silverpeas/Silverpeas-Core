@@ -44,6 +44,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
@@ -52,6 +53,7 @@ import java.util.stream.Collectors;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Singleton
+@Transactional(Transactional.TxType.MANDATORY)
 public class UserManager {
 
   public static final String USERMANAGER_SYNCHRO_REPORT = "UserManager";
@@ -67,7 +69,7 @@ public class UserManager {
   @Inject
   private DomainDriverManager domainDriverManager;
 
-  private UserManager() {
+  protected UserManager() {
   }
 
   /**
@@ -377,7 +379,7 @@ public class UserManager {
    */
   public UserFull getUserFull(String sUserId) throws AdminException {
     try {
-      return domainDriverManager.doInTransaction(() -> domainDriverManager.getUserFull(sUserId));
+      return domainDriverManager.getUserFull(sUserId);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("user", sUserId), e);
     }
@@ -461,30 +463,28 @@ public class UserManager {
     }
 
     try {
-      domainDriverManager.doInTransaction(() -> {
-        // create user in target Domain
-        String oldDomainId = userDetail.getDomainId();
-        UserFull userFull = getUserFull(userDetail.getId());
-        userFull.setDomainId(targetDomainId);
-        String specificId = domainDriverManager.createUser(userFull);
-        userFull.setSpecificId(specificId);
+      // create user in target Domain
+      String oldDomainId = userDetail.getDomainId();
+      UserFull userFull = getUserFull(userDetail.getId());
+      userFull.setDomainId(targetDomainId);
+      String specificId = domainDriverManager.createUser(userFull);
+      userFull.setSpecificId(specificId);
 
-        // User creation may reset password, force reset to old one
-        userDetail.setDomainId(targetDomainId);
-        userDetail.setSpecificId(specificId);
-        domainDriverManager.resetEncryptedPassword(userDetail, userFull.getPassword());
+      // User creation may reset password, force reset to old one
+      userDetail.setDomainId(targetDomainId);
+      userDetail.setSpecificId(specificId);
+      domainDriverManager.resetEncryptedPassword(userDetail, userFull.getPassword());
 
-        // remove user from domainSilverpeas
-        userFull.setDomainId(oldDomainId);
-        domainDriverManager.deleteUser(userFull.getId());
+      // remove user from domainSilverpeas
+      userFull.setDomainId(oldDomainId);
+      domainDriverManager.deleteUser(userFull.getId());
 
-        // associates new user to silverpeas user
-        userFull.setDomainId(targetDomainId);
-        userFull.setSpecificId(specificId);
+      // associates new user to silverpeas user
+      userFull.setDomainId(targetDomainId);
+      userFull.setSpecificId(specificId);
 
-        // update user
-        return updateUser(userFull);
-      });
+      // update user
+      updateUser(userFull);
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate("user", userDetail.getId()), e);
     }
@@ -523,42 +523,40 @@ public class UserManager {
       return "";
     }
 
-    try {
-      return domainDriverManager.doInTransaction(() -> {
-        SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + addUser,
-            "Ajout de l'utilisateur " + userDetail.getSpecificId() + " dans la base...");
-        UserDetail user = userDAO.getUserByLogin(domainDriverManager.getCurrentConnection(),
-            userDetail.getDomainId(), userDetail.getLogin());
-        if (user != null) {
-          SynchroDomainReport.error(USERMANAGER_SYNCHRO_REPORT + addUser,
-              "Utilisateur " + userDetail.getLogin() +
-                  " déjà présent dans la base avec ce login. Il n'a pas été rajouté", null);
-          throw new AdminException(failureOnAdding("user", userDetail.getLogin()));
-        }
+    try(Connection connection = DBUtil.openConnection()) {
+      SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + addUser,
+          "Ajout de l'utilisateur " + userDetail.getSpecificId() + " dans la base...");
+      UserDetail user = userDAO.getUserByLogin(connection, userDetail.getDomainId(),
+          userDetail.getLogin());
+      if (user != null) {
+        SynchroDomainReport.error(USERMANAGER_SYNCHRO_REPORT + addUser,
+            "Utilisateur " + userDetail.getLogin() +
+                " déjà présent dans la base avec ce login. Il n'a pas été rajouté", null);
+        throw new AdminException(failureOnAdding("user", userDetail.getLogin()));
+      }
 
-        if (!addOnlyInSilverpeas) {
-          // Create user in specific domain
-          String specificId = domainDriverManager.createUser(userDetail);
-          userDetail.setSpecificId(specificId);
-        }
+      if (!addOnlyInSilverpeas) {
+        // Create user in specific domain
+        String specificId = domainDriverManager.createUser(userDetail);
+        userDetail.setSpecificId(specificId);
+      }
 
-        String userId = userDAO.saveUser(domainDriverManager.getCurrentConnection(), userDetail);
-        userDetail.setId(userId);
+      String userId = userDAO.saveUser(connection, userDetail);
+      userDetail.setId(userId);
 
-        notifier.notifyEventOn(ResourceEvent.Type.CREATION, userDetail);
+      notifier.notifyEventOn(ResourceEvent.Type.CREATION, userDetail);
 
-        domainDriverManager.indexUser(userDetail.getId());
+      domainDriverManager.indexUser(userDetail.getId());
 
-        // X509?
-        long domainActions = domainDriverManager.getDomainActions(userDetail.getDomainId());
-        boolean isX509Enabled = (domainActions & AbstractDomainDriver.ACTION_X509_USER) != 0;
-        if (isX509Enabled) {
-          X509Factory.buildP12(userDetail.getId(), userDetail.getLogin(), userDetail.getLastName(),
-              userDetail.getFirstName(), userDetail.getDomainId());
-        }
+      // X509?
+      long domainActions = domainDriverManager.getDomainActions(userDetail.getDomainId());
+      boolean isX509Enabled = (domainActions & AbstractDomainDriver.ACTION_X509_USER) != 0;
+      if (isX509Enabled) {
+        X509Factory.buildP12(userDetail.getId(), userDetail.getLogin(), userDetail.getLastName(),
+            userDetail.getFirstName(), userDetail.getDomainId());
+      }
 
-        return userDetail.getId();
-      });
+      return userDetail.getId();
     } catch (Exception e) {
       SynchroDomainReport.error(USERMANAGER_SYNCHRO_REPORT + addUser,
           pbAddUser + userDetail.getFirstName() + " " + userDetail.getLastName() + SPECIFIC_ID +
@@ -579,39 +577,37 @@ public class UserManager {
   public String deleteUser(UserDetail user, boolean onlyInSilverpeas)
       throws AdminException {
     final String deleteUser = ".deleteUser()";
-    try {
-      return domainDriverManager.doInTransaction(() -> {
-        // Send the delayed notifications of the user to delete
-        delayedNotificationOfUserDeletion(user);
+    try(Connection connection = DBUtil.openConnection()) {
+      // Send the delayed notifications of the user to delete
+      delayedNotificationOfUserDeletion(user);
 
-        // Delete user from specific domain
-        if (!onlyInSilverpeas) {
-          domainDriverManager.deleteUser(user.getId());
-        }
-        // Delete the user node from Silverpeas
-        SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + deleteUser,
-            "Suppression de l'utilisateur " + user.
-                getSpecificId() + " de la base...");
-        userDAO.deleteUser(domainDriverManager.getCurrentConnection(), user);
-        notifier.notifyEventOn(ResourceEvent.Type.DELETION, user);
+      // Delete user from specific domain
+      if (!onlyInSilverpeas) {
+        domainDriverManager.deleteUser(user.getId());
+      }
+      // Delete the user node from Silverpeas
+      SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + deleteUser,
+          "Suppression de l'utilisateur " + user.
+              getSpecificId() + " de la base...");
+      userDAO.deleteUser(connection, user);
+      notifier.notifyEventOn(ResourceEvent.Type.DELETION, user);
 
-        // Delete index of user information
-        domainDriverManager.unindexUser(user.getId());
+      // Delete index of user information
+      domainDriverManager.unindexUser(user.getId());
 
-        // X509?
-        long domainActions = domainDriverManager.getDomainActions(user.getDomainId());
-        boolean isX509Enabled = (domainActions & AbstractDomainDriver.ACTION_X509_USER) != 0;
-        if (isX509Enabled) {
-          X509Factory.revocateUserCertificate(user.getId());
-        }
+      // X509?
+      long domainActions = domainDriverManager.getDomainActions(user.getDomainId());
+      boolean isX509Enabled = (domainActions & AbstractDomainDriver.ACTION_X509_USER) != 0;
+      if (isX509Enabled) {
+        X509Factory.revocateUserCertificate(user.getId());
+      }
 
-        return user.getId();
-      });
+      return user.getId();
     } catch (Exception e) {
       SynchroDomainReport.error(USERMANAGER_SYNCHRO_REPORT + deleteUser,
           "problème à la suppression de l'utilisateur " + user.getFirstName() + " " +
-              user.getLastName() + SPECIFIC_ID
-          + user.getSpecificId() + ") - " + e.getMessage(), null);
+              user.getLastName() + SPECIFIC_ID + user.getSpecificId() + ") - " + e.getMessage(),
+          null);
       throw new AdminException(failureOnDeleting("user", user.getId()), e);
     }
   }
@@ -635,23 +631,20 @@ public class UserManager {
    * @throws AdminException if an error occurs while updating the user.
    */
   public String updateUser(UserDetail user) throws AdminException {
-    try {
-      return domainDriverManager.doInTransaction(() -> {
-        // update the user node in Silverpeas
-        SynchroDomainReport.info("UserManager.updateUser()",
-            "Maj de l'utilisateur " + user.getSpecificId() + " dans la base...");
-        userDAO.updateUser(domainDriverManager.getCurrentConnection(), user);
+    try(Connection connection = DBUtil.openConnection()) {
+      // update the user node in Silverpeas
+      SynchroDomainReport.info("UserManager.updateUser()",
+          "Maj de l'utilisateur " + user.getSpecificId() + " dans la base...");
+      userDAO.updateUser(connection, user);
 
-        // index user information
-        domainDriverManager.indexUser(user.getId());
-        return user.getId();
-      });
+      // index user information
+      domainDriverManager.indexUser(user.getId());
+      return user.getId();
     } catch (Exception e) {
       SynchroDomainReport.error("UserManager.updateUser()",
           "problème lors de la maj de l'utilisateur " + user.getFirstName() + " " +
-              user.getLastName() + SPECIFIC_ID
-          + user.getSpecificId()
-          + ") - " + e.getMessage(), null);
+              user.getLastName() + SPECIFIC_ID + user.getSpecificId() + ") - " + e.getMessage(),
+          null);
       throw new AdminException(failureOnUpdate("user", user.getId()), e);
     }
   }
@@ -664,12 +657,10 @@ public class UserManager {
    * @throws AdminException if the update fails.
    */
   public String updateUserFull(UserFull userFull) throws AdminException {
-    try {
-      return domainDriverManager.doInTransaction(() -> {
-        domainDriverManager.updateUserFull(userFull);
-        userDAO.updateUser(domainDriverManager.getCurrentConnection(), userFull);
-        return userFull.getId();
-      });
+    try(Connection connection = DBUtil.openConnection()) {
+      domainDriverManager.updateUserFull(userFull);
+      userDAO.updateUser(connection, userFull);
+      return userFull.getId();
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate("user", userFull.getId()), e);
     }

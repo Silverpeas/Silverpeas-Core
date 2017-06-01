@@ -21,6 +21,11 @@
 
 package org.silverpeas.core.silverstatistics.volume.dao;
 
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silverstatistics.volume.model.StatType;
+import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
+import org.silverpeas.core.util.StringUtil;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -30,13 +35,6 @@ import java.sql.Statement;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-
-import org.silverpeas.core.util.StringUtil;
-
-import org.silverpeas.core.silverstatistics.volume.model.StatisticsConfig;
-import org.silverpeas.core.silverstatistics.volume.model.StatType;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 /**
  * This is the alimentation statistics DAO Object
@@ -224,12 +222,6 @@ public class SilverStatisticsDAO {
 
     String selectStatement = selectStatementBuf.toString();
     String updateStatement = updateStatementBuf.toString();
-    SilverTrace
-        .info("silverstatistics", "SilverStatisticsDAO.putDataStats", "root.MSG_GEN_PARAM_VALUE",
-            "selectStatement=" + selectStatement);
-    SilverTrace
-        .info("silverstatistics", "SilverStatisticsDAO.putDataStats", "root.MSG_GEN_PARAM_VALUE",
-            "updateStatementBuf=" + updateStatementBuf);
     stmt = con.createStatement();
 
     try {

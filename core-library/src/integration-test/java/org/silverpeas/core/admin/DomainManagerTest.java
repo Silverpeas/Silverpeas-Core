@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -31,10 +30,11 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 
 import javax.inject.Inject;
 
@@ -48,7 +48,7 @@ import static org.junit.Assert.assertThat;
 public class DomainManagerTest {
 
   @Inject
-  private AdminController adminController;
+  private Administration admin;
 
   public DomainManagerTest() {
   }
@@ -69,19 +69,19 @@ public class DomainManagerTest {
 
   @Before
   public void reloadCache() {
-    adminController.reloadAdminCache();
+    admin.reloadCache();
   }
 
   @Test
   public void testGetDomainManagerUser() throws Exception {
     String sUserId = "5";
     String expectedDomainId = "0";
-    UserDetail userDetail = adminController.getUserDetail(sUserId);
+    UserDetail userDetail = admin.getUserDetail(sUserId);
     assertThat(userDetail.getDomainId(), is(expectedDomainId));
     assertThat(userDetail.getAccessLevel(), is(UserAccessLevel.DOMAIN_ADMINISTRATOR));
-    assertThat(adminController.isDomainManagerUser(sUserId, expectedDomainId), is(true));
-    assertThat(adminController.isDomainManagerUser("4", expectedDomainId), is(false));
-    assertThat(adminController.isDomainManagerUser("0", "0"), is(false));
+    assertThat(admin.isDomainManagerUser(sUserId, expectedDomainId), is(true));
+    assertThat(admin.isDomainManagerUser("4", expectedDomainId), is(false));
+    assertThat(admin.isDomainManagerUser("0", "0"), is(false));
   }
 
 }

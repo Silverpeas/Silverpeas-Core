@@ -74,11 +74,6 @@ public class AdminController implements java.io.Serializable {
 
   }
 
-  // Start the processes
-  public void startServer() throws Exception {
-    admin.startServer();
-  }
-
   /* Return true if the given space name exists */
   public boolean isSpaceInstExist(String sClientSpaceId) {
 
@@ -1592,10 +1587,6 @@ public class AdminController implements java.io.Serializable {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
-  }
-
-  public void reloadAdminCache() {
-    admin.reloadCache();
   }
 
   public String copyAndPasteComponent(PasteDetail pasteDetail)

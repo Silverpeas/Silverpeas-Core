@@ -43,6 +43,7 @@ import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ import java.util.Set;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Singleton
+@Transactional(Transactional.TxType.MANDATORY)
 public class GroupManager {
 
   @Inject
@@ -66,7 +68,7 @@ public class GroupManager {
   /**
    * Constructor
    */
-  private GroupManager() {
+  protected GroupManager() {
   }
 
   /**
@@ -102,9 +104,7 @@ public class GroupManager {
             criteria.getCriterionOnUserStatesToExclude();
         int userCount = userDao.getUserCountByCriteria(connection, criteriaOnUsers.
             onDomainId(domainIdConstraint).
-            and().
             onGroupIds(groupIds.toArray(new String[groupIds.size()])).
-            and().
             onUserStatesToExclude(criterionOnUserStatesToExclude
                 .toArray(new UserState[criterionOnUserStatesToExclude.size()])));
         group.setTotalNbUsers(userCount);
@@ -135,7 +135,6 @@ public class GroupManager {
       UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
       int userCount = userDao.getUserCountByCriteria(connection, criteriaOnUsers.
           onDomainId(domainId).
-          and().
           onGroupIds(groupIds.toArray(new String[groupIds.size()])));
       return userCount;
     } catch (SQLException e) {
@@ -456,9 +455,10 @@ public class GroupManager {
         group.setName(gr.name);
         group.setDescription(gr.description);
         group.setRule(gr.rule);
+
+        // Get the selected users for this group
+        setDirectUsersOfGroup(group);
       }
-      // Get the selected users for this group
-      setDirectUsersOfGroup(group);
 
       return group;
     } catch (Exception e) {

@@ -30,6 +30,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 
 /**
  * @author Yohann Chastagnier
@@ -45,6 +46,7 @@ public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuota
    * @see QuotaService#getCurrentCount(QuotaKey)
    */
   @Override
+  @Transactional
   public long getCurrentCount(final UserDomainQuotaKey key) throws QuotaException {
     try {
       return DomainDriverManagerProvider.getCurrentDomainDriverManager().getAllUsers(

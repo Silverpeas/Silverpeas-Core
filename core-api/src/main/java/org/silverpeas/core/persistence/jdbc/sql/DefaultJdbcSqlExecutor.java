@@ -26,6 +26,8 @@ package org.silverpeas.core.persistence.jdbc.sql;
 
 import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.persistence.jdbc.ConnectionPool;
+import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -41,7 +43,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZonedDateTime;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -54,6 +55,8 @@ import java.util.List;
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
+
+  public static final String SQL_REQUEST = ". SQL request: ";
 
   protected DefaultJdbcSqlExecutor() {
     // Hidden constructor
@@ -78,12 +81,16 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
           throw new IllegalArgumentException("select count execution error");
         }
         return count;
+      } catch (SQLException e) {
+        SilverLogger.getLogger(this)
+            .debug(e.getMessage() + SQL_REQUEST + selectCountQueryBuilder.getSqlQuery());
+        throw e;
       }
     }
   }
 
   @Override
-  public <R> List<R> select(JdbcSqlQuery selectQuery, SelectResultRowProcess<R> process)
+  public <R> ListSlice<R> select(JdbcSqlQuery selectQuery, SelectResultRowProcess<R> process)
       throws SQLException {
     try (Connection con = ConnectionPool.getConnection()) {
       return select(con, selectQuery, process);
@@ -91,25 +98,38 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
   }
 
   @Override
-  public <R> List<R> select(final Connection con, final JdbcSqlQuery selectQuery,
+  public <R> ListSlice<R> select(final Connection con, final JdbcSqlQuery selectQuery,
       final SelectResultRowProcess<R> process) throws SQLException {
-    try (PreparedStatement st = con.prepareStatement(selectQuery.getSqlQuery())) {
+    JdbcSqlQuery.Configuration queryConf = selectQuery.getConfiguration();
+    try (PreparedStatement st = queryConf.isFirstResultScrolled() ?
+        con.prepareStatement(selectQuery.getSqlQuery(), ResultSet.TYPE_SCROLL_INSENSITIVE,
+            ResultSet.CONCUR_READ_ONLY) : con.prepareStatement(selectQuery.getSqlQuery())) {
       setParameters(st, selectQuery.getParameters());
       try (ResultSet rs = st.executeQuery()) {
-        List<R> entities = new ArrayList<>();
-        int i = 0;
-        while (rs.next()) {
-          int resultLimit = selectQuery.getConfiguration().getResultLimit();
-          if (resultLimit > 0 && entities.size() >= resultLimit) {
-            break;
-          }
-          R entity = process.currentRow(new ResultSetWrapper(rs, i));
-          if (entity != null) {
-            entities.add(entity);
-          }
-          i++;
+        int idx = queryConf.getOffset();
+        if (queryConf.isFirstResultScrolled()) {
+          rs.next();
+          rs.relative(idx - 1);
         }
+        final int lastIdx =
+            queryConf.isResultCountLimited() ? idx + queryConf.getResultLimit() - 1 : 0;
+        ListSlice<R> entities = new ListSlice<>(idx, lastIdx);
+        int originalSize = idx;
+        for (;rs.next(); originalSize++) {
+          if (!queryConf.isResultCountLimited() ||
+              (queryConf.isResultCountLimited() && entities.size() < queryConf.getResultLimit())) {
+            R entity = process.currentRow(new ResultSetWrapper(rs, idx++));
+            if (entity != null) {
+              entities.add(entity);
+            }
+          }
+        }
+        entities.setOriginalListSize(originalSize);
         return entities;
+      } catch (SQLException e) {
+        SilverLogger.getLogger(this)
+            .debug(e.getMessage() + SQL_REQUEST + selectQuery.getSqlQuery());
+        throw e;
       }
     }
   }
@@ -145,6 +165,10 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
       try (PreparedStatement prepStmt = con.prepareStatement(modifyQuery.getSqlQuery())) {
         setParameters(prepStmt, modifyQuery.getParameters());
         nbUpdate += prepStmt.executeUpdate();
+      } catch (SQLException e) {
+        SilverLogger.getLogger(this)
+            .debug(e.getMessage() + SQL_REQUEST + modifyQuery.getSqlQuery());
+        throw e;
       }
     }
     return nbUpdate;
@@ -210,10 +234,7 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
     if (parameter instanceof OffsetDateTime) {
       return true;
     }
-    if (parameter instanceof ZonedDateTime) {
-      return true;
-    }
-    return false;
+    return parameter instanceof ZonedDateTime;
   }
 
   private static Instant toInstant(final Object parameter) {

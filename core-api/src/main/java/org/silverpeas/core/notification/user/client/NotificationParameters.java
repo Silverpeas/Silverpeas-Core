@@ -158,6 +158,6 @@ public class NotificationParameters {
     trace.append(", Date: " + dDate.toString());
     trace.append(", Action: " + (eAction != null ? eAction.name() : "N/A"));
     trace.append("}");
-    SilverLogger.getLogger(this).info(trace.toString());
+    SilverLogger.getLogger(this).debug(trace.toString());
   }
 }
