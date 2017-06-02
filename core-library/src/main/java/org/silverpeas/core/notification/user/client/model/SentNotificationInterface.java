@@ -24,28 +24,32 @@
 
 package org.silverpeas.core.notification.user.client.model;
 
-import java.util.List;
-import java.util.Set;
-
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.UserRecipient;
+import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * Interface declaration
- * @author
  */
 public interface SentNotificationInterface {
 
-  public void saveNotifUser(NotificationMetaData metaData, Set<UserRecipient> usersSet)
+  static SentNotificationInterface get() {
+    return ServiceProvider.getService(SentNotificationInterface.class);
+  }
+
+  void saveNotifUser(NotificationMetaData metaData, Set<UserRecipient> usersSet)
       throws NotificationManagerException;
 
-  public List<SentNotificationDetail> getAllNotifByUser(String userId)
+  List<SentNotificationDetail> getAllNotifByUser(String userId)
       throws NotificationManagerException;
 
-  public SentNotificationDetail getNotification(int notifId) throws NotificationManagerException;
+  SentNotificationDetail getNotification(int notifId) throws NotificationManagerException;
 
-  public void deleteNotif(int notifId, String userId) throws NotificationManagerException;
+  void deleteNotif(int notifId, String userId) throws NotificationManagerException;
 
-  public void deleteNotifByUser(String userId) throws NotificationManagerException;
+  void deleteNotifByUser(String userId) throws NotificationManagerException;
 }

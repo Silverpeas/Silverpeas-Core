@@ -265,13 +265,13 @@ public class PaginationSP extends AbstractPagination {
     // display page jumper script
     result.append("<script type=\"text/javascript\">");
     result.append("function display").append(jumperName).append("() {");
-    result.append("var ").append(jumperName).append(" = document.getElementById(\"").append(
-        jumperName).append("\");");
-    result.append("if (").append(jumperName).append(".style.visibility != \"visible\") {");
-    result.append("").append(jumperName).append(".style.visibility = \"visible\";");
-    result.append("").append(jumperName).append(".focus();");
+    result.append("var $jumperInput = jQuery('#").append(jumperName).append("');");
+    result.append("if ($jumperInput.css('visibility') !== 'visible') {");
+    result.append("$jumperInput.css('visibility', 'visible');");
+    result.append("$jumperInput.hide();$jumperInput.focus();");
+    result.append("$jumperInput.show();$jumperInput.focus();");
     result.append("} else {");
-    result.append("").append(jumperName).append(".style.visibility = \"hidden\";");
+    result.append("$jumperInput.css('visibility', 'hidden');");
     result.append("}");
     result.append("}");
 

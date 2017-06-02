@@ -44,60 +44,55 @@
 <html>
 <head>
 <title><fmt:message key="GML.popupTitle"/></title>
-<view:looknfeel/>
-    <script type="text/javascript" >
-      function deleteMessage( notifId )
-      {
-        window.opener.deleteMessage(notifId, true);
-        window.close();
-      }
+  <view:looknfeel/>
+  <script type="text/javascript">
+    function deleteMessage(notifId) {
+      window.opener.deleteMessage(notifId, true);
+      window.close();
+    }
 
-      <c:if test="${!empty notif.link}">
-      function goTo()
-      {
-        window.opener.location="<c:url value="${notif.link}"/>";
-        window.close();
-      }
-      </c:if>
+    <c:if test="${!empty notif.link}">
+    function goTo() {
+      window.opener.location = "<c:url value="${notif.link}"/>";
+      window.close();
+    }
+    </c:if>
 
-      function closeWindow()
-      {
-      <c:choose>
-        <c:when test="${'homePage' eq from}">window.opener.location.reload();</c:when>
-        <c:otherwise>window.opener.location="SentUserNotifications.jsp";</c:otherwise>
-      </c:choose>
-          window.close();
-        }
-    </script>
-  </head>
-  <body>
-    <fmt:message key="silverMail" var="browseLabel" />
-    <view:browseBar clickable="false">
-      <view:browseBarElt link="#" label="${browseLabel}" />
-      <view:browseBarElt link="#" label="${notif.title}" />
-    </view:browseBar>
-    <view:window popup="true">
-    <div class="popup-read-notification">
+    function closeWindow() {
+      window.close();
+    }
+  </script>
+</head>
+<body>
+<fmt:message key="silverMail" var="browseLabel"/>
+<view:browseBar clickable="false">
+  <view:browseBarElt link="#" label="${browseLabel}"/>
+  <view:browseBarElt link="#" label="${notif.title}"/>
+</view:browseBar>
+<view:window popup="true">
+  <div class="popup-read-notification">
     <div class="entete">
       <div class="from"><span class="label">&nbsp;</span></div>
-        <div class="date"><view:formatDateTime value="${notif.notifDate}" /></div>
-      </div>
-      <div class="source">
-        <span class="label"><fmt:message key="source" /> :</span> <c:out value="${notif.source}" /> </div>
-      <c:if test="${!empty notif.link}">
-        <div class="link"> <a href="javaScript:goTo();"><fmt:message key="silvermail.link.text" /> </a> </div>
-      </c:if>
-      <div class="content-notification">
-        ${notif.body}
-      </div>
-       <view:buttonPane>
-         <fmt:message var="deleteLabel" key="delete" />
-         <c:set var="deleteAction">javascript:onclick=deleteMessage(<c:out value="${notif.notifId}"/>);</c:set>
-       <view:button label="${deleteLabel}" action="${deleteAction}"/>
-         <fmt:message var="closeLabel" key="close" />
-         <view:button label="${closeLabel}" action="javascript:onclick=closeWindow();"/>
-       </view:buttonPane>
+      <div class="date"><view:formatDateTime value="${notif.notifDate}"/></div>
     </div>
-    </view:window>
-  </body>
+    <div class="source">
+      <span class="label"><fmt:message key="source"/> :</span> <c:out value="${notif.source}"/>
+    </div>
+    <c:if test="${!empty notif.link}">
+      <div class="link"><a href="javaScript:goTo();"><fmt:message key="silvermail.link.text"/> </a>
+      </div>
+    </c:if>
+    <div class="content-notification">
+        ${notif.body}
+    </div>
+    <view:buttonPane>
+      <fmt:message var="deleteLabel" key="delete"/>
+      <c:set var="deleteAction">javascript:onclick=deleteMessage(<c:out value="${notif.notifId}"/>);</c:set>
+      <view:button label="${deleteLabel}" action="${deleteAction}"/>
+      <fmt:message var="closeLabel" key="close"/>
+      <view:button label="${closeLabel}" action="javascript:onclick=closeWindow();"/>
+    </view:buttonPane>
+  </div>
+</view:window>
+</body>
 </html>

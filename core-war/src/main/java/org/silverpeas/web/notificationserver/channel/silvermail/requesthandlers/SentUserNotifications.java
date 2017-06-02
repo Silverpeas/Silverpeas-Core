@@ -24,12 +24,12 @@
 package org.silverpeas.web.notificationserver.channel.silvermail.requesthandlers;
 
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
-import org.silverpeas.core.notification.user.client.model.SentNotificationDetail;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.ComponentSessionController;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILRequestHandler;
 import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessionController;
+import org.silverpeas.web.notificationserver.channel.silvermail.SentUserNotificationItem;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -58,7 +58,7 @@ public class SentUserNotifications implements SILVERMAILRequestHandler {
 
     // passer en paramètre la liste dans la request
     SILVERMAILSessionController silvermailScc = (SILVERMAILSessionController) componentSC;
-    List<SentNotificationDetail> sentNotifs = new ArrayList<SentNotificationDetail>();
+    List<SentUserNotificationItem> sentNotifs = new ArrayList<>();
     try {
       sentNotifs = silvermailScc.getUserMessageList();
     } catch (NotificationManagerException e) {

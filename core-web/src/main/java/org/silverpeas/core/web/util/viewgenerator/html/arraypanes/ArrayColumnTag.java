@@ -26,9 +26,11 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.silverpeas.core.util.StringUtil;
 
+import javax.el.LambdaExpression;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 import javax.servlet.jsp.tagext.Tag;
+import java.util.function.Function;
 
 /**
  * Create a new column header in an ArrayPane
@@ -40,6 +42,7 @@ public class ArrayColumnTag extends BodyTagSupport {
   private String title;
   private ArrayPane arrayPane;
   private Boolean sortable;
+  private LambdaExpression compareOn;
   private String width;
 
   @Override
@@ -50,10 +53,15 @@ public class ArrayColumnTag extends BodyTagSupport {
     super.setParent(tag);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public int doStartTag() throws JspException {
     ArrayColumn column = arrayPane.addArrayColumn(title);
-    if (sortable != null) {
+    if (compareOn != null) {
+      compareOn.setELContext(pageContext.getELContext());
+      Function function = o -> compareOn.invoke(o);
+      column.setCompareOn(function);
+    } else if (sortable != null) {
       column.setSortable(sortable);
     }
     if (StringUtil.isDefined(width)) {
@@ -68,6 +76,10 @@ public class ArrayColumnTag extends BodyTagSupport {
 
   public void setTitle(final String title) {
     this.title = title;
+  }
+
+  public void setCompareOn(final LambdaExpression compareOn) {
+    this.compareOn = compareOn;
   }
 
   public void setSortable(boolean sortable) {

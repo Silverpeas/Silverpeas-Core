@@ -72,6 +72,7 @@ public abstract class AbstractPagination implements Pagination {
     return GraphicElementFactory.getIconsPath();
   }
 
+  @Override
   public int getNbItems() {
     return nbItems;
   }

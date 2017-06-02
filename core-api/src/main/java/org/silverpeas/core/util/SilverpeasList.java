@@ -49,11 +49,17 @@ public interface SilverpeasList<T> extends List<T> {
    * SilverpeasList}, in encounter order.
    */
   @SuppressWarnings("unchecked")
-  static <C, R extends SilverpeasList<C>, S> Collector<C, R, R> collector(
-      SilverpeasList<S> source) {
+  static <C, R extends SilverpeasList<C>, S> Collector<C, R, R> collector(List<S> source) {
     final Supplier<R> supplier;
-    if (source != null && source.isPageWindow()) {
-      supplier = () -> (R) PaginationList.from(new ArrayList<>(source.size()), source.maxSize());
+    final SilverpeasList<S> silverpeasList = SilverpeasList.wrap(source);
+    if (silverpeasList != null && silverpeasList.isSlice()) {
+      if (silverpeasList instanceof PaginationList) {
+        supplier = () -> (R) PaginationList
+            .from(new ArrayList<>(silverpeasList.size()), silverpeasList.originalListSize());
+      } else {
+        throw new UnsupportedOperationException(
+            silverpeasList.getClass().getSimpleName() + " is not yet supported");
+      }
     } else {
       supplier = () -> (R) new SilverpeasArrayList<>();
     }
@@ -81,19 +87,19 @@ public interface SilverpeasList<T> extends List<T> {
   }
 
   /**
-   * Gets the maximum number of items the list contains.
-   * <p>If the list is a page representation of a larger one, the {@link #maxSize()} returns a
-   * higher result than the one of {@link #size()}, otherwise {@link #maxSize()} and
+   * Gets the number of items the original list contains.
+   * <p>If the list is a slice of a larger one, the {@link #originalListSize()} returns a
+   * higher result than the one of {@link #size()}, otherwise {@link #originalListSize()} and
    * {@link #size()} returns the same result.</p>
-   * @return the maximum size of the list.
+   * @return the original size of the list as long.
    */
-  long maxSize();
+  long originalListSize();
 
   /**
-   * Indicates if the list is a page representation of a larger one.
-   * @return true if page window, false otherwise.
+   * Indicates if the list is a slice of a larger one.
+   * @return true if it represents a slice, false otherwise.
    */
-  default boolean isPageWindow() {
-    return maxSize() != size();
+  default boolean isSlice() {
+    return originalListSize() != size();
   }
 }

@@ -20,16 +20,14 @@
  */
 package org.silverpeas.core.notification.user.client;
 
-import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
-import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
-import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
-import org.silverpeas.core.notification.user.client.model.SentNotificationInterfaceImpl;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.notification.user.client.constant.NotifMediaType;
+import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -153,17 +151,8 @@ public class NotificationSender implements java.io.Serializable {
     }
   }
 
-  private SentNotificationInterface getNotificationInterface()
-      throws NotificationManagerException {
-    SentNotificationInterface notificationInterface = null;
-    try {
-      notificationInterface = new SentNotificationInterfaceImpl();
-    } catch (Exception e) {
-      throw new NotificationManagerException(
-          "NotificationSender.getNotificationInterface()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return notificationInterface;
+  private SentNotificationInterface getNotificationInterface() {
+    return SentNotificationInterface.get();
   }
 
   private List<String> getUserIds(String lang, Map<String, String> usersLanguage) {
@@ -258,7 +247,7 @@ public class NotificationSender implements java.io.Serializable {
   // The next 4 static functions are for the use of NotificationUser component
   // as a popup window
   // -------------------------------------------------------------------------------------------
-  static public String getIdsLineFromIdsArray(String[] asrc) {
+  public static String getIdsLineFromIdsArray(String[] asrc) {
     StringBuilder toIds = new StringBuilder("");
 
     if (asrc != null) {
@@ -272,7 +261,7 @@ public class NotificationSender implements java.io.Serializable {
     return toIds.toString();
   }
 
-  static public String getIdsLineFromUserArray(UserDetail[] users) {
+  public static String getIdsLineFromUserArray(UserDetail[] users) {
     StringBuilder toIds = new StringBuilder("");
 
     if (users != null) {
@@ -286,7 +275,7 @@ public class NotificationSender implements java.io.Serializable {
     return toIds.toString();
   }
 
-  static public String getIdsLineFromGroupArray(Group[] groups) {
+  public static String getIdsLineFromGroupArray(Group[] groups) {
     StringBuilder toIds = new StringBuilder("");
 
     if (groups != null) {
@@ -300,7 +289,7 @@ public class NotificationSender implements java.io.Serializable {
     return toIds.toString();
   }
 
-  static public String[] getIdsArrayFromIdsLine(String src) {
+  public static String[] getIdsArrayFromIdsLine(String src) {
     if (src == null) {
       return new String[0];
     }

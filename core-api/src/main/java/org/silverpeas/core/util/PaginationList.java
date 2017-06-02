@@ -79,7 +79,7 @@ public class PaginationList<T> implements SilverpeasList<T> {
   }
 
   @Override
-  public long maxSize() {
+  public long originalListSize() {
     return maxsize;
   }
 
@@ -115,7 +115,7 @@ public class PaginationList<T> implements SilverpeasList<T> {
 
   @Override
   public boolean add(T e) {
-    if (wrappedList.size() + 1 > maxSize()) {
+    if (wrappedList.size() + 1 > originalListSize()) {
       throw MORE_THAN_MAXSIZE_EXCEPTION;
     }
     return wrappedList.add(e);
@@ -134,7 +134,7 @@ public class PaginationList<T> implements SilverpeasList<T> {
 
   @Override
   public boolean addAll(Collection<? extends T> c) {
-    if (wrappedList.size() + c.size() > maxSize()) {
+    if (wrappedList.size() + c.size() > originalListSize()) {
       throw MORE_THAN_MAXSIZE_EXCEPTION;
     }
     return wrappedList.addAll(c);
@@ -143,7 +143,7 @@ public class PaginationList<T> implements SilverpeasList<T> {
   @Override
   public boolean addAll(int index,
       Collection<? extends T> c) {
-    if (wrappedList.size() + c.size() > maxSize()) {
+    if (wrappedList.size() + c.size() > originalListSize()) {
       throw MORE_THAN_MAXSIZE_EXCEPTION;
     }
     return wrappedList.addAll(index, c);
@@ -188,7 +188,7 @@ public class PaginationList<T> implements SilverpeasList<T> {
 
   @Override
   public void add(int index, T element) {
-    if (wrappedList.size() + 1 > maxSize()) {
+    if (wrappedList.size() + 1 > originalListSize()) {
       throw MORE_THAN_MAXSIZE_EXCEPTION;
     }
     wrappedList.add(index, element);
@@ -276,7 +276,7 @@ public class PaginationList<T> implements SilverpeasList<T> {
 
     @Override
     public void add(T e) {
-      if (list.maxSize() + 1 > 0) {
+      if (list.originalListSize() + 1 > 0) {
         throw MORE_THAN_MAXSIZE_EXCEPTION;
       }
       iterator.add(e);

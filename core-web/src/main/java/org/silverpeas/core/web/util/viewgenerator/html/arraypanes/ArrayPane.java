@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 import javax.servlet.ServletRequest;
@@ -228,12 +227,4 @@ public interface ArrayPane extends SimpleGraphicElement {
   void setSortableLines(boolean sortableLines);
 
   void setUpdateSortJavascriptCallback(String callback);
-
-  /**
-   * Sets the pagination list which is able to provide only the necessary lines but with the
-   * maximum items the array could to provide.
-   * <p>For now, the elements of the pagination are not used, only max items is used</p>
-   * @param paginationList the pagination list.
-   */
-  void setPaginationList(SilverpeasList paginationList);
 }

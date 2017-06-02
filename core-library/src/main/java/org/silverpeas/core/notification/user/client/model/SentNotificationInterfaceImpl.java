@@ -24,36 +24,35 @@
 
 package org.silverpeas.core.notification.user.client.model;
 
-import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.security.authorization.ForbiddenRuntimeException;
 
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Interface declaration
- * @author
- */
+import static org.silverpeas.core.persistence.jdbc.DBUtil.openConnection;
+
+@Singleton
 public class SentNotificationInterfaceImpl implements SentNotificationInterface {
 
-  public SentNotificationInterfaceImpl() {
+  protected SentNotificationInterfaceImpl() {
   }
 
+  @Transactional
   @Override
   public void saveNotifUser(NotificationMetaData metaData, Set<UserRecipient> usersSet)
       throws NotificationManagerException {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
 
-      List<String> users = new ArrayList<String>();
+      List<String> users = new ArrayList<>();
       for (UserRecipient user : usersSet) {
         users.add(user.getUserId());
       }
@@ -70,42 +69,34 @@ public class SentNotificationInterfaceImpl implements SentNotificationInterface 
     } catch (Exception e) {
       throw new NotificationManagerException("SentNotificationInterfaceImpl.saveNotifUser()",
           SilverpeasRuntimeException.ERROR, "notificationManager.EX_CANT_SAVE_NOTIFICATION", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public List<SentNotificationDetail> getAllNotifByUser(String userId)
       throws NotificationManagerException {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       return SentNotificationDAO.getAllNotifByUser(con, userId);
     } catch (Exception e) {
       throw new NotificationManagerException("SentNotificationInterfaceImpl.getAllNotifByUser()",
           SilverpeasRuntimeException.ERROR, "notificationManager.EX_CANT_GET_NOTIFICATIONS", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public SentNotificationDetail getNotification(int notifId) throws NotificationManagerException {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       return SentNotificationDAO.getNotif(con, notifId);
     } catch (Exception e) {
       throw new NotificationManagerException("SentNotificationInterfaceImpl.getNotification()",
           SilverpeasRuntimeException.ERROR, "notificationManager.EX_CANT_GET_NOTIFICATION", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
+  @Transactional
   @Override
   public void deleteNotif(int notifId, String userId) throws NotificationManagerException {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       SentNotificationDetail toDel = getNotification(notifId);
 
       //check rights : check that the current user has the rights to delete the notification
@@ -118,30 +109,17 @@ public class SentNotificationInterfaceImpl implements SentNotificationInterface 
     } catch (Exception e) {
       throw new NotificationManagerException("SentNotificationInterfaceImpl.deleteNotif()",
           SilverpeasRuntimeException.ERROR, "notificationManager.EX_CANT_DELETE_NOTIFICATION", e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
+  @Transactional
   @Override
   public void deleteNotifByUser(String userId) throws NotificationManagerException {
-    Connection con = initCon();
-    try {
+    try (Connection con = openConnection()) {
       SentNotificationDAO.deleteNotifByUser(con, userId);
     } catch (Exception e) {
       throw new NotificationManagerException("SentNotificationInterfaceImpl.deleteNotifByUser()",
           SilverpeasRuntimeException.ERROR, "notificationManager.EX_CANT_DELETE_NOTIFICATION", e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  private Connection initCon() throws NotificationManagerException {
-    try {
-      return DBUtil.openConnection();
-    } catch (Exception e) {
-      throw new NotificationManagerException("SentNotificationInterfaceImpl.initCon()",
-          SilverpeasException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
     }
   }
 }

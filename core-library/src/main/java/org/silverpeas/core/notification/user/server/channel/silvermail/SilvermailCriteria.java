@@ -28,7 +28,9 @@ import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Class that permits to set message search criteria for user notification.
@@ -60,6 +62,7 @@ public class SilvermailCriteria {
     }
   }
 
+  private List<Long> ids = new ArrayList<>();
   private Long userId;
   private Long folderId;
   private Integer readState;
@@ -75,6 +78,16 @@ public class SilvermailCriteria {
    */
   public static SilvermailCriteria get() {
     return new SilvermailCriteria();
+  }
+
+  /**
+   * Sets the criteria of user identifier.
+   * @param ids the message identifiers.
+   * @return itself.
+   */
+  public SilvermailCriteria byId(Long... ids) {
+    this.ids.addAll(Arrays.stream(ids).collect(Collectors.toList())) ;
+    return this;
   }
 
   /**
@@ -161,6 +174,10 @@ public class SilvermailCriteria {
    */
   public void processWith(final SilvermailCriteriaProcessor processor) {
     processor.startProcessing();
+
+    if (!ids.isEmpty()) {
+      processor.then().processByIds(ids);
+    }
 
     if (userId != null) {
       processor.then().processUserId(userId);

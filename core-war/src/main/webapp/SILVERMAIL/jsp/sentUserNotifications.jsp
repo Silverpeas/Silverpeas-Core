@@ -32,112 +32,134 @@ response.setHeader("Pragma","no-cache");        //HTTP 1.0
 response.setDateHeader ("Expires",-1);          //prevents caching at the proxy server
 %>
 
-<%@ include file="graphicBox.jsp" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <%@ include file="checkSilvermail.jsp" %>
-<%@ page import="org.silverpeas.core.notification.user.client.model.SentNotificationDetail"%>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
-<%@page import="java.util.Date"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<c:set var="_userLanguage" value="${requestScope.resources.language}" scope="request"/>
+<jsp:useBean id="_userLanguage" type="java.lang.String" scope="request"/>
+<fmt:setLocale value="${_userLanguage}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+<view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
-<%
-   List<SentNotificationDetail> sentNotifs = (List<SentNotificationDetail>) request.getAttribute("SentNotifs");
-%>
+<c:url var="deleteIconUrl" value="/util/icons/delete.gif"/>
+<c:url var="userSettingUrl" value='<%=URLUtil.getURL(URLUtil.CMP_PERSONALIZATION, null, null) + "ParametrizeNotification"%>'/>
+
+<fmt:message var="deleteLabel" key="delete"/>
+<fmt:message var="deleteMessageConfirm" key="ConfirmDeleteMessage"/>
+<fmt:message var="deleteAllConfirm" key="ConfirmDeleteAllSentNotif"/>
+<fmt:message var="componentName" key="silverMail"/>
+<fmt:message var="inboxBrowseBarLabel" key="bbar1_inbox"/>
+<fmt:message var="deleteAllLabel" key="DeleteAllSentNotif"/>
+<fmt:message var="inboxLabel" key="LireNotification"/>
+<fmt:message var="outboxLabel" key="SentUserNotifications"/>
+<fmt:message var="userSettingLabel" key="ParametrerNotification"/>
+<fmt:message var="dateLabel" key="date"/>
+<fmt:message var="sourceLabel" key="source"/>
+<fmt:message var="subjectLabel" key="subject"/>
+<fmt:message var="operationLabel" key="operation"/>
+
+<c:set var="sentUserNotifications" value="${requestScope.SentNotifs}"/>
+<jsp:useBean id="sentUserNotifications" type="java.util.List<org.silverpeas.web.notificationserver.channel.silvermail.SentUserNotificationItem>"/>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<title><%=resource.getString("GML.popupTitle")%></title>
-<view:looknfeel/>
-<script type="text/javascript">
-function readMessage(id){
-	SP_openWindow("ReadSentNotification.jsp?NotifId=" + id,"ReadSentNotification","600","380","scrollable=yes,scrollbars=yes");
-}
+  <title></title>
+  <view:looknfeel/>
+  <script type="text/javascript">
+  function readMessage(id){
+    SP_openWindow("ReadSentNotification.jsp?NotifId=" + id,"ReadSentNotification","600","380","scrollable=yes,scrollbars=yes");
+  }
 
-function deleteMessage(id, skipConfirmation) {
-  if(skipConfirmation){
-    reallyDeleteMessage(id);
-  } else {
-    jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteMessage")%>", function() {
+  var _updateFromRequest = function(request) {
+    return sp.updateTargetWithHtmlContent('#silvermail-sent-list', request.responseText, true).then(
+        function() {
+          spProgressMessage.hide();
+        });
+  };
+
+  function deleteMessage(id, skipConfirmation) {
+    if(skipConfirmation){
       reallyDeleteMessage(id);
+    } else {
+      jQuery.popup.confirm("${deleteMessageConfirm}", function() {
+        reallyDeleteMessage(id);
+      });
+    }
+  }
+
+  function reallyDeleteMessage(id) {
+    var ajaxConfig = sp.ajaxConfig("DeleteSentNotification.jsp").byPostMethod();
+    ajaxConfig.withParam("NotifId", id);
+    spProgressMessage.show();
+    silverpeasAjax(ajaxConfig).then(_updateFromRequest);
+  }
+
+  function deleteAllMessages() {
+    jQuery.popup.confirm("${deleteAllConfirm}", function() {
+      var ajaxConfig = sp.ajaxConfig("DeleteAllSentNotifications.jsp").byPostMethod();
+      spProgressMessage.show();
+      silverpeasAjax(ajaxConfig).then(_updateFromRequest);
     });
   }
-}
-
-function reallyDeleteMessage(id) {
-  var $form = jQuery('#genericForm');
-  jQuery('#NotifId', $form).val(id);
-  $form.attr('action', "DeleteSentNotification.jsp").submit();
-}
-
-function deleteAllMessages() {
-  jQuery.popup.confirm("<%=silvermailScc.getString("ConfirmDeleteAllSentNotif")%>", function() {
-    jQuery('#genericForm').attr('action', "DeleteAllSentNotifications.jsp").submit();
-  });
-}
-</script>
+  </script>
 </head>
 <body>
-<%
-  Window window = gef.getWindow();
-
-  OperationPane operationPane = window.getOperationPane();
-  operationPane.addOperation(deleteAllNotif, silvermailScc.getString("DeleteAllSentNotif"), "javascript:deleteAllMessages()");
-
-  BrowseBar browseBar = window.getBrowseBar();
-  browseBar.setComponentName(silvermailScc.getString("silverMail"));
-  browseBar.setPath(silvermailScc.getString("bbar1_inbox"));
-
-  // Barre d'onglet
-  TabbedPane tabbedPane = gef.getTabbedPane();
-  tabbedPane.addTab(silvermailScc.getString("LireNotification"), "Main", false);
-  tabbedPane.addTab(silvermailScc.getString("SentUserNotifications"), "SentUserNotifications", true);
-  tabbedPane.addTab(silvermailScc.getString("ParametrerNotification"), m_Context + URLUtil.getURL(
-      URLUtil.CMP_PERSONALIZATION) + "ParametrizeNotification", false);
-
-  out.println(window.printBefore());
-  out.println(tabbedPane.print());
-
-  //Instanciation du cadre avec le view generator
-  Frame frame = gef.getFrame();
-  out.println(frame.printBefore());
-
-  // Arraypane
-  ArrayPane list = gef.getArrayPane( "silvermail", "SentUserNotifications.jsp", request,session );
-  list.addArrayColumn( silvermailScc.getString("date") );
-  list.addArrayColumn( silvermailScc.getString("source") );
-  list.addArrayColumn( silvermailScc.getString("subject") );
-  list.addArrayColumn(silvermailScc.getString("operation")).setSortable(false);
-
-  for (SentNotificationDetail message : sentNotifs) {
-    String link = "<a href=\"javascript:onclick=readMessage(" + message.getNotifId() + ");\">";
-    ArrayLine line = list.addArrayLine();
-	  Date notifDate = message.getNotifDate();
-    ArrayCellText cell = line.addArrayCellText(link + resource.getOutputDate(notifDate) + "</a>");
-    cell.setCompareOn(notifDate);
-    ArrayCellText cell1 = line.addArrayCellText(link + WebEncodeHelper.javaStringToHtmlString(message.getSource()) + "</a>");
-    cell1.setCompareOn(message.getSource());
-    line.addArrayCellText(link + message.getTitle() + "</a>").setCompareOn(message.getTitle());
-
-    // Ajout des icones de modification et de suppression
-    IconPane actions = gef.getIconPane();
-    Icon del = actions.addIcon();
-	del.setProperties(delete, silvermailScc.getString("delete") , "javascript:onclick=deleteMessage('" + message.getNotifId() +"');");
-    line.addArrayCellIconPane(actions);
-  }
-
-  out.println(list.print());
-  out.println(frame.printAfter());
-  out.println(window.printAfter());
-%>
-<form id="genericForm" action="" method="post">
-  <input id="NotifId" name="NotifId" type="hidden"/>
-</form>
+<view:browseBar clickable="false">
+  <view:browseBarElt link="#" label="${componentName}"/>
+  <view:browseBarElt link="#" label="${inboxBrowseBarLabel}"/>
+</view:browseBar>
+<view:operationPane>
+  <view:operation action="javascript:deleteAllMessages()" altText="${deleteAllLabel}"/>
+</view:operationPane>
+<view:window>
+  <view:tabs>
+    <view:tab label="${inboxLabel}" action="Main" selected="false"/>
+    <view:tab label="${outboxLabel}" action="SentUserNotifications" selected="true"/>
+    <view:tab label="${userSettingLabel}" action="${userSettingUrl}" selected="false"/>
+  </view:tabs>
+  <view:frame>
+    <div id="silvermail-sent-list">
+      <view:arrayPane var="userNotificationOutbox" routingAddress="SentUserNotifications.jsp">
+        <view:arrayColumn width="80" title="${dateLabel}" compareOn="${n -> n.id}"/>
+        <view:arrayColumn title="${subjectLabel}" compareOn="${n -> silfn:escapeHtml(n.data.title)}"/>
+        <view:arrayColumn title="${sourceLabel}" compareOn="${n -> silfn:escapeHtml(n.data.source)}"/>
+        <view:arrayColumn width="10" title="${operationLabel}" sortable="false"/>
+        <view:arrayLines var="sentUserNotification" items="${sentUserNotifications}">
+          <view:arrayLine>
+            <c:set var="viewUrl" value="javascript:onclick=readMessage('${sentUserNotification.id}');"/>
+            <c:set var="deleteUrl" value="javascript:onclick=deleteMessage('${sentUserNotification.id}');"/>
+            <view:arrayCellText>
+              <a href="${viewUrl}">${silfn:formatDate(sentUserNotification.data.notifDate, _userLanguage)}</a>
+            </view:arrayCellText>
+            <view:arrayCellText>
+              <a href="${viewUrl}">${silfn:escapeHtml(sentUserNotification.data.title)}</a>
+            </view:arrayCellText>
+            <view:arrayCellText>
+              <a href="${viewUrl}">${silfn:escapeHtml(sentUserNotification.data.source)}</a>
+            </view:arrayCellText>
+            <view:arrayCellText>
+              <view:icons>
+                <view:icon iconName="${deleteIconUrl}" action="${deleteUrl}" altText="${deleteLabel}"/>
+              </view:icons>
+            </view:arrayCellText>
+          </view:arrayLine>
+        </view:arrayLines>
+      </view:arrayPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          sp.arrayPane.ajaxControls('#silvermail-sent-list', _updateFromRequest);
+        });
+      </script>
+    </div>
+  </view:frame>
+</view:window>
+<view:progressMessage/>
 </body>
 </html>
