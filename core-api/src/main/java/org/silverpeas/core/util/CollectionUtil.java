@@ -23,12 +23,16 @@
  */
 package org.silverpeas.core.util;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
+
 import java.util.*;
 
 /**
  * @author Yohann Chastagnier
  */
 public class CollectionUtil {
+
+  private static final int SPLIT_BATCH_SIZE = 500;
 
   /**
    * Reverse the given list and returns it.
@@ -67,8 +71,19 @@ public class CollectionUtil {
    * @param collection the collection to split
    * @return the clices of the specified collection
    */
+  @SuppressWarnings("unchecked")
+  public static <T> List<List<T>> splitList(final List<T> collection) {
+    return (List) split((Collection) collection, SPLIT_BATCH_SIZE);
+  }
+
+  /**
+   * Splits a collection into several collections. (Particularly useful for limitations of database
+   * around the "in" clause)
+   * @param collection the collection to split
+   * @return the clices of the specified collection
+   */
   public static <T> Collection<Collection<T>> split(final Collection<T> collection) {
-    return split(collection, 500);
+    return split(collection, SPLIT_BATCH_SIZE);
   }
 
   /**
@@ -88,7 +103,7 @@ public class CollectionUtil {
         if (collectionSizeMax > 0 && collection.size() > collectionSizeMax) {
 
           // Guessing the result size and initializing the result
-          int size = (collection.size() / collectionSizeMax);
+          int size = collection.size() / collectionSizeMax;
           if ((collection.size() % collectionSizeMax) != 0) {
             size++;
           }
@@ -114,7 +129,7 @@ public class CollectionUtil {
         }
       }
     } catch (final Exception e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     } finally {
       if (result == null) {
         result = new ArrayList<>();
@@ -195,7 +210,7 @@ public class CollectionUtil {
    * @param extractor extractor interface
    * @return a map initialized from a list by an extractor
    */
-  public static <T, K, V> HashMap<K, V> listToMap(final Collection<T> collection,
+  public static <T, K, V> Map<K, V> listToMap(final Collection<T> collection,
       final ExtractionList<T, K, V> extractor) {
     final LinkedHashMap<K, V> result;
     if (collection == null) {

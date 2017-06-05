@@ -22,30 +22,34 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.util;
+package org.silverpeas.web.notificationserver.channel.silvermail;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import org.silverpeas.core.notification.user.client.model.SentNotificationDetail;
+
+import java.util.function.Function;
 
 /**
  * @author Yohann Chastagnier
  */
-public class SilverpeasArrayList<T> extends ArrayList<T> implements SilverpeasList<T> {
+public class SentUserNotificationItem {
 
-  public SilverpeasArrayList(final int initialCapacity) {
-    super(initialCapacity);
+  private final SentNotificationDetail data;
+  private final Function<String, String> sourceSupplier;
+
+  public SentUserNotificationItem(final SentNotificationDetail data,
+      final Function<String, String> sourceSupplier) {
+    this.data = data;
+    this.sourceSupplier = sourceSupplier;
   }
 
-  public SilverpeasArrayList() {
-    super();
+  public String getId() {
+    return String.valueOf(getData().getNotifId());
   }
 
-  public SilverpeasArrayList(final Collection<? extends T> c) {
-    super(c);
-  }
-
-  @Override
-  public long originalListSize() {
-    return size();
+  public SentNotificationDetail getData() {
+    if(data.getSource() == null) {
+      data.setSource(sourceSupplier.apply(data.getComponentId()));
+    }
+    return data;
   }
 }

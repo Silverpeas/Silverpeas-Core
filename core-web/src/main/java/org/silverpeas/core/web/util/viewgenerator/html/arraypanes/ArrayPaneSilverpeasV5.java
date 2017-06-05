@@ -26,6 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import java.util.Collections;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
@@ -61,11 +62,10 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
    */
   @Override
   public String print() {
-    GraphicElementFactory gef =
-        (GraphicElementFactory) getSession().getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    
-    Pagination pagination = gef.getPagination(getNbItems(), getState().getMaximumVisibleLine(),
-        getState().getFirstVisibleLine());
+    GraphicElementFactory gef = (GraphicElementFactory) getSession()
+        .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+
+    Pagination pagination = getPagination(getNbItems());
 
     String sep = "&";
     if (isXHTML()) {
@@ -86,7 +86,8 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
 
     int columnsCount = getColumns().size();
 
-    if (!getLines().isEmpty() && (getColumnToSort() != 0) && (getColumnToSort() <= columnsCount)) {
+    if (!isPaginationOptimized() && !getLines().isEmpty() && (getColumnToSort() != 0) &&
+        (getColumnToSort() <= columnsCount)) {
       Collections.sort(getLines());
     }
 
@@ -138,14 +139,10 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
         if (isPaginationOptimized()) {
           getLines().forEach(l -> printArrayPaneLine(result, l));
         } else {
-          final int first = pagination.getIndexForCurrentPage();
-          final int lastIndex;
-          if (pagination.isLastPage()) {
-            lastIndex = pagination.getLastItemIndex();
-          } else {
-            lastIndex = pagination.getIndexForNextPage();
-          }
-          for (int i = first; i < lastIndex; i++) {
+          final Pair<Integer, Integer> indexes = getStartLastIndexesFrom(pagination);
+          final int firstIndex = indexes.getLeft();
+          final int lastIndex = indexes.getRight();
+          for (int i = firstIndex; i < lastIndex; i++) {
             printArrayPaneLine(result, getLines().get(i));
           }
         }

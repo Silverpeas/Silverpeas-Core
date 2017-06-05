@@ -24,12 +24,14 @@
 package org.silverpeas.core.notification.user.server.channel.silvermail;
 
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.datasource.repository.QueryCriteria;
 import org.silverpeas.core.persistence.datasource.repository.SimpleQueryCriteria;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * A dynamic builder of a JPQL query.
@@ -68,6 +70,18 @@ public class JPQLQueryBuilder implements SilvermailCriteriaProcessor {
   public SilvermailCriteriaProcessor then() {
     if (!done && jpqlCriteria.clause().text().length() > 0) {
       conjonction = "and";
+    }
+    return this;
+  }
+
+  @Override
+  public SilvermailCriteriaProcessor processByIds(final List<Long> ids) {
+    if (!done) {
+      List<UniqueLongIdentifier> convertedIds =
+          ids.stream().map(i -> new UniqueLongIdentifier().fromString(String.valueOf(i)))
+              .collect(Collectors.toList());
+      jpqlCriteria.clause().add(conjonction).add("id = :ids").parameters().add("ids", convertedIds);
+      conjonction = null;
     }
     return this;
   }

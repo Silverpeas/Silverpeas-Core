@@ -47,9 +47,9 @@ public class SilverpeasListWrapper<E> implements SilverpeasList<E> {
   }
 
   @Override
-  public long maxSize() {
+  public long originalListSize() {
     return wrappedList instanceof SilverpeasList ?
-        ((SilverpeasList) wrappedList).maxSize() :
+        ((SilverpeasList) wrappedList).originalListSize() :
         size();
   }
 

@@ -33,7 +33,6 @@ import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.model.SentNotificationDetail;
 import org.silverpeas.core.notification.user.client.model.SentNotificationInterface;
-import org.silverpeas.core.notification.user.client.model.SentNotificationInterfaceImpl;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILException;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILPersistence;
@@ -48,12 +47,13 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
     .QUERY_ORDER_BY.*;
@@ -76,6 +76,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   private Set<String> selectedUserNotificationIds = new HashSet<>();
   private PaginationPage pagination;
   private QUERY_ORDER_BY orderBy;
+  private Function<String, String> sourceSupplier = this::getSource;
 
   /**
    * Constructor declaration
@@ -163,23 +164,17 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
    * @throws NotificationManagerException
    * @see
    */
-  public List<SentNotificationDetail> getUserMessageList()
+  public List<SentUserNotificationItem> getUserMessageList()
       throws NotificationManagerException {
-    String userId = getUserId();
-    List<SentNotificationDetail> notifByUser;
-    List<SentNotificationDetail> sentNotifByUser = new ArrayList<SentNotificationDetail>();
     try {
-      notifByUser = getNotificationInterface().getAllNotifByUser(userId);
-      for (SentNotificationDetail sentNotif : notifByUser) {
-        sentNotif.setSource(getSource(sentNotif.getComponentId()));
-        sentNotifByUser.add(sentNotif);
-      }
+      return getNotificationInterface().getAllNotifByUser(getUserId()).stream()
+          .map(n -> new SentUserNotificationItem(n, sourceSupplier))
+          .collect(Collectors.toList());
     } catch (NotificationManagerException e) {
       throw new NotificationManagerException(
           "SILVERMAILSessionController.getUserMessageList()",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
     }
-    return sentNotifByUser;
   }
 
   /**
@@ -253,15 +248,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
 
   private SentNotificationInterface getNotificationInterface()
       throws NotificationManagerException {
-    SentNotificationInterface notificationInterface = null;
-    try {
-      notificationInterface = new SentNotificationInterfaceImpl();
-    } catch (Exception e) {
-      throw new NotificationManagerException(
-          "SILVERMAILSessionController.getNotificationInterface()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
-    }
-    return notificationInterface;
+    return SentNotificationInterface.get();
   }
 
   /**

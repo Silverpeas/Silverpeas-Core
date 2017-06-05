@@ -24,6 +24,14 @@
 
 package org.silverpeas.core.notification.user.client.model;
 
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.LongText;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,10 +40,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.persistence.jdbc.LongText;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
+import java.util.Map;
 
 public class SentNotificationDAO {
 
@@ -83,10 +88,11 @@ public class SentNotificationDAO {
   public static List<SentNotificationDetail> getAllNotifByUser(Connection con, String userId)
       throws SQLException {
     // récupérer toutes les notifications envoyées par un utilisateur
-    List<SentNotificationDetail> notifs = new ArrayList<SentNotificationDetail>();
+    final List<SentNotificationDetail> notifs = new ArrayList<>();
+    final List<Integer> longTextIds = new ArrayList<>();
 
     String query =
-        "select " + COLUMNS + " from ST_NotifSended where userId = ? order by notifDate desc";
+        "select " + COLUMNS + " from ST_NotifSended where userId = ? order by notifId desc";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
     try {
@@ -94,9 +100,19 @@ public class SentNotificationDAO {
       prepStmt.setInt(1, Integer.parseInt(userId));
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        SentNotificationDetail notif = recupNotif(rs);
+        final SentNotificationDetail notif = convertFromWithoutBody(rs);
+        longTextIds.add(rs.getInt("body"));
         notifs.add(notif);
       }
+      final Mutable<Integer> offset = Mutable.of(0);
+      CollectionUtil.splitList(longTextIds).forEach(batchIds -> {
+        final Map<Integer, String> contents = LongText.listLongTexts(batchIds);
+        for (int n = offset.get(), c = 0; c < batchIds.size(); n++, c++) {
+          final SentNotificationDetail notif = notifs.get(n);
+          notif.setBody(contents.get(batchIds.get(c)));
+        }
+        offset.set(offset.get() + batchIds.size());
+      });
     } finally {
       DBUtil.close(rs, prepStmt);
     }
@@ -137,7 +153,7 @@ public class SentNotificationDAO {
       prepStmt.setInt(1, notifId);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
-        notif = recupNotif(rs);
+        notif = convertFrom(rs);
       }
       // récupérer les destinataires
       notif.setUsers(getReceivers(con, notifId));
@@ -150,6 +166,9 @@ public class SentNotificationDAO {
   public static void deleteNotif(Connection con, int notifId) throws SQLException {
     PreparedStatement prepStmt = null;
     try {
+      JdbcSqlQuery.createDeleteFor("ST_LongText")
+          .where("id = (select body from ST_NotifSended where notifId = ?)", notifId)
+          .executeWith(con);
       // supprimer la liste des users ayant reçu la notification
       deleteReceivers(con, notifId);
       // supprimer la notification
@@ -195,7 +214,7 @@ public class SentNotificationDAO {
     }
   }
 
-  protected static SentNotificationDetail recupNotif(ResultSet rs) throws SQLException {
+  private static SentNotificationDetail convertFromWithoutBody(ResultSet rs) throws SQLException {
     SentNotificationDetail notif = new SentNotificationDetail();
     notif.setNotifId(rs.getInt("notifId"));
     notif.setUserId(rs.getInt("userId"));
@@ -215,13 +234,17 @@ public class SentNotificationDAO {
     notif.setLink(rs.getString("link"));
     notif.setSessionId(rs.getString("sessionId"));
     notif.setComponentId(rs.getString("componentId"));
-    // récupération du body depuis la table ST_LongText à partir de l'id
+    return notif;
+  }
+
+  private static SentNotificationDetail convertFrom(ResultSet rs) throws SQLException {
+    SentNotificationDetail notif = convertFromWithoutBody(rs);
+    // Getting content
     String body = "";
     try {
-      int longTextId = -1;
-      longTextId = rs.getInt("body");
-      body = LongText.getLongText(longTextId);
+      body = LongText.getLongText(rs.getInt("body"));
     } catch (Exception e) {
+      SilverLogger.getLogger(SentNotificationDAO.class).warn(e);
     }
     notif.setBody(body);
     return notif;

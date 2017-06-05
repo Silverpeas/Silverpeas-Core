@@ -53,7 +53,7 @@
 <fmt:message var="linkIconUrl" key="silvermail.link" bundle="${icons}"/>
 
 <fmt:message var="componentName" key="silverMail"/>
-<fmt:message var="inboxLabel" key="bbar1_inbox"/>
+<fmt:message var="inboxBrowseBarLabel" key="bbar1_inbox"/>
 <fmt:message var="notyfyLabel" key="Notifier"/>
 <fmt:message var="markSelectedReadLabel" key="MarkSelectedNotifAsRead"/>
 <fmt:message var="markSelectedReadConfirm" key="MarkSelectedNotifAsReadConfirmation"/>
@@ -158,7 +158,7 @@
 <body>
 <view:browseBar clickable="false">
   <view:browseBarElt link="#" label="${componentName}"/>
-  <view:browseBarElt link="#" label="${inboxLabel}"/>
+  <view:browseBarElt link="#" label="${inboxBrowseBarLabel}"/>
 </view:browseBar>
 <view:operationPane>
   <view:operationOfCreation icon="${notifyIconUrl}" action="javascript:newMessage()" altText="${notyfyLabel}"/>
@@ -192,21 +192,21 @@
             <view:arrayCellCheckbox name="selection"
                                     checked="${userNotification.selected}"
                                     value="${userNotification.id}"/>
-            <view:arrayCellText compareOn="${userNotification.data.id}">
-              ${silfn:formatDate(userNotification.data.date, _userLanguage)}
+            <view:arrayCellText>
+              <a href="${viewUrl}">${silfn:formatDate(userNotification.data.date, _userLanguage)}</a>
             </view:arrayCellText>
             <view:arrayCellText>
               <c:if test="${not empty userNotification.data.url}">
                 <a href="${userNotification.data.url}" target="_top"><img src="<c:url value="${linkIconUrl}"/>" alt="" border="0"/></a>
               </c:if>
             </view:arrayCellText>
-            <view:arrayCellText compareOn="${fn:toLowerCase(userNotification.data.subject)}">
+            <view:arrayCellText>
               <a href="${viewUrl}">${silfn:escapeHtml(userNotification.data.subject)}</a>
             </view:arrayCellText>
-            <view:arrayCellText compareOn="${fn:toLowerCase(userNotification.data.senderName)}">
+            <view:arrayCellText>
               <a href="${viewUrl}">${silfn:escapeHtml(userNotification.data.senderName)}</a>
             </view:arrayCellText>
-            <view:arrayCellText compareOn="${fn:toLowerCase(userNotification.data.source)}">
+            <view:arrayCellText>
               ${silfn:escapeHtml(userNotification.data.source)}
             </view:arrayCellText>
           </view:arrayLine>

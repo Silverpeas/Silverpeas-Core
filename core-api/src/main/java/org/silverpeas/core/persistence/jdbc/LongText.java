@@ -24,129 +24,117 @@
 
 package org.silverpeas.core.persistence.jdbc;
 
-/**
- * Title: userPanelPeas
- * Description: this is an object pair of pair object
- * Copyright:    Copyright (c) 2002
- * Company:      Silverpeas
- * @author J-C Groccia
- * @version 1.0
- */
-
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.util.Mutable;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.silverpeas.core.persistence.jdbc.DBUtil.openConnection;
 
 public class LongText {
-  public final static int PART_SIZE_MAX = 1998;
+  private static final int PART_SIZE_MAX = 1998;
+  private static final String INSERT_LONG_TEXT =
+      "insert into ST_LongText (id, orderNum, bodyContent) values (?, ?, ?)";
 
-  static public int addLongText(String theText) throws SQLException {
+  /**
+   * Hidden constructor.
+   */
+  private LongText() {
+  }
+
+  public static int addLongText(String theText) throws SQLException {
     int theId = DBUtil.getNextId("ST_LongText", "id");
-    PreparedStatement stmt = null;
-    Connection privateConnection = null;
     int orderNum = 0;
-    String partText = null;
-    String theQuery = "insert into ST_LongText (id, orderNum, bodyContent) values (?, ?, ?)";
 
-    try {
-      privateConnection = openConnection();
-      stmt = privateConnection.prepareStatement(theQuery);
+    try (Connection connection = openConnection();
+         PreparedStatement stmt = connection.prepareStatement(INSERT_LONG_TEXT)) {
       if ((theText == null) || (theText.length() <= 0)) {
-        stmt.setInt(1, theId);
-        stmt.setInt(2, orderNum);
-        stmt.setString(3, "");
+        int i = 1;
+        stmt.setInt(i++, theId);
+        stmt.setInt(i++, orderNum);
+        stmt.setString(i, "");
         stmt.executeUpdate();
       } else {
         while (orderNum * PART_SIZE_MAX < theText.length()) {
-          if ((orderNum + 1) * PART_SIZE_MAX < theText.length())
-            partText = theText.substring(orderNum * PART_SIZE_MAX,
-                (orderNum + 1) * PART_SIZE_MAX);
-          else
+          final String partText;
+          if ((orderNum + 1) * PART_SIZE_MAX < theText.length()) {
+            partText = theText.substring(orderNum * PART_SIZE_MAX, (orderNum + 1) * PART_SIZE_MAX);
+          } else {
             partText = theText.substring(orderNum * PART_SIZE_MAX);
-          stmt.setInt(1, theId);
-          stmt.setInt(2, orderNum);
-          stmt.setString(3, partText);
+          }
+          int i = 1;
+          stmt.setInt(i++, theId);
+          stmt.setInt(i++, orderNum);
+          stmt.setString(i, partText);
           stmt.executeUpdate();
           orderNum++;
         }
       }
-    } finally {
-      DBUtil.close(stmt);
-      closeConnection(privateConnection);
     }
     return theId;
   }
 
-  static public String getLongText(int longTextId) throws UtilException {
-    PreparedStatement stmt = null;
-    Connection privateConnection = null;
-    ResultSet rs = null;
-    StringBuilder valret = new StringBuilder();
-    String theQuery = "select bodyContent from ST_LongText where id = ? order by orderNum";
-
+  public static String getLongText(int longTextId) {
     try {
-      privateConnection = openConnection();
-      stmt = privateConnection.prepareStatement(theQuery);
-      stmt.setInt(1, longTextId);
-      rs = stmt.executeQuery();
-      while (rs.next()) {
-        valret.append(rs.getString(1));
-      }
-      return valret.toString();
+      final StringBuilder content = new StringBuilder();
+      JdbcSqlQuery.createSelect("bodyContent from ST_LongText")
+          .where("id = ?", longTextId)
+          .addSqlPart("order by orderNum")
+          .executeUnique(row -> {
+            content.append(row.getString(1));
+            return null;
+          });
+      return content.toString();
     } catch (Exception e) {
-      throw new UtilException("LongText.getLongText()",
-          SilverpeasException.WARNING, "root.MSG_PARAM_VALUE", Integer
-          .toString(longTextId), e);
-    } finally {
-      DBUtil.close(rs, stmt);
-      closeConnection(privateConnection);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
-  static public void removeLongText(int longTextId) throws UtilException {
-    PreparedStatement stmt = null;
-    Connection privateConnection = null;
-    String theQuery = "delete from ST_LongText where id = ?";
-
+  /**
+   * Lists long texts which are indexed by their ids.
+   * @param longTextIds the long text ids.
+   * @return the long texts indexed by their ids.
+   */
+  public static Map<Integer, String> listLongTexts(Collection<Integer> longTextIds) {
     try {
-      privateConnection = openConnection();
-      stmt = privateConnection.prepareStatement(theQuery);
-      stmt.setInt(1, longTextId);
-      stmt.executeUpdate();
+      final int idIndex = 1;
+      final int contentIndex = idIndex + 1;
+      final Mutable<Integer> previousId = Mutable.of(-1);
+      final StringBuilder content = new StringBuilder();
+      final Map<Integer, String> result = new HashMap<>();
+      JdbcSqlQuery.createSelect("id, bodyContent from ST_LongText")
+          .where("id").in(longTextIds)
+          .addSqlPart("order by id, orderNum")
+          .execute(row -> {
+            final int id = row.getInt(idIndex);
+            if (!row.isFirst() && !previousId.is(id)) {
+              result.put(previousId.get(), content.toString());
+              content.setLength(0);
+            }
+            previousId.set(id);
+            content.append(row.getString(contentIndex));
+            if (row.isLast()) {
+              result.put(id, content.toString());
+            }
+            return null;
+          });
+      return result;
     } catch (Exception e) {
-      throw new UtilException("LongText.removeLongText()",
-          SilverpeasException.WARNING, "root.MSG_PARAM_VALUE", Integer
-          .toString(longTextId), e);
-    } finally {
-      DBUtil.close(stmt);
-      closeConnection(privateConnection);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 
-  static protected Connection openConnection() throws UtilException {
-    Connection con = null;
+  public static void removeLongText(int longTextId) {
     try {
-      con = DBUtil.openConnection();
+      JdbcSqlQuery.createDeleteFor("ST_LongText").where("id = ?", longTextId).execute();
     } catch (Exception e) {
-      throw new UtilException("LongText.openConnection()",
-          SilverpeasException.WARNING, "root.MSG_PARAM_VALUE", e);
-    }
-
-    return con;
-  }
-
-  static protected void closeConnection(Connection con) {
-    try {
-      con.close();
-    } catch (Exception e) {
-      SilverTrace.error("util", "LongText.closeConnection()",
-          "root.EX_CONNECTION_CLOSE_FAILED", e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 }

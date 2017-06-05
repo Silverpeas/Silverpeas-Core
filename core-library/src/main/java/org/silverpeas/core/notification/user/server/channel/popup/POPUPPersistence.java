@@ -24,13 +24,14 @@
 
 package org.silverpeas.core.notification.user.server.channel.popup;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.LongText;
+import org.silverpeas.core.persistence.jdbc.bean.IdPK;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 public class POPUPPersistence {
 
@@ -82,6 +83,7 @@ public class POPUPPersistence {
           longTextId = Integer.parseInt(smb.getBody());
           body = LongText.getLongText(longTextId);
         } catch (Exception e) {
+          SilverLogger.getLogger(POPUPPersistence.class).error(e);
           body = smb.getBody();
         }
         result.setBody(body);

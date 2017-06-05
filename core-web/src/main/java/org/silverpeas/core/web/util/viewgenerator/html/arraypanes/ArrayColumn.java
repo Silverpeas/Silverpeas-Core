@@ -24,13 +24,12 @@
 
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.ACTION_PARAMETER_NAME;
-import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.COLUMN_PARAMETER_NAME;
-import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.TARGET_PARAMETER_NAME;
+import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.function.Function;
 
-import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
+import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.*;
 
 /**
  * @author squere
@@ -51,6 +50,7 @@ public class ArrayColumn implements SimpleGraphicElement {
   protected ArrayPane pane;
   protected int m_Behaviour = COLUMN_BEHAVIOUR_DEFAULT;
   protected String width = null;
+  private Function compareOn;
   /**
    * In some cases, it may be preferable to specify the routing address (via
    * {@link #setRoutingAddress(String address)}) If not the {@link #print()} method defaults to an
@@ -117,6 +117,16 @@ public class ArrayColumn implements SimpleGraphicElement {
     } else {
       return false;
     }
+  }
+
+  @SuppressWarnings("unchecked")
+  public <T, V> Function<T, Comparable<V>> getCompareOn() {
+    return compareOn;
+  }
+
+  public <T, V> void setCompareOn(final Function<T, Comparable<V>> compareOn) {
+    setSortable(true);
+    this.compareOn = compareOn;
   }
 
   /**

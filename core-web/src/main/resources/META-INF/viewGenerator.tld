@@ -1184,6 +1184,12 @@
       <type>java.lang.Boolean</type>
     </attribute>
     <attribute>
+      <description>Set comparator for lazy display. If specified, sortable attribute is ignored</description>
+      <name>compareOn</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>javax.el.LambdaExpression</type>
+    </attribute>
+    <attribute>
       <description>If the column is sortable</description>
       <name>width</name>
       <rtexprvalue>true</rtexprvalue>

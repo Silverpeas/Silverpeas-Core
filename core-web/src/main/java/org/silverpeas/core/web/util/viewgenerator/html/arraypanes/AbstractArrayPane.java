@@ -26,6 +26,7 @@ import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
 import javax.portlet.RenderRequest;
 import javax.servlet.ServletRequest;
@@ -59,6 +60,7 @@ public class AbstractArrayPane implements ArrayPane {
   private HttpSession session = null;
   private int mSortMode = 0;
   private int maxCountOfPaginationList = -1;
+  private Pagination pagination;
   /**
    * configurable values for cells spacing and padding (of the internal table).
    */
@@ -185,6 +187,22 @@ public class AbstractArrayPane implements ArrayPane {
       result = orderBy != null ? orderBy.getLeft() : null;
     }
     return result;
+  }
+
+  /**
+   * Gets the start index and the last index.
+   * @param pagination the pagination.
+   * @return the indexes.
+   */
+  static Pair<Integer, Integer> getStartLastIndexesFrom(Pagination pagination) {
+    final int firstIndex = pagination.getIndexForCurrentPage();
+    final int lastIndex;
+    if (pagination.isLastPage()) {
+      lastIndex = pagination.getLastItemIndex();
+    } else {
+      lastIndex = pagination.getIndexForNextPage();
+    }
+    return Pair.of(firstIndex, lastIndex);
   }
 
   @Override
@@ -546,10 +564,15 @@ public class AbstractArrayPane implements ArrayPane {
     this.updateSortJavascriptCallback = callback;
   }
 
-  @Override
-  public void setPaginationList(final SilverpeasList paginationList) {
-    if (paginationList.isPageWindow()) {
-      this.maxCountOfPaginationList = (int) paginationList.maxSize();
+  /**
+   * Sets the pagination list which is able to provide only the necessary lines but with the
+   * maximum items the array could to provide.
+   * <p>For now, the elements of the pagination are not used, only max items is used</p>
+   * @param paginationList the pagination list.
+   */
+  void setPaginationList(final SilverpeasList paginationList) {
+    if (paginationList.isSlice()) {
+      this.maxCountOfPaginationList = (int) paginationList.originalListSize();
     } else {
       this.maxCountOfPaginationList = -1;
     }
@@ -570,5 +593,22 @@ public class AbstractArrayPane implements ArrayPane {
    */
   protected int getNbItems() {
     return isPaginationOptimized() ? maxCountOfPaginationList : getLines().size();
+  }
+  /**
+   * Gets the current pagination.
+   * @return the {@link Pagination} instance.
+   * @param nbItems
+   */
+  Pagination getPagination(final int nbItems) {
+    if (pagination == null) {
+      GraphicElementFactory gef = (GraphicElementFactory) getSession()
+          .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+      pagination = gef.getPagination(nbItems, getState().getMaximumVisibleLine(),
+          getState().getFirstVisibleLine());
+    } else if (pagination.getNbItems() != nbItems) {
+      pagination
+          .init(nbItems, getState().getMaximumVisibleLine(), getState().getFirstVisibleLine());
+    }
+    return pagination;
   }
 }

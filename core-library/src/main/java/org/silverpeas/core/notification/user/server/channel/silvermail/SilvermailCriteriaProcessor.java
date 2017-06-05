@@ -63,6 +63,13 @@ public interface SilvermailCriteriaProcessor {
   SilvermailCriteriaProcessor then();
 
   /**
+   * Processes the criterion on the message identifiers.
+   * @param ids the identifier of messages.
+   * @return the processor itself.
+   */
+  SilvermailCriteriaProcessor processByIds(List<Long> ids);
+
+  /**
    * Processes the criterion on the user identifier.
    * @param userId the identifier of a user.
    * @return the processor itself.
