@@ -33,7 +33,6 @@ import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
 import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
@@ -42,7 +41,6 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 
-import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -127,10 +125,7 @@ public class GroupSynchronizationRuleTest {
 
     UserManager userManager = commonAPI4Test.injectIntoMockedBeanContainer(mock(UserManager.class));
     GroupManager groupManager = commonAPI4Test.injectIntoMockedBeanContainer(mock(GroupManager.class));
-
-    OrganizationSchema organizationSchema = new OrganizationSchema(mock(Connection.class));
-    final DomainDriverManager domainDriverManager = mock(DomainDriverManager.class);
-    when(domainDriverManager.getOrganization()).thenReturn(organizationSchema);
+    final DomainDriverManager domainDriverManager = commonAPI4Test.injectIntoMockedBeanContainer(mock(DomainDriverManager.class));
     DomainDriverManagerProvider domainDriverManagerProvider =
         commonAPI4Test.injectIntoMockedBeanContainer(mock(DomainDriverManagerProvider.class));
     when(domainDriverManagerProvider.getDomainDriverManager())

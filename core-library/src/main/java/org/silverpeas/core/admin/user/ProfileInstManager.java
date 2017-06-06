@@ -24,19 +24,20 @@
 
 package org.silverpeas.core.admin.user;
 
-import org.silverpeas.core.admin.domain.DomainDriverManager;
-import org.silverpeas.core.admin.persistence.AdminPersistenceException;
+import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.RightAssignationContext;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
@@ -49,6 +50,11 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 @Transactional(Transactional.TxType.MANDATORY)
 public class ProfileInstManager {
 
+  public static final String PROFILES_OF_USER = "profiles of user";
+  public static final String PROFILE = "profile";
+  @Inject
+  private OrganizationSchema organizationSchema;
+
   /**
    * Constructor
    */
@@ -58,69 +64,61 @@ public class ProfileInstManager {
   /**
    * Create a new Profile instance in database
    * @param profileInst
-   * @param ddManager
    * @param fatherCompLocalId
    * @return
    * @throws AdminException
    */
-  public String createProfileInst(ProfileInst profileInst,
-      DomainDriverManager ddManager, int fatherCompLocalId)
+  public String createProfileInst(ProfileInst profileInst, int fatherCompLocalId)
       throws AdminException {
     try {
       // Create the spaceProfile node
       UserRoleRow newRole = makeUserRoleRow(profileInst);
       newRole.id = -1; // new profile Id is to be defined
       newRole.instanceId = fatherCompLocalId;
-      ddManager.getOrganization().userRole.createUserRole(newRole);
+      organizationSchema.userRole().createUserRole(newRole);
       String sProfileNodeId = idAsString(newRole.id);
 
       // Update the CSpace with the links TProfile-TGroup
       for (int nI = 0; nI < profileInst.getNumGroup(); nI++) {
-        ddManager.getOrganization().userRole.addGroupInUserRole(idAsInt(profileInst.getGroup(nI)),
+        organizationSchema.userRole().addGroupInUserRole(idAsInt(profileInst.getGroup(nI)),
             idAsInt(
             sProfileNodeId));
       }
 
       // Update the CSpace with the links TProfile-TUser
       for (int nI = 0; nI < profileInst.getNumUser(); nI++) {
-        ddManager.getOrganization().userRole.addUserInUserRole(idAsInt(profileInst.getUser(nI)),
+        organizationSchema.userRole().addUserInUserRole(idAsInt(profileInst.getUser(nI)),
             idAsInt(
             sProfileNodeId));
       }
 
       return sProfileNodeId;
     } catch (Exception e) {
-      throw new AdminException(failureOnAdding("profile", profileInst.getName()), e);
+      throw new AdminException(failureOnAdding(PROFILE, profileInst.getName()), e);
     }
   }
 
   /**
-   * Get Profileinformation from database with the given id and creates a new Profile instance
-   * @param ddManager
+   * Get Profile information from database with the given id and creates a new Profile instance
    * @param sProfileId
    * @return
    * @throws AdminException
    */
-  public ProfileInst getProfileInst(DomainDriverManager ddManager, String sProfileId)
+  public ProfileInst getProfileInst(String sProfileId)
       throws AdminException {
     ProfileInst profileInst = null;
     try {
-      ddManager.holdOrganizationSchema();
-
       // Load the profile detail
-      UserRoleRow userRole = ddManager.getOrganization().userRole.getUserRole(idAsInt(sProfileId));
+      UserRoleRow userRole = organizationSchema.userRole().getUserRole(idAsInt(sProfileId));
 
       if (userRole != null) {
         profileInst = userRoleRow2ProfileInst(userRole);
-        setUsersAndGroups(ddManager, profileInst);
+        setUsersAndGroups(profileInst);
       } else {
-        SilverTrace.error("admin", "ProfileInstManager.getProfileInst",
-            "root.EX_RECORD_NOT_FOUND", "sProfileId = " + sProfileId);
+        SilverLogger.getLogger(this).error("User profile {0} not found", sProfileId);
       }
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("profile", sProfileId), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
+      throw new AdminException(failureOnGetting(PROFILE, sProfileId), e);
     }
     return profileInst;
   }
@@ -143,12 +141,11 @@ public class ProfileInstManager {
     return profileInst;
   }
 
-  private void setUsersAndGroups(DomainDriverManager ddManager, ProfileInst profileInst)
-      throws AdminPersistenceException {
+  private void setUsersAndGroups(ProfileInst profileInst) throws SQLException, AdminException {
 
     // Get the groups
     String[] asGroupIds =
-        ddManager.getOrganization().group.getDirectGroupIdsInUserRole(idAsInt(profileInst.getId()));
+        organizationSchema.group().getDirectGroupIdsInUserRole(idAsInt(profileInst.getId()));
 
     // Set the groups to the space profile
     if (asGroupIds != null) {
@@ -158,84 +155,72 @@ public class ProfileInstManager {
     }
 
     // Get the Users
-    try {
-      List<String> userIds = UserManager.get().getDirectUserIdsInRole(profileInst.getId());
-      userIds.forEach(profileInst::addUser);
-    } catch (AdminException e) {
-      throw new AdminPersistenceException(e);
-    }
+    List<String> userIds = UserManager.get().getDirectUserIdsInRole(profileInst.getId());
+    userIds.forEach(profileInst::addUser);
   }
 
-  public ProfileInst getInheritedProfileInst(DomainDriverManager ddManager,
-      int instanceLocalId, String roleName)
+  public ProfileInst getInheritedProfileInst(int instanceLocalId, String roleName)
       throws AdminException {
     try {
-      ddManager.holdOrganizationSchema();
-
       // Load the profile detail
       UserRoleRow userRole =
-          ddManager.getOrganization().userRole.getUserRole(instanceLocalId, roleName, 1);
+          organizationSchema.userRole().getUserRole(instanceLocalId, roleName, 1);
 
       ProfileInst profileInst = null;
       if (userRole != null) {
         // Set the attributes of the profile Inst
         profileInst = userRoleRow2ProfileInst(userRole);
-        setUsersAndGroups(ddManager, profileInst);
+        setUsersAndGroups(profileInst);
       }
 
       return profileInst;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("inherited profile", roleName), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
   }
 
   /**
    * Deletes profile instance from Silverpeas
    * @param profileInst
-   * @param ddManager
    * @throws AdminException
    */
-  public void deleteProfileInst(ProfileInst profileInst,
-      DomainDriverManager ddManager) throws AdminException {
+  public void deleteProfileInst(ProfileInst profileInst) throws AdminException {
     try {
       // delete the profile node
-      ddManager.getOrganization().userRole.removeUserRole(idAsInt(profileInst.getId()));
+      organizationSchema.userRole().removeUserRole(idAsInt(profileInst.getId()));
     } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("profile", profileInst.getId()), e);
+      throw new AdminException(failureOnDeleting(PROFILE, profileInst.getId()), e);
     }
   }
 
   /**
    * Update group role in objects of component
    * @param groupManager
-   * @param ddManager
    * @param profileInst
    * @param groupId
    * @param rightAssignationMode the data is used from a copy/replace from operation...
    * @throws AdminException
    */
-  private void updateGroupRoleOfComponentObjects(GroupManager groupManager,
-      DomainDriverManager ddManager, ProfileInst profileInst, String groupId,
-      final RightAssignationContext.MODE rightAssignationMode) throws AdminException {
+  private void updateGroupRoleOfComponentObjects(GroupManager groupManager, ProfileInst profileInst,
+      String groupId, final RightAssignationContext.MODE rightAssignationMode)
+      throws AdminException, SQLException {
 
     //First : update role for the group
     int componentId = Integer.parseInt(profileInst.getComponentFatherId());
     boolean groupComponentAccess =
-        hasDirectRightsToComponent(ddManager, groupManager, groupId, true, componentId,
+        hasDirectRightsToComponent(groupManager, groupId, true, componentId,
             rightAssignationMode);
 
     if(!groupComponentAccess) {
       //get all component object rights
       String[] componentObjectRoleIds =
-          ddManager.getOrganization().userRole.getAllObjectUserRoleIdsOfInstance(componentId);
+          organizationSchema.userRole().getAllObjectUserRoleIdsOfInstance(componentId);
 
       //delete rights for this group to objects of this component
       for (String userRoleId : componentObjectRoleIds) {
-        if (ddManager.getOrganization().userRole
+        if (organizationSchema.userRole()
             .isGroupDirectlyInRole(idAsInt(groupId), Integer.parseInt(userRoleId))) {
-          ddManager.getOrganization().userRole
+          organizationSchema.userRole()
               .removeGroupFromUserRole(idAsInt(groupId), Integer.parseInt(userRoleId));
         }
       }
@@ -243,7 +228,7 @@ public class ProfileInstManager {
 
     //Second : update role for the users of the group
     //the set of unique user id
-    Set<String> users = new HashSet<String>();
+    Set<String> users = new HashSet<>();
 
     //users directly in group
     List<String> listUsersGroup = groupManager.getUsersDirectlyInGroup(groupId);
@@ -262,7 +247,7 @@ public class ProfileInstManager {
 
     //for any user : updateRoleInNodes
     for(String userId : users) {
-      updateUserRoleOfComponentObjects(ddManager, groupManager, profileInst, userId,
+      updateUserRoleOfComponentObjects(groupManager, profileInst, userId,
           rightAssignationMode);
     }
   }
@@ -270,7 +255,6 @@ public class ProfileInstManager {
   /**
    * Indicates if the user has access to a component without searching into right objects managed
    * by the component.
-   * @param ddManager
    * @param groupManager
    * @param resourceId
    * @param isGroupResource
@@ -279,51 +263,50 @@ public class ProfileInstManager {
    * @return true if the user has access to the given component
    * @throws AdminException
    */
-  private boolean hasDirectRightsToComponent(final DomainDriverManager ddManager,
-      final GroupManager groupManager, String resourceId, boolean isGroupResource, int instanceId,
+  private boolean hasDirectRightsToComponent(final GroupManager groupManager, String resourceId,
+      boolean isGroupResource, int instanceId,
       final RightAssignationContext.MODE rightAssignationMode) throws AdminException {
     final List<String> roleIds;
     if (isGroupResource) {
-      roleIds = getDirectComponentProfileIds(ddManager, null, Collections.singletonList(resourceId),
+      roleIds = getDirectComponentProfileIds(null, Collections.singletonList(resourceId),
           instanceId);
     } else {
       List<String> allGroupIdsOfUser = null;
       if (!RightAssignationContext.MODE.REPLACE.equals(rightAssignationMode)) {
-        allGroupIdsOfUser = groupManager.getAllGroupsOfUser(ddManager, resourceId);
+        allGroupIdsOfUser = groupManager.getAllGroupsOfUser(resourceId);
       }
-      roleIds = getDirectComponentProfileIds(ddManager, resourceId, allGroupIdsOfUser, instanceId);
+      roleIds = getDirectComponentProfileIds(resourceId, allGroupIdsOfUser, instanceId);
     }
     return !roleIds.isEmpty();
   }
 
   /**
    * Update user role in objects of component
-   * @param ddManager
    * @param groupManager
    * @param profileInst
    * @param userId
    * @param rightAssignationMode the data is used from a copy/replace from operation...
    * @throws AdminException
    * */
-  private void updateUserRoleOfComponentObjects(DomainDriverManager ddManager,
-      final GroupManager groupManager, ProfileInst profileInst, String userId,
-      final RightAssignationContext.MODE rightAssignationMode) throws AdminException {
+  private void updateUserRoleOfComponentObjects(final GroupManager groupManager,
+      ProfileInst profileInst, String userId,
+      final RightAssignationContext.MODE rightAssignationMode) throws AdminException, SQLException {
 
     int componentId = Integer.parseInt(profileInst.getComponentFatherId());
     boolean userComponentAccess =
-        hasDirectRightsToComponent(ddManager, groupManager, userId, false, componentId,
+        hasDirectRightsToComponent(groupManager, userId, false, componentId,
             rightAssignationMode);
 
     if (!userComponentAccess) {
       //get all object rights of this component
       String[] componentObjectRoleIds =
-          ddManager.getOrganization().userRole.getAllObjectUserRoleIdsOfInstance(componentId);
+          organizationSchema.userRole().getAllObjectUserRoleIdsOfInstance(componentId);
 
       //delete rights for this user to Nodes of this component
       for (String userRoleId : componentObjectRoleIds) {
-        if (ddManager.getOrganization().userRole
+        if (organizationSchema.userRole()
             .isUserDirectlyInRole(idAsInt(userId), Integer.parseInt(userRoleId))) {
-          ddManager.getOrganization().userRole
+          organizationSchema.userRole()
               .removeUserFromUserRole(idAsInt(userId), Integer.parseInt(userRoleId));
         }
       }
@@ -334,125 +317,82 @@ public class ProfileInstManager {
    * Update profile instance.
    * The method take into account the Node Rights of users or groups.
    * @param groupManager
-   * @param ddManager
    * @param profileInstNew
    * @param rightAssignationMode the data is used from a copy/replace from operation. It is not a
    * nice way to handle this kind of information, but it is not possible to refactor the right
    * services.
    * @throws AdminException
    */
-  public String updateProfileInst(GroupManager groupManager, DomainDriverManager ddManager,
-      ProfileInst profileInstNew, final RightAssignationContext.MODE rightAssignationMode)
+  public String updateProfileInst(GroupManager groupManager, ProfileInst profileInstNew,
+      final RightAssignationContext.MODE rightAssignationMode)
       throws AdminException {
-
-    ProfileInst profileInst = getProfileInst(ddManager, profileInstNew.getId());
-
-    ArrayList<String> alOldProfileGroup = new ArrayList<String>();
-    ArrayList<String> alNewProfileGroup = new ArrayList<String>();
-    ArrayList<String> alAddGroup = new ArrayList<String>();
-    ArrayList<String> alRemGroup = new ArrayList<String>();
-    ArrayList<String> alOldProfileUser = new ArrayList<String>();
-    ArrayList<String> alNewProfileUser = new ArrayList<String>();
-    ArrayList<String> alAddUser = new ArrayList<String>();
-    ArrayList<String> alRemUser = new ArrayList<String>();
+    ProfileInst profileInst = getProfileInst(profileInstNew.getId());
 
     try {
-      // Compute the Old profile group list
-      ArrayList<String> alGroup = profileInst.getAllGroups();
-      for (String groupId : alGroup) {
-        alOldProfileGroup.add(groupId);
-      }
+      // the groups in the previous state of the profile
+      List<String> alOldProfileGroup = profileInst.getAllGroups();
 
-      // Compute the New profile group list
-      alGroup = profileInstNew.getAllGroups();
-      for (String groupId : alGroup) {
-        alNewProfileGroup.add(groupId);
-      }
-
-      // Compute the remove group list
-      for (String groupId : alOldProfileGroup) {
-        if (!alNewProfileGroup.contains(groupId)) {
-          alRemGroup.add(groupId);
-        }
-      }
-
-      // Compute the add and stay group list
-      for (String groupId : alNewProfileGroup) {
-        if (!alOldProfileGroup.contains(groupId)) {
-          alAddGroup.add(groupId);
-        }
-      }
+      // the groups in the current state of the profile
+      List<String> alNewProfileGroup = profileInstNew.getAllGroups();
 
       // Add the new Groups
-      for (String groupId : alAddGroup) {
-        // Create the links between the profile and the group
-        ddManager.getOrganization().userRole.addGroupInUserRole(
-            idAsInt(groupId), idAsInt(profileInst.getId()));
-      }
-
-      // Remove the removed groups
-      for (String groupId : alRemGroup) {
-        // delete the node link Profile_Group
-        ddManager.getOrganization().userRole.removeGroupFromUserRole(
-            idAsInt(groupId), idAsInt(profileInst.getId()));
-
-        //update group role for objects of component
-        updateGroupRoleOfComponentObjects(groupManager, ddManager, profileInst, groupId,
-            rightAssignationMode);
-      }
-
-      // Compute the Old profile User list
-      ArrayList<String> alUser = profileInst.getAllUsers();
-      for (String userId : alUser) {
-        alOldProfileUser.add(userId);
-      }
-
-      // Compute the New profile User list
-      alUser = profileInstNew.getAllUsers();
-      for (String userId : alUser) {
-        alNewProfileUser.add(userId);
-      }
-
-      // Compute the remove User list
-      for (String userId : alOldProfileUser) {
-        if (!alNewProfileUser.contains(userId)) {
-          alRemUser.add(userId);
+      for (String groupId : alNewProfileGroup) {
+        if (!alOldProfileGroup.contains(groupId)) {
+          // Create the links between the profile and the group
+          organizationSchema.userRole().addGroupInUserRole(
+              idAsInt(groupId), idAsInt(profileInst.getId()));
         }
       }
 
-      // Compute the add and stay User list
-      for (String userId : alNewProfileUser) {
-        if (!alOldProfileUser.contains(userId)) {
-          alAddUser.add(userId);
+      // Remove from the profile the groups that are no more in the new state of the profile
+      for (String groupId : alOldProfileGroup) {
+        if (!alNewProfileGroup.contains(groupId)) {
+          // delete the link between the profile and the group
+          organizationSchema.userRole().removeGroupFromUserRole(
+              idAsInt(groupId), idAsInt(profileInst.getId()));
+
+          //update group role for objects of component
+          updateGroupRoleOfComponentObjects(groupManager, profileInst, groupId,
+              rightAssignationMode);
         }
       }
+
+      // the users in the previous state of the profile
+      List<String> alOldProfileUser = profileInst.getAllUsers();
+
+      // the users in the new state of the profile
+      List<String> alNewProfileUser = profileInstNew.getAllUsers();
 
       // Add the new Users
-      for (String userId : alAddUser) {
-        // Create the links between the profile and the User
-        ddManager.getOrganization().userRole.addUserInUserRole(
-            idAsInt(userId), idAsInt(profileInst.getId()));
+      for (String userId : alNewProfileUser) {
+        if (!alOldProfileUser.contains(userId)) {
+          // Create the links between the profile and the user
+          organizationSchema.userRole().addUserInUserRole(
+              idAsInt(userId), idAsInt(profileInst.getId()));
+        }
       }
 
-      // Remove the removed Users
-      for (String userId : alRemUser) {
-        // delete the node link Profile_User
-        ddManager.getOrganization().userRole.removeUserFromUserRole(
-            idAsInt(userId), idAsInt(profileInst.getId()));
+      // Remove from the profile the users that are no more in the new state of the profile
+      for (String userId : alOldProfileUser) {
+        if (!alNewProfileUser.contains(userId)) {
+          // delete the link between the profile and the user
+          organizationSchema.userRole().removeUserFromUserRole(
+              idAsInt(userId), idAsInt(profileInst.getId()));
 
-        //update user role in nodes of component
-        updateUserRoleOfComponentObjects(ddManager, groupManager, profileInst, userId,
-            rightAssignationMode);
+          //update user role in nodes of component
+          updateUserRoleOfComponentObjects(groupManager, profileInst, userId,
+              rightAssignationMode);
+        }
       }
 
       // update the profile node
       UserRoleRow changedUserRole = makeUserRoleRow(profileInstNew);
       changedUserRole.id = idAsInt(profileInstNew.getId());
-      ddManager.getOrganization().userRole.updateUserRole(changedUserRole);
+      organizationSchema.userRole().updateUserRole(changedUserRole);
 
       return idAsString(changedUserRole.id);
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("profile", profileInst.getId()), e);
+      throw new AdminException(failureOnUpdate(PROFILE, profileInst.getId()), e);
     }
   }
 
@@ -469,7 +409,7 @@ public class ProfileInstManager {
       con = DBUtil.openConnection();
 
       List<UserRoleRow> roles = RoleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId));
-      List<String> roleIds = new ArrayList<String>();
+      List<String> roleIds = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
         roleIds.add(Integer.toString(role.id));
@@ -478,7 +418,7 @@ public class ProfileInstManager {
       return roleIds.toArray(new String[roleIds.size()]);
 
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("profiles of user", sUserId), e);
+      throw new AdminException(failureOnGetting(PROFILES_OF_USER, sUserId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -486,23 +426,17 @@ public class ProfileInstManager {
 
   /**
    * Get all the profiles Id for the given user and componentId
-   * @param ddManager
    * @param sUserId
    * @param groupIds
    * @param componentId
    * @return ids
    * @throws AdminException
    */
-  private List<String> getDirectComponentProfileIds(final DomainDriverManager ddManager,
-      String sUserId, List<String> groupIds, int componentId) throws AdminException {
-    try {
-      // This connection must not been closed at the end of this method,
-      // because it must be called into a transaction. It the method that has initialized the
-      // transaction that will close the connection.
-      Connection con = ddManager.getOrganization().getConnection();
-
+  private List<String> getDirectComponentProfileIds(String sUserId, List<String> groupIds,
+      int componentId) throws AdminException {
+    try (Connection con = DBUtil.openConnection()) {
       List<UserRoleRow> roles = RoleDAO.getRoles(con, groupIds, idAsInt(sUserId), componentId);
-      List<String> roleIds = new ArrayList<String>();
+      List<String> roleIds = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
         roleIds.add(Integer.toString(role.id));
@@ -511,7 +445,7 @@ public class ProfileInstManager {
       return roleIds;
 
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("profiles of user", sUserId), e);
+      throw new AdminException(failureOnGetting(PROFILES_OF_USER, sUserId), e);
     }
   }
 
@@ -530,7 +464,7 @@ public class ProfileInstManager {
 
       List<UserRoleRow> roles =
           RoleDAO.getAllComponentObjectRoles(con, groupIds, Integer.parseInt(sUserId));
-      List<String> roleIds = new ArrayList<String>();
+      List<String> roleIds = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
         roleIds.add(Integer.toString(role.id));
@@ -539,7 +473,7 @@ public class ProfileInstManager {
       return roleIds.toArray(new String[roleIds.size()]);
 
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("profiles of user", sUserId), e);
+      throw new AdminException(failureOnGetting(PROFILES_OF_USER, sUserId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -553,7 +487,7 @@ public class ProfileInstManager {
 
       List<UserRoleRow> roles =
           RoleDAO.getRoles(con, groupIds, Integer.parseInt(sUserId), componentLocalId);
-      List<String> roleNames = new ArrayList<String>();
+      List<String> roleNames = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
         if (!roleNames.contains(role.roleName)) {
@@ -564,7 +498,7 @@ public class ProfileInstManager {
       return roleNames.toArray(new String[roleNames.size()]);
 
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("profiles of user", sUserId), e);
+      throw new AdminException(failureOnGetting(PROFILES_OF_USER, sUserId), e);
     } finally {
       DBUtil.close(con);
     }
@@ -581,10 +515,10 @@ public class ProfileInstManager {
     try {
       con = DBUtil.openConnection();
 
-      List<String> groupIds = new ArrayList<String>();
+      List<String> groupIds = new ArrayList<>();
       groupIds.add(sGroupId);
       List<UserRoleRow> roles = RoleDAO.getRoles(con, groupIds, -1);
-      List<String> roleIds = new ArrayList<String>();
+      List<String> roleIds = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
         roleIds.add(Integer.toString(role.id));
@@ -612,7 +546,7 @@ public class ProfileInstManager {
 
       List<UserRoleRow> roles = RoleDAO.getAllComponentObjectRoles(con,
           Collections.singletonList(groupId), -1);
-      List<String> roleIds = new ArrayList<String>();
+      List<String> roleIds = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
         roleIds.add(Integer.toString(role.id));
@@ -660,7 +594,7 @@ public class ProfileInstManager {
   /**
    * Convert int Id to String Id
    */
-  static private String idAsString(int id) {
+  private static String idAsString(int id) {
     return Integer.toString(id);
   }
 }

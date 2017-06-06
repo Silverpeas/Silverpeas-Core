@@ -25,8 +25,6 @@
 package org.silverpeas.core.notification.user.client.model;
 
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
-import org.silverpeas.core.persistence.jdbc.Schema;
-import org.silverpeas.core.exception.UtilException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,24 +36,24 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
   /**
    * Builds a new NotifPreferenceTable
    */
-  public NotifPreferenceTable(Schema schema) {
-    super(schema, "ST_NotifPreference");
+  NotifPreferenceTable() {
+    super("ST_NotifPreference");
   }
 
   /**
    * The column list used for every select query.
    */
-  static final protected String NOTIFPREFERENCE_COLUMNS =
+  protected static final String NOTIFPREFERENCE_COLUMNS =
       "id,notifAddressId,componentInstanceId,userId,messageType";
 
   /**
    * Returns the unique NotifPreference row having a given id
    */
-  public NotifPreferenceRow getNotifPreference(int id) throws UtilException {
+  public NotifPreferenceRow getNotifPreference(int id) throws SQLException {
     return getUniqueRow(SELECT_NOTIFPREFERENCE_BY_ID, id);
   }
 
-  static final private String SELECT_NOTIFPREFERENCE_BY_ID = "select "
+  private static final String SELECT_NOTIFPREFERENCE_BY_ID = "select "
       + NOTIFPREFERENCE_COLUMNS + " from ST_NotifPreference where id = ?";
 
   /**
@@ -63,13 +61,13 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
    */
   public NotifPreferenceRow getByUserIdAndComponentInstanceIdAndMessageType(
       int userId, int componentInstanceId, int messageType)
-      throws UtilException {
+      throws SQLException {
     int[] intArgs = { userId, componentInstanceId, messageType };
     return getUniqueRow(SELECT_NOTIFPREFERENCE_BY_USERID_AND_COMPONENTINSTANCEID_AND_MESSAGETYPE,
         intArgs);
   }
 
-  static final private String SELECT_NOTIFPREFERENCE_BY_USERID_AND_COMPONENTINSTANCEID_AND_MESSAGETYPE =
+  private static final String SELECT_NOTIFPREFERENCE_BY_USERID_AND_COMPONENTINSTANCEID_AND_MESSAGETYPE =
       "select "
       + NOTIFPREFERENCE_COLUMNS
       + " from ST_NotifPreference where "
@@ -79,49 +77,49 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
    * Returns all the NotifPreferenceRow having a given componentInstanceId
    */
   public NotifPreferenceRow[] getAllByComponentInstanceId(
-      int componentInstanceId) throws UtilException {
+      int componentInstanceId) throws SQLException {
     List<NotifPreferenceRow> rows = getRows(
         SELECT_ALL_NOTIFPREFERENCE_WITH_GIVEN_COMPONENTINSTANCEID, componentInstanceId);
     return rows.toArray(new NotifPreferenceRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_NOTIFPREFERENCE_WITH_GIVEN_COMPONENTINSTANCEID = "select "
+  private static final String SELECT_ALL_NOTIFPREFERENCE_WITH_GIVEN_COMPONENTINSTANCEID = "select "
       + NOTIFPREFERENCE_COLUMNS
       + " from ST_NotifPreference where componentInstanceId=?";
 
   /**
    * Returns all the NotifPreferenceRow having a given userId
    */
-  public NotifPreferenceRow[] getAllByUserId(int userId) throws UtilException {
+  public NotifPreferenceRow[] getAllByUserId(int userId) throws SQLException {
     List<NotifPreferenceRow> rows = getRows(SELECT_ALL_NOTIFPREFERENCE_WITH_GIVEN_USERID, userId);
     return rows.toArray(new NotifPreferenceRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_NOTIFPREFERENCE_WITH_GIVEN_USERID = "select "
+  private static final String SELECT_ALL_NOTIFPREFERENCE_WITH_GIVEN_USERID = "select "
       + NOTIFPREFERENCE_COLUMNS + " from ST_NotifPreference where userId=?";
 
   /**
    * Returns all the rows.
    */
-  public NotifPreferenceRow[] getAllRows() throws UtilException {
+  public NotifPreferenceRow[] getAllRows() throws SQLException {
     List<NotifPreferenceRow> rows = getRows(SELECT_ALL_NOTIFPREFERENCE);
     return rows.toArray(new NotifPreferenceRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_NOTIFPREFERENCE = "select "
+  private static final String SELECT_ALL_NOTIFPREFERENCE = "select "
       + NOTIFPREFERENCE_COLUMNS + " from ST_NotifPreference";
 
   /**
    * Returns the unique row given by a no parameters query.
    */
-  public NotifPreferenceRow getNotifPreference(String query) throws UtilException {
+  public NotifPreferenceRow getNotifPreference(String query) throws SQLException {
     return getUniqueRow(query);
   }
 
   /**
    * Returns all the rows given by a no parameters query.
    */
-  public NotifPreferenceRow[] getNotifPreferences(String query) throws UtilException {
+  public NotifPreferenceRow[] getNotifPreferences(String query) throws SQLException {
     List<NotifPreferenceRow> rows = getRows(query);
     return rows.toArray(new NotifPreferenceRow[rows.size()]);
   }
@@ -129,23 +127,23 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
   /**
    * Inserts in the database a new NotifPreference row.
    */
-  public int create(NotifPreferenceRow notifPreference) throws UtilException {
+  public int create(NotifPreferenceRow notifPreference) throws SQLException {
     insertRow(INSERT_NOTIFPREFERENCE, notifPreference);
     return notifPreference.getId();
   }
 
-  static final private String INSERT_NOTIFPREFERENCE = "insert into"
+  private static final String INSERT_NOTIFPREFERENCE = "insert into"
       + " ST_NotifPreference (id, notifAddressId, componentInstanceId, userId, messageType)"
       + " values  (?, ?, ?, ?, ?)";
 
   /**
    * Update the given NotifPreferenceRow
    */
-  public void update(NotifPreferenceRow notifPreference) throws UtilException {
+  public void update(NotifPreferenceRow notifPreference) throws SQLException {
     updateRow(UPDATE_NOTIFPREFERENCE, notifPreference);
   }
 
-  static final private String UPDATE_NOTIFPREFERENCE = "update ST_NotifPreference set"
+  private static final String UPDATE_NOTIFPREFERENCE = "update ST_NotifPreference set"
       + " notifAddressId = ?,"
       + " componentInstanceId = ?,"
       + " userId = ?,"
@@ -154,7 +152,7 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
   /**
    * Updates theNotifPreference row. or inserts it if new.
    */
-  public void save(NotifPreferenceRow notifPreference) throws UtilException {
+  public void save(NotifPreferenceRow notifPreference) throws SQLException {
     if (notifPreference.getId() == -1) {
       // No id : it's a creation
       create(notifPreference);
@@ -166,17 +164,17 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
   /**
    * Deletes theNotifPreferenceRow. after having removed all the reference to it.
    */
-  public void delete(int id) throws UtilException {
+  public void delete(int id) throws SQLException {
     updateRelation(DELETE_NOTIFPREFERENCE, id);
   }
 
-  static final private String DELETE_NOTIFPREFERENCE = "delete from ST_NotifPreference where id=?";
+  private static final String DELETE_NOTIFPREFERENCE = "delete from ST_NotifPreference where id=?";
 
   /**
    * Removes a reference to ComponentInstanceId
    */
   public void dereferenceComponentInstanceId(int componentInstanceId)
-      throws UtilException {
+      throws SQLException {
     NotifPreferenceRow[] notifPreferenceToBeDeleted =
         getAllByComponentInstanceId(componentInstanceId);
     for (NotifPreferenceRow aNotifPreferenceToBeDeleted : notifPreferenceToBeDeleted) {
@@ -187,7 +185,7 @@ public class NotifPreferenceTable extends AbstractTable<NotifPreferenceRow> {
   /**
    * Removes a reference to UserId
    */
-  public void dereferenceUserId(int userId) throws UtilException {
+  public void dereferenceUserId(int userId) throws SQLException {
     NotifPreferenceRow[] notifPreferenceToBeDeleted = getAllByUserId(userId);
     for (NotifPreferenceRow aNotifPreferenceToBeDeleted : notifPreferenceToBeDeleted) {
       delete(aNotifPreferenceToBeDeleted.getId());

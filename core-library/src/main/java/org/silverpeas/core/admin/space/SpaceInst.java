@@ -436,7 +436,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   public List<SpaceProfileInst> getInheritedProfiles() {
-    List<SpaceProfileInst> profiles = new ArrayList<SpaceProfileInst>();
+    List<SpaceProfileInst> profiles = new ArrayList<>();
     for (SpaceProfileInst profile : spaceProfiles) {
       if (profile.isInherited()) {
         profiles.add(profile);
@@ -447,7 +447,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   public List<SpaceProfileInst> getProfiles() {
-    List<SpaceProfileInst> profiles = new ArrayList<SpaceProfileInst>();
+    List<SpaceProfileInst> profiles = new ArrayList<>();
     for (SpaceProfileInst profile : spaceProfiles) {
       if (!profile.isInherited()) {
         profiles.add(profile);

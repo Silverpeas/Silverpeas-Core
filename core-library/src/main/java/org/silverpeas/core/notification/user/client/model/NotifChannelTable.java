@@ -25,8 +25,6 @@
 package org.silverpeas.core.notification.user.client.model;
 
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
-import org.silverpeas.core.persistence.jdbc.Schema;
-import org.silverpeas.core.exception.UtilException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,48 +36,48 @@ public class NotifChannelTable extends AbstractTable<NotifChannelRow> {
   /**
    * Builds a new NotifChannelTable
    */
-  public NotifChannelTable(Schema schema) {
-    super(schema, "ST_NotifChannel");
+  NotifChannelTable() {
+    super("ST_NotifChannel");
   }
 
   /**
    * The column list used for every select query.
    */
-  static final protected String NOTIFCHANNEL_COLUMNS =
+  protected static final String NOTIFCHANNEL_COLUMNS =
       "id,name,description,couldBeAdded,fromAvailable,subjectAvailable";
 
   /**
    * Returns the unique NotifChannel row having a given id
    */
-  public NotifChannelRow getNotifChannel(int id) throws UtilException {
+  public NotifChannelRow getNotifChannel(int id) throws SQLException {
     return getUniqueRow(SELECT_NOTIFCHANNEL_BY_ID, id);
   }
 
-  static final private String SELECT_NOTIFCHANNEL_BY_ID = "select "
+  private static final String SELECT_NOTIFCHANNEL_BY_ID = "select "
       + NOTIFCHANNEL_COLUMNS + " from ST_NotifChannel Where id = ?";
 
   /**
    * Returns all the rows.
    */
-  public NotifChannelRow[] getAllRows() throws UtilException {
+  public NotifChannelRow[] getAllRows() throws SQLException {
     List<NotifChannelRow> rows = getRows(SELECT_ALL_NOTIFCHANNEL);
     return rows.toArray(new NotifChannelRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_NOTIFCHANNEL = "select "
+  private static final String SELECT_ALL_NOTIFCHANNEL = "select "
       + NOTIFCHANNEL_COLUMNS + " from ST_NotifChannel";
 
   /**
    * Returns the unique row given by a no parameters query.
    */
-  public NotifChannelRow getNotifChannel(String query) throws UtilException {
+  public NotifChannelRow getNotifChannel(String query) throws SQLException {
     return getUniqueRow(query);
   }
 
   /**
    * Returns all the rows given by a no parameters query.
    */
-  public NotifChannelRow[] getNotifChannels(String query) throws UtilException {
+  public NotifChannelRow[] getNotifChannels(String query) throws SQLException {
     List<NotifChannelRow> rows = getRows(query);
     return rows.toArray(new NotifChannelRow[rows.size()]);
   }
@@ -87,23 +85,23 @@ public class NotifChannelTable extends AbstractTable<NotifChannelRow> {
   /**
    * Inserts in the database a new NotifChannel row.
    */
-  public int create(NotifChannelRow notifChannel) throws UtilException {
+  public int create(NotifChannelRow notifChannel) throws SQLException {
     insertRow(INSERT_NOTIFCHANNEL, notifChannel);
     return notifChannel.getId();
   }
 
-  static final private String INSERT_NOTIFCHANNEL = "insert into"
+  private static final String INSERT_NOTIFCHANNEL = "insert into"
       + " ST_NotifChannel (id, name, description, couldBeAdded, fromAvailable, subjectAvailable)"
       + " values  (?, ?, ?, ?, ?, ?)";
 
   /**
    * Update the given NotifChannelRow
    */
-  public void update(NotifChannelRow notifChannel) throws UtilException {
+  public void update(NotifChannelRow notifChannel) throws SQLException {
     updateRow(UPDATE_NOTIFCHANNEL, notifChannel);
   }
 
-  static final private String UPDATE_NOTIFCHANNEL = "Update ST_NotifChannel set"
+  private static final String UPDATE_NOTIFCHANNEL = "Update ST_NotifChannel set"
       + " name = ?,"
       + " description = ?,"
       + " couldBeAdded = ?,"
@@ -112,7 +110,7 @@ public class NotifChannelTable extends AbstractTable<NotifChannelRow> {
   /**
    * Updates theNotifChannel row. or inserts it if new.
    */
-  public void save(NotifChannelRow notifChannel) throws UtilException {
+  public void save(NotifChannelRow notifChannel) throws SQLException {
     if (notifChannel.getId() == -1) {
       // No id : it's a creation
       create(notifChannel);
@@ -124,12 +122,12 @@ public class NotifChannelTable extends AbstractTable<NotifChannelRow> {
   /**
    * Deletes theNotifChannelRow. after having removed all the reference to it.
    */
-  public void delete(int id) throws UtilException {
-    ((NotifSchema) schema).notifAddress.dereferenceNotifChannelId(id);
+  public void delete(int id) throws SQLException {
+    NotificationSchema.get().notifAddress().dereferenceNotifChannelId(id);
     updateRelation(DELETE_NOTIFCHANNEL, id);
   }
 
-  static final private String DELETE_NOTIFCHANNEL = "delete from ST_NotifChannel where id=?";
+  private static final String DELETE_NOTIFCHANNEL = "delete from ST_NotifChannel where id=?";
 
   /**
    * Fetch the current NotifChannel row from a resultSet.

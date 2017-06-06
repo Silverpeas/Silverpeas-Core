@@ -20,7 +20,6 @@
  */
 package org.silverpeas.core.admin.user;
 
-import org.silverpeas.core.admin.domain.AbstractDomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminException;
@@ -51,6 +50,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_X509_USER;
 
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
@@ -550,7 +550,7 @@ public class UserManager {
 
       // X509?
       long domainActions = domainDriverManager.getDomainActions(userDetail.getDomainId());
-      boolean isX509Enabled = (domainActions & AbstractDomainDriver.ACTION_X509_USER) != 0;
+      boolean isX509Enabled = (domainActions & ACTION_X509_USER) != 0;
       if (isX509Enabled) {
         X509Factory.buildP12(userDetail.getId(), userDetail.getLogin(), userDetail.getLastName(),
             userDetail.getFirstName(), userDetail.getDomainId());
@@ -597,7 +597,7 @@ public class UserManager {
 
       // X509?
       long domainActions = domainDriverManager.getDomainActions(user.getDomainId());
-      boolean isX509Enabled = (domainActions & AbstractDomainDriver.ACTION_X509_USER) != 0;
+      boolean isX509Enabled = (domainActions & ACTION_X509_USER) != 0;
       if (isX509Enabled) {
         X509Factory.revocateUserCertificate(user.getId());
       }

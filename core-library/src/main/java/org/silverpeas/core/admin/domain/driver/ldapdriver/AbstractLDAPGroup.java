@@ -24,7 +24,6 @@ import com.novell.ldap.LDAPEntry;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
-import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.silvertrace.SilverTrace;
 
 import java.util.ArrayList;
@@ -67,7 +66,7 @@ abstract public class AbstractLDAPGroup {
   /**
    * Called when Admin starts the synchronization
    */
-  public void beginSynchronization() throws Exception {
+  public void beginSynchronization() {
     synchroReport = new StringBuffer();
     synchroInProcess = true;
   }
@@ -75,7 +74,7 @@ abstract public class AbstractLDAPGroup {
   /**
    * Called when Admin ends the synchronization
    */
-  public String endSynchronization() throws Exception {
+  public String endSynchronization() {
     synchroInProcess = false;
     return synchroReport.toString();
   }

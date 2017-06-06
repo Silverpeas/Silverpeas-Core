@@ -21,13 +21,15 @@
 
 package org.silverpeas.core.notification.user.client;
 
-import org.silverpeas.core.notification.user.client.model.NotifSchema;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.notification.UserEvent;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.notification.user.client.model.NotificationSchema;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
+import java.sql.SQLException;
 
 /**
  * A listener of events about a given user account in Silverpeas.
@@ -36,40 +38,20 @@ import javax.inject.Singleton;
 @Singleton
 public class NotificationUserEventListener extends CDIResourceEventListener<UserEvent> {
 
-  private SilverLogger logger = SilverLogger.getLogger(this);
+  @Inject
+  private NotificationSchema notificationSchema;
 
   @Override
   public void onDeletion(final UserEvent event) throws Exception {
     dereferenceUserFromUserNotification(event);
   }
 
-  public void dereferenceUserFromUserNotification(UserEvent event) {
-    NotifSchema schema = null;
-    try {
-      schema = new NotifSchema();
-      UserDetail user = event.getTransition().getBefore();
-      int userId = Integer.parseInt(user.getId());
-      schema.notifDefaultAddress.dereferenceUserId(userId);
-      schema.notifPreference.dereferenceUserId(userId);
-      schema.notifAddress.dereferenceUserId(userId);
-      schema.commit();
-    } catch (Exception e) {
-      logger.error(e.getMessage(), e);
-      try {
-        if (schema != null) {
-          schema.rollback();
-        }
-      } catch (Exception ex) {
-        logger.warn(ex.getMessage());
-      }
-    } finally {
-      try {
-        if (schema != null) {
-          schema.close();
-        }
-      } catch (Exception e) {
-        logger.warn(e.getMessage());
-      }
-    }
+  @Transactional
+  public void dereferenceUserFromUserNotification(UserEvent event) throws SQLException {
+    UserDetail user = event.getTransition().getBefore();
+    int userId = Integer.parseInt(user.getId());
+    notificationSchema.notifDefaultAddress().dereferenceUserId(userId);
+    notificationSchema.notifPreference().dereferenceUserId(userId);
+    notificationSchema.notifAddress().dereferenceUserId(userId);
   }
 }

@@ -98,20 +98,6 @@ public interface Administration {
       throws AdminException;
 
   /**
-   * Delete the given space if it's not the general space The delete is apply recursively to the
-   * sub-spaces
-   * @param userId Id of user who deletes the space
-   * @param spaceId Id of the space to be deleted
-   * @param startNewTransaction Flag : must be true at first call to initialize transaction, then
-   * false for recurrents calls
-   * @param definitive
-   * @return the deleted space id
-   * @throws AdminException
-   */
-  String deleteSpaceInstById(String userId, String spaceId, boolean startNewTransaction,
-      boolean definitive) throws AdminException;
-
-  /**
    * @param spaceId
    * @throws AdminException
    */
@@ -270,17 +256,6 @@ public interface Administration {
       throws AdminException, QuotaException;
 
   /**
-   * Add the given component instance in Silverpeas.
-   * @param userId
-   * @param componentInst
-   * @param startNewTransaction
-   * @return
-   * @throws AdminException
-   */
-  String addComponentInst(String userId, ComponentInst componentInst, boolean startNewTransaction)
-      throws AdminException, QuotaException;
-
-  /**
    * Delete the specified component.
    * @param userId
    * @param componentId
@@ -319,15 +294,6 @@ public interface Administration {
       boolean startNewTransaction) throws AdminException;
 
   void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space) throws AdminException;
-
-  /**
-   * Set space profile to a component. There is persistance.
-   * @param component the object to set profiles
-   * @param space the object to get profiles
-   * @throws AdminException
-   */
-  void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space,
-      boolean startNewTransaction) throws AdminException;
 
   void moveSpace(String spaceId, String fatherId) throws AdminException;
 
@@ -408,9 +374,6 @@ public interface Administration {
 
   String updateSpaceProfileInst(SpaceProfileInst newSpaceProfile, String userId)
       throws AdminException;
-
-  String updateSpaceProfileInst(SpaceProfileInst newSpaceProfile, String userId,
-      boolean startNewTransaction) throws AdminException;
 
   /**
    * Get the group names corresponding to the given group ids.
@@ -561,18 +524,7 @@ public interface Administration {
 
   String addGroupProfileInst(GroupProfileInst spaceProfileInst) throws AdminException;
 
-  /**
-   * Add the space profile instance from Silverpeas
-   */
-  String addGroupProfileInst(GroupProfileInst groupProfileInst, boolean startNewTransaction)
-      throws AdminException;
-
   String deleteGroupProfileInst(String groupId) throws AdminException;
-
-  /**
-   * Delete the given space profile from Silverpeas
-   */
-  String deleteGroupProfileInst(String groupId, boolean startNewTransaction) throws AdminException;
 
   /**
    * Update the given space profile in Silverpeas
@@ -1225,11 +1177,6 @@ public interface Administration {
   ListSlice<UserDetail> searchUsers(UserDetailsSearchCriteria searchCriteria) throws AdminException;
 
   ListSlice<GroupDetail> searchGroups(GroupsSearchCriteria searchCriteria) throws AdminException;
-
-  // -------------------------------------------------------------------------
-  // For DB connection reset
-  // -------------------------------------------------------------------------
-  void resetAllDBConnections(boolean isScheduled) throws AdminException;
 
   // -------------------------------------------------------------------------
   // Node profile management

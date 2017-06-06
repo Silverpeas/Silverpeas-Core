@@ -25,6 +25,7 @@
 package org.silverpeas.core.admin.domain;
 
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
@@ -35,107 +36,115 @@ import java.util.Map;
 
 public interface DomainDriver {
 
-  /**
-   * No possible actions Mask
-   * @see #getDriverActions
-   */
-  long ACTION_NONE = 0x00000000;
-  /**
-   * Read Users' infos action Mask
-   * @see #getDriverActions
-   */
-  long ACTION_READ_USER = 0x00000001;
-  /**
-   * Read Groups' infos action Mask
-   * @see #getDriverActions
-   */
-  long ACTION_READ_GROUP = 0x00000002;
-  /**
-   * Update Users' infos action Mask
-   * @see #getDriverActions
-   */
-  long ACTION_UPDATE_USER = 0x00000004;
-  /**
-   * Update Groups' infos action Mask
-   * @see #getDriverActions
-   */
-  long ACTION_UPDATE_GROUP = 0x00000008;
-  /**
-   * Create User action Mask
-   * @see #getDriverActions
-   */
-  long ACTION_CREATE_USER = 0x00000010;
-  /**
-   * Create GroupDetail action Mask
-   * @see #getDriverActions
-   */
-  long ACTION_CREATE_GROUP = 0x00000020;
-  /**
-   * Delete User action Mask
-   * @see #getDriverActions
-   */
-  long ACTION_DELETE_USER = 0x00000040;
-  /**
-   * Delete GroupDetail action Mask
-   * @see #getDriverActions
-   */
-  long ACTION_DELETE_GROUP = 0x00000080;
-  /**
-   * Add/Remove User from group action Mask
-   * @see #getDriverActions
-   */
-  long ACTION_EDIT_USER_IN_GROUP = 0x00000100;
-  /**
-   * Add a user in Silverpeas DB by synchronization with a reference LDAP DB
-   * @see #getDriverActions
-   */
-  long ACTION_IMPORT_USER = 0x00000200;
-  /**
-   * Updates user Silverpeas infos from LDAP DB
-   * @see #getDriverActions
-   */
-  long ACTION_SYNCHRO_USER = 0x00000400;
-  /**
-   * Remove user entry from Silverpeas
-   * @see #getDriverActions
-   */
-  long ACTION_REMOVE_USER = 0x00000800;
-  /**
-   * Add a group in Silverpeas DB by synchronization with a reference LDAP DB
-   * @see #getDriverActions
-   */
-  long ACTION_IMPORT_GROUP = 0x00001000;
-  /**
-   * Updates group Silverpeas infos from LDAP DB
-   * @see #getDriverActions
-   */
-  long ACTION_SYNCHRO_GROUP = 0x00002000;
-  /**
-   * Remove group entry from Silverpeas
-   * @see #getDriverActions
-   */
-  long ACTION_REMOVE_GROUP = 0x00004000;
-  /**
-   * Create a x509 certificate and store it in server's truststore
-   * @see #getDriverActions
-   */
-  long ACTION_X509_USER = 0x00008000;
-  /**
-   * All available actions Mask
-   * @see #getDriverActions
-   */
-  long ACTION_MASK_ALL = 0xFFFFFFFF;
-  long ACTION_MASK_RW = ACTION_READ_USER |
-      ACTION_READ_GROUP | ACTION_UPDATE_USER | ACTION_UPDATE_GROUP |
-      ACTION_CREATE_USER | ACTION_CREATE_GROUP | ACTION_DELETE_USER |
-      ACTION_DELETE_GROUP | ACTION_EDIT_USER_IN_GROUP;
-  long ACTION_MASK_RO = ACTION_READ_USER | ACTION_READ_GROUP | ACTION_IMPORT_USER
-      | ACTION_SYNCHRO_USER | ACTION_REMOVE_USER | ACTION_IMPORT_GROUP | ACTION_SYNCHRO_GROUP |
-      ACTION_REMOVE_GROUP;
-  long ACTION_MASK_MIXED_GROUPS = ACTION_READ_GROUP | ACTION_UPDATE_GROUP | ACTION_CREATE_GROUP
-      | ACTION_DELETE_GROUP | ACTION_EDIT_USER_IN_GROUP;
+  class ActionConstants {
 
-  void init(int domainId, String initParam, String authenticationServer) throws Exception;
+    private ActionConstants() {
+
+    }
+
+    /**
+     * No possible actions Mask
+     * @see #getDriverActions
+     */
+    public static final long ACTION_NONE = 0x00000000;
+    /**
+     * Read Users' infos action Mask
+     * @see #getDriverActions
+     */
+    public static final long ACTION_READ_USER = 0x00000001;
+    /**
+     * Read Groups' infos action Mask
+     * @see #getDriverActions
+     */
+    public static final long ACTION_READ_GROUP = 0x00000002;
+    /**
+     * Update Users' infos action Mask
+     * @see #getDriverActions
+     */
+    public static final long ACTION_UPDATE_USER = 0x00000004;
+    /**
+     * Update Groups' infos action Mask
+     * @see #getDriverActions
+     */
+    public static final long ACTION_UPDATE_GROUP = 0x00000008;
+    /**
+     * Create User action Mask
+     * @see #getDriverActions
+     */
+    public static final long ACTION_CREATE_USER = 0x00000010;
+    /**
+     * Create GroupDetail action Mask
+     * @see #getDriverActions
+     */
+    public static final long ACTION_CREATE_GROUP = 0x00000020;
+    /**
+     * Delete User action Mask
+     * @see #getDriverActions
+     */
+    public static final long ACTION_DELETE_USER = 0x00000040;
+    /**
+     * Delete GroupDetail action Mask
+     * @see #getDriverActions
+     */
+    public static final long ACTION_DELETE_GROUP = 0x00000080;
+    /**
+     * Add/Remove User from group action Mask
+     * @see #getDriverActions
+     */
+    public static final long ACTION_EDIT_USER_IN_GROUP = 0x00000100;
+    /**
+     * Add a user in Silverpeas DB by synchronization with a reference LDAP DB
+     * @see #getDriverActions
+     */
+    public static final long ACTION_IMPORT_USER = 0x00000200;
+    /**
+     * Updates user Silverpeas infos from LDAP DB
+     * @see #getDriverActions
+     */
+    public static final long ACTION_SYNCHRO_USER = 0x00000400;
+    /**
+     * Remove user entry from Silverpeas
+     * @see #getDriverActions
+     */
+    public static final long ACTION_REMOVE_USER = 0x00000800;
+    /**
+     * Add a group in Silverpeas DB by synchronization with a reference LDAP DB
+     * @see #getDriverActions
+     */
+    public static final long ACTION_IMPORT_GROUP = 0x00001000;
+    /**
+     * Updates group Silverpeas infos from LDAP DB
+     * @see #getDriverActions
+     */
+    public static final long ACTION_SYNCHRO_GROUP = 0x00002000;
+    /**
+     * Remove group entry from Silverpeas
+     * @see #getDriverActions
+     */
+    public static final long ACTION_REMOVE_GROUP = 0x00004000;
+    /**
+     * Create a x509 certificate and store it in server's truststore
+     * @see #getDriverActions
+     */
+    public static final long ACTION_X509_USER = 0x00008000;
+    /**
+     * All available actions Mask
+     * @see #getDriverActions
+     */
+    public static final long ACTION_MASK_ALL = 0xFFFFFFFF;
+    public static final long ACTION_MASK_RW =
+        ACTION_READ_USER | ACTION_READ_GROUP | ACTION_UPDATE_USER | ACTION_UPDATE_GROUP |
+            ACTION_CREATE_USER | ACTION_CREATE_GROUP | ACTION_DELETE_USER | ACTION_DELETE_GROUP |
+            ACTION_EDIT_USER_IN_GROUP;
+    public static final long ACTION_MASK_RO =
+        ACTION_READ_USER | ACTION_READ_GROUP | ACTION_IMPORT_USER | ACTION_SYNCHRO_USER |
+            ACTION_REMOVE_USER | ACTION_IMPORT_GROUP | ACTION_SYNCHRO_GROUP | ACTION_REMOVE_GROUP;
+    public static final long ACTION_MASK_MIXED_GROUPS =
+        ACTION_READ_GROUP | ACTION_UPDATE_GROUP | ACTION_CREATE_GROUP | ACTION_DELETE_GROUP |
+            ACTION_EDIT_USER_IN_GROUP;
+  }
+
+  void init(int domainId, String initParam, String authenticationServer) throws AdminException;
 
   String[] getPropertiesNames();
 
@@ -153,7 +162,7 @@ public interface DomainDriver {
 
   Map<String, String> getPropertiesDescriptions(String language);
 
-  void initFromProperties(SettingBundle rs) throws Exception;
+  void initFromProperties(SettingBundle rs) throws AdminException;
 
   long getDriverActions();
 
@@ -167,87 +176,81 @@ public interface DomainDriver {
 
   boolean mustImportUsers();
 
-  String getTimeStamp(String minTimeStamp) throws Exception;
+  String getTimeStamp(String minTimeStamp) throws AdminException;
 
-  String getTimeStampField() throws Exception;
+  String getTimeStampField() throws AdminException;
 
   boolean isX509CertificateEnabled();
 
-  UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp) throws Exception;
+  UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp) throws AdminException;
 
-  GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception;
+  GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws AdminException;
 
-  void beginSynchronization() throws Exception;
+  void beginSynchronization() throws AdminException;
 
-  boolean isSynchroInProcess() throws Exception;
+  boolean isSynchroInProcess() throws AdminException;
 
-  String endSynchronization(boolean cancelSynchro) throws Exception;
+  String endSynchronization(boolean cancelSynchro) throws AdminException;
 
-  UserDetail importUser(String userLogin) throws Exception;
+  UserDetail importUser(String userLogin) throws AdminException;
 
-  void removeUser(String userId) throws Exception;
+  void removeUser(String userId) throws AdminException;
 
-  UserDetail synchroUser(String userId) throws Exception;
+  UserDetail synchroUser(String userId) throws AdminException;
 
-  String createUser(UserDetail user) throws Exception;
+  String createUser(UserDetail user) throws AdminException;
 
-  void deleteUser(String userId) throws Exception;
+  void deleteUser(String userId) throws AdminException;
 
-  void updateUserFull(UserFull user) throws Exception;
+  void updateUserFull(UserFull user) throws AdminException;
 
-  void updateUserDetail(UserDetail user) throws Exception;
+  void updateUserDetail(UserDetail user) throws AdminException;
 
-  UserDetail getUser(String userId) throws Exception;
+  UserDetail getUser(String userId) throws AdminException;
 
   /**
    * Retrieve user information from database
    * @param userId The user id as stored in the database
    * @return The full User object that contain ALL user informations
    */
-  UserFull getUserFull(String userId) throws Exception;
+  UserFull getUserFull(String userId) throws AdminException;
 
-  String[] getUserMemberGroupIds(String userId) throws Exception;
+  String[] getUserMemberGroupIds(String userId) throws AdminException;
 
-  UserDetail[] getAllUsers() throws Exception;
+  UserDetail[] getAllUsers() throws AdminException;
 
-  UserDetail[] getUsersBySpecificProperty(String propertyName, String value) throws Exception;
+  UserDetail[] getUsersBySpecificProperty(String propertyName, String value) throws AdminException;
 
-  UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception;
+  UserDetail[] getUsersByQuery(Map<String, String> query) throws AdminException;
 
-  GroupDetail importGroup(String groupName) throws Exception;
+  GroupDetail importGroup(String groupName) throws AdminException;
 
-  void removeGroup(String groupId) throws Exception;
+  void removeGroup(String groupId) throws AdminException;
 
-  GroupDetail synchroGroup(String groupId) throws Exception;
+  GroupDetail synchroGroup(String groupId) throws AdminException;
 
-  String createGroup(GroupDetail m_Group) throws Exception;
+  String createGroup(GroupDetail group) throws AdminException;
 
-  void deleteGroup(String groupId) throws Exception;
+  void deleteGroup(String groupId) throws AdminException;
 
-  void updateGroup(GroupDetail m_Group) throws Exception;
+  void updateGroup(GroupDetail group) throws AdminException;
 
-  GroupDetail getGroup(String groupId) throws Exception;
+  GroupDetail getGroup(String groupId) throws AdminException;
 
-  GroupDetail getGroupByName(String groupName) throws Exception;
+  GroupDetail getGroupByName(String groupName) throws AdminException;
 
-  GroupDetail[] getGroups(String groupId) throws Exception;
+  GroupDetail[] getGroups(String groupId) throws AdminException;
 
-  GroupDetail[] getAllGroups() throws Exception;
+  GroupDetail[] getAllGroups() throws AdminException;
 
-  GroupDetail[] getAllRootGroups() throws Exception;
+  GroupDetail[] getAllRootGroups() throws AdminException;
 
-  String[] getGroupMemberGroupIds(String groupId) throws Exception;
+  String[] getGroupMemberGroupIds(String groupId) throws AdminException;
 
-  void startTransaction(boolean bAutoCommit);
+  List<String> getUserAttributes() throws AdminException;
 
-  void commit() throws Exception;
+  void resetPassword(UserDetail user, String password) throws AdminException;
 
-  void rollback() throws Exception;
-
-  List<String> getUserAttributes() throws Exception;
-
-  void resetPassword(UserDetail user, String password) throws Exception;
-
-  void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws Exception;
+  void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws AdminException;
 
 }

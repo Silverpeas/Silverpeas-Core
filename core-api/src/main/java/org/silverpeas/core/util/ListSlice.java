@@ -126,11 +126,11 @@ public class ListSlice<T> extends ArrayList<T> {
 
   /**
    * Gets the size of the original list this slice comes from. If this slice covers all the original
-   * list then {@code getOriginalListSize() == size()}. The size of the original list can be
+   * list then {@code originalListSize() == size()}. The size of the original list can be
    * unknown at the time the slice is built, in this case -1 is returned.
    * @return the size of the original list or -1 if such a size isn't known.
    */
-  public int getOriginalListSize() {
+  public int originalListSize() {
     return maxsize;
   }
 

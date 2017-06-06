@@ -24,6 +24,7 @@
 package org.silverpeas.core.admin.component;
 
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ObjectFactory;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.initialization.Initialization;
@@ -86,7 +87,7 @@ public class WAComponentRegistry implements Initialization {
   @Override
   public void init() throws Exception {
     Path descriptorHome = getWAComponentDescriptorHome();
-    Files.find(descriptorHome, 2, (p, a) -> Files.isRegularFile(p) &&
+    Files.find(descriptorHome, 2, (p, a) -> p.toFile().isFile() &&
         "xml".equalsIgnoreCase(FilenameUtils.getExtension(p.toString()))).forEach(p -> {
       WAComponent component = loadComponent(p.toFile());
       componentsByName.put(component.getName(), component);
@@ -117,9 +118,9 @@ public class WAComponentRegistry implements Initialization {
    * </p>
    * If a such workflow application already exists, then nothing is done.
    * @param waComponent the WAComponent instance representing a workflow application.
-   * @throws RuntimeException if the registration failed.
+   * @throws SilverpeasRuntimeException if the registration failed.
    */
-  public void putWorkflow(WAComponent waComponent) throws RuntimeException {
+  public void putWorkflow(WAComponent waComponent) {
     if (!componentsByName.containsKey(waComponent.getName())) {
       try {
         Path descriptor =
@@ -128,7 +129,7 @@ public class WAComponentRegistry implements Initialization {
         storeComponent(waComponent, descriptor.toFile());
         componentsByName.put(waComponent.getName(), waComponent);
       } catch (JAXBException e) {
-        throw new RuntimeException(e.getMessage(), e);
+        throw new SilverpeasRuntimeException(e.getMessage(), e);
       }
     }
   }
@@ -139,9 +140,9 @@ public class WAComponentRegistry implements Initialization {
    * </p>
    * If a such workflow application doesn't exist, nothing is done.
    * @param waComponent the WAComponent instance representing a workflow application.
-   * @throws RuntimeException if the remove failed.
+   * @throws SilverpeasRuntimeException if the remove failed.
    */
-  public void removeWorkflow(WAComponent waComponent) throws RuntimeException {
+  public void removeWorkflow(WAComponent waComponent) {
     try {
       if (componentsByName.containsKey(waComponent.getName())) {
         Path descriptor =
@@ -151,7 +152,7 @@ public class WAComponentRegistry implements Initialization {
         componentsByName.remove(waComponent.getName());
       }
     } catch (IOException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 
@@ -174,7 +175,7 @@ public class WAComponentRegistry implements Initialization {
             getValue();
       }
     } catch (IOException | JAXBException | XMLStreamException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
   }
 

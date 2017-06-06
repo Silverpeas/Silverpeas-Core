@@ -33,11 +33,11 @@ import java.sql.SQLException;
  */
 public class KeyStoreTable extends Table<KeyStoreRow> {
 
-  public KeyStoreTable(OrganizationSchema organization) {
-    super(organization, "ST_KeyStore");
+  KeyStoreTable() {
+    super("ST_KeyStore");
   }
 
-  static final private String KEYSTORE_COLUMNS = "userKey, login, domainId";
+  private static final String KEYSTORE_COLUMNS = "userKey, login, domainId";
 
   /**
    * Fetch the current keyStore row from a resultSet.
@@ -55,21 +55,21 @@ public class KeyStoreTable extends Table<KeyStoreRow> {
   /**
    * Get a keystore record by userKey
    */
-  public KeyStoreRow getRecordByKey(int nKey) throws AdminPersistenceException {
+  public KeyStoreRow getRecordByKey(int nKey) throws SQLException {
     return getUniqueRow(SELECT_RECORD_BY_KEY, nKey);
   }
 
-  static final private String SELECT_RECORD_BY_KEY = "select "
+  private static final String SELECT_RECORD_BY_KEY = "select "
       + KEYSTORE_COLUMNS + " from ST_KeyStore where userKey = ?";
 
   /**
    * Remove a keystore record with the given key
    */
-  public void removeKeyStoreRecord(int nKey) throws AdminPersistenceException {
+  public void removeKeyStoreRecord(int nKey) throws SQLException {
     updateRelation(DELETE_RECORD, nKey);
   }
 
-  static final private String DELETE_RECORD = "delete from ST_KeyStore where userKey = ?";
+  private static final String DELETE_RECORD = "delete from ST_KeyStore where userKey = ?";
 
   /**
    * Fetch the current accessLevel row from a resultSet.

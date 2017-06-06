@@ -28,20 +28,21 @@ import org.silverpeas.core.admin.domain.AbstractDomainDriver;
 import org.silverpeas.core.admin.domain.DomainServiceProvider;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
-import org.silverpeas.core.admin.persistence.AdminPersistenceException;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,10 +51,11 @@ import java.util.Map;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
+@Transactional(Transactional.TxType.MANDATORY)
 public class SQLDriver extends AbstractDomainDriver {
 
-  protected Connection openedConnection = null;
-  protected boolean inTransaction = false;
+  public static final String GROUP = "group";
+  private DataSource dataSource;
   protected SQLSettings drvSettings = new SQLSettings();
   protected SQLUserTable localUserMgr = new SQLUserTable(drvSettings);
   protected SQLGroupTable localGroupMgr = new SQLGroupTable(drvSettings);
@@ -63,7 +65,7 @@ public class SQLDriver extends AbstractDomainDriver {
   /**
    * Constructor
    */
-  public SQLDriver() {
+  protected SQLDriver() {
   }
 
   /*
@@ -72,12 +74,12 @@ public class SQLDriver extends AbstractDomainDriver {
    * (java.lang.String)
    */
   @Override
-  public String[] getGroupMemberGroupIds(String groupId) throws Exception {
+  public String[] getGroupMemberGroupIds(String groupId) throws AdminException {
     GroupDetail group = getGroup(groupId);
     if ((group != null) && (group.getSuperGroupId() != null)) {
       return new String[] { group.getSuperGroupId() };
     }
-    return null;
+    return ArrayUtil.EMPTY_STRING_ARRAY;
   }
 
   /**
@@ -85,62 +87,39 @@ public class SQLDriver extends AbstractDomainDriver {
    * class who need it.
    */
   @Override
-  public void initFromProperties(SettingBundle rs) throws Exception {
+  public void initFromProperties(SettingBundle rs) throws AdminException {
     drvSettings.initFromProperties(rs);
+    try {
+      dataSource = InitialContext.doLookup(drvSettings.getDataSourceJNDIName());
+    } catch (NamingException e) {
+      throw new AdminException(e.getMessage(), e);
+    }
   }
 
   @Override
   public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp)
-      throws Exception {
+      throws AdminException {
     return new UserDetail[0];
   }
 
   @Override
-  public GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
+  public GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws AdminException {
     return new GroupDetail[0];
   }
 
   @Override
-  public UserDetail importUser(String userLogin) throws Exception {
+  public UserDetail importUser(String userLogin) throws AdminException {
     return null;
   }
 
   @Override
-  public void removeUser(String userId) throws Exception {
+  public void removeUser(String userId) throws AdminException {
+    // Silverpeas doesn't modify the database behind the SQL domain
   }
 
   @Override
-  public UserDetail synchroUser(String userId) throws Exception {
+  public UserDetail synchroUser(String userId) throws AdminException {
     return null;
-  }
-
-  /**
-   * Get an DomainSQL schema from the pool.
-   */
-  private void openConnection() throws AdminException {
-    if (openedConnection == null) {
-      try {
-        DataSource dataSource = InitialContext.doLookup(drvSettings.getDataSourceJNDIName());
-        openedConnection = dataSource.getConnection();
-      } catch (Exception e) {
-        throw new AdminException(failureOnOpeningConnectionTo("SQL domain"), e);
-      }
-    }
-  }
-
-  /**
-   * Release the DomainSQL schema.
-   */
-  public void closeConnection() throws AdminException {
-    if (openedConnection != null) {
-      try {
-        openedConnection.close();
-      } catch (Exception e) {
-        throw new AdminException(failureOnClosingConnectionTo("SQL domain"), e);
-      } finally {
-        openedConnection = null;
-      }
-    }
   }
 
   /**
@@ -148,47 +127,41 @@ public class SQLDriver extends AbstractDomainDriver {
    * @return String
    */
   @Override
-  public String createUser(UserDetail ud) throws Exception {
-    try {
-      this.openConnection();
+  public String createUser(UserDetail ud) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
       DomainServiceProvider.getUserDomainQuotaService().verify(UserDomainQuotaKey.from(ud));
-      int userId = localUserMgr.createUser(openedConnection, ud);
-      localUserMgr.updateUserPassword(openedConnection, userId, "");
-      localUserMgr.updateUserPasswordValid(openedConnection, userId,
+      int userId = localUserMgr.createUser(connection, ud);
+      localUserMgr.updateUserPassword(connection, userId, "");
+      localUserMgr.updateUserPasswordValid(connection, userId,
           false);
       return idAsString(userId);
     } catch (QuotaException qe) {
-      throw qe;
+      throw new AdminException(qe.getMessage(), qe);
     } catch (Exception e) {
       throw new AdminException(failureOnAdding("user", ud.getDisplayedName()), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
 
   @Override
-  public void resetPassword(UserDetail user, String password) throws Exception {
+  public void resetPassword(UserDetail user, String password) throws AdminException {
     PasswordEncryption encryption = PasswordEncryptionProvider.getDefaultPasswordEncryption();
     String encryptedPassword = encryption.encrypt(password);
     effectiveResetPassword(user, encryptedPassword);
   }
 
   @Override
-  public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws Exception {
+  public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws AdminException {
     effectiveResetPassword(user, encryptedPassword);
   }
 
-  private void effectiveResetPassword(UserDetail user, String password) throws Exception {
-    try {
-      this.openConnection();
-      localUserMgr.updateUserPassword(openedConnection, idAsInt(user.getSpecificId()), password);
-      localUserMgr.updateUserPasswordValid(openedConnection, idAsInt(user.getSpecificId()), true);
+  private void effectiveResetPassword(UserDetail user, String password) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      localUserMgr.updateUserPassword(connection, idAsInt(user.getSpecificId()), password);
+      localUserMgr.updateUserPasswordValid(connection, idAsInt(user.getSpecificId()), true);
     } catch (Exception e) {
       throw new AdminException(
           "Fail to effectively reset password for user " + user.getSpecificId(), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
@@ -197,15 +170,12 @@ public class SQLDriver extends AbstractDomainDriver {
    * @param userId
    */
   @Override
-  public void deleteUser(String userId) throws Exception {
-    try {
-      this.openConnection();
-      localGroupUserRelMgr.removeAllUserRel(openedConnection, idAsInt(userId));
-      localUserMgr.deleteUser(openedConnection, idAsInt(userId));
+  public void deleteUser(String userId) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      localGroupUserRelMgr.removeAllUserRel(connection, idAsInt(userId));
+      localUserMgr.deleteUser(connection, idAsInt(userId));
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting("user", userId), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
@@ -214,36 +184,33 @@ public class SQLDriver extends AbstractDomainDriver {
    * @param uf a UserFull object
    */
   @Override
-  public void updateUserFull(UserFull uf) throws Exception {
-    try {
-      this.openConnection();
-      localUserMgr.updateUser(openedConnection, uf);
+  public void updateUserFull(UserFull uf) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      localUserMgr.updateUser(connection, uf);
       int userId = idAsInt(uf.getSpecificId());
       // MAJ Specific Properties (except password)
       String[] specificProps = getPropertiesNames();
       for (String specificProp : specificProps) {
         DomainProperty theProp = getProperty(specificProp);
-        localUserMgr.updateUserSpecificProperty(openedConnection, userId, theProp,
+        localUserMgr.updateUserSpecificProperty(connection, userId, theProp,
             uf.getValue(theProp.getName()));
       }
 
       // PWD specific treatment
       if (drvSettings.isUserPasswordAvailable()) {
         if (StringUtil.isDefined(uf.getPassword())) {
-          String existingPassword = localUserMgr.getUserPassword(openedConnection, userId);
+          String existingPassword = localUserMgr.getUserPassword(connection, userId);
           if (!existingPassword.equals(uf.getPassword())) {
             PasswordEncryption encryption =
                 PasswordEncryptionProvider.getDefaultPasswordEncryption();
             String encryptedPassword = encryption.encrypt(uf.getPassword());
-            localUserMgr.updateUserPassword(openedConnection, userId, encryptedPassword);
+            localUserMgr.updateUserPassword(connection, userId, encryptedPassword);
           }
         }
-        localUserMgr.updateUserPasswordValid(openedConnection, userId, uf.isPasswordValid());
+        localUserMgr.updateUserPasswordValid(connection, userId, uf.isPasswordValid());
       }
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate("user", uf.getSpecificId()), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
@@ -252,14 +219,11 @@ public class SQLDriver extends AbstractDomainDriver {
    * domain<DOMAIN_NAME>_user table
    */
   @Override
-  public void updateUserDetail(UserDetail ud) throws Exception {
-    try {
-      this.openConnection();
-      localUserMgr.updateUser(openedConnection, ud);
+  public void updateUserDetail(UserDetail ud) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      localUserMgr.updateUser(connection, ud);
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate("user", ud.getSpecificId()), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
@@ -268,33 +232,27 @@ public class SQLDriver extends AbstractDomainDriver {
    * @return User
    */
   @Override
-  public UserDetail getUser(String userId) throws Exception {
-    try {
-      this.openConnection();
-      return localUserMgr.getUser(openedConnection, idAsInt(userId));
+  public UserDetail getUser(String userId) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      return localUserMgr.getUser(connection, idAsInt(userId));
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("user", userId), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
   @Override
-  public UserFull getUserFull(String id) throws Exception {
-    try {
-      this.openConnection();
+  public UserFull getUserFull(String id) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
       int userId = idAsInt(id);
       UserFull uf = null;
-      UserDetail ud = localUserMgr.getUser(openedConnection, userId);
+      UserDetail ud = localUserMgr.getUser(connection, userId);
       if (ud != null) {
         uf = new UserFull(this, ud);
 
         if (drvSettings.isUserPasswordAvailable()) {
           uf.setPasswordAvailable(true);
-          uf.setPassword(localUserMgr.getUserPassword(
-              openedConnection, userId));
-          uf.setPasswordValid(localUserMgr.getUserPasswordValid(
-              openedConnection, userId));
+          uf.setPassword(localUserMgr.getUserPassword(connection, userId));
+          uf.setPasswordValid(localUserMgr.getUserPasswordValid(connection, userId));
         }
         String[] specificProps = getPropertiesNames();
         DomainProperty theProp;
@@ -302,74 +260,67 @@ public class SQLDriver extends AbstractDomainDriver {
 
         for (String specificProp : specificProps) {
           theProp = getProperty(specificProp);
-          value = localUserMgr.getUserSpecificProperty(openedConnection, userId, theProp);
+          value = localUserMgr.getUserSpecificProperty(connection, userId, theProp);
           uf.setValue(theProp.getName(), value);
         }
       }
       return uf;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("user", id), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
   @Override
-  public String[] getUserMemberGroupIds(String userId) throws Exception {
+  public String[] getUserMemberGroupIds(String userId) throws AdminException {
     return new String[0];
   }
 
   /**
    * @return User[]
    */
-  public UserDetail[] getAllUsers() throws Exception {
-    try {
-      this.openConnection();
-      List<UserDetail> users = localUserMgr.getAllUsers(openedConnection);
+  public UserDetail[] getAllUsers() throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      List<UserDetail> users = localUserMgr.getAllUsers(connection);
       return users.toArray(new UserDetail[users.size()]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all users", ""), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
   public UserDetail[] getUsersBySpecificProperty(String propertyName,
-      String propertyValue) throws Exception {
+      String propertyValue) throws AdminException {
     DomainProperty property = getProperty(propertyName);
     if (property == null) {
       // This property is not defined in this domain
-      return null;
+      return new UserDetail[0];
     } else {
-      try {
-        this.openConnection();
-        List<UserDetail> users = localUserMgr.getUsersBySpecificProperty(openedConnection,
+      try(Connection connection = dataSource.getConnection()) {
+        List<UserDetail> users = localUserMgr.getUsersBySpecificProperty(connection,
             property.getMapParameter(), propertyValue);
         return users.toArray(new UserDetail[users.size()]);
       } catch (Exception e) {
         throw new AdminException(failureOnGetting("all users by property", propertyName), e);
-      } finally {
-        this.closeConnection();
       }
     }
   }
 
   @Override
-  public UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception {
+  public UserDetail[] getUsersByQuery(Map<String, String> query) throws AdminException {
     return new UserDetail[0];
   }
 
   @Override
-  public GroupDetail importGroup(String groupName) throws Exception {
+  public GroupDetail importGroup(String groupName) throws AdminException {
     return null;
   }
 
   @Override
-  public void removeGroup(String groupId) throws Exception {
+  public void removeGroup(String groupId) throws AdminException {
+    // Silverpeas doesn't modify the database behind the SQL domain
   }
 
   @Override
-  public GroupDetail synchroGroup(String groupId) throws Exception {
+  public GroupDetail synchroGroup(String groupId) throws AdminException {
     return null;
   }
 
@@ -377,10 +328,9 @@ public class SQLDriver extends AbstractDomainDriver {
    * @param group
    * @return String
    */
-  public String createGroup(GroupDetail group) throws Exception {
-    try {
-      this.openConnection();
-      int theGrpId = localGroupMgr.createGroup(openedConnection, group);
+  public String createGroup(GroupDetail group) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      int theGrpId = localGroupMgr.createGroup(connection, group);
       String theGrpIdStr = Integer.toString(theGrpId);
       // Add the users in the group
       String[] asUserIds = group.getUserIds();
@@ -391,60 +341,51 @@ public class SQLDriver extends AbstractDomainDriver {
       }
       return theGrpIdStr;
     } catch (Exception e) {
-      throw new AdminException(failureOnAdding("group", group.getName()), e);
-    } finally {
-      this.closeConnection();
+      throw new AdminException(failureOnAdding(GROUP, group.getName()), e);
     }
   }
 
   /**
    * @param groupId
    */
-  public void deleteGroup(String groupId) throws Exception {
-    try {
+  public void deleteGroup(String groupId) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
       int gid;
-
-      this.openConnection();
       List<GroupDetail> allSubGroups = new ArrayList<>();
-      allSubGroups.add(localGroupMgr.getGroup(openedConnection, idAsInt(groupId)));
+      allSubGroups.add(localGroupMgr.getGroup(connection, idAsInt(groupId)));
 
-      while (allSubGroups.size() > 0) {
+      while (!allSubGroups.isEmpty()) {
         gid = idAsInt(allSubGroups.remove(0).getSpecificId());
         // Add sub groups
-        allSubGroups.addAll(localGroupMgr.getDirectSubGroups(
-            openedConnection, gid));
+        allSubGroups.addAll(localGroupMgr.getDirectSubGroups(connection, gid));
         // Remove the group
-        localGroupUserRelMgr.removeAllGroupRel(openedConnection, gid);
-        localGroupMgr.deleteGroup(openedConnection, gid);
+        localGroupUserRelMgr.removeAllGroupRel(connection, gid);
+        localGroupMgr.deleteGroup(connection, gid);
       }
     } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("group", groupId), e);
-    } finally {
-      this.closeConnection();
+      throw new AdminException(failureOnDeleting(GROUP, groupId), e);
     }
   }
 
   /**
    * @param group
    */
-  public void updateGroup(GroupDetail group) throws Exception {
+  public void updateGroup(GroupDetail group) throws AdminException {
     List<String> alAddUsers = new ArrayList<>();
 
-    try {
-      if (group == null || group.getName().length() == 0 ||
-          group.getSpecificId().length() == 0) {
-        throw new AdminException(undefined("group"));
-      }
+    if (group == null || group.getName().length() == 0 ||
+        group.getSpecificId().length() == 0) {
+      throw new AdminException(undefined(GROUP));
+    }
 
+    try(Connection connection = dataSource.getConnection()) {
       int groupId = idAsInt(group.getSpecificId());
-      this.openConnection();
 
       // Update the group node
-      localGroupMgr.updateGroup(openedConnection, group);
+      localGroupMgr.updateGroup(connection, group);
 
       // Update the users if necessary
-      List<String> asOldUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
-          groupId);
+      List<String> asOldUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(connection, groupId);
       // Compute the users list
       String[] asNewUsersId = group.getUserIds();
 
@@ -456,17 +397,15 @@ public class SQLDriver extends AbstractDomainDriver {
 
       // Remove the users that are not in this group anymore
       for (String anAsOldUsersId : asOldUsersId) {
-        localGroupUserRelMgr.removeGroupUserRel(openedConnection, groupId, idAsInt(anAsOldUsersId));
+        localGroupUserRelMgr.removeGroupUserRel(connection, groupId, idAsInt(anAsOldUsersId));
       }
 
       // Add the new users of the group
       for (String alAddUser : alAddUsers) {
-        localGroupUserRelMgr.createGroupUserRel(openedConnection, groupId, idAsInt(alAddUser));
+        localGroupUserRelMgr.createGroupUserRel(connection, groupId, idAsInt(alAddUser));
       }
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("group", group.getSpecificId()), e);
-    } finally {
-      this.closeConnection();
+      throw new AdminException(failureOnUpdate(GROUP, group.getSpecificId()), e);
     }
   }
 
@@ -474,21 +413,18 @@ public class SQLDriver extends AbstractDomainDriver {
    * @param groupId
    * @return GroupDetail
    */
-  public GroupDetail getGroup(String groupId) throws Exception {
-    try {
-      this.openConnection();
-      GroupDetail valret = localGroupMgr.getGroup(openedConnection, idAsInt(groupId));
+  public GroupDetail getGroup(String groupId) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      GroupDetail valret = localGroupMgr.getGroup(connection, idAsInt(groupId));
       if (valret != null) {
         // Get the selected users for this group
         List<String> asUsersId =
-            localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection, idAsInt(groupId));
+            localGroupUserRelMgr.getDirectUserIdsOfGroup(connection, idAsInt(groupId));
         valret.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
       }
       return valret;
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("group", groupId), e);
-    } finally {
-      this.closeConnection();
+      throw new AdminException(failureOnGetting(GROUP, groupId), e);
     }
   }
 
@@ -496,16 +432,11 @@ public class SQLDriver extends AbstractDomainDriver {
    * @param groupName
    * @return GroupDetail
    */
-  public GroupDetail getGroupByName(String groupName) throws Exception {
-    try {
-      this.openConnection();
-      GroupDetail valret = localGroupMgr.getGroupByName(openedConnection,
-          groupName);
-      return valret;
+  public GroupDetail getGroupByName(String groupName) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      return localGroupMgr.getGroupByName(connection, groupName);
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("group", groupName), e);
-    } finally {
-      this.closeConnection();
+      throw new AdminException(failureOnGetting(GROUP, groupName), e);
     }
   }
 
@@ -513,14 +444,13 @@ public class SQLDriver extends AbstractDomainDriver {
    * @param groupId
    * @return GroupDetail[]
    */
-  public GroupDetail[] getGroups(String groupId) throws Exception {
-    try {
-      this.openConnection();
-      List<GroupDetail> ar = localGroupMgr.getDirectSubGroups(openedConnection, idAsInt(groupId));
+  public GroupDetail[] getGroups(String groupId) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      List<GroupDetail> ar = localGroupMgr.getDirectSubGroups(connection, idAsInt(groupId));
 
       for (GroupDetail theGroup : ar) {
         // Get the selected users for this group
-        List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
+        List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(connection,
             idAsInt(theGroup.getSpecificId()));
         theGroup.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
       }
@@ -528,22 +458,19 @@ public class SQLDriver extends AbstractDomainDriver {
       return ar.toArray(new GroupDetail[ar.size()]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("subgroups of group", groupId), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
   /**
    * @return GroupDetail[]
    */
-  public GroupDetail[] getAllGroups() throws Exception {
-    try {
-      this.openConnection();
-      List<GroupDetail> ar = localGroupMgr.getAllGroups(openedConnection);
+  public GroupDetail[] getAllGroups() throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      List<GroupDetail> ar = localGroupMgr.getAllGroups(connection);
 
       for (GroupDetail theGroup : ar) {
         // Get the selected users for this group
-        List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
+        List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(connection,
             idAsInt(theGroup.getSpecificId()));
         theGroup.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
       }
@@ -551,21 +478,18 @@ public class SQLDriver extends AbstractDomainDriver {
       return ar.toArray(new GroupDetail[ar.size()]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all groups", ""), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
   /**
    * @return GroupDetail[]
    */
-  public GroupDetail[] getAllRootGroups() throws Exception {
-    try {
-      this.openConnection();
-      List<GroupDetail> ar = localGroupMgr.getDirectSubGroups(openedConnection, -1);
+  public GroupDetail[] getAllRootGroups() throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      List<GroupDetail> ar = localGroupMgr.getDirectSubGroups(connection, -1);
       for (GroupDetail theGroup : ar) {
         // Get the selected users for this group
-        List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(openedConnection,
+        List<String> asUsersId = localGroupUserRelMgr.getDirectUserIdsOfGroup(connection,
             idAsInt(theGroup.getSpecificId()));
         theGroup.setUserIds(asUsersId.toArray(new String[asUsersId.size()]));
       }
@@ -573,8 +497,6 @@ public class SQLDriver extends AbstractDomainDriver {
       return ar.toArray(new GroupDetail[ar.size()]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all root groups", ""), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
@@ -582,14 +504,11 @@ public class SQLDriver extends AbstractDomainDriver {
    * @param userId
    * @param groupId
    */
-  public void addUserInGroup(String userId, String groupId) throws Exception {
-    try {
-      this.openConnection();
-      localGroupUserRelMgr.createGroupUserRel(openedConnection, idAsInt(groupId), idAsInt(userId));
+  public void addUserInGroup(String userId, String groupId) throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      localGroupUserRelMgr.createGroupUserRel(connection, idAsInt(groupId), idAsInt(userId));
     } catch (Exception e) {
       throw new AdminException(failureOnAdding("user " + userId, "in group" + groupId), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
@@ -598,66 +517,16 @@ public class SQLDriver extends AbstractDomainDriver {
    * @param groupId
    */
   public void removeUserFromGroup(String userId, String groupId)
-      throws Exception {
-    try {
-      this.openConnection();
-      localGroupUserRelMgr.removeGroupUserRel(openedConnection,
-          idAsInt(groupId), idAsInt(userId));
+      throws AdminException {
+    try(Connection connection = dataSource.getConnection()) {
+      localGroupUserRelMgr.removeGroupUserRel(connection, idAsInt(groupId), idAsInt(userId));
 
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting("user " + userId, "in group" + groupId), e);
-    } finally {
-      this.closeConnection();
     }
   }
 
-  /**
-   * Start a new transaction
-   */
-  @Override
-  public void startTransaction(boolean bAutoCommit) {
-    try {
-      //inTransaction = true;
-      openConnection();
-      //if (openedConnection != null) {
-      //  openedConnection.setAutoCommit(bAutoCommit);
-      //}
-    } catch (AdminException ex) {
-      throw new UtilException("SQLDriver", "startTransaction", ex);
-    }
-  }
-
-  /**
-   * Commit transaction
-   */
-  public void commit() throws Exception {
-    try {
-      //if (openedConnection != null) {
-      //  openedConnection.commit();
-      //}
-      //inTransaction = false;
-      closeConnection();
-    } catch (AdminPersistenceException e) {
-      throw new AdminException("SQL Driver Transaction commit failure", e);
-    }
-  }
-
-  /**
-   * Rollback transaction
-   */
-  public void rollback() throws Exception {
-    try {
-      /*if (openedConnection != null) {
-        openedConnection.rollback();
-      }
-      inTransaction = false;*/
-      closeConnection();
-    } catch (AdminPersistenceException e) {
-      throw new AdminException("SQL Driver Transaction rollback failure", e);
-    }
-  }
-
-  public List<String> getUserAttributes() throws Exception {
+  public List<String> getUserAttributes() throws AdminException {
     return Arrays.asList(getPropertiesNames());
   }
 }

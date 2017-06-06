@@ -43,7 +43,6 @@ import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.driver.DriverSettings;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
-import org.silverpeas.core.admin.persistence.ScheduledDBReset;
 import org.silverpeas.core.admin.quota.QuotaKey;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
@@ -107,8 +106,6 @@ import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.Schema;
-import org.silverpeas.core.persistence.jdbc.SchemaPool;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.test.jcr.JcrIntegrationTest;
@@ -624,7 +621,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addAdministrationFeatures() {
     if (!contains(Administration.class)) {
-      addClasses(Administration.class, ScheduledDBReset.class, PublicationTemplateException.class);
+      addClasses(Administration.class, PublicationTemplateException.class);
       addClasses(RightRecover.class);
       addClasses(DriverSettings.class);
       addClasses(ObjectType.class);
@@ -670,7 +667,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
         UserFavoriteSpaceServiceImpl.class, UserFavoriteSpaceServiceProvider.class);
     addPackages(true, "org.silverpeas.core.admin.persistence");
     addPackages(true, "com.stratelia.webactiv.persistence");
-    addClasses(Schema.class, SchemaPool.class);
     // Centralized features
     addAdministrationFeatures();
     return this;

@@ -24,47 +24,31 @@
 
 package org.silverpeas.core.admin.persistence;
 
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.List;
-
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.i18n.I18NHelper;
 
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * A InstanceData object manages component parameters
  */
 public class InstanceDataTable extends Table<InstanceDataRow> {
 
-  public InstanceDataTable(OrganizationSchema organization) {
-    super(organization, "ST_Instance_Data");
+  public InstanceDataTable() {
+    super("ST_Instance_Data");
   }
 
-  static final private String INSTANCEDATA_COLUMNS = "id,componentId,name,label,value";
-
-  /**
-   * Fetch the current instanceData row from a resultSet.
-   */
-  protected InstanceDataRow fetchUserSet(ResultSet rs) throws SQLException {
-    InstanceDataRow idr = new InstanceDataRow();
-    idr.id = rs.getInt(1);
-    idr.componentId = rs.getInt(2);
-    idr.name = rs.getString(3);
-    idr.label = rs.getString(4);
-    idr.value = rs.getString(5);
-
-    return idr;
-  }
+  private static final String INSTANCEDATA_COLUMNS = "id,componentId,name,label,value";
 
   /**
    * Inserts in the database a new instanceData row.
    */
-  public void createInstanceData(int componentId, Parameter parameter) throws
-      AdminPersistenceException, SQLException {
+  public void createInstanceData(int componentId, Parameter parameter) throws SQLException {
     InstanceDataRow idr = new InstanceDataRow();
 
     idr.id = getNextId();
@@ -76,17 +60,17 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     insertRow(INSERT_INSTANCEDATA, idr);
   }
 
-  static final private String INSERT_INSTANCEDATA = "insert into ST_Instance_Data("
+  private static final String INSERT_INSTANCEDATA = "insert into ST_Instance_Data("
       + INSTANCEDATA_COLUMNS + ") values (?,?,?,?,?)";
 
   /**
    * Returns the instance whith the given id.
    */
-  public InstanceDataRow getInstanceData(int id) throws AdminPersistenceException {
+  public InstanceDataRow getInstanceData(int id) throws SQLException {
     return getUniqueRow(SELECT_INSTANCEDATA_BY_ID, id);
   }
 
-  static final private String SELECT_INSTANCEDATA_BY_ID = "select "
+  private static final String SELECT_INSTANCEDATA_BY_ID = "select "
       + INSTANCEDATA_COLUMNS + " from ST_Instance_Data where id = ?";
 
   @Override
@@ -103,7 +87,7 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
    * Returns all the parameters of the given component (List of SPParameter)
    */
   public List<Parameter> getAllParametersInComponent(int componentId) throws
-      AdminPersistenceException {
+      SQLException {
     List<InstanceDataRow> rows = getRows(SELECT_ALL_COMPONENT_PARAMETERS, componentId);
     List<Parameter> params = new ArrayList<>();
     for (InstanceDataRow row : rows) {
@@ -118,15 +102,14 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     return params;
   }
 
-  static final private String SELECT_ALL_COMPONENT_PARAMETERS = "select "
+  private static final String SELECT_ALL_COMPONENT_PARAMETERS = "select "
       + INSTANCEDATA_COLUMNS
       + " from ST_Instance_Data where componentId = ? order by id";
 
   /**
    * Updates a instance data row.
    */
-  public void updateInstanceData(int componentId, Parameter parameter) throws
-      AdminPersistenceException, SQLException {
+  public void updateInstanceData(int componentId, Parameter parameter) throws SQLException {
     InstanceDataRow idr = new InstanceDataRow();
 
     idr.componentId = componentId;
@@ -139,17 +122,17 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     }
   }
 
-  static final private String UPDATE_INSTANCEDATA = "UPDATE ST_Instance_Data"
+  private static final String UPDATE_INSTANCEDATA = "UPDATE ST_Instance_Data"
       + " SET value = ?" + " where componentId = ? and name = ?";
 
   /**
    * Removes a instance data row.
    */
-  public void removeInstanceData(int id) throws AdminPersistenceException {
+  public void removeInstanceData(int id) throws SQLException {
     updateRelation(REMOVE_INSTANCEDATA, id);
   }
 
-  static final private String REMOVE_INSTANCEDATA = "delete from ST_Instance_Data"
+  private static final String REMOVE_INSTANCEDATA = "delete from ST_Instance_Data"
       + " where componentid = ?";
 
   /**

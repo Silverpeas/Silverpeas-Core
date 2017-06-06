@@ -23,6 +23,7 @@ package org.silverpeas.core.admin.persistence;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -37,12 +38,11 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
  */
 public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
-  public ComponentInstanceTable(OrganizationSchema organization) {
-    super(organization, "ST_ComponentInstance");
-    this.organization = organization;
+  public ComponentInstanceTable() {
+    super("ST_ComponentInstance");
   }
 
-  static final private String INSTANCE_COLUMNS =
+  private static final String INSTANCE_COLUMNS =
       "id,spaceId,name,componentName,description,createdBy,orderNum,createTime,updateTime," +
           "removeTime,componentStatus,updatedBy,removedBy,isPublic,isHidden,lang," +
           "isInheritanceBlocked";
@@ -59,7 +59,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     i.spaceId = rs.getInt(2);
     i.name = rs.getString(3);
     i.componentName = rs.getString(4);
-    i.description = Table.getNotNullString(rs.getString(5));
+    i.description = getNotNullString(rs.getString(5));
     i.createdBy = rs.getInt(6);
     if (rs.wasNull()) {
       i.createdBy = -1;
@@ -98,28 +98,29 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * Returns the instance with the given id.
    * @param id the unique identifier of the component instance
    * @return the instance with the given id.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public ComponentInstanceRow getComponentInstance(int id) throws AdminPersistenceException {
+  public ComponentInstanceRow getComponentInstance(int id) throws SQLException {
     return getUniqueRow(SELECT_INSTANCE_BY_ID, id);
   }
 
-  static final private String SELECT_INSTANCE_BY_ID =
-      "select " + INSTANCE_COLUMNS + " from ST_ComponentInstance where id = ?";
+  public static final String SELECT = "select ";
+  private static final String SELECT_INSTANCE_BY_ID =
+      SELECT + INSTANCE_COLUMNS + " from ST_ComponentInstance where id = ?";
 
   /**
    * Returns the ComponentInstance of a given user role.
    * @param userRoleId id of user role
    * @return the ComponentInstance of a given user role.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public ComponentInstanceRow getComponentInstanceOfUserRole(int userRoleId)
-      throws AdminPersistenceException {
+      throws SQLException {
     return getUniqueRow(SELECT_USERROLE_INSTANCE, userRoleId);
   }
 
-  static final private String SELECT_USERROLE_INSTANCE =
-      "select " + Table.aliasColumns("i", INSTANCE_COLUMNS) +
+  private static final String SELECT_USERROLE_INSTANCE =
+      SELECT + Table.aliasColumns("i", INSTANCE_COLUMNS) +
           " from ST_ComponentInstance i, ST_UserRole us" +
           " where i.id = us.instanceId and us.id = ?";
 
@@ -127,15 +128,15 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * Returns all the instances in a given space
    * @param spaceId the space id
    * @return all the instances in a given space
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public ComponentInstanceRow[] getAllComponentInstancesInSpace(int spaceId)
-      throws AdminPersistenceException {
+      throws SQLException {
     List<ComponentInstanceRow> rows = getRows(SELECT_ALL_SPACE_INSTANCES, spaceId);
     return rows.toArray(new ComponentInstanceRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_SPACE_INSTANCES = "select " + INSTANCE_COLUMNS +
+  private static final String SELECT_ALL_SPACE_INSTANCES = SELECT + INSTANCE_COLUMNS +
       " from ST_ComponentInstance where spaceId = ? and componentStatus is null" +
       " order by orderNum";
 
@@ -143,39 +144,39 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * Returns all the instance ids in a given space
    * @param spaceId the space id
    * @return all the instance ids in a given space
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public String[] getAllComponentInstanceIdsInSpace(int spaceId) throws AdminPersistenceException {
+  public String[] getAllComponentInstanceIdsInSpace(int spaceId) throws SQLException {
     List<String> ids = getIds(SELECT_ALL_SPACE_INSTANCE_IDS, spaceId);
     return ids.toArray(new String[ids.size()]);
   }
 
-  static final private String SELECT_ALL_SPACE_INSTANCE_IDS =
+  private static final String SELECT_ALL_SPACE_INSTANCE_IDS =
       "select id from ST_ComponentInstance " + "where spaceId = ? and componentStatus is null" +
           " order by orderNum";
 
   /**
    * Returns all components which has been removed but not definitely deleted
    * @return all components which has been removed but not definitely deleted
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public ComponentInstanceRow[] getRemovedComponents() throws AdminPersistenceException {
+  public ComponentInstanceRow[] getRemovedComponents() throws SQLException {
     List<ComponentInstanceRow> rows = getRows(SELECT_REMOVED_COMPONENTS);
     return rows.toArray(new ComponentInstanceRow[rows.size()]);
   }
 
-  static final private String SELECT_REMOVED_COMPONENTS =
-      "select " + INSTANCE_COLUMNS + " from ST_ComponentInstance where componentStatus = '" +
+  private static final String SELECT_REMOVED_COMPONENTS =
+      SELECT + INSTANCE_COLUMNS + " from ST_ComponentInstance where componentStatus = '" +
           ComponentInst.STATUS_REMOVED + "' order by removeTime desc";
 
   /**
    * Returns the ComponentInstance whose fields match those of the given sample instance fields.
    * @param sampleInstance a row with the fields of the component instance
    * @return the ComponentInstance whose fields match those of the given sample instance fields.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public ComponentInstanceRow[] getAllMatchingComponentInstances(
-      ComponentInstanceRow sampleInstance) throws AdminPersistenceException {
+      ComponentInstanceRow sampleInstance) throws SQLException {
     String[] columns = new String[]{"componentName", "name", "description"};
     String[] values =
         new String[]{sampleInstance.componentName, sampleInstance.name, sampleInstance.description};
@@ -186,18 +187,18 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   /**
    * Inserts in the database a new instance row.
    * @param instance a row with the fields of a component instance
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public void createComponentInstance(ComponentInstanceRow instance)
-      throws AdminPersistenceException {
-    SpaceRow space = organization.space.getSpace(instance.spaceId);
+      throws SQLException {
+    SpaceRow space = OrganizationSchema.get().space().getSpace(instance.spaceId);
     if (space == null) {
-      throw new AdminPersistenceException(unknown("space", String.valueOf(instance.spaceId)));
+      throw new SQLException(unknown("space", String.valueOf(instance.spaceId)));
     }
     insertRow(INSERT_INSTANCE, instance);
   }
 
-  static final private String INSERT_INSTANCE =
+  private static final String INSERT_INSTANCE =
       "insert into ST_ComponentInstance(" + INSTANCE_COLUMNS +
           ") values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -209,9 +210,9 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     }
     insert.setInt(1, row.id);
     insert.setInt(2, row.spaceId);
-    insert.setString(3, Table.truncate(row.name, 100));
-    insert.setString(4, Table.truncate(row.componentName, 100));
-    insert.setString(5, Table.truncate(row.description, 500));
+    insert.setString(3, truncate(row.name, 100));
+    insert.setString(4, truncate(row.componentName, 100));
+    insert.setString(5, truncate(row.description, 500));
 
     if (row.createdBy == -1) {
       insert.setNull(6, Types.INTEGER);
@@ -236,16 +237,18 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     insert.setInt(17, row.inheritanceBlocked);
   }
 
-  public void updateComponentOrder(int componentId, int orderNum) throws AdminPersistenceException {
+  public void updateComponentOrder(int componentId, int orderNum) throws SQLException {
     int[] values = new int[]{orderNum, componentId};
     updateRelation(UPDATE_COMPONENT_ORDER, values);
   }
 
-  static final private String UPDATE_COMPONENT_ORDER =
-      "update ST_ComponentInstance set" + " orderNum = ?" + " where id = ?";
+  public static final String UPDATE_ST_COMPONENT_INSTANCE_SET = "update ST_ComponentInstance set";
+  public static final String WHERE_ID = " where id = ?";
+  private static final String UPDATE_COMPONENT_ORDER =
+      UPDATE_ST_COMPONENT_INSTANCE_SET + " orderNum = ?" + WHERE_ID;
 
   public void updateComponentInheritance(int componentId, boolean inheritanceBlocked)
-      throws AdminPersistenceException {
+      throws SQLException {
     int iInheritance = 0;
     if (inheritanceBlocked) {
       iInheritance = 1;
@@ -254,48 +257,43 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     updateRelation(UPDATE_COMPONENT_INHERITANCE, values);
   }
 
-  static final private String UPDATE_COMPONENT_INHERITANCE =
-      "update ST_ComponentInstance set" + " isInheritanceBlocked = ?" + " where id = ?";
+  private static final String UPDATE_COMPONENT_INHERITANCE =
+      UPDATE_ST_COMPONENT_INSTANCE_SET + " isInheritanceBlocked = ?" + WHERE_ID;
 
   /**
    * Updates in the database an instance row.
    * @param instance the row with the fields of the component instance
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public void updateComponentInstance(ComponentInstanceRow instance)
-      throws AdminPersistenceException {
+      throws SQLException {
     updateRow(UPDATE_INSTANCE, instance);
   }
 
-  static final private String UPDATE_INSTANCE = "update ST_ComponentInstance set" +
+  private static final String UPDATE_INSTANCE = UPDATE_ST_COMPONENT_INSTANCE_SET +
       " name = ?, description = ?, createdBy = ?, orderNum = ?, updateTime = ?," +
       " updatedBy = ?, componentStatus = ?, isPublic = ?, isHidden = ?," + " lang = ?," +
-      " isInheritanceBlocked = ?" + " where id = ?";
+      " isInheritanceBlocked = ?" + WHERE_ID;
 
   /**
    * Check if a named component already exists in given space
    * @param spaceId the space id
    * @param name the name of a component
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public boolean isComponentIntoBasket(int spaceId, String name) throws AdminPersistenceException {
-    PreparedStatement statement = null;
-    ResultSet rs = null;
-    try {
-      statement = organization.getStatement(IS_COMPONENT_INTO_BASKET);
+  public boolean isComponentIntoBasket(int spaceId, String name) throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement statement = connection.prepareStatement(IS_COMPONENT_INTO_BASKET)) {
       statement.setString(1, name);
       statement.setInt(2, spaceId);
       statement.setString(3, ComponentInst.STATUS_REMOVED);
-      rs = statement.executeQuery();
-      return rs.next();
-    } catch (SQLException e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, statement);
+      try (ResultSet rs = statement.executeQuery()) {
+        return rs.next();
+      }
     }
   }
 
-  static final private String IS_COMPONENT_INTO_BASKET =
+  private static final String IS_COMPONENT_INTO_BASKET =
       "select * from ST_ComponentInstance where name = ? and spaceId = ? and componentStatus = ? ";
 
   /**
@@ -306,67 +304,57 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * @throws AdminPersistenceException
    */
   public void sendComponentToBasket(int id, String tempLabel, String userId)
-      throws AdminPersistenceException {
-    PreparedStatement statement = null;
-    try {
-      statement = organization.getStatement(SEND_COMPONENT_IN_BASKET);
+      throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement statement = connection.prepareStatement(SEND_COMPONENT_IN_BASKET)) {
       statement.setString(1, tempLabel);
       statement.setInt(2, Integer.parseInt(userId));
       statement.setString(3, Long.toString(new Date().getTime()));
       statement.setString(4, ComponentInst.STATUS_REMOVED);
       statement.setInt(5, id);
       statement.executeUpdate();
-    } catch (SQLException e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
     }
   }
 
-  static final private String SEND_COMPONENT_IN_BASKET =
+  private static final String SEND_COMPONENT_IN_BASKET =
       "update ST_ComponentInstance set name = ?, " +
           "removedBy = ?, removeTime = ?, componentStatus = ? where id = ?";
 
   /**
    * Remove the space from the basket Space will be available again
    * @param id the component id
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void restoreComponentFromBasket(int id) throws AdminPersistenceException {
-    PreparedStatement statement = null;
-    try {
-      statement = organization.getStatement(RESTORE_COMPONENT_FROM_BASKET);
+  public void restoreComponentFromBasket(int id) throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement statement = connection.prepareStatement(RESTORE_COMPONENT_FROM_BASKET)) {
       statement.setNull(1, Types.INTEGER);
       statement.setNull(2, Types.VARCHAR);
       statement.setNull(3, Types.VARCHAR);
       statement.setInt(4, id);
       statement.executeUpdate();
-    } catch (SQLException e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
     }
   }
 
-  static final private String RESTORE_COMPONENT_FROM_BASKET =
+  private static final String RESTORE_COMPONENT_FROM_BASKET =
       "update ST_ComponentInstance set removedBy = ?, removeTime = ?, " +
           "componentStatus = ? where id = ?";
 
-  public void moveComponentInstance(int spaceId, int componentId) throws AdminPersistenceException {
+  public void moveComponentInstance(int spaceId, int componentId) throws SQLException {
     int[] param = new int[2];
     param[0] = spaceId;
     param[1] = componentId;
     updateRelation(MOVE_COMPONENT_INSTANCE, param);
   }
 
-  static final private String MOVE_COMPONENT_INSTANCE =
-      "update ST_ComponentInstance set" + " spaceId = ? where id = ?";
+  private static final String MOVE_COMPONENT_INSTANCE =
+      UPDATE_ST_COMPONENT_INSTANCE_SET + " spaceId = ? where id = ?";
 
   @Override
   protected void prepareUpdate(String updateQuery, PreparedStatement update,
       ComponentInstanceRow row) throws SQLException {
-    update.setString(1, Table.truncate(row.name, 100));
-    update.setString(2, Table.truncate(row.description, 500));
+    update.setString(1, truncate(row.name, 100));
+    update.setString(2, truncate(row.description, 500));
     if (row.createdBy == -1) {
       update.setNull(3, Types.INTEGER);
     } else {
@@ -395,23 +383,25 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   /**
    * Delete a component instance and all his user role sets.
    * @param id the component instance identifier
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void removeComponentInstance(int id) throws AdminPersistenceException {
+  public void removeComponentInstance(int id) throws SQLException {
     ComponentInstanceRow instance = getComponentInstance(id);
     if (instance == null) {
       return;
     }
     // delete component roles
-    UserRoleRow[] roles = organization.userRole.getAllUserRolesOfInstance(id);
+    OrganizationSchema schema = OrganizationSchema.get();
+    UserRoleTable userRoleTable = schema.userRole();
+    UserRoleRow[] roles = userRoleTable.getAllUserRolesOfInstance(id);
     for (UserRoleRow role : roles) {
-      organization.userRole.removeUserRole(role.id);
+      userRoleTable.removeUserRole(role.id);
     }
-    organization.instanceData.removeInstanceData(id);
+    schema.instanceData().removeInstanceData(id);
     updateRelation(DELETE_INSTANCE, id);
   }
 
-  static final private String DELETE_INSTANCE = "delete from ST_ComponentInstance where id = ?";
+  private static final String DELETE_INSTANCE = "delete from ST_ComponentInstance where id = ?";
 
   /**
    * Fetch the current space row from a resultSet.
@@ -421,5 +411,4 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     return fetchComponentInstance(rs);
   }
 
-  private OrganizationSchema organization = null;
 }

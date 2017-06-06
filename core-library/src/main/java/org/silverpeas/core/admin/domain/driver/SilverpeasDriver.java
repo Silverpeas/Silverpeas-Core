@@ -24,13 +24,13 @@
 
 package org.silverpeas.core.admin.domain.driver;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import org.silverpeas.core.admin.domain.AbstractDomainDriver;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authentication.password.PasswordEncryption;
 import org.silverpeas.core.security.authentication.password.PasswordEncryptionProvider;
@@ -52,9 +52,17 @@ import java.util.Set;
 import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 
 @Singleton
-@Transactional
 public class SilverpeasDriver extends AbstractDomainDriver implements SilverpeasDomainDriver {
 
+  public static final String TITLE = "title";
+  public static final String COMPANY = "company";
+  public static final String POSITION = "position";
+  public static final String BOSS = "boss";
+  public static final String PHONE = "phone";
+  public static final String HOME_PHONE = "homePhone";
+  public static final String FAX = "fax";
+  public static final String CELLULAR_PHONE = "cellularPhone";
+  public static final String ADDRESS = "address";
   @Inject
   private SPUserRepository spUserRepository;
 
@@ -64,40 +72,42 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   /**
    * Constructor
    */
-  public SilverpeasDriver() {
+  protected SilverpeasDriver() {
   }
 
   /**
    * Virtual method that performs extra initialization from a properties file. To overload by the
    * class who need it.
-   * @throws Exception
+   * @throws AdminException
    */
   @Override
-  public void initFromProperties(SettingBundle rs) throws Exception {
+  public void initFromProperties(SettingBundle rs) throws AdminException {
+    // no extra initializations are done for this driver
   }
 
   @Override
   public UserDetail[] getAllChangedUsers(String fromTimeStamp, String toTimeStamp)
-      throws Exception {
+      throws AdminException {
     return new UserDetail[0];
   }
 
   @Override
-  public GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws Exception {
+  public GroupDetail[] getAllChangedGroups(String fromTimeStamp, String toTimeStamp) throws AdminException {
     return new GroupDetail[0];
   }
 
   @Override
-  public UserDetail importUser(String userLogin) throws Exception {
+  public UserDetail importUser(String userLogin) throws AdminException {
     return null;
   }
 
   @Override
-  public void removeUser(String userId) throws Exception {
+  public void removeUser(String userId) throws AdminException {
+    // the remove of the user isn't of its responsibility
   }
 
   @Override
-  public UserDetail synchroUser(String userId) throws Exception {
+  public UserDetail synchroUser(String userId) throws AdminException {
     return null;
   }
 
@@ -106,6 +116,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @return the new user id.
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public String createUser(UserDetail ud) {
     try {
       SPUser user = convertToSPUser(ud, new SPUser());
@@ -121,6 +132,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @param userId
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public void deleteUser(String userId) {
     if (StringUtil.isInteger(userId)) {
       SPUser user = spUserRepository.getById(userId);
@@ -135,22 +147,23 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public void updateUserFull(UserFull userFull) throws UtilException {
+  @Transactional(Transactional.TxType.MANDATORY)
+  public void updateUserFull(UserFull userFull) {
     SPUser oldUser = spUserRepository.getById(userFull.getSpecificId());
     oldUser.setFirstname(userFull.getFirstName());
     oldUser.setLastname(userFull.getLastName());
     oldUser.setLogin(userFull.getLogin());
     oldUser.setEmail(userFull.geteMail());
 
-    oldUser.setTitle(userFull.getValue("title"));
-    oldUser.setCompany(userFull.getValue("company"));
-    oldUser.setPosition(userFull.getValue("position"));
-    oldUser.setBoss(userFull.getValue("boss"));
-    oldUser.setPhone(userFull.getValue("phone"));
-    oldUser.setHomephone(userFull.getValue("homePhone"));
-    oldUser.setFax(userFull.getValue("fax"));
-    oldUser.setCellphone(userFull.getValue("cellularPhone"));
-    oldUser.setAddress(userFull.getValue("address"));
+    oldUser.setTitle(userFull.getValue(TITLE));
+    oldUser.setCompany(userFull.getValue(COMPANY));
+    oldUser.setPosition(userFull.getValue(POSITION));
+    oldUser.setBoss(userFull.getValue(BOSS));
+    oldUser.setPhone(userFull.getValue(PHONE));
+    oldUser.setHomephone(userFull.getValue(HOME_PHONE));
+    oldUser.setFax(userFull.getValue(FAX));
+    oldUser.setCellphone(userFull.getValue(CELLULAR_PHONE));
+    oldUser.setAddress(userFull.getValue(ADDRESS));
     oldUser.setLoginmail("");
 
     // Only update password when this field has been filled
@@ -166,6 +179,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @param ud
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public void updateUserDetail(UserDetail ud) {
     if (StringUtil.isInteger(ud.getSpecificId())) {
       SPUser user = spUserRepository.getById(ud.getSpecificId());
@@ -180,6 +194,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @return User
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public UserDetail getUser(String userId) {
     if (!StringUtil.isInteger(userId)) {
       return null;
@@ -189,6 +204,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public UserFull getUserFull(String userId) {
     if (!StringUtil.isInteger(userId)) {
       return null;
@@ -198,15 +214,15 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     if (user != null) {
       userFull.setFirstName(user.getFirstname());
       userFull.setLastName(user.getLastname());
-      userFull.setValue("title", user.getTitle());
-      userFull.setValue("company", user.getCompany());
-      userFull.setValue("position", user.getPosition());
-      userFull.setValue("boss", user.getBoss());
-      userFull.setValue("phone", user.getPhone());
-      userFull.setValue("homePhone", user.getHomephone());
-      userFull.setValue("fax", user.getFax());
-      userFull.setValue("cellularPhone", user.getCellphone());
-      userFull.setValue("address", user.getAddress());
+      userFull.setValue(TITLE, user.getTitle());
+      userFull.setValue(COMPANY, user.getCompany());
+      userFull.setValue(POSITION, user.getPosition());
+      userFull.setValue(BOSS, user.getBoss());
+      userFull.setValue(PHONE, user.getPhone());
+      userFull.setValue(HOME_PHONE, user.getHomephone());
+      userFull.setValue(FAX, user.getFax());
+      userFull.setValue(CELLULAR_PHONE, user.getCellphone());
+      userFull.setValue(ADDRESS, user.getAddress());
       userFull.setLogin(user.getLogin());
       userFull.seteMail(user.getEmail());
       userFull.setPassword(user.getPassword());
@@ -217,7 +233,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public String[] getUserMemberGroupIds(String userId) throws Exception {
+  public String[] getUserMemberGroupIds(String userId) throws AdminException {
     return new String[0];
   }
 
@@ -225,6 +241,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @return User[]
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public UserDetail[] getAllUsers() {
     List<SPUser> users = spUserRepository.getAll();
     List<UserDetail> details = new ArrayList<>(users.size());
@@ -235,28 +252,29 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public UserDetail[] getUsersBySpecificProperty(String propertyName,
-      String propertyValue) throws Exception {
+      String propertyValue) throws AdminException {
     DomainProperty property = getProperty(propertyName);
     if (property == null) {
-      return null;
+      return new UserDetail[0];
     }
     List<SPUser> users = new ArrayList<>();
-    if ("title".equalsIgnoreCase(propertyName)) {
+    if (TITLE.equalsIgnoreCase(propertyName)) {
       users = spUserRepository.findByTitle(propertyValue);
-    } else if ("company".equalsIgnoreCase(propertyName)) {
+    } else if (COMPANY.equalsIgnoreCase(propertyName)) {
       users = spUserRepository.findByCompany(propertyValue);
-    } else if ("position".equalsIgnoreCase(propertyName)) {
+    } else if (POSITION.equalsIgnoreCase(propertyName)) {
       users = spUserRepository.findByPosition(propertyValue);
-    } else if ("phone".equalsIgnoreCase(propertyName)) {
+    } else if (PHONE.equalsIgnoreCase(propertyName)) {
       users = spUserRepository.findByPhone(propertyValue);
-    } else if ("homePhone".equalsIgnoreCase(propertyName)) {
+    } else if (HOME_PHONE.equalsIgnoreCase(propertyName)) {
       users = spUserRepository.findByHomephone(propertyValue);
-    } else if ("fax".equalsIgnoreCase(propertyName)) {
+    } else if (FAX.equalsIgnoreCase(propertyName)) {
       users = spUserRepository.findByFax(propertyValue);
-    } else if ("cellularPhone".equalsIgnoreCase(propertyName)) {
+    } else if (CELLULAR_PHONE.equalsIgnoreCase(propertyName)) {
       users = spUserRepository.findByCellphone(propertyValue);
-    } else if ("address".equalsIgnoreCase(propertyName)) {
+    } else if (ADDRESS.equalsIgnoreCase(propertyName)) {
       users = spUserRepository.findByAddress(propertyValue);
     }
     List<UserDetail> userDetails = new ArrayList<>(users.size());
@@ -267,21 +285,22 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public UserDetail[] getUsersByQuery(Map<String, String> query) throws Exception {
+  public UserDetail[] getUsersByQuery(Map<String, String> query) throws AdminException {
     return new UserDetail[0];
   }
 
   @Override
-  public GroupDetail importGroup(String groupName) throws Exception {
+  public GroupDetail importGroup(String groupName) throws AdminException {
     return null;
   }
 
   @Override
-  public void removeGroup(String groupId) throws Exception {
+  public void removeGroup(String groupId) throws AdminException {
+    // the removing of a group isn't of its responsibility
   }
 
   @Override
-  public GroupDetail synchroGroup(String groupId) throws Exception {
+  public GroupDetail synchroGroup(String groupId) throws AdminException {
     return null;
   }
 
@@ -290,6 +309,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @return String
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public String createGroup(GroupDetail group) {
     try {
       SPGroup spGroup = new SPGroup();
@@ -320,6 +340,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @param groupId
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public void deleteGroup(String groupId) {
     SPGroup group = spGroupRepository.getById(groupId);
     if (group != null) {
@@ -345,6 +366,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @throws AdminException
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public void updateGroup(GroupDetail group) throws AdminException {
     Set<SPUser> addedUsers = new HashSet<>();
     if (group == null || !StringUtil.isDefined(group.getName()) || !StringUtil.isDefined(
@@ -381,13 +403,14 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @return GroupDetail
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail getGroup(String groupId) {
     SPGroup gr = spGroupRepository.getById(groupId);
     return convertToGroup(gr);
   }
 
   @Override
-  public GroupDetail getGroupByName(String groupName) throws Exception {
+  public GroupDetail getGroupByName(String groupName) throws AdminException {
     return null;
   }
 
@@ -396,6 +419,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @return GroupDetail[]
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail[] getGroups(String groupId) {
     SPGroup gr = spGroupRepository.getById(groupId);
     Set<SPGroup> subGroups = gr.getSubGroups();
@@ -410,6 +434,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @return GroupDetail[]
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail[] getAllGroups() {
     List<SPGroup> groups = spGroupRepository.getAll();
     List<GroupDetail> result = new ArrayList<>(groups.size());
@@ -420,6 +445,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail[] getAllRootGroups() {
     List<SPGroup> groups = spGroupRepository.listAllRootGroups();
     List<GroupDetail> result = new ArrayList<>(groups.size());
@@ -430,28 +456,17 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public String[] getGroupMemberGroupIds(String groupId) throws Exception {
+  public String[] getGroupMemberGroupIds(String groupId) throws AdminException {
     return new String[0];
-  }
-
-  @Override
-  public void startTransaction(boolean bAutoCommit) {
-  }
-
-  @Override
-  public void commit() throws Exception {
-  }
-
-  @Override
-  public void rollback() throws Exception {
   }
 
   /**
    * @param userId
    * @param groupId
-   * @throws Exception
+   * @throws AdminException
    */
-  public void addUserInGroup(String userId, String groupId) throws Exception {
+  @Transactional(Transactional.TxType.MANDATORY)
+  public void addUserInGroup(String userId, String groupId) {
     SPUser user = spUserRepository.getById(userId);
     SPGroup group = spGroupRepository.getById(groupId);
     user.getGroups().add(group);
@@ -463,6 +478,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
    * @param userId
    * @param groupId
    */
+  @Transactional(Transactional.TxType.MANDATORY)
   public void removeUserFromGroup(String userId, String groupId) {
     SPUser user = spUserRepository.getById(userId);
     SPGroup group = spGroupRepository.getById(groupId);
@@ -474,7 +490,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   /**
    * Convert GroupDetail to SPGroupRow
    */
-  SPGroup convertToSPGroup(GroupDetail group, SPGroup spGroup) {
+  private SPGroup convertToSPGroup(GroupDetail group, SPGroup spGroup) {
     if (StringUtil.isDefined(group.getSpecificId()) && StringUtil.isInteger(group.getSpecificId())) {
       spGroup.setId(Integer.valueOf(group.getSpecificId()));
     }
@@ -488,7 +504,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     return spGroup;
   }
 
-  GroupDetail convertToGroup(SPGroup gr) {
+  private GroupDetail convertToGroup(SPGroup gr) {
     GroupDetail group = new GroupDetail();
     group.setSpecificId(String.valueOf(gr.getId()));
     group.setName(gr.getName());
@@ -506,12 +522,12 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public List<String> getUserAttributes() throws Exception {
+  public List<String> getUserAttributes() throws AdminException {
     // no attributes for this driver
-    return null;
+    return Collections.emptyList();
   }
 
-  SPUser convertToSPUser(UserDetail detail, SPUser user) {
+  private SPUser convertToSPUser(UserDetail detail, SPUser user) {
     if (StringUtil.isDefined(detail.getSpecificId()) &&
         StringUtil.isInteger(detail.getSpecificId())) {
       user.setId(Integer.valueOf(detail.getId()));
@@ -523,7 +539,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     return user;
   }
 
-  UserDetail convertToUser(SPUser user, UserDetail detail) {
+  private UserDetail convertToUser(SPUser user, UserDetail detail) {
     detail.setSpecificId(String.valueOf(user.getId()));
     detail.setFirstName(user.getFirstname());
     detail.setLastName(user.getLastname());
@@ -533,7 +549,8 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public void resetPassword(UserDetail userDetail, String password) throws Exception {
+  @Transactional(Transactional.TxType.MANDATORY)
+  public void resetPassword(UserDetail userDetail, String password) throws AdminException {
     SPUser user = spUserRepository.getById(userDetail.getId());
     user.setPassword(encrypt(password));
     user.setPasswordValid(true);
@@ -546,7 +563,8 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   }
 
   @Override
-  public void resetEncryptedPassword(UserDetail userDetail, String encryptedPassword) throws Exception {
+  @Transactional(Transactional.TxType.MANDATORY)
+  public void resetEncryptedPassword(UserDetail userDetail, String encryptedPassword) throws AdminException {
     SPUser user = spUserRepository.getById(userDetail.getId());
     user.setPassword(encryptedPassword);
     user.setPasswordValid(true);

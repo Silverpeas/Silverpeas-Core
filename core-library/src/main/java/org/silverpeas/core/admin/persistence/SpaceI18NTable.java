@@ -34,11 +34,11 @@ import java.util.List;
  */
 public class SpaceI18NTable extends Table<SpaceI18NRow> {
 
-  public SpaceI18NTable(OrganizationSchema organization) {
-    super(organization, "ST_SpaceI18N");
+  SpaceI18NTable() {
+    super("ST_SpaceI18N");
   }
 
-  static final private String COLUMNS = "id,spaceId,lang,name,description";
+  private static final String COLUMNS = "id,spaceId,lang,name,description";
 
   /**
    * Fetch the current space row from a resultSet.
@@ -56,21 +56,21 @@ public class SpaceI18NTable extends Table<SpaceI18NRow> {
   /**
    * Returns the Space whith the given id.
    */
-  public List<SpaceI18NRow> getTranslations(int spaceId) throws AdminPersistenceException {
+  public List<SpaceI18NRow> getTranslations(int spaceId) throws SQLException {
     return getRows(SELECT_TRANSLATIONS, spaceId);
   }
 
-  static final private String SELECT_TRANSLATIONS = "select " + COLUMNS
+  private static final String SELECT_TRANSLATIONS = "select " + COLUMNS
       + " from ST_SpaceI18N where spaceId = ?";
 
   /**
    * Inserts in the database a new space row.
    */
-  public void createTranslation(SpaceI18NRow translation) throws AdminPersistenceException {
+  public void createTranslation(SpaceI18NRow translation) throws SQLException {
     insertRow(INSERT_TRANSLATION, translation);
   }
 
-  static final private String INSERT_TRANSLATION = "insert into"
+  private static final String INSERT_TRANSLATION = "insert into"
       + " ST_SpaceI18N(" + COLUMNS + ")" + " values  (?, ?, ?, ?, ?)";
 
   @Override
@@ -87,11 +87,11 @@ public class SpaceI18NTable extends Table<SpaceI18NRow> {
   /**
    * Updates a space row.
    */
-  public void updateTranslation(SpaceI18NRow space) throws AdminPersistenceException {
+  public void updateTranslation(SpaceI18NRow space) throws SQLException {
     updateRow(UPDATE_TRANSLATION, space);
   }
 
-  static final private String UPDATE_TRANSLATION = "update ST_SpaceI18N set"
+  private static final String UPDATE_TRANSLATION = "update ST_SpaceI18N set"
       + " name = ?," + " description = ? " + " WHERE id = ? ";
 
   @Override
@@ -105,20 +105,20 @@ public class SpaceI18NTable extends Table<SpaceI18NRow> {
   /**
    * Delete a translation.
    */
-  public void removeTranslation(int id) throws AdminPersistenceException {
+  public void removeTranslation(int id) throws SQLException {
     updateRelation(DELETE_TRANSLATION, id);
   }
 
-  static final private String DELETE_TRANSLATION = "delete from ST_SpaceI18N where id = ?";
+  private static final String DELETE_TRANSLATION = "delete from ST_SpaceI18N where id = ?";
 
   /**
    * Delete all space's translations.
    */
-  public void removeTranslations(int spaceId) throws AdminPersistenceException {
+  public void removeTranslations(int spaceId) throws SQLException {
     updateRelation(DELETE_TRANSLATIONS, spaceId);
   }
 
-  static final private String DELETE_TRANSLATIONS = "delete from ST_SpaceI18N where spaceId = ?";
+  private static final String DELETE_TRANSLATIONS = "delete from ST_SpaceI18N where spaceId = ?";
 
   /**
    * Fetch the current space row from a resultSet.
