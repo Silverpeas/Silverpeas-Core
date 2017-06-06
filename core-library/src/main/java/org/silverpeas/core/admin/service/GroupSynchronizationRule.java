@@ -36,6 +36,7 @@ import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.exception.WithNested;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine;
@@ -390,7 +391,7 @@ class GroupSynchronizationRule {
     if (domainDriver != null) {
       try {
         users = domainDriver.getUsersBySpecificProperty(propertyName, propertyValue);
-        if (users == null) {
+        if (ArrayUtil.isEmpty(users)) {
           reportInfo("admin.getUserIdsBySpecificProperty",
               "La propriété '" + propertyName + "' n'est pas définie dans le domaine " +
                   domainId);

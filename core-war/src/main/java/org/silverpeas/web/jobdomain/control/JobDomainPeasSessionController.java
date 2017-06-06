@@ -1004,7 +1004,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         m_TargetUserId = null;
       }
 
-      if ((getDomainActions() & DomainDriver.ACTION_X509_USER) != 0) {
+      if ((getDomainActions() & DomainDriver.ActionConstants.ACTION_X509_USER) != 0) {
         // revocate user's certificate
         revocateCertificate(user);
       }

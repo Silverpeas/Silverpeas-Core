@@ -104,12 +104,6 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String deleteSpaceInstById(final String userId, final String spaceId,
-      final boolean startNewTransaction, final boolean definitive) throws AdminException {
-    return null;
-  }
-
-  @Override
   public void restoreSpaceFromBasket(final String spaceId) throws AdminException {
 
   }
@@ -227,12 +221,6 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String addComponentInst(final String userId, final ComponentInst componentInst,
-      final boolean startNewTransaction) throws AdminException, QuotaException {
-    return null;
-  }
-
-  @Override
   public String deleteComponentInst(final String userId, final String componentId,
       final boolean definitive) throws AdminException {
     return null;
@@ -267,11 +255,6 @@ public class StubbedAdministration implements Administration {
 
   }
 
-  @Override
-  public void setSpaceProfilesToComponent(final ComponentInst component, final SpaceInst space,
-      final boolean startNewTransaction) throws AdminException {
-
-  }
 
   @Override
   public void moveSpace(final String spaceId, final String fatherId) throws AdminException {
@@ -383,12 +366,6 @@ public class StubbedAdministration implements Administration {
   @Override
   public String updateSpaceProfileInst(final SpaceProfileInst newSpaceProfile, final String userId)
       throws AdminException {
-    return null;
-  }
-
-  @Override
-  public String updateSpaceProfileInst(final SpaceProfileInst newSpaceProfile, final String userId,
-      final boolean startNewTransaction) throws AdminException {
     return null;
   }
 
@@ -512,19 +489,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String addGroupProfileInst(final GroupProfileInst groupProfileInst,
-      final boolean startNewTransaction) throws AdminException {
-    return null;
-  }
-
-  @Override
   public String deleteGroupProfileInst(final String groupId) throws AdminException {
-    return null;
-  }
-
-  @Override
-  public String deleteGroupProfileInst(final String groupId, final boolean startNewTransaction)
-      throws AdminException {
     return null;
   }
 
@@ -1131,11 +1096,6 @@ public class StubbedAdministration implements Administration {
   public ListSlice<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria)
       throws AdminException {
     return null;
-  }
-
-  @Override
-  public void resetAllDBConnections(final boolean isScheduled) throws AdminException {
-
   }
 
   @Override

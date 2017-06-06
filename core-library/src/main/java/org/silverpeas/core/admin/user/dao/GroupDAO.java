@@ -20,10 +20,13 @@
  */
 package org.silverpeas.core.admin.user.dao;
 
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.StringUtil;
+
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,9 +34,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
-import org.silverpeas.core.util.ListSlice;
-
-import javax.inject.Singleton;
 
 @Singleton
 public class GroupDAO {
@@ -41,9 +41,11 @@ public class GroupDAO {
   static final private String GROUP_COLUMNS =
       "id,specificId,domainId,superGroupId,name,description,synchroRule";
 
-  public GroupDAO() {
+  protected GroupDAO() {
+
   }
-  static final private String queryGetGroup = "select " + GROUP_COLUMNS
+
+  private static final String QUERY_GET_GROUP = "select " + GROUP_COLUMNS
       + " from ST_Group where id = ?";
 
   /**
@@ -108,7 +110,7 @@ public class GroupDAO {
     ResultSet rs = null;
 
     try {
-      stmt = con.prepareStatement(queryGetGroup);
+      stmt = con.prepareStatement(QUERY_GET_GROUP);
       stmt.setInt(1, Integer.parseInt(groupId));
 
       rs = stmt.executeQuery();

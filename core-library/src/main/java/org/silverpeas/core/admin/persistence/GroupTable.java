@@ -45,9 +45,8 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
  */
 public class GroupTable extends Table<GroupRow> {
 
-  public GroupTable(OrganizationSchema schema) {
-    super(schema, "ST_Group");
-    this.organization = schema;
+  GroupTable() {
+    super("ST_Group");
   }
 
   static final private String GROUP_COLUMNS =
@@ -87,9 +86,9 @@ public class GroupTable extends Table<GroupRow> {
    * Returns the Group with the given id.
    * @param id group id
    * @return the Group with the given id.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public GroupRow getGroup(int id) throws AdminPersistenceException {
+  public GroupRow getGroup(int id) throws SQLException {
     return getUniqueRow(SELECT_GROUP_BY_ID, id);
   }
 
@@ -98,10 +97,10 @@ public class GroupTable extends Table<GroupRow> {
    * @param domainId domain id
    * @param specificId group specific id
    * @return Group whith the given specificId and domainId.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public GroupRow getGroupBySpecificId(int domainId, String specificId)
-      throws AdminPersistenceException {
+      throws SQLException {
     List<Object> params = new ArrayList<>(2);
     params.add(domainId);
     params.add(specificId);
@@ -112,7 +111,7 @@ public class GroupTable extends Table<GroupRow> {
     if (groups.size() == 1) {
       return groups.get(0);
     }
-    throw new AdminPersistenceException(failureOnGetting("group with specific id", specificId));
+    throw new SQLException(failureOnGetting("group with specific id", specificId));
 
   }
 
@@ -120,9 +119,9 @@ public class GroupTable extends Table<GroupRow> {
    * Returns the root Group with the given name.
    * @param name group name
    * @return the root Group with the given name.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public GroupRow getRootGroup(String name) throws AdminPersistenceException {
+  public GroupRow getRootGroup(String name) throws SQLException {
     List<GroupRow> groups = getRows(SELECT_ROOT_GROUP_BY_NAME, Collections.singletonList(name));
     if (groups.isEmpty()) {
       return null;
@@ -130,7 +129,7 @@ public class GroupTable extends Table<GroupRow> {
     if (groups.size() == 1) {
       return groups.get(0);
     }
-    throw new AdminPersistenceException(failureOnGetting("root group", name));
+    throw new SQLException(failureOnGetting("root group", name));
   }
 
   /**
@@ -138,9 +137,9 @@ public class GroupTable extends Table<GroupRow> {
    * @param superGroupId parent group id
    * @param name name of the group
    * @return the Group with the given name in the given super group.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public GroupRow getGroup(int superGroupId, String name) throws AdminPersistenceException {
+  public GroupRow getGroup(int superGroupId, String name) throws SQLException {
     List<Object> params = new ArrayList<>(2);
     params.add(superGroupId);
     params.add(name);
@@ -151,16 +150,16 @@ public class GroupTable extends Table<GroupRow> {
     if (groups.size() == 1) {
       return groups.get(0);
     }
-    throw new AdminPersistenceException(
+    throw new SQLException(
         failureOnGetting("subgroup " + name, "in group " + superGroupId));
   }
 
   /**
    * Returns all the Groups.
    * @return all the Groups.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public GroupRow[] getAllGroups() throws AdminPersistenceException {
+  public GroupRow[] getAllGroups() throws SQLException {
     List<GroupRow> rows = getRows(SELECT_ALL_GROUPS);
     return rows.toArray(new GroupRow[rows.size()]);
   }
@@ -170,7 +169,7 @@ public class GroupTable extends Table<GroupRow> {
   /**
    * Returns all the Groups.
    */
-  public GroupRow[] getSynchronizedGroups() throws AdminPersistenceException {
+  public GroupRow[] getSynchronizedGroups() throws SQLException {
     List<GroupRow> rows = getRows(SELECT_SYNCHRONIZED_GROUPS);
     return rows.toArray(new GroupRow[rows.size()]);
   }
@@ -181,9 +180,9 @@ public class GroupTable extends Table<GroupRow> {
   /**
    * Returns all the Group ids.
    * @return all the Group ids.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public String[] getAllGroupIds() throws AdminPersistenceException {
+  public String[] getAllGroupIds() throws SQLException {
     List<String> ids = getIds(SELECT_ALL_GROUP_IDS);
     return ids.toArray(new String[ids.size()]);
   }
@@ -193,9 +192,9 @@ public class GroupTable extends Table<GroupRow> {
   /**
    * Returns all the Groups without a superGroup.
    * @return all the Groups without a superGroup.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public GroupRow[] getAllRootGroups() throws AdminPersistenceException {
+  public GroupRow[] getAllRootGroups() throws SQLException {
     List<GroupRow> rows = getRows(SELECT_ALL_ROOT_GROUPS);
     return rows.toArray(new GroupRow[rows.size()]);
   }
@@ -206,9 +205,9 @@ public class GroupTable extends Table<GroupRow> {
   /**
    * Returns all the Groups without a superGroup.
    * @return all the Groups without a superGroup.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public String[] getAllRootGroupIds() throws AdminPersistenceException {
+  public String[] getAllRootGroupIds() throws SQLException {
     List<String> ids = getIds(SELECT_ALL_ROOT_GROUP_IDS);
     return ids.toArray(new String[ids.size()]);
   }
@@ -220,9 +219,9 @@ public class GroupTable extends Table<GroupRow> {
    * Returns all the Groups having a given superGroup.
    * @param superGroupId parent group id
    * @return all the Groups having a given superGroup.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public GroupRow[] getDirectSubGroups(int superGroupId) throws AdminPersistenceException {
+  public GroupRow[] getDirectSubGroups(int superGroupId) throws SQLException {
     List<GroupRow> rows = getRows(SELECT_SUBGROUPS, superGroupId);
     return rows.toArray(new GroupRow[rows.size()]);
   }
@@ -234,9 +233,9 @@ public class GroupTable extends Table<GroupRow> {
    * Returns all the Group ids having a given superGroup.
    * @param superGroupId parent group id
    * @return an array with the identifiers of the subgroups
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public String[] getDirectSubGroupIds(int superGroupId) throws AdminPersistenceException {
+  public String[] getDirectSubGroupIds(int superGroupId) throws SQLException {
     List<String> ids = getIds(SELECT_SUBGROUP_IDS, superGroupId);
     return ids.toArray(new String[ids.size()]);
   }
@@ -248,9 +247,9 @@ public class GroupTable extends Table<GroupRow> {
    * Returns all the Root Groups having a given domain id.
    * @param domainId domain id
    * @return all the Root Groups having a given domain id.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public GroupRow[] getAllRootGroupsOfDomain(int domainId) throws AdminPersistenceException {
+  public GroupRow[] getAllRootGroupsOfDomain(int domainId) throws SQLException {
     List<GroupRow> rows = getRows(SELECT_ALL_ROOT_GROUPS_IN_DOMAIN, domainId);
     return rows.toArray(new GroupRow[rows.size()]);
   }
@@ -259,9 +258,9 @@ public class GroupTable extends Table<GroupRow> {
    * Returns all the Root Group Ids having a given domain id.
    * @param domainId domain id
    * @return all the Root Group Ids having a given domain id.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public String[] getAllRootGroupIdsOfDomain(int domainId) throws AdminPersistenceException {
+  public String[] getAllRootGroupIdsOfDomain(int domainId) throws SQLException {
     List<String> ids = getIds(SELECT_ALL_ROOT_GROUPS_IDS_IN_DOMAIN, domainId);
     return ids.toArray(new String[ids.size()]);
   }
@@ -275,9 +274,9 @@ public class GroupTable extends Table<GroupRow> {
    * Returns all the Groups having a given domain id.
    * @param domainId domain id
    * @return all the Groups having a given domain id.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public GroupRow[] getAllGroupsOfDomain(int domainId) throws AdminPersistenceException {
+  public GroupRow[] getAllGroupsOfDomain(int domainId) throws SQLException {
     SynchroDomainReport.debug("GroupTable.getAllGroupsOfDomain()",
         "Recherche de l'ensemble des groupes du domaine LDAP dans la base (ID " + domainId +
             "), requête : " + SELECT_ALL_GROUPS_IN_DOMAIN);
@@ -292,9 +291,9 @@ public class GroupTable extends Table<GroupRow> {
    * Returns the superGroup of a given subGroup.
    * @param subGroupId parent group id
    * @return the superGroup of a given subGroup.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public GroupRow getSuperGroup(int subGroupId) throws AdminPersistenceException {
+  public GroupRow getSuperGroup(int subGroupId) throws SQLException {
     return getUniqueRow(SELECT_SUPERGROUP, subGroupId);
   }
 
@@ -305,9 +304,9 @@ public class GroupTable extends Table<GroupRow> {
    * Returns all the groups of a given user (not recursive).
    * @param userId user id
    * @return all the groups of a given user (not recursive).
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public GroupRow[] getDirectGroupsOfUser(int userId) throws AdminPersistenceException {
+  public GroupRow[] getDirectGroupsOfUser(int userId) throws SQLException {
     List<GroupRow> rows = getRows(SELECT_USER_GROUPS, userId);
     return rows.toArray(new GroupRow[rows.size()]);
   }
@@ -319,9 +318,9 @@ public class GroupTable extends Table<GroupRow> {
    * Returns all the groups in a given userRole (not recursive).
    * @param userRoleId user role id
    * @return all the groups in a given userRole (not recursive).
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public String[] getDirectGroupIdsInUserRole(int userRoleId) throws AdminPersistenceException {
+  public String[] getDirectGroupIdsInUserRole(int userRoleId) throws SQLException {
     List<String> ids = getIds(SELECT_USERROLE_GROUP_IDS, userRoleId);
     return ids.toArray(new String[ids.size()]);
   }
@@ -333,10 +332,10 @@ public class GroupTable extends Table<GroupRow> {
    * Returns all the group ids in a given spaceUserRole (not recursive).
    * @param spaceUserRoleId space role id played by a user
    * @return all the group ids in a given spaceUserRole (not recursive).
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public String[] getDirectGroupIdsInSpaceUserRole(int spaceUserRoleId)
-      throws AdminPersistenceException {
+      throws SQLException {
     List<String> ids = getIds(SELECT_SPACEUSERROLE_GROUP_IDS, spaceUserRoleId);
     return ids.toArray(new String[ids.size()]);
   }
@@ -348,10 +347,10 @@ public class GroupTable extends Table<GroupRow> {
    * Returns all the groups in a given groupUserRole (not recursive).
    * @param groupUserRoleId group role id
    * @return all the groups in a given groupUserRole (not recursive).
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public GroupRow[] getDirectGroupsInGroupUserRole(int groupUserRoleId)
-      throws AdminPersistenceException {
+      throws SQLException {
     List<GroupRow> rows = getRows(SELECT_GROUPUSERROLE_GROUPS, groupUserRoleId);
     return rows.toArray(new GroupRow[rows.size()]);
   }
@@ -363,9 +362,9 @@ public class GroupTable extends Table<GroupRow> {
    * Returns the Group of a given group user role.
    * @param groupUserRoleId group role id
    * @return the Group of a given group user role.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public GroupRow getGroupOfGroupUserRole(int groupUserRoleId) throws AdminPersistenceException {
+  public GroupRow getGroupOfGroupUserRole(int groupUserRoleId) throws SQLException {
     return getUniqueRow(SELECT_GROUPUSERROLE_GROUP, groupUserRoleId);
   }
 
@@ -377,10 +376,10 @@ public class GroupTable extends Table<GroupRow> {
    * Returns all the group ids in a given groupUserRole (not recursive).
    * @param groupUserRoleId group role id
    * @return all the group ids in a given groupUserRole (not recursive).
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public String[] getDirectGroupIdsInGroupUserRole(int groupUserRoleId)
-      throws AdminPersistenceException {
+      throws SQLException {
     List<String> ids = getIds(SELECT_GROUPUSERROLE_GROUP_IDS, groupUserRoleId);
     return ids.toArray(new String[ids.size()]);
   }
@@ -392,9 +391,9 @@ public class GroupTable extends Table<GroupRow> {
    * Returns the Group whose fields match those of the given sample group fields.
    * @param sampleGroup a sample group
    * @return the Group whose fields match those of the given sample group fields.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public GroupRow[] getAllMatchingGroups(GroupRow sampleGroup) throws AdminPersistenceException {
+  public GroupRow[] getAllMatchingGroups(GroupRow sampleGroup) throws SQLException {
     String[] columns = new String[]{"name", "description"};
     String[] values = new String[]{sampleGroup.name, sampleGroup.description};
     List<GroupRow> rows = getMatchingRows(GROUP_COLUMNS, columns, values);
@@ -408,10 +407,10 @@ public class GroupTable extends Table<GroupRow> {
    * @param aRoleId the identifiers of the roles the groups has to play
    * @param groupModel a model of a group
    * @return all the Groups satisfying the model that are direct childs of a specific group
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public String[] searchGroupsIds(boolean isRootGroup, int componentId, int[] aRoleId,
-      GroupRow groupModel) throws AdminPersistenceException {
+      GroupRow groupModel) throws SQLException {
     boolean concatAndOr = false;
     String andOr = ") AND (";
     StringBuilder theQuery;
@@ -490,10 +489,10 @@ public class GroupTable extends Table<GroupRow> {
    * @param groupModel a group model
    * @param isAnd the link operator
    * @return an array of rows of groups
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public GroupRow[] searchGroups(GroupRow groupModel, boolean isAnd)
-      throws AdminPersistenceException {
+      throws SQLException {
     boolean concatAndOr = false;
     String andOr;
     StringBuilder theQuery = new StringBuilder(SELECT_SEARCH_GROUPS);
@@ -530,14 +529,14 @@ public class GroupTable extends Table<GroupRow> {
   /**
    * Insert a new group row.
    * @param group a group
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void createGroup(GroupRow group) throws AdminPersistenceException {
+  public void createGroup(GroupRow group) throws SQLException {
     GroupRow superGroup;
     if (group.superGroupId != -1) {
       superGroup = getGroup(group.superGroupId);
       if (superGroup == null) {
-        throw new AdminPersistenceException(
+        throw new SQLException(
             failureOnAdding("group into parent group", String.valueOf(group.superGroupId)));
       }
     }
@@ -578,7 +577,7 @@ public class GroupTable extends Table<GroupRow> {
    * @param group a group
    * @throws AdminPersistenceException
    */
-  public void updateGroup(GroupRow group) throws AdminPersistenceException {
+  public void updateGroup(GroupRow group) throws SQLException {
     SynchroDomainReport.debug("GroupTable.updateGroup()",
         "Maj de " + group.name + ", Id=" + group.id + ", requête : " + UPDATE_GROUP);
     updateRow(UPDATE_GROUP, group);
@@ -610,9 +609,9 @@ public class GroupTable extends Table<GroupRow> {
   /**
    * Delete the group and all the sub-groups
    * @param id a group id
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void removeGroup(int id) throws AdminPersistenceException {
+  public void removeGroup(int id) throws SQLException {
     GroupRow group = getGroup(id);
     if (group == null) {
       return;
@@ -621,19 +620,21 @@ public class GroupTable extends Table<GroupRow> {
     SynchroDomainReport.info("GroupTable.removeGroup()",
         "Suppression du groupe " + group.name + " dans la base...");
     // remove the group from each role where it's used.
-    UserRoleRow[] roles = organization.userRole.getDirectUserRolesOfGroup(id);
+    UserRoleTable userRoleTable = OrganizationSchema.get().userRole();
+    UserRoleRow[] roles = userRoleTable.getDirectUserRolesOfGroup(id);
     SynchroDomainReport.info("GroupTable.removeGroup()",
         "Suppression de " + group.name + " des rôles dans la base");
     for (UserRoleRow role : roles) {
-      organization.userRole.removeGroupFromUserRole(id, role.id);
+      userRoleTable.removeGroupFromUserRole(id, role.id);
     }
 
     // remove the group from each space role where it's used.
-    SpaceUserRoleRow[] spaceRoles = organization.spaceUserRole.getDirectSpaceUserRolesOfGroup(id);
+    SpaceUserRoleTable spaceUserRoleTable = OrganizationSchema.get().spaceUserRole();
+    SpaceUserRoleRow[] spaceRoles = spaceUserRoleTable.getDirectSpaceUserRolesOfGroup(id);
     SynchroDomainReport.info("GroupTable.removeGroup()",
         "Suppression de " + group.name + " comme manager d'espace dans la base");
     for (SpaceUserRoleRow spaceRole : spaceRoles) {
-      organization.spaceUserRole.removeGroupFromSpaceUserRole(id, spaceRole.id);
+      spaceUserRoleTable.removeGroupFromSpaceUserRole(id, spaceRole.id);
     }
     // remove all subgroups.
     GroupRow[] subGroups = getDirectSubGroups(id);
@@ -649,7 +650,7 @@ public class GroupTable extends Table<GroupRow> {
     try {
       userIds = UserManager.get().getDirectUserIdsInGroup(String.valueOf(id));
     } catch (AdminException e) {
-      throw new AdminPersistenceException(e);
+      throw new SQLException(e);
     }
     for(String userId: userIds) {
       removeUserFromGroup(Integer.valueOf(userId), id);
@@ -659,8 +660,7 @@ public class GroupTable extends Table<GroupRow> {
         "Suppression de " + userIds.size() + " utilisateurs inclus directement dans le groupe " +
             group.name + " dans la base");
 
-    // remove the empty group.
-    // organization.userSet.removeUserSet("G", id);
+    // remove the empty group.;
     SynchroDomainReport.debug("GroupTable.removeGroup()",
         "Suppression de " + group.name + " (ID=" + id + "), requête : " + DELETE_GROUP);
     updateRelation(DELETE_GROUP, id);
@@ -671,7 +671,7 @@ public class GroupTable extends Table<GroupRow> {
   /**
    * Tests if a user is in given group (not recursive).
    */
-  private boolean isUserDirectlyInGroup(int userId, int groupId) throws AdminPersistenceException {
+  private boolean isUserDirectlyInGroup(int userId, int groupId) throws SQLException {
     int[] ids = new int[]{userId, groupId};
     Integer result = getInteger(SELECT_COUNT_GROUP_USER_REL, ids);
     return result != null && result >= 1;
@@ -684,9 +684,10 @@ public class GroupTable extends Table<GroupRow> {
    * Add an user in this group.
    * @param userId a user id
    * @param groupId a group id
-   * @throws AdminPersistenceException
+   * @throws SQLException
+   * @throws AdminException
    */
-  public void addUserInGroup(int userId, int groupId) throws AdminPersistenceException {
+  public void addUserInGroup(int userId, int groupId) throws SQLException, AdminException {
     if (isUserDirectlyInGroup(userId, groupId)) {
       return;
     }
@@ -695,7 +696,7 @@ public class GroupTable extends Table<GroupRow> {
 
     GroupRow group = getGroup(groupId);
     if (group == null) {
-      throw new AdminPersistenceException(unknown("group", String.valueOf(groupId)));
+      throw new SQLException(unknown("group", String.valueOf(groupId)));
     }
 
     int[] params = new int[]{groupId, userId};
@@ -711,15 +712,16 @@ public class GroupTable extends Table<GroupRow> {
    * @param userIds user ids
    * @param groupId group ids
    * @param checkRelation is a relation has to be checked
-   * @throws AdminPersistenceException
+   * @throws SQLException
+   * @throws AdminException
    */
   public void addUsersInGroup(String[] userIds, int groupId, boolean checkRelation)
-      throws AdminPersistenceException {
+      throws SQLException, AdminException {
 
 
     GroupRow group = getGroup(groupId);
     if (group == null) {
-      throw new AdminPersistenceException(unknown("group", String.valueOf(groupId)));
+      throw new SQLException(unknown("group", String.valueOf(groupId)));
     }
 
     for (String userId1 : userIds) {
@@ -750,11 +752,11 @@ public class GroupTable extends Table<GroupRow> {
    * Removes an user from this group.
    * @param userId user id
    * @param groupId group id
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void removeUserFromGroup(int userId, int groupId) throws AdminPersistenceException {
+  public void removeUserFromGroup(int userId, int groupId) throws SQLException {
     if (!isUserDirectlyInGroup(userId, groupId)) {
-      throw new AdminPersistenceException(
+      throw new SQLException(
           failureOnDeleting("user " + userId, "in group " + groupId));
     }
     int[] params = new int[]{groupId, userId};
@@ -776,11 +778,11 @@ public class GroupTable extends Table<GroupRow> {
    * @throws AdminPersistenceException
    */
   public void removeUsersFromGroup(String[] userIds, int groupId, boolean checkRelation)
-      throws AdminPersistenceException {
+      throws SQLException {
 
     GroupRow group = getGroup(groupId);
     if (group == null) {
-      throw new AdminPersistenceException(unknown("group", String.valueOf(groupId)));
+      throw new SQLException(unknown("group", String.valueOf(groupId)));
     }
 
     for (String userId1 : userIds) {
@@ -799,7 +801,7 @@ public class GroupTable extends Table<GroupRow> {
         updateRelation(DELETE_GROUP_USER_REL, params);
         GroupCache.removeCacheOfUser(Integer.toString(userId));
       } else {
-        throw new AdminPersistenceException(
+        throw new SQLException(
             failureOnDeleting("user " + userId, "in group " + groupId));
       }
     }
@@ -809,6 +811,4 @@ public class GroupTable extends Table<GroupRow> {
   protected GroupRow fetchRow(ResultSet rs) throws SQLException {
     return fetchGroup(rs);
   }
-
-  private OrganizationSchema organization = null;
 }

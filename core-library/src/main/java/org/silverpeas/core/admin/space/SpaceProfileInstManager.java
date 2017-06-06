@@ -20,13 +20,15 @@
  */
 package org.silverpeas.core.admin.space;
 
-import org.silverpeas.core.admin.domain.DomainDriverManager;
+import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.UserManager;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +38,10 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 @Transactional(Transactional.TxType.MANDATORY)
 public class SpaceProfileInstManager {
 
+  public static final String SPACE_PROFILE = "space profile";
+  @Inject
+  private OrganizationSchema organizationSchema;
+
   /**
    * Constructor
    */
@@ -44,20 +50,17 @@ public class SpaceProfileInstManager {
 
   /**
    * Get all the space profile Ids for the given user
-   * @param domainManager
    * @param sUserId
    * @return spaceProfile ids
    * @throws AdminException
    */
-  public String[] getSpaceProfileIdsOfUserType(DomainDriverManager domainManager, String sUserId)
+  public String[] getSpaceProfileIdsOfUserType(String sUserId)
       throws AdminException {
     try {
-      domainManager.holdOrganizationSchema();
-
-      List<String> roleIds = new ArrayList<String>();
+      List<String> roleIds = new ArrayList<>();
 
       //space user role
-      SpaceUserRoleRow[] tabSpaceUserRole = domainManager.getOrganization().spaceUserRole
+      SpaceUserRoleRow[] tabSpaceUserRole = organizationSchema.spaceUserRole()
           .getDirectSpaceUserRolesOfUser(Integer.parseInt(sUserId));
       for (SpaceUserRoleRow role : tabSpaceUserRole) {
         roleIds.add(Integer.toString(role.id));
@@ -67,27 +70,22 @@ public class SpaceProfileInstManager {
 
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("space profiles of user", sUserId), e);
-    } finally {
-      domainManager.releaseOrganizationSchema();
     }
   }
 
   /**
    * Get all the space profile Ids for the given group
-   * @param domainManager
    * @param groupId
    * @return spaceProfile ids
    * @throws AdminException
    */
-  public String[] getSpaceProfileIdsOfGroupType(DomainDriverManager domainManager, String groupId)
+  public String[] getSpaceProfileIdsOfGroupType(String groupId)
       throws AdminException {
     try {
-      domainManager.holdOrganizationSchema();
-
-      List<String> roleIds = new ArrayList<String>();
+      List<String> roleIds = new ArrayList<>();
 
       //space group role
-      SpaceUserRoleRow[] tabSpaceGroupRole = domainManager.getOrganization().spaceUserRole
+      SpaceUserRoleRow[] tabSpaceGroupRole = organizationSchema.spaceUserRole()
           .getDirectSpaceUserRolesOfGroup(Integer.parseInt(groupId));
       for (SpaceUserRoleRow role : tabSpaceGroupRole) {
         roleIds.add(Integer.toString(role.id));
@@ -96,8 +94,6 @@ public class SpaceProfileInstManager {
 
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("space profiles of group", groupId), e);
-    } finally {
-      domainManager.releaseOrganizationSchema();
     }
   }
 
@@ -106,117 +102,110 @@ public class SpaceProfileInstManager {
    *
    *
    * @param spaceProfileInst
-   * @param domainManager
    * @param parentSpaceLocalId
    * @return
    * @throws AdminException
    */
-  public String createSpaceProfileInst(SpaceProfileInst spaceProfileInst,
-      DomainDriverManager domainManager, int parentSpaceLocalId) throws AdminException {
+  public String createSpaceProfileInst(SpaceProfileInst spaceProfileInst, int parentSpaceLocalId)
+      throws AdminException {
     try {
       // Create the spaceProfile node
       SpaceUserRoleRow newRole = makeSpaceUserRoleRow(spaceProfileInst);
       newRole.spaceId = parentSpaceLocalId;
-      domainManager.getOrganization().spaceUserRole.createSpaceUserRole(newRole);
+      organizationSchema.spaceUserRole().createSpaceUserRole(newRole);
       String spaceProfileNodeId = idAsString(newRole.id);
 
       // Update the CSpace with the links TSpaceProfile-TGroup
       for (String groupId : spaceProfileInst.getAllGroups()) {
-        domainManager.getOrganization().spaceUserRole.addGroupInSpaceUserRole(idAsInt(groupId),
+        organizationSchema.spaceUserRole().addGroupInSpaceUserRole(idAsInt(groupId),
             idAsInt(spaceProfileNodeId));
       }
 
       // Update the CSpace with the links TSpaceProfile-TUser
       for (String userId : spaceProfileInst.getAllUsers()) {
-        domainManager.getOrganization().spaceUserRole.addUserInSpaceUserRole(idAsInt(userId),
+        organizationSchema.spaceUserRole().addUserInSpaceUserRole(idAsInt(userId),
             idAsInt(spaceProfileNodeId));
       }
       return spaceProfileNodeId;
     } catch (Exception e) {
-      throw new AdminException(failureOnAdding("space profile", spaceProfileInst.getName()), e);
+      throw new AdminException(failureOnAdding(SPACE_PROFILE, spaceProfileInst.getName()), e);
     }
   }
 
   /**
    * Get Space profile information with given id and creates a new SpaceProfileInst
    *
-   * @param ddManager
    * @param spaceProfileId
    * @return
    * @throws AdminException
    */
-  public SpaceProfileInst getSpaceProfileInst(DomainDriverManager ddManager,
-      String spaceProfileId) throws AdminException {
+  public SpaceProfileInst getSpaceProfileInst(String spaceProfileId) throws AdminException {
     try {
-      ddManager.holdOrganizationSchema();
-
       // Load the profile detail
-      SpaceUserRoleRow spaceUserRole = ddManager.getOrganization().spaceUserRole.
+      SpaceUserRoleRow spaceUserRole = organizationSchema.spaceUserRole().
           getSpaceUserRole(idAsInt(spaceProfileId));
 
       SpaceProfileInst spaceProfileInst = null;
       if (spaceUserRole != null) {
         // Set the attributes of the space profile Inst
         spaceProfileInst = spaceUserRoleRow2SpaceProfileInst(spaceUserRole);
-        setUsersAndGroups(ddManager, spaceProfileInst);
+        setUsersAndGroups(spaceProfileInst);
       }
       return spaceProfileInst;
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("space profile", spaceProfileId), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
+      throw new AdminException(failureOnGetting(SPACE_PROFILE, spaceProfileId), e);
     }
   }
 
   /**
    * get information for given id and store it in the given SpaceProfileInst object
    *
-   * @param ddManager
    * @param spaceLocalId
    * @param roleName
    * @throws AdminException
    */
-  public SpaceProfileInst getInheritedSpaceProfileInstByName(DomainDriverManager ddManager,
-      int spaceLocalId, String roleName) throws AdminException {
-    return getSpaceProfileInst(ddManager, spaceLocalId, roleName, true);
+  public SpaceProfileInst getInheritedSpaceProfileInstByName(int spaceLocalId, String roleName)
+      throws AdminException {
+    return getSpaceProfileInst(spaceLocalId, roleName, true);
   }
 
-  public SpaceProfileInst getSpaceProfileInstByName(DomainDriverManager ddManager,
-      int spaceLocalId, String roleName) throws AdminException {
-    return getSpaceProfileInst(ddManager, spaceLocalId, roleName, false);
+  public SpaceProfileInst getSpaceProfileInstByName(int spaceLocalId, String roleName)
+      throws AdminException {
+    return getSpaceProfileInst(spaceLocalId, roleName, false);
   }
 
-  private SpaceProfileInst getSpaceProfileInst(DomainDriverManager ddManager,
-      int spaceLocalId, String roleName, boolean isInherited) throws AdminException {
+  private SpaceProfileInst getSpaceProfileInst(int spaceLocalId, String roleName,
+      boolean isInherited) throws AdminException {
     try {
-      ddManager.holdOrganizationSchema();
       int inherited = 0;
       if (isInherited) {
         inherited = 1;
       }
       // Load the profile detail
-      SpaceUserRoleRow spaceUserRole = ddManager.getOrganization().spaceUserRole.
+      SpaceUserRoleRow spaceUserRole = organizationSchema.spaceUserRole().
           getSpaceUserRole(spaceLocalId, roleName, inherited);
 
       SpaceProfileInst spaceProfileInst = null;
       if (spaceUserRole != null) {
         // Set the attributes of the space profile Inst
         spaceProfileInst = spaceUserRoleRow2SpaceProfileInst(spaceUserRole);
-        setUsersAndGroups(ddManager, spaceProfileInst);
+        setUsersAndGroups(spaceProfileInst);
       }
       return spaceProfileInst;
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("space profile", roleName), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
+      throw new AdminException(failureOnGetting(SPACE_PROFILE, roleName), e);
     }
   }
 
-  private void setUsersAndGroups(DomainDriverManager ddManager, SpaceProfileInst spaceProfileInst)
-      throws AdminException {
+  private void setUsersAndGroups(SpaceProfileInst spaceProfileInst) throws AdminException {
     // Get the groups
-    String[] asGroupIds = ddManager.getOrganization().group.
-        getDirectGroupIdsInSpaceUserRole(idAsInt(spaceProfileInst.getId()));
+    String[] asGroupIds;
+    try {
+      asGroupIds = organizationSchema.group().
+          getDirectGroupIdsInSpaceUserRole(idAsInt(spaceProfileInst.getId()));
+    } catch (SQLException e) {
+      throw new AdminException(e.getMessage(), e);
+    }
 
     // Set the groups to the space profile
     if (asGroupIds != null) {
@@ -246,24 +235,22 @@ public class SpaceProfileInstManager {
    * Deletes space profile instance from Silverpeas
    *
    * @param spaceProfileInst
-   * @param ddManager
    * @throws AdminException
    */
-  public void deleteSpaceProfileInst(SpaceProfileInst spaceProfileInst,
-      DomainDriverManager ddManager) throws AdminException {
+  public void deleteSpaceProfileInst(SpaceProfileInst spaceProfileInst) throws AdminException {
     try {
       // delete the spaceProfile node
-      ddManager.getOrganization().spaceUserRole.removeSpaceUserRole(idAsInt(spaceProfileInst
+      organizationSchema.spaceUserRole().removeSpaceUserRole(idAsInt(spaceProfileInst
           .getId()));
     } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("space profile", spaceProfileInst.getId()), e);
+      throw new AdminException(failureOnDeleting(SPACE_PROFILE, spaceProfileInst.getId()), e);
     }
   }
 
-  public void removeUserFromSpaceProfileInst(String userId, String spaceProdileId,
-      DomainDriverManager ddManager) throws AdminException {
+  public void removeUserFromSpaceProfileInst(String userId, String spaceProdileId)
+      throws AdminException {
     try {
-      ddManager.getOrganization().spaceUserRole.removeUserFromSpaceUserRole(idAsInt(userId),
+      organizationSchema.spaceUserRole().removeUserFromSpaceUserRole(idAsInt(userId),
           idAsInt(spaceProdileId));
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting("user from space profile", spaceProdileId), e);
@@ -274,112 +261,70 @@ public class SpaceProfileInstManager {
    * Updates space profile instance
    *
    * @param spaceProfileInst
-   * @param ddManager
    * @param spaceProfileInstNew
    * @return
    * @throws AdminException
    */
   public String updateSpaceProfileInst(SpaceProfileInst spaceProfileInst,
-      DomainDriverManager ddManager, SpaceProfileInst spaceProfileInstNew)
+      SpaceProfileInst spaceProfileInstNew)
       throws AdminException {
-    List<String> alOldSpaceProfileGroup = new ArrayList<String>();
-    List<String> alNewSpaceProfileGroup = new ArrayList<String>();
-    List<String> alAddGroup = new ArrayList<String>();
-    List<String> alRemGroup = new ArrayList<String>();
-    List<String> alOldSpaceProfileUser = new ArrayList<String>();
-    List<String> alNewSpaceProfileUser = new ArrayList<String>();
-    List<String> alAddUser = new ArrayList<String>();
-    List<String> alRemUser = new ArrayList<String>();
-
     try {
-      // Compute the Old spaceProfile group list
-      List<String> alGroup = spaceProfileInst.getAllGroups();
-      for (String groupId : alGroup) {
-        alOldSpaceProfileGroup.add(groupId);
-      }
+      // the groups in the previous state of the space profile
+      List<String> alOldSpaceProfileGroup = spaceProfileInst.getAllGroups();
 
-      // Compute the New spaceProfile group list
-      alGroup = spaceProfileInstNew.getAllGroups();
-      for (String groupId : alGroup) {
-        alNewSpaceProfileGroup.add(groupId);
-      }
+      // the groups in the new state of the space profile
+      List<String> alNewSpaceProfileGroup = spaceProfileInstNew.getAllGroups();
 
-      // Compute the remove group list
-      for (String groupId : alOldSpaceProfileGroup) {
-        if (!alNewSpaceProfileGroup.contains(groupId)) {
-          alRemGroup.add(groupId);
-        }
-      }
-
-      // Compute the add and stay group list
+      // Add the new groups in the profile
       for (String groupId : alNewSpaceProfileGroup) {
         if (!alOldSpaceProfileGroup.contains(groupId)) {
-          alAddGroup.add(groupId);
+          // Create the links between the space profile and the group
+          organizationSchema.spaceUserRole().addGroupInSpaceUserRole(
+              idAsInt(groupId), idAsInt(spaceProfileInst.getId()));
         }
       }
 
-      // Add the new Groups
-      for (String groupId : alAddGroup) {
-        // Create the links between the spaceProfile and the group
-        ddManager.getOrganization().spaceUserRole.addGroupInSpaceUserRole(
-            idAsInt(groupId), idAsInt(spaceProfileInst.getId()));
+      // Remove from the space profile the groups that are no more in the new state of the profile
+      for (String groupId : alOldSpaceProfileGroup) {
+        if (!alNewSpaceProfileGroup.contains(groupId)) {
+          // delete the link between the space profile and the group
+          organizationSchema.spaceUserRole().removeGroupFromSpaceUserRole(
+              idAsInt(groupId), idAsInt(spaceProfileInst.getId()));
+        }
       }
 
-      // Remove the removed groups
-      for (String groupId : alRemGroup) {
-        // delete the node link SpaceProfile_Group
-        ddManager.getOrganization().spaceUserRole.removeGroupFromSpaceUserRole(
-            idAsInt(groupId), idAsInt(spaceProfileInst.getId()));
-      }
+      // the users in the previous state of the space profile
+      ArrayList<String> alOldSpaceProfileUser = spaceProfileInst.getAllUsers();
 
-      // Compute the Old spaceProfile User list
-      ArrayList<String> alUser = spaceProfileInst.getAllUsers();
-      for (String userId : alUser) {
-        alOldSpaceProfileUser.add(userId);
-      }
+      // the users in the new state of the space profile
+      List<String> alNewSpaceProfileUser = spaceProfileInstNew.getAllUsers();
 
-      // Compute the New spaceProfile User list
-      alUser = spaceProfileInstNew.getAllUsers();
-      for (String userId : alUser) {
-        alNewSpaceProfileUser.add(userId);
-      }
-
-      // Compute the remove User list
+      // Remove from the space profile the users that are no more in the new state of the profile
       for (String userId : alOldSpaceProfileUser) {
         if (!alNewSpaceProfileUser.contains(userId)) {
-          alRemUser.add(userId);
+          // delete the link between the space profile and the user
+          organizationSchema.spaceUserRole().removeUserFromSpaceUserRole(
+              idAsInt(userId), idAsInt(spaceProfileInst.getId()));
         }
       }
 
-      // Compute the add and stay User list
+      // Add the new users in the profile
       for (String userId : alNewSpaceProfileUser) {
         if (!alOldSpaceProfileUser.contains(userId)) {
-          alAddUser.add(userId);
+          // Create the links between the space profile and the User
+          organizationSchema.spaceUserRole().addUserInSpaceUserRole(
+              idAsInt(userId), idAsInt(spaceProfileInst.getId()));
         }
-      }
-
-      // Add the new Users
-      for (String userId : alAddUser) {
-        // Create the links between the spaceProfile and the User
-        ddManager.getOrganization().spaceUserRole.addUserInSpaceUserRole(
-            idAsInt(userId), idAsInt(spaceProfileInst.getId()));
-      }
-
-      // Remove the removed Users
-      for (String userId : alRemUser) {
-        // delete the node link SpaceProfile_User
-        ddManager.getOrganization().spaceUserRole.removeUserFromSpaceUserRole(
-            idAsInt(userId), idAsInt(spaceProfileInst.getId()));
       }
 
       // update the spaceProfile node
       SpaceUserRoleRow changedSpaceUserRole = makeSpaceUserRoleRow(spaceProfileInstNew);
       changedSpaceUserRole.id = idAsInt(spaceProfileInstNew.getId());
-      ddManager.getOrganization().spaceUserRole.updateSpaceUserRole(changedSpaceUserRole);
+      organizationSchema.spaceUserRole().updateSpaceUserRole(changedSpaceUserRole);
 
       return idAsString(changedSpaceUserRole.id);
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("space profile", spaceProfileInst.getId()), e);
+      throw new AdminException(failureOnUpdate(SPACE_PROFILE, spaceProfileInst.getId()), e);
     }
   }
 
@@ -417,7 +362,7 @@ public class SpaceProfileInstManager {
   /**
    * Convert int Id to String Id
    */
-  static private String idAsString(int id) {
+  private static String idAsString(int id) {
     return Integer.toString(id);
   }
 }

@@ -25,8 +25,6 @@
 package org.silverpeas.core.notification.user.client.model;
 
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
-import org.silverpeas.core.persistence.jdbc.Schema;
-import org.silverpeas.core.exception.UtilException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,20 +36,20 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
   /**
    * Builds a new NotifDefaultAddressTable
    */
-  public NotifDefaultAddressTable(Schema schema) {
-    super(schema, "ST_NotifDefaultAddress");
+  NotifDefaultAddressTable() {
+    super("ST_NotifDefaultAddress");
   }
 
   /**
    * The column list used for every select query.
    */
-  static final protected String NOTIFDEFAULTADDRESS_COLUMNS = "id,userId,notifAddressId";
+  protected static final String NOTIFDEFAULTADDRESS_COLUMNS = "id,userId,notifAddressId";
 
   /**
    * Returns the unique NotifDefaultAddress row having a given id
    */
   public NotifDefaultAddressRow getNotifDefaultAddress(int id)
-      throws UtilException {
+      throws SQLException {
     return getUniqueRow(SELECT_NOTIFDEFAULTADDRESS_BY_ID, id);
   }
 
@@ -63,20 +61,20 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
    * Returns all the NotifDefaultAddressRow having a given userId
    */
   public NotifDefaultAddressRow[] getAllByUserId(int userId)
-      throws UtilException {
+      throws SQLException {
     List<NotifDefaultAddressRow> rows = getRows(
         SELECT_ALL_NOTIFDEFAULTADDRESS_WITH_GIVEN_USERID, userId);
     return rows.toArray(new NotifDefaultAddressRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_NOTIFDEFAULTADDRESS_WITH_GIVEN_USERID = "select "
+  private static final String SELECT_ALL_NOTIFDEFAULTADDRESS_WITH_GIVEN_USERID = "select "
       + NOTIFDEFAULTADDRESS_COLUMNS
       + " from ST_NotifDefaultAddress where userId=?";
 
   /**
    * Returns all the rows.
    */
-  public NotifDefaultAddressRow[] getAllRows() throws UtilException {
+  public NotifDefaultAddressRow[] getAllRows() throws SQLException {
     List<NotifDefaultAddressRow> rows = getRows(SELECT_ALL_NOTIFDEFAULTADDRESS);
     return rows.toArray(new NotifDefaultAddressRow[rows.size()]);
   }
@@ -88,7 +86,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
    * Returns the unique row given by a no parameters query.
    */
   public NotifDefaultAddressRow getNotifDefaultAddress(String query)
-      throws UtilException {
+      throws SQLException {
     return getUniqueRow(query);
   }
 
@@ -96,7 +94,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
    * Returns all the rows given by a no parameters query.
    */
   public NotifDefaultAddressRow[] getNotifDefaultAddresss(String query)
-      throws UtilException {
+      throws SQLException {
     List<NotifDefaultAddressRow> rows = getRows(query);
     return rows.toArray(new NotifDefaultAddressRow[rows.size()]);
   }
@@ -105,7 +103,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
    * Inserts in the database a new NotifDefaultAddress row.
    */
   public int create(NotifDefaultAddressRow notifDefaultAddress)
-      throws UtilException {
+      throws SQLException {
     insertRow(INSERT_NOTIFDEFAULTADDRESS, notifDefaultAddress);
     return notifDefaultAddress.getId();
   }
@@ -117,7 +115,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
   /**
    * Update the given NotifDefaultAddressRow
    */
-  public void update(NotifDefaultAddressRow notifDefaultAddress) throws UtilException {
+  public void update(NotifDefaultAddressRow notifDefaultAddress) throws SQLException {
     updateRow(UPDATE_NOTIFDEFAULTADDRESS, notifDefaultAddress);
   }
 
@@ -128,7 +126,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
    * Updates theNotifDefaultAddress row. or inserts it if new.
    */
   public void save(NotifDefaultAddressRow notifDefaultAddress)
-      throws UtilException {
+      throws SQLException {
     if (notifDefaultAddress.getId() == -1) {
       // No id : it's a creation
       create(notifDefaultAddress);
@@ -140,7 +138,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
   /**
    * Deletes theNotifDefaultAddressRow. after having removed all the reference to it.
    */
-  public void delete(int id) throws UtilException {
+  public void delete(int id) throws SQLException {
     updateRelation(DELETE_NOTIFDEFAULTADDRESS, id);
   }
 
@@ -150,7 +148,7 @@ public class NotifDefaultAddressTable extends AbstractTable<NotifDefaultAddressR
   /**
    * Removes a reference to UserId
    */
-  public void dereferenceUserId(int userId) throws UtilException {
+  public void dereferenceUserId(int userId) throws SQLException {
     NotifDefaultAddressRow[] notifDefaultAddressToBeDeleted = getAllByUserId(userId);
     for (NotifDefaultAddressRow aNotifDefaultAddressToBeDeleted : notifDefaultAddressToBeDeleted) {
       delete(aNotifDefaultAddressToBeDeleted.getId());

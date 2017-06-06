@@ -34,11 +34,11 @@ import java.util.List;
  */
 public class DomainTable extends Table<DomainRow> {
 
-  public DomainTable(OrganizationSchema schema) {
-    super(schema, "ST_Domain");
+  DomainTable() {
+    super("ST_Domain");
   }
 
-  static final private String DOMAIN_COLUMNS =
+  private static final String DOMAIN_COLUMNS =
       "id,name,description,propFileName,className,authenticationServer,theTimeStamp,silverpeasServerURL";
 
   /**
@@ -65,38 +65,38 @@ public class DomainTable extends Table<DomainRow> {
    * Returns the domain whith the given id.
    * @param id
    * @return the domain whith the given id.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public DomainRow getDomain(int id) throws AdminPersistenceException {
+  public DomainRow getDomain(int id) throws SQLException {
     return getUniqueRow(SELECT_DOMAIN_BY_ID, id);
   }
 
-  static final private String SELECT_DOMAIN_BY_ID = "select " + DOMAIN_COLUMNS
+  private static final String SELECT_DOMAIN_BY_ID = "select " + DOMAIN_COLUMNS
       + " from ST_Domain where id = ?";
 
   /**
    * Returns all the Domains.
    * @return all the Domains.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public DomainRow[] getAllDomains() throws AdminPersistenceException {
+  public DomainRow[] getAllDomains() throws SQLException {
     List<DomainRow> rows = getRows(SELECT_ALL_DOMAINS);
     return rows.toArray(new DomainRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_DOMAINS = "select " + DOMAIN_COLUMNS
+  private static final String SELECT_ALL_DOMAINS = "select " + DOMAIN_COLUMNS
       + " from ST_Domain where not id=-1 order by name asc";
 
   /**
    * Insert a new domain row.
    * @param domain
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void createDomain(DomainRow domain) throws AdminPersistenceException {
+  public void createDomain(DomainRow domain) throws SQLException {
     insertRow(INSERT_DOMAIN, domain);
   }
 
-  static final private String INSERT_DOMAIN = "INSERT INTO ST_Domain (id, name, description, " +
+  private static final String INSERT_DOMAIN = "INSERT INTO ST_Domain (id, name, description, " +
       "propFileName, className, authenticationServer, theTimeStamp, silverpeasServerURL) VALUES " +
       " (? ,? ,?, ? ,?, ?, ?, ?)";
 
@@ -124,13 +124,13 @@ public class DomainTable extends Table<DomainRow> {
   /**
    * Updates a domain row.
    * @param domain
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void updateDomain(DomainRow domain) throws AdminPersistenceException {
+  public void updateDomain(DomainRow domain) throws SQLException {
     updateRow(UPDATE_DOMAIN, domain);
   }
 
-  static final private String UPDATE_DOMAIN = "update ST_Domain set"
+  private static final String UPDATE_DOMAIN = "update ST_Domain set"
       + " name = ?," + " description = ?," + " propFileName = ?,"
       + " className = ?," + " authenticationServer = ?," + " theTimeStamp = ?,"
       + " silverpeasServerURL = ?" + " where id = ?";
@@ -155,9 +155,9 @@ public class DomainTable extends Table<DomainRow> {
   /**
    * Delete the domain
    * @param id
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void removeDomain(int id) throws AdminPersistenceException {
+  public void removeDomain(int id) throws SQLException {
     DomainRow domain = getDomain(id);
     if (domain == null) {
       return;
@@ -165,7 +165,7 @@ public class DomainTable extends Table<DomainRow> {
     updateRelation(DELETE_DOMAIN, id);
   }
 
-  static final private String DELETE_DOMAIN = "delete from ST_Domain where id = ?";
+  private static final String DELETE_DOMAIN = "delete from ST_Domain where id = ?";
 
   /**
    * Fetch the current domain row from a resultSet.

@@ -57,6 +57,9 @@ public class UserDAO {
   private static final String ID_PARAM = "id = ?";
   private static final String STATE = "state";
   private static final String USER_ID_JOINTURE = "id = userId";
+  public static final String LOGIN = "login";
+  public static final String SAVE_DATE = "saveDate";
+  public static final String STATE_SAVE_DATE = "stateSaveDate";
 
 
   protected UserDAO() {
@@ -73,7 +76,7 @@ public class UserDAO {
         .addInsertParam("id", nextId)
         .addInsertParam(SPECIFIC_ID, user.getSpecificId())
         .addInsertParam(DOMAIN_ID, Integer.parseInt(user.getDomainId()))
-        .addInsertParam("login", user.getLogin())
+        .addInsertParam(LOGIN, user.getLogin())
         .addInsertParam(FIRST_NAME, user.getFirstName())
         .addInsertParam(LAST_NAME, user.getLastName())
         .addInsertParam("loginMail", "")
@@ -82,7 +85,7 @@ public class UserDAO {
         .addInsertParam("loginQuestion", user.getLoginQuestion())
         .addInsertParam("loginAnswer", user.getLoginAnswer())
         .addInsertParam("creationDate", now)
-        .addInsertParam("saveDate", now)
+        .addInsertParam(SAVE_DATE, now)
         .addInsertParam("version", 0)
         .addInsertParam("tosAcceptanceDate", toInstance(user.getTosAcceptanceDate()))
         .addInsertParam("lastLoginDate", toInstance(user.getLastLoginDate()))
@@ -91,7 +94,7 @@ public class UserDAO {
             toInstance(user.getLastLoginCredentialUpdateDate()))
         .addInsertParam("expirationDate", toInstance(user.getExpirationDate()))
         .addInsertParam(STATE, user.getState())
-        .addInsertParam("stateSaveDate", now)
+        .addInsertParam(STATE_SAVE_DATE, now)
         .addInsertParam("notifManualReceiverLimit", user.getNotifManualReceiverLimit())
         .executeWith(connection);
 
@@ -101,11 +104,11 @@ public class UserDAO {
   public void deleteUser(final Connection connection, final UserDetail user) throws SQLException {
     Instant now = new Date().toInstant();
     JdbcSqlQuery.createUpdateFor(USER_TABLE)
-        .addUpdateParam("login", "???REM???" + user.getId())
+        .addUpdateParam(LOGIN, "???REM???" + user.getId())
         .addUpdateParam(SPECIFIC_ID, "???REM???" + user.getId())
         .addUpdateParam(STATE, UserState.DELETED)
-        .addUpdateParam("stateSaveDate", now)
-        .addUpdateParam("saveDate", now)
+        .addUpdateParam(STATE_SAVE_DATE, now)
+        .addUpdateParam(SAVE_DATE, now)
         .where(ID_PARAM, Integer.parseInt(user.getId()))
         .executeWith(connection);
   }
@@ -199,14 +202,14 @@ public class UserDAO {
     JdbcSqlQuery.createUpdateFor(USER_TABLE)
         .addUpdateParam(SPECIFIC_ID, user.getSpecificId())
         .addUpdateParam(DOMAIN_ID, Integer.parseInt(user.getDomainId()))
-        .addUpdateParam("login", user.getLogin())
+        .addUpdateParam(LOGIN, user.getLogin())
         .addUpdateParam(FIRST_NAME, user.getFirstName())
         .addUpdateParam(LAST_NAME, user.getLastName())
         .addUpdateParam("email", user.geteMail())
         .addUpdateParam(ACCESS_LEVEL, user.getAccessLevel().code())
         .addUpdateParam("loginQuestion", user.getLoginQuestion())
         .addUpdateParam("loginAnswer", user.getLoginAnswer())
-        .addUpdateParam("saveDate", now)
+        .addUpdateParam(SAVE_DATE, now)
         .addUpdateParam("version", user.getVersion() + 1)
         .addUpdateParam("tosAcceptanceDate", toInstance(user.getTosAcceptanceDate()))
         .addUpdateParam("lastLoginDate", toInstance(user.getLastLoginDate()))
@@ -215,7 +218,7 @@ public class UserDAO {
             toInstance(user.getLastLoginCredentialUpdateDate()))
         .addUpdateParam("expirationDate", toInstance(user.getExpirationDate()))
         .addUpdateParam(STATE, user.getState())
-        .addUpdateParam("stateSaveDate", toInstance(user.getStateSaveDate()))
+        .addUpdateParam(STATE_SAVE_DATE, toInstance(user.getStateSaveDate()))
         .addUpdateParam("notifManualReceiverLimit", user.getNotifManualReceiverLimit())
         .where(ID_PARAM, Integer.parseInt(user.getId()))
         .executeWith(connection);

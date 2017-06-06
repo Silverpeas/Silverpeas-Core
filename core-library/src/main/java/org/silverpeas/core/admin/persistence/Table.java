@@ -23,19 +23,18 @@
 */
 package org.silverpeas.core.admin.persistence;
 
-import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.UserManager;
+import org.silverpeas.core.persistence.jdbc.AbstractTable;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.persistence.jdbc.Schema;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.sql.Types;
+import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -48,35 +47,27 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 /**
 * A Table object manages a table in a database.
 */
-public abstract class Table<T> {
+public abstract class Table<T> extends AbstractTable<T> {
 
-  public Table(Schema schema, String tableName) {
-    this.schema = schema;
-    this.tableName = tableName;
+  protected Table(String tableName) {
+    super(tableName);
   }
 
-  static String getNotNullString(String sn) {
+  protected String getNotNullString(String sn) {
     if (!isDefined(sn)) {
       return "";
     }
     return sn;
   }
 
-  static Timestamp getSqlTimestamp(Date date) {
-    if (date == null) {
-      return null;
-    }
-    return new Timestamp(date.getTime());
-  }
-
   /**
-* Builds an aliased columns list from a row alias and a columns list. Returns
-* "u.id,u.firstName,u.lastName" for row alias "u" columns list "id,firstName,lastName".
-* @param rowAlias
-* @param columnList
-* @return
-*/
-  static public String aliasColumns(String rowAlias, String columnList) {
+   * Builds an aliased columns list from a row alias and a columns list. Returns
+   * "u.id,u.firstName,u.lastName" for row alias "u" columns list "id,firstName,lastName".
+   * @param rowAlias
+   * @param columnList
+   * @return
+   */
+  protected static String aliasColumns(String rowAlias, String columnList) {
     StringBuilder result = new StringBuilder();
     StringTokenizer st = new StringTokenizer(columnList, ",");
     String separator = "";
@@ -92,123 +83,10 @@ public abstract class Table<T> {
     return result.toString();
   }
 
-  /**
-* Truncates a string value to be inserted in a fixed size column
-* @param value
-* @param maxSize
-* @return
-*/
-  static public String truncate(String value, int maxSize) {
-    if (value != null && value.length() > maxSize) {
-      return value.substring(0, maxSize - 1);
-    }
-    return value;
-  }
-
-  /**
-* Returns the next id which can be used to create a new row.
-* @return
-* @throws SQLException
-*/
-  public int getNextId() throws SQLException {
-    int nextId;
-    try {
-      nextId = DBUtil.getNextId(tableName, "id");
-    } catch (Exception e) {
-      throw new SQLException(e.toString(), e);
-    }
-    if (nextId == 0) {
-      return 1;
-    }
-    return nextId;
-  }
-
-  protected void checkUserExistence(final int userId) throws AdminPersistenceException {
+  protected void checkUserExistence(final int userId) throws AdminException {
     UserManager userManager = UserManager.get();
-    try {
-      if (!userManager.isUserExisting(String.valueOf(userId))) {
-        throw new AdminPersistenceException(unknown("user", String.valueOf(userId)));
-      }
-    } catch (AdminException e) {
-      throw new AdminPersistenceException(e);
-    }
-  }
-
-  /**
-* Builds a new row object which values are retrieved from the given ResultSet.
-* @param rs
-* @return
-* @throws SQLException
-*/
-  abstract protected T fetchRow(ResultSet rs) throws SQLException;
-
-  /**
-* Set all the parameters of the insert PreparedStatement built from the insertQuery in order to
-* insert the given row.
-* @param insertQuery
-* @param insert
-* @param row
-* @throws SQLException
-*/
-  abstract protected void prepareInsert(String insertQuery, PreparedStatement insert, T row)
-          throws SQLException;
-
-  /**
-* Set all the parameters of the update PreparedStatement built from the updateQuery in order to
-* update the given row.
-* @param updateQuery
-* @param update
-* @param row
-* @throws SQLException
-*/
-  abstract protected void prepareUpdate(String updateQuery, PreparedStatement update, T row)
-          throws SQLException;
-
-  /**
-* Returns the unique row referenced by the given query and id. Returns null if no rows match the
-* id. Throws a AdminPersistenceException if more then one row match the id.
-* @return the requiered row or null.
-* @throws AdminPersistenceException
-* @param query the sql query string must be like "select * from ... where ... id=?" where id is
-* an int column.
-* @param id references an unique row.
-*/
-  protected synchronized T getUniqueRow(String query, int id) throws AdminPersistenceException {
-    ResultSet rs = null;
-    PreparedStatement select = null;
-    try {
-      select = schema.getStatement(query);
-      select.setInt(1, id);
-      rs = select.executeQuery();
-      return getUniqueRow(rs);
-    } catch (SQLException e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  /**
-* Returns the unique row referenced by the given query and id. Returns null if no rows match the
-* id. Throws a AdminPersistenceException if more then one row match the id.
-* @return the requiered row or null.
-* @throws AdminPersistenceException
-* @param query the sql query string must be like "select * from ... where ... id=?" where id is
-* an String column.
-* @param id references an unique row.
-*/
-  protected synchronized T getUniqueRow(String query, String id) throws AdminPersistenceException {
-    ResultSet rs = null;
-    PreparedStatement select = null;
-    try {
-      select = schema.getStatement(query);
-      select.setString(1, id);
-      rs = select.executeQuery();
-      return getUniqueRow(rs);
-    } catch (SQLException e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, select);
+    if (!userManager.isUserExisting(String.valueOf(userId))) {
+      throw new AdminException(unknown("user", String.valueOf(userId)));
     }
   }
 
@@ -216,10 +94,10 @@ public abstract class Table<T> {
    * Returns the ids described by the given no parameters query.
    * @param query
    * @return
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  protected synchronized List<String> getIds(String query) throws AdminPersistenceException {
-    return getIdsUnsynchronized(query, null);
+  protected List<String> getIds(String query) throws SQLException {
+    return getIds(query, null);
   }
 
   /**
@@ -227,30 +105,10 @@ public abstract class Table<T> {
    * @param query
    * @param id
    * @return
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  protected synchronized List<String> getIds(String query, int id)
-      throws AdminPersistenceException {
-    return getIdsUnsynchronized(query, Collections.singletonList(id));
-  }
-
-  /**
-   * Returns the rows described by the given query with parameters.
-   * Handled Types :
-   * - Integer
-   * - Long
-   * - String
-   * - Date (util)
-   * - Date (sql)
-   * - Timestamp
-   * @param query
-   * @param params
-   * @return
-   * @throws AdminPersistenceException
-   */
-  protected synchronized List<String> getIds(String query, List<?> params)
-      throws AdminPersistenceException {
-    return getIdsUnsynchronized(query, params);
+  protected List<String> getIds(String query, int id) throws SQLException {
+    return getIds(query, Collections.singletonList(id));
   }
 
   /**
@@ -258,100 +116,32 @@ public abstract class Table<T> {
    * @param query
    * @param params
    * @return
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  private List<String> getIdsUnsynchronized(String query, List<?> params)
-      throws AdminPersistenceException {
-    ResultSet rs = null;
-    PreparedStatement select = null;
-    try {
-      logQuery("getIds", query, params);
-      select = schema.getStatement(query);
+  protected List<String> getIds(String query, List<?> params) throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement select = connection.prepareStatement(query)) {
       performPrepareStatementParams(select, params);
-      rs = select.executeQuery();
-      return getIds(rs);
-    } catch (SQLException e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, select);
+      try (ResultSet rs = select.executeQuery()) {
+        return getIds(rs);
+      }
     }
   }
 
   /**
-   * Returns the rows described by the given no parameters query.
-   * @param query
-   * @return
-   * @throws AdminPersistenceException
-   */
-  protected synchronized List<T> getRows(String query) throws AdminPersistenceException {
-    return getRowsUnsynchronized(query, null);
-  }
-
-  /**
-   * Returns the rows described by the given query with one id parameter.
-   * @param query
-   * @param id
-   * @return
-   * @throws AdminPersistenceException
-   */
-  protected synchronized List<T> getRows(String query, int id) throws AdminPersistenceException {
-    return getRowsUnsynchronized(query, Collections.singletonList(id));
-  }
-
-  /**
-   * Returns the rows described by the given query with parameters.
-   * Handled Types :
-   * - Integer
-   * - Long
-   * - String
-   * - Date (util)
-   * - Date (sql)
-   * - Timestamp
-   * @param query
-   * @param params
-   * @return
-   * @throws AdminPersistenceException
-   */
-  protected synchronized List<T> getRows(String query, List<?> params)
-      throws AdminPersistenceException {
-    return getRowsUnsynchronized(query, params);
-  }
-
-  /**
    * Returns the rows described by the given query with parameters.
    * @param query
    * @param params
    * @return
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  private List<T> getRowsUnsynchronized(String query, List<?> params)
-      throws AdminPersistenceException {
-    ResultSet rs = null;
-    PreparedStatement select = null;
-    try {
-      logQuery("getRows", query, params);
-      select = schema.getStatement(query);
+  protected List<T> getRows(String query, List<?> params) throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement select = connection.prepareStatement(query)) {
       performPrepareStatementParams(select, params);
-      rs = select.executeQuery();
-      return getRows(rs);
-    } catch (SQLException e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  /**
-   * Centralization of log writing.
-   * @param fromMethodName
-   * @param query
-   * @param params
-   */
-  private void logQuery(String fromMethodName, String query, List<?> params) {
-    StringBuilder message = new StringBuilder(query);
-    if (params != null && !params.isEmpty()) {
-      message.append(" params[]: ");
-      message.append(Arrays.toString(params.toArray()));
+      try (ResultSet rs = select.executeQuery()) {
+        return getRows(rs);
+      }
     }
   }
 
@@ -389,25 +179,20 @@ public abstract class Table<T> {
    * @param whereClause
    * @param param
    * @return
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  protected int getCount(String tableName, String whereClause, String param)
-      throws AdminPersistenceException {
-    ResultSet rs = null;
-    String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
-    PreparedStatement select = null;
-    try {
-      select = schema.getStatement(query);
+  protected int getCount(String tableName, String whereClause, String param) throws SQLException {
+    String query = MessageFormat.format("select count(*) as nbResult from {0} where {1}", tableName,
+        whereClause);
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement select = connection.prepareStatement(query)) {
       select.setString(1, param);
-      rs = select.executeQuery();
-      if (rs.next()) {
-        return rs.getInt(1);
+      try (ResultSet rs = select.executeQuery()) {
+        if (rs.next()) {
+          return rs.getInt(1);
+        }
       }
       return 0;
-    } catch (Exception e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, select);
     }
   }
 
@@ -418,102 +203,23 @@ public abstract class Table<T> {
    * @param id
    * @param param
    * @return
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   protected int getCount(String tableName, String whereClause, int id, String param)
-      throws AdminPersistenceException {
-    ResultSet rs = null;
-    String query = "select count(*) as nbResult from " + tableName + " where " + whereClause;
-    PreparedStatement select = null;
-
-    try {
-      select = schema.getStatement(query);
+      throws SQLException {
+    String query = MessageFormat.format("select count(*) as nbResult from {0} where {1}", tableName,
+        whereClause);
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement select = connection.prepareStatement(query)) {
       select.setInt(1, id);
       select.setString(2, param);
-      rs = select.executeQuery();
-      if (rs.next()) {
-        return rs.getInt(1);
+      try (ResultSet rs = select.executeQuery()) {
+        if (rs.next()) {
+          return rs.getInt(1);
+        }
       }
       return 0;
-    } catch (Exception e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, select);
     }
-  }
-
-  /**
-   * Returns the rows like a sample row. The sample is build from a matchColumns names list and a
-   * matchValues list of values. For each matchColumn with a non null matchValue is added a
-   * criterium : where matchColumn like 'matchValue' The wildcard caracters %, must be set by the
-   * caller : so we can choose and do queries as "login like 'exactlogin'" and queries as
-   * "lastName like 'Had%'" or "lastName like '%addo%'". The returned rows are given by the
-   * returnedColumns parameter which is of the form 'col1, col2, ..., colN'.
-   * @param returnedColumns
-   * @param matchColumns
-   * @param matchValues
-   * @return
-   * @throws AdminPersistenceException
-   */
-  protected List<T> getMatchingRows(String returnedColumns, String[] matchColumns,
-          String[] matchValues) throws AdminPersistenceException {
-    StringBuilder query =
-        new StringBuilder("select ").append(returnedColumns).append(" from ").append(tableName);
-    List<String> notNullValues = new ArrayList<String>();
-    String sep = " where ";
-    for (int i = 0; i < matchColumns.length; i++) {
-      if (matchValues[i] != null) {
-        query.append(sep).append(matchColumns[i]).append(" like ?");
-        sep = " , ";
-        notNullValues.add(matchValues[i]);
-      }
-    }
-    return getRows(query.toString(), notNullValues);
-  }
-
-  /**
-* Returns the integer of the single row, single column resultset returned by the given query with
-* id parameters. Returns null if the result set was empty.
-* @param query
-* @param ids
-* @return
-* @throws AdminPersistenceException
-*/
-  protected Integer getInteger(String query, int[] ids) throws AdminPersistenceException {
-    ResultSet rs = null;
-    PreparedStatement select = null;
-    try {
-      select = schema.getStatement(query);
-      for (int i = 0; i < ids.length; i++) {
-        select.setInt(i + 1, ids[i]);
-      }
-      rs = select.executeQuery();
-      return getInteger(rs);
-    } catch (SQLException e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, select);
-    }
-  }
-
-  protected T getUniqueRow(ResultSet rs) throws SQLException, AdminPersistenceException {
-    T result;
-    if (!rs.next()) {// no row found
-      return null;
-    }
-    result = fetchRow(rs);
-    if (rs.next()) { // more then one row !
-      throw new AdminPersistenceException("SQL row not unique");
-    }
-    return result;
-  }
-
-  protected List<T> getRows(ResultSet rs) throws SQLException {
-    List<T> result = new ArrayList<>();
-    while (rs.next()) {
-      result.add(fetchRow(rs));
-    }
-    return result;
   }
 
   protected List<String> getIds(ResultSet rs) throws SQLException {
@@ -524,118 +230,16 @@ public abstract class Table<T> {
     return result;
   }
 
-  protected Integer getInteger(ResultSet rs) throws SQLException, AdminPersistenceException {
-    if (!rs.next()) { // no row found
-      return null;
-    }
-    int result = rs.getInt(1);
-    if (rs.next()) { // more then one row !
-      throw new AdminPersistenceException("SQL row not unique");
-    }
-    return result;
-  }
-
-  protected int insertRow(String insertQuery, T row) throws AdminPersistenceException {
-    int rowsCount;
-    PreparedStatement statement = null;
-    try {
-      statement = schema.getStatement(insertQuery);
-      prepareInsert(insertQuery, statement, row);
-      rowsCount = statement.executeUpdate();
-      return rowsCount;
-    } catch (SQLException e) {
-      SynchroDomainReport.error("Table.insertRow()", "Exception SQL : " + e.getMessage(), null);
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
+  protected int updateRelation(String query) throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement statement = connection.prepareStatement(query)) {
+      return statement.executeUpdate();
     }
   }
-
-  protected int updateRow(String updateQuery, T row) throws AdminPersistenceException {
-    int rowsCount;
-    PreparedStatement statement = null;
-    try {
-      statement = schema.getStatement(updateQuery);
-      prepareUpdate(updateQuery, statement, row);
-      rowsCount = statement.executeUpdate();
-      return rowsCount;
-    } catch (SQLException e) {
-      SynchroDomainReport.error("Table.updateRow()", "Exception SQL : " + e.getMessage(), null);
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
-    }
-  }
-
-  protected int updateRelation(String query) throws AdminPersistenceException {
-    int rowsCount;
-    PreparedStatement statement = null;
-    try {
-      statement = schema.getStatement(query);
-      rowsCount = statement.executeUpdate();
-      return rowsCount;
-    } catch (SQLException e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
-    }
-  }
-
-  protected int updateRelation(String query, int param) throws AdminPersistenceException {
-    int rowsCount;
-    PreparedStatement statement = null;
-    try {
-      statement = schema.getStatement(query);
-      if (param == -1) {
-        statement.setNull(1, Types.INTEGER);
-      } else {
-        statement.setInt(1, param);
-      }
-      rowsCount = statement.executeUpdate();
-      return rowsCount;
-    } catch (SQLException e) {
-      SynchroDomainReport.error("Table.updateRelation()", "Exception SQL : " + e.getMessage(), null);
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
-    }
-  }
-
-  protected int updateRelation(String query, int[] ids) throws AdminPersistenceException {
-    int rowsCount;
-    PreparedStatement statement = null;
-    try {
-      statement = schema.getStatement(query);
-      for (int i = 0; i < ids.length; i++) {
-        if (ids[i] == -1) {
-          statement.setNull(i + 1, Types.INTEGER);
-        } else {
-          statement.setInt(i + 1, ids[i]);
-        }
-      }
-      rowsCount = statement.executeUpdate();
-      return rowsCount;
-    } catch (SQLException e) {
-      SynchroDomainReport.error("Table.updateRelation()", "Exception SQL : " + e.getMessage(), null);
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
-    }
-  }
-  private Schema schema = null;
-  private String tableName = null;
 
   protected boolean addParamToQuery(Collection<Object> theVect, StringBuilder theQuery, String value,
           String column, boolean concatAndOr, String andOr) {
     if ((value != null) && (value.length() > 0)) {
-      return addParamToQuery(theVect, theQuery, (Object) value, column, concatAndOr, andOr);
-    }
-    return concatAndOr;
-  }
-
-  protected boolean addParamToQuery(Collection<Object> theVect, StringBuilder theQuery,
-      Timestamp value, String column, boolean concatAndOr, String andOr) {
-    if (value != null) {
       return addParamToQuery(theVect, theQuery, (Object) value, column, concatAndOr, andOr);
     }
     return concatAndOr;

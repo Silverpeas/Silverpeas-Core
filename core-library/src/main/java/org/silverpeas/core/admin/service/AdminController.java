@@ -52,6 +52,7 @@ import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -63,6 +64,7 @@ import java.util.Map;
  * It provides access functions to query and modify the domains as well as the company organization
  * It should be used only by a client that has the administrator rights
  */
+@Transactional
 public class AdminController implements java.io.Serializable {
 
   private static final long serialVersionUID = -1605341557688427460L;
@@ -1557,15 +1559,6 @@ public class AdminController implements java.io.Serializable {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
-    }
-  }
-
-  public void resetAllDBConnections(boolean isScheduled) {
-
-    try {
-      admin.resetAllDBConnections(isScheduled);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
   }
 

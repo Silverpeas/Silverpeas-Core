@@ -121,7 +121,7 @@ public class RightRecover {
       }
     } else {
       // recover space rights
-      admin.setSpaceProfilesToComponent(component, space, true);
+      admin.setSpaceProfilesToComponent(component, space);
     }
   }
 }

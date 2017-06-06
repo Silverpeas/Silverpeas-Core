@@ -25,8 +25,9 @@
 package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -43,12 +44,13 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
  */
 public class UserRoleTable extends Table<UserRoleRow> {
 
-  public UserRoleTable(OrganizationSchema organization) {
-    super(organization, "ST_UserRole");
-    this.organization = organization;
+  public static final String REQUEST_MSG = ", requête : ";
+
+  public UserRoleTable() {
+    super("ST_UserRole");
   }
 
-  static final private String USERROLE_COLUMNS =
+  private static final String USERROLE_COLUMNS =
       "id,instanceId,name,roleName,description,isInherited,objectId";
 
   /**
@@ -75,25 +77,26 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * Returns the UserRole whith the given id.
    * @param id
    * @return the UserRole whith the given id.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public UserRoleRow getUserRole(int id) throws AdminPersistenceException {
+  public UserRoleRow getUserRole(int id) throws SQLException {
     return getUniqueRow(SELECT_USERROLE_BY_ID, id);
   }
 
-  static final private String SELECT_USERROLE_BY_ID = "select "
+  public static final String SELECT = "select ";
+  private static final String SELECT_USERROLE_BY_ID = SELECT
       + USERROLE_COLUMNS + " from ST_UserRole where id = ?";
 
   /**
-   * Returns the UserRole whith the given roleName in the given instance.
+   * Returns the UserRole with the given roleName in the given instance.
    * @param instanceId
    * @param roleName
-   * @return the UserRole whith the given roleName in the given instance. the UserRole whith the
+   * @return the UserRole with the given roleName in the given instance. the UserRole whith the
    * given roleName in the given instance.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public UserRoleRow getUserRole(int instanceId, String roleName, int inherited)
-      throws AdminPersistenceException {
+      throws SQLException {
     List<Object> params = new ArrayList<>(3);
     params.add(instanceId);
     params.add(inherited);
@@ -105,14 +108,13 @@ public class UserRoleTable extends Table<UserRoleRow> {
     }
 
     if (userRoles.size() >= 2) {
-      SilverTrace.error("admin", "UserRoleTable.getUserRole", "root.MSG_GEN_PARAM_VALUE", "# = " +
-          userRoles.size() + ", instanceId = " + instanceId + ", roleName = " + roleName);
+      SilverLogger.getLogger(this).error("Error more than 2 user roles found!");
     }
     return userRoles.get(0);
   }
 
-  static final private String SELECT_USERROLE_BY_ROLENAME =
-      "select "
+  private static final String SELECT_USERROLE_BY_ROLENAME =
+      SELECT
           +
           USERROLE_COLUMNS
           +
@@ -122,37 +124,37 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * Returns all the UserRoles of an instance.
    * @param instanceId
    * @return all the UserRoles of an instance.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public UserRoleRow[] getAllUserRolesOfInstance(int instanceId) throws AdminPersistenceException {
+  public UserRoleRow[] getAllUserRolesOfInstance(int instanceId) throws SQLException {
     List<UserRoleRow> rows = getRows(SELECT_ALL_INSTANCE_USERROLES, instanceId);
     return rows.toArray(new UserRoleRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_INSTANCE_USERROLES = "select "
+  private static final String SELECT_ALL_INSTANCE_USERROLES = SELECT
       + USERROLE_COLUMNS + " from ST_UserRole where instanceId = ? ";
 
   /**
    * Returns all the UserRole ids of an instance.
    * @param instanceId
    * @return all the UserRole ids of an instance.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public String[] getAllUserRoleIdsOfInstance(int instanceId) throws AdminPersistenceException {
+  public String[] getAllUserRoleIdsOfInstance(int instanceId) throws SQLException {
     List<String> ids = getIds(SELECT_ALL_INSTANCE_USERROLE_IDS, instanceId);
     return ids.toArray(new String[ids.size()]);
   }
 
-  static final private String SELECT_ALL_INSTANCE_USERROLE_IDS =
+  private static final String SELECT_ALL_INSTANCE_USERROLE_IDS =
       "select id from ST_UserRole where instanceId = ? and objectId is null";
 
   public String[] getAllObjectUserRoleIdsOfInstance(int instanceId)
-      throws AdminPersistenceException {
+      throws SQLException {
     List<String> ids = getIds(SELECT_ALL_INSTANCE_OBJECT_USERROLE_IDS, instanceId);
     return ids.toArray(new String[ids.size()]);
   }
 
-  static final private String SELECT_ALL_INSTANCE_OBJECT_USERROLE_IDS =
+  private static final String SELECT_ALL_INSTANCE_OBJECT_USERROLE_IDS =
       "select id from ST_UserRole where instanceId = ? and objectId is not null";
 
   /**
@@ -161,10 +163,10 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @param objectType
    * @param instanceId
    * @return all the UserRole ids of an object in a given instance.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public String[] getAllUserRoleIdsOfObject(int objectId, String objectType, int instanceId) throws
-      AdminPersistenceException {
+      SQLException {
     List<Object> params = new ArrayList<>(3);
     params.add(instanceId);
     params.add(objectId);
@@ -173,21 +175,21 @@ public class UserRoleTable extends Table<UserRoleRow> {
     return ids.toArray(new String[ids.size()]);
   }
 
-  static final private String SELECT_ALL_OBJECT_USERROLE_IDS =
+  private static final String SELECT_ALL_OBJECT_USERROLE_IDS =
       "select id from ST_UserRole where instanceId = ? and objectId = ? and objectType = ? ";
 
   /**
    * Returns all the direct UserRoles of user.
    * @param userId
    * @return all the direct UserRoles of user.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public UserRoleRow[] getDirectUserRolesOfUser(int userId) throws AdminPersistenceException {
+  public UserRoleRow[] getDirectUserRolesOfUser(int userId) throws SQLException {
     List<UserRoleRow> rows = getRows(SELECT_USER_USERROLES, userId);
     return rows.toArray(new UserRoleRow[rows.size()]);
   }
 
-  static final private String SELECT_USER_USERROLES = "select "
+  private static final String SELECT_USER_USERROLES = SELECT
       + USERROLE_COLUMNS + " from ST_UserRole, ST_UserRole_User_Rel"
       + " where id = userRoleId" + " and userId = ? ";
 
@@ -195,35 +197,35 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * Returns all the direct UserRoles of a group.
    * @param groupId
    * @return all the direct UserRoles of a group.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public UserRoleRow[] getDirectUserRolesOfGroup(int groupId) throws AdminPersistenceException {
+  public UserRoleRow[] getDirectUserRolesOfGroup(int groupId) throws SQLException {
     List<UserRoleRow> rows = getRows(SELECT_GROUP_USERROLES, groupId);
     return rows.toArray(new UserRoleRow[rows.size()]);
   }
 
-  static final private String SELECT_GROUP_USERROLES = "select " + USERROLE_COLUMNS
+  private static final String SELECT_GROUP_USERROLES = SELECT + USERROLE_COLUMNS
       + " from ST_UserRole, ST_UserRole_Group_Rel where id = userRoleId" + " and groupId = ? ";
 
   /**
    * Inserts in the database a new userRole row.
    * @param userRole
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void createUserRole(UserRoleRow userRole) throws AdminPersistenceException {
-    ComponentInstanceRow instance = organization.instance.getComponentInstance(userRole.instanceId);
+  public void createUserRole(UserRoleRow userRole) throws SQLException {
+    ComponentInstanceRow instance = OrganizationSchema.get().instance().getComponentInstance(userRole.instanceId);
     if (instance == null) {
-      throw new AdminPersistenceException(
+      throw new SQLException(
           unknown("component instance", String.valueOf(userRole.instanceId)));
     }
 
     if (userRole.objectId != -1 && !StringUtil.isDefined(userRole.objectType)) {
-      throw new AdminPersistenceException(undefined("user role type"));
+      throw new SQLException(undefined("user role type"));
     }
     insertRow(INSERT_USERROLE, userRole);
   }
 
-  static final private String INSERT_USERROLE = "insert into"
+  private static final String INSERT_USERROLE = "insert into"
       + " ST_UserRole(id,instanceId,name,roleName,description,isInherited,objectId,objectType)"
       + " values     (? ,?         ,?   ,?       ,?			 ,?			 ,?		  ,?)";
 
@@ -254,13 +256,13 @@ public class UserRoleTable extends Table<UserRoleRow> {
   /**
    * Update a user role.
    * @param userRole
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void updateUserRole(UserRoleRow userRole) throws AdminPersistenceException {
+  public void updateUserRole(UserRoleRow userRole) throws SQLException {
     updateRow(UPDATE_USERROLE, userRole);
   }
 
-  static final private String UPDATE_USERROLE = "update ST_UserRole set"
+  private static final String UPDATE_USERROLE = "update ST_UserRole set"
       + " name = ?, description = ? where id = ?";
 
   @Override
@@ -274,9 +276,9 @@ public class UserRoleTable extends Table<UserRoleRow> {
   /**
    * Delete the userRole
    * @param id
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void removeUserRole(int id) throws AdminPersistenceException {
+  public void removeUserRole(int id) throws SQLException {
     UserRoleRow userRole = getUserRole(id);
     if (userRole == null) {
       return;
@@ -288,22 +290,22 @@ public class UserRoleTable extends Table<UserRoleRow> {
     updateRelation(DELETE_USERROLE, id);
   }
 
-  static final private String DELETE_USERROLE = "delete from ST_UserRole where id = ?";
+  private static final String DELETE_USERROLE = "delete from ST_UserRole where id = ?";
 
   /**
    * Tests if a user has a given role (not recursive).
    * @param userId
    * @param userRoleId
    * @return
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public boolean isUserDirectlyInRole(int userId, int userRoleId) throws AdminPersistenceException {
+  public boolean isUserDirectlyInRole(int userId, int userRoleId) throws SQLException {
     int[] ids = new int[] { userId, userRoleId };
     Integer result = getInteger(SELECT_COUNT_USERROLE_USER_REL, ids);
     return result != null && result >= 1;
   }
 
-  static final private String SELECT_COUNT_USERROLE_USER_REL =
+  private static final String SELECT_COUNT_USERROLE_USER_REL =
       "select count(*) from ST_UserRole_User_Rel"
       + " where userId = ? and userRoleId = ?";
 
@@ -311,9 +313,10 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * Add an user in a userRole.
    * @param userId
    * @param userRoleId
-   * @throws AdminPersistenceException
+   * @throws SQLException
+   * @throws AdminException
    */
-  public void addUserInUserRole(int userId, int userRoleId) throws AdminPersistenceException {
+  public void addUserInUserRole(int userId, int userRoleId) throws SQLException, AdminException {
     if (isUserDirectlyInRole(userId, userRoleId)) {
       return;
     }
@@ -321,64 +324,64 @@ public class UserRoleTable extends Table<UserRoleRow> {
 
     UserRoleRow userRole = getUserRole(userRoleId);
     if (userRole == null) {
-      throw new AdminPersistenceException(unknown("user role", String.valueOf(userRoleId)));
+      throw new SQLException(unknown("user role", String.valueOf(userRoleId)));
     }
 
     int[] params = new int[] { userRoleId, userId };
     updateRelation(INSERT_A_USERROLE_USER_REL, params);
   }
 
-  static final private String INSERT_A_USERROLE_USER_REL =
+  private static final String INSERT_A_USERROLE_USER_REL =
       "insert into ST_UserRole_User_Rel(userRoleId, userId) values(?,?)";
 
   /**
    * Removes an user from a userRole.
    * @param userId
    * @param userRoleId
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void removeUserFromUserRole(int userId, int userRoleId) throws AdminPersistenceException {
+  public void removeUserFromUserRole(int userId, int userRoleId) throws SQLException {
     if (!isUserDirectlyInRole(userId, userRoleId)) {
-      throw new AdminPersistenceException("user " + userId + " isn't in role " + userRoleId);
+      throw new SQLException("user " + userId + " isn't in role " + userRoleId);
     }
     int[] params = new int[] { userRoleId, userId };
     SynchroDomainReport.debug("UserRoleTable.removeUserFromUserRole()",
         "Retrait de l'utilisateur d'ID " + userId + " du role d'ID "
-        + userRoleId + ", requête : " + DELETE_USERROLE_USER_REL);
+        + userRoleId + REQUEST_MSG + DELETE_USERROLE_USER_REL);
     updateRelation(DELETE_USERROLE_USER_REL, params);
   }
 
-  static final private String DELETE_USERROLE_USER_REL =
+  private static final String DELETE_USERROLE_USER_REL =
       "delete from ST_UserRole_User_Rel where userRoleId = ? and userId = ?";
 
   /**
    * Removes all users from a userRole.
    * @param userRoleId
    */
-  public void removeAllUsersFromUserRole(int userRoleId) throws AdminPersistenceException {
+  public void removeAllUsersFromUserRole(int userRoleId) throws SQLException {
     SynchroDomainReport.debug("UserRoleTable.removeAllUsersFromUserRole()",
-        "Retrait des utilisateurs du role d'ID " + userRoleId + ", requête : "
+        "Retrait des utilisateurs du role d'ID " + userRoleId + REQUEST_MSG
         + DELETE_USERROLE_USER_REL);
     updateRelation(DELETE_ALL_USERS_FROM_USERROLE, userRoleId);
   }
 
-  static final private String DELETE_ALL_USERS_FROM_USERROLE =
+  private static final String DELETE_ALL_USERS_FROM_USERROLE =
       "delete from ST_UserRole_User_Rel where userRoleId = ? ";
 
   /**
    * Removes all groups from a userRole.
    * @param userRoleId
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void removeAllGroupsFromUserRole(int userRoleId) throws AdminPersistenceException {
+  public void removeAllGroupsFromUserRole(int userRoleId) throws SQLException {
 
     SynchroDomainReport.debug("UserRoleTable.removeAllGroupsFromUserRole()",
-        "Retrait des groupes du role d'ID " + userRoleId + ", requête : "
+        "Retrait des groupes du role d'ID " + userRoleId + REQUEST_MSG
         + DELETE_USERROLE_USER_REL);
     updateRelation(DELETE_ALL_GROUPS_FROM_USERROLE, userRoleId);
   }
 
-  static final private String DELETE_ALL_GROUPS_FROM_USERROLE =
+  private static final String DELETE_ALL_GROUPS_FROM_USERROLE =
       "delete from ST_UserRole_Group_Rel where userRoleId = ? ";
 
   /**
@@ -386,66 +389,66 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @param groupId
    * @param userRoleId
    * @return
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public boolean isGroupDirectlyInRole(int groupId, int userRoleId)
-      throws AdminPersistenceException {
+      throws SQLException {
     int[] ids = new int[] { groupId, userRoleId };
     Integer result = getInteger(SELECT_COUNT_USERROLE_GROUP_REL, ids);
 
     return result != null && result >= 1;
   }
 
-  static final private String SELECT_COUNT_USERROLE_GROUP_REL =
+  private static final String SELECT_COUNT_USERROLE_GROUP_REL =
       "select count(*) from ST_UserRole_Group_Rel where groupId = ? and userRoleId = ?";
 
   /**
    * Adds a group in a userRole.
    * @param groupId
    * @param userRoleId
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void addGroupInUserRole(int groupId, int userRoleId) throws AdminPersistenceException {
+  public void addGroupInUserRole(int groupId, int userRoleId) throws SQLException {
     if (isGroupDirectlyInRole(groupId, userRoleId)) {
       return;
     }
 
-    GroupRow group = organization.group.getGroup(groupId);
+    GroupRow group = OrganizationSchema.get().group().getGroup(groupId);
     if (group == null) {
-      throw new AdminPersistenceException(unknown("group", String.valueOf(groupId)));
+      throw new SQLException(unknown("group", String.valueOf(groupId)));
     }
 
     UserRoleRow userRole = getUserRole(userRoleId);
     if (userRole == null) {
-      throw new AdminPersistenceException(unknown("role", String.valueOf(userRoleId)));
+      throw new SQLException(unknown("role", String.valueOf(userRoleId)));
     }
     int[] params = new int[] { userRoleId, groupId };
     updateRelation(INSERT_A_USERROLE_GROUP_REL, params);
 
   }
 
-  static final private String INSERT_A_USERROLE_GROUP_REL =
+  private static final String INSERT_A_USERROLE_GROUP_REL =
       "insert into ST_UserRole_Group_Rel(userRoleId, groupId) values(?,?)";
 
   /**
    * Removes a group from a userRole.
    * @param groupId
    * @param userRoleId
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void removeGroupFromUserRole(int groupId, int userRoleId) throws AdminPersistenceException {
+  public void removeGroupFromUserRole(int groupId, int userRoleId) throws SQLException {
     if (!isGroupDirectlyInRole(groupId, userRoleId)) {
-      throw new AdminPersistenceException("group " + groupId + " isn't in role " + userRoleId);
+      throw new SQLException("group " + groupId + " isn't in role " + userRoleId);
     }
 
     int[] params = new int[] { userRoleId, groupId };
     SynchroDomainReport.debug("UserRoleTable.removeGroupFromUserRole()",
         "Retrait du groupe d'ID " + groupId + " du role d'ID " + userRoleId
-        + ", requête : " + DELETE_USERROLE_GROUP_REL);
+        + REQUEST_MSG + DELETE_USERROLE_GROUP_REL);
     updateRelation(DELETE_USERROLE_GROUP_REL, params);
   }
 
-  static final private String DELETE_USERROLE_GROUP_REL =
+  private static final String DELETE_USERROLE_GROUP_REL =
       "delete from ST_UserRole_Group_Rel where userRoleId = ? and groupId = ?";
 
   /**
@@ -455,6 +458,4 @@ public class UserRoleTable extends Table<UserRoleRow> {
   protected UserRoleRow fetchRow(ResultSet rs) throws SQLException {
     return fetchUserRole(rs);
   }
-
-  private OrganizationSchema organization = null;
 }

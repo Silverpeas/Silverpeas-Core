@@ -422,7 +422,7 @@ public class JdbcSqlQuery {
     if (parameters != null) {
       // Oracle has a hard limitation with SQL lists with 'in' clause: it cannot take more than 1000
       // elements. So we split it in several SQL lists so that they contain less than 1000 elements.
-      final int threshold = 10;
+      final int threshold = 1000;
       int end = sqlQuery.lastIndexOf(NOT_IN_OPERATOR);
       String negation = " NOT ";
       if (end < 0) {
@@ -436,15 +436,14 @@ public class JdbcSqlQuery {
         }
         String currentSqlPart = sqlQuery.substring(from + 1, end);
         sqlQuery.delete(from + 1, sqlQuery.length()).append(negation).append("(");
+
         List<?> listOfParameters = new ArrayList<>(parameters);
-        for (int i = 0; i < parameters.size(); i += threshold) {
-          String params = listOfParameters.subList(i, i + threshold)
-              .stream()
-              .map(p -> "?")
-              .collect(Collectors.joining(","));
+        for (int i = 0; i < listOfParameters.size(); i += threshold) {
+          String params = sublistOfParameters(i, i + threshold, listOfParameters);
           sqlQuery.append(currentSqlPart).append(" IN (").append(params).append(") OR ");
         }
         sqlQuery.replace(sqlQuery.length() - 4, sqlQuery.length(), ")");
+
       } else {
         String params = parameters.stream().map(p -> "?").collect(Collectors.joining(","));
         sqlQuery.append(" (").append(params).append(")");
@@ -453,6 +452,18 @@ public class JdbcSqlQuery {
         allParameters.addAll(parameters);
       }
     }
+  }
+
+  private String sublistOfParameters(final int fromIndex, final int toIndex,
+      final List<?> listOfParameters) {
+    int limit = toIndex;
+    if (limit > listOfParameters.size()) {
+      limit = listOfParameters.size();
+    }
+    return listOfParameters.subList(fromIndex, limit)
+        .stream()
+        .map(p -> "?")
+        .collect(Collectors.joining(","));
   }
 
   /**
