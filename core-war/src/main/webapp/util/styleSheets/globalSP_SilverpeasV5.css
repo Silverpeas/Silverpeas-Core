@@ -934,12 +934,14 @@ Style Utilise par le ViewGenerator
 
 .cellBodyWindows {
   margin-top:0.5em;
-  display:table;
-  width:100%;
 }
 
 #sp-layout-body-part-layout-content-part {
   padding-left:1em;
+}
+
+.sp_goToTop {
+  clear:both;
 }
 /* Objet Button */
 
@@ -1025,7 +1027,7 @@ Style Utilise par le ViewGenerator
 }
 
 .hautFrame {
-  padding-top: 10px;
+  padding: 1em 0;
 }
 
 /* Objet board */
