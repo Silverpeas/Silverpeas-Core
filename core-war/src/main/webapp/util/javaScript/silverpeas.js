@@ -1060,6 +1060,13 @@ if (typeof window.sp === 'undefined') {
           params.success = options;
         } else if (typeof options === 'object') {
           params = extendsObject(params, options);
+        } else {
+          params.success = function(request) {
+            return sp.updateTargetWithHtmlContent(containerCssSelector, request.responseText, true)
+                     .then(function() {
+                       window.top.spProgressMessage.hide();
+                     });
+          };
         }
         var $container = jQuery(containerCssSelector);
         var __ajaxRequest = function(url) {

@@ -60,10 +60,6 @@
     return sp.load('#silvermail-portlet-list', ajaxConfig, true);
   };
 
-  var _updateFromRequest = function(request) {
-    return sp.updateTargetWithHtmlContent('#silvermail-portlet-list', request.responseText, true);
-  };
-
   window.USERNOTIFICATION_PROMISE.then(function() {
     spUserNotification.addEventListener('userNotificationRead', _reloadList,
         "SILVERMAIL_portlet_UserNotificationRead");
@@ -108,7 +104,7 @@
   </view:arrayPane>
   <script type="text/javascript">
     whenSilverpeasReady(function() {
-      sp.arrayPane.ajaxControls('#silvermail-portlet-list', _updateFromRequest);
+      sp.arrayPane.ajaxControls('#silvermail-portlet-list');
     });
   </script>
 </div>
