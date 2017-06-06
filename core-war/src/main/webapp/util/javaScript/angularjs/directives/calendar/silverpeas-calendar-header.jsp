@@ -54,7 +54,12 @@
       <div id="currentScope">
         <span id="today"> <a href="#" ng-click="$ctrl.timeWindow({type:'today'})" onfocus="this.blur()"><fmt:message key="GML.Today"/></a></span>
         <a class="btn_navigation previous" href="#" ng-click="$ctrl.timeWindow({type:'previous'})" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowLeft.gif"/>"></a>
-        <span class="period-label">{{$ctrl.timeWindowViewContext.referencePeriodLabel}}</span>
+        <span>
+          <input type="text" class="reference-day" style="visibility: hidden"
+                 ng-model="$ctrl.timeWindowViewContext.formattedReferenceDay"
+                 ng-change="$ctrl.referenceDayChanged()">
+          <span class="period-label" ng-click="$ctrl.chooseReferenceDay()">{{$ctrl.timeWindowViewContext.referencePeriodLabel}}</span>
+        </span>
         <a class="btn_navigation next" href="#" ng-click="$ctrl.timeWindow({type:'next'})" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowRight.gif"/>"></a>
       </div>
     </div>

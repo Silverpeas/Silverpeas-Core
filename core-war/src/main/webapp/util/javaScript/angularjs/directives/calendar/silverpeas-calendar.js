@@ -136,6 +136,10 @@
                 occurrence.start = occurrence.startDate;
                 occurrence.end = occurrence.endDate;
                 occurrence.editable = occurrence.canBeModified;
+                // Important class
+                if (occurrence.priority === 'HIGH') {
+                  occurrence.className = 'important';
+                }
                 if (callback) {
                   callback(occurrence);
                 }
@@ -402,8 +406,8 @@
               /**
                * Changes the current time window by the one specified.
                */
-              changeTimeWindow : function(type) {
-                return saveContext({"timeWindow" : type});
+              changeTimeWindow : function(type, day) {
+                return saveContext({"timeWindow" : type, "timeWindowDate" : day});
               }.bind(this),
 
               //
@@ -711,20 +715,43 @@
         };
       }]);
 
-  angular.module('silverpeas.directives').directive('silverpeasCalendarHeader', function() {
-    return {
-      templateUrl : webContext +
-      '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-header.jsp',
-      restrict : 'E',
-      scope : {
-        view : '&', timeWindow : '&', timeWindowViewContext : '='
-      },
-      controllerAs : '$ctrl',
-      bindToController : true,
-      controller : function($scope, $element, $attrs, $transclude) {
-      }
-    };
-  });
+  angular.module('silverpeas.directives').directive('silverpeasCalendarHeader',
+      ['$timeout', function($timeout) {
+        return {
+          templateUrl : webContext +
+          '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-header.jsp',
+          restrict : 'E',
+          scope : {
+            view : '&', timeWindow : '&', timeWindowViewContext : '='
+          },
+          controllerAs : '$ctrl',
+          bindToController : true,
+          controller : function($scope, $element, $attrs, $transclude) {
+            this.referenceDayChanged = function() {
+              var referenceDay = sp.moment.make(this.timeWindowViewContext.formattedReferenceDay, 'L');
+              var formattedReferenceDay = referenceDay.format();
+              var day = formattedReferenceDay.substr(0, formattedReferenceDay.indexOf('T'));
+              this.timeWindow({type : 'referenceDay', day : day});
+            }
+            this.chooseReferenceDay = function() {
+              this.$referenceDayInput.datepicker("show");
+            };
+            this.$postLink = function() {
+              $timeout(function() {
+                this.$referenceDayInput = jQuery(angular.element(".reference-day", $element));
+                this.$referenceDayInput.datepicker({
+                  showOn : '',
+                  stepMonths : 2,
+                  numberOfMonths : [ 1, 3 ],
+                  showCurrentAtPos: 1,
+                  showOtherMonths: true,
+                  selectOtherMonths: true
+                });
+              }.bind(this), 0);
+            }.bind(this);
+          }
+        };
+      }]);
 
   /**
    * Gets a moment instance from a given time window view context.

@@ -47,7 +47,7 @@
   </silverpeas-calendar-event-management>
   <silverpeas-calendar-header time-window-view-context="$ctrl.timeWindowViewContext"
                               view="$ctrl.api.changeView(type)"
-                              time-window="$ctrl.api.changeTimeWindow(type)">
+                              time-window="$ctrl.api.changeTimeWindow(type, day)">
   </silverpeas-calendar-header>
   <silverpeas-calendar-list on-calendar-color-select="$ctrl.api.setCalendarColor(calendar,color)"
                             on-calendar-visibility-toggle="$ctrl.api.toggleCalendarVisibility(calendar)"

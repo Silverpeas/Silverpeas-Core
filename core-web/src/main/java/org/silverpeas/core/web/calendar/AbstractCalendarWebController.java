@@ -39,11 +39,12 @@ import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
+import java.sql.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -85,16 +86,15 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
     }
     String timeWindow = context.getRequest().getParameter("timeWindow");
     if (StringUtil.isDefined(timeWindow)) {
-      switch (timeWindow) {
-        case "previous":
-          getCalendarTimeWindowContext().previous();
-          break;
-        case "next":
-          getCalendarTimeWindowContext().next();
-          break;
-        case "today":
-          getCalendarTimeWindowContext().today();
-          break;
+      if ("previous".equals(timeWindow)) {
+        getCalendarTimeWindowContext().previous();
+      } else if ("next".equals(timeWindow)) {
+        getCalendarTimeWindowContext().next();
+      } else if ("today".equals(timeWindow)) {
+        getCalendarTimeWindowContext().today();
+      } else if ("referenceDay".equals(timeWindow)) {
+        LocalDate date = LocalDate.parse(context.getRequest().getParameter("timeWindowDate"));
+        getCalendarTimeWindowContext().setReferenceDay(Date.valueOf(date));
       }
     }
     return getCalendarTimeWindowContext();
@@ -165,7 +165,7 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
     userPanelSelection.setGoBackURL(goUrl);
     userPanelSelection.setElementSelectable(true);
     userPanelSelection.setSelectedElements(userIds);
-    // TODO for now groups are not handled, but it will be the case in thr future
+    // TODO for now groups are not handled, but it will be the case in the future
     userPanelSelection.setSetSelectable(false);
     userPanelSelection.setSelectedSets(groupIds);
     userPanelSelection.setHostPath(null);
