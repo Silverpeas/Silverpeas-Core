@@ -23,31 +23,22 @@
  */
 package org.silverpeas.web.notificationuser.servlets;
 
-import org.silverpeas.web.notificationuser.Notification;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.web.notificationuser.control.NotificationUserSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.web.notificationuser.Notification;
+import org.silverpeas.web.notificationuser.control.NotificationUserSessionController;
 
-/**
- * Class declaration
- * <p>
- * @author
- */
+import java.util.List;
+
 public class NotificationUserRequestRouter extends ComponentRequestRouter<NotificationUserSessionController> {
 
   private static final long serialVersionUID = -5858231857279380747L;
+  private static final String POPUP_MODE_PARAM = "popupMode";
+  private static final String EDIT_TARGETS_PARAM = "editTargets";
 
-  /**
-   * Method declaration
-   *
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   * @see
-   */
   @Override
   public NotificationUserSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -101,28 +92,17 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
         }
         request.setAttribute("Notification", notification);
 
-        boolean popupMode = StringUtil.getBooleanValue(request.getParameter("popupMode"));
-        String param = request.getParameter("editTargets");
+        boolean popupMode = StringUtil.getBooleanValue(request.getParameter(POPUP_MODE_PARAM));
+        String param = request.getParameter(EDIT_TARGETS_PARAM);
         boolean editTargets = true;
         if (StringUtil.isDefined(param)) {
           editTargets = StringUtil.getBooleanValue(param);
         }
-        request.setAttribute("popupMode", popupMode);
-        request.setAttribute("editTargets", editTargets);
+        request.setAttribute(POPUP_MODE_PARAM, popupMode);
+        request.setAttribute(EDIT_TARGETS_PARAM, editTargets);
 
         destination = "/notificationUser/jsp/notificationSender.jsp";
-      } else if ("SetTarget".equals(function)) {
-        String popupMode = request.getParameter("popupMode");
-        nuSC.setNotification(request2Notification(request));
-        StringBuilder paramValue = new StringBuilder("?popupMode=").append(popupMode);
-        destination = nuSC.initSelectionPeas(paramValue.toString());
-      } else if (function.startsWith("GetTarget")) {
-        boolean popupMode = StringUtil.getBooleanValue(request.getParameter("popupMode"));
-        request.setAttribute("popupMode", popupMode);
-        request.setAttribute("editTargets", true);
-        request.setAttribute("Notification", nuSC.getNotificationWithNewRecipients());
-        destination = "/notificationUser/jsp/notificationSender.jsp";
-      } else if (function.equals("SendNotif")) {
+      } else if ("SendNotif".equals(function)) {
         Notification notification = request2Notification(request);
         nuSC.sendMessage(notification);
         destination = "/peasCore/jsp/close.jsp";
@@ -143,8 +123,10 @@ public class NotificationUserRequestRouter extends ComponentRequestRouter<Notifi
     notification.setBody(request.getParameter("txtMessage"));
     notification.setChannel(request.getParameter("notificationId"));
     notification.setPriority(request.getParameter("priorityId"));
-    notification.setUsers(StringUtil.split(request.getParameter("selectedUsers")));
-    notification.setGroups(StringUtil.split(request.getParameter("selectedGroups")));
+    final List<String> selectedUsers = request.getParameterAsList("selectedUsers");
+    final List<String> selectedGroups = request.getParameterAsList("selectedGroups");
+    notification.setUsers(selectedUsers.toArray(new String[selectedUsers.size()]));
+    notification.setGroups(selectedGroups.toArray(new String[selectedGroups.size()]));
     return notification;
   }
 }

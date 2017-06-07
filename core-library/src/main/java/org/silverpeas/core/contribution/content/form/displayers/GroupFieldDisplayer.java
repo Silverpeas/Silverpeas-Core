@@ -23,14 +23,9 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.silverpeas.core.contribution.content.form.Field;
 import org.apache.commons.fileupload.FileItem;
-
+import org.apache.ecs.xhtml.div;
+import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
@@ -38,10 +33,20 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.GroupField;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.html.plugin.UserGroupSelectProducer;
 import org.silverpeas.core.util.file.FileUploadUtil;
+
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import static org.silverpeas.core.contribution.content.form.displayers.UserFieldDisplayer
+    .produceMandatoryCheck;
+import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.SelectionType.GROUP;
+import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.withContainerId;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A GroupFieldDisplayer is an object which allow to select a group and display it in HTML and can
@@ -54,7 +59,7 @@ import org.silverpeas.core.util.file.FileUploadUtil;
  */
 public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
 
-  private final static int GROUP = 1;
+  private static final int NB_HTML_ELEMENTS = 2;
 
   /**
    * Returns the name of the managed types.
@@ -74,23 +79,10 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
    * </ul>
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
       throws java.io.IOException {
-    String language = PagesContext.getLanguage();
-
-    if (!GroupField.TYPE.equals(template.getTypeName())) {
-
-    }
-    if (template.isMandatory() && PagesContext.useMandatory()) {
-      out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("      errorMsg+=\"  - '"
-          + WebEncodeHelper.javaStringToJsString(template.getLabel(language))
-          + "' " + Util.getString("GML.MustBeFilled", language)
-          + "\\n\";");
-      out.println("      errorNb++;");
-      out.println("   }");
-    }
-    Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
+    produceMandatoryCheck(out, template, pagesContext);
+    Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
   /**
@@ -104,82 +96,45 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
   @Override
   public void display(PrintWriter out, GroupField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String language = pageContext.getLanguage();
-    String selectGroupImg = Util.getIcon("groupPanel");
-    String selectGroupLab = Util.getString("groupPanel", language);
-    String deleteImg = Util.getIcon("delete");
-    String deleteLab = Util.getString("clearGroup", language);
+    final boolean writable =
+        !template.isHidden() && !template.isDisabled() && !template.isReadOnly();
+    final String language = pageContext.getLanguage();
+    final String selectGroupLab = Util.getString("groupPanel", language);
+    final String deleteGroupLab = Util.getString("clearGroup", language);
+    final String fieldName = template.getFieldName();
+    final String rootContainerId = "select-user-group-" + fieldName;
+    final String groupId = field.getTypeName().equals(GroupField.TYPE) ? field.getGroupId() : "";
 
-    String groupName = "";
-    String groupId = "";
-    StringBuilder html = new StringBuilder();
-
-    String fieldName = template.getFieldName();
-
-    if (!GroupField.TYPE.equals(field.getTypeName())) {
-
-    } else {
-      groupId = field.getGroupId();
-    }
-    if (!field.isNull()) {
-      groupName = field.getValue();
-    }
-    html.append("<input type=\"hidden\"" + " id=\"").append(fieldName).append("\" name=\"").
-        append(fieldName).append("\" value=\"").
-        append(WebEncodeHelper.javaStringToHtmlString(groupId)).append("\" />");
-
-    String displayedElementId = fieldName + "_name";
-
-    if (!template.isHidden()) {
-      html.append("<input type=\"text\" disabled=\"disabled\" size=\"50\" " + " id=\"").
-          append(displayedElementId).append("\" name=\"").append(fieldName).
-          append("$$name\" value=\"").
-          append(WebEncodeHelper.javaStringToHtmlString(groupName)).append("\" />");
-    }
-
-    if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
+    final UserGroupSelectProducer selectGroup = withContainerId(rootContainerId)
+        .withGroupInputName(fieldName)
+        .selectionOf(GROUP)
+        .multiple(false)
+        .readOnly(!writable)
+        .hidden(template.isHidden())
+        .withGroupIds(groupId)
+        .withUserPanelButtonLabel(selectGroupLab)
+        .withRemoveButtonLabel(deleteGroupLab);
+    if (writable) {
       Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
-      boolean groupsOfInstanceOnly =
-          StringUtil.getBooleanValue(parameters.get("groupsOfInstanceOnly"));
       String roles = parameters.get("roles");
-      if (StringUtil.isDefined(roles)) {
-        groupsOfInstanceOnly = true;
+      boolean groupsOfInstanceOnly =
+          getBooleanValue(parameters.get("groupsOfInstanceOnly")) || isDefined(roles);
+      if (groupsOfInstanceOnly) {
+        selectGroup.filterOnComponentId(pageContext.getComponentId());
       }
-      html.append("&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('")
-          .append(URLUtil.getApplicationURL())
-          .append("/RselectionPeasWrapper/jsp/open" + "?formName=")
-          .append(pageContext.getFormName())
-          .append("&elementId=").append(fieldName)
-          .append("&elementName=").append(displayedElementId)
-          .append("&selectable=").append(GROUP)
-          .append("&selectedGroup=").append((groupId == null) ? "" : groupId)
-          .append(groupsOfInstanceOnly ? "&instanceId=" + pageContext.getComponentId() : "")
-          .append(StringUtil.isDefined(roles) ? "&roles=" + roles : "")
-          .append("','selectGroup',800,600,'');return false;\" >");
-      html.append("<img src=\"").append(selectGroupImg).
-          append("\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(selectGroupLab).
-          append("\" align=\"top\" title=\"").append(selectGroupLab).append("\"/></a>");
-      html.append("&nbsp;<a href=\"#\" onclick=\"javascript:").
-          append("$('#").append(fieldName).append("').val('');").
-          append("$('#").append(displayedElementId).append("').val('')").
-          append(";return false;\">");
-      html.append("<img src=\"").append(deleteImg).append(
-          "\" width=\"15\" height=\"15\" border=\"0\" alt=\"").append(deleteLab).append(
-          "\" align=\"top\" title=\"").append(deleteLab).append("\"/></a>");
-
-      if (template.isMandatory() && pageContext.useMandatory()) {
-        html.append(Util.getMandatorySnippet());
-      }
+      selectGroup.filterOnRoles(roles);
+      selectGroup.mandatory(template.isMandatory() && pageContext.useMandatory());
     }
 
-    out.println(html);
+    out.println(new div().setID(rootContainerId));
+    out.println(selectGroup.produce());
   }
 
   @Override
   public List<String> update(String newId, GroupField field, FieldTemplate template,
       PagesContext pagesContext) throws FormException {
     if (field.getTypeName().equals(GroupField.TYPE)) {
-      if (!StringUtil.isDefined(newId)) {
+      if (!isDefined(newId)) {
         field.setNull();
       } else {
         field.setGroupId(newId);
@@ -204,7 +159,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
    */
   @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pagesContext) {
-    return 2;
+    return NB_HTML_ELEMENTS;
   }
 
   @Override
@@ -213,7 +168,7 @@ public class GroupFieldDisplayer extends AbstractFieldDisplayer<GroupField> {
     String itemName = template.getFieldName();
     String value = FileUploadUtil.getParameter(items, itemName);
     if (pageContext.getUpdatePolicy() == PagesContext.ON_UPDATE_IGNORE_EMPTY_VALUES
-        && !StringUtil.isDefined(value)) {
+        && !isDefined(value)) {
       return new ArrayList<>();
     }
     return update(value, field, template, pageContext);

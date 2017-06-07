@@ -67,8 +67,29 @@
 <%@ attribute name="hideEmptyList" required="false" type="java.lang.Boolean"
               description="Hide empty list" %>
 
+<%@ attribute name="domainIdFilter" required="false" type="java.lang.String"
+              description="The domain id to filter on" %>
+
+<%@ attribute name="componentIdFilter" required="false" type="java.lang.String"
+              description="The component instance id to filter on" %>
+
 <%@ attribute name="id" required="false" type="java.lang.String"
               description="CSS id" %>
+
+<%@ attribute name="initUserPanelUserIdParamName" required="false" type="java.lang.String"
+              description="Sets the user parameter name used to init the user panel, otherwise UserPanelCurrentUserIds is used" %>
+
+<%@ attribute name="initUserPanelGroupIdParamName" required="false" type="java.lang.String"
+              description="Sets the group parameter name used to init the user panel, otherwise UserPanelCurrentGroupIds is used" %>
+
+<%@ attribute name="userInputName" required="false" type="java.lang.String"
+              description="Sets the name of the user input, otherwise ${id}UserPanelCurrentUserIds is created" %>
+
+<%@ attribute name="groupInputName" required="false" type="java.lang.String"
+              description="Sets the name of the group input, otherwise ${id}UserPanelCurrentGroupIds is created" %>
+
+<%@ attribute name="readOnly" required="false" type="java.lang.Boolean"
+              description="Indicates if the readOnly mode is required" %>
 
 <c:if test="${displayUserZoom == null}">
   <c:set var="displayUserZoom" value="${true}"/>
@@ -86,7 +107,25 @@
   <c:set var="displayLabel" value="${true}"/>
 </c:if>
 
-<c:set var="readOnly" value="${empty updateCallback}"/>
+<c:if test="${initUserPanelUserIdParamName == null}">
+  <c:set var="initUserPanelUserIdParamName" value="UserPanelCurrentUserIds"/>
+</c:if>
+
+<c:if test="${initUserPanelGroupIdParamName == null}">
+  <c:set var="initUserPanelGroupIdParamName" value="UserPanelCurrentGroupIds"/>
+</c:if>
+
+<c:if test="${userInputName == null}">
+  <c:set var="userInputName" value="${id}UserPanelCurrentUserIds"/>
+</c:if>
+
+<c:if test="${groupInputName == null}">
+  <c:set var="groupInputName" value="${id}UserPanelCurrentGroupIds"/>
+</c:if>
+
+<c:if test="${readOnly == null}">
+  <c:set var="readOnly" value="${empty updateCallback}"/>
+</c:if>
 
 <c:set var="currentUserId" value="${sessionScope['SilverSessionController'].userId}"/>
 <view:includePlugin name="listOfUsersAndGroups"/>
@@ -124,12 +163,19 @@
       groupIds = [<c:forEach items="${groupIds}" var="groupId" varStatus="status"><c:if test="${not status.first}">, </c:if>${groupId}</c:forEach>];
     }
     new ListOfUsersAndGroups({
+      readOnly : ${readOnly},
+      domainIdFilter : '${domainIdFilter}',
+      componentIdFilter : '${componentIdFilter}',
       userPanelId : '${id}',
+      initUserPanelUserIdParamName : '${initUserPanelUserIdParamName}',
+      initUserPanelGroupIdParamName : '${initUserPanelGroupIdParamName}',
+      userInputName : '${userInputName}',
+      groupInputName : '${groupInputName}',
       currentUserId : ${currentUserId},
       rootContainerId : "root-profile-list-${id}",
       initialUserIds : userIds,
       initialGroupIds : groupIds,
-      userPanelCallback : '${updateCallback}',
+      userPanelInitUrl : '${updateCallback}',
       jsSaveCallback : ${empty jsSaveCallback ? false : silfn:escapeJs(jsSaveCallback)},
       formSaveSelector : '${empty formSaveSelector ? '' : silfn:escapeJs(formSaveSelector)}',
       displayUserZoom : ${displayUserZoom},

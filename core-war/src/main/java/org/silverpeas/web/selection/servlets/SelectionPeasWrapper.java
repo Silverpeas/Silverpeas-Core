@@ -23,16 +23,15 @@
  */
 package org.silverpeas.web.selection.servlets;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.web.selection.control.SelectionPeasWrapperSessionController;
-import org.silverpeas.core.web.http.HttpRequest;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * A simple wrapper for the userpanel.
@@ -41,6 +40,7 @@ public class SelectionPeasWrapper extends
     ComponentRequestRouter<SelectionPeasWrapperSessionController> {
 
   private static final long serialVersionUID = 1L;
+  private static final String ERROR_PAGE_PATH = "/admin/jsp/errorpageMain.jsp";
 
   /**
    * Returns a new session controller
@@ -61,73 +61,79 @@ public class SelectionPeasWrapper extends
   /**
    * Do the requested function and return the destination url.
    */
-  public String getDestination(String function, SelectionPeasWrapperSessionController session,
+  public String getDestination(String function, SelectionPeasWrapperSessionController controller,
       HttpRequest request) {
     try {
-      if (function.equals("open")) {
-        session.setFormName(request.getParameter("formName"));
-        session.setElementId(request.getParameter("elementId"));
-        session.setElementName(request.getParameter("elementName"));
-        boolean selectionMultiple =
-            StringUtil.getBooleanValue(request.getParameter("selectionMultiple"));
-        String instanceId = request.getParameter("instanceId");
-        List<String> roles = getRoles(request.getParameter("roles"));
-
-        session.setSelectable(request.getParameter("selectable"));
-        session.setDomainIdFilter(request.getParameter("domainIdFilter"));
-
-        if (session.isGroupSelectable()) {
-          if (selectionMultiple) {
-            session.setSelectedGroupIds(request.getParameter("selectedGroups"));
-          } else {
-            session.setSelectedGroupId(request.getParameter("selectedGroup"));
-          }
-        } else {
-          if (selectionMultiple) {
-            session.setSelectedUserIds(request.getParameter("selectedUsers"));
-          } else {
-            session.setSelectedUserId(request.getParameter("selectedUser"));
-          }
-        }
-        return session.initSelectionPeas(selectionMultiple, instanceId, roles);
-      } else if (function.equals("close")) {
-        session.getSelectionPeasSelection();
-        request.setAttribute("formName", session.getFormName());
-        request.setAttribute("elementId", session.getElementId());
-        request.setAttribute("elementName", session.getElementName());
-
-        if (session.isGroupSelectable()) {
-          if (session.getSelection().isMultiSelect()) {
-            request.setAttribute("groups", session.getSelectedGroups());
-            return "/selectionPeas/jsp/closeWrapperMultiple.jsp";
-          } else {
-            request.setAttribute("group", session.getSelectedGroup());
-            return "/selectionPeas/jsp/closeWrapper.jsp";
-          }
-        } else {
-          if (session.getSelection().isMultiSelect()) {
-            request.setAttribute("users", session.getSelectedUsers());
-            return "/selectionPeas/jsp/closeWrapperMultiple.jsp";
-          } else {
-            request.setAttribute("user", session.getSelectedUser());
-            return "/selectionPeas/jsp/closeWrapper.jsp";
-          }
-        }
-
-      } else {
-        return "/admin/jsp/errorpageMain.jsp";
+      String destination = null;
+      if ("open".equals(function)) {
+        destination = openUserGroupPanel(request, controller);
+      } else if ("close".equals(function)) {
+        destination = closeUserGroupPanel(request, controller);
       }
+      return defaultStringIfNotDefined(destination, ERROR_PAGE_PATH);
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
-      return "/admin/jsp/errorpageMain.jsp";
+      return ERROR_PAGE_PATH;
     }
   }
 
-  private List<String> getRoles(String param) {
-    if (StringUtil.isDefined(param)) {
-      return Arrays.asList(StringUtil.split(param, ","));
+  public String openUserGroupPanel(final HttpRequest request,
+      final SelectionPeasWrapperSessionController controller) {
+    controller.setFormName(request.getParameter("formName"));
+    controller.setElementId(request.getParameter("elementId"));
+    controller.setElementName(request.getParameter("elementName"));
+    boolean selectionMultiple = request.getParameterAsBoolean("selectionMultiple");
+    boolean selectedUserLimit = request.getParameterAsBoolean("selectedUserLimit");
+    String instanceId = request.getParameter("instanceId");
+    List<String> roles = request.getParameterAsList("roles");
+    boolean showDeactivated = request.getParameterAsBoolean("showDeactivated");
+
+    controller.setSelectable(request.getParameter("selectable"));
+    controller.setDomainIdFilter(request.getParameter("domainIdFilter"));
+
+    if (controller.isGroupSelectable()) {
+      if (selectionMultiple) {
+        controller.setSelectedGroupIds(request.getParameter("selectedGroups"));
+      } else {
+        controller.setSelectedGroupId(request.getParameter("selectedGroup"));
+      }
     }
-    return new ArrayList<String>();
+    if (controller.isUserSelectable()) {
+      if (selectionMultiple) {
+        controller.setSelectedUserIds(request.getParameter("selectedUsers"));
+      } else {
+        controller.setSelectedUserId(request.getParameter("selectedUser"));
+      }
+    }
+    return controller.initSelectionPeas(selectionMultiple, instanceId, roles, showDeactivated,
+        selectedUserLimit);
   }
 
+  public String closeUserGroupPanel(final HttpRequest request,
+      final SelectionPeasWrapperSessionController controller) {
+    controller.getSelectionPeasSelection();
+    request.setAttribute("formName", controller.getFormName());
+    request.setAttribute("elementId", controller.getElementId());
+    request.setAttribute("elementName", controller.getElementName());
+
+    if (controller.isGroupSelectable()) {
+      if (controller.getSelection().isMultiSelect()) {
+        request.setAttribute("groups", controller.getSelectedGroups());
+        return "/selectionPeas/jsp/closeWrapperMultiple.jsp";
+      } else {
+        request.setAttribute("group", controller.getSelectedGroup());
+        return "/selectionPeas/jsp/closeWrapper.jsp";
+      }
+    }
+    if (controller.isUserSelectable()) {
+      if (controller.getSelection().isMultiSelect()) {
+        request.setAttribute("users", controller.getSelectedUsers());
+        return "/selectionPeas/jsp/closeWrapperMultiple.jsp";
+      } else {
+        request.setAttribute("user", controller.getSelectedUser());
+        return "/selectionPeas/jsp/closeWrapper.jsp";
+      }
+    }
+    return null;
+  }
 }

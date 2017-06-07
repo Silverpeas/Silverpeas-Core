@@ -180,10 +180,15 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     }
 
     if (criteria.isCriterionOnNameSet()) {
-      String normalizedName =
-          criteria.getCriterionOnName().replaceAll("'", "''").replaceAll("\\*", "%");
-      query.and("(lower(st_user.firstName) like lower(?) OR lower(st_user.lastName) like lower(?))",
-          normalizedName, normalizedName);
+      String normalizedName = criteria.getCriterionOnName().replaceAll("'", "''");
+      if (normalizedName.contains("%")) {
+        query.and("(lower(st_user.firstName || st_user.lastName) like lower(?))", normalizedName);
+      } else {
+        normalizedName = normalizedName.replaceAll("\\*", "%");
+        query.and(
+            "(lower(st_user.firstName) like lower(?) OR lower(st_user.lastName) like lower(?))",
+            normalizedName, normalizedName);
+      }
     }
 
     if (criteria.isCriterionOnUserIdsSet()) {

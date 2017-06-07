@@ -69,6 +69,25 @@
       return params;
     };
 
+    var _performQTip = function(element, content, options, qtipOptions) {
+      var contentType = typeof content;
+      if (contentType !== 'undefined' && contentType !== 'string' && contentType !== 'function') {
+        qtipOptions.content = jQuery(content);
+      }
+      if (options && options.style && typeof options.style.classes === 'string') {
+        qtipOptions.style.classes = qtipOptions.style.classes + ' ' + options.style.classes;
+      }
+      if (options && options.position) {
+        if (typeof options.position.target === 'string') {
+          qtipOptions.position = {target : options.position.target};
+          qtipOptions.position.adjust = options.position.adjust;
+        } else {
+          qtipOptions.position = extendsObject(qtipOptions.position, options.position);
+        }
+      }
+      return jQuery(element).qtip(qtipOptions).qtip('api');
+    };
+
     /**
      * Displays as a simple way an help represented as a tip.
      * @param element the element on which the qtip must be applied.
@@ -85,7 +104,7 @@
           text : message
         }
       }));
-      jQuery(element).qtip(qtipOptions);
+      return _performQTip(element, undefined, options, qtipOptions);
     };
 
     /**
@@ -104,7 +123,126 @@
           text : message
         }
       }));
-      jQuery(element).qtip(qtipOptions);
+      return _performQTip(element, undefined, options, qtipOptions);
+    };
+
+    /**
+     * Displays a simple way information into represented as a tip.
+     * @param element the element on which the qtip must be applied.
+     * @param content the content.
+     * @param options TipManager options, see _computeParams private method.
+     */
+    this.simpleSelect = function(element, content, options) {
+      var params = options ? options : {};
+      var qtipOptions = _computeParams(extendsObject({
+        show : {
+          event : 'click'
+        },
+        hide : {
+          event : 'unfocus'
+        }
+      }, params, {
+        style : {
+          classes : "qtip-shadow qtip-light qtip-default-silverpeas qtip-select"
+        },
+        content : {
+          text : content
+        }
+      }));
+      qtipOptions.position = undefined;
+      return _performQTip(element, content, options, qtipOptions);
+    };
+
+    /**
+     * Displays a simple way information into represented as a tip.
+     * @param element the element on which the qtip must be applied.
+     * @param content the content.
+     * @param options TipManager options, see _computeParams private method.
+     */
+    this.simpleDetails = function(element, content, options) {
+      var params = options ? options : {};
+      var qtipOptions = _computeParams(extendsObject({
+        show : {
+          event : 'click'
+        },
+        hide : {
+          event : 'unfocus'
+        }
+      }, params, {
+        style : {
+          tip : true,
+          classes : "qtip-shadow qtip-bootstrap qtip-default-silverpeas qtip-details"
+        },
+        content : {
+          text : content
+        },
+        position : {
+          adjust : {
+            method : "none"
+          },
+          my : "bottom left",
+          at : "top left"
+        }
+      }));
+      return _performQTip(element, content, options, qtipOptions);
+    };
+
+    /**
+     * Displays a drop up popin as a tip.
+     * @param element the element on which the qtip must be applied.
+     * @param content the content.
+     * @param options TipManager options, see _computeParams private method.
+     */
+    this.dropDown = function(element, content, options) {
+      var params = options ? options : {};
+      var qtipOptions = _computeParams(extendsObject({
+        show : {
+          event : 'none'
+        },
+        hide : {
+          event : 'unfocus'
+        }
+      }, params, {
+        style : {
+          tip : false,
+          classes : "qtip-shadow qtip-bootstrap qtip-drop-down-silverpeas qtip-details"
+        },
+        content : {
+          text : content
+        },
+        position : {
+          adjust : {
+            method : "flip"
+          },
+          my : "top left",
+          at : "bottom left"
+        }
+      }));
+      return _performQTip(element, content, options, qtipOptions);
+    };
+
+    /**
+     * Destroys all qTip representations belonging to the selected elements.
+     * @param selector the CSS selector.
+     */
+    this.destroyAll = function(selector) {
+      jQuery(selector).qtip('destroy', true);
+    };
+
+    /**
+     * Hides all qTip representations belonging to the selected elements.
+     * @param selector the CSS selector.
+     */
+    this.hideAll = function(selector) {
+      jQuery(selector).qtip('toggle', false);
+    };
+
+    /**
+     * Shows all qTip representations belonging to the selected elements.
+     * @param selector the CSS selector.
+     */
+    this.showAll = function(selector) {
+      jQuery(selector).qtip('toggle', true);
     };
   };
 })();

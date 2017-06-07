@@ -31,17 +31,8 @@
 <%
 	String roles = "";
 	String usersOfInstanceOnlyChecked = "";
-	String rows = "";
-	String cols = "";
 
 	if (field != null) {
-		if (parameters.containsKey("rows")) {
-			rows = parameters.get("rows");
-		}
-
-		if (parameters.containsKey("cols")) {
-			cols = parameters.get("cols");
-		}
 
 		roles = parameters.get("roles");
 		if (!StringUtil.isDefined(roles)) {
@@ -67,11 +58,5 @@
 </tr>
 <tr>
 <td class="txtlibform" width="170px"><%=resource.getString("templateDesigner.displayer.roles")%> :</td><td><input type="text" name="Param_roles" value="<%=roles%>" /></td>
-</tr>
-<tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.rows")%> :</td><td><input type="text" name="Param_rows" value="<%=rows%>" size="5" maxLength="3"/></td>
-</tr>
-<tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.cols")%> :</td><td><input type="text" name="Param_cols" value="<%=cols%>" size="5" maxLength="3"/></td>
 </tr>
 <%@ include file="includeBottomField.jsp" %>

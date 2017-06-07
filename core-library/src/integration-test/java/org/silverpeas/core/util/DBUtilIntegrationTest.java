@@ -258,8 +258,6 @@ public class DBUtilIntegrationTest {
   }
 
   @Test
-  @Ignore
-  // TODO This test fails to often in jenkins. Enable it again once it is correctly fixed
   public void nextUniqueIdUpdateForAnExistingTablesShouldWorkAndConcurrency() throws Exception {
     long startTime = System.currentTimeMillis();
     try {

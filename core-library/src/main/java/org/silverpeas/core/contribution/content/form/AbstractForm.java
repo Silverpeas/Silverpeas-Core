@@ -188,7 +188,8 @@ public abstract class AbstractForm implements Form {
                 out.append("	field = document.getElementById(\"").append(currentFieldName).append("\");\n");
                 out.append("	if (field == null) {\n");
                 // try to find field by name
-                out.append("  field = $(\"input[name=").append(currentFieldName).append("]\");\n");
+                out.append("  var $field = $(\"input[name=").append(currentFieldName).append("]\");\n");
+                out.append("  field = $field.length ? $field[0] : null;\n");
                 out.println("}");
                 out.append(" if (field != null) {\n");
                 fieldDisplayer.displayScripts(out, fieldTemplate, pc);

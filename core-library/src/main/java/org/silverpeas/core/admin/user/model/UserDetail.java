@@ -762,19 +762,12 @@ public class UserDetail implements User {
     return invitation;
   }
 
-  /**
-   * Indicates if a limitation exists about the number of receivers the user can notify manually.
-   * @return true if the limitation exists, false otherwise.
-   */
+  @Override
   public boolean isUserManualNotificationUserReceiverLimit() {
     return getUserManualNotificationUserReceiverLimitValue() > 0;
   }
 
-  /**
-   * Gets the maximum user receivers the user can notify manually.
-   * @return the maximum user receivers the user can notify manually. If the value is not greater
-   * than 0, the user is not limited.
-   */
+  @Override
   public int getUserManualNotificationUserReceiverLimitValue() {
     int limit = 0;
     if (isUserManualNotificationRecipientLimitEnabled() && (isAccessUser() || isAccessGuest() ||

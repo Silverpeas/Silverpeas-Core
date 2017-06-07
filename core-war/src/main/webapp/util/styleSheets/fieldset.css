@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -21,7 +21,7 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**mise en page g�n�rale pour les fieldset & formulaire de ce genre **/
+/**mise en page générale pour les fieldset & formulaire de ce genre **/
 
 
 form {
@@ -148,8 +148,22 @@ padding-right:0;
 }
 
 .champs input, .champs select, .champs textarea {
-	width:90%;
-	margin:0;
+  width: 90%;
+  margin: 0;
+}
+
+.champs .select-user-group-container,
+.champs .select-user-group-container .search-input-container,
+.field .select-user-group-container,
+.field .select-user-group-container .search-input-container {
+  width: 100%;
+  margin: 0;
+}
+
+.champs .select-user-group-container .search-input-container .selectize-control,
+.field .select-user-group-container .search-input-container .selectize-control {
+  width: 90%;
+  background: #FFF;
 }
 
 .champs input[type="checkbox"] {
@@ -222,18 +236,13 @@ input.inputHour{
   float:none;
 }
 
-.skinFieldset .forms .fields .fieldInput {
-  display: block;
-  margin-left: 195px;
-}
-
 .cell .skinFieldset .forms .fields .fieldInput {
-    display: inline-block;
-    margin-left: 0;
+  display: inline-block;
+  margin-left: 0;
 }
 
-.skinFieldset .forms .fields .fieldInput select{
-  max-width:200px;
+.skinFieldset .forms .fields .fieldInput select {
+  max-width: 200px;
 }
 
 /* Notifications  */
@@ -242,11 +251,6 @@ input.inputHour{
 }
 #send-notification #recipientsArea, #subjectArea, #messageArea {
   width: 98%;
-}
-#send-notification #recipientsArea ul.tagit {
-	width:90%;
-	display:inline-block;
-	margin-bottom:0;
 }
 #send-notification #recipientsArea img {
   vertical-align:baseline;

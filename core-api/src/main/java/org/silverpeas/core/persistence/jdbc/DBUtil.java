@@ -42,6 +42,8 @@ import java.util.UUID;
 
 public class DBUtil {
 
+  private static final int MAX_NB_ATTEMPT = 100;
+
   /**
    * @return the DateFieldLength
    */
@@ -140,7 +142,7 @@ public class DBUtil {
   public static int getNextId(final String identifierName, final String tableFieldIdentifierName)
       throws SQLException {
     final String identifierNameLowerCase = identifierName.toLowerCase(Locale.ROOT);
-    for (int nbAttempts = 0; ; nbAttempts++) {
+    for (int nbAttempts = 0; nbAttempts < MAX_NB_ATTEMPT; nbAttempts++) {
 
       // Getting the next unique identifier value from uniqueId table
       Integer nextUniqueMaxId = nextUniqueIdentifierValue(identifierNameLowerCase);
@@ -155,13 +157,10 @@ public class DBUtil {
         // The next identifier value has been well computed
         return nextUniqueMaxId;
       }
-
-      if (nbAttempts > 2) {
-        throw new SilverpeasRuntimeException(
-            "computing of next id not possible for " + identifierName + " with " +
-                tableFieldIdentifierName + "primary key");
-      }
     }
+    throw new SilverpeasRuntimeException(
+        "computing of next id not possible for " + identifierName + " with " +
+            tableFieldIdentifierName + "primary key");
   }
 
   /**

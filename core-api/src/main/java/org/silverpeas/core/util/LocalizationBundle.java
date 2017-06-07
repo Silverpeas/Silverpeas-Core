@@ -185,7 +185,7 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
     }
   }
 
-  public String getStringWithParams(String resName, String... params) {
+  public String getStringWithParams(String resName, Object... params) {
     String msgPattern = getString(resName);
     return MessageFormat.format(msgPattern, params);
   }

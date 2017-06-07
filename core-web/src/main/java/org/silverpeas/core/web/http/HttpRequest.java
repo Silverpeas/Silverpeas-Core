@@ -45,6 +45,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -52,8 +53,11 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import static java.util.Arrays.asList;
 import static java.util.Arrays.stream;
+import static org.apache.commons.lang3.StringUtils.split;
 
 /**
  * An HTTP request decorating an HTTP servlet request with some additional methods and by changing
@@ -387,6 +391,23 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   /**
+   * Get a parameter value as a {@link List} of string.
+   *
+   * @param parameterName the name of the parameter.
+   * @return the value of the parameter as a {@link List} of string.
+   */
+  public List<String> getParameterAsList(String parameterName) {
+    String[] values = getParameterMap().get(parameterName);
+    if (values == null) {
+      values = new String[0];
+    }
+    if (values.length == 1) {
+      return asList(split(values[0], ","));
+    }
+    return Arrays.stream(values).collect(Collectors.toList());
+  }
+
+  /**
    * Get a parameter value as a {@link RequestFile}.
    *
    * @param parameterName the name of the parameter.
@@ -412,6 +433,17 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   /**
+   * Get a parameter value as a list of boolean.
+   *
+   * @param parameterName the name of the parameter.
+   * @return the value of the parameter as a list of boolean.
+   */
+  public List<Boolean> getParameterAsBooleanList(String parameterName) {
+    return getParameterAsList(parameterName).stream().map(this::asBoolean)
+        .collect(Collectors.toList());
+  }
+
+  /**
    * Get a parameter value as a Long.
    *
    * @param parameterName the name of the parameter.
@@ -419,6 +451,17 @@ public class HttpRequest extends HttpServletRequestWrapper {
    */
   public Long getParameterAsLong(String parameterName) {
     return asLong(getParameter(parameterName));
+  }
+
+  /**
+   * Get a parameter value as a list of long.
+   *
+   * @param parameterName the name of the parameter.
+   * @return the value of the parameter as a list of long.
+   */
+  public List<Long> getParameterAsLongList(String parameterName) {
+    return getParameterAsList(parameterName).stream().map(this::asLong)
+        .collect(Collectors.toList());
   }
 
   /**
@@ -432,6 +475,17 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   /**
+   * Get a parameter value as a list of integer.
+   *
+   * @param parameterName the name of the parameter.
+   * @return the value of the parameter as a list of integer.
+   */
+  public List<Integer> getParameterAsIntegerList(String parameterName) {
+    return getParameterAsList(parameterName).stream().map(this::asInteger)
+        .collect(Collectors.toList());
+  }
+
+  /**
    * Get a date from a date parameter.
    *
    * @param dateParameterName the name of the parameter.
@@ -440,6 +494,22 @@ public class HttpRequest extends HttpServletRequestWrapper {
    */
   public Date getParameterAsDate(String dateParameterName) throws ParseException {
     return asDate(getParameter(dateParameterName), null);
+  }
+
+  /**
+   * Get a parameter value as a list of date.
+   *
+   * @param dateParameterName the name of the parameter.
+   * @return the value of the parameter as a list of date.
+   */
+  public List<Date> getParameterAsDateList(String dateParameterName) {
+    return getParameterAsList(dateParameterName).stream().map(p -> {
+      try {
+        return asDate(p, null);
+      } catch (ParseException e) {
+        throw new SilverpeasRuntimeException(e);
+      }
+    }).collect(Collectors.toList());
   }
 
   /**
@@ -465,6 +535,18 @@ public class HttpRequest extends HttpServletRequestWrapper {
    */
   public <E extends Enum> E getParameterAsEnum(String enumValue, Class<E> enumClass) {
     return asEnum(getParameter(enumValue), enumClass);
+  }
+
+  /**
+   * Get a parameter value as a list of enum.
+   *
+   * @param parameterName the name of the parameter.
+   * @param enumClass the class of the expected enum instance.
+   * @return the value of the parameter as a list of enum.
+   */
+  public <E extends Enum> List<E> getParameterAsEnumList(String parameterName, Class<E> enumClass) {
+    return getParameterAsList(parameterName).stream().map(p -> asEnum(p, enumClass))
+        .collect(Collectors.toList());
   }
 
   private <T> boolean asBoolean(T object) {

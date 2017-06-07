@@ -27,6 +27,7 @@ import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.chat.servers.ChatServer;
@@ -734,15 +735,39 @@ public class JavascriptPluginInclusion {
   }
 
   /**
+   * Includes the Silverpeas Plugin that handles complex item selection.
+   * @return the completed parent container.
+   */
+  public static ElementContainer includeSelectize(final ElementContainer xhtml) {
+    xhtml.addElement(link(STYLESHEET_PATH + "selectize.css"));
+    xhtml.addElement(link(STYLESHEET_PATH + "silverpeas-selectize.css"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "selectize.min.js"));
+    return xhtml;
+  }
+
+  /**
    * Includes the Silverpeas Plugin that handles list of users and groups.
    * @return the completed parent container.
    */
   public static ElementContainer includeListOfUsersAndGroups(final ElementContainer xhtml,
       final String language) {
+    LocalizationBundle bundle = ResourceLocator.getLocalizationBundle(
+        "org.silverpeas.notificationManager.multilang.notificationManagerBundle", language);
+    final int userManualNotificationUserReceiverLimitValue =
+        User.getCurrentRequester().getUserManualNotificationUserReceiverLimitValue();
+    includeSelectize(xhtml);
     includePopup(xhtml);
+    includeQTip(xhtml);
+    xhtml.addElement(scriptContent(JavascriptSettingProducer
+        .settingVariableName("UserGroupListSettings")
+        .add("u.m.n.u.r.l.v", userManualNotificationUserReceiverLimitValue)
+        .add("d.r", User.getCurrentRequester().isDomainRestricted())
+        .add("d.nb", OrganizationController.get().getAllDomains().length)
+        .produce()));
     xhtml.addElement(scriptContent(JavascriptBundleProducer
         .bundleVariableName("UserGroupListBundle")
         .add(ResourceLocator.getGeneralLocalizationBundle(language),
+            "GML.user_s",
             "GML.delete",
             "GML.deleteAll",
             "GML.action.remove",
@@ -753,6 +778,9 @@ public class JavascriptPluginInclusion {
             "GML.modify",
             "GML.action.select",
             "GML.list.changed.message")
+        .add("n.m.r.l.m.w", bundle
+            .getStringWithParams("notif.manual.receiver.limit.message.warning",
+                userManualNotificationUserReceiverLimitValue))
         .produce()));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_LIST_OF_USERS_AND_GROUPS_JS));
     return xhtml;
