@@ -38,14 +38,18 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
  */
 public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
 
-  public ComponentInstanceTable() {
-    super("ST_ComponentInstance");
-  }
-
   private static final String INSTANCE_COLUMNS =
       "id,spaceId,name,componentName,description,createdBy,orderNum,createTime,updateTime," +
           "removeTime,componentStatus,updatedBy,removedBy,isPublic,isHidden,lang," +
           "isInheritanceBlocked";
+  private static final String SELECT = "select ";
+  private static final String SELECT_INSTANCE_BY_ID =
+      SELECT + INSTANCE_COLUMNS + " from ST_ComponentInstance where id = ?";
+  private static final String DELETE_INSTANCE = "delete from ST_ComponentInstance where id = ?";
+
+  public ComponentInstanceTable() {
+    super("ST_ComponentInstance");
+  }
 
   /**
    * Fetch the current instance row from a resultSet.
@@ -103,10 +107,6 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   public ComponentInstanceRow getComponentInstance(int id) throws SQLException {
     return getUniqueRow(SELECT_INSTANCE_BY_ID, id);
   }
-
-  public static final String SELECT = "select ";
-  private static final String SELECT_INSTANCE_BY_ID =
-      SELECT + INSTANCE_COLUMNS + " from ST_ComponentInstance where id = ?";
 
   /**
    * Returns the ComponentInstance of a given user role.
@@ -400,8 +400,6 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     schema.instanceData().removeInstanceData(id);
     updateRelation(DELETE_INSTANCE, id);
   }
-
-  private static final String DELETE_INSTANCE = "delete from ST_ComponentInstance where id = ?";
 
   /**
    * Fetch the current space row from a resultSet.

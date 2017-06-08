@@ -316,7 +316,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws SQLException
    * @throws AdminException
    */
-  public void addUserInUserRole(int userId, int userRoleId) throws SQLException, AdminException {
+  public void addUserInUserRole(int userId, int userRoleId) throws SQLException {
     if (isUserDirectlyInRole(userId, userRoleId)) {
       return;
     }
@@ -413,10 +413,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
       return;
     }
 
-    GroupRow group = OrganizationSchema.get().group().getGroup(groupId);
-    if (group == null) {
-      throw new SQLException(unknown("group", String.valueOf(groupId)));
-    }
+    checkGroupExistence(groupId);
 
     UserRoleRow userRole = getUserRole(userRoleId);
     if (userRole == null) {

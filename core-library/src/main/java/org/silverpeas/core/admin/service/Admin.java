@@ -99,6 +99,7 @@ import java.sql.Connection;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants
@@ -120,6 +121,8 @@ class Admin implements Administration {
    * Silverpeas.
    */
   private static final String ADMIN_ID = "0";
+  public static final String ADMIN_DELETE_USER = "Admin.deleteUser()";
+  public static final String REMOVE_OF = "Suppression de ";
 
   // Divers
   private final Object semaphore = new Object();
@@ -136,7 +139,6 @@ class Admin implements Administration {
   private SynchroDomainScheduler domainSynchroScheduler = null;
   private SettingBundle roleMapping = null;
   private boolean useProfileInheritance = false;
-  private transient boolean cacheLoaded = false;
 
   @Inject
   private WAComponentRegistry componentRegistry;
@@ -209,7 +211,6 @@ class Admin implements Administration {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }
-    cacheLoaded = true;
   }
 
   @Override
@@ -239,20 +240,16 @@ class Admin implements Administration {
     domainSynchroScheduler.initialize(domainSynchroCron, synchroDomainIds);
 
     // init synchronization of groups
-    GroupDetail[] groups = null;
+    List<GroupDetail> groups = null;
     try {
       groups = getSynchronizedGroups();
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e);
     }
-    List<String> synchronizedGroupIds = new ArrayList<>();
-    if (groups != null) {
-      for (GroupDetail group : groups) {
-        if (group.isSynchronized()) {
-          synchronizedGroupIds.add(group.getId());
-        }
-      }
-    }
+    List<String> synchronizedGroupIds = groups.stream()
+        .filter(GroupDetail::isSynchronized)
+        .map(GroupDetail::getId)
+        .collect(Collectors.toList());
     groupSynchroScheduler = new SynchroGroupScheduler();
     groupSynchroScheduler.initialize(groupSynchroCron, synchronizedGroupIds);
   }
@@ -397,7 +394,7 @@ class Admin implements Administration {
 
         // delete the space profiles instance
         for (int nI = 0; nI < spaceInst.getNumSpaceProfileInst(); nI++) {
-          deleteSpaceProfileInst(spaceInst.getSpaceProfileInst(nI).getId(), false);
+          deleteSpaceProfileInst(spaceInst.getSpaceProfileInst(nI).getId());
         }
 
         // Delete the components
@@ -442,7 +439,7 @@ class Admin implements Administration {
   private void deleteSpaceProfiles(SpaceInst spaceInst) throws AdminException {
     // delete the space profiles
     for (int nI = 0; nI < spaceInst.getNumSpaceProfileInst(); nI++) {
-      deleteSpaceProfileInst(spaceInst.getSpaceProfileInst(nI).getId(), false);
+      deleteSpaceProfileInst(spaceInst.getSpaceProfileInst(nI).getId());
     }
 
     // delete the components profiles
@@ -616,7 +613,7 @@ class Admin implements Administration {
         // suppression des droits hérités de l'espace
         List<SpaceProfileInst> inheritedProfiles = space.getInheritedProfiles();
         for (SpaceProfileInst profile : inheritedProfiles) {
-          deleteSpaceProfileInst(profile.getId(), false);
+          deleteSpaceProfileInst(profile.getId());
         }
       } else {
         // Héritage des droits de l'espace
@@ -624,7 +621,7 @@ class Admin implements Administration {
         List<SpaceProfileInst> profiles = space.getProfiles();
         for (SpaceProfileInst profile : profiles) {
           if (profile != null && !profile.isManager()) {
-            deleteSpaceProfileInst(profile.getId(), false);
+            deleteSpaceProfileInst(profile.getId());
           }
         }
         if (!space.isRoot()) {
@@ -1260,7 +1257,7 @@ class Admin implements Administration {
         // inherited rights must be removed but local rights are preserved
         List<SpaceProfileInst> inheritedProfiles = space.getInheritedProfiles();
         for (SpaceProfileInst profile : inheritedProfiles) {
-          deleteSpaceProfileInst(profile.getId(), false);
+          deleteSpaceProfileInst(profile.getId());
         }
 
         if (!moveOnTop) {
@@ -1638,7 +1635,7 @@ class Admin implements Administration {
     }
   }
 
-  private String deleteSpaceProfileInst(String sSpaceProfileId, boolean startNewTransaction) throws
+  private String deleteSpaceProfileInst(String sSpaceProfileId) throws
       AdminException {
     return deleteSpaceProfileInst(sSpaceProfileId, null);
   }
@@ -1849,8 +1846,8 @@ class Admin implements Administration {
   }
 
   @Override
-  public String[] getAllGroupIds() throws AdminException {
-    return groupManager.getAllGroupIds();
+  public List<GroupDetail> getAllGroups() throws AdminException {
+    return groupManager.getAllGroups();
   }
 
   @Override
@@ -1930,11 +1927,11 @@ class Admin implements Administration {
         throw new AdminException(unknown("group", sGroupId));
       }
 
-      // Delete group managers
+      // Delete group profiles
       deleteGroupProfileInst(sGroupId);
 
       // Delete group itself
-      String sReturnGroupId = groupManager.deleteGroupById(group, onlyInSilverpeas);
+      String sReturnGroupId = groupManager.deleteGroup(group, onlyInSilverpeas);
       if (group.isSynchronized()) {
         groupSynchroScheduler.removeGroup(sGroupId);
       }
@@ -1990,29 +1987,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public AdminGroupInst[] getAdminOrganization() throws AdminException {
-    return groupManager.getAdminOrganization();
-  }
-
-  @Override
-  public String[] getAllSubGroupIds(String groupId) throws AdminException {
-    return groupManager.getAllSubGroupIds(groupId);
-  }
-
-  @Override
-  public String[] getAllSubGroupIdsRecursively(String groupId)
-      throws AdminException {
-    List<String> groupIds = groupManager.getAllSubGroupIdsRecursively(groupId);
-    return groupIds.toArray(new String[groupIds.size()]);
-  }
-
-  @Override
-  public String[] getAllRootGroupIds() throws AdminException {
-    return groupManager.getAllRootGroupIds();
-  }
-
-  @Override
-  public GroupDetail[] getAllRootGroups() throws AdminException {
+  public List<GroupDetail> getAllRootGroups() throws AdminException {
     return groupManager.getAllRootGroups();
   }
 
@@ -2331,22 +2306,22 @@ class Admin implements Administration {
         throw new AdminException(unknown("user", sUserId));
       }
 
-      SynchroDomainReport.info("Admin.deleteUser()",
-          "Suppression de " + user.getLogin() + " des groupes dans la base");
-      String[] groups = groupManager.getDirectGroupsOfUser(user.getId());
-      for (String groupId : groups) {
-        groupManager.removeUserFromGroup(user.getId(), groupId);
+      SynchroDomainReport.info(ADMIN_DELETE_USER,
+          REMOVE_OF + user.getLogin() + " des groupes dans la base");
+      List<GroupDetail> groups = groupManager.getDirectGroupsOfUser(user.getId());
+      for (GroupDetail group : groups) {
+        groupManager.removeUserFromGroup(user.getId(), group.getId());
       }
 
-      SynchroDomainReport.info("Admin.deleteUser()",
-          "Suppression de " + user.getLogin() + " en tant que manager d'espace dans la base");
+      SynchroDomainReport.info(ADMIN_DELETE_USER,
+          REMOVE_OF + user.getLogin() + " en tant que manager d'espace dans la base");
       String[] profiles =
           spaceProfileManager.getSpaceProfileIdsOfUserType(user.getId());
       for (String profileId : profiles) {
         spaceProfileManager.removeUserFromSpaceProfileInst(user.getId(), profileId);
       }
 
-      SynchroDomainReport.info("Admin.deleteUser()",
+      SynchroDomainReport.info(ADMIN_DELETE_USER,
           "Delete " + user.getLogin() + " from user favorite space table");
       UserFavoriteSpaceService ufsDAO =
           UserFavoriteSpaceServiceProvider.getUserFavoriteSpaceService();
@@ -2614,20 +2589,11 @@ class Admin implements Administration {
   }
 
   @Override
-  public GroupDetail[] getSynchronizedGroups() throws AdminException {
+  public List<GroupDetail> getSynchronizedGroups() throws AdminException {
     try {
       return groupManager.getSynchronizedGroups();
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("synchronized groups", ""), e);
-    }
-  }
-
-  @Override
-  public String[] getRootGroupIdsOfDomain(String domainId) throws AdminException {
-    try {
-      return groupManager.getRootGroupIdsOfDomain(domainId);
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("root groups of domain", domainId), e);
     }
   }
 
@@ -2737,20 +2703,11 @@ class Admin implements Administration {
   // QUERY FUNCTIONS
   // ---------------------------------------------------------------------------------------------
   @Override
-  public String[] getDirectGroupsIdsOfUser(String userId) throws AdminException {
+  public List<GroupDetail> getDirectGroupsOfUser(String userId) throws AdminException {
     try {
       return groupManager.getDirectGroupsOfUser(userId);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("direct groups of user", userId), e);
-    }
-  }
-
-  @Override
-  public GroupDetail[] searchGroups(GroupDetail modelGroup, boolean isAnd) throws AdminException {
-    try {
-      return groupManager.searchGroups(modelGroup, isAnd);
-    } catch (Exception e) {
-      throw new AdminException("Fail to search groups", e);
     }
   }
 
@@ -3636,8 +3593,14 @@ class Admin implements Administration {
 
   @Override
   public GroupDetail[] getAllSubGroups(String parentGroupId) throws AdminException {
-    String[] theIds = groupManager.getAllSubGroupIds(parentGroupId);
-    return getGroups(theIds);
+    List<GroupDetail> subgroups = groupManager.getSubGroups(parentGroupId);
+    return subgroups.toArray(new GroupDetail[subgroups.size()]);
+  }
+
+  @Override
+  public GroupDetail[] getRecursivelyAllSubGroups(String parentGroupId) throws AdminException {
+    List<GroupDetail> subgroups = groupManager.getRecursivelySubGroups(parentGroupId);
+    return subgroups.toArray(new GroupDetail[subgroups.size()]);
   }
 
   @Override
@@ -3886,6 +3849,10 @@ class Admin implements Administration {
         SynchroGroupReport.warn("admin.synchronizeGroup",
             "Ajout de " + newUsers.size() + " utilisateur(s)");
         if (!newUsers.isEmpty()) {
+          SynchroGroupReport.debug("admin.synchronizeGroup()",
+              () -> "Ajout de l'utilisateur d'ID " +
+                  newUsers.stream().collect(Collectors.joining(", ")) + " dans le groupe d'ID " +
+                  groupId);
           groupManager.addUsersInGroup(newUsers, groupId);
         }
 
@@ -3898,9 +3865,9 @@ class Admin implements Administration {
                 .info("admin.synchronizeGroup", "Suppression de l'utilisateur " + actualUserId);
           }
         }
-        SynchroGroupReport.warn("admin.synchronizeGroup", "Suppression de " + removedUsers.size()
+        SynchroGroupReport.warn("admin.synchronizeGroup", REMOVE_OF + removedUsers.size()
             + " utilisateur(s)");
-        if (removedUsers.size() > 0) {
+        if (!removedUsers.isEmpty()) {
           groupManager.removeUsersFromGroup(removedUsers, groupId);
         }
       } catch (Exception e) {
@@ -4116,17 +4083,16 @@ class Admin implements Administration {
           theUserDetail.getSpecificId());
       List<String> incGroupsId = translateGroupIds(theUserDetail.getDomainId(),
           incGroupsSpecificId, recurs);
-      String[] oldGroupsId = groupManager.getDirectGroupsOfUser(userId);
-      for (String oldGroupId : oldGroupsId) {
-        if (incGroupsId.contains(oldGroupId)) { // No changes have to be
+      List<GroupDetail> oldGroups = groupManager.getDirectGroupsOfUser(userId);
+      for (GroupDetail oldGroup : oldGroups) {
+        if (incGroupsId.contains(oldGroup.getId())) { // No changes have to be
           // performed to the group -> Remove it
-          incGroupsId.remove(oldGroupId);
+          incGroupsId.remove(oldGroup.getId());
         } else {
-          GroupDetail grpToRemove = groupManager.getGroup(oldGroupId);
-          if (theUserDetail.getDomainId().equals(grpToRemove.getDomainId())) {
+          if (theUserDetail.getDomainId().equals(oldGroup.getDomainId())) {
             // Remove the user from this group
-            groupManager.removeUserFromGroup(userId, oldGroupId);
-            cache.opRemoveUserFromGroup(userId, oldGroupId);
+            groupManager.removeUserFromGroup(userId, oldGroup.getId());
+            cache.opRemoveUserFromGroup(userId, oldGroup.getId());
           }
         }
       }
@@ -4237,7 +4203,7 @@ class Admin implements Administration {
         // Get all users of the domain from Silverpeas
         UserDetail[] silverpeasUDs = userManager.getAllUsersInDomain(sDomainId);
         HashMap<String, String> userIdsMapping = getUserIdsMapping(silverpeasUDs);
-        sReport += "\n" + synchronizeGroups(sDomainId, userIdsMapping, fromTimeStamp, toTimeStamp);
+        sReport += "\n" + synchronizeGroups(sDomainId, userIdsMapping);
 
         // All the synchro is finished -> set the new timestamp
         // ----------------------------------------------------
@@ -4471,7 +4437,8 @@ class Admin implements Administration {
   }
 
   private void processSpecificSynchronization(String domainId, Collection<UserDetail> usersAdded,
-      Collection<UserDetail> usersUpdated, Collection<UserDetail> usersRemoved) throws Exception {
+      Collection<UserDetail> usersUpdated, Collection<UserDetail> usersRemoved)
+      throws AdminException {
     Domain theDomain = domainDriverManager.getDomain(domainId);
     SettingBundle propDomainLdap = theDomain.getSettings();
     String nomClasseSynchro = propDomainLdap.getString("synchro.Class", null);
@@ -4503,8 +4470,8 @@ class Admin implements Administration {
   /**
    * Synchronize groups between cache and domain's datastore
    */
-  private String synchronizeGroups(String domainId, Map<String, String> userIds,
-      String fromTimeStamp, String toTimeStamp) throws Exception {
+  private String synchronizeGroups(String domainId, Map<String, String> userIds)
+      throws AdminException {
     boolean bFound;
     String specificId;
     String sReport = "GroupDetail synchronization : \n";
@@ -4522,7 +4489,7 @@ class Admin implements Administration {
       SynchroDomainReport.info("admin.synchronizeGroups", "Adding or updating groups in database...");
       // Check for new groups resursively
       sReport += checkOutGroups(domainId, silverpeasGroups, distantRootGroups, allDistantGroups,
-          userIds, null, iNbGroupsAdded, iNbGroupsMaj, iNbGroupsDeleted);
+          userIds, null, iNbGroupsAdded, iNbGroupsMaj);
 
       // Delete obsolete groups
       SynchroDomainReport.info("admin.synchronizeGroups", "Removing groups from database...");
@@ -4544,7 +4511,7 @@ class Admin implements Administration {
         // if found, do nothing, else delete
         if (!bFound) {
           try {
-            groupManager.deleteGroupById(silverpeasGroup, true);
+            groupManager.deleteGroup(silverpeasGroup, true);
             iNbGroupsDeleted++;
             sReport += "deleting group " + silverpeasGroup.getName() + "(id:" + specificId + ")\n";
             SynchroDomainReport.warn("admin.synchronizeGroups", "GroupDetail " + silverpeasGroup.getName()
@@ -4581,7 +4548,7 @@ class Admin implements Administration {
   // synchronization
   private String checkOutGroups(String domainId, GroupDetail[] existingGroups, GroupDetail[] testedGroups,
       Map<String, GroupDetail> allIncluededGroups, Map<String, String> userIds, String superGroupId,
-      int iNbGroupsAdded, int iNbGroupsMaj, int iNbGroupsDeleted) throws Exception {
+      int iNbGroupsAdded, int iNbGroupsMaj) throws AdminException {
     boolean bFound;
     String specificId;
     String silverpeasId = null;
@@ -4701,7 +4668,7 @@ class Admin implements Administration {
                 + specificId + "...");
             report += checkOutGroups(domainId, existingGroups, cleanSubGroups,
                 allIncluededGroups,
-                userIds, silverpeasId, iNbGroupsAdded, iNbGroupsMaj, iNbGroupsDeleted);
+                userIds, silverpeasId, iNbGroupsAdded, iNbGroupsMaj);
           }
         }
       }
@@ -4713,7 +4680,7 @@ class Admin implements Administration {
    * Remove cross reference risk between groups
    */
   private GroupDetail[] removeCrossReferences(GroupDetail[] subGroups, Map<String, GroupDetail> allIncluededGroups,
-      String fatherId) throws Exception {
+      String fatherId) {
     ArrayList<GroupDetail> cleanSubGroups = new ArrayList<>();
     //noinspection UnusedAssignment,UnusedAssignment,UnusedAssignment
     for (GroupDetail subGroup : subGroups) {
@@ -4756,43 +4723,6 @@ class Admin implements Administration {
   // -------------------------------------------------------------------------
   // For SelectionPeas
   // -------------------------------------------------------------------------
-
-  private List<String> getUserIdsForComponent(String componentId) throws AdminException {
-    List<String> userIds = new ArrayList<>();
-
-    ComponentInst component = getComponentInst(componentId);
-    if (component != null) {
-      if (component.isPublic()) {
-        // component is public, all users are allowed to access it
-        return Arrays.asList(getAllUsersIds());
-      } else {
-        List<ProfileInst> profiles = component.getAllProfilesInst();
-        for (ProfileInst profile : profiles) {
-          userIds.addAll(getUserIdsForComponentProfile(profile));
-        }
-      }
-    }
-
-    return userIds;
-  }
-
-  private List<String> getUserIdsForComponentProfile(ProfileInst profile) throws AdminException {
-    List<String> userIds = new ArrayList<>();
-
-    // add users directly attach to profile
-    userIds.addAll(profile.getAllUsers());
-
-    // add users indirectly attach to profile (groups attached to profile)
-    List<String> groupIds = profile.getAllGroups();
-    List<String> allGroupIds = new ArrayList<>();
-    for (String groupId : groupIds) {
-      allGroupIds.add(groupId);
-      allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(groupId));
-    }
-    userIds.addAll(userManager.getAllUserIdsInGroups(allGroupIds));
-
-    return userIds;
-  }
 
   @Override
   public ListSlice<UserDetail> searchUsers(final UserDetailsSearchCriteria searchCriteria) throws
@@ -4927,7 +4857,7 @@ class Admin implements Administration {
     if (searchCriteria.isCriterionOnDomainIdSet()) {
       String domainId = searchCriteria.getCriterionOnDomainId();
       if (searchCriteria.isCriterionOnMixedDomainIdSet()) {
-        criteria.onMixedDomainOronDomainId(domainId);
+        criteria.onMixedDomainOrOnDomainId(domainId);
       } else {
         criteria.onDomainId(domainId);
       }

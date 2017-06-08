@@ -502,7 +502,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
           PasteDetail.class, WAComponent.class, ComponentInst.class,
           ComponentInstLight.class, SpaceInst.class, SpaceInstLight.class, CompoSpace.class,
           QuotaException.class, ProfileInst.class, SpaceAndChildren.class, SpaceProfileInst.class,
-          Group.class, GroupProfileInst.class, AdminGroupInst.class, SearchCriteria.class,
+          Group.class, GroupProfileInst.class, SearchCriteria.class,
           UserDetailsSearchCriteria.class, GroupsSearchCriteria.class, DomainProperty.class);
       addClasses(RightRecover.class, AdminException.class);
       addPackages(true, "org.silverpeas.core.i18n");

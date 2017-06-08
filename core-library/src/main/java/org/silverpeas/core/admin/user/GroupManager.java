@@ -23,8 +23,11 @@ package org.silverpeas.core.admin.user;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.admin.persistence.GroupRow;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
+import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
+import org.silverpeas.core.admin.persistence.SpaceUserRoleTable;
+import org.silverpeas.core.admin.persistence.UserRoleRow;
+import org.silverpeas.core.admin.persistence.UserRoleTable;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.dao.GroupDAO;
@@ -32,13 +35,12 @@ import org.silverpeas.core.admin.user.dao.GroupSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.dao.SearchCriteriaDAOFactory;
 import org.silverpeas.core.admin.user.dao.UserDAO;
 import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
-import org.silverpeas.core.admin.user.model.AdminGroupInst;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.notification.GroupEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
@@ -65,6 +67,9 @@ public class GroupManager {
   public static final String GROUP_MANAGER_ADD_GROUP = "GroupManager.addGroup()";
   public static final String GROUP_MANAGER_UPDATE_GROUP = "GroupManager.updateGroup()";
   public static final String IN_GROUP = "in group ";
+  public static final String GROUP_MANAGER_DELETE_GROUP = "GroupManager.deleteGroup()";
+  public static final String REMOVING_MESSAGE = "Suppression de ";
+  public static final String IN_SILVERPEAS_MESSAGE = " dans la base";
   @Inject
   private GroupDAO groupDao;
   @Inject
@@ -76,10 +81,11 @@ public class GroupManager {
   @Inject
   private DomainDriverManager domainDriverManager;
 
-  /**
-   * Constructor
-   */
   protected GroupManager() {
+  }
+
+  public static GroupManager get() {
+    return ServiceProvider.getService(GroupManager.class);
   }
 
   /**
@@ -91,10 +97,7 @@ public class GroupManager {
    */
   public ListSlice<GroupDetail> getGroupsMatchingCriteria(final GroupSearchCriteriaForDAO criteria) throws
           AdminException {
-    Connection connection = null;
-    try {
-      connection = DBUtil.openConnection();
-
+    try (Connection connection = DBUtil.openConnection()){
       ListSlice<GroupDetail> groups = groupDao.getGroupsByCriteria(connection, criteria);
 
       String domainIdConstraint = null;
@@ -111,20 +114,17 @@ public class GroupManager {
         List<String> groupIds = getAllSubGroupIdsRecursively(group.getId());
         groupIds.add(group.getId());
         UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
-        Set<UserState> criterionOnUserStatesToExclude =
+        UserState[] criterionOnUserStatesToExclude =
             criteria.getCriterionOnUserStatesToExclude();
         int userCount = userDao.getUserCountByCriteria(connection, criteriaOnUsers.
             onDomainId(domainIdConstraint).
             onGroupIds(groupIds.toArray(new String[groupIds.size()])).
-            onUserStatesToExclude(criterionOnUserStatesToExclude
-                .toArray(new UserState[criterionOnUserStatesToExclude.size()])));
+            onUserStatesToExclude(criterionOnUserStatesToExclude));
         group.setTotalNbUsers(userCount);
       }
       return groups;
     } catch (Exception e) {
       throw new AdminException("Fail to search groups matching criteria", e);
-    } finally {
-      DBUtil.close(connection);
     }
   }
 
@@ -163,8 +163,8 @@ public class GroupManager {
    */
   public void addUserInGroup(String sUserId, String sGroupId) throws
           AdminException {
-    try {
-      organizationSchema.group().addUserInGroup(idAsInt(sUserId), idAsInt(sGroupId));
+    try (Connection connection = DBUtil.openConnection()) {
+      groupDao.addUserInGroup(connection, sUserId, sGroupId);
     } catch (Exception e) {
       throw new AdminException(failureOnAdding("user " + sUserId, IN_GROUP + sGroupId), e);
     }
@@ -172,10 +172,8 @@ public class GroupManager {
 
   public void addUsersInGroup(final List<String> userIds, final String groupId)
       throws AdminException {
-    try {
-      organizationSchema.group()
-          .addUsersInGroup(userIds.toArray(new String[userIds.size()]), Integer.parseInt(groupId),
-              false);
+    try (Connection connection = DBUtil.openConnection()) {
+      groupDao.addUsersInGroup(connection, userIds, groupId);
     } catch (SQLException e) {
       throw new AdminException(e.getMessage(), e);
     }
@@ -190,8 +188,10 @@ public class GroupManager {
    */
   public void removeUserFromGroup(String sUserId, String sGroupId)
           throws AdminException {
-    try {
-      organizationSchema.group().removeUserFromGroup(idAsInt(sUserId), idAsInt(sGroupId));
+    try (Connection connection = DBUtil.openConnection()) {
+      SynchroDomainReport.debug("GroupManager.removeUserFromGroup()",
+          "Retrait de l'utilisateur d'ID " + sUserId + " du groupe d'ID " + sGroupId);
+      groupDao.deleteUserInGroup(connection, sUserId, sGroupId);
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting("user " + sUserId, IN_GROUP + sGroupId), e);
     }
@@ -199,15 +199,22 @@ public class GroupManager {
 
   public void removeUsersFromGroup(final List<String> userIds, final String groupId)
       throws AdminException {
-
-    try {
-      organizationSchema.group()
-          .removeUsersFromGroup(userIds.toArray(new String[userIds.size()]),
-              Integer.parseInt(groupId), false);
+    try (Connection connection = DBUtil.openConnection()) {
+      for (String userId : userIds) {
+        groupDao.deleteUserInGroup(connection, userId, groupId);
+      }
     } catch (SQLException e) {
       throw new AdminException(
           failureOnDeleting("users " + userIds.stream().collect(Collectors.joining("n")),
               IN_GROUP + groupId), e);
+    }
+  }
+
+  public List<String> getDirectGroupIdsInSpaceRole(final String spaceRoleId) throws AdminException {
+    try(Connection connection = DBUtil.openConnection()) {
+      return groupDao.getDirectGroupIdsBySpaceUserRole(connection, spaceRoleId);
+    } catch (Exception e) {
+      throw new AdminException(failureOnGetting("groups in space role", spaceRoleId), e);
     }
   }
 
@@ -218,16 +225,10 @@ public class GroupManager {
    * @return
    * @throws AdminException
    */
-  public String[] getDirectGroupsOfUser(String sUserId) throws
+  public List<GroupDetail> getDirectGroupsOfUser(String sUserId) throws
           AdminException {
-    try {
-      GroupRow[] grs = organizationSchema.group().getDirectGroupsOfUser(idAsInt(sUserId));
-      // Convert GroupRow objects in GroupDetail Object
-      String[] groups = new String[grs.length];
-      for (int nI = 0; nI < grs.length; nI++) {
-        groups[nI] = idAsString(grs[nI].id);
-      }
-      return groups;
+    try (Connection connection = DBUtil.openConnection()) {
+      return groupDao.getDirectGroupsOfUser(connection, sUserId);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("direct groups of user", sUserId), e);
     }
@@ -243,9 +244,8 @@ public class GroupManager {
   public List<String> getAllGroupsOfUser(String userId) throws AdminException {
     Set<String> allGroupsOfUser = new HashSet<>();
 
-    String[] directGroupIds = getDirectGroupsOfUser(userId);
-    for (String directGroupId : directGroupIds) {
-      GroupDetail group = getGroupDetail(directGroupId);
+    List<GroupDetail> directGroups = getDirectGroupsOfUser(userId);
+    for (GroupDetail group : directGroups) {
       if (group != null) {
         allGroupsOfUser.add(group.getId());
         while (group != null && StringUtil.isDefined(group.getSuperGroupId())) {
@@ -270,71 +270,34 @@ public class GroupManager {
    */
   public String getGroupIdBySpecificIdAndDomainId(String sSpecificId,
           String sDomainId) throws AdminException {
-    try {
-      GroupRow gr = organizationSchema.group().getGroupBySpecificId(
-              idAsInt(sDomainId), sSpecificId);
-      return idAsString(gr.id);
+    try (Connection connection = DBUtil.openConnection()) {
+      GroupDetail gr = groupDao.getGroupBySpecificId(connection, sDomainId, sSpecificId);
+      return gr.getId();
     } catch (Exception e) {
       throw new AdminException(
           failureOnGetting("groups by specific id and domain", sSpecificId + "/" + sDomainId), e);
     }
   }
 
-  /**
-   * Get the all the groups id available in Silverpeas
-   *
-   * @return
-   * @throws AdminException
-   */
-  public String[] getAllGroupIds() throws AdminException {
-    try {
-      String[] asGroupIds = organizationSchema.group().getAllGroupIds();
-
-      if (asGroupIds != null) {
-        return asGroupIds;
-      }
-      return ArrayUtil.EMPTY_STRING_ARRAY;
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("all groups", ""), e);
-    }
-  }
-
-  /**
-   * Get the all the root groups id available in Silverpeas
-   *
-   * @return
-   * @throws AdminException
-   */
-  public String[] getAllRootGroupIds() throws AdminException {
-    try {
-      String[] asGroupIds = organizationSchema.group().getAllRootGroupIds();
-      if (asGroupIds != null) {
-        return asGroupIds;
-      }
-      return ArrayUtil.EMPTY_STRING_ARRAY;
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("all root groups", ""), e);
+  public List<GroupDetail> getAllGroups() throws AdminException {
+    try (Connection connection = DBUtil.openConnection()) {
+      return groupDao.getAllGroups(connection);
+    } catch (SQLException e) {
+      throw new AdminException(failureOnGetting("all", "groups"), e);
     }
   }
 
   /**
    * Gets all the root user groups in Silverpeas.
    *
-   * @return an array of root user groups.
+   * @return a list of root user groups.
    * @throws AdminException if an error occurs while getting the root groups.
    */
-  public GroupDetail[] getAllRootGroups() throws AdminException {
-    try {
-      GroupRow[] rows = organizationSchema.group().getAllRootGroups();
-      GroupDetail[] rootGroups;
-      if (rows != null) {
-        rootGroups = new GroupDetail[rows.length];
-        for (int i = 0; i < rows.length; i++) {
-          rootGroups[i] = groupRow2Group(rows[i]);
-          setDirectUsersOfGroup(rootGroups[i]);
-        }
-      } else {
-        rootGroups = new GroupDetail[0];
+  public List<GroupDetail> getAllRootGroups() throws AdminException {
+    try (Connection connection = DBUtil.openConnection()) {
+      List<GroupDetail> rootGroups = groupDao.getAllRootGroups(connection);
+      for (GroupDetail group : rootGroups) {
+        setDirectUsersOfGroup(group);
       }
       return rootGroups;
     } catch (Exception e) {
@@ -342,25 +305,31 @@ public class GroupManager {
     }
   }
 
-  /**
-   * Get the all the direct sub groups id of a given group
-   *
-   * @param superGroupId
-   * @return
-   * @throws AdminException
-   */
-  public String[] getAllSubGroupIds(String superGroupId) throws
-          AdminException {
-    try {
-      String[] asGroupIds = organizationSchema.group().getDirectSubGroupIds(idAsInt(
-              superGroupId));
-      if (asGroupIds != null) {
-        return asGroupIds;
-      }
-      return ArrayUtil.EMPTY_STRING_ARRAY;
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("all subgroups of group", superGroupId), e);
+  public List<GroupDetail> getSubGroups(final String groupId) throws AdminException {
+    try (Connection connection = DBUtil.openConnection()) {
+      return groupDao.getDirectSubGroups(connection, groupId);
+    } catch (SQLException e) {
+      throw new AdminException(failureOnGetting("all subgroups of group", groupId), e);
     }
+  }
+
+  public List<GroupDetail> getRecursivelySubGroups(final String groupId) throws AdminException {
+    try (Connection connection = DBUtil.openConnection()) {
+      return getRecursivelySubGroups(connection, groupId);
+    } catch (SQLException e) {
+      throw new AdminException(failureOnGetting("recursively all subgroups of group", groupId), e);
+    }
+  }
+
+  private List<GroupDetail> getRecursivelySubGroups(final Connection connection,
+      final String groupId) throws SQLException {
+    List<GroupDetail> subGroupsFlatTree = new ArrayList<>();
+    List<GroupDetail> groups = groupDao.getDirectSubGroups(connection, groupId);
+    for (GroupDetail group : groups) {
+      subGroupsFlatTree.add(group);
+      subGroupsFlatTree.addAll(getRecursivelySubGroups(connection, group.getId()));
+    }
+    return subGroupsFlatTree;
   }
 
   /**
@@ -372,12 +341,12 @@ public class GroupManager {
    */
   public List<String> getPathToGroup(String groupId) throws
           AdminException {
-    try {
+    try (Connection connection = DBUtil.openConnection()) {
       List<String> path = new ArrayList<>();
-      GroupRow superGroup = organizationSchema.group().getSuperGroup(idAsInt(groupId));
+      GroupDetail superGroup = groupDao.getSuperGroup(connection, groupId);
       while (superGroup != null) {
-        path.add(0, idAsString(superGroup.id));
-        superGroup = organizationSchema.group().getSuperGroup(superGroup.id);
+        path.add(0, superGroup.getId());
+        superGroup = groupDao.getSuperGroup(connection, superGroup.getId());
       }
 
       return path;
@@ -395,17 +364,8 @@ public class GroupManager {
    * @throws AdminException
    */
   public boolean isGroupExist(String sName) throws AdminException {
-    try {
-      // build GroupRow to search
-      GroupRow searchedGroup = new GroupRow();
-      searchedGroup.specificId = null;
-      searchedGroup.name = sName;
-      searchedGroup.description = null;
-
-      // search for group
-      GroupRow[] group = organizationSchema.group().getAllMatchingGroups(searchedGroup);
-
-      return (group.length > 0);
+    try (Connection connection = DBUtil.openConnection()) {
+      return groupDao.isGroupByNameExists(connection, sName);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all groups matching name", sName), e);
     }
@@ -457,7 +417,7 @@ public class GroupManager {
 
   private List<String> getSubGroupIds(Connection con, String groupId) throws SQLException {
     List<String> groupIds = new ArrayList<>();
-    List<GroupDetail> groups = groupDao.getSubGroups(con, groupId);
+    List<GroupDetail> groups = groupDao.getDirectSubGroups(con, groupId);
     for (GroupDetail group : groups) {
       groupIds.add(group.getId());
       groupIds.addAll(getSubGroupIds(con, group.getId()));
@@ -475,16 +435,14 @@ public class GroupManager {
    */
   public GroupDetail getGroupByNameInDomain(String sGroupName,
           String sDomainFatherId) throws AdminException {
-    try {
+    try (Connection connection = DBUtil.openConnection()) {
       GroupDetail group = domainDriverManager.getGroupByNameInDomain(sGroupName, sDomainFatherId);
 
       if (group != null) {
         String specificId = group.getSpecificId();
-        GroupRow gr = organizationSchema.group().getGroupBySpecificId(
-                idAsInt(sDomainFatherId),
-                specificId);
+        GroupDetail gr = groupDao.getGroupBySpecificId(connection, sDomainFatherId, specificId);
         if (gr != null) {
-          group.setId(idAsString(gr.id));
+          group.setId(gr.getId());
           // Get the selected users for this group
           setDirectUsersOfGroup(group);
         } else {
@@ -505,60 +463,23 @@ public class GroupManager {
    */
   public GroupDetail[] getRootGroupsOfDomain(String sDomainId) throws
           AdminException {
-    try {
-      // Get groups of domain from Silverpeas database
-      GroupRow[] grs = organizationSchema.group().getAllRootGroupsOfDomain(idAsInt(sDomainId));
-      // Convert GroupRow objects in GroupDetail Object
-      GroupDetail[] groups = new GroupDetail[grs.length];
-      for (int nI = 0; nI < grs.length; nI++) {
-        groups[nI] = groupRow2Group(grs[nI]);
-        // Get the selected users for this group
-        setDirectUsersOfGroup(groups[nI]);
+    try (Connection connection = DBUtil.openConnection()) {
+      List<GroupDetail> groups = groupDao.getAllRootGroupsByDomainId(connection, sDomainId);
+      for (GroupDetail group : groups) {
+        setDirectUsersOfGroup(group);
       }
-      return groups;
+      return groups.toArray(new GroupDetail[groups.size()]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("root groups in domain", sDomainId), e);
     }
   }
 
-  /**
-   *
-   * @return
-   * @throws AdminException
-   */
-  public GroupDetail[] getSynchronizedGroups() throws AdminException {
-    try {
+  public List<GroupDetail> getSynchronizedGroups() throws AdminException {
+    try (Connection connection = DBUtil.openConnection()) {
       // Get groups of domain from Silverpeas database
-      GroupRow[] grs = organizationSchema.group().getSynchronizedGroups();
-      // Convert GroupRow objects in GroupDetail Object
-      GroupDetail[] groups = new GroupDetail[grs.length];
-      for (int nI = 0; nI < grs.length; nI++) {
-        groups[nI] = groupRow2Group(grs[nI]);
-      }
-      return groups;
-    } catch (Exception e) {
+      return groupDao.getSynchronizedGroups(connection);
+    } catch (SQLException e) {
       throw new AdminException(failureOnGetting("synchronized groups", ""), e);
-    }
-  }
-
-  /**
-   *
-   * @param sDomainId
-   * @return
-   * @throws AdminException
-   */
-  public String[] getRootGroupIdsOfDomain(String sDomainId) throws
-          AdminException {
-    try {
-      // Get groups of domain from Silverpeas database
-      String[] groupIds = organizationSchema.group().getAllRootGroupIdsOfDomain(idAsInt(
-              sDomainId));
-      if (groupIds != null) {
-        return groupIds;
-      }
-      return ArrayUtil.EMPTY_STRING_ARRAY;
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("root groups in domain", sDomainId), e);
     }
   }
 
@@ -571,92 +492,34 @@ public class GroupManager {
    */
   public GroupDetail[] getGroupsOfDomain(String sDomainId) throws
           AdminException {
-    try {
+    try (Connection connection = DBUtil.openConnection()) {
       // Get organization
       SynchroDomainReport.info(GROUP_MANAGER_GET_GROUPS_OF_DOMAIN,
               "Recherche des groupes du domaine LDAP dans la base...");
       // Get groups of domain from Silverpeas database
-      GroupRow[] grs = organizationSchema.group().getAllGroupsOfDomain(idAsInt(sDomainId));
+      List<GroupDetail> grs = groupDao.getAllGroupsByDomainId(connection, sDomainId);
       // Convert GroupRow objects in GroupDetail Object
-      GroupDetail[] groups = new GroupDetail[grs.length];
-      for (int nI = 0; nI < grs.length; nI++) {
-        groups[nI] = groupRow2Group(grs[nI]);
+      GroupDetail[] groups = new GroupDetail[grs.size()];
+      for (int nI = 0; nI < grs.size(); nI++) {
+        groups[nI] = grs.get(nI);
         SynchroDomainReport.debug(
             GROUP_MANAGER_GET_GROUPS_OF_DOMAIN, "Groupe trouvé no : " + Integer.
                 toString(nI) + ", specificID : " + groups[nI].getSpecificId() + ", desc. : "
                 + groups[nI].getDescription());
       }
       SynchroDomainReport.info(GROUP_MANAGER_GET_GROUPS_OF_DOMAIN,
-              "Récupération de " + grs.length + " groupes du domaine LDAP dans la base");
+          "Récupération de " + grs.size() + " groupes du domaine LDAP dans la base");
       return groups;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("groups in domain", sDomainId), e);
     }
   }
 
-  public String[] searchGroupsIds(boolean isRootGroup,
-          int componentId, String[] aProfileId, GroupDetail modelGroup) throws AdminException {
-    try {
-      GroupRow model = group2GroupRow(modelGroup);
-      // The Ids could be equal to -1 !!!! Put it to -2 if null
-      if (!StringUtil.isDefined(modelGroup.getId())) {
-        model.id = -2;
-      }
-      if (!StringUtil.isDefined(modelGroup.getDomainId())) {
-        model.domainId = -2;
-      }
-      if (!StringUtil.isDefined(modelGroup.getSuperGroupId())) {
-        model.superGroupId = -2;
-      }
-
-      int[] aRoleId = null;
-      if (aProfileId != null) {
-        aRoleId = new int[aProfileId.length];
-        for (int i = 0; i < aProfileId.length; i++) {
-          aRoleId[i] = idAsInt(aProfileId[i]);
-        }
-      }
-      // Get groups
-      return organizationSchema.group().searchGroupsIds(isRootGroup,
-              componentId, aRoleId, model);
-    } catch (Exception e) {
-      throw new AdminException("Fail to search groups", e);
-    }
-  }
-
-  /**
-   *
-   * @param modelGroup
-   * @param isAnd
-   * @return
-   * @throws AdminException
-   */
-  public GroupDetail[] searchGroups(GroupDetail modelGroup, boolean isAnd) throws
-          AdminException {
-    try {
-      GroupRow model = group2GroupRow(modelGroup);
-      // The Ids could be equal to -1 !!!! Put it to -2 if null
-      if (!StringUtil.isDefined((modelGroup.getId()))) {
-        model.id = -2;
-      }
-      if (!StringUtil.isDefined(modelGroup.getDomainId())) {
-        model.domainId = -2;
-      }
-      if (!StringUtil.isDefined(modelGroup.getSuperGroupId())) {
-        model.superGroupId = -2;
-      }
-      // Get groups
-      GroupRow[] grs = organizationSchema.group().searchGroups(model, isAnd);
-      // Convert GroupRow objects in GroupDetail Object
-      GroupDetail[] groups = new GroupDetail[grs.length];
-      for (int nI = 0; nI < grs.length; nI++) {
-        groups[nI] = groupRow2Group(grs[nI]);
-        // Get the selected users for this group
-        setDirectUsersOfGroup(groups[nI]);
-      }
-      return groups;
-    } catch (Exception e) {
-      throw new AdminException("Fail to search group", e);
+  public List<String> getDirectGroupIdsInRole(String roleId) throws AdminException {
+    try (Connection connection = DBUtil.openConnection()) {
+      return groupDao.getDirectGroupIdsByUserRole(connection, roleId);
+    } catch (SQLException e) {
+      throw new AdminException(failureOnGetting("groups in profile ", roleId), e);
     }
   }
 
@@ -668,8 +531,7 @@ public class GroupManager {
    * @return
    * @throws AdminException
    */
-  public String addGroup(GroupDetail group, boolean onlyInSilverpeas)
-          throws AdminException {
+  public String addGroup(GroupDetail group, boolean onlyInSilverpeas) throws AdminException {
     if (group == null || !StringUtil.isDefined(group.getName())) {
       if (group != null) {
         SynchroDomainReport.error(GROUP_MANAGER_ADD_GROUP, "Problème lors de l'ajout du groupe "
@@ -678,7 +540,7 @@ public class GroupManager {
       return "";
     }
 
-    try {
+    try (Connection connection = DBUtil.openConnection()) {
       // Create group in specific domain (if onlyInSilverpeas is not true)
       // if domainId=-1 then group is a silverpeas organization
       if (!onlyInSilverpeas) {
@@ -689,22 +551,20 @@ public class GroupManager {
         }
       }
       // Create the group node in Silverpeas
-      GroupRow gr = group2GroupRow(group);
-      if (gr.superGroupId != -1) {
+      if (StringUtil.isDefined(group.getSuperGroupId())) {
         SynchroDomainReport.info(GROUP_MANAGER_ADD_GROUP, "Ajout du groupe " + group.getName()
                 + " (père=" + getGroupDetail(group.getSuperGroupId()).getSpecificId()
                 + ") dans la table ST_Group");
-      } else { // pas de père
+      } else {
         SynchroDomainReport.info(GROUP_MANAGER_ADD_GROUP, "Ajout du groupe " + group.getName()
                 + " (groupe racine) dans la table ST_Group...");
       }
-      organizationSchema.group().createGroup(gr);
-      String sGroupId = idAsString(gr.id);
-      group.setId(sGroupId);
+      String groupId = groupDao.saveGroup(connection, group);
+      group.setId(groupId);
       notifier.notifyEventOn(ResourceEvent.Type.CREATION, group);
 
       // index group information
-      domainDriverManager.indexGroup(gr);
+      domainDriverManager.indexGroup(group);
 
       // Create the links group_user in Silverpeas
       SynchroDomainReport.info(GROUP_MANAGER_ADD_GROUP,
@@ -714,14 +574,14 @@ public class GroupManager {
       int nUserAdded = 0;
       for (String asUserId : asUserIds) {
         if (StringUtil.isDefined(asUserId)) {
-          organizationSchema.group().addUserInGroup(idAsInt(asUserId), idAsInt(sGroupId));
+          groupDao.addUserInGroup(connection, asUserId, groupId);
           nUserAdded++;
         }
       }
       SynchroDomainReport.info(
           GROUP_MANAGER_ADD_GROUP, nUserAdded + " utilisateurs ajoutés au groupe "
-              + group.getName() + " dans la base");
-      return sGroupId;
+              + group.getName() + IN_SILVERPEAS_MESSAGE);
+      return groupId;
     } catch (Exception e) {
       SynchroDomainReport.error(GROUP_MANAGER_ADD_GROUP, "problème lors de l'ajout du groupe "
               + group.getName() + " - " + e.getMessage(), null);
@@ -737,14 +597,14 @@ public class GroupManager {
    * @return
    * @throws AdminException
    */
-  public String deleteGroupById(GroupDetail group,
+  public String deleteGroup(GroupDetail group,
           boolean onlyInSilverpeas) throws AdminException {
-    try {
+    try (Connection connection = DBUtil.openConnection()) {
       if (group.getDomainId() != null && !onlyInSilverpeas) {
         domainDriverManager.deleteGroup(group.getId());
       }
       // Delete the group node from Silverpeas
-      organizationSchema.group().removeGroup(idAsInt(group.getId()));
+      deleteGroup(connection, group);
       notifier.notifyEventOn(ResourceEvent.Type.DELETION, group);
 
       // Delete index of group information
@@ -752,11 +612,63 @@ public class GroupManager {
 
       return group.getId();
     } catch (Exception e) {
-      SynchroDomainReport.error("GroupManager.deleteGroupById()",
+      SynchroDomainReport.error(GROUP_MANAGER_DELETE_GROUP,
               "problème lors de la suppression du groupe " + group.getName()
               + " - " + e.getMessage(), null);
       throw new AdminException(failureOnDeleting(GROUP, group.getId()), e);
     }
+  }
+
+  private void deleteGroup(final Connection connection, final GroupDetail group)
+      throws SQLException, AdminException {
+    int groupId = idAsInt(group.getId());
+
+    SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+        "Suppression du groupe " + group.getName() + " dans la base...");
+    // remove the group from each role where it's used.
+    UserRoleTable userRoleTable = OrganizationSchema.get().userRole();
+    UserRoleRow[] roles = userRoleTable.getDirectUserRolesOfGroup(groupId);
+    SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+        REMOVING_MESSAGE + group.getName() + " des rôles dans la base");
+    for (UserRoleRow role : roles) {
+      userRoleTable.removeGroupFromUserRole(groupId, role.id);
+    }
+
+    // remove the group from each space role where it's used.
+    SpaceUserRoleTable spaceUserRoleTable = OrganizationSchema.get().spaceUserRole();
+    SpaceUserRoleRow[] spaceRoles = spaceUserRoleTable.getDirectSpaceUserRolesOfGroup(groupId);
+    SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+        REMOVING_MESSAGE + group.getName() + " comme manager d'espace dans la base");
+    for (SpaceUserRoleRow spaceRole : spaceRoles) {
+      spaceUserRoleTable.removeGroupFromSpaceUserRole(groupId, spaceRole.id);
+    }
+    // remove all the subgroups
+    List<GroupDetail> subgroups = groupDao.getDirectSubGroups(connection, group.getId());
+    if (!subgroups.isEmpty()) {
+      SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+          "Suppression des groupes fils de " + group.getName() + IN_SILVERPEAS_MESSAGE);
+      for (GroupDetail subgroup : subgroups) {
+        deleteGroup(connection, subgroup);
+      }
+    }
+    // remove from the group any user.
+    List<String> userIds;
+    try {
+      userIds = UserManager.get().getDirectUserIdsInGroup(group.getId());
+    } catch (AdminException e) {
+      throw new SQLException(e);
+    }
+    for (String userId : userIds) {
+      removeUserFromGroup(userId, group.getId());
+    }
+
+    SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+        REMOVING_MESSAGE + userIds.size() + " utilisateurs inclus directement dans le groupe " +
+            group.getName() + IN_SILVERPEAS_MESSAGE);
+
+    SynchroDomainReport.debug(GROUP_MANAGER_DELETE_GROUP,
+        REMOVING_MESSAGE + group.getName() + " (ID=" + group.getName() + ")");
+    groupDao.deleteGroup(connection, group);
   }
 
   /**
@@ -769,9 +681,6 @@ public class GroupManager {
    */
   public String updateGroup(GroupDetail group, boolean onlyInSilverpeas)
           throws AdminException {
-    ArrayList<String> alRemUsers = new ArrayList<>();
-    ArrayList<String> alAddUsers = new ArrayList<>();
-
     if (group == null || !StringUtil.isDefined(group.getName()) || !StringUtil.isDefined(
             group.getId())) {
       if (group != null) {
@@ -780,7 +689,7 @@ public class GroupManager {
       }
       return "";
     }
-    try {
+    try (Connection connection = DBUtil.openConnection()) {
       if (group.getDomainId() != null && !onlyInSilverpeas) {
         domainDriverManager.updateGroup(group);
       }
@@ -795,45 +704,28 @@ public class GroupManager {
                 + " (groupe racine) dans la base (table ST_Group)...";
       }
       SynchroDomainReport.info(GROUP_MANAGER_UPDATE_GROUP, strInfoSycnhro);
-      // Update the group node
-      GroupRow gr = group2GroupRow(group);
-      organizationSchema.group().updateGroup(gr);
+      // Update the group
+      groupDao.updateGroup(connection, group);
 
       // index group information
-      domainDriverManager.indexGroup(gr);
+      domainDriverManager.indexGroup(group);
 
       // Update the users if necessary
       SynchroDomainReport.info(GROUP_MANAGER_UPDATE_GROUP, "Maj éventuelle des relations du groupe "
               + group.getName()
               + " avec les utilisateurs qui y sont directement inclus (tables ST_Group_User_Rel)");
 
-      try (Connection connection = DBUtil.openConnection()) {
-        List<String> asOldUsersId = userDao.getDirectUserIdsInGroup(connection, sGroupId);
+      List<String> asOldUsersId = userDao.getDirectUserIdsInGroup(connection, sGroupId);
 
-        // Compute the remove users list
-        List<String> asNewUsersId = Arrays.asList(group.getUserIds());
-        asOldUsersId.stream()
-            .filter(u -> !asNewUsersId.contains(u))
-            .forEach(alRemUsers::add);
-        // Compute the add users list
-        asNewUsersId.stream()
-            .filter(u -> !asOldUsersId.contains(u))
-            .forEach(alAddUsers::add);
-      }
-      // Remove the users that are not in this group anymore
-      for (String alRemUser : alRemUsers) {
-        organizationSchema.group().removeUserFromGroup(
-                idAsInt(alRemUser), idAsInt(sGroupId));
-      }
+      // Compute the remove users list
+      List<String> asNewUsersId = Arrays.asList(group.getUserIds());
+      long removedUsers =
+          removeUsersNoMoreInGroup(connection, sGroupId, asOldUsersId, asNewUsersId);
+      long addedUsers = addNewUsersInGroup(connection, sGroupId, asOldUsersId, asNewUsersId);
 
-      // Add the new users of the group
-      for (String alAddUser : alAddUsers) {
-        organizationSchema.group().addUserInGroup(idAsInt(alAddUser), idAsInt(sGroupId));
-      }
-
-      SynchroDomainReport.info(GROUP_MANAGER_UPDATE_GROUP, "Groupe : "
-              + group.getName() + ", ajout de " + alAddUsers.size()
-              + " nouveaux utilisateurs, suppression de " + alRemUsers.size()
+      SynchroDomainReport.info(GROUP_MANAGER_UPDATE_GROUP,
+          "Groupe : " + group.getName() + ", ajout de " + addedUsers +
+              " nouveaux utilisateurs, suppression de " + removedUsers
               + " utilisateurs");
       return sGroupId;
     } catch (Exception e) {
@@ -844,58 +736,32 @@ public class GroupManager {
     }
   }
 
-  /**
-   * Get Silverpeas admin organization
-   *
-   * @return an array of AdminGroupInst containing the organization
-   * @throws AdminException
-   */
-  public AdminGroupInst[] getAdminOrganization() throws AdminException {
-    try {
-      String[] asGroupIds = this.getAllGroupIds();
-      GroupDetail[] aGroup = new GroupDetail[asGroupIds.length];
-      for (int nI = 0; nI < asGroupIds.length; nI++) {
-        aGroup[nI] = this.getGroupDetail(asGroupIds[nI]);
+  private long addNewUsersInGroup(final Connection connection, final String sGroupId,
+      final List<String> asOldUsersId, final List<String> asNewUsersId) throws SQLException {
+    long addedUsers = 0;
+    for (String userId : asNewUsersId) {
+      if (!asOldUsersId.contains(userId)) {
+        SynchroDomainReport.debug(GROUP_MANAGER_UPDATE_GROUP,
+            "Ajout de l'utilisateur d'ID " + userId + " dans le groupe d'ID " + sGroupId);
+        groupDao.addUserInGroup(connection, userId, sGroupId);
+        addedUsers++;
       }
-      // Search the root groups
-      ArrayList<Integer> alRoot = new ArrayList<>();
-      for (int nI = 0; nI < aGroup.length; nI++) {
-        if (aGroup[nI].getSuperGroupId() == null) {
-          alRoot.add(nI);
-        }
-      }
-      AdminGroupInst[] aAdminGroupInst = new AdminGroupInst[alRoot.size()];
-      for (int nI = 0; nI < alRoot.size(); nI++) {
-        aAdminGroupInst[nI] = new AdminGroupInst();
-        aAdminGroupInst[nI].setGroup(aGroup[alRoot.get(nI)]);
-        aAdminGroupInst[nI].setChildrenAdminGroupInst(
-            this.getChildrenGroupInst(aAdminGroupInst[nI].getGroup().getId(), aGroup));
-      }
-      return aAdminGroupInst;
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting("admin organization", ""), e);
     }
+    return addedUsers;
   }
 
-  /**
-   * Get the list of children groups of the given group
-   */
-  private ArrayList<AdminGroupInst> getChildrenGroupInst(String sFatherGroupId,
-      GroupDetail[] aGroup) {
-    ArrayList<AdminGroupInst> alChildrenGroupInst = new ArrayList<>();
-
-    // Search the children group
-    for (GroupDetail anAGroup : aGroup) {
-      if (anAGroup.getSuperGroupId() != null && anAGroup.getSuperGroupId().equals(sFatherGroupId)) {
-        AdminGroupInst adminGroupInst = new AdminGroupInst();
-        adminGroupInst.setGroup(anAGroup);
-        adminGroupInst.setChildrenAdminGroupInst(
-            this.getChildrenGroupInst(adminGroupInst.getGroup().getId(), aGroup));
-        alChildrenGroupInst.add(adminGroupInst);
+  private long removeUsersNoMoreInGroup(final Connection connection, final String sGroupId,
+      final List<String> asOldUsersId, final List<String> asNewUsersId) throws SQLException {
+    long removedUsers = 0;
+    for (String userId : asOldUsersId) {
+      if (!asNewUsersId.contains(userId)) {
+        SynchroDomainReport.debug(GROUP_MANAGER_UPDATE_GROUP,
+            "Suppression de l'utilisateur d'ID " + userId + " du groupe d'ID " + sGroupId);
+        groupDao.deleteUserInGroup(connection, userId, sGroupId);
+        removedUsers++;
       }
     }
-
-    return alChildrenGroupInst;
+    return removedUsers;
   }
 
   public List<String> getManageableGroupIds(String userId, List<String> groupIds)
@@ -950,61 +816,17 @@ public class GroupManager {
   }
 
   /**
-   * Convert GroupRow to GroupDetail
-   */
-  private GroupDetail groupRow2Group(GroupRow gr) {
-    GroupDetail group = new GroupDetail();
-
-    if (gr != null) {
-      group.setId(idAsString(gr.id));
-      group.setSpecificId(gr.specificId);
-      group.setDomainId(idAsString(gr.domainId));
-      group.setSuperGroupId(idAsString(gr.superGroupId));
-      group.setName(gr.name);
-      group.setDescription(gr.description);
-      group.setRule(gr.rule);
-    }
-    return group;
-  }
-
-  /**
-   * Convert GroupDetail to GroupRow
-   */
-  private GroupRow group2GroupRow(GroupDetail group) {
-    GroupRow gr = new GroupRow();
-    gr.id = idAsInt(group.getId());
-    gr.specificId = group.getSpecificId();
-    gr.domainId = idAsInt(group.getDomainId());
-    gr.superGroupId = idAsInt(group.getSuperGroupId());
-    gr.name = group.getName();
-    gr.description = group.getDescription();
-    gr.rule = group.getRule();
-
-    return gr;
-  }
-
-  /**
    * Convert String Id to int Id
    */
   private int idAsInt(String id) {
     if (id == null || id.length() == 0) {
-      return -1; // the null id.
+      return -1;
     }
     try {
       return Integer.parseInt(id);
     } catch (NumberFormatException e) {
-      return -1; // the null id.
+      return -1;
     }
   }
-
-  /**
-   * Convert int Id to String Id
-   */
-  private static String idAsString(int id) {
-    if (id == -1) {
-      return null;
-    } else {
-      return Integer.toString(id);
-    }
-  }
+  
 }

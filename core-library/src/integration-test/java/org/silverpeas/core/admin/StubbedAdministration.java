@@ -41,7 +41,6 @@ import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.user.model.AdminGroupInst;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
@@ -380,8 +379,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String[] getAllGroupIds() throws AdminException {
-    return new String[0];
+  public List<GroupDetail> getAllGroups() throws AdminException {
+    return Collections.emptyList();
   }
 
   @Override
@@ -454,28 +453,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public AdminGroupInst[] getAdminOrganization() throws AdminException {
-    return new AdminGroupInst[0];
-  }
-
-  @Override
-  public String[] getAllSubGroupIds(final String groupId) throws AdminException {
-    return new String[0];
-  }
-
-  @Override
-  public String[] getAllSubGroupIdsRecursively(final String groupId) throws AdminException {
-    return new String[0];
-  }
-
-  @Override
-  public String[] getAllRootGroupIds() throws AdminException {
-    return new String[0];
-  }
-
-  @Override
-  public GroupDetail[] getAllRootGroups() throws AdminException {
-    return new GroupDetail[0];
+  public List<GroupDetail> getAllRootGroups() throws AdminException {
+    return Collections.emptyList();
   }
 
   @Override
@@ -679,13 +658,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public GroupDetail[] getSynchronizedGroups() throws AdminException {
-    return new GroupDetail[0];
-  }
-
-  @Override
-  public String[] getRootGroupIdsOfDomain(final String domainId) throws AdminException {
-    return new String[0];
+  public List<GroupDetail> getSynchronizedGroups() throws AdminException {
+    return Collections.emptyList();
   }
 
   @Override
@@ -727,13 +701,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String[] getDirectGroupsIdsOfUser(final String userId) throws AdminException {
-    return new String[0];
-  }
-
-  @Override
-  public GroupDetail[] searchGroups(final GroupDetail modelGroup, final boolean isAnd) throws AdminException {
-    return new GroupDetail[0];
+  public List<GroupDetail> getDirectGroupsOfUser(final String userId) throws AdminException {
+    return Collections.emptyList();
   }
 
   @Override
@@ -943,6 +912,11 @@ public class StubbedAdministration implements Administration {
 
   @Override
   public GroupDetail[] getAllSubGroups(final String parentGroupId) throws AdminException {
+    return new GroupDetail[0];
+  }
+
+  @Override
+  public GroupDetail[] getRecursivelyAllSubGroups(String parentGroupId) throws AdminException {
     return new GroupDetail[0];
   }
 

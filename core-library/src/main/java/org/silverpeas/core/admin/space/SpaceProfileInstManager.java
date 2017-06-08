@@ -23,12 +23,12 @@ package org.silverpeas.core.admin.space;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.UserManager;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -198,21 +198,9 @@ public class SpaceProfileInstManager {
   }
 
   private void setUsersAndGroups(SpaceProfileInst spaceProfileInst) throws AdminException {
-    // Get the groups
-    String[] asGroupIds;
-    try {
-      asGroupIds = organizationSchema.group().
-          getDirectGroupIdsInSpaceUserRole(idAsInt(spaceProfileInst.getId()));
-    } catch (SQLException e) {
-      throw new AdminException(e.getMessage(), e);
-    }
+    List<String> groupIds = GroupManager.get().getDirectGroupIdsInSpaceRole(spaceProfileInst.getId());
+    groupIds.forEach(spaceProfileInst::addGroup);
 
-    // Set the groups to the space profile
-    if (asGroupIds != null) {
-      for (String groupId : asGroupIds) {
-        spaceProfileInst.addGroup(groupId);
-      }
-    }
     List<String> userIds = UserManager.get().getDirectUserIdsInSpaceRole(spaceProfileInst.getId());
     userIds.forEach(spaceProfileInst::addUser);
   }

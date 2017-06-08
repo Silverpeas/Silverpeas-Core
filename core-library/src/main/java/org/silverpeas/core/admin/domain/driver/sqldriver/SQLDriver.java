@@ -51,7 +51,6 @@ import java.util.Map;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
-@Transactional(Transactional.TxType.MANDATORY)
 public class SQLDriver extends AbstractDomainDriver {
 
   public static final String GROUP = "group";
@@ -127,6 +126,7 @@ public class SQLDriver extends AbstractDomainDriver {
    * @return String
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public String createUser(UserDetail ud) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       DomainServiceProvider.getUserDomainQuotaService().verify(UserDomainQuotaKey.from(ud));
@@ -144,6 +144,7 @@ public class SQLDriver extends AbstractDomainDriver {
 
 
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public void resetPassword(UserDetail user, String password) throws AdminException {
     PasswordEncryption encryption = PasswordEncryptionProvider.getDefaultPasswordEncryption();
     String encryptedPassword = encryption.encrypt(password);
@@ -151,6 +152,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws AdminException {
     effectiveResetPassword(user, encryptedPassword);
   }
@@ -166,10 +168,8 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
 
-  /**
-   * @param userId
-   */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public void deleteUser(String userId) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       localGroupUserRelMgr.removeAllUserRel(connection, idAsInt(userId));
@@ -184,6 +184,7 @@ public class SQLDriver extends AbstractDomainDriver {
    * @param uf a UserFull object
    */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public void updateUserFull(UserFull uf) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       localUserMgr.updateUser(connection, uf);
@@ -214,11 +215,8 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * @param ud a UserDetail object which contains all the data to update inside
-   * domain<DOMAIN_NAME>_user table
-   */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public void updateUserDetail(UserDetail ud) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       localUserMgr.updateUser(connection, ud);
@@ -227,11 +225,8 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * @param userId
-   * @return User
-   */
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public UserDetail getUser(String userId) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       return localUserMgr.getUser(connection, idAsInt(userId));
@@ -241,6 +236,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public UserFull getUserFull(String id) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       int userId = idAsInt(id);
@@ -275,9 +271,8 @@ public class SQLDriver extends AbstractDomainDriver {
     return new String[0];
   }
 
-  /**
-   * @return User[]
-   */
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public UserDetail[] getAllUsers() throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       List<UserDetail> users = localUserMgr.getAllUsers(connection);
@@ -287,6 +282,8 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public UserDetail[] getUsersBySpecificProperty(String propertyName,
       String propertyValue) throws AdminException {
     DomainProperty property = getProperty(propertyName);
@@ -324,10 +321,8 @@ public class SQLDriver extends AbstractDomainDriver {
     return null;
   }
 
-  /**
-   * @param group
-   * @return String
-   */
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public String createGroup(GroupDetail group) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       int theGrpId = localGroupMgr.createGroup(connection, group);
@@ -345,9 +340,8 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * @param groupId
-   */
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public void deleteGroup(String groupId) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       int gid;
@@ -367,9 +361,8 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * @param group
-   */
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public void updateGroup(GroupDetail group) throws AdminException {
     List<String> alAddUsers = new ArrayList<>();
 
@@ -409,10 +402,8 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * @param groupId
-   * @return GroupDetail
-   */
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail getGroup(String groupId) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       GroupDetail valret = localGroupMgr.getGroup(connection, idAsInt(groupId));
@@ -428,10 +419,8 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * @param groupName
-   * @return GroupDetail
-   */
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail getGroupByName(String groupName) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       return localGroupMgr.getGroupByName(connection, groupName);
@@ -440,10 +429,8 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * @param groupId
-   * @return GroupDetail[]
-   */
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail[] getGroups(String groupId) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       List<GroupDetail> ar = localGroupMgr.getDirectSubGroups(connection, idAsInt(groupId));
@@ -461,9 +448,8 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * @return GroupDetail[]
-   */
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail[] getAllGroups() throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       List<GroupDetail> ar = localGroupMgr.getAllGroups(connection);
@@ -481,9 +467,8 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * @return GroupDetail[]
-   */
+  @Override
+  @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail[] getAllRootGroups() throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       List<GroupDetail> ar = localGroupMgr.getDirectSubGroups(connection, -1);
@@ -500,10 +485,7 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * @param userId
-   * @param groupId
-   */
+  @Transactional(Transactional.TxType.MANDATORY)
   public void addUserInGroup(String userId, String groupId) throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
       localGroupUserRelMgr.createGroupUserRel(connection, idAsInt(groupId), idAsInt(userId));
@@ -512,10 +494,7 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * @param userId
-   * @param groupId
-   */
+  @Transactional(Transactional.TxType.MANDATORY)
   public void removeUserFromGroup(String userId, String groupId)
       throws AdminException {
     try(Connection connection = dataSource.getConnection()) {
@@ -526,6 +505,7 @@ public class SQLDriver extends AbstractDomainDriver {
     }
   }
 
+  @Override
   public List<String> getUserAttributes() throws AdminException {
     return Arrays.asList(getPropertiesNames());
   }

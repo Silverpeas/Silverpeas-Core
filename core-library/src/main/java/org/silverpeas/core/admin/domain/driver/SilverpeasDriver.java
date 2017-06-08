@@ -128,9 +128,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     return "-1";
   }
 
-  /**
-   * @param userId
-   */
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public void deleteUser(String userId) {
@@ -175,9 +172,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     this.spUserRepository.saveAndFlush(oldUser);
   }
 
-  /**
-   * @param ud
-   */
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public void updateUserDetail(UserDetail ud) {
@@ -189,10 +183,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     }
   }
 
-  /**
-   * @param userId
-   * @return User
-   */
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public UserDetail getUser(String userId) {
@@ -237,9 +227,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     return new String[0];
   }
 
-  /**
-   * @return User[]
-   */
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public UserDetail[] getAllUsers() {
@@ -304,10 +291,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     return null;
   }
 
-  /**
-   * @param group
-   * @return String
-   */
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public String createGroup(GroupDetail group) {
@@ -336,9 +319,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     return "";
   }
 
-  /**
-   * @param groupId
-   */
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public void deleteGroup(String groupId) {
@@ -361,10 +341,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     }
   }
 
-  /**
-   * @param group
-   * @throws AdminException
-   */
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public void updateGroup(GroupDetail group) throws AdminException {
@@ -398,10 +374,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     spGroupRepository.saveAndFlush(gr);
   }
 
-  /**
-   * @param groupId
-   * @return GroupDetail
-   */
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail getGroup(String groupId) {
@@ -414,10 +386,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     return null;
   }
 
-  /**
-   * @param groupId
-   * @return GroupDetail[]
-   */
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail[] getGroups(String groupId) {
@@ -430,9 +398,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     return groups.toArray(new GroupDetail[groups.size()]);
   }
 
-  /**
-   * @return GroupDetail[]
-   */
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public GroupDetail[] getAllGroups() {
@@ -460,11 +425,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     return new String[0];
   }
 
-  /**
-   * @param userId
-   * @param groupId
-   * @throws AdminException
-   */
   @Transactional(Transactional.TxType.MANDATORY)
   public void addUserInGroup(String userId, String groupId) {
     SPUser user = spUserRepository.getById(userId);
@@ -474,10 +434,6 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     spGroupRepository.saveAndFlush(group);
   }
 
-  /**
-   * @param userId
-   * @param groupId
-   */
   @Transactional(Transactional.TxType.MANDATORY)
   public void removeUserFromGroup(String userId, String groupId) {
     SPUser user = spUserRepository.getById(userId);

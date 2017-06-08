@@ -25,7 +25,6 @@
 package org.silverpeas.core.admin.persistence;
 
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
-import org.silverpeas.core.admin.service.AdminException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -257,7 +256,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
    * Add an user in a spaceUserRole.
    */
   public void addUserInSpaceUserRole(int userId, int spaceUserRoleId) throws
-      SQLException, AdminException {
+      SQLException {
     if (isUserDirectlyInRole(userId, spaceUserRoleId)) {
       return;
     }
@@ -332,10 +331,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
       return;
     }
 
-    GroupRow group = OrganizationSchema.get().group().getGroup(groupId);
-    if (group == null) {
-      throw new SQLException(unknown("group", String.valueOf(groupId)));
-    }
+    checkGroupExistence(groupId);
 
     SpaceUserRoleRow spaceUserRole = getSpaceUserRole(spaceUserRoleId);
     if (spaceUserRole == null) {

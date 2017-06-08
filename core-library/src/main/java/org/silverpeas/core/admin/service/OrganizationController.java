@@ -10,6 +10,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -214,11 +215,6 @@ public interface OrganizationController extends java.io.Serializable {
   <T extends Group> ListSlice<T> searchGroups(GroupsSearchCriteria criteria);
 
   /**
-   * Return an array of Group corresponding to the founded groups
-   */
-  <T extends Group> T[] searchGroups(T modelGroup, boolean isAnd);
-
-  /**
    * Returns the total number of distinct users recursively contained in the specified group
    */
   int getAllSubUsersNumber(String sGroupId);
@@ -390,7 +386,7 @@ public interface OrganizationController extends java.io.Serializable {
    */
   Domain[] getAllDomains();
 
-  String[] getDirectGroupIdsOfUser(String userId);
+  List<GroupDetail> getDirectGroupsOfUser(String userId);
 
   String[] getAllGroupIdsOfUser(String userId);
 

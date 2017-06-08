@@ -23,20 +23,21 @@
  */
 package org.silverpeas.core.util.comparator;
 
+import java.io.Serializable;
 import java.util.Comparator;
 
 /**
  * @author yohann.chastagnier
  * @param <C>
  */
-public abstract class AbstractComparator<C> implements Comparator<C> {
+public abstract class AbstractComparator<C> implements Comparator<C>, Serializable {
 
   /**
    * Centralizes bean comparison mechanism
    * @return
    */
   protected static <T> boolean areInstancesComparable(final T comp1, final T comp2) {
-    return (comp1 != null && comp2 != null);
+    return comp1 != null && comp2 != null;
   }
 
   /**

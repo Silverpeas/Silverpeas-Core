@@ -60,8 +60,8 @@ public class PaginationList<T> implements SilverpeasList<T> {
    * @param aCollection the collection to decorate.
    * @return a {@code PaginationList} instance.
    */
-  public static final <T> PaginationList<T> from(final Collection<T> aCollection) {
-    return new PaginationList<T>(new ArrayList<T>(aCollection));
+  public static <T> PaginationList<T> from(final Collection<T> aCollection) {
+    return new PaginationList<>(new ArrayList<>(aCollection));
   }
 
   /**
@@ -74,8 +74,13 @@ public class PaginationList<T> implements SilverpeasList<T> {
    * @param maxItems the maximum number of items; that is the size of the pagination.
    * @return a {@code PaginationList} instance.
    */
-  public static final <T> PaginationList<T> from(final Collection<T> aCollection, long maxItems) {
-    return new PaginationList<T>(new ArrayList<T>(aCollection), maxItems);
+  public static <T> PaginationList<T> from(final Collection<T> aCollection, long maxItems) {
+    return new PaginationList<>(new ArrayList<>(aCollection), maxItems);
+  }
+
+  @Override
+  public <U> SilverpeasList<U> newList() {
+    return new PaginationList<>(new ArrayList<>(size()), maxsize);
   }
 
   @Override
@@ -211,12 +216,12 @@ public class PaginationList<T> implements SilverpeasList<T> {
 
   @Override
   public ListIterator<T> listIterator() {
-    return new PaginationListIterator<T>(this, wrappedList.listIterator());
+    return new PaginationListIterator<>(this, wrappedList.listIterator());
   }
 
   @Override
   public ListIterator<T> listIterator(int index) {
-    return new PaginationListIterator<T>(this, wrappedList.listIterator(index));
+    return new PaginationListIterator<>(this, wrappedList.listIterator(index));
   }
 
   @Override
@@ -229,7 +234,7 @@ public class PaginationList<T> implements SilverpeasList<T> {
     private final ListIterator<T> iterator;
     private final PaginationList<T> list;
 
-    public PaginationListIterator(PaginationList<T> list, ListIterator<T> iterator) {
+    PaginationListIterator(PaginationList<T> list, ListIterator<T> iterator) {
       this.iterator = iterator;
       this.list = list;
     }

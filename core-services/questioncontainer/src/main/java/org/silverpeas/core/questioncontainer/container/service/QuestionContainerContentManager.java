@@ -102,7 +102,7 @@ public class QuestionContainerContentManager {
       throws ContentManagerException {
     int contentId = getContentManager().getSilverContentId(pk.getId(), pk.getComponentName());
 
-    getContentManager().removeSilverContent(con, contentId, pk.getComponentName());
+    getContentManager().removeSilverContent(con, contentId);
   }
 
   private static ContentManager getContentManager() {

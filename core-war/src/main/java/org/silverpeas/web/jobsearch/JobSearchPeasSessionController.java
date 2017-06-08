@@ -20,6 +20,7 @@
  */
 package org.silverpeas.web.jobsearch;
 
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.core.util.URLUtil;
@@ -596,15 +597,13 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @return
    */
   private List<String> getListPathUser(UserDetail user) {
-    List<String> listEmplacement = new ArrayList<String>();
+    List<String> listEmplacement = new ArrayList<>();
     String userId = user.getId();
 
     //groupe(s) d'appartenance
-    String[] groupIds = getAdminController().getDirectGroupsIdsOfUser(userId);
-    if (null != groupIds && 0 < groupIds.length) {
-      for (String groupId : groupIds) {
-        Group group = getOrganisationController().getGroup(groupId);
-
+    List<GroupDetail> groups = getAdminController().getDirectGroupsOfUser(userId);
+    if (!groups.isEmpty()) {
+      for (Group group : groups) {
         String domainId = group.getDomainId();
         if (null == domainId) {
           domainId = "-1";
@@ -619,7 +618,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         }
 
         //nom du(des) groupe(s) pères
-        List<String> groupList = getAdminController().getPathToGroup(groupId);
+        List<String> groupList = getAdminController().getPathToGroup(group.getId());
         for (String elementGroupId : groupList) {
           emplacement.append(" > ").append(getAdminController().getGroupName(elementGroupId));
         }

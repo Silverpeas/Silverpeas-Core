@@ -37,6 +37,7 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -49,6 +50,7 @@ import org.silverpeas.core.util.ListSlice;
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Named;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -225,11 +227,6 @@ public class OrganizationControllerMock implements OrganizationController {
   @Override
   public ListSlice<Group> searchGroups(final GroupsSearchCriteria criteria) {
     return null;
-  }
-
-  @Override
-  public Group[] searchGroups(final Group modelGroup, final boolean isAnd) {
-    return new Group[0];
   }
 
   @Override
@@ -443,8 +440,8 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public String[] getDirectGroupIdsOfUser(final String userId) {
-    return new String[0];
+  public List<GroupDetail> getDirectGroupsOfUser(final String userId) {
+    return Collections.emptyList();
   }
 
   @Override

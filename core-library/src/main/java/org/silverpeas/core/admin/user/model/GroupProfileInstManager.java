@@ -24,15 +24,17 @@
 
 package org.silverpeas.core.admin.user.model;
 
-import org.silverpeas.core.admin.persistence.GroupRow;
 import org.silverpeas.core.admin.persistence.GroupUserRoleRow;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.user.UserManager;
+import org.silverpeas.core.admin.user.dao.GroupDAO;
+import org.silverpeas.core.admin.user.dao.UserDAO;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.sql.Connection;
 import java.util.List;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
@@ -44,6 +46,10 @@ public class GroupProfileInstManager {
   public static final String GROUP_PROFILE = "group profile";
   @Inject
   private OrganizationSchema organizationSchema;
+  @Inject
+  private GroupDAO groupDAO;
+  @Inject
+  private UserDAO userDAO;
 
   /**
    * Constructor
@@ -87,13 +93,13 @@ public class GroupProfileInstManager {
       throws AdminException {
     String groupId = sGroupId;
     if (sGroupId == null) {
-      try {
-        GroupRow group = organizationSchema.group()
-            .getGroupOfGroupUserRole(idAsInt(sProfileId));
+      try (Connection connection = DBUtil.openConnection()) {
+        GroupDetail group = groupDAO.getGroupByGroupUserRole(connection, sProfileId);
         if (group == null) {
-          group = new GroupRow();
+          groupId = "-1";
+        } else {
+          groupId = group.getId();
         }
-        groupId = idAsString(group.id);
       } catch (Exception e) {
         throw new AdminException(
             failureOnGetting("profile " + sProfileId, "of group " + groupId), e);
@@ -114,7 +120,7 @@ public class GroupProfileInstManager {
   public void setGroupProfileInst(GroupProfileInst groupProfileInst, String sProfileId,
       String sGroupId)
       throws AdminException {
-    try {
+    try (Connection connection = DBUtil.openConnection()) {
       // Load the profile detail
       GroupUserRoleRow groupUserRole = organizationSchema.groupUserRole()
           .getGroupUserRoleByGroupId(idAsInt(sGroupId));
@@ -128,18 +134,12 @@ public class GroupProfileInstManager {
 
         String profileId = groupProfileInst.getId();
 
-        // Get the groups
-        String[] asGroupIds = organizationSchema.group()
-            .getDirectGroupIdsInGroupUserRole(idAsInt(profileId));
+        // set the groups
+        groupDAO.getDirectGroupIdsByGroupUserRole(connection, profileId)
+            .forEach(groupProfileInst::addGroup);
 
-        // Set the groups to the space profile
-        for (int nI = 0; asGroupIds != null && nI < asGroupIds.length; nI++) {
-          groupProfileInst.addGroup(asGroupIds[nI]);
-        }
-
-        // Get the Users
-        UserManager.get()
-            .getDirectUserIdsInGroupRole(profileId)
+        // set the users
+        userDAO.getDirectUserIdsByGroupUserRole(connection, profileId)
             .forEach(groupProfileInst::addUser);
       }
     } catch (Exception e) {

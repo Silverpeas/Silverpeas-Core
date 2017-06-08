@@ -25,15 +25,12 @@
 package org.silverpeas.core.contribution.contentcontainer.content;
 
 import org.silverpeas.core.SilverpeasExceptionMessages;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.JoinStatement;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
 import javax.inject.Singleton;
-import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -323,7 +320,7 @@ public class ContentManager implements Serializable {
   /**
    * Remove a silver content Called when a content remove a document
    */
-  public void removeSilverContent(Connection connection, int nSilverContentId, String sComponentId)
+  public void removeSilverContent(Connection connection, int nSilverContentId)
       throws ContentManagerException {
     PreparedStatement prepStmt = null;
     try {

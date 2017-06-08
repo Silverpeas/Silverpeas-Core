@@ -47,16 +47,16 @@ public class UserDAO {
       + "loginQuestion,loginAnswer,creationDate,saveDate,version,tosAcceptanceDate,"
       + "lastLoginDate,nbSuccessfulLoginAttempts,lastLoginCredentialUpdateDate,expirationDate,"
       + "state,stateSaveDate, notifManualReceiverLimit";
-  private static final String STATE_CONDITION = "state <> ?";
+  private static final String STATE_CRITERION = "state <> ?";
+  private static final String ID_CRITERION = "id = ?";
+  private static final String DOMAIN_ID_CRITERION = "domainId = ?";
+  private static final String USER_ID_JOINTURE = "id = userId";
   private static final String ACCESS_LEVEL = "accessLevel";
   private static final String LAST_NAME = "lastName";
   private static final String FIRST_NAME = "firstName";
   private static final String DOMAIN_ID = "domainId";
   private static final String SPECIFIC_ID = "specificId";
-  private static final String DOMAIN_ID_PARAM = "domainId = ?";
-  private static final String ID_PARAM = "id = ?";
   private static final String STATE = "state";
-  private static final String USER_ID_JOINTURE = "id = userId";
   public static final String LOGIN = "login";
   public static final String SAVE_DATE = "saveDate";
   public static final String STATE_SAVE_DATE = "stateSaveDate";
@@ -109,7 +109,7 @@ public class UserDAO {
         .addUpdateParam(STATE, UserState.DELETED)
         .addUpdateParam(STATE_SAVE_DATE, now)
         .addUpdateParam(SAVE_DATE, now)
-        .where(ID_PARAM, Integer.parseInt(user.getId()))
+        .where(ID_CRITERION, Integer.parseInt(user.getId()))
         .executeWith(connection);
   }
 
@@ -123,7 +123,7 @@ public class UserDAO {
   public UserDetail getUserById(final Connection connection, final String id) throws SQLException {
     return JdbcSqlQuery.createSelect(USER_COLUMNS)
         .from(USER_TABLE)
-        .where(ID_PARAM, Integer.parseInt(id))
+        .where(ID_CRITERION, Integer.parseInt(id))
         .executeUniqueWith(connection, UserDAO::fetchUser);
   }
 
@@ -131,8 +131,8 @@ public class UserDAO {
       throws SQLException {
     return JdbcSqlQuery.createSelect("COUNT(id)")
         .from(USER_TABLE)
-        .where(ID_PARAM, Integer.parseInt(id))
-        .and(STATE_CONDITION, UserState.DELETED)
+        .where(ID_CRITERION, Integer.parseInt(id))
+        .and(STATE_CRITERION, UserState.DELETED)
         .executeUniqueWith(connection, row -> row.getInt(1)) == 1;
   }
 
@@ -140,7 +140,7 @@ public class UserDAO {
       final String specificId) throws SQLException {
     return JdbcSqlQuery.createSelect(USER_COLUMNS)
         .from(USER_TABLE)
-        .where(DOMAIN_ID_PARAM, Integer.parseInt(domainId))
+        .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .and("specificId = ?", specificId)
         .executeUniqueWith(connection, UserDAO::fetchUser);
   }
@@ -149,7 +149,7 @@ public class UserDAO {
       final List<String> specificIds) throws SQLException {
     return JdbcSqlQuery.createSelect(USER_COLUMNS)
         .from(USER_TABLE)
-        .where(DOMAIN_ID_PARAM, Integer.parseInt(domainId))
+        .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .and(SPECIFIC_ID)
         .in(specificIds)
         .executeWith(connection, UserDAO::fetchUser);
@@ -159,9 +159,9 @@ public class UserDAO {
       final String login) throws SQLException {
     return JdbcSqlQuery.createSelect(USER_COLUMNS)
         .from(USER_TABLE)
-        .where(DOMAIN_ID_PARAM, Integer.parseInt(domainId))
+        .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .and("lower(login) = lower(?)", login)
-        .and(STATE_CONDITION, UserState.DELETED)
+        .and(STATE_CRITERION, UserState.DELETED)
         .executeUniqueWith(connection, UserDAO::fetchUser);
   }
 
@@ -220,7 +220,7 @@ public class UserDAO {
         .addUpdateParam(STATE, user.getState())
         .addUpdateParam(STATE_SAVE_DATE, toInstance(user.getStateSaveDate()))
         .addUpdateParam("notifManualReceiverLimit", user.getNotifManualReceiverLimit())
-        .where(ID_PARAM, Integer.parseInt(user.getId()))
+        .where(ID_CRITERION, Integer.parseInt(user.getId()))
         .executeWith(connection);
   }
 
@@ -260,7 +260,7 @@ public class UserDAO {
     return JdbcSqlQuery.createSelect(USER_COLUMNS)
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
         .where(USER_ID_JOINTURE).and("groupid").in(groupIdsAsInt)
-        .and(STATE_CONDITION, UserState.DELETED)
+        .and(STATE_CRITERION, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(con, UserDAO::fetchUser);
   }
@@ -268,7 +268,7 @@ public class UserDAO {
   public List<String> getAllUserIds(Connection connection) throws SQLException {
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE)
-        .where(STATE_CONDITION, UserState.DELETED)
+        .where(STATE_CRITERION, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -293,7 +293,7 @@ public class UserDAO {
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
         .where(USER_ID_JOINTURE)
         .and("groupId = ?", Integer.parseInt(groupId))
-        .and(STATE_CONDITION, UserState.DELETED)
+        .and(STATE_CRITERION, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -305,7 +305,7 @@ public class UserDAO {
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE, GROUP_USER_REL_TABLE)
         .where(USER_ID_JOINTURE).and("groupid").in(groupIdsAsInt)
-        .and(STATE_CONDITION, UserState.DELETED)
+        .and(STATE_CRITERION, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(con, row -> Integer.toString(row.getInt(1)));
   }
@@ -314,7 +314,7 @@ public class UserDAO {
       throws SQLException {
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE)
-        .where(STATE_CONDITION, UserState.DELETED)
+        .where(STATE_CRITERION, UserState.DELETED)
         .and(DOMAIN_ID, Integer.parseInt(domainId))
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
@@ -324,7 +324,7 @@ public class UserDAO {
       final UserAccessLevel accessLevel) throws SQLException {
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE)
-        .where(STATE_CONDITION, UserState.DELETED)
+        .where(STATE_CRITERION, UserState.DELETED)
         .and(ACCESS_LEVEL, accessLevel.code())
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
@@ -334,7 +334,7 @@ public class UserDAO {
       final UserAccessLevel accessLevel, final String domainId) throws SQLException {
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE)
-        .where(STATE_CONDITION, UserState.DELETED)
+        .where(STATE_CRITERION, UserState.DELETED)
         .and(DOMAIN_ID, Integer.parseInt(domainId))
         .and(ACCESS_LEVEL, accessLevel.code())
         .orderBy(LAST_NAME)
@@ -347,7 +347,7 @@ public class UserDAO {
         .from(USER_TABLE, "ST_UserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("userRoleId = ?", Integer.parseInt(userRoleId))
-        .and(STATE_CONDITION, UserState.DELETED)
+        .and(STATE_CRITERION, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -364,7 +364,7 @@ public class UserDAO {
         .from(USER_TABLE, "ST_SpaceUserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("spaceUserRoleId = ?", Integer.parseInt(spaceUserRoleId))
-        .and(STATE_CONDITION, UserState.DELETED)
+        .and(STATE_CRITERION, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -375,7 +375,7 @@ public class UserDAO {
         .from(USER_TABLE, "ST_GroupUserRole_User_Rel")
         .where(USER_ID_JOINTURE)
         .and("groupUserRoleId = ?", Integer.parseInt(groupUserRoleId))
-        .and(STATE_CONDITION, UserState.DELETED)
+        .and(STATE_CRITERION, UserState.DELETED)
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -393,7 +393,7 @@ public class UserDAO {
     final String order = StringUtil.isDefined(orderBy) ? orderBy : LAST_NAME;
     JdbcSqlQuery query = JdbcSqlQuery.createSelect(USER_COLUMNS)
         .from(USER_TABLE)
-        .where(STATE_CONDITION, UserState.DELETED);
+        .where(STATE_CRITERION, UserState.DELETED);
     if (domainIds != null && !domainIds.isEmpty()) {
       final List<Integer> domainIdsAsInt =
           domainIds.stream().map(Integer::parseInt).collect(Collectors.toList());

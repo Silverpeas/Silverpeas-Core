@@ -34,11 +34,11 @@ import java.util.List;
  * are part of this slice.
  * @author mmoquillon
  */
-public class ListSlice<T> extends ArrayList<T> {
+public class ListSlice<T> extends ArrayList<T> implements SilverpeasList<T> {
 
   private int start = 0;
   private int end;
-  private int maxsize = -1;
+  private long maxsize = -1;
 
   /**
    * Constructs a new slice for a given list.
@@ -50,8 +50,7 @@ public class ListSlice<T> extends ArrayList<T> {
    * this slice ends up at the index of this last item.
    */
   public ListSlice(int sliceBeginIndex, int sliceEndIndex) {
-    super();
-    checkIndexes(sliceBeginIndex, sliceEndIndex);
+    super(sliceEndIndex - sliceBeginIndex + 1);
     this.start = sliceBeginIndex;
     this.end = sliceEndIndex;
   }
@@ -67,7 +66,7 @@ public class ListSlice<T> extends ArrayList<T> {
    * @param originalListSize the size of the original list this slice comes from. It must be greater
    * than 0.
    */
-  public ListSlice(int sliceBeginIndex, int sliceEndIndex, int originalListSize) {
+  public ListSlice(int sliceBeginIndex, int sliceEndIndex, long originalListSize) {
     this(sliceBeginIndex, sliceEndIndex);
     assert originalListSize > 0;
     this.maxsize = originalListSize;
@@ -84,7 +83,6 @@ public class ListSlice<T> extends ArrayList<T> {
    */
   public ListSlice(int sliceBeginIndex, int sliceEndIndex, List<? extends T> originalList) {
     super(originalList.subList(sliceBeginIndex, sliceEndIndex));
-    checkIndexes(sliceBeginIndex, sliceEndIndex);
     this.start = sliceBeginIndex;
     this.end = sliceEndIndex;
     this.maxsize = originalList.size();
@@ -103,9 +101,14 @@ public class ListSlice<T> extends ArrayList<T> {
     this.maxsize = collection.size();
   }
 
+  @Override
+  public <U> SilverpeasList<U> newList() {
+    return new ListSlice<>(this.start, this.end, this.maxsize);
+  }
+
   /**
-   * Gets the first index of this slice in the original list from which it comes. It is the index
-   * at which this slice begins in the original list.
+   * Gets the first index of this slice in the original list from which it comes. It is the
+   * inclusive index at which this slice begins in the original list.
    * @return the index at which this slice begins in the original list.
    */
   public int getFirstIndex() {
@@ -113,8 +116,8 @@ public class ListSlice<T> extends ArrayList<T> {
   }
 
   /**
-   * Gets the last index of this slice in the original list from which it comes. It is the index
-   * at which this slice ends in the original list.
+   * Gets the last index of this slice in the original list from which it comes. It is the
+   * inclusive index at which this slice ends in the original list.
    * @return the index at which this slice ends in the original list.
    */
   public int getLastIndex() {
@@ -130,7 +133,8 @@ public class ListSlice<T> extends ArrayList<T> {
    * unknown at the time the slice is built, in this case -1 is returned.
    * @return the size of the original list or -1 if such a size isn't known.
    */
-  public int originalListSize() {
+  @Override
+  public long originalListSize() {
     return maxsize;
   }
 
@@ -174,12 +178,5 @@ public class ListSlice<T> extends ArrayList<T> {
         .append(maxsize)
         .append(super.hashCode())
         .toHashCode();
-  }
-
-  private void checkIndexes(final int begin, final int end) {
-    if (begin > end) {
-      throw new IllegalArgumentException(
-          "The lower bound of this slice must be lesser or equal than its upper bound");
-    }
   }
 }
