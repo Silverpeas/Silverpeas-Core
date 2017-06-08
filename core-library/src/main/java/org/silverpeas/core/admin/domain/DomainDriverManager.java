@@ -22,11 +22,11 @@ package org.silverpeas.core.admin.domain;
 
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.persistence.DomainRow;
-import org.silverpeas.core.admin.persistence.GroupRow;
 import org.silverpeas.core.admin.persistence.KeyStoreRow;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.UserIndexation;
+import org.silverpeas.core.admin.user.dao.GroupDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
 import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.model.GroupDetail;
@@ -69,6 +69,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
   public static final String GROUP = "group";
   @Inject
   private UserDAO userDAO;
+  @Inject
+  private GroupDAO groupDAO;
   @Inject
   private OrganizationSchema organizationSchema;
   private Map<String, DomainDriver> domainDriverInstances = new ConcurrentHashMap<>();
@@ -361,12 +363,12 @@ public class DomainDriverManager extends AbstractDomainDriver {
       throws AdminException {
     if (StringUtil.isDefined(group.getSuperGroupId())) {
       // Get the user information
-      try {
-        GroupRow gr = getOrganizationSchema().group().getGroup(idAsInt(group.getSuperGroupId()));
+      try (Connection connection = DBUtil.openConnection()) {
+        GroupDetail gr = groupDAO.getGroup(connection, group.getSuperGroupId());
         if (gr == null) {
           throw new AdminException(unknown("parent group", group.getSuperGroupId()));
         }
-        specificGroup.setSuperGroupId(gr.specificId);
+        specificGroup.setSuperGroupId(gr.getSpecificId());
       } catch (SQLException e) {
         throw new AdminException(e.getMessage(), e);
       }
@@ -375,18 +377,18 @@ public class DomainDriverManager extends AbstractDomainDriver {
 
   @Override
   public void deleteGroup(String groupId) throws AdminException {
-    try {
+    try (Connection connection = DBUtil.openConnection()) {
       // Get the group information
-      GroupRow gr = getOrganizationSchema().group().getGroup(idAsInt(groupId));
+      GroupDetail gr = groupDAO.getGroup(connection, groupId);
       if (gr == null) {
         throw new AdminException(unknown(GROUP, groupId));
       }
 
       // Get a DomainDriver instance
-      DomainDriver domainDriver = this.getDomainDriver(idAsString(gr.domainId));
+      DomainDriver domainDriver = this.getDomainDriver(gr.getDomainId());
 
       // Get GroupDetail detail from specific domain
-      domainDriver.deleteGroup(gr.specificId);
+      domainDriver.deleteGroup(gr.getSpecificId());
 
       // Delete index to given group
       unindexGroup(groupId);
@@ -404,7 +406,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   public void updateGroup(GroupDetail group) throws AdminException {
     GroupDetail specificGroup = new GroupDetail(group);
 
-    try {
+    try (Connection connection = DBUtil.openConnection()) {
       // Set supergroup specific Id
       setGroupSpecificId(group, specificGroup);
       // Set subUsers specific Id
@@ -412,13 +414,13 @@ public class DomainDriverManager extends AbstractDomainDriver {
           getUserIds()));
 
       // Get the group information
-      GroupRow gr = getOrganizationSchema().group().getGroup(idAsInt(group.getId()));
+      GroupDetail gr = groupDAO.getGroup(connection, group.getId());
       if (gr == null) {
         throw new AdminException(unknown(GROUP, group.getId()));
       }
       // Get a DomainDriver instance
-      DomainDriver domainDriver = this.getDomainDriver(idAsString(gr.domainId));
-      specificGroup.setId(gr.specificId);
+      DomainDriver domainDriver = this.getDomainDriver(gr.getDomainId());
+      specificGroup.setId(gr.getSpecificId());
       // Update GroupDetail in specific domain
       domainDriver.updateGroup(specificGroup);
     } catch (SQLException e) {
@@ -435,21 +437,21 @@ public class DomainDriverManager extends AbstractDomainDriver {
   public GroupDetail getGroup(String groupId) throws AdminException {
     GroupDetail group;
 
-    try {
+    try (Connection connection = DBUtil.openConnection()) {
       // Get the user information
-      GroupRow gr = getOrganizationSchema().group().getGroup(idAsInt(groupId));
+      GroupDetail gr = groupDAO.getGroup(connection, groupId);
       if (gr == null) {
         throw new AdminException(unknown(GROUP, groupId));
       }
       // Get a DomainDriver instance
-      DomainDriver domainDriver = this.getDomainDriver(idAsString(gr.domainId));
+      DomainDriver domainDriver = this.getDomainDriver(gr.getDomainId());
       // Get GroupDetail detail from specific domain
-      group = domainDriver.getGroup(gr.specificId);
+      group = domainDriver.getGroup(gr.getSpecificId());
 
       // Fill silverpeas info of group details
       group.setId(groupId);
-      group.setSpecificId(gr.specificId);
-      group.setDomainId(idAsString(gr.domainId));
+      group.setSpecificId(gr.getSpecificId());
+      group.setDomainId(gr.getDomainId());
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting(GROUP, groupId), e);
     }
@@ -483,18 +485,18 @@ public class DomainDriverManager extends AbstractDomainDriver {
   public GroupDetail[] getGroups(String groupId) throws AdminException {
     GroupDetail[] groups;
 
-    try {
+    try (Connection connection = DBUtil.openConnection()) {
       // Get the user information
-      GroupRow gr = getOrganizationSchema().group().getGroup(idAsInt(groupId));
+      GroupDetail gr = groupDAO.getGroup(connection, groupId);
       if (gr == null) {
         throw new AdminException(unknown(GROUP, groupId));
       }
 
       // Get a DomainDriver instance
-      DomainDriver domainDriver = this.getDomainDriver(idAsString(gr.domainId));
+      DomainDriver domainDriver = this.getDomainDriver(gr.getDomainId());
 
       // Get Groups of GroupDetail from specific domain
-      groups = domainDriver.getGroups(gr.specificId);
+      groups = domainDriver.getGroups(gr.getSpecificId());
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting(GROUP, groupId), e);
     }
@@ -545,9 +547,9 @@ public class DomainDriverManager extends AbstractDomainDriver {
     return groups;
   }
 
-  public GroupRow[] getAllGroupOfDomain(String domainId) throws AdminException {
-    try {
-      return getOrganizationSchema().group().getAllGroupsOfDomain(Integer.parseInt(domainId));
+  public List<GroupDetail> getAllGroupOfDomain(String domainId) throws AdminException {
+    try (Connection connection = DBUtil.openConnection()) {
+      return groupDAO.getAllGroupsByDomainId(connection, domainId);
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting("all groups in domain", domainId), e);
     }
@@ -559,8 +561,8 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * @throws AdminException
    */
   public void indexAllGroups(String domainId) throws AdminException {
-    GroupRow[] tabGroup = getAllGroupOfDomain(domainId);
-    for (GroupRow group : tabGroup) {
+    List<GroupDetail> groups = getAllGroupOfDomain(domainId);
+    for (GroupDetail group : groups) {
       indexGroup(group);
     }
   }
@@ -569,17 +571,17 @@ public class DomainDriverManager extends AbstractDomainDriver {
    * Indexing a group
    * @param group
    */
-  public void indexGroup(GroupRow group) {
-    FullIndexEntry indexEntry = new FullIndexEntry("groups", "GroupRow", Integer.toString(group.id));
+  public void indexGroup(GroupDetail group) {
+    FullIndexEntry indexEntry = new FullIndexEntry("groups", "GroupRow", group.getId());
     indexEntry.setLastModificationDate(new Date());
-    indexEntry.setTitle(group.name);
-    indexEntry.setPreView(group.description);
+    indexEntry.setTitle(group.getName());
+    indexEntry.setPreView(group.getDescription());
 
     // index some group informations
-    indexEntry.addField("DomainId", Integer.toString(group.domainId));
-    indexEntry.addField("SpecificId", group.specificId);
-    indexEntry.addField("SuperGroupId", Integer.toString(group.superGroupId));
-    indexEntry.addField("SynchroRule", group.rule);
+    indexEntry.addField("DomainId", group.getDomainId());
+    indexEntry.addField("SpecificId", group.getSpecificId());
+    indexEntry.addField("SuperGroupId", group.getSuperGroupId());
+    indexEntry.addField("SynchroRule", group.getRule());
 
     IndexEngineProxy.addIndexEntry(indexEntry);
   }
@@ -670,7 +672,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
   public String createDomain(Domain theDomain) throws AdminException {
     try {
       DomainRow dr = new DomainRow();
-      dr.id = (StringUtil.isInteger(theDomain.getId())) ? Integer.valueOf(theDomain.getId()) : -1;
+      dr.id = StringUtil.isInteger(theDomain.getId()) ? Integer.valueOf(theDomain.getId()) : -1;
       dr.name = theDomain.getName();
       dr.description = theDomain.getDescription();
       dr.className = theDomain.getDriverClassName();
@@ -819,7 +821,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
       return specificIds.toArray(new String[specificIds.size()]);
     } catch (SQLException e) {
       throw new AdminException(
-          failureOnGetting("users", Arrays.stream(ids).collect(Collectors.joining(","))));
+          failureOnGetting("users", Arrays.stream(ids).collect(Collectors.joining(","))), e);
     }
   }
 

@@ -24,13 +24,13 @@
 
 package org.silverpeas.core.web.authentication;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -39,18 +39,14 @@ import javax.servlet.http.HttpSession;
 @Singleton
 public class MandatoryQuestionChecker {
 
-  private final static SettingBundle general =
+  private static final SettingBundle general =
       ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
-  private String destination;
-
-  public String getDestination() {
-    return destination;
-  }
 
   protected MandatoryQuestionChecker() {
   }
 
-  public boolean check(HttpServletRequest req, String authenticationKey) {
+  public String check(HttpServletRequest req, String authenticationKey) {
+    String destination = null;
     boolean isUserLoginQuestionMandatory = "personalQuestion".equals(general.getString(
         "forgottenPwdActive")) && general.getBoolean("userLoginQuestionMandatory", false);
     if (isUserLoginQuestionMandatory) {
@@ -66,10 +62,9 @@ public class MandatoryQuestionChecker {
           destination = "/CredentialsServlet/ChangeQuestion";
         }
       } catch (AdminException e) {
-        SilverTrace
-            .error("util", "MandatoryQuestionChecker.check()", "root.MSG_GEN_EXIT_METHOD", e);
+       SilverLogger.getLogger(this).error(e);
       }
     }
-    return StringUtil.isDefined(destination);
+    return destination;
   }
 }

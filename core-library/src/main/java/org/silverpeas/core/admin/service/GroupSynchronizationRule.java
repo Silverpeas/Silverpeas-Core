@@ -311,7 +311,7 @@ class GroupSynchronizationRule {
     if (isSharedDomain) {
       return getUserManager().getAllUserIdsInDomain(domainId);
     }
-    return Collections.EMPTY_LIST;
+    return Collections.emptyList();
   }
 
   /**
@@ -322,8 +322,6 @@ class GroupSynchronizationRule {
    */
   private List<String> getUserIdsByAccessLevel(String accessLevel) throws AdminException {
     List<String> userIds;
-    DomainDriverManager domainDriverManager = DomainDriverManagerProvider.
-        getCurrentDomainDriverManager();
     if ("*".equalsIgnoreCase(accessLevel)) {
       // In case of "Shared domain" then retrieving all users of all domains
       // Otherwise getting only users of group's domain
@@ -413,7 +411,7 @@ class GroupSynchronizationRule {
     }
 
     // We have to find users according to theirs specificIds
-    List<String> specificIds = users == null ? Collections.EMPTY_LIST :
+    List<String> specificIds = users == null ? Collections.emptyList() :
         Arrays.stream(users).map(UserDetail::getSpecificId).collect(Collectors.toList());
     List<UserDetail> usersInDomain =
         getUserManager().getUsersBySpecificIdsAndDomainId(specificIds, domainId);
@@ -431,8 +429,6 @@ class GroupSynchronizationRule {
     if (cacheOfAllUserIds == null) {
       // In case of "Shared domain", retrieving all users of all domains
       // Otherwise retrieving only users of group's domain
-      DomainDriverManager domainDriverManager =
-          DomainDriverManagerProvider.getCurrentDomainDriverManager();
       if (isSharedDomain) {
         cacheOfAllUserIds = getUserManager().getAllUsersIds();
       } else {

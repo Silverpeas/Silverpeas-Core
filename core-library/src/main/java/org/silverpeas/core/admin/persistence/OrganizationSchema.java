@@ -37,8 +37,6 @@ public class OrganizationSchema {
   @Inject
   private KeyStoreTable keyStore;
   @Inject
-  private GroupTable group;
-  @Inject
   private SpaceTable space;
   @Inject
   private SpaceI18NTable spaceI18N;
@@ -71,10 +69,6 @@ public class OrganizationSchema {
 
   public KeyStoreTable keyStore() {
     return keyStore;
-  }
-
-  public GroupTable group() {
-    return group;
   }
 
   public SpaceTable space() {

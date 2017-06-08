@@ -37,7 +37,6 @@ import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.user.model.AdminGroupInst;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
@@ -392,11 +391,11 @@ public interface Administration {
   String getGroupName(String sGroupId) throws AdminException;
 
   /**
-   * Get the all the groups ids available in Silverpeas.
-   * @return
+   * Get the all the groups available in Silverpeas.
+   * @return a list of available user groups in Silverpeas.
    * @throws AdminException
    */
-  String[] getAllGroupIds() throws AdminException;
+  List<GroupDetail> getAllGroups() throws AdminException;
 
   /**
    * Tests if group exists in Silverpeas.
@@ -489,33 +488,13 @@ public interface Administration {
   void addUserInGroup(String sUserId, String sGroupId) throws AdminException;
 
   /**
-   * Get Silverpeas organization
-   */
-  AdminGroupInst[] getAdminOrganization() throws AdminException;
-
-  /**
-   * Gets the set of Ids denoting the direct subgroups of a given group
-   * @param groupId The ID of the parent group
-   * @return the Ids as an array of <code>String</code>.
-   */
-  String[] getAllSubGroupIds(String groupId) throws AdminException;
-
-  String[] getAllSubGroupIdsRecursively(String groupId) throws AdminException;
-
-  /**
-   * Gets the set of Ids denoting the groups without any parent.
-   * @return the Ids as an array of <code>String</code>.
-   */
-  String[] getAllRootGroupIds() throws AdminException;
-
-  /**
    * Gets all root user groups in Silverpeas. A root group is the group of users without any other
    * parent group.
-   * @return an array of user groups.
+   * @return a list of user groups.
    * @throws AdminException if an error occurs whil getting the
    * root user groups.
    */
-  GroupDetail[] getAllRootGroups() throws AdminException;
+  List<GroupDetail> getAllRootGroups() throws AdminException;
 
   /**
    * Get the group profile instance corresponding to the given ID
@@ -739,9 +718,7 @@ public interface Administration {
 
   GroupDetail[] getRootGroupsOfDomain(String domainId) throws AdminException;
 
-  GroupDetail[] getSynchronizedGroups() throws AdminException;
-
-  String[] getRootGroupIdsOfDomain(String domainId) throws AdminException;
+  List<GroupDetail> getSynchronizedGroups() throws AdminException;
 
   UserDetail[] getAllUsersOfGroup(String groupId) throws AdminException;
 
@@ -778,9 +755,7 @@ public interface Administration {
   // ---------------------------------------------------------------------------------------------
   // QUERY FUNCTIONS
   // ---------------------------------------------------------------------------------------------
-  String[] getDirectGroupsIdsOfUser(String userId) throws AdminException;
-
-  GroupDetail[] searchGroups(GroupDetail modelGroup, boolean isAnd) throws AdminException;
+  List<GroupDetail> getDirectGroupsOfUser(String userId) throws AdminException;
 
   /**
    * Get the spaces ids allowed for the given user Id
@@ -1033,6 +1008,11 @@ public interface Administration {
    * For use in userPanel : return the direct sub-groups
    */
   GroupDetail[] getAllSubGroups(String parentGroupId) throws AdminException;
+
+  /**
+   * For use in userPanel : return the direct sub-groups
+   */
+  GroupDetail[] getRecursivelyAllSubGroups(String parentGroupId) throws AdminException;
 
   /**
    * For use in userPanel : return the users that are direct child of a given group

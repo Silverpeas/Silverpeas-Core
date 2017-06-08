@@ -345,8 +345,8 @@ public class UsersAndGroupsTest {
     String groupId = admin.addGroup(subGroup);
     assertThat(groupId, is("2"));
 
-    String[] subGroupIds = admin.getAllSubGroupIds("1");
-    assertThat(subGroupIds.length, is(1));
+    GroupDetail[] subGroups = admin.getAllSubGroups("1");
+    assertThat(subGroups.length, is(1));
 
     String[] userIds = new String[1];
     userIds[0] = "1";

@@ -28,16 +28,12 @@
 
 package org.silverpeas.web.jobdomain;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -71,56 +67,10 @@ public class DomainNavigationStock extends NavigationStock {
     }
 
     if (manageableGroupIds != null)
-      m_SubGroups = filterGroupsToGroupManager(m_SubGroups);
+      m_SubGroups = filterGroupsToGroupManager(manageableGroupIds, m_SubGroups);
 
     JobDomainSettings.sortGroups(m_SubGroups);
     verifIndexes();
-  }
-
-  private Group[] filterGroupsToGroupManager(Group[] groups) {
-    // get all manageable groups by current user
-    Iterator<String> itManageableGroupsIds = null;
-
-    List<Group> temp = new ArrayList<Group>();
-
-    // filter groups
-    String groupId = null;
-    for (Group group : groups) {
-      groupId = group.getId();
-
-      if (manageableGroupIds.contains(groupId)) {
-        temp.add(group);
-      } else {
-        // get all subGroups of group
-        List<String> subGroupIds = Arrays.asList(m_adc
-            .getAllSubGroupIdsRecursively(groupId));
-
-        // check if at least one manageable group is part of subGroupIds
-        itManageableGroupsIds = manageableGroupIds.iterator();
-
-        String manageableGroupId = null;
-        boolean find = false;
-        while (!find && itManageableGroupsIds.hasNext()) {
-          manageableGroupId = itManageableGroupsIds.next();
-          if (subGroupIds.contains(manageableGroupId)) {
-            find = true;
-          }
-        }
-
-        if (find) {
-          temp.add(group);
-        }
-      }
-    }
-
-    return temp.toArray(new Group[temp.size()]);
-  }
-
-  public boolean isThisDomain(String grId) {
-    if (StringUtil.isDefined(grId)) {
-      return (grId.equals(m_NavDomain.getId()));
-    }
-    return (isDomainValid(m_NavDomain) == false);
   }
 
   public Domain getThisDomain() {

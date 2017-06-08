@@ -442,7 +442,8 @@ public class JdbcSqlQuery {
           String params = sublistOfParameters(i, i + threshold, listOfParameters);
           sqlQuery.append(currentSqlPart).append(" IN (").append(params).append(") OR ");
         }
-        sqlQuery.replace(sqlQuery.length() - 4, sqlQuery.length(), ")");
+        final int lengthOfORLink = 4;
+        sqlQuery.replace(sqlQuery.length() - lengthOfORLink, sqlQuery.length(), ")");
 
       } else {
         String params = parameters.stream().map(p -> "?").collect(Collectors.joining(","));
@@ -575,8 +576,9 @@ public class JdbcSqlQuery {
    * @throws java.sql.SQLException on SQL error.
    */
   public long executeWith(Connection connection) throws SQLException {
+    final int lengthOfStartStatement = 13;
     String builtSqlQuery = getSqlQuery().trim();
-    if ("SELECT COUNT(".equalsIgnoreCase(builtSqlQuery.substring(0, 13))) {
+    if ("SELECT COUNT(".equalsIgnoreCase(builtSqlQuery.substring(0, lengthOfStartStatement))) {
       if (connection == null) {
         return getJdbcSqlExecutor().selectCount(this);
       } else {

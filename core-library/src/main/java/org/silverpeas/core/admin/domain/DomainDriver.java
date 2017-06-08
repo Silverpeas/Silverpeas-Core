@@ -38,10 +38,6 @@ public interface DomainDriver {
 
   class ActionConstants {
 
-    private ActionConstants() {
-
-    }
-
     /**
      * No possible actions Mask
      * @see #getDriverActions
@@ -142,6 +138,10 @@ public interface DomainDriver {
     public static final long ACTION_MASK_MIXED_GROUPS =
         ACTION_READ_GROUP | ACTION_UPDATE_GROUP | ACTION_CREATE_GROUP | ACTION_DELETE_GROUP |
             ACTION_EDIT_USER_IN_GROUP;
+
+    private ActionConstants() {
+
+    }
   }
 
   void init(int domainId, String initParam, String authenticationServer) throws AdminException;

@@ -295,19 +295,15 @@ public class JobDomainPeasRequestRouter extends
 
           // groupe d'appartenance
           AdminController adminController = ServiceProvider.getService(AdminController.class);
-          String[] groupIds = adminController.getDirectGroupsIdsOfUser(userId);
-          if (groupIds != null && groupIds.length > 0) {
-            for (final String groupId : groupIds) {
-              Group group = orgaController.getGroup(groupId);
-
-              String groupDomainId = group.getDomainId();
-              if (groupDomainId == null) {
-                groupDomainId = "-1";
-              }
-              if (!groupDomainId.equals("-1")) {
-                jobDomainSC.goIntoGroup(group.getId());
-                break;
-              }
+          List<GroupDetail> groups = adminController.getDirectGroupsOfUser(userId);
+          for (final Group group : groups) {
+            String groupDomainId = group.getDomainId();
+            if (groupDomainId == null) {
+              groupDomainId = "-1";
+            }
+            if (!groupDomainId.equals("-1")) {
+              jobDomainSC.goIntoGroup(group.getId());
+              break;
             }
           }
 

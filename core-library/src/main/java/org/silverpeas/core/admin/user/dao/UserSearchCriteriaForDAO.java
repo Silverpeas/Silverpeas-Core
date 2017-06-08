@@ -52,7 +52,11 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   private static final String ST_USER = "st_user";
   private final UserDetailsSearchCriteria criteria;
   private Set<String> tables = new HashSet<>();
-  private PaginationPage page;
+
+  private UserSearchCriteriaForDAO(final UserDetailsSearchCriteria criteria) {
+    this.criteria = criteria;
+    tables.add(ST_USER);
+  }
 
   public static UserSearchCriteriaForDAO newCriteria() {
     return new UserSearchCriteriaForDAO(new UserDetailsSearchCriteria());
@@ -60,11 +64,6 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   public static UserSearchCriteriaForDAO newCriteriaFrom(final UserDetailsSearchCriteria criteria) {
     return new UserSearchCriteriaForDAO(criteria);
-  }
-
-  private UserSearchCriteriaForDAO(final UserDetailsSearchCriteria criteria) {
-    this.criteria = criteria;
-    tables.add(ST_USER);
   }
 
   @Override
@@ -82,7 +81,6 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   @Override
   public UserSearchCriteriaForDAO onName(String name) {
     if (isDefined(name)) {
-      tables.add(ST_USER);
       criteria.onName(name);
     }
     return this;
@@ -96,7 +94,6 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
    */
   public UserSearchCriteriaForDAO onFirstName(final String firstName) {
     if (isDefined(firstName)) {
-      tables.add(ST_USER);
       criteria.onFirstName(firstName);
     }
     return this;
@@ -110,7 +107,6 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
    */
   public UserSearchCriteriaForDAO onLastName(final String lastName) {
     if (isDefined(lastName)) {
-      tables.add(ST_USER);
       criteria.onLastName(lastName);
     }
     return this;
@@ -118,16 +114,16 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public UserSearchCriteriaForDAO onGroupIds(String... groupIds) {
-    tables.add(ST_USER);
-    tables.add("st_group_user_rel");
-    criteria.onGroupIds(groupIds);
+    if (groupIds != ANY) {
+      tables.add("st_group_user_rel");
+      criteria.onGroupIds(groupIds);
+    }
     return this;
   }
 
   @Override
   public UserSearchCriteriaForDAO onAccessLevels(UserAccessLevel... accessLevels) {
     if (accessLevels != null && accessLevels.length > 0) {
-      tables.add(ST_USER);
       criteria.onAccessLevels(accessLevels);
     }
     return this;
@@ -138,7 +134,6 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     // all users that are part of the specified domain or that have administration priviledges
     // (the administrators should be visible by anyone in order to be contacted)
     if (isDefined(domainId)) {
-      tables.add(ST_USER);
       criteria.onDomainId(domainId);
     }
     return this;
@@ -147,7 +142,6 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   @Override
   public UserSearchCriteriaForDAO onUserIds(String... userIds) {
     if (userIds != ANY) {
-      tables.add(ST_USER);
       criteria.onUserIds(userIds);
     }
     return this;
@@ -160,15 +154,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   }
 
   JdbcSqlQuery toSQLQuery(String fields) {
-    List<UserState> userStatesToExclude = new ArrayList<>();
-    if (criteria.isCriterionOnUserStatesToExcludeSet()) {
-      Collections.addAll(userStatesToExclude, criteria.getCriterionOnUserStatesToExclude());
-    }
-    userStatesToExclude.add(UserState.DELETED);
-
-    JdbcSqlQuery query = JdbcSqlQuery.createSelect(fields)
-        .from(tables.stream().collect(Collectors.joining(",")))
-        .where("st_user.state").notIn(userStatesToExclude);
+    JdbcSqlQuery query = prepareJdbcSqlQuery(fields);
 
     if (criteria.isCriterionOnAccessLevelsSet()) {
       List<String> codes = Arrays.stream(criteria.getCriterionOnAccessLevels())
@@ -215,17 +201,7 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
           .and("st_group_user_rel.groupId").in(groupIds);
     }
 
-    boolean userSelection = false;
-    if (!fields.toLowerCase().matches("(count|max|min)\\(.*\\)")) {
-      query.orderBy(ORDERING);
-      userSelection = true;
-    }
-
-    if (criteria.isCriterionOnPaginationSet() && userSelection) {
-      PaginationPage page = criteria.getCriterionOnPagination();
-      query.offset((page.getPageNumber() - 1) * page.getPageSize());
-      query.limit(page.getPageSize());
-    }
+    finalizeJdbcSqlQuery(fields, query);
 
     return query;
   }
@@ -261,4 +237,29 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     return this;
   }
 
+  private void finalizeJdbcSqlQuery(final String fields, final JdbcSqlQuery query) {
+    boolean userSelection = false;
+    if (!fields.toLowerCase().matches("(count|max|min)\\(.*\\)")) {
+      query.orderBy(ORDERING);
+      userSelection = true;
+    }
+
+    if (criteria.isCriterionOnPaginationSet() && userSelection) {
+      PaginationPage page = criteria.getCriterionOnPagination();
+      query.offset((page.getPageNumber() - 1) * page.getPageSize());
+      query.limit(page.getPageSize());
+    }
+  }
+
+  private JdbcSqlQuery prepareJdbcSqlQuery(final String fields) {
+    List<UserState> userStatesToExclude = new ArrayList<>();
+    if (criteria.isCriterionOnUserStatesToExcludeSet()) {
+      Collections.addAll(userStatesToExclude, criteria.getCriterionOnUserStatesToExclude());
+    }
+    userStatesToExclude.add(UserState.DELETED);
+
+    return JdbcSqlQuery.createSelect(fields)
+        .from(tables.stream().collect(Collectors.joining(",")))
+        .where("st_user.state").notIn(userStatesToExclude);
+  }
 }

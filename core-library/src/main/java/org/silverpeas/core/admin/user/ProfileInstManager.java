@@ -141,18 +141,10 @@ public class ProfileInstManager {
     return profileInst;
   }
 
-  private void setUsersAndGroups(ProfileInst profileInst) throws SQLException, AdminException {
-
+  private void setUsersAndGroups(ProfileInst profileInst) throws AdminException {
     // Get the groups
-    String[] asGroupIds =
-        organizationSchema.group().getDirectGroupIdsInUserRole(idAsInt(profileInst.getId()));
-
-    // Set the groups to the space profile
-    if (asGroupIds != null) {
-      for (String groupId : asGroupIds) {
-        profileInst.addGroup(groupId);
-      }
-    }
+    List<String> asGroupIds = GroupManager.get().getDirectGroupIdsInRole(profileInst.getId());
+    asGroupIds.forEach(profileInst::addGroup);
 
     // Get the Users
     List<String> userIds = UserManager.get().getDirectUserIdsInRole(profileInst.getId());

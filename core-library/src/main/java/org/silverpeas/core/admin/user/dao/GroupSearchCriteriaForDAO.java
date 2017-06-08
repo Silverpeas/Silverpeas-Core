@@ -23,19 +23,20 @@
  */
 package org.silverpeas.core.admin.user.dao;
 
-import org.silverpeas.core.NotSupportedException;
-import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.user.model.SearchCriteria;
+import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
+import org.silverpeas.core.admin.user.model.SearchCriteria;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
-import java.text.MessageFormat;
 import java.util.ArrayList;
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -46,40 +47,39 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
-  private static final String QUERY = "select distinct {0} from {1} {2} order by name";
-  private final StringBuilder filter = new StringBuilder();
-  private Set<UserState> userStatesToExclude = new HashSet<UserState>();
-  private final Set<String> tables = new HashSet<String>();
-  private final List<String> domainIds = new ArrayList<String>();
-  private PaginationPage page = null;
+  private final GroupsSearchCriteria criteria;
+  private final Set<String> tables = new HashSet<>();
+  private String[] userIds = null;
+
+  private GroupSearchCriteriaForDAO(final GroupsSearchCriteria criteria) {
+    this.criteria = criteria;
+    tables.add("st_group");
+  }
 
   public static GroupSearchCriteriaForDAO newCriteria() {
-    return new GroupSearchCriteriaForDAO();
+    return new GroupSearchCriteriaForDAO(new GroupsSearchCriteria());
+  }
+
+  public static GroupSearchCriteriaForDAO newCriteriaFrom(final GroupsSearchCriteria criteria) {
+    return new GroupSearchCriteriaForDAO(criteria);
   }
 
   @Override
   public GroupSearchCriteriaForDAO and() {
-    if (filter.length() > 0) {
-      filter.append(" and ");
-    }
+    this.criteria.and();
     return this;
   }
 
   @Override
   public GroupSearchCriteriaForDAO or() {
-    if (filter.length() > 0) {
-      filter.append(" or ");
-    }
+    this.criteria.or();
     return this;
   }
 
   @Override
   public GroupSearchCriteriaForDAO onName(String name) {
     if (isDefined(name)) {
-      tables.add("st_group");
-      getFixedQuery().append("lower(st_group.name) like lower('").
-          append(name).
-          append("')");
+      this.criteria.onName(name);
     }
     return this;
   }
@@ -87,13 +87,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   @Override
   public GroupSearchCriteriaForDAO onGroupIds(String... groupIds) {
     if (groupIds != ANY) {
-      tables.add("st_group");
-      StringBuilder[] sqlLists = asSQLList(groupIds);
-      StringBuilder theQuery = getFixedQuery().append("(st_group.id in ").append(sqlLists[0]);
-      for (int i = 1; i < sqlLists.length; i++) {
-        theQuery.append(" or st_group.id in ").append(sqlLists[i]);
-      }
-      theQuery.append(")");
+      this.criteria.onGroupIds(groupIds);
     }
     return this;
   }
@@ -101,9 +95,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   @Override
   public GroupSearchCriteriaForDAO onDomainId(String domainId) {
     if (isDefined(domainId)) {
-      domainIds.add(domainId);
-      tables.add("st_group");
-      getFixedQuery().append("st_group.domainId = ").append(Integer.valueOf(domainId));
+      this.criteria.onDomainId(domainId);
     }
     return this;
   }
@@ -111,28 +103,22 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   @Override
   public GroupSearchCriteriaForDAO onAccessLevels(UserAccessLevel... accessLevels) {
     // Not handled for now
-    removeLastOperatorIfAny();
     return this;
   }
 
   @Override
   public SearchCriteria onUserStatesToExclude(final UserState... userStates) {
     if (userStates != null && userStates.length > 0) {
-      Collections.addAll(userStatesToExclude, userStates);
+      this.criteria.onUserStatesToExclude(userStates);
       // It is only used in order to transport the criterion which will be given to the
       // UserSearchCriteriaForDAO when getting the number of users linked to the group
     }
-    removeLastOperatorIfAny();
     return this;
   }
 
-  public GroupSearchCriteriaForDAO onMixedDomainOronDomainId(String domainId) {
+  public GroupSearchCriteriaForDAO onMixedDomainOrOnDomainId(String domainId) {
     if (isDefined(domainId)) {
-      domainIds.add(domainId);
-      tables.add("st_group");
-      getFixedQuery().append("(st_group.domainId = ").append(Integer.valueOf(domainId)).
-          append(" or st_group.domainId = ").append(Integer.valueOf(Domain.MIXED_DOMAIN_ID)).
-          append(")");
+      this.criteria.onMixedDomainOrOnDomainId(domainId);
     }
     return this;
   }
@@ -141,14 +127,7 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   public SearchCriteria onUserIds(String... userIds) {
     if (userIds != ANY) {
       tables.add("st_group_user_rel");
-      StringBuilder[] sqlLists = asSQLList(userIds);
-      getFixedQuery().append("st_group.id = st_group_user_rel.groupid");
-      StringBuilder theQuery =
-          getFixedQuery().append(" and (st_group_user_rel.userid in ").append(sqlLists[0]);
-      for (int i = 1; i < sqlLists.length; i++) {
-        theQuery.append(" or st_group_user_rel.userid in ").append(sqlLists[i]);
-      }
-      theQuery.append(")");
+      this.userIds = Arrays.copyOf(userIds, userIds.length);
     }
     return this;
   }
@@ -156,119 +135,93 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   @Override
   public SearchCriteria onRoleNames(String... roleIds) {
     if (roleIds != null && roleIds.length > 0) {
-      tables.add("st_group");
       tables.add("st_userrole_group_rel");
-      StringBuilder[] sqlLists = asSQLList(roleIds);
-      StringBuilder theQuery = getFixedQuery().
-          append(
-              "(ST_Group.id = ST_UserRole_Group_Rel.groupId and (ST_UserRole_Group_Rel.userRoleId" +
-                  " in ").
-          append(sqlLists[0]);
-      for (int i = 1; i < sqlLists.length; i++) {
-        theQuery.append(" or ST_UserRole_Group_Rel.userRoleId in ").append(sqlLists[i]);
-      }
-      theQuery.append("))");
+      this.criteria.onRoleNames(roleIds);
     }
     return this;
   }
 
   public SearchCriteria onSuperGroupId(String superGroupId) {
     if (isDefined(superGroupId)) {
-      tables.add("st_group");
-      getFixedQuery().append("st_group.superGroupId = ").append(Integer.valueOf(superGroupId));
+      this.criteria.onSuperGroupId(superGroupId);
     }
     return this;
   }
 
   public SearchCriteria onAsRootGroup() {
-    tables.add("st_group");
-    getFixedQuery().append("st_group.superGroupId is null");
+    this.criteria.onAsRootGroup();
     return this;
   }
 
-  public String toSQLQuery(String fields) {
-    return MessageFormat.format(QUERY, fields, impliedTables(), queryFilter());
+  public JdbcSqlQuery toSQLQuery(String fields) {
+    JdbcSqlQuery query = prepareJdbcSqlQuery(fields);
+
+    if (criteria.isCriterionOnNameSet()) {
+      query.and("lower(st_group.name) like lower(?)", criteria.getCriterionOnName());
+    }
+
+    if (criteria.isCriterionOnGroupIdsSet()) {
+      List<Integer> groupIds = Arrays.stream(criteria.getCriterionOnGroupIds())
+          .map(Integer::parseInt)
+          .collect(Collectors.toList());
+      query.and("st_group.id").in(groupIds);
+    }
+
+    if (criteria.isCriterionOnDomainIdSet()) {
+      List<Integer> domains =
+          getCriterionOnDomainIds().stream().map(Integer::parseInt).collect(Collectors.toList());
+      query.and("st_group.domainId").in(domains);
+    }
+
+    if (userIds != null && userIds.length > 0) {
+      List<Integer> ids =
+          Arrays.stream(userIds).map(Integer::parseInt).collect(Collectors.toList());
+      query.and("st_group.id = st_group_user_rel.groupId")
+          .and("st_group_user_rel.userid").in(ids);
+    }
+
+    if (criteria.isCriterionOnRoleNamesSet()) {
+      List<Integer> rolesIds = Arrays.stream(criteria.getCriterionOnRoleNames())
+          .map(Integer::parseInt)
+          .collect(Collectors.toList());
+      query.and("st_group.id = st_userrole_group_rel.groupId")
+          .and("st_userrole_group_rel.userRoleId").in(rolesIds);
+    }
+
+    setCriterionOnSuperGroup(query);
+
+    finalizeJdbcSqlQuery(query);
+
+    return query;
   }
 
   @Override
   public String toString() {
-    return toSQLQuery("*");
+    return toSQLQuery("*").toString();
   }
 
   @Override
   public boolean isEmpty() {
-    return filter.length() == 0;
+    return criteria.isEmpty();
   }
 
   public boolean isCriterionOnDomainIdSet() {
-    return !domainIds.isEmpty();
+    return criteria.isCriterionOnDomainIdSet() || criteria.isCriterionOnMixedDomainIdSet();
   }
 
   public List<String> getCriterionOnDomainIds() {
+    List<String> domainIds = new ArrayList<>();
+    if (criteria.isCriterionOnDomainIdSet()) {
+      domainIds.add(criteria.getCriterionOnDomainId());
+    }
+    if (criteria.isCriterionOnMixedDomainIdSet()) {
+      domainIds.add(Domain.MIXED_DOMAIN_ID);
+    }
     return domainIds;
   }
 
-  public Set<UserState> getCriterionOnUserStatesToExclude() {
-    return userStatesToExclude;
-  }
-
-  private String impliedTables() {
-    StringBuilder tablesUsedInCriteria = new StringBuilder();
-    for (String aTable : tables) {
-      tablesUsedInCriteria.append(aTable).append(", ");
-    }
-    return tablesUsedInCriteria.substring(0, tablesUsedInCriteria.length() - 2);
-  }
-
-  private String queryFilter() {
-    String sqlFilter = "";
-    if (filter.length() > 0) {
-      sqlFilter += " where " + filter;
-    }
-    return sqlFilter;
-  }
-
-  private GroupSearchCriteriaForDAO() {
-    tables.add("st_group");
-  }
-
-  /**
-   * Gets the current query after fixing it if it is needed. The query is fixed if it contains some
-   * contraints and we are coming to set another one without set a conjonction or a disjonction link
-   * between the previous contraints and the next one.
-   *
-   * @return the current query fixed so that the contraints are linked with either a conjonction or
-   * a disjonction operator.
-   */
-  private StringBuilder getFixedQuery() {
-    if (filter.length() > 0 && !filter.toString().endsWith(" and ")
-        && !filter.toString().endsWith(" or ")) {
-      filter.append(" and ");
-    }
-    return filter;
-  }
-
-  // Oracle has a hard limitation with SQL lists with 'in' clause: it cannot take more than 1000
-  // elements. So we split it in several SQL lists so that they contain less than 1000 elements.
-  private StringBuilder[] asSQLList(String... items) {
-    StringBuilder[] lists = new StringBuilder[(int) Math.ceil(items.length / 1000) + 1];
-    int count = 0;
-    int i = 0;
-    lists[i] = new StringBuilder("(");
-    for (String anItem : items) {
-      if (++count >= 1000) {
-        lists[i].setCharAt(lists[i].length() - 1, ')');
-        lists[++i] = new StringBuilder("(");
-        count = 0;
-      }
-      lists[i].append(anItem).append(",");
-    }
-    if (lists[i].toString().endsWith(",")) {
-      lists[i].setCharAt(lists[i].length() - 1, ')');
-    } else {
-      lists[i].append("null").append(")");
-    }
-    return lists;
+  public UserState[] getCriterionOnUserStatesToExclude() {
+    return this.criteria.getCriterionOnUserStatesToExclude();
   }
 
   @Override
@@ -283,30 +236,18 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
 
   @Override
   public SearchCriteria onPagination(PaginationPage page) {
-    removeLastOperatorIfAny();
-    this.page = page;
+    if (page != null) {
+      this.criteria.onPagination(page);
+    }
     return this;
   }
-
-  /**
-   * Removes from the query the last operator if any.<br/>
-   * It is useful to use it on a criteria that is not yet handled (for example).
-   */
-  private void removeLastOperatorIfAny() {
-    if (filter.toString().endsWith(" and ")) {
-      filter.delete(filter.toString().lastIndexOf(" and "), filter.length());
-    } else if (filter.toString().endsWith(" or ")) {
-      filter.delete(filter.toString().lastIndexOf(" or "), filter.length());
-    }
-  }
-
   /**
    * Gets the criterion on the pagination page to fetch.
    *
    * @return a pagination page.
    */
   public PaginationPage getPagination() {
-    return page;
+    return criteria.getCriterionOnPagination();
   }
 
   /**
@@ -315,6 +256,34 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
    * @return true if a criterion on the pagination about user groups is set, false otherwise.
    */
   public boolean isPaginationSet() {
-    return page != null;
+    return criteria.isCriterionOnPaginationSet();
+  }
+
+  private void setCriterionOnSuperGroup(final JdbcSqlQuery query) {
+    if (criteria.isCriterionOnSuperGroupIdSet() && criteria.mustBeRoot()) {
+      query.and("(st_group.superGroupId = ? or st_group.superGroupId is null)",
+          Integer.parseInt(criteria.getCriterionOnSuperGroupId()));
+    } else if (criteria.isCriterionOnSuperGroupIdSet()) {
+      query.and("st_group.superGroupId = ?",
+          Integer.parseInt(criteria.getCriterionOnSuperGroupId()));
+    } else if (criteria.mustBeRoot()) {
+      query.and("st_group.superGroupId is null");
+    }
+  }
+
+  private JdbcSqlQuery prepareJdbcSqlQuery(final String fields) {
+    return JdbcSqlQuery.createSelect(fields)
+        .from(tables.stream().collect(Collectors.joining(",")))
+        .where("st_group.id = st_group.id");
+  }
+
+  private void finalizeJdbcSqlQuery(final JdbcSqlQuery query) {
+    query.orderBy("st_group.name");
+
+    if (criteria.isCriterionOnPaginationSet()) {
+      PaginationPage page = criteria.getCriterionOnPagination();
+      query.offset((page.getPageNumber() - 1) * page.getPageSize());
+      query.limit(page.getPageSize());
+    }
   }
 }

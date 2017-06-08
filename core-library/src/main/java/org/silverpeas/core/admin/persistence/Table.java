@@ -23,8 +23,6 @@
 */
 package org.silverpeas.core.admin.persistence;
 
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
@@ -48,6 +46,9 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 * A Table object manages a table in a database.
 */
 public abstract class Table<T> extends AbstractTable<T> {
+
+  private static final String GROUP_EXISTENCE = "select id from ST_Group where id = ?";
+  private static final String USER_EXISTENCE = "select id from ST_User where id = ?";
 
   protected Table(String tableName) {
     super(tableName);
@@ -83,10 +84,27 @@ public abstract class Table<T> extends AbstractTable<T> {
     return result.toString();
   }
 
-  protected void checkUserExistence(final int userId) throws AdminException {
-    UserManager userManager = UserManager.get();
-    if (!userManager.isUserExisting(String.valueOf(userId))) {
-      throw new AdminException(unknown("user", String.valueOf(userId)));
+  protected void checkUserExistence(final int userId) throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement statement = connection.prepareStatement(USER_EXISTENCE)) {
+      statement.setInt(1, userId);
+      try (ResultSet rs = statement.executeQuery()) {
+        if (!rs.next()) {
+          throw new SQLException(unknown("user", String.valueOf(userId)));
+        }
+      }
+    }
+  }
+
+  protected void checkGroupExistence(int groupId) throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement statement = connection.prepareStatement(GROUP_EXISTENCE)) {
+      statement.setInt(1, groupId);
+      try (ResultSet rs = statement.executeQuery()) {
+        if (!rs.next()) {
+          throw new SQLException(unknown("group", String.valueOf(groupId)));
+        }
+      }
     }
   }
 

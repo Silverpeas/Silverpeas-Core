@@ -32,8 +32,14 @@
 package org.silverpeas.web.jobdomain;
 
 import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This class manage the informations needed for groups navigation and browse PRE-REQUIRED : the
@@ -51,6 +57,30 @@ public class NavigationStock {
     m_adc = adc;
     m_FirstDisplayedUser = 0;
     m_FirstDisplayedGroup = 0;
+  }
+
+  public static Group[] filterGroupsToGroupManager(final List<String> manageableGroupIds,
+      final Group[] groups) {
+    List<Group> manageableGroups = new ArrayList<>(groups.length);
+    for (Group group: groups) {
+      if (manageableGroupIds.contains(group.getId())) {
+        manageableGroups.add(group);
+      } else {
+        Group[] subGroups = new Group[0];
+        try {
+          subGroups = Administration.get().getRecursivelyAllSubGroups(group.getId());
+        } catch (AdminException e) {
+          SilverLogger.getLogger(NavigationStock.class).error(e.getMessage(), e);
+        }
+        for (Group subGroup : subGroups) {
+          if (manageableGroupIds.contains(subGroup.getId())) {
+            manageableGroups.add(group);
+            break;
+          }
+        }
+      }
+    }
+    return manageableGroups.toArray(new Group[manageableGroups.size()]);
   }
 
   protected void verifIndexes() {

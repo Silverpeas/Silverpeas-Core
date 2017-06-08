@@ -25,6 +25,7 @@
 package org.silverpeas.web.joborganization.control;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.web.joborganization.JobOrganizationPeasException;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -150,14 +151,14 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
       if (getCurrentUserId() == null) {
         return null;
       }
-      String[] groupIds = getAdminController().getDirectGroupsIdsOfUser(
+      List<GroupDetail> groups = getAdminController().getDirectGroupsOfUser(
           getCurrentUserId());
-      if (groupIds == null || groupIds.length == 0) {
+      if (groups.isEmpty()) {
         return null;
       }
-      currentGroups = new String[groupIds.length][4];
-      for (int iGrp = 0; iGrp < groupIds.length; iGrp++) {
-        Group theCurrentGroup = getOrganisationController().getGroup(groupIds[iGrp]);
+      currentGroups = new String[groups.size()][4];
+      for (int iGrp = 0; iGrp < groups.size(); iGrp++) {
+        Group theCurrentGroup = groups.get(iGrp);
         currentGroups[iGrp][0] = theCurrentGroup.getId();
         currentGroups[iGrp][1] = theCurrentGroup.getName();
         currentGroups[iGrp][2] = String.valueOf(theCurrentGroup.getUserIds().length);

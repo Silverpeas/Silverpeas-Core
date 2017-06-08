@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.util;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -44,6 +45,12 @@ public class SilverpeasListWrapper<E> implements SilverpeasList<E> {
 
   SilverpeasListWrapper(final List<E> wrappedList) {
     this.wrappedList = wrappedList;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public <U> SilverpeasList<U> newList() {
+    return new SilverpeasListWrapper(new ArrayList<>());
   }
 
   @Override
@@ -153,22 +160,27 @@ public class SilverpeasListWrapper<E> implements SilverpeasList<E> {
     return wrappedList.subList(fromIndex, toIndex);
   }
 
+  @Override
   public void forEach(Consumer<? super E> action) {
     wrappedList.forEach(action);
   }
 
+  @Override
   public Spliterator<E> spliterator() {
     return wrappedList.spliterator();
   }
 
+  @Override
   public boolean removeIf(Predicate<? super E> filter) {
     return wrappedList.removeIf(filter);
   }
 
+  @Override
   public void replaceAll(UnaryOperator<E> operator) {
     wrappedList.replaceAll(operator);
   }
 
+  @Override
   public void sort(Comparator<? super E> c) {
     wrappedList.sort(c);
   }

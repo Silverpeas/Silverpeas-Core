@@ -106,26 +106,7 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
             ResultSet.CONCUR_READ_ONLY) : con.prepareStatement(selectQuery.getSqlQuery())) {
       setParameters(st, selectQuery.getParameters());
       try (ResultSet rs = st.executeQuery()) {
-        int idx = queryConf.getOffset();
-        if (queryConf.isFirstResultScrolled()) {
-          rs.next();
-          rs.relative(idx - 1);
-        }
-        final int lastIdx =
-            queryConf.isResultCountLimited() ? idx + queryConf.getResultLimit() - 1 : 0;
-        ListSlice<R> entities = new ListSlice<>(idx, lastIdx);
-        int originalSize = idx;
-        for (;rs.next(); originalSize++) {
-          if (!queryConf.isResultCountLimited() ||
-              (queryConf.isResultCountLimited() && entities.size() < queryConf.getResultLimit())) {
-            R entity = process.currentRow(new ResultSetWrapper(rs, idx++));
-            if (entity != null) {
-              entities.add(entity);
-            }
-          }
-        }
-        entities.setOriginalListSize(originalSize);
-        return entities;
+        return fetchEntities(rs, process, queryConf);
       } catch (SQLException e) {
         SilverLogger.getLogger(this)
             .debug(e.getMessage() + SQL_REQUEST + selectQuery.getSqlQuery());
@@ -172,6 +153,31 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
       }
     }
     return nbUpdate;
+  }
+
+  private <R> ListSlice<R> fetchEntities(final ResultSet rs,
+      final SelectResultRowProcess<R> process, final JdbcSqlQuery.Configuration queryConf)
+      throws SQLException {
+    int idx = queryConf.getOffset();
+    if (queryConf.isFirstResultScrolled()) {
+      rs.next();
+      rs.relative(idx - 1);
+    }
+    final int lastIdx =
+        queryConf.isResultCountLimited() ? idx + queryConf.getResultLimit() - 1 : 0;
+    ListSlice<R> entities = new ListSlice<>(idx, lastIdx);
+    int originalSize = idx;
+    for (;rs.next(); originalSize++) {
+      if (!queryConf.isResultCountLimited() ||
+          (queryConf.isResultCountLimited() && entities.size() < queryConf.getResultLimit())) {
+        R entity = process.currentRow(new ResultSetWrapper(rs, idx++));
+        if (entity != null) {
+          entities.add(entity);
+        }
+      }
+    }
+    entities.setOriginalListSize(originalSize);
+    return entities;
   }
 
   /**
