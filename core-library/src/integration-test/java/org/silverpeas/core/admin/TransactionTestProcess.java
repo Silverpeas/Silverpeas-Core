@@ -22,35 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.util;
-
-import java.util.ArrayList;
-import java.util.Collection;
+package org.silverpeas.core.admin;
 
 /**
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-public class SilverpeasArrayList<T> extends ArrayList<T> implements SilverpeasList<T> {
-
-  public SilverpeasArrayList(final int initialCapacity) {
-    super(initialCapacity);
-  }
-
-  public SilverpeasArrayList() {
-    super();
-  }
-
-  public SilverpeasArrayList(final Collection<? extends T> c) {
-    super(c);
-  }
-
-  @Override
-  public <U> SilverpeasList<U> newEmptyListWithSameProperties() {
-    return new SilverpeasArrayList<>(this.size());
-  }
-
-  @Override
-  public long originalListSize() {
-    return size();
-  }
+public interface TransactionTestProcess {
+  void perform() throws Exception;
 }

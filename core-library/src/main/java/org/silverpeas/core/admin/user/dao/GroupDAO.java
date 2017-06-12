@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 @Singleton
 public class GroupDAO {
@@ -49,7 +50,7 @@ public class GroupDAO {
   private static final String USER_ROLE_GROUPS_TABLE = "st_userrole_group_rel";
   private static final String SPACE_ROLE_GROUP = "st_spaceuserrole_group_rel";
   private static final String GROUP_COLUMNS =
-      "id,specificId,domainId,superGroupId,name,description,synchroRule";
+      "DISTINCT(id),specificId,domainId,superGroupId,name,description,synchroRule";
   private static final String DOMAIN_ID_CRITERION = "domainId = ?";
   private static final String GROUP_ID_CRITERION = "groupId = ?";
   private static final String ID_CRITERION = "id = ?";
@@ -70,12 +71,12 @@ public class GroupDAO {
     Integer superGroupId = checkSuperGroup(connection, group);
 
     final int nextId = DBUtil.getNextId(GROUP_TABLE);
-    String specificId = StringUtil.isDefined(group.getSpecificId()) ? group.getSpecificId() :
-        String.valueOf(nextId);
+    String specificId =
+        isDefined(group.getSpecificId()) ? group.getSpecificId() : String.valueOf(nextId);
     JdbcSqlQuery.createInsertFor(GROUP_TABLE)
         .addInsertParam("id", nextId)
         .addInsertParam(SPECIFIC_ID, specificId)
-        .addInsertParam(DOMAIN_ID, Integer.parseInt(group.getDomainId()))
+        .addInsertParam(DOMAIN_ID, getDomainIdOf(group))
         .addInsertParam(SUPER_GROUP_ID, superGroupId)
         .addInsertParam(NAME, group.getName())
         .addInsertParam(DESCRIPTION, group.getDescription())
@@ -134,15 +135,14 @@ public class GroupDAO {
       throws SQLException {
     Integer superGroupId = checkSuperGroup(connection, group);
 
-    String specificId =
-        StringUtil.isDefined(group.getSpecificId()) ? group.getSpecificId() : group.getId();
+    String specificId = isDefined(group.getSpecificId()) ? group.getSpecificId() : group.getId();
     JdbcSqlQuery.createUpdateFor(GROUP_TABLE)
         .addUpdateParam(SPECIFIC_ID, specificId)
-        .addUpdateParam(DOMAIN_ID, Integer.parseInt(group.getDomainId()))
+        .addUpdateParam(DOMAIN_ID, getDomainIdOf(group))
         .addUpdateParam(SUPER_GROUP_ID, superGroupId)
         .addUpdateParam(NAME, group.getName())
         .addUpdateParam(DESCRIPTION, group.getDescription())
-        .addUpdateParam(SYNCHRO_RULE, group.getRule())
+        .addUpdateParam(SYNCHRO_RULE, isDefined(group.getRule()) ? group.getRule() : null)
         .where(ID_CRITERION, Integer.parseInt(group.getId()))
         .executeWith(connection);
   }
@@ -150,7 +150,7 @@ public class GroupDAO {
   private Integer checkSuperGroup(final Connection connection, final GroupDetail group)
       throws SQLException {
     Integer superGroupId = null;
-    if (StringUtil.isDefined(group.getSuperGroupId())) {
+    if (isDefined(group.getSuperGroupId())) {
       superGroupId = Integer.parseInt(group.getSuperGroupId());
       if (superGroupId >= 0 && getGroup(connection, group.getSuperGroupId()) == null) {
         throw new SQLException(unknown("parent group", superGroupId));
@@ -315,7 +315,7 @@ public class GroupDAO {
   public List<String> getManageableGroupIds(Connection con, String userId,
       List<String> groupIds) throws SQLException {
     List<String> manageableGroupIds = new ArrayList<>();
-    if (StringUtil.isDefined(userId)) {
+    if (isDefined(userId)) {
       manageableGroupIds.addAll(getManageableGroupIdsByUser(con, userId));
     }
     if (groupIds != null && !groupIds.isEmpty()) {
@@ -416,10 +416,14 @@ public class GroupDAO {
     GroupDetail group = new GroupDetail();
     group.setId(Integer.toString(rs.getInt("id")));
     group.setSpecificId(rs.getString(SPECIFIC_ID));
-    if (group.getSpecificId().equals("-1")) {
+    if ("-1".equals(group.getSpecificId())) {
       group.setSpecificId(null);
     }
-    group.setDomainId(Integer.toString(rs.getInt(DOMAIN_ID)));
+    final int domainId = rs.getInt(DOMAIN_ID);
+    if (domainId != -1) {
+      // The domain is not the MIXED one
+      group.setDomainId(Integer.toString(domainId));
+    }
     group.setSuperGroupId(Integer.toString(rs.getInt(SUPER_GROUP_ID)));
     if (rs.wasNull()) {
       group.setSuperGroupId(null);
@@ -428,5 +432,14 @@ public class GroupDAO {
     group.setDescription(rs.getString(DESCRIPTION));
     group.setRule(rs.getString(SYNCHRO_RULE));
     return group;
+  }
+
+  private int getDomainIdOf(final GroupDetail group) {
+    final String domainId = group.getDomainId();
+    if (StringUtil.isNotDefined(domainId)) {
+      // Case of MIXED domain
+      return -1;
+    }
+    return Integer.parseInt(domainId);
   }
 }

@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.persistence.jdbc.sql;
 
+import org.apache.commons.lang3.ArrayUtils;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.StringUtil;
 
@@ -364,6 +366,10 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery in(Collection<?> parameters) {
+    if (CollectionUtil.isEmpty(parameters)) {
+      throw new IllegalArgumentException(
+          "cannot apply in clause because no value to set ! query=" + sqlQuery);
+    }
     sqlQuery.append(IN_OPERATOR);
     addListOfParameters(parameters, true);
     return this;
@@ -375,6 +381,10 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery in(Object... parameters) {
+    if (ArrayUtils.isEmpty(parameters)) {
+      throw new IllegalArgumentException(
+          "cannot apply in clause because no value to set ! query=" + sqlQuery);
+    }
     sqlQuery.append(IN_OPERATOR);
     addListOfParameters(Arrays.asList(parameters), true);
     return this;
@@ -386,6 +396,10 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery notIn(Collection<?> parameters) {
+    if (CollectionUtil.isEmpty(parameters)) {
+      throw new IllegalArgumentException(
+          "cannot apply not in clause because no value to set ! query=" + sqlQuery);
+    }
     sqlQuery.append(NOT_IN_OPERATOR);
     addListOfParameters(parameters, true);
     return this;
@@ -397,6 +411,10 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery notIn(Object... parameters) {
+    if (ArrayUtils.isEmpty(parameters)) {
+      throw new IllegalArgumentException(
+          "cannot apply not in clause because no value to set ! query=" + sqlQuery);
+    }
     sqlQuery.append(NOT_IN_OPERATOR);
     addListOfParameters(Arrays.asList(parameters), true);
     return this;
@@ -406,15 +424,38 @@ public class JdbcSqlQuery {
    * Centralization in order to build easily a SQL values clause.
    */
   private void valuesForInsert() {
-    sqlQuery.append(") values");
-    addListOfParameters(allParameters, false);
+    if (!isSqlQueryCompleted()) {
+      sqlQuery.append(") values");
+      addListOfParameters(allParameters, false);
+    }
   }
 
   /**
    * Centralization in order to build easily a SQL values clause.
    */
   private void finalizeTableCreation() {
-    sqlQuery.append(")");
+    if (!isSqlQueryCompleted()) {
+      sqlQuery.append(")");
+    }
+  }
+
+  /**
+   * Indicates if the query seems completed.
+   * @return true if query is completed, false otherwise.
+   */
+  private boolean isSqlQueryCompleted() {
+    final char lastChar = sqlQuery.charAt(sqlQuery.length() - 1);
+    int openParenthesisCount = 0;
+    int closeParenthesisCount = 0;
+    for (int i = 0; i < sqlQuery.length(); i++) {
+      final char currentChar = sqlQuery.charAt(i);
+      if (currentChar == '(') {
+        openParenthesisCount++;
+      } else if (currentChar == ')') {
+        closeParenthesisCount++;
+      }
+    }
+    return lastChar == ';' || openParenthesisCount == closeParenthesisCount;
   }
 
   private void addListOfParameters(Collection<?> parameters,
@@ -423,13 +464,20 @@ public class JdbcSqlQuery {
       // Oracle has a hard limitation with SQL lists with 'in' clause: it cannot take more than 1000
       // elements. So we split it in several SQL lists so that they contain less than 1000 elements.
       final int threshold = 1000;
-      int end = sqlQuery.lastIndexOf(NOT_IN_OPERATOR);
-      String negation = " NOT ";
-      if (end < 0) {
-        end = sqlQuery.lastIndexOf(IN_OPERATOR);
-        negation = "";
+      int end = -1;
+      String negation = StringUtil.EMPTY;
+      if (parameters.size() > threshold) {
+        end = sqlQuery.lastIndexOf(NOT_IN_OPERATOR);
+        negation = " NOT ";
+        if ((end + NOT_IN_OPERATOR.length()) < sqlQuery.length()) {
+          end = sqlQuery.lastIndexOf(IN_OPERATOR);
+          negation = "";
+          if ((end + IN_OPERATOR.length()) < sqlQuery.length()) {
+            end = -1;
+          }
+        }
       }
-      if (end > -1 && parameters.size() > threshold) {
+      if (end > -1) {
         int from = end - 1;
         while (sqlQuery.charAt(from) != ' ') {
           from--;

@@ -44,17 +44,23 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
  */
 public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
 
+  private static final String SELECT = "select ";
   private static final String SELECT_COUNT_GROUPUSERROLE_USER_REL =
       "select count(*) from ST_GroupUserRole_User_Rel"
           + " where userId = ? and groupUserRoleId = ?";
-  private static final String GROUPUSERROLE_COLUMNS = "id,groupId,roleName";
-  private static final String SELECT_GROUPUSERROLE_BY_ID = "select "
+  private static final String GROUPUSERROLE_COLUMNS = "id,ST_GroupUserRole.groupId,roleName";
+  private static final String SELECT_GROUPUSERROLE_BY_ID = SELECT
       + GROUPUSERROLE_COLUMNS + " from ST_GroupUserRole where id = ?";
-  private static final String SELECT_GROUPUSERROLE_BY_GROUPID = "select "
+  private static final String SELECT_GROUPUSERROLE_BY_GROUPID = SELECT
       + GROUPUSERROLE_COLUMNS + " from ST_GroupUserRole where groupId = ?";
+  private static final String SELECT_USER_GROUPUSERROLES = SELECT + GROUPUSERROLE_COLUMNS +
+      " from ST_GroupUserRole, ST_GroupUserRole_User_Rel where id = groupUserRoleId  and " +
+      "ST_GroupUserRole_User_Rel.userId = ?";
+  private static final String SELECT_GROUP_GROUPUSERROLES = SELECT + GROUPUSERROLE_COLUMNS +
+      " from ST_GroupUserRole, ST_GroupUserRole_Group_Rel where id = groupUserRoleId  and " +
+      "ST_GroupUserRole_Group_Rel.groupId = ?";
   private static final String INSERT_GROUPUSERROLE =
-      "insert into ST_GroupUserRole(id,groupId,roleName)"
-          + " values     (? 	,?       ,?)";
+      "insert into ST_GroupUserRole(id,groupId,roleName) values (?,?,?)";
   private static final String DELETE_GROUPUSERROLE = "delete from ST_GroupUserRole where id = ?";
   private static final String INSERT_A_GROUPUSERROLE_USER_REL =
       "insert into ST_GroupUserRole_User_Rel(groupUserRoleId, userId) values(?,?)";
@@ -101,6 +107,22 @@ public class GroupUserRoleTable extends Table<GroupUserRoleRow> {
    */
   public GroupUserRoleRow getGroupUserRoleByGroupId(int groupId) throws SQLException {
     return getUniqueRow(SELECT_GROUPUSERROLE_BY_GROUPID, groupId);
+  }
+
+  /**
+   * Returns all the direct GroupUserRoles of user.
+   */
+  public GroupUserRoleRow[] getDirectGroupUserRolesOfUser(int userId) throws SQLException {
+    List<GroupUserRoleRow> rows = getRows(SELECT_USER_GROUPUSERROLES, userId);
+    return rows.toArray(new GroupUserRoleRow[rows.size()]);
+  }
+
+  /**
+   * Returns all the direct GroupUserRoles of a group.
+   */
+  public GroupUserRoleRow[] getDirectGroupUserRolesOfGroup(int groupId) throws SQLException {
+    List<GroupUserRoleRow> rows = getRows(SELECT_GROUP_GROUPUSERROLES, groupId);
+    return rows.toArray(new GroupUserRoleRow[rows.size()]);
   }
 
   /**

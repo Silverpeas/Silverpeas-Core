@@ -54,10 +54,7 @@ import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.SpaceProfileInstManager;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
-import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
-import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.Space;
-import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.space.notification.SpaceEventNotifier;
 import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
@@ -113,7 +110,7 @@ import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants
  * </p>
  */
 @Singleton
-@Transactional
+@Transactional(rollbackOn = AdminException.class)
 class Admin implements Administration {
 
   /**
@@ -195,7 +192,6 @@ class Admin implements Administration {
     });
   }
 
-  @Transactional
   @Override
   public void reloadCache() {
     cache.resetCache();
@@ -459,7 +455,6 @@ class Admin implements Administration {
     }
   }
 
-  @Transactional
   @Override
   public void restoreSpaceFromBasket(String spaceId) throws AdminException {
     try {
@@ -540,7 +535,6 @@ class Admin implements Administration {
     }
   }
 
-  @Transactional
   @Override
   public String updateSpaceInst(SpaceInst spaceInstNew) throws AdminException {
     try {
@@ -571,7 +565,6 @@ class Admin implements Administration {
     }
   }
 
-  @Transactional
   @Override
   public void updateSpaceOrderNum(String spaceId, int orderNum) throws AdminException {
     try {
@@ -815,7 +808,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public void restoreComponentFromBasket(String componentId) throws AdminException {
     try {
       // update data in database
@@ -1098,14 +1090,12 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space)
   throws AdminException {
     setSpaceProfilesToSubSpace(subSpace, space, false, false);
   }
 
   @Override
-  @Transactional
   public void setSpaceProfilesToSubSpace(final SpaceInst subSpace, final SpaceInst space,
       boolean persist, boolean startNewTransaction)
       throws AdminException {
@@ -1682,7 +1672,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String updateSpaceProfileInst(SpaceProfileInst newSpaceProfile, String userId)
       throws AdminException {
     try {
@@ -1884,7 +1873,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String addGroup(GroupDetail group) throws AdminException {
     try {
       return addGroup(group, false);
@@ -1919,23 +1907,31 @@ class Admin implements Administration {
 
   @Override
   public String deleteGroupById(String sGroupId, boolean onlyInSilverpeas) throws AdminException {
-    GroupDetail group = null;
+    // Get group information
+    GroupDetail  group = getGroup(sGroupId);
+    if (group == null) {
+      throw new AdminException(unknown("group", sGroupId));
+    }
     try {
-      // Get group information
-      group = getGroup(sGroupId);
-      if (group == null) {
-        throw new AdminException(unknown("group", sGroupId));
-      }
 
       // Delete group profiles
       deleteGroupProfileInst(sGroupId);
 
+      // Listing the group and its sub groups before the recursive deletion
+      final List<GroupDetail> groupAndSubGroups = new ArrayList<>();
+      groupAndSubGroups.add(group);
+      Collections.addAll(groupAndSubGroups, getRecursivelyAllSubGroups(sGroupId));
+
       // Delete group itself
       String sReturnGroupId = groupManager.deleteGroup(group, onlyInSilverpeas);
-      if (group.isSynchronized()) {
-        groupSynchroScheduler.removeGroup(sGroupId);
-      }
-      cache.opRemoveGroup(group);
+
+      // Removing the deleted groups from caches
+      groupAndSubGroups.forEach(g -> {
+        if (g.isSynchronized()) {
+          groupSynchroScheduler.removeGroup(g.getId());
+        }
+        cache.opRemoveGroup(g);
+      });
       return sReturnGroupId;
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting("group", group.getId()), e);
@@ -2306,30 +2302,6 @@ class Admin implements Administration {
         throw new AdminException(unknown("user", sUserId));
       }
 
-      SynchroDomainReport.info(ADMIN_DELETE_USER,
-          REMOVE_OF + user.getLogin() + " des groupes dans la base");
-      List<GroupDetail> groups = groupManager.getDirectGroupsOfUser(user.getId());
-      for (GroupDetail group : groups) {
-        groupManager.removeUserFromGroup(user.getId(), group.getId());
-      }
-
-      SynchroDomainReport.info(ADMIN_DELETE_USER,
-          REMOVE_OF + user.getLogin() + " en tant que manager d'espace dans la base");
-      String[] profiles =
-          spaceProfileManager.getSpaceProfileIdsOfUserType(user.getId());
-      for (String profileId : profiles) {
-        spaceProfileManager.removeUserFromSpaceProfileInst(user.getId(), profileId);
-      }
-
-      SynchroDomainReport.info(ADMIN_DELETE_USER,
-          "Delete " + user.getLogin() + " from user favorite space table");
-      UserFavoriteSpaceService ufsDAO =
-          UserFavoriteSpaceServiceProvider.getUserFavoriteSpaceService();
-      if (!ufsDAO.removeUserFavoriteSpace(
-          new UserFavoriteSpaceVO(Integer.parseInt(user.getId()), -1))) {
-        throw new AdminPersistenceException(failureOnDeleting("user", user.getId()));
-      }
-
       // Delete the user
       String sReturnUserId = userManager.deleteUser(user, onlyInSilverpeas);
 
@@ -2455,7 +2427,6 @@ class Admin implements Administration {
   // DOMAIN QUERY
   // -------------------------------------------------------------------------
   @Override
-  @Transactional
   public String getNextDomainId() throws AdminException {
     try {
       return domainDriverManager.getNextDomainId();
@@ -2465,7 +2436,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String addDomain(Domain theDomain) throws AdminException {
     try {
       String id = domainDriverManager.createDomain(theDomain);
@@ -2483,7 +2453,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String updateDomain(Domain domain) throws AdminException {
     try {
       DomainCache.removeDomain(domain.getId());
@@ -2496,41 +2465,32 @@ class Admin implements Administration {
   @Override
   public String removeDomain(String domainId) throws AdminException {
     try {
-        // Remove all users
-        UserDetail[] toRemoveUDs = userManager.getAllUsersInDomain(domainId);
-        if (toRemoveUDs != null) {
-          SilverLogger.getLogger(this).debug("[Domain deletion] Remove all the users...");
-          for (final UserDetail user : toRemoveUDs) {
-            try {
-              deleteUser(user.getId(), false);
-            } catch (Exception e) {
-              deleteUser(user.getId(), true);
-            }
-          }
+      // Remove all users
+      UserDetail[] toRemoveUDs = userManager.getAllUsersInDomain(domainId);
+      if (toRemoveUDs != null) {
+        SilverLogger.getLogger(this).debug("[Domain deletion] Remove all the users...");
+        for (final UserDetail user : toRemoveUDs) {
+          deleteUser(user.getId(), false);
         }
+      }
 
-        // Remove all groups
-        GroupDetail[] toRemoveGroups =
-            groupManager.getGroupsOfDomain(domainId);
-        if (toRemoveGroups != null) {
-          SilverLogger.getLogger(this).debug("[Domain deletion] Remove all the groups...");
-          for (final GroupDetail group : toRemoveGroups) {
-            try {
-              deleteGroupById(group.getId(), false);
-            } catch (Exception e) {
-              deleteGroupById(group.getId(), true);
-            }
-          }
+      // Remove all groups
+      GroupDetail[] toRemoveGroups = groupManager.getRootGroupsOfDomain(domainId);
+      if (toRemoveGroups != null) {
+        SilverLogger.getLogger(this).debug("[Domain deletion] Remove all the groups...");
+        for (final GroupDetail group : toRemoveGroups) {
+          deleteGroupById(group.getId(), false);
         }
+      }
 
-        SilverLogger.getLogger(this).debug("[Domain deletion] Then remove the domain...");
-        // Remove the domain
-        domainDriverManager.removeDomain(domainId);
-        // Update the synchro scheduler
-        domainSynchroScheduler.removeDomain(domainId);
-        DomainCache.removeDomain(domainId);
+      SilverLogger.getLogger(this).debug("[Domain deletion] Then remove the domain...");
+      // Remove the domain
+      domainDriverManager.removeDomain(domainId);
+      // Update the synchro scheduler
+      domainSynchroScheduler.removeDomain(domainId);
+      DomainCache.removeDomain(domainId);
 
-        return domainId;
+      return domainId;
     } catch (Exception e) {
       throw new AdminException(failureOnDeleting("domain", domainId), e);
     }
@@ -3942,7 +3902,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String synchronizeGroup(String groupId, boolean recurs) throws Exception {
 
     GroupDetail theGroup = getGroup(groupId);
@@ -3961,7 +3920,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String synchronizeImportGroup(String domainId, String groupKey, String askedParentId,
       boolean recurs, boolean isIdKey) throws Exception {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
@@ -4020,7 +3978,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String synchronizeRemoveGroup(String groupId) throws Exception {
     GroupDetail theGroup = getGroup(groupId);
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theGroup.getDomainId());
@@ -4058,7 +4015,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String synchronizeUser(String userId, boolean recurs) throws Exception {
     Collection<UserDetail> listUsersUpdate = new ArrayList<>();
     try {
@@ -4114,7 +4070,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String synchronizeImportUserByLogin(String domainId, String userLogin, boolean recurs)
       throws Exception {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
@@ -4127,7 +4082,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String synchronizeImportUser(String domainId, String specificId, boolean recurs) throws
       Exception {
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(domainId);
@@ -4155,7 +4109,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String synchronizeRemoveUser(String userId) throws Exception {
     UserDetail theUserDetail = getUserDetail(userId);
     DomainDriver synchroDomain = domainDriverManager.getDomainDriver(theUserDetail.getDomainId());
@@ -4811,7 +4764,7 @@ class Admin implements Administration {
       if (searchCriteria.isCriterionOnFirstNameSet()) {
         criteria.and().onFirstName(searchCriteria.getCriterionOnFirstName());
       }
-      if (searchCriteria.isCriterionOnFirstNameSet()) {
+      if (searchCriteria.isCriterionOnLastNameSet()) {
         criteria.and().onLastName(searchCriteria.getCriterionOnLastName());
       }
     }
@@ -4915,7 +4868,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String copyAndPasteComponent(PasteDetail pasteDetail) throws AdminException,
       QuotaException {
     if (!StringUtil.isDefined(pasteDetail.getToSpaceId())) {
@@ -5005,7 +4957,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public String copyAndPasteSpace(PasteDetail pasteDetail) throws AdminException, QuotaException {
     String newSpaceId = null;
     String spaceId = pasteDetail.getFromSpaceId();
@@ -5411,7 +5362,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public void assignRightsFromUserToUser(RightAssignationContext.MODE operationMode,
       String sourceUserId, String targetUserId, boolean nodeAssignRights, String authorId)
       throws AdminException {
@@ -5422,7 +5372,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public void assignRightsFromUserToGroup(RightAssignationContext.MODE operationMode,
       String sourceUserId, String targetGroupId, boolean nodeAssignRights, String authorId)
       throws AdminException {
@@ -5433,7 +5382,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public void assignRightsFromGroupToUser(RightAssignationContext.MODE operationMode,
       String sourceGroupId, String targetUserId, boolean nodeAssignRights, String authorId)
       throws AdminException {
@@ -5444,7 +5392,6 @@ class Admin implements Administration {
   }
 
   @Override
-  @Transactional
   public void assignRightsFromGroupToGroup(RightAssignationContext.MODE operationMode,
       String sourceGroupId, String targetGroupId, boolean nodeAssignRights, String authorId)
       throws AdminException {

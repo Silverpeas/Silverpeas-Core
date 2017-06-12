@@ -22,35 +22,27 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.util;
+package org.silverpeas.core.admin;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.dao.UserDAO;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 
 /**
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-public class SilverpeasArrayList<T> extends ArrayList<T> implements SilverpeasList<T> {
-
-  public SilverpeasArrayList(final int initialCapacity) {
-    super(initialCapacity);
-  }
-
-  public SilverpeasArrayList() {
-    super();
-  }
-
-  public SilverpeasArrayList(final Collection<? extends T> c) {
-    super(c);
-  }
-
-  @Override
-  public <U> SilverpeasList<U> newEmptyListWithSameProperties() {
-    return new SilverpeasArrayList<>(this.size());
-  }
-
-  @Override
-  public long originalListSize() {
-    return size();
-  }
+class TransactionNotSingletonTestServiceImpl extends AbstractTransactionTestService {
 }

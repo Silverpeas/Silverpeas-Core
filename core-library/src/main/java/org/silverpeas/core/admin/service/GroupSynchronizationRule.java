@@ -411,10 +411,12 @@ class GroupSynchronizationRule {
     }
 
     // We have to find users according to theirs specificIds
-    List<String> specificIds = users == null ? Collections.emptyList() :
-        Arrays.stream(users).map(UserDetail::getSpecificId).collect(Collectors.toList());
-    List<UserDetail> usersInDomain =
-        getUserManager().getUsersBySpecificIdsAndDomainId(specificIds, domainId);
+    List<UserDetail> usersInDomain = Collections.emptyList();
+    if (ArrayUtil.isNotEmpty(users)) {
+      List<String> specificIds =
+          Arrays.stream(users).map(UserDetail::getSpecificId).collect(Collectors.toList());
+      usersInDomain = getUserManager().getUsersBySpecificIdsAndDomainId(specificIds, domainId);
+    }
 
     return usersInDomain.stream().map(UserDetail::getId).collect(Collectors.toList());
   }

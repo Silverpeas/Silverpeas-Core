@@ -50,6 +50,7 @@ public class UserDAO {
   private static final String STATE_CRITERION = "state <> ?";
   private static final String ID_CRITERION = "id = ?";
   private static final String DOMAIN_ID_CRITERION = "domainId = ?";
+  private static final String ACCESS_LEVEL_CRITERION = "accessLevel = ?";
   private static final String USER_ID_JOINTURE = "id = userId";
   private static final String ACCESS_LEVEL = "accessLevel";
   private static final String LAST_NAME = "lastName";
@@ -150,8 +151,7 @@ public class UserDAO {
     return JdbcSqlQuery.createSelect(USER_COLUMNS)
         .from(USER_TABLE)
         .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
-        .and(SPECIFIC_ID)
-        .in(specificIds)
+        .and(SPECIFIC_ID).in(specificIds)
         .executeWith(connection, UserDAO::fetchUser);
   }
 
@@ -276,11 +276,11 @@ public class UserDAO {
   public List<String> getAllAdminIds(Connection connection, final UserDetail fromUser)
       throws SQLException {
     JdbcSqlQuery query =
-        JdbcSqlQuery.createSelect("id").from(USER_TABLE).where("state <> 'DELETED'");
+        JdbcSqlQuery.createSelect("id").from(USER_TABLE).where(STATE_CRITERION, UserState.DELETED);
     if (fromUser.isAccessAdmin() || fromUser.isAccessDomainManager()) {
       query.and("accessLevel = ?", UserAccessLevel.ADMINISTRATOR.code());
     } else {
-      query.and(DOMAIN_ID, Integer.parseInt(fromUser.getDomainId()))
+      query.and(DOMAIN_ID_CRITERION, Integer.parseInt(fromUser.getDomainId()))
           .and("(accessLevel = ? or accessLevel = ?)", UserAccessLevel.ADMINISTRATOR.code(),
               UserAccessLevel.DOMAIN_ADMINISTRATOR.code());
     }
@@ -315,7 +315,7 @@ public class UserDAO {
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE)
         .where(STATE_CRITERION, UserState.DELETED)
-        .and(DOMAIN_ID, Integer.parseInt(domainId))
+        .and(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -325,7 +325,7 @@ public class UserDAO {
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE)
         .where(STATE_CRITERION, UserState.DELETED)
-        .and(ACCESS_LEVEL, accessLevel.code())
+        .and(ACCESS_LEVEL_CRITERION, accessLevel.code())
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }
@@ -335,8 +335,8 @@ public class UserDAO {
     return JdbcSqlQuery.createSelect("id")
         .from(USER_TABLE)
         .where(STATE_CRITERION, UserState.DELETED)
-        .and(DOMAIN_ID, Integer.parseInt(domainId))
-        .and(ACCESS_LEVEL, accessLevel.code())
+        .and(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
+        .and(ACCESS_LEVEL_CRITERION, accessLevel.code())
         .orderBy(LAST_NAME)
         .executeWith(connection, row -> Integer.toString(row.getInt(1)));
   }

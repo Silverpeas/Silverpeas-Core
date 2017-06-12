@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (C) 2000 - 2013 Silverpeas
 *
 * This program is free software: you can redistribute it and/or modify it under the terms of the
@@ -21,8 +21,9 @@
 package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.domain.DomainDriverManager;
-import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
+import org.silverpeas.core.admin.persistence.GroupUserRoleRow;
+import org.silverpeas.core.admin.persistence.GroupUserRoleTable;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
 import org.silverpeas.core.admin.persistence.SpaceUserRoleTable;
@@ -56,6 +57,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
+import static org.silverpeas.core.admin.domain.model.Domain.MIXED_DOMAIN_ID;
 
 @Singleton
 @Transactional(Transactional.TxType.MANDATORY)
@@ -103,7 +105,7 @@ public class GroupManager {
       String domainIdConstraint = null;
       List<String> domainIds = criteria.getCriterionOnDomainIds();
       for (String domainId : domainIds) {
-        if (!domainId.equals(Domain.MIXED_DOMAIN_ID)) {
+        if (!MIXED_DOMAIN_ID.equals(domainId)) {
           domainIdConstraint = domainId;
           break;
         }
@@ -625,6 +627,7 @@ public class GroupManager {
 
     SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
         "Suppression du groupe " + group.getName() + " dans la base...");
+
     // remove the group from each role where it's used.
     UserRoleTable userRoleTable = OrganizationSchema.get().userRole();
     UserRoleRow[] roles = userRoleTable.getDirectUserRolesOfGroup(groupId);
@@ -642,6 +645,24 @@ public class GroupManager {
     for (SpaceUserRoleRow spaceRole : spaceRoles) {
       spaceUserRoleTable.removeGroupFromSpaceUserRole(groupId, spaceRole.id);
     }
+
+    // remove the group from each group role where it's used.
+    GroupUserRoleTable groupUserRoleTable = OrganizationSchema.get().groupUserRole();
+    GroupUserRoleRow[] groupRoles = groupUserRoleTable.getDirectGroupUserRolesOfGroup(groupId);
+    SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+        REMOVING_MESSAGE + group.getName() + " comme manager de groupe dans la base");
+    for (GroupUserRoleRow groupRole : groupRoles) {
+      groupUserRoleTable.removeGroupFromGroupUserRole(groupId, groupRole.id);
+    }
+
+    // remove the group user role.
+    GroupUserRoleRow groupRole = groupUserRoleTable.getGroupUserRoleByGroupId(groupId);
+    if (groupRole != null) {
+      SynchroDomainReport.info(GROUP_MANAGER_DELETE_GROUP,
+          REMOVING_MESSAGE + group.getName() + " des rôles de groupe dans la base");
+      groupUserRoleTable.removeGroupUserRole(groupRole.id);
+    }
+
     // remove all the subgroups
     List<GroupDetail> subgroups = groupDao.getDirectSubGroups(connection, group.getId());
     if (!subgroups.isEmpty()) {

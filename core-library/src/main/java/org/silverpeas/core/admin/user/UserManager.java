@@ -22,12 +22,22 @@ package org.silverpeas.core.admin.user;
 
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
+import org.silverpeas.core.admin.persistence.GroupUserRoleRow;
+import org.silverpeas.core.admin.persistence.GroupUserRoleTable;
+import org.silverpeas.core.admin.persistence.OrganizationSchema;
+import org.silverpeas.core.admin.persistence.SpaceUserRoleRow;
+import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
+import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.dao.SpaceDAO;
+import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.dao.GroupDAO;
 import org.silverpeas.core.admin.user.dao.UserDAO;
 import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.admin.user.notification.UserEventNotifier;
@@ -45,6 +55,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,14 +71,18 @@ public class UserManager {
   public static final String IN_DOMAIN = "in domain ";
   public static final String ALL_USERS = "all users";
   public static final String SPECIFIC_ID = "(specificId:";
+  private static final String USER_TABLE_REMOVE_USER = "UserTable.removeUser()";
+  private static final String REMOVING_MESSAGE = "Suppression de ";
   @Inject
   private UserDAO userDAO;
-
+  @Inject
+  private GroupDAO groupDAO;
   @Inject
   private UserEventNotifier notifier;
-
   @Inject
   private DomainDriverManager domainDriverManager;
+  @Inject
+  private OrganizationSchema organizationSchema;
 
   protected UserManager() {
   }
@@ -586,10 +601,11 @@ public class UserManager {
         domainDriverManager.deleteUser(user.getId());
       }
       // Delete the user node from Silverpeas
-      SynchroDomainReport.info(USERMANAGER_SYNCHRO_REPORT + deleteUser,
-          "Suppression de l'utilisateur " + user.
+      SynchroDomainReport
+          .info(USERMANAGER_SYNCHRO_REPORT + deleteUser, "Suppression de l'utilisateur " + user.
               getSpecificId() + " de la base...");
-      userDAO.deleteUser(connection, user);
+      deleteUser(connection, user);
+
       notifier.notifyEventOn(ResourceEvent.Type.DELETION, user);
 
       // Delete index of user information
@@ -610,6 +626,53 @@ public class UserManager {
           null);
       throw new AdminException(failureOnDeleting("user", user.getId()), e);
     }
+  }
+
+  private void deleteUser(final Connection connection, final UserDetail user) throws SQLException {
+    final String userLogin = user.getLogin();
+    SynchroDomainReport.info(USER_TABLE_REMOVE_USER,
+        REMOVING_MESSAGE + userLogin + " des groupes dans la base");
+    final String userId = user.getId();
+    List<GroupDetail> groups = groupDAO.getDirectGroupsOfUser(connection, userId);
+    for (GroupDetail group : groups) {
+      groupDAO.deleteUserInGroup(connection, userId, group.getId());
+    }
+
+    SynchroDomainReport.info(USER_TABLE_REMOVE_USER,
+        REMOVING_MESSAGE + userLogin + " des rôles dans la base");
+    final int userIdAsInt = Integer.parseInt(userId);
+    UserRoleRow[] roles = organizationSchema.userRole().getDirectUserRolesOfUser(userIdAsInt);
+    for (UserRoleRow role : roles) {
+      organizationSchema.userRole().removeUserFromUserRole(userIdAsInt, role.id);
+    }
+
+    SynchroDomainReport.info(USER_TABLE_REMOVE_USER,
+        REMOVING_MESSAGE + userLogin + " en tant que manager d'espace dans la base");
+    SpaceUserRoleRow[] spaceRoles =
+        organizationSchema.spaceUserRole().getDirectSpaceUserRolesOfUser(userIdAsInt);
+    for (SpaceUserRoleRow spaceRole : spaceRoles) {
+      organizationSchema.spaceUserRole().removeUserFromSpaceUserRole(userIdAsInt, spaceRole.id);
+    }
+
+    GroupUserRoleTable groupUserRoleTable = OrganizationSchema.get().groupUserRole();
+    GroupUserRoleRow[] groupRoles = groupUserRoleTable.getDirectGroupUserRolesOfUser(userIdAsInt);
+    SynchroDomainReport.info(USER_TABLE_REMOVE_USER,
+        REMOVING_MESSAGE + userLogin + " en tant que manager de groupe dans la base");
+    for (GroupUserRoleRow groupRole : groupRoles) {
+      groupUserRoleTable.removeUserFromGroupUserRole(userIdAsInt, groupRole.id);
+    }
+
+    SynchroDomainReport
+        .info(USER_TABLE_REMOVE_USER, "Delete " + userLogin + " from user favorite space table");
+    UserFavoriteSpaceService ufsService =
+        UserFavoriteSpaceServiceProvider.getUserFavoriteSpaceService();
+    if (!ufsService.removeUserFavoriteSpace(new UserFavoriteSpaceVO(userIdAsInt, -1))) {
+      throw new SQLException(failureOnDeleting("user", userId));
+    }
+
+    SynchroDomainReport
+        .debug(USER_TABLE_REMOVE_USER, REMOVING_MESSAGE + userLogin + " (ID=" + userId + ")");
+    userDAO.deleteUser(connection, user);
   }
 
   private void delayedNotificationOfUserDeletion(final UserDetail user) {

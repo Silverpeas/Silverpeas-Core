@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2016 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
@@ -40,11 +40,7 @@ import org.silverpeas.core.util.ServiceProvider;
 import javax.annotation.Resource;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
-import javax.transaction.Transactional;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.concurrent.Future;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -58,7 +54,12 @@ import static org.hamcrest.Matchers.*;
  * @author mmoquillon
  */
 @RunWith(Arquillian.class)
-public class TransactionIntegrationTest {
+public class TransactionConnectionIntegrationTest extends AbstractTransactionIntegrationTest {
+
+  @Rule
+  public DbSetupRule dbSetupRule =
+      DbSetupRule.createTablesFrom("/org/silverpeas/core/admin/domain/driver/create_table.sql")
+          .loadInitialDataSetFrom("test-usersandgroups-dataset.sql");
 
   @Inject
   private UserDAO userDAO;
@@ -66,17 +67,10 @@ public class TransactionIntegrationTest {
   @Resource
   private ManagedScheduledExecutorService executor;
 
-  @Rule
-  public DbSetupRule dbSetupRule =
-      DbSetupRule.createTablesFrom("/org/silverpeas/core/admin/domain/driver/create_table.sql")
-          .loadInitialDataSetFrom("test-usersandgroups-dataset.sql");
-
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(TransactionIntegrationTest.class)
-        .addAdministrationFeatures()
-        .addProcessFeatures()
-        .build();
+    return configureTestArchive(
+        WarBuilder4LibCore.onWarForTestClass(TransactionConnectionIntegrationTest.class)).build();
   }
 
   @Before
@@ -87,9 +81,9 @@ public class TransactionIntegrationTest {
 
   @Test
   public void test() throws Exception {
-    TransactionIntegrationTest test = ServiceProvider.getService(TransactionIntegrationTest.class);
-    Future<Connection> connection1 = executor.submit(() -> test.transaction1());
-    Future<Connection> connection2 = executor.submit(() -> test.transaction1());
+    TransactionTestService test = getTestService();
+    Future<Connection> connection1 = executor.submit(test::transaction1);
+    Future<Connection> connection2 = executor.submit(test::transaction1);
     assertThat(connection1.get(), not(connection2.get()));
   }
 
@@ -101,7 +95,7 @@ public class TransactionIntegrationTest {
       assertThat(user, notNullValue());
     }
 
-    TransactionIntegrationTest test = ServiceProvider.getService(TransactionIntegrationTest.class);
+    TransactionTestService test = getTestService();
     test.transaction2(user);
 
     try (Connection connection = DBUtil.openConnection()) {
@@ -111,43 +105,7 @@ public class TransactionIntegrationTest {
     }
   }
 
-  @Transactional
-  public Connection transaction1() throws SQLException {
-    Connection connection1;
-    UserDetail user;
-    try (Connection connection = DBUtil.openConnection()) {
-      // assert that the connection is managed
-      assertThat(connection.getAutoCommit(), is(false));
-      connection1 = getWrappedConnection(connection);
-      user = userDAO.getUserById(connection, "1");
-      assertThat(user, notNullValue());
-    }
-
-    Connection connection2 = transaction2(user);
-    assertThat(connection1, is(connection2));
-    return connection1;
+  TransactionTestService getTestService() {
+    return ServiceProvider.getService(TransactionNotSingletonTestServiceImpl.class);
   }
-
-  @Transactional
-  public Connection transaction2(final UserDetail user) throws SQLException {
-    try(Connection connection = DBUtil.openConnection()) {
-      // assert that the connection is managed
-      assertThat(connection.getAutoCommit(), is(false));
-      user.setFirstName("MOOZER");
-      user.setLastName("KILLER");
-      userDAO.updateUser(connection, user);
-      return getWrappedConnection(connection);
-    }
-  }
-
-
-  private Connection getWrappedConnection(final Connection connection) {
-    try {
-      Method getUnderlyingConnection = connection.getClass().getMethod("getUnderlyingConnection");
-      return (Connection) getUnderlyingConnection.invoke(connection);
-    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-      throw new IllegalArgumentException(e.getMessage(), e);
-    }
-  }
-
 }

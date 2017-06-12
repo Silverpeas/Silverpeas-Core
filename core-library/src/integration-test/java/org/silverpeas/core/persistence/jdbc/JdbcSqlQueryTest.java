@@ -278,9 +278,16 @@ public class JdbcSqlQueryTest {
   }
 
   private static class TableResultProcess implements SelectResultRowProcess<Pair<Long, String>> {
+    private int rowIndex = 0;
+
     @Override
     public Pair<Long, String> currentRow(final ResultSetWrapper row) throws SQLException {
-      return Pair.of(row.getLongObject(1), row.getString(2));
+      try {
+        assertThat(row.getCurrentRowIndex(), is(rowIndex));
+        return Pair.of(row.getLongObject(1), row.getString(2));
+      } finally {
+        rowIndex = rowIndex + 1;
+      }
     }
   }
 

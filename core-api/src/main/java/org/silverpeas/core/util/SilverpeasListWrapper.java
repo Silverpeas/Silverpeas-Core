@@ -49,7 +49,7 @@ public class SilverpeasListWrapper<E> implements SilverpeasList<E> {
 
   @Override
   @SuppressWarnings("unchecked")
-  public <U> SilverpeasList<U> newList() {
+  public <U> SilverpeasList<U> newEmptyListWithSameProperties() {
     return new SilverpeasListWrapper(new ArrayList<>());
   }
 

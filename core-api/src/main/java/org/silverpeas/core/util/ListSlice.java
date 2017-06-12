@@ -102,7 +102,7 @@ public class ListSlice<T> extends ArrayList<T> implements SilverpeasList<T> {
   }
 
   @Override
-  public <U> SilverpeasList<U> newList() {
+  public <U> SilverpeasList<U> newEmptyListWithSameProperties() {
     return new ListSlice<>(this.start, this.end, this.maxsize);
   }
 

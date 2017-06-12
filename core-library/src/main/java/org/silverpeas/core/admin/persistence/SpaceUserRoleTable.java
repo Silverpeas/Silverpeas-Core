@@ -136,8 +136,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
   /**
    * Returns all the direct SpaceUserRoles of user.
    */
-  public SpaceUserRoleRow[] getDirectSpaceUserRolesOfUser(int userId) throws
-      SQLException {
+  public SpaceUserRoleRow[] getDirectSpaceUserRolesOfUser(int userId) throws SQLException {
     List<SpaceUserRoleRow> rows = getRows(SELECT_USER_SPACEUSERROLES, userId);
     return rows.toArray(new SpaceUserRoleRow[rows.size()]);
   }
@@ -150,8 +149,7 @@ public class SpaceUserRoleTable extends Table<SpaceUserRoleRow> {
   /**
    * Returns all the direct SpaceUserRoles of a group.
    */
-  public SpaceUserRoleRow[] getDirectSpaceUserRolesOfGroup(int groupId) throws
-      SQLException {
+  public SpaceUserRoleRow[] getDirectSpaceUserRolesOfGroup(int groupId) throws SQLException {
     List<SpaceUserRoleRow> rows = getRows(SELECT_GROUP_SPACEUSERROLES, groupId);
     return rows.toArray(new SpaceUserRoleRow[rows.size()]);
   }

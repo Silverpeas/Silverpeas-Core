@@ -216,6 +216,7 @@ public class SQLDomainService extends AbstractDomainService {
   @Transactional
   @Override
   public String deleteDomain(Domain domainToRemove) throws DomainDeletionException {
+    final String originalName = domainToRemove.getName();
 
     // Retrieve the prefix of a domain property file name
     String separator = "#@#@#@#@#";
@@ -230,8 +231,15 @@ public class SQLDomainService extends AbstractDomainService {
     domainToRemove.setName(fileDomainName);
 
     // unregister new Domain dans st_domain
-    String domainId = unRegisterDomain(domainToRemove);
+    final String domainId;
+    try {
+      domainId = unRegisterDomain(domainToRemove);
+    } catch (DomainDeletionException e) {
+      domainToRemove.setName(originalName);
+      throw e;
+    }
     if (!StringUtil.isDefined(domainId)) {
+      domainToRemove.setName(originalName);
       throw new DomainDeletionException("SQLDomainService.deleteDomain");
     }
 
@@ -239,6 +247,7 @@ public class SQLDomainService extends AbstractDomainService {
     try {
       dao.deleteDomainStorage(domainToRemove);
     } catch (Exception e) {
+      domainToRemove.setName(originalName);
       throw new DomainDeletionException("SQLDomainService.deleteDomain", e);
     }
 

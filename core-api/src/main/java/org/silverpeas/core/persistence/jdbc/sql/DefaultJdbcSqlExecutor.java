@@ -56,7 +56,7 @@ import java.util.List;
 @Transactional(Transactional.TxType.SUPPORTS)
 class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
 
-  public static final String SQL_REQUEST = ". SQL request: ";
+  private static final String SQL_REQUEST = ". SQL request: ";
 
   protected DefaultJdbcSqlExecutor() {
     // Hidden constructor
@@ -158,19 +158,21 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
   private <R> ListSlice<R> fetchEntities(final ResultSet rs,
       final SelectResultRowProcess<R> process, final JdbcSqlQuery.Configuration queryConf)
       throws SQLException {
+    final ResultSetWrapper rsw = new ResultSetWrapper(rs);
     int idx = queryConf.getOffset();
     if (queryConf.isFirstResultScrolled()) {
-      rs.next();
-      rs.relative(idx - 1);
+      rsw.next();
+      rsw.relative(idx - 1);
     }
     final int lastIdx =
         queryConf.isResultCountLimited() ? idx + queryConf.getResultLimit() - 1 : 0;
     ListSlice<R> entities = new ListSlice<>(idx, lastIdx);
     int originalSize = idx;
-    for (;rs.next(); originalSize++) {
+    for (;rsw.next(); originalSize++) {
       if (!queryConf.isResultCountLimited() ||
           (queryConf.isResultCountLimited() && entities.size() < queryConf.getResultLimit())) {
-        R entity = process.currentRow(new ResultSetWrapper(rs, idx++));
+        rsw.setCurrentRowIndex(idx++);
+        R entity = process.currentRow(rsw);
         if (entity != null) {
           entities.add(entity);
         }

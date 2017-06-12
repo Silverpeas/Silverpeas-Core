@@ -752,7 +752,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     return valret;
   }
 
-  @Transactional(Transactional.TxType.REQUIRED)
+  @Transactional(value = Transactional.TxType.REQUIRED, rollbackOn = AdminException.class)
   public DomainDriver getDomainDriver(String domainId) throws AdminException {
     DomainDriver domainDriver;
     try {

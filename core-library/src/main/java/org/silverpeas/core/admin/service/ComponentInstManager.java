@@ -51,7 +51,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 import static org.silverpeas.core.notification.system.ResourceEvent.Type.UPDATE;
 
 @Singleton
-@Transactional(Transactional.TxType.MANDATORY)
+@Transactional(value = Transactional.TxType.MANDATORY)
 public class ComponentInstManager {
 
   public static final String COMPONENT = "component";

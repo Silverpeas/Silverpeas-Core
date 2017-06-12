@@ -53,7 +53,7 @@ public interface SilverpeasList<T> extends List<T> {
   static <C, R extends SilverpeasList<C>> Collector<C, R, R> collector(List<?> source) {
     final Supplier<R> supplier;
     if (source instanceof SilverpeasList) {
-      supplier = () -> (R) ((SilverpeasList) source).newList();
+      supplier = () -> (R) ((SilverpeasList) source).newEmptyListWithSameProperties();
     } else {
       supplier = () -> (R) new SilverpeasArrayList<>();
     }
@@ -88,7 +88,7 @@ public interface SilverpeasList<T> extends List<T> {
    * @param <U> the concrete type of the items of the returned list.
    * @return an empty {@link SilverpeasList} with the same properties than this list.
    */
-  <U> SilverpeasList<U> newList();
+  <U> SilverpeasList<U> newEmptyListWithSameProperties();
 
   /**
    * Gets the number of items the original list contains.
