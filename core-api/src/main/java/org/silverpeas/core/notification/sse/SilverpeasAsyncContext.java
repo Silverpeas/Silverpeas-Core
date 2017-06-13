@@ -188,49 +188,49 @@ public class SilverpeasAsyncContext implements AsyncContext {
   }
 
   boolean isHeartbeat() {
-    synchronized (this) {
+    synchronized (mutex) {
       return heartbeat;
     }
   }
 
   public void setHeartbeat(final boolean heartbeat) {
-    synchronized (this) {
+    synchronized (mutex) {
       this.heartbeat = heartbeat;
     }
   }
 
   boolean isComplete() {
-    synchronized (this) {
+    synchronized (mutex) {
       return complete;
     }
   }
 
   void setComplete(final boolean complete) {
-    synchronized (this) {
+    synchronized (mutex) {
       this.complete = complete;
     }
   }
 
   boolean isTimeout() {
-    synchronized (this) {
+    synchronized (mutex) {
       return timeout;
     }
   }
 
   void setTimeout(final boolean timeout) {
-    synchronized (this) {
+    synchronized (mutex) {
       this.timeout = timeout;
     }
   }
 
   boolean isError() {
-    synchronized (this) {
+    synchronized (mutex) {
       return error;
     }
   }
 
   void setError(final boolean error) {
-    synchronized (this) {
+    synchronized (mutex) {
       this.error = error;
     }
   }
