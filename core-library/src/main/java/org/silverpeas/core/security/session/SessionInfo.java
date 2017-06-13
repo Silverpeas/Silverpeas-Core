@@ -25,8 +25,8 @@ import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * It gathers information about an opened session of a user.
@@ -36,22 +36,17 @@ public class SessionInfo {
   public static final SessionInfo NoneSession = new SessionInfo(null, null);
   public static final SessionInfo AnonymousSession = getAnonymousSession();
 
+  // Object on which to synchronize (the instance indeed)
+  private final Object mutex;
+
   private final String sessionId;
-  private String ipAddress;
   private final UserDetail userDetail;
   private final long openingTimestamp;
+  private final Map<String, Object> attributes = new ConcurrentHashMap<>();
+  private String ipAddress;
   private long lastAccessTimestamp;
-  private final Map<String, Object> attributes = new HashMap<String, Object>();
   private long idleTimestamp;
   private SimpleCache cache;
-
-  private static SessionInfo getAnonymousSession() {
-    UserDetail anonymousUser = UserDetail.getAnonymousUser();
-    if (anonymousUser != null) {
-      return new SessionInfo(null, anonymousUser);
-    }
-    return NoneSession;
-  }
 
   /**
    * Constructs a new instance about a given opened user session.
@@ -60,6 +55,7 @@ public class SessionInfo {
    * @param user the user for which a session was opened.
    */
   public SessionInfo(final String sessionId, final UserDetail user) {
+    this.mutex = this;
     this.sessionId = sessionId;
     this.userDetail = user;
     this.openingTimestamp = this.lastAccessTimestamp = System.currentTimeMillis();
@@ -70,13 +66,12 @@ public class SessionInfo {
     }
   }
 
-  /**
-   * Sets the IP address of the remote client that requests a session opening with Silverpeas.
-   *
-   * @param ip the IP address of the remote client.
-   */
-  public void setIPAddress(String ip) {
-    this.ipAddress = ip;
+  private static SessionInfo getAnonymousSession() {
+    UserDetail anonymousUser = UserDetail.getAnonymousUser();
+    if (anonymousUser != null) {
+      return new SessionInfo(null, anonymousUser);
+    }
+    return NoneSession;
   }
 
   /**
@@ -85,7 +80,20 @@ public class SessionInfo {
    * @return the client remote IP address.
    */
   public String getIPAddress() {
-    return ipAddress;
+    synchronized (mutex) {
+      return ipAddress;
+    }
+  }
+
+  /**
+   * Sets the IP address of the remote client that requests a session opening with Silverpeas.
+   *
+   * @param ip the IP address of the remote client.
+   */
+  public void setIPAddress(String ip) {
+    synchronized (mutex) {
+      this.ipAddress = ip;
+    }
   }
 
   /**
@@ -94,7 +102,9 @@ public class SessionInfo {
    * @return timestamp of the last access.
    */
   public long getLastAccessTimestamp() {
-    return lastAccessTimestamp;
+    synchronized (mutex) {
+      return lastAccessTimestamp;
+    }
   }
 
   /**
@@ -112,7 +122,9 @@ public class SessionInfo {
    * @return the session alive timestamp.
    */
   public long getLastIdleDuration() {
-    return System.currentTimeMillis() - idleTimestamp;
+    synchronized (mutex) {
+      return System.currentTimeMillis() - idleTimestamp;
+    }
   }
 
   /**
@@ -120,7 +132,9 @@ public class SessionInfo {
    * it is still in alive.
    */
   public void setAsIdle() {
-    idleTimestamp = System.currentTimeMillis();
+    synchronized (mutex) {
+      idleTimestamp = System.currentTimeMillis();
+    }
   }
 
   /**
@@ -145,8 +159,10 @@ public class SessionInfo {
    * Updates the last access timestamp.
    */
   public void updateLastAccess() {
-    this.lastAccessTimestamp = System.currentTimeMillis();
-    this.idleTimestamp = 0;
+    synchronized (mutex) {
+      this.lastAccessTimestamp = System.currentTimeMillis();
+      this.idleTimestamp = 0;
+    }
   }
 
   /**
