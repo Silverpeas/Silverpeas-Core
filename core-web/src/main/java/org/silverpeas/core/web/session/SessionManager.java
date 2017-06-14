@@ -63,11 +63,14 @@ import java.net.InetAddress;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
@@ -82,20 +85,32 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 @Singleton
 public class SessionManager implements SessionManagement {
 
-  private static final String NOTIFY_DATE_FORMAT = " HH:mm (dd/MM/yyyy) ";
+  // Object on which to synchronize (the instance indeed)
+  private final Object mutex;
+
   // Local constants
+  private static final String NOTIFY_DATE_FORMAT = " HH:mm (dd/MM/yyyy) ";
   private static final String SESSION_MANAGER_JOB_NAME = "SessionManagerScheduler";
+  // 10mn
+  private static final int DEFAULT_USER_SESSION_TIMEOUT = 600000;
+  // 20mn
+  private static final int DEFAULT_ADMIN_SESSION_TIMEOUT = 1200000;
+  // 1mn
+  private static final int DEFAULT_SCHEDULED_SESSION_MANAGEMENT_TIMESTAMP = 60000;
+  // 1mn30
+  private static final int DEFAULT_MAX_REFRESH_INTERVAL = 90000;
   // Max session duration in ms
-  private long userSessionTimeout = 600000; // 10mn
-  private long adminSessionTimeout = 1200000; // 20mn
+  private long userSessionTimeout = DEFAULT_USER_SESSION_TIMEOUT;
+  private long adminSessionTimeout = DEFAULT_ADMIN_SESSION_TIMEOUT;
   // Timestamp of execution of the scheduled job in ms
-  private long scheduledSessionManagementTimeStamp = 60000; // 1mn
+  private long scheduledSessionManagementTimeStamp = DEFAULT_SCHEDULED_SESSION_MANAGEMENT_TIMESTAMP;
   // Client refresh interval in ms (see Clipboard Session Controller)
-  private long maxRefreshInterval = 90000; // 1mn30
+  private long maxRefreshInterval = DEFAULT_MAX_REFRESH_INTERVAL;
   // Contains all current sessions
-  private final Map<String, SessionInfo> userDataSessions = new HashMap<>(100);
+  private final ConcurrentMap<String, SessionInfo> userDataSessions = new ConcurrentHashMap<>(100);
   // Contains the session when notified
-  private final List<String> userNotificationSessions = new ArrayList<>(100);
+  private final List<String> userNotificationSessions =
+      Collections.synchronizedList(new ArrayList<>(100));
   @Inject
   private SilverStatisticsManager myStatisticsManager = null;
   @Inject
@@ -107,6 +122,7 @@ public class SessionManager implements SessionManagement {
    * Prevent the class from being instantiate (private)
    */
   protected SessionManager() {
+    this.mutex = this;
   }
 
   /**
@@ -156,7 +172,7 @@ public class SessionManager implements SessionManagement {
   }
 
   @Override
-  public synchronized SessionInfo validateSession(final SessionValidationContext context) {
+  public SessionInfo validateSession(final SessionValidationContext context) {
     String sessionKey = context.getSessionKey();
     SessionInfo sessionInfo = getSessionInfo(sessionKey);
     if (!context.mustSkipLastUserAccessTimeRegistering()) {
@@ -196,7 +212,7 @@ public class SessionManager implements SessionManagement {
   }
 
   @Override
-  public synchronized void closeSession(String sessionId) {
+  public void closeSession(String sessionId) {
     ServerEventDispatcherTask.unregisterBySessionId(sessionId);
     SessionInfo si = userDataSessions.get(sessionId);
     if (si != null) {
@@ -204,26 +220,29 @@ public class SessionManager implements SessionManagement {
     }
   }
 
-  private synchronized void removeSession(SessionInfo si) {
+  private void removeSession(SessionInfo si) {
     try {
       // Notify statistics
       Date now = new java.util.Date();
       long duration = now.getTime() - si.getOpeningTimestamp();
-      myStatisticsManager.addStatConnection(si.getUserDetail().getId(), now, 1, duration);
+      synchronized (mutex) {
+        myStatisticsManager.addStatConnection(si.getUserDetail().getId(), now, 1, duration);
 
-      // Delete in wait server messages corresponding to the session to invalidate
-      removeInQueueMessages(si.getUserDetail().getId(), si.getSessionId());
+        // Delete in wait server messages corresponding to the session to invalidate
+        removeInQueueMessages(si.getUserDetail().getId(), si.getSessionId());
 
-      // Clears all volatile resources
-      VolatileResourceCacheService.clearFrom(si);
+        // Clears all volatile resources
+        VolatileResourceCacheService.clearFrom(si);
 
-      // Clears all upload sessions
-      UploadSession.clearFrom(si);
+        // Clears all upload sessions
+        UploadSession.clearFrom(si);
 
-      // Remove the session from lists
-      userDataSessions.remove(si.getSessionId());
-      userNotificationSessions.remove(si.getSessionId());
-      si.onClosed();
+        // Remove the session from lists
+        userDataSessions.remove(si.getSessionId());
+        userNotificationSessions.remove(si.getSessionId());
+
+        si.onClosed();
+      }
 
       defaultServerEventNotifier.notify(UserSessionServerEvent.aClosingOneFor(si));
     } catch (Exception ex) {
@@ -232,7 +251,7 @@ public class SessionManager implements SessionManagement {
   }
 
   @Override
-  public synchronized SessionInfo getSessionInfo(String sessionId) {
+  public SessionInfo getSessionInfo(String sessionId) {
     SessionInfo session = userDataSessions.get(sessionId);
     if (session == null) {
       if (UserDetail.getCurrentRequester() != null &&
@@ -264,7 +283,7 @@ public class SessionManager implements SessionManagement {
    * @return
    */
   @Override
-  public synchronized Collection<SessionInfo> getConnectedUsersList() {
+  public Collection<SessionInfo> getConnectedUsersList() {
     return userDataSessions.values();
   }
 
@@ -332,12 +351,12 @@ public class SessionManager implements SessionManagement {
    * @param currentDate the date when the method is called by the scheduler
    * @see Scheduler for parameters, addSession, setLastAccess
    */
-  private synchronized void doSessionManagement(Date currentDate) {
+  private void doSessionManagement(Date currentDate) {
     try {
       long currentTime = currentDate.getTime();
-      List<SessionInfo> expiredSessions = new ArrayList<>(userDataSessions.size());
-
       Collection<SessionInfo> allSI = userDataSessions.values();
+      List<SessionInfo> expiredSessions = new ArrayList<>(allSI.size());
+
       for (SessionInfo si : allSI) {
         UserDetail userDetail = si.getUserDetail();
         long userSessionTimeoutMillis = userDetail.isAccessAdmin() ? adminSessionTimeout
@@ -345,7 +364,9 @@ public class SessionManager implements SessionManagement {
         // Has the session expired (timeout)
         if (currentTime - si.getLastAccessTimestamp() >= userSessionTimeoutMillis) {
           if (si instanceof HTTPSessionInfo) {
-            performUserSessionExpiration(si, currentTime, expiredSessions);
+            synchronized (mutex) {
+              performUserSessionExpiration(si, currentTime, expiredSessions);
+            }
           } else {
             // the session isn't a Servlet API one (session opened directly by a web service for example).
             expiredSessions.add(si);
@@ -543,9 +564,10 @@ public class SessionManager implements SessionManagement {
   }
 
   @Override
-  public synchronized boolean isUserConnected(UserDetail user) {
+  public boolean isUserConnected(UserDetail user) {
+    final String userId = user.getId();
     for (SessionInfo session : userDataSessions.values()) {
-      if (user.getId().equals(session.getUserDetail().getId())) {
+      if (userId.equals(session.getUserDetail().getId())) {
         return true;
       }
     }
