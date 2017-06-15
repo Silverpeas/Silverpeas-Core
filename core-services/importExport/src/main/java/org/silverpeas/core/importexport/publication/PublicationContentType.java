@@ -44,6 +44,7 @@ public class PublicationContentType {
   private XMLModelContentType xmlModelContentType;
 
   public PublicationContentType() {
+    // This constructor is necessary with JAXB
   }
 
   public XMLModelContentType getXMLModelContentType() {

@@ -41,7 +41,7 @@ public class CoordinatePoint implements Serializable {
   private String path;
 
   /**
-   * Empty Constructor needed for mapping Castor
+   * Empty Constructor needed for JAXB mapping
    */
   public CoordinatePoint() {
   }

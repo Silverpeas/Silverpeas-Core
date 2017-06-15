@@ -37,7 +37,7 @@ public class Coordinate implements Serializable {
   private Collection coordinatePoints;
 
   /**
-   * Empty Constructor needed for mapping Castor
+   * Empty Constructor needed for JAXB mapping
    */
   public Coordinate() {
   }

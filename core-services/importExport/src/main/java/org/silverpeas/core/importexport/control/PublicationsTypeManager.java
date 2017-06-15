@@ -165,7 +165,7 @@ public class PublicationsTypeManager {
       }
       // To avoid problems with Winzip
       if (exportPublicationPath.length() > 250) {
-        return null;
+        return Collections.emptyList();
       }
 
       // Copie des fichiers de contenu s'il en existe
@@ -191,7 +191,7 @@ public class PublicationsTypeManager {
       }
       if (!writePublicationHtml(exportReport, wysiwygText, pubId, publicationType,
           exportPublicationRelativePath, exportPublicationPath, nbThemes)) {
-        return null;
+        return Collections.emptyList();
       }
       wysiwygText = null;
     }
@@ -234,6 +234,7 @@ public class PublicationsTypeManager {
       fileHTML.createNewFile();
       FileUtils.write(fileHTML, s.toHtml(), Charsets.UTF_8);
     } catch (IOException ex) {
+      SilverLogger.getLogger(this).silent(ex);
       return false;
     }
     return true;
@@ -250,7 +251,9 @@ public class PublicationsTypeManager {
       }
     } catch (Exception ex) {
       // Do not block export in case of error
-      SilverLogger.getLogger(this).warn("Cannot get PdC positions: {0}", ex.getMessage());
+      SilverLogger.getLogger(this)
+          .silent(ex)
+          .warn("Cannot get PdC positions: {0}", ex.getMessage());
     }
   }
 
@@ -279,7 +282,9 @@ public class PublicationsTypeManager {
             FileRepositoryManager
                 .copyFile(fromPath, exportPublicationPath + separator + wysiwygFile);
           } catch (Exception e) {
-            SilverLogger.getLogger(this).warn("Cannot write WYSIWYG content: {0}", e.getMessage());
+            SilverLogger.getLogger(this)
+                .silent(e)
+                .warn("Cannot write WYSIWYG content: {0}", e.getMessage());
           }
 
         } else if (value.startsWith("image")) {
@@ -290,7 +295,7 @@ public class PublicationsTypeManager {
                 .searchDocumentById(new SimpleDocumentPK(imageId, publicationPk.getInstanceId()),
                     null);
           } catch (RuntimeException e1) {
-            SilverLogger.getLogger(this).warn("Cannot get image: {0}", e1.getMessage());
+            SilverLogger.getLogger(this).silent(e1).warn("Cannot get image: {0}", e1.getMessage());
           }
 
           if (attachment != null) {
@@ -300,7 +305,7 @@ public class PublicationsTypeManager {
               FileRepositoryManager
                   .copyFile(fromPath, exportPublicationPath + separator + attachment.getFilename());
             } catch (Exception e) {
-              SilverLogger.getLogger(this).warn("Cannot write file: {0}", e.getMessage());
+              SilverLogger.getLogger(this).silent(e).warn("Cannot write file: {0}", e.getMessage());
             }
             xmlField.setValue(exportPublicationRelativePath + separator + attachment.getFilename());
           }
@@ -313,7 +318,9 @@ public class PublicationsTypeManager {
                 .searchDocumentById(new SimpleDocumentPK(fileId, publicationPk.getInstanceId()),
                     null);
           } catch (RuntimeException e1) {
-            SilverLogger.getLogger(this).warn("Cannot get attachment: {0}", e1.getMessage());
+            SilverLogger.getLogger(this)
+                .silent(e1)
+                .warn("Cannot get attachment: {0}", e1.getMessage());
           }
           if (attachment != null) {
             xmlField.setValue(exportPublicationRelativePath + separator + attachment.getFilename());
@@ -662,6 +669,7 @@ public class PublicationsTypeManager {
                       Integer.parseInt(pubDetail.getId()), pubType.getPublicationContentType(),
                       userDetail.getId(), pubDetail.getLanguage());
                 } catch (ImportExportException ex) {
+                  SilverLogger.getLogger(this).silent(ex);
                   if (unitReport.getError() == UnitReport.ERROR_NO_ERROR) {
                     unitReport.setError(UnitReport.ERROR_CANT_CREATE_CONTENT);
                   }
@@ -794,6 +802,7 @@ public class PublicationsTypeManager {
                   }
                 }
               } catch (Exception e) {
+                SilverLogger.getLogger(this).silent(e);
                 unitReport.setError(UnitReport.ERROR_INCORRECT_CLASSIFICATION_ON_COMPONENT);
               }
             }

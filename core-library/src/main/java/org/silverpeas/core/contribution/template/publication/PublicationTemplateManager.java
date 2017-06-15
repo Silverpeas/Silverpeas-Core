@@ -246,7 +246,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
       return publicationTemplate.basicClone();
     } catch (JAXBException e) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
+          "form.EX_ERR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
           + xmlFileName, e);
     }
   }
@@ -288,7 +288,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
     } catch (JAXBException e) {
       throw new PublicationTemplateException("PublicationTemplateManager.loadPublicationTemplate",
-          "form.EX_ERR_CASTOR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
+          "form.EX_ERR_UNMARSHALL_PUBLICATION_TEMPLATE", "Publication Template FileName : "
           + xmlFileName, e);
     }
   }
@@ -308,7 +308,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
       templateNames = FileFolderManager.getAllFile(templateDir);
     } catch (UtilException e1) {
       throw new PublicationTemplateException("PublicationTemplateManager.getPublicationTemplates",
-          "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATES", e1);
+          "form.EX_ERR_LOAD_PUBLICATION_TEMPLATES", e1);
     }
     for (File templateFile : templateNames) {
       String fileName = templateFile.getName();
@@ -328,7 +328,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
         }
       } catch (Exception e) {
         SilverTrace.error("form", "PublicationTemplateManager.getPublicationTemplates",
-            "form.EX_ERR_CASTOR_LOAD_PUBLICATION_TEMPLATE", "fileName = " + fileName);
+            "form.EX_ERR_LOAD_PUBLICATION_TEMPLATE", "fileName = " + fileName);
       }
     }
 

@@ -26,7 +26,6 @@ package org.silverpeas.core.workflow.api;
 import org.silverpeas.core.workflow.api.error.WorkflowError;
 import org.silverpeas.core.workflow.api.event.GenericEvent;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
-import org.silverpeas.core.workflow.api.instance.HistoryStep;
 
 /**
  * The workflow engine services relate to error management.
@@ -35,8 +34,7 @@ public interface ErrorManager {
   /**
    * Save an error
    */
-  public WorkflowError saveError(ProcessInstance instance, GenericEvent event,
-      HistoryStep step, Exception exception);
+  public WorkflowError saveError(ProcessInstance instance, GenericEvent event, Exception exception);
 
   /**
    * Get all the errors that occured for a given instance

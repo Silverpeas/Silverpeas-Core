@@ -23,53 +23,43 @@
  */
 package org.silverpeas.core.workflow.engine.instance;
 
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.workflow.engine.ReferrableObjectIntf;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.Date;
 
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+@Entity
+@Table(name = "sb_workflow_activestate")
+public class ActiveState extends BasicJpaEntity<ActiveState, UniqueIntegerIdentifier> {
 
-/**
- * @table SB_Workflow_ActiveState
- * @depends ProcessInstanceImpl
- * @key-generator MAX
- */
-public class ActiveState extends AbstractReferrableObject {
-  /**
-   * Used for persistence
-   * @primary-key
-   * @field-name id
-   * @field-type string
-   * @sql-type integer
-   */
-  private String id = null;
-
-  /**
-   * @field-name processInstance
-   * @field-type ProcessInstanceImpl
-   * @sql-name instanceId
-   */
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "instanceid", referencedColumnName = "instanceid", nullable = false)
   private ProcessInstanceImpl processInstance = null;
 
-  /**
-   * @field-name state
-   */
+  @Column
   private String state = null;
 
-  /**
-   * @field-name backStatus
-   */
-  private boolean backStatus = false;
+  @Column
+  private int backStatus;
 
   /**
    * Flag that indicates if this active state is there for a long long time (As several timeout can
    * be defined in chain, timeoutstatus numeric value N represent the Nth timeout
-   * @field-name timeoutStatus
    */
+  @Column
   private int timeoutStatus = 0;
 
   /**
    * Date at which current state will be in timeout
-   * @field-name timeoutDate
    */
+  @Column
   private Date timeoutDate = null;
 
   /**
@@ -86,20 +76,8 @@ public class ActiveState extends AbstractReferrableObject {
     this.state = state;
   }
 
-  /**
-   * For persistence in database Get this object id
-   * @return this object id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * For persistence in database Set this object id
-   * @param this object id
-   */
-  public void setId(String id) {
-    this.id = id;
+  public ActiveState(int id) {
+    setId(String.valueOf(id));
   }
 
   /**
@@ -123,14 +101,7 @@ public class ActiveState extends AbstractReferrableObject {
    * @return true if state is active to be discussed
    */
   public boolean getBackStatus() {
-    return backStatus;
-  }
-
-  public int getBackStatusCastor() {
-    if (getBackStatus())
-      return 1;
-    else
-      return 0;
+    return backStatus == 1;
   }
 
   /**
@@ -138,11 +109,7 @@ public class ActiveState extends AbstractReferrableObject {
    * @param backStatus true if state is active to be discussed
    */
   public void setBackStatus(boolean backStatus) {
-    this.backStatus = backStatus;
-  }
-
-  public void setBackStatusCastor(int backStatus) {
-    this.backStatus = (backStatus == 1);
+    this.backStatus = backStatus ? 1 : 0;
   }
 
   /**
@@ -199,6 +166,23 @@ public class ActiveState extends AbstractReferrableObject {
    */
   public String getKey() {
     return this.getState();
+  }
+
+  @Override
+  public boolean equals(Object theOther) {
+    if (theOther instanceof String) {
+      return getKey().equals(theOther);
+    } else if (theOther instanceof ReferrableObjectIntf) {
+      return getKey().equals(((ReferrableObjectIntf) theOther).getKey());
+    } else if (theOther instanceof ActiveState) {
+      return getKey().equals(((ActiveState) theOther).getKey());
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return getKey().hashCode();
   }
 
 }

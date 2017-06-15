@@ -429,21 +429,21 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   }
 
   /**
-   * Used by the castor xml mapping.
+   * Used by the XML mapping.
    */
   public List<Label> getLabelsObj() {
     return labelsObj;
   }
 
   /**
-   * Used by the castor xml mapping.
+   * Used by the XML mapping.
    */
   public void setLabelsObj(List<Label> labelsObj) {
     this.labelsObj = labelsObj;
   }
 
   /**
-   * Used by the castor xml mapping.
+   * Used by the XML mapping.
    */
   @Override
   public List<Parameter> getParametersObj() {
@@ -451,7 +451,7 @@ public class GenericFieldTemplate implements FieldTemplate, Serializable, Clonea
   }
 
   /**
-   * Used by the castor xml mapping.
+   * Used by the XML mapping.
    */
   public void setParametersObj(List<Parameter> parametersObj) {
     this.parametersObj = parametersObj;

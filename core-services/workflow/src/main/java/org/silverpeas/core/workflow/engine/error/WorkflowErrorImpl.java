@@ -27,44 +27,78 @@ import java.util.*;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintStream;
 
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.GenericEvent;
-import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.error.WorkflowError;
 import org.silverpeas.core.workflow.api.user.User;
 
-/**
- * @table SB_Workflow_Error
- * @key-generator MAX
- */
-public class WorkflowErrorImpl implements WorkflowError {
-  /**
-   * Blank constructor for Castor
-   */
-  public WorkflowErrorImpl() {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+
+@Entity
+@Table(name = "sb_workflow_error")
+@NamedQueries({@NamedQuery(name = "processInstance.findErrors",
+    query = "SELECT error FROM WorkflowErrorImpl error WHERE error.instanceId = :id"),
+    @NamedQuery(name = "processInstance.deleteErrors",
+        query = "DELETE WorkflowErrorImpl error WHERE error.instanceId = :id")})
+public class WorkflowErrorImpl extends BasicJpaEntity<WorkflowErrorImpl, UniqueIntegerIdentifier> implements WorkflowError {
+
+  @Column
+  private int instanceId = -1;
+  @Column
+  private int stepId;
+  @Column
+  private String errorMessage = null;
+  @Column
+  private String stackTrace = null;
+  @Column
+  private String userId = null;
+  @Column
+  private String actionName = null;
+  @Column
+  private Date actionDate = null;
+  @Column
+  private String userRole = null;
+  @Column
+  private String stateName = null;
+
+  @Transient
+  private State state = null;
+
+  @Transient
+  private ProcessInstance processInstance = null;
+
+  @Transient
+  private User user = null;
+
+  @Transient
+  private Action action = null;
+
+  protected WorkflowErrorImpl() {
   }
 
   /**
    * A WorkflowErrorImpl is build from a process instance, a generic event, a history step and a
    * Exception
    */
-  public WorkflowErrorImpl(ProcessInstance instance, GenericEvent event,
-      HistoryStep step, Exception exception) {
+  public WorkflowErrorImpl(ProcessInstance instance, GenericEvent event, Exception exception) {
     this.processInstance = instance;
-    this.instanceId = instance.getInstanceId();
+    this.instanceId = Integer.parseInt(instance.getInstanceId());
     this.errorMessage = exception.getMessage();
     this.actionName = event.getActionName();
     this.actionDate = event.getActionDate();
     this.userRole = event.getUserRoleName();
 
-    this.step = step;
-    if (step != null) {
-      this.stepId = step.getId();
-    }
     this.user = event.getUser();
     if (user != null) {
       this.userId = event.getUser().getUserId();
@@ -83,270 +117,74 @@ public class WorkflowErrorImpl implements WorkflowError {
   /**
    * @return ProcessInstance
    */
+  @Override
   public ProcessInstance getProcessInstance() throws WorkflowException {
-    if (processInstance == null) {
-      if (instanceId != null) {
-        processInstance = Workflow.getProcessInstanceManager()
-            .getProcessInstance(instanceId);
-      }
+    if (processInstance == null && instanceId != -1) {
+      processInstance =
+          Workflow.getProcessInstanceManager().getProcessInstance(String.valueOf(instanceId));
     }
 
     return processInstance;
   }
 
   /**
-   * Get error Id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * Set error Id
-   */
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  /**
-   * Get instance Id
-   */
-  public String getInstanceId() {
-    return instanceId;
-  }
-
-  /**
-   * Set instance Id
-   */
-  public void setInstanceId(String instanceId) {
-    this.instanceId = instanceId;
-  }
-
-  /**
-   * @return history step
-   */
-  public HistoryStep getHistoryStep() throws WorkflowException {
-    if (step == null) {
-      if (stepId != null) {
-        if (getProcessInstance() != null)
-          step = getProcessInstance().getHistoryStep(stepId);
-      }
-    }
-
-    return step;
-  }
-
-  /**
-   * Get history step Id
-   */
-  public String getStepId() {
-    return stepId;
-  }
-
-  /**
-   * Set history step Id
-   */
-  public void setStepId(String stepId) {
-    this.stepId = stepId;
-  }
-
-  /**
    * @return error message
    */
+  @Override
   public String getErrorMessage() {
     return errorMessage;
   }
 
   /**
-   * @return error message
-   */
-  public void setErrorMessage(String errorMessage) {
-    this.errorMessage = errorMessage;
-  }
-
-  /**
    * @return stack trace
    */
+  @Override
   public String getStackTrace() {
     return stackTrace;
   }
 
   /**
-   * @return stack trace
-   */
-  public void setStackTrace(String stackTrace) {
-    this.stackTrace = stackTrace;
-  }
-
-  /**
    * @return user
    */
+  @Override
   public User getUser() throws WorkflowException {
-    if (user == null) {
-      if (userId != null) {
-        user = Workflow.getUserManager().getUser(userId);
-      }
+    if (user == null && userId != null) {
+      user = Workflow.getUserManager().getUser(userId);
     }
 
     return user;
   }
 
   /**
-   * Get user Id
-   */
-  public String getUserId() {
-    return userId;
-  }
-
-  /**
-   * Set user Id
-   */
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
-
-  /**
    * @return action
    */
+  @Override
   public Action getAction() throws WorkflowException {
-    if (action == null && actionName != null) {
-      if (getProcessInstance() != null) {
-        action = getProcessInstance().getProcessModel().getAction(actionName);
-      }
+    if (action == null && actionName != null && getProcessInstance() != null) {
+      action = getProcessInstance().getProcessModel().getAction(actionName);
     }
 
     return action;
   }
 
   /**
-   * Get action name
-   */
-  public String getActionName() {
-    return actionName;
-  }
-
-  /**
-   * Set action name
-   */
-  public void setActionName(String actionName) {
-    this.actionName = actionName;
-  }
-
-  /**
    * Get action date
    */
+  @Override
   public Date getActionDate() {
     return actionDate;
   }
 
   /**
-   * Set action date
-   */
-  public void setActionDate(Date actionDate) {
-    this.actionDate = actionDate;
-  }
-
-  /**
-   * Get user role
-   */
-  public String getUserRole() {
-    return userRole;
-  }
-
-  /**
-   * Set user role
-   */
-  public void setUserRole(String userRole) {
-    this.userRole = userRole;
-  }
-
-  /**
    * @return resolved state
    */
+  @Override
   public State getResolvedState() throws WorkflowException {
-    if (state == null && stateName != null) {
-      if (getProcessInstance() != null) {
-        state = getProcessInstance().getProcessModel().getState(stateName);
-      }
+    if (state == null && stateName != null && getProcessInstance() != null) {
+      state = getProcessInstance().getProcessModel().getState(stateName);
     }
 
     return state;
   }
 
-  /**
-   * Get state name
-   */
-  public String getStateName() {
-    return stateName;
-  }
-
-  /**
-   * Set state name
-   */
-  public void setStateName(String stateName) {
-    this.stateName = stateName;
-  }
-
-  /**
-   * @field-name id
-   * @field-type string
-   * @sql-type integer
-   * @primary-key
-   */
-  private String id = null;
-
-  /**
-   * @field-name instanceId
-   * @field-type string
-   * @sql-type integer
-   */
-  private String instanceId = null;
-  private transient ProcessInstance processInstance = null;
-
-  /**
-   * @field-name stepId
-   * @field-type string
-   * @sql-type integer
-   */
-  private String stepId = null;
-  private transient HistoryStep step = null;
-
-  /**
-   * @field-name errorMessage
-   */
-  private String errorMessage = null;
-
-  /**
-   * @field-name stackTrace
-   */
-  private String stackTrace = null;
-
-  /**
-   * @field-name userId
-   */
-  private String userId = null;
-  private transient User user = null;
-
-  /**
-   * @field-name actionName
-   */
-  private String actionName = null;
-  private transient Action action = null;
-
-  /**
-   * @field-name actionDate
-   * @sql-type timestamp
-   */
-  private Date actionDate = null;
-
-  /**
-   * @field-name userRole
-   */
-  private String userRole = null;
-
-  /**
-   * @field-name stateName
-   */
-  private String stateName = null;
-  private transient State state = null;
 }

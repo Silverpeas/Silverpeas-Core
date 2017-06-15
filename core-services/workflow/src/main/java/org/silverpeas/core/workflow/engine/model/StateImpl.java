@@ -23,10 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.AllowedActions;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
@@ -43,6 +39,9 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;state&gt; element of a Process Model.
@@ -355,5 +354,24 @@ public class StateImpl implements State, Serializable {
    */
   public void setTimeoutNotifyAdmin(boolean timeoutAction) {
     this.timeoutNotifyAdmin = timeoutAction;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    final StateImpl state = (StateImpl) o;
+
+    return name.equals(state.name);
+  }
+
+  @Override
+  public int hashCode() {
+    return name.hashCode();
   }
 }

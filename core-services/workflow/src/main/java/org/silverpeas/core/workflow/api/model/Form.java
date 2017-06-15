@@ -103,7 +103,7 @@ public interface Form {
   public Iterator<Input> iterateInput();
 
   /**
-   * Add an input Method needed primarily by Castor
+   * Add an input
    */
   public void addInput(Input input);
 

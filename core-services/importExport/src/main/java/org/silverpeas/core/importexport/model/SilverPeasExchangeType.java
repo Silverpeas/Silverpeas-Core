@@ -37,6 +37,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -67,6 +68,7 @@ public class SilverPeasExchangeType {
   private List<ComponentInst> componentsType;
 
   public SilverPeasExchangeType() {
+    // This constructor is necessary with JAXB
   }
 
   public String getTargetComponentId() {
@@ -78,7 +80,7 @@ public class SilverPeasExchangeType {
   }
 
   public void setPublicationsType(List<PublicationType> type) {
-    publicationsType = type;
+    publicationsType = type == null ? Collections.emptyList() : type;
   }
 
   public List<RepositoryType> getRepositoriesType() {

@@ -57,7 +57,7 @@ public interface Role {
   public ContextualDesignations getLabels();
 
   /**
-   * Add a label Method needed primarily by Castor
+   * Add a label
    */
   public void addLabel(ContextualDesignation label);
 

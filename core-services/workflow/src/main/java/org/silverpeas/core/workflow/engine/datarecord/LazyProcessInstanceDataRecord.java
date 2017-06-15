@@ -42,6 +42,7 @@ import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
+import org.silverpeas.core.workflow.engine.user.UserSettingsService;
 
 /**
  * A ProcessInstanceDataRecord groups in a single DataRecord all the data items of a
@@ -141,7 +142,7 @@ public class LazyProcessInstanceDataRecord extends AbstractProcessInstanceDataRe
               }
               return field;
             } else {
-              UserSettings settings = Workflow.getUserManager().getUserSettings(
+              UserSettings settings = UserSettingsService.get().get(
                   step.getUser().getUserId(), instance.getModelId());
               UserInfo info = settings.getUserInfo(shortFieldName);
 

@@ -74,7 +74,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
    * ResourceLocator object to retrieve settings in a properties file
    */
   private static SettingBundle settings =
-      ResourceLocator.getSettingBundle("org.silverpeas.workflow.engine.castorSettings");
+      ResourceLocator.getSettingBundle("org.silverpeas.workflow.engine.settings");
 
   /**
    * The map (modelId -> cached process model).
@@ -321,7 +321,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       return process;
     } catch (JAXBException e) {
       throw new WorkflowException("ProcessModelManagerImpl.loadProcessModel",
-          "workflowEngine.EX_ERR_CASTOR_LOAD_XML_MAPPING",
+          "workflowEngine.EX_ERR_LOAD_XML_MAPPING",
           "Process path : " + processPath, e);
     }
   }
@@ -349,7 +349,7 @@ public class ProcessModelManagerImpl implements ProcessModelManager {
       clearProcessModelCache();
     } catch (JAXBException e) {
       throw new WorkflowException("ProcessModelManagerImpl.saveProcessModel",
-          "workflowEngine.EX_ERR_CASTOR_LOAD_XML_MAPPING",
+          "workflowEngine.EX_ERR_LOAD_XML_MAPPING",
           "Process path = " + processPath, e);
     }
   }

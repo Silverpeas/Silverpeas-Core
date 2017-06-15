@@ -41,6 +41,7 @@ public class NodePositionType {
   private String explicitPath;
 
   public NodePositionType() {
+    // This constructor is necessary with JAXB
   }
 
   public int getId() {

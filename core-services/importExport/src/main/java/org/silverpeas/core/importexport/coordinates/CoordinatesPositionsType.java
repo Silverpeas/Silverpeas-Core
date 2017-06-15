@@ -43,6 +43,7 @@ public class CoordinatesPositionsType {
   private boolean createEnable = false;
 
   public CoordinatesPositionsType() {
+    // This constructor is necessary with JAXB
   }
 
   public List getCoordinatesPositions() {

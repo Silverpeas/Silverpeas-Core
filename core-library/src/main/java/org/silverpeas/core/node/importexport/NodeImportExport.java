@@ -59,7 +59,7 @@ public class NodeImportExport {
   /**
    * Méthode de récupération de l'arborescence totale des topics d'un liste de composants
    * @param listComponentId - liste des ids des composants dont on veut l'arborescence des topics
-   * @return un object NodeTreesType utilisé par le mapping castor du module d ' ImportExport
+   * @return un object NodeTreesType utilisé par le mapping JAXB du module d ' ImportExport
    */
   public List<NodeTreeType> getTrees(List<String> listComponentId) {
     List<NodeTreeType> listNodeTreeType = new ArrayList<>(listComponentId.size());

@@ -23,12 +23,10 @@
  */
 package org.silverpeas.core.importexport.versioning;
 
-import org.silverpeas.core.importexport.form.FormTemplateImportExport;
-import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -36,22 +34,23 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentEventNotifier;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
+import org.silverpeas.core.importexport.form.FormTemplateImportExport;
+import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -113,8 +112,7 @@ public class VersioningImport {
         boolean removed = FileUtils.deleteQuietly(attachmentImportExport.getAttachmentFile(
             attachment));
         if (!removed) {
-          SilverTrace.error("versioning", "VersioningImport.importDocuments()",
-              "root.MSG_GEN_PARAM_VALUE", "Can't remove file " + attachmentImportExport
+          SilverLogger.getLogger(this).error("Can't remove file {0}", attachmentImportExport
               .getAttachmentFile(attachment));
         }
       }
@@ -137,122 +135,134 @@ public class VersioningImport {
   }
 
   public List<SimpleDocument> importDocuments(ForeignPK objectPK, List<Document> documents,
-      int userId, boolean indexIt) throws RemoteException, FileNotFoundException {
-
-    boolean launchCallback = false;
-
-    List<SimpleDocument> importedDocs = new ArrayList<SimpleDocument>(documents.size());
+      int userId, boolean indexIt) throws FileNotFoundException {
+    List<SimpleDocument> importedDocs = new ArrayList<>(documents.size());
 
     // get existing documents of object
     List<SimpleDocument> existingDocuments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(objectPK, null);
-    FormTemplateImportExport xmlIE = null;
+    FormTemplateImportExport xmlIE = new FormTemplateImportExport();
     for (Document document : documents) {
-      SimpleDocument existingDocument = null;
-      if (document.getPk() != null && StringUtil.isDefined(document.getPk().getId())
-          && !"-1".equals(document.getPk().getId())) {
-        existingDocument = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
-            new SimpleDocumentPK("", document.getPk()), null);
-      }
-      if (existingDocument == null) {
-        existingDocument = isDocumentExist(existingDocuments, document.getName());
-        if (existingDocument != null) {
-          document.setPk(new DocumentPK((int) existingDocument.getPk().getOldSilverpeasId(),
-              objectPK.getInstanceId()));
-        }
-      }
-
-      ResourceEvent.Type type = ResourceEvent.Type.CREATION;
-      if (existingDocument != null && existingDocument.isVersioned()) {
-        type = ResourceEvent.Type.UPDATE;
-        List<DocumentVersion> versions = document.getVersionsType();
-        for (DocumentVersion version : versions) {
-          version.setInstanceId(objectPK.getInstanceId());
-          existingDocument = addVersion(version, existingDocument, userId, indexIt);
-          XMLModelContentType xmlContent = version.getXMLModelContentType();
-          // Store xml content
-          try {
-            if (xmlContent != null) {
-              if (xmlIE == null) {
-                xmlIE = new FormTemplateImportExport();
-              }
-              ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().
-                  getInstanceId());
-              xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent,
-                  Integer.toString(version.getAuthorId()));
-            }
-          } catch (Exception e) {
-            SilverTrace.error("versioning", "VersioningImport.importDocuments()",
-                "root.MSG_GEN_PARAM_VALUE", e);
-          }
-        }
-      } else {
-        // Il n'y a pas de document portant le même nom
-        // On crée un nouveau document
-        List<DocumentVersion> versions = document.getVersionsType();
-        existingDocument = null;
-        for (DocumentVersion version : versions) {
-          if (existingDocument == null) {
-            if (version.getCreationDate() == null) {
-              version.setCreationDate(new Date());
-            }
-            if (version.getAuthorId() == -1) {
-              version.setAuthorId(userId);
-            }
-            // Création du nouveau document
-
-            XMLModelContentType xmlContent = version.getXMLModelContentType();
-            String xmlFormId = null;
-            if (xmlContent != null) {
-              xmlFormId = xmlContent.getName();
-            }
-            existingDocument = new HistorisedDocument(new SimpleDocumentPK(null, objectPK.
-                getInstanceId()), objectPK.getId(), -1, new SimpleAttachment(version.
-                getLogicalName(), I18NHelper.defaultLanguage,
-                document.getName(), document.getDescription(), version.getSize(), version.
-                getMimeType(), version.getAuthorId() + "", version.getCreationDate(), xmlFormId));
-
-            existingDocument.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
-            boolean isPublic = version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION;
-            if (isPublic) {
-              launchCallback = true;
-            }
-            existingDocument.setPublicDocument(isPublic);
-            InputStream content = getVersionContent(version);
-            existingDocument.setContentType(version.getMimeType());
-            existingDocument.setSize(version.getSize());
-            existingDocument.setFilename(version.getLogicalName());
-            existingDocument.setComment(version.getComments());
-            existingDocument = AttachmentServiceProvider.getAttachmentService()
-                .createAttachment(existingDocument, content, indexIt);
-            IOUtils.closeQuietly(content);
-          } else {
-            existingDocument = addVersion(version, existingDocument, userId, indexIt);
-          }
-          importedDocs.add(existingDocument);
-          // Store xml content
-          try {
-            XMLModelContentType xmlContent = version.getXMLModelContentType();
-            if (xmlContent != null) {
-              if (xmlIE == null) {
-                xmlIE = new FormTemplateImportExport();
-              }
-              ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().getInstanceId());
-              xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent, Integer.
-                  toString(version.getAuthorId()));
-            }
-          } catch (Exception e) {
-            SilverTrace.error("versioning", "VersioningImport.importDocuments()",
-                "root.MSG_GEN_PARAM_VALUE", e);
-          }
-        }
-      }
-      if (launchCallback && existingDocument != null) {
-        AttachmentEventNotifier notifier = AttachmentEventNotifier.getNotifier();
-        notifier.notifyEventOn(type, existingDocument);
-      }
+      importDocument(objectPK, userId, indexIt, importedDocs, existingDocuments,
+              xmlIE, document);
     }
     return importedDocs;
+  }
+
+  private void importDocument(final ForeignPK objectPK, final int userId, final boolean indexIt,
+      final List<SimpleDocument> importedDocs,
+      final List<SimpleDocument> existingDocuments, final FormTemplateImportExport xmlIE,
+      final Document document) throws FileNotFoundException {
+    boolean launchCallback = false;
+
+    SimpleDocument existingDocument = getExistingDocument(objectPK, existingDocuments, document);
+
+    ResourceEvent.Type type = ResourceEvent.Type.CREATION;
+    if (existingDocument != null && existingDocument.isVersioned()) {
+      type = ResourceEvent.Type.UPDATE;
+      existingDocument = addVersionForExistingDocument(objectPK, userId, indexIt, xmlIE, document,
+          existingDocument);
+    } else {
+      // no document yet existing with the same name, so create it
+      List<DocumentVersion> versions = document.getVersionsType();
+      existingDocument = null;
+      for (DocumentVersion version : versions) {
+        if (existingDocument == null) {
+          if (version.getCreationDate() == null) {
+            version.setCreationDate(new Date());
+          }
+          if (version.getAuthorId() == -1) {
+            version.setAuthorId(userId);
+          }
+          boolean isPublic = version.getType() == DocumentVersion.TYPE_PUBLIC_VERSION;
+          if (isPublic) {
+            launchCallback = true;
+          }
+          existingDocument = createSimpleDocument(objectPK, indexIt, document, version, isPublic);
+        } else {
+          existingDocument = addVersion(version, existingDocument, userId, indexIt);
+        }
+        importedDocs.add(existingDocument);
+        // Store xml content
+        importXMLContent(version, xmlIE);
+      }
+    }
+    if (launchCallback && existingDocument != null) {
+      AttachmentEventNotifier notifier = AttachmentEventNotifier.getNotifier();
+      notifier.notifyEventOn(type, existingDocument);
+    }
+  }
+
+  private SimpleDocument addVersionForExistingDocument(final ForeignPK objectPK, final int userId,
+      final boolean indexIt, final FormTemplateImportExport xmlIE, final Document document,
+      SimpleDocument existingDocument) throws FileNotFoundException {
+    List<DocumentVersion> versions = document.getVersionsType();
+    SimpleDocument lastDocumentVersion = existingDocument;
+    for (DocumentVersion version : versions) {
+      version.setInstanceId(objectPK.getInstanceId());
+      lastDocumentVersion = addVersion(version, existingDocument, userId, indexIt);
+      importXMLContent(version, xmlIE);
+    }
+    return lastDocumentVersion;
+  }
+
+  private SimpleDocument createSimpleDocument(final ForeignPK objectPK, final boolean indexIt,
+      final Document document, final DocumentVersion version, final boolean isPublic)
+      throws FileNotFoundException {
+    XMLModelContentType xmlContent = version.getXMLModelContentType();
+    String xmlFormId = null;
+    if (xmlContent != null) {
+      xmlFormId = xmlContent.getName();
+    }
+    SimpleDocument existingDocument = new HistorisedDocument(new SimpleDocumentPK(null, objectPK.
+        getInstanceId()), objectPK.getId(), -1, new SimpleAttachment(version.
+        getLogicalName(), I18NHelper.defaultLanguage,
+        document.getName(), document.getDescription(), version.getSize(), version.
+        getMimeType(), version.getAuthorId() + "", version.getCreationDate(), xmlFormId));
+
+    existingDocument.setStatus("" + DocumentVersion.STATUS_VALIDATION_NOT_REQ);
+    existingDocument.setPublicDocument(isPublic);
+    InputStream content = getVersionContent(version);
+    existingDocument.setContentType(version.getMimeType());
+    existingDocument.setSize(version.getSize());
+    existingDocument.setFilename(version.getLogicalName());
+    existingDocument.setComment(version.getComments());
+    existingDocument = AttachmentServiceProvider.getAttachmentService()
+        .createAttachment(existingDocument, content, indexIt);
+    IOUtils.closeQuietly(content);
+    return existingDocument;
+  }
+
+  private SimpleDocument getExistingDocument(final ForeignPK objectPK,
+      final List<SimpleDocument> existingDocuments, final Document document) {
+    SimpleDocument existingDocument = null;
+    if (document.getPk() != null && StringUtil.isDefined(document.getPk().getId())
+        && !"-1".equals(document.getPk().getId())) {
+      existingDocument = AttachmentServiceProvider.getAttachmentService().searchDocumentById(
+          new SimpleDocumentPK("", document.getPk()), null);
+    }
+    if (existingDocument == null) {
+      existingDocument = isDocumentExist(existingDocuments, document.getName());
+      if (existingDocument != null) {
+        document.setPk(new DocumentPK((int) existingDocument.getPk().getOldSilverpeasId(),
+            objectPK.getInstanceId()));
+      }
+    }
+    return existingDocument;
+  }
+
+  private void importXMLContent(DocumentVersion version, FormTemplateImportExport xmlIE) {
+    XMLModelContentType xmlContent = version.getXMLModelContentType();
+    try {
+      if (xmlContent != null) {
+        ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().
+            getInstanceId());
+        xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent,
+            Integer.toString(version.getAuthorId()));
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
   }
 
   private SimpleDocument isDocumentExist(List<SimpleDocument> documents, String name) {

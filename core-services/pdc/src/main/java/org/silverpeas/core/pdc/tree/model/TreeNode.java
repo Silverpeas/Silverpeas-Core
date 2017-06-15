@@ -26,16 +26,15 @@
 
 package org.silverpeas.core.pdc.tree.model;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.HashMap;
 import java.util.Map;
@@ -200,7 +199,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   }
 
   public boolean hasFather() {
-    return StringUtil.isDefined(getFatherId()) && !getFatherId().equals("-1");
+    return StringUtil.isDefined(getFatherId()) && !"-1".equals(getFatherId());
   }
 
   /**
