@@ -50,6 +50,7 @@ public class AxisType {
   private String name;
 
   public AxisType() {
+    // This constructor is necessary with JAXB
   }
 
   /**

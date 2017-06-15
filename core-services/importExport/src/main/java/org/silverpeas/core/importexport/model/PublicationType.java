@@ -67,6 +67,7 @@ public class PublicationType {
   private CoordinatesPositionsType coordinatesPositionsType;
 
   public PublicationType() {
+    // This constructor is necessary with JAXB
   }
 
   public String getComponentId() {

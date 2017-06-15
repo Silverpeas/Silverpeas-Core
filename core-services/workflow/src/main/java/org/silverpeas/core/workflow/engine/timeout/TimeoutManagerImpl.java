@@ -23,23 +23,24 @@
  */
 package org.silverpeas.core.workflow.engine.timeout;
 
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.workflow.api.TimeoutManager;
-import org.silverpeas.core.workflow.api.Workflow;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.TimeoutEvent;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.engine.WorkflowEngineTask;
 import org.silverpeas.core.workflow.engine.event.TimeoutEventImpl;
 import org.silverpeas.core.workflow.engine.instance.ActionAndState;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Date;
 
@@ -47,7 +48,10 @@ import java.util.Date;
  * The workflow engine services relate to error management.
  */
 @Singleton
-public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListener {
+public class TimeoutManagerImpl implements Initialization, SchedulerEventListener {
+
+  @Inject
+  private ProcessInstanceManager manager;
 
   // Local constants
   private static final String TIMEOUT_MANAGER_JOB_NAME = "WorkflowTimeoutManager";
@@ -56,11 +60,10 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListene
    * Initialize timeout manager
    */
   @Override
-  public void initialize() {
+  public void init() {
     try {
       SettingBundle settings = ResourceLocator.getSettingBundle(
           "org.silverpeas.workflow.engine.schedulerSettings");
-      // List<SchedulerJob> jobList = SimpleScheduler.getJobList(this);
       Scheduler scheduler = SchedulerProvider.getScheduler();
       if (scheduler.isJobScheduled(TIMEOUT_MANAGER_JOB_NAME)) {
         // Remove previous scheduled job
@@ -84,13 +87,10 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListene
    * been reached. In that case, the administrator can be notified, the active state and the
    * instance are marked as timeout
    */
-  public void doTimeoutManagement() {
-    Date beginDate = new Date();
-
+  private void doTimeoutManagement() {
     try {
       // parse all "process manager" peas
-      ProcessInstance[] instances =
-          Workflow.getProcessInstanceManager().getTimeOutProcessInstances();
+      ProcessInstance[] instances = manager.getTimeOutProcessInstances();
       Date now = new Date();
 
       for (final ProcessInstance instance : instances) {
@@ -105,9 +105,6 @@ public class TimeoutManagerImpl implements TimeoutManager, SchedulerEventListene
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-    } finally {
-      Date endDate = new Date();
-      long delay = (endDate.getTime() - beginDate.getTime()) / 1000;
     }
   }
 

@@ -398,7 +398,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
   }
 
   /**
-   * Méthode nécéssaire au marshalling castor
+   * Méthode nécéssaire au marshalling JAXB
    * @param id
    */
   public void setId(int id) {

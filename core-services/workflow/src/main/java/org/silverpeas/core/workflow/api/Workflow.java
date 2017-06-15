@@ -23,10 +23,9 @@
  */
 package org.silverpeas.core.workflow.api;
 
-import org.silverpeas.core.workflow.engine.WorkflowHub;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.workflow.engine.WorkflowHub;
 
 import java.util.HashMap;
 
@@ -35,10 +34,13 @@ import java.util.HashMap;
  * class to the WorkflowHub class which gives all the workflow services.
  */
 public final class Workflow {
+
+  private static final HashMap<String, LocalizationBundle> localLabels = new HashMap<>();
+
   /**
    * @return the ProcessModelManager
    */
-  static public ProcessModelManager getProcessModelManager()
+  public static ProcessModelManager getProcessModelManager()
       throws WorkflowException {
     return WorkflowHub.getProcessModelManager();
   }
@@ -46,7 +48,7 @@ public final class Workflow {
   /**
    * @return the ProcessInstanceManager
    */
-  static public ProcessInstanceManager getProcessInstanceManager()
+  public static ProcessInstanceManager getProcessInstanceManager()
       throws WorkflowException {
     return WorkflowHub.getProcessInstanceManager();
   }
@@ -54,14 +56,14 @@ public final class Workflow {
   /**
    * @return the UserManager
    */
-  static public UserManager getUserManager() throws WorkflowException {
+  public static UserManager getUserManager() throws WorkflowException {
     return WorkflowHub.getUserManager();
   }
 
   /**
    * @return the WorkflowEngine
    */
-  static public WorkflowEngine getWorkflowEngine()
+  public static WorkflowEngine getWorkflowEngine()
       throws WorkflowException {
     return WorkflowHub.getWorkflowEngine();
   }
@@ -69,21 +71,21 @@ public final class Workflow {
   /**
    * @return the TaskManager
    */
-  static public TaskManager getTaskManager() throws WorkflowException {
+  public static TaskManager getTaskManager() throws WorkflowException {
     return WorkflowHub.getTaskManager();
   }
 
   /**
    * @return the ErrorManager
    */
-  static public ErrorManager getErrorManager() throws WorkflowException {
+  public static ErrorManager getErrorManager() throws WorkflowException {
     return WorkflowHub.getErrorManager();
   }
 
   /**
    * Returns the localized label.
    */
-  static public String getLabel(String labelName, String lang) {
+  public static String getLabel(String labelName, String lang) {
     LocalizationBundle labels = localLabels.get(lang);
     if (labels == null) {
       labels = ResourceLocator.getLocalizationBundle(
@@ -95,20 +97,4 @@ public final class Workflow {
     return labels.getString(labelName);
   }
 
-  /**
-   * Initialize the Workflow inspector the Workflow inspector will verify periodically the timeout
-   * on
-   */
-  static public void initialize() {
-    try {
-      TimeoutManager timeoutManager = WorkflowHub.getTimeoutManager();
-      timeoutManager.initialize();
-    } catch (WorkflowException we) {
-      SilverTrace.error("workflowEngine", "Workflow.initialize",
-          "workflowEngine.EX_ERR_INITIALIZE", we);
-    }
-  }
-
-  static private final HashMap<String, LocalizationBundle> localLabels =
-      new HashMap<>();
 }

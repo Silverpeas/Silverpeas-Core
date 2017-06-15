@@ -23,12 +23,10 @@
  */
 package org.silverpeas.core.importexport.versioning;
 
-import org.silverpeas.core.importexport.form.FormTemplateImportExport;
-import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -36,22 +34,23 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.notification.AttachmentEventNotifier;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
+import org.silverpeas.core.importexport.form.FormTemplateImportExport;
+import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -113,8 +112,7 @@ public class VersioningImport {
         boolean removed = FileUtils.deleteQuietly(attachmentImportExport.getAttachmentFile(
             attachment));
         if (!removed) {
-          SilverTrace.error("versioning", "VersioningImport.importDocuments()",
-              "root.MSG_GEN_PARAM_VALUE", "Can't remove file " + attachmentImportExport
+          SilverLogger.getLogger(this).error("Can't remove file {0}", attachmentImportExport
               .getAttachmentFile(attachment));
         }
       }
@@ -137,7 +135,7 @@ public class VersioningImport {
   }
 
   public List<SimpleDocument> importDocuments(ForeignPK objectPK, List<Document> documents,
-      int userId, boolean indexIt) throws RemoteException, FileNotFoundException {
+      int userId, boolean indexIt) throws FileNotFoundException {
 
     boolean launchCallback = false;
 
@@ -146,7 +144,7 @@ public class VersioningImport {
     // get existing documents of object
     List<SimpleDocument> existingDocuments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(objectPK, null);
-    FormTemplateImportExport xmlIE = null;
+    FormTemplateImportExport xmlIE = new FormTemplateImportExport();
     for (Document document : documents) {
       SimpleDocument existingDocument = null;
       if (document.getPk() != null && StringUtil.isDefined(document.getPk().getId())
@@ -169,22 +167,7 @@ public class VersioningImport {
         for (DocumentVersion version : versions) {
           version.setInstanceId(objectPK.getInstanceId());
           existingDocument = addVersion(version, existingDocument, userId, indexIt);
-          XMLModelContentType xmlContent = version.getXMLModelContentType();
-          // Store xml content
-          try {
-            if (xmlContent != null) {
-              if (xmlIE == null) {
-                xmlIE = new FormTemplateImportExport();
-              }
-              ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().
-                  getInstanceId());
-              xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent,
-                  Integer.toString(version.getAuthorId()));
-            }
-          } catch (Exception e) {
-            SilverTrace.error("versioning", "VersioningImport.importDocuments()",
-                "root.MSG_GEN_PARAM_VALUE", e);
-          }
+          importXMLContent(version, xmlIE);
         }
       } else {
         // Il n'y a pas de document portant le même nom
@@ -231,20 +214,7 @@ public class VersioningImport {
           }
           importedDocs.add(existingDocument);
           // Store xml content
-          try {
-            XMLModelContentType xmlContent = version.getXMLModelContentType();
-            if (xmlContent != null) {
-              if (xmlIE == null) {
-                xmlIE = new FormTemplateImportExport();
-              }
-              ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().getInstanceId());
-              xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent, Integer.
-                  toString(version.getAuthorId()));
-            }
-          } catch (Exception e) {
-            SilverTrace.error("versioning", "VersioningImport.importDocuments()",
-                "root.MSG_GEN_PARAM_VALUE", e);
-          }
+          importXMLContent(version, xmlIE);
         }
       }
       if (launchCallback && existingDocument != null) {
@@ -253,6 +223,20 @@ public class VersioningImport {
       }
     }
     return importedDocs;
+  }
+
+  private void importXMLContent(DocumentVersion version, FormTemplateImportExport xmlIE) {
+    XMLModelContentType xmlContent = version.getXMLModelContentType();
+    try {
+      if (xmlContent != null) {
+        ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().
+            getInstanceId());
+        xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent,
+            Integer.toString(version.getAuthorId()));
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
   }
 
   private SimpleDocument isDocumentExist(List<SimpleDocument> documents, String name) {

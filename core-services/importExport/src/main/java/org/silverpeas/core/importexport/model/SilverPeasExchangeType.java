@@ -67,6 +67,7 @@ public class SilverPeasExchangeType {
   private List<ComponentInst> componentsType;
 
   public SilverPeasExchangeType() {
+    // This constructor is necessary with JAXB
   }
 
   public String getTargetComponentId() {

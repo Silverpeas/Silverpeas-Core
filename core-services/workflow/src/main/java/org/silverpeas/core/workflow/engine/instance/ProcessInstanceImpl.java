@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.workflow.engine.instance;
 
+import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.DataRecordUtil;
 import org.silverpeas.core.contribution.content.form.Field;
@@ -35,6 +40,13 @@ import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldD
 import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.form.field.UserField;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.Workflow;
@@ -51,154 +63,128 @@ import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.datarecord.LazyProcessInstanceDataRecord;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceDataRecord;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
-import org.silverpeas.core.workflow.engine.jdo.WorkflowJDOManager;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.lang3.StringUtils;
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.PersistenceException;
-import org.exolab.castor.jdo.QueryResults;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.util.StringUtil;
 
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
- * This class is one implementation of interface UpdatableProcessInstance. It uses Castor library
- * to
- * read/write process instance information in database
- * @table SB_Workflow_ProcessInstance
- * @key-generator MAX
+ * This class is one implementation of interface UpdatableProcessInstance.
  */
-public class ProcessInstanceImpl implements UpdatableProcessInstance {
+@Entity
+@Table(name = "sb_workflow_processinstance")
+@AttributeOverride(name = "id", column = @javax.persistence.Column(name = "instanceid"))
+public class ProcessInstanceImpl
+    extends BasicJpaEntity<ProcessInstanceImpl, UniqueIntegerIdentifier>
+    implements UpdatableProcessInstance {
 
   /**
    * Abstract process model
    */
-  private transient ProcessModel model = null;
+  @Transient
+  private ProcessModel model = null;
   /**
    * Flag that indicates validity of this processInstance
    */
-  private transient boolean valid = false;
+  @Transient
+  private boolean valid = false;
   /**
    * Flag that indicates if this instance is locked by admin
-   * @field-name locked
-   * @get-method isLockedByAdmin
-   * @set-method setLockedByAdmin
    */
-  private boolean locked = false;
+  @Column
+  private int locked = 0;
   /**
    * Flag that indicates if this instance status is "error"
-   * @field-name errorStatus
    */
-  private boolean errorStatus = false;
+  @Column
+  private int errorStatus = 0;
   /**
    * Flag that indicates if this instance is in an active state for a long long time
-   * @field-name timeoutStatus
    */
-  private boolean timeoutStatus = false;
-  /**
-   * the instance Id
-   * @field-name instanceId
-   * @sql-type integer
-   * @primary-key
-   */
-  private String instanceId = null;
+  @Column
+  private int timeoutStatus = 0;
   /**
    * the model Id
-   * @field-name modelId
    */
+  @Column
   private String modelId = null;
   /**
-   * Vector of all history step that trace events occured on this process instance
-   * @field-name historySteps
-   * @field-type HistoryStepImpl
-   * @many-key instanceId
-   * @set-method castor_setHistorySteps
-   * @get-method castor_getHistorySteps
+   * All history steps that trace events occured on this process instance
    */
-  private Vector<HistoryStep> historySteps = null;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+      "processInstance")
+  private Set<HistoryStepImpl> historySteps = new HashSet<>();
+
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+      "processInstance")
+  private Set<UndoHistoryStep> undoSteps = new HashSet<>();
+
   /**
    * Vector of all questions asked on this process instance
-   * @field-name questions
-   * @field-type QuestionImpl
-   * @many-key instanceId
-   * @set-method castor_setQuestions
-   * @get-method castor_getQuestions
    */
-  private Vector<Question> questions = null;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+      "processInstance")
+  private Set<QuestionImpl> questions = new HashSet<>();
   /**
-   * The current history step used to add actomic operations in history
+   * The current history step used to add atomic operations in history
    */
-  private transient HistoryStep currentStep = null;
+  @Transient
+  private HistoryStep currentStep = null;
   /**
    * the status of this instance regarding 'undo' process while true, the atomic operations are not
    * stored anymore
    */
-  private transient boolean inUndoProcess = false;
+  @Transient
+  private boolean inUndoProcess = false;
   /**
-   * Vector of all users who can see this process instance
-   * @field-name interestedUsers
-   * @field-type InterestedUser
-   * @many-key instanceId
-   * @set-method castor_setInterestedUsers
-   * @get-method castor_getInterestedUsers
+   * All users who can see this process instance
    */
-  private Vector<InterestedUser> interestedUsers = null;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+      "processInstance")
+  private Set<InterestedUser> interestedUsers = new HashSet<>();
   /**
-   * Vector of all users who can act on this process instance
-   * @field-name workingUsers
-   * @field-type WorkingUser
-   * @set-method castor_setWorkingUsers
-   * @get-method castor_getWorkingUsers
+   * All users who can act on this process instance
    */
-  private Vector<WorkingUser> workingUsers = null;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+      "processInstance")
+  private Set<WorkingUser> workingUsers = new HashSet<>();
   /**
-   * Vector of all users who can have locked a state of this process instance
-   * @field-name lockingUsers
-   * @field-type LockingUser
-   * @many-key instanceId
-   * @set-method castor_setLockingUsers
-   * @get-method castor_getLockingUsers
+   * All users who can have locked a state of this process instance
    */
-  private Vector<LockingUser> lockingUsers = null;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+      "processInstance")
+  private Set<LockingUser> lockingUsers = new HashSet<>();
   /**
-   * Vector of all states that are due to be resolved for this process instance
-   * @field-name activeStates
-   * @field-type ActiveState
-   * @many-key instanceId
-   * @set-method castor_setActiveStates
-   * @get-method castor_getActiveStates
+   * A1l states that are due to be resolved for this process instance
    */
-  private Vector<ActiveState> activeStates = null;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+      "processInstance")
+  private Set<ActiveState> activeStates = new HashSet<>();
   /**
    * The DataRecord where are stored all the folder fields.
    */
-  private transient DataRecord folder = null;
+  @Transient
+  private DataRecord folder = null;
   /**
    * A Map action -> DataRecord
    */
-  private transient Map<String, DataRecord> actionData = null;
+  @Transient
+  private Map<String, DataRecord> actionData = null;
 
   /**
    * Default constructor
    */
   public ProcessInstanceImpl() {
-    historySteps = new Vector();
-    questions = new Vector<>();
-    interestedUsers = new Vector<>();
-    workingUsers = new Vector<>();
-    activeStates = new Vector<>();
-    lockingUsers = new Vector<>();
-    valid = false;
-    folder = null;
-    actionData = null;
+    // This constructor is necessary with JAXB
   }
 
   /**
@@ -206,7 +192,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return instance id
    */
   public String getInstanceId() {
-    return instanceId;
+    return getId();
   }
 
   /**
@@ -214,7 +200,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @param instanceId instance id
    */
   public void setInstanceId(String instanceId) {
-    this.instanceId = instanceId;
+    setId(instanceId);
   }
 
   /**
@@ -239,7 +225,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   public void addHistoryStep(HistoryStep step) throws WorkflowException {
     ((HistoryStepImpl) step).setProcessInstance(this);
-    historySteps.add(step);
+    historySteps.add((HistoryStepImpl) step);
 
     this.currentStep = step;
   }
@@ -248,7 +234,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * Update an history step for this instance
    * @param step the history step to update
    */
-  public void updateHistoryStep(HistoryStep step) throws WorkflowException {
+  public void updateHistoryStep(HistoryStep step) {
     this.currentStep = step;
   }
 
@@ -280,30 +266,30 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
             } catch (Exception e) {
               SilverTrace.warn("workflowEngine", "ProcessInstanceImpl.computeTimeOutDate",
                   "root.ERR_BAD_DATE_ITEM",
-                  "instanceid:" + getInstanceId() + ", date item =" + dateItem.getName());
+                  "instanceid:" + getId() + ", date item =" + dateItem.getName());
             }
-          } // if no item set, then use delay to compute next timeout
-          else {
+          } else {
+            // if no item set, then use delay to compute next timeout
             String delay = timeOutAction.getDelay();
-            if ((StringUtil.isDefined(delay)) && (delay.endsWith("m"))) {
+            if (StringUtil.isDefined(delay) && delay.endsWith("m")) {
               now.add(Calendar.MONTH,
                   Integer.parseInt(delay.substring(0, delay.length() - 1)));
               timeOutDate = now.getTime();
-            } else if ((StringUtil.isDefined(delay)) && (delay.endsWith("d"))) {
+            } else if (StringUtil.isDefined(delay) && delay.endsWith("d")) {
               now.add(Calendar.DAY_OF_YEAR,
                   Integer.parseInt(delay.substring(0, delay.length() - 1)));
               timeOutDate = now.getTime();
-            } else if ((StringUtil.isDefined(delay)) && (delay.endsWith("h"))) {
+            } else if (StringUtil.isDefined(delay) && delay.endsWith("h")) {
               now.add(Calendar.HOUR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
               timeOutDate = now.getTime();
-            } else if ((StringUtil.isDefined(delay)) && (StringUtils.isNumeric(delay))) {
+            } else if (StringUtil.isDefined(delay) && StringUtils.isNumeric(delay)) {
               // If no unit is specified, we consider the value as a number of minutes
               now.add(Calendar.MINUTE, Integer.parseInt(delay));
               timeOutDate = now.getTime();
             } else {
               SilverTrace.warn("workflowEngine", "ProcessInstanceImpl.computeTimeOutDate",
                   "root.ERR_BAD_DELAY_FORMAT",
-                  "instanceid:" + getInstanceId() + ", delay =" + delay);
+                  "instanceid:" + getId() + ", delay =" + delay);
             }
           }
           break;
@@ -371,8 +357,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * Computes time out status : instance is in timeout if at least one active state is in timeout
    */
   private void computeTimeOutStatus() {
-    if (this.activeStates == null || this.activeStates.isEmpty()) {
-      this.timeoutStatus = false;
+    if (CollectionUtil.isEmpty(activeStates)) {
+      setTimeoutStatus(false);
     } else {
       boolean oneTimeOutExists = false;
       for (ActiveState state : this.activeStates) {
@@ -381,7 +367,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           break;
         }
       }
-      this.timeoutStatus = oneTimeOutExists;
+      setTimeoutStatus(oneTimeOutExists);
     }
   }
 
@@ -390,19 +376,16 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   @Override
   public void addTimeout(State state) throws WorkflowException {
-    boolean found = false;
-
-    if (activeStates == null || activeStates.isEmpty()) {
+    if (CollectionUtil.isEmpty(activeStates)) {
       return;
     }
-    for (int i = 0; (!found) && i < activeStates.size(); i++) {
-      ActiveState activeState = activeStates.get(i);
+    for (ActiveState activeState : activeStates) {
       if (activeState.getState().equals(state.getName())) {
-        found = true;
         activeState.setTimeoutStatus(activeState.getTimeoutStatus() + 1);
         Date nextTimeOutDate = computeTimeOutDate(state, activeState.getTimeoutStatus() + 1);
         activeState.setTimeoutDate(nextTimeOutDate);
         this.setTimeoutStatus(true);
+        return;
       }
     }
   }
@@ -438,12 +421,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   @Override
   public void addWorkingUser(User user, State state, String role) throws WorkflowException {
-    this.addWorkingUser(user, state.getName(), role, null);
+    this.addWorkingUser(user, getStateName(state), role, null);
   }
 
   @Override
   public void addWorkingUser(Actor actor, State state) throws WorkflowException {
-    addWorkingUser(actor.getUser(), state.getName(), actor.getUserRoleName(), actor.getGroupId());
+    addWorkingUser(actor.getUser(), getStateName(state), actor.getUserRoleName(), actor.getGroupId());
   }
 
   /**
@@ -630,11 +613,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @throws WorkflowException
    */
   public void addQuestion(Question question) throws WorkflowException {
-    questions.add(question);
+    questions.add((QuestionImpl) question);
   }
 
   public void computeValid() {
-    this.valid = (workingUsers.size() > 0);
+    this.valid = !workingUsers.isEmpty();
   }
 
   /**
@@ -650,77 +633,14 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   }
 
   /**
-   * Creates this instance in database
-   * @return the newly created instance id
-   * @throws WorkflowException
-   */
-  public String create() throws WorkflowException {
-    Database db = null;
-    try {
-      db = WorkflowJDOManager.getDatabase();
-      db.begin();
-      db.create(this);
-      db.commit();
-      return this.getInstanceId();
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceImpl.create",
-          "workflowEngine.EX_ERR_CASTOR_CREATE_INSTANCE", "instanceid=" + getInstanceId(), pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-    }
-  }
-
-  /**
-   * Permanently removes this instance from database
-   * @throws WorkflowException
-   */
-  public void delete() throws WorkflowException {
-    Database db = null;
-    try {
-      db = WorkflowJDOManager.getDatabase();
-      synchronized (db) {
-        db.begin();
-        db.remove(this);
-        db.commit();
-      }
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceImpl.delete",
-          "workflowEngine.EX_ERR_CASTOR_DELETE_INSTANCE", "instanceid=" + getInstanceId(), pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-    }
-  }
-
-  /**
-   * Store modifications of this instance in database
-   * @throws WorkflowException
-   */
-  @Override
-  public void update() throws WorkflowException {
-    Database db = null;
-    try {
-      db = WorkflowJDOManager.getDatabase();
-      synchronized (db) {
-        db.begin();
-        db.update(this);
-        db.commit();
-      }
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceImpl.update",
-          "workflowEngine.EX_ERR_CASTOR_UPDATE_INSTANCE", "instanceid=" + getInstanceId(), pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-    }
-  }
-
-  /**
    * @return HistoryStep[]
    */
   @Override
   public HistoryStep[] getHistorySteps() {
     if (historySteps != null) {
-      Collections.sort(historySteps);
-      return historySteps.toArray(new HistoryStep[historySteps.size()]);
+      List<HistoryStep> steps = new ArrayList(historySteps);
+      Collections.sort(steps);
+      return steps.toArray(new HistoryStep[steps.size()]);
     }
     return null;
   }
@@ -736,22 +656,16 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       }
     }
     throw new WorkflowException("ProcessInstanceImpl.getHistoryStep",
-        "workflowEngine.EX_ERR_HISTORYSTEP_NOT_FOUND", "instanceid=" + getInstanceId());
+        "workflowEngine.EX_ERR_HISTORYSTEP_NOT_FOUND", "instanceid=" + getId());
   }
 
   /**
    * @return Vector
    */
-  public Vector<Participant> getParticipants() throws WorkflowException {
-    Vector<Participant> participants = new Vector<>();
-    for (int i = 0; i < historySteps.size(); i++) {
-      HistoryStepImpl step = (HistoryStepImpl) historySteps.get(i);
-      User user;
-      try {
-        user = WorkflowHub.getUserManager().getUser(step.getUserId());
-      } catch (WorkflowException we) {
-        user = null;
-      }
+  public List<Participant> getParticipants() throws WorkflowException {
+    List<Participant> participants = new ArrayList<>();
+    for (HistoryStep step : historySteps) {
+      User user = step.getUser();
       State state;
       if (step.getResolvedState() == null) {
         state = null;
@@ -802,7 +716,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   public DataRecord getFolder() throws WorkflowException {
     if (folder == null) {
-      String folderId = instanceId;
+      String folderId = getId();
 
       try {
         RecordSet folderSet = getProcessModel().getFolderRecordSet();
@@ -838,16 +752,13 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * Creates a new empty folder.
    */
   private void createFolder() throws WorkflowException {
-    String folderId = instanceId;
-
     try {
-
       RecordSet folderSet = getProcessModel().getFolderRecordSet();
       folder = folderSet.getEmptyRecord();
-      folder.setId(folderId);
+      folder.setId(getId());
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_FOLDER_CREATE_FAILED",
-          "folder=" + folderId, e);
+          "folder=" + getId(), e);
     }
   }
 
@@ -878,7 +789,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       folderSet.save(getFolder());
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_FOLDER_UPDATE_FAILED",
-          "folder=" + instanceId, e);
+          "folder=" + getId(), e);
     }
   }
 
@@ -890,7 +801,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     DataRecord folder = getFolder();
     if (folder == null) {
       throw new WorkflowException("ProcessInstanceImpl.getField",
-          "workflowEngine.EX_ERR_GET_FOLDER", "instanceid=" + getInstanceId());
+          "workflowEngine.EX_ERR_GET_FOLDER", "instanceid=" + getId());
     }
 
     try {
@@ -898,12 +809,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       if (returnedField == null) {
         throw new WorkflowException("ProcessInstanceImpl.getField",
             "workflowEngine.EXP_UNKNOWN_ITEM",
-            "instanceid=" + getInstanceId() + ", folder." + fieldName);
+            "instanceid=" + getId() + ", folder." + fieldName);
       }
       return returnedField;
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl.getField", "workflowEngine.EXP_UNKNOWN_ITEM",
-          "instanceid=" + getInstanceId() + "folder." + fieldName, e);
+          "instanceid=" + getId() + "folder." + fieldName, e);
     }
   }
 
@@ -924,7 +835,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       }
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_ITEM_UPDATE_FAILED",
-          "instanceid=" + getInstanceId() + "folder." + fieldName, e);
+          "instanceid=" + getId() + "folder." + fieldName, e);
     }
   }
 
@@ -978,7 +889,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       return data;
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_FORM_READ_FAILED",
-          "instanceid=" + getInstanceId() + ",formname =" + formName, e);
+          "instanceid=" + getId() + ",formname =" + formName, e);
     }
   }
 
@@ -1014,7 +925,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       return data;
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_FORM_CREATE_FAILED",
-          "instanceid=" + getInstanceId() + ", action=" + actionName, e);
+          "instanceid=" + getId() + ", action=" + actionName, e);
     }
   }
 
@@ -1035,7 +946,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       step.setActionRecord(actionData);
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_FORM_CREATE_FAILED",
-          "instanceid=" + getInstanceId(), e);
+          "instanceid=" + getId(), e);
     }
   }
 
@@ -1060,7 +971,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       if (updatedField == null) {
         SilverTrace.error("workflowEngine", "ProcessInstanceImpl.checkWysiwygData",
             "root.MSG_GEN_ENTER_METHOD",
-            "instanceid=" + getInstanceId() + ", cannot retrieve field : " + fieldName);
+            "instanceid=" + getId() + ", cannot retrieve field : " + fieldName);
       }
       FieldTemplate tmpl = template.getFieldTemplate(fieldName);
 
@@ -1071,7 +982,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           PagesContext context =
               new PagesContext("dummy", "0", actionData.getLanguage(), false, getModelId(),
                   "dummy");
-          context.setObjectId(instanceId);
+          context.setObjectId(getId());
           displayer.update(updatedField.getStringValue(), (TextField) updatedField, tmpl, context);
         }
       }
@@ -1103,14 +1014,14 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
         WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
         PagesContext context =
             new PagesContext("dummy", "0", actionData.getLanguage(), false, getModelId(), "dummy");
-        context.setObjectId(instanceId);
+        context.setObjectId(getId());
         displayer.duplicateContent(updatedField, tmpl, context, "Step" + step.getId());
       }
 
       if ("file".equals(tmpl.getTypeName())) {
         String attachmentId = updatedField.getValue();
         if (StringUtil.isDefined(attachmentId)) {
-          ForeignPK fromPK = new ForeignPK(instanceId, modelId);
+          ForeignPK fromPK = new ForeignPK(getId(), modelId);
           ForeignPK toPK = new ForeignPK("Step" + step.getId(), modelId);
 
           List<SimpleDocument> attachments = AttachmentServiceProvider
@@ -1134,11 +1045,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   public HistoryStep getMostRecentStep(String actionName) {
     Date actionDate = null;
     HistoryStep mostRecentStep = null;
-    HistoryStep step = null;
 
-    for (int i = 0; i < historySteps.size(); i++) {
-      step = historySteps.get(i);
-
+    for (HistoryStep step : historySteps) {
       // if step matches the searched action, tests if the step is most recent
       if (step.getAction().equals(actionName)) {
         // choose this step, if no previous step found or action date is more
@@ -1159,10 +1067,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   public HistoryStep getSavedStep(String userId) throws WorkflowException {
     HistoryStep savedStep = null;
-    HistoryStep step = null;
-    for (int i = 0; i < historySteps.size(); i++) {
-      step = historySteps.get(i);
-
+    for (HistoryStep step : historySteps) {
       // if step matches the searched action, tests if the step is most recent
       if ((step.getActionStatus() == 3) && (step.getUser().getUserId().equals(userId))) {
         savedStep = step;
@@ -1174,41 +1079,17 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   }
 
   /**
-   * Get the most recent step where an action has been performed on the given state. If no action
-   * has been performed on this state, return the step that activate this state.
-   */
-  public HistoryStep getMostRecentStep(State state) {
-    try {
-      if (state == null) {
-        return null;
-      }
-
-      HistoryStep mostRecentStep = getMostRecentStepOnState(state.getName());
-
-      if (mostRecentStep != null) {
-        return mostRecentStep;
-      }
-
-      return getOriginStep(state.getName());
-    } catch (WorkflowException we) {
-      return null;
-    }
-  }
-
-  /**
    * Returns the most recent step where an action was performed on the given state.
    * @param stateName name of state for which we want the most recent step
    * @return the most recent step
    */
   private HistoryStep getMostRecentStepOnState(String stateName) {
-    HistoryStepImpl step = null;
-    HistoryStepImpl mostRecentStep = null;
+    HistoryStep mostRecentStep = null;
     Date actionDate = null;
     boolean stepMatch = false;
 
-    for (int i = 0; i < historySteps.size(); i++) {
+    for (HistoryStep step : historySteps) {
       stepMatch = false;
-      step = (HistoryStepImpl) historySteps.get(i);
 
       // special case : searched stateName is null or empty (the step is
       // representing the creation)
@@ -1234,71 +1115,16 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     return mostRecentStep;
   }
 
-  /**
-   * Returns the most recent step where an action caused the activation of the given state
-   * @param stateName name of state
-   * @return the most recent step where an action caused the activation of the given state
-   */
-  private HistoryStep getOriginStep(String stateName) throws WorkflowException {
-    OQLQuery query = null;
-    QueryResults results;
-    String stepId = null;
-    Database db = null;
-    try {
-      // Constructs the query
-      db = WorkflowJDOManager.getDatabase();
-      db.begin();
-      query = db.getOQLQuery(
-          "SELECT undoStep " +
-          "FROM org.silverpeas.core.workflow.engine.instance.UndoHistoryStep undoStep " +
-          "WHERE undoStep.instanceId = $1 " +
-          "AND undoStep.action = \"addActiveState\" " +
-          "AND undoStep.parameters = $2");
-
-      // Execute the query
-      query.bind((Integer.parseInt(instanceId)));
-      query.bind(stateName);
-      results = query.execute();
-
-      while (results.hasMore()) {
-        UndoHistoryStep undoStep = (UndoHistoryStep) results.next();
-        stepId = undoStep.getStepId();
-      }
-
-      db.commit();
-    } catch (WorkflowException we) {
-      throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-          "workflowEngine.EX_ERR_UNDO_STEP", "instanceid=" + getInstanceId(), we);
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceManagerImpl.getProcessInstances",
-          "workflowEngine.EX_ERR_CASTOR_UNDO_STEP", "instanceid=" + getInstanceId(), pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-    }
-
-    if (stepId != null) {
-      return getHistoryStep(stepId);
-    } else {
-      return null;
-    }
-  }
-
-  /**
-   * @return String[]
-   */
   public String[] getActiveStates() {
-    String[] states = null;
-
-    if (activeStates == null || activeStates.isEmpty()) {
-      states = ArrayUtil.EMPTY_STRING_ARRAY;
+    if (CollectionUtil.isEmpty(activeStates)) {
+      return ArrayUtil.EMPTY_STRING_ARRAY;
     } else {
-      states = new String[activeStates.size()];
-      for (int i = 0; i < activeStates.size(); i++) {
-        states[i] = activeStates.get(i).getState();
+      List<String> stateNames = new ArrayList<String>();
+      for (ActiveState state : activeStates) {
+        stateNames.add(state.getState());
       }
+      return stateNames.toArray(new String[activeStates.size()]);
     }
-
-    return states;
   }
 
   /**
@@ -1307,16 +1133,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return true if resolution of active state involves a cancel of actions
    */
   public boolean isStateInBackStatus(String stateName) {
-    boolean result = false;
-
-    for (int i = 0; i < activeStates.size(); i++) {
-      if ((activeStates.get(i).getState()).equals(stateName) &&
-          activeStates.get(i).getBackStatus() == true) {
-        result = true;
+    for(ActiveState activeState : activeStates) {
+      if (activeState.getState().equals(stateName) && activeState.getBackStatus() == true) {
+        return true;
       }
     }
-
-    return result;
+    return false;
   }
 
   /**
@@ -1324,8 +1146,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   public Actor[] getWorkingUsers() throws WorkflowException {
     List<Actor> actors = new ArrayList<>(workingUsers.size());
-    for (int i = 0; i < workingUsers.size(); i++) {
-      WorkingUser wkUser = workingUsers.get(i);
+    for (WorkingUser wkUser : workingUsers) {
       actors.addAll(wkUser.toActors());
     }
     return actors.toArray(new Actor[actors.size()]);
@@ -1337,9 +1158,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   public Actor[] getWorkingUsers(String state) throws WorkflowException {
     List<Actor> actors = new ArrayList<>(workingUsers.size());
-
-    for (int i = 0; i < workingUsers.size(); i++) {
-      WorkingUser wkUser = workingUsers.get(i);
+    for (WorkingUser wkUser : workingUsers) {
       if (wkUser.getState().equals(state)) {
         actors.addAll(wkUser.toActors());
       }
@@ -1443,14 +1262,10 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return LockingUser
    */
   public LockingUser getLockingUser(String state) throws WorkflowException {
-    // Constructs a new LockingUser to proceed search
-    LockingUser searchedUser = new LockingUser();
-    searchedUser.setState(state);
-
-    int indexUser = lockingUsers.indexOf(searchedUser);
-    if (indexUser != -1) {
-      LockingUser foundUser = lockingUsers.get(indexUser);
-      return foundUser;
+    for (LockingUser lockingUser : lockingUsers) {
+      if (state.equals(lockingUser.getState())) {
+        return lockingUser;
+      }
     }
     return null;
   }
@@ -1471,15 +1286,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   private void lock(String state, User user) throws WorkflowException {
     // Test if lock already exists
-    LockingUser searchedUser = new LockingUser();
     LockingUser foundUser = null;
-    searchedUser.setState(state);
-    searchedUser.setUserId(user.getUserId());
-    searchedUser.setProcessInstance(this);
-
-    int indexUser = lockingUsers.indexOf(searchedUser);
-    if (indexUser != -1) {
-      foundUser = lockingUsers.get(indexUser);
+    for (LockingUser lockingUser : lockingUsers) {
+      if (lockingUser.getState().equals(state)) {
+        foundUser = lockingUser;
+        break;
+      }
     }
 
     if (foundUser != null) {
@@ -1488,14 +1300,18 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       if (!foundUser.getUserId().equals(user.getUserId())) {
         throw new WorkflowException("ProcessInstanceImpl.lock",
             "workflowEngine.EX_ERR_INSTANCE_LOCKED_BY_ANOTHER_PERSON",
-            "instanceid=" + getInstanceId());
-      } else // no need to lock, already done
-      {
+            "instanceid=" + getId());
+      } else {
+        // no need to lock, already done
         return;
       }
     }
 
     // No previous lock, creates one.
+    LockingUser searchedUser = new LockingUser();
+    searchedUser.setState(state);
+    searchedUser.setUserId(user.getUserId());
+    searchedUser.setProcessInstance(this);
     lockingUsers.add(searchedUser);
   }
 
@@ -1520,15 +1336,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   private void unLock(String state, User user) throws WorkflowException {
     // Test if lock already exists
-    LockingUser searchedUser = new LockingUser();
     LockingUser foundUser = null;
-    searchedUser.setState(state);
-    searchedUser.setUserId(user.getUserId());
-    searchedUser.setProcessInstance(this);
-
-    int indexUser = lockingUsers.indexOf(searchedUser);
-    if (indexUser != -1) {
-      foundUser = lockingUsers.get(indexUser);
+    for (LockingUser lockingUser : lockingUsers) {
+      if (lockingUser.getState().equals(state)) {
+        foundUser = lockingUser;
+        break;
+      }
     }
 
     if (foundUser == null) {
@@ -1541,10 +1354,14 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     if (!foundUser.getUserId().equals(user.getUserId())) {
       throw new WorkflowException("ProcessInstanceImpl.unlock",
           "workflowEngine.EX_ERR_INSTANCE_LOCKED_BY_ANOTHER_PERSON",
-          "instanceid=" + getInstanceId());
+          "instanceid=" + getId());
     }
 
     // Unlocks the previous one.
+    LockingUser searchedUser = new LockingUser();
+    searchedUser.setState(state);
+    searchedUser.setUserId(user.getUserId());
+    searchedUser.setProcessInstance(this);
     lockingUsers.remove(searchedUser);
   }
 
@@ -1553,12 +1370,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   public void lock() throws WorkflowException {
     // Test if lock already exists
-    if (locked) {
+    if (isLockedByAdmin()) {
       throw new WorkflowException("ProcessInstanceImpl.lock()",
-          "workflowEngine.EX_ERR_INSTANCE_ALREADY_LOCKED", "instanceid=" + getInstanceId());
+          "workflowEngine.EX_ERR_INSTANCE_ALREADY_LOCKED", "instanceid=" + getId());
     }
-
-    locked = true;
+    setLockedByAdmin(true);
   }
 
   /**
@@ -1566,8 +1382,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   public void unLock() throws WorkflowException {
     // Test if the instance is locked
-    if (locked) {
-      locked = false;
+    if (isLockedByAdmin()) {
+      setLockedByAdmin(false);
     }
   }
 
@@ -1584,15 +1400,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return true is this instance is locked by admin
    */
   public boolean isLockedByAdmin() {
-    return locked;
-  }
-
-  public int isLockedByAdminCastor() {
-    if (isLockedByAdmin()) {
-      return 1;
-    } else {
-      return 0;
-    }
+    return locked == 1;
   }
 
   /**
@@ -1600,11 +1408,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @param locked true is this instance is locked by admin
    */
   public void setLockedByAdmin(boolean locked) {
-    this.locked = locked;
-  }
-
-  public void setLockedByAdminCastor(int locked) {
-    this.locked = (locked == 1);
+    this.locked = locked ? 1 : 0;
   }
 
   /**
@@ -1612,15 +1416,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return true if this instance is in error
    */
   public boolean getErrorStatus() {
-    return errorStatus;
-  }
-
-  public int getErrorStatusCastor() {
-    if (getErrorStatus()) {
-      return 1;
-    } else {
-      return 0;
-    }
+    return errorStatus != 0;
   }
 
   /**
@@ -1628,11 +1424,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @param errorStatus true if this instance is in error
    */
   public void setErrorStatus(boolean errorStatus) {
-    this.errorStatus = errorStatus;
-  }
-
-  public void setErrorStatusCastor(int errorStatus) {
-    this.errorStatus = (errorStatus == 1);
+    this.errorStatus = errorStatus ? 1 : 0;
   }
 
   /**
@@ -1640,15 +1432,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @return true if this instance is in an active state for a long long time
    */
   public boolean getTimeoutStatus() {
-    return timeoutStatus;
-  }
-
-  public int getTimeoutStatusCastor() {
-    if (getTimeoutStatus()) {
-      return 1;
-    } else {
-      return 0;
-    }
+    return timeoutStatus == 1;
   }
 
   /**
@@ -1656,11 +1440,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @param timeoutStatus true if this instance is in an active state for a long long time
    */
   public void setTimeoutStatus(boolean timeoutStatus) {
-    this.timeoutStatus = timeoutStatus;
-  }
-
-  public void setTimeoutStatusCastor(int timeoutStatus) {
-    this.timeoutStatus = (timeoutStatus == 1);
+    this.timeoutStatus = timeoutStatus ? 1 : 0;
   }
 
   public List<User> getUsersInRole(String role) throws WorkflowException {
@@ -1689,24 +1469,24 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     RelatedGroup[] relatedGroups = qualifiedUsers.getRelatedGroups();
 
     // Process first "user in Role"
-    for (int i = 0; i < userInRoles.length; i++) {
-      actors.add(new ActorImpl(null, userInRoles[i].getRoleName(), state));
+    for (UserInRole userInRole : userInRoles) {
+      actors.add(new ActorImpl(null, userInRole.getRoleName(), state));
     }
 
     // Then process related users
-    for (int i = 0; i < relatedUsers.length; i++) {
+    for (RelatedUser relatedUser : relatedUsers) {
       User[] users = null;
-      String relation = relatedUsers[i].getRelation();
+      String relation = relatedUser.getRelation();
 
-      if (relatedUsers[i].getParticipant() != null) {
-        String resolvedState = relatedUsers[i].getParticipant().getResolvedState();
+      if (relatedUser.getParticipant() != null) {
+        String resolvedState = relatedUser.getParticipant().getResolvedState();
 
         Participant participant = this.getParticipant(resolvedState);
         if (participant != null) {
           users = ArrayUtil.add(users, participant.getUser());
         }
-      } else if (relatedUsers[i].getFolderItem() != null) {
-        String fieldName = relatedUsers[i].getFolderItem().getName();
+      } else if (relatedUser.getFolderItem() != null) {
+        String fieldName = relatedUser.getFolderItem().getName();
         Field field = getField(fieldName);
         if (field instanceof UserField) {
           String userId = field.getStringValue();
@@ -1729,7 +1509,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           // Get the role to which affect the user
           // if no role defined in related user
           // then get the one defined in qualifiedUser
-          String role = relatedUsers[i].getRole();
+          String role = relatedUser.getRole();
           if (role == null) {
             role = qualifiedUsers.getRole();
           }
@@ -1771,23 +1551,21 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   private void addUndoHistoryStep(String action, String params) throws WorkflowException {
     UndoHistoryStep undoStep = new UndoHistoryStep();
     undoStep.setStepId(this.currentStep.getId());
-    undoStep.setInstanceId(instanceId);
+    undoStep.setInstance(this);
     undoStep.setAction(action);
     undoStep.setParameters(params);
 
-    Database db = null;
-    try {
-      db = WorkflowJDOManager.getDatabase();
-      db.begin();
-      db.create(undoStep);
-      db.commit();
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceImpl.addUndoHistoryStep",
-          "workflowEngine.EX_ERR_CASTOR_CREATE_UNDO_HISTORYSTEP", "instanceid=" + getInstanceId(),
-          pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
+    undoSteps.add(undoStep);
+  }
+
+  private List<UndoHistoryStep> getByStepId(String id) {
+    List<UndoHistoryStep> undoStepsOfStep = new ArrayList<>();
+    for (UndoHistoryStep undoStep : undoSteps) {
+      if (undoStep.getId().equals(id)) {
+        undoStepsOfStep.add(undoStep);
+      }
     }
+    return undoStepsOfStep;
   }
 
   /**
@@ -1795,43 +1573,27 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    * @param historyStep the historyStep when the atomic operations had occured
    */
   private void undoStep(HistoryStep historyStep) throws WorkflowException {
-    OQLQuery query = null;
-    QueryResults results;
-    Database db = null;
-
     try {
       // Mark this instance as beeing in undo process
       // to avoid storing atomic operation done here
       this.inUndoProcess = true;
 
-      // Constructs the query
-      db = WorkflowJDOManager.getDatabase();
-      db.begin();
-      query = db.getOQLQuery(
-          "SELECT undoStep " +
-          "FROM org.silverpeas.core.workflow.engine.instance.UndoHistoryStep undoStep " +
-          "WHERE undoStep.stepId = $1 ");
-
-      // Execute the query
-      query.bind((Integer.parseInt(historyStep.getId())));
-      results = query.execute();
-
-      while (results.hasMore()) {
-        UndoHistoryStep undoStep = (UndoHistoryStep) results.next();
+      List<UndoHistoryStep> someUndoSteps = getByStepId(historyStep.getId());
+      for (UndoHistoryStep undoStep : someUndoSteps) {
         String action = undoStep.getAction();
         StringTokenizer st = new StringTokenizer(undoStep.getParameters(), "##");
 
-        if (action.equals("addActiveState")) {
+        if ("addActiveState".equals(action)) {
           String state = undoStep.getParameters();
           this.removeActiveState(state);
-        } else if (action.equals("removeActiveState")) {
+        } else if ("removeActiveState".equals(action)) {
           String state = undoStep.getParameters();
           this.addActiveState(state, null);
-        } else if (action.equals("addWorkingUser")) {
+        } else if ("addWorkingUser".equals(action)) {
           // The number of parameters must be : 3 or 2
-          if ((st.countTokens() != 3) && (st.countTokens() != 2)) {
+          if (st.countTokens() != 3 && st.countTokens() != 2) {
             throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-                "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getInstanceId() +
+                "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getId() +
                 ", method addWorkingUser - found:" + st.countTokens() + " instead of 2 or 3");
           }
 
@@ -1842,11 +1604,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
 
           this.removeWorkingUser(user, state, role);
           this.unLock(state, user);
-        } else if (action.equals("removeWorkingUser")) {
+        } else if ("removeWorkingUser".equals(action)) {
           // The number of parameters must be : 3 or 2
-          if ((st.countTokens() != 3) && (st.countTokens() != 2)) {
+          if (st.countTokens() != 3 && st.countTokens() != 2) {
             throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-                "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getInstanceId() +
+                "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getId() +
                 ", method addWorkingUser - found:" + st.countTokens() + " instead of 2 or 3");
           }
 
@@ -1856,11 +1618,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           User user = WorkflowHub.getUserManager().getUser(userId);
 
           this.addWorkingUser(user, state, role, null);
-        } else if (action.equals("addInterestedUser")) {
+        } else if ("addInterestedUser".equals(action)) {
           // The number of parameters must be : 3 or 2
           if ((st.countTokens() != 3) && (st.countTokens() != 2)) {
             throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-                "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getInstanceId() +
+                "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getId() +
                 ", method addInterestedUser - found:" + st.countTokens() + " instead of 2 or 3");
           }
 
@@ -1870,11 +1632,11 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           User user = WorkflowHub.getUserManager().getUser(userId);
 
           this.removeInterestedUser(user, state, role);
-        } else if (action.equals("removeInterestedUser")) {
+        } else if ("removeInterestedUser".equals(action)) {
           // The number of parameters must be : 3 or 2
           if ((st.countTokens() != 3) && (st.countTokens() != 2)) {
             throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-                "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getInstanceId() +
+                "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getId() +
                 ", method removeInterestedUser - found:" + st.countTokens() + " instead of 2 or 3");
           }
 
@@ -1886,22 +1648,16 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
           this.addInterestedUser(user, state, role, null);
         } else {
           throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-              "workflowEngine.EXP_UNKNOWN_ACTION", "instanceid=" + getInstanceId());
+              "workflowEngine.EXP_UNKNOWN_ACTION", "instanceid=" + getId());
         }
 
         // as the atomic operation has been undone, remove it from undoHistory
-        db.remove(undoStep);
+        undoSteps.remove(undoStep);
       }
-
-      db.commit();
     } catch (WorkflowException we) {
       throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-          "workflowEngine.EX_ERR_UNDO_STEP", "instanceid=" + getInstanceId(), we);
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceManagerImpl.getProcessInstances",
-          "workflowEngine.EX_ERR_CASTOR_UNDO_STEP", "instanceid=" + getInstanceId(), pe);
+          "workflowEngine.EX_ERR_UNDO_STEP", "instanceid=" + getId(), we);
     } finally {
-      WorkflowJDOManager.closeDatabase(db);
       this.inUndoProcess = false;
     }
   }
@@ -1945,24 +1701,10 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   public HistoryStep[] getBackSteps(User user, String roleName, String stateName)
       throws WorkflowException {
-    String stepId = null;
     List<String> stepIds = new ArrayList<>();
     List<HistoryStep> steps = new ArrayList<>();
-    OQLQuery query = null;
-    QueryResults results;
     HistoryStep[] allSteps = this.getHistorySteps();
-    Database db = null;
     try {
-      // Constructs the query
-      db = WorkflowJDOManager.getDatabase();
-      db.begin();
-      query = db.getOQLQuery(
-          "SELECT undoStep " +
-          "FROM org.silverpeas.core.workflow.engine.instance.UndoHistoryStep undoStep " +
-          "WHERE undoStep.instanceId = $1 " +
-          "AND undoStep.action = $2 " +
-          "AND undoStep.parameters = $3 ");
-
       // Search for all steps that activates the given state
       // Tests if user is a working user for this state
       WorkingUser wkUser = new WorkingUser();
@@ -1970,25 +1712,21 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       wkUser.setState(stateName);
       wkUser.setRole(roleName);
       if (workingUsers.contains(wkUser)) {
-        // Execute the query
-        query.bind(Integer.parseInt(instanceId));
-        query.bind("addActiveState");
-        query.bind(stateName);
-        results = query.execute();
-
-        while (results.hasMore()) {
-          stepId = ((UndoHistoryStep) results.next()).getStepId();
+        JdbcSqlQuery query = JdbcSqlQuery.createSelect("stepid from sb_workflow_undo_step")
+            .where("instanceid = ? ", Integer.parseInt(getId())).and("action = ? ", "addActiveState")
+            .and("parameters = ? ", stateName);
+        List<Integer> results = query.execute(row -> row.getInt(1));
+        for (Integer result : results) {
+          String stepId = String.valueOf(result);
           if (!stepIds.contains(stepId)) {
             stepIds.add(stepId);
           }
         }
       }
-      db.commit();
 
       // Build vector of HistoryStep found
       for (int i = 0; i < allSteps.length; i++) {
         ActiveState state = new ActiveState(allSteps[i].getResolvedState());
-
         if (stepIds.contains(allSteps[i].getId()) &&
             (!allSteps[i].getAction().equals("#question#")) &&
             (!allSteps[i].getAction().equals("#response#")) &&
@@ -1998,14 +1736,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       }
 
       return steps.toArray(new HistoryStep[steps.size()]);
-    } catch (WorkflowException we) {
+    } catch (SQLException e) {
       throw new WorkflowException("ProcessInstanceImpl.getBackSteps",
-          "workflowEngine.EX_ERR_GET_BACKSTEPS", "instanceid=" + getInstanceId(), we);
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceImpl.getBackSteps",
-          "workflowEngine.EX_ERR_CASTOR_GET_BACKSTEPS", "instanceid=" + getInstanceId(), pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
+          "workflowEngine.EX_ERR_GET_BACKSTEPS", "instanceid=" + getId(), e);
     }
   }
 
@@ -2027,7 +1760,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     if (foundStep == null) {
       throw new WorkflowException("ProcessInstanceImpl.getStep",
           "workflowEngine.EX_ERR_HISTORYSTEP_NOT_FOUND",
-          "instanceid=" + getInstanceId() + ", stepid : " + stepId);
+          "instanceid=" + getId() + ", stepid : " + stepId);
     }
 
     return foundStep;
@@ -2066,16 +1799,17 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   public State answerQuestion(String content, String questionId) throws WorkflowException {
     Question question = null;
     // search for the question with given id
-    for (int i = 0; question == null && i < questions.size(); i++) {
-      if (questions.get(i).getId().equals(questionId)) {
-        question = questions.get(i);
+    for (Question aQuestion : questions) {
+      if (aQuestion.getId().equals(questionId)) {
+        question = aQuestion;
       }
     }
+
     // if question not found, throw exception
     if (question == null) {
       throw new WorkflowException("ProcessInstanceImpl.answerQuestion",
           "workflowEngine.ERR_QUESTION_NOT_FOUND",
-          "instanceid=" + getInstanceId() + ", questionid : " + questionId);
+          "instanceid=" + getId() + ", questionid : " + questionId);
     }
     // put the answer in question
     question.answer(content);
@@ -2091,8 +1825,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
   @Override
   public Question[] getPendingQuestions(String stateName) {
     List<Question> questionsAsked = new ArrayList<>();
-    for (int i = 0; i < questions.size(); i++) {
-      Question question = questions.get(i);
+    for (Question question : questions) {
       if (question.getTargetState().getName().equals(stateName) &&
           question.getResponseDate() == null) {
         questionsAsked.add(question);
@@ -2108,10 +1841,8 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   public Question[] getSentQuestions(String stateName) {
     Vector<Question> questionsAsked = new Vector<>();
-    Question question = null;
 
-    for (int i = 0; i < questions.size(); i++) {
-      question = questions.get(i);
+    for (Question question : questions) {
       if (question.getFromState().getName().equals(stateName) &&
           question.getResponseDate() == null) {
         questionsAsked.add(question);
@@ -2127,11 +1858,9 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
    */
   public Question[] getRelevantQuestions(String stateName) {
     Vector<Question> questionsAsked = new Vector<>();
-    Question question = null;
 
-    for (int i = 0; i < questions.size(); i++) {
-      question = questions.get(i);
-      if (question.getFromState().getName().equals(stateName) &&
+    for (Question question : questions) {
+     if (question.getFromState().getName().equals(stateName) &&
           question.getResponseDate() != null && question.isRelevant()) {
         questionsAsked.add(question);
       }
@@ -2171,104 +1900,12 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     return questions.toArray(new QuestionImpl[questions.size()]);
   }
 
-  // METHODS FOR CASTOR
-
-  /**
-   * Set the instance history steps
-   * @param historySteps history steps
-   */
-  public void castor_setHistorySteps(Vector historySteps) {
-    this.historySteps = historySteps;
-  }
-
-  /**
-   * Get the instance history steps
-   * @return history steps as a Vector
-   */
-  public Vector castor_getHistorySteps() {
-    return historySteps;
-  }
-
-  /**
-   * Set the instance questions
-   * @param questions questions
-   */
-  public void castor_setQuestions(Vector<Question> questions) {
-    this.questions = questions;
-  }
-
-  /**
-   * Get the instance questions
-   * @return questions as a Vector
-   */
-  public Vector<Question> castor_getQuestions() {
-    return questions;
-  }
-
-  /**
-   * Set users who can see this process instance
-   * @param interestedUsers users as a Vector
-   * @return
-   */
-  public void castor_setInterestedUsers(Vector<InterestedUser> interestedUsers) {
-    this.interestedUsers = interestedUsers;
-  }
-
-  /**
-   * Get users who can see this process instance
-   * @return users as a Vector
-   */
-  public Vector<InterestedUser> castor_getInterestedUsers() {
-    return interestedUsers;
-  }
-
-  /**
-   * Set users who can act on this process instance
-   * @param workingUsers users as a Vector
-   * @return
-   */
-  public void castor_setWorkingUsers(Vector<WorkingUser> workingUsers) {
-    this.workingUsers = workingUsers;
-  }
-
-  /**
-   * Get users who can act on this process instance
-   * @return users as a Vector
-   */
-  public Vector<WorkingUser> castor_getWorkingUsers() {
-    return workingUsers;
-  }
-
-  /**
-   * Set users who have locked a state of this process instance
-   * @param lockingUsers users as a Vector
-   */
-  public void castor_setLockingUsers(Vector<LockingUser> lockingUsers) {
-    this.lockingUsers = lockingUsers;
-  }
-
-  /**
-   * Get users who have locked a state of this process instance
-   * @return users as a Vector
-   */
-  public Vector<LockingUser> castor_getLockingUsers() {
-    return lockingUsers;
-  }
-
   /**
    * Set states that are due to be resolved for this process instance
    * @param activeStates states as a Vector
    */
-  public void castor_setActiveStates(Vector<ActiveState> activeStates) {
-    this.activeStates = activeStates;
-  }
-
-  /**
-   * Get states that are due to be resolved for this process instance
-   * @return states as a Vector
-   */
-  public Vector<ActiveState> castor_getActiveStates() {
-    return activeStates;
+  public void setActiveStates(List<ActiveState> activeStates) {
+    this.activeStates = new HashSet<>(activeStates);
   }
 
   /**
@@ -2293,7 +1930,7 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
     }
 
     if (title == null) {
-      title = "" + instanceId;
+      title = getId();
     }
 
     return title;
@@ -2336,13 +1973,17 @@ public class ProcessInstanceImpl implements UpdatableProcessInstance {
       return false;
     }
     ProcessInstance instance = (ProcessInstance) obj;
-    return instance.getInstanceId().equals(this.instanceId);
+    return instance.getInstanceId().equals(getId());
   }
 
   @Override
   public int hashCode() {
     int hash = 7;
-    hash = 97 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
+    hash = 97 * hash + (getId() != null ? getId().hashCode() : 0);
     return hash;
+  }
+
+  private String getStateName(State state) {
+    return (state != null) ? state.getName() : "";
   }
 }

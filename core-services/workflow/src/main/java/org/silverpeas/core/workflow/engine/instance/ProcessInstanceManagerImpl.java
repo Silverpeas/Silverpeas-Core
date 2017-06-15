@@ -23,31 +23,26 @@
  */
 package org.silverpeas.core.workflow.engine.instance;
 
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.Actor;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
-import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
-import org.silverpeas.core.workflow.engine.jdo.WorkflowJDOManager;
-import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.PersistenceException;
-import org.exolab.castor.jdo.QueryResults;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -58,7 +53,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 /**
  * A ProcessInstanceManager implementation
@@ -71,6 +65,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
   @Inject
   private SilverpeasCalendar calendar;
+
+  @Inject
+  private ProcessInstanceRepository repository;
 
   @Override
   public ProcessInstance[] getProcessInstances(String peasId, User user, String role)
@@ -87,12 +84,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     StringBuilder selectQuery = new StringBuilder();
     List<ProcessInstanceImpl> instances = new ArrayList<>();
     try {
-      // Need first to make a SQL query to find all concerned instances ids
-      // Due to the operator EXISTS that is not yet supported by Castor OQL->SQL translator
       con = DBUtil.openConnection();
 
-      if (role.equals("supervisor")) {
-
+      if ("supervisor".equals(role)) {
         selectQuery.append("SELECT * from SB_Workflow_ProcessInstance instance where modelId = ?");
         prepStmt = con.prepareStatement(selectQuery.toString());
         prepStmt.setString(1, peasId);
@@ -106,12 +100,12 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
                 "select instanceId from SB_Workflow_InterestedUser intUser where I.instanceId = " +
                     "intUser.instanceId and (");
         selectQuery.append("intUser.userId = ? ");
-        if ((userRoles != null) && (userRoles.length > 0)) {
+        if (ArrayUtil.isNotEmpty(userRoles)) {
           selectQuery.append(" or intUser.usersRole in (");
           selectQuery.append(getSQLClauseIn(userRoles));
           selectQuery.append(")");
         }
-        if (userGroupIds != null && userGroupIds.length > 0) {
+        if (ArrayUtil.isNotEmpty(userGroupIds)) {
           selectQuery.append(" or (intUser.groupId is not null");
           selectQuery.append(" and intUser.groupId in (");
           selectQuery.append(getSQLClauseIn(userGroupIds));
@@ -123,12 +117,12 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
             append("select instanceId from SB_Workflow_WorkingUser wkUser where I.instanceId = " +
                 "wkUser.instanceId and (");
         selectQuery.append("wkUser.userId = ? ");
-        if ((userRoles != null) && (userRoles.length > 0)) {
+        if (ArrayUtil.isNotEmpty(userRoles)) {
           selectQuery.append(" or wkUser.usersRole in (");
           selectQuery.append(getSQLClauseIn(userRoles));
           selectQuery.append(")");
         }
-        if (userGroupIds != null && userGroupIds.length > 0) {
+        if (ArrayUtil.isNotEmpty(userGroupIds)) {
           selectQuery.append(" or (wkUser.groupId is not null");
           selectQuery.append(" and wkUser.groupId in (");
           selectQuery.append(getSQLClauseIn(userGroupIds));
@@ -145,8 +139,6 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
         selectQuery.append(")");
         selectQuery.append("order by I.instanceId desc");
-
-
 
         prepStmt = con.prepareStatement(selectQuery.toString());
         prepStmt.setString(1, peasId);
@@ -178,8 +170,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         prepStmt.setInt(1, Integer.parseInt(instance.getInstanceId()));
         rs = prepStmt.executeQuery();
         while (rs.next()) {
-          HistoryStepImpl historyStep = new HistoryStepImpl();
-          historyStep.setId(String.valueOf(rs.getInt(2)));
+          HistoryStepImpl historyStep = new HistoryStepImpl(rs.getInt(2));
           historyStep.setUserId(rs.getString(3));
           historyStep.setUserRoleName(rs.getString(4));
           historyStep.setAction(rs.getString(5));
@@ -192,30 +183,29 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           instance.addHistoryStep(historyStep);
         }
       }
+
       prepStmt = con.prepareStatement(
           "SELECT * FROM SB_Workflow_ActiveState WHERE instanceId = ? ORDER BY id ASC");
 
       for (ProcessInstanceImpl instance : instances) {
         prepStmt.setInt(1, Integer.parseInt(instance.getInstanceId()));
         rs = prepStmt.executeQuery();
-        Vector<ActiveState> states = new Vector<>();
+        List<ActiveState> states = new ArrayList<>();
         while (rs.next()) {
-          ActiveState state = new ActiveState();
-          state.setId(String.valueOf(rs.getInt(1)));
+          ActiveState state = new ActiveState(rs.getInt(1));
           state.setState(rs.getString(3));
           state.setBackStatus(rs.getBoolean(4));
           state.setTimeoutStatus(rs.getInt(5));
           state.setProcessInstance(instance);
           states.add(state);
         }
-        instance.castor_setActiveStates(states);
+        instance.setActiveStates(states);
       }
-
 
       return instances.toArray(new ProcessInstance[instances.size()]);
     } catch (SQLException se) {
       throw new WorkflowException("ProcessInstanceManagerImpl.getProcessInstances",
-          "EX_ERR_CASTOR_GET_INSTANCES", "sql query : " + selectQuery, se);
+          "EX_ERR_GET_INSTANCES", "sql query : " + selectQuery, se);
     } finally {
       DBUtil.close(rs, prepStmt);
       DBUtil.close(con);
@@ -236,92 +226,6 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   }
 
   /**
-   * Get the list of process instances for a given peas Id, that have the given state activated and
-   * @param peasId id of processManager instance
-   * @param state activated state
-   * @return an array of ProcessInstance objects
-   */
-  public ProcessInstance[] getProcessInstancesInState(String peasId, State state)
-      throws WorkflowException {
-    Database db = null;
-    Connection con = null;
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    String selectQuery = "";
-    OQLQuery query = null;
-    QueryResults results;
-    List<ProcessInstance> instances = new ArrayList<>();
-
-    try {
-      // Constructs the query
-      db = WorkflowJDOManager.getDatabase(false);
-      db.begin();
-
-      // Need first to make a SQL query to find all concerned instances ids
-      // Due to the operator EXISTS that is not yet supported by Castor OQL->SQL
-      // translator
-      con = DBUtil.openConnection();
-
-      selectQuery = "SELECT DISTINCT instance.instanceId ";
-      selectQuery +=
-          "FROM SB_Workflow_ActiveState activeState, SB_Workflow_ProcessInstance instance ";
-      selectQuery += "WHERE activeState.state = ? ";
-      selectQuery += "AND activeState.timeoutStatus = 0 ";
-      selectQuery += "AND instance.instanceId = activeState.instanceId ";
-      selectQuery += "AND activeState.backStatus = 0 ";
-      selectQuery += "AND instance.modelId = ?";
-
-      prepStmt = con.prepareStatement(selectQuery);
-      prepStmt.setString(1, state.getName());
-      prepStmt.setString(2, peasId);
-      rs = prepStmt.executeQuery();
-
-      StringBuilder queryBuf = new StringBuilder();
-      queryBuf.append("SELECT distinct instance ");
-      queryBuf.append("FROM org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl instance ");
-      queryBuf.append("WHERE instanceId IN LIST(");
-
-      while (rs.next()) {
-        String instanceId = rs.getString(1);
-        queryBuf.append("\"");
-        queryBuf.append(instanceId);
-        queryBuf.append("\"");
-        queryBuf.append(" ,");
-      }
-      queryBuf.append(" \"-1\")");
-
-      query = db.getOQLQuery(queryBuf.toString());
-
-      // Execute the query
-      try {
-        results = query.execute(org.exolab.castor.jdo.Database.READONLY);
-
-        // get the instance if any
-        while (results.hasMore()) {
-          ProcessInstance instance = (ProcessInstance) results.next();
-          instances.add(instance);
-        }
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-      }
-
-      db.commit();
-
-      return instances.toArray(new ProcessInstance[instances.size()]);
-    } catch (SQLException se) {
-      throw new WorkflowException("ProcessInstanceManagerImpl.getProcessInstancesInState",
-          "EX_ERR_CASTOR_GET_INSTANCES_IN_STATE", "sql query : " + selectQuery, se);
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceManagerImpl.getProcessInstancesInState",
-          "EX_ERR_CASTOR_GET_INSTANCES_IN_STATE", pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-      DBUtil.close(rs, prepStmt);
-      DBUtil.close(con);
-    }
-  }
-
-  /**
    * Get the process instances for a given instance id
    * @param instanceId id of searched instance
    * @return the searched process instance
@@ -329,23 +233,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    */
   @Override
   public ProcessInstance getProcessInstance(String instanceId) throws WorkflowException {
-    ProcessInstanceImpl instance;
-
-    Database db = null;
-    try {
-      // Constructs the query
-      db = WorkflowJDOManager.getDatabase();
-      db.begin();
-      instance = (ProcessInstanceImpl) db.load(ProcessInstanceImpl.class, instanceId);
-      db.commit();
-
-      return instance;
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceManagerImpl.getProcessInstance",
-          "EX_ERR_CASTOR_GET_INSTANCE", pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-    }
+    return repository.getById(instanceId);
   }
 
   /**
@@ -355,11 +243,12 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    * @throws WorkflowException
    */
   @Override
-  public synchronized ProcessInstance createProcessInstance(String modelId) throws WorkflowException {
-
+  @Transactional
+  public synchronized ProcessInstance createProcessInstance(String modelId)
+      throws WorkflowException {
     ProcessInstanceImpl instance = new ProcessInstanceImpl();
     instance.setModelId(modelId);
-    instance.create();
+    repository.save(instance);
     return instance;
   }
 
@@ -369,77 +258,46 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    * @throws WorkflowException
    */
   @Override
+  @Transactional
   public void removeProcessInstance(String instanceId) throws WorkflowException {
+    ProcessInstance instance = repository.getById(instanceId);
 
-    ProcessInstanceImpl instance;
-    Database db = null;
-    try {
-      // Delete forms data associated with this instance
-      removeProcessInstanceData(instanceId);
-
-      // Constructs the query
-      db = WorkflowJDOManager.getDatabase();
-      db.begin();
-      instance = (ProcessInstanceImpl) db.load(ProcessInstanceImpl.class, instanceId);
-      db.remove(instance);
-      db.commit();
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceManagerImpl.removeProcessInstance",
-          "EX_ERR_CASTOR_REMOVE_INSTANCE", pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-    }
+    // Delete forms data associated with this instance
+    removeProcessInstanceData(instance);
 
     WorkflowHub.getErrorManager().removeErrorsOfInstance(instanceId);
 
-  }
-
-  /**
-   * Delete forms data associated with this instance
-   * @param instanceId instance id
-   */
-  private void removeProcessInstanceData(String instanceId) throws WorkflowException {
-    ProcessInstance instance = getProcessInstance(instanceId);
-
-    removeProcessInstanceData(instance);
+    repository.delete((ProcessInstanceImpl) instance);
   }
 
   public void removeProcessInstanceData(ProcessInstance instance) throws WorkflowException {
-
-
-    ForeignPK foreignPK = new ForeignPK(instance.getInstanceId(), instance.getModelId());
+    String id = instance.getInstanceId();
+    String componentId = instance.getModelId();
 
     // delete attachments
-
-    List<SimpleDocument> attachments =
-        AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKey(foreignPK, null);
-    for (SimpleDocument attachment : attachments) {
-      AttachmentServiceProvider.getAttachmentService().deleteAttachment(attachment);
-    }
+    AttachmentServiceProvider.getAttachmentService().deleteAllAttachments(id, componentId);
 
     // delete folder
-
     try {
       RecordSet folderRecordSet = instance.getProcessModel().getFolderRecordSet();
-      folderRecordSet.delete(instance.getFolder());
+      folderRecordSet.delete(id);
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceManagerImpl.removeProcessInstanceData",
           "EX_ERR_CANT_REMOVE_FOLDER", e);
     }
 
     // delete history steps
-
     HistoryStep[] steps = instance.getHistorySteps();
-    for (int i = 0; steps != null && i < steps.length; i++) {
-      if (!steps[i].getAction().equals("#question#") &&
-          !steps[i].getAction().equals("#response#")) {
-        steps[i].deleteActionRecord();
+    if (steps != null) {
+      for (HistoryStep step : steps) {
+        if (!"#question#".equals(step.getAction()) && !"#response#".equals(step.getAction())) {
+          step.deleteActionRecord();
+        }
       }
     }
 
-    // delete associated todos
-    calendar
-        .removeToDoFromExternal("useless", foreignPK.getInstanceId(), foreignPK.getId() + "##%");
+    // delete associated todo
+    calendar.removeToDoFromExternal("useless", componentId, id + "##%");
   }
 
   /**
@@ -447,38 +305,11 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    * @param state state that have to be locked
    * @param user the locking user
    */
+  @Transactional
   public void lock(ProcessInstance instance, State state, User user) throws WorkflowException {
-    Database db = null;
-
-    try {
-      // Get database connection
-      db = WorkflowJDOManager.getDatabase();
-
-      // begin transaction
-      db.begin();
-
-      // Re-load process instance
-      UpdatableProcessInstance copyInstance =
-          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-      // Do workflow stuff
-      try {
-        // lock instance for user
-        copyInstance.lock(state, user);
-      } catch (WorkflowException we) {
-        db.rollback();
-        throw new WorkflowException("ProcessInstanceManagerImpl.lock", "workflowEngine.EX_ERR_LOCK",
-            we);
-      }
-
-      // commit
-      db.commit();
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceManagerImpl.lock",
-          "workflowEngine.EX_ERR_CASTOR_LOCK", pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-    }
+    ProcessInstance copyInstance = repository.getById(instance.getInstanceId());
+    copyInstance.lock(state, user);
+    repository.save((ProcessInstanceImpl) copyInstance);
   }
 
   /**
@@ -486,38 +317,11 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    * @param state state that have to be locked
    * @param user the locking user
    */
+  @Transactional
   public void unlock(ProcessInstance instance, State state, User user) throws WorkflowException {
-    Database db = null;
-
-    try {
-      // Get database connection
-      db = WorkflowJDOManager.getDatabase();
-
-      // begin transaction
-      db.begin();
-
-      // Re-load process instance
-      UpdatableProcessInstance copyInstance =
-          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-      // Do workflow stuff
-      try {
-        // unlock instance for user
-        copyInstance.unLock(state, user);
-      } catch (WorkflowException we) {
-        db.rollback();
-        throw new WorkflowException("ProcessInstanceManagerImpl.unlock",
-            "workflowEngine.EX_ERR_UNLOCK", we);
-      }
-
-      // commit
-      db.commit();
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceManagerImpl.unlock",
-          "workflowEngine.EX_ERR_CASTOR_UNLOCK", pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-    }
+    ProcessInstance copyInstance = repository.getById(instance.getInstanceId());
+    copyInstance.unLock(state, user);
+    repository.save((ProcessInstanceImpl) copyInstance);
   }
 
   /**
@@ -544,71 +348,21 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    */
   @Override
   public ProcessInstance[] getTimeOutProcessInstances() throws WorkflowException {
-    Database db = null;
-    Connection con = null;
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    String selectQuery = "";
-    QueryResults results;
-    Set<ProcessInstance> instances = new HashSet<>();
-
     try {
-      // Constructs the query
-      db = WorkflowJDOManager.getDatabase(false);
-      db.begin();
-
-      // Need first to make a SQL query to find all concerned instances ids
-      con = DBUtil.openConnection();
-
-      selectQuery =
-          "SELECT DISTINCT activeState.instanceId FROM SB_Workflow_ActiveState activeState WHERE " +
-              "activeState.timeoutDate < ? ";
-
-      prepStmt = con.prepareStatement(selectQuery);
-      prepStmt.setTimestamp(1, new Timestamp((new Date()).getTime()));
-      rs = prepStmt.executeQuery();
-
-      StringBuilder queryBuf = new StringBuilder();
-      queryBuf.append("SELECT distinct instance ");
-      queryBuf.append("FROM org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl instance ");
-      queryBuf.append("WHERE instanceId IN LIST(");
-
-      while (rs.next()) {
-        String instanceId = rs.getString(1);
-        queryBuf.append("\"");
-        queryBuf.append(instanceId);
-        queryBuf.append("\"");
-        queryBuf.append(" ,");
+      JdbcSqlQuery query = JdbcSqlQuery.createSelect("instanceid from SB_Workflow_ActiveState")
+          .where("timeoutDate < ? ", new Timestamp((new Date()).getTime()));
+      List<String> ids = query.execute(row -> String.valueOf(row.getInt(1)));
+      Set<String> instanceIds = new HashSet<>();
+      for (String id : ids) {
+        instanceIds.add(id);
       }
-      queryBuf.append(" \"-1\")");
 
-      OQLQuery query = db.getOQLQuery(queryBuf.toString());
+      SilverpeasList<ProcessInstanceImpl> instances = repository.getById(instanceIds);
 
-      // Execute the query
-      try {
-        results = query.execute(org.exolab.castor.jdo.Database.READONLY);
-
-        // get the instance if any
-        while (results.hasMore()) {
-          ProcessInstance instance = (ProcessInstance) results.next();
-          instances.add(instance);
-        }
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-      }
-      db.commit();
       return instances.toArray(new ProcessInstance[instances.size()]);
     } catch (SQLException se) {
       throw new WorkflowException("ProcessInstanceManagerImpl.getTimeOutProcessInstances",
-          "EX_ERR_CASTOR_GET_TIMEOUT_INSTANCES", "sql query : " + selectQuery, se);
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("ProcessInstanceManagerImpl.getTimeOutProcessInstances",
-          "EX_ERR_CASTOR_GET_TIMEOUT_INSTANCES", pe);
-
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-      DBUtil.close(rs, prepStmt);
-      DBUtil.close(con);
+          "EX_ERR_GET_TIMEOUT_INSTANCES", se);
     }
   }
 }

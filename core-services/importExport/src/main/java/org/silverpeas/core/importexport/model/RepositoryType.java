@@ -59,6 +59,7 @@ public class RepositoryType {
   private String massiveType;
 
   public RepositoryType() {
+    // This constructor is necessary with JAXB
   }
 
   public String getComponentId() {

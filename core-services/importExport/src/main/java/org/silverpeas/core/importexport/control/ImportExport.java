@@ -171,8 +171,8 @@ public class ImportExport extends AbstractExportProcess {
 
   /**
    * Méthode retournant l'arbre des objets mappés sur le fichier xml passé en paramètre.
-   * @param xmlFileName le fichier xml interprêté par Castor
-   * @return Un objet SilverPeasExchangeType contenant le mapping d'un fichier XML Castor
+   * @param xmlFileName le fichier xml interprêté par JAXB
+   * @return Un objet SilverPeasExchangeType contenant le mapping d'un fichier XML
    * @throws ImportExportException
    */
   private SilverPeasExchangeType loadSilverpeasExchange(String xmlFileName) throws ImportExportException {
@@ -210,7 +210,7 @@ public class ImportExport extends AbstractExportProcess {
   /**
    * Méthode faisant appel au moteur d'importExport de silver peas, des publications définie dans
    * le
-   * fichier xml passé en paramètre sont générées grace à l'outil castor.
+   * fichier xml passé en paramètre sont générées grace à JAXB.
    * @param userDetail - information sur l'utilisateur utilisant le moteur importExport
    * @param xmlFileName - fichier xml définissant les import et/ou export à effectuer
    * @return un rapport détaillé sur l'execution de l'import/export

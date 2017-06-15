@@ -48,6 +48,7 @@ public class NodeTreeType {
   private NodeDetail nodeDetail;
 
   public NodeTreeType() {
+    // This constructor is necessary with JAXB
   }
 
   /**

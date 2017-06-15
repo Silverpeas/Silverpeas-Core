@@ -43,6 +43,7 @@ public class WysiwygContentType {
   private String path;
 
   public WysiwygContentType() {
+    // This constructor is necessary with JAXB
   }
 
   /**

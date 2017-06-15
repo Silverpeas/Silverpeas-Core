@@ -23,86 +23,53 @@
  */
 package org.silverpeas.core.workflow.engine.instance;
 
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.instance.Actor;
+import org.silverpeas.core.workflow.api.model.State;
+import org.silverpeas.core.workflow.api.user.User;
+import org.silverpeas.core.workflow.engine.WorkflowHub;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.model.State;
-import org.silverpeas.core.workflow.api.user.User;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.workflow.api.instance.Actor;
-import org.silverpeas.core.workflow.engine.WorkflowHub;
+@Entity
+@Table(name = "sb_workflow_workinguser")
+public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdentifier> {
 
-/**
- * @table SB_Workflow_WorkingUser
- * @depends ProcessInstanceImpl
- * @key-generator MAX
- */
-public class WorkingUser extends AbstractReferrableObject {
-  /**
-   * Used for persistence
-   * @primary-key
-   * @field-name id
-   * @field-type string
-   * @sql-type integer
-   */
-  private String id = null;
-
-  /**
-   * @field-name processInstance
-   * @field-type ProcessInstanceImpl
-   * @sql-name instanceId
-   */
+  @ManyToOne(fetch = FetchType.EAGER)
+  @JoinColumn(name = "instanceid", nullable = false)
   private ProcessInstanceImpl processInstance = null;
 
-  /**
-   * @field-name userId
-   */
+  @Column
   private String userId = null;
 
-  /**
-   * @field-name usersRole
-   */
+  @Column
   private String usersRole = null;
 
-  /**
-   * @field-name state
-   */
+  @Column
   private String state = null;
 
-  /**
-   * @field-name role
-   */
+  @Column
   private String role = null;
 
-  /**
-   * @field-name groupId
-   */
+  @Column
   private String groupId = null;
 
   /**
    * Default Constructor
    */
   public WorkingUser() {
-  }
-
-  /**
-   * For persistence in database Get this object id
-   * @return this object id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * For persistence in database Set this object id
-   * @param this object id
-   */
-  public void setId(String id) {
-    this.id = id;
   }
 
   /**
@@ -139,7 +106,7 @@ public class WorkingUser extends AbstractReferrableObject {
 
   /**
    * Set state role for which user is affected
-   * @param state state role
+   * @param role state role
    */
   public void setRole(String role) {
     this.role = role;
@@ -202,25 +169,6 @@ public class WorkingUser extends AbstractReferrableObject {
   }
 
   /**
-   * Converts WorkingUser to User
-   * @return an object implementing User interface and containing user details
-   */
-  public User toUser() throws WorkflowException {
-    return WorkflowHub.getUserManager().getUser(this.getUserId());
-  }
-
-  /**
-   * Converts WorkingUser to Actor
-   * @return an object implementing Actor interface
-   */
-  public Actor toActor() throws WorkflowException {
-    State state = processInstance.getProcessModel().getState(this.state);
-    User user = WorkflowHub.getUserManager().getUser(this.getUserId());
-
-    return new ActorImpl(user, role, state);
-  }
-
-  /**
    * Converts WorkingUser to Actors
    * @return an object implementing Actor interface
    */
@@ -260,8 +208,7 @@ public class WorkingUser extends AbstractReferrableObject {
    * @param workingUsers an array of WorkingUser objects
    * @return an array of objects implementing User interface and containing user details
    */
-  static public User[] toUser(WorkingUser[] workingUsers)
-      throws WorkflowException {
+  public static User[] toUser(WorkingUser[] workingUsers) throws WorkflowException {
     String[] userIds = new String[workingUsers.length];
 
     for (int i = 0; i < workingUsers.length; i++) {
@@ -275,9 +222,23 @@ public class WorkingUser extends AbstractReferrableObject {
    * This method has to be implemented by the referrable object it has to compute the unique key
    * @return The unique key.
    */
-  public String getKey() {
-    return (this.getUserId() + "--" + this.getState() + "--" + this.getRole() + "--" + this
-        .getUsersRole());
+  private String getKey() {
+    return getUserId() + "--" + getState() + "--" + getRole() + "--" + getUsersRole();
+  }
+
+  @Override
+  public boolean equals(Object theOther) {
+    if (theOther instanceof String) {
+      return getKey().equals(theOther);
+    } else if (theOther instanceof WorkingUser) {
+      return getKey().equals(((WorkingUser) theOther).getKey());
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return getKey().hashCode();
   }
 
 }

@@ -159,7 +159,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   private ContributionRating contributionRating;
 
   /**
-   * Default contructor, required for castor mapping in importExport.
+   * Default contructor, required for JAXB mapping in importExport.
    */
   public PublicationDetail() {
     // Nothing to do

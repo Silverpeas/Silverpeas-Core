@@ -35,8 +35,7 @@ public interface ErrorManager {
   /**
    * Save an error
    */
-  public WorkflowError saveError(ProcessInstance instance, GenericEvent event,
-      HistoryStep step, Exception exception);
+  public WorkflowError saveError(ProcessInstance instance, GenericEvent event, Exception exception);
 
   /**
    * Get all the errors that occured for a given instance

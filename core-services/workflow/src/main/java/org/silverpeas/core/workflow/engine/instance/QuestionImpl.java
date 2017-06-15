@@ -23,25 +23,92 @@
  */
 package org.silverpeas.core.workflow.engine.instance;
 
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.instance.Question;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.Date;
 
 /**
  * A Question object represents a question asked for the instance
- * @table SB_Workflow_Question
- * @depends ProcessInstanceImpl
- * @key-generator MAX
  */
-public class QuestionImpl implements Question {
+@Entity
+@Table(name = "sb_workflow_question")
+public class QuestionImpl extends BasicJpaEntity<QuestionImpl, UniqueIntegerIdentifier>
+    implements Question {
+
   /**
-   * default constructor used by Castor
+   * the process instance where the question was asked
    */
-  public QuestionImpl() {
+  @ManyToOne
+  @JoinColumn(name = "instanceid", nullable = false)
+  private ProcessInstanceImpl processInstance = null;
+
+  /**
+   * state where the question was asked
+   */
+  @Column
+  private String fromState = null;
+
+  /**
+   * destination state for the question
+   */
+  @Column
+  private String targetState = null;
+
+  /**
+   * question content
+   */
+  @Column
+  private String questionText = null;
+
+  /**
+   * response content
+   */
+  @Column
+  private String responseText = null;
+
+  /**
+   * date when question was asked
+   */
+  @Column
+  private Date questionDate = null;
+
+  /**
+   * date when question was answered
+   */
+  @Column
+  private Date responseDate = null;
+
+  /**
+   * Has this response been taken in account, if yes, so it's not relevant anymore (return false)
+   */
+  @Column
+  private int relevant = 1;
+
+  /**
+   * The id of user who asked this question
+   */
+  @Column
+  private String fromUserId = null;
+
+  /**
+   * The id of user who received this question
+   */
+  @Column
+  private String toUserId = null;
+
+  protected QuestionImpl() {
   }
 
   /**
@@ -57,20 +124,6 @@ public class QuestionImpl implements Question {
     this.questionDate = new Date();
     this.fromUserId = fromUser.getUserId();
     this.toUserId = toUser.getUserId();
-  }
-
-  /**
-   * Get the question id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * Set the question id
-   */
-  public void setId(String id) {
-    this.id = id;
   }
 
   /**
@@ -261,104 +314,14 @@ public class QuestionImpl implements Question {
    * (return false)
    */
   public boolean isRelevant() {
-    return relevant;
-  }
-
-  public int isRelevantCastor() {
-    if (isRelevant())
-      return 1;
-    else
-      return 0;
+    return relevant == 1;
   }
 
   /**
    * Set the relevant status of this question
-   * @see isRelevant()
    */
   public void setRelevant(boolean relevant) {
-    this.relevant = relevant;
+    this.relevant = relevant ? 1 : 0;
   }
-
-  public void setRelevantCastor(int relevant) {
-    this.relevant = (relevant == 1);
-  }
-
-  /**
-   * the question Id
-   * @field-name id
-   * @sql-type integer
-   * @primary-key
-   */
-  private String id = null;
-
-  /**
-   * the process instance where the question was asked
-   * @field-name processInstance
-   * @field-type ProcessInstanceImpl
-   * @sql-name instanceId
-   */
-  private ProcessInstanceImpl processInstance = null;
-
-  /**
-   * state where the question was asked
-   * @field-name fromState
-   * @get-method getFromStateName
-   * @set-method setFromStateName
-   */
-  private String fromState = null;
-
-  /**
-   * destination state for the question
-   * @field-name targetState
-   * @get-method getTargetStateName
-   * @set-method setTargetStateName
-   */
-  private String targetState = null;
-
-  /**
-   * question content
-   * @field-name questionText
-   */
-  private String questionText = null;
-
-  /**
-   * response content
-   * @field-name responseText
-   */
-  private String responseText = null;
-
-  /**
-   * date when question was asked
-   * @field-name questionDate
-   * @sql-type timestamp
-   */
-  private Date questionDate = null;
-
-  /**
-   * date when question was answered
-   * @field-name responseDate
-   * @sql-type timestamp
-   */
-  private Date responseDate = null;
-
-  /**
-   * Has this response been taken in account, if yes, so it's not relevant anymore (return false)
-   * @field-name relevant
-   * @get-method isRelevant
-   * @set-method setRelevant
-   */
-  private boolean relevant = true;
-
-  /**
-   * The id of user who asked this question
-   * @field-name fromUserId
-   */
-  private String fromUserId = null;
-
-  /**
-   * The id of user who received this question
-   * @field-name toUserId
-   */
-  private String toUserId = null;
 
 }
