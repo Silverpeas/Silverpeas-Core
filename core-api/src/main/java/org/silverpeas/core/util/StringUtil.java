@@ -26,6 +26,7 @@ import javax.mail.internet.AddressException;
 import javax.mail.internet.InternetAddress;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.Base64;
 import java.util.Map;
@@ -50,6 +51,23 @@ public class StringUtil extends StringUtils {
     return !isDefined(parameter);
   }
 
+  /**
+   * Normalizes the given string (which could be encoded into UTF-8) in order that the result
+   * contains only unified chars.
+   * <p>Indeed, according the environment of the user, sometimes could be send data with composed
+   * characters which will make the server have a bs behavior, like throw an error on file
+   * download.</p>
+   * @param string the string to normalize. There is no guarantee when the string is not encoded
+   * into UTF8.
+   * @return the normalized string.
+   */
+  public static String normalize(final String string) {
+    String normalized = string;
+    if (normalized != null) {
+      normalized = Normalizer.normalize(normalized, Normalizer.Form.NFC);
+    }
+    return normalized;
+  }
 
   /**
    * <p>Returns either the passed in String, or if the String is

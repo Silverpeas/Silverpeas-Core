@@ -140,7 +140,8 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     try {
 
       // Update the attachment
-      SimpleDocumentEntity entity = updateSimpleDocument(uploadData, filename);
+      String normalizedFileName = StringUtil.normalize(filename);
+      SimpleDocumentEntity entity = updateSimpleDocument(uploadData, normalizedFileName);
 
       if (AJAX_IFRAME_TRANSPORT.equals(uploadData.getXRequestedWith())) {
 

@@ -86,6 +86,7 @@ public class FileUploadData {
       brutFullPath = "";
     }
     String fullPath = URLDecoder.decode(brutFullPath, Charsets.UTF_8.name());
+    fullPath = StringUtil.normalize(fullPath);
     return new FileUploadData(request.getHeader(X_UPLOAD_SESSION), fullPath,
         request.getHeader(X_COMPONENT_INSTANCE_ID));
   }

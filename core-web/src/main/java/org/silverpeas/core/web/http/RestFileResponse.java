@@ -25,6 +25,7 @@
 package org.silverpeas.core.web.http;
 
 import org.silverpeas.core.io.file.SilverpeasFile;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -91,8 +92,9 @@ public class RestFileResponse extends FileResponse {
         responseBuilder = getFullResponseBuilder(absoluteFilePath, fullContentLength);
       }
 
+      String normalizedFileName = StringUtil.normalize(absoluteFilePath.getFileName().toString());
       return responseBuilder.type(fileMimeType).header("Content-Disposition",
-          String.format("inline;filename=\"%s\"", absoluteFilePath.getFileName()));
+          String.format("inline;filename=\"%s\"", normalizedFileName));
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {

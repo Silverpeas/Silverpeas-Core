@@ -23,11 +23,12 @@
  */
 package org.silverpeas.core.web.http;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -48,7 +49,7 @@ public class RequestFile {
   }
 
   public String getName() {
-    return FilenameUtils.getName(fileItem.getName());
+    return StringUtil.normalize(FilenameUtils.getName(fileItem.getName()));
   }
 
   public long getSize() {
