@@ -41,6 +41,8 @@ import java.util.Set;
 
 import static org.silverpeas.core.security.authorization.AccessControlOperation.isPersistActionFrom;
 import static org.silverpeas.core.security.authorization.AccessControlOperation.isSharingActionFrom;
+import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
+    .getSessionVolatileResourceCacheService;
 
 /**
  * Check the access to a publication for a user.
@@ -132,7 +134,8 @@ public class PublicationAccessController extends AbstractAccessController<Public
     }
 
     if (componentAccessController.isTopicTrackerSupported(publicationPK.getInstanceId()) &&
-      StringUtil.isInteger(publicationPK.getId())) {
+        StringUtil.isInteger(publicationPK.getId()) && !getSessionVolatileResourceCacheService()
+        .contains(publicationPK.getId(), publicationPK.getInstanceId())) {
       final PublicationDetail pubDetail;
       try {
         pubDetail =

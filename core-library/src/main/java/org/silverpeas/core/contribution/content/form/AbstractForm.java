@@ -75,6 +75,7 @@ public abstract class AbstractForm implements Form {
     formName = name;
   }
 
+  @Override
   public String getFormName() {
     return formName;
   }

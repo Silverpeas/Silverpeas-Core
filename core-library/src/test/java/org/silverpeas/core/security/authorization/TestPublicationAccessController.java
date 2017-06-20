@@ -33,6 +33,8 @@ import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.UserProvider;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -1391,6 +1393,7 @@ public class TestPublicationAccessController {
         }
         return alias;
       });
+      ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
     }
   }
 

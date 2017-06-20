@@ -121,4 +121,6 @@ public interface Form {
    * @param viewForm true if this form is a 'view' form
    */
   public void setViewForm(boolean viewForm);
+
+  public String getFormName();
 }
