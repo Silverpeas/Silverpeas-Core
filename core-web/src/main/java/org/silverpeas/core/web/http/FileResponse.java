@@ -27,6 +27,7 @@ package org.silverpeas.core.web.http;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -77,6 +78,28 @@ public abstract class FileResponse {
   FileResponse(final HttpServletRequest request, final HttpServletResponse response) {
     this.request = request;
     this.response = response;
+  }
+
+  /**
+   * Encodes the content disposition with inline filename as UTF8.
+   * @param filename the filename to encode.
+   * @return the encoded
+   */
+  public static String encodeInlineFilenameAsUtf8(String filename) {
+    String normalized = StringUtil.normalize(filename);
+    normalized = URLUtil.encodeURL(normalized).replace("+", "%20");
+    return String.format("inline; filename*=UTF-8''%s", normalized);
+  }
+
+  /**
+   * Encodes the content disposition with attachment filename as UTF8.
+   * @param filename the filename to encode.
+   * @return the encoded
+   */
+  public static String encodeAttachmentFilenameAsUtf8(String filename) {
+    String normalized = StringUtil.normalize(filename);
+    normalized = URLUtil.encodeURL(normalized).replace("+", "%20");
+    return String.format("attachment; filename*=UTF-8''%s", normalized);
   }
 
   /**
