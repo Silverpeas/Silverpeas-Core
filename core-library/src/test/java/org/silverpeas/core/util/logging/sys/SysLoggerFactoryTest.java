@@ -94,7 +94,7 @@ public class SysLoggerFactoryTest {
 
   @Test
   public void getTheSameLoggerFromDifferentThreads() throws Exception {
-    final int maxThreads = 100;
+    final int maxThreads = 10;
     ExecutorService executor = Executors.newFixedThreadPool(maxThreads);
     final Set<SilverLogger> loggers = new HashSet<>(maxThreads);
     SilverLoggerFactory loggerFactory = new SysLoggerFactory();
