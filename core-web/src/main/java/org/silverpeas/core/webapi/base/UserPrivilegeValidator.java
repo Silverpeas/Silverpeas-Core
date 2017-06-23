@@ -24,40 +24,27 @@
 package org.silverpeas.core.webapi.base;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionValidationContext;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.codec.binary.Base64;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
-import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.security.authentication.AuthenticationCredential;
-import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
-import org.silverpeas.core.security.authentication.UserSessionReference;
-import org.silverpeas.core.security.authentication.exception.AuthenticationException;
-import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.user.UserReference;
-import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
-import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.isInteger;
 
 /**
  * It is a decorator of a REST-based web service that provides access to the validation of the
@@ -80,7 +67,7 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
   private SimpleDocumentAccessControl documentAccessController;
 
   @Inject
-  private OrganizationController organisationController;
+  private HTTPAuthentication authentication;
 
   /**
    * This constant is used to specify into the request attributes if the registering of "the last
@@ -108,8 +95,8 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
    * @throws WebApplicationException exception if the validation failed.
    */
   @Override
-  public SessionInfo validateUserAuthentication(final HttpServletRequest request) throws
-      WebApplicationException {
+  public SessionInfo validateUserAuthentication(final HttpServletRequest request,
+      final HttpServletResponse response) {
     SessionInfo userSession;
     String sessionKey = getUserSessionKey(request);
     if (isDefined(sessionKey)) {
@@ -120,11 +107,9 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
       }
       userSession = validateUserSession(sessionValidationContext);
     } else {
-      userSession = authenticateUser(request);
+      userSession = authentication.authenticate(
+          new HTTPAuthentication.AuthenticationContext(request, response));
     }
-
-    // Verify that the user can login
-    verifyUserCanLogin(userSession);
 
     // Returning the user session
     return userSession;
@@ -155,22 +140,6 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
   }
 
   /**
-   * Verify that the user can login
-   *
-   * @param userSession
-   */
-  private void verifyUserCanLogin(SessionInfo userSession) {
-    if (userSession != null && userSession.getUserDetail() != null) {
-      try {
-        AuthenticationUserVerifierFactory.getUserCanLoginVerifier(userSession.getUserDetail())
-            .verify();
-      } catch (AuthenticationException e) {
-        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-      }
-    }
-  }
-
-  /**
    * Validates the authorization of the specified user to access the component instance with the
    * specified unique identifier.
    *
@@ -179,8 +148,7 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
    * @throws WebApplicationException exception if the validation failed.
    */
   @Override
-  public void validateUserAuthorizationOnComponentInstance(final User user, String instanceId)
-      throws WebApplicationException {
+  public void validateUserAuthorizationOnComponentInstance(final User user, String instanceId) {
     if (user == null || !componentAccessController.isUserAuthorized(user.getId(), instanceId)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
@@ -196,7 +164,7 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
    */
   @Override
   public void validateUserAuthorizationOnAttachment(final HttpServletRequest request,
-      final User user, SimpleDocument doc) throws WebApplicationException {
+      final User user, SimpleDocument doc) {
     AccessControlContext context = AccessControlContext.init();
     if (HttpMethod.PUT.equals(request.getMethod())) {
       context.onOperationsOf(AccessControlOperation.creation);
@@ -237,77 +205,19 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
   }
 
   /**
-   * Authenticates the user by using the credentials in the header Authorization of the specified
-   * HTTP request.
-   *
-   * According to the HTTP specification, authentication credentials must be carried by the HTTP
-   * header Authorization. Its value must follow the RFC 2617 basic digest and it must be Base 64
-   * encoded.
-   *
-   * In Silverpeas, the authentication process with web services asks for the unique identifier of
-   * the user as login instead of its true login text that can be not unique (it is unique only
-   * within a given Silverpeas domain).
-   *
-   * Once the user well authenticated, return details about him. If the authentication fails, then a
-   * WebApplicationException exception is thrown with an HTTP status code UNAUTHORIZED (401). The
-   * implementation of this method is for taking into account the Silverpeas security doesn't
-   * satisfy the JAAS way. Once JAAS supported in Silverpeas, the web services should use the
-   * SecurityContext instead of the credentials token passed in the header of HTTP requests.
-   *
-   * @return the detail about the authenticated user requested this web service.
-   */
-  private SessionInfo authenticateUser(final HttpServletRequest request) {
-    SessionInfo session = SessionInfo.NoneSession;
-    String userCredentials = request.getHeader(HTTP_AUTHORIZATION);
-    if (isDefined(userCredentials)) {
-      String[] auth = userCredentials.split(" ");
-      if (auth.length == 2 && auth[0].equalsIgnoreCase("Basic")) {
-        String decoded = new String(Base64.decodeBase64(auth[1]), Charsets.UTF_8);
-        // the first ':' character is the separator according to the RFC 2617 in basic digest
-        int loginPasswordSeparatorIndex = decoded.indexOf(':');
-        if (loginPasswordSeparatorIndex > 0) {
-          String[] login = decoded.substring(0, loginPasswordSeparatorIndex).split("@domain");
-          String password = decoded.substring(loginPasswordSeparatorIndex + 1);
-          if (login.length == 2 && isDefined(login[0]) && isInteger(login[1])) {
-            AuthenticationCredential credential =
-                AuthenticationCredential.newWithAsLogin(login[0])
-                    .withAsPassword(password)
-                    .withAsDomainId(login[1]);
-            AuthenticationService authenticator = AuthenticationServiceProvider.getService();
-            String key = authenticator.authenticate(credential);
-            if (!authenticator.isInError(key)) {
-              HttpSession httpSession = request.getSession(true);
-              try {
-                String userId = Administration.get().identify(key, httpSession.getId(), false);
-                session = sessionManagement.openSession(UserDetail.getById(userId), request);
-              } catch (AdminException e) {
-                throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-              }
-            }
-          }
-        }
-      }
-    }
-    if (!session.isDefined()) {
-      throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-    }
-    return session;
-  }
-
-  /**
    * Validates the current user session with the specified session key. The session key is either an
-   * identifier of an opened HTTP session or an identifier token associated to an existing user.
+   * identifier of an opened HTTP session or a token associated with a virtual existing user session.
    *
    * This method checks first that the specified key identifies uniquely an opened session in
    * Silverpeas. In this case it validates this session matches the one within which the current
    * HTTP request was sent. If the validation succeeds, the HTTP session is returned. If the key
-   * doesn't identify any opened session, the method validates it matchs the identifier token of a
-   * user in Silverpeas and in this case a session is then created only for the current request and
+   * doesn't identify any opened session, the method validates it matches the token of a virtual
+   * user session and in this case a session is then created only for the current request and it
    * is returned. If the validation fails, a WebApplicationException exception is thrown.
    *
-   * As the anonymous user has no opened session, when a request is recieved by this web service and
-   * that request does neither belong to an opened session nor carries autentication information, it
-   * is accepted only if the anonymous access is activated; in this case, an anonymous session is
+   * As the anonymous user has no opened session, when a request is received by this web service and
+   * that request does neither belong to an opened session nor carries authentication information,
+   * it is accepted only if the anonymous access is activated; in this case, an anonymous session is
    * created for the circumstance.
    *
    * @param context the context of the validation that contains at least the session key
@@ -315,34 +225,14 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
    * session or a session spawned only for the current request.
    */
   private SessionInfo validateUserSession(SessionValidationContext context) {
-    String sessionKey = context.getSessionKey();
     SessionInfo sessionInfo = sessionManagement.validateSession(context);
     if (!sessionInfo.isDefined()) {
-      // the key isn't a session identifier; is it then a user auth token?
-      UserDetail user = null;
-      final PersistentResourceToken userToken = PersistentResourceToken.getToken(sessionKey);
-      UserSessionReference userSessionRef = userToken.getResource(UserSessionReference.class);
-      if (userSessionRef != null) {
-        user = userSessionRef.getEntity().getUser();
-        if (!user.isValidState()) {
-          user = null;
-        }
-      } else {
-        // the key isn't a user auth token; is it then a user token?
-        UserReference userRef = userToken.getResource(UserReference.class);
-        if (userRef != null) {
-          user = userRef.getEntity();
-        }
-      }
-      if (user != null) {
-        // the session key is a token and this token is bound to an existing user
-        sessionInfo = new SessionInfo(sessionKey, user);
-      } else {
-        // the session key isn't a token or it isn't bound to an existing user
-        if (!UserDetail.isAnonymousUserExist()) {
-          throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-        }
+      // no existing session for the user behind the incoming HTTP request. So, is this an
+      // anonymous request?
+      if (UserDetail.isAnonymousUserExist()) {
         sessionInfo = new SessionInfo(null, UserDetail.getAnonymousUser());
+      } else {
+        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
       }
     }
     return sessionInfo;

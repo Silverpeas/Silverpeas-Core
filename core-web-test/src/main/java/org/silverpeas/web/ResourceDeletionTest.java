@@ -72,7 +72,7 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest
    */
   public void deleteAt(String uri) {
     resource().path(uri).request(MediaType.APPLICATION_JSON).
-        header(HTTP_SESSIONKEY, getTokenKey()).
+        header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(getAPITokenValue())).
         delete();
   }
 
@@ -85,7 +85,7 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest
    */
   public <C> C deleteAt(String uri, Class<C> c) {
     return resource().path(uri).request(MediaType.APPLICATION_JSON)
-        .header(HTTP_SESSIONKEY, getTokenKey()).delete(c);
+        .header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(getAPITokenValue())).delete(c);
   }
 
   @Test
@@ -107,7 +107,7 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest
     try {
       resource().path(aResourceURI()).
           request(MediaType.APPLICATION_JSON).
-          header(HTTP_SESSIONKEY, UUID.randomUUID().toString()).
+          header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(UUID.randomUUID().toString())).
           delete();
       fail("A user with a deprecated session shouldn't delete a resource");
     } catch (WebApplicationException ex) {

@@ -68,8 +68,8 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 public abstract class ResourceCreationTest extends RESTWebServiceTest
     implements WebResourceTesting {
 
-  private static String withAsSessionKey(String sessionKey) {
-    return sessionKey;
+  private static String withAsApiToken(String apiTokenValue) {
+    return apiTokenValue;
   }
 
   /**
@@ -89,12 +89,12 @@ public abstract class ResourceCreationTest extends RESTWebServiceTest
    * @return the response of the post.
    */
   public <C> Response post(final C entity, String atURI) {
-    return post(entity, atURI, withAsSessionKey(getTokenKey()));
+    return post(entity, atURI, withAsApiToken(getAPITokenValue()));
   }
 
   @Test
   public void creationOfANewResourceByANonAuthenticatedUser() {
-    Response response = post(aResource(), at(aResourceURI()), withAsSessionKey(null));
+    Response response = post(aResource(), at(aResourceURI()), withAsApiToken(null));
     int receivedStatus = response.getStatus();
     int unauthorized = Status.UNAUTHORIZED.getStatusCode();
     assertThat(receivedStatus, is(unauthorized));
@@ -103,7 +103,7 @@ public abstract class ResourceCreationTest extends RESTWebServiceTest
   @Test
   public void creationOfANewResourceWithADeprecatedSession() {
     Response response =
-        post(aResource(), at(aResourceURI()), withAsSessionKey(UUID.randomUUID().toString()));
+        post(aResource(), at(aResourceURI()), withAsApiToken(UUID.randomUUID().toString()));
     int receivedStatus = response.getStatus();
     int unauthorized = Status.UNAUTHORIZED.getStatusCode();
     assertThat(receivedStatus, is(unauthorized));
@@ -127,7 +127,7 @@ public abstract class ResourceCreationTest extends RESTWebServiceTest
     assertThat(receivedStatus, is(badRequest));
   }
 
-  private <C> Response post(final C entity, String atURI, String withSessionKey) {
+  private <C> Response post(final C entity, String atURI, String apiTokenValue) {
     String thePath = atURI;
     String queryParams = "";
     WebTarget resource = resource();
@@ -138,8 +138,9 @@ public abstract class ResourceCreationTest extends RESTWebServiceTest
     }
     Invocation.Builder resourcePoster = applyQueryParameters(queryParams, resource.path(thePath))
         .request(MediaType.APPLICATION_JSON);
-    if (isDefined(withSessionKey)) {
-      resourcePoster = resourcePoster.header(HTTP_SESSIONKEY, withSessionKey);
+    if (isDefined(apiTokenValue)) {
+      resourcePoster =
+          resourcePoster.header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(apiTokenValue));
     }
     return resourcePoster.post(Entity.entity(entity, MediaType.APPLICATION_JSON));
   }

@@ -121,7 +121,7 @@ public class PasswordPolicyGettingIT extends ResourceGettingTest {
   }
 
   @Override
-  public String getTokenKey() {
+  public String getAPITokenValue() {
     return sessionKey;
   }
 

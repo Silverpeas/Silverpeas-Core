@@ -118,7 +118,7 @@ public class PasswordPolicyCheckingIT extends ResourceCreationTest {
   }
 
   @Override
-  public String getTokenKey() {
+  public String getAPITokenValue() {
     return sessionKey;
   }
 

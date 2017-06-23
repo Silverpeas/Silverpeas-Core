@@ -532,7 +532,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String getUserIdByAuthenticationKey(final String authenticationKey) throws Exception {
+  public String getUserIdByAuthenticationKey(final String authenticationKey) throws AdminException {
     return null;
   }
 
