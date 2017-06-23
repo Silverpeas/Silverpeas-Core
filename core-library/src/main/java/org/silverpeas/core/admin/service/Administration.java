@@ -596,7 +596,7 @@ public interface Administration {
    * @return The user id corresponding to the authentication key.
    * @throws Exception
    */
-  String getUserIdByAuthenticationKey(String authenticationKey) throws Exception;
+  String getUserIdByAuthenticationKey(String authenticationKey) throws AdminException;
 
   /**
    * Get the user corresponding to the given user Id (only infos in cache table)

@@ -2179,7 +2179,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public String getUserIdByAuthenticationKey(String authenticationKey) throws Exception {
+  public String getUserIdByAuthenticationKey(String authenticationKey) throws AdminException {
     Map<String, String> userParameters = domainDriverManager.authenticate(authenticationKey);
     String login = userParameters.get("login");
     String domainId = userParameters.get("domainId");

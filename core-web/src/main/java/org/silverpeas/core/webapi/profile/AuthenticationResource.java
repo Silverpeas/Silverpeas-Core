@@ -23,37 +23,37 @@
  */
 package org.silverpeas.core.webapi.profile;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.webapi.base.HTTPAuthentication;
+import org.silverpeas.core.webapi.base.HTTPAuthentication.AuthenticationContext;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.user.model.UserFull;
-import org.apache.commons.codec.binary.Base64;
-import org.silverpeas.core.security.authentication.AuthenticationCredential;
-import org.silverpeas.core.security.authentication.AuthenticationService;
-import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
-import org.silverpeas.core.security.authentication.UserSessionReference;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
-import org.silverpeas.core.util.Charsets;
 
 import javax.inject.Inject;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.Status;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_AUTHORIZATION;
-import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_SESSIONKEY;
-import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A REST-based Web service that handles the authentication of a user to the data server.
+ * If the authentication matches the basic authentication scheme, then a session is opened in
+ * Silverpeas for the user behind the request and that session can be used both for browsing
+ * the Silverpeas web portal or to access the REST API by the same client. If the authentication
+ * matches a bearer authentication scheme, then a session is created just for the HTTP request. The
+ * latter is then pertinent only to check the authorization of the user to access the REST API of
+ * Silverpeas.
+ * <p>
+ * This service is only interesting for opening an HTTP session before performing several tasks
+ * in Silverpeas. It avoids to authenticate the user by its login and password for each HTTP request
+ * against the REST API of Silverpeas. Nevertheless, the recommended (and better) way to consume the
+ * REST API is to use the bearer authentication scheme with the API token of the user; the token
+ * can be passed in each request against the REST API in the {@code Authorization} HTTP header
+ * without passing through the heaver authentication mechanism by user credentials
+ * (login/domain/password).
+ * </p>
  */
 @Service
 @RequestScoped
@@ -61,20 +61,9 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 public class AuthenticationResource extends RESTWebService {
 
   static final String PATH = "authentication";
-  private static Pattern AUTHORIZATION_PATTERN = Pattern.compile("(?i)^Basic (.*)");
-
-  // the first ':' character is the separator according to the RFC 2617 in basic digest
-  private static Pattern AUTHENTICATION_PATTERN =
-      Pattern.compile("(?i)^[\\s]*([^\\s]+)[\\s]*@domain([0-9]+):(.+)$");
 
   @Inject
-  private SessionManagement sessionManagement;
-
-  /**
-   * Creates a new instance of UserProfileResource
-   */
-  public AuthenticationResource() {
-  }
+  private HTTPAuthentication authentication;
 
   /**
    * Authenticates the user identified either by its credentials passed through the Authorization
@@ -84,53 +73,14 @@ public class AuthenticationResource extends RESTWebService {
   @POST
   @Produces(MediaType.APPLICATION_JSON)
   public UserProfileEntity authenticate() {
-
-    try {
-      String authorizationValue = getHttpRequest().getHeader(HTTP_AUTHORIZATION);
-      Matcher authorizationMatcher = AUTHORIZATION_PATTERN.matcher(authorizationValue);
-      if (!authorizationMatcher.matches() || authorizationMatcher.groupCount() != 1) {
-        throw new WebApplicationException(Status.UNAUTHORIZED);
-      }
-      String userCredentials = authorizationMatcher.group(1);
-      if (isDefined(userCredentials)) {
-        String decodedCredentials =
-            new String(Base64.decodeBase64(userCredentials), Charsets.UTF_8);
-
-        // Getting expected parts of credentials
-        Matcher matcher = AUTHENTICATION_PATTERN.matcher(decodedCredentials);
-        if (matcher.matches() && matcher.groupCount() == 3) {
-
-          // All expected parts detected, so getting an authentication key
-          AuthenticationCredential credential =
-              AuthenticationCredential.newWithAsLogin(matcher.group(1))
-                  .withAsPassword(matcher.group(3)).withAsDomainId(matcher.group(2));
-          AuthenticationService authenticator = AuthenticationServiceProvider.getService();
-          String key = authenticator.authenticate(credential);
-          if (!authenticator.isInError(key)) {
-            String userId = Administration.get().getUserIdByAuthenticationKey(key);
-            UserFull user = OrganizationController.get().getUserFull(userId);
-
-            // The key is correct, so computing a new authentication token to return to the user.
-            PersistentResourceToken userSessionToken =
-                PersistentResourceToken.createToken(UserSessionReference.fromUser(user));
-            if (userSessionToken.isDefined()) {
-
-              // Setting the new token into the response headers
-              getHttpServletResponse().setHeader("Access-Control-Expose-Headers", HTTP_SESSIONKEY);
-              getHttpServletResponse().setHeader(HTTP_SESSIONKEY, userSessionToken.getValue());
-
-              // Returning the user profile
-              return UserProfileEntity.fromUser(user).withAsUri(ProfileResourceBaseURIs.uriOfUser(userId));
-            }
-          }
-        }
-      }
-      throw new WebApplicationException(Status.UNAUTHORIZED);
-    } catch (final WebApplicationException ex) {
-      throw ex;
-    } catch (final Exception ex) {
-      throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
-    }
+    AuthenticationContext context =
+        new AuthenticationContext(getHttpServletRequest(),
+            getHttpServletResponse());
+    SessionInfo session = authentication.authenticate(context);
+    // Returning the user profile
+    UserDetail user = session.getUserDetail();
+    return UserProfileEntity.fromUser(user)
+        .withAsUri(ProfileResourceBaseURIs.uriOfUser(user.getId()));
   }
 
   @Override

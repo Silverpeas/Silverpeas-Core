@@ -143,7 +143,7 @@ public class PreviewGettingIT extends ResourceGettingTest {
   }
 
   @Override
-  public String getTokenKey() {
+  public String getAPITokenValue() {
     return tokenKey;
   }
 

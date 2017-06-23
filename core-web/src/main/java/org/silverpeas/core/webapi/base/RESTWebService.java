@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -31,14 +31,12 @@ import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.SilverpeasWebResource;
 import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.webapi.base.aspect.ComponentInstMustExistIfSpecified;
 import org.silverpeas.core.webapi.base.aspect.WebEntityMustBeValid;
 
@@ -51,12 +49,9 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import java.util.Collection;
 
-import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_AUTHORIZATION;
-import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_SESSIONKEY;
-
 /**
  * The class of the Silverpeas REST web services. It provides all of the common features required by
- * the web services in Silverpeas like the user priviledge checking.
+ * the web services in Silverpeas like the user privilege checking.
  */
 @ComponentInstMustExistIfSpecified
 @WebEntityMustBeValid
@@ -69,8 +64,6 @@ public abstract class RESTWebService implements ProtectedWebResource {
   public static final String RESPONSE_HEADER_ARRAYSIZE = "X-Silverpeas-Size";
   @Inject
   private OrganizationController organizationController;
-  @Inject
-  private SynchronizerTokenService tokenService;
   @Context
   private UriInfo uriInfo;
   @Context
@@ -131,21 +124,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
   @Override
   public void validateUserAuthentication(final UserPrivilegeValidation validation) {
     HttpServletRequest request = getHttpServletRequest();
-    SessionInfo session = validation.validateUserAuthentication(request);
-    // Sent back the identifier of the spawned session in the HTTP response
-    if (StringUtil.isDefined(session.getSessionId()) && session.getLastAccessTimestamp() == session.
-        getOpeningTimestamp()) {
-      getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
-      getHttpServletResponse().addHeader("Access-Control-Expose-Headers",
-          UserPrivilegeValidation.HTTP_SESSIONKEY);
-      if (request.getHeader(HTTP_AUTHORIZATION) != null
-          && session.getLastAccessTimestamp() == session.getOpeningTimestamp()) {
-        tokenService.setUpSessionTokens(session);
-        Token token = tokenService.getSessionToken(session);
-        getHttpServletResponse().addHeader(SynchronizerTokenService.SESSION_TOKEN_KEY, token.
-            getValue());
-      }
-    }
+    SessionInfo session = validation.validateUserAuthentication(request, getHttpServletResponse());
     this.userDetail = session.getUserDetail();
     if (this.userDetail != null) {
       MessageManager.setLanguage(this.userDetail.getUserPreferences().getLanguage());
@@ -329,7 +308,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
      * One of the aim of this mechanism is to centralize the exception catching and also to avoid
      * redundant coding around web exceptions.
      * If a lowest role access is defined, the user must verify it.
-     * If the user isn't authentified, a 401 HTTP code is returned.
+     * If the user isn't authenticated, a 401 HTTP code is returned.
      * If a problem occurs when processing the request, a 503 HTTP code is returned.
      * @return the value computed by the specified web treatment.
      */

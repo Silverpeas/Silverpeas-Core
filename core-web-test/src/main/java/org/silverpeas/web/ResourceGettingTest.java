@@ -44,8 +44,8 @@ import static org.junit.Assert.fail;
  */
 public abstract class ResourceGettingTest extends RESTWebServiceTest implements WebResourceTesting {
 
-  public static String withAsSessionKey(String sessionKey) {
-    return sessionKey;
+  public static String withAsApiToken(String apiTokenValue) {
+    return apiTokenValue;
   }
 
   public static MediaType asMediaType(MediaType mediaType) {
@@ -78,13 +78,13 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
    * @return the web entity representing the resource at the specified URI.
    */
   public <C> C getAt(String uri, MediaType mediaType, Class<C> c) {
-    return getAt(uri, withAsSessionKey(getTokenKey()), asMediaType(mediaType), c);
+    return getAt(uri, withAsApiToken(getAPITokenValue()), asMediaType(mediaType), c);
   }
 
   @Test
   public void gettingAResourceByANonAuthenticatedUser() {
     try {
-      getAt(aResourceURI(), withAsSessionKey(null), asMediaType(MediaType.APPLICATION_JSON_TYPE),
+      getAt(aResourceURI(), withAsApiToken(null), asMediaType(MediaType.APPLICATION_JSON_TYPE),
           getWebEntityClass());
       fail("A non authenticated user shouldn't access the resource");
     } catch (WebApplicationException ex) {
@@ -97,7 +97,7 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
   @Test
   public void gettingAResourceWithAnExpiredSession() {
     try {
-      getAt(aResourceURI(), withAsSessionKey(UUID.randomUUID().toString()),
+      getAt(aResourceURI(), withAsApiToken(UUID.randomUUID().toString()),
           asMediaType(MediaType.APPLICATION_JSON_TYPE), getWebEntityClass());
       fail("A non authenticated user shouldn't access the resource");
     } catch (WebApplicationException ex) {
@@ -132,7 +132,7 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
     }
   }
 
-  private <C> C getAt(String uri, String sessionKey, MediaType mediaType, Class<C> c) {
+  private <C> C getAt(String uri, String apiToken, MediaType mediaType, Class<C> c) {
     String thePath = uri;
     String queryParams = "";
     WebTarget resource = resource();
@@ -144,8 +144,9 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
 
     Invocation.Builder requestBuilder =
         applyQueryParameters(queryParams, resource.path(thePath)).request(mediaType);
-    if (StringUtil.isDefined(sessionKey)) {
-      requestBuilder = requestBuilder.header(HTTP_SESSIONKEY, sessionKey);
+    if (StringUtil.isDefined(apiToken)) {
+      requestBuilder =
+          requestBuilder.header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(apiToken));
     }
     return requestBuilder.get(c);
   }

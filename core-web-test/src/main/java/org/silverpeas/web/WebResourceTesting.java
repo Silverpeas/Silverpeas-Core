@@ -30,10 +30,12 @@ package org.silverpeas.web;
 public interface WebResourceTesting {
 
   /**
-   * The HTTP header paremeter in an incoming request that carries the user session key as it is
-   * defined in the Silverpeas REST web service API.
+   * The HTTP header parameter in an incoming request that carries the user API token value as it is
+   * defined in the Silverpeas REST web service API. The API token value must be first encoded
+   * before setting the HTTP parameter with it; for doing, please use the
+   * {@link WebResourceTesting#encodesAPITokenValue(String)} ()} method.
    */
-  String HTTP_SESSIONKEY = "X-Silverpeas-Session";
+  String API_TOKEN_HTTP_HEADER = "Authorization";
 
   /**
    * Gets the URI of a valid and existing web resource backed by a REST web service.
@@ -57,14 +59,27 @@ public interface WebResourceTesting {
   <T> T aResource();
 
   /**
-   * Gets the valid token key to use in tests.
-   * @return a valid token key.
+   * Gets the valid API token value to use in tests.
+   * To be authorize to consume the REST API in the tests, the user must pass its API token
+   * through a bearer authorization scheme.
+   * @return a valid API user token key.
    */
-  String getTokenKey();
+  String getAPITokenValue();
+
 
   /**
    * Gets the class of the web entities handled by the REST web service to test.
    * @return the class of the web entities.
    */
   Class<?> getWebEntityClass();
+
+  /**
+   * encodes the value of the specified API token so that it can be passed into the HTTP header
+   * that carries the API tokens in the HTTP requests.
+   * @param apiTokenValue the value of an API token.
+   * @return the encoded API token value.
+   */
+  default String encodesAPITokenValue(final String apiTokenValue)  {
+    return "Bearer " + apiTokenValue;
+  }
 }

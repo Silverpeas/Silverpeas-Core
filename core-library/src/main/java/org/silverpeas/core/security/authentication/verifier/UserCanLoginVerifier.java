@@ -48,6 +48,8 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
   public static final String ERROR_INCORRECT_LOGIN_PWD_DOMAIN = "6";
   public static final String ERROR_USER_ACCOUNT_BLOCKED = "Error_UserAccountBlocked";
   public static final String ERROR_USER_ACCOUNT_DEACTIVATED = "Error_UserAccountDeactivated";
+  public static final String VERIFIER = "UserCanLoginVerifier.verify()";
+  public static final String CANNOT_LOGIN = "authentication.EX_VERIFY_USER_CAN_LOGIN";
 
   /**
    * Default constructor.
@@ -93,18 +95,18 @@ public class UserCanLoginVerifier extends AbstractAuthenticationVerifier {
   public void verify() throws AuthenticationException {
     if(getUser() == null) {
       // Authentication failed
-      throw new AuthenticationBadCredentialException("UserCanLoginVerifier.verify()",
-          SilverpeasException.ERROR, "authentication.EX_VERIFY_USER_CAN_LOGIN");
+      throw new AuthenticationBadCredentialException(VERIFIER,
+          SilverpeasException.ERROR, CANNOT_LOGIN);
     } else if (!isUserStateValid()) {
       // For now, if user is not valid (BLOCKED, DEACTIVATED, EXPIRED, DELETED, UNKNOWN) he is
       // considered as BLOCKED.
       if (getUser().isDeactivatedState()) {
-        throw new AuthenticationUserAccountDeactivatedException("UserCanLoginVerifier.verify()",
-            SilverpeasException.ERROR, "authentication.EX_VERIFY_USER_CAN_LOGIN",
+        throw new AuthenticationUserAccountDeactivatedException(VERIFIER,
+            SilverpeasException.ERROR, CANNOT_LOGIN,
             "Login=" + getUser().getLogin());
       }
-      throw new AuthenticationUserAccountBlockedException("UserCanLoginVerifier.verify()",
-          SilverpeasException.ERROR, "authentication.EX_VERIFY_USER_CAN_LOGIN",
+      throw new AuthenticationUserAccountBlockedException(VERIFIER,
+          SilverpeasException.ERROR, CANNOT_LOGIN,
           "Login=" + getUser().getLogin());
     }
   }
