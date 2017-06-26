@@ -32,6 +32,10 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.silverpeas.core.util.file.FileServerUtils;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
@@ -40,11 +44,6 @@ import static org.junit.Assert.assertNotNull;
  * @author ehugonnet
  */
 public class FileServerUtilsTest {
-
-  @BeforeClass
-  public static void setUp() {
-    // code that will be invoked before this test starts
-    }
 
   @Test
   public void testGetAttachmentURL() {
@@ -69,4 +68,37 @@ public class FileServerUtilsTest {
     assertEquals("/silverpeas/TempFileServer/Mon%2520%25C5%2593uvre%2520&%2520mon%2520%25C3%25A9t%25C3%25A9.pdf", url);
   }
 
+  @Test
+  public void replaceAccentChars() {
+    String allInput = "²1&234567890°+=})]à@ç\\_`è-|[({'#\"~é?,.;:!§ù%*µ¤$£";
+    String resInput = "²1&234567890_+=})]a@c\\_`e-|[({'#\"~e?,.;:!§u%*µ¤$£";
+    Map<String, String> expectedResultMapping = new HashMap<>();
+    expectedResultMapping.put("é", "e");
+    expectedResultMapping.put("è", "e");
+    expectedResultMapping.put("ë", "e");
+    expectedResultMapping.put("ê", "e");
+    expectedResultMapping.put("ö", "o");
+    expectedResultMapping.put("ô", "o");
+    expectedResultMapping.put("õ", "o");
+    expectedResultMapping.put("ò", "o");
+    expectedResultMapping.put("ï", "i");
+    expectedResultMapping.put("î", "i");
+    expectedResultMapping.put("ì", "i");
+    expectedResultMapping.put("ñ", "n");
+    expectedResultMapping.put("ü", "u");
+    expectedResultMapping.put("û", "u");
+    expectedResultMapping.put("ù", "u");
+    expectedResultMapping.put("ç", "c");
+    expectedResultMapping.put("à", "a");
+    expectedResultMapping.put("ä", "a");
+    expectedResultMapping.put("ã", "a");
+    expectedResultMapping.put("â", "a");
+    expectedResultMapping.put("°", "_");
+    expectedResultMapping.put(allInput, resInput);
+
+    expectedResultMapping.forEach((key, value) -> {
+      String result = FileServerUtils.replaceAccentChars(key);
+      assertEquals(value, result);
+    });
+  }
 }

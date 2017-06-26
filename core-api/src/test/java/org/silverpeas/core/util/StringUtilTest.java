@@ -29,7 +29,6 @@
 package org.silverpeas.core.util;
 
 import org.junit.Test;
-import org.silverpeas.core.util.StringUtil;
 
 import java.io.UnsupportedEncodingException;
 
@@ -195,5 +194,45 @@ public class StringUtilTest {
     assertFalse(StringUtil.isValidHour("10-30"));
     assertFalse(StringUtil.isValidHour(null));
     assertFalse(StringUtil.isValidHour(""));
+  }
+
+  @Test
+  public void normalize() {
+    String allInput =
+        " \r\t\n²1&234567890°+=})]aàäãâ@ç\\_`eéèëê-oöôõòiïîìnnñuüûù|[({'#\"~?,.;:!§ù%*µ¤$£├®é";
+    String resInput =
+        " \r\t\n²1&234567890°+=})]aàäãâ@ç\\_`eéèëê-oöôõòiïîìnnñuüûù|[({'#\"~?,.;:!§ù%*µ¤$£├®é";
+    String result = StringUtil.normalize(allInput);
+    assertEquals(resInput, result);
+  }
+
+  @Test
+  public void normalizeByRemovingAccent() {
+    String allInput =
+        " \r\t\n²1&234567890°+=})]aàäãâ@ç\\_`eéèëê-oöôõòiïîìnnñuüûù|[({'#\"~?,.;:!§ù%*µ¤$£├®é";
+    String resInput =
+        " \r\t\n²1&234567890°+=})]aaaaa@c\\_`eeeee-oooooiiiinnnuuuu|[({'#\"~?,.;:!§u%*µ¤$£├®e";
+    String result = StringUtil.normalizeByRemovingAccent(allInput);
+    assertEquals(resInput, result);
+  }
+
+  @Test
+  public void normalizeWhenUppercase() {
+    String allInput =
+        " \r\t\n²1&234567890°+=})]AÀÄÃÂ@Ç\\_`EÉÈËÊ-OÖÔÕÒIÏÎÌNNÑUÜÛÙ|[({'#\"~?,.;:!§Ù%*Μ¤$£├®É";
+    String resInput =
+        " \r\t\n²1&234567890°+=})]AÀÄÃÂ@Ç\\_`EÉÈËÊ-OÖÔÕÒIÏÎÌNNÑUÜÛÙ|[({'#\"~?,.;:!§Ù%*Μ¤$£├®É";
+    String result = StringUtil.normalize(allInput);
+    assertEquals(resInput, result);
+  }
+
+  @Test
+  public void normalizeByRemovingAccentWhenUppercase() {
+    String allInput =
+        " \r\t\n²1&234567890°+=})]AÀÄÃÂ@Ç\\_`EÉÈËÊ-OÖÔÕÒIÏÎÌNNÑUÜÛÙ|[({'#\"~?,.;:!§Ù%*Μ¤$£├®É";
+    String resInput =
+        " \r\t\n²1&234567890°+=})]AAAAA@C\\_`EEEEE-OOOOOIIIINNNUUUU|[({'#\"~?,.;:!§U%*Μ¤$£├®E";
+    String result = StringUtil.normalizeByRemovingAccent(allInput);
+    assertEquals(resInput, result);
   }
 }

@@ -52,11 +52,11 @@ public class StringUtil extends StringUtils {
   }
 
   /**
-   * Normalizes the given string (which could be encoded into UTF-8) in order that the result
+   * Normalizes the given string (which must be encoded into UTF-8) in order that the result
    * contains only unified chars.
-   * <p>Indeed, according the environment of the user, sometimes could be send data with composed
-   * characters which will make the server have a bs behavior, like throw an error on file
-   * download.</p>
+   * <p>Indeed, according to the environment of the user, sometimes it is sent data with
+   * combined characters which will make the server have a bad behavior, like throw an error on
+   * file download.</p>
    * @param string the string to normalize. There is no guarantee when the string is not encoded
    * into UTF8.
    * @return the normalized string.
@@ -65,6 +65,24 @@ public class StringUtil extends StringUtils {
     String normalized = string;
     if (normalized != null) {
       normalized = Normalizer.normalize(normalized, Normalizer.Form.NFC);
+    }
+    return normalized;
+  }
+
+  /**
+   * Same treatment as the one of {@link #normalize(String)} but removes also the accented
+   * characters.
+   * @param string the string to normalize. There is no guarantee when the string is not encoded
+   * into UTF8.
+   * @return the normalized string.
+   */
+  public static String normalizeByRemovingAccent(final String string) {
+    String normalized = string;
+    if (normalized != null) {
+      // separating all of the accent marks from the characters
+      normalized = Normalizer.normalize(normalized, Normalizer.Form.NFD);
+      // removing accent
+      normalized = normalized.replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
     }
     return normalized;
   }
