@@ -74,7 +74,7 @@ public class SysLoggerFactoryTest {
 
   @Test
   public void getDifferentLoggersFromDifferentThreads() throws Exception {
-    final int maxThreads = 100;
+    final int maxThreads = Runtime.getRuntime().availableProcessors() + 1;
     ExecutorService executor = Executors.newFixedThreadPool(maxThreads);
     final Set<SilverLogger> loggers = new HashSet<>(maxThreads);
     SilverLoggerFactory loggerFactory = new SysLoggerFactory();
@@ -87,14 +87,14 @@ public class SysLoggerFactoryTest {
     }
     executor.shutdown();
     do {
-      executor.awaitTermination(5, TimeUnit.MILLISECONDS);
+      executor.awaitTermination(10, TimeUnit.MILLISECONDS);
     } while (!executor.isTerminated());
     assertThat(loggers.size(), is(maxThreads));
   }
 
   @Test
   public void getTheSameLoggerFromDifferentThreads() throws Exception {
-    final int maxThreads = 10;
+    final int maxThreads = Runtime.getRuntime().availableProcessors() + 1;
     ExecutorService executor = Executors.newFixedThreadPool(maxThreads);
     final Set<SilverLogger> loggers = new HashSet<>(maxThreads);
     SilverLoggerFactory loggerFactory = new SysLoggerFactory();
@@ -107,7 +107,7 @@ public class SysLoggerFactoryTest {
     }
     executor.shutdown();
     do {
-      executor.awaitTermination(5, TimeUnit.MILLISECONDS);
+      executor.awaitTermination(10, TimeUnit.MILLISECONDS);
     } while (!executor.isTerminated());
     assertThat(loggers.size(), is(1));
   }
