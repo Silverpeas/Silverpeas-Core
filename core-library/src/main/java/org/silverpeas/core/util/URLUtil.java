@@ -80,7 +80,7 @@ public class URLUtil {
   public final static int URL_DOCUMENT = 8;
   public final static int URL_VERSION = 9;
   public final static int URL_MEDIA = 10;
-  private static final String applicationURL =
+  private static final String APPLICATION_URL =
       ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL", "/silverpeas");
   static SettingBundle settings = null;
   static String httpMode = null;
@@ -218,7 +218,7 @@ public class URLUtil {
    * @return The Application web context.
    */
   public static String getApplicationURL() {
-    return applicationURL;
+    return APPLICATION_URL;
   }
 
   public static String getFullApplicationURL(HttpServletRequest request) {
@@ -239,7 +239,7 @@ public class URLUtil {
     String absoluteUrl = "";
     if (request != null) {
       absoluteUrl = request.getScheme() + "://" + request.getServerName();
-      if (request.getServerPort() != 80) {
+      if (request.getServerPort() != 80 && request.getServerPort() != 443) {
         absoluteUrl += ":" + request.getServerPort();
       }
     }
