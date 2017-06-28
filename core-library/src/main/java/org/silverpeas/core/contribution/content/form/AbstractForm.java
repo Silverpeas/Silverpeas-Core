@@ -319,7 +319,7 @@ public abstract class AbstractForm implements Form {
           SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
       } else {
-        SilverLogger.getLogger(this).info("Field {0} is ignored as it is read only",
+        SilverLogger.getLogger(this).debug("Field {0} is ignored as it is read only",
             fieldTemplate.getFieldName());
       }
 

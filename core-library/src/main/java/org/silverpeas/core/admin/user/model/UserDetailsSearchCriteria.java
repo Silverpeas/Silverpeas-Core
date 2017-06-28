@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.user.constant.UserState;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.commons.lang3.ArrayUtils.isNotEmpty;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -37,10 +38,10 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class UserDetailsSearchCriteria implements SearchCriteria {
 
-  public static String[] ANY_GROUPS = ANY;
-
+  public static final String[] ANY_GROUPS = ANY;
   private static final String USER_ACCESS_LEVELS = "userAccessLevels";
   private static final String USER_STATES_TO_EXCLUDE = "userStatesToExclude";
+
   private static final String GROUP_IDS = "groupId";
   private static final String USER_IDS = "userIds";
   private static final String ROLE_NAMES = "roleIds";
@@ -48,13 +49,41 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   private static final String RESOURCE_ID = "resourceId";
   private static final String INSTANCE_ID = "instanceId";
   private static final String NAME = "name";
+  private static final String FIRST_NAME = "firstName";
+  private static final String LAST_NAME = "lastName";
   private static final String PAGINATION = "pagination";
-  private Map<String, Object> criteria = new HashMap<String, Object>();
+  private Map<String, Object> criteria = new HashMap<>();
 
   @Override
   public UserDetailsSearchCriteria onName(String name) {
     if (isDefined(name)) {
       criteria.put(NAME, name);
+    }
+    return this;
+  }
+
+  /**
+   * Appends a criterion on the first name of the users for which the search must be constrained to.
+   * The users to fetch have to satisfy this criterion.
+   * @param firstName a pattern on the first name of the users to fetch.
+   * @return the criteria enriched with a criterion on the user first name.
+   */
+  public SearchCriteria onFirstName(final String firstName) {
+    if (isDefined(firstName)) {
+      criteria.put(FIRST_NAME, firstName);
+    }
+    return this;
+  }
+
+  /**
+   * Appends a criterion on the last name of the users for which the search must be constrained to.
+   * The users to fetch have to satisfy this criterion.
+   * @param lastName a pattern on the last name of the users to fetch.
+   * @return the criteria enriched with a criterion on the user last name.
+   */
+  public SearchCriteria onLastName(final String lastName) {
+    if (isDefined(lastName)) {
+      criteria.put(LAST_NAME, lastName);
     }
     return this;
   }
@@ -69,7 +98,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onRoleNames(String[] roleIds) {
-    if (roleIds != null && roleIds.length > 0) {
+    if (isNotEmpty(roleIds)) {
       criteria.put(ROLE_NAMES, roleIds);
     }
     return this;
@@ -77,7 +106,9 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onGroupIds(String... groupIds) {
-    criteria.put(GROUP_IDS, groupIds);
+    if (isNotEmpty(groupIds)) {
+      criteria.put(GROUP_IDS, groupIds);
+    }
     return this;
   }
 
@@ -91,13 +122,17 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onAccessLevels(final UserAccessLevel... accessLevels) {
-    criteria.put(USER_ACCESS_LEVELS, accessLevels);
+    if (isNotEmpty(accessLevels)) {
+      criteria.put(USER_ACCESS_LEVELS, accessLevels);
+    }
     return this;
   }
 
   @Override
   public UserDetailsSearchCriteria onUserStatesToExclude(final UserState... userStates) {
-    criteria.put(USER_STATES_TO_EXCLUDE, userStates);
+    if (isNotEmpty(userStates)) {
+      criteria.put(USER_STATES_TO_EXCLUDE, userStates);
+    }
     return null;
   }
 
@@ -111,8 +146,16 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onUserIds(String[] userIds) {
-    if (userIds != null && userIds.length > 0) {
+    if (isNotEmpty(userIds)) {
       criteria.put(USER_IDS, userIds);
+    }
+    return this;
+  }
+
+  @Override
+  public UserDetailsSearchCriteria onPagination(PaginationPage page) {
+    if (page != null) {
+      criteria.put(PAGINATION, page);
     }
     return this;
   }
@@ -151,6 +194,14 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   public boolean isCriterionOnNameSet() {
     return criteria.containsKey(NAME);
+  }
+
+  public boolean isCriterionOnFirstNameSet() {
+    return criteria.containsKey(FIRST_NAME);
+  }
+
+  public boolean isCriterionOnLastNameSet() {
+    return criteria.containsKey(LAST_NAME);
   }
 
   public boolean isCriterionOnPaginationSet() {
@@ -230,6 +281,22 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   /**
+   * Gets the pattern on the name the user first name must satisfy.
+   * @return a pattern on the user first name.
+   */
+  public String getCriterionOnFirstName() {
+    return (String) criteria.get(FIRST_NAME);
+  }
+
+  /**
+   * Gets the pattern on the name the user last name must satisfy.
+   * @return a pattern on the user last name.
+   */
+  public String getCriterionOnLastName() {
+    return (String) criteria.get(LAST_NAME);
+  }
+
+  /**
    * Gets the pagination page into which the groups to return has to be part.
    * @return the page in a pagination mechanism to fetch.
    */
@@ -283,11 +350,5 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   @Override
   public boolean isEmpty() {
     return criteria.isEmpty();
-  }
-
-  @Override
-  public UserDetailsSearchCriteria onPagination(PaginationPage page) {
-    criteria.put(PAGINATION, page);
-    return this;
   }
 }

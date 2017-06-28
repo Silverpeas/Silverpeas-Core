@@ -170,8 +170,8 @@ public class UserProfileResource extends RESTWebService {
     ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(
         asWebEntity(users, locatedAt(getUriInfo().getAbsolutePath()))).
-        header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).
-        header(RESPONSE_HEADER_ARRAYSIZE, users.getOriginalListSize()).build();
+        header(RESPONSE_HEADER_USERSIZE, users.originalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, users.originalListSize()).build();
   }
 
   /**
@@ -267,8 +267,8 @@ public class UserProfileResource extends RESTWebService {
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
         asWebEntity(users, locatedAt(usersUri))).
-        header(RESPONSE_HEADER_USERSIZE, users.getOriginalListSize()).
-        header(RESPONSE_HEADER_ARRAYSIZE, users.getOriginalListSize()).build();
+        header(RESPONSE_HEADER_USERSIZE, users.originalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, users.originalListSize()).build();
   }
 
   /**
@@ -337,8 +337,8 @@ public class UserProfileResource extends RESTWebService {
     URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
         asWebEntity(contacts, locatedAt(usersUri))).
-        header(RESPONSE_HEADER_USERSIZE, contacts.getOriginalListSize()).
-        header(RESPONSE_HEADER_ARRAYSIZE, contacts.getOriginalListSize()).build();
+        header(RESPONSE_HEADER_USERSIZE, contacts.originalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, contacts.originalListSize()).build();
   }
 
   @Override

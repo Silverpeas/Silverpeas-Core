@@ -25,8 +25,6 @@
 package org.silverpeas.core.notification.user.client.model;
 
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
-import org.silverpeas.core.persistence.jdbc.Schema;
-import org.silverpeas.core.exception.UtilException;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -38,85 +36,72 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
   /**
    * Builds a new NotifAddressTable
    */
-  public NotifAddressTable(Schema schema) {
-    super(schema, "ST_NotifAddress");
+  NotifAddressTable() {
+    super("ST_NotifAddress");
   }
 
   /**
    * The column list used for every select query.
    */
-  static final protected String NOTIFADDRESS_COLUMNS =
+  protected static final String NOTIFADDRESS_COLUMNS =
       "id,userId,notifName,notifChannelId,address,usage,priority";
 
   /**
    * Returns the unique NotifAddress row having a given id
    */
-  public NotifAddressRow getNotifAddress(int id) throws UtilException {
+  public NotifAddressRow getNotifAddress(int id) throws SQLException {
     return getUniqueRow(SELECT_NOTIFADDRESS_BY_ID, id);
   }
 
-  static final private String SELECT_NOTIFADDRESS_BY_ID = "Select "
+  private static final String SELECT_NOTIFADDRESS_BY_ID = "Select "
       + NOTIFADDRESS_COLUMNS + " from ST_NotifAddress Where id = ?";
-
-  /**
-   * Returns all the NotifAddress rows having a given userId
-   */
-  public NotifAddressRow[] getAllByUserId(int aUserId, String orderField)
-      throws UtilException {
-    String req = "select " + NOTIFADDRESS_COLUMNS + " from ST_NotifAddress"
-        + " Where UserId = " + aUserId;
-    if (orderField != null) {
-      req = req + " order by " + orderField;
-    }
-    List<NotifAddressRow> rows = getRows(req);
-    return rows.toArray(new NotifAddressRow[rows.size()]);
-  }
 
   /**
    * Returns all the NotifAddressRow having a given notifChannelId
    */
-  public NotifAddressRow[] getAllByNotifChannelId(int notifChannelId) throws UtilException {
+  public NotifAddressRow[] getAllByNotifChannelId(int notifChannelId) throws SQLException {
     List<NotifAddressRow> rows =
         getRows(SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID, notifChannelId);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID = "select "
+  public static final String SELECT = "select ";
+  static final private String SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_NOTIFCHANNELID = SELECT
       + NOTIFADDRESS_COLUMNS + " from ST_NotifAddress where notifChannelId=?";
 
   /**
    * Returns all the NotifAddressRow having a given userId
    */
-  public NotifAddressRow[] getAllByUserId(int userId) throws UtilException {
+  public NotifAddressRow[] getAllByUserId(int userId) throws SQLException {
     List<NotifAddressRow> rows = getRows(SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID, userId);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID = "select "
+  static final private String SELECT_ALL_NOTIFADDRESS_WITH_GIVEN_USERID = SELECT
       + NOTIFADDRESS_COLUMNS + " from ST_NotifAddress where userId=?";
 
   /**
    * Returns all the rows.
    */
-  public NotifAddressRow[] getAllRows() throws UtilException {
+  public NotifAddressRow[] getAllRows() throws SQLException {
     List<NotifAddressRow> rows = getRows(SELECT_ALL_NOTIFADDRESS);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_NOTIFADDRESS = "select "
+  static final private String SELECT_ALL_NOTIFADDRESS = SELECT
       + NOTIFADDRESS_COLUMNS + " from ST_NotifAddress";
 
   /**
    * Returns the unique row given by a no parameters query.
    */
-  public NotifAddressRow getNotifAddress(String query) throws UtilException {
+  public NotifAddressRow getNotifAddress(String query) throws SQLException {
     return getUniqueRow(query);
   }
 
   /**
    * Returns all the rows given by a no parameters query.
    */
-  public NotifAddressRow[] getNotifAddresss(String query) throws UtilException {
+  public NotifAddressRow[] getNotifAddresss(String query) throws SQLException {
     List<NotifAddressRow> rows = getRows(query);
     return rows.toArray(new NotifAddressRow[rows.size()]);
   }
@@ -124,7 +109,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
   /**
    * Inserts in the database a new NotifAddress row.
    */
-  public int create(NotifAddressRow notifAddress) throws UtilException {
+  public int create(NotifAddressRow notifAddress) throws SQLException {
     insertRow(INSERT_NOTIFADDRESS, notifAddress);
     return notifAddress.getId();
   }
@@ -136,7 +121,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
   /**
    * Update the given NotifAddressRow
    */
-  public void update(NotifAddressRow notifAddress) throws UtilException {
+  public void update(NotifAddressRow notifAddress) throws SQLException {
     updateRow(UPDATE_NOTIFADDRESS, notifAddress);
   }
 
@@ -149,7 +134,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
   /**
    * Updates theNotifAddress row. or inserts it if new.
    */
-  public void save(NotifAddressRow notifAddress) throws UtilException {
+  public void save(NotifAddressRow notifAddress) throws SQLException {
     if (notifAddress.getId() == -1) {
       // No id : it's a creation
       create(notifAddress);
@@ -161,7 +146,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
   /**
    * Deletes theNotifAddressRow. after having removed all the reference to it.
    */
-  public void delete(int id) throws UtilException {
+  public void delete(int id) throws SQLException {
     updateRelation(DELETE_NOTIFADDRESS, id);
   }
 
@@ -170,7 +155,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
   /**
    * Removes a reference to NotifChannelId
    */
-  public void dereferenceNotifChannelId(int notifChannelId) throws UtilException {
+  public void dereferenceNotifChannelId(int notifChannelId) throws SQLException {
     NotifAddressRow[] notifAddressToBeDeleted = getAllByNotifChannelId(notifChannelId);
     for (NotifAddressRow aNotifAddressToBeDeleted : notifAddressToBeDeleted) {
       delete(aNotifAddressToBeDeleted.getId());
@@ -180,7 +165,7 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
   /**
    * Removes a reference to UserId
    */
-  public void dereferenceUserId(int userId) throws UtilException {
+  public void dereferenceUserId(int userId) throws SQLException {
     NotifAddressRow[] notifAddressToBeDeleted = getAllByUserId(userId);
     for (NotifAddressRow aNotifAddressToBeDeleted : notifAddressToBeDeleted) {
       delete(aNotifAddressToBeDeleted.getId());
@@ -228,11 +213,11 @@ public class NotifAddressTable extends AbstractTable<NotifAddressRow> {
   }
 
   public void deleteAndPropagate(int notifAddressId, int defaultAddress)
-      throws UtilException {
-    NotifPreferenceRow[] nprs = null;
-    NotifPreferenceTable npt = ((NotifSchema) schema).notifPreference;
-    NotifDefaultAddressRow[] ndars = null;
-    NotifDefaultAddressTable ndat = ((NotifSchema) schema).notifDefaultAddress;
+      throws SQLException {
+    NotifPreferenceRow[] nprs;
+    NotifPreferenceTable npt = NotificationSchema.get().notifPreference();
+    NotifDefaultAddressRow[] ndars;
+    NotifDefaultAddressTable ndat = NotificationSchema.get().notifDefaultAddress();
     int i;
 
     // Remove the preferences that are linked to this Address

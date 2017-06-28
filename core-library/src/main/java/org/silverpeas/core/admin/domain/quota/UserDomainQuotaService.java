@@ -23,19 +23,24 @@
  */
 package org.silverpeas.core.admin.domain.quota;
 
-import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
+import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.service.AbstractQuotaService;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 
 /**
  * @author Yohann Chastagnier
  */
 @Singleton
 public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuotaKey> {
+
+  @Inject
+  private DomainDriverManager domainDriverManager;
 
   private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings");
@@ -45,10 +50,10 @@ public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuota
    * @see QuotaService#getCurrentCount(QuotaKey)
    */
   @Override
+  @Transactional
   public long getCurrentCount(final UserDomainQuotaKey key) throws QuotaException {
     try {
-      return DomainDriverManagerProvider.getCurrentDomainDriverManager().getAllUsers(
-          key.getResourceId()).length;
+      return domainDriverManager.getAllUsers(key.getResourceId()).length;
     } catch (final Exception e) {
       throw new QuotaException(e);
     }

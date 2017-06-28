@@ -66,7 +66,7 @@ public class LDAPUser {
   /**
    * Called when Admin starts the synchronization
    */
-  public void beginSynchronization() throws Exception {
+  public void beginSynchronization() {
     synchroReport = new StringBuffer();
     synchroInProcess = true;
   }
@@ -74,7 +74,7 @@ public class LDAPUser {
   /**
    * Called when Admin ends the synchronization
    */
-  public String endSynchronization() throws Exception {
+  public String endSynchronization() {
     synchroInProcess = false;
     return synchroReport.toString();
   }

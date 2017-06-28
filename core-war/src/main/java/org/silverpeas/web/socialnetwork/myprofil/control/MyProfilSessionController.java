@@ -97,7 +97,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public boolean isUserDomainRW() {
-    return (getDomainActions() & DomainDriver.ACTION_UPDATE_USER) != 0;
+    return (getDomainActions() & DomainDriver.ActionConstants.ACTION_UPDATE_USER) != 0;
   }
 
   public boolean isAdmin() {

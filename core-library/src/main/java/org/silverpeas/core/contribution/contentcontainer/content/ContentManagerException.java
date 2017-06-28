@@ -27,7 +27,7 @@
 
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 /**
  * Class declaration
@@ -35,37 +35,18 @@ import org.silverpeas.core.exception.SilverpeasException;
  */
 public class ContentManagerException extends SilverpeasException {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 2L;
 
-  /**
-   * -------------------------------------------------------------------------- constructor
-   * constructor
-   */
-  public ContentManagerException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+
+  public ContentManagerException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public ContentManagerException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public ContentManagerException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public ContentManagerException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  public ContentManagerException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public String getModule() {
-    return "contentManager";
+  public ContentManagerException(final Throwable cause) {
+    super(cause);
   }
 }

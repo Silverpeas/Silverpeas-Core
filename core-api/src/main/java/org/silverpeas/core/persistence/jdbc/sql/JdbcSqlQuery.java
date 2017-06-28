@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.persistence.jdbc.sql;
 
+import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.StringUtil;
 
 import java.sql.Connection;
@@ -47,6 +48,8 @@ public class JdbcSqlQuery {
 
   private static final int SPACE_OFFSET_DETECTION = 2;
   private static final int OPEN_PARENTHESIS_OFFSET_DETECTION = 1;
+  private static final String NOT_IN_OPERATOR = " NOT IN ";
+  private static final String IN_OPERATOR = " IN ";
   private final Configuration configuration = new Configuration();
   private final StringBuilder sqlQuery = new StringBuilder();
   private final Collection<Object> allParameters = new ArrayList<>();
@@ -110,7 +113,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createSelect(String sqlPart, Object... paramValue) {
-    return new JdbcSqlQuery().addSqlPart("select").addSqlPart(sqlPart, paramValue);
+    return new JdbcSqlQuery().addSqlPart("SELECT").addSqlPart(sqlPart, paramValue);
   }
 
   /**
@@ -120,7 +123,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createSelect(String sqlPart, Collection<?> paramValue) {
-    return new JdbcSqlQuery().addSqlPart("select").addSqlPart(sqlPart, paramValue);
+    return new JdbcSqlQuery().addSqlPart("SELECT").addSqlPart(sqlPart, paramValue);
   }
 
   /**
@@ -129,7 +132,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createCountFor(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("select count(*) from").addSqlPart(tableName);
+    return new JdbcSqlQuery().addSqlPart("SELECT COUNT(*) FROM").addSqlPart(tableName);
   }
 
   /**
@@ -138,7 +141,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createTable(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("create table").addSqlPart(tableName).addSqlPart(" (");
+    return new JdbcSqlQuery().addSqlPart("CREATE TABLE").addSqlPart(tableName).addSqlPart(" (");
   }
 
   /**
@@ -147,7 +150,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createInsertFor(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("insert into").addSqlPart(tableName).addSqlPart(" (");
+    return new JdbcSqlQuery().addSqlPart("INSERT INTO").addSqlPart(tableName).addSqlPart(" (");
   }
 
   /**
@@ -156,7 +159,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createUpdateFor(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("update ").addSqlPart(tableName).addSqlPart(" set");
+    return new JdbcSqlQuery().addSqlPart("UPDATE ").addSqlPart(tableName).addSqlPart(" SET");
   }
 
   /**
@@ -165,7 +168,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createDeleteFor(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("delete from").addSqlPart(tableName);
+    return new JdbcSqlQuery().addSqlPart("DELETE FROM").addSqlPart(tableName);
   }
 
   /**
@@ -174,7 +177,7 @@ public class JdbcSqlQuery {
    * @return the instance of the new builder.
    */
   public static JdbcSqlQuery createDropFor(String tableName) {
-    return new JdbcSqlQuery().addSqlPart("drop table").addSqlPart(tableName);
+    return new JdbcSqlQuery().addSqlPart("DROP TABLE").addSqlPart(tableName);
   }
 
   /**
@@ -242,7 +245,16 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery where(String sqlPart, Collection<?> paramValues) {
-    return addSqlPart("where " + sqlPart, paramValues);
+    return addSqlPart("WHERE " + sqlPart, paramValues);
+  }
+
+  /**
+   * The query is about the concerned SQL table.
+   * @param tableNames the name of the table(s) concerned by the query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery from(String... tableNames) {
+    return addSqlPart("FROM " + Arrays.stream(tableNames).collect(Collectors.joining(",")));
   }
 
   /**
@@ -262,7 +274,7 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery and(String sqlPart, Collection<?> paramValues) {
-    return addSqlPart("and " + sqlPart, paramValues);
+    return addSqlPart("AND " + sqlPart, paramValues);
   }
 
   /**
@@ -282,7 +294,40 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery or(String sqlPart, Collection<?> paramValues) {
-    return addSqlPart("or " + sqlPart, paramValues);
+    return addSqlPart("OR " + sqlPart, paramValues);
+  }
+
+  /**
+   * Orders the result of the query by the specified statement.
+   * @param sqlPart the SQL part that contains the statement over which the result of the query
+   * should be ordered.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery orderBy(String sqlPart) {
+    return addSqlPart("ORDER BY " + sqlPart);
+  }
+
+  /**
+   * Limits the count of result returned by the query. This overrides any previous value of the
+   * limit property in the configuration.
+   * @param count the size of results to return.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery limit(int count) {
+    this.configuration.withResultLimit(count);
+    return this;
+  }
+
+  /**
+   * Sets the offset from which each result should be processed by the row processor. The other
+   * results returned by the query will be ignored.
+   * This overrides any previous value of the offset property in the configuration.
+   * @param offset the offset from which the row processing has to start.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery offset(int offset) {
+    this.configuration.withOffset(offset);
+    return this;
   }
 
   /**
@@ -301,7 +346,7 @@ public class JdbcSqlQuery {
    * @param paramValues the value of parameters included into the given sqlPart.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
-  public JdbcSqlQuery addSqlPart(String sqlPart, Collection<?> paramValues) {
+  private JdbcSqlQuery addSqlPart(String sqlPart, Collection<?> paramValues) {
     allParameters.addAll(paramValues);
     if (sqlQuery.length() > 0) {
       char lastChar = sqlQuery.charAt(sqlQuery.length() - 1);
@@ -319,7 +364,7 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery in(Collection<?> parameters) {
-    sqlQuery.append(" in");
+    sqlQuery.append(IN_OPERATOR);
     addListOfParameters(parameters, true);
     return this;
   }
@@ -330,41 +375,96 @@ public class JdbcSqlQuery {
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
   public JdbcSqlQuery in(Object... parameters) {
-    sqlQuery.append(" in");
+    sqlQuery.append(IN_OPERATOR);
+    addListOfParameters(Arrays.asList(parameters), true);
+    return this;
+  }
+
+  /**
+   * Centralization in order to build easily a SQL in clause.
+   * @param parameters the parameters to append to the given SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery notIn(Collection<?> parameters) {
+    sqlQuery.append(NOT_IN_OPERATOR);
+    addListOfParameters(parameters, true);
+    return this;
+  }
+
+  /**
+   * Centralization in order to build easily a SQL in clause.
+   * @param parameters the parameters to append to the given SQL query.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery notIn(Object... parameters) {
+    sqlQuery.append(NOT_IN_OPERATOR);
     addListOfParameters(Arrays.asList(parameters), true);
     return this;
   }
 
   /**
    * Centralization in order to build easily a SQL values clause.
-   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
-  private JdbcSqlQuery valuesForInsert() {
+  private void valuesForInsert() {
     sqlQuery.append(") values");
     addListOfParameters(allParameters, false);
-    return this;
   }
 
   /**
    * Centralization in order to build easily a SQL values clause.
-   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
    */
-  private JdbcSqlQuery finalizeTableCreation() {
+  private void finalizeTableCreation() {
     sqlQuery.append(")");
-    return this;
   }
 
-  private JdbcSqlQuery addListOfParameters(Collection<?> parameters,
+  private void addListOfParameters(Collection<?> parameters,
       final boolean addToParameters) {
-    String params = "";
     if (parameters != null) {
-      params = parameters.stream().map(p -> "?").collect(Collectors.joining(","));
+      // Oracle has a hard limitation with SQL lists with 'in' clause: it cannot take more than 1000
+      // elements. So we split it in several SQL lists so that they contain less than 1000 elements.
+      final int threshold = 1000;
+      int end = sqlQuery.lastIndexOf(NOT_IN_OPERATOR);
+      String negation = " NOT ";
+      if (end < 0) {
+        end = sqlQuery.lastIndexOf(IN_OPERATOR);
+        negation = "";
+      }
+      if (end > -1 && parameters.size() > threshold) {
+        int from = end - 1;
+        while (sqlQuery.charAt(from) != ' ') {
+          from--;
+        }
+        String currentSqlPart = sqlQuery.substring(from + 1, end);
+        sqlQuery.delete(from + 1, sqlQuery.length()).append(negation).append("(");
+
+        List<?> listOfParameters = new ArrayList<>(parameters);
+        for (int i = 0; i < listOfParameters.size(); i += threshold) {
+          String params = sublistOfParameters(i, i + threshold, listOfParameters);
+          sqlQuery.append(currentSqlPart).append(" IN (").append(params).append(") OR ");
+        }
+        final int lengthOfORLink = 4;
+        sqlQuery.replace(sqlQuery.length() - lengthOfORLink, sqlQuery.length(), ")");
+
+      } else {
+        String params = parameters.stream().map(p -> "?").collect(Collectors.joining(","));
+        sqlQuery.append(" (").append(params).append(")");
+      }
       if (addToParameters) {
         allParameters.addAll(parameters);
       }
     }
-    sqlQuery.append(" (").append(params).append(")");
-    return this;
+  }
+
+  private String sublistOfParameters(final int fromIndex, final int toIndex,
+      final List<?> listOfParameters) {
+    int limit = toIndex;
+    if (limit > listOfParameters.size()) {
+      limit = listOfParameters.size();
+    }
+    return listOfParameters.subList(fromIndex, limit)
+        .stream()
+        .map(p -> "?")
+        .collect(Collectors.joining(","));
   }
 
   /**
@@ -412,7 +512,7 @@ public class JdbcSqlQuery {
    * Select executor.
    * @throws java.sql.SQLException on SQL error.
    */
-  public <R> List<R> execute(SelectResultRowProcess<R> process)
+  public <R> ListSlice<R> execute(SelectResultRowProcess<R> process)
       throws SQLException {
     return executeWith(null, process);
   }
@@ -422,7 +522,7 @@ public class JdbcSqlQuery {
    * @param connection existing connection.
    * @throws java.sql.SQLException on SQL error.
    */
-  public <R> List<R> executeWith(Connection connection, SelectResultRowProcess<R> process)
+  public <R> ListSlice<R> executeWith(Connection connection, SelectResultRowProcess<R> process)
       throws SQLException {
     if (connection == null) {
       return getJdbcSqlExecutor().select(this, process);
@@ -455,9 +555,9 @@ public class JdbcSqlQuery {
    */
   void finalizeBeforeExecution() {
     String computedSqlQuery = getSqlQuery();
-    if (computedSqlQuery.startsWith("insert into ")) {
+    if (computedSqlQuery.startsWith("INSERT INTO ")) {
       valuesForInsert();
-    } else if (computedSqlQuery.startsWith("create table ")) {
+    } else if (computedSqlQuery.startsWith("CREATE TABLE ")) {
       finalizeTableCreation();
     }
   }
@@ -476,8 +576,9 @@ public class JdbcSqlQuery {
    * @throws java.sql.SQLException on SQL error.
    */
   public long executeWith(Connection connection) throws SQLException {
-    String builtSqlQuery = getSqlQuery();
-    if (builtSqlQuery.startsWith("select count(*)")) {
+    final int lengthOfStartStatement = 13;
+    String builtSqlQuery = getSqlQuery().trim();
+    if ("SELECT COUNT(".equalsIgnoreCase(builtSqlQuery.substring(0, lengthOfStartStatement))) {
       if (connection == null) {
         return getJdbcSqlExecutor().selectCount(this);
       } else {
@@ -492,17 +593,37 @@ public class JdbcSqlQuery {
   }
 
   /**
-   * Context of execution that has to be taken into account.
+   * Configuration of execution that has to be taken into account.
    */
   public static class Configuration {
     private int limit = 0;
+    private int offset = 0;
 
     int getResultLimit() {
       return limit;
     }
 
+    int getOffset() {
+      return offset;
+    }
+
+    boolean isFirstResultScrolled() {
+      return offset > 0;
+    }
+
+    boolean isResultCountLimited() {
+      return limit > 0;
+    }
+
     public Configuration withResultLimit(final int limit) {
+      assert limit >= 0;
       this.limit = limit;
+      return this;
+    }
+
+    public Configuration withOffset(final int offset) {
+      assert offset >= 0;
+      this.offset = offset;
       return this;
     }
   }

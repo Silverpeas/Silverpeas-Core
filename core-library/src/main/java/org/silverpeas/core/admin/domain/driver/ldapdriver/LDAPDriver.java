@@ -41,6 +41,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.*;
+
 /**
  * Domain driver for LDAP access. Could be used to access any type of LDAP DB (even exchange)
  * IMPORTANT : For the moment, it is not possible to add, remove or update a group neither add or
@@ -50,8 +52,6 @@ import java.util.Map;
 public class LDAPDriver extends AbstractDomainDriver {
 
   LDAPSynchroCache synchroCache = new LDAPSynchroCache();
-  boolean synchroInProcess = false;
-
   protected LDAPSettings driverSettings = new LDAPSettings();
   protected LDAPUser userTranslator = null;
   protected AbstractLDAPGroup groupTranslator = null;
@@ -209,7 +209,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    * Called when Admin starts the synchronization
    */
   @Override
-  public void beginSynchronization() throws Exception {
+  public void beginSynchronization() {
     synchroInProcess = true;
     synchroCache.beginSynchronization();
     userTranslator.beginSynchronization();
@@ -219,7 +219,7 @@ public class LDAPDriver extends AbstractDomainDriver {
   /**
    * Called when Admin ends the synchronization
    */
-  public String endSynchronization() throws Exception {
+  public String endSynchronization() {
     StringBuilder valret = new StringBuilder("");
 
     synchroCache.endSynchronization();
@@ -266,17 +266,18 @@ public class LDAPDriver extends AbstractDomainDriver {
    * @return The User object that contain new user information
    */
   @Override
-  public UserDetail synchroUser(String userId) throws Exception {
+  public UserDetail synchroUser(String userId) throws AdminException {
     return getUser(userId);
   }
 
   @Override
-  public String createUser(UserDetail user) throws Exception {
+  public String createUser(UserDetail user) throws AdminException {
     return null;
   }
 
   @Override
-  public void deleteUser(String userId) throws Exception {
+  public void deleteUser(String userId) throws AdminException {
+    // Silverpeas doesn't modify the remote LDAP
   }
 
   @Override
@@ -298,39 +299,11 @@ public class LDAPDriver extends AbstractDomainDriver {
       String userFullDN = theEntry.getDN();
       List<LDAPModification> modifications = new ArrayList<>();
 
-      // update basic informations (first name, last name and email)
-      LDAPAttribute attribute =
-          getLDAPAttribute(driverSettings.getUsersFirstNameField(), user.getFirstName());
-      modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
-
-      attribute = getLDAPAttribute(driverSettings.getUsersLastNameField(), user.getLastName());
-      modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
-
-      attribute = getLDAPAttribute(driverSettings.getUsersEmailField(), user.geteMail());
-      modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
+      // update basic information (first name, last name and email)
+      updateBasicData(user, modifications);
 
       // prepare properties update
-      for (String propertyName : user.getPropertiesNames()) {
-        DomainProperty property = user.getProperty(propertyName);
-        if (property.isUpdateAllowedToAdmin() || property.isUpdateAllowedToUser()) {
-          if (property.getType().equals(DomainProperty.PROPERTY_TYPE_USERID)) {
-            // setting user's DN
-            String anotherUserId = user.getValue(propertyName);
-            String anotherUserDN = null;
-            if (StringUtil.isDefined(anotherUserId)) {
-              UserDetail anotherUser = UserDetail.getById(anotherUserId);
-              LDAPEntry anotherUserEntry = getUserLDAPEntry(ld, anotherUser.getSpecificId());
-              if (anotherUserEntry != null) {
-                anotherUserDN = anotherUserEntry.getDN();
-              }
-            }
-            attribute = getLDAPAttribute(property.getMapParameter(), anotherUserDN);
-          } else {
-            attribute = getLDAPAttribute(property.getMapParameter(), user.getValue(propertyName));
-          }
-          modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
-        }
-      }
+      preparePropertiesUpdate(ld, user, modifications);
 
       // Perform the update
       connection
@@ -350,12 +323,55 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
   }
 
+  private void updateBasicData(final UserFull user, final List<LDAPModification> modifications) {
+    LDAPAttribute attribute =
+        getLDAPAttribute(driverSettings.getUsersFirstNameField(), user.getFirstName());
+    modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
+
+    attribute = getLDAPAttribute(driverSettings.getUsersLastNameField(), user.getLastName());
+    modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
+
+    attribute = getLDAPAttribute(driverSettings.getUsersEmailField(), user.geteMail());
+    modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
+  }
+
+  private void preparePropertiesUpdate(final String ld, final UserFull user,
+      final List<LDAPModification> modifications) throws AdminException {
+    for (String propertyName : user.getPropertiesNames()) {
+      DomainProperty property = user.getProperty(propertyName);
+      if (property.isUpdateAllowedToAdmin() || property.isUpdateAllowedToUser()) {
+        preparePropertyUpdate(ld, user, modifications, propertyName, property);
+      }
+    }
+  }
+
+  private void preparePropertyUpdate(final String ld, final UserFull user,
+      final List<LDAPModification> modifications, final String propertyName,
+      final DomainProperty property) throws AdminException {
+    final LDAPAttribute attribute;
+    if (property.getType().equals(DomainProperty.PROPERTY_TYPE_USERID)) {
+      // setting user's DN
+      String anotherUserId = user.getValue(propertyName);
+      String anotherUserDN = null;
+      if (StringUtil.isDefined(anotherUserId)) {
+        UserDetail anotherUser = UserDetail.getById(anotherUserId);
+        LDAPEntry anotherUserEntry = getUserLDAPEntry(ld, anotherUser.getSpecificId());
+        if (anotherUserEntry != null) {
+          anotherUserDN = anotherUserEntry.getDN();
+        }
+      }
+      attribute = getLDAPAttribute(property.getMapParameter(), anotherUserDN);
+    } else {
+      attribute = getLDAPAttribute(property.getMapParameter(), user.getValue(propertyName));
+    }
+    modifications.add(new LDAPModification(LDAPModification.REPLACE, attribute));
+  }
+
   private LDAPEntry getUserLDAPEntry(String connection, String id) throws AdminException {
-    LDAPEntry userEntry = LDAPUtility
+    return LDAPUtility
         .getFirstEntryFromSearch(connection, driverSettings.getLDAPUserBaseDN(),
             driverSettings.getScope(), driverSettings.getUsersIdFilter(id),
             driverSettings.getUserAttributes());
-    return userEntry;
   }
 
   private LDAPAttribute getLDAPAttribute(String name, String value) {
@@ -367,7 +383,8 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public void updateUserDetail(UserDetail user) throws Exception {
+  public void updateUserDetail(UserDetail user) throws AdminException {
+    // Silverpeas doesn't modify the remote LDAP
   }
 
   /**
@@ -424,7 +441,7 @@ public class LDAPDriver extends AbstractDomainDriver {
     DomainProperty property = getProperty(propertyName);
     if (property == null) {
       // This property is not defined in this domain
-      return null;
+      return new UserDetail[0];
     } else {
       String ld = LDAPUtility.openConnection(driverSettings);
       try {
@@ -447,11 +464,11 @@ public class LDAPDriver extends AbstractDomainDriver {
   @Override
   public UserDetail[] getUsersByQuery(Map<String, String> query) throws AdminException {
     StringBuilder extraFilter = new StringBuilder();
-    for (String propertyName : query.keySet()) {
+    for (Map.Entry<String, String> property : query.entrySet()) {
       extraFilter.append("(")
-          .append(propertyName)
+          .append(property.getKey())
           .append("=")
-          .append(query.get(propertyName))
+          .append(property.getValue())
           .append(")");
     }
 
@@ -499,7 +516,7 @@ public class LDAPDriver extends AbstractDomainDriver {
    */
   @Override
   public void removeGroup(String groupId) throws AdminException {
-    // In this driver, do nothing
+    // Silverpeas doesn't modify the remote LDAP
   }
 
   /**
@@ -513,16 +530,19 @@ public class LDAPDriver extends AbstractDomainDriver {
   }
 
   @Override
-  public String createGroup(GroupDetail m_Group) throws AdminException {
+  public String createGroup(GroupDetail group) throws AdminException {
+    // Silverpeas doesn't modify the remote LDAP
     return null;
   }
 
   @Override
   public void deleteGroup(String groupId) throws AdminException {
+    // Silverpeas doesn't modify the remote LDAP
   }
 
   @Override
-  public void updateGroup(GroupDetail m_Group) throws AdminException {
+  public void updateGroup(GroupDetail group) throws AdminException {
+    // Silverpeas doesn't modify the remote LDAP
   }
 
   /**
@@ -603,44 +623,18 @@ public class LDAPDriver extends AbstractDomainDriver {
     }
   }
 
-  /**
-   * Start a new transaction
-   * @param bAutoCommit Specifies is transaction is automatically committed (without explicit
-   * 'commit' statement)
-   */
-  @Override
-  public void startTransaction(boolean bAutoCommit) {
-    // Access in read only -> no need to support transaction mode
-  }
-
-  /**
-   * Commit transaction
-   */
-  @Override
-  public void commit() throws AdminException {
-    // Access in read only -> no need to support transaction mode
-  }
-
-  /**
-   * Rollback transaction
-   */
-  @Override
-  public void rollback() throws AdminException {
-    // Access in read only -> no need to support transaction mode
-  }
-
   @Override
   public List<String> getUserAttributes() throws AdminException {
     return Arrays.asList(userTranslator.getUserAttributes());
   }
 
   @Override
-  public void resetPassword(UserDetail user, String password) throws Exception {
+  public void resetPassword(UserDetail user, String password) throws AdminException {
     // Access in read only
   }
 
   @Override
-  public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws Exception {
+  public void resetEncryptedPassword(UserDetail user, String encryptedPassword) throws AdminException {
     // Access in read only
   }
 

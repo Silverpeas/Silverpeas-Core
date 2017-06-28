@@ -82,6 +82,7 @@ import org.silverpeas.web.jobdomain.JobDomainPeasDAO;
 import org.silverpeas.web.jobdomain.JobDomainPeasException;
 import org.silverpeas.web.jobdomain.JobDomainPeasTrappedException;
 import org.silverpeas.web.jobdomain.JobDomainSettings;
+import org.silverpeas.web.jobdomain.NavigationStock;
 import org.silverpeas.web.jobdomain.SynchroUserWebServiceItf;
 import org.silverpeas.web.jobdomain.UserRequestData;
 
@@ -958,15 +959,15 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     // TODO : Manage deleting case for group manager
     if (!UserAccessLevel.ADMINISTRATOR.equals(getUserAccessLevel())
         && !UserAccessLevel.DOMAIN_ADMINISTRATOR.equals(getUserAccessLevel()) && isGroupManager()) {
-      List<String> directGroupIds = Arrays.asList(getOrganisationController().
-          getDirectGroupIdsOfUser(idUser));
+      List<GroupDetail> directGroups = getOrganisationController()
+          .getDirectGroupsOfUser(idUser);
       List<String> manageableGroupIds = getUserManageableGroupIds();
 
       String directGroupId;
       String rootGroupId;
       List<String> groupIdLinksToRemove = new ArrayList<String>();
-      for (String directGroupId1 : directGroupIds) {
-        directGroupId = directGroupId1;
+      for (GroupDetail directGroup : directGroups) {
+        directGroupId = directGroup.getId();
 
         // get root group of each directGroup
         List<String> groupPath = m_AdminCtrl.getPathToGroup(directGroupId);
@@ -1004,7 +1005,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         m_TargetUserId = null;
       }
 
-      if ((getDomainActions() & DomainDriver.ACTION_X509_USER) != 0) {
+      if ((getDomainActions() & DomainDriver.ActionConstants.ACTION_X509_USER) != 0) {
         // revocate user's certificate
         revocateCertificate(user);
       }
@@ -1569,35 +1570,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   private Group[] filterGroupsToGroupManager(Group[] groups) {
-    // get all manageable groups by current user
-    List<String> manageableGroupIds = getUserManageableGroupIds();
-    List<Group> temp = new ArrayList<Group>();
-    // filter groups
-    for (Group group : groups) {
-      if (manageableGroupIds.contains(group.getId())) {
-        temp.add(group);
-      } else {
-        // get all subGroups of group
-        List<String> subGroupIds = Arrays.asList(m_AdminCtrl.getAllSubGroupIdsRecursively(group.
-            getId()));
-        // check if at least one manageable group is part of subGroupIds
-        Iterator<String> itManageableGroupsIds = manageableGroupIds.iterator();
-
-        String manageableGroupId;
-        boolean find = false;
-        while (!find && itManageableGroupsIds.hasNext()) {
-          manageableGroupId = itManageableGroupsIds.next();
-          if (subGroupIds.contains(manageableGroupId)) {
-            find = true;
-          }
-        }
-
-        if (find) {
-          temp.add(group);
-        }
-      }
-    }
-    return temp.toArray(new Group[temp.size()]);
+    return NavigationStock.filterGroupsToGroupManager(getUserManageableGroupIds(), groups);
   }
 
   public String createDomain(String domainName, String domainDescription, String domainDriver,

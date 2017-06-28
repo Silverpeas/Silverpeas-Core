@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -46,12 +47,11 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
  */
 public class SpaceTable extends Table<SpaceRow> {
 
-  public SpaceTable(OrganizationSchema organization) {
-    super(organization, "ST_Space");
-    this.organization = organization;
+  SpaceTable() {
+    super("ST_Space");
   }
 
-  static final private String SPACE_COLUMNS = "id,domainFatherId,name,description,createdBy," +
+  private static final String SPACE_COLUMNS = "id,domainFatherId,name,description,createdBy," +
       "firstPageType,firstPageExtraParam,orderNum,createTime,updateTime,removeTime,spaceStatus," +
       "updatedBy,removedBy,lang,isInheritanceBlocked,look,displaySpaceFirst,isPersonal";
 
@@ -119,117 +119,118 @@ public class SpaceTable extends Table<SpaceRow> {
    * Returns the Space whith the given id.
    * @param id
    * @return
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public SpaceRow getSpace(int id) throws AdminPersistenceException {
+  public SpaceRow getSpace(int id) throws SQLException {
     return getUniqueRow(SELECT_SPACE_BY_ID, id);
   }
 
-  static final private String SELECT_SPACE_BY_ID =
-      "select " + SPACE_COLUMNS + " from ST_Space where id = ?";
+  public static final String SELECT = "select ";
+  private static final String SELECT_SPACE_BY_ID =
+      SELECT + SPACE_COLUMNS + " from ST_Space where id = ?";
 
-  public SpaceRow getPersonalSpace(String userId) throws AdminPersistenceException {
-    List<Object> params = new ArrayList<Object>(2);
+  public SpaceRow getPersonalSpace(String userId) throws SQLException {
+    List<Object> params = new ArrayList<>(2);
     params.add(1);
     params.add(Integer.valueOf(userId));
     List<SpaceRow> rows = getRows(SELECT_PERSONALSPACE, params);
-    if (rows != null && rows.size() > 0) {
+    if (rows != null && !rows.isEmpty()) {
       return rows.get(0);
     }
     return null;
   }
 
-  static final private String SELECT_PERSONALSPACE =
-      "select " + SPACE_COLUMNS + " from ST_Space where isPersonal = ? and createdBy = ? ";
+  private static final String SELECT_PERSONALSPACE =
+      SELECT + SPACE_COLUMNS + " from ST_Space where isPersonal = ? and createdBy = ? ";
 
   /**
    * Tests if a space with given space id exists
    * @param id
    * @return true if the given space instance name is an existing space
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public boolean isSpaceInstExist(int id) throws AdminPersistenceException {
+  public boolean isSpaceInstExist(int id) throws SQLException {
     return (this.getSpace(id) != null);
   }
 
   /**
    * Returns all the Spaces.
    * @return all the Spaces.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public SpaceRow[] getAllSpaces() throws AdminPersistenceException {
+  public SpaceRow[] getAllSpaces() throws SQLException {
     List<SpaceRow> rows = getRows(SELECT_ALL_SPACES);
     return rows.toArray(new SpaceRow[rows.size()]);
   }
 
-  static final private String SELECT_ALL_SPACES =
-      "select " + SPACE_COLUMNS + " from ST_Space" + " order by orderNum";
+  private static final String SELECT_ALL_SPACES =
+      SELECT + SPACE_COLUMNS + " from ST_Space" + " order by orderNum";
 
   /**
    * Returns all the Space ids.
    * @return all the Space ids.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public String[] getAllSpaceIds() throws AdminPersistenceException {
+  public String[] getAllSpaceIds() throws SQLException {
     List<String> ids = getIds(SELECT_ALL_SPACE_IDS);
     return ids.toArray(new String[ids.size()]);
   }
 
-  static final private String SELECT_ALL_SPACE_IDS =
+  private static final String SELECT_ALL_SPACE_IDS =
       "select id from ST_Space" + " order by orderNum";
 
   /**
    * Returns all the root Space ids.
    * @return all the root Space ids.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public String[] getAllRootSpaceIds() throws AdminPersistenceException {
+  public String[] getAllRootSpaceIds() throws SQLException {
     List<String> ids = getIds(SELECT_ALL_ROOT_SPACE_IDS);
     return ids.toArray(new String[ids.size()]);
   }
 
-  static final private String SELECT_ALL_ROOT_SPACE_IDS = "SELECT id FROM st_space WHERE " +
+  private static final String SELECT_ALL_ROOT_SPACE_IDS = "SELECT id FROM st_space WHERE " +
       "domainFatherId IS NULL AND spaceStatus IS NULL AND isPersonal IS NULL ORDER BY orderNum";
 
   /**
    * Returns all spaces which has been removed but not definitely deleted
    * @return all spaces which has been removed but not definitely deleted
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public SpaceRow[] getRemovedSpaces() throws AdminPersistenceException {
+  public SpaceRow[] getRemovedSpaces() throws SQLException {
     List<SpaceRow> rows = getRows(SELECT_REMOVED_SPACES);
     return rows.toArray(new SpaceRow[rows.size()]);
   }
 
-  static final private String SELECT_REMOVED_SPACES =
-      "select " + SPACE_COLUMNS + " from ST_Space" + " where spaceStatus = '" +
+  private static final String SELECT_REMOVED_SPACES =
+      SELECT + SPACE_COLUMNS + " from ST_Space" + " where spaceStatus = '" +
           SpaceInst.STATUS_REMOVED + "'" + " order by removeTime desc";
 
   /**
    * Returns the Space of a given component instance.
    * @param instanceId
    * @return the Space of a given component instance.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public SpaceRow getSpaceOfInstance(int instanceId) throws AdminPersistenceException {
+  public SpaceRow getSpaceOfInstance(int instanceId) throws SQLException {
     return getUniqueRow(SELECT_INSTANCE_SPACE, instanceId);
   }
 
-  static final private String SELECT_INSTANCE_SPACE = "select " + aliasColumns("s", SPACE_COLUMNS) +
+  private static final String SELECT_INSTANCE_SPACE = SELECT + aliasColumns("s", SPACE_COLUMNS) +
       " from ST_Space s, ST_ComponentInstance i where s.id = i.spaceId and i.id = ?";
 
   /**
    * Returns all the space ids having a given superSpace.
    * @param superSpaceId
    * @return all the space ids having a given superSpace.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public String[] getDirectSubSpaceIds(int superSpaceId) throws AdminPersistenceException {
+  public String[] getDirectSubSpaceIds(int superSpaceId) throws SQLException {
     List<String> ids = getIds(SELECT_SUBSPACE_IDS, superSpaceId);
     return ids.toArray(new String[ids.size()]);
   }
 
-  static final private String SELECT_SUBSPACE_IDS =
+  private static final String SELECT_SUBSPACE_IDS =
       "select id from ST_Space where domainFatherId = ? " +
           "and spaceStatus is null order by orderNum";
 
@@ -237,35 +238,35 @@ public class SpaceTable extends Table<SpaceRow> {
    * Returns direct sub spaces of given space.
    * @param superSpaceId
    * @return all direct sub spaces of given space.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public List<SpaceRow> getDirectSubSpaces(int superSpaceId) throws AdminPersistenceException {
+  public List<SpaceRow> getDirectSubSpaces(int superSpaceId) throws SQLException {
     return getRows(SELECT_SUBSPACES, superSpaceId);
   }
 
-  static final private String SELECT_SUBSPACES =
-      "select " + SPACE_COLUMNS + " from ST_Space where domainFatherId = ? " +
+  private static final String SELECT_SUBSPACES =
+      SELECT + SPACE_COLUMNS + " from ST_Space where domainFatherId = ? " +
           "and spaceStatus is null order by orderNum";
 
   /**
    * Inserts in the database a new space row.
    * @param space
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void createSpace(SpaceRow space) throws AdminPersistenceException {
+  public void createSpace(SpaceRow space) throws SQLException {
     SpaceRow superSpace;
 
     if (space.domainFatherId != -1) {
       superSpace = getSpace(space.domainFatherId);
       if (superSpace == null) {
-        throw new AdminPersistenceException(
+        throw new SQLException(
             unknown("parent space", String.valueOf(space.domainFatherId)));
       }
     }
     insertRow(INSERT_SPACE, space);
   }
 
-  static final private String INSERT_SPACE = "insert into" + " ST_Space(" + SPACE_COLUMNS + ")" +
+  private static final String INSERT_SPACE = "insert into" + " ST_Space(" + SPACE_COLUMNS + ")" +
       " values  (? ,? ,? ,? ,?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
   @Override
@@ -320,26 +321,24 @@ public class SpaceTable extends Table<SpaceRow> {
     }
   }
 
-  public void updateSpaceOrder(int spaceId, int orderNum) throws AdminPersistenceException {
+  public void updateSpaceOrder(int spaceId, int orderNum) throws SQLException {
     int[] values = new int[]{orderNum, spaceId};
     updateRelation(UPDATE_SPACE_ORDER, values);
   }
 
-  static final private String UPDATE_SPACE_INHERITANCE =
-      "update ST_Space set " + "isInheritanceBlocked = ? where id = ?";
-  static final private String UPDATE_SPACE_ORDER =
+  private static final String UPDATE_SPACE_ORDER =
       "update ST_Space set" + " orderNum = ? where id = ?";
 
   /**
    * Updates a space row.
    * @param space
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void updateSpace(SpaceRow space) throws AdminPersistenceException {
+  public void updateSpace(SpaceRow space) throws SQLException {
     updateRow(UPDATE_SPACE, space);
   }
 
-  static final private String UPDATE_SPACE =
+  private static final String UPDATE_SPACE =
       "update ST_Space set" + " domainFatherId = ?," + " name = ?," + " description = ?," +
           " createdBy = ?," + " firstPageType = ?," + " firstPageExtraParam = ?," +
           " orderNum = ?, updateTime = ?," + " updatedBy = ?," + " spaceStatus = ?, lang = ?," +
@@ -387,132 +386,116 @@ public class SpaceTable extends Table<SpaceRow> {
     update.setInt(16, row.id);
   }
 
-  public void moveSpace(int spaceId, int fatherId) throws AdminPersistenceException {
+  public void moveSpace(int spaceId, int fatherId) throws SQLException {
     int[] params = new int[2];
     params[0] = fatherId;
     params[1] = spaceId;
-    //callBackManager.invoke(CallBackManager.ACTION_BEFORE_REMOVE_COMPONENT, componentId, null,
-    // null);
     updateRelation(MOVE_SPACE, params);
   }
 
-  static final private String MOVE_SPACE = "update ST_SPACE set domainFatherId = ? where id = ?";
+  private static final String MOVE_SPACE = "update ST_SPACE set domainFatherId = ? where id = ?";
 
   /**
    * Delete the space and all his component instances.
    * @param id
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void removeSpace(int id) throws AdminPersistenceException {
+  public void removeSpace(int id) throws SQLException {
     SpaceRow space = getSpace(id);
     if (space == null) {
       return;
     }
 
-    ComponentInstanceRow[] instances = organization.instance.getAllComponentInstancesInSpace(id);
+    ComponentInstanceTable instanceTable = OrganizationSchema.get().instance();
+    ComponentInstanceRow[] instances = instanceTable.getAllComponentInstancesInSpace(id);
     for (ComponentInstanceRow instance : instances) {
-      organization.instance.removeComponentInstance(instance.id);
+      instanceTable.removeComponentInstance(instance.id);
     }
     // Remove user favorite space
     UserFavoriteSpaceService ufsDAO = UserFavoriteSpaceServiceProvider.getUserFavoriteSpaceService();
     if (!ufsDAO.removeUserFavoriteSpace(new UserFavoriteSpaceVO(-1, id))) {
-      throw new AdminPersistenceException(failureOnDeleting("space", String.valueOf(id)));
+      throw new SQLException(failureOnDeleting("space", String.valueOf(id)));
     }
     updateRelation(DELETE_SPACE, id);
   }
 
-  static final private String DELETE_SPACE = "delete from ST_Space where id = ?";
+  private static final String DELETE_SPACE = "delete from ST_Space where id = ?";
 
   /**
    * Delete the space and all his component instances.
    * @param id
    * @param newName
    * @param userId
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public void sendSpaceToBasket(int id, String newName, String userId)
-      throws AdminPersistenceException {
-    PreparedStatement statement = null;
-    try {
-      statement = organization.getStatement(SEND_SPACE_IN_BASKET);
+      throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement statement = connection.prepareStatement(SEND_SPACE_IN_BASKET)) {
       statement.setString(1, newName);
       statement.setInt(2, Integer.parseInt(userId));
       statement.setString(3, Long.toString(new Date().getTime()));
       statement.setString(4, SpaceInst.STATUS_REMOVED);
       statement.setInt(5, id);
       statement.executeUpdate();
-    } catch (SQLException e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
     }
   }
 
-  static final private String SEND_SPACE_IN_BASKET =
+  private static final String SEND_SPACE_IN_BASKET =
       "update ST_Space set name = ?, removedBy = ?, removeTime = ?, spaceStatus = ? where id = ?";
 
   /**
    * Check if a named space already exists in given space
    * @param fatherId
    * @param name
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public boolean isSpaceIntoBasket(int fatherId, String name) throws AdminPersistenceException {
-    PreparedStatement statement = null;
-    ResultSet rs = null;
-    try {
-      statement = organization.getStatement(IS_SPACE_INTO_BASKET);
+  public boolean isSpaceIntoBasket(int fatherId, String name) throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement statement = connection.prepareStatement(IS_SPACE_INTO_BASKET)) {
       statement.setString(1, name);
       statement.setInt(2, fatherId);
       statement.setString(3, SpaceInst.STATUS_REMOVED);
-      rs = statement.executeQuery();
-      return rs.next();
-    } catch (SQLException e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, statement);
+      try (ResultSet rs = statement.executeQuery()) {
+        return rs.next();
+      }
     }
   }
 
-  static final private String IS_SPACE_INTO_BASKET =
+  private static final String IS_SPACE_INTO_BASKET =
       "select * from ST_Space where name = ? and domainFatherId = ? and spaceStatus = ? ";
 
   /**
    * Remove the space from the basket Space will be available again
    * @param id
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void removeSpaceFromBasket(int id) throws AdminPersistenceException {
-    PreparedStatement statement = null;
-    try {
-      statement = organization.getStatement(REMOVE_SPACE_FROM_BASKET);
+  public void removeSpaceFromBasket(int id) throws SQLException {
+    try (Connection connection = DBUtil.openConnection();
+         PreparedStatement statement = connection.prepareStatement(REMOVE_SPACE_FROM_BASKET)) {
       statement.setNull(1, Types.INTEGER);
       statement.setNull(2, Types.VARCHAR);
       statement.setNull(3, Types.VARCHAR);
       statement.setInt(4, id);
       statement.executeUpdate();
-    } catch (SQLException e) {
-      throw new AdminPersistenceException(e.getMessage(), e);
-    } finally {
-      DBUtil.close(statement);
     }
   }
 
-  static final private String REMOVE_SPACE_FROM_BASKET =
+  private static final String REMOVE_SPACE_FROM_BASKET =
       "update ST_Space set removedBy = ?, removeTime = ?, spaceStatus = ? where id = ?";
 
   /**
    * Returns the Space of a given space user role.
    * @param spaceUserRoleId
    * @return the Space of a given space user role.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public SpaceRow getSpaceOfSpaceUserRole(int spaceUserRoleId) throws AdminPersistenceException {
+  public SpaceRow getSpaceOfSpaceUserRole(int spaceUserRoleId) throws SQLException {
     return getUniqueRow(SELECT_SPACEUSERROLE_SPACE, spaceUserRoleId);
   }
 
-  static final private String SELECT_SPACEUSERROLE_SPACE =
-      "select " + aliasColumns("i", SPACE_COLUMNS) + " from ST_Space i, ST_SpaceUserRole us" +
+  private static final String SELECT_SPACEUSERROLE_SPACE =
+      SELECT + aliasColumns("i", SPACE_COLUMNS) + " from ST_Space i, ST_SpaceUserRole us" +
           " where i.id = us.spaceId and   us.id = ?";
 
   /**
@@ -522,6 +505,4 @@ public class SpaceTable extends Table<SpaceRow> {
   protected SpaceRow fetchRow(ResultSet rs) throws SQLException {
     return fetchSpace(rs);
   }
-
-  private OrganizationSchema organization = null;
 }

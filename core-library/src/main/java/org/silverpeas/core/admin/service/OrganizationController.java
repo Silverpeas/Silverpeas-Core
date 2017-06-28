@@ -10,6 +10,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -203,11 +204,6 @@ public interface OrganizationController extends java.io.Serializable {
   <T extends User> T[] getFiltredDirectUsers(String sGroupId, String sUserLastNameFilter);
 
   /**
-   * Return an array of users corresponding to the founded users
-   */
-  <T extends User> T[] searchUsers(T modelUser, boolean isAnd);
-
-  /**
    * Searches the groups that match the specified criteria.
    *
    * @param criteria the criteria in searching of user groups.
@@ -217,11 +213,6 @@ public interface OrganizationController extends java.io.Serializable {
    * user groups.
    */
   <T extends Group> ListSlice<T> searchGroups(GroupsSearchCriteria criteria);
-
-  /**
-   * Return an array of Group corresponding to the founded groups
-   */
-  <T extends Group> T[] searchGroups(T modelGroup, boolean isAnd);
 
   /**
    * Returns the total number of distinct users recursively contained in the specified group
@@ -369,19 +360,6 @@ public interface OrganizationController extends java.io.Serializable {
   String[] getAllUsersIds();
 
   /**
-   *
-   * Return all the users of Silverpeas
-   *
-   * @param groupId
-   * @param componentId
-   * @param profileId
-   * @param filterUser
-   * @return
-   */
-  <T extends User> String[] searchUsersIds(String groupId, String componentId, String[] profileId,
-      T filterUser);
-
-  /**
    * Return userIds according to a list of profile names
    *
    * @param componentId the instance id
@@ -392,9 +370,6 @@ public interface OrganizationController extends java.io.Serializable {
 
   String[] getUsersIdsByRoleNames(String componentId, String objectId, ObjectType objectType,
       List<String> profileNames);
-
-  <T extends Group> String[] searchGroupsIds(boolean isRootGroup, String componentId,
-      String[] profileId, T modelGroup);
 
   /**
    * Get a domain with given id
@@ -411,11 +386,9 @@ public interface OrganizationController extends java.io.Serializable {
    */
   Domain[] getAllDomains();
 
-  String[] getDirectGroupIdsOfUser(String userId);
+  List<GroupDetail> getDirectGroupsOfUser(String userId);
 
   String[] getAllGroupIdsOfUser(String userId);
-
-  void reloadAdminCache();
 
   /**
    * Is the anonymous access is activated for the running Silverpeas? When the anonymous access is

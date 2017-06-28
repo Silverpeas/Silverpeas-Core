@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.socialnetwork.relationship;
 
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
@@ -33,6 +32,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.List;
 
 @Singleton
+@Transactional
 public class RelationShipService {
 
   @Inject
@@ -55,12 +56,6 @@ public class RelationShipService {
   protected RelationShipService() {
   }
 
-  private Connection getConnection(boolean useAutoCommit) throws UtilException, SQLException {
-    Connection connection = DBUtil.openConnection();
-    connection.setAutoCommit(useAutoCommit);
-    return connection;
-  }
-
   /**
    * remove RelationShip (if this relationShips is deleted return true)
    * @param idUser1
@@ -69,10 +64,8 @@ public class RelationShipService {
    */
 
   public boolean removeRelationShip(int idUser1, int idUser2) {
-    Connection connection = null;
     boolean endAction = false;
-    try {
-      connection = getConnection(false);
+    try (Connection connection = DBUtil.openConnection()) {
       RelationShip rel1to2 = relationShipDao.getRelationShip(connection, idUser1, idUser2);
       RelationShip rel2to1 = relationShipDao.getRelationShip(connection, idUser2, idUser1);
       relationShipDao.deleteRelationShip(connection, idUser1, idUser2);
@@ -86,9 +79,6 @@ public class RelationShipService {
       }
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      DBUtil.rollback(connection);
-    } finally {
-      DBUtil.close(connection);
     }
     return endAction;
   }
@@ -101,15 +91,11 @@ public class RelationShipService {
    * @throws SQLException
    */
   public boolean isInRelationShip(int user1Id, int user2Id) throws SQLException {
-    Connection connection = null;
     boolean isInRelationShip = false;
-    try {
-      connection = getConnection(true);
+    try (Connection connection = DBUtil.openConnection()) {
       isInRelationShip = relationShipDao.isInRelationShip(connection, user1Id, user2Id);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-    } finally {
-      DBUtil.close(connection);
     }
     return isInRelationShip;
   }
@@ -121,15 +107,11 @@ public class RelationShipService {
    * @throws SQLException
    */
   public List<RelationShip> getAllMyRelationShips(int myId) throws SQLException {
-    Connection connection = null;
     List<RelationShip> listMyRelation = new ArrayList<RelationShip>();
-    try {
-      connection = getConnection(true);
+    try (Connection connection = DBUtil.openConnection()) {
       listMyRelation = relationShipDao.getAllMyRelationShips(connection, myId);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-    } finally {
-      DBUtil.close(connection);
     }
     return listMyRelation;
   }
@@ -141,15 +123,11 @@ public class RelationShipService {
    * @throws SQLException
    */
   public List<String> getMyContactsIds(int myId) throws SQLException {
-    Connection connection = null;
     List<String> myContactsIds = new ArrayList<String>();
-    try {
-      connection = getConnection(true);
+    try (Connection connection = DBUtil.openConnection()) {
       myContactsIds = relationShipDao.getMyContactsIds(connection, myId);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-    } finally {
-      DBUtil.close(connection);
     }
     return myContactsIds;
   }
@@ -162,15 +140,11 @@ public class RelationShipService {
    * @throws SQLException
    */
   public List<String> getAllCommonContactsIds(int user1Id, int user2Id) throws SQLException {
-    Connection connection = null;
     List<String> myContactsIds = new ArrayList<String>();
-    try {
-      connection = getConnection(true);
+    try (Connection connection = DBUtil.openConnection()) {
       myContactsIds = relationShipDao.getAllCommonContactsIds(connection, user1Id, user2Id);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-    } finally {
-      DBUtil.close(connection);
     }
     return myContactsIds;
   }
@@ -186,16 +160,12 @@ public class RelationShipService {
    */
   public List<SocialInformation> getAllMyRelationShips(String userId,
       Date begin, Date end) throws SQLException {
-    Connection connection = null;
-    try {
-      connection = getConnection(true);
+    try (Connection connection = DBUtil.openConnection()) {
       return relationShipDao.getAllMyRelationShips(connection, userId, begin, end);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-    } finally {
-      DBUtil.close(connection);
     }
-    return new ArrayList<SocialInformation>();
+    return new ArrayList<>();
   }
 
   /**
@@ -209,16 +179,12 @@ public class RelationShipService {
    */
   public List<SocialInformation> getAllRelationShipsOfContacts(List<String> myContactsIds,
       Date begin, Date end) throws SQLException {
-    Connection connection = null;
-    try {
-      connection = getConnection(true);
+    try (Connection connection = DBUtil.openConnection()) {
       return relationShipDao.getAllRelationShipsOfContacts(connection, myContactsIds, begin, end);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-    } finally {
-      DBUtil.close(connection);
     }
-    return new ArrayList<SocialInformation>();
+    return new ArrayList<>();
   }
 
   /**
@@ -229,15 +195,11 @@ public class RelationShipService {
    * @throws SQLException
    */
   public RelationShip getRelationShip(int user1Id, int user2Id) throws SQLException {
-    Connection connection = null;
     RelationShip relation = null;
-    try {
-      connection = getConnection(true);
+    try (Connection connection = DBUtil.openConnection()) {
       relation = relationShipDao.getRelationShip(connection, user1Id, user2Id);
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-    } finally {
-      DBUtil.close(connection);
     }
     return relation;
   }

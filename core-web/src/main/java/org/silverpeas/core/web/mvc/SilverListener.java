@@ -134,7 +134,7 @@ public class SilverListener
   private void remove(HttpSessionEvent event) {
     final String sessionId = event.getSession().getId();
     sessionManager.closeSession(sessionId);
-    SilverLogger.getLogger(this).info("Session with id {0} has just been closed", sessionId);
+    SilverLogger.getLogger(this).debug("Session with id {0} has just been closed", sessionId);
   }
 
   /**

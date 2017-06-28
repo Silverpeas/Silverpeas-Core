@@ -28,19 +28,15 @@
 
 package org.silverpeas.web.jobdomain;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.StringUtil;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Iterator;
 import java.util.List;
 
 /**
- * This class manage the informations needed for groups navigation and browse PRE-REQUIRED : the
+ * This class manage the information needed for groups navigation and browse PRE-REQUIRED : the
  * Group passed in the constructor MUST BE A VALID GROUP (with Id, etc...)
  * @t.leroi
  */
@@ -58,10 +54,7 @@ public class GroupNavigationStock extends NavigationStock {
   }
 
   public void refresh() {
-    String[] subUsersIds = null;
-    String[] subGroupsIds = null;
-    int i;
-
+    String[] subUsersIds;
     m_NavGroup = m_adc.getGroupById(m_GroupId);
     subUsersIds = m_NavGroup.getUserIds();
     if (subUsersIds == null) {
@@ -71,58 +64,13 @@ public class GroupNavigationStock extends NavigationStock {
     }
     JobDomainSettings.sortUsers(m_SubUsers);
 
-    subGroupsIds = m_adc.getAllSubGroupIds(m_NavGroup.getId());
-    if (subGroupsIds == null) {
-      m_SubGroups = new Group[0];
-    } else {
-      if (manageableGroupIds != null)
-        subGroupsIds = filterGroupsToGroupManager(subGroupsIds);
-
-      m_SubGroups = new Group[subGroupsIds.length];
-      for (i = 0; i < subGroupsIds.length; i++) {
-        m_SubGroups[i] = m_adc.getGroupById(subGroupsIds[i]);
-      }
+    m_SubGroups = m_adc.getAllSubGroups(m_NavGroup.getId());
+    if (manageableGroupIds != null) {
+      m_SubGroups = filterGroupsToGroupManager(manageableGroupIds, m_SubGroups);
     }
+
     JobDomainSettings.sortGroups(m_SubGroups);
     verifIndexes();
-  }
-
-  private String[] filterGroupsToGroupManager(String[] groupIds) {
-    // get all manageable groups by current user
-    Iterator<String> itManageableGroupsIds = null;
-
-    List<String> temp = new ArrayList<String>();
-
-    // filter groups
-    String groupId = null;
-    for (String groupId1 : groupIds) {
-      groupId = groupId1;
-
-      if (manageableGroupIds.contains(groupId)) {
-        temp.add(groupId);
-      } else {
-        // get all subGroups of group
-        List<String> subGroupIds = Arrays.asList(m_adc.getAllSubGroupIdsRecursively(groupId));
-
-        // check if at least one manageable group is part of subGroupIds
-        itManageableGroupsIds = manageableGroupIds.iterator();
-
-        String manageableGroupId = null;
-        boolean find = false;
-        while (!find && itManageableGroupsIds.hasNext()) {
-          manageableGroupId = itManageableGroupsIds.next();
-          if (subGroupIds.contains(manageableGroupId)) {
-            find = true;
-          }
-        }
-
-        if (find) {
-          temp.add(groupId);
-        }
-      }
-    }
-
-    return temp.toArray(new String[temp.size()]);
   }
 
   public boolean isThisGroup(String grId) {

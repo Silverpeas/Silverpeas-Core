@@ -24,46 +24,43 @@
 
 package org.silverpeas.core.notification.user.client.model;
 
-import org.silverpeas.core.persistence.jdbc.Schema;
-import org.silverpeas.core.persistence.jdbc.SchemaPool;
-import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.util.ServiceProvider;
 
-/**
- * The NotifSchemaPool class manages a pool of NotifSchema shared by all the client (admin classes).
- * All the public methods are static and the calls are deferred to a singleton.
- */
-public class NotifSchemaPool extends SchemaPool {
-  /**
-   * The unique NotifSchemaPool built to serve all the requests.
-   */
-  static private NotifSchemaPool singleton = new NotifSchemaPool();
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-  /**
-   * The constructor is private, so we can ensure that only one pool will be created in the JVM.
-   */
-  private NotifSchemaPool() {
+@Singleton
+public class NotificationSchema {
+
+  @Inject
+  private NotifAddressTable notifAddress;
+  @Inject
+  private NotifChannelTable notifChannel;
+  @Inject
+  private NotifDefaultAddressTable notifDefaultAddress;
+  @Inject
+  private NotifPreferenceTable notifPreference;
+
+  public static NotificationSchema get() {
+    return ServiceProvider.getService(NotificationSchema.class);
   }
 
-  /**
-   * Returns an Shema. The returned schema must be released after use.
-   */
-  static public NotifSchema getNotifSchema() throws UtilException {
-    return (NotifSchema) singleton.getInstance();
+  private NotificationSchema() {
   }
 
-  /**
-   * Release an Scheme previously returned by the pool.
-   */
-  static public void releaseNotifSchema(NotifSchema s) {
-    singleton.release(s);
+  public NotifAddressTable notifAddress() {
+    return notifAddress;
   }
 
-  static public void releaseConnections() {
-    singleton.releaseSchemas();
+  public NotifChannelTable notifChannel() {
+    return notifChannel;
   }
 
-  @Override
-  protected Schema newSchema() throws UtilException {
-    return new NotifSchema();
+  public NotifDefaultAddressTable notifDefaultAddress() {
+    return notifDefaultAddress;
+  }
+
+  public NotifPreferenceTable notifPreference() {
+    return notifPreference;
   }
 }

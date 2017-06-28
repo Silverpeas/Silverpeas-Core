@@ -20,12 +20,6 @@
  */
 package org.silverpeas.core.admin;
 
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.GroupDetail;
-import org.silverpeas.core.admin.user.model.GroupProfileInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.time.DateUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -34,22 +28,27 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.component.ComponentHelper;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.admin.user.model.GroupProfileInst;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
+import org.silverpeas.core.index.search.model.IndexSearcher;
 import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.index.search.model.SearchEngineException;
-import org.silverpeas.core.index.search.model.IndexSearcher;
-import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
-import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.persistence.jdbc.AbstractTable;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenRuntimeException;
-import org.silverpeas.core.persistence.jdbc.AbstractTable;
-import org.silverpeas.core.admin.component.ComponentHelper;
-import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.memory.MemoryData;
 import org.silverpeas.core.util.memory.MemoryUnit;
 
@@ -333,7 +332,7 @@ public class UsersAndGroupsTest {
     assertThat(group.getId(), is("1"));
     admin.deleteGroupById("1");
     group = admin.getGroup("1");
-    assertThat(group.getId(), is(nullValue()));
+    assertThat(group, is(nullValue()));
   }
 
 
@@ -346,8 +345,8 @@ public class UsersAndGroupsTest {
     String groupId = admin.addGroup(subGroup);
     assertThat(groupId, is("2"));
 
-    String[] subGroupIds = admin.getAllSubGroupIds("1");
-    assertThat(subGroupIds.length, is(1));
+    GroupDetail[] subGroups = admin.getAllSubGroups("1");
+    assertThat(subGroups.length, is(1));
 
     String[] userIds = new String[1];
     userIds[0] = "1";

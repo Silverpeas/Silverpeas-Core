@@ -24,14 +24,19 @@
 package org.silverpeas.core.admin.user.dao;
 
 import org.silverpeas.core.admin.PaginationPage;
-import org.silverpeas.core.admin.user.model.SearchCriteria;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.model.SearchCriteria;
+import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 
-import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -42,82 +47,84 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class UserSearchCriteriaForDAO implements SearchCriteria {
 
-  private static final String QUERY = "select {0} from {1} where state not in ({2}) {3} {4}";
-  private static final String ORDER_BY_LASTNAME = "order by lastName, firstName";
+  private static final String ORDERING = "lastName, firstName";
+  private static final String NOT_SUPPORTED_YET = "Not supported yet.";
+  private static final String ST_USER = "st_user";
+  private final UserDetailsSearchCriteria criteria;
+  private Set<String> tables = new HashSet<>();
 
-  private StringBuilder filter = new StringBuilder();
-  private Set<UserState> userStatesToExclude = new HashSet<UserState>();
-  private Set<String> tables = new HashSet<String>();
-  private PaginationPage page = null;
+  private UserSearchCriteriaForDAO(final UserDetailsSearchCriteria criteria) {
+    this.criteria = criteria;
+    tables.add(ST_USER);
+  }
 
   public static UserSearchCriteriaForDAO newCriteria() {
-    return new UserSearchCriteriaForDAO();
+    return new UserSearchCriteriaForDAO(new UserDetailsSearchCriteria());
+  }
+
+  public static UserSearchCriteriaForDAO newCriteriaFrom(final UserDetailsSearchCriteria criteria) {
+    return new UserSearchCriteriaForDAO(criteria);
   }
 
   @Override
   public UserSearchCriteriaForDAO and() {
-    if (filter.length() > 0) {
-      filter.append(" and ");
-    }
+    criteria.and();
     return this;
   }
 
   @Override
   public UserSearchCriteriaForDAO or() {
-    if (filter.length() > 0) {
-      filter.append(" or ");
-    }
+    criteria.or();
     return this;
   }
 
   @Override
   public UserSearchCriteriaForDAO onName(String name) {
     if (isDefined(name)) {
-      tables.add("st_user");
-      String normalizedName = name.replaceAll("'", "''");
-      getFixedQuery().append("(lower(st_user.firstName) like lower('").
-              append(normalizedName).
-              append("') or lower(st_user.lastName) like lower('").
-              append(normalizedName).
-              append("'))");
+      criteria.onName(name);
+    }
+    return this;
+  }
+
+  /**
+   * Appends a criterion on the first name of the users for which the search must be constrained to.
+   * The users to fetch have to satisfy this criterion.
+   * @param firstName a pattern on the first name of the users to fetch.
+   * @return the criteria enriched with a criterion on the user first name.
+   */
+  public UserSearchCriteriaForDAO onFirstName(final String firstName) {
+    if (isDefined(firstName)) {
+      criteria.onFirstName(firstName);
+    }
+    return this;
+  }
+
+  /**
+   * Appends a criterion on the last name of the users for which the search must be constrained to.
+   * The users to fetch have to satisfy this criterion.
+   * @param lastName a pattern on the last name of the users to fetch.
+   * @return the criteria enriched with a criterion on the user last name.
+   */
+  public UserSearchCriteriaForDAO onLastName(final String lastName) {
+    if (isDefined(lastName)) {
+      criteria.onLastName(lastName);
     }
     return this;
   }
 
   @Override
   public UserSearchCriteriaForDAO onGroupIds(String... groupIds) {
-    tables.add("st_user");
-    tables.add("st_group_user_rel");
-    StringBuilder theQuery = getFixedQuery().append("(st_group_user_rel.userid = st_user.id");
     if (groupIds != ANY) {
-      StringBuilder[] sqlLists = asSQLList(groupIds);
-      theQuery.append(" and (st_group_user_rel.groupId in ").
-              append(sqlLists[0]);
-      for (int i = 1; i < sqlLists.length; i++) {
-        theQuery.append(" or st_group_user_rel.groupId in ").
-                append(sqlLists[i]);
-      }
-      theQuery.append(")");
+      tables.add("st_group_user_rel");
+      criteria.onGroupIds(groupIds);
     }
-    theQuery.append(")");
     return this;
   }
 
   @Override
   public UserSearchCriteriaForDAO onAccessLevels(UserAccessLevel... accessLevels) {
     if (accessLevels != null && accessLevels.length > 0) {
-      tables.add("st_user");
-      StringBuilder accessLevelsAsCodes = new StringBuilder();
-      for (UserAccessLevel accessLevel : accessLevels) {
-        if (accessLevelsAsCodes.length() > 0) {
-          accessLevelsAsCodes.append(",");
-        }
-        accessLevelsAsCodes.append("'");
-        accessLevelsAsCodes.append(accessLevel.getCode());
-        accessLevelsAsCodes.append("'");
-      }
-      getFixedQuery().append("(st_user.accessLevel in (").append(accessLevelsAsCodes.toString())
-          .append("))");
+      criteria.onAccessLevels(accessLevels);
     }
     return this;
   }
@@ -127,159 +134,132 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     // all users that are part of the specified domain or that have administration priviledges
     // (the administrators should be visible by anyone in order to be contacted)
     if (isDefined(domainId)) {
-      tables.add("st_user");
-      getFixedQuery().append("st_user.domainId = ").append(Integer.valueOf(domainId));
+      criteria.onDomainId(domainId);
     }
     return this;
   }
 
   @Override
-  public SearchCriteria onUserIds(String... userIds) {
+  public UserSearchCriteriaForDAO onUserIds(String... userIds) {
     if (userIds != ANY) {
-      tables.add("st_user");
-      StringBuilder[] sqlLists = asSQLList(userIds);
-      StringBuilder theQuery = getFixedQuery().append("(st_user.id in ").append(sqlLists[0]);
-      for (int i = 1; i < sqlLists.length; i++) {
-        theQuery.append(" or st_user.id in ").append(sqlLists[i]);
-      }
-      theQuery.append(")");
+      criteria.onUserIds(userIds);
     }
     return this;
   }
 
   @Override
   public UserSearchCriteriaForDAO onUserStatesToExclude(final UserState... userStates) {
-    Collections.addAll(userStatesToExclude, userStates);
-    String tmpFilter = filter.toString().replaceFirst(" (and|or) $", "");
-    filter = new StringBuilder(tmpFilter);
+    criteria.onUserStatesToExclude(userStates);
     return this;
   }
 
-  public String toSQLQuery(String fields) {
-    String ordering = ORDER_BY_LASTNAME;
-    if (fields.toLowerCase().matches("(count|max|min)\\(.*\\)")) {
-      ordering = "";
+  JdbcSqlQuery toSQLQuery(String fields) {
+    JdbcSqlQuery query = prepareJdbcSqlQuery(fields);
+
+    if (criteria.isCriterionOnAccessLevelsSet()) {
+      List<String> codes = Arrays.stream(criteria.getCriterionOnAccessLevels())
+          .map(UserAccessLevel::getCode)
+          .collect(Collectors.toList());
+      query.and("st_user.accessLevel").in(codes);
     }
 
-    StringBuilder excludedUserStatesSQLPart =
-        new StringBuilder("'").append(UserState.DELETED).append("'");
-    for (UserState userStateToExclude : userStatesToExclude) {
-      excludedUserStatesSQLPart.append(", '").append(userStateToExclude).append("'");
+    if (criteria.isCriterionOnDomainIdSet()) {
+      query.and("st_user.domainId = ?", Integer.parseInt(criteria.getCriterionOnDomainId()));
     }
 
-    return MessageFormat
-        .format(QUERY, fields, impliedTables(), excludedUserStatesSQLPart.toString(), queryFilter(),
-            ordering);
+    if (criteria.isCriterionOnFirstNameSet()) {
+      String normalizedName =
+          criteria.getCriterionOnFirstName().replaceAll("'", "''").replaceAll("\\*", "%");
+      query.and("lower(st_user.firstName) like lower(?)", normalizedName);
+    }
+
+    if (criteria.isCriterionOnLastNameSet()) {
+      String normalizedName =
+          criteria.getCriterionOnLastName().replaceAll("'", "''").replaceAll("\\*", "%");
+      query.and("lower(st_user.lastName) like lower(?)", normalizedName);
+    }
+
+    if (criteria.isCriterionOnNameSet()) {
+      String normalizedName =
+          criteria.getCriterionOnName().replaceAll("'", "''").replaceAll("\\*", "%");
+      query.and("(lower(st_user.firstName) like lower(?) OR lower(st_user.lastName) like lower(?))",
+          normalizedName, normalizedName);
+    }
+
+    if (criteria.isCriterionOnUserIdsSet()) {
+      List<Integer> userIds = Arrays.stream(criteria.getCriterionOnUserIds())
+          .map(Integer::parseInt)
+          .collect(Collectors.toList());
+      query.and("st_user.id").in(userIds);
+    }
+
+    if (criteria.isCriterionOnGroupIdsSet()) {
+      List<Integer> groupIds = Arrays.stream(criteria.getCriterionOnGroupIds())
+          .map(Integer::parseInt)
+          .collect(Collectors.toList());
+      query.and("st_user.id = st_group_user_rel.userId")
+          .and("st_group_user_rel.groupId").in(groupIds);
+    }
+
+    finalizeJdbcSqlQuery(fields, query);
+
+    return query;
   }
 
   @Override
   public String toString() {
-    return toSQLQuery("*");
+    return toSQLQuery("*").getSqlQuery();
   }
 
   @Override
   public boolean isEmpty() {
-    return filter.length() == 0;
-  }
-
-  private String impliedTables() {
-    StringBuilder tablesUsedInCriteria = new StringBuilder();
-    for (String aTable : tables) {
-      tablesUsedInCriteria.append(aTable).append(", ");
-    }
-    return tablesUsedInCriteria.substring(0, tablesUsedInCriteria.length() - 2);
-  }
-
-  private String queryFilter() {
-    String sqlFilter = "";
-    if (filter.length() > 0) {
-      sqlFilter += " and " + filter;
-    }
-    return sqlFilter;
-  }
-
-  private UserSearchCriteriaForDAO() {
-    tables.add("st_user");
-  }
-
-  /**
-   * Gets the current query after fixing it if it is needed. The query is fixed if it contains some
-   * contraints and we are coming to set another one without set a conjonction or a disjonction link
-   * between the previous contraints and the next one.
-   *
-   * @return the current query fixed so that the contraints are linked with either a conjonction or
-   * a disjonction operator.
-   */
-  private StringBuilder getFixedQuery() {
-    if (filter.length() > 0 && !filter.toString().endsWith(" and ")
-            && !filter.toString().endsWith(" or ")) {
-      filter.append(" and ");
-    }
-    return filter;
-  }
-
-  // Oracle has a hard limitation with SQL lists with 'in' clause: it cannot take more than 1000
-  // elements. So we split it in several SQL lists so that they contain less than 1000 elements.
-  private StringBuilder[] asSQLList(String... items) {
-    StringBuilder[] lists = new StringBuilder[(int) Math.ceil(items.length / 1000) + 1];
-    int count = 0;
-    int i = 0;
-    lists[i] = new StringBuilder("(");
-    for (String anItem : items) {
-      if (++count >= 1000) {
-        lists[i].setCharAt(lists[i].length() - 1, ')');
-        lists[++i] = new StringBuilder("(");
-        count = 0;
-      }
-      lists[i].append(anItem).append(",");
-    }
-    if (lists[i].toString().endsWith(",")) {
-      lists[i].setCharAt(lists[i].length() - 1, ')');
-    } else {
-      lists[i].append("null").append(")");
-    }
-    return lists;
+    return criteria.isEmpty();
   }
 
   @Override
   public SearchCriteria onRoleNames(String... roleIds) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
   }
 
   @Override
   public SearchCriteria onComponentInstanceId(String instanceId) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
   }
 
   @Override
   public SearchCriteria onResourceId(String resourceId) {
-    throw new UnsupportedOperationException("Not supported yet.");
+    throw new UnsupportedOperationException(NOT_SUPPORTED_YET);
   }
 
   @Override
   public SearchCriteria onPagination(PaginationPage page) {
-    if (filter.toString().endsWith(" and ")) {
-      filter.delete(filter.toString().lastIndexOf(" and "), filter.length());
-    } else if  (filter.toString().endsWith(" or ")) {
-      filter.delete(filter.toString().lastIndexOf(" or "), filter.length());
-    }
-    this.page = page;
+    this.criteria.onPagination(page);
     return this;
   }
 
-  /**
-   * Gets the criterion on the pagination page to fetch.
-   * @return a pagination page.
-   */
-  public PaginationPage getPagination() {
-    return page;
+  private void finalizeJdbcSqlQuery(final String fields, final JdbcSqlQuery query) {
+    boolean userSelection = false;
+    if (!fields.toLowerCase().matches("(count|max|min)\\(.*\\)")) {
+      query.orderBy(ORDERING);
+      userSelection = true;
+    }
+
+    if (criteria.isCriterionOnPaginationSet() && userSelection) {
+      PaginationPage page = criteria.getCriterionOnPagination();
+      query.offset((page.getPageNumber() - 1) * page.getPageSize());
+      query.limit(page.getPageSize());
+    }
   }
 
-  /**
-   * Is the pagination criterion set?
-   * @return true if a criterion on the pagination about user profiles is set, false otherwise.
-   */
-  public boolean isPaginationSet() {
-    return page != null;
+  private JdbcSqlQuery prepareJdbcSqlQuery(final String fields) {
+    List<UserState> userStatesToExclude = new ArrayList<>();
+    if (criteria.isCriterionOnUserStatesToExcludeSet()) {
+      Collections.addAll(userStatesToExclude, criteria.getCriterionOnUserStatesToExclude());
+    }
+    userStatesToExclude.add(UserState.DELETED);
+
+    return JdbcSqlQuery.createSelect(fields)
+        .from(tables.stream().collect(Collectors.joining(",")))
+        .where("st_user.state").notIn(userStatesToExclude);
   }
 }

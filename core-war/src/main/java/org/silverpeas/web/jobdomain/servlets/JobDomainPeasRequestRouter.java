@@ -23,6 +23,7 @@ package org.silverpeas.web.jobdomain.servlets;
 import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
+import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminController;
@@ -34,7 +35,6 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.SilverpeasTrappedException;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
@@ -62,6 +62,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.StringTokenizer;
+
+import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.*;
 
 /**
  * Class declaration
@@ -293,19 +295,15 @@ public class JobDomainPeasRequestRouter extends
 
           // groupe d'appartenance
           AdminController adminController = ServiceProvider.getService(AdminController.class);
-          String[] groupIds = adminController.getDirectGroupsIdsOfUser(userId);
-          if (groupIds != null && groupIds.length > 0) {
-            for (final String groupId : groupIds) {
-              Group group = orgaController.getGroup(groupId);
-
-              String groupDomainId = group.getDomainId();
-              if (groupDomainId == null) {
-                groupDomainId = "-1";
-              }
-              if (!groupDomainId.equals("-1")) {
-                jobDomainSC.goIntoGroup(group.getId());
-                break;
-              }
+          List<GroupDetail> groups = adminController.getDirectGroupsOfUser(userId);
+          for (final Group group : groups) {
+            String groupDomainId = group.getDomainId();
+            if (groupDomainId == null) {
+              groupDomainId = "-1";
+            }
+            if (!groupDomainId.equals("-1")) {
+              jobDomainSC.goIntoGroup(group.getId());
+              break;
             }
           }
 
@@ -569,9 +567,10 @@ public class JobDomainPeasRequestRouter extends
           destination = jobDomainSC.initSelectionPeasForGroups((String) request.getAttribute(
               "myComponentURL"));
         } else if (function.startsWith("displayUserCreate")) {
-          DomainDriverManager domainDriverManager = new DomainDriverManager();
+          DomainDriverManager domainDriverManager =
+              DomainDriverManagerProvider.getCurrentDomainDriverManager();
           DomainDriver domainDriver = domainDriverManager.getDomainDriver(
-              Integer.parseInt(jobDomainSC.getTargetDomain().getId()));
+              jobDomainSC.getTargetDomain().getId());
           UserFull newUser = new UserFull(domainDriver);
           newUser.setPasswordAvailable(true);
 
@@ -697,12 +696,12 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("theUser", jobDomainSC.getUserDetail());
         request.setAttribute("subGroups", jobDomainSC.getSubGroups(false));
         request.setAttribute("subUsers", jobDomainSC.getSubUsers(false));
-        request.setAttribute("isDomainRW", ((domainRight & DomainDriver.ACTION_CREATE_GROUP) != 0)
-            || ((domainRight & DomainDriver.ACTION_CREATE_USER) != 0));
-        request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_CREATE_USER) != 0);
+        request.setAttribute("isDomainRW", ((domainRight & ACTION_CREATE_GROUP) != 0)
+            || ((domainRight & ACTION_CREATE_USER) != 0));
+        request.setAttribute("isUserRW", (domainRight & ACTION_CREATE_USER) != 0);
         request.setAttribute("isDomainSync",
-            ((domainRight & DomainDriver.ACTION_SYNCHRO_USER) != 0)
-            || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
+            ((domainRight & ACTION_SYNCHRO_USER) != 0)
+            || ((domainRight & ACTION_SYNCHRO_GROUP) != 0));
 
         request.setAttribute("isOnlyGroupManager", jobDomainSC.isOnlyGroupManager());
         request.setAttribute("isUserAddingAllowedForGroupManager", jobDomainSC.
@@ -716,12 +715,12 @@ public class JobDomainPeasRequestRouter extends
             "myComponentURL"), null));
         request.setAttribute("subGroups", jobDomainSC.getSubGroups(true));
         request.setAttribute("subUsers", jobDomainSC.getSubUsers(true));
-        request.setAttribute("isDomainRW", ((domainRight & DomainDriver.ACTION_CREATE_GROUP) != 0)
-            || ((domainRight & DomainDriver.ACTION_CREATE_USER) != 0));
-        request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_CREATE_USER) != 0);
+        request.setAttribute("isDomainRW", ((domainRight & ACTION_CREATE_GROUP) != 0)
+            || ((domainRight & ACTION_CREATE_USER) != 0));
+        request.setAttribute("isUserRW", (domainRight & ACTION_CREATE_USER) != 0);
         request.setAttribute("isDomainSync",
-            ((domainRight & DomainDriver.ACTION_SYNCHRO_USER) != 0)
-            || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
+            ((domainRight & ACTION_SYNCHRO_USER) != 0)
+            || ((domainRight & ACTION_SYNCHRO_GROUP) != 0));
 
         request
             .setAttribute("isGroupManagerOnThisGroup", jobDomainSC.isGroupManagerOnCurrentGroup());
@@ -736,13 +735,13 @@ public class JobDomainPeasRequestRouter extends
           long domainRight = jobDomainSC.getDomainActions();
 
           request.setAttribute("isDomainRW",
-              ((domainRight & DomainDriver.ACTION_CREATE_GROUP) != 0)
-              || ((domainRight & DomainDriver.ACTION_CREATE_USER) != 0));
-          request.setAttribute("isUserRW", (domainRight & DomainDriver.ACTION_CREATE_USER) != 0);
+              ((domainRight & ACTION_CREATE_GROUP) != 0)
+              || ((domainRight & ACTION_CREATE_USER) != 0));
+          request.setAttribute("isUserRW", (domainRight & ACTION_CREATE_USER) != 0);
           request.setAttribute("isDomainSync",
-              ((domainRight & DomainDriver.ACTION_SYNCHRO_USER) != 0)
-              || ((domainRight & DomainDriver.ACTION_SYNCHRO_GROUP) != 0));
-          request.setAttribute("isX509Enabled", (domainRight & DomainDriver.ACTION_X509_USER) != 0);
+              ((domainRight & ACTION_SYNCHRO_USER) != 0)
+              || ((domainRight & ACTION_SYNCHRO_GROUP) != 0));
+          request.setAttribute("isX509Enabled", (domainRight & ACTION_X509_USER) != 0);
           request.setAttribute("isOnlyGroupManager", jobDomainSC.isOnlyGroupManager());
           request.setAttribute("userManageableByGroupManager", jobDomainSC.
               isUserInAtLeastOneGroupManageableByCurrentUser());

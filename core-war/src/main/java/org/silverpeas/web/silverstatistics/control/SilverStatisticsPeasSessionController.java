@@ -170,9 +170,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
   }
 
   public UserAccessLevel getUserProfile() {
-    SilverTrace
-        .info("silverStatisticsPeas", "SilverStatisticsPeasSessionController.getUserProfile()",
-            "root.MSG_GEN_ENTER_METHOD");
     if (getUserDetail().isAccessAdmin()) {
       return getUserDetail().getAccessLevel();
     }

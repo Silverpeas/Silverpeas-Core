@@ -316,7 +316,7 @@ public class NotificationData implements Serializable {
   }
 
   public void traceObject() {
-    SilverLogger.getLogger(this).info("Notification Data Dump: {" +
+    SilverLogger.getLogger(this).debug("Notification Data Dump: {" +
             "NotificationId: {0}, ReportToSenderStatus: {1}, ReportToSenderTargetChannel: {2}," +
             "ReportToSenderTargetReceipt: {3}, ReportToSenderTargetParam: {4}," +
             "ReportToLogStatus: {5}", mNotificationId, mReportToSenderStatus,

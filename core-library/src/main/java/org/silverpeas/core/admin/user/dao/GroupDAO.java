@@ -20,31 +20,168 @@
  */
 package org.silverpeas.core.admin.user.dao;
 
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.admin.user.model.GroupCache;
 import org.silverpeas.core.admin.user.model.GroupDetail;
-import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.inject.Singleton;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 @Singleton
 public class GroupDAO {
 
-  static final private String GROUP_COLUMNS =
+  private static final String GROUP_TABLE = "ST_Group";
+  private static final String GROUP_USERS_TABLE = "st_group_user_rel";
+  private static final String GROUP_ROLE_TABLE = "st_groupuserrole";
+  private static final String GROUP_ROLE_USERS_TABLE = "st_groupuserrole_user_rel";
+  private static final String GROUP_ROLE_GROUPS_TABLE = "st_groupuserrole_group_rel";
+  private static final String USER_ROLE_GROUPS_TABLE = "st_userrole_group_rel";
+  private static final String SPACE_ROLE_GROUP = "st_spaceuserrole_group_rel";
+  private static final String GROUP_COLUMNS =
       "id,specificId,domainId,superGroupId,name,description,synchroRule";
+  private static final String DOMAIN_ID_CRITERION = "domainId = ?";
+  private static final String GROUP_ID_CRITERION = "groupId = ?";
+  private static final String ID_CRITERION = "id = ?";
+  private static final String USER_ID = "userId";
+  private static final String GROUP_ID = "groupId";
+  private static final String SPECIFIC_ID = "specificId";
+  private static final String DOMAIN_ID = "domainId";
+  private static final String SUPER_GROUP_ID = "superGroupId";
+  private static final String NAME = "name";
+  private static final String DESCRIPTION = "description";
+  private static final String SYNCHRO_RULE = "synchroRule";
 
-  public GroupDAO() {
+  protected GroupDAO() {
   }
-  static final private String queryGetGroup = "select " + GROUP_COLUMNS
-      + " from ST_Group where id = ?";
+
+  public String saveGroup(final Connection connection, final GroupDetail group)
+      throws SQLException {
+    Integer superGroupId = checkSuperGroup(connection, group);
+
+    final int nextId = DBUtil.getNextId(GROUP_TABLE);
+    String specificId = StringUtil.isDefined(group.getSpecificId()) ? group.getSpecificId() :
+        String.valueOf(nextId);
+    JdbcSqlQuery.createInsertFor(GROUP_TABLE)
+        .addInsertParam("id", nextId)
+        .addInsertParam(SPECIFIC_ID, specificId)
+        .addInsertParam(DOMAIN_ID, Integer.parseInt(group.getDomainId()))
+        .addInsertParam(SUPER_GROUP_ID, superGroupId)
+        .addInsertParam(NAME, group.getName())
+        .addInsertParam(DESCRIPTION, group.getDescription())
+        .addInsertParam(SYNCHRO_RULE, group.getRule())
+        .executeWith(connection);
+
+    return String.valueOf(nextId);
+  }
+
+  public void addUserInGroup(final Connection connection, final String userId, final String groupId)
+      throws SQLException {
+    checkUserExistence(connection, userId);
+
+    checkGroupExistence(connection, groupId);
+
+    JdbcSqlQuery.createInsertFor(GROUP_USERS_TABLE)
+        .addInsertParam(GROUP_ID, Integer.parseInt(groupId))
+        .addInsertParam(USER_ID, Integer.parseInt(userId))
+        .executeWith(connection);
+
+    GroupCache.removeCacheOfUser(userId);
+  }
+
+  public void addUsersInGroup(final Connection connection, final List<String> userIds,
+      final String groupId) throws SQLException {
+    checkGroupExistence(connection, groupId);
+
+    for (String userId : userIds) {
+      checkUserExistence(connection, userId);
+
+      JdbcSqlQuery.createInsertFor(GROUP_USERS_TABLE)
+          .addInsertParam(GROUP_ID, Integer.parseInt(groupId))
+          .addInsertParam(USER_ID, Integer.parseInt(userId))
+          .executeWith(connection);
+
+      GroupCache.removeCacheOfUser(userId);
+    }
+  }
+
+  private void checkGroupExistence(final Connection connection, final String groupId)
+      throws SQLException {
+    if (getGroup(connection, groupId) == null) {
+      throw new SQLException(unknown("group", groupId));
+    }
+  }
+
+  private void checkUserExistence(final Connection connection, final String userId)
+      throws SQLException {
+    UserDAO userDAO = ServiceProvider.getService(UserDAO.class);
+    if (!userDAO.isUserByIdExists(connection, userId)) {
+      throw new SQLException(unknown("user", userId));
+    }
+  }
+
+  public void updateGroup(final Connection connection, final GroupDetail group)
+      throws SQLException {
+    Integer superGroupId = checkSuperGroup(connection, group);
+
+    String specificId =
+        StringUtil.isDefined(group.getSpecificId()) ? group.getSpecificId() : group.getId();
+    JdbcSqlQuery.createUpdateFor(GROUP_TABLE)
+        .addUpdateParam(SPECIFIC_ID, specificId)
+        .addUpdateParam(DOMAIN_ID, Integer.parseInt(group.getDomainId()))
+        .addUpdateParam(SUPER_GROUP_ID, superGroupId)
+        .addUpdateParam(NAME, group.getName())
+        .addUpdateParam(DESCRIPTION, group.getDescription())
+        .addUpdateParam(SYNCHRO_RULE, group.getRule())
+        .where(ID_CRITERION, Integer.parseInt(group.getId()))
+        .executeWith(connection);
+  }
+
+  private Integer checkSuperGroup(final Connection connection, final GroupDetail group)
+      throws SQLException {
+    Integer superGroupId = null;
+    if (StringUtil.isDefined(group.getSuperGroupId())) {
+      superGroupId = Integer.parseInt(group.getSuperGroupId());
+      if (superGroupId >= 0 && getGroup(connection, group.getSuperGroupId()) == null) {
+        throw new SQLException(unknown("parent group", superGroupId));
+      }
+    }
+    return superGroupId;
+  }
+
+  public void deleteGroup(final Connection connection, final GroupDetail group)
+      throws SQLException {
+    JdbcSqlQuery.createDeleteFor(GROUP_TABLE)
+        .where(ID_CRITERION, Integer.parseInt(group.getId()))
+        .executeWith(connection);
+  }
+
+  public void deleteUserInGroup(final Connection connection, final String userId,
+      final String groupdId) throws SQLException {
+    JdbcSqlQuery.createDeleteFor(GROUP_USERS_TABLE)
+        .where("userId = ?", Integer.parseInt(userId))
+        .and(GROUP_ID_CRITERION, Integer.parseInt(groupdId))
+        .executeWith(connection);
+    GroupCache.removeCacheOfUser(userId);
+  }
+
+  public boolean isGroupByNameExists(final Connection connection, final String name)
+      throws SQLException {
+    return JdbcSqlQuery.createSelect("COUNT(id)")
+        .from(GROUP_TABLE)
+        .where("name like ?", name)
+        .executeUniqueWith(connection, rs -> rs.getInt(1)) > 0;
+  }
 
   /**
    * Gets all the user groups available in Silverpeas whatever the user domain they belongs to.
@@ -54,18 +191,72 @@ public class GroupDAO {
    * @throws SQLException if an error occurs while getting the user groups from the data source.
    */
   public List<GroupDetail> getAllGroups(Connection connection) throws SQLException {
-    PreparedStatement statement = null;
-    ResultSet resultSet = null;
-    try {
-      String query = "select " + GROUP_COLUMNS
-          + " from st_group"
-          + " order by name";
-      statement = connection.prepareStatement(query);
-      resultSet = statement.executeQuery();
-      return theGroupsFrom(resultSet);
-    } finally {
-      DBUtil.close(resultSet, statement);
-    }
+    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+        .from(GROUP_TABLE)
+        .orderBy(NAME)
+        .executeWith(connection, GroupDAO::fetchGroup);
+  }
+
+  /**
+   * Gets all root groups available in Silverpeas whatever the user domain they belongs to.
+   * @param connection the connection with the data source to use.
+   * @return a list of user groups.
+   * @throws SQLException if an error occurs while getting the user groups from the data source.
+   */
+  public List<GroupDetail> getAllRootGroups(Connection connection) throws SQLException {
+    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+        .from(GROUP_TABLE)
+        .where("superGroupId is null")
+        .orderBy(NAME)
+        .executeWith(connection, GroupDAO::fetchGroup);
+  }
+
+  /**
+   * Returns all the Root Groups having a given domain id.
+   * @param domainId domain id
+   * @return all the Root Groups having a given domain id.
+   * @throws SQLException
+   */
+  public List<GroupDetail> getAllRootGroupsByDomainId(final Connection connection,
+      final String domainId) throws SQLException {
+    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+        .from(GROUP_TABLE)
+        .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
+        .and("superGroupId is null")
+        .orderBy(NAME)
+        .executeWith(connection, GroupDAO::fetchGroup);
+  }
+
+  /**
+   * Returns all the Groups having a given domain id.
+   * @param connection connection to the data source.
+   * @param domainId domain id
+   * @return all the Groups having a given domain id.
+   * @throws SQLException
+   */
+  public List<GroupDetail> getAllGroupsByDomainId(final Connection connection,
+      final String domainId) throws SQLException {
+    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+        .from(GROUP_TABLE)
+        .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
+        .orderBy(NAME)
+        .executeWith(connection, GroupDAO::fetchGroup);
+  }
+
+  /**
+   * Returns the parent of the given group if any.
+   * @param connection connection to the data source.
+   * @param groupId a group id
+   * @return the parent of the specified group or null.
+   * @throws SQLException
+   */
+  public GroupDetail getSuperGroup(Connection connection, String groupId) throws SQLException {
+    return JdbcSqlQuery.createSelect(
+        "sg.id,sg.specificId,sg.domainId,sg.superGroupId,sg.name,sg.description,sg.synchroRule")
+        .from(GROUP_TABLE + " sg", GROUP_TABLE + " g")
+        .where("sg.id = g.superGroupId")
+        .and("g.id = ?", Integer.parseInt(groupId))
+        .executeUniqueWith(connection, GroupDAO::fetchGroup);
   }
 
   /**
@@ -80,189 +271,141 @@ public class GroupDAO {
    */
   public ListSlice<GroupDetail> getGroupsByCriteria(Connection connection,
       GroupSearchCriteriaForDAO criteria) throws SQLException {
-    ListSlice<GroupDetail> groups;
-    PreparedStatement statement = null;
-    ResultSet resultSet = null;
-    try {
-      String query = criteria.toSQLQuery(GROUP_COLUMNS);
-      statement = connection.prepareStatement(query, ResultSet.TYPE_SCROLL_INSENSITIVE,
-          ResultSet.CONCUR_READ_ONLY);
-      resultSet = statement.executeQuery();
-      if (criteria.isPaginationSet()) {
-        PaginationPage page = criteria.getPagination();
-        int start = (page.getPageNumber() - 1) * page.getPageSize();
-        int end = start + page.getPageSize();
-        groups = theGroupsFrom(resultSet, start, end);
-      } else {
-        groups = new ListSlice<GroupDetail>(theGroupsFrom(resultSet));
-      }
-    } finally {
-      DBUtil.close(resultSet, statement);
-    }
-    return groups;
+    return criteria.toSQLQuery(GROUP_COLUMNS).executeWith(connection, GroupDAO::fetchGroup);
+  }
+
+  public GroupDetail getGroupBySpecificId(final Connection connection, final String domainId,
+      final String specificId) throws SQLException {
+    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+        .from(GROUP_TABLE)
+        .where(DOMAIN_ID_CRITERION, Integer.parseInt(domainId))
+        .and("specificId = ?", specificId)
+        .executeUniqueWith(connection, GroupDAO::fetchGroup);
   }
 
   public GroupDetail getGroup(Connection con, String groupId)
       throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.prepareStatement(queryGetGroup);
-      stmt.setInt(1, Integer.parseInt(groupId));
-
-      rs = stmt.executeQuery();
-
-      GroupDetail group = null;
-      if (rs.next()) {
-        group = fetchGroup(rs);
-      }
-      return group;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
+    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+        .from(GROUP_TABLE)
+        .where(ID_CRITERION, Integer.parseInt(groupId))
+        .executeUniqueWith(con, GroupDAO::fetchGroup);
   }
-  static final private String queryGetSubGroups = "select " + GROUP_COLUMNS
-      + " from ST_Group where superGroupId = ?";
 
-  public List<GroupDetail> getSubGroups(Connection con, String groupId) throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      List<GroupDetail> groups = new ArrayList<GroupDetail>();
-      stmt = con.prepareStatement(queryGetSubGroups);
-      stmt.setInt(1, Integer.parseInt(groupId));
-
-      rs = stmt.executeQuery();
-
-      while (rs.next()) {
-        groups.add(fetchGroup(rs));
-      }
-      return groups;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
-
+  public List<GroupDetail> getDirectSubGroups(Connection con, String groupId) throws SQLException {
+    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+        .from(GROUP_TABLE)
+        .where("superGroupId = ?", Integer.parseInt(groupId))
+        .executeWith(con, GroupDAO::fetchGroup);
   }
-  static final private String queryGetNBUsersDirectlyInGroup = "select count(userid)"
-      + " from st_group_user_rel where groupid = ?";
 
   public int getNBUsersDirectlyInGroup(Connection con, String groupId) throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      stmt = con.prepareStatement(queryGetNBUsersDirectlyInGroup);
-      stmt.setInt(1, Integer.parseInt(groupId));
-
-      rs = stmt.executeQuery();
-
-      if (rs.next()) {
-        return rs.getInt(1);
-      }
-      return 0;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
+    return JdbcSqlQuery.createSelect("COUNT(userId)")
+        .from(GROUP_USERS_TABLE)
+        .where(GROUP_ID_CRITERION, Integer.parseInt(groupId))
+        .executeUniqueWith(con, rs -> rs.getInt(1));
   }
 
-  static final private String queryGetUsersDirectlyInGroup = "select userid"
-      + " from st_group_user_rel where groupid = ?";
-
   public List<String> getUsersDirectlyInGroup(Connection con, String groupId) throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      List<String> userIds = new ArrayList<String>();
-      stmt = con.prepareStatement(queryGetUsersDirectlyInGroup);
-      stmt.setInt(1, Integer.parseInt(groupId));
-
-      rs = stmt.executeQuery();
-
-      while (rs.next()) {
-        userIds.add(Integer.toString(rs.getInt(1)));
-      }
-      return userIds;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
+    return JdbcSqlQuery.createSelect(USER_ID)
+        .from(GROUP_USERS_TABLE)
+        .where(GROUP_ID_CRITERION, Integer.parseInt(groupId))
+        .executeWith(con, rs -> String.valueOf(rs.getInt(1)));
   }
 
   public List<String> getManageableGroupIds(Connection con, String userId,
       List<String> groupIds) throws SQLException {
-    List<String> manageableGroupIds = new ArrayList<String>();
+    List<String> manageableGroupIds = new ArrayList<>();
     if (StringUtil.isDefined(userId)) {
       manageableGroupIds.addAll(getManageableGroupIdsByUser(con, userId));
     }
-    if (groupIds != null && groupIds.size() > 0) {
+    if (groupIds != null && !groupIds.isEmpty()) {
       manageableGroupIds.addAll(getManageableGroupIdsByGroups(con, groupIds));
     }
     return manageableGroupIds;
   }
-  static final private String queryGetManageableGroupIdsByUser = "select st_groupuserrole.groupid"
-      + " from st_groupuserrole_user_rel, st_groupuserrole "
-      + " where st_groupuserrole_user_rel.groupuserroleid=st_groupuserrole.id"
-      + " and st_groupuserrole_user_rel.userid=?";
+
+  public List<GroupDetail> getSynchronizedGroups(final Connection connection) throws SQLException {
+    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+        .from(GROUP_TABLE)
+        .where("synchroRule is not null")
+        .executeWith(connection, GroupDAO::fetchGroup);
+  }
+
+  /**
+   * Returns all the groups of a given user (not recursive).
+   * @param userId user id
+   * @return all the groups of a given user (not recursive).
+   * @throws SQLException
+   */
+  public List<GroupDetail> getDirectGroupsOfUser(final Connection connection, final String userId)
+      throws SQLException {
+    return JdbcSqlQuery.createSelect(GROUP_COLUMNS)
+        .from(GROUP_TABLE, GROUP_USERS_TABLE)
+        .where("id = groupId")
+        .and("userId = ?", Integer.parseInt(userId))
+        .executeWith(connection, GroupDAO::fetchGroup);
+  }
+
+  /**
+   * Returns all the identifiers of the groups that are in the specified user role (not recursive).
+   * @param userRoleId user role id
+   * @return all the group identifiers.
+   * @throws SQLException
+   */
+  public List<String> getDirectGroupIdsByUserRole(Connection connection, String userRoleId)
+      throws SQLException {
+    return JdbcSqlQuery.createSelect("id")
+        .from(GROUP_TABLE, USER_ROLE_GROUPS_TABLE)
+        .where("id = groupid")
+        .and("userroleid = ?", Integer.parseInt(userRoleId))
+        .executeWith(connection, rs -> String.valueOf(rs.getInt(1)));
+  }
+
+  public List<String> getDirectGroupIdsBySpaceUserRole(Connection connection,
+      String spaceUserRoleId) throws SQLException {
+    return JdbcSqlQuery.createSelect("id")
+        .from(GROUP_TABLE, SPACE_ROLE_GROUP)
+        .where("groupId = id")
+        .and("spaceUserRoleId = ?", Integer.parseInt(spaceUserRoleId))
+        .executeWith(connection, rs -> String.valueOf(rs.getInt(1)));
+  }
+
+  public List<String> getDirectGroupIdsByGroupUserRole(Connection connection,
+      String groupUserRoleId) throws SQLException {
+    return JdbcSqlQuery.createSelect("id")
+        .from(GROUP_TABLE, GROUP_ROLE_GROUPS_TABLE)
+        .where("id = groupId")
+        .and("groupUserRoleId = ?", Integer.parseInt(groupUserRoleId))
+        .executeWith(connection, row -> Integer.toString(row.getInt(1)));
+  }
+
+  public GroupDetail getGroupByGroupUserRole(Connection connection, String groupUserRoleId)
+      throws SQLException {
+    return JdbcSqlQuery.createSelect(
+        "g.id,g.specificId,g.domainId,g.superGroupId,g.name,g.description,g.synchroRule")
+        .from(GROUP_TABLE + " g", GROUP_ROLE_TABLE + " gr")
+        .where("g.id = gr.groupId")
+        .and("gr.id = ?", Integer.parseInt(groupUserRoleId))
+        .executeUniqueWith(connection, GroupDAO::fetchGroup);
+  }
 
   private List<String> getManageableGroupIdsByUser(Connection con, String userId)
       throws SQLException {
-    PreparedStatement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      List<String> groupIds = new ArrayList<String>();
-      stmt = con.prepareStatement(queryGetManageableGroupIdsByUser);
-      stmt.setInt(1, Integer.parseInt(userId));
-
-      rs = stmt.executeQuery();
-
-      while (rs.next()) {
-        groupIds.add(Integer.toString(rs.getInt(1)));
-      }
-      return groupIds;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
-
+    return JdbcSqlQuery.createSelect(GROUP_ROLE_TABLE + ".groupid")
+        .from(GROUP_ROLE_USERS_TABLE, GROUP_ROLE_TABLE)
+        .where(GROUP_ROLE_USERS_TABLE + ".groupuserroleid = " + GROUP_ROLE_TABLE + ".id")
+        .and(GROUP_ROLE_USERS_TABLE + ".userId = ?", Integer.parseInt(userId))
+        .executeWith(con, rs -> String.valueOf(rs.getInt(1)));
   }
 
   private List<String> getManageableGroupIdsByGroups(Connection con, List<String> groupIds)
       throws SQLException {
-    Statement stmt = null;
-    ResultSet rs = null;
-
-    try {
-      String aQueryGetManageableGroupIdsByUser = "select st_groupuserrole.groupid"
-          + " from st_groupuserrole_group_rel, st_groupuserrole "
-          + " where st_groupuserrole_group_rel.groupuserroleid=st_groupuserrole.id"
-          + " and st_groupuserrole_group_rel.groupid IN (" + list2String(groupIds) + ")";
-
-      List<String> manageableGroupIds = new ArrayList<String>();
-      stmt = con.createStatement();
-
-      rs = stmt.executeQuery(aQueryGetManageableGroupIdsByUser);
-
-      while (rs.next()) {
-        manageableGroupIds.add(Integer.toString(rs.getInt(1)));
-      }
-      return manageableGroupIds;
-    } finally {
-      DBUtil.close(rs, stmt);
-    }
-
-  }
-
-  private static String list2String(List<String> ids) {
-    StringBuilder str = new StringBuilder();
-    for (int i = 0; i < ids.size(); i++) {
-      if (i != 0) {
-        str.append(",");
-      }
-      str.append(ids.get(i));
-    }
-    return str.toString();
+    return JdbcSqlQuery.createSelect(GROUP_ROLE_TABLE + ".groupid")
+        .from(GROUP_ROLE_GROUPS_TABLE, GROUP_ROLE_TABLE)
+        .where(GROUP_ROLE_GROUPS_TABLE + ".groupuserroleid = " + GROUP_ROLE_TABLE + ".id")
+        .and(GROUP_ROLE_GROUPS_TABLE + ".groupId")
+        .in(groupIds.stream().map(Integer::parseInt).collect(Collectors.toList()))
+        .executeWith(con, rs -> String.valueOf(rs.getInt(1)));
   }
 
   /**
@@ -272,43 +415,18 @@ public class GroupDAO {
 
     GroupDetail group = new GroupDetail();
     group.setId(Integer.toString(rs.getInt("id")));
-    group.setSpecificId(rs.getString("specificId"));
+    group.setSpecificId(rs.getString(SPECIFIC_ID));
     if (group.getSpecificId().equals("-1")) {
       group.setSpecificId(null);
     }
-    group.setDomainId(Integer.toString(rs.getInt("domainId")));
-    group.setSuperGroupId(Integer.toString(rs.getInt("superGroupId")));
+    group.setDomainId(Integer.toString(rs.getInt(DOMAIN_ID)));
+    group.setSuperGroupId(Integer.toString(rs.getInt(SUPER_GROUP_ID)));
     if (rs.wasNull()) {
       group.setSuperGroupId(null);
     }
-    group.setName(rs.getString("name"));
-    group.setDescription(rs.getString("description"));
-    group.setRule(rs.getString("synchroRule"));
+    group.setName(rs.getString(NAME));
+    group.setDescription(rs.getString(DESCRIPTION));
+    group.setRule(rs.getString(SYNCHRO_RULE));
     return group;
-  }
-
-  private static List<GroupDetail> theGroupsFrom(ResultSet rs) throws SQLException {
-    List<GroupDetail> groups = new ArrayList<GroupDetail>();
-    while (rs.next()) {
-      groups.add(fetchGroup(rs));
-    }
-    return groups;
-  }
-
-  @SuppressWarnings("empty-statement")
-  private static ListSlice<GroupDetail> theGroupsFrom(ResultSet rs, int start, int end) throws SQLException {
-    ListSlice<GroupDetail> groups = new ListSlice<GroupDetail>(start, end);
-    if (start > 0) {
-      rs.next();
-      rs.relative(start - 1);
-    }
-    int i;
-    for (i = start; rs.next(); i++) {
-      if (i < end) {
-        groups.add(fetchGroup(rs));
-      }
-    }
-    groups.setOriginalListSize(i);
-    return groups;
   }
 }

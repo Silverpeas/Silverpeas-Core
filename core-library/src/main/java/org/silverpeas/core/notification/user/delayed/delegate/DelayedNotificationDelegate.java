@@ -572,11 +572,6 @@ public class DelayedNotificationDelegate extends AbstractNotification {
     // Sender (administrator)
     final UserDetail sender = getUserDetail(-1);
 
-    // Log
-    SilverTrace
-        .info("delayedNotificationDelegate", "DelayedNotificationDelegate.createNotificationData()",
-            "root.MSG_GEN_PARAM_VALUE", "userId =" + synthese.getUserId());
-
     // Set the channel
     notificationData.setTargetChannel(channel.name());
 

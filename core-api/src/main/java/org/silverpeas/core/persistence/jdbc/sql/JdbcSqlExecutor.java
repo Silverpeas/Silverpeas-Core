@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.persistence.jdbc.sql;
 
+import org.silverpeas.core.util.ListSlice;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
@@ -54,24 +56,31 @@ public interface JdbcSqlExecutor {
   long selectCount(Connection connection, JdbcSqlQuery selectCountQueryBuilder) throws SQLException;
 
   /**
-   * Select query executor.
-   * @param selectQuery the select SQL query.
-   * @param process the row processor.
-   * @return the list of entities.
+   * Executes the specified query that selects a slice of the list of entities in the data source
+   * @param selectQuery the SQL query to select some entities.
+   * @param process the processor of result rows.
+   * @return a slice of the list of entities in the data source. This slice contains only the
+   * requested entities. If the offset property is set in the configuration of the specified query
+   * then the returned list matches the slice of the list of the requested entities from this
+   * offset.
    * @throws java.sql.SQLException on SQL error.
    */
-  <R> List<R> select(JdbcSqlQuery selectQuery, SelectResultRowProcess<R> process)
+  <R> ListSlice<R> select(JdbcSqlQuery selectQuery, SelectResultRowProcess<R> process)
       throws SQLException;
 
   /**
-   * Select query executor.
-   * @param connection an existing connection.
-   * @param selectQuery the select SQL query.
-   * @param process the row processor.
-   * @return the list of entities.
+   * Executes the specified query that selects a slice of the list of entities in the data source
+   * by using the given connection.
+   * @param connection an existing connection to the data source.
+   * @param selectQuery the SQL query to select some entities.
+   * @param process the processor of result rows.
+   * @return a slice of the list of entities in the data source. This slice contains only the
+   * requested entities. If the offset property is set in the configuration of the specified query
+   * then the returned list matches the slice of the list of the requested entities from this
+   * offset.
    * @throws java.sql.SQLException on SQL error.
    */
-  <R> List<R> select(Connection connection, JdbcSqlQuery selectQuery,
+  <R> ListSlice<R> select(Connection connection, JdbcSqlQuery selectQuery,
       SelectResultRowProcess<R> process) throws SQLException;
 
   /**
