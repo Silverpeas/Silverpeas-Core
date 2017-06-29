@@ -88,7 +88,7 @@ function areYouSure() {
     browseBar.setComponentName(rootPath);
 
     TabbedPane tabbedPane = gef.getTabbedPane();
-    tabbedPane.addTab(resource.getString("pdc"), "subscriptionList.jsp?userId=" + userId, false);
+    tabbedPane.addTab(resource.getString("pdc"), (isReadOnly ? "showUserSubscriptions" : "subscriptionList.jsp") + "?userId=" + userId, false);
     tabbedPane.addTab(resource.getString("thematique"), "#", true);
     tabbedPane.addTab(resource.getString("application"),
         "ViewSubscriptionComponent?userId=" + userId + "&action=" + action, false);

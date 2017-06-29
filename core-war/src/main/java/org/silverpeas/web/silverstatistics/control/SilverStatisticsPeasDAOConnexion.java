@@ -98,9 +98,6 @@ public class SilverStatisticsPeasDAOConnexion {
    */
   public static Collection<String[]> getStatsConnexionAllAll(String startDate, String endDate)
       throws SQLException {
-    SilverTrace
-        .info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsConnexionAllAll",
-            "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -270,9 +267,6 @@ public class SilverStatisticsPeasDAOConnexion {
    */
   public static Collection[] getStatsUserConnexion(String startDate, String endDate, String idUser)
       throws SQLException, ParseException {
-    SilverTrace
-        .info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsUserConnexion",
-            "root.MSG_GEN_ENTER_METHOD");
     PreparedStatement stmt = null;
     ResultSet rs = null;
     Connection myCon = null;
@@ -347,9 +341,6 @@ public class SilverStatisticsPeasDAOConnexion {
    */
   public static Collection<String[]> getStatsConnexionGroupAll(String dateBegin, String dateEnd)
       throws SQLException, UtilException {
-    SilverTrace
-        .info("silverStatisticsPeas", "SilverStatisticsPeasDAOConnexion.getStatsConnexionGroupAll",
-            "root.MSG_GEN_ENTER_METHOD");
     List<String[]> result = new ArrayList<String[]>();
     Group[] groups = OrganizationControllerProvider.getOrganisationController().getAllGroups();
     for (Group group : groups) {

@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.user;
 
-import org.silverpeas.core.admin.domain.DomainDriverManager;
+import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
@@ -33,44 +33,46 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Singleton
+@Transactional(Transactional.TxType.MANDATORY)
 public class ProfiledObjectManager {
 
   @Inject
-  private ProfileInstManager m_ProfileInstManager;
+  private ProfileInstManager profileInstManager;
+  @Inject
+  private OrganizationSchema organizationSchema;
 
   /**
    * Constructor
    */
-  public ProfiledObjectManager() {
+  protected ProfiledObjectManager() {
   }
 
-  public List<ProfileInst> getProfiles(DomainDriverManager ddManager, int objectId,
-      String objectType, int componentId) throws AdminException {
-    List<ProfileInst> profiles = new ArrayList<ProfileInst>();
+  public List<ProfileInst> getProfiles(int objectId, String objectType, int componentId)
+      throws AdminException {
+    List<ProfileInst> profiles = new ArrayList<>();
 
     String[] asProfileIds = null;
     try {
-      ddManager.getOrganizationSchema();
       // Get the profiles
-      asProfileIds = ddManager.getOrganization().userRole.getAllUserRoleIdsOfObject(
+      asProfileIds = organizationSchema.userRole().getAllUserRoleIdsOfObject(
           objectId, objectType, componentId);
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
 
     // Insert the profileInst in the componentInst
     for (int nI = 0; asProfileIds != null && nI < asProfileIds.length; nI++) {
-      ProfileInst profileInst = m_ProfileInstManager.getProfileInst(ddManager, asProfileIds[nI]);
+      ProfileInst profileInst = profileInstManager.getProfileInst(asProfileIds[nI]);
       profileInst.setObjectType(objectType);
       profiles.add(profileInst);
     }
@@ -90,7 +92,7 @@ public class ProfiledObjectManager {
 
       List<UserRoleRow> roles =
           RoleDAO.getRoles(con, objectId, objectType, componentId, groupIds, userId);
-      List<String> roleNames = new ArrayList<String>();
+      List<String> roleNames = new ArrayList<>();
 
       for (UserRoleRow role : roles) {
         roleNames.add(role.roleName);
@@ -113,16 +115,16 @@ public class ProfiledObjectManager {
 
       List<UserRoleRow> roles =
           RoleDAO.getRoles(con, -1, objectType, componentId, groupIds, userId);
-      Map<Integer, List<String>> objectProfiles = new HashMap<Integer, List<String>>(roles.size());
+      Map<Integer, List<String>> objectProfiles = new HashMap<>(roles.size());
 
-      Collections.sort(roles, (o1, o2) -> o1.objectId - o2.objectId);
+      Collections.sort(roles, Comparator.comparingInt(o -> o.objectId));
 
       int currentObjectId = -1;
-      List<String> roleNames = new ArrayList<String>();
+      List<String> roleNames = new ArrayList<>();
       for (UserRoleRow role : roles) {
         if (currentObjectId != role.objectId) {
           currentObjectId = role.objectId;
-          roleNames = new ArrayList<String>();
+          roleNames = new ArrayList<>();
           objectProfiles.put(currentObjectId, roleNames);
         }
         roleNames.add(role.roleName);
@@ -137,24 +139,21 @@ public class ProfiledObjectManager {
     }
   }
 
-  public List<ProfileInst> getProfiles(DomainDriverManager ddManager, int componentId)
+  public List<ProfileInst> getProfiles(int componentId)
       throws AdminException {
-    List<ProfileInst> profiles = new ArrayList<ProfileInst>();
+    List<ProfileInst> profiles = new ArrayList<>();
 
     String[] asProfileIds = null;
     try {
-      ddManager.getOrganizationSchema();
       // Get the profiles
-      asProfileIds = ddManager.getOrganization().userRole
+      asProfileIds = organizationSchema.userRole()
           .getAllObjectUserRoleIdsOfInstance(componentId);
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
 
     for (int nI = 0; asProfileIds != null && nI < asProfileIds.length; nI++) {
-      ProfileInst profileInst = m_ProfileInstManager.getProfileInst(ddManager, asProfileIds[nI]);
+      ProfileInst profileInst = profileInstManager.getProfileInst(asProfileIds[nI]);
       profiles.add(profileInst);
     }
 

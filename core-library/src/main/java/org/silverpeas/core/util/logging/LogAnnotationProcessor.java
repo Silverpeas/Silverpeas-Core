@@ -64,10 +64,10 @@ public class LogAnnotationProcessor {
     String message = getAnyLogMessageFor(context.getMethod());
     if (StringUtil.isDefined(message)) {
       if (currentUser == null) {
-        logger.info(SYSTEM_PATTERN,
+        logger.debug(SYSTEM_PATTERN,
             message);
       } else {
-        logger.info(USER_PATTERN,
+        logger.debug(USER_PATTERN,
             currentUser.getDisplayedName(),
             currentUser.getId(),
             message);
@@ -75,18 +75,18 @@ public class LogAnnotationProcessor {
       result = context.proceed();
     } else {
       if (currentUser == null) {
-        logger.info(SYSTEM_DEFAULT_BEFORE_PATTERN,
+        logger.debug(SYSTEM_DEFAULT_BEFORE_PATTERN,
             context.getMethod().getDeclaringClass().getSimpleName(),
             context.getMethod().getName());
         long start = System.currentTimeMillis();
         result = context.proceed();
         long duration = System.currentTimeMillis() - start;
-        logger.info(SYSTEM_DEFAULT_AFTER_PATTERN,
+        logger.debug(SYSTEM_DEFAULT_AFTER_PATTERN,
             context.getMethod().getDeclaringClass().getSimpleName(),
             context.getMethod().getName(),
             duration);
       } else {
-        logger.info(USER_DEFAULT_BEFORE_PATTERN,
+        logger.debug(USER_DEFAULT_BEFORE_PATTERN,
             currentUser.getDisplayedName(),
             currentUser.getId(),
             context.getMethod().getDeclaringClass().getSimpleName(),
@@ -94,7 +94,7 @@ public class LogAnnotationProcessor {
         long start = System.currentTimeMillis();
         result = context.proceed();
         long duration = System.currentTimeMillis() - start;
-        logger.info(USER_DEFAULT_AFTER_PATTERN,
+        logger.debug(USER_DEFAULT_AFTER_PATTERN,
             currentUser.getDisplayedName(),
             currentUser.getId(),
             context.getMethod().getDeclaringClass().getSimpleName(),

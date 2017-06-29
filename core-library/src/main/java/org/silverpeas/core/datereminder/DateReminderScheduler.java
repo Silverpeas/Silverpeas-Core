@@ -58,7 +58,7 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
     try {
       SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.dateReminder.settings.dateReminderSettings");
       String cron = settings.getString("cronScheduledDateReminder");
-      SilverLogger.getLogger(this).info("Date reminder Processor scheduled with cron ''{0}''", cron);
+      SilverLogger.getLogger(this).debug("Date reminder Processor scheduled with cron ''{0}''", cron);
       Scheduler scheduler = SchedulerProvider.getScheduler();
       scheduler.unscheduleJob(DATEREMINDER_JOB_NAME_PROCESS);
       JobTrigger trigger = JobTrigger.triggerAt(cron);

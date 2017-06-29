@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.servlets;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -89,7 +90,11 @@ public class RestOnlineFileServer extends AbstractFileSender {
       res.setStatus(HttpServletResponse.SC_NOT_FOUND);
       res.sendError(res.getStatus());
     } catch (IllegalAccessException ex) {
-      SilverLogger.getLogger(this).error("Forbidden access to the requested file", ex);
+      User currentUser = User.getCurrentRequester();
+      String userId = currentUser != null ? currentUser.getId() : "N/A";
+      SilverLogger.getLogger(this)
+          .warn("Forbidden file access from ''{0}'' by user ''{1}''", req.getRequestURI(), userId,
+              ex);
       res.setStatus(HttpServletResponse.SC_FORBIDDEN);
       res.sendError(res.getStatus());
     } catch (Exception ex) {
@@ -127,7 +132,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
           }
           file = getSilverpeasFile(attachment);
         } else {
-          throw new IllegalAccessException("You can't access this file " + attachment.getFilename());
+          throw new IllegalAccessException("Forbidden access to file " + attachment);
         }
       }
     }
@@ -153,7 +158,7 @@ public class RestOnlineFileServer extends AbstractFileSender {
           }
           file = getSilverpeasFile(version);
         } else {
-          throw new IllegalAccessException("You can't access this file " + version.getFilename());
+          throw new IllegalAccessException("Forbidden access to file " + version);
         }
       }
     }

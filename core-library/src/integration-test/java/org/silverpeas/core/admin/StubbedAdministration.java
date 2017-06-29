@@ -41,7 +41,6 @@ import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.user.model.AdminGroupInst;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.GroupsSearchCriteria;
@@ -53,6 +52,7 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
 
 import javax.inject.Singleton;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +72,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public void startServer() {
+  public void initSynchronization() {
 
   }
 
@@ -99,12 +99,6 @@ public class StubbedAdministration implements Administration {
   @Override
   public String deleteSpaceInstById(final String userId, final String spaceId,
       final boolean definitive) throws AdminException {
-    return null;
-  }
-
-  @Override
-  public String deleteSpaceInstById(final String userId, final String spaceId,
-      final boolean startNewTransaction, final boolean definitive) throws AdminException {
     return null;
   }
 
@@ -226,12 +220,6 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String addComponentInst(final String userId, final ComponentInst componentInst,
-      final boolean startNewTransaction) throws AdminException, QuotaException {
-    return null;
-  }
-
-  @Override
   public String deleteComponentInst(final String userId, final String componentId,
       final boolean definitive) throws AdminException {
     return null;
@@ -266,11 +254,6 @@ public class StubbedAdministration implements Administration {
 
   }
 
-  @Override
-  public void setSpaceProfilesToComponent(final ComponentInst component, final SpaceInst space,
-      final boolean startNewTransaction) throws AdminException {
-
-  }
 
   @Override
   public void moveSpace(final String spaceId, final String fatherId) throws AdminException {
@@ -386,12 +369,6 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String updateSpaceProfileInst(final SpaceProfileInst newSpaceProfile, final String userId,
-      final boolean startNewTransaction) throws AdminException {
-    return null;
-  }
-
-  @Override
   public String[] getGroupNames(final String[] groupIds) throws AdminException {
     return new String[0];
   }
@@ -402,8 +379,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String[] getAllGroupIds() throws AdminException {
-    return new String[0];
+  public List<GroupDetail> getAllGroups() throws AdminException {
+    return Collections.emptyList();
   }
 
   @Override
@@ -476,28 +453,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public AdminGroupInst[] getAdminOrganization() throws AdminException {
-    return new AdminGroupInst[0];
-  }
-
-  @Override
-  public String[] getAllSubGroupIds(final String groupId) throws AdminException {
-    return new String[0];
-  }
-
-  @Override
-  public String[] getAllSubGroupIdsRecursively(final String groupId) throws AdminException {
-    return new String[0];
-  }
-
-  @Override
-  public String[] getAllRootGroupIds() throws AdminException {
-    return new String[0];
-  }
-
-  @Override
-  public GroupDetail[] getAllRootGroups() throws AdminException {
-    return new GroupDetail[0];
+  public List<GroupDetail> getAllRootGroups() throws AdminException {
+    return Collections.emptyList();
   }
 
   @Override
@@ -511,19 +468,7 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String addGroupProfileInst(final GroupProfileInst groupProfileInst,
-      final boolean startNewTransaction) throws AdminException {
-    return null;
-  }
-
-  @Override
   public String deleteGroupProfileInst(final String groupId) throws AdminException {
-    return null;
-  }
-
-  @Override
-  public String deleteGroupProfileInst(final String groupId, final boolean startNewTransaction)
-      throws AdminException {
     return null;
   }
 
@@ -713,13 +658,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public GroupDetail[] getSynchronizedGroups() throws AdminException {
-    return new GroupDetail[0];
-  }
-
-  @Override
-  public String[] getRootGroupIdsOfDomain(final String domainId) throws AdminException {
-    return new String[0];
+  public List<GroupDetail> getSynchronizedGroups() throws AdminException {
+    return Collections.emptyList();
   }
 
   @Override
@@ -761,19 +701,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String[] getDirectGroupsIdsOfUser(final String userId) throws AdminException {
-    return new String[0];
-  }
-
-  @Override
-  public UserDetail[] searchUsers(final UserDetail modelUser, final boolean isAnd)
-      throws AdminException {
-    return new UserDetail[0];
-  }
-
-  @Override
-  public GroupDetail[] searchGroups(final GroupDetail modelGroup, final boolean isAnd) throws AdminException {
-    return new GroupDetail[0];
+  public List<GroupDetail> getDirectGroupsOfUser(final String userId) throws AdminException {
+    return Collections.emptyList();
   }
 
   @Override
@@ -987,6 +916,11 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
+  public GroupDetail[] getRecursivelyAllSubGroups(String parentGroupId) throws AdminException {
+    return new GroupDetail[0];
+  }
+
+  @Override
   public UserDetail[] getFiltredDirectUsers(final String sGroupId, final String sUserLastNameFilter)
       throws AdminException {
     return new UserDetail[0];
@@ -1122,9 +1056,8 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public String[] searchUsersIds(final String sGroupId, final String componentId,
-      final String[] profileIds, final UserDetail modelUser) throws AdminException {
-    return new String[0];
+  public List<String> searchUserIdsByProfile(final List<String> profileIds) throws AdminException {
+    return Collections.emptyList();
   }
 
   @Override
@@ -1137,17 +1070,6 @@ public class StubbedAdministration implements Administration {
   public ListSlice<GroupDetail> searchGroups(final GroupsSearchCriteria searchCriteria)
       throws AdminException {
     return null;
-  }
-
-  @Override
-  public String[] searchGroupsIds(final boolean isRootGroup, final String componentId,
-      final String[] profileId, final GroupDetail modelGroup) throws AdminException {
-    return new String[0];
-  }
-
-  @Override
-  public void resetAllDBConnections(final boolean isScheduled) throws AdminException {
-
   }
 
   @Override

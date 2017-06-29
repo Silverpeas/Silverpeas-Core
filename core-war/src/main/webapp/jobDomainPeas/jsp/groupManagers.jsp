@@ -49,6 +49,7 @@
       browseBar.setPath(groupsPath);
     }
 %>
+<c:set var="backUrl">groupContent?Idgroup=<%=grObject.getId()%></c:set>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
@@ -72,7 +73,7 @@ out.println(tabbedPane.print());
 </form>
   <view:buttonPane>
     <fmt:message var="backButton" key="GML.back"/>
-    <view:button label="${backButton}" action="groupContent?Idgroup=<%=grObject.getId()%>"/>
+    <view:button label="${backButton}" action="${backUrl}"/>
   </view:buttonPane>
 </view:frame>
 <%

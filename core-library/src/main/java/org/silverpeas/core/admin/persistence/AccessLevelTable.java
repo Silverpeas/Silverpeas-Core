@@ -30,8 +30,8 @@ import java.sql.SQLException;
 
 public class AccessLevelTable extends Table<AccessLevelRow> {
 
-  public AccessLevelTable(OrganizationSchema organization) {
-    super(organization, "ST_AccessLevel");
+  public AccessLevelTable() {
+    super("ST_AccessLevel");
   }
 
   /**
@@ -50,26 +50,26 @@ public class AccessLevelTable extends Table<AccessLevelRow> {
   /**
    * Returns all the Access levels.
    * @return all the Access levels.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public AccessLevelRow[] getAllAccessLevels() throws AdminPersistenceException {
+  public AccessLevelRow[] getAllAccessLevels() throws SQLException {
     return getRows(SELECT_ALL_ACCESSLEVELS).toArray(
         new AccessLevelRow[getRows(SELECT_ALL_ACCESSLEVELS).size()]);
   }
 
-  static final private String SELECT_ALL_ACCESSLEVELS = "SELECT id, name FROM ST_AccessLevel";
+  private static final String SELECT_ALL_ACCESSLEVELS = "SELECT id, name FROM ST_AccessLevel";
 
   /**
    * Returns the Access level whith the given id.
    * @param id
    * @return the Access level whith the given id.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public AccessLevelRow getAccessLevel(String id) throws AdminPersistenceException {
+  public AccessLevelRow getAccessLevel(String id) throws SQLException {
     return getUniqueRow(SELECT_ACCESSLEVEL_BY_ID, id);
   }
 
-  static final private String SELECT_ACCESSLEVEL_BY_ID =
+  private static final String SELECT_ACCESSLEVEL_BY_ID =
       "SELECT id, name FROM  ST_AccessLevel WHERE id = ?";
 
   /**

@@ -36,7 +36,7 @@ public interface SearchCriteria {
   /**
    * The whatever value to be used as criterion value if you don't care of a given criterion.
    */
-  static final String[] ANY = null;
+  String[] ANY = null;
 
   /**
    * Appends a criteria conjonction.
@@ -100,7 +100,7 @@ public interface SearchCriteria {
    * of the resources to fetch have to satisfy this criterion.
    *
    * @param name a pattern on the name the resources to fetch must have.
-   * @return the criteria enriched with a criterion on the user name.
+   * @return the criteria enriched with a criterion on the resource name.
    */
   SearchCriteria onName(String name);
 

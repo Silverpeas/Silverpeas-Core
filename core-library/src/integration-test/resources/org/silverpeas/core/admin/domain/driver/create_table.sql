@@ -1,3 +1,11 @@
+CREATE TABLE IF NOT EXISTS SB_ContentManager_Instance
+(
+	instanceId	int		NOT NULL ,
+	componentId	varchar(100)	NOT NULL ,
+	containerType	varchar(100)	NOT NULL ,
+	contentType	varchar(100)	NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS ST_AccessLevel
 (
   id   CHAR(1)      NOT NULL,

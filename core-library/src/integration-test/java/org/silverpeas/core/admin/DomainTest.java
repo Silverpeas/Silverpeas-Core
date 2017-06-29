@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.admin;
 
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.domain.model.Domain;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -32,6 +30,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
@@ -45,7 +46,7 @@ import static org.junit.Assert.assertThat;
 public class DomainTest {
 
   @Inject
-  private AdminController adminController;
+  private Administration admin;
 
   @Rule
   public DbSetupRule dbSetupRule =
@@ -62,11 +63,11 @@ public class DomainTest {
 
   @Before
   public void reloadCache() {
-    adminController.reloadAdminCache();
+    admin.reloadCache();
   }
 
   @Test
-  public void testGetDomain() {
+  public void testGetDomain() throws AdminException {
     String domainId = "0";
     Domain domain = new Domain();
     domain.setName("Silverpeas");
@@ -74,23 +75,23 @@ public class DomainTest {
     domain.setDriverClassName("org.silverpeas.core.admin.domain.driver.SilverpeasDomainDriver");
     domain.setAuthenticationServer("autDomainSP");
     domain.setId(domainId);
-    Domain savedDomain = adminController.getDomain(domainId);
+    Domain savedDomain = admin.getDomain(domainId);
     assertThat(savedDomain, is(domain));
   }
 
   @Test
-  public void testAddDomain() {
+  public void testAddDomain() throws AdminException {
     Domain domain = new Domain();
     domain.setName("Test new");
     domain.setDriverClassName("org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver");
     domain.setPropFileName("org.silverpeas.domains.domainSQL");
     domain.setAuthenticationServer("autDomainSQL");
     domain.setSilverpeasServerURL("http://localhost:8000");
-    String domainId = adminController.addDomain(domain);
+    String domainId = admin.addDomain(domain);
     assertThat(domainId, is(notNullValue()));
     assertThat(domainId, is("1"));
     domain.setId(domainId);
-    Domain savedDomain = adminController.getDomain(domainId);
+    Domain savedDomain = admin.getDomain(domainId);
     assertThat(savedDomain, is(domain));
   }
 }

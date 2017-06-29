@@ -23,13 +23,15 @@
  */
 package org.silverpeas.web;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.NotImplementedException;
+import org.junit.Before;
 import org.junit.Rule;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.web.environment.SilverpeasEnvironmentTest;
-import org.silverpeas.web.environment.SilverpeasEnvironmentTestRule;
 
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
@@ -49,8 +51,16 @@ public abstract class RESTWebServiceTest {
   protected static final String CONTEXT_NAME = "test";
 
   @Rule
-  public SilverpeasEnvironmentTestRule silverpeasEnvironmentTestRule =
-      new SilverpeasEnvironmentTestRule();
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom(
+      "/org/silverpeas/web/environment/create-table-domain-user-group.sql",
+      "/org/silverpeas/web/environment/create-table-space-component.sql",
+      "/org/silverpeas/web/environment/create-table-profile.sql",
+      "/org/silverpeas/web/environment/create-table-token.sql");
+
+  @Before
+  public void reloadAdminCaches() {
+    Administration.get().reloadCache();
+  }
 
   /**
    * Gets the component instances to take into account in tests. Theses component instances will be
@@ -85,7 +95,7 @@ public abstract class RESTWebServiceTest {
   }
 
   public SilverpeasEnvironmentTest getSilverpeasEnvironmentTest() {
-    return SilverpeasEnvironmentTest.getSilverpeasEnvironmentTest();
+    return SilverpeasEnvironmentTest.get();
   }
 
   /**
@@ -97,7 +107,7 @@ public abstract class RESTWebServiceTest {
    * manager instance).
    * </p>
    * <p>
-   * For example: <pre>getTokenKeyOf(getSilverpeasEnvironmentTest().createUser());</pre>
+   * For example: <pre>getTokenKeyOf(get().createUser());</pre>
    * </p>
    *
    * @param theUser the user to authenticate.

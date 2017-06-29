@@ -174,7 +174,7 @@ public class ActifyDocumentProcessor {
       String id = document.getForeignId();
       String fileName = document.getFilename();
       if (isCADDocumentSupported(fileName)) {
-        logger.info("CAD document supported by Actify detected: {0}", fileName);
+        logger.debug("CAD document supported by Actify detected: {0}", fileName);
         String dirPrefix = document.isVersioned() ? "v_" : "a_";
         String dirDestName = dirPrefix + componentId + "_" + id;
         String actifyWorkingPath = getActifySourcePath() + File.separatorChar + dirDestName;

@@ -24,15 +24,15 @@
 
 package org.silverpeas.core.admin.domain.repository;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.admin.domain.exception.SQLDomainDAOException;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQueries;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import javax.inject.Singleton;
 import java.io.FileInputStream;
@@ -59,13 +59,17 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
 
   private JdbcSqlQuery generateGroupUserRelTableCreateStatement(String domainName) {
     return JdbcSqlQuery.createTable("Domain" + domainName +
-        "_Group_User_Rel").addField("groupId", "int NOT NULL").addField("userId", "int NOT NULL");
+        "_Group_User_Rel")
+        .addField("groupId", "int NOT NULL")
+        .addField("userId", "int NOT NULL");
   }
 
   private JdbcSqlQuery generateGroupTableCreateStatement(String domainName) {
     return JdbcSqlQuery.createTable("Domain" + domainName +
-        "_Group").addField("id", "int NOT NULL").addField("superGroupId", "int NULL")
-        .addField("name", "varchar(100) NOT NULL").addField("description", "varchar(400) NULL")
+        "_Group").addField("id", "int NOT NULL")
+        .addField("superGroupId", "int NULL")
+        .addField("name", "varchar(100) NOT NULL")
+        .addField("description", "varchar(400) NULL")
         .addField("grSpecificInfo", "varchar(50) NULL");
   }
 
@@ -83,10 +87,13 @@ public class SQLInternalDomainRepository implements SQLDomainRepository {
     JdbcSqlQuery userTable = JdbcSqlQuery.createTable("Domain" + domainName + "_User ");
 
     // Common columns
-    userTable.addField("id", "int NOT NULL").addField("firstName", "varchar(100) NULL");
-    userTable.addField("lastName", "varchar(100) NULL").addField("email", "varchar(200) NULL");
-    userTable.addField("login", "varchar(50) NOT NULL").addField("password", "varchar(123) NULL");
-    userTable.addField("passwordValid", "char(1) NULL");
+    userTable.addField("id", "int NOT NULL")
+        .addField("firstName", "varchar(100) NULL")
+        .addField("lastName", "varchar(100) NULL")
+        .addField("email", "varchar(200) NULL")
+        .addField("login", "varchar(50) NOT NULL")
+        .addField("password", "varchar(123) NULL")
+        .addField("passwordValid", "char(1) NULL");
 
     // Domain specific columns
     String specificColumnName;

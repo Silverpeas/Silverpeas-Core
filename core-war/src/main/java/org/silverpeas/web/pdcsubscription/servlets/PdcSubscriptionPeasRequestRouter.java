@@ -80,7 +80,7 @@ public class PdcSubscriptionPeasRequestRouter extends ComponentRequestRouter<Pdc
         destination = rootDest + processSubscriptionList(request, pdcSC);
       } else if (function.startsWith("showUserSubscriptions")) {
         String reqUserId = request.getParameter("userId");
-        if (reqUserId != null && !reqUserId.equals("")) {
+        if (StringUtil.isDefined(reqUserId)) {
           int userId = Integer.parseInt(reqUserId);
           destination = rootDest + processUserSubscriptions(request, pdcSC, userId);
         }

@@ -20,6 +20,7 @@
  */
 package org.silverpeas.core.persistence.jdbc;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -135,7 +136,7 @@ public class DBUtil {
   public static int getNextId(final String identifierName, final String tableFieldIdentifierName)
       throws SQLException {
     final String identifierNameLowerCase = identifierName.toLowerCase(Locale.ROOT);
-    while (true) {
+    for (int nbAttempts = 0; ; nbAttempts++) {
 
       // Getting the next unique identifier value from uniqueId table
       Integer nextUniqueMaxId = nextUniqueIdentifierValue(identifierNameLowerCase);
@@ -149,6 +150,12 @@ public class DBUtil {
 
         // The next identifier value has been well computed
         return nextUniqueMaxId;
+      }
+
+      if (nbAttempts > 2) {
+        throw new SilverpeasRuntimeException(
+            "computing of next id not possible for " + identifierName + " with " +
+                tableFieldIdentifierName + "primary key");
       }
     }
   }
@@ -199,7 +206,7 @@ public class DBUtil {
             } else {
               // Another server process has just updated the next unique identifier value, so the
               // returned value indicates to the caller to retry to compute one
-              SilverLogger.getLogger(DBUtil.class.getSimpleName()).info(
+              SilverLogger.getLogger(DBUtil.class.getSimpleName()).debug(
                   "The next unique identifier value '" + nextUniqueValue + "' for identifier '" +
                       identifierNameLowerCase +
                       "' has been computed by another server process call at the same time, " +
@@ -262,7 +269,7 @@ public class DBUtil {
           }
 
           SilverLogger.getLogger(DBUtil.class)
-              .info("A new entry has been registered into UniqueId table for '" +
+              .debug("A new entry has been registered into UniqueId table for '" +
                   identifierNameLowerCase + "' table");
         }
         return null;

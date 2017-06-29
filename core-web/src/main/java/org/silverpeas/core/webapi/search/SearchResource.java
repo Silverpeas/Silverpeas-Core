@@ -100,7 +100,7 @@ public class SearchResource extends RESTWebService {
         String date = LocalDate.parse(startDate).format(formatter);
         queryDescription.setRequestedCreatedAfter(date);
       } catch (Exception e) {
-        SilverLogger.getLogger(this).info("Can't parse start date as Long : {0}",
+        SilverLogger.getLogger(this).error("Can't parse start date as Long : {0}",
             new String[] {startDate}, e);
       }
     }
@@ -110,7 +110,7 @@ public class SearchResource extends RESTWebService {
         String date = LocalDate.parse(endDate).format(formatter);
         queryDescription.setRequestedCreatedBefore(date);
       } catch (Exception e) {
-        SilverLogger.getLogger(this).info("Can't parse end date as Long : {0}",
+        SilverLogger.getLogger(this).error("Can't parse end date as Long : {0}",
             new String[] {endDate}, e);
       }
     }

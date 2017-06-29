@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.util;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -38,28 +37,23 @@ import java.util.stream.Collector;
 public interface SilverpeasList<T> extends List<T> {
 
   /**
-   * Returns a {@link Collector} that accumulates the input elements into a new {@link
+   * Returns a {@link Collector} that accumulates the input items into a new {@link
    * SilverpeasList}. There are no guarantees on the type, mutability, serializability, or
-   * thread-safety of the {@code SilverpeasList} returned.
-   * <p> If source is paginated (a {@link PaginationList} for example), then the collected list
-   * will also be.
+   * thread-safety of the returned {@code SilverpeasList}.
+   * <p> If the source is already a {@link SilverpeasList}, then the returned list will be of the
+   * same concrete type than the source list.
    * </p>
-   * @param <C> the type of the input elements.
+   * @param <C> the type of the input items in the destination list.
+   * @param <R> the concrete type of the {@link SilverpeasList}.
+   * @param source the source list from which a SilverpeasList is built.
    * @return a {@link Collector} which collects all the input elements into a {@link
    * SilverpeasList}, in encounter order.
    */
   @SuppressWarnings("unchecked")
-  static <C, R extends SilverpeasList<C>, S> Collector<C, R, R> collector(List<S> source) {
+  static <C, R extends SilverpeasList<C>> Collector<C, R, R> collector(List<?> source) {
     final Supplier<R> supplier;
-    final SilverpeasList<S> silverpeasList = SilverpeasList.wrap(source);
-    if (silverpeasList != null && silverpeasList.isSlice()) {
-      if (silverpeasList instanceof PaginationList) {
-        supplier = () -> (R) PaginationList
-            .from(new ArrayList<>(silverpeasList.size()), silverpeasList.originalListSize());
-      } else {
-        throw new UnsupportedOperationException(
-            silverpeasList.getClass().getSimpleName() + " is not yet supported");
-      }
+    if (source instanceof SilverpeasList) {
+      supplier = () -> (R) ((SilverpeasList) source).newEmptyListWithSameProperties();
     } else {
       supplier = () -> (R) new SilverpeasArrayList<>();
     }
@@ -85,6 +79,16 @@ public interface SilverpeasList<T> extends List<T> {
         (SilverpeasList<T>) listToWrap :
         new SilverpeasListWrapper<>(listToWrap);
   }
+
+  /**
+   * Builds a new empty {@link SilverpeasList} with the same properties than this list.
+   * <p>
+   *   This method is mainly dedicated to be used for making a collector for the Java Stream API.
+   * </p>
+   * @param <U> the concrete type of the items of the returned list.
+   * @return an empty {@link SilverpeasList} with the same properties than this list.
+   */
+  <U> SilverpeasList<U> newEmptyListWithSameProperties();
 
   /**
    * Gets the number of items the original list contains.

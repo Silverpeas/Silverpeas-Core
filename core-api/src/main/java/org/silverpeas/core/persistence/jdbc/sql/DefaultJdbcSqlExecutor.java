@@ -26,6 +26,8 @@ package org.silverpeas.core.persistence.jdbc.sql;
 
 import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.persistence.jdbc.ConnectionPool;
+import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -36,7 +38,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -49,6 +55,8 @@ import java.util.List;
 @Singleton
 @Transactional(Transactional.TxType.SUPPORTS)
 class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
+
+  private static final String SQL_REQUEST = ". SQL request: ";
 
   protected DefaultJdbcSqlExecutor() {
     // Hidden constructor
@@ -73,12 +81,16 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
           throw new IllegalArgumentException("select count execution error");
         }
         return count;
+      } catch (SQLException e) {
+        SilverLogger.getLogger(this)
+            .debug(e.getMessage() + SQL_REQUEST + selectCountQueryBuilder.getSqlQuery());
+        throw e;
       }
     }
   }
 
   @Override
-  public <R> List<R> select(JdbcSqlQuery selectQuery, SelectResultRowProcess<R> process)
+  public <R> ListSlice<R> select(JdbcSqlQuery selectQuery, SelectResultRowProcess<R> process)
       throws SQLException {
     try (Connection con = ConnectionPool.getConnection()) {
       return select(con, selectQuery, process);
@@ -86,25 +98,19 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
   }
 
   @Override
-  public <R> List<R> select(final Connection con, final JdbcSqlQuery selectQuery,
+  public <R> ListSlice<R> select(final Connection con, final JdbcSqlQuery selectQuery,
       final SelectResultRowProcess<R> process) throws SQLException {
-    try (PreparedStatement st = con.prepareStatement(selectQuery.getSqlQuery())) {
+    JdbcSqlQuery.Configuration queryConf = selectQuery.getConfiguration();
+    try (PreparedStatement st = queryConf.isFirstResultScrolled() ?
+        con.prepareStatement(selectQuery.getSqlQuery(), ResultSet.TYPE_SCROLL_INSENSITIVE,
+            ResultSet.CONCUR_READ_ONLY) : con.prepareStatement(selectQuery.getSqlQuery())) {
       setParameters(st, selectQuery.getParameters());
       try (ResultSet rs = st.executeQuery()) {
-        List<R> entities = new ArrayList<>();
-        int i = 0;
-        while (rs.next()) {
-          int resultLimit = selectQuery.getConfiguration().getResultLimit();
-          if (resultLimit > 0 && entities.size() >= resultLimit) {
-            break;
-          }
-          R entity = process.currentRow(new ResultSetWrapper(rs, i));
-          if (entity != null) {
-            entities.add(entity);
-          }
-          i++;
-        }
-        return entities;
+        return fetchEntities(rs, process, queryConf);
+      } catch (SQLException e) {
+        SilverLogger.getLogger(this)
+            .debug(e.getMessage() + SQL_REQUEST + selectQuery.getSqlQuery());
+        throw e;
       }
     }
   }
@@ -140,9 +146,40 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
       try (PreparedStatement prepStmt = con.prepareStatement(modifyQuery.getSqlQuery())) {
         setParameters(prepStmt, modifyQuery.getParameters());
         nbUpdate += prepStmt.executeUpdate();
+      } catch (SQLException e) {
+        SilverLogger.getLogger(this)
+            .debug(e.getMessage() + SQL_REQUEST + modifyQuery.getSqlQuery());
+        throw e;
       }
     }
     return nbUpdate;
+  }
+
+  private <R> ListSlice<R> fetchEntities(final ResultSet rs,
+      final SelectResultRowProcess<R> process, final JdbcSqlQuery.Configuration queryConf)
+      throws SQLException {
+    final ResultSetWrapper rsw = new ResultSetWrapper(rs);
+    int idx = queryConf.getOffset();
+    if (queryConf.isFirstResultScrolled()) {
+      rsw.next();
+      rsw.relative(idx - 1);
+    }
+    final int lastIdx =
+        queryConf.isResultCountLimited() ? idx + queryConf.getResultLimit() - 1 : 0;
+    ListSlice<R> entities = new ListSlice<>(idx, lastIdx);
+    int originalSize = idx;
+    for (;rsw.next(); originalSize++) {
+      if (!queryConf.isResultCountLimited() ||
+          (queryConf.isResultCountLimited() && entities.size() < queryConf.getResultLimit())) {
+        rsw.setCurrentRowIndex(idx++);
+        R entity = process.currentRow(rsw);
+        if (entity != null) {
+          entities.add(entity);
+        }
+      }
+    }
+    entities.setOriginalListSize(originalSize);
+    return entities;
   }
 
   /**
@@ -168,11 +205,12 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
         preparedStatement.setLong(paramIndex, (Long) parameter);
       } else if (parameter instanceof Timestamp) {
         preparedStatement.setTimestamp(paramIndex, (Timestamp) parameter);
-      } else if (parameter instanceof DateTime) {
-        preparedStatement
-            .setTimestamp(paramIndex, new java.sql.Timestamp(((Date) parameter).getTime()));
-      } else if (parameter instanceof Date) {
-        preparedStatement.setDate(paramIndex, new java.sql.Date(((Date) parameter).getTime()));
+      } else if (isADateTime(parameter)) {
+        preparedStatement.setTimestamp(paramIndex,
+            new java.sql.Timestamp(toInstant(parameter).toEpochMilli()));
+      } else if (isADate(parameter)) {
+        preparedStatement.setDate(paramIndex,
+            new java.sql.Date(toInstant(parameter).toEpochMilli()));
       } else {
         try {
           Method idGetter = parameter.getClass().getDeclaredMethod("getId");
@@ -184,6 +222,39 @@ class DefaultJdbcSqlExecutor implements JdbcSqlExecutor {
         }
       }
       paramIndex++;
+    }
+  }
+
+  private static boolean isADate(final Object parameter) {
+    return parameter instanceof Date || parameter instanceof LocalDate;
+  }
+
+  private static boolean isADateTime(final Object parameter) {
+    if (parameter instanceof DateTime) {
+      return true;
+    }
+    if (parameter instanceof Instant) {
+      return true;
+    }
+    if (parameter instanceof LocalDateTime) {
+      return true;
+    }
+    if (parameter instanceof OffsetDateTime) {
+      return true;
+    }
+    return parameter instanceof ZonedDateTime;
+  }
+
+  private static Instant toInstant(final Object parameter) {
+    try {
+      if (parameter instanceof Instant) {
+        return (Instant) parameter;
+      }
+      Method toInstant = parameter.getClass().getMethod("toInstant");
+      return (Instant) toInstant.invoke(parameter);
+    } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+      throw new IllegalArgumentException(
+          "Date or date time parameter expected. But is " + parameter.getClass(), e);
     }
   }
 

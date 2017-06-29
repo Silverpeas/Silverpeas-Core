@@ -45,6 +45,11 @@ public class SilverpeasArrayList<T> extends ArrayList<T> implements SilverpeasLi
   }
 
   @Override
+  public <U> SilverpeasList<U> newEmptyListWithSameProperties() {
+    return new SilverpeasArrayList<>(this.size());
+  }
+
+  @Override
   public long originalListSize() {
     return size();
   }

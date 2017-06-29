@@ -39,10 +39,13 @@ import java.util.Map;
 public class ResultSetWrapper implements ResultSet {
 
   private final ResultSet resultSet;
-  private final int currentRowIndex;
+  private int currentRowIndex = 0;
 
-  public ResultSetWrapper(final ResultSet resultSet, final int currentRowIndex) {
+  ResultSetWrapper(final ResultSet resultSet) {
     this.resultSet = resultSet;
+  }
+
+  void setCurrentRowIndex(final int currentRowIndex) {
     this.currentRowIndex = currentRowIndex;
   }
 

@@ -80,7 +80,7 @@ public class RepositoryIndexer {
    */
   private void processFileList(Path dir, LocalDate creationDate, String creatorId, String action) {
     if (count % 10000 == 0) {
-      SilverLogger.getLogger(this).info("# of indexed documents = {0}", count);
+      SilverLogger.getLogger(this).debug("# of indexed documents = {0}", count);
     }
 
     File[] dirs = dir.toFile().listFiles(DirectorySPFilter.getInstance());

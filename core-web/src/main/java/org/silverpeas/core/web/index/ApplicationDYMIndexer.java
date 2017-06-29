@@ -110,9 +110,9 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    * creates a spellchecker index for the PDC
    */
   public void indexPdc() {
-    SilverLogger.getLogger(this).info("starting indexation of PDC");
+    SilverLogger.getLogger(this).debug("starting indexation of PDC");
     String pdcIndexPath = IndexFileManager.getAbsoluteIndexPath("pdc");
     DidYouMeanIndexer.createSpellIndexForAllLanguage("content", pdcIndexPath);
-    SilverLogger.getLogger(this).info("ending indexation of PDC");
+    SilverLogger.getLogger(this).debug("ending indexation of PDC");
   }
 }

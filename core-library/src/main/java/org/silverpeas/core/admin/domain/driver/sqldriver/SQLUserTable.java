@@ -38,7 +38,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A UserTable object manages the DomainSQL_User table.
+ * a DAO to manage the DomainSQL_User table.
  */
 public class SQLUserTable {
   SQLSettings drvSettings = new SQLSettings();

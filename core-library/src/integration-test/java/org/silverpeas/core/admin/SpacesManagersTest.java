@@ -20,8 +20,6 @@
  */
 package org.silverpeas.core.admin;
 
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -29,13 +27,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.component.ComponentHelper;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.space.SpaceProfileInst;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.admin.component.ComponentHelper;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.memory.MemoryData;
 import org.silverpeas.core.util.memory.MemoryUnit;
 
@@ -49,7 +50,7 @@ import static org.junit.Assert.assertThat;
 public class SpacesManagersTest {
 
   @Inject
-  private AdminController adminController;
+  private Administration admin;
 
   @Rule
   public DbSetupRule dbSetupRule =
@@ -78,49 +79,49 @@ public class SpacesManagersTest {
 
   @Before
   public void reloadCache() {
-    adminController.reloadAdminCache();
+    admin.reloadCache();
   }
 
   @Test
-  public void testAddRemoveSpaceManager() {
+  public void testAddRemoveSpaceManager() throws AdminException {
     //add profile
     SpaceProfileInst profile = new SpaceProfileInst();
     profile.setSpaceFatherId("WA2");
     profile.setName(SpaceProfileInst.SPACE_MANAGER);
     profile.addUser("2");
-    String profileId = adminController.addSpaceProfileInst(profile, "1");
+    String profileId = admin.addSpaceProfileInst(profile, "1");
     assertThat(profileId, is("4"));
 
     //check manager
-    profile = adminController.getSpaceProfileInst("4");
+    profile = admin.getSpaceProfileInst("4");
     assertThat(profile.getNumUser(), is(1));
 
     //remove manager
     profile.getAllUsers().clear();
-    adminController.updateSpaceProfileInst(profile, "1");
-    profile = adminController.getSpaceProfileInst("4");
+    admin.updateSpaceProfileInst(profile, "1");
+    profile = admin.getSpaceProfileInst("4");
     assertThat(profile.getNumUser(), is(0));
   }
 
   @Test
-  public void testGetManageableSpaces() {
-    String[] spaceIds = adminController.getUserManageableSpaceIds("1");
+  public void testGetManageableSpaces() throws AdminException {
+    String[] spaceIds = admin.getUserManageableSpaceIds("1");
     assertThat(spaceIds, is(notNullValue()));
     assertThat(spaceIds.length, is(2));
 
-    spaceIds = adminController.getUserManageableSpaceIds("2");
+    spaceIds = admin.getUserManageableSpaceIds("2");
     assertThat(spaceIds, is(notNullValue()));
     assertThat(spaceIds.length, is(4));
 
-    spaceIds = adminController.getUserManageableSubSpaceIds("1", "WA1");
+    spaceIds = admin.getUserManageableSubSpaceIds("1", "WA1");
     assertThat(spaceIds, is(notNullValue()));
     assertThat(spaceIds.length, is(2));
 
-    spaceIds = adminController.getUserManageableSubSpaceIds("2", "WA1");
+    spaceIds = admin.getUserManageableSubSpaceIds("2", "WA1");
     assertThat(spaceIds, is(notNullValue()));
     assertThat(spaceIds.length, is(2));
 
-    spaceIds = adminController.getUserManageableSubSpaceIds("2", "WA2");
+    spaceIds = admin.getUserManageableSubSpaceIds("2", "WA2");
     assertThat(spaceIds, is(notNullValue()));
     assertThat(spaceIds.length, is(1));
     assertThat(spaceIds[0], is("3"));

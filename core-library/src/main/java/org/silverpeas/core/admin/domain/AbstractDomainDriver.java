@@ -25,6 +25,7 @@
 package org.silverpeas.core.admin.domain;
 
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -37,20 +38,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.MissingResourceException;
 
-abstract public class AbstractDomainDriver implements DomainDriver {
+import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_RW;
+import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_X509_USER;
+
+public abstract class AbstractDomainDriver implements DomainDriver {
 
   protected int domainId = -1; // The domainId of this instance of domain
   // driver
-  protected List<DomainProperty> domainProperties = new ArrayList<DomainProperty>(); // liste
+  protected List<DomainProperty> domainProperties = new ArrayList<>(); // liste
   // ordonnée
   // des properties du bundle domainSP
   protected String[] keys = null;
-  protected String m_PropertiesMultilang = "";
-  protected Map<String, HashMap<String, String>> m_PropertiesLabels =
-      new HashMap<String, HashMap<String, String>>();
-  protected Map<String, HashMap<String, String>> m_PropertiesDescriptions =
-      new HashMap<String, HashMap<String, String>>();
-  protected String[] m_mapParameters = null;
+  protected String propertiesl10n = "";
+  protected Map<String, HashMap<String, String>> propertiesLabels = new HashMap<>();
+  protected Map<String, HashMap<String, String>> propertiesDescriptions = new HashMap<>();
+  protected String[] mapParameters = null;
   protected boolean synchroInProcess = false;
   protected boolean x509Enabled = false;
 
@@ -61,11 +63,11 @@ abstract public class AbstractDomainDriver implements DomainDriver {
    * @param domainId id of domain
    * @param initParam name of resource file
    * @param authenticationServer name of the authentication server (no more used yet)
-   * @throws Exception
+   * @throws AdminException
    */
   @Override
   public void init(int domainId, String initParam, String authenticationServer)
-      throws Exception {
+      throws AdminException {
     SettingBundle settings = ResourceLocator.getSettingBundle(initParam);
     int nbProps = 0;
 
@@ -73,13 +75,13 @@ abstract public class AbstractDomainDriver implements DomainDriver {
 
     // Init the domain's users properties
     domainProperties.clear();
-    m_PropertiesMultilang = settings.getString("property.ResourceFile");
+    propertiesl10n = settings.getString("property.ResourceFile");
     String s = settings.getString("property.Number", "");
     if (StringUtil.isDefined(s)) {
       nbProps = Integer.parseInt(s);
     }
     keys = new String[nbProps];
-    m_mapParameters = new String[nbProps];
+    mapParameters = new String[nbProps];
     for (int i = 1; i <= nbProps; i++) {
       s = settings.getString("property_" + Integer.toString(i) + ".Name", "");
       if (!s.trim().isEmpty()) {
@@ -88,7 +90,7 @@ abstract public class AbstractDomainDriver implements DomainDriver {
         // infos
         domainProperties.add(newElmt);
         keys[i - 1] = newElmt.getName();
-        m_mapParameters[i - 1] = newElmt.getMapParameter();
+        mapParameters[i - 1] = newElmt.getMapParameter();
       }
     }
 
@@ -116,12 +118,12 @@ abstract public class AbstractDomainDriver implements DomainDriver {
 
   @Override
   public String[] getMapParameters() {
-    return m_mapParameters;
+    return mapParameters;
   }
 
   @Override
   public List<DomainProperty> getPropertiesToImport(String language) {
-    List<DomainProperty> props = new ArrayList<DomainProperty>();
+    List<DomainProperty> props = new ArrayList<>();
 
     Map<String, String> theLabels = getPropertiesLabels(language);
     Map<String, String> theDescriptions = getPropertiesDescriptions(language);
@@ -153,11 +155,11 @@ abstract public class AbstractDomainDriver implements DomainDriver {
 
   @Override
   public Map<String, String> getPropertiesLabels(String language) {
-    HashMap<String, String> valret = m_PropertiesLabels.get(language);
+    HashMap<String, String> valret = propertiesLabels.get(language);
     if (valret == null) {
-      HashMap<String, String> newLabels = new HashMap<String, String>();
+      HashMap<String, String> newLabels = new HashMap<>();
       LocalizationBundle msg =
-          ResourceLocator.getLocalizationBundle(m_PropertiesMultilang, language);
+          ResourceLocator.getLocalizationBundle(propertiesl10n, language);
       for (String key : keys) {
         try {
           newLabels.put(key, msg.getString(key));
@@ -165,7 +167,7 @@ abstract public class AbstractDomainDriver implements DomainDriver {
           SilverLogger.getLogger(this).warn(mre.getMessage());
         }
       }
-      m_PropertiesLabels.put(language, newLabels);
+      propertiesLabels.put(language, newLabels);
       valret = newLabels;
     }
     return valret;
@@ -173,12 +175,12 @@ abstract public class AbstractDomainDriver implements DomainDriver {
 
   @Override
   public Map<String, String> getPropertiesDescriptions(String language) {
-    Map<String, String> valret = m_PropertiesDescriptions.get(language);
+    Map<String, String> valret = propertiesDescriptions.get(language);
 
     if (valret == null) {
-      HashMap<String, String> newDescriptions = new HashMap<String, String>();
+      HashMap<String, String> newDescriptions = new HashMap<>();
       LocalizationBundle msg =
-          ResourceLocator.getLocalizationBundle(m_PropertiesMultilang, language);
+          ResourceLocator.getLocalizationBundle(propertiesl10n, language);
       for (String key : keys) {
         try {
           newDescriptions.put(key, msg.getString(key + ".description"));
@@ -186,7 +188,7 @@ abstract public class AbstractDomainDriver implements DomainDriver {
           SilverLogger.getLogger(this).warn(mre.getMessage());
         }
       }
-      m_PropertiesDescriptions.put(language, newDescriptions);
+      propertiesDescriptions.put(language, newDescriptions);
       valret = newDescriptions;
     }
     return valret;
@@ -198,7 +200,7 @@ abstract public class AbstractDomainDriver implements DomainDriver {
    * @param rs name of resource file
    */
   @Override
-  public void initFromProperties(SettingBundle rs) throws Exception {
+  public void initFromProperties(SettingBundle rs) throws AdminException {
   }
 
   /**
@@ -207,7 +209,7 @@ abstract public class AbstractDomainDriver implements DomainDriver {
   @Override
   public long getDriverActions() {
     if (x509Enabled) {
-      return ACTION_MASK_RW | AbstractDomainDriver.ACTION_X509_USER;
+      return ACTION_MASK_RW | ACTION_X509_USER;
     }
     return ACTION_MASK_RW;
   }
@@ -238,12 +240,12 @@ abstract public class AbstractDomainDriver implements DomainDriver {
   }
 
   @Override
-  public String getTimeStamp(String minTimeStamp) throws Exception {
+  public String getTimeStamp(String minTimeStamp) throws AdminException {
     return "";
   }
 
   @Override
-  public String getTimeStampField() throws Exception {
+  public String getTimeStampField() throws AdminException {
     return null;
   }
 
@@ -256,12 +258,12 @@ abstract public class AbstractDomainDriver implements DomainDriver {
    * Called when Admin starts the synchronization
    */
   @Override
-  public void beginSynchronization() throws Exception {
+  public void beginSynchronization() throws AdminException {
     synchroInProcess = true;
   }
 
   @Override
-  public boolean isSynchroInProcess() throws Exception {
+  public boolean isSynchroInProcess() throws AdminException {
     return synchroInProcess;
   }
 
@@ -270,12 +272,12 @@ abstract public class AbstractDomainDriver implements DomainDriver {
    * @param cancelSynchro true if the synchronization is cancelled, false if it ends normally
    */
   @Override
-  public String endSynchronization(boolean cancelSynchro) throws Exception {
+  public String endSynchronization(boolean cancelSynchro) throws AdminException {
     synchroInProcess = false;
     return "";
   }
 
-  static protected int idAsInt(String id) {
+  protected static int idAsInt(String id) {
     if (!StringUtil.isDefined(id)) {
       return -1; // the null id.
     }
@@ -290,7 +292,7 @@ abstract public class AbstractDomainDriver implements DomainDriver {
    * Convert int Id to String Id
    * @param id id to convert
    */
-  static protected String idAsString(int id) {
+  protected static String idAsString(int id) {
     return String.valueOf(id);
   }
 }

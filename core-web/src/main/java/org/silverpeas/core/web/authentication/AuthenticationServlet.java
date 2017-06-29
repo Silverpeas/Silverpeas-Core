@@ -70,7 +70,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   private static final String INCORRECT_LOGIN_PWD_DOMAIN = "6";
   private static final String LOGIN_ERROR_PAGE = "/Login?ErrorCode=";
   private static final String COOKIE_PASSWORD = "svpPassword";
-  private static int COOKIE_TIMELIFE = 31536000;
+  private static final int COOKIE_TIMELIFE = 31536000;
 
   @Inject
   private AuthenticationService authService;
@@ -164,8 +164,9 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       }
     }
 
-    if (mandatoryQuestionChecker.check(request, authenticationKey)) {
-      forward(request, response, mandatoryQuestionChecker.getDestination());
+    String destination = mandatoryQuestionChecker.check(request, authenticationKey);
+    if (StringUtil.isDefined(destination)) {
+      forward(request, response, destination);
       return;
     }
 
@@ -193,67 +194,15 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     } else {
       if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(errorCode) ||
           AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(errorCode)) {
-        try {
-          if (userCanTryAgainToLoginVerifier.isActivated()) {
-            storeLogin(response, authenticationParameters.isNewEncryptionMode(),
-                authenticationParameters.getLogin(),
-                authenticationParameters.isSecuredAccess());
-            storeDomain(response, authenticationParameters.getDomainId(),
-                authenticationParameters.isSecuredAccess());
-          }
-          if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(errorCode)) {
-            url = userCanTryAgainToLoginVerifier.verify()
-                .performRequestUrl(request, LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD);
-          } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(errorCode)) {
-            url = userCanTryAgainToLoginVerifier.verify()
-                .performRequestUrl(request, LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD_DOMAIN);
-          }
-        } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
-          logger.error(e.getMessage(), e);
-          url = userCanTryAgainToLoginVerifier.getErrorDestination();
-        }
+        url = processBadLogin(errorCode, request, response, authenticationParameters,
+            userCanTryAgainToLoginVerifier);
       } else if (UserCanLoginVerifier.ERROR_USER_ACCOUNT_BLOCKED.equals(errorCode) ||
           UserCanLoginVerifier.ERROR_USER_ACCOUNT_DEACTIVATED.equals(errorCode)) {
-        if (userCanTryAgainToLoginVerifier.isActivated() || StringUtil.isDefined(
-            userCanTryAgainToLoginVerifier.getUser().getId())) {
-          // If user can try again to login verifier is activated or if the user has been found
-          // from credential, the login and the domain are stored
-          storeLogin(response, authenticationParameters.isNewEncryptionMode(),
-              authenticationParameters.getLogin(), authenticationParameters.isSecuredAccess());
-          storeDomain(response, authenticationParameters.getDomainId(),
-              authenticationParameters.isSecuredAccess());
-          url = AuthenticationUserVerifierFactory
-              .getUserCanLoginVerifier(userCanTryAgainToLoginVerifier.getUser())
-              .getErrorDestination();
-        } else {
-          if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(errorCode)) {
-            url = LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD;
-          } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(errorCode)) {
-            url = LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD_DOMAIN;
-          }
-        }
-      } else if (AuthenticationService.ERROR_PWD_EXPIRED.equals(errorCode)) {
-        String allowPasswordChange = (String) session.getAttribute(
-            Authentication.PASSWORD_CHANGE_ALLOWED);
-        if (StringUtil.getBooleanValue(allowPasswordChange)) {
-          SettingBundle settings = ResourceLocator.getSettingBundle(
-              "org.silverpeas.authentication.settings.passwordExpiration");
-          url = settings.getString("passwordExpiredURL") + "?login=" + authenticationParameters.
-              getLogin() + "&domainId=" + authenticationParameters.getDomainId();
-        } else {
-          url = LOGIN_ERROR_PAGE + AuthenticationService.ERROR_PWD_EXPIRED;
-        }
-      } else if (AuthenticationService.ERROR_PWD_MUST_BE_CHANGED.equals(errorCode)) {
-        String allowPasswordChange = (String) session.getAttribute(
-            Authentication.PASSWORD_CHANGE_ALLOWED);
-        if (StringUtil.getBooleanValue(allowPasswordChange)) {
-          SettingBundle settings = ResourceLocator.getSettingBundle(
-              "org.silverpeas.authentication.settings.passwordExpiration");
-          url = settings.getString("passwordExpiredURL") + "?login=" + authenticationParameters.
-              getLogin() + "&domainId=" + authenticationParameters.getDomainId();
-        } else {
-          url = LOGIN_ERROR_PAGE + AuthenticationService.ERROR_PWD_EXPIRED;
-        }
+        url = processBadAccountState(errorCode, response, authenticationParameters,
+            userCanTryAgainToLoginVerifier);
+      } else if (AuthenticationService.ERROR_PWD_EXPIRED.equals(errorCode) ||
+          AuthenticationService.ERROR_PWD_MUST_BE_CHANGED.equals(errorCode)) {
+        url = processPasswordExpiration(authenticationParameters, session);
       } else if (UserMustChangePasswordVerifier.ERROR_PWD_MUST_BE_CHANGED_ON_FIRST_LOGIN
           .equals(errorCode)) {
         // User has been successfully authenticated, but he has to change his password on his
@@ -281,6 +230,73 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     }
     response.sendRedirect(
         response.encodeRedirectURL(URLUtil.getFullApplicationURL(request) + url));
+  }
+
+  private String processPasswordExpiration(final AuthenticationParameters authenticationParameters,
+      final HttpSession session) {
+    final String url;
+    String allowPasswordChange = (String) session.getAttribute(
+        Authentication.PASSWORD_CHANGE_ALLOWED);
+    if (StringUtil.getBooleanValue(allowPasswordChange)) {
+      SettingBundle settings = ResourceLocator.getSettingBundle(
+          "org.silverpeas.authentication.settings.passwordExpiration");
+      url = settings.getString("passwordExpiredURL") + "?login=" + authenticationParameters.
+          getLogin() + "&domainId=" + authenticationParameters.getDomainId();
+    } else {
+      url = LOGIN_ERROR_PAGE + AuthenticationService.ERROR_PWD_EXPIRED;
+    }
+    return url;
+  }
+
+  private String processBadAccountState(final String errorCode, final HttpServletResponse response,
+      final AuthenticationParameters authenticationParameters,
+      final UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier) {
+    String url = null;
+    if (userCanTryAgainToLoginVerifier.isActivated() || StringUtil.isDefined(
+        userCanTryAgainToLoginVerifier.getUser().getId())) {
+      // If user can try again to login verifier is activated or if the user has been found
+      // from credential, the login and the domain are stored
+      storeLogin(response, authenticationParameters.isNewEncryptionMode(),
+          authenticationParameters.getLogin(), authenticationParameters.isSecuredAccess());
+      storeDomain(response, authenticationParameters.getDomainId(),
+          authenticationParameters.isSecuredAccess());
+      url = AuthenticationUserVerifierFactory
+          .getUserCanLoginVerifier(userCanTryAgainToLoginVerifier.getUser())
+          .getErrorDestination();
+    } else {
+      if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(errorCode)) {
+        url = LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD;
+      } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(errorCode)) {
+        url = LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD_DOMAIN;
+      }
+    }
+    return url;
+  }
+
+  private String processBadLogin(final String errorCode, final HttpRequest request,
+      final HttpServletResponse response, final AuthenticationParameters authenticationParameters,
+      final UserCanTryAgainToLoginVerifier userCanTryAgainToLoginVerifier) {
+    String url = null;
+    try {
+      if (userCanTryAgainToLoginVerifier.isActivated()) {
+        storeLogin(response, authenticationParameters.isNewEncryptionMode(),
+            authenticationParameters.getLogin(),
+            authenticationParameters.isSecuredAccess());
+        storeDomain(response, authenticationParameters.getDomainId(),
+            authenticationParameters.isSecuredAccess());
+      }
+      if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(errorCode)) {
+        url = userCanTryAgainToLoginVerifier.verify()
+            .performRequestUrl(request, LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD);
+      } else if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD_DOMAIN.equals(errorCode)) {
+        url = userCanTryAgainToLoginVerifier.verify()
+            .performRequestUrl(request, LOGIN_ERROR_PAGE + INCORRECT_LOGIN_PWD_DOMAIN);
+      }
+    } catch (AuthenticationNoMoreUserConnectionAttemptException e) {
+      logger.error(e.getMessage(), e);
+      url = userCanTryAgainToLoginVerifier.getErrorDestination();
+    }
+    return url;
   }
 
   private void forward(HttpServletRequest request, HttpServletResponse response,

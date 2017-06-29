@@ -159,7 +159,7 @@ public class GroupsSearchCriteria implements SearchCriteria {
   }
 
   public boolean isCriterionOnDomainIdSet() {
-    return criteria.containsKey(DOMAIN_IDS);
+    return getCriterionOnDomainId() != null;
   }
 
   public boolean isCriterionOnAccessLevelsSet() {
@@ -171,10 +171,12 @@ public class GroupsSearchCriteria implements SearchCriteria {
   }
 
   public boolean isCriterionOnMixedDomainIdSet() {
-    String[] domainIds = (String[])criteria.get(DOMAIN_IDS);
-    for (String domainId : domainIds) {
-      if (domainId.equals(Domain.MIXED_DOMAIN_ID)) {
-        return true;
+    if (criteria.containsKey(DOMAIN_IDS)) {
+      String[] domainIds = (String[]) criteria.get(DOMAIN_IDS);
+      for (String domainId : domainIds) {
+        if (domainId.equals(Domain.MIXED_DOMAIN_ID)) {
+          return true;
+        }
       }
     }
     return false;

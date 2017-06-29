@@ -67,7 +67,7 @@ public abstract class AbstractIndexer {
    * @param spaceId space identifier
    */
   private void indexSpace(String spaceId) {
-    SilverLogger.getLogger(this).info("starting space indexation with id ''{0}''", spaceId);
+    SilverLogger.getLogger(this).debug("starting space indexation with id ''{0}''", spaceId);
 
     String currentSpaceId = spaceId;
     try {
@@ -97,7 +97,7 @@ public abstract class AbstractIndexer {
       SilverLogger.getLogger(this)
           .error("failure while indexing space with id ''{0}''", new Object[]{spaceId}, e);
     }
-    SilverLogger.getLogger(this).info("ending space indexation with id ''{0}''", spaceId);
+    SilverLogger.getLogger(this).debug("ending space indexation with id ''{0}''", spaceId);
   }
 
   protected void indexPersonalComponents() {

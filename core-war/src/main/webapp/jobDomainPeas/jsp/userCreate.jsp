@@ -388,7 +388,7 @@ out.println(window.printBefore());
               <input type="text" name="userManualNotifReceiverLimitValue" id="userManualNotifReceiverLimitValue" size="50" maxlength="3"
                      value="${userObject.userManualNotificationUserReceiverLimit
                               and not empty userObject.notifManualReceiverLimit
-                              and userObject.notifManualReceiverLimit gt 0 ? ('' + userObject.notifManualReceiverLimit) : ''}"/>
+                              and userObject.notifManualReceiverLimit gt 0 ? userObject.notifManualReceiverLimit : ''}"/>
             </div>
           </div>
         </div>

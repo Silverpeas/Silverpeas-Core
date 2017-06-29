@@ -34,11 +34,11 @@ import java.util.List;
  */
 public class ComponentInstanceI18NTable extends Table<ComponentInstanceI18NRow> {
 
-  public ComponentInstanceI18NTable(OrganizationSchema organization) {
-    super(organization, "ST_ComponentInstanceI18N");
+  public ComponentInstanceI18NTable() {
+    super("ST_ComponentInstanceI18N");
   }
 
-  static final private String COLUMNS = "id,componentId,lang,name,description";
+  private static final String COLUMNS = "id,componentId,lang,name,description";
 
   /**
    * Fetch the current component row from a resultSet.
@@ -62,27 +62,27 @@ public class ComponentInstanceI18NTable extends Table<ComponentInstanceI18NRow> 
    * Returns the Component whith the given id.
    * @param componentId
    * @return the Component whith the given id.
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public List<ComponentInstanceI18NRow> getTranslations(int componentId) throws
-      AdminPersistenceException {
+      SQLException {
     return getRows(SELECT_TRANSLATIONS, componentId);
   }
 
-  static final private String SELECT_TRANSLATIONS = "select " + COLUMNS
+  private static final String SELECT_TRANSLATIONS = "select " + COLUMNS
       + " from ST_ComponentInstanceI18N where componentId = ?";
 
   /**
    * Inserts in the database a new component row.
    * @param translation
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public void createTranslation(ComponentInstanceI18NRow translation) throws
-      AdminPersistenceException {
+      SQLException {
     insertRow(INSERT_TRANSLATION, translation);
   }
 
-  static final private String INSERT_TRANSLATION = "insert into"
+  private static final String INSERT_TRANSLATION = "insert into"
       + " ST_ComponentInstanceI18N(" + COLUMNS + ")"
       + " values  (?, ?, ?, ?, ?)";
 
@@ -100,14 +100,14 @@ public class ComponentInstanceI18NTable extends Table<ComponentInstanceI18NRow> 
   /**
    * Updates a component row.
    * @param component
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
   public void updateTranslation(ComponentInstanceI18NRow component)
-      throws AdminPersistenceException {
+      throws SQLException {
     updateRow(UPDATE_TRANSLATION, component);
   }
 
-  static final private String UPDATE_TRANSLATION = "update ST_ComponentInstanceI18N set"
+  private static final String UPDATE_TRANSLATION = "update ST_ComponentInstanceI18N set"
       + " name = ?," + " description = ? " + " WHERE id = ? ";
 
   @Override
@@ -121,25 +121,25 @@ public class ComponentInstanceI18NTable extends Table<ComponentInstanceI18NRow> 
   /**
    * Delete a translation.
    * @param id
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void removeTranslation(int id) throws AdminPersistenceException {
+  public void removeTranslation(int id) throws SQLException {
     updateRelation(DELETE_TRANSLATION, id);
   }
 
-  static final private String DELETE_TRANSLATION =
+  private static final String DELETE_TRANSLATION =
       "delete from ST_ComponentInstanceI18N where id = ?";
 
   /**
    * Delete all component's translations.
    * @param componentId
-   * @throws AdminPersistenceException
+   * @throws SQLException
    */
-  public void removeTranslations(int componentId) throws AdminPersistenceException {
+  public void removeTranslations(int componentId) throws SQLException {
     updateRelation(DELETE_TRANSLATIONS, componentId);
   }
 
-  static final private String DELETE_TRANSLATIONS =
+  private static final String DELETE_TRANSLATIONS =
       "delete from ST_ComponentInstanceI18N where componentId = ?";
 
   /**

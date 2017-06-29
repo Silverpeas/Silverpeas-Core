@@ -24,50 +24,86 @@
 
 package org.silverpeas.core.admin.persistence;
 
-import org.silverpeas.core.persistence.jdbc.Schema;
-import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.util.ServiceProvider;
 
-import java.sql.Connection;
+import javax.inject.Inject;
+import javax.inject.Singleton;
 
-public class OrganizationSchema extends Schema {
+@Singleton
+public class OrganizationSchema {
 
-  public OrganizationSchema() throws UtilException {
-    super();
-    init();
+  @Inject
+  private DomainTable domain;
+  @Inject
+  private KeyStoreTable keyStore;
+  @Inject
+  private SpaceTable space;
+  @Inject
+  private SpaceI18NTable spaceI18N;
+  @Inject
+  private ComponentInstanceTable instance;
+  @Inject
+  private ComponentInstanceI18NTable instanceI18N;
+  @Inject
+  private InstanceDataTable instanceData;
+  @Inject
+  private UserRoleTable userRole;
+  @Inject
+  private SpaceUserRoleTable spaceUserRole;
+  @Inject
+  private AccessLevelTable accessLevel;
+  @Inject
+  private GroupUserRoleTable groupUserRole;
+
+  public static OrganizationSchema get() {
+    return ServiceProvider.getService(OrganizationSchema.class);
   }
 
-  public OrganizationSchema(Connection connection) throws UtilException {
-    super(connection);
-    init();
+  protected OrganizationSchema() {
+
   }
 
-  public final void init() {
-    domain = new DomainTable(this);
-    keyStore = new KeyStoreTable(this);
-    user = new UserTable(this);
-    group = new GroupTable(this);
-    space = new SpaceTable(this);
-    spaceI18N = new SpaceI18NTable(this);
-    instance = new ComponentInstanceTable(this);
-    instanceI18N = new ComponentInstanceI18NTable(this);
-    instanceData = new InstanceDataTable(this);
-    userRole = new UserRoleTable(this);
-    spaceUserRole = new SpaceUserRoleTable(this);
-    accessLevel = new AccessLevelTable(this);
-    groupUserRole = new GroupUserRoleTable(this);
+  public DomainTable domain() {
+    return domain;
   }
 
-  public DomainTable domain = null;
-  public KeyStoreTable keyStore = null;
-  public UserTable user = null;
-  public GroupTable group = null;
-  public SpaceTable space = null;
-  public SpaceI18NTable spaceI18N = null;
-  public ComponentInstanceTable instance = null;
-  public ComponentInstanceI18NTable instanceI18N = null;
-  public InstanceDataTable instanceData = null;
-  public UserRoleTable userRole = null;
-  public SpaceUserRoleTable spaceUserRole = null;
-  public AccessLevelTable accessLevel = null;
-  public GroupUserRoleTable groupUserRole = null;
+  public KeyStoreTable keyStore() {
+    return keyStore;
+  }
+
+  public SpaceTable space() {
+    return space;
+  }
+
+  public SpaceI18NTable spaceI18N() {
+    return spaceI18N;
+  }
+
+  public ComponentInstanceTable instance() {
+    return instance;
+  }
+
+  public ComponentInstanceI18NTable instanceI18N() {
+    return instanceI18N;
+  }
+
+  public InstanceDataTable instanceData() {
+    return instanceData;
+  }
+
+  public UserRoleTable userRole() {
+    return userRole;
+  }
+
+  public SpaceUserRoleTable spaceUserRole() {
+    return spaceUserRole;
+  }
+
+  public AccessLevelTable accessLevel() {
+    return accessLevel;
+  }
+
+  public GroupUserRoleTable groupUserRole() {
+    return groupUserRole;
+  }
 }

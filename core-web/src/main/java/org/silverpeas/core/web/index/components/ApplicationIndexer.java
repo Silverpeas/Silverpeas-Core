@@ -142,14 +142,14 @@ public class ApplicationIndexer extends AbstractIndexer {
   }
 
   public void indexUsers() {
-    SilverLogger.getLogger(this).info("starting indexation of users");
+    SilverLogger.getLogger(this).debug("starting indexation of users");
     admin.indexAllUsers();
-    SilverLogger.getLogger(this).info("ending indexation of users");
+    SilverLogger.getLogger(this).debug("ending indexation of users");
   }
 
   public void indexGroups() {
-    SilverLogger.getLogger(this).info("starting indexation of groups");
+    SilverLogger.getLogger(this).debug("starting indexation of groups");
     admin.indexAllGroups();
-    SilverLogger.getLogger(this).info("ending indexation of groups");
+    SilverLogger.getLogger(this).debug("ending indexation of groups");
   }
 }

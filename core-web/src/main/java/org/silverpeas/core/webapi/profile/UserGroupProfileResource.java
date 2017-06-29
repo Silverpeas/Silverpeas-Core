@@ -131,8 +131,8 @@ public class UserGroupProfileResource extends RESTWebService {
     UserGroupProfileEntity[] entities = asWebEntity(allGroups, locatedAt(getUriInfo().
         getAbsolutePath()));
     return Response.ok(entities).
-        header(RESPONSE_HEADER_GROUPSIZE, allGroups.getOriginalListSize()).
-        header(RESPONSE_HEADER_ARRAYSIZE, allGroups.getOriginalListSize()).build();
+        header(RESPONSE_HEADER_GROUPSIZE, allGroups.originalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, allGroups.originalListSize()).build();
   }
 
   /**
@@ -199,8 +199,8 @@ public class UserGroupProfileResource extends RESTWebService {
     ListSlice<Group> groups = getOrganisationController().searchGroups(criteriaBuilder.build());
     URI groupsUri = getUriInfo().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
     return Response.ok(asWebEntity(groups, locatedAt(groupsUri))).
-        header(RESPONSE_HEADER_GROUPSIZE, groups.getOriginalListSize()).
-        header(RESPONSE_HEADER_ARRAYSIZE, groups.getOriginalListSize()).build();
+        header(RESPONSE_HEADER_GROUPSIZE, groups.originalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, groups.originalListSize()).build();
   }
 
   /**
@@ -266,8 +266,8 @@ public class UserGroupProfileResource extends RESTWebService {
 
     ListSlice<Group> subgroups = getOrganisationController().searchGroups(criteriaBuilder.build());
     return Response.ok(asWebEntity(subgroups, locatedAt(getUriInfo().getAbsolutePath()))).
-        header(RESPONSE_HEADER_GROUPSIZE, subgroups.getOriginalListSize()).
-        header(RESPONSE_HEADER_ARRAYSIZE, subgroups.getOriginalListSize()).build();
+        header(RESPONSE_HEADER_GROUPSIZE, subgroups.originalListSize()).
+        header(RESPONSE_HEADER_ARRAYSIZE, subgroups.originalListSize()).build();
   }
 
   @Override

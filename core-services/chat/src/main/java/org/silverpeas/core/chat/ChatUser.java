@@ -67,7 +67,7 @@ public class ChatUser extends UserDetail {
    * @return the login of the user in the chat service.
    */
   public String getChatLogin() {
-    return getLogin().replaceAll("@\\w+\\.\\w+$", "").toLowerCase();
+    return getLogin().replaceAll("(@\\w+\\.\\w+$|'*)", "").toLowerCase();
   }
 
   /**

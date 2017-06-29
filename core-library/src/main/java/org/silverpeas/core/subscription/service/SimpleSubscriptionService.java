@@ -168,8 +168,6 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
 
   @Override
   public boolean existsSubscription(final Subscription subscription) {
-    SilverTrace
-        .info("subscribe", "SubscriptionService.existsSubscription", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
 
     try {
@@ -219,8 +217,6 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
 
   @Override
   public SubscriptionList getBySubscriber(SubscriptionSubscriber subscriber) {
-    SilverTrace
-        .info("subscribe", "SubscriptionService.getBySubscriber", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();
@@ -298,8 +294,6 @@ public class SimpleSubscriptionService implements SubscriptionService, Component
   @Override
   public SubscriptionSubscriberList getSubscribers(
       final Collection<? extends SubscriptionResource> resources, final SubscriptionMethod method) {
-    SilverTrace
-        .info("subscribe", "SubscriptionService.getSubscribers", "root.MSG_GEN_ENTER_METHOD");
     Connection con = null;
     try {
       con = getConnection();

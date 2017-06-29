@@ -40,7 +40,7 @@ import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.user.model.AdminGroupInst;
+import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.ProfileInst;
@@ -52,8 +52,10 @@ import org.silverpeas.core.util.expression.PrefixedNotationExpressionEngine;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +65,7 @@ import java.util.Map;
  * It provides access functions to query and modify the domains as well as the company organization
  * It should be used only by a client that has the administrator rights
  */
+@Transactional
 public class AdminController implements java.io.Serializable {
 
   private static final long serialVersionUID = -1605341557688427460L;
@@ -72,11 +75,6 @@ public class AdminController implements java.io.Serializable {
 
   protected AdminController() {
 
-  }
-
-  // Start the processes
-  public void startServer() throws Exception {
-    admin.startServer();
   }
 
   /* Return true if the given space name exists */
@@ -734,15 +732,14 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   // User related functions
   // ----------------------------------------------
-  public String[] getDirectGroupsIdsOfUser(String userId) {
-
+  public List<GroupDetail> getDirectGroupsOfUser(String userId) {
     try {
-      return admin.getDirectGroupsIdsOfUser(userId);
+      return admin.getDirectGroupsOfUser(userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this)
           .error("cannot get direct group identifiers of userId ''{0}'' ({1})",
               new String[]{userId, e.getLocalizedMessage()}, e);
-      return null;
+      return Collections.emptyList();
     }
   }
 
@@ -822,19 +819,6 @@ public class AdminController implements java.io.Serializable {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return new GroupDetail[0];
-    }
-  }
-
-  /**
-   * Get ALL GroupDetail Ids for the domain's groups
-   */
-  public String[] getRootGroupIdsOfDomain(String domainId) {
-
-    try {
-      return admin.getRootGroupIdsOfDomain(domainId);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return ArrayUtil.EMPTY_STRING_ARRAY;
     }
   }
 
@@ -964,64 +948,21 @@ public class AdminController implements java.io.Serializable {
   // Groups related functions
   // ----------------------------------------------
 
-  /** Return all the groups ids available in webactiv */
-  public String[] getAllGroupsIds() {
-
+  public Group[] getAllSubGroups(String groupId) {
     try {
-      return admin.getAllGroupIds();
+      return admin.getAllSubGroups(groupId);
     } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return new Group[0];
     }
   }
 
-  /**
-   * @return all the root groups ids available
-   */
-  public String[] getAllRootGroupIds() {
-
+  public Group[] getAllSubGroupsRecursively(String groupId) {
     try {
-      return admin.getAllRootGroupIds();
+      return admin.getRecursivelyAllSubGroups(groupId);
     } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return ArrayUtil.EMPTY_STRING_ARRAY;
-    }
-  }
-
-  /**
-   * @return all the direct subgroups ids of a given group
-   */
-  public String[] getAllSubGroupIds(String groupId) {
-
-    try {
-      return admin.getAllSubGroupIds(groupId);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return ArrayUtil.EMPTY_STRING_ARRAY;
-    }
-  }
-
-  /**
-   * @return all subgroups ids of a given group
-   */
-  public String[] getAllSubGroupIdsRecursively(String groupId) {
-
-    try {
-      return admin.getAllSubGroupIdsRecursively(groupId);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return ArrayUtil.EMPTY_STRING_ARRAY;
-    }
-  }
-
-  /** Return all the group names corresponding to the given group Ids */
-  public String[] getGroupNames(String[] asGroupIds) {
-
-    try {
-      return admin.getGroupNames(asGroupIds);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return new Group[0];
     }
   }
 
@@ -1324,16 +1265,6 @@ public class AdminController implements java.io.Serializable {
   // ----------------------------------------------
   // Admin GroupDetail Detail related functions
   // ----------------------------------------------
-  /** Return all the groups Id available in webactiv */
-  public String[] getAllGroupIds() {
-
-    try {
-      return admin.getAllGroupIds();
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return ArrayUtil.EMPTY_STRING_ARRAY;
-    }
-  }
 
   /** Return true if the group with the given name */
   public boolean isGroupExist(String sName) {
@@ -1409,16 +1340,6 @@ public class AdminController implements java.io.Serializable {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return "";
-    }
-  }
-
-  public AdminGroupInst[] getAdminOrganization() {
-
-    try {
-      return admin.getAdminOrganization();
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-      return null;
     }
   }
 
@@ -1565,15 +1486,6 @@ public class AdminController implements java.io.Serializable {
     }
   }
 
-  public void resetAllDBConnections(boolean isScheduled) {
-
-    try {
-      admin.resetAllDBConnections(isScheduled);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-    }
-  }
-
   /** Removes the given user from the given group */
   public void removeUserFromGroup(String sUserId, String sGroupId) {
 
@@ -1592,10 +1504,6 @@ public class AdminController implements java.io.Serializable {
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
     }
-  }
-
-  public void reloadAdminCache() {
-    admin.reloadCache();
   }
 
   public String copyAndPasteComponent(PasteDetail pasteDetail)

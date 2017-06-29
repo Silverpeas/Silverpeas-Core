@@ -22,8 +22,7 @@ package org.silverpeas.core.admin.service;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.domain.DomainDriverManager;
-import org.silverpeas.core.admin.persistence.AdminPersistenceException;
+import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.SpaceI18NRow;
 import org.silverpeas.core.admin.persistence.SpaceRow;
 import org.silverpeas.core.admin.service.cache.TreeCache;
@@ -38,11 +37,14 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -51,16 +53,20 @@ import java.util.Map;
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
 @Singleton
+@Transactional(Transactional.TxType.MANDATORY)
 public class SpaceInstManager {
 
+  public static final String SPACE = "space";
   @Inject
   private ComponentInstManager componentInstManager;
   @Inject
   private SpaceProfileInstManager spaceProfileInstManager;
   @Inject
   private SpaceEventNotifier notifier;
+  @Inject
+  private OrganizationSchema organizationSchema;
 
-  public SpaceInstManager() {
+  protected SpaceInstManager() {
   }
 
   /**
@@ -118,40 +124,39 @@ public class SpaceInstManager {
   /**
    * Create a new space in database
    */
-  public void createSpaceInst(SpaceInst spaceInst,
-      DomainDriverManager ddManager) throws AdminException {
+  public void createSpaceInst(SpaceInst spaceInst) throws AdminException {
     try {
       // Check if the new space to add is valid
-      this.isValidSpace(spaceInst);
+      this.checkSpaceIsValid(spaceInst);
 
       // Convert space instance to SpaceRow
       SpaceRow newSpaceRow = this.makeSpaceRow(spaceInst);
 
       // Create the space node
-      ddManager.getOrganization().space.createSpace(newSpaceRow);
+      organizationSchema.space().createSpace(newSpaceRow);
       spaceInst.setLocalId(newSpaceRow.id);
       notifier.notifyEventOn(ResourceEvent.Type.CREATION, spaceInst);
 
       // duplicates existing translations
       Map<String, SpaceI18N> translations = spaceInst.getTranslations();
-      for (String lang : translations.keySet()) {
-        if (!lang.equals(newSpaceRow.lang)) {
+      for (Map.Entry<String, SpaceI18N> lang : translations.entrySet()) {
+        if (!lang.getKey().equals(newSpaceRow.lang)) {
           // default language stored in main table must not be stored in i18n table
-          SpaceI18N translation = translations.get(lang);
+          SpaceI18N translation = lang.getValue();
           SpaceI18NRow row =
-              new SpaceI18NRow(newSpaceRow.id, lang, translation.getName(),
+              new SpaceI18NRow(newSpaceRow.id, lang.getKey(), translation.getName(),
                   translation.getDescription());
-          ddManager.getOrganization().spaceI18N.createTranslation(row);
+          organizationSchema.spaceI18N().createTranslation(row);
         }
       }
 
       // Create the SpaceProfile nodes
       for (int nI = 0; nI < spaceInst.getNumSpaceProfileInst(); nI++) {
         spaceProfileInstManager.createSpaceProfileInst(spaceInst.getSpaceProfileInst(nI),
-            ddManager, spaceInst.getLocalId());
+            spaceInst.getLocalId());
       }
     } catch (Exception e) {
-      throw new AdminException(failureOnAdding("space", spaceInst.getName()), e);
+      throw new AdminException(failureOnAdding(SPACE, spaceInst.getName()), e);
     }
   }
 
@@ -161,12 +166,11 @@ public class SpaceInstManager {
    * @param spaceInstLocalId driver space id
    * @return Space information as SpaceInst object
    */
-  public SpaceInst getSpaceInstById(DomainDriverManager ddManager, int spaceInstLocalId)
+  public SpaceInst getSpaceInstById(int spaceInstLocalId)
       throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
       // Load the space detail
-      SpaceRow space = ddManager.getOrganization().space.getSpace(spaceInstLocalId);
+      SpaceRow space = organizationSchema.space().getSpace(spaceInstLocalId);
 
       if (space == null) {
         SilverLogger.getLogger(this).error("Space {0} not found", spaceInstLocalId);
@@ -176,7 +180,7 @@ public class SpaceInstManager {
       // Set the attributes of the space Inst
       SpaceInst spaceInst = spaceRow2SpaceInst(space);
       // Get the sub spaces
-      List<SpaceRow> asSubSpaces = ddManager.getOrganization().space.getDirectSubSpaces(
+      List<SpaceRow> asSubSpaces = organizationSchema.space().getDirectSubSpaces(
           spaceInstLocalId);
       List<SpaceInst> spaceInsts = new ArrayList<>(asSubSpaces.size());
       for (SpaceRow spaceRow: asSubSpaces) {
@@ -185,30 +189,28 @@ public class SpaceInstManager {
       spaceInst.setSubSpaces(spaceInsts);
 
       // Get the components
-      String[] asCompoIds =
-          ddManager.getOrganization().instance.getAllComponentInstanceIdsInSpace(
+      String[] asCompoIds = organizationSchema.instance().getAllComponentInstanceIdsInSpace(
               spaceInstLocalId);
 
       // Insert the componentsInst in the spaceInst
       if (asCompoIds != null) {
         for (String componentId : asCompoIds) {
-          ComponentInst componentInst = componentInstManager.getComponentInst(
-              ddManager, idAsInt(componentId), spaceInstLocalId);
+          ComponentInst componentInst =
+              componentInstManager.getComponentInst(idAsInt(componentId), spaceInstLocalId);
           WAComponent.get(componentInst.getName())
               .ifPresent(waComponent -> spaceInst.addComponentInst(componentInst));
         }
       }
 
       // Get the space profiles
-      String[] asProfIds =
-          ddManager.getOrganization().spaceUserRole.getAllSpaceUserRoleIdsOfSpace(
+      String[] asProfIds = organizationSchema.spaceUserRole().getAllSpaceUserRoleIdsOfSpace(
               spaceInstLocalId);
 
       // Insert the spaceProfilesInst in the spaceInst
       if (asProfIds != null) {
         for (String profileId : asProfIds) {
           SpaceProfileInst spaceProfileInst =
-              spaceProfileInstManager.getSpaceProfileInst(ddManager, profileId, spaceInstLocalId);
+              spaceProfileInstManager.getSpaceProfileInst(profileId);
           spaceInst.addSpaceProfileInst(spaceProfileInst);
         }
       }
@@ -221,7 +223,7 @@ public class SpaceInstManager {
       spaceInst.addTranslation(translation);
 
       List<SpaceI18NRow> translations =
-          ddManager.getOrganization().spaceI18N.getTranslations(spaceInstLocalId);
+          organizationSchema.spaceI18N().getTranslations(spaceInstLocalId);
       for (int t = 0; translations != null && t < translations.size(); t++) {
         SpaceI18NRow row = translations.get(t);
         spaceInst.addTranslation(new SpaceI18N(row));
@@ -229,31 +231,28 @@ public class SpaceInstManager {
 
       return spaceInst;
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("space", String.valueOf(spaceInstLocalId)), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
+      throw new AdminException(failureOnGetting(SPACE, String.valueOf(spaceInstLocalId)), e);
     }
   }
 
-  public SpaceInst getPersonalSpace(DomainDriverManager ddManager, String userId)
+  public SpaceInst getPersonalSpace(String userId)
       throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
       // Load the space detail
-      SpaceRow space = ddManager.getOrganization().space.getPersonalSpace(userId);
+      SpaceRow space = organizationSchema.space().getPersonalSpace(userId);
 
       if (space != null) {
         SpaceInst spaceInst = spaceRow2SpaceInst(space);
 
         // Get the components
-        String[] asCompoIds =
-            ddManager.getOrganization().instance
+        String[] asCompoIds = organizationSchema.instance()
             .getAllComponentInstanceIdsInSpace(spaceInst.getLocalId());
 
         // Insert the componentsInst in the spaceInst
         for (int nI = 0; asCompoIds != null && nI < asCompoIds.length; nI++) {
-          ComponentInst componentInst = componentInstManager.getComponentInst(
-              ddManager, idAsInt(asCompoIds[nI]), spaceInst.getLocalId());
+          ComponentInst componentInst =
+              componentInstManager.getComponentInst(idAsInt(asCompoIds[nI]),
+                  spaceInst.getLocalId());
           WAComponent.get(componentInst.getName())
               .ifPresent(waComponent -> spaceInst.addComponentInst(componentInst));
         }
@@ -264,8 +263,6 @@ public class SpaceInstManager {
       return null;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("personal space of user", userId), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
   }
 
@@ -318,13 +315,10 @@ public class SpaceInstManager {
    * @param spaceLocalId driver space id
    * @return Space information as SpaceInst object
    */
-  public SpaceInstLight getSpaceInstLightById(DomainDriverManager ddManager,
-      int spaceLocalId) throws AdminException {
+  public SpaceInstLight getSpaceInstLightById(int spaceLocalId) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
-
       // Load the space detail
-      SpaceRow spaceRow = ddManager.getOrganization().space.getSpace(spaceLocalId);
+      SpaceRow spaceRow = organizationSchema.space().getSpace(spaceLocalId);
       if (spaceRow == null) {
         return null;
       }
@@ -335,28 +329,22 @@ public class SpaceInstManager {
       spaceInstLight.setLevel(getSpaceLevel(spaceRow.id));
 
       // Add translations
-      setTranslations(ddManager, spaceInstLight, spaceRow);
+      setTranslations(spaceInstLight, spaceRow);
 
       return spaceInstLight;
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("space", String.valueOf(spaceLocalId)), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
+      throw new AdminException(failureOnGetting(SPACE, String.valueOf(spaceLocalId)), e);
     }
   }
 
   /*
    * Updates space in Silverpeas
    */
-  public void updateSpaceOrder(DomainDriverManager ddManager, int spaceLocalId,
-      int orderNum) throws AdminException {
+  public void updateSpaceOrder(int spaceLocalId, int orderNum) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
-      ddManager.getOrganization().space.updateSpaceOrder(spaceLocalId, orderNum);
+      organizationSchema.space().updateSpaceOrder(spaceLocalId, orderNum);
     } catch (Exception e) {
       throw new AdminException(failureOnUpdate("order of space", String.valueOf(spaceLocalId)), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
   }
 
@@ -367,53 +355,44 @@ public class SpaceInstManager {
   /**
    * Return the all the root spaces ids available in Silverpeas
    */
-  public String[] getAllRootSpaceIds(DomainDriverManager ddManager) throws AdminException {
+  public String[] getAllRootSpaceIds() throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
-      String[] asSpaceIds = ddManager.getOrganization().space.getAllRootSpaceIds();
+      String[] asSpaceIds = organizationSchema.space().getAllRootSpaceIds();
       if (asSpaceIds != null) {
         return asSpaceIds;
       }
       return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all root spaces", ""), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
   }
 
   /**
    * Return the all the spaces ids available in Silverpeas
    */
-  public String[] getAllSpaceIds(DomainDriverManager ddManager) throws AdminException {
+  public String[] getAllSpaceIds() throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
-      String[] asSpaceIds = ddManager.getOrganization().space.getAllSpaceIds();
+      String[] asSpaceIds = organizationSchema.space().getAllSpaceIds();
       if (asSpaceIds != null) {
         return asSpaceIds;
       }
       return ArrayUtil.EMPTY_STRING_ARRAY;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all spaces", ""), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
   }
 
   /**
    * Returns all components which has been removed but not definitely deleted
    */
-  public List<SpaceInstLight> getRemovedSpaces(DomainDriverManager ddManager)
+  public List<SpaceInstLight> getRemovedSpaces()
       throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
-      SpaceRow[] spaceRows = ddManager.getOrganization().space.getRemovedSpaces();
+      SpaceRow[] spaceRows = organizationSchema.space().getRemovedSpaces();
 
-      return spaceRows2SpaceInstLights(ddManager, spaceRows);
+      return spaceRows2SpaceInstLights(spaceRows);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("removed spaces", ""), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
   }
 
@@ -422,19 +401,16 @@ public class SpaceInstManager {
    *
    * @return a List of SpaceInstLight
    */
-  public List<SpaceInstLight> getSubSpaces(DomainDriverManager ddManager, int spaceLocalId) throws
+  public List<SpaceInstLight> getSubSpaces(int spaceLocalId) throws
       AdminException {
     try {
-      ddManager.getOrganizationSchema();
-      List<SpaceRow> rows = ddManager.getOrganization().space.getDirectSubSpaces(spaceLocalId);
+      List<SpaceRow> rows = organizationSchema.space().getDirectSubSpaces(spaceLocalId);
 
-      return spaceRows2SpaceInstLights(ddManager, rows.toArray(new SpaceRow[rows.size()]));
+      return spaceRows2SpaceInstLights(rows.toArray(new SpaceRow[rows.size()]));
 
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("subspaces of space", String.valueOf(spaceLocalId)),
           e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
   }
 
@@ -452,7 +428,7 @@ public class SpaceInstManager {
     }
   }
 
-  private void setTranslations(DomainDriverManager ddManager, SpaceInstLight space, SpaceRow row) {
+  private void setTranslations(SpaceInstLight space, SpaceRow row) {
     try {
       space.setLanguage(row.lang);
       // Add default translation
@@ -460,27 +436,25 @@ public class SpaceInstManager {
       space.addTranslation(translation);
 
       if (I18NHelper.isI18nContentActivated) {
-        List<SpaceI18NRow> translations =
-            ddManager.getOrganization().spaceI18N.getTranslations(row.id);
+        List<SpaceI18NRow> translations = organizationSchema.spaceI18N().getTranslations(row.id);
         for (int t = 0; translations != null && t < translations.size(); t++) {
           SpaceI18NRow i18nRow = translations.get(t);
           space.addTranslation(new SpaceI18N(i18nRow));
         }
       }
-    } catch (AdminPersistenceException e) {
+    } catch (SQLException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
-  private List<SpaceInstLight> spaceRows2SpaceInstLights(DomainDriverManager ddManager,
-      SpaceRow[] spaceRows) {
+  private List<SpaceInstLight> spaceRows2SpaceInstLights(SpaceRow[] spaceRows) {
     List<SpaceInstLight> spaces = new ArrayList<>();
     if (spaceRows == null) {
       return spaces;
     }
     for (SpaceRow row : spaceRows) {
       SpaceInstLight spaceLight = new SpaceInstLight(row);
-      setTranslations(ddManager, spaceLight, row);
+      setTranslations(spaceLight, row);
       spaces.add(spaceLight);
     }
     return spaces;
@@ -489,11 +463,9 @@ public class SpaceInstManager {
   /**
    * Get all the space profiles of a space
    */
-  public String[] getAllSpaceProfileIds(DomainDriverManager ddManager,
-      int spaceLocalId) throws AdminException {
+  public String[] getAllSpaceProfileIds(int spaceLocalId) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
-      String[] asSpaceProfileIds = ddManager.getOrganization().spaceUserRole.
+      String[] asSpaceProfileIds = organizationSchema.spaceUserRole().
           getAllSpaceUserRoleIdsOfSpace(spaceLocalId);
       if (asSpaceProfileIds != null) {
         return asSpaceProfileIds;
@@ -503,19 +475,15 @@ public class SpaceInstManager {
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("profiles of space", String.valueOf(spaceLocalId)),
           e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
   }
 
   /*
    * Get all the spaces ids available in Silverpeas
    */
-  public String[] getAllSubSpaceIds(DomainDriverManager ddManager,
-      int sDomainFatherId) throws AdminException {
+  public String[] getAllSubSpaceIds(int sDomainFatherId) throws AdminException {
     try {
-      ddManager.getOrganizationSchema();
-      String[] asSpaceIds = ddManager.getOrganization().space.getDirectSubSpaceIds(sDomainFatherId);
+      String[] asSpaceIds = organizationSchema.space().getDirectSubSpaceIds(sDomainFatherId);
       if (asSpaceIds != null) {
         return asSpaceIds;
       }
@@ -523,190 +491,186 @@ public class SpaceInstManager {
     } catch (Exception e) {
       throw new AdminException(
           failureOnGetting("all subspaces of space", String.valueOf(sDomainFatherId)), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
   }
 
   /*
    * Delete space from Silverpeas
    */
-  public void deleteSpaceInst(SpaceInst spaceInst, DomainDriverManager ddManager)
-      throws AdminException {
+  public void deleteSpaceInst(SpaceInst spaceInst) throws AdminException {
     try {
       // delete translations
-      ddManager.getOrganization().spaceI18N.removeTranslations(spaceInst.getLocalId());
+      organizationSchema.spaceI18N().removeTranslations(spaceInst.getLocalId());
 
       // delete the space node
-      ddManager.getOrganization().space.removeSpace(spaceInst.getLocalId());
+      organizationSchema.space().removeSpace(spaceInst.getLocalId());
       notifier.notifyEventOn(ResourceEvent.Type.DELETION, spaceInst);
     } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("space", spaceInst.getId()), e);
+      throw new AdminException(failureOnDeleting(SPACE, spaceInst.getId()), e);
     }
   }
 
   /*
    * Delete space from Silverpeas
    */
-  public void sendSpaceToBasket(DomainDriverManager ddManager, SpaceInst spaceInst, String userId)
+  public void sendSpaceToBasket(SpaceInst spaceInst, String userId)
       throws AdminException {
     // Find a name which is not in concurrency with a previous deleted space
     boolean nameOK = false;
     int retry = 0;
     String deletedSpaceName = null;
     while (!nameOK) {
-      deletedSpaceName = spaceInst.getName() + Admin.basketSuffix;
+      String spaceName = spaceInst.getName() + Admin.basketSuffix;
       if (retry > 0) {
-        deletedSpaceName += " " + retry;
+        spaceName += " " + retry;
       }
-      boolean spaceAlreadyExists = ddManager.getOrganization().space
-          .isSpaceIntoBasket(idAsInt(spaceInst.getDomainFatherId()), deletedSpaceName);
+      boolean spaceAlreadyExists;
+      try {
+        spaceAlreadyExists = organizationSchema.space()
+            .isSpaceIntoBasket(idAsInt(spaceInst.getDomainFatherId()), spaceName);
+      } catch (SQLException e) {
+        throw new AdminException(e.getMessage(), e);
+      }
       nameOK = !spaceAlreadyExists;
+      deletedSpaceName = spaceName;
       retry++;
     }
 
     // Set space into basket with a unique name
     try {
-      ddManager.getOrganization().space
+      organizationSchema.space()
           .sendSpaceToBasket(spaceInst.getLocalId(), deletedSpaceName, userId);
     } catch (Exception e) {
-      throw new AdminException(failureOnMoving("space", spaceInst.getId(), "bin", ""), e);
+      throw new AdminException(failureOnMoving(SPACE, spaceInst.getId(), "bin", ""), e);
     }
   }
 
-  public void removeSpaceFromBasket(DomainDriverManager ddManager,
-      int spaceLocalId) throws AdminException {
+  public void removeSpaceFromBasket(int spaceLocalId) throws AdminException {
     try {
-      ddManager.getOrganization().space.removeSpaceFromBasket(spaceLocalId);
+      organizationSchema.space().removeSpaceFromBasket(spaceLocalId);
     } catch (Exception e) {
-      throw new AdminException(failureOnRestoring("space", String.valueOf(spaceLocalId)), e);
+      throw new AdminException(failureOnRestoring(SPACE, String.valueOf(spaceLocalId)), e);
     }
   }
 
   /*
    * Move space from current location to space defined by fatherId
    */
-  public void moveSpace(DomainDriverManager ddManager, int spaceId, int fatherId)
-      throws AdminException {
+  public void moveSpace(int spaceId, int fatherId) throws AdminException {
     try {
-      ddManager.getOrganization().space.moveSpace(spaceId, fatherId);
+      organizationSchema.space().moveSpace(spaceId, fatherId);
     } catch (Exception e) {
       throw new AdminException(
-          failureOnMoving("space", String.valueOf(spaceId), "space", String.valueOf(fatherId)), e);
+          failureOnMoving(SPACE, String.valueOf(spaceId), SPACE, String.valueOf(fatherId)), e);
     }
   }
 
   /*
    * Updates space in Silverpeas
    */
-  public void updateSpaceInst(DomainDriverManager ddManager,
-      SpaceInst spaceInstNew) throws AdminException {
+  public void updateSpaceInst(SpaceInst spaceInstNew) throws AdminException {
     try {
       // Check that the given space is valid
-      this.isValidSpace(spaceInstNew);
+      this.checkSpaceIsValid(spaceInstNew);
 
       SpaceRow changedSpace = makeSpaceRow(spaceInstNew);
       changedSpace.id = spaceInstNew.getLocalId();
 
-      SpaceRow oldSpace = ddManager.getOrganization().space.getSpace(changedSpace.id);
+      SpaceRow oldSpace = organizationSchema.space().getSpace(changedSpace.id);
       if (spaceInstNew.isRemoveTranslation()) {
-        if (oldSpace.lang.equalsIgnoreCase(spaceInstNew.getLanguage())) {
-          List<SpaceI18NRow> translations = ddManager.getOrganization().spaceI18N.getTranslations(
-              changedSpace.id);
-
-          if (translations != null && translations.size() > 0) {
-            SpaceI18NRow translation = translations.get(0);
-
-            changedSpace.lang = translation.lang;
-            changedSpace.name = translation.name;
-            changedSpace.description = translation.description;
-
-            ddManager.getOrganization().space.updateSpace(changedSpace);
-
-            ddManager.getOrganization().spaceI18N.removeTranslation(translation.id);
-          }
-        } else {
-          ddManager.getOrganization().spaceI18N.removeTranslation(Integer.parseInt(spaceInstNew.
-              getTranslationId()));
-        }
+        removeTranslation(spaceInstNew, changedSpace, oldSpace);
       } else {
-        if (changedSpace.lang != null) {
-          if (oldSpace.lang == null) {
-            // translation for the first time
-            oldSpace.lang = I18NHelper.defaultLanguage;
-          }
-          if (!oldSpace.lang.equalsIgnoreCase(changedSpace.lang)) {
-            SpaceI18NRow row = new SpaceI18NRow(changedSpace);
-            String translationId = spaceInstNew.getTranslationId();
-            if (translationId != null && !translationId.equals("-1")) {
-              // update translation
-              row.id = Integer.parseInt(spaceInstNew.getTranslationId());
-
-              ddManager.getOrganization().spaceI18N.updateTranslation(row);
-            } else {
-              ddManager.getOrganization().spaceI18N.createTranslation(row);
-            }
-
-            changedSpace.lang = oldSpace.lang;
-            changedSpace.name = oldSpace.name;
-            changedSpace.description = oldSpace.description;
-          }
-        }
-
-        ddManager.getOrganization().space.updateSpace(changedSpace);
+        updateTranslation(spaceInstNew, changedSpace, oldSpace);
+        organizationSchema.space().updateSpace(changedSpace);
       }
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("space", String.valueOf(spaceInstNew.getLocalId())),
+      throw new AdminException(failureOnUpdate(SPACE, String.valueOf(spaceInstNew.getLocalId())),
           e);
+    }
+  }
+
+  private void updateTranslation(final SpaceInst spaceInstNew, final SpaceRow changedSpace,
+      final SpaceRow oldSpace) throws SQLException {
+    if (changedSpace.lang != null) {
+      if (oldSpace.lang == null) {
+        // translation for the first time
+        oldSpace.lang = I18NHelper.defaultLanguage;
+      }
+      if (!oldSpace.lang.equalsIgnoreCase(changedSpace.lang)) {
+        SpaceI18NRow row = new SpaceI18NRow(changedSpace);
+        String translationId = spaceInstNew.getTranslationId();
+        if (translationId != null && !translationId.equals("-1")) {
+          // update translation
+          row.id = Integer.parseInt(spaceInstNew.getTranslationId());
+
+          organizationSchema.spaceI18N().updateTranslation(row);
+        } else {
+          organizationSchema.spaceI18N().createTranslation(row);
+        }
+
+        changedSpace.lang = oldSpace.lang;
+        changedSpace.name = oldSpace.name;
+        changedSpace.description = oldSpace.description;
+      }
+    }
+  }
+
+  private void removeTranslation(final SpaceInst spaceInstNew, final SpaceRow changedSpace,
+      final SpaceRow oldSpace) throws SQLException {
+    if (oldSpace.lang.equalsIgnoreCase(spaceInstNew.getLanguage())) {
+      List<SpaceI18NRow> translations = organizationSchema.spaceI18N().getTranslations(
+          changedSpace.id);
+
+      if (translations != null && !translations.isEmpty()) {
+        SpaceI18NRow translation = translations.get(0);
+
+        changedSpace.lang = translation.lang;
+        changedSpace.name = translation.name;
+        changedSpace.description = translation.description;
+
+        organizationSchema.space().updateSpace(changedSpace);
+
+        organizationSchema.spaceI18N().removeTranslation(translation.id);
+      }
+    } else {
+      organizationSchema.spaceI18N().removeTranslation(Integer.parseInt(spaceInstNew.
+          getTranslationId()));
     }
   }
 
   /**
    * Check if the given space to add is valid
    */
-  private void isValidSpace(SpaceInst spaceInst) throws AdminException {
-    String sError = "";
-
+  private void checkSpaceIsValid(SpaceInst spaceInst) throws AdminException {
     // Check the minimum configuration (no requirements on description)
-    if (spaceInst.getName().length() < 1) {
-      sError += "The space name is empty";
-    }
-
-    if (sError.length() != 0) {
-      throw new AdminException(sError);
+    if (StringUtil.isNotDefined(spaceInst.getName())) {
+      throw new AdminException("The space name is empty");
     }
   }
 
   /**
    * Tests if a space with given space id exists
    *
-   * @param ddManager the domain driver manager
    * @param spaceLocalId the local id of the space
    * @return true if the given space instance name is an existing space.
    * @throws AdminException
    */
-  public boolean isSpaceInstExist(DomainDriverManager ddManager, int spaceLocalId) throws
+  public boolean isSpaceInstExist(int spaceLocalId) throws
       AdminException {
     try {
-      ddManager.getOrganizationSchema();
-      return ddManager.getOrganization().space.isSpaceInstExist(spaceLocalId);
+      return organizationSchema.space().isSpaceInstExist(spaceLocalId);
     } catch (Exception e) {
       throw new AdminException(e.getMessage(), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
   }
 
-  public List<SpaceInstLight> getAllSpaces(DomainDriverManager ddManager) throws AdminException {
+  public List<SpaceInstLight> getAllSpaces() throws AdminException {
     List<SpaceInstLight> spaces = new ArrayList<>();
     try {
-      ddManager.getOrganizationSchema();
-      SpaceRow[] spaceRows = ddManager.getOrganization().space.getAllSpaces();
-      spaces.addAll(spaceRows2SpaceInstLights(ddManager, spaceRows));
+      SpaceRow[] spaceRows = organizationSchema.space().getAllSpaces();
+      spaces.addAll(spaceRows2SpaceInstLights(spaceRows));
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all spaces", ""), e);
-    } finally {
-      ddManager.releaseOrganizationSchema();
     }
     return spaces;
   }
@@ -779,7 +743,7 @@ public class SpaceInstManager {
   /**
    * Convert int Id to String Id
    */
-  static private String idAsString(int id) {
+  private static String idAsString(int id) {
     return String.valueOf(id);
   }
 }

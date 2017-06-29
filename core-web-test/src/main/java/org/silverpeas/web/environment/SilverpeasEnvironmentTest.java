@@ -24,23 +24,18 @@
 
 package org.silverpeas.web.environment;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.admin.user.UserReference;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.ServiceProvider;
 
-import javax.annotation.PostConstruct;
-import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * This class permits to load easily a Silverpeas Environment:
@@ -56,53 +51,12 @@ public class SilverpeasEnvironmentTest {
 
   public static final String DEFAULT_DOMAIN = "0";
 
-  @Inject
-  private Administration administration;
-
-  private List<TableHandler> tableHandlers = Arrays.asList(
-      new SqlScriptTableHandler("create-table-domain-user-group.sql",
-          "create-table-space-component.sql", "create-table-profile.sql",
-          "create-table-token.sql"));
-
   /**
    * Gets the Silverpeas environment.
    * @return the instance of the Silverpeas environment.
    */
-  public static SilverpeasEnvironmentTest getSilverpeasEnvironmentTest() {
+  public static SilverpeasEnvironmentTest get() {
     return ServiceProvider.getService(SilverpeasEnvironmentTest.class);
-  }
-
-  @PostConstruct
-  void initialize() {
-    for (TableHandler tableHandler : tableHandlers) {
-      if (!tableHandler.tablesExist()) {
-        tableHandler.createTables();
-      }
-    }
-    administration.reloadCache();
-  }
-
-  void clear() {
-    for (TableHandler tableHandler : tableHandlers) {
-      if (tableHandler.tablesExist()) {
-        tableHandler.dropTables();
-      }
-    }
-  }
-
-  /**
-   * Adds SQL script files to execute before each test.
-   * @param sqlScriptFiles the SQL script files.
-   */
-  public SilverpeasEnvironmentTest addSqlScriptToExecuteBeforeTest(File... sqlScriptFiles) {
-    if (sqlScriptFiles.length > 0) {
-      String[] sqlScriptFilePaths = new String[sqlScriptFiles.length];
-      for (File sqlScriptFile : sqlScriptFiles) {
-        sqlScriptFilePaths[sqlScriptFilePaths.length] = sqlScriptFile.getPath();
-      }
-      tableHandlers.add(new SqlScriptTableHandler(sqlScriptFilePaths));
-    }
-    return this;
   }
 
   /**
@@ -126,7 +80,7 @@ public class SilverpeasEnvironmentTest {
    */
   public SilverpeasEnvironmentTest addUser(UserDetail userDetail) {
     try {
-      administration.addUser(userDetail);
+      Administration.get().addUser(userDetail);
     } catch (AdminException e) {
       throw new RuntimeException(e);
     }
@@ -154,7 +108,7 @@ public class SilverpeasEnvironmentTest {
    */
   public ComponentInst getDummyPublicComponent() {
     try {
-      return administration.getComponentInst("dummyComponent0");
+      return Administration.get().getComponentInst("dummyComponent0");
     } catch (AdminException e) {
       throw new RuntimeException(e);
     }
@@ -167,7 +121,7 @@ public class SilverpeasEnvironmentTest {
    */
   public SilverpeasEnvironmentTest updateComponent(ComponentInst componentInst) {
     try {
-      administration.updateComponentInst(componentInst);
+      Administration.get().updateComponentInst(componentInst);
     } catch (AdminException e) {
       throw new RuntimeException(e);
     }

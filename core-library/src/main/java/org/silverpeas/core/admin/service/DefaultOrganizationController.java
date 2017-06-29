@@ -56,11 +56,13 @@ import javax.inject.Singleton;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.util.ArrayUtil.EMPTY_STRING_ARRAY;
 
@@ -425,16 +427,6 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public <T extends User> T[] searchUsers(T modelUser, boolean isAnd) {
-    try {
-      return (T[]) getAdminService().searchUsers((UserDetail) modelUser, isAnd);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
-    }
-  }
-
-  @Override
   public <T extends Group> ListSlice<T> searchGroups(final GroupsSearchCriteria criteria) {
     try {
       return (ListSlice<T>) getAdminService().searchGroups(criteria);
@@ -442,16 +434,6 @@ public class DefaultOrganizationController implements OrganizationController {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
     return null;
-  }
-
-  @Override
-  public Group[] searchGroups(Group modelGroup, boolean isAnd) {
-    try {
-      return getAdminService().searchGroups((GroupDetail) modelGroup, isAnd);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
-    }
   }
 
   @Override
@@ -609,27 +591,22 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public Group[] getAllGroups() {
     try {
-      Group[] aGroup = null;
-      String[] asGroupIds = getAdminService().getAllGroupIds();
-
-      if (asGroupIds != null) {
-        aGroup = getAdminService().getGroups(asGroupIds);
-
-      }
-      return aGroup;
+      List<GroupDetail> groups = getAdminService().getAllGroups();
+      return groups.toArray(new Group[groups.size()]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return new Group[0];
     }
   }
 
   @Override
   public Group[] getAllRootGroups() {
     try {
-      return getAdminService().getAllRootGroups();
+      List<GroupDetail> groups = getAdminService().getAllRootGroups();
+      return groups.toArray(new Group[groups.size()]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
+      return new Group[0];
     }
   }
 
@@ -930,36 +907,23 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public String[] searchUsersIds(String groupId, String componentId, String[] profileId,
-      User filterUser) {
-    try {
-      return getAdminService().searchUsersIds(groupId, componentId, profileId,
-          (UserDetail) filterUser);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
-    }
-  }
-
-  @Override
   public String[] getUsersIdsByRoleNames(String componentId, List<String> profileNames) {
     try {
+      List<String> userIds = null;
       ComponentInst componentInst = getComponentInst(componentId);
 
       List<ProfileInst> profiles = componentInst.getAllProfilesInst();
-      List<String> profileIds = new ArrayList<String>();
-      for (ProfileInst profileInst : profiles) {
-        if (profileNames.contains(profileInst.getName())) {
-          profileIds.add(profileInst.getId());
-        }
+      List<String> profileIds = profiles.stream()
+          .filter(p -> profileNames.contains(p.getName()))
+          .map(ProfileInst::getId)
+          .collect(Collectors.toList());
+
+      if (profileIds.isEmpty()) {
+        return ArrayUtil.EMPTY_STRING_ARRAY;
       }
 
-      if (!profileIds.isEmpty()) {
-        String[] pIds = profileIds.toArray(new String[profileIds.size()]);
-
-        return getAdminService().searchUsersIds(null, null, pIds, new UserDetail());
-      }
-      return ArrayUtil.EMPTY_STRING_ARRAY;
+      userIds = getAdminService().searchUserIdsByProfile(profileIds);
+      return userIds.toArray(new String[userIds.size()]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
@@ -985,21 +949,8 @@ public class DefaultOrganizationController implements OrganizationController {
         return EMPTY_STRING_ARRAY;
       } // else return all users !!
 
-      return getAdminService().searchUsersIds(null, null, profileIds.toArray(new String[profileIds.
-          size()]),
-          new UserDetail());
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return null;
-    }
-  }
-
-  @Override
-  public String[] searchGroupsIds(boolean isRootGroup, String componentId, String[] profileId,
-      Group modelGroup) {
-    try {
-      return getAdminService().searchGroupsIds(isRootGroup, componentId, profileId,
-          (GroupDetail) modelGroup);
+      List<String> userIds = getAdminService().searchUserIdsByProfile(profileIds);
+      return userIds.toArray(new String[userIds.size()]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
@@ -1027,12 +978,12 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public String[] getDirectGroupIdsOfUser(String userId) {
+  public List<GroupDetail> getDirectGroupsOfUser(String userId) {
     try {
-      return getAdminService().getDirectGroupsIdsOfUser(userId);
+      return getAdminService().getDirectGroupsOfUser(userId);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-      return EMPTY_STRING_ARRAY;
+      return Collections.emptyList();
     }
 
   }
@@ -1049,21 +1000,16 @@ public class DefaultOrganizationController implements OrganizationController {
   @Override
   public String[] getAllGroupIdsOfUser(String userId) {
     try {
-      ArrayList<String> listRes = new ArrayList<String>();
-      String[] tabGroupIds = getAdminService().getDirectGroupsIdsOfUser(userId);
-      for (String groupId : tabGroupIds) {
-        listRes = recursiveMajListGroupId(groupId, listRes);
+      ArrayList<String> listRes = new ArrayList<>();
+      List<GroupDetail> groups = getAdminService().getDirectGroupsOfUser(userId);
+      for (GroupDetail group : groups) {
+        listRes = recursiveMajListGroupId(group.getId(), listRes);
       }
       return listRes.toArray(new String[listRes.size()]);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return EMPTY_STRING_ARRAY;
     }
-  }
-
-  @Override
-  public void reloadAdminCache() {
-    getAdminService().reloadCache();
   }
 
   @Override
