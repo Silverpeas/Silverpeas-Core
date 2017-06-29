@@ -44,6 +44,8 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Optional;
 
+import static java.time.Month.DECEMBER;
+
 /**
  * A calendar is a particular system for scheduling and organizing events and activities that occur
  * at different times or on different dates throughout the years.
@@ -111,6 +113,19 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
+   * Gets a calendar window of time defined between the two specified dates and from which the
+   * events occurring in the given period can be requested.
+   * @param start the start date of the period.
+   * @param end the end date of the period.
+   * @return a window of time that includes all the calendar events occurring in its specified
+   * period of time.
+   */
+  public static CalendarTimeWindow getTimeWindowBetween(final LocalDate start,
+      final LocalDate end) {
+    return new CalendarTimeWindow(start, end);
+  }
+
+  /**
    * Gets the identifier of the component instance which the calendar is attached.
    * @return the identifier of the component instance which the calendar is attached.
    */
@@ -153,45 +168,45 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
-   * Gets a time window according to the specified period into which occurrences of events are
-   * requested.
-   * @param year the year during which the events occur.
-   * @return the initialized time window.
+   * Gets a window of time on this calendar defined by the specified period. The window of time
+   * will include only the events in this calendar that occur in the specified period.
+   * @param year the year during which the events in this calendar occur.
+   * @return the window of time including the events in this calendar occurring in the given period.
    */
   public CalendarTimeWindow in(final Year year) {
-    return new CalendarTimeWindow(this, year);
+    return between(year.atDay(1), year.atMonth(DECEMBER).atEndOfMonth());
   }
 
   /**
-   * Gets a time window according to the specified period into which occurrences of events are
-   * requested.
-   * @param yearMonth the month and year during which the events occur.
-   * @return the initialized time window.
+   * Gets a window of time on this calendar defined by the specified period. The window of time
+   * will include only the events in this calendar that occur in the specified period.
+   * @param yearMonth the month and year during which the events in this calendar occur.
+   * @return the window of time including the events in this calendar occurring in the given period.
    */
   public CalendarTimeWindow in(final YearMonth yearMonth) {
-    return new CalendarTimeWindow(this, yearMonth);
+    return between(yearMonth.atDay(1), yearMonth.atEndOfMonth());
   }
 
   /**
-   * Gets a time window according to the specified period into which occurrences of events are
-   * requested.
-   * @param day day during which the events occur.
-   * @return the initialized time window.
+   * Gets a window of time on this calendar defined by the specified period. The window of time
+   * will include only the events in this calendar that occur in the specified period.
+   * @param day day during which the events in this calendar occur.
+   * @return the window of time including the events in this calendar occurring in the given period.
    */
   public CalendarTimeWindow in(final LocalDate day) {
-    return new CalendarTimeWindow(this, day);
+    return between(day, day);
   }
 
   /**
-   * Gets a time window according to the specified period into which occurrences of events are
-   * requested.
+   * Gets a window of time on this calendar defined by the specified period. The window of time
+   * will include only the events in this calendar that occur in the specified period.
    * @param start the start date of the period.
    * @param end the end date of the period.
-   * @return the initialized time window.
+   * @return the window of time including the events in this calendar occurring in the given period.
    */
   public CalendarTimeWindow between(final LocalDate start, final LocalDate end) {
     verifyCalendarIsPersisted();
-    return new CalendarTimeWindow(this, start, end);
+    return Calendar.getTimeWindowBetween(start, end).filter(f -> f.onCalendar(this));
   }
 
   private void verifyCalendarIsPersisted() {
@@ -238,4 +253,5 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
     CalendarEventRepository repository = CalendarEventRepository.get();
     return repository.size(this) == 0;
   }
+
 }
