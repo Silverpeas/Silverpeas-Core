@@ -37,6 +37,8 @@ public class ConnectionDetail implements Serializable {
   private String componentId;
   private String componentName;
   private Map<String, String> param;
+  private boolean newWindow;
+  private String method;
 
   public ConnectionDetail() {
   }
@@ -93,4 +95,19 @@ public class ConnectionDetail implements Serializable {
     this.componentName = componentName;
   }
 
+  public boolean isNewWindow() {
+    return newWindow;
+  }
+
+  public void setNewWindow(final boolean newWindow) {
+    this.newWindow = newWindow;
+  }
+
+  public String getMethod() {
+    return method;
+  }
+
+  public void setMethod(final String method) {
+    this.method = method;
+  }
 }
