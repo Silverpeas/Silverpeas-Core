@@ -656,9 +656,8 @@ public class JavascriptPluginInclusion {
       xhtml.addElement(script(jsxcDir + "lib/jquery.fullscreen.js"));
       xhtml.addElement(script(jsxcDir + "lib/jquery.slimscroll.js"));
       xhtml.addElement(script(jsxcDir + "lib/jsxc.dep.min.js"));
-      xhtml.addElement(script(chatDir + "lib/strophe.chatstates.js"));
       xhtml.addElement(script(jsxcDir + "jsxc.min.js"));
-      xhtml.addElement(script(chatDir + "js/silverpeas-chat-resizable.js"));
+      xhtml.addElement(script(JAVASCRIPT_PATH + "js/silverpeas-chat-resizable.js"));
       xhtml.addElement(script(chatDir + "js/silverchat.min.js"));
       xhtml.addElement(link(jsxcDir + "css/jsxc.css"));
       xhtml.addElement(link(jsxcDir + "css/magnific-popup.css"));
