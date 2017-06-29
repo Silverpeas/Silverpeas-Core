@@ -24,7 +24,6 @@
 
 package org.silverpeas.core.admin.domain.driver;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import org.silverpeas.core.admin.domain.AbstractDomainDriver;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
 import org.silverpeas.core.admin.service.AdminException;
@@ -43,6 +42,7 @@ import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
