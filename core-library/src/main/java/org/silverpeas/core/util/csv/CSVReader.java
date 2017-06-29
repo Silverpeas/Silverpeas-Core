@@ -25,6 +25,7 @@
 package org.silverpeas.core.util.csv;
 
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -136,7 +137,7 @@ public class CSVReader {
     int lineNumber = 1;
     StringBuilder listErrors = new StringBuilder("");
     try {
-      BufferedReader rb = new BufferedReader(new InputStreamReader(is));
+      BufferedReader rb = new BufferedReader(new InputStreamReader(is, Charsets.UTF_8));
       String theLine = rb.readLine();
       if (theLine != null && !isExtraColumnsControlEnabled()) {
         StringTokenizer st = new StringTokenizer(theLine, separator);

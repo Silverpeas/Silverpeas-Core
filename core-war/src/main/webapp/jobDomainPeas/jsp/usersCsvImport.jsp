@@ -40,94 +40,88 @@
 <%
 	Domain 		domObject 		= (Domain)request.getAttribute("domainObject");
 
-    Board board = gef.getBoard();
-
-    browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
-    browseBar.setPath((String)request.getAttribute("groupsPath"));
+  browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
+  browseBar.setPath((String)request.getAttribute("groupsPath"));
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html>
 <head>
-<view:looknfeel withCheckFormScript="true"/>
+<view:looknfeel withCheckFormScript="true" withFieldsetStyle="true"/>
 <script language="JavaScript">
-
-function SubmitWithVerif(verifParams)
-{
-    var csvFilefld = stripInitialWhitespace(document.csvFileForm.file_upload.value);
-    var errorMsg = "";
-
-    if (verifParams)
-    {
-         if (isWhitespace(csvFilefld)) {
-            errorMsg = "<% out.print(resource.getString("JDP.missingFieldStart")+resource.getString("JDP.csvFile")+resource.getString("JDP.missingFieldEnd")); %>";
-         } else {
-			var ext = csvFilefld.substring(csvFilefld.length - 4);
-
-	    if (ext.toLowerCase() != ".csv") {
-			errorMsg = "<% out.print(resource.getString("JDP.errorCsvFile")); %>";
-		}
-		}
+function SubmitWithVerif() {
+  var csvFilefld = stripInitialWhitespace(document.csvFileForm.file_upload.value);
+  var errorMsg = "";
+  if (isWhitespace(csvFilefld)) {
+    errorMsg = "<%=resource.getString("JDP.missingFieldStart")+resource.getString("JDP.csvFile")+resource.getString("JDP.missingFieldEnd")%>";
+  } else {
+    var ext = csvFilefld.substring(csvFilefld.length - 4);
+    if (ext.toLowerCase() != ".csv") {
+      errorMsg = "<%=resource.getString("JDP.errorCsvFile")%>";
     }
-    if (errorMsg == "")
-    {
-        document.csvFileForm.submit();
-    }
-    else
-    {
-      jQuery.popup.error(errorMsg);
-    }
+  }
+  if (errorMsg == "") {
+    document.csvFileForm.submit();
+  } else {
+    jQuery.popup.error(errorMsg);
+  }
 }
 
+$(document).ready(function(){
+  $("#form-row-extra-message").hide();
+  $('#sendEmailId').on('change', function() {
+    if ($(this).is(':checked')) {
+      $("#form-row-extra-message").show();
+    } else {
+      $("#form-row-extra-message").hide();
+    }
+  });
+});
 </script>
 </head>
 <body>
-
 <%
-out.println(window.printBefore());
-out.println(frame.printBefore());
+  out.println(window.printBefore());
 %>
-<center>
-<%
-out.println(board.printBefore());
-%>
-<form name="csvFileForm" action="usersCsvImport" method="POST" enctype="multipart/form-data">
-    <table cellpadding="5" cellspacing="0" border="0" width="100%">
-        <tr>
-            <td valign="baseline" align=left  class="txtlibform">
-                <%=resource.getString("JDP.csvFile") %> :
-            </td>
-            <td align=left valign="baseline">
-                <input type="file" name="file_upload" size="50" maxlength="50" VALUE="">&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5">
-            </td>
-        </tr>
-        <tr id="sendEmailTRid">
-            <td class="txtlibform"><fmt:message key="JDP.sendEmail" /></td>
-            <td>
-                <input type="checkbox" name="sendEmail" id="sendEmailId" value="true" />&nbsp;<fmt:message key="GML.yes" /> <br/>
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">(<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5">
-      : <%=resource.getString("GML.requiredField")%>)</td>
-        </tr>
-    </table>
-
+<div class="inlineMessage">
+  <fmt:message key="JDP.csvImport.help">
+    <fmt:param value="<%=domObject.getPropFileName()%>"/>
+  </fmt:message>
+</div>
+<form name="csvFileForm" action="usersCsvImport" method="post" enctype="multipart/form-data">
+  <fieldset id="identity-main" class="skinFieldset">
+    <div class="fields">
+      <div class="field" id="form-row-csvFile">
+        <label class="txtlibform"><%=resource.getString("JDP.csvFile") %></label>
+        <div class="champs">
+          <input type="file" name="file_upload" size="50" maxlength="50"/>&nbsp;<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
+        </div>
+      </div>
+      <div class="field" id="sendEmailTRid">
+        <label class="txtlibform"><fmt:message key="JDP.sendEmail" /></label>
+        <div class="champs">
+          <input type="checkbox" name="sendEmail" id="sendEmailId" value="true" />&nbsp;<fmt:message key="GML.yes" />
+        </div>
+      </div>
+      <div class="field" id="form-row-extra-message">
+        <label class="txtlibform"><fmt:message key="JDP.sendEmail.message"/></label>
+        <div class="champs">
+          <fmt:message key="JDP.sendEmail.message.help" var="extraMessageHelp"/>
+          <textarea rows="3" cols="50" name="extraMessage" placeholder="${extraMessageHelp}"></textarea>
+        </div>
+      </div>
+    </div>
+  </fieldset>
+  <div class="legend">
+    <img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
+    : <%=resource.getString("GML.requiredField")%>
+  </div>
 </form>
 <%
-out.println(board.printAfter());
+  ButtonPane bouton = gef.getButtonPane();
+  bouton.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif()", false));
+  bouton.addButton(gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
+  out.println(bouton.print());
+  out.println(window.printAfter());
 %>
-<br/>
-		<%
-		  ButtonPane bouton = gef.getButtonPane();
-		  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif(true)", false));
-          bouton.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
-		  out.println(bouton.print());
-		%>
-</center>
-<%
-out.println(frame.printAfter());
-out.println(window.printAfter());
-	%>
-
 </body>
 </html>
