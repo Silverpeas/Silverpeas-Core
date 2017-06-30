@@ -300,7 +300,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         LocalizationBundle notifBundle = ResourceLocator.getLocalizationBundle(
             "org.silverpeas.jobDomainPeas.multilang.jobDomainPeasBundle", lang);
         notifMetaData.addLanguage(lang, notifBundle.getString("JDP.createAccountNotifTitle"), "");
-        templates.put(lang, getTemplate(user, loginUrl, userRequestData.getPassword(), isNewUser));
+        templates.put(lang, getTemplate(user, loginUrl, userRequestData, isNewUser));
       }
 
       notifMetaData.addUserRecipient(new UserRecipient(user.getId()));
@@ -339,17 +339,18 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    *
    * @param userDetail the current user detail
    * @param loginURL the login URL String
-   * @param userPassword the current user password we have to send to new/modified user
+   * @param userRequestData the current user data
    * @param isNew true if it's a created user, false else if
    * @return a SilverpeasTemplate
    */
   private SilverpeasTemplate getTemplate(UserDetail userDetail, String loginURL,
-      String userPassword, boolean isNew) {
+      UserRequestData userRequestData, boolean isNew) {
     Properties configuration = new Properties(templateConfiguration);
     SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
     template.setAttribute("userDetail", userDetail);
     template.setAttribute("loginURL", loginURL);
-    template.setAttribute("pwd", userPassword);
+    template.setAttribute("pwd", userRequestData.getPassword());
+    template.setAttribute("extraMessage", userRequestData.getExtraMessage());
     if (isNew) {
       template.setAttribute("createdUser", "true");
     }
@@ -445,7 +446,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @throws JobDomainPeasTrappedException
    * @throws JobDomainPeasException
    */
-  public void importCsvUsers(FileItem filePart, boolean sendEmail, HttpServletRequest req)
+  public void importCsvUsers(FileItem filePart, UserRequestData data, HttpServletRequest req)
       throws UtilTrappedException, JobDomainPeasTrappedException, JobDomainPeasException {
     InputStream is;
     try {
@@ -783,7 +784,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       userRequestData.setAccessLevel(userAccessLevel);
       userRequestData.setPasswordValid(passwordValid);
       userRequestData.setPassword(motDePasse);
-      userRequestData.setSendEmail(sendEmail);
+      userRequestData.setSendEmail(data.isSendEmail());
+      userRequestData.setExtraMessage(data.getExtraMessage());
       userRequestData.setUserManualNotifReceiverLimitEnabled(true);
       createUser(userRequestData, properties, req);
     }

@@ -7,7 +7,12 @@ $!  "loginURL"  the login URL string representation    !$
 $!  "createdUser"  is created user (IF DEFINED)    !$
 Hello  $userDetail.firstName$ $userDetail.lastName$,<br/>
 Your account has been successfully $if(createdUser)$created$else$modified$endif$.<br/>
-You will find below the details of your connection:
-login : $userDetail.login$
-password : $pwd$
-Connection URL : <a href="$loginURL$">Follow this link...</a>
+You will find below details of your connection:
+<ul>
+<li>Login : $userDetail.login$</li>
+<li>Password : $pwd$</li>
+<li>Connection : <a href="$loginURL$">Follow this link...</a></li>
+</ul>
+$if(extraMessage)$
+<div style="background-color:#FFF9D7; border:1px solid #E2C822; padding:5px; width:390px;">$extraMessage$</div>
+$endif$

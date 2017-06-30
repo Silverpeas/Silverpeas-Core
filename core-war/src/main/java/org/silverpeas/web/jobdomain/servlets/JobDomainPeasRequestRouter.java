@@ -168,7 +168,7 @@ public class JobDomainPeasRequestRouter extends
           FileItem fileItem = FileUploadUtil.getFile(fileItems, "file_upload");
 
           if (fileItem != null) {
-            jobDomainSC.importCsvUsers(fileItem, userRequestData.isSendEmail(), request);
+            jobDomainSC.importCsvUsers(fileItem, userRequestData, request);
           }
 
           destination = "domainContent.jsp";

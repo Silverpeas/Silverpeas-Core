@@ -81,6 +81,9 @@ public class UserRequestData {
   @FormParam("sendEmail")
   private boolean sendEmail;
 
+  @FormParam("extraMessage")
+  private String extraMessage;
+
   /**
    * The access level of the user.
    */
@@ -258,6 +261,14 @@ public class UserRequestData {
 
   public void setLanguage(final String language) {
     this.language = language;
+  }
+
+  public String getExtraMessage() {
+    return extraMessage;
+  }
+
+  public void setExtraMessage(final String extraMessage) {
+    this.extraMessage = extraMessage;
   }
 
   protected boolean getUserManualNotifReceiverLimitEnabled() {

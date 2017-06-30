@@ -1,6 +1,7 @@
 <%@ page import="org.silverpeas.core.notification.user.client.NotificationManagerSettings" %>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.util.CollectionUtil" %>
 <%--
 
     Copyright (C) 2000 - 2013 Silverpeas
@@ -59,9 +60,10 @@
   String action = (String) request.getAttribute("action");
   String groupsPath = (String) request.getAttribute("groupsPath");
   Integer minLengthLogin = (Integer) request.getAttribute("minLengthLogin");
-  List<Group> groups = (List) request.getAttribute("GroupsManagedByCurrentUser");
+  List<Group> groups = (List<Group>) request.getAttribute("GroupsManagedByCurrentUser");
 
-  boolean extraInfosUpdatable = "userCreate".equals(action) || "userModify".equals(action);
+  boolean userCreation = "userCreate".equals(action);
+  boolean extraInfosUpdatable = userCreation || "userModify".equals(action);
 
   browseBar.setComponentName(getDomainLabel(domObject, resource),
       "domainContent?Iddomain=" + domObject.getId());
@@ -102,6 +104,17 @@
     $limitActivation.trigger("change");
     $("input[name='userAccessLevel']:checked").trigger("change");
     </c:if>
+
+    selectUnselect();
+
+    $("#form-row-extra-message").hide();
+    $('#sendEmailId').on('change', function() {
+      if ($(this).is(':checked')) {
+        $("#form-row-extra-message").show();
+      } else {
+        $("#form-row-extra-message").hide();
+      }
+    });
   });
 
 function SubmitWithVerif()
@@ -113,7 +126,7 @@ function SubmitWithVerif()
     errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.lastName")+resource.getString("JDP.missingFieldEnd")%>\n";
   }
 
-  <% if ("userCreate".equals(action)) { %>
+  <% if (userCreation) { %>
   var loginfld = stripInitialWhitespace(document.userForm.userLogin.value);
   if (isWhitespace(loginfld)) {
     errorMsg += "- <%=resource.getString("JDP.missingFieldStart")+resource.getString("GML.login")+resource.getString("JDP.missingFieldEnd")%>\n";
@@ -125,7 +138,7 @@ function SubmitWithVerif()
   <% if (userObject.isPasswordAvailable()) { %>
   if ($('#userPasswordValid:checked').val()) {
     var $pwdInput = $('#userPasswordId');
-    <% if ("userCreate".equals(action) || "userModify".equals(action)) { %>
+    <% if (userCreation || "userModify".equals(action)) { %>
       <% if ("userModify".equals(action)) { %>
     if ($pwdInput.val()) {
       <% } %>
@@ -154,7 +167,7 @@ function SubmitWithVerif()
 
   if (errorMsg == "")
   {
-    <% if ("userCreate".equals(action) && groups != null && groups.size() > 0) { %>
+    <% if (userCreation && CollectionUtil.isNotEmpty(groups)) { %>
       var firstName = $("#userFirstName").val();
       var lastName = userLastNameInput.val();
       var email = $("#userEMail").val();
@@ -172,19 +185,14 @@ function SubmitWithVerif()
   <% } else { %>
         document.userForm.submit();
       <% } %>
-  }
-  else
-  {
+  } else {
     jQuery.popup.error(errorMsg);
   }
 }
 
-function selectUnselect()
-{
+function selectUnselect() {
 <% if (userObject.isPasswordAvailable()) { %>
-  var bSelected;
-
-  bSelected = document.userForm.userPasswordValid.checked;
+  var bSelected = document.userForm.userPasswordValid.checked;
   if (bSelected){
       document.userForm.userPassword.disabled = false;
       $("#sendEmailTRid").show();
@@ -194,10 +202,9 @@ function selectUnselect()
   }
 <% } %>
 }
-
 </script>
 </head>
-<body onload="selectUnselect();">
+<body>
 <%
 out.println(window.printBefore());
 %>
@@ -241,7 +248,7 @@ out.println(window.printBefore());
 	<div class="field" id="form-row-login">
 			<label class="txtlibform"><fmt:message key="GML.login"/></label>
 			<div class="champs">
-				<% if (action.equals("userCreate")) { %>
+				<% if (userCreation) { %>
                   <input type="text" name="userLogin" size="50" maxlength="50"
 			value="<%=WebEncodeHelper.javaStringToHtmlString(userObject.getLogin())%>"/>
 			&nbsp;<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/>
@@ -301,9 +308,9 @@ out.println(window.printBefore());
 			<div class="champs">
 				<input type="checkbox" name="userPasswordValid" id="userPasswordValid" value="true"
 				<%
-                 if (userObject.isPasswordValid()) {
+                 if (userObject.isPasswordValid() || userCreation) {
                    out.print("checked");
-                 } %> onclick="selectUnselect()"/>&nbsp;<fmt:message key="GML.yes" /><br/>
+                 } %> onclick="selectUnselect()"/>&nbsp;<fmt:message key="GML.yes" />
 			</div>
 		</div>
 		<!--Password-->
@@ -328,12 +335,20 @@ out.println(window.printBefore());
 				&nbsp;<fmt:message key="GML.yes" /> <br/>
 			</div>
 		</div>
+    <div class="field" id="form-row-extra-message">
+      <label class="txtlibform"><fmt:message key="JDP.sendEmail.message"/></label>
+      <div class="champs">
+        <fmt:message key="JDP.sendEmail.message.help" var="extraMessageHelp"/>
+        <textarea rows="3" cols="50" name="extraMessage" placeholder="${extraMessageHelp}"></textarea>
+      </div>
+    </div>
+
         <% }
 
         //in case of group manager, the added user must be set to one group
         //if user manages only once group, user will be added to it
         //else if he manages several groups, manager chooses one group
-        if (groups != null && groups.size() > 0) {
+        if (CollectionUtil.isNotEmpty(groups)) {
       %>
 	<!--Group-->
 	<div class="field" id="form-row-group">
