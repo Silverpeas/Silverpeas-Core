@@ -350,7 +350,7 @@ public class ComponentInstManager {
       } else {
         SilverLogger.getLogger(this).error("Component instance " + compLocalId + " not found!");
       }
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new AdminException(failureOnUpdate(COMPONENT, compLocalId), e);
     }
   }

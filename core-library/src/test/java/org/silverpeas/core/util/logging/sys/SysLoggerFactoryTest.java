@@ -87,7 +87,7 @@ public class SysLoggerFactoryTest {
     }
     executor.shutdown();
     do {
-      executor.awaitTermination(10, TimeUnit.MILLISECONDS);
+      executor.awaitTermination(100, TimeUnit.MILLISECONDS);
     } while (!executor.isTerminated());
     assertThat(loggers.size(), is(maxThreads));
   }
@@ -107,7 +107,7 @@ public class SysLoggerFactoryTest {
     }
     executor.shutdown();
     do {
-      executor.awaitTermination(10, TimeUnit.MILLISECONDS);
+      executor.awaitTermination(100, TimeUnit.MILLISECONDS);
     } while (!executor.isTerminated());
     assertThat(loggers.size(), is(1));
   }

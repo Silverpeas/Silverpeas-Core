@@ -339,7 +339,8 @@ public class LDAPDriver extends AbstractDomainDriver {
       final List<LDAPModification> modifications) throws AdminException {
     for (String propertyName : user.getPropertiesNames()) {
       DomainProperty property = user.getProperty(propertyName);
-      if (property.isUpdateAllowedToAdmin() || property.isUpdateAllowedToUser()) {
+      if (property != null &&
+          (property.isUpdateAllowedToAdmin() || property.isUpdateAllowedToUser())) {
         preparePropertyUpdate(ld, user, modifications, propertyName, property);
       }
     }

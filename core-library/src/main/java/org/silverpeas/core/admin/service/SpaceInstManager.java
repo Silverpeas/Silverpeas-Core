@@ -230,7 +230,7 @@ public class SpaceInstManager {
       }
 
       return spaceInst;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new AdminException(failureOnGetting(SPACE, String.valueOf(spaceInstLocalId)), e);
     }
   }

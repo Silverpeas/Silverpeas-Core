@@ -383,7 +383,7 @@ public class ProfileInstManager {
       organizationSchema.userRole().updateUserRole(changedUserRole);
 
       return idAsString(changedUserRole.id);
-    } catch (Exception e) {
+    } catch (SQLException e) {
       throw new AdminException(failureOnUpdate(PROFILE, profileInst.getId()), e);
     }
   }
