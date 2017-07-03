@@ -447,7 +447,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @throws JobDomainPeasException
    */
   public void importCsvUsers(FileItem filePart, UserRequestData data, HttpServletRequest req)
-      throws UtilTrappedException, JobDomainPeasTrappedException, JobDomainPeasException {
+      throws JobDomainPeasTrappedException {
     InputStream is;
     try {
       is = filePart.getInputStream();
@@ -473,8 +473,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     try {
       csvValues = csvReader.parseStream(is);
     } catch (UtilTrappedException ute) {
-      ute.setGoBackPage("displayUsersCsvImport");
-      throw ute;
+      JobDomainPeasTrappedException e = new JobDomainPeasTrappedException(
+          "JobDomainPeasSessionController.importCsvUsers",
+          SilverpeasException.ERROR, "jobDomainPeas.EX_CSV_FILE", ute);
+      e.setGoBackPage("displayUsersCsvImport");
+      throw e;
     }
 
     StringBuilder listErrors = new StringBuilder("");
@@ -787,7 +790,13 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       userRequestData.setSendEmail(data.isSendEmail());
       userRequestData.setExtraMessage(data.getExtraMessage());
       userRequestData.setUserManualNotifReceiverLimitEnabled(true);
-      createUser(userRequestData, properties, req);
+      try {
+        createUser(userRequestData, properties, req);
+      } catch (JobDomainPeasException e) {
+        throw new JobDomainPeasTrappedException(
+            "JobDomainPeasSessionController.importCsvUsers",
+            SilverpeasException.ERROR, "jobDomainPeas.EX_CSV_FILE", e);
+      }
     }
   }
 

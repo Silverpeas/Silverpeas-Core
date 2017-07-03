@@ -584,7 +584,7 @@ public class GroupManager {
           GROUP_MANAGER_ADD_GROUP, nUserAdded + " utilisateurs ajoutés au groupe "
               + group.getName() + IN_SILVERPEAS_MESSAGE);
       return groupId;
-    } catch (Exception e) {
+    } catch (SQLException e) {
       SynchroDomainReport.error(GROUP_MANAGER_ADD_GROUP, "problème lors de l'ajout du groupe "
               + group.getName() + " - " + e.getMessage(), null);
       throw new AdminException(failureOnAdding(GROUP, group.getName()), e);
@@ -613,7 +613,7 @@ public class GroupManager {
       domainDriverManager.unindexGroup(group.getId());
 
       return group.getId();
-    } catch (Exception e) {
+    } catch (SQLException e) {
       SynchroDomainReport.error(GROUP_MANAGER_DELETE_GROUP,
               "problème lors de la suppression du groupe " + group.getName()
               + " - " + e.getMessage(), null);

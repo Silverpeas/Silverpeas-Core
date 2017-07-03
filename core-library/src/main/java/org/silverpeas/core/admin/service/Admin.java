@@ -69,6 +69,7 @@ import org.silverpeas.core.admin.user.dao.SearchCriteriaDAOFactory;
 import org.silverpeas.core.admin.user.dao.UserSearchCriteriaForDAO;
 import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
@@ -93,14 +94,14 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
-import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants
-    .ACTION_MASK_MIXED_GROUPS;
+import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.ACTION_MASK_MIXED_GROUPS;
 
 /**
  * The class Admin is the main class of the Administrator.
@@ -242,12 +243,14 @@ class Admin implements Administration {
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e);
     }
-    List<String> synchronizedGroupIds = groups.stream()
-        .filter(GroupDetail::isSynchronized)
-        .map(GroupDetail::getId)
-        .collect(Collectors.toList());
-    groupSynchroScheduler = new SynchroGroupScheduler();
-    groupSynchroScheduler.initialize(groupSynchroCron, synchronizedGroupIds);
+    if (groups != null) {
+      List<String> synchronizedGroupIds = groups.stream()
+          .filter(GroupDetail::isSynchronized)
+          .map(GroupDetail::getId)
+          .collect(Collectors.toList());
+      groupSynchroScheduler = new SynchroGroupScheduler();
+      groupSynchroScheduler.initialize(groupSynchroCron, synchronizedGroupIds);
+    }
   }
 
   private void addSpaceInTreeCache(SpaceInstLight space, boolean addSpaceToSuperSpace)
@@ -1013,7 +1016,7 @@ class Admin implements Administration {
       }
 
       return componentId;
-    } catch (Exception e) {
+    } catch (SQLException|ContentManagerException e) {
       throw new AdminException(failureOnDeleting("component", componentId), e);
     }
   }
@@ -1230,81 +1233,74 @@ class Admin implements Administration {
     }
     boolean moveOnTop = shortFatherId == -1;
 
-    try {
-      SpaceInst space = getSpaceInstById(shortSpaceId);
-      int shortOldSpaceId = getDriverSpaceId(space.getDomainFatherId());
+    SpaceInst space = getSpaceInstById(shortSpaceId);
+    int shortOldSpaceId = getDriverSpaceId(space.getDomainFatherId());
 
-      // move space in database
-      spaceManager.moveSpace(shortSpaceId, shortFatherId);
+    // move space in database
+    spaceManager.moveSpace(shortSpaceId, shortFatherId);
 
-      // set space in last rank
-      spaceManager.updateSpaceOrder(shortSpaceId,
-          getAllSubSpaceIds(fatherId).length);
+    // set space in last rank
+    spaceManager.updateSpaceOrder(shortSpaceId, getAllSubSpaceIds(fatherId).length);
 
-      if (useProfileInheritance) {
-        space = spaceManager.getSpaceInstById(shortSpaceId);
+    if (useProfileInheritance) {
+      space = spaceManager.getSpaceInstById(shortSpaceId);
 
-        // inherited rights must be removed but local rights are preserved
-        List<SpaceProfileInst> inheritedProfiles = space.getInheritedProfiles();
-        for (SpaceProfileInst profile : inheritedProfiles) {
-          deleteSpaceProfileInst(profile.getId());
-        }
-
-        if (!moveOnTop) {
-          if (!space.isInheritanceBlocked()) {
-            // space inherits rights from parent
-            space = spaceManager.getSpaceInstById(shortSpaceId);
-            SpaceInst father = getSpaceInstById(shortFatherId);
-            setSpaceProfilesToSubSpace(space, father, true, false);
-          } else {
-            // space uses only local rights
-            // let it as it is
-          }
-        }
-
-        // Merge inherited and specific for each type of profile
-        Map<String, SpaceProfileInst> mergedProfiles = new HashMap<>();
-        List<SpaceProfileInst> allProfiles = new ArrayList<>();
-        allProfiles.addAll(space.getProfiles());
-        if (!moveOnTop) {
-          allProfiles.addAll(space.getInheritedProfiles());
-        }
-        for (SpaceProfileInst profile : allProfiles) {
-          SpaceProfileInst mergedProfile = mergedProfiles.get(profile.getName());
-          if (mergedProfile == null) {
-            mergedProfile = new SpaceProfileInst();
-            mergedProfile.setName(profile.getName());
-            mergedProfile.setInherited(true);
-            mergedProfiles.put(profile.getName(), mergedProfile);
-          }
-          mergedProfile.addGroups(profile.getAllGroups());
-          mergedProfile.addUsers(profile.getAllUsers());
-        }
-
-        // Spread profiles
-        for (SpaceProfileInst profile : mergedProfiles.values()) {
-          spreadSpaceProfile(shortSpaceId, profile);
-        }
-
-        if (moveOnTop) {
-          // on top level, space inheritance is not applicable
-          space.setInheritanceBlocked(false);
-          spaceManager.updateSpaceInst(space);
-        }
+      // inherited rights must be removed but local rights are preserved
+      List<SpaceProfileInst> inheritedProfiles = space.getInheritedProfiles();
+      for (SpaceProfileInst profile : inheritedProfiles) {
+        deleteSpaceProfileInst(profile.getId());
       }
 
-      // reset caches
-      cache.resetSpaceInst();
-      TreeCache.removeSpace(shortSpaceId);
-      TreeCache.setSubspaces(shortOldSpaceId, spaceManager.getSubSpaces(shortOldSpaceId));
-      addSpaceInTreeCache(spaceManager.getSpaceInstLightById(shortSpaceId),
-          false);
       if (!moveOnTop) {
-        TreeCache.setSubspaces(shortFatherId, spaceManager.getSubSpaces(shortFatherId));
+        if (!space.isInheritanceBlocked()) {
+          // space inherits rights from parent
+          space = spaceManager.getSpaceInstById(shortSpaceId);
+          SpaceInst father = getSpaceInstById(shortFatherId);
+          setSpaceProfilesToSubSpace(space, father, true, false);
+        } else {
+          // space uses only local rights
+          // let it as it is
+        }
       }
 
-    } catch (Exception e) {
-      throw new AdminException("Fail to move space " + spaceId + " into space " + fatherId, e);
+      // Merge inherited and specific for each type of profile
+      Map<String, SpaceProfileInst> mergedProfiles = new HashMap<>();
+      List<SpaceProfileInst> allProfiles = new ArrayList<>();
+      allProfiles.addAll(space.getProfiles());
+      if (!moveOnTop) {
+        allProfiles.addAll(space.getInheritedProfiles());
+      }
+      for (SpaceProfileInst profile : allProfiles) {
+        SpaceProfileInst mergedProfile = mergedProfiles.get(profile.getName());
+        if (mergedProfile == null) {
+          mergedProfile = new SpaceProfileInst();
+          mergedProfile.setName(profile.getName());
+          mergedProfile.setInherited(true);
+          mergedProfiles.put(profile.getName(), mergedProfile);
+        }
+        mergedProfile.addGroups(profile.getAllGroups());
+        mergedProfile.addUsers(profile.getAllUsers());
+      }
+
+      // Spread profiles
+      for (SpaceProfileInst profile : mergedProfiles.values()) {
+        spreadSpaceProfile(shortSpaceId, profile);
+      }
+
+      if (moveOnTop) {
+        // on top level, space inheritance is not applicable
+        space.setInheritanceBlocked(false);
+        spaceManager.updateSpaceInst(space);
+      }
+    }
+
+    // reset caches
+    cache.resetSpaceInst();
+    TreeCache.removeSpace(shortSpaceId);
+    TreeCache.setSubspaces(shortOldSpaceId, spaceManager.getSubSpaces(shortOldSpaceId));
+    addSpaceInTreeCache(spaceManager.getSpaceInstLightById(shortSpaceId), false);
+    if (!moveOnTop) {
+      TreeCache.setSubspaces(shortFatherId, spaceManager.getSubSpaces(shortFatherId));
     }
   }
 
@@ -1637,6 +1633,9 @@ class Admin implements Administration {
   public String deleteSpaceProfileInst(String sSpaceProfileId, String userId)
       throws AdminException {
     SpaceProfileInst spaceProfileInst = spaceProfileManager.getSpaceProfileInst(sSpaceProfileId);
+    if (spaceProfileInst == null) {
+      return sSpaceProfileId;
+    }
     try {
       spaceProfileManager.deleteSpaceProfileInst(spaceProfileInst);
       cache.opRemoveSpaceProfile(spaceProfileInst);
@@ -2018,7 +2017,9 @@ class Admin implements Administration {
   public String deleteGroupProfileInst(String groupId) throws AdminException {
     // Get the SpaceProfile to delete
     GroupProfileInst groupProfileInst = groupProfileManager.getGroupProfileInst(null, groupId);
-
+    if (groupProfileInst == null) {
+      return groupId;
+    }
     try {
       // Delete the Profile in tables
       groupProfileManager.deleteGroupProfileInst(groupProfileInst);
@@ -4217,7 +4218,7 @@ class Admin implements Administration {
   private String synchronizeUsers(String domainId, String fromTimeStamp, String toTimeStamp,
       boolean threaded, boolean importUsers) throws AdminException {
     String specificId;
-    String sReport = "User synchronization : \n";
+    StringBuilder sReport = new StringBuilder("User synchronization : \n");
     String message;
     Collection<UserDetail> addedUsers = new ArrayList<>();
     Collection<UserDetail> updateUsers = new ArrayList<>();
@@ -4231,7 +4232,7 @@ class Admin implements Administration {
 
       message = distantUDs.length
           + " user(s) have been changed in LDAP since the last synchronization";
-      sReport += message + "\n";
+      sReport.append(message).append("\n");
       SynchroDomainReport.info("admin.synchronizeUsers", message);
 
       // Get all users of the domain from Silverpeas
@@ -4293,13 +4294,13 @@ class Admin implements Administration {
       processSpecificSynchronization(domainId, addedUsers, updateUsers, removedUsers);
 
       message = "Users synchronization terminated";
-      sReport += message + "\n";
+      sReport.append(message).append("\n");
       SynchroDomainReport.warn("admin.synchronizeUsers", message);
       message = "# of updated users : " + updateUsers.size() + ", added : " + addedUsers.size()
           + ", removed : " + removedUsers.size();
-      sReport += message + "\n";
+      sReport.append(message).append("\n");
       SynchroDomainReport.warn("admin.synchronizeUsers", message);
-      return sReport;
+      return sReport.toString();
     } catch (Exception e) {
       SynchroDomainReport.error("admin.synchronizeUsers", "Problem during synchronization of users : "
           + e.getMessage(), null);
@@ -4321,7 +4322,7 @@ class Admin implements Administration {
   }
 
   private void updateUserDuringSynchronization(UserDetail distantUD,
-      Collection<UserDetail> updatedUsers, String sReport) {
+      Collection<UserDetail> updatedUsers, StringBuilder sReport) {
     String specificId = distantUD.getSpecificId();
     try {
       String silverpeasId = userManager.updateUser(distantUD);
@@ -4329,33 +4330,35 @@ class Admin implements Administration {
       String message = "user " + distantUD.getDisplayedName() + " updated (id:" + silverpeasId
           + " / specificId:" + specificId + ")";
       SynchroDomainReport.warn("admin.synchronizeUsers", message);
-      sReport += message + "\n";
+      sReport.append(message).append("\n");
     } catch (AdminException aeMaj) {
       SilverLogger.getLogger(this).error("Full synchro: error while updating user " + specificId,
           aeMaj);
-      String message = "problem updating user " + distantUD.getDisplayedName() + " (specificId:"
+      String errorMessage = "problem updating user " + distantUD.getDisplayedName() + " (specificId:"
           + specificId + ") - " + aeMaj.getMessage();
-      SynchroDomainReport.warn("admin.synchronizeUsers", message);
+      sReport.append(errorMessage).append("\n");
+      SynchroDomainReport.warn("admin.synchronizeUsers", errorMessage);
+      sReport.append("user hasn't been updated\n");
     }
   }
 
   private void addUserDuringSynchronization(UserDetail distantUD, Collection<UserDetail> addedUsers,
-      String sReport) {
+      StringBuilder sReport) {
     String specificId = distantUD.getSpecificId();
     try {
       String silverpeasId = userManager.addUser(distantUD, true);
       if (silverpeasId.equals("")) {
         String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:"
             + specificId + ") - Login and LastName must be set !!!";
-        sReport += message + "\n";
+        sReport.append(message).append("\n");
         SynchroDomainReport.warn("admin.synchronizeUsers", message);
-        sReport += "user has not been added\n";
+        sReport.append("user has not been added\n");
       } else {
 
         addedUsers.add(distantUD);
         String message = "user " + distantUD.getDisplayedName() + " added (id:" + silverpeasId
             + " / specificId:" + specificId + ")";
-        sReport += message + "\n";
+        sReport.append(message).append("\n");
         SynchroDomainReport.warn("admin.synchronizeUsers", message);
       }
     } catch (AdminException ae) {
@@ -4363,29 +4366,29 @@ class Admin implements Administration {
       String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:"
           + specificId + ") - " + ae.getMessage();
       SynchroDomainReport.warn("admin.synchronizeUsers", message);
-      sReport += message + "\n";
-      sReport += "user has not been added\n";
+      sReport.append(message).append("\n");
+      sReport.append("user has not been added\n");
     }
   }
 
   private void deleteUserDuringSynchronization(UserDetail silverpeasUD,
-      Collection<UserDetail> deletedUsers, String sReport) {
+      Collection<UserDetail> deletedUsers, StringBuilder sReport) {
     String specificId = silverpeasUD.getSpecificId();
     try {
       userManager.deleteUser(silverpeasUD, true);
       deletedUsers.add(silverpeasUD);
       String message = "user " + silverpeasUD.getDisplayedName() + " deleted (id:" + specificId
           + ")";
-      sReport += message + "\n";
+      sReport.append(message).append("\n");
       SynchroDomainReport.warn("admin.synchronizeUsers", message);
     } catch (AdminException aeDel) {
       SilverLogger.getLogger(this).error("Full synchro: error while deleting user " + specificId,
           aeDel);
       String message = "problem deleting user " + silverpeasUD.getDisplayedName() + " (specificId:"
           + specificId + ") - " + aeDel.getMessage();
-      sReport += message + "\n";
+      sReport.append(message).append("\n");
       SynchroDomainReport.warn("admin.synchronizeUsers", message);
-      sReport += "user has not been deleted\n";
+      sReport.append("user has not been deleted\n");
     }
   }
 
@@ -5184,18 +5187,20 @@ class Admin implements Administration {
     //Add space rights (and sub-space and components, by inheritance)
     for (String spaceProfileId : sourceSpaceProfileIds) {
       SpaceProfileInst currentSourceSpaceProfile = getSpaceProfileInst(spaceProfileId);
-      SpaceInstLight spaceInst =
-          getSpaceInstLight(getDriverSpaceId(currentSourceSpaceProfile.getSpaceFatherId()));
-      if (!spaceInst.isPersonalSpace()) {// do not treat the personal space
-        switch (context.getTargetType()) {
-          case USER:
-            currentSourceSpaceProfile.addUser(context.getTargetId());
-            break;
-          case GROUP:
-            currentSourceSpaceProfile.addGroup(context.getTargetId());
-            break;
+      if (currentSourceSpaceProfile != null) {
+        SpaceInstLight spaceInst =
+            getSpaceInstLight(getDriverSpaceId(currentSourceSpaceProfile.getSpaceFatherId()));
+        if (!spaceInst.isPersonalSpace()) {// do not treat the personal space
+          switch (context.getTargetType()) {
+            case USER:
+              currentSourceSpaceProfile.addUser(context.getTargetId());
+              break;
+            case GROUP:
+              currentSourceSpaceProfile.addGroup(context.getTargetId());
+              break;
+          }
+          updateSpaceProfileInst(currentSourceSpaceProfile, context.getAuthor());
         }
-        updateSpaceProfileInst(currentSourceSpaceProfile, context.getAuthor());
       }
     }
 
