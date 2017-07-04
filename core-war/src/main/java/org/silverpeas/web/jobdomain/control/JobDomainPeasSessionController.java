@@ -106,6 +106,9 @@ import static org.silverpeas.core.personalization.service.PersonalizationService
  */
 public class JobDomainPeasSessionController extends AbstractComponentSessionController {
 
+  public static final String IMPORT_CSV_USERS_OPERATION =
+      "JobDomainPeasSessionController.importCsvUsers";
+  public static final String ERROR_CSV_FILE = "jobDomainPeas.EX_CSV_FILE";
   String m_TargetUserId = null;
   String targetDomainId = "";
   DomainNavigationStock m_TargetDomain = null;
@@ -453,8 +456,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       is = filePart.getInputStream();
     } catch (IOException e) {
       JobDomainPeasTrappedException jdpe = new JobDomainPeasTrappedException(
-          "JobDomainPeasSessionController.importCsvUsers",
-          SilverpeasException.ERROR, "jobDomainPeas.EX_CSV_FILE", e);
+          IMPORT_CSV_USERS_OPERATION,
+          SilverpeasException.ERROR, ERROR_CSV_FILE, e);
       jdpe.setGoBackPage("displayUsersCsvImport");
       throw jdpe;
     }
@@ -474,8 +477,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       csvValues = csvReader.parseStream(is);
     } catch (UtilTrappedException ute) {
       JobDomainPeasTrappedException e = new JobDomainPeasTrappedException(
-          "JobDomainPeasSessionController.importCsvUsers",
-          SilverpeasException.ERROR, "jobDomainPeas.EX_CSV_FILE", ute);
+          IMPORT_CSV_USERS_OPERATION,
+          SilverpeasException.ERROR, ERROR_CSV_FILE, ute);
       e.setGoBackPage("displayUsersCsvImport");
       throw e;
     }
@@ -676,8 +679,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     if (listErrors.length() > 0) {
       JobDomainPeasTrappedException jdpe = new JobDomainPeasTrappedException(
-          "JobDomainPeasSessionController.importCsvUsers",
-          SilverpeasException.ERROR, "jobDomainPeas.EX_CSV_FILE", listErrors.toString());
+          IMPORT_CSV_USERS_OPERATION,
+          SilverpeasException.ERROR, ERROR_CSV_FILE, listErrors.toString());
       jdpe.setGoBackPage("displayUsersCsvImport");
       throw jdpe;
     }
@@ -793,9 +796,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       try {
         createUser(userRequestData, properties, req);
       } catch (JobDomainPeasException e) {
-        throw new JobDomainPeasTrappedException(
-            "JobDomainPeasSessionController.importCsvUsers",
-            SilverpeasException.ERROR, "jobDomainPeas.EX_CSV_FILE", e);
+        throw new JobDomainPeasTrappedException(IMPORT_CSV_USERS_OPERATION,
+            SilverpeasException.ERROR, ERROR_CSV_FILE, e);
       }
     }
   }
