@@ -33,6 +33,13 @@
     <version>1.0-SNAPSHOT</version>
   </parent>
 
+  <groupId>org.silverpeas</groupId>
+  <artifactId>core</artifactId>
+  <version>6.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  <name>Silverpeas Core</name>
+  <url>http://www.silverpeas.org/docs/core</url>
+
   <description>
     The foundation of Silverpeas. It defines the transverse service and the core objects of
     Silverpeas upon which any business-specific components can be built.
@@ -67,14 +74,6 @@
       <url>http://www.silverpeas.org/nexus/content/groups/silverpeas</url>
     </pluginRepository>
   </pluginRepositories>
-
-
-  <groupId>org.silverpeas</groupId>
-  <artifactId>core</artifactId>
-  <version>6.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <name>Silverpeas Core</name>
-  <url>http://www.silverpeas.org/docs/core</url>
 
   <dependencies>
     <dependency>
