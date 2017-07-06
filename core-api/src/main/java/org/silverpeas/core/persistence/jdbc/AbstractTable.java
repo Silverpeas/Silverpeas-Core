@@ -55,7 +55,10 @@ public abstract class AbstractTable<T> {
   }
 
   /**
-   * Truncates a string value to be inserted in a fixed size column
+   * Truncates a string value to be inserted in a fixed size column.
+   * @param value the value to truncate.
+   * @param maxSize the size at which the value has to be truncated.
+   * @return the truncated string.
    */
   protected String truncate(String value, int maxSize) {
     if (value != null && value.length() > maxSize) {
@@ -66,6 +69,8 @@ public abstract class AbstractTable<T> {
 
   /**
    * Returns the next id which can be used to create a new row.
+   * @return the next identifier value.
+   * @throws SQLException on SQL error.
    */
   public int getNextId() throws SQLException {
     int nextId = DBUtil.getNextId(tableName, "id");
@@ -78,20 +83,15 @@ public abstract class AbstractTable<T> {
 
   /**
    * Builds a new row object which values are retrieved from the given ResultSet.
+   * @param rs the result set from which the row will be fetched.
+   * @return the entity in the row.
+   * @throws SQLException on SQL error.
    */
   protected abstract T fetchRow(ResultSet rs) throws SQLException;
 
-  /**
-   * Set all the parameters of the insert PreparedStatement built from the insertQuery in order to
-   * insert the given row.
-   */
   protected abstract void prepareInsert(String insertQuery, PreparedStatement insert, T row)
       throws SQLException;
 
-  /**
-   * Set all the parameters of the update PreparedStatement built from the updateQuery in order to
-   * update the given row.
-   */
   protected abstract void prepareUpdate(String updateQuery, PreparedStatement update, T row)
       throws SQLException;
 
@@ -215,9 +215,6 @@ public abstract class AbstractTable<T> {
     }
   }
 
-  /**
-   * Returns the rows described by the given no parameters query.
-   */
   protected List<T> getRows(String query) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement select = connection.prepareStatement(query);
@@ -226,9 +223,6 @@ public abstract class AbstractTable<T> {
     }
   }
 
-  /**
-   * Returns the rows described by the given query with one id parameter.
-   */
   protected List<T> getRows(String query, int id) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement select = connection.prepareStatement(query)) {
@@ -239,9 +233,6 @@ public abstract class AbstractTable<T> {
     }
   }
 
-  /**
-   * Returns the rows described by the given query with one string parameter.
-   */
   protected List<T> getRows(String query, String parameter) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement select = connection.prepareStatement(query)) {
@@ -252,9 +243,6 @@ public abstract class AbstractTable<T> {
     }
   }
 
-  /**
-   * Returns the rows described by the given query with id parameters.
-   */
   protected List<T> getRows(String query, int[] ids) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement select = connection.prepareStatement(query)) {
@@ -267,9 +255,6 @@ public abstract class AbstractTable<T> {
     }
   }
 
-  /**
-   * Returns the rows described by the given query and String parameters.
-   */
   protected List<T> getRows(String query, String[] params) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement select = connection.prepareStatement(query)) {
@@ -282,9 +267,6 @@ public abstract class AbstractTable<T> {
     }
   }
 
-  /**
-   * Returns the rows described by the given query with id and String parameters.
-   */
   protected List<T> getRows(String query, int[] ids, String[] params) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement select = connection.prepareStatement(query)) {
@@ -303,15 +285,15 @@ public abstract class AbstractTable<T> {
   /**
    * Returns the rows like a sample row. The sample is build from a matchColumns names list and a
    * matchValues list of values. For each matchColumn with a non null matchValue is added a
-   * criterium : where matchColumn like 'matchValue' The wildcard caracters %, must be set by the
-   * caller : so we can choose and do queries as "login like 'exactlogin'" and queries as
+   * criterion: where matchColumn like 'matchValue' The wildcard caracters %, must be set by the
+   * caller: so we can choose and do queries as "login like 'exactlogin'" and queries as
    * "lastName like 'Had%'" or "lastName like '%addo%'". The returned rows are given by the
    * returnedColumns parameter which is of the form 'col1, col2, ..., colN'.
-   * @param returnedColumns
-   * @param matchColumns
-   * @param matchValues
+   * @param returnedColumns the column to returned.
+   * @param matchColumns the column with a matching value.
+   * @param matchValues the matching values corresponding to the matching columns.
    * @return a list of rows matching the specified columns.
-   * @throws SQLException
+   * @throws SQLException on SQL error.
    */
   protected List<T> getMatchingRows(String returnedColumns, String[] matchColumns,
       String[] matchValues) throws SQLException {
@@ -329,10 +311,6 @@ public abstract class AbstractTable<T> {
     return getRows(query.toString(), notNullValues.toArray(new String[notNullValues.size()]));
   }
 
-  /**
-   * Returns the integer of the single row, single column resultset returned by the given query with
-   * id parameters. Returns null if the result set was empty.
-   */
   protected Integer getInteger(String query, int[] ids) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
          PreparedStatement select = connection.prepareStatement(query)) {

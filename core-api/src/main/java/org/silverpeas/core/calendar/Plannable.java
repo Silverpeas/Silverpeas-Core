@@ -25,7 +25,6 @@ package org.silverpeas.core.calendar;
 
 import java.io.Serializable;
 import java.time.OffsetDateTime;
-import java.util.Set;
 
 /**
  * A plannable object is a object that can be planned in a calendar and that can be serialized
@@ -41,7 +40,7 @@ public interface Plannable extends Serializable {
 
   /**
    * Gets the unique identifier of this plannable object.
-   * @return
+   * @return the unique identifier of the object.
    */
   String getId();
 
@@ -94,7 +93,7 @@ public interface Plannable extends Serializable {
    * into the given calendar and it will have hence an unique identifier that will uniquely
    * identify it among all others plannable objects in the calendar. If this was already
    * planned in a calender, nothing is done.
-   * @param aCalendar
+   * @param aCalendar a calendar on which this object has to be planned.
    * @return itself.
    */
   Plannable planOn(final Calendar aCalendar);

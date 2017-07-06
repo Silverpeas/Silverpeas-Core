@@ -41,8 +41,8 @@ import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.util.Version;
 
 /**
- * This class allows to manage the specific index of "did you mean" functionality. <br/>
- * creates new entry into index <br/>
+ * This class allows to manage the specific index of "did you mean" functionality. <br>
+ * creates new entry into index <br>
  * clear all the entries from index
  */
 public class DidYouMeanIndexer {

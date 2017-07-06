@@ -29,9 +29,6 @@ package org.silverpeas.core.notification.message;
  */
 public class InfoMessage extends AbstractMessage {
 
-  /**
-   * Default constructor.
-   */
   protected InfoMessage(final String message) {
     super(message);
     setDisplayLiveTime(5000L);

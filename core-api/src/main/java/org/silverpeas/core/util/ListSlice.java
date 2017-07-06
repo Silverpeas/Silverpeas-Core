@@ -140,6 +140,7 @@ public class ListSlice<T> extends ArrayList<T> implements SilverpeasList<T> {
 
   /**
    * Sets the size of the original list this slice comes from.
+   * @param size the size of the original list
    */
   public void setOriginalListSize(int size) {
     this.maxsize = size;

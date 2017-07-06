@@ -83,11 +83,6 @@ public enum NotifChannel {
     return null;
   }
 
-  /**
-   * Transforming the given collection into a collection of simple type
-   * @param notifChannels
-   * @return
-   */
   public static Collection<Integer> toIds(final Collection<NotifChannel> notifChannels) {
     final Collection<Integer> result = new ArrayList<Integer>();
     if (notifChannels != null) {

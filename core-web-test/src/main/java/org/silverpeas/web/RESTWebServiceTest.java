@@ -100,7 +100,7 @@ public abstract class RESTWebServiceTest {
 
   /**
    * <p>
-   * Gets (and initializes if necessary) the token key of the given user.<br/>
+   * Gets (and initializes if necessary) the token key of the given user.<br>
    * The user must exist into database (use {@link SilverpeasEnvironmentTest#createDefaultUser()}
    * to add
    * a user, and use {@link #getSilverpeasEnvironmentTest()} to get the silverpeas environment

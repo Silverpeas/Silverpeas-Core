@@ -60,7 +60,7 @@ public class ResultSetWrapper implements ResultSet {
    * Gets a long value from the current result set.
    * @param columnIndex the first column is 1, the second is 2, ...
    * @return the long value if it exists, null otherwise.
-   * @throws SQLException
+   * @throws SQLException on SQL error.
    */
   public Long getLongObject(int columnIndex) throws SQLException {
     if (resultSet.getObject(columnIndex) != null) {
@@ -73,7 +73,7 @@ public class ResultSetWrapper implements ResultSet {
    * Gets a Date value from a Long value from the current result set.
    * @param columnIndex the first column is 1, the second is 2, ...
    * @return the Date value if it exists a long value, null otherwise.
-   * @throws SQLException
+   * @throws SQLException on SQL error.
    */
   public java.util.Date getDateFromLong(int columnIndex) throws SQLException {
     Long dateIntoLongFormat = getLongObject(columnIndex);

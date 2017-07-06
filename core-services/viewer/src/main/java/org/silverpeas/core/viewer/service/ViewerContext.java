@@ -95,8 +95,8 @@ public class ViewerContext implements Cloneable {
   }
 
   /**
-   * Gets the identifier associated to the current conversion processes for viewing.<br/>
-   * If an id has been explicitly set, then it is returned.<br/>
+   * Gets the identifier associated to the current conversion processes for viewing.<br>
+   * If an id has been explicitly set, then it is returned.<br>
    * Otherwise, a unique id is computed.
    * @return a unique identifier as string.
    */
@@ -105,7 +105,7 @@ public class ViewerContext implements Cloneable {
   }
 
   /**
-   * Sets a unique identifier associated to the current document to convert.<br/>
+   * Sets a unique identifier associated to the current document to convert.<br>
    * This id is used by {@link #getViewId()} in order to compute the final unique identifier.
    * @param uniqueDocumentId a unique document identifier (please be careful about 'unique' word).
    * @return the current context instance.

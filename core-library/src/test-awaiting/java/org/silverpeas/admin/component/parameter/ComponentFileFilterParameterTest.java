@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
  * /file.odp
  * /rep1/file.pdf
  * /rep1/rep2/file.pptx
- * <p/>
+ * <p>
  * User: Yohann Chastagnier
  * Date: 17/12/12
  */

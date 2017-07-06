@@ -55,13 +55,6 @@ public class RelationShipService {
   protected RelationShipService() {
   }
 
-  /**
-   * remove RelationShip (if this relationShips is deleted return true)
-   * @param idUser1
-   * @param idUser2
-   * @return boolean
-   */
-
   public boolean removeRelationShip(int idUser1, int idUser2) {
     boolean endAction = false;
     try (Connection connection = DBUtil.openConnection()) {
@@ -82,13 +75,6 @@ public class RelationShipService {
     return endAction;
   }
 
-  /**
-   * these two users in relationship
-   * @param user1Id
-   * @param user2Id
-   * @return boolean
-   * @throws SQLException
-   */
   public boolean isInRelationShip(int user1Id, int user2Id) throws SQLException {
     boolean isInRelationShip = false;
     try (Connection connection = DBUtil.openConnection()) {
@@ -99,12 +85,6 @@ public class RelationShipService {
     return isInRelationShip;
   }
 
-  /**
-   * get all my RelationShips
-   * @param myId
-   * @return List<RelationShip>
-   * @throws SQLException
-   */
   public List<RelationShip> getAllMyRelationShips(int myId) throws SQLException {
     List<RelationShip> listMyRelation = new ArrayList<RelationShip>();
     try (Connection connection = DBUtil.openConnection()) {
@@ -115,12 +95,6 @@ public class RelationShipService {
     return listMyRelation;
   }
 
-  /**
-   * get all my RelationShips ids
-   * @param myId
-   * @return List<String>
-   * @throws SQLException
-   */
   public List<String> getMyContactsIds(int myId) throws SQLException {
     List<String> myContactsIds = new ArrayList<String>();
     try (Connection connection = DBUtil.openConnection()) {
@@ -131,13 +105,6 @@ public class RelationShipService {
     return myContactsIds;
   }
 
-  /**
-   * get all common contacts Ids between usre1 and user2
-   * @param user1Id
-   * @param user2Id
-   * @return List<String>
-   * @throws SQLException
-   */
   public List<String> getAllCommonContactsIds(int user1Id, int user2Id) throws SQLException {
     List<String> myContactsIds = new ArrayList<String>();
     try (Connection connection = DBUtil.openConnection()) {
@@ -148,15 +115,6 @@ public class RelationShipService {
     return myContactsIds;
   }
 
-  /**
-   * Get list of my socialInformationRelationShip (relationShips) according to number of Item and
-   * the first Index
-   * @param userId
-   * @param begin date
-   * @param end date
-   * @return List<SocialInformationRelationShip>
-   * @throws SQLException
-   */
   public List<SocialInformation> getAllMyRelationShips(String userId,
       Date begin, Date end) throws SQLException {
     try (Connection connection = DBUtil.openConnection()) {
@@ -167,15 +125,6 @@ public class RelationShipService {
     return new ArrayList<>();
   }
 
-  /**
-   * Get list socialInformationRelationShip (relationShips) of my Contacts according to number of
-   * Item and the first Index
-   * @param myContactsIds
-   * @param begin date
-   * @param end date
-   * @return List<SocialInformationRelationShip>
-   * @throws SQLException
-   */
   public List<SocialInformation> getAllRelationShipsOfContacts(List<String> myContactsIds,
       Date begin, Date end) throws SQLException {
     try (Connection connection = DBUtil.openConnection()) {
@@ -186,13 +135,6 @@ public class RelationShipService {
     return new ArrayList<>();
   }
 
-  /**
-   * get RelationShip witch is between user1 and user2
-   * @param user1Id
-   * @param user2Id
-   * @return RelationShip
-   * @throws SQLException
-   */
   public RelationShip getRelationShip(int user1Id, int user2Id) throws SQLException {
     RelationShip relation = null;
     try (Connection connection = DBUtil.openConnection()) {

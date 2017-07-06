@@ -41,23 +41,28 @@ public class ClassAnnotationUtil {
    * <p>
    * Example (it is stupid, but it is for understanding):
    * <pre>
+   *   {@code
    *   public interface Car<? extends Model, ? extends Engine> {...}
    *
    *   public abstract SedanElectricCar extends Car<Sedan, Electric> {...}
    *
    *   public class Wikispeed implements SedanElectricCar {...}
+   *   }
    * </pre>
    * When trying to get some parametrized type information from an instance of Wikispeed,
    * perform this operation:
    * <pre>
+   *   {@code
    *   Class<? extends Engine> engineClassOfCar =
    *     AnnotationUtil.searchParameterizedTypeFrom(Engine.class, Wikispeed.class)
+   *   }
    * </pre>
    * Some explanations:
    * <ul>
    * <li>Engine.class is the superclass of the searched class from parametrized type</li>
    * <li>Wikispeed.class is the instance from which the parametrized type is searched</li>
    * </ul>
+   * @param <T> the class type.
    * @param searchedParametrizedTypeClass the superclass of the searched parametrized type.
    * @param fromClass the instance from which the parametrized type is searched.
    * @return the class of the parametrized type if any, null otherwise.
@@ -100,6 +105,7 @@ public class ClassAnnotationUtil {
    * This method is awesome.
    * It permits to retrieve the class from a class hierarchy the one that declares the given
    * annotation.
+   * @param <T> the class type.
    * @param searchedAnnotationClass the class of the searched annotation.
    * @param fromClass the class from which the annotation is searched.
    * @return the class that declares the given annotation, null otherwise.

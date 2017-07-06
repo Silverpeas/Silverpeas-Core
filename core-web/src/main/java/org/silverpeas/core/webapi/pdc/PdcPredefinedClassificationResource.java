@@ -50,13 +50,13 @@ import javax.ws.rs.*;
  * A REST Web resource that represents the predefined classifications on the PdC to classify the
  * contents that are published into a given node of a given component instance or in a whole
  * component instance.
- * <p/>
+ * <p>
  * A predefined classification on the PdC can be created and attached either to a component
  * instance
  * or to a a node of a component instance. It then can be used as a default classification to
  * automatically classify the contents or as a classification template from which the contents can
  * be classified on the PdC.
- * <p/>
+ * <p>
  * A predefined classification associated with a given node or with a given component instance
  * follows the hierarchical structure of the node tree; it is also applicable to all contents in
  * the
@@ -68,16 +68,16 @@ import javax.ws.rs.*;
  * this predefined classification will be used to classify the content. Similarly, when editing a
  * predefined classification associated with a node, it is sought backward in the hierarchical tree
  * of nodes but the predefined classification found will be modified only for the given node.
- * <p/>
+ * <p>
  * A node in a component instance is a generic way in Silverpeas to categorize hierarchically the
  * contents; they are divided into a tree of nodes. A node can represent a topic, a tag or a folder
  * for example.
- * <p/>
+ * <p>
  * A classification on the PdC is defined by a set of different positions on the axis of the PdC. A
  * position is a set of one or more values of axis. A classification can be modifiable or not. By
  * default, a predefined classification is set as unmodifiable whereas the classification of a
  * content is modifiable by default.
- * <p/>
+ * <p>
  * The positions of a given classification can be accessed with this Web resource by the URI of the
  * position; classifications and positions are exposed in the Web by Silverpeas and are thus
  * uniquely identified by an URI in the Web.
@@ -103,7 +103,7 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
    * Gets the predefined classification on the PdC that is set for the contents in the node
    * identified by the query part of the request URI. If no node identifier is provided in the URI,
    * the predefined classification set for the whole component instance is sought.
-   * <p/>
+   * <p>
    * A node in a component instance is a generic way in Silverpeas to categorize hierarchically the
    * contents of the component instance. If no predefined classification on the PdC is defined for
    * the requested node, a predefined one is then looked backward among the parent nodes up to the
@@ -133,7 +133,7 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
 
   /**
    * Creates a new predefined classification for the specified node.
-   * <p/>
+   * <p>
    * If the JSON representation of the classification isn't correct (no values), then a 400 HTTP
    * code is returned. If the user isn't authenticated, a 401 HTTP code is returned. If the user
    * isn't authorized to access the classification, a 403 is returned. If the resource referred by
@@ -174,7 +174,7 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
 
   /**
    * Updates the predefined classification for the specified node.
-   * <p/>
+   * <p>
    * If no predefined classification is associated with the specified node, it inherits of the
    * predefined classification of its closest parent node. So, as the updated predefined position
    * on
@@ -182,7 +182,7 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
    * the new predefined classification that is created for the specified node from of the one of
    * the
    * parent node.
-   * <p/>
+   * <p>
    * If the JSON representation of the position isn't correct (no values), then a 400 HTTP code is
    * returned. If the user isn't authenticated, a 401 HTTP code is returned. If the user isn't
    * authorized to access the comment, a 403 is returned. If a problem occurs when processing the

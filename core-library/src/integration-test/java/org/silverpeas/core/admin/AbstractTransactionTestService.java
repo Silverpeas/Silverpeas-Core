@@ -50,10 +50,11 @@ abstract class AbstractTransactionTestService implements TransactionTestService 
 
   @Override
   @Transactional
-  public Connection transaction1() throws SQLException {
+  public Connection transaction1() throws SQLException, InterruptedException {
     Connection connection1;
     UserDetail user;
     try (Connection connection = DBUtil.openConnection()) {
+      Thread.sleep(1000l);
       // assert that the connection is managed
       assertThat(connection.getAutoCommit(), is(false));
       connection1 = getWrappedConnection(connection);

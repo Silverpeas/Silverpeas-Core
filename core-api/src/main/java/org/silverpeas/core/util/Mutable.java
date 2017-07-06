@@ -97,6 +97,7 @@ public final class Mutable<T> {
   /**
    * Indicates id the given value is equal to the one of the {@code Mutable} instance.
    * @param value the value to verify.
+   * @return true if the value is equal to the wrapped one in this mutable. False otherwise.
    */
   public boolean is(final T value) {
     return Objects.equals(this.value, value);
@@ -157,7 +158,7 @@ public final class Mutable<T> {
    * following code traverses a stream of file names, selects one that has
    * not yet been processed, and then opens that file, returning an
    * {@code Mutable<FileInputStream>}:
-   * <p>
+   * <br>
    * <pre>{@code
    *     Mutable<FileInputStream> fis =
    *         names.stream().filter(name -> !isProcessedYet(name))

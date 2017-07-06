@@ -25,7 +25,7 @@ package org.silverpeas.core.util.logging;
 
 /**
  * The different logging levels taken in charge by the Silverpeas logger.
- * </p>
+ * <p>
  * This Level enumeration defines a set of standard logging levels that can be used to control
  * logging output. The logging levels are ordered. Enabling logging at a given level also enables
  * logging at all higher levels.

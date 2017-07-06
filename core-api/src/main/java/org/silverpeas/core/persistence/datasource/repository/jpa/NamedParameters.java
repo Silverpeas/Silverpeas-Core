@@ -36,13 +36,13 @@ import java.util.Map;
 
 /**
  * This class permits to handle as a friendly way the named parameters of a query.
- * <p/>
+ * <p>
  * Use {@link #add} method to add a named parameter (its name, its value and
  * optionaly a temporal type).
- * <p/>
+ * <p>
  * Use {@link #applyTo} to apply the named parameter to the query. This method returns the query
  * passed, so that query methods can be called directly in one line of code.
- * <p/>
+ * <p>
  * @author Yohann Chastagnier
  */
 public class NamedParameters implements Parameters {
@@ -54,12 +54,12 @@ public class NamedParameters implements Parameters {
    * Default constructor.
    */
   NamedParameters() {
-    namedParameters = new LinkedHashMap<String, NamedParameter<?, ?>>();
+    namedParameters = new LinkedHashMap<>();
   }
 
   /**
    * Gets the last parameter.
-   * @return
+   * @return the name of the last added parameter.
    */
   public String getLastParameterName() {
     return lastParameterName;
@@ -76,9 +76,9 @@ public class NamedParameters implements Parameters {
 
   /**
    * Adding a new named parameter.
-   * @param name
-   * @param value
-   * @return
+   * @param name the parameter name.
+   * @param value the parameter value.
+   * @return itself.
    */
   @Override
   public NamedParameters add(final String name, final Object value) {
@@ -86,11 +86,11 @@ public class NamedParameters implements Parameters {
   }
 
   /**
-   * Adding a new named parameter.
-   * @param name
-   * @param value
-   * @param temporalType
-   * @return
+   * Adding a new temporal named parameter.
+   * @param name the parameter name.
+   * @param value the parameter value.
+   * @param temporalType the temporal type of the parameter.
+   * @return itself.
    */
   @SuppressWarnings("unchecked")
   public NamedParameters add(final String name, final Object value,

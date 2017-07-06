@@ -36,26 +36,9 @@ public interface SocialCommentPublicationsInterface {
     return ServiceProvider.getService(SocialCommentPublicationsInterface.class);
   }
 
-  /**
-   * get list of SocialInformation
-   * @param userId
-   * @param begin
-   * @param end
-   * @return List<SocialInformation>
-   * @throws SilverpeasException
-   */
   List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
       throws SilverpeasException;
 
-  /**
-   * get list of socialInformation of my contacts according to ids of my contacts
-   * @param myId
-   * @param myContactsIds
-   * @param begin
-   * @param end
-   * @return List<SocialInformation>
-   * @throws SilverpeasException
-   */
   List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException;
 }

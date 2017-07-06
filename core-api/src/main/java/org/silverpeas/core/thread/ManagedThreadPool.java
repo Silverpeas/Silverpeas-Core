@@ -72,8 +72,8 @@ public class ManagedThreadPool {
   }
 
   /**
-   * Invokes the given {@link java.lang.Runnable} instances into a managed thread.<br/>
-   * Each {@link java.lang.Runnable} instance will be used one managed thread.<br/>
+   * Invokes the given {@link java.lang.Runnable} instances into a managed thread.<br>
+   * Each {@link java.lang.Runnable} instance will be used one managed thread.<br>
    * If the application server has no more thread to supply, then the execution will wait until it
    * exists one again available.
    * @param runnables the {@link java.lang.Runnable} instances to invoke.
@@ -91,12 +91,12 @@ public class ManagedThreadPool {
 
   /**
    * Invokes the given {@link java.lang.Runnable} instances into a managed thread and waiting for
-   * the end of execution of all of it.<br/>
-   * Each {@link java.lang.Runnable} instance will be used one managed thread.<br/>
+   * the end of execution of all of it.<br>
+   * Each {@link java.lang.Runnable} instance will be used one managed thread.<br>
    * If the application server has no more thread to supply, then the execution will wait until it
    * exists one again available.
    * @param runnables the {@link java.lang.Runnable} instances to invoke.
-   * @throws ManagedThreadPoolException
+   * @throws ManagedThreadPoolException if the invocation fails.
    */
   public void invokeAndAwaitTermination(List<? extends Runnable> runnables)
       throws ManagedThreadPoolException {
@@ -105,13 +105,13 @@ public class ManagedThreadPool {
 
   /**
    * Invokes the given {@link java.lang.Runnable} instances into a managed thread and waiting for
-   * the end of execution of all of it.<br/>
-   * Each {@link java.lang.Runnable} instance will be used one managed thread.<br/>
+   * the end of execution of all of it.<br>
+   * Each {@link java.lang.Runnable} instance will be used one managed thread.<br>
    * If the application server has no more thread to supply, then the execution will wait until it
    * exists one again available.
    * @param runnables the {@link java.lang.Runnable} instances to invoke.
    * @param config the {@link java.lang.Runnable} instances execution configuration.
-   * @throws ManagedThreadPoolException
+   * @throws ManagedThreadPoolException if the invocation fails.
    */
   public void invokeAndAwaitTermination(List<? extends Runnable> runnables,
       ExecutionConfig config) throws ManagedThreadPoolException {
@@ -145,21 +145,21 @@ public class ManagedThreadPool {
   }
 
   /**
-   * Invokes the given {@link java.util.concurrent.Callable} instance into a managed thread.<br/>
+   * Invokes the given {@link java.util.concurrent.Callable} instance into a managed thread.<br>
    * If the application server has no more thread to supply, then the execution will wait until it
    * exists one again available.
    * @param callable the callable to invoke.
    * @param <V> the type of the returned value of a {@link java.util.concurrent.Callable} instance.
    * @return the {@link java.util.concurrent.Future} returned by the invocation of the given
    * {@link java.util.concurrent.Callable} instance.
-   * @throws InterruptedException
+   * @throws InterruptedException if interrupted while waiting
    */
   public <V> Future<V> invoke(Callable<V> callable) throws InterruptedException {
     return invoke(callable, defaultConfig());
   }
 
   /**
-   * Invokes the given {@link java.util.concurrent.Callable} instance into a managed thread.<br/>
+   * Invokes the given {@link java.util.concurrent.Callable} instance into a managed thread.<br>
    * If the application server has no more thread to supply, then the execution will wait until it
    * exists one again available.
    * @param callable the callable to invoke.
@@ -167,22 +167,22 @@ public class ManagedThreadPool {
    * @param <V> the type of the returned value of a {@link java.util.concurrent.Callable} instance.
    * @return the {@link java.util.concurrent.Future} returned by the invocation of the given
    * {@link java.util.concurrent.Callable} instance.
-   * @throws InterruptedException
+   * @throws InterruptedException if interrupted while waiting
    */
   public <V> Future<V> invoke(Callable<V> callable, ExecutionConfig config) throws InterruptedException {
     return invoke(Collections.singletonList(callable), config).get(0);
   }
 
   /**
-   * Invokes the given {@link java.util.concurrent.Callable} instances into managed threads.<br/>
-   * Each {@link java.util.concurrent.Callable} instance will be used one managed thread.<br/>
+   * Invokes the given {@link java.util.concurrent.Callable} instances into managed threads.<br>
+   * Each {@link java.util.concurrent.Callable} instance will be used one managed thread.<br>
    * If the application server has no more thread to supply, then the execution will wait until it
    * exists one again available.
    * @param callables the {@link java.util.concurrent.Callable} instances to invoke.
    * @param <V> the type of the returned value of a {@link java.util.concurrent.Callable} instance.
    * @return the list of {@link java.util.concurrent.Future} returned by the invocation of each
    * given {@link java.util.concurrent.Callable} instances.
-   * @throws InterruptedException
+   * @throws InterruptedException if interrupted while waiting
    */
   public <V> List<Future<V>> invoke(List<? extends Callable<V>> callables)
       throws InterruptedException {
@@ -190,10 +190,10 @@ public class ManagedThreadPool {
   }
 
   /**
-   * Invokes the given {@link java.util.concurrent.Callable} instances into managed threads.<br/>
-   * Each {@link java.util.concurrent.Callable} instance will be used one managed thread.<br/>
+   * Invokes the given {@link java.util.concurrent.Callable} instances into managed threads.<br>
+   * Each {@link java.util.concurrent.Callable} instance will be used one managed thread.<br>
    * If the application server has no more thread to supply, then the execution will wait until it
-   * exists one again available.<br/>
+   * exists one again available.<br>
    * A difference with invoking {@link java.lang.Runnable} instances is that if a timeout is set the
    * caller will get back the hand after the successful execution of all threads or after the
    * timeout, but never before.
@@ -202,7 +202,7 @@ public class ManagedThreadPool {
    * @param <V> the type of the returned value of a {@link java.util.concurrent.Callable} instance.
    * @return the list of {@link java.util.concurrent.Future} returned by the invocation of each
    * given {@link java.util.concurrent.Callable} instances.
-   * @throws InterruptedException
+   * @throws InterruptedException if interrupted while waiting
    */
   public <V> List<Future<V>> invoke(List<? extends Callable<V>> callables,
       ExecutionConfig config) throws InterruptedException {
@@ -260,8 +260,9 @@ public class ManagedThreadPool {
     private boolean runInBackgroundAfterTimeout = true;
 
     /**
-     * Gets an instance of an execution configuration with a specified maximum pool of thread.<br/>
+     * Gets an instance of an execution configuration with a specified maximum pool of thread.<br>
      * This is only useful when invoking {@link Callable} instances.
+     * @param maxThreadPoolSize the maximum size of the treads pool.
      * @return an instance of an execution configuration with a specified maximum pool of thread.
      */
     public static ExecutionConfig maxThreadPoolSizeOf(int maxThreadPoolSize) {
@@ -270,6 +271,7 @@ public class ManagedThreadPool {
 
     /**
      * Gets an instance of an execution configuration with a specified timeout in milliseconds.
+     * @param timeout the timeout
      * @return an instance of an execution configuration with a specified timeout in milliseconds.
      */
     public static ExecutionConfig timeoutOf(long timeout) {
@@ -291,7 +293,7 @@ public class ManagedThreadPool {
     }
 
     /**
-     * Gets the maximum size of the pool of thread.<br/>
+     * Gets the maximum size of the pool of thread.<br>
      * @return Zero or negative value indicates an undefined pool size.
      */
     int getMaxThreadPoolSize() {
@@ -323,7 +325,7 @@ public class ManagedThreadPool {
     }
 
     /**
-     * Sets a maximum size of the pool of threads.<br/>
+     * Sets a maximum size of the pool of threads.<br>
      * This is only useful when invoking {@link Callable} instances.
      * @param maxThreadPoolSize the maximum size of the pool of threads.
      * @return the instance of {@link ExecutionConfig}.

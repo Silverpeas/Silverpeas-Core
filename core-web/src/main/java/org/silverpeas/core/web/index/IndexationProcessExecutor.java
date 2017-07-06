@@ -67,7 +67,7 @@ public class IndexationProcessExecutor {
   }
 
   /**
-   * Stops a current indexation operation if it exists a running one.<br/>
+   * Stops a current indexation operation if it exists a running one.<br>
    * Otherwise, nothing is done.
    */
   @SuppressWarnings({"unchecked", "WeakerAccess", "unused"})
@@ -86,8 +86,8 @@ public class IndexationProcessExecutor {
   }
 
   /**
-   * Executes an indexation process.<br/>
-   * There is no error of an other one is already running.<br/>
+   * Executes an indexation process.<br>
+   * There is no error of an other one is already running.<br>
    * The monitoring of executions has to be performed by caller by using {@link
    * #isCurrentExecution()} and {@link #stopCurrentExecutionIfAny()} methods.
    * @param indexationProcess the indexation process to execute.

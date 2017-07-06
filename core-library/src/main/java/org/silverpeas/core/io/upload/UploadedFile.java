@@ -45,7 +45,7 @@ import java.io.File;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
- * Representation of an uploaded file.<br/>
+ * Representation of an uploaded file.<br>
  * Each {@link UploadedFile} is associated to a unique {@link UploadSession} instance. So, it can
  * not be possible to get several {@link UploadedFile} from an {@link UploadSession}.
  * @author Yohann Chastagnier

@@ -124,8 +124,8 @@ public class AjaxFileUploadServlet extends HttpServlet {
             if (!isInWhiteList(filename)) {
               errorMessage += "The file " + filename + " is not uploaded!";
               errorMessage += (StringUtil.isDefined(whiteList) ? " Only " + whiteList.
-                  replaceAll(" ", ", ") + " file types can be uploaded<br/>"
-                  : " No allowed file format has been defined for upload<br/>");
+                  replaceAll(" ", ", ") + " file types can be uploaded<br>"
+                  : " No allowed file format has been defined for upload<br>");
               session.setAttribute(UPLOAD_ERRORS, errorMessage);
             } else {
               filename = System.currentTimeMillis() + "-" + filename;
@@ -206,7 +206,7 @@ public class AjaxFileUploadServlet extends HttpServlet {
     if (bytesProcessed != null) {
       long percentComplete = (long) Math.floor((bytesProcessed.doubleValue() / totalSize.
           doubleValue()) * 100.0);
-      response.getWriter().println("<b>Upload Status:</b><br/>");
+      response.getWriter().println("<b>Upload Status:</b><br>");
 
       if (!bytesProcessed.equals(totalSize)) {
         response.getWriter().println(
@@ -222,9 +222,9 @@ public class AjaxFileUploadServlet extends HttpServlet {
           String uploadedFilePaths = getUploadedFilePaths(paths);
           String errors = (String) session.getAttribute(UPLOAD_ERRORS);
           if (StringUtil.isDefined(errors)) {
-            response.getWriter().println("<b>Upload complete with error(s).</b><br/>");
+            response.getWriter().println("<b>Upload complete with error(s).</b><br>");
           } else {
-            response.getWriter().println("<b>Upload complete.</b><br/>");
+            response.getWriter().println("<b>Upload complete.</b><br>");
             errors = "";
           }
           response.getWriter()

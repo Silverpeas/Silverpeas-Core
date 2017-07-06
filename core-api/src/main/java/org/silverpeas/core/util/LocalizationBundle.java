@@ -35,7 +35,7 @@ import java.util.function.BiFunction;
 /**
  * A resource bundle that contains the localized resources defined under a fully qualified name in
  * Silverpeas. These resources can be messages, icons, and so one.
- * </p>
+ * <p>
  * It decorates {@code java.util.ResourceBundle} to suit the peculiar use of the resource bundles
  * in Silverpeas. It wraps in a transparent way both the Silverpeas general resource bundle and the
  * resource bundle of the given name. The loading of the resources bundles in Silverpeas is managed
@@ -43,12 +43,11 @@ import java.util.function.BiFunction;
  * qualified name (the bundle base name) or if a given key isn't defined in the bundle, then a
  * {@code MissingResourceException} exception is thrown as defined in the {@code ResourceBundle}
  * contract.
- * </p>
+ * <p>
  * To handle the general localized resources and those from the given bundle name it uses an
  * instance of {@code java.util.ResourceBundle} for each of them. So, it profits then of the bundle
  * content access policy implemented by this class: the content is cached in memory with an
  * expiration trigger.
- * </p>
  * @see java.util.ResourceBundle
  */
 public class LocalizationBundle extends ResourceBundle implements SilverpeasBundle {

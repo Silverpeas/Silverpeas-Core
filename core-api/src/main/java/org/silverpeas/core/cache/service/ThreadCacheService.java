@@ -27,7 +27,7 @@ import org.silverpeas.core.cache.model.SimpleCache;
 
 /**
  * A service that uses the local thread to store a cache.
- * </p>
+ * <br>
  * BE VERY VERY CAREFULLY: into web application with thread pool management, the thread is never
  * killed and the cache is then never cleared. So you have to clear explicitly the cache with
  * the {©ode ThreadCacheService#clearAllCaches()} method.

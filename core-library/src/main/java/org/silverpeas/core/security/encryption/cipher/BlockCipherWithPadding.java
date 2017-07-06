@@ -171,7 +171,7 @@ public abstract class BlockCipherWithPadding implements Cipher {
 
   /**
    * Encrypts the specified data by using the specified cryptographic key.
-   * <p/>
+   * <p>
    * The String objects handled by the encryption is done according the UTF-8 charset.
    *
    * @param data the data to encode.
@@ -198,7 +198,7 @@ public abstract class BlockCipherWithPadding implements Cipher {
 
   /**
    * Decrypt the specified code or cipher by using the specified cryptographic key.
-   * <p/>
+   * <p>
    * The String objects handled by the encryption is done according the UTF-8 charset.
    *
    * @param encryptedData the data in bytes encrypted by this cipher.

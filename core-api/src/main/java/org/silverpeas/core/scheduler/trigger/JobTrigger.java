@@ -58,6 +58,8 @@ public abstract class JobTrigger {
 
   /**
    * Creates a job trigger that will fire a job execution every the specified time.
+   * @param time the time at every which the trigger will fire the execution of a job.
+   * @param unit the temporal unit in which is expressed the time.
    * @return a job trigger whose the triggering is scheduled periodically at a given time.
    */
   public static JobTrigger triggerEvery(int time, final TimeUnit unit) {
@@ -82,6 +84,7 @@ public abstract class JobTrigger {
    * actual fire time of the trigger. However the first actual first time will not be before this
    * date.
    * @param startDate the job trigger's scheduling start date.
+   * @return itself.
    */
   public JobTrigger startAt(final Date startDate) {
     assertNotNull(startDate, "Either the start date of the job is null or it is anterior at now!");

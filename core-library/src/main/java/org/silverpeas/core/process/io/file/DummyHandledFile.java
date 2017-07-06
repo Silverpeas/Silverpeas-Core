@@ -26,9 +26,9 @@ package org.silverpeas.core.process.io.file;
 /**
  * This class permits to wrap a representation of a file that it will be used only for its
  * information. It will not be physically manipulated.
- * <p/>
+ * <p>
  * It is useful for process check operation.
- * <p/>
+ * <p>
  * User: Yohann Chastagnier
  * Date: 17/10/13
  */

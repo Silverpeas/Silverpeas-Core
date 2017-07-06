@@ -37,7 +37,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * An annotation applicable to methods and types for which you wish to trace the invocation of the
  * method. Only DI managed bean are taken in charge by the processor of this annotation.
- * </p>
+ * <p>
  * With this annotation, for each invocation of a method two log records will be generated:
  * one for the start of the method execution and the second for its end with as information
  * at least the method's name and the user behind the invocation (if any).

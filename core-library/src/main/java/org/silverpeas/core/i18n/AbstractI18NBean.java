@@ -161,7 +161,7 @@ public abstract class AbstractI18NBean<T extends Translation> implements Seriali
   }
 
   /**
-   * Gets cloned translations.<br/>
+   * Gets cloned translations.<br>
    * This is useful on copy/paste operations.
    * @return a clone of {@link #getTranslations()} result.
    */

@@ -354,8 +354,11 @@ public class CalendarEvent extends SilverpeasJpaEntity<CalendarEvent, UuidIdenti
 
   /**
    * BE CAREFUL, it is not possible to use the persistence when the ID is set by this method or
-   * {@link #setId(String)}.<br/>
+   * {@link #setId(String)}.<br>
    * TODO this behavior will be removed...
+   * @param appId the identifier of the app
+   * @param eventId the identifier of the event
+   * @return itself
    */
   public CalendarEvent identifiedBy(String appId, String eventId) {
     if (getId() != null) {

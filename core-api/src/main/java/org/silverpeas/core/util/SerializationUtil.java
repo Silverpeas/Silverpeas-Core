@@ -49,6 +49,7 @@ public class SerializationUtil extends SerializationUtils {
 
   /**
    * <p>Deserializes a single {@code Object} from a string.</p>
+   * @param <T> the type of the returned serializable object
    * @param objectStringData the serialized object, must not be null
    * @return the deserialized object
    * @throws IllegalArgumentException if {@code objectData} is {@code null}

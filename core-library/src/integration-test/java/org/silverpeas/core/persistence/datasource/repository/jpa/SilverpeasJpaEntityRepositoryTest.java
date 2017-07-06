@@ -60,13 +60,13 @@ import static org.mockito.Mockito.when;
  * - Entity
  * - EntityRepository
  * - Service and transactions
- * <p/>
+ * <p>
  * Entities :
  * - Person (Uuid identifier, has a bag of animal without cascade behaviour)
  * - Animal (Unique Id identifier, attached to a person and has a bag of equipment with {@link
  * javax.persistence.CascadeType#ALL} behaviour)
  * - Equipment (Uuid identifier, attached to an animal)
- * <p/>
+ * <p>
  * User: Yohann Chastagnier
  * Date: 20/11/13
  */

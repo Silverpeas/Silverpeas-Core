@@ -313,7 +313,7 @@ public class RoleDAO {
 
   /**
    * Gets the roles associated to the given user about the object represented by an id and a
-   * type.<br/>
+   * type.<br>
    * When the value {@code -1} is given of the objectId parameter, all the object of given type are
    * aimed.
    * @return a list of user roles.

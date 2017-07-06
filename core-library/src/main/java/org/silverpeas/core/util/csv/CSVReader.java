@@ -194,7 +194,7 @@ public class CSVReader {
                 .append(utilMessages.getString("util.valeur")).append(" = ").append(theValue)
                 .append(", ");
             listErrors.append(utilMessages.getString("util.type")).append(" = ").append(colType)
-                .append("<br/>");
+                .append("<br>");
           } else {
             theValue = colDefaultValues.get(i);
           }
@@ -214,7 +214,7 @@ public class CSVReader {
             .append(utilMessages.getString("util.valeur")).append(" = ").append(theValue)
             .append(", ");
         listErrors.append(utilMessages.getString("util.type")).append(" = ").append(colType)
-            .append("<br/>");
+            .append("<br>");
       }
       start = end + 1;
       if (start == 0) {
@@ -234,7 +234,7 @@ public class CSVReader {
         listErrors.append(Integer.toString(i + 2)).append(" ")
             .append(utilMessages.getString("util.colonnesAttendues")).append(" ")
             .append(Integer.toString(nbCols)).append(" ")
-            .append(utilMessages.getString("util.attendues")).append("<br/>");
+            .append(utilMessages.getString("util.attendues")).append("<br>");
       }
     }
 
@@ -265,7 +265,7 @@ public class CSVReader {
                   .append(utilMessages.getString("util.valeur")).append(" = ").append(theValue)
                   .append(", ");
               listErrors.append(utilMessages.getString("util.type")).append(" = ")
-                  .append(specificColType).append("<br/>");
+                  .append(specificColType).append("<br>");
             }
           }
         } catch (UtilException e) {
@@ -277,7 +277,7 @@ public class CSVReader {
               .append(utilMessages.getString("util.valeur")).append(" = ").append(theValue)
               .append(", ");
           listErrors.append(utilMessages.getString("util.type")).append(" = ")
-              .append(specificColType).append("<br/>");
+              .append(specificColType).append("<br>");
         }
       } else {
         try {
@@ -303,7 +303,7 @@ public class CSVReader {
         listErrors.append(Integer.toString(i + 2 + nbCols)).append(" ")
             .append(utilMessages.getString("util.colonnesAttendues")).append(" ")
             .append(Integer.toString(nbColsTotal)).append(" ")
-            .append(utilMessages.getString("util.attendues")).append("<br/>");
+            .append(utilMessages.getString("util.attendues")).append("<br>");
       }
 
       j++;
@@ -326,7 +326,7 @@ public class CSVReader {
       listErrors.append(nbColumns).append(" ")
           .append(utilMessages.getString("util.colonnesAttendues")).append(" ")
           .append(Integer.toString(nbColsTotal)).append(" ")
-          .append(utilMessages.getString("util.attendues")).append("<br/>");
+          .append(utilMessages.getString("util.attendues")).append("<br>");
     }
 
     if (listErrors.length() > 0) {

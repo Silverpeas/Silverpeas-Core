@@ -91,13 +91,14 @@ public class DbSetupRule implements TestRule {
    * statements to create the different tables required by the integration test. The creation of
    * the table UniqueId is taken in charge automatically by this rule, so you don't have to
    * specify it.
-   * </p>
+   * <p>
    * In order to work fine, it is not recommended to insert an initial data set with these
    * scripts. For doing a such purpose, please invoke one of the following methods:
    * {@link #loadInitialDataSetFrom(com.ninja_squad.dbsetup.operation.Operation...)} or
    * {@link #loadInitialDataSetFrom(String...)}.
    * @param sqlScripts the path of the SQL scripts in the classpath and from which the database
    * will be set up.
+   * @return itself.
    */
   public static DbSetupRule createTablesFrom(String... sqlScripts) {
     return new DbSetupRule(sqlScripts);
@@ -267,7 +268,8 @@ public class DbSetupRule implements TestRule {
   /**
    * Opens a new connection to the database that will be closed automatically closed at the end of
    * test if it is not already done.
-   * @throws SQLException
+   * @return a connection to the database.
+   * @throws SQLException on SQL error
    */
   protected Connection openSafeConnection() throws SQLException {
     try {
@@ -359,7 +361,8 @@ public class DbSetupRule implements TestRule {
   /**
    * Gets a new connection to the database that will be closed automatically closed at the end of
    * test if it is not already done.
-   * @throws SQLException
+   * @return a connection to the database
+   * @throws SQLException on SQL error
    */
   public static Connection getSafeConnection() throws SQLException {
     return getCurrentRuleInstance().openSafeConnection();
@@ -368,7 +371,8 @@ public class DbSetupRule implements TestRule {
   /**
    * Gets a new connection to the database that will be closed automatically closed at the end of
    * test if it is not already done.
-   * @throws SQLException
+   * @return a connection to the database
+   * @throws SQLException on SQL error
    */
   public Connection getSafeConnectionFromDifferentThread() throws SQLException {
     return openSafeConnection();
@@ -377,6 +381,7 @@ public class DbSetupRule implements TestRule {
   /**
    * Gets the actual data set in the database so that you can check information persisted in the
    * data source according to the operations that were performed in the behaviour of the test.
+   * @param connection a connection to the database
    * @return the actual data set.
    * @throws Exception if an error occurs while fetching the data set in the database.
    */

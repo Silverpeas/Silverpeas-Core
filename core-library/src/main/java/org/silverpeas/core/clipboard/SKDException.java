@@ -21,74 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent) ---*/
+package org.silverpeas.core.clipboard;
 
 /*
  * @author Dominique Blot
  * @version 1.0
  */
-
-package org.silverpeas.core.clipboard;
-
-/**
- * Class declaration
- * @author
- */
 public class SKDException extends ClipboardException {
 
   private static final long serialVersionUID = -3001137137162651068L;
 
-  /**
-   * -------------------------------------------------------------------------- constructor
-   * constructor
-   */
   public SKDException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @see
-   */
   public SKDException(String callingClass, int errorLevel, String message,
       String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   * @see
-   */
   public SKDException(String callingClass, int errorLevel, String message,
       Exception nested) {
     super(callingClass, errorLevel, message, nested);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   * @see
-   */
   public SKDException(String callingClass, int errorLevel, String message,
       String extraParams, Exception nested) {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
   public String getModule() {
     return "clipboard";
   }

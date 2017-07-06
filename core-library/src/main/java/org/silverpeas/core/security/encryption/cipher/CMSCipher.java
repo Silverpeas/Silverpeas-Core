@@ -44,17 +44,17 @@ import java.util.Collection;
  * data. It is based on the syntax of PKCS#7, which in turn is based on the Privacy-Enhanced Mail
  * standard. The newest version of CMS (as of 2009) is specified in RFC 5652 (but see also RFC 5911
  * for updated ASN.1 modules conforming to ASN.1 2002).
- * <p/>
+ * <p>
  * The architecture of CMS is built around certificate-based key management, such as the profile
  * defined by the PKIX working group.
- * <p/>
+ * <p>
  * CMS is used as the key cryptographic component of many other cryptographic standards, such as
  * S/MIME, PKCS#12 and the RFC 3161 Digital timestamping protocol.
- * <p/>
+ * <p>
  * This implementation wraps the all the mechanism required to encrypt and to decrypt messages
  * within a PKS/CMS infrastructure. For doing it uses the public key, the secret key and the X509
  * certificate provided by a PKS#12 key store (an instance of the PKS12KeyStore class).
- * <p/>
+ * <p>
  * Instances of this class is for signing and encrypting, and checking and decrypting data
  * exchanged
  * between two interlocutors.
@@ -75,7 +75,7 @@ public class CMSCipher implements Cipher {
 
   /**
    * Encrypts the specified data by using the specified cryptographic key.
-   * <p/>
+   * <p>
    * The String objects handled by the encryption is done according the UTF-8 charset.
    * @param data the data to encode.
    * @param keyFilePath the file in which is stored the public key to use in the encryption.
@@ -118,7 +118,7 @@ public class CMSCipher implements Cipher {
 
   /**
    * Decrypt the specified code or cipher by using the specified cryptographic key.
-   * <p/>
+   * <p>
    * The String objects handled by the encryption is done according the UTF-8 charset.
    * @param encryptedData the data in bytes that was encrypted by this cipher.
    * @param keyFilePath the file in which is stored the secret key to use in the decryption.

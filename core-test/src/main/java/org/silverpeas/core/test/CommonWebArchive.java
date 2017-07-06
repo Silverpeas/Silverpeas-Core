@@ -33,7 +33,7 @@ public interface CommonWebArchive<T> extends CommonArchive<CommonWebArchive<T>> 
 
   /**
    * Adds the resource as a WEB-INF resource to the container, returning the container itself.
-   * <br/>
+   * <br>
    * The {@link ClassLoader} used to obtain the resource is up to the implementation.
    * @param resourceName resource to add
    * @param target The target path within the archive in which to add the resource, relative to the

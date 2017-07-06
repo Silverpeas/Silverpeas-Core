@@ -24,9 +24,7 @@
 package org.silverpeas.core.util.logging;
 
 import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import static java.lang.annotation.ElementType.PACKAGE;
@@ -35,7 +33,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * This annotation is for specifying the logger to use for the given package or class.
- * </p>
+ * <p>
  * By default, the logger to use is identified by the package name of the object that log messages.
  * By using this annotation, this rule is bypassed and the namespace specified in the annotation's
  * value is then used to get the logger to use for logging messages.
@@ -46,7 +44,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Documented
 public @interface Logger {
   /**
-   * The namespace of the logger.
+   * @return the namespace of the logger.
    */
   String value();
 }

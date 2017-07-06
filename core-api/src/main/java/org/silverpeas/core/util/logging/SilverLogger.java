@@ -28,12 +28,12 @@ import java.util.function.Supplier;
 /**
  * The custom logger for Silverpeas. It abstracts the concrete logging mechanism that will be used
  * in runtime and it provides additional capabilities for the specific use in Silverpeas.
- * </p>
+ * <p>
  * It is an adapter to a concrete underlying logging backend to use to log messages. The logging
  * backend can be the logging subsystem of the used application server or a tiers logging framework.
  * With the adapter it can then be easy to switch from an implementation to the other without
  * impacting the logging use in the code of Silverpeas.
- * </p>
+ * <p>
  * An implementation of this interface must be a wrapper of a concrete logging mechanism and
  * instances of the implementation must be manufactured by the
  * {@link org.silverpeas.core.util.logging.SilverLoggerFactory} factory.
@@ -194,7 +194,7 @@ public interface SilverLogger {
    * Logs an debugging message with the specified parameters. The message is computed by a function
    * that will be invoked only if the actual logger level is higher or equal than the message
    * level.
-   * </p>
+   * <p>
    * Usually, debugging message are computed by executing codes that shouldn't be ran in a nominal
    * execution context. In order to avoid this code to be executed when the logger level is lower
    * than the debug level, it can be written within a function whose the invocation is left to

@@ -32,7 +32,7 @@ import org.silverpeas.core.socialnetwork.model.SocialInformationType;
 public class SocialInformationRelationShip extends AbstractSocialInformation {
 
   /**
-   * @param relationShip
+   * @param relationShip the relationship
    */
   public SocialInformationRelationShip(RelationShip relationShip) {
     setAuthor(Integer.toString(relationShip.getUser1Id()));// myFriend

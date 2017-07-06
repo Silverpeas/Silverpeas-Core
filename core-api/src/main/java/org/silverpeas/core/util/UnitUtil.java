@@ -37,104 +37,38 @@ import java.math.BigDecimal;
  */
 public class UnitUtil {
 
-  /**
-   * Converting a computer data storage value (bytes)
-   * @param byteValue
-   * @param to
-   * @return
-   */
   public static long convertTo(final long byteValue, final MemoryUnit to) {
     return getMemData(byteValue).getRoundedSizeConverted(to).longValue();
   }
 
-  /**
-   * Converting a computer data storage value (bytes)
-   *
-   * @param byteValue
-   * @param to
-   * @return
-   */
   public static BigDecimal convertTo(BigDecimal byteValue, final MemoryUnit to) {
     return getMemData(byteValue).getSizeConverted(to);
   }
 
-  /**
-   * Converting a computer data storage value
-   *
-   * @param value
-   * @param from
-   * @param to
-   * @return
-   */
   public static long convertTo(final long value, final MemoryUnit from, final MemoryUnit to) {
     return getMemData(value, from).getRoundedSizeConverted(to).longValue();
   }
 
-  /**
-   * Converting a computer data storage value
-   *
-   * @param value
-   * @param from
-   * @param to
-   * @return
-   */
   public static BigDecimal convertTo(BigDecimal value, final MemoryUnit from, final MemoryUnit to) {
     return getMemData(value, from).getSizeConverted(to);
   }
 
-  /**
-   * Converting a computer data storage value
-   *
-   * @param memoryData
-   * @param to
-   * @return
-   */
   public static BigDecimal convertAndRoundTo(MemoryData memoryData, final MemoryUnit to) {
     return memoryData.getRoundedSizeConverted(to);
   }
 
-  /**
-   * Format a byte memory value
-   *
-   * @param byteValue
-   * @param to
-   * @return
-   */
   public static String formatValue(final long byteValue, final MemoryUnit to) {
     return getMemData(byteValue).getFormattedValue(to);
   }
 
-  /**
-   * Format a byte memory value
-   *
-   * @param byteValue
-   * @param to
-   * @return
-   */
   public static String formatValue(final BigDecimal byteValue, final MemoryUnit to) {
     return getMemData(byteValue).getFormattedValue(to);
   }
 
-  /**
-   * Format a memory value
-   *
-   * @param value
-   * @param from
-   * @param to
-   * @return
-   */
   public static String formatValue(final long value, final MemoryUnit from, final MemoryUnit to) {
     return getMemData(value, from).getFormattedValue(to);
   }
 
-  /**
-   * Format a memory value
-   *
-   * @param value
-   * @param from
-   * @param to
-   * @return formated value
-   */
   public static String formatValue(final BigDecimal value, final MemoryUnit from,
       final MemoryUnit to) {
     return getMemData(value, from).getFormattedValue(to);
@@ -223,104 +157,38 @@ public class UnitUtil {
     return new MemoryData(byteMemSize);
   }
 
-  /**
-   * Converting a time value (milliseconds)
-   * @param millisecondValue
-   * @param to
-   * @return
-   */
   public static long convertTo(final long millisecondValue, final TimeUnit to) {
     return getTimeData(millisecondValue).getRoundedTimeConverted(to).longValue();
   }
 
-  /**
-   * Converting a time value (milliseconds)
-   *
-   * @param millisecondValue
-   * @param to
-   * @return
-   */
   public static BigDecimal convertTo(BigDecimal millisecondValue, final TimeUnit to) {
     return getTimeData(millisecondValue).getTimeConverted(to);
   }
 
-  /**
-   * Converting a time value
-   *
-   * @param value
-   * @param from
-   * @param to
-   * @return
-   */
   public static long convertTo(final long value, final TimeUnit from, final TimeUnit to) {
     return getTimeData(value, from).getRoundedTimeConverted(to).longValue();
   }
 
-  /**
-   * Converting a time value
-   *
-   * @param value
-   * @param from
-   * @param to
-   * @return
-   */
   public static BigDecimal convertTo(BigDecimal value, final TimeUnit from, final TimeUnit to) {
     return getTimeData(value, from).getTimeConverted(to);
   }
 
-  /**
-   * Converting a time value
-   *
-   * @param timeData
-   * @param to
-   * @return
-   */
   public static BigDecimal convertAndRoundTo(TimeData timeData, final TimeUnit to) {
     return timeData.getRoundedTimeConverted(to);
   }
 
-  /**
-   * Format a millisecond time value
-   *
-   * @param millisecondValue
-   * @param to
-   * @return
-   */
   public static String formatValue(final long millisecondValue, final TimeUnit to) {
     return getTimeData(millisecondValue).getFormattedValue(to);
   }
 
-  /**
-   * Format a millisecond time value
-   *
-   * @param millisecondValue
-   * @param to
-   * @return
-   */
   public static String formatValue(final BigDecimal millisecondValue, final TimeUnit to) {
     return getTimeData(millisecondValue).getFormattedValue(to);
   }
 
-  /**
-   * Format a time value
-   *
-   * @param value
-   * @param from
-   * @param to
-   * @return
-   */
   public static String formatValue(final long value, final TimeUnit from, final TimeUnit to) {
     return getTimeData(value, from).getFormattedValue(to);
   }
 
-  /**
-   * Format a time value
-   *
-   * @param value
-   * @param from
-   * @param to
-   * @return formated value
-   */
   public static String formatValue(final BigDecimal value, final TimeUnit from,
       final TimeUnit to) {
     return getTimeData(value, from).getFormattedValue(to);
@@ -349,7 +217,7 @@ public class UnitUtil {
   /**
    * Get the time with the suitable unit
    *
-   * @param time
+   * @param time in milliseconds
    * @param from the unit of the given size
    * @return String
    */
@@ -360,7 +228,7 @@ public class UnitUtil {
   /**
    * Get the time with the suitable unit
    *
-   * @param time
+   * @param time in milliseconds
    * @param from the unit of the given size
    * @return String
    */
@@ -388,7 +256,7 @@ public class UnitUtil {
 
   /**
    * Get the time data
-   * @param time
+   * @param time in milliseconds
    * @param from the unit of the given size
    * @return TimeData
    */
@@ -400,7 +268,7 @@ public class UnitUtil {
 
   /**
    * Get the time data
-   * @param time
+   * @param time in milliseconds
    * @param from the unit of the given size
    * @return TimeData
    */

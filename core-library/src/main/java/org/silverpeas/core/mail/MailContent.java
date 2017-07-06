@@ -123,6 +123,7 @@ public class MailContent {
    * If the content is a string and contains {@code <html>} TAG, then the content is considered as
    * an HTML one, even if {@link #isHtml()} returns false.
    * @param message the {@link MimeMessage}.
+   * @throws MessagingException if an error occurs with the message
    */
   public void applyOn(MimeMessage message) throws MessagingException {
     if (getValue() instanceof String) {

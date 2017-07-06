@@ -53,65 +53,66 @@ public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>, IDENTIFI
 
   /**
    * Gets the date of the entity creation (in the persistence environment).
-   * @return
+   * @return the date at which this entity was created.
    */
   Date getCreateDate();
 
   /**
    * Gets the free "created by" data.
-   * @return
+   * @return the unique identifier of the creator.
    */
   String getCreatedBy();
 
   /**
    * Gets the user which has created the entity (in the persistence environment).
    * (if "created by" is a known user id)
-   * @return
+   * @return the creator.
    */
   User getCreator();
 
   /**
    * Sets the user which has created the entity (in the persistence environment).
-   * @param creator
-   * @return
+   * @param creator the creator of this entity.
+   * @return itself.
    */
   ENTITY setCreator(User creator);
 
   /**
    * Gets the last date and time of the entity update (in the persistence environment).
-   * @return
+   * @return the last date at which this entity was updated.
    */
   Date getLastUpdateDate();
 
   /**
    * Gets the free "last updated by" data.
-   * @return
+   * @return the unique identifier of the last updater.
    */
   String getLastUpdatedBy();
 
   /**
    * Gets the last user which has updated the entity (in the persistence environment).
    * (if "last updated by" is a known user id)
-   * @return
+   * @return the last updater.
    */
   User getLastUpdater();
 
   /**
    * Sets the last user which has updated the entity (in the persistence environment).
-   * @param updater
-   * @return
+   * @param updater the last updater to set.
+   * @return itself.
    */
   ENTITY setLastUpdater(User updater);
 
   /**
    * Gets the version of the entity (in the persistence environment).
-   * @return
+   * @return the version of this entity.
    */
   Long getVersion();
 
   /**
    * Indicates if the entity has been modified at least one time.
-   * @return
+   * @return true if this entity was modified since its first fetching from the database. False
+   * otherwise.
    */
   boolean hasBeenModified();
 

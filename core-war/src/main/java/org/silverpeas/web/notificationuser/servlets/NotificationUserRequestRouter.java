@@ -33,7 +33,7 @@ import org.silverpeas.core.util.StringUtil;
 
 /**
  * Class declaration
- * <p/>
+ * <p>
  * @author
  */
 public class NotificationUserRequestRouter extends ComponentRequestRouter<NotificationUserSessionController> {

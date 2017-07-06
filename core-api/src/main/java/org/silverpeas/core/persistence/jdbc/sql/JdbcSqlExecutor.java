@@ -56,6 +56,7 @@ public interface JdbcSqlExecutor {
 
   /**
    * Executes the specified query that selects a slice of the list of entities in the data source
+   * @param <R> The type of the items in the list.
    * @param selectQuery the SQL query to select some entities.
    * @param process the processor of result rows.
    * @return a slice of the list of entities in the data source. This slice contains only the
@@ -70,6 +71,7 @@ public interface JdbcSqlExecutor {
   /**
    * Executes the specified query that selects a slice of the list of entities in the data source
    * by using the given connection.
+   * @param <R> The type of the items in the list.
    * @param connection an existing connection to the data source.
    * @param selectQuery the SQL query to select some entities.
    * @param process the processor of result rows.
@@ -86,6 +88,7 @@ public interface JdbcSqlExecutor {
    * Modify query executor.
    * @param modifySqlQueries the list of SQL query to execute. An SQL query is represented by a
    * string (SQL) and an Object (parameters).
+   * @return the number of entities that were modified.
    * @throws java.sql.SQLException on SQL error.
    */
   long executeModify(JdbcSqlQuery... modifySqlQueries) throws SQLException;
@@ -95,6 +98,7 @@ public interface JdbcSqlExecutor {
    * @param connection an existing connection.
    * @param modifySqlQueries the list of SQL query to execute. An SQL query is represented by a
    * string (SQL) and an Object (parameters).
+   * @return the number of entities that were modified.
    * @throws java.sql.SQLException on SQL error.
    */
   long executeModify(Connection connection, JdbcSqlQuery... modifySqlQueries) throws SQLException;
@@ -103,6 +107,7 @@ public interface JdbcSqlExecutor {
    * Modify query executor.
    * @param modifySqlQueries the list of SQL query to execute. An SQL query is represented by a
    * string (SQL) and an Object (parameters).
+   * @return the number of entities that were modified.
    * @throws java.sql.SQLException on SQL error.
    */
   long executeModify(List<JdbcSqlQuery> modifySqlQueries) throws SQLException;
@@ -112,6 +117,7 @@ public interface JdbcSqlExecutor {
    * @param connection an existing connection.
    * @param modifySqlQueries the list of SQL query to execute. An SQL query is represented by a
    * string (SQL) and an Object (parameters).
+   * @return the number of entities that were modified.
    * @throws java.sql.SQLException on SQL error.
    */
   long executeModify(Connection connection, List<JdbcSqlQuery> modifySqlQueries)

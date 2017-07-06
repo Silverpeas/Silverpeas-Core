@@ -46,29 +46,14 @@ public class TimeData {
   // Time in milliseconds.
   private final BigDecimal time;
 
-  /**
-   * Hidden constructor
-   * @param time
-   */
   public TimeData(final long time) {
     this.time = new BigDecimal(String.valueOf(time));
   }
 
-  /**
-   * Hidden constructor
-   * @param time
-   */
   public TimeData(final BigDecimal time) {
     this.time = time;
   }
 
-  /**
-   * Converting a value
-   * @param value
-   * @param from
-   * @param to
-   * @return
-   */
   public static BigDecimal convertTo(BigDecimal value, final TimeUnit from, final TimeUnit to) {
     int fromIndex = orderedUnits.indexOf(from);
     int toIndex = orderedUnits.indexOf(to);
@@ -83,7 +68,7 @@ public class TimeData {
 
   /**
    * Gets the time in milliseconds.
-   * @return
+   * @return the time in milliseconds
    */
   public BigDecimal getTime() {
     return getTimeConverted(TimeUnit.MILLI);
@@ -91,7 +76,7 @@ public class TimeData {
 
   /**
    * Gets the time in milliseconds.
-   * @return
+   * @return the time in milliseconds.
    */
   public Long getTimeAsLong() {
     return getTimeConverted(TimeUnit.MILLI).longValue();
@@ -99,8 +84,8 @@ public class TimeData {
 
   /**
    * Gets the time converted to desired unit.
-   * @param to
-   * @return
+   * @param to a time unit
+   * @return the time converted to desired unit.
    */
   public BigDecimal getRoundedTimeConverted(final TimeUnit to) {
     BigDecimal convertedSize = getTimeConverted(to);
@@ -113,8 +98,8 @@ public class TimeData {
 
   /**
    * Gets the time converted to desired unit.
-   * @param to
-   * @return
+   * @param to a time unit
+   * @return the time converted to desired unit.
    */
   public BigDecimal getTimeConverted(final TimeUnit to) {
     return convertTo(time, TimeUnit.MILLI, to);
@@ -122,7 +107,7 @@ public class TimeData {
 
   /**
    * Gets the best unit (for display as example).
-   * @return
+   * @return the best unit
    */
   public TimeUnit getBestUnit() {
     for (int i = 1; i < orderedUnits.size(); i++) {
@@ -140,7 +125,7 @@ public class TimeData {
 
   /**
    * Gets the best unformatted value (for display as example).
-   * @return
+   * @return the best unformatted value
    */
   public BigDecimal getBestValue() {
     TimeUnit bestUnit = getBestUnit();
@@ -150,7 +135,7 @@ public class TimeData {
 
   /**
    * Gets the best display value with or without the unit label.
-   * @return
+   * @return the best display value
    */
   private String getBestDisplayValue(boolean valueOnly) {
     return getFormattedValue(getBestUnit(), valueOnly);
@@ -159,7 +144,7 @@ public class TimeData {
 
   /**
    * Gets the best display value
-   * @return
+   * @return the best display value
    */
   public String getBestDisplayValueOnly() {
     return getBestDisplayValue(true);
@@ -167,17 +152,13 @@ public class TimeData {
 
   /**
    * Gets the best display value
-   * @return
+   * @return the best display value
    */
   public String getBestDisplayValue() {
     return getBestDisplayValue(false);
   }
 
 
-  /**
-   * Gets the desired value with or without the unit label.
-   * @return
-   */
   private String getFormattedValue(final TimeUnit to, boolean valueOnly) {
     BigDecimal bestDisplayValue = getRoundedTimeConverted(to);
     final StringBuilder sb = new StringBuilder();
@@ -190,32 +171,18 @@ public class TimeData {
   }
 
 
-  /**
-   * Gets the desired value only
-   * @return
-   */
   public String getFormattedValueOnly(final TimeUnit to) {
     return getFormattedValue(to, true);
   }
 
-  /**
-   * Gets the desired value with its label
-   * @return
-   */
   public String getFormattedValue(final TimeUnit to) {
     return getFormattedValue(to, false);
   }
 
-  /**
-   * @see #getFormattedDuration(String)
-   */
   public String getFormattedDurationAsHMSM() {
     return getFormattedDuration("HH:mm:ss.SSS");
   }
 
-  /**
-   * @see #getFormattedDuration(String)
-   */
   public String getFormattedDurationAsHMS() {
     TimeData roundedTimeData = UnitUtil
         .getTimeData(getRoundedTimeConverted(TimeUnit.SEC).setScale(0, BigDecimal.ROUND_HALF_DOWN),
@@ -223,9 +190,6 @@ public class TimeData {
     return roundedTimeData.getFormattedDuration("HH:mm:ss");
   }
 
-  /**
-   * @see org.apache.commons.lang3.time.DurationFormatUtils#formatDuration
-   */
   public String getFormattedDuration(String format) {
     return DurationFormatUtils.formatDuration(getTimeAsLong(), format);
   }

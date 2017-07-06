@@ -42,8 +42,8 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A processor to verify if the given path corresponds to an attachment URL link in order to
- * transform it into the FileSystem attachment path.<br/>
- * This processor must have a high priority.<br/>
+ * transform it into the FileSystem attachment path.<br>
+ * This processor must have a high priority.<br>
  * @author Yohann Chastagnier
  */
 public class AttachmentUrlLinkProcessor extends AbstractSilverpeasFileProcessor {

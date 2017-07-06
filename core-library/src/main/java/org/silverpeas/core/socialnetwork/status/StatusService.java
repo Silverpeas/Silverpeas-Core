@@ -24,7 +24,6 @@
 package org.silverpeas.core.socialnetwork.status;
 
 import org.silverpeas.core.date.Date;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -45,21 +44,10 @@ public class StatusService {
   protected StatusService() {
   }
 
-  /**
-   * get Connection
-   * @return Connection
-   * @throws UtilException
-   * @throws SQLException
-   */
   private Connection getConnection() throws SQLException {
     return DBUtil.openConnection();
   }
 
-  /**
-   * Change my Staus
-   * @param status
-   * @return String
-   */
   public String changeStatus(Status status) {
     Connection connection = null;
     int id = -1;
@@ -77,11 +65,6 @@ public class StatusService {
     return null;
   }
 
-  /**
-   * get last status for user
-   * @param userid
-   * @return
-   */
   public Status getLastStatus(int userid) {
     Connection connection = null;
     Status status = new Status();
@@ -97,13 +80,6 @@ public class StatusService {
 
   }
 
-  /**
-   * get all my SocialInformation according to number of Item and the first Index
-   * @param userId
-   * @param begin
-   * @param end
-   * @return List<SocialInformationStatus>
-   */
   public List<SocialInformation> getAllStatus(int userId, Date begin, Date end) {
     Connection connection = null;
     try {
@@ -117,14 +93,6 @@ public class StatusService {
     return Collections.emptyList();
   }
 
-  /**
-   * when data base is PostgreSQL get SocialInformation of my conatct according to number of Item
-   * and the first Index
-   * @param myContactsIds
-   * @param begin
-   * @param end
-   * @return List<SocialInformationStatus>
-   */
   List<SocialInformation> getSocialInformationListOfMyContacts(List<String> myContactsIds,
       Date begin, Date end) {
     Connection connection = null;

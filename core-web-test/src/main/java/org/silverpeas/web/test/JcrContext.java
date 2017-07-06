@@ -49,8 +49,8 @@ import java.nio.file.Path;
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
- * This class handle a JCR test.<br/>
- * The repository is created before and deleted after each test.<br/>
+ * This class handle a JCR test.<br>
+ * The repository is created before and deleted after each test.<br>
  * The registered physical files are also deleted.
  * @author Yohann Chastagnier
  */

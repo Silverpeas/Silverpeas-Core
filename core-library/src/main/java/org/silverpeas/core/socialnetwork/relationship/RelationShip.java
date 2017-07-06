@@ -89,7 +89,7 @@ public class RelationShip implements Serializable {
 
   /**
    * set the id of relationship
-   * @param id
+   * @param id the identifier to set
    */
   public void setId(int id) {
     this.idRelationShip = id;

@@ -1452,7 +1452,7 @@ public class AdminController implements java.io.Serializable {
   }
 
   /**
-   * Synchronizes the users of the group represented by the given identifier.<br/>
+   * Synchronizes the users of the group represented by the given identifier.<br>
    * Two types of synchronization are possible:
    * <ul>
    * <li>when the group is synchronized from an LDAP domain, it is synchronized directly with the

@@ -32,8 +32,8 @@ import java.util.List;
 
 /**
  * This class permits to handle the different languages that a user can choose to display the
- * labels of the application.<br/>
- * Be careful, this class handles possible user languages and not possible content languages.<br/>
+ * labels of the application.<br>
+ * Be careful, this class handles possible user languages and not possible content languages.<br>
  * The different content languages are managed by {@code org.silverpeas.util.i18n.I18NHelper}.
  */
 public class DisplayI18NHelper {
@@ -74,6 +74,7 @@ public class DisplayI18NHelper {
 
   /**
    * Verifies if the given user language is handled by the server.
+   * @param language the language to verify
    * @return the given user language if it is handled by the server, the default user language
    * otherwise.
    */

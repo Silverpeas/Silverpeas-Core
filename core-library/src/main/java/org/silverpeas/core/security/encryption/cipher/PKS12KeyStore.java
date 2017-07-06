@@ -41,11 +41,11 @@ import java.util.List;
 
 /**
  * A key store of the public and secret keys, and of the X509 certificate in a PKS infrastructure.
- * <p/>
+ * <p>
  * The PKS (Public-Key Cryptography Standards) is a group of standards in cryptography that are
  * under the control of the the RSA Security company. The standards promote a cryptographic
  * infrastructure for the identification of users, the signature and the exchange of data.
- * <p/>
+ * <p>
  * The format used to store the private key and the public key certificate is described in the
  * PKS#12 specification written by the RSA Security company in California.
  */
@@ -65,7 +65,6 @@ public class PKS12KeyStore {
    * @param p12FilePath the path of the PKS#12 key store file.
    * @param password the password which protects the key store file.
    * @throws KeyStoreException if an error occurs while opening the PKS#12 key store file.
-   * @throws FileNotFoundException if the PKS#12 key store file doesn't exist.
    * @throws CryptoException if an error occurs while loading the keys and the certificate from
    * the PKS#12 key store file.
    */

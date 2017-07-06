@@ -514,11 +514,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       nom = csvValues[i][0].getValueString();
       if (nom.length() == 0) {// champ obligatoire
         listErrors.append(getErrorMessage(i + 1, 1, nom));
-        listErrors.append(getString("JDP.obligatoire")).append("<br/>");
+        listErrors.append(getString("JDP.obligatoire")).append("<br>");
       } else if (nom.length() > 100) {// verifier 100 char max
         listErrors.append(getErrorMessage(i + 1, 1, nom));
         listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").
-            append(getString("JDP.caracteres")).append("<br/>");
+            append(getString("JDP.caracteres")).append("<br>");
       }
 
       // Prenom
@@ -526,29 +526,29 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       if (prenom.length() > 100) {
         listErrors.append(getErrorMessage(i + 1, 2, prenom));
         listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(
-            getString("JDP.caracteres")).append("<br/>");
+            getString("JDP.caracteres")).append("<br>");
       }
 
       // Login
       login = csvValues[i][2].getValueString();
       if (login.length() == 0) {// champ obligatoire
         listErrors.append(getErrorMessage(i + 1, 3, login));
-        listErrors.append(getString("JDP.obligatoire")).append("<br/>");
+        listErrors.append(getString("JDP.obligatoire")).append("<br>");
       } else if (login.length() < JobDomainSettings.m_MinLengthLogin) {// verifier
         listErrors.append(getErrorMessage(i + 1, 3, login));
         listErrors.append(getString("JDP.nbCarMin")).append(" ").append(
             JobDomainSettings.m_MinLengthLogin).append(" ").append(getString("JDP.caracteres")).
-            append("<br/>");
+            append("<br>");
       } else if (login.length() > 50) {// verifier 50 char max
         listErrors.append(getErrorMessage(i + 1, 3, login));
         listErrors.append(getString("JDP.nbCarMax")).append(" 50 ").append(getString(
-            "JDP.caracteres")).append("<br/>");
+            "JDP.caracteres")).append("<br>");
       } else {// verif login unique
         existingLogin = m_AdminCtrl.getUserIdByLoginAndDomain(login,
             targetDomainId);
         if (existingLogin != null) {
           listErrors.append(getErrorMessage(i + 1, 3, login));
-          listErrors.append(getString("JDP.existingLogin")).append("<br/>");
+          listErrors.append(getString("JDP.existingLogin")).append("<br>");
         }
       }
 
@@ -557,7 +557,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       if (email.length() > 100) {
         listErrors.append(getErrorMessage(i + 1, 4, email));
         listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
-            "JDP.caracteres")).append("<br/>");
+            "JDP.caracteres")).append("<br>");
       }
 
       // Droits
@@ -566,7 +566,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           && !"AdminPdc".equals(droits) && !"AdminDomain".equals(droits)
           && !"User".equals(droits) && !"Guest".equals(droits)) {
         listErrors.append(getErrorMessage(i + 1, 5, droits));
-        listErrors.append(getString("JDP.valeursPossibles")).append("<br/>");
+        listErrors.append(getString("JDP.valeursPossibles")).append("<br>");
       }
 
       // MotDePasse
@@ -578,11 +578,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         if (!passwordCheck.isCorrect()) {
           listErrors.append(getErrorMessage(i + 1, 6, motDePasse))
               .append(passwordCheck.getFormattedErrorMessage(getLanguage()));
-          listErrors.append("<br/>");
+          listErrors.append("<br>");
         } else if (motDePasse.length() > 32) {// verifier 32 char max
           listErrors.append(getErrorMessage(i + 1, 6, motDePasse));
           listErrors.append(getString("JDP.nbCarMax")).append(" 32 ").append(getString(
-              "JDP.caracteres")).append("<br/>");
+              "JDP.caracteres")).append("<br>");
         }
       }
 
@@ -595,7 +595,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           if (title.length() > 100) {
             listErrors.append(getErrorMessage(i + 1, 7, title));
             listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
-                "JDP.caracteres")).append("<br/>");
+                "JDP.caracteres")).append("<br>");
           }
 
           // company
@@ -603,7 +603,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           if (company.length() > 100) {
             listErrors.append(getErrorMessage(i + 1, 8, company));
             listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
-                "JDP.caracteres")).append("<br/>");
+                "JDP.caracteres")).append("<br>");
           }
 
           // position
@@ -611,7 +611,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           if (position.length() > 100) {
             listErrors.append(getErrorMessage(i + 1, 9, position));
             listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
-                "JDP.caracteres")).append("<br/>");
+                "JDP.caracteres")).append("<br>");
           }
 
           // boss
@@ -619,7 +619,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           if (boss.length() > 100) {
             listErrors.append(getErrorMessage(i + 1, 10, boss));
             listErrors.append(getString("JDP.nbCarMax")).append(" 100 ").append(getString(
-                "JDP.caracteres")).append("<br/>");
+                "JDP.caracteres")).append("<br>");
           }
 
           // phone
@@ -627,7 +627,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           if (phone.length() > 20) {
             listErrors.append(getErrorMessage(i + 1, 11, phone));
             listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
-                "JDP.caracteres")).append("<br/>");
+                "JDP.caracteres")).append("<br>");
           }
 
           // homePhone
@@ -635,7 +635,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           if (homePhone.length() > 20) {
             listErrors.append(getErrorMessage(i + 1, 12, homePhone));
             listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
-                "JDP.caracteres")).append("<br/>");
+                "JDP.caracteres")).append("<br>");
           }
 
           // fax
@@ -643,7 +643,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           if (fax.length() > 20) {
             listErrors.append(getErrorMessage(i + 1, 13, fax));
             listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
-                "JDP.caracteres")).append("<br/>");
+                "JDP.caracteres")).append("<br>");
           }
 
           // cellularPhone
@@ -652,7 +652,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           if (cellularPhone.length() > 20) {
             listErrors.append(getErrorMessage(i + 1, 14, cellularPhone));
             listErrors.append(getString("JDP.nbCarMax")).append(" 20 ").append(getString(
-                "JDP.caracteres")).append("<br/>");
+                "JDP.caracteres")).append("<br>");
           }
 
           // address
@@ -660,7 +660,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
           if (address.length() > 500) {
             listErrors.append(getErrorMessage(i + 1, 15, address));
             listErrors.append(getString("JDP.nbCarMax")).append(" 500 ").append(getString(
-                "JDP.caracteres")).append("<br/>");
+                "JDP.caracteres")).append("<br>");
           }
         } else {// domaine SQL
 
@@ -672,7 +672,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
                 listErrors.append(getErrorMessage(i + 1, j + 6, informationSpecifiqueString));
                 listErrors.append(getString("JDP.nbCarMax")).append(" ")
                     .append(csvReader.getSpecificColMaxLength(j)).append(" ")
-                    .append(getString("JDP.caracteres")).append("<br/>");
+                    .append(getString("JDP.caracteres")).append("<br>");
               }
             }
           }

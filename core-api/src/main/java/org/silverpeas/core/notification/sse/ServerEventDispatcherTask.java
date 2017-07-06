@@ -46,7 +46,7 @@ import static org.silverpeas.core.notification.user.client.NotificationManagerSe
 
 /**
  * This task is in charge of dispatching server events without blocking the thread of the emitter.
- * <br/>
+ * <br>
  * {@link javax.servlet.Servlet} implementation must call
  * {@link #registerAsyncContext(SilverpeasAsyncContext)} to be taken into account.
  */
@@ -129,7 +129,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
   }
 
   /**
-   * Register an {@link SilverpeasAsyncContext} instance.<br/>
+   * Register an {@link SilverpeasAsyncContext} instance.<br>
    * If the instance is already registered, nothing is again registered.
    * @param context the instance to register.
    */
@@ -150,7 +150,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
    * @param receiverSessionInfoId the identifier of the receiver session.
    * @param receiver the receiver instance.
    * @return the last server event identifier sent or the given one if nothing has been sent.
-   * @throws IOException
+   * @throws IOException if the sending fails.
    */
   public static long sendLastServerEventsFromId(final HttpServletRequest request,
       HttpServletResponse response, long lastServerEventId, final String receiverSessionInfoId,

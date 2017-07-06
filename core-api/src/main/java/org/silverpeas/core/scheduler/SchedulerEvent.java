@@ -62,7 +62,7 @@ public class SchedulerEvent {
 
   /**
    * Creates a new scheduler event about a trigger firing.
-   * @param the context of the job to be executed.
+   * @param context the context of the job to be executed.
    * @return the scheduler event fired by the firing of a trigger.
    */
   public static SchedulerEvent triggerFired(final JobExecutionContext context) {
@@ -71,7 +71,7 @@ public class SchedulerEvent {
 
   /**
    * Creates a new scheduler event about a success of a job execution.
-   * @param the context of the completed execution of a job.
+   * @param context the context of the completed execution of a job.
    * @return the scheduler event fired by the job completion.
    */
   public static SchedulerEvent jobSucceeded(final JobExecutionContext context) {
@@ -126,8 +126,8 @@ public class SchedulerEvent {
 
   /**
    * Constructs a scheduler event.
-   * @param aType The type of the event
-   * @param aJob The job, which is the source for the event
+   * @param aType the type of the event
+   * @param aContext the context of the job execution.
    */
   protected SchedulerEvent(final Type aType, final JobExecutionContext aContext) {
     this.type = aType;

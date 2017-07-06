@@ -95,7 +95,7 @@ public abstract class EntityReference<T> {
 
   /**
    * Extracts automatically the type from a {@link Class}.
-   *
+   * @param aClass the class
    * @return the meaningful name in upper case of the type of the referred entity.
    */
   public static String getType(Class aClass) {
@@ -104,7 +104,7 @@ public abstract class EntityReference<T> {
 
   /**
    * Extracts automatically the type from a simple name of {@link Class}.
-   *
+   * @param classSimpleName the class simple name
    * @return the meaningful name in upper case of the type of the referred entity.
    */
   public static String getType(String classSimpleName) {
@@ -121,7 +121,6 @@ public abstract class EntityReference<T> {
 
   /**
    * Gets the instance of the entity targeted by this reference.
-   *
    * @return the entity identified by this reference.
    */
   public abstract T getEntity();

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.persistence.jdbc.bean;
 
-import java.io.Serializable;
-
 import org.silverpeas.core.WAPrimaryKey;
+
+import java.io.Serializable;
 
 /**
  * SilverpeasBean represents an Entity in old silverpeas persistence layer
- * @Deprecated Replaced with a model Entity from org.silverpeas.core.persistence.datasource.model package.
+ * @deprecated Replaced with a model Entity from org.silverpeas.core.persistence.datasource.model package.
  */
 @Deprecated
 public class SilverpeasBean implements SilverpeasBeanIntf, Serializable {

@@ -226,6 +226,7 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
    * Lists entities from the specified JPQL query and with the specified parameters.
    * @param query the JPQL query.
    * @param parameters the parameters to apply to the query.
+   * @param pagination the pagination criterion to apply.
    * @return a list of entities matching the query and the parameters. If no entities match the
    * query then an empty list is returned.
    */
@@ -257,6 +258,7 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
    * @param <U> the type of the returned entities.
    * @param jpqlQuery the JPQL query.
    * @param parameters the parameters to apply to the query.
+   * @param pagination the pagination criterion to apply.
    * @param returnEntityType the class of the returned entities.
    * @return a list of entities matching the query and the parameters. If no entities match the
    * query then an empty list is returned.
@@ -382,7 +384,7 @@ public abstract class AbstractJpaEntityRepository<T extends IdentifiableEntity>
 
   /**
    * Sets the maximum items in a in clause.
-   * @param maximumItemsInClause
+   * @param maximumItemsInClause the maximum number of items in an SQL in-clause.
    */
   protected void setMaximumItemsInClause(final int maximumItemsInClause) {
     this.maximumItemsInClause = maximumItemsInClause;

@@ -49,7 +49,7 @@ public class OperationContext {
 
   /**
    * Creates an empty instance.
-   * @return
+   * @return a new {@link OperationContext} instance.
    */
   public static OperationContext createInstance() {
     return new OperationContext();
@@ -57,8 +57,8 @@ public class OperationContext {
 
   /**
    * Creates an instance from the given identifier which aims a user.
-   * @param userId
-   * @return
+   * @param userId the unique identifier of a user.
+   * @return a new {@link OperationContext} for the specified user identifier.
    */
   public static OperationContext fromUser(String userId) {
     return fromUser(User.getById(userId));
@@ -66,8 +66,8 @@ public class OperationContext {
 
   /**
    * Creates an instance from the given user.
-   * @param user
-   * @return
+   * @param user a user
+   * @return a new {@link OperationContext} for the specified user.
    */
   public static OperationContext fromUser(User user) {
     return new OperationContext().withUser(user);
@@ -75,17 +75,17 @@ public class OperationContext {
 
   /**
    * Creates an instance from the current requester ({@link User#getCurrentRequester()}).
-   * @return
+   * @return a new {@link OperationContext} for the current user.
    */
   public static OperationContext fromCurrentRequester() {
     return new OperationContext().withUser(User.getCurrentRequester());
   }
 
   /**
-   * Get the current instance of the transaction from a cache (thread cache (request cache
+   * Get the current {@link OperationContext} instance from a cache (thread cache (request cache
    * exactly)).
-   * The call of this method is automatically done by tachnical JPA tools.
-   * @return
+   * The call of this method is automatically done by technical JPA tools.
+   * @return the current {@link OperationContext} instance from the cache.
    */
   public static OperationContext getFromCache() {
     return CacheServiceProvider.getRequestCacheService()
@@ -102,8 +102,8 @@ public class OperationContext {
 
   /**
    * Sets the user associated to the save operation.
-   * @param user
-   * @return
+   * @param user the user to set.
+   * @return itself.
    */
   public OperationContext withUser(User user) {
     this.user = user;
@@ -114,6 +114,7 @@ public class OperationContext {
    * Calling this method to indicates that the current data update is performed in a case of a
    * creation. Indeed, in some cases, the creation of a resource into database is done by a
    * chaining of inserts and updates.
+   * @return itselft.
    */
   public OperationContext setUpdatingInCaseOfCreation() {
     return setUpdatingInCaseOfCreation(true);
@@ -125,6 +126,7 @@ public class OperationContext {
    * chaining of inserts and updates.
    * @param updatingInCaseOfCreation true to specify that the update is performed in a case of data
    * creation.
+   * @return itself
    */
   public OperationContext setUpdatingInCaseOfCreation(boolean updatingInCaseOfCreation) {
     this.updatingInCaseOfCreation = updatingInCaseOfCreation;
@@ -133,7 +135,7 @@ public class OperationContext {
 
   /**
    * Indicates if the date update is performed in a case of creation.
-   * @return
+   * @return true if the date is updated, false otherwise.
    */
   public boolean isUpdatingInCaseOfCreation() {
     return updatingInCaseOfCreation;
@@ -141,7 +143,7 @@ public class OperationContext {
 
   /**
    * Gets the user behind the operation.
-   * @return
+   * @return the user concerned by the operation.
    */
   public User getUser() {
     return user;
@@ -157,8 +159,8 @@ public class OperationContext {
   }
 
   /**
-   * Applying informations of the context to the given entity on a persist operation.
-   * @param entity
+   * Applying information of the context to the given entity on a persist operation.
+   * @param entity an entity.
    */
   public void applyToPersistOperation(Entity entity) {
     String errorMessage = "the user identifier must exist when performing persist operation";
@@ -169,8 +171,8 @@ public class OperationContext {
   }
 
   /**
-   * Applying informations of the context to the given entity on a update opearation.
-   * @param entity
+   * Applying information of the context to the given entity on a update operation.
+   * @param entity an entity.
    */
   public void applyToUpdateOperation(Entity entity) {
     String errorMessage = "the user identifier must exist when performing update operation";

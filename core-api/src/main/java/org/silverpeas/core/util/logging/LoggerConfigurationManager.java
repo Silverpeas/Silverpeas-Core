@@ -46,14 +46,14 @@ import java.util.stream.Collector;
 /**
  * There is a single global LoggerConfigurationManager object that is used to manage a set of
  * configuration about the different Loggers available in Silverpeas.
- * </p>
+ * <p>
  * Each logger in Silverpeas is usually mapped to a given Silverpeas module. A Silverpeas module
  * is either a component of Silverpeas Core or an application in Silverpeas Components. By defining
  * a mapping between a module and a logger, when logging some messages, it is required to the
  * objects just to pass the name of the module to which they belong; it is hence no necessary to
  * remind the schema of the loggers namespace in use in Silverpeas. Each mapping is defined in a
  * logging configuration with optionally the logging level to use for the mapped logger.
- * </p>
+ * <p>
  * A logging configuration for a Silverpeas module is stored into a properties file that must
  * be located in the <code>SILVERPEAS_HOME/properties/org/silverpeas/util/logging</code> directory.
  * @author miguel

@@ -34,9 +34,9 @@ import java.util.concurrent.Semaphore;
 
 /**
  * A thread MailSenderThread in the background a batch of mail sending. All the public methods
- * are static, so only one thread runs and processes the mail sending.<br/>
+ * are static, so only one thread runs and processes the mail sending.<br>
  * When it get no more mail to send, the thread ends a new one will be instantiated on the next
- * mail sending request.<br/>
+ * mail sending request.<br>
  * Priority is given to synchronous mail sending request.
  */
 public class MailSenderTask extends AbstractRequestTask<MailProcessContext> {
@@ -44,7 +44,7 @@ public class MailSenderTask extends AbstractRequestTask<MailProcessContext> {
   /**
    * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
    * access will be synchronized on this list. Furthermore this list is used to synchronize the
-   * providers and the consumers of the list.<br/>
+   * providers and the consumers of the list.<br>
    * When the list is empty, then the thread is killed. It will be instantiated again on the next
    * mail to send.
    */

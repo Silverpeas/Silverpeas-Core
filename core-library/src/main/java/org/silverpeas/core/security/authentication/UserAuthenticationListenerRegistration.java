@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Registering <code>UserAuthenticationListener</code> implementations.<br/>
+ * Registering <code>UserAuthenticationListener</code> implementations.<br>
  * Registered <code>UserAuthenticationListener</code> are used by
  * <code>SilverpeasSessionOpener</code>.
  * @author Nicolas Eysseric

@@ -61,14 +61,6 @@ public class LDAPUtility {
   static final Map<String, LDAPConnectInfos> connectInfos = new HashMap<String, LDAPConnectInfos>();
   static int connexionsLastId = 0;
 
-  /**
-   * Method declaration
-   *
-   * @param driverSettings
-   * @return
-   * @throws AdminException
-   * @see
-   */
   static public String openConnection(LDAPSettings driverSettings) throws AdminException {
     String newId;
     synchronized (connectInfos) {
@@ -83,27 +75,10 @@ public class LDAPUtility {
     return newId;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param connectionId
-   * @return
-   * @throws AdminException
-   * @see
-   */
   static public LDAPConnection getConnection(String connectionId) {
     return (connectInfos.get(connectionId)).connection;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param connectionId
-   * @param ex
-   * @return
-   * @throws AdminException
-   * @see
-   */
   static public boolean recoverConnection(String connectionId, LDAPException ex) {
     int nbRetry = 0;
     boolean reOpened = false;
@@ -139,25 +114,11 @@ public class LDAPUtility {
     return reOpened;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param connectionId
-   * @throws AdminException
-   * @see
-   */
   static public void closeConnection(String connectionId) throws AdminException {
     InternalCloseConnection(connectionId);
     connectInfos.remove(connectionId);
   }
 
-  /**
-   * Method declaration
-   *
-   * @param connectionId
-   * @throws AdminException
-   * @see
-   */
   static private void InternalOpenConnection(String connectionId) throws AdminException {
     LDAPSettings driverSettings = (connectInfos.get(connectionId)).driverSettings;
     LDAPConnection valret;
@@ -190,13 +151,6 @@ public class LDAPUtility {
     }
   }
 
-  /**
-   * Method declaration
-   *
-   * @param connectionId
-   * @throws AdminException
-   * @see
-   */
   static private void InternalCloseConnection(String connectionId)
       throws AdminException {
     LDAPConnection toClose = getConnection(connectionId);
@@ -395,7 +349,7 @@ public class LDAPUtility {
 
   /**
    * Escaping search filter to prevent LDAP injection. Based on
-   * http://blogs.sun.com/shankar/entry/what_is_ldap_injection rfc 2254 actually adresses how to fix
+   * http://blogs.sun.com/shankar/entry/what_is_ldap_injection rfc 2254 actually addresses how to fix
    * these ldap injection bugs in section 4 on page 4 Character ASCII value
    * --------------------------- * 0x2a ( 0x28 ) 0x29 \ 0x5c NUL 0x00
    *
@@ -445,19 +399,6 @@ public class LDAPUtility {
     return unescapedFilter;
   }
 
-  /**
-   * Method declaration
-   *
-   * @param lds
-   * @param baseDN
-   * @param scope
-   * @param filter
-   * @param varToSort
-   * @param args
-   * @return
-   * @throws AdminException
-   * @see
-   */
   static public LDAPEntry[] search1000Plus(String lds, String baseDN, int scope, String filter,
       String varToSort, String[] args) throws AdminException {
 

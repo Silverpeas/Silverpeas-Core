@@ -33,13 +33,6 @@ public class Invitation {
   private String message;
   private Date invitationDate;
 
-  /**
-   * Constructor using fields
-   * @param senderId
-   * @param receiverId
-   * @param message
-   * @param invitationDate
-   */
   public Invitation(int senderId, int receiverId, String message, Date invitationDate) {
     this.senderId = senderId;
     this.receiverId = receiverId;
@@ -93,43 +86,22 @@ public class Invitation {
     return senderId;
   }
 
-  /**
-   * set the Id of invitation
-   * @param id
-   */
   public void setId(int id) {
     this.id = id;
   }
 
-  /**
-   * set the Date of invitation
-   * @param invitationDate
-   */
   public void setInvitationDate(Date invitationDate) {
-
     this.invitationDate = invitationDate;
   }
 
-  /**
-   * set the Message of invitation
-   * @param message
-   */
   public void setMessage(String message) {
     this.message = message;
   }
 
-  /**
-   * set the Receiver of invitation
-   * @param receiverId
-   */
   public void setReceiverId(int receiverId) {
     this.receiverId = receiverId;
   }
 
-  /**
-   * set the sender of invitation
-   * @param senderId
-   */
   public void setSenderId(int senderId) {
     this.senderId = senderId;
   }

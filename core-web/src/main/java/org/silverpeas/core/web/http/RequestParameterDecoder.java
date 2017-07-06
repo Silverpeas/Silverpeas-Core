@@ -37,9 +37,9 @@ import java.util.Date;
 /**
  * This class decodes the request parameters in order to set them to a simple specified POJO which
  * attributes are annotated by {@link javax.ws.rs.FormParam} or
- * {@link javax.xml.bind.annotation.XmlElement} annotation.<br/>
+ * {@link javax.xml.bind.annotation.XmlElement} annotation.<br>
  * It is possible to annotate the attribute with {@link UnescapeHtml} annotation in order to
- * perform an HTML unescape operation (string type only).<br/>
+ * perform an HTML unescape operation (string type only).<br>
  * WARNINGS:
  * <ul>
  * <li>for now, the decoder is not compatible with Inner Classes</li>

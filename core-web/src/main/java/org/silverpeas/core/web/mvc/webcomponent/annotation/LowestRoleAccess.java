@@ -36,7 +36,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Annotation to specify the lower Silverpeas role the user should play in order to invoke the
  * annotated method.
- * <p/>
+ * <p>
  * @author Yohann Chastagnier
  */
 @Inherited

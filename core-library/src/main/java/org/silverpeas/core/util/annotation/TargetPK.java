@@ -35,7 +35,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Annotation to specify a method parameter to be identified as a PK target.
  * The parameter could directly be the PK or also could contain the PK.
  * It can specify also a list of source PK.
- * <p/>
+ * <p>
  * User: Yohann Chastagnier
  * Date: 21/10/13
  */

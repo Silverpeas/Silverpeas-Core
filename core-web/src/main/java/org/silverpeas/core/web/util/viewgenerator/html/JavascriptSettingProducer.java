@@ -33,7 +33,7 @@ import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
 
 /**
  * This tool permits the creates dynamically javascript settings that javascript plugins can used
- * easily.<br/>
+ * easily.<br>
  * The generated javascript settings will be an instance of SilverpeasPluginSettings defined into
  * silverpeas.js
  * @author Yohann Chastagnier
@@ -117,7 +117,7 @@ public class JavascriptSettingProducer {
   }
 
   /**
-   * The name of the javascript variable that represents the instance of the bundle.<br/>
+   * The name of the javascript variable that represents the instance of the bundle.<br>
    * Please ensure that it is unique.
    * @return the javascript as string.
    */

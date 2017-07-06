@@ -34,7 +34,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Annotation to specify a web controller method that can be invoked before the execution of an
  * HTTP method.
- * <p/>
+ * <p>
  * @author Yohann Chastagnier
  */
 @Inherited

@@ -74,12 +74,6 @@ public class DelayedNotificationUserSetting
     // NTD
   }
 
-  /**
-   * Default constructor
-   * @param userId
-   * @param channelId
-   * @param frequency
-   */
   public DelayedNotificationUserSetting(final int userId, final NotifChannel channelId,
       final DelayedNotificationFrequency frequency) {
     setUserId(userId);

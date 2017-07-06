@@ -76,7 +76,7 @@ public class NotificationResourceData
 
   /**
    * Copying all data from the given resource excepted the id
-   * @param notificationResourceData
+   * @param notificationResourceData the data from which all is copied.
    */
   public void fillFrom(final NotificationResourceData notificationResourceData) {
     setResourceId(notificationResourceData.getResourceId());

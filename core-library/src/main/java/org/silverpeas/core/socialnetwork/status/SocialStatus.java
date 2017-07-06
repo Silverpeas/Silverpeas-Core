@@ -23,14 +23,13 @@
  */
 package org.silverpeas.core.socialnetwork.status;
 
-import java.util.List;
-
 import org.silverpeas.core.date.Date;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialStatusInterface;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.List;
 
 @Singleton
 public class SocialStatus implements SocialStatusInterface {
@@ -46,26 +45,11 @@ public class SocialStatus implements SocialStatusInterface {
 
   }
 
-  /**
-   * Get list of my socialInformationStatus according to number of Item and the first Index
-   * @param userid
-   * @param begin date
-   * @param end date
-   * @return List
-   */
   @Override
   public List<SocialInformation> getSocialInformationList(String userid, Date begin, Date end) {
     return getStatusService().getAllStatus(Integer.parseInt(userid), begin, end);
   }
 
-  /**
-   * Get list of socialInformationStatus of my contacts according to number of Item and the first
-   * Index
-   * @param myContactsIds
-   * @param begin date
-   * @param end date
-   * @return List
-   */
   @Override
   public List<SocialInformation> getSocialInformationListOfMyContacts(
       List<String> myContactsIds, Date begin, Date end) {

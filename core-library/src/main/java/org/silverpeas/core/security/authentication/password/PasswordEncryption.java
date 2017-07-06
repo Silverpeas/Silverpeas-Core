@@ -25,12 +25,12 @@ package org.silverpeas.core.security.authentication.password;
 
 /**
  * Encryption of a user password or passphrase by using a cryptographic one-way hash algorithm.
- * <p/>
+ * <p>
  * While the message authentication and the integrity checking requires a hash function that matters
  * in speed and in efficiency (a different digest for inputs altered even a little), the hashing of
  * the passwords or passphrases require robustness and future-proof against strong attacks that take
  * advantage of a hardware more and more powerful and of the password's lifetime.
- * <p/>
+ * <p>
  * Usually, the hash functions used in the encryption of a password is based on a standard and well
  * known cryptographic algorithm: MD5, SHA-1, SHA-256, etc. Unfortunately, these functions don't
  * suit well for encrypting password for the reasons explained above; they suffer of the
@@ -74,7 +74,7 @@ public interface PasswordEncryption {
 
   /**
    * Checks the specified password matches the specified digest.
-   * <p/>
+   * <p>
    *
    * @param password an unencrypted password.
    * @param digest a digest of a password with which the specified password has to be matched.
@@ -84,11 +84,11 @@ public interface PasswordEncryption {
 
   /**
    * Gets the salt that was used to compute the specified digest.
-   * <p/>
+   * <p>
    * According to the cryptographic algorithm that computed the digest, the salt used in the
    * encryption can be retrieved from the digest itself. In the case the salt cannot be determine,
    * an empty one is then returned.
-   * <p/>
+   * <p>
    * If the digest cannot be analysed by this encryption then an IllegalArgumentException exception
    * is thrown.
    *

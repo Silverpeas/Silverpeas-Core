@@ -31,20 +31,9 @@ import java.util.EventListener;
  */
 public interface MessageListener extends EventListener {
 
-  /**
-   * Method called before a message is added
-   */
   void beforeGetLanguage(MessageContainer container);
 
-  /**
-   * Method called before a message is added
-   * @param message
-   */
   void beforeAddMessage(MessageContainer container, Message message);
 
-  /**
-   * Method called after a message is added
-   * @param message
-   */
   void afterMessageAdded(MessageContainer container, Message message);
 }

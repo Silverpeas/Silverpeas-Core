@@ -58,26 +58,14 @@ public class MessageContainer {
     return ResourceLocator.getLocalizationBundle(bundleBaseName, lang);
   }
 
-  /**
-   * Adding a message listener
-   * @param listener
-   */
   public void addListener(MessageListener listener) {
     listeners.add(listener);
   }
 
-  /**
-   * Setting a language
-   * @param language
-   */
   public void setLanguage(final String language) {
     this.language = language;
   }
 
-  /**
-   * Getting language
-   * @return
-   */
   public String getLanguage() {
     for (MessageListener messageListener : listeners) {
       messageListener.beforeGetLanguage(this);
@@ -85,10 +73,6 @@ public class MessageContainer {
     return language;
   }
 
-  /**
-   * Adding a message
-   * @param message
-   */
   public void addMessage(Message message) {
     for (MessageListener messageListener : listeners) {
       messageListener.beforeAddMessage(this, message);
@@ -99,10 +83,6 @@ public class MessageContainer {
     }
   }
 
-  /**
-   * Getting all messages
-   * @return
-   */
   public Set<Message> getMessages() {
     return messages;
   }

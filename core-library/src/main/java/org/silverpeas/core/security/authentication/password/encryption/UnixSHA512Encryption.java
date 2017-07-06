@@ -79,19 +79,19 @@ import java.util.regex.Pattern;
 /**
  * A variation of the SHA-512 algorithm (Secure Hash Algorithm) as used in current Unix systems for
  * hashing the passwords.
- * <p/>
+ * <p>
  * This version uses salting and stretching to perturb the algorithm in different ways, and hence
  * to be less vulnerable to attacks. It computes a base64-encoded digest of 123 characters at
  * maximum from a salt and an unencrypted password; the SHA-512 encrypted password in the digest is
  * fixed at 86 characters.
- * <p/>
+ * <p>
  * The UnixSHA512Encryption class is based upon the the new generation, scalable, SHA-512-based
  * Unix 'crypt' algorithm developed by a group of engineers from Red Hat, Sun, IBM, and HP for
  * common use in Unix and Linux.
- * <p/>
+ * <p>
  * The Linux glibc library (starting at version 2.7) includes support for validating passwords
  * hashed using this algorithm.
- * <p/>
+ * <p>
  * The algorithm itself was released into the Public Domain by Ulrich Drepper
  * &lt;drepper@redhat.com&gt;. A discussion of the rationale and development of this algorithm is
  * at
@@ -135,7 +135,7 @@ public class UnixSHA512Encryption implements PasswordEncryption {
 
   /**
    * Checks the specified password matches the specified digest.
-   * <p/>
+   * <p>
    * @param password an unencrypted password.
    * @param digest a digest of a password with which the specified password has to be matched.
    * @throws AssertionError if the digest wasn't computed from the specified password.
@@ -150,11 +150,11 @@ public class UnixSHA512Encryption implements PasswordEncryption {
 
   /**
    * Gets the salt that was used to compute the specified digest.
-   * <p/>
+   * <p>
    * According to the cryptographic algorithm that computed the digest, the salt used in the
    * encryption can be retrieved from the digest itself. In the case the salt cannot be determine,
    * an empty one is then returned.
-   * <p/>
+   * <p>
    * If the digest cannot be analysed by this encryption then an IllegalArgumentException exception
    * is thrown.
    * @param digest the digest from which the salt has to be get.

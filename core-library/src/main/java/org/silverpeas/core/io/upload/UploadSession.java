@@ -181,7 +181,7 @@ public class UploadSession {
   }
 
   /**
-   * Gets the root folder on the server of the upload session.<br/>
+   * Gets the root folder on the server of the upload session.<br>
    * If the folder does not yet exist, then it is created.
    * @return a {@link File} that represents the upload session folder.
    */
@@ -193,7 +193,7 @@ public class UploadSession {
   /**
    * Gets the {@link File} list (so file or folder) from the root folder on the server of the
    * upload
-   * session.<br/>
+   * session.<br>
    * If the folder does not yet exist, then it is created.
    * @return a list of {@link File} from the root folder provided by {@link #getRootFolder()}.
    */

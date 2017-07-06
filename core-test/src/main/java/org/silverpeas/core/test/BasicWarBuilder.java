@@ -31,6 +31,7 @@ public class BasicWarBuilder extends WarBuilder<BasicWarBuilder> {
   /**
    * Constructs a war builder for the specified test class. It will load all the resources in the
    * same packages of the specified test class.
+   * @param <T> the concrete type of the test
    * @param test the class of the test for which a war archive will be build.
    */
   protected <T> BasicWarBuilder(final Class<T> test) {

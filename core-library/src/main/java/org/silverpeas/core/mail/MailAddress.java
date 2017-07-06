@@ -89,8 +89,8 @@ public class MailAddress {
    * Gets from this defined mail address the corresponding authorized {@link InternetAddress}
    * according to the ruled defined by {@link MailUtil#getAuthorizedEmailAddress(String, String)}.
    * @return the authorized {@link MailUtil#getAuthorizedEmailAddress(String, String)}.
-   * @throws UnsupportedEncodingException
-   * @throws AddressException
+   * @throws UnsupportedEncodingException if the text encoding is not supported
+   * @throws AddressException if the address isn't well formatted
    */
   public InternetAddress getAuthorizedInternetAddress()
       throws UnsupportedEncodingException, AddressException {

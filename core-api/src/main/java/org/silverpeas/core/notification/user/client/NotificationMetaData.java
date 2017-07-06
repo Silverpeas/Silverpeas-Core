@@ -567,10 +567,6 @@ public class NotificationMetaData implements java.io.Serializable {
     groupRecipients.add(group);
   }
 
-  /**
-   * Add group recipients to group recipients
-   * @param groups
-   */
   public void addGroupRecipients(Collection<GroupRecipient> groups) {
     if (groups != null) {
       groupRecipients.addAll(groups);
@@ -670,10 +666,11 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Gets the complete list of users that will receive the notification, so it takes into account
-   * users of groups.<br/>
-   * If the sender is identified, it is removed from the result.<br/>
+   * users of groups.<br>
+   * If the sender is identified, it is removed from the result.<br>
    * No internal data of the current {@link NotificationMetaData} is updated.
    * @return the complete list of users that will receive the notification.
+   * @throws NotificationManagerException if an error occurs
    */
   public Set<UserRecipient> getAllUserRecipients() throws NotificationManagerException {
     return getAllUserRecipients(false);
@@ -681,12 +678,13 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Gets the complete list of users that will receive the notification, so it takes into account
-   * users of groups.<br/>
-   * If the sender is identified (as a user), it is removed from the result.<br/>
+   * users of groups.<br>
+   * If the sender is identified (as a user), it is removed from the result.<br>
    * @param updateInternalUserRecipientsToExclude if true, the internal container of user
    * recipients to exclude will be updated. This container is provided by {@link
    * #getUserRecipientsToExclude()}. If false, nothing is done.
    * @return the complete list of users that will receive the notification.
+   * @throws NotificationManagerException if an error occurs
    */
   public Set<UserRecipient> getAllUserRecipients(boolean updateInternalUserRecipientsToExclude)
       throws NotificationManagerException {
@@ -804,7 +802,7 @@ public class NotificationMetaData implements java.io.Serializable {
 
   /**
    * Indicates if the current {@link NotificationMetaData} concerns a manual notification between a
-   * sender user and several user/group receivers. <br/>
+   * sender user and several user/group receivers. <br>
    * Warning : the sender information is not verified.
    * @return true if the current {@link NotificationMetaData} concerns a manual one, false
    * otherwise.

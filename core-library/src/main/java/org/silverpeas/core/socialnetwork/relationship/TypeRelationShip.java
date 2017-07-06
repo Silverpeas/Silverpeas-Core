@@ -28,15 +28,12 @@ public class TypeRelationShip {
   private int idTypeRelationShip;
   private String designation;
 
-  /**
-   * @param designation
-   */
   public TypeRelationShip(String designation) {
     this.designation = designation;
   }
 
   public TypeRelationShip() {
-    // TODO Auto-generated constructor stub
+    // Auto-generated constructor stub
   }
 
   /**
@@ -47,21 +44,21 @@ public class TypeRelationShip {
   }
 
   /**
-   * @returnString
+   * @return String
    */
   public String getDesignation() {
     return designation;
   }
 
   /**
-   * @param idTypeRelationShip
+   * @param idTypeRelationShip the relationship identifier
    */
   public void setId(int idTypeRelationShip) {
     this.idTypeRelationShip = idTypeRelationShip;
   }
 
   /**
-   * @param designation
+   * @param designation date as String
    */
   public void setInvitationDate(String designation) {
     this.designation = designation;

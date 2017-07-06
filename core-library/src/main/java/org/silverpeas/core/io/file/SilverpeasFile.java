@@ -36,7 +36,7 @@ import java.io.InputStream;
  * A representation of a File in Silverpeas. This class abstracts the way the files are managed
  * in Silverpeas by extending the original JDK file with additional features. A file in Silverpeas
  * belongs always to a component instance and is qualified by its MIME type.
- * <p/>
+ * <p>
  * Such file can be either a document referred by a publication's attachment or an image from a
  * form.
  * @author mmoquillon
@@ -96,7 +96,7 @@ public class SilverpeasFile extends File {
 
   /**
    * @see java.io.File#delete()
-   * <p/>
+   * <p>
    * A chain of post-processors will be ran once this file deleted to perform possible additional
    * treatments.
    * @return true if the deletion succeed, false otherwise.
@@ -123,7 +123,7 @@ public class SilverpeasFile extends File {
   /**
    * Writes the content of the specified input stream into this file. If this file doesn't aleady
    * exists, then it is created.
-   * <p/>
+   * <p>
    * A chain of post-processors will be ran once the content written in this file to perform
    * possible additional treatments.
    * @param stream the input stream from which the content to write is fetched.
@@ -152,10 +152,10 @@ public class SilverpeasFile extends File {
    * Moves this file into the specified directory. If the directory doesn't exist, it is then
    * created before. Once the file is moved, it is not more existing. If the file doesn't exist,
    * then nothing is done and {@code NO_FILE} is returned.
-   * <p/>
+   * <p>
    * A chain of post-processors will be ran once this file is moved to the directory to perform
    * possible additional treatments on the the moved file.
-   * <p/>
+   * <p>
    * The moving operation will create a new file in the specified directory with the content of this
    * file and then delete this file. Consequently, a chain of post-processors will be ran against
    * the deleted file to perform additional treatments at file deletion.
@@ -179,7 +179,7 @@ public class SilverpeasFile extends File {
   /**
    * Copies this file into the specified directory. If the directory doesn't exist, it is then
    * created before.
-   * <p/>
+   * <p>
    * A chain of post-processors will be ran once this file is copied to the directory to perform
    * possible additional treatments on the copied file.
    * @param directoryPath the absolute path of the directory into which this file has to be moved.

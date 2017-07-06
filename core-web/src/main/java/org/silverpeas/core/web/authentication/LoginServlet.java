@@ -38,7 +38,7 @@ import java.io.IOException;
 import static org.silverpeas.core.util.StringUtil.*;
 
 /**
- * This servlet handle the login page access.<br/>
+ * This servlet handle the login page access.<br>
  * If it exists an opened user session, the user is redirected to the welcome Silverpeas page.
  * @author Yohann Chastagnier
  */
@@ -98,7 +98,7 @@ public class LoginServlet extends SilverpeasHttpServlet {
   }
 
   /**
-   * Performs the rules of Login dispatch.<br/>
+   * Performs the rules of Login dispatch.<br>
    * This method must be called only if it does not exists an authenticated user into the session.
    * @param request the current request.
    * @param response the current response.

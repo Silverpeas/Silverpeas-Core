@@ -37,16 +37,16 @@ public interface CommonArchive<T extends CommonArchive<T>> {
 
   /**
    * Denotes whether this archive contains a resource at the specified path
-   * @param path
-   * @return
+   * @param path the path of the resource
+   * @return true if the archive contains the resource, false otherwise
    * @throws IllegalArgumentException If the path is not specified
    */
   boolean contains(String path) throws IllegalArgumentException;
 
   /**
    * Denotes whether this archive contains a class
-   * @param aClass
-   * @return
+   * @param aClass a class
+   * @return true if the archive contains the class, false otherwise.
    * @throws IllegalArgumentException If the path is not specified
    */
   boolean contains(Class<?> aClass) throws IllegalArgumentException;
@@ -70,10 +70,10 @@ public interface CommonArchive<T extends CommonArchive<T>> {
   T addPackages(boolean recursive, String... packages) throws IllegalArgumentException;
 
   /**
-   * Adds the resource as a resource to the container, returning the container itself. <br/>
+   * Adds the resource as a resource to the container, returning the container itself. <br>
    * The resource will be placed into the Container Resource path under the same context from which
-   * it was retrieved. <br/>
-   * <br/>
+   * it was retrieved. <br>
+   * <br>
    * The {@link ClassLoader} used to obtain the resource is up to the implementation.
    * @param resourceName resource to add
    * @return This virtual archive
@@ -83,8 +83,8 @@ public interface CommonArchive<T extends CommonArchive<T>> {
   T addAsResource(String resourceName) throws IllegalArgumentException;
 
   /**
-   * Adds the resource as a resource to the container, returning the container itself. <br/>
-   * <br/>
+   * Adds the resource as a resource to the container, returning the container itself. <br>
+   * <br>
    * The {@link ClassLoader} used to obtain the resource is up to the implementation.
    * @param resourceName resource to add
    * @param target The target path within the archive in which to add the resource, relative to the

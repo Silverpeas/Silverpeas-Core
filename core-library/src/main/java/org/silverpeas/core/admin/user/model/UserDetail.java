@@ -811,7 +811,7 @@ public class UserDetail implements User {
 
   /**
    * Sets the maximum user receivers the user can notify manually from the persistence
-   * context.<br/>
+   * context.<br>
    * This method must only be used be the administration persistence services.
    * @param notifManualReceiverLimit the maximum user receivers the user can notify manually from
    * the persistence context.
@@ -821,7 +821,7 @@ public class UserDetail implements User {
   }
 
   /*
-   * Gets the maximum user receivers the user can notify manually from the persistence context.<br/>
+   * Gets the maximum user receivers the user can notify manually from the persistence context.<br>
    * This method must only be used be the administration persistence services.
    * @return the maximum user receivers the user can notify manually from the persistence context.
    */

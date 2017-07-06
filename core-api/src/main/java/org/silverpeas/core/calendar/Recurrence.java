@@ -187,7 +187,7 @@ public class Recurrence implements Cloneable {
    * and on the first tuesday. The days of week for a weekly recurrence can also be indicated if,
    * and only if, the nth occurrence of the day is the first one or all occurrences (as there is
    * actually only one possible occurrence of a day in a week); any value other than 1 or
-   * {@©ode ALL_OCCURRENCES} is considered as an error and an IllegalArgumentException is thrown.
+   * {@code ALL_OCCURRENCES} is considered as an error and an IllegalArgumentException is thrown.
    * This method can only be applied on recurrence period higher than the day, otherwise an
    * {@link IllegalStateException} will be thrown.
    * @param days the occurrences of day of week at which an event should occur. Theses days replace
@@ -204,7 +204,7 @@ public class Recurrence implements Cloneable {
    * on the first tuesday. The days of week for a weekly recurrence can also be indicated if, and
    * only if, the nth occurrence of the day is the first one or all occurrences (as there is
    * actually only one possible occurrence of a day in a week); any value other than 1 or
-   * {@©code ALL_OCCURRENCES} is considered as an error and an IllegalArgumentException is thrown.
+   * {@code ALL_OCCURRENCES} is considered as an error and an IllegalArgumentException is thrown.
    * This method can only be applied on recurrence period higher than the day, otherwise an
    * {@link IllegalStateException} will be thrown.
    * @param days a list of days of week at which a {@link Plannable} should occur. Theses days

@@ -28,7 +28,7 @@ package org.silverpeas.core.security.encryption.cipher;
  * The encryption is the operation that converts information from plain text into code or cipher.
  * The decryption is the operation that recovers information in plain text from a code or cipher.
  * All implementation of a given cipher in Silverpeas must implement this interface.
- * <p/>
+ * <p>
  * When using a cipher the original information is known as plaintext, and the encrypted form as
  * ciphertext. The ciphertext message contains all the information of the plaintext message, but is
  * not in a format readable by a human or computer without the proper mechanism to decrypt it.
@@ -36,7 +36,7 @@ package org.silverpeas.core.security.encryption.cipher;
  * A key must be selected before using a cipher to encrypt a message. Without knowledge of the key,
  * it should be difficult, if not nearly impossible, to decrypt the resulting ciphertext into
  * readable plaintext.
- * <p/>
+ * <p>
  * ciphers can be categorized in several ways:
  * <ul>
  * <li>By whether they work on blocks of symbols usually of a fixed size (block ciphers), or on a

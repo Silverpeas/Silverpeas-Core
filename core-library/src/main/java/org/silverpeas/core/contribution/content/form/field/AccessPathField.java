@@ -38,7 +38,7 @@ import java.util.List;
 
 /**
  * An AccessPathField stores the current access path of the form
- * <p/>
+ * <p>
  * @see Field
  * @see FieldDisplayer
  */

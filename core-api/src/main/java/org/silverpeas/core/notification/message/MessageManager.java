@@ -33,12 +33,12 @@ import org.silverpeas.core.util.logging.SilverLogger;
 /**
  * This manager provides tools to register and restitute volatile messages (info, success or error)
  * to the user (on screen).
- * <p/>
+ * <p>
  * It works for now with Thread Cache Service, and several steps have to be performed :
  * - use the initialize function in order to render accessible message tools provided
  * - user message tools in treatment when necessary
  * - use the destroy function in order to clear all message data attached to the thread
- * <p/>
+ * <p>
  * A typical initialization/destruction in a the service method of a HttpServlet :
  * protected void service(HttpHttpServletResponse response) {
  * <code>
@@ -51,14 +51,14 @@ import org.silverpeas.core.util.logging.SilverLogger;
  * }
  * }
  * </code>
- * <p/>
+ * <p>
  * A typical use anywhere in treatments :
  * <code>
  * if ([test of functionnal information is not ok]) {
  * MessageMessager.addError(bundle.getMessage("err.label", params));
  * }
  * </code>
- * <p/>
+ * <p>
  * @author Yohann Chastagnier
  */
 public class MessageManager {
@@ -66,9 +66,6 @@ public class MessageManager {
   private static SimpleCache applicationCache =
       CacheServiceProvider.getApplicationCacheService().getCache();
 
-  /**
-   * Initialize the manager in order to be used everywhere in treatments.
-   */
   public static String initialize() {
     String registeredKey = applicationCache.add(new MessageContainer());
     CacheServiceProvider.getRequestCacheService()
@@ -78,24 +75,16 @@ public class MessageManager {
   }
 
   /**
-   * Clear out the thread cache the registred key referenced.
+   * Clear out the thread cache the registered key referenced.
    */
   public static void destroy() {
     CacheServiceProvider.getRequestCacheService().getCache().remove(MessageManager.class);
   }
 
-  /**
-   * Adding a message listener
-   * @param listener
-   */
   public static void addListener(MessageListener listener) {
     addListener(getRegistredKey(), listener);
   }
 
-  /**
-   * Adding a message listener
-   * @param listener
-   */
   protected static void addListener(String registredKey, MessageListener listener) {
     MessageContainer container = getMessageContainer(registredKey);
     if (container != null) {
@@ -103,26 +92,14 @@ public class MessageManager {
     }
   }
 
-  /**
-   * Setting a language
-   * @param language
-   */
   public static void setLanguage(final String language) {
     setLanguage(getRegistredKey(), language);
   }
 
-  /**
-   * Getting language
-   * @return
-   */
   public static String getLanguage() {
     return getLanguage(getRegistredKey());
   }
 
-  /**
-   * Setting a language
-   * @param language
-   */
   protected static void setLanguage(String registredKey, String language) {
     MessageContainer container = getMessageContainer(registredKey);
     if (container != null) {
@@ -130,10 +107,6 @@ public class MessageManager {
     }
   }
 
-  /**
-   * Getting language
-   * @return
-   */
   protected static String getLanguage(String registredKey) {
     MessageContainer container = getMessageContainer(registredKey);
     if (container != null) {
@@ -142,16 +115,10 @@ public class MessageManager {
     return DisplayI18NHelper.getDefaultLanguage();
   }
 
-  /**
-   * Remove out of the cache the message container referenced by the given key
-   */
   public static void clear(String registredKey) {
     applicationCache.remove(registredKey);
   }
 
-  /**
-   * Get the key that permits to get the MessageContainer registred for the thread.
-   */
   public static String getRegistredKey() {
     return CacheServiceProvider.getRequestCacheService()
         .getCache()
@@ -190,10 +157,6 @@ public class MessageManager {
   }
 
 
-  /**
-   * Gets the message container.
-   * @return
-   */
   public static MessageContainer getMessageContainer(String registredKey) {
     return applicationCache.get(registredKey, MessageContainer.class);
   }
@@ -201,7 +164,7 @@ public class MessageManager {
   /**
    * Add an error message. If a message already exists, HTML newline is added
    * between the existent message and the given one
-   * @param message
+   * @param message message to add
    * @return the instance of the created message. Some parameters of this instance can be
    * overridden (the display live time for example).
    */
@@ -212,7 +175,8 @@ public class MessageManager {
   /**
    * Add an error message. If a message already exists, HTML newline is added
    * between the existent message and the given one
-   * @param message
+   * @param registredKey the key
+   * @param message message to add
    * @return the instance of the created message. Some parameters of this instance can be
    * overridden (the display live time for example).
    */
@@ -223,7 +187,7 @@ public class MessageManager {
   /**
    * Add an severe message. If a message already exists, HTML newline is added
    * between the existent message and the given one
-   * @param message
+   * @param message message to add
    * @return the instance of the created message. Some parameters of this instance can be
    * overridden (the display live time for example).
    */
@@ -234,7 +198,8 @@ public class MessageManager {
   /**
    * Add an severe message. If a message already exists, HTML newline is added
    * between the existent message and the given one
-   * @param message
+   * @param registredKey the key
+   * @param message message to add
    * @return the instance of the created message. Some parameters of this instance can be
    * overridden (the display live time for example).
    */
@@ -245,7 +210,7 @@ public class MessageManager {
   /**
    * Add an warning message. If a message already exists, HTML newline is added
    * between the existent message and the given one
-   * @param message
+   * @param message message to add
    * @return the instance of the created message. Some parameters of this instance can be
    * overridden (the display live time for example).
    */
@@ -256,7 +221,8 @@ public class MessageManager {
   /**
    * Add an warning message. If a message already exists, HTML newline is added
    * between the existent message and the given one
-   * @param message
+   * @param registredKey the key
+   * @param message message to add
    * @return the instance of the created message. Some parameters of this instance can be
    * overridden (the display live time for example).
    */
@@ -267,7 +233,7 @@ public class MessageManager {
   /**
    * Add a success message. If a message already exists, HTML newline is added
    * between the existent message and the given one
-   * @param message
+   * @param message message to add
    * @return the instance of the created message. Some parameters of this instance can be
    * overridden (the display live time for example).
    */
@@ -278,7 +244,8 @@ public class MessageManager {
   /**
    * Add a success message. If a message already exists, HTML newline is added
    * between the existent message and the given one
-   * @param message
+   * @param registredKey the key
+   * @param message message to add
    * @return the instance of the created message. Some parameters of this instance can be
    * overridden (the display live time for example).
    */
@@ -289,7 +256,7 @@ public class MessageManager {
   /**
    * Add an info message. If a message already exists, HTML newline is added
    * between the existent message and the given one
-   * @param message
+   * @param message message to add
    * @return the instance of the created message. Some parameters of this instance can be
    * overridden (the display live time for example).
    */
@@ -300,7 +267,8 @@ public class MessageManager {
   /**
    * Add an info message. If a message already exists, HTML newline is added
    * between the existent message and the given one
-   * @param message
+   * @param registredKey the key
+   * @param message message to add
    * @return the instance of the created message. Some parameters of this instance can be
    * overridden (the display live time for example).
    */
@@ -310,7 +278,8 @@ public class MessageManager {
 
   /**
    * Centralization
-   * @param message
+   * @param registredKey the key mapped with the message
+   * @param message message to add
    * @return the instance of the created message. Some parameters of this instance can be
    * overridden (the display live time for example).
    */

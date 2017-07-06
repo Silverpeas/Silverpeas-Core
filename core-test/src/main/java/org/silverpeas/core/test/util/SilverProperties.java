@@ -36,7 +36,7 @@ public class SilverProperties extends Properties {
   private final Class baseClass;
 
   /**
-   * Loads properties of given property file path from a class.<br/>
+   * Loads properties of given property file path from a class.<br>
    * Property file has to exist into resources of the project.
    * @param fromClass the class from which the properties are requested.
    * @param propertyFilePaths the paths of files that contains the aimed properties.
@@ -52,7 +52,7 @@ public class SilverProperties extends Properties {
   }
 
   /**
-   * Loads properties of given property file path from a class and add them to the currents.<br/>
+   * Loads properties of given property file path from a class and add them to the currents.<br>
    * Property file has to exist into resources of the project.
    * @param propertyFilePaths the paths of files that contains the aimed properties.
    * @return an instance of {@link SilverProperties} that contains requested properties.

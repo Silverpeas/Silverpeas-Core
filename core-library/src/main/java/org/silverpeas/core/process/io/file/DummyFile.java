@@ -30,7 +30,7 @@ import java.io.File;
 
 /**
  * Simple dummy representation of a File that has to be handle.
- * <p/>
+ * <p>
  * User: Yohann Chastagnier
  * Date: 17/10/13
  */

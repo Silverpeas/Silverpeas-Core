@@ -28,7 +28,7 @@ import java.util.List;
 import static java.util.Collections.singletonList;
 
 /**
- * It is an abstract extension of a {@link AbstractServerEvent}.<br/>
+ * It is an abstract extension of a {@link AbstractServerEvent}.<br>
  * This is the base implementation for all events which will be handled by common server event
  * notifying.
  * @author Yohann Chastagnier

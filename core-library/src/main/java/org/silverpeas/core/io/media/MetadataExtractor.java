@@ -110,8 +110,8 @@ public class MetadataExtractor {
 
 
   /**
-   * Adjusts MP4 extracted duration.<br/>
-   * Indeed {@link MP4Parser} puts into metadata the duration in seconds.<br/>
+   * Adjusts MP4 extracted duration.<br>
+   * Indeed {@link MP4Parser} puts into metadata the duration in seconds.<br>
    * It can not be perfect all the time!
    * @param metadata the current extracted metadata.
    * @param mediaType the mediaType of current processed file.

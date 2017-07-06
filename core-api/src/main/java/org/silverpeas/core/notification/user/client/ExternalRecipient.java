@@ -29,10 +29,6 @@ public class ExternalRecipient {
    */
   private String email;
 
-  /**
-   * Default constructor
-   * @param email
-   */
   public ExternalRecipient(String email) {
     super();
     this.email = email;

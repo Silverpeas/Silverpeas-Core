@@ -33,7 +33,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation to specify a method object parameter object to be identified as a source one.
- * <p/>
+ * <p>
  * @author Yohann Chastagnier
  */
 @Inherited

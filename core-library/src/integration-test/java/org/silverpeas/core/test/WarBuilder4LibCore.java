@@ -383,8 +383,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   }
 
   /**
-   * Sets JCR features.<br/>
-   * This method must be used with {@link JcrContext} junit rule.<br/>
+   * Sets JCR features.<br>
+   * This method must be used with {@link JcrContext} junit rule.<br>
    * Calls automatically:
    * <ul>
    * <li>{@link #addJpaPersistenceFeatures()}</li>

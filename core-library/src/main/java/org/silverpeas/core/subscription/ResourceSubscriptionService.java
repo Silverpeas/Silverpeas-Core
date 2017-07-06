@@ -34,7 +34,7 @@ import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
 public interface ResourceSubscriptionService {
 
   /**
-   * Gets all subscribers registered on a component.<br/>
+   * Gets all subscribers registered on a component.<br>
    * This service does not look at resources handled by the component but just explicit component
    * subscriptions.
    * @param componentInstanceId the identifier of the component instance from which subscription
@@ -46,7 +46,7 @@ public interface ResourceSubscriptionService {
 
   /**
    * Gets all subscribers concerned by a specified resource represented by the
-   * given resource type and identifier.<br/>
+   * given resource type and identifier.<br>
    * The inheritance of subscription is handled by this method. So if the aimed subscription
    * resource has a parent subscription resource, subscribers of both of them are returned.
    * @param componentInstanceId the identifier of the component instance from which subscription
@@ -60,7 +60,7 @@ public interface ResourceSubscriptionService {
       SubscriptionResourceType resourceType, String resourceId);
 
   /**
-   * Gets all subscribers concerned by a specified subscription resource.<br/>
+   * Gets all subscribers concerned by a specified subscription resource.<br>
    * The inheritance of subscription is handled by this method. So if the aimed subscription
    * resource has a parent subscription resource, subscribers of both of them are returned.
    * @param subscriptionResource the instance of subscription resource.

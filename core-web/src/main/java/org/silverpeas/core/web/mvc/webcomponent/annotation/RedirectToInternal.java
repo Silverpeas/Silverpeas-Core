@@ -35,7 +35,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * Annotation to specify to which resource, in the current component, the control will be passed
  * once the treatment of the annotated method succeeded. For example:
  * {@code  @RedirectToInternal("Main")} will redirect to the component's home page.
- * <p/>
+ * <p>
  * @author Yohann Chastagnier
  */
 @Inherited

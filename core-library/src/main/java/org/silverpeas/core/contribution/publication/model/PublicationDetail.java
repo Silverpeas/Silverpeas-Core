@@ -1178,7 +1178,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   /**
    * Is the specified user can access this publication?
-   * <p/>
+   * <p>
    * A user can access a publication if he has enough rights to access both the application
    * instance
    * in which is managed this publication and one of the nodes to which this publication belongs
@@ -1195,7 +1195,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   /**
    * Is the specified user can access this publication on persist context?
-   * <p/>
+   * <p>
    * A user can access a publication on persist context if he has enough rights to access both the
    * application instance in which is managed this publication and one of the nodes to which this
    * publication belongs to.

@@ -289,7 +289,7 @@ public class CMYKJPEGImageReader extends ImageReader {
    * @param cmykProfile An ICC_Profile for conversion from the CMYK color space to the RGB color
    * space. If this parameter is null, a default profile is used.
    * @return a BufferedImage containing the decoded image converted into the RGB color space.
-   * @throws java.io.IOException
+   * @throws java.io.IOException on error while reading the image
    */
   public static BufferedImage readRGBImageFromCMYK(InputStream in, ICC_Profile cmykProfile) throws
     IOException {
@@ -313,7 +313,7 @@ public class CMYKJPEGImageReader extends ImageReader {
    * @param rgbaProfile An ICC_Profile for conversion from the RGBA color space to the RGBA color
    * space. If this parameter is null, a default profile is used.
    * @return a BufferedImage containing the decoded image converted into the RGB color space.
-   * @throws java.io.IOException
+   * @throws java.io.IOException on error while reading the image
    */
   public static BufferedImage readRGBAImageFromRGBA(InputStream in, ICC_Profile rgbaProfile) throws
     IOException {
@@ -336,7 +336,7 @@ public class CMYKJPEGImageReader extends ImageReader {
    * @param cmykProfile An ICC_Profile for conversion from the CMYK color space to the RGB color
    * space. If this parameter is null, a default profile is used.
    * @return a BufferedImage containing the decoded image converted into the RGB color space.
-   * @throws java.io.IOException
+   * @throws java.io.IOException on error while reading the image
    */
   public static BufferedImage readRGBImageFromYCCK(InputStream in, ICC_Profile cmykProfile) throws
     IOException {
@@ -360,7 +360,7 @@ public class CMYKJPEGImageReader extends ImageReader {
    * @param cmykProfile An ICC_Profile for conversion from the CMYK color space to the RGB color
    * space. If this parameter is null, a default profile is used.
    * @return a BufferedImage containing the decoded image converted into the RGB color space.
-   * @throws java.io.IOException
+   * @throws java.io.IOException on error while reading the image
    */
   public static BufferedImage readRGBImageFromInvertedYCCK(InputStream in, ICC_Profile cmykProfile)
     throws IOException {
@@ -382,7 +382,7 @@ public class CMYKJPEGImageReader extends ImageReader {
    * @param cmykProfile An ICC_Profile for conversion from the CMYK color space to the RGB color
    * space. If this parameter is null, a default profile is used.
    * @return a BufferedImage in the RGB color space.
-   * @throws NullPointerException
+   * @throws NullPointerException on error while creating the image
    */
   public static BufferedImage createRGBImageFromYCCK(Raster ycckRaster, ICC_Profile cmykProfile) {
     BufferedImage image;
@@ -677,7 +677,7 @@ public class CMYKJPEGImageReader extends ImageReader {
    * @param in An InputStream, preferably an ImageInputStream, in the JPEG File Interchange Format
    * (JFIF).
    * @return a BufferedImage containing the decoded image converted into the RGB color space.
-   * @throws java.io.IOException
+   * @throws java.io.IOException on error while reading the image
    */
   public static BufferedImage readImageFromYUVorGray(ImageInputStream in) throws IOException {
     ImageReader r = createNativeJPEGReader();

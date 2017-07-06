@@ -23,19 +23,20 @@
  */
 package org.silverpeas.core.admin.domain.driver.ldapdriver;
 
-import java.util.Collection;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.SilverpeasException;
 
+import java.util.Collection;
+
 /**
  * Interface de définition des méthodes pour la synchronisation des utilisateurs d'un domaine LDAP
- * @c.bonin
+ * @author c.bonin
  */
 public interface LDAPSynchroUserItf {
-  public void processUsers(Collection<UserDetail> listUserCreate,
+  void processUsers(Collection<UserDetail> listUserCreate,
       Collection<UserDetail> listUserUpdate, Collection<UserDetail> listUserDelete)
       throws SilverpeasException;
 
-  public UserFull getCacheUserFull(UserDetail user) throws SilverpeasException;
+  UserFull getCacheUserFull(UserDetail user) throws SilverpeasException;
 }

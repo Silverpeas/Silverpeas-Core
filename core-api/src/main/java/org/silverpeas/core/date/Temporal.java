@@ -31,7 +31,7 @@ import java.util.TimeZone;
 /**
  * A temporal object is an object that represents an instant in a time line in Silverpeas. This
  * instant can be a date (day in month in year), a time or a date time.
- * </p>
+ * <p>
  * Date, time, and date time are different types as they don't have any instances in common, but
  * they are part of the same types class. As Java doesn't support the class type concept from which
  * a polymorphic family of types can be modeled, the temporal class is here introduced by a Java
@@ -194,12 +194,14 @@ public interface Temporal<T extends Temporal<? super T>> extends Cloneable {
   /**
    * Compute the first hour, minute, second, millisecond from the temporal instance and a given
    * locale.
+   * @param locale the locale
    * @return a date at last hour, minute, second and millisecond of the temporal instance.
    */
   T getBeginOfWeek(String locale);
 
   /**
    * Compute the date of the first day in the week from the temporal instance and a given locale.
+   * @param locale the locale
    * @return a date for the first day of the week of the temporal instance.
    */
   T getEndOfWeek(String locale);
@@ -230,6 +232,7 @@ public interface Temporal<T extends Temporal<? super T>> extends Cloneable {
 
   /**
    * Compute the time between the temporal instance and another one.
+   * @param anotherDatable another date
    * @return the time between the temporal instance and another one represented by {@link TimeData}.
    */
   TimeData getTimeDataTo(T anotherDatable);
@@ -309,13 +312,13 @@ public interface Temporal<T extends Temporal<? super T>> extends Cloneable {
   /**
    * Indicates is the date is different from {@link DateUtil#MINIMUM_DATE} or
    * {@link DateUtil#MAXIMUM_DATE}.
-   * @return true if the date is not equal to undifined one, false otherwise.
+   * @return true if the date is not equal to undefined one, false otherwise.
    */
   boolean isDefined();
 
   /**
    * Indicates the opposite of {@link #isDefined()}
-   * @return
+   * @return true if the date is undefined, false otherwise.
    */
   boolean isNotDefined();
 }

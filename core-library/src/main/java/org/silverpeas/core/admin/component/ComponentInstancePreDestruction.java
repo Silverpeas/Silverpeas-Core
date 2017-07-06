@@ -64,7 +64,7 @@ public interface ComponentInstancePreDestruction {
   String NAME_SUFFIX = "InstancePreDestruction";
 
   /**
-   * Each workflow is an application but all of them uses the same pre destruction process.<br/>
+   * Each workflow is an application but all of them uses the same pre destruction process.<br>
    * So, when the name of a workflow component is detected, the pre destruction implementation
    * retrieved will be the one named like this constant value.
    */

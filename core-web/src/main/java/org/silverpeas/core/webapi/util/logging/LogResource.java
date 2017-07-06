@@ -72,7 +72,7 @@ public class LogResource extends RESTWebService {
   @GET
   @Produces(MediaType.TEXT_HTML)
   public String getLastLogRecordsAsHtml(@QueryParam("count") int count) {
-    return getLastLogRecords(count).stream().collect(Collectors.joining("<br/>"))
+    return getLastLogRecords(count).stream().collect(Collectors.joining("<br>"))
         .replace("\t", new span("&#160;&#160;&#160;&#160;").toString());
   }
 

@@ -169,7 +169,7 @@ public class FileServerUtils {
 
   /**
    * Gets the URL of the specified image with the specified size.
-   * <p/>
+   * <p>
    * Each image uploaded in Silverpeas are kept with their original size. From them, a set of
    * resized images are computed. This method is to get the URL of the resized version of an
    * uploaded image.

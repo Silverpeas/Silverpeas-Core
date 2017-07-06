@@ -28,7 +28,7 @@ import org.silverpeas.core.cache.model.SimpleCache;
 
 /**
  * Service to manage session caches.
- * <p/>
+ * <p>
  * A session cache is a cache whose lifetime span over the session of a user in Silverpeas. As
  * such,
  * a session cache belongs to a given user and should be initialized at the user session opening.
@@ -80,6 +80,7 @@ public class SessionCacheService implements CacheService {
 
   /**
    * Gets the user for whom the specified session cache has been created.
+   * @param sessionCache a session cache.
    * @return the user to whom the specified session cache belongs.
    * @throws IllegalArgumentException if the specified cache isn't a session cache correctly
    * initialized.

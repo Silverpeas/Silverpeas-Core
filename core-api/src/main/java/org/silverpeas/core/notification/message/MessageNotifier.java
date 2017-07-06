@@ -45,37 +45,22 @@ public class MessageNotifier {
     return MessageManager.getLocalizationBundle(bundleBaseName);
   }
 
-  /**
-   * @see MessageManager#addSevere(String)
-   */
   public static Message addSevere(String message, Object... parameters) {
     return MessageManager.addSevere(format(message, parameters));
   }
 
-  /**
-   * @see MessageManager#addError(String)
-   */
   public static Message addError(String message, Object... parameters) {
     return MessageManager.addError(format(message, parameters));
   }
 
-  /**
-   * @see MessageManager#addWarning(String)
-   */
   public static Message addWarning(String message, Object... parameters) {
     return MessageManager.addWarning(format(message, parameters));
   }
 
-  /**
-   * @see MessageManager#addSuccess(String)
-   */
   public static Message addSuccess(String message, Object... parameters) {
     return MessageManager.addSuccess(format(message, parameters));
   }
 
-  /**
-   * @see MessageManager#addInfo(String)
-   */
   public static Message addInfo(String message, Object... parameters) {
     return MessageManager.addInfo(format(message, parameters));
   }

@@ -96,8 +96,9 @@ public class DBUtil {
   }
 
   /**
-   * fabrique une nouvelle connection
+   * Opens a new connection to the Silverpeas database.
    * @return a new connection to the database.
+   * @throws SQLException if the connection cannot be opened.
    */
   public static Connection openConnection() throws SQLException {
     return ConnectionPool.getConnection();
@@ -116,7 +117,7 @@ public class DBUtil {
    * @param identifierName a name that does not correspond to something into persistence, but the
    * caller needs to handle unique identifiers for a resource.
    * @return a unique id.
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException on SQL error.
    */
   @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
   public static int getNextId(final String identifierName) throws SQLException {
@@ -133,7 +134,7 @@ public class DBUtil {
    * the table in case of it is not yet referenced into the uniqueId table. If this value is not
    * defined, the identifierName parameter is not considered as a table name.
    * @return a unique id.
-   * @throws java.sql.SQLException
+   * @throws java.sql.SQLException on SQL error.
    */
   @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
   public static int getNextId(final String identifierName, final String tableFieldIdentifierName)
@@ -171,7 +172,7 @@ public class DBUtil {
    * table, -1 if identifier name is already registered into uniqueId table but a concurrent server
    * process has just performed an update too (so caller has just to retry to call the method),
    * null if the identifier name is not yet registered into uniqueId table.
-   * @throws SQLException
+   * @throws SQLException on SQL error.
    */
   private static Integer nextUniqueIdentifierValue(String identifierNameLowerCase)
       throws SQLException {
@@ -239,7 +240,7 @@ public class DBUtil {
    * identifierName parameter that permits to initialize the first value of unique identifier for
    * the table in case of it is not yet referenced into the uniqueId table. If this value is not
    * defined, the identifierName parameter is not considered as a table name.
-   * @throws SQLException
+   * @throws SQLException on SQL error.
    */
   private static void registeringIdentifierName(String identifierNameLowerCase,
       String tableFieldIdentifierName) throws SQLException {
@@ -342,6 +343,7 @@ public class DBUtil {
    * Gets all table names.
    * @param connection a current connection.
    * @return all the table name of the database.
+   * @throws SQLException on error.
    */
   private static Set<String> getAllTableNames(Connection connection) throws SQLException {
     Set<String> tableNames = new LinkedHashSet<>();

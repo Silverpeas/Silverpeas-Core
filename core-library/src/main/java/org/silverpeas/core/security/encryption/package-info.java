@@ -24,7 +24,7 @@
 /**
  * Provides the Silverpeas Cryptography API that is based on some security and cryptography tiers
  * libraries (as well on the Java Cryptography API).
- * </p>
+ * <br>
  * It defines the cryptographic functions Silverpeas supports and provides to components.
  * These can be both one-way hash functions like MD5, symmetric-key ciphers like AES-256 or
  * asymmetric-keys ciphers like CMS (based on PKS#7).

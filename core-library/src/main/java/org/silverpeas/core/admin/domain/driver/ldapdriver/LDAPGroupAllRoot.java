@@ -90,14 +90,6 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     return groupsVector;
   }
 
-  /**
-   * All root groups, so, no group belongs to another...
-   *
-   * @param lds
-   * @param groupId the group's Id
-   * @return
-   * @throws AdminException
-   */
   @Override
   public String[] getGroupMemberGroupIds(String lds, String groupId) throws AdminException {
     return ArrayUtil.EMPTY_STRING_ARRAY;
@@ -122,15 +114,6 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     return groupsManaged.toArray(new String[groupsManaged.size()]);
   }
 
-  /**
-   * Method declaration
-   *
-   * @param lds
-   * @param groupEntry
-   * @return
-   * @throws AdminException
-   * @see
-   */
   @Override
   protected String[] getUserIds(String lds, LDAPEntry groupEntry) throws AdminException {
     Set<String> usersManaged = new HashSet<>();
@@ -206,15 +189,6 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     return usersVector;
   }
 
-  /**
-   * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
-   *
-   * @param lds
-   * @param parentId
-   * @return
-   * @throws AdminException
-   * @see
-   */
   @Override
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId, String extraFilter) throws
       AdminException {
@@ -249,15 +223,6 @@ public class LDAPGroupAllRoot extends AbstractLDAPGroup {
     }
   }
 
-  /**
-   * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
-   *
-   * @param lds
-   * @param theEntry
-   * @return
-   * @throws AdminException
-   * @see
-   */
   protected List<LDAPEntry> getTRUEChildGroupsEntry(String lds, LDAPEntry theEntry) {
     try {
       LDAPEntry[] entries = LDAPUtility.search1000Plus(lds, theEntry.getDN(),

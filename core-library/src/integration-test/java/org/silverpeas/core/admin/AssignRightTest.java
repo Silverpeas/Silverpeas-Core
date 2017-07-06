@@ -504,19 +504,19 @@ public class AssignRightTest  {
   }
 
   /**
-   * Centralization of verification.<br/>
+   * Centralization of verification.<br>
    * <p>
-   * The mechanism is the following:<br/>
-   * <p/>
+   * The mechanism is the following:<br>
+   * <p>
    * the given parameters represents the name of the file that contains the expected result that
-   * must return the method {@link #getCurrentDirectRights()}.<br/>
+   * must return the method {@link #getCurrentDirectRights()}.<br>
    * Normally, each lines starts with a number as the first data is the domain id. So, in order to
    * give the possibility to annotate the file (for comprehension for example), each line of the
-   * file that does not start with a number is ignored.<br/>
+   * file that does not start with a number is ignored.<br>
    * If the file content is equal to the result of the query execution, the test is successfully
-   * verified.<br/>
+   * verified.<br>
    * If not, the different lines between the file content and the query result are logged to the
-   * console.<br/>
+   * console.<br>
    * The lines of current query result and those of the expected ones (from the file) are sorted by
    * alphabetic mode.
    * </p>
@@ -567,11 +567,11 @@ public class AssignRightTest  {
 
   /**
    * This method execute a SQL Query on the database (with the connection of the test) to extract
-   * the list of all direct rights (inherited or not) assigned to users and groups.<br/>
+   * the list of all direct rights (inherited or not) assigned to users and groups.<br>
    * The executed query returns 3 columns and the two firsts columns has always the same number of
    * characters (spaces are added after data to obtain the total number of characters that must
    * have
-   * the column). For example, the first column always returns 40 characters. <br/>
+   * the column). For example, the first column always returns 40 characters. <br>
    * The composition of the columns is the following (separated by tabulation character):
    * <ul>
    * <li>Column 1: the domain identifier of the group or the user</li>

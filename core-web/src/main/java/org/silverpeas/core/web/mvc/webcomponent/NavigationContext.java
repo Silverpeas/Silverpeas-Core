@@ -36,7 +36,7 @@ import java.util.List;
 
 /**
  * This class permits to handle a context according to the user navigation.
- * <p/>
+ * <p>
  * The navigation context can be see as a stack of {@link NavigationStep} elements. Each time a
  * new step is defined, it is pushed into the stack. If the step already exists from the stack,
  * then the navigation context is reset to this. The usual needs of the use of a navigation context
@@ -44,7 +44,7 @@ import java.util.List;
  * order to be able to go back to a previous step (generally a Web page) whatever it is. It is
  * useful when it exists several navigation paths to a given Web page and from which the user can
  * be go back to one of its previous steps of its navigation.
- * <p/>
+ * <p>
  * The creation of navigation steps must be defined manually in web controllers by the programmer.
  * For doing, it can use the following tools:
  * <ul>
@@ -127,10 +127,10 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
   /**
    * Gets in any cases of navigation the right previous {@link NavigationContext.NavigationStep}
    * instance.
-   * <p/>
+   * <p>
    * If user has just performed a web treatment that resulting to a navigation step creation or
    * reset, then the returned navigation step is the previous of the one created or reset.
-   * <p/>
+   * <p>
    * If user has performed a web treatment that not resulting to a navigation step creation or
    * reset, then the previous navigation step returned is the last created or reset.
    * @return the right previous {@link NavigationContext.NavigationStep} as above described.
@@ -159,7 +159,7 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
    * Method to specify a navigation step creation/reset on a HTTP method of a {@link
    * WebComponentController} without using the
    * {@link org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep} annotation.
-   * <p/>
+   * <p>
    * When a HTTP method with this annotation is called, one of the following internal treatment is
    * performed:
    * <ul>
@@ -203,10 +203,10 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
   /**
    * When no {@link org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep} is not
    * specified to a called HTTP Web Controller method, then the mechanism calls this method.
-   * <p/>
+   * <p>
    * It takes into account the case that a navigation step is created or reset by using
    * directly the {@link #navigationStepFrom(String)} method from the Web Controller.
-   * <p/>
+   * <p>
    * The aim of this method is to set the right navigation step returned by {@link
    * #getPreviousNavigationStep()} method.
    */

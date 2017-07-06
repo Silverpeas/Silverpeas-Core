@@ -87,7 +87,7 @@ import static org.silverpeas.core.util.CollectionUtil.union;
  * a combination of simple rules. The language to write the combination is the one of
  * prefixed notation expression. Please take a look at documentation of
  * {@link PrefixedNotationExpressionEngine} class to get more information about this
- * language.<br/>
+ * language.<br>
  * Each operand, here, can be:
  * <ul>
  * <li><b>a simple rule</b> one of those defined above</li>
@@ -157,7 +157,7 @@ class GroupSynchronizationRule {
   }
 
   /**
-   * Gets the expression of the rule.<br/>
+   * Gets the expression of the rule.<br>
    * If simple value, and if no escaped character detected, parentheses are escaped.
    * @return the expression.
    */
@@ -301,7 +301,7 @@ class GroupSynchronizationRule {
   }
 
   /**
-   * Gets the users of the domain represented by the given identifier.<br/>
+   * Gets the users of the domain represented by the given identifier.<br>
    * This method returns user identifiers only into the context of shared domain search.
    * @param domainId the identifier of the aimed domain.
    * @return a list of user identifiers.
@@ -422,7 +422,7 @@ class GroupSynchronizationRule {
   }
 
   /**
-   * Gets all user identifiers of the Silverpeas platform.<br/>
+   * Gets all user identifiers of the Silverpeas platform.<br>
    * The ids are cached.
    * @return a list of user identifiers.
    * @throws AdminException
@@ -463,7 +463,7 @@ class GroupSynchronizationRule {
     }
 
     /**
-     * Gets a message handled by the synchronization rule process.<br/>
+     * Gets a message handled by the synchronization rule process.<br>
      * If not handled, like a {@link NullPointerException}, empty message is returned.
      * @return handled message, empty otherwise.
      */

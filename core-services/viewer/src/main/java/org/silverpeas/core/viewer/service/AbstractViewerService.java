@@ -74,7 +74,7 @@ public abstract class AbstractViewerService {
   }
 
   /**
-   * This method permits to start the setting of a {@link ViewerTreatment}.<br/>
+   * This method permits to start the setting of a {@link ViewerTreatment}.<br>
    * It manages also a cache mechanism in order to avoid taking too much resources at a same time
    * and also in order to preserve memory space of filesystem.
    * @param processName the name of the process (preview for example).

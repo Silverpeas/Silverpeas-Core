@@ -37,14 +37,14 @@ import java.util.List;
  * manage the files in Silverpeas. Both {@code SilverpeasFileProvider} and {@code SilverpeasFile}
  * classes support a mechanism of pre and post operations processing permitting to hook additional
  * treatments on the files handled in Silverpeas.
- * <p/>
+ * <p>
  * Unlike the IO Processing API in Silverpeas, it is not dedicated to be used within a
  * transactional file processing; for a such use, please see the
  * {@link FileHandler} class that offers a higher level access to the
  * files managed in Silverpeas. This class is dedicated to provide a low-level and a single and
  * unique point to access the files in Silverpeas with a support for an additional computing in
  * order to hook parallel behaviours on the handled file.
- * <p/>
+ * <p>
  * The Silverpeas File Provider provides two extensions points to hook additional computations with
  * the file operations. For example, a process can be hooked to resize automatically the images on
  * the demand (see {@link ImageResizingProcessor} for a such example of
@@ -85,7 +85,7 @@ public class SilverpeasFileProvider {
   /**
    * Gets a {@code SilverpeasFile} instance matching the description provided by the specified
    * file descriptor.
-   * <p/>
+   * <p>
    * A chain of pre and post file processing will be performed against the file
    * to retrieve; in this case, the returned file can be a modified version of the targeted file:
    * <ul>
@@ -117,7 +117,7 @@ public class SilverpeasFileProvider {
 
   /**
    * Gets a {@code SilverpeasFile} instance for the file located at the specified absolute path.
-   * <p/>
+   * <p>
    * A chain of pre and post file processing will be performed against the file
    * to retrieve; in this case, the returned file can be a modified version of the targeted file:
    * <ul>
@@ -154,10 +154,10 @@ public class SilverpeasFileProvider {
    * file. For others operations (like deletion, update, ...) only the chain of post processing is
    * ran against the Silverpeas file once the operation done, as the Silverpeas file was already
    * get. Each processor are triggered in the order they are added and the output of one processor
-   * acts as an input for the second processor.<br/>
+   * acts as an input for the second processor.<br>
    * The chained execution of the processors is established according to the priority of a
    * processor, provided by {@link SilverpeasFileProcessor#getPriority()} method.
-   * <p/>
+   * <p>
    * {@see SilverpeasFileProcessor}
    * @param processor a SilverpeasFile processor to add.
    */

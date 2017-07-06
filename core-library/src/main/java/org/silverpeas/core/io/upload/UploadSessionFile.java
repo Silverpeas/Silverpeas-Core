@@ -72,7 +72,7 @@ public class UploadSessionFile {
   }
 
   /**
-   * Writes the given input stream into the physical file.<br/>
+   * Writes the given input stream into the physical file.<br>
    * Closes the input stream at the end.
    * @param uploadedInputStream
    * @throws IOException

@@ -97,10 +97,10 @@ public class MassiveWebSecurityFilterIntegrationTest {
     assertXSS(param("< script\t"), true);
     assertXSS(param("< script\n"), true);
     assertXSS(param("<<<< \tscript\n"), true);
-    assertXSS(param("< script <br/>"), true);
-    assertXSS(param("< script <br/>  >"), true);
-    assertXSS(param("< /script <br/>"), true);
-    assertXSS(param("</ script <br/>  >"), true);
+    assertXSS(param("< script <br>"), true);
+    assertXSS(param("< script <br>  >"), true);
+    assertXSS(param("< /script <br>"), true);
+    assertXSS(param("</ script <br>  >"), true);
     assertXSS(param("</sCript"), true);
     assertXSS(param("< \\ script  >"), false);
     assertXSS(param("<script " + "type=\"text/javascript\">var webContext='/silverpeas';</script>"),

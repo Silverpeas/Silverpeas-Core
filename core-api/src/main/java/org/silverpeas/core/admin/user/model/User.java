@@ -52,6 +52,8 @@ public interface User extends Serializable, Comparable<User> {
   }
 
   /**
+   * @param userId the unique identifier of a user.
+   * @return true if the user account in Silverpeas is activated, false otherwise.
    * @see #isActivatedState()
    */
   static boolean isActivatedStateFor(String userId) {

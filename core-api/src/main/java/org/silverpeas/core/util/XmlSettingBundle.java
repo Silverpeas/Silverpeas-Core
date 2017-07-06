@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
 /**
  * A bundle of settings in XML used to configure some features in Silverpeas or the behaviour of an
  * application.
- * </p>
+ * <p>
  * The settings in a such bundle are structured into a tree of setting sections and are schema or
  * DTD free. Each non-leave node defines a setting section and the only
  * constrain is how each setting is defined: by the XML element <code>param</code> that must be
@@ -56,9 +56,9 @@ import java.util.stream.Collectors;
  * param = param-name param-description? param-value+
  * </pre>
  * with <code>?</code> meaning zero element or more and <code>+</code> meaning at least one element.
- * </p>
+ * <p>
  * The content of an XML bundle is cached but there is no expiration-based mechanism of this cache.
- * </p>
+ * <p>
  * If the XML content of the bundle is malformed, then a {@code java.util.MissingResourceException}
  * exception is thrown.
  *

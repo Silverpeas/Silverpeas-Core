@@ -69,31 +69,44 @@ public interface Group extends Serializable, Comparable<Group> {
 
   /**
    * Get the domain id where the group is stored
+   * @return the user domain identifier.
    */
   String getDomainId();
 
   /**
    * Get the father group id
+   * @return the identifier of the group parent of this group. Null the group has no parent.
    */
   String getSuperGroupId();
 
   /**
    * Get the group name
+   * @return the group name.
    */
   String getName();
 
   /**
    * Get the group description
+   * @return the group description.
    */
   String getDescription();
 
   /**
    * Get the list of users in the group
+   * @return the identifiers of the users in this group.
    */
   String[] getUserIds();
 
+  /**
+   * Gets the synchronization rule that is applied to this group.
+   * @return a synchronization rule or null if no such rule is defined for this group.
+   */
   String getRule();
 
+  /**
+   * Is this group synchronized from a remote domain service?
+   * @return true if this group is synchronized, false otherwise.
+   */
   boolean isSynchronized();
 
   /**
@@ -107,7 +120,7 @@ public interface Group extends Serializable, Comparable<Group> {
   /**
    * Gets the total number of users in this group and in its subgroups. Users that are in several
    * groups are counted only once.
-   * </p>
+   * <p>
    * Depending on the requester, the total number of users can omit some users by their state
    * (usually the users whose their account is deactivated). By default, all the users whose
    * the account is deleted aren't taken into account.

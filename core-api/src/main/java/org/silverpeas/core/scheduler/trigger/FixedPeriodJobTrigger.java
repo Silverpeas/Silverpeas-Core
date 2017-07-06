@@ -52,7 +52,7 @@ public final class FixedPeriodJobTrigger extends JobTrigger {
 
   /**
    * Gets the unit of the interval of time between two job triggerings.
-   * @return
+   * @return the temporal unit in which is expressed the firing time of this trigger.
    */
   public TimeUnit getTimeUnit() {
     return unit;

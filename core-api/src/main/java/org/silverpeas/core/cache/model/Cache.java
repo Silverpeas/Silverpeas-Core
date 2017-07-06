@@ -32,9 +32,9 @@ public interface Cache extends SimpleCache {
   /**
    * Adds a value and generate a unique key to retrieve later the value.
    * After the given time, the value is trashed.
-   * @param value
+   * @param value an object to add into the cache
    * @param timeToLive 0 = unlimited
-   * @return
+   * @return the key to which the added object is mapped in the cache
    */
   String add(Object value, int timeToLive);
 
@@ -42,18 +42,18 @@ public interface Cache extends SimpleCache {
    * Adds a value and generate a unique key to retrieve later the value.
    * After the given live time, the value is trashed.
    * After the given idle time, the value is trashed.
-   * @param value
+   * @param value the object to add in the cache.
    * @param timeToLive 0 = unlimited
    * @param timeToIdle 0 = unlimited
-   * @return
+   * @return the key to which the added object is mapped in the cache
    */
   String add(Object value, int timeToLive, int timeToIdle);
 
   /**
    * Puts a value for a given key.
    * After the given time, the value is trashed.
-   * @param key
-   * @param value
+   * @param key the key with which the object to add has to be mapped.
+   * @param value the object to add in the cache.
    * @param timeToLive 0 = unlimited
    */
   void put(Object key, Object value, int timeToLive);
@@ -62,9 +62,9 @@ public interface Cache extends SimpleCache {
    * Puts a value for a given key.
    * After the given time, the value is trashed.
    * After the given idle time, the value is trashed.
-   * @param key
-   * @param value
-   * @param timeToLive
+   * @param key the key with which the object to add has to be mapped.
+   * @param value the object to add in the cache.
+   * @param timeToLive 0 = unlimited
    * @param timeToIdle 0 = unlimited
    */
   void put(Object key, Object value, int timeToLive, int timeToIdle);

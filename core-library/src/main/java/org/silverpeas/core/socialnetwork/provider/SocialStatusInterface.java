@@ -23,35 +23,18 @@
  */
 package org.silverpeas.core.socialnetwork.provider;
 
-import java.util.List;
-
 import org.silverpeas.core.date.Date;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+
+import java.util.List;
 
 public interface SocialStatusInterface {
 
-  /**
-   * get list of socialInformation according number of Item and the first Index
-   * @param userId
-   * @param begin date
-   * @param end date
-   * @return
-   * @throws SilverpeasException
-   */
-  public List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end)
+  List<SocialInformation> getSocialInformationList(String userId, Date begin, Date end)
       throws
       SilverpeasException;
 
-  /**
-   * get list of socialInformation of my contacts according to ids of my contacts , number of Item
-   * and the first Index
-   * @param myContactsIds
-   * @param begin date
-   * @param end date
-   * @return
-   * @throws SilverpeasException
-   */
-  public List<SocialInformation> getSocialInformationListOfMyContacts(List<String> myContactsIds,
+  List<SocialInformation> getSocialInformationListOfMyContacts(List<String> myContactsIds,
       Date begin, Date end);
 }

@@ -26,7 +26,7 @@ package org.silverpeas.core.notification.sse;
 import org.silverpeas.core.util.ServiceProvider;
 
 /**
- * A common implementation that extends {@link CDIServerEventNotifier}.<br/>
+ * A common implementation that extends {@link CDIServerEventNotifier}.<br>
  * Any treatment of Silverpeas has just to use this implementation in order to notify on a server
  * event.
  * @author Yohann Chastagnier

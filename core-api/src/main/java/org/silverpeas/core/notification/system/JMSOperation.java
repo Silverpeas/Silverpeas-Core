@@ -31,7 +31,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.JMSContext;
 
 /**
- * A JMS operation processor. But why?<br/>
+ * A JMS operation processor. But why?<br>
  * In fact, {@link javax.jms.JMSContext} can be used as <code>application-managed</code> way or it
  * can be used as <code>container-managed</code>.
  * <p>
@@ -51,8 +51,8 @@ import javax.jms.JMSContext;
  *     }
  *   }
  * </pre>
+ * <p>
  * So that is kind of manual management.
- * </p>
  * <p>
  * In the second way, the {@link javax.jms.JMSContext} must be injected and used directly. For
  * example:
@@ -67,8 +67,9 @@ import javax.jms.JMSContext;
  *     producer.send(destination, event);
  *   }
  * </pre>
+ * <p>
  * There is no manual management here concerning the {@link javax.jms.JMSContext} because that is
- * handled by the container.<br/>
+ * handled by the container.<br>
  * But to be managed efficiently, a JTA transaction must exist, and also, the following rule must
  * be verified (from documentation of {@link javax.jms.JMSContext}): Applications running in the
  * Java EE web and EJB containers are not permitted to create more than one active session on a

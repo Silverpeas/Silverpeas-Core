@@ -23,19 +23,20 @@
  */
 package org.silverpeas.core.security.encryption;
 
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
+
 import java.util.Iterator;
 import java.util.Map;
-import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
 /**
  * An iterator over a collection of contents for encryption purpose. The content is here represented
  * by a {@link Map} object in which each entry represents a field or a property of a content.
- * </p>
+ * <p>
  * Any provider of contents to be encrypted or decrypted must provide an implementation of this
  * interface. It has been defined to be used in conjunction with {@link ContentEncryptionService}.
  * The provider can implement this interface by wrapping the retrieve of the contents to be
  * encrypted or to be decrypted and to put them at disposition of the caller.
- * </p>
+ * <p>
  * It extends the {@link Iterator} interface by adding the following methods:
  * <ul>
  * <li>{@link #update(java.util.Map)} to update the last content returned by the iterator,</li>
@@ -65,7 +66,7 @@ public interface EncryptionContentIterator extends Iterator<Map<String, String>>
 
   /**
    * Is there another content in this iteration?
-   * </p>
+   * <p>
    * This method is called by the encryption service each time before asking the next content to
    * encrypt or to decrypt with the {@link #next()} method.
    *
@@ -84,7 +85,7 @@ public interface EncryptionContentIterator extends Iterator<Map<String, String>>
 
   /**
    * An error occurred while processing the last content returned by this iterator.
-   * </p>
+   * <p>
    * This method is invoked by the encryption service when an error occurs while processing the last
    * content returned by the iterator.
    *

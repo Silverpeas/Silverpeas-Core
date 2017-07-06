@@ -72,15 +72,6 @@ public class ProviderSwitch implements ProviderSwitchInterface {
     return SocialCommentGalleryInterface.get();
   }
 
-  /**
-   * get my social Informations list according to the social information type and the UserId
-   * @param socialInformationType
-   * @param userId
-   * @param classification
-   * @param begin date
-   * @param end date
-   * @return List<SocialInformation>
-   */
   @Override
   public List<SocialInformation> getSocialInformationsList(
       SocialInformationType socialInformationType, String userId, String classification, Date begin,
@@ -254,17 +245,6 @@ public class ProviderSwitch implements ProviderSwitchInterface {
     return socialRelationShipsInterface;
   }
 
-  /**
-   * get the List of social Informations of my contatcs according to the social information type
-   * and
-   * my UserId , ids of my contacts ,limit and index
-   * @param socialInformationType
-   * @param myId
-   * @param myContactsIds the ids of my contacts
-   * @param begin date
-   * @param end date
-   * @return List<SocialInformation>
-   */
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(
       SocialInformationType socialInformationType, String myId, List<String> myContactsIds,

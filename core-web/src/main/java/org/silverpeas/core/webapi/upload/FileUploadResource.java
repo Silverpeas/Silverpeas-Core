@@ -263,7 +263,7 @@ public class FileUploadResource extends RESTWebService {
   }
 
   /**
-   * Checks the authorized mime-types if {@link #getComponentId()} return a defined value.<br/>
+   * Checks the authorized mime-types if {@link #getComponentId()} return a defined value.<br>
    * If no defined value is returned by {@link #getComponentId()}, nothing is verified.
    * @param fileName the file name to test.
    */
@@ -284,7 +284,7 @@ public class FileUploadResource extends RESTWebService {
   }
 
   /**
-   * Checks the authorized mime-types if {@link #getComponentId()} return a defined value.<br/>
+   * Checks the authorized mime-types if {@link #getComponentId()} return a defined value.<br>
    * If no defined value is returned by {@link #getComponentId()}, nothing is verified.
    * @param fileUploadData the file upload data (filled when file has not been yet uploaded).
    * @param uploadedFile the uploaded file.

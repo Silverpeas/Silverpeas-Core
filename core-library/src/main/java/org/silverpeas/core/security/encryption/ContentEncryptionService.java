@@ -23,24 +23,25 @@
  */
 package org.silverpeas.core.security.encryption;
 
-import java.util.Map;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
+
+import java.util.Map;
 
 /**
  * It is a security service for protecting content from an access in plain data. The service
  * provides the encryption and the decryption of content by using a symmetric-key cryptographic
  * algorithm for which it manages the key.
- * </p>
+ * <p>
  * The implementation of this service must be accessible within an IoC container under the name
  * "contentEncryptionService".
- * </p>
+ * <p>
  * This service doesn't maintain the knowledge of the contents that were encrypted; it is not of its
  * responsibility. Therefore, when the encryption key is updated, it is the responsibility of the
  * content management services to provide this service the encrypted contents they manage. For
  * doing, it provides them an interface to register a content provider in the form of an
  * {@link EncryptionContentIterator} object. These iterators will be then used directly by the
  * content encryption service to renew their cipher when the key is updated.
- * </p>
+ * <p>
  * When the encryption key is updated, all of the encryption and decryption capabilities are then
  * locked. If a call is performed to one of this service's methods, an IllegalStateException is
  * thrown.
@@ -55,7 +56,7 @@ public interface ContentEncryptionService {
    *
    * @param encryptedContentParts either the different part of an encrypted content to decrypt or
    * several single encrypted textual contents to decrypt.
-   * </p>
+   * <p>
    * If the encryption key is is being updated, an IllegalStateException is thrown.
    * @return an array with the different parts of the decrypted content in the same order they were
    * passed as argument of this method.
@@ -67,11 +68,11 @@ public interface ContentEncryptionService {
   /**
    * Decrypts the specified encrypted content by using the encryption key that was set with the
    * {@link #updateCipherKey(String)} method.
-   * </p>
+   * <p>
    * The encrypted content is here in the form of a Map instance in which each entry represents a
    * field or a property of the encrypted content. The method returns also a Map with, for each
    * entry, the field or the property decrypted.
-   * </p>
+   * <p>
    * If the encryption key is is being updated, an IllegalStateException is thrown.
    *
    * @param encryptedContent the content to decrypt in the form of a Map instance. Each entry in the
@@ -84,11 +85,11 @@ public interface ContentEncryptionService {
 
   /**
    * Decrypts the encrypted contents provided by the specified iterators.
-   * <p/>
+   * <p>
    * This method is for decrypting in batch several and possibly different encrypted contents. If
    * there is more than one iterator on contents, each of them will be taken in charge concurrently
    * by a pool of several threads.
-   * </p>
+   * <p>
    * If the encryption key is is being updated, an IllegalStateException is thrown.
    *
    * @param iterators the iterators on the contents to decrypt.
@@ -102,7 +103,7 @@ public interface ContentEncryptionService {
    *
    * @param contentParts either the different part of a content to encrypt or several single textual
    * contents to encrypt.
-   * </p>
+   * <p>
    * If the encryption key is is being updated, an IllegalStateException is thrown.
    * @return an array with the different parts of the content, encrypted and in base64, in the same
    * order they were passed as argument of this method.
@@ -113,11 +114,11 @@ public interface ContentEncryptionService {
   /**
    * Encrypts the specified content by using the encryption key that was set with the
    * {@link #updateCipherKey(String)} method.
-   * </p>
+   * <p>
    * The content is here in the form of a Map instance in which each entry represents a field or a
    * property of the content. The method returns also a Map with, for each entry, the field or the
    * property encrypted and in base64.
-   * </p>
+   * <p>
    * If the encryption key is is being updated, an IllegalStateException is thrown.
    *
    * @param content the content to encrypt in the form of a Map instance. Each entry in the Map
@@ -129,11 +130,11 @@ public interface ContentEncryptionService {
 
   /**
    * Encrypts the contents provided by the specified iterators.
-   * </p>
+   * <p>
    * This method is for encrypting in batch several and possibly different contents. If there is
    * more than one iterator on contents, each of them will be taken in charge concurrently by a pool
    * of several threads.
-   * </p>
+   * <p>
    * If the encryption key is is being updated, an IllegalStateException is thrown.
    *
    * @param iterators the iterators on the contents to encrypt.
@@ -143,7 +144,7 @@ public interface ContentEncryptionService {
   /**
    * Registers the specified iterator on some encrypted contents for which the cipher has to be
    * renewed when the encryption key is updated.
-   * </p>
+   * <p>
    * This method is dedicated to the content management service for providing to the content
    * encryption services a way to access the encrypted contents they manage in order to renew their
    * cipher when the encryption key is updated.
@@ -155,15 +156,15 @@ public interface ContentEncryptionService {
 
   /**
    * Renews explicitly the cipher of the contents provided by the specified iterators.
-   * </p>
+   * <p>
    * This method is mainly for encrypted contents for which the renew of their cipher has failed
    * when the encryption key has been updated.
-   * </p>
+   * <p>
    * The execution of this method will block any other call of the DefaultContentEncryptionService
    * methods for all of its instances in order to prevent incoherent state of encrypted contents.
    * Any attempts to execute one of the DefaultContentEncryptionService method, whereas this method
    * is running, will raise an IllegalStateException exception.
-   * </p>
+   * <p>
    * If it doesn't exist a previous encryption key required to decrypt the contents before
    * encrypting them with the actual encryption key, then nothing is performed by this method and it
    * will return silently.
@@ -182,12 +183,12 @@ public interface ContentEncryptionService {
    * hexadecimal otherwise an AssertionError will be thrown. If no previous key existed, then the
    * cipher key will be created with this specified one and it will be used to encrypt and to
    * decrypt at the demand the content in Silverpeas.
-   * </p>
+   * <p>
    * The update of the key triggers automatically the renew of the cipher of the encrypted contents
    * in Silverpeas with the new cipher key. If one of the cipher renew of one of the encrypted
    * content failed, the key update is rolled-back (the key isn't updated) and a
    * {@link CryptoException} is thrown.
-   * </p>
+   * <p>
    * The execution of this method will block any other call of the DefaultContentEncryptionService
    * methods for all of its instances in order to prevent incoherent state of encrypted contents.
    * Any attempts to execute one of the DefaultContentEncryptionService method, whereas this method

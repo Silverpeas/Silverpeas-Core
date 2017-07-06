@@ -41,9 +41,9 @@ import static org.silverpeas.core.util.SerializationUtil.serializeAsString;
 
 /**
  * If a treatment uses a real resource identifier for a temporary resource, it is possible
- * that someone else accesses this temporary resource without any right.<br/>
+ * that someone else accesses this temporary resource without any right.<br>
  * So, this class provides a set of tool to handle workspace which the root path of the workspace
- * is translated.<br/>
+ * is translated.<br>
  * @author Yohann Chastagnier
  */
 public class TemporaryWorkspaceTranslation {

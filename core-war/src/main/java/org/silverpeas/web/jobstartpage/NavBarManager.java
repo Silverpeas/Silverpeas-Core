@@ -530,7 +530,7 @@ public class NavBarManager {
     result.append("<a href=\"").append(link).append("\" ").append(target).append(">")
         .append(imageLinked).append("&nbsp;</a>");
     result.append("<a href=\"").append(link).append("\" ").append(target).append(">")
-        .append(boldStart).append(safeLabelLinked).append(boldEnd).append("</a><br/>");
+        .append(boldStart).append(safeLabelLinked).append(boldEnd).append("</a><br>");
     return result.toString();
   }
 }

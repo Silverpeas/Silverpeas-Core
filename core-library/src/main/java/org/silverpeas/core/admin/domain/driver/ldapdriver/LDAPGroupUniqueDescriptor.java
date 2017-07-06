@@ -86,14 +86,6 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
     return getMemberGroupIds(lds, userId, false);
   }
 
-  /**
-   * Method declaration
-   * @param lds
-   * @param groupEntry
-   * @return
-   * @throws AdminException
-   * @see
-   */
   @Override
   protected String[] getUserIds(String lds, LDAPEntry groupEntry) throws AdminException {
     Vector<String> usersVector = new Vector<>();
@@ -129,14 +121,6 @@ public class LDAPGroupUniqueDescriptor extends AbstractLDAPGroup {
     return usersVector.toArray(new String[usersVector.size()]);
   }
 
-  /**
-   * Method declaration THIS FUNCTION THROW EXCEPTION ONLY WHEN NO SYNCHRO IS RUNNING
-   * @param lds
-   * @param parentId
-   * @return
-   * @throws AdminException
-   * @see
-   */
   @Override
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId, String extraFilter)
       throws AdminException {

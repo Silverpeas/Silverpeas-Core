@@ -33,8 +33,5 @@ import org.silverpeas.core.notification.user.UserNotification;
  */
 public interface UserNotificationBuilder {
 
-  /**
-   * Builds the notification data container
-   */
   UserNotification build();
 }

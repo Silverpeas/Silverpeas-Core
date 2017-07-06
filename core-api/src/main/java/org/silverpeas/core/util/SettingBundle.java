@@ -31,7 +31,7 @@ import java.util.function.Function;
 /**
  * A bundle settings used to configure some features in Silverpeas or the behaviour of an
  * application. Each setting in the bundle is defined as a key-value pair.
- * </p>
+ * <p>
  * It uses a {@code java.util.ResourceBundle} behind the scene to access the settings defined under
  * a fully qualified name (the resource bundle base name), so the lifecycle of the bundle is then
  * managed by the {@code java.util.ResourceBundle} implementation (with expiration time, cache
@@ -40,7 +40,6 @@ import java.util.function.Function;
  * then a {@code java.util.MissingResourceException} exception is thrown. In the case a default
  * value is specified (whatever its value), no {@code java.util.MissingResourceException}
  * exception is thrown when the property doesn't exist.
- * </p>
  * @see java.util.ResourceBundle
  * @author miguel
  */
@@ -102,7 +101,7 @@ public class SettingBundle implements SilverpeasBundle {
   /**
    * Gets the value as a String of the data identified by the specified key. If the data isn't
    * valued or if it doesn't exist, then the default value is returned.
-   * </p>
+   * <p>
    * If you expect the data can be not defined in this bundle, then use this method instead of
    * {@code org.silverpeas.core.util.SettingBundle#getString} method and use the default value
    * to test afterward the data is or not defined.

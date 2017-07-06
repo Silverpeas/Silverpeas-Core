@@ -82,8 +82,8 @@ abstract class AbstractBaseDynamicValue extends JdbcBasedDBTestCase {
   }
 
   /**
-   * Returns the password for the connection.<br/> Subclasses may override this method to provide a
-   * custom password.<br/> Default implementations returns null.
+   * Returns the password for the connection.<br> Subclasses may override this method to provide a
+   * custom password.<br> Default implementations returns null.
    */
   @Override
   protected String getPassword() {
@@ -91,8 +91,8 @@ abstract class AbstractBaseDynamicValue extends JdbcBasedDBTestCase {
   }
 
   /**
-   * Returns the username for the connection.<br/> Subclasses may override this method to provide a
-   * custom username.<br/> Default implementations returns null.
+   * Returns the username for the connection.<br> Subclasses may override this method to provide a
+   * custom username.<br> Default implementations returns null.
    */
   @Override
   protected String getUsername() {

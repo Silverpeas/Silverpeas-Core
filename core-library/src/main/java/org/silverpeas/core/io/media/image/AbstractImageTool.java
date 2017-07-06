@@ -91,7 +91,7 @@ public abstract class AbstractImageTool implements ImageTool {
   }
 
   /**
-   * Centralizes convert calling.<br/>
+   * Centralizes convert calling.<br>
    * It can not be performed at a same time more than the {@link #semaphore} is specifying.
    * @param source
    * @param destination

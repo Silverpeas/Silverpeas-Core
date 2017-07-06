@@ -145,7 +145,7 @@ public class MavenTargetDirectoryRule implements TestRule {
   }
 
   /**
-   * Loads maven properties from a test class.<br/>
+   * Loads maven properties from a test class.<br>
    * maven.properties has to exist into resources of the project.
    * @param testClass the test class for which the maven properties are requested.
    * @return an instance of {@link Properties} that containes requested maven properties.

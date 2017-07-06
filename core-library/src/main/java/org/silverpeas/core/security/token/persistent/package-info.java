@@ -27,7 +27,7 @@
  * which they can logon in Silverpeas or access a protected contribution.
  *
  * The resources can be of whatever type and they are referenced by the token through an
- * {@link EntityReference} type.
+ * EntityReference type.
  *
  */
 package org.silverpeas.core.security.token.persistent;

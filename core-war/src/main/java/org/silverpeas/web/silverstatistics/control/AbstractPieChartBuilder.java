@@ -40,7 +40,7 @@ import java.util.Map;
 import java.util.Vector;
 
 /**
- * <p/>
+ * <p>
  * @author BERTINL
  */
 public abstract class AbstractPieChartBuilder {

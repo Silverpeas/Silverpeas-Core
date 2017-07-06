@@ -37,10 +37,6 @@ public abstract class AbstractDateTemporal<T extends Temporal<? super T>> extend
     implements Temporal<T> {
   private static final long serialVersionUID = 4908009936415992351L;
 
-  /**
-   * Default constructor.
-   * @param date
-   */
   public AbstractDateTemporal(final long date) {
     super(date);
   }

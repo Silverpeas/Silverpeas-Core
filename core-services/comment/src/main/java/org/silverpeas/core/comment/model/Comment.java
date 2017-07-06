@@ -212,10 +212,10 @@ public class Comment implements SilverpeasContent {
 
   /**
    * Is the specified user can access this comment?
-   * <p/>
+   * <p>
    * A user can access a comment if it has enough rights to access the application instance in
    * which is managed this comment.
-   * <p/>
+   * <p>
    * Be caution, the access control on the commented resource is usually more reliable than using
    * this method.
    * @param user a user in Silverpeas.

@@ -100,7 +100,7 @@ public class StreamTest {
   }
 
   /**
-   * Converts a {@link Pair} instance into a {@link Map} one.<br/>
+   * Converts a {@link Pair} instance into a {@link Map} one.<br>
    * (That is idiot but it is for testing...)
    * @param index a string index
    * @return a map with one couple initialized from given string index.

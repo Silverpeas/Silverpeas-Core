@@ -39,7 +39,7 @@ public class VolatileCacheServiceProvider {
   }
 
   /**
-   * Gets the volatile resource cache linked to the current user session.<br/>
+   * Gets the volatile resource cache linked to the current user session.<br>
    * For example (and for now), this cache permits to handle attachments linked to a contribution
    * not yet persisted. In case of the user does not persist its contribution, all resources
    * linked to a "volatile" contribution (attachments for the example) are automatically deleted

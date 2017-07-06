@@ -117,8 +117,9 @@ public class JSONCodec {
 
   /**
    * Decodes the specified JSON representation into its corresponding bean.
-   * @param json the JSON representation of a bean to decode.
    * @param <T> the type of the bean.
+   * @param json the JSON representation of a bean to decode.
+   * @param beanType the class of the bean
    * @return the bean decoded from JSON.
    * @throws EncodingException if an error occurs while decoding a JSON String into a bean.
    */
@@ -136,8 +137,9 @@ public class JSONCodec {
 
   /**
    * Decodes the specified JSON representation into its corresponding bean.
-   * @param jsonStream a stream to a JSON representation of a bean to decode.
    * @param <T> the type of the bean.
+   * @param jsonStream a stream to a JSON representation of a bean to decode.
+   * @param beanType the class of the bean
    * @return the bean decoded from JSON.
    * @throws EncodingException if an error occurs while decoding a JSON stream into a bean.
    */
@@ -244,6 +246,10 @@ public class JSONCodec {
     }
 
     /**
+     * Set the specified JSON object attribute with the specified array.
+     * @param fieldName the name of the JSON object field to set
+     * @param arrayBuilder a builder of a JSON array
+     * @return itself
      * @deprecated use instead {@link #putJSONArray(String, Function)}
      */
     @Deprecated

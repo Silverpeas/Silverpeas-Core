@@ -36,7 +36,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * once the treatment of the annotated method succeeded. For example:
  * {@code  @RedirectToInternal("Ralmanach/Main")} will redirect the web navigation to the home page
  * of the Almanach component.
- * <p/>
+ * <p>
  * @author Yohann Chastagnier
  */
 @Inherited

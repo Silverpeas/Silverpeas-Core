@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
- * This listener handles the chat initialization.<br/>
+ * This listener handles the chat initialization.<br>
  * Just after a successful user authentication, doing some stuffs about the chat.
  */
 @Singleton

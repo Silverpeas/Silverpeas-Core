@@ -117,7 +117,7 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
    * Indicates if the session security token has to be renewed from the given requested function?
    * The answer depends first on the <code>security.web.protection.sessiontoken.renew</code>
    * parameter defined in <code>org/silverpeas/util/security.properties</code> and secondly on the
-   * choice made by some of the component request router.<br/>
+   * choice made by some of the component request router.<br>
    * The Referer information from headers is verified. If the referer is equals to the current
    * request URI, then the session security token is never renewed.
    * @return true if the token has to be renewed

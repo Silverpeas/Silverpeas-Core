@@ -34,13 +34,13 @@ import java.util.Random;
  * A variation of the DES algorithm (Data Encryption Standard) as used in the Unix systems for a
  * while. It has variations intended to be used for encrypting password and it uses salting to
  * perturb the algorithm in different ways.
- * <p/>
+ * <p>
  * This symmetric-key encryption method uses a 56-bit key to encrypt a password and as such it
  * is now considered as insecure for many applications; in 1999 it was broken in 22 hours and 15
  * minutes. It was then replaced by the MD5 algorithm.
- * <p/>
+ * <p>
  * It is no more supported in Silverpeas and it shouldn't be used anymore.
- * <p/>
+ * <p>
  * It is the Java-based implementation of the unix encrypt command. It is based upon C source code
  * written by Eric Young, eay@psych.uq.oz.au.
  * This class is a renaming of the jcrypt class found at http://www.vulcanware.com/java_jcrypt/
@@ -641,7 +641,7 @@ public class UnixDESEncryption implements PasswordEncryption {
 
   /**
    * Gets the salt that was used to compute the specified digest.
-   * <p/>
+   * <p>
    * According to the cryptographic algorithm that computed the digest, the salt used in the
    * encryption can be retrieved from the digest itself. In the case the salt cannot be determine,
    * an empty one is then returned.
@@ -660,7 +660,7 @@ public class UnixDESEncryption implements PasswordEncryption {
    * Does this encryption understand the specified digest?
    * An encryption understands usually the digest it has itself generated. This method is for
    * knowing the encryption that has computed a given digest.
-   * <p/>
+   * <p>
    * The DES encryption is particular in a way that a text in input produces a digest of the same
    * length; the length of the digest isn't fix and it varies with the input text. So, this method
    * can return bad response and it is recommended to ask before to others encryption to have a more

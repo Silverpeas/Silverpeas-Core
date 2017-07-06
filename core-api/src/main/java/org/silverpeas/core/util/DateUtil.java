@@ -229,15 +229,15 @@ public class DateUtil {
 
   /**
    * Gets the current date and hour.
-   * @return
+   * @return the current date and hour.
    */
   public static Date getNow() {
     return Calendar.getInstance().getTime();
   }
 
   /**
-   * Gets the current date with reseted hour.
-   * @return
+   * Gets the current date with reset hour.
+   * @return the current date with reset hour.
    */
   public static Date getDate() {
     return resetHour(getNow());
@@ -343,7 +343,7 @@ public class DateUtil {
    * Parse a special String into a Date.
    * @param date (String) the format of this date must be yyyy/MM/dd
    * @return a java object Date
-   * @throws ParseException
+   * @throws ParseException if the date is malformed.
    */
   public static Date parse(String date) throws ParseException {
     synchronized (DATE_PARSER) {
@@ -360,7 +360,7 @@ public class DateUtil {
    * @param date (String) the format of this date must be yyyy/MM/dd
    * @param format (String) the whished format in according to the date parameter
    * @return a java object Date
-   * @throws ParseException
+   * @throws ParseException if the date is malformed.
    */
   public static Date parse(String date, String format) throws ParseException {
     SimpleDateFormat sdf = new SimpleDateFormat(format);
@@ -379,9 +379,11 @@ public class DateUtil {
 
   /**
    * Compare 2 dates on year/month/day only.
-   * @param date1
-   * @param date2
-   * @return int
+   * @param date1 the first date to compare with the second one.
+   * @param date2 the second date to compare with the first one.
+   * @return int the distance between the two dates. A negative value means the first date is
+   * anterior the second one whereas a positive value means the first date is posterior the second
+   * date. Zero means the two dates are equal.
    */
   public static int compareTo(Date date1, Date date2) {
     return compareTo(date1, date2, true);
@@ -389,17 +391,20 @@ public class DateUtil {
 
   /**
    * Compare 2 dates.
-   * @param date1
-   * @param aDate2
-   * @return int
+   * @param date1 the first date to compare with the second one.
+   * @param date2 the second date to compare with the first one.
+   * @param aForceResetHour has the hour to be reset when comparing the two dates?
+   * @return int the distance between the two dates. A negative value means the first date is
+   * anterior the second one whereas a positive value means the first date is posterior the second
+   * date. Zero means the two dates are equal.
    */
-  public static int compareTo(Date date1, Date aDate2, boolean aForceResetHour) {
+  public static int compareTo(Date date1, Date date2, boolean aForceResetHour) {
     Calendar myCal1 = DateUtil.convert(date1);
     if (aForceResetHour) {
       resetHour(myCal1);
     }
 
-    Calendar myCal2 = DateUtil.convert(aDate2);
+    Calendar myCal2 = DateUtil.convert(date2);
     if (aForceResetHour) {
       resetHour(myCal2);
     }
@@ -414,7 +419,7 @@ public class DateUtil {
   /**
    * @param date the date to transform
    * @return a String representing the given date in a yyyy/MM/dd format or null if given date is
-   *         null
+   * null
    */
   public static String date2SQLDate(Date date) {
     if (date == null) {
@@ -496,7 +501,7 @@ public class DateUtil {
    * Parse a String of format yyyy/MM/dd and return the corresponding Date.
    * @param date the String to be parsed.
    * @return the corresponding date.
-   * @throws ParseException
+   * @throws ParseException if the date is malformed
    */
   public static Date parseDate(String date) throws ParseException {
     if (date == null) {
@@ -511,8 +516,8 @@ public class DateUtil {
 
   /**
    * Reset hour of a date (00:00:00.000)
-   * @param date
-   * @return
+   * @param date a date
+   * @return a {@link Calendar} instance representing the specified date without the time set.
    */
   public static Calendar resetHour(Calendar date) {
     date.set(Calendar.HOUR_OF_DAY, 0);
@@ -524,8 +529,8 @@ public class DateUtil {
 
   /**
    * Reset hour of a date (00:00:00.000)
-   * @param date
-   * @return
+   * @param date a date
+   * @return a {@link Date} instance representing the specified date without the time set.
    */
   public static Date resetHour(Date date) {
     Calendar calendar = Calendar.getInstance();
@@ -541,7 +546,7 @@ public class DateUtil {
    * Parse a String of format yyyy/MM/dd hh:mm and return the corresponding Date.
    * @param date the String to be parsed.
    * @return the corresponding date.
-   * @throws ParseException
+   * @throws ParseException if the date is malformed
    */
   public static Date parseDateTime(String date) throws ParseException {
     if (date == null) {
@@ -558,7 +563,7 @@ public class DateUtil {
    * Parse a String of format yyyy/MM/dd hh:mm and return the corresponding Date.
    * @param time the String to be parsed.
    * @return the corresponding date.
-   * @throws ParseException
+   * @throws ParseException if the date is malformed
    */
   public static Date parseTime(String time) throws ParseException {
     if (time == null) {
@@ -575,7 +580,7 @@ public class DateUtil {
    * Parse a String of format yyyy/MM/dd and return the corresponding Date.
    * @param date the String to be parsed.
    * @return the corresponding date.
-   * @throws ParseException
+   * @throws ParseException if the date is malformed
    */
   public static Calendar parseCalendar(String date) throws ParseException {
     if (date == null) {
@@ -676,7 +681,7 @@ public class DateUtil {
    * Formats the specified date according to the ISO 8601 format.
    * @param date the date to format.
    * @return a String representation of the date in one of the ISO 8601 format (down to the minute
-   *         and without the UTC offset).
+   * and without the UTC offset).
    */
   public static String formatAsISO8601Date(final Date date) {
     return ISO8601DATE_FORMATTER.format(date);
@@ -694,12 +699,10 @@ public class DateUtil {
 
   /**
    * Formats the specified date according to the ISO 8601 format of the iCal format (in the
-   * timezone
-   * of the date).
+   * timezone of the date).
    * @param date the date to format.
    * @return a String representation of the date the ISO 8601 format of the iCal format (down to
-   *         the
-   *         second).
+   * the second).
    */
   public static String formatAsICalDate(final Date date) {
     return ICALDATE_FORMATTER.format(date);
@@ -709,8 +712,7 @@ public class DateUtil {
    * Formats the specified date according to the ISO 8601 format of the iCal format (in UTC).
    * @param date the date to format.
    * @return a String representation of the date the ISO 8601 format of the iCal format (down to
-   *         the
-   *         second in UTC).
+   * the second in UTC).
    */
   public static String formatAsICalUTCDate(final Date date) {
     return ICALUTCDATE_FORMATTER.format(date);
@@ -943,8 +945,8 @@ public class DateUtil {
 
   /**
    * Compute a new date by adding the specified number of days without couting week-ends.
-   * @param calendar
-   * @param nbDay
+   * @param calendar the specified calendar
+   * @param nbDay the number of days to add
    */
   public static void addDaysExceptWeekEnds(Calendar calendar, int nbDay) {
     int nb = 0;
@@ -960,8 +962,8 @@ public class DateUtil {
    * Return the day index of the week from a given date.
    * This index is that of Calendar monday, tuesday, ...
    * Use Calendar.MONDAY, Calendar.TUESDAY, ...
-   * @param curDate
-   * @return String
+   * @param curDate a date
+   * @return the index of the day of the week
    */
   public static int getDayNumberInWeek(Date curDate) {
     return DateUtil.convert(curDate).get(DAY_OF_WEEK);
@@ -969,9 +971,9 @@ public class DateUtil {
 
   /**
    * Get the number of days between two dates.
-   * @param date1
-   * @param date2
-   * @return int
+   * @param date1 the first date
+   * @param date2 the second date
+   * @return int the interval in days between the two dates
    */
   public static int getDayNumberBetween(Date date1, Date date2) {
     return UnitUtil.getTimeData(date2.getTime() - date1.getTime()).getTimeConverted(TimeUnit.DAY)
@@ -980,8 +982,8 @@ public class DateUtil {
 
   /**
    * Convert Date to Calendar
-   * @param curDate
-   * @return Calendar
+   * @param curDate the date to convert
+   * @return Calendar the calendar representation of the date
    */
   public static Calendar convert(Date curDate) {
     return convert(curDate, null);
@@ -989,10 +991,10 @@ public class DateUtil {
 
   /**
    * Convert Date to Calendar
-   * @param curDate
+   * @param curDate the date to convert
    * @param language the locale to take into account (fr for the french locale (fr_FR) for
    * example).
-   * @return Calendar
+   * @return Calendar the calendar representation of the date
    */
   public static Calendar convert(Date curDate, String language) {
     Locale locale = getLocale(language);

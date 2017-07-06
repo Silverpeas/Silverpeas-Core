@@ -23,43 +23,22 @@
  */
 package org.silverpeas.core.socialnetwork.provider;
 
-import java.util.List;
-
 import org.silverpeas.core.date.Date;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
-import org.silverpeas.core.exception.SilverpeasException;
+
+import java.util.List;
 
 /**
  * @author Bensalem Nabil
  */
 public interface ProviderSwitchInterface {
 
-  /**
-   * get my social Informations list according to the social information type and the UserId
-   * @param socialInformationType
-   * @param userId
-   * @param classification
-   * @param begin date
-   * @param end date
-   * @return List<SocialInformation>
-   * @exception SilverpeasException
-   */
   List<SocialInformation> getSocialInformationsList(
       SocialInformationType socialInformationType, String userId,
       String classification, Date begin, Date end) throws SilverpeasException;
 
-  /**
-   * get the List of social Informations of my contatcs according to the social information type and
-   * the ids of my contacts
-   * @param socialInformationType
-   * @param myId
-   * @param myContactsIds the ids of my contacts
-   * @param begin date
-   * @param end date
-   * @return List<SocialInformation>
-   * @exception SilverpeasException
-   */
   List<SocialInformation> getSocialInformationsListOfMyContacts(
       SocialInformationType socialInformationType,
       String myId, List<String> myContactsIds, Date begin, Date end) throws SilverpeasException;

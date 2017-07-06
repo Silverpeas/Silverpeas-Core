@@ -59,7 +59,7 @@ public class PieChart extends AbstractChart<PieChartItem> {
   }
 
   /**
-   * Adds a new pie part.<br/>
+   * Adds a new pie part.<br>
    * @param label the label.
    * @param value the value.
    * @return the {@link PieChartItem} that represents the given value.

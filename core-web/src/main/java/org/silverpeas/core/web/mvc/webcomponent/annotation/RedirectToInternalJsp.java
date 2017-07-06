@@ -34,7 +34,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Annotation to specify which JSP page, the current component, the control will be passed once
  * the treatment of the annotated method succeeded.
- * <p/>
+ * <p>
  * @author Yohann Chastagnier
  */
 @Inherited

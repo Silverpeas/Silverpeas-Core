@@ -24,12 +24,12 @@
 /**
  * Provides an API to manage file uploads.
  * Uploaded files are retrieved from indicators contained in an HttpServletRequest.
- * <br/>
+ * <br>
  * On user interface side, silverpeas-fileUpload.js has to be used via
  * <view:fileUpload [options] /> tag. When this Silverpeas jQuery plugin is used,
  * each files selected or dragged and dropped are uploaded by AJAX http request. User can't
  * validate form unless all files are uploaded.
- * <br/>
+ * <br>
  * On server side, {@link org.silverpeas.core.io.upload.FileUploadManager} has to be used to
  * retrieve uploaded files from {@link javax.servlet.http.HttpServletRequest}.
  */

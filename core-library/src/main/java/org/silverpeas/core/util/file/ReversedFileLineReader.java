@@ -47,9 +47,9 @@ public class ReversedFileLineReader extends ReversedLinesFileReader {
   }
 
   /**
-   * Reads a specified number of last lines of a file represented by a {@link Path} instance.<br/>
-   * The result will never contains more than {@link #FULL_FILE_NB_LINE_LIMIT} lines.<br/>
-   * Last lines are sorted from oldest to the most recent.<br/>
+   * Reads a specified number of last lines of a file represented by a {@link Path} instance.<br>
+   * The result will never contains more than {@link #FULL_FILE_NB_LINE_LIMIT} lines.<br>
+   * Last lines are sorted from oldest to the most recent.<br>
    * Empty line at end of file is skipped.
    * @param path the path where the file data are located.
    * @param lastLines the number of last lines to read. 0 or negative value to get all the lines of
@@ -64,8 +64,8 @@ public class ReversedFileLineReader extends ReversedLinesFileReader {
   }
 
   /**
-   * Reads a specified number of last lines of a file represented by a {@link Path} instance.<br/>
-   * The result will never contains more than {@link #FULL_FILE_NB_LINE_LIMIT} lines.<br/>
+   * Reads a specified number of last lines of a file represented by a {@link Path} instance.<br>
+   * The result will never contains more than {@link #FULL_FILE_NB_LINE_LIMIT} lines.<br>
    * Empty line at end of file is skipped.
    * @param path the path where the file data are located.
    * @param lastLines the number of last lines to read. 0 or negative value to get all the lines of

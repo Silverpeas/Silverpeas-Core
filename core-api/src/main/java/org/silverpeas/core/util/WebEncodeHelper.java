@@ -23,8 +23,9 @@
  */
 package org.silverpeas.core.util;
 
-import javax.xml.bind.DatatypeConverter;
 import org.apache.commons.lang3.StringEscapeUtils;
+
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Utility class to encode special string or characters to be compliant with the web (HTML and
@@ -49,7 +50,7 @@ public class WebEncodeHelper {
   }
 
   /**
-   * Convert a java string to a html string for textArea Replace ", <, >, & and \n
+   * Convert a java string to a html string for textArea Replace ", &gt;, &lt;, &amp; and \n
    *
    * @param javastring Java string to encode
    * @return html string encoded
@@ -70,7 +71,7 @@ public class WebEncodeHelper {
   }
 
   /**
-   * Convert a java string to a html string for textfield... Replace ", <, >, & and \n
+   * Convert a java string to a html string for textfield... Replace ", &gt;, &lt;, &amp; and \n
    *
    * @param javastring Java string to encode
    * @return html string encoded
@@ -83,7 +84,7 @@ public class WebEncodeHelper {
     for (int i = 0; i < javastring.length(); i++) {
       switch (javastring.charAt(i)) {
         case '\n':
-          resSB.append("<br/>");
+          resSB.append("<br>");
           break;
         case '\r':
           break;
@@ -98,7 +99,7 @@ public class WebEncodeHelper {
   }
 
   /**
-   * Convert a java string to a html string for textfield... Replace ", <, >, & and \n
+   * Convert a java string to a html string for textfield... Replace ", &gt;, &lt;, &amp; and \n
    *
    * @param javastring Java string to encode
    * @return html string encoded
@@ -109,7 +110,7 @@ public class WebEncodeHelper {
   }
 
   /**
-   * Convert a html string to a java string Replace &quot
+   * Convert a html string to a java string. Replace &quot;
    *
    * @param htmlstring HTML string to encode
    * @return html string JAVA encoded

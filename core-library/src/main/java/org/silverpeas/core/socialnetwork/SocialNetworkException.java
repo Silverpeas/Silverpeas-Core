@@ -29,10 +29,6 @@ public class SocialNetworkException extends SilverpeasException {
 
   private static final long serialVersionUID = 8552020923204390308L;
 
-  /**
-   * -------------------------------------------------------------------------- constructor
-   * constructor
-   */
   public SocialNetworkException(String callingClass, int errorLevel,
       String message) {
     super(callingClass, errorLevel, message);
@@ -53,9 +49,6 @@ public class SocialNetworkException extends SilverpeasException {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
   public String getModule() {
     return "socialNetwork";
   }

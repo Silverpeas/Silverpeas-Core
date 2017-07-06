@@ -32,7 +32,7 @@ import java.io.Serializable;
  * <li>the space</li>
  * <li>the component name</li>
  * </ul>
- * It is now replaced by {@code {@link org.silverpeas.core.ResourceIdentifier} but it is still
+ * It is now replaced by {@link org.silverpeas.core.ResourceIdentifier} but it is still
  * used in old code.
  * @author Nicolas Eysseric
  * @version 1.0
@@ -64,7 +64,7 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
 
   /**
    * Constructor which set only the id
-   * @see #id
+   * @param id the unique identifier value
    * @since 1.0
    */
   public WAPrimaryKey(String id) {
@@ -73,9 +73,9 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
 
   /**
    * Constructor which set id, space and component name
-   * @see #id
-   * @see #space
-   * @see #componentName
+   * @param  id the unique identifier value
+   * @param  space the space identifier
+   * @param  componentName the component instance identifier
    * @since 1.0
    */
   public WAPrimaryKey(String id, String space, String componentName) {
@@ -84,6 +84,12 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
     setComponentName(componentName);
   }
 
+  /**
+   * Constructor which set id, space and component name
+   * @param  id the unique identifier value
+   * @param  componentId the component instance identifier
+   * @since 1.0
+   */
   public WAPrimaryKey(String id, String componentId) {
     setId(id);
     setSpace(null);
@@ -91,7 +97,10 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
   }
 
   /**
-   * Constructor which set the id The WAPrimaryKey provides space and component name
+   * Constructor which set the id. The WAPrimaryKey provides space and component instance
+   * identifiers.
+   * @param id the unique identifier value
+   * @param pk another primary key from which is taken the space and component instance identifiers.
    * @since 1.0
    */
   public WAPrimaryKey(String id, WAPrimaryKey pk) {
@@ -103,8 +112,8 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
 
   /**
    * This method must be specialized - Check if an another object is equal to this object
-   * @return true if obj is equals to this object
    * @param obj the object to compare to this WAPrimaryKey
+   * @return true if obj is equals to this object
    * @since 1.0
    */
   @Override
@@ -123,7 +132,6 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
   /**
    * Get the row id of this object
    * @return the id
-   * @see #id
    * @since 1.0
    */
   public String getId() {
@@ -132,7 +140,6 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
 
   /**
    * Set the row id of this object
-   * @see #id
    * @param val the row id
    * @since 1.0
    */
@@ -143,7 +150,6 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
   /**
    * Get the space of this object
    * @return the space
-   * @see #space
    * @since 1.0
    */
   public String getSpace() {
@@ -152,7 +158,6 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
 
   /**
    * Set the space of this object
-   * @see #space
    * @param space the space
    * @since 1.0
    */
@@ -163,7 +168,6 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
   /**
    * Get the component name of this object
    * @return the component name
-   * @see #componentName
    * @since 1.0
    */
   public String getComponentName() {
@@ -172,7 +176,6 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
 
   /**
    * Set the component name of this object
-   * @see #componentName
    * @param componentName the component name
    * @since 1.0
    */
@@ -184,8 +187,6 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
    * Get the database table name where the object is stored
    * @return the database table name where the object is stored : space + componentName +
    * rootTableName (ex : ED1KmeliaPublication)
-   * @see #space
-   * @see #componentName
    * @see #getRootTableName
    * @since 1.0
    */
@@ -195,10 +196,10 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
 
   /**
    * Get the database table name where the object is stored
-   * @return the database table name where the object is stored : space + componentName +
    * rootTableName (ex : ED1KmeliaPublication)
    * @param space a space name
    * @param componentName a component name
+   * @return the database table name where the object is stored : space + componentName +
    * @since 1.0
    */
   public String getTableName(String space, String componentName) {

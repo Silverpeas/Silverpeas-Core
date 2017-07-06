@@ -36,8 +36,9 @@ public interface SimpleCache {
 
   /**
    * Gets an element from the cache.
-   * @param key
-   * @return
+   * @param key the key with which the object to get is mapped in the cache.
+   * @return the object mapped with the key or null if no there is no object mapped with the
+   * specified key.
    */
   Object get(Object key);
 
@@ -45,17 +46,18 @@ public interface SimpleCache {
    * Gets a typed element from the cache.
    * Null is returned if an element exists for the given key but the object type doesn't
    * correspond.
-   * @param key
-   * @param classType
-   * @param <T>
-   * @return
+   * @param <T> the concrete type of the object to get.
+   * @param key the key with which the object to get is mapped in the cache.
+   * @param classType the class of the instance to get.
+   * @return the object mapped with the key or null if no there is no object mapped with the
+   * specified key.
    */
   <T> T get(Object key, Class<T> classType);
 
   /**
    * Removes an element from the cache and return it.
-   * @param key
-   * @return
+   * @param key the key with which the object to get is mapped in the cache.
+   * @return the object removed from the cache.
    */
   Object remove(Object key);
 
@@ -63,26 +65,26 @@ public interface SimpleCache {
    * Removes a typed element from the cache and return it.
    * Null is returned if an element exists for the given key but the object type doesn't
    * correspond.
-   * @param key
-   * @param classType
-   * @param <T>
-   * @return
+   * @param <T> the concrete type of the object to remove.
+   * @param key the key with which the object to get is mapped in the cache.
+   * @param classType the class of the instance to remove.
+   * @return the object removed from the cache.
    */
   <T> T remove(Object key, Class<T> classType);
 
   /**
    * Adds a value and generate a unique key to retrieve later the value.
    * After 12 hours without be used the value is trashed.
-   * @param value
-   * @return
+   * @param value the object to add in the cache.
+   * @return the key with which the added object is mapped in the cache.
    */
   String add(Object value);
 
   /**
    * Puts a value for a given key.
    * After 12 hours without be used the value is trashed.
-   * @param key
-   * @param value
+   * @param key the key with which the object to put has to be mapped
+   * @param value the object to put in the cache.
    */
   void put(Object key, Object value);
 }

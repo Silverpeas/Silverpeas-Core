@@ -71,6 +71,7 @@ public class JdbcSqlQuery {
 
   /**
    * Gets from a entity list the unique entity expected.
+   * @param <E> the type of the entities.
    * @param entities the entity list.
    * @return the unique entity result.
    * @throws IllegalArgumentException if it exists more than one entity in the specified
@@ -557,6 +558,10 @@ public class JdbcSqlQuery {
 
   /**
    * Select executor.
+   * @param <R> the type of the items in the list.
+   * @param process the process to execute on the ResultSet objects.
+   * @return a slice of the list of entities matching the query. The slice is computed from the
+   * query configuration {@link Configuration}.
    * @throws java.sql.SQLException on SQL error.
    */
   public <R> ListSlice<R> execute(SelectResultRowProcess<R> process)
@@ -566,7 +571,11 @@ public class JdbcSqlQuery {
 
   /**
    * Select executor.
+   * @param <R> the type of the items in the list.
    * @param connection existing connection.
+   * @param process the process to execute on the ResultSet objects.
+   * @return a slice of the list of entities matching the query. The slice is computed from the
+   * query configuration {@link Configuration}.
    * @throws java.sql.SQLException on SQL error.
    */
   public <R> ListSlice<R> executeWith(Connection connection, SelectResultRowProcess<R> process)
@@ -580,6 +589,9 @@ public class JdbcSqlQuery {
 
   /**
    * Select executor.
+   * @param <R> the type of the entity.
+   * @param process the process to execute on the ResultSet objects.
+   * @return the entity matching the query.
    * @throws java.sql.SQLException on SQL error.
    */
   public <R> R executeUnique(SelectResultRowProcess<R> process)
@@ -589,7 +601,10 @@ public class JdbcSqlQuery {
 
   /**
    * Select executor.
+   * @param <R> the type of the entity.
    * @param connection existing connection.
+   * @param process the process to execute on the ResultSet objects.
+   * @return the entity matching the query.
    * @throws java.sql.SQLException on SQL error.
    */
   public <R> R executeUniqueWith(Connection connection, SelectResultRowProcess<R> process)
@@ -611,6 +626,7 @@ public class JdbcSqlQuery {
 
   /**
    * Modify executor.
+   * @return the number of entities that were implied in the modification.
    * @throws java.sql.SQLException on SQL error.
    */
   public long execute() throws SQLException {
@@ -620,6 +636,7 @@ public class JdbcSqlQuery {
   /**
    * Modify executor.
    * @param connection existing connection.
+   * @return the number of entities that were implied in the modification.
    * @throws java.sql.SQLException on SQL error.
    */
   public long executeWith(Connection connection) throws SQLException {

@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,9 +16,9 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.persistence.jdbc.bean;
@@ -43,7 +43,7 @@ import java.util.Collection;
  * moment, SilverpeasBeanDAO is able to work with int, String and Date. This list can grow in the
  * near futur.
  * @param <T> the SilverpeasBeanIntf type
- * @Deprecated Replaced it with the new persistence layer built upon JPA
+ * @deprecated Replaced it with the new persistence layer built upon JPA
  */
 @Deprecated
 public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {
@@ -56,39 +56,42 @@ public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {
   /**
    * update the row in db with the new bean properties.
    * @param bean the SilverpeasBean to update, with its complete primaryKey.
-   * @throws PersistenceException
+   * @throws PersistenceException if the update fails.
    */
-  public void update(T bean) throws PersistenceException;
+  void update(T bean) throws PersistenceException;
 
-  public void update(Connection con, T bean) throws PersistenceException;
+  void update(Connection con, T bean) throws PersistenceException;
 
   /**
    * create the bean and a row in DB.
    * @param bean the SilverpeasBeanIntf to update, with a primaryKey initialized with only spaceId
    * and componentId.
    * @return The complete primary key, with the id.
+   * @throws PersistenceException if the creation fails.
    */
-  public WAPrimaryKey add(T bean) throws PersistenceException;
+  WAPrimaryKey add(T bean) throws PersistenceException;
 
-  public WAPrimaryKey add(Connection con, T bean) throws PersistenceException;
+  WAPrimaryKey add(Connection con, T bean) throws PersistenceException;
 
   /**
    * remove the row in db represented by the primary key.
    * @param pk the SilverpeasBeanIntf to update, with a primaryKey initialized with only spaceId
    * and componentId.
+   * @throws PersistenceException if the deletion fails.
    */
-  public void remove(WAPrimaryKey pk) throws PersistenceException;
+  void remove(WAPrimaryKey pk) throws PersistenceException;
 
-  public void remove(Connection con, WAPrimaryKey pk) throws PersistenceException;
+  void remove(Connection con, WAPrimaryKey pk) throws PersistenceException;
 
   /**
    * remove all row in db represented by the where clause.
    * @param pk the specific identifier
    * @param p_WhereClause the where clause.
+   * @throws PersistenceException if the deletion fails.
    */
-  public void removeWhere(WAPrimaryKey pk, String p_WhereClause) throws PersistenceException;
+  void removeWhere(WAPrimaryKey pk, String p_WhereClause) throws PersistenceException;
 
-  public void removeWhere(Connection con, WAPrimaryKey pk, String p_WhereClause)
+  void removeWhere(Connection con, WAPrimaryKey pk, String p_WhereClause)
       throws PersistenceException;
 
   /**
@@ -97,19 +100,21 @@ public interface SilverpeasBeanDAO<T extends SilverpeasBeanIntf> {
    * @param whereClause The where clause to put in select request. If null, all SilverpeasBeanIntfs
    * will be selected (all rows in the table).
    * @return The list of SilverpeasBeanIntfs corresponding to the where clause
+   * @throws PersistenceException if the finding fails.
    */
-  public Collection<T> findByWhereClause(WAPrimaryKey pk, String whereClause)
+  Collection<T> findByWhereClause(WAPrimaryKey pk, String whereClause)
       throws PersistenceException;
 
-  public Collection<T> findByWhereClause(Connection con, WAPrimaryKey pk, String whereClause)
+  Collection<T> findByWhereClause(Connection con, WAPrimaryKey pk, String whereClause)
       throws PersistenceException;
 
   /**
    * get a bean representing a row in db from its pk
    * @param pk the complete beans primary key
    * @return The SilverpeasBeanIntfs corresponding to the pk, null if not found
+   * @throws PersistenceException if the finding fails.
    */
-  public T findByPrimaryKey(WAPrimaryKey pk) throws PersistenceException;
+  T findByPrimaryKey(WAPrimaryKey pk) throws PersistenceException;
 
-  public T findByPrimaryKey(Connection con, WAPrimaryKey pk) throws PersistenceException;
+  T findByPrimaryKey(Connection con, WAPrimaryKey pk) throws PersistenceException;
 }

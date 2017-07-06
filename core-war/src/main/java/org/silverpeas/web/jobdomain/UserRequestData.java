@@ -35,7 +35,7 @@ import javax.ws.rs.FormParam;
 
 /**
  * This class is a user data container which the data are retrieved from an HTTP request that
- * deals with user data creation or modification.<br/>
+ * deals with user data creation or modification.<br>
  * To get a loaded container, use {@link RequestParameterDecoder#decode(HttpRequest, Class)}.
  * @author Yohann Chastagnier
  */
@@ -129,7 +129,7 @@ public class UserRequestData {
   private Integer userManualNotifReceiverLimitValue;
 
   /**
-   * Applies the data on the specified new instance of a user.<br/>
+   * Applies the data on the specified new instance of a user.<br>
    * Following data are not set:
    * <ul>
    * <li>user id</li>
@@ -144,7 +144,7 @@ public class UserRequestData {
   }
 
   /**
-   * Applies the data on the specified instance of an existing user.<br/>
+   * Applies the data on the specified instance of an existing user.<br>
    * Following data are not set:
    * <ul>
    * <li>user id</li>

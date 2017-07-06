@@ -27,7 +27,7 @@ import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
 
 /**
  * Implementation of {@link UserNotificationBuilder} must implement this interface if it deals with
- * subscription notifications.<br/>
+ * subscription notifications.<br>
  * By this way, the implementation takes advantage on centralized treatments around the
  * subscription notification.
  * @author Yohann Chastagnier

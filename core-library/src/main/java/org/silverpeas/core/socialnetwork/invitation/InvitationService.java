@@ -124,7 +124,7 @@ public class InvitationService {
 
   /**
    * ignore this invitation
-   * @param id : the invitation identifier to ignore (delete)
+   * @param id the invitation identifier to ignore (delete)
    */
   @Transactional
   public void ignoreInvitation(int id) {
@@ -137,7 +137,7 @@ public class InvitationService {
 
   /**
    * accept invitation between sender and receiver and create the relationship
-   * @param idInvitation
+   * @param idInvitation invitation identifier
    * @return -1 if this Invitation not exists, -2 if the RelationShip already exists, else the id of
    * RelationShip if the action has been done successfully
    */
@@ -207,7 +207,7 @@ public class InvitationService {
   /**
    * return all my invitations sent
    * @param userId the user identifier
-   * @return List<Invitation>
+   * @return a list of invitations
    */
   public List<Invitation> getAllMyInvitationsSent(int userId) {
     List<Invitation> invitations = new ArrayList<>();
@@ -219,11 +219,6 @@ public class InvitationService {
     return invitations;
   }
 
-  /**
-   * return All my invitations received
-   * @param myId
-   * @return
-   */
   public List<Invitation> getAllMyInvitationsReceive(int myId) {
     List<Invitation> invitations = new ArrayList<>();
     try (Connection connection = getConnection()) {
@@ -234,11 +229,6 @@ public class InvitationService {
     return invitations;
   }
 
-  /**
-   * return invitation by her id
-   * @param id invitation identifier
-   * @return Invitation
-   */
   public Invitation getInvitation(int id) {
     try (Connection connection = getConnection()) {
       return invitationDao.getInvitation(connection, id);
@@ -248,12 +238,6 @@ public class InvitationService {
     return null;
   }
 
-  /**
-   * return invitation between 2 users
-   * @param senderId
-   * @param receiverId
-   * @return Invitation
-   */
   public Invitation getInvitation(int senderId, int receiverId) {
     try (Connection connection = getConnection()) {
       return invitationDao.getInvitation(connection, senderId, receiverId);

@@ -33,9 +33,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * This engine reads a prefixed notation expression in order to evaluate it.<br/>
- * Each part of the expression is composed of an operator with one or several operands.<br/>
- * Each operand must be wrapped into parentheses.<br/>
+ * This engine reads a prefixed notation expression in order to evaluate it.<br>
+ * Each part of the expression is composed of an operator with one or several operands.<br>
+ * Each operand must be wrapped into parentheses.<br>
  * An operand can be:
  * <ul>
  * <li><b>a value to evaluate</b> (by the converter given as first parameter of
@@ -44,18 +44,18 @@ import java.util.regex.Pattern;
  * <li><b>an operator with</b> one or several operands</li>
  * </ul>
  * Each operator must be defined by the caller and given to variable parameter of
- * {@link #from(Function, OperatorFunction[])} method.<br/>
+ * {@link #from(Function, OperatorFunction[])} method.<br>
  * So, by calling {@link #from(Function, OperatorFunction[])} method, the caller defines the
- * behaviour of the operators of the expression to evaluate.<br/>
+ * behaviour of the operators of the expression to evaluate.<br>
  * An operator without operands means that the operator is part of the value to evaluate (by the
  * converter).
  * <p>
- * For example:<br/>
+ * For example:<br>
  * <pre>
- *   PrefixedNotationExpressionEngine<Integer> engine = from(
- *     (aString) -> aString == null ? 0 : Integer.parseInt(aString), // the converter
- *     new OperatorFunction<Integer>("+", (a,b) -> (a == null ? 0 : a) + b), // ADD operator
- *     new OperatorFunction<Integer>("-", (a,b) -> (a == null ? 0 : a) - b) // SUBTRACT operator
+ *   PrefixedNotationExpressionEngine&lt;Integer&gt; engine = from(
+ *     (aString) -&gt; aString == null ? 0 : Integer.parseInt(aString), // the converter
+ *     new OperatorFunction&lt;Integer&gt;("+", (a,b) -&gt; (a == null ? 0 : a) + b), // ADD operator
+ *     new OperatorFunction&lt;Integer&gt;("-", (a,b) -&gt; (a == null ? 0 : a) - b) // SUBTRACT operator
  *   )
  *
  *   engine.evaluate("+(+(3)(4))(+(-(5))(2))"); // gives 4
@@ -70,9 +70,9 @@ import java.util.regex.Pattern;
  *                                            // is taken into account as part of the value and not
  *                                            // as an operator
  * </pre>
- * </p>
+ * <p>
  * Some errors can be thrown as {@link IllegalArgumentException} with message containing an error
- * key. It is free to the caller to use these keys.<br/>
+ * key. It is free to the caller to use these keys.<br>
  * The errors:
  * <ul>
  * <li><b>expression.operation.malformed</b> 1 (1)</li>
@@ -112,7 +112,10 @@ public class PrefixedNotationExpressionEngine<R> {
 
   /**
    * Initializes the instance.
-   * @param operationFunctions instances of {@link OperatorFunction<R>} where each one represents
+   * @param <R> the type of the expression result.
+   * @param converter a function that converts a String representation of a data to
+   * the concrete type of that data.
+   * @param operationFunctions instances of {@link OperatorFunction} where each one represents
    * an operator and its behavior.
    * @return the initialized instance.
    */
@@ -294,7 +297,7 @@ public class PrefixedNotationExpressionEngine<R> {
 
   /**
    * Defines an operator behavior.
-   * @param <T>
+   * @param <T> the concrete type of the argument the function accepts.
    */
   public static class OperatorFunction<T> {
     private final String operator;

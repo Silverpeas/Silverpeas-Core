@@ -150,7 +150,7 @@ public class ExternalExecution {
 
     /**
      * Calling this method avoids to log errors thrown during the execution of a command into log
-     * handlers of the server.<br/>
+     * handlers of the server.<br>
      * It is useful for a command for which an execution error can be interpreted as a functional
      * information. For example, a command that verifies the existence of an external tool.
      * @return the {@link ExternalExecution.Config} instance completed with the given information.

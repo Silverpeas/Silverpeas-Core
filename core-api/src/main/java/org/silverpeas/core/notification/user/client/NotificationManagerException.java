@@ -29,10 +29,6 @@ public class NotificationManagerException extends SilverpeasException {
 
   private static final long serialVersionUID = 5537557512687144809L;
 
-  /**
-   * -------------------------------------------------------------------------- constructor
-   * constructor
-   */
   public NotificationManagerException(String callingClass, int errorLevel,
       String message) {
     super(callingClass, errorLevel, message);
@@ -53,9 +49,6 @@ public class NotificationManagerException extends SilverpeasException {
     super(callingClass, errorLevel, message, extraParams, nested);
   }
 
-  /**
-   * -------------------------------------------------------------------------- getModule getModule
-   */
   public String getModule() {
     return "notificationManager";
   }

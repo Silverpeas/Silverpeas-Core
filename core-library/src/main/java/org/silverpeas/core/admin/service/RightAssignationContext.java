@@ -27,7 +27,7 @@ import org.silverpeas.core.util.StringUtil;
 
 /**
  * This class permits to specify the context of a right assignation operations (copy or replace for
- * now).<br/>
+ * now).<br>
  * It simplifies significantly all the method definition that perform right assignation operations.
  * @author Yohann Chastagnier
  */

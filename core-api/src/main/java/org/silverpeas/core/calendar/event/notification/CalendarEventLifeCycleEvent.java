@@ -27,7 +27,6 @@ import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
 import javax.validation.constraints.NotNull;
-import java.io.Serializable;
 
 /**
  * A lifecycle event of {@link org.silverpeas.core.calendar.event.CalendarEvent}
@@ -46,7 +45,6 @@ public class CalendarEventLifeCycleEvent extends AbstractResourceEvent<CalendarE
    * calendar event's lifecycle).
    * @param calendarEvent the states of a calendar event concerned by a state transition in
    * its lifecycle.
-   * @see AbstractResourceEvent#AbstractResourceEvent(Type, Serializable[])
    */
   public CalendarEventLifeCycleEvent(final Type type,
       @NotNull final CalendarEvent... calendarEvent) {

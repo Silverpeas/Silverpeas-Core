@@ -35,9 +35,9 @@ import java.util.Iterator;
 
 /**
  * This manager permits to retrieve from {@link HttpServletRequest} a collection of
- * {@link UploadedFile}.<br/>
+ * {@link UploadedFile}.<br>
  * This class must be used when silverpeas-fileUpload Silverpeas Javascript Plugin is used on
- * client-side.<br/>
+ * client-side.<br>
  * @author Yohann Chastagnier
  */
 public class FileUploadManager {

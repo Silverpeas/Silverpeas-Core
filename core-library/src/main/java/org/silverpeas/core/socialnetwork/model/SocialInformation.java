@@ -56,13 +56,13 @@ public interface SocialInformation extends Comparable<SocialInformation> {
 
   /**
    * return the Date of this SocialInfo
-   * @return
+   * @return Date
    */
   public Date getDate();
 
   /**
    * return the Type of this SocialInfo
-   * @return
+   * @return String
    */
   public String getType();
 

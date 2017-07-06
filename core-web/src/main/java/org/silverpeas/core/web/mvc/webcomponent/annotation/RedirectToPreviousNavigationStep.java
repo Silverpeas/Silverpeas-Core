@@ -37,7 +37,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Annotation to specify a redirection to a previous navigation step on a HTTP method of a {@link
  * WebComponentController}.
- * <p/>
+ * <p>
  * When a HTTP method with this annotation is called, the redirection is performed from
  * informations known by the navigation step returned by {@link
  * NavigationContext#getPreviousNavigationStep()} method.

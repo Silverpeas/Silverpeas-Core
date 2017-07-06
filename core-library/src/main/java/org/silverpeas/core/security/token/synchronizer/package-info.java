@@ -26,8 +26,8 @@
  * resources in Silverpeas by using a mechanism based upon tokens. For more information about
  * Synchronizer Token, please read the following articles:
  * <ul>
- * <li>https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29_Prevention_Cheat_Sheet</li>
- * <li>http://blog.whitehatsec.com/tag/synchronizer-token/</li>
+ * <li><a href="https://www.owasp.org/index.php/Cross-Site_Request_Forgery_%28CSRF%29_Prevention_Cheat_Sheet">CSRF</a></li>
+ * <li><a href="http://blog.whitehatsec.com/tag/synchronizer-token/">Synchronizer token</a></li>
  * </ul>
  */
 package org.silverpeas.core.security.token.synchronizer;

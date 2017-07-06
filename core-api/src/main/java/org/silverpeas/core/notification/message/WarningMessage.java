@@ -29,9 +29,6 @@ package org.silverpeas.core.notification.message;
  */
 public class WarningMessage extends AbstractMessage {
 
-  /**
-   * Default constructor.
-   */
   protected WarningMessage(final String message) {
     super(message);
   }

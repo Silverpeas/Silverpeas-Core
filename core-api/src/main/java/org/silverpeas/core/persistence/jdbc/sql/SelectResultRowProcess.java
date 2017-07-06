@@ -27,9 +27,16 @@ import java.sql.SQLException;
 
 /**
  * Result Set Row Processor
- * @param <R>
+ * @param <R> the type of the entity.
  */
 @FunctionalInterface
 public interface SelectResultRowProcess<R> {
+
+  /**
+   * Gets the current entity represented by the specified {@link ResultSetWrapper} object.
+   * @param row a wrapper on the {@link java.sql.ResultSet} instance returned by a SQL statement.
+   * @return the entity matching the current given row.
+   * @throws SQLException on SQL errors.
+   */
   R currentRow(final ResultSetWrapper row) throws SQLException;
 }

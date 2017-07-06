@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General  License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,9 +16,9 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General  License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General  License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.socialnetwork.provider;
@@ -33,31 +33,11 @@ import java.util.List;
  */
 public interface SocialRelationShipsInterface {
 
-  /**
-   * get list of socialInformation according to number of Item and the first Index
-   * @param userId
-   * @param begin date
-   * @param end date
-   * @return
-   * @throws SilverpeasException
-   */
-
-  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
+  List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
       throws
       SilverpeasException;
 
-  /**
-   * get list of socialInformation of my contacts according to ids of my contacts , number of Item
-   * and the first Index
-   * @param myId
-   * @param myContactsIds
-   * @param begin date
-   * @param end date
-   * @return
-   * @throws SilverpeasException
-   */
-
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
+  List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds,
       Date begin, Date end) throws SilverpeasException;
 }

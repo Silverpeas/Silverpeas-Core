@@ -245,7 +245,7 @@ public class WysiwygController {
   }
 
   /**
-   * Loads wysiwyg content that will only be read and never updated.<br/>
+   * Loads wysiwyg content that will only be read and never updated.<br>
    * Indeed, this method will call standard WYSIWYG transformations that are necessary only in
    * readOnly mode. The resizing of image attachments for example.
    * @param componentId String : the id of component.

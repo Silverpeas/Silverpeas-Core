@@ -40,7 +40,7 @@ public class ForgottenPasswordMailParameters {
       KEY_USER_NAME };
 
   private static final String TEXT_LINE_SEPARATOR = "\r\n";
-  private static final String HTML_LINE_SEPARATOR = "<br/>";
+  private static final String HTML_LINE_SEPARATOR = "<br>";
 
   private String toAddress;
   private String subject;

@@ -160,7 +160,7 @@ public class QuestionContainerDetail implements java.io.Serializable, Silverpeas
 
   /**
    * Is the specified user can access this container of questions?
-   * <p/>
+   * <p>
    * A user can access a container if it has enough rights to access the application instance in
    * which is managed this container.
    * @param user a user in Silverpeas.

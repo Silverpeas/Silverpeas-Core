@@ -31,8 +31,6 @@ import org.silverpeas.core.test.rule.DbUnitLoadingRule;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
@@ -50,7 +48,7 @@ public abstract class DataSetTest {
   }
 
   /**
-   * Gets the necessary to initialize the data into the database.<br/>
+   * Gets the necessary to initialize the data into the database.<br>
    * @param <T> {@link Operation}, array of {@link Operation}, {@link String} or array of {@link
    * String}.
    * @return Must return an {@link Operation}, an array of {@link Operation}, a dataset path or
@@ -102,11 +100,6 @@ public abstract class DataSetTest {
     }
   }
 
-  /**
-   * Gets the database connection.
-   * @return the database connection.
-   * @throws java.sql.SQLException
-   */
   protected Connection getConnection() throws SQLException {
     return DbSetupRule.getSafeConnection();
   }

@@ -30,7 +30,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 
 /**
- * Web plugin consumer registry.<br/>
+ * Web plugin consumer registry.<br>
  * It consists to map a {@link SupportedWebPlugins} with a {@link BiConsumer} which consumes an
  * {@link ElementContainer} and the language as string.
  * @author Yohann Chastagnier

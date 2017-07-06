@@ -40,7 +40,7 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
  * (i.e. childs that have no groups between group node to their node) : 1) Search all child groups
  * of GroupG 2) Sort the result by DN 3) Remove from the search all the groups that are not
  * directly
- * under GroupG (i.e. there is another group between) => Those groups are the direct childs of
+ * under GroupG (i.e. there is another group between). Those groups are the direct children of
  * GroupG (result of "getChildGroupsEntryByLDAPEntry" call) 4) Performs a search of the users that
  * have for baseDN GroupG's DN and that have NOT : (DN substring of any direct child groups' DN)
  * @author tleroi
@@ -97,14 +97,6 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     return getMemberGroupIds(lds, userId, false);
   }
 
-  /**
-   * Method declaration
-   * @param lds
-   * @param groupEntry
-   * @return
-   * @throws AdminException
-   * @see
-   */
   protected String[] getUserIds(String lds, LDAPEntry groupEntry) throws AdminException {
     LDAPEntry[] theEntries;
     Vector<String> usersVector = new Vector<>();
@@ -127,14 +119,6 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     return usersVector.toArray(new String[usersVector.size()]);
   }
 
-  /**
-   * Method declaration
-   * @param lds
-   * @param parentId
-   * @return
-   * @throws AdminException
-   * @see
-   */
   protected LDAPEntry[] getChildGroupsEntry(String lds, String parentId, String extraFilter)
       throws AdminException {
     LDAPEntry parentEntry = null;
@@ -168,14 +152,6 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     }
   }
 
-  /**
-   * Method declaration
-   * @param lds
-   * @param parentEntry
-   * @return
-   * @throws AdminException
-   * @see
-   */
   private LDAPEntry[] getChildGroupsEntryByLDAPEntry(String lds, LDAPEntry parentEntry)
       throws AdminException {
     LDAPEntry[] theEntries;
@@ -225,11 +201,6 @@ public class LDAPGroupSubTree extends AbstractLDAPGroup {
     return entryVector.toArray(new LDAPEntry[entryVector.size()]);
   }
 
-  /**
-   * Method declaration
-   * @param theEntries
-   * @return
-   */
   private LDAPEntry[] sortReversedDN(LDAPEntry[] theEntries) {
     TreeMap<String, LDAPEntry> theMap = new TreeMap<>();
     StringBuffer forReversing;

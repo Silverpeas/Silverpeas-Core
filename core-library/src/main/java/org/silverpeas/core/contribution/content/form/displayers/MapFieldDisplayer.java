@@ -133,7 +133,7 @@ public class MapFieldDisplayer extends AbstractTextFieldDisplayer {
           container.addElement(anIFrame);
 
           if (enlarge) {
-            container.addElement("<br/>");
+            container.addElement("<br>");
             container.addElement("<small class=\"map-enlarge\">");
             container.addElement(href);
             container.addElement("</small>");

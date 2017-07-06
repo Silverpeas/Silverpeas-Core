@@ -96,7 +96,7 @@ public class HtmlExportGeneratorTest {
     result = HtmlExportGenerator.encode("\t\t");
     assertThat("&nbsp;&nbsp;&nbsp;&nbsp;", is(result));
     result = HtmlExportGenerator.encode("\t\n");
-    assertThat("&nbsp;&nbsp;<br/>", is(result));
+    assertThat("&nbsp;&nbsp;<br>", is(result));
     result = HtmlExportGenerator.encode("mise en œuvre");
     assertThat("mise en &oelig;uvre", is(result));
     result = HtmlExportGenerator.encode("c'est cet été");

@@ -328,6 +328,7 @@ public class RelationShipDao {
    * @param connection a connection to the data source.
    * @param relationShipId the relationship identifier
    * @return the RelationShip instance loaded from the relationship identifier
+   * @throws SQLException on SQL error.
    */
   public RelationShip getRelationShip(Connection connection, int relationShipId)
       throws SQLException {

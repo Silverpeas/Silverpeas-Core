@@ -30,7 +30,7 @@ import org.silverpeas.core.web.http.RequestParameterDecoder;
 import javax.ws.rs.FormParam;
 
 /**
- * This class contains the parameter values of an embed media player request.<br/>
+ * This class contains the parameter values of an embed media player request.<br>
  * To get a loaded container, use {@link RequestParameterDecoder#decode(HttpRequest, Class)}.
  * @author Yohann Chastagnier
  */

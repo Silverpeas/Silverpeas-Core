@@ -33,6 +33,7 @@ public interface CacheService {
 
   /**
    * Gets a cache from this service.
+   * @param <T> the concrete type of {@link SimpleCache}
    * @return either a new cache or a single one according to the policy of the service about the
    * cache(s) on which it works.
    */

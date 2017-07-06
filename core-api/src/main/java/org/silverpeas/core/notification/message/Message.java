@@ -32,27 +32,26 @@ public interface Message {
   /**
    * Gets the type of the message.
    * {@link MessageType}
-   * @return
+   * @return the message type
    */
   MessageType getType();
 
   /**
    * Gets the content of the message.
-   * @return
+   * @return the message content
    */
   String getContent();
 
   /**
    * Sets the time to live of the message after to have been displayed.
-   * @param milliseconds 0 <= unlimited
-   * @return
+   * @param milliseconds 0 = unlimited
+   * @return the message
    */
   Message setDisplayLiveTime(long milliseconds);
 
   /**
    * Gets the time to live of the message after to have been displayed.
-   * Time unit is milliseconds.
-   * @return
+   * @return the time in milliseconds.
    */
   long getDisplayLiveTime();
 }

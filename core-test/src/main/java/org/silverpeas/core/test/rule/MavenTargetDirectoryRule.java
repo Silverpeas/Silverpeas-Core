@@ -145,7 +145,7 @@ public class MavenTargetDirectoryRule implements TestRule {
   }
 
   /**
-   * Loads maven properties from a test class.<br/>
+   * Loads maven properties from a test class.<br>
    * maven.properties has to exist into resources of the project.
    * @param testClass the test class for which the maven properties are requested.
    * @return an instance of {@link Properties} that containes requested maven properties.
@@ -164,6 +164,7 @@ public class MavenTargetDirectoryRule implements TestRule {
 
   /**
    * Gets the silverpeas version.
+   * @param mavenProperties the Maven properties
    * @return the silverpeas version.
    */
   public static String getSilverpeasVersion(Properties mavenProperties) {
@@ -172,6 +173,7 @@ public class MavenTargetDirectoryRule implements TestRule {
 
   /**
    * Gets the target directory of the test.
+   * @param mavenProperties the Maven properties
    * @return the target directory of the test.
    */
   public static File getBuildDirFile(Properties mavenProperties) {
@@ -180,6 +182,7 @@ public class MavenTargetDirectoryRule implements TestRule {
 
   /**
    * Gets the resource path of test execution context.
+   * @param mavenProperties the Maven properties
    * @return the resource path.
    */
   public static File getResourceTestDirFile(Properties mavenProperties) {
@@ -188,7 +191,7 @@ public class MavenTargetDirectoryRule implements TestRule {
 
   /**
    * Gets the path of the Wildfly home directory.
-   * @param mavenProperties
+   * @param mavenProperties the Maven properties
    * @return the Wildfly home directory.
    */
   public static File getWildflyHomeFile(Properties mavenProperties) {

@@ -179,7 +179,7 @@ public class SQLDriver extends AbstractDomainDriver {
   }
 
   /**
-   * Update the data inside domain<DOMAIN_NAME>_user table
+   * Update the data inside domain &lt;DOMAIN_NAME&gt;_user table
    * @param uf a UserFull object
    */
   @Override

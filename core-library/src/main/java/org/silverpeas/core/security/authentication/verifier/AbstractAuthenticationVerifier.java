@@ -27,7 +27,6 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -49,7 +48,7 @@ class AbstractAuthenticationVerifier {
 
   /**
    * Default constructor.
-   * @param user
+   * @param user a user to set
    */
   protected AbstractAuthenticationVerifier(UserDetail user) {
     this.user = user;
@@ -57,7 +56,7 @@ class AbstractAuthenticationVerifier {
 
   /**
    * Sets the user.
-   * @param user
+   * @param user the user to set
    */
   public void setUser(final UserDetail user) {
     this.user = user;
@@ -65,7 +64,7 @@ class AbstractAuthenticationVerifier {
 
   /**
    * Gets the user.
-   * @return
+   * @return the user
    */
   public UserDetail getUser() {
     return user;
@@ -73,9 +72,8 @@ class AbstractAuthenticationVerifier {
 
   /**
    * Gets a user from its credentials.
-   * @param credential
-   * @return
-   * @throws org.silverpeas.core.security.authentication.exception.AuthenticationException
+   * @param credential the credentials
+   * @return the user with the specified credentials
    */
   protected static UserDetail getUserByCredential(AuthenticationCredential credential) {
     try {
@@ -88,20 +86,13 @@ class AbstractAuthenticationVerifier {
 
   /**
    * Gets a user from its identifier.
-   * @param userId
-   * @return
+   * @param userId the unique identifier of the user
+   * @return the user
    */
   protected static UserDetail getUserById(String userId) {
     return UserDetail.getById(userId);
   }
 
-  /**
-   * Gets a string message according to the given language.
-   * @param key
-   * @param language
-   * @param params
-   * @return
-   */
   protected static String getString(final String key, final String language,
       final String... params) {
     LocalizationBundle messages = ResourceLocator.getLocalizationBundle(

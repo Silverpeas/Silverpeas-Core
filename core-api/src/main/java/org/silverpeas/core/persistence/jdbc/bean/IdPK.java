@@ -41,16 +41,10 @@ public class IdPK extends WAPrimaryKey {
     super(Integer.toString(id));
   }
 
-  /**
-   * IdPK(String id, WAPrimaryKey value)
-   */
   public IdPK(String id, WAPrimaryKey value) {
     super(id, value);
   }
 
-  /**
-   * equals
-   */
   public boolean equals(Object other) {
     if (!(other instanceof IdPK)) {
       return false;
@@ -58,16 +52,10 @@ public class IdPK extends WAPrimaryKey {
     return (getId().equals(((IdPK) other).getId()));
   }
 
-  /**
-   * setIdAsLong( long value )
-   */
   public void setIdAsLong(long value) {
     setId(Long.toString(value));
   }
 
-  /**
-   * getIdAsLong()
-   */
   public long getIdAsLong() {
     return new Integer(getId()).longValue();
   }

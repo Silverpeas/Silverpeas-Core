@@ -32,7 +32,7 @@ import org.silverpeas.core.util.StringUtil;
  * Instead of providing a full representation of a criteria API by which criterion objects can be
  * composing programmatically and that wraps each underlying persistence-specific criteria API we
  * use, we prefer to let the developers provide their own implementation of the criteria by
- * extendings this interface and by adapting it to their purpose.
+ * extending this interface and by adapting it to their purpose.
  * @author mmoquillon
  */
 public interface QueryCriteria {
@@ -119,8 +119,8 @@ public interface QueryCriteria {
     }
 
     /**
-     * Gets the parameters refered by the clause.
-     * @param <T>
+     * Gets the parameters referred by the clause.
+     * @param <T> the concrete type of the parameters.
      * @return all the parameters to apply with the clause to a query.
      */
     public <T extends Parameters> T parameters() {

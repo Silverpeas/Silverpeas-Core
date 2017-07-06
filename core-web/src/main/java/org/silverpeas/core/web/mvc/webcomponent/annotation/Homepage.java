@@ -34,7 +34,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Annotation to identify the method that takes in charge of the requests for the home page.
- * <p/>
+ * <p>
  * @author Yohann Chastagnier
  */
 @Inherited

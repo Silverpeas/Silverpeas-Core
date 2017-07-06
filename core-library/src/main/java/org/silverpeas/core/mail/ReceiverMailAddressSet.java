@@ -89,9 +89,6 @@ public class ReceiverMailAddressSet extends LinkedHashSet<MailAddress> {
   // The default batch size
   private int receiversBatchSizeForOneSend = DEFAULT_BATCH_SIZE;
 
-  /**
-   * See {@link ReceiverMailAddressSet#with(java.util.Collection)} details.
-   */
   public static ReceiverMailAddressSet with(MailAddress... mailAddresses) {
     return with(CollectionUtil.asList(mailAddresses));
   }

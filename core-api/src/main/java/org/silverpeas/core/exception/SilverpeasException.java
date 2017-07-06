@@ -34,7 +34,7 @@ import java.util.List;
 
 /**
  * Deprecated exception. Please use instead {@link org.silverpeas.core.SilverpeasException}
- * </p>
+ * <br>
  * SilverpeasException est la racine de la hiérarchie d'exception silverpeas. Toutes les classes
  * d'exception spécifiques aux differents modules doivent dériver (directement ou non) de
  * SilverpeasException. La page d'erreur globale à l'application ne saura traiter correctement que
@@ -61,8 +61,6 @@ abstract public class SilverpeasException extends Exception implements WithNeste
     this("noClass", ERROR, "", null, exception);
   }
 
-  // Constructors
-  // ------------
   /**
    * Fabriquation d'une exception silverpeas avec un message multilangue. Il n'y a pas d'exception
    * ayant provoqué celle-ci (getNested() renvera null). Le niveau d'importance est ERROR.
@@ -134,8 +132,6 @@ abstract public class SilverpeasException extends Exception implements WithNeste
     }
   }
 
-  // WithNested methods
-  // ------------------
   /**
    * retourne l'exception qui a provoqué la creation de celle-ci. Permet l'encapsulation des
    * exception technique.
@@ -147,8 +143,6 @@ abstract public class SilverpeasException extends Exception implements WithNeste
     return nested;
   }
 
-  // Throwable methods overloaded
-  // ----------------------------
   @Override
   public void printStackTrace() {
     this.printStackTrace(System.out);

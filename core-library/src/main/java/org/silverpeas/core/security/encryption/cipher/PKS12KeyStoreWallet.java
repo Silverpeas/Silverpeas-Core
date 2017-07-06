@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * A wallet of PKS#12 key files. It is an in-memory storage of PKS12KeyStore instances for users
  * in order to be taken into account by some cryptographic processes to exchange between them
  * digital data.
- * <p/>
+ * <p>
  * It is a singleton that manages all the PKS#12 key stores for Silverpeas.
  */
 public class PKS12KeyStoreWallet {

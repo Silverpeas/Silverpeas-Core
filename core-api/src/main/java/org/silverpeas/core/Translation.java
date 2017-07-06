@@ -30,7 +30,7 @@ package org.silverpeas.core;
  * must implement either this interface or one of its more-typed children interfaces:
  * <ul>
  *   <li>{@code org.silverpeas.core.contribution.ContributionTranslation} for the contributions,</li>
- *   <li>{@¢ode org.silverpeas.core.contribution.model.ContributionContentTranslation} for the
+ *   <li>{@code org.silverpeas.core.contribution.model.ContributionContentTranslation} for the
  *   contribution content.</li>
  * </ul>
  * <p>

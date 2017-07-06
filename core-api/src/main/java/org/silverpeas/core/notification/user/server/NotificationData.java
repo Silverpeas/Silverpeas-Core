@@ -189,128 +189,74 @@ public class NotificationData implements Serializable {
     return mAnswerAllowed;
   }
 
-  /**
-   * @param pNotificationId
-   */
   public void setNotificationId(long pNotificationId) {
     mNotificationId = pNotificationId;
   }
 
-  /**
-   * @param pUser
-   */
   public void setLoginUser(String pUser) {
     mLoginUser = pUser;
   }
 
-  /**
-   * @param pPassword
-   */
   public void setLoginPassword(String pPassword) {
     mLoginPassword = pPassword;
   }
 
-  /**
-   * @param pMessage
-   */
   public void setMessage(String pMessage) {
     mMessage = pMessage;
   }
 
-  /**
-   * @param pComment
-   */
   public void setComment(String pComment) {
     mComment = pComment;
   }
 
-  /**
-   * @param pSenderName
-   */
   public void setSenderName(String pSenderName) {
     mSenderName = pSenderName;
   }
 
-  /**
-   * @param pSenderId
-   */
   public void setSenderId(String pSenderId) {
     mSenderId = pSenderId;
   }
 
-  /**
-   * @param pTargetChannel
-   */
   public void setTargetChannel(String pTargetChannel) {
     mTargetChannel = pTargetChannel;
   }
 
-  /**
-   * @param pTargetReceipt
-   */
   public void setTargetReceipt(String pTargetReceipt) {
     mTargetReceipt = pTargetReceipt;
   }
 
-  /**
-   * @param pTargetName
-   */
   public void setTargetName(String pTargetName) {
     mTargetName = pTargetName;
   }
 
-  /**
-   * @param pTargetParam
-   */
   public void setTargetParam(Map<String, Object> pTargetParam) {
     mTargetParam = pTargetParam;
   }
 
-  /**
-   * @param pPrioritySpeed
-   */
   public void setPrioritySpeed(String pPrioritySpeed) {
     mPrioritySpeed = pPrioritySpeed;
   }
 
-  /**
-   * @param pReportToSenderStatus
-   */
   public void setReportToSenderStatus(String pReportToSenderStatus) {
     mReportToSenderStatus = pReportToSenderStatus;
   }
 
-  /**
-   * @param pReportToSenderTargetChannel
-   */
   public void setReportToSenderTargetChannel(String pReportToSenderTargetChannel) {
     mReportToSenderTargetChannel = pReportToSenderTargetChannel;
   }
 
-  /**
-   * @param pReportToSenderTargetReceipt
-   */
   public void setReportToSenderTargetReceipt(String pReportToSenderTargetReceipt) {
     mReportToSenderTargetReceipt = pReportToSenderTargetReceipt;
   }
 
-  /**
-   * @param pReportToSenderTargetParam
-   */
   public void setReportToSenderTargetParam(String pReportToSenderTargetParam) {
     mReportToSenderTargetParam = pReportToSenderTargetParam;
   }
 
-  /**
-   * @param pReportToLogStatus
-   */
   public void setReportToLogStatus(String pReportToLogStatus) {
     mReportToLogStatus = pReportToLogStatus;
   }
 
-  /**
-   * @param answerAllowed
-   */
   public void setAnswerAllowed(boolean answerAllowed) {
     mAnswerAllowed = answerAllowed;
   }

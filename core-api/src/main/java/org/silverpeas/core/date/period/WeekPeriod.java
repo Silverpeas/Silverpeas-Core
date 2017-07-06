@@ -35,6 +35,7 @@ public class WeekPeriod extends Period {
   /**
    * Constructor : Constructs a newly allocated <code>period</code>.
    * @param referenceDatable the reference date to compute a week period.
+   * @param locale locale
    */
   protected WeekPeriod(final DateTime referenceDatable, final String locale) {
     super(referenceDatable.getBeginOfWeek(locale), referenceDatable.getEndOfWeek(locale).addMilliseconds(1));

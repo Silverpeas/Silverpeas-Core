@@ -49,16 +49,16 @@ import java.util.Random;
 /**
  * A variation of the MD5 algorithm (Message Digest 5) as used in modern Unix systems for hashing
  * the passwords.
- * <p/>
+ * <p>
  * This version uses salting to perturb the algorithm in different ways, and hence to be less
  * vulnerable to attacks.
- * <p/>
+ * <p>
  * Since the discovery of the vulnerability of the MD5 algorithm, it is now replaced in the
  * current Unix systems by one of the SHA-2 algorithm (SHA-256 or SHA-512). OpenBSD,
  * an operating system notorious for being "obsessed with security", uses as its default
  * password authentication mechanism the bcrypt cryptographic algorithm (a modified version of
  * Blowfish).
- * <p/>
+ * <p>
  * This class implements the popular MD5Crypt function as used by BSD and most modern Un*x systems.
  * It was basically converted from the C code write by Poul-Henning Kamp.
  */
@@ -240,7 +240,7 @@ public class UnixMD5Encryption implements PasswordEncryption {
 
   /**
    * Gets the salt that was used to compute the specified digest.
-   * <p/>
+   * <p>
    * According to the cryptographic algorithm that computed the digest, the salt used in the
    * encryption can be retrieved from the digest itself. In the case the salt cannot be determine,
    * an empty one is then returned.

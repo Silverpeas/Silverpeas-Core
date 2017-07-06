@@ -35,7 +35,7 @@ import java.sql.SQLException;
 public interface TransactionTestService {
 
   @Transactional
-  Connection transaction1() throws SQLException;
+  Connection transaction1() throws SQLException, InterruptedException;
 
   @Transactional
   Connection transaction2(UserDetail user) throws SQLException;

@@ -36,7 +36,7 @@ public interface ScheduledJob {
 
   /**
    * Gets the name under which the job is registered into the scheduler.
-   * @return
+   * @return the name of the job.
    */
   String getName();
 

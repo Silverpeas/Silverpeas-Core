@@ -25,7 +25,6 @@ package org.silverpeas.core.persistence.datasource.model;
 
 import org.silverpeas.core.ResourceIdentifier;
 
-import javax.persistence.Embeddable;
 import java.io.Serializable;
 
 /**
@@ -37,15 +36,19 @@ public interface EntityIdentifier extends ResourceIdentifier, Serializable {
 
   /**
    * Sets the id value from a String.
-   * @return
+   * @param id the String value of the identifier.
+   * @return the entity identifier instance.
    */
   EntityIdentifier fromString(String id);
 
   /**
    * Generate a new ID.
    * "Auto-Increment" identifiers must implement this method.
-   * @param tableName
-   * @param tableColumnIdName
+   * @param tableName the name of the database table for which the next identifier value has to be
+   * determined.
+   * @param tableColumnIdName the name of the identifier column from which the next identifier value
+   * has to be determined.
+   * @return the entity identifier instance.
    */
   EntityIdentifier generateNewId(final String tableName, final String tableColumnIdName);
 }

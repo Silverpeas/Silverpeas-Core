@@ -27,7 +27,6 @@ import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * A factory of transaction instances.
- * <p/>
  * @author mmoquillon
  */
 public class TransactionProvider {

@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.clipboard.service;
 
-import java.util.Collection;
-
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
+
+import java.util.Collection;
 
 /**
  * A clipboard in Silverpeas to receive the objects cut or copied by users in Silverpeas.
@@ -34,127 +34,36 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
  */
 public interface Clipboard {
 
-  /**
-   * Method declaration
-   *
-   * @param clipObject
-   * @throws ClipboardException
-   * @see
-   */
-  public void add(ClipboardSelection clipObject) throws ClipboardException;
+  void add(ClipboardSelection clipObject) throws ClipboardException;
 
-  /**
-   * Method declaration
-   *
-   * @return
-   */
-  public ClipboardSelection getObject();
+  ClipboardSelection getObject();
 
-  /**
-   * Method declaration
-   *
-   * @throws ClipboardException
-   */
-  public void PasteDone() throws ClipboardException;
+  void PasteDone() throws ClipboardException;
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @throws ClipboardException
-   */
-  public Collection<ClipboardSelection> getSelectedObjects() throws ClipboardException;
+  Collection<ClipboardSelection> getSelectedObjects() throws ClipboardException;
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @throws ClipboardException
-   */
-  public Collection<ClipboardSelection> getObjects() throws ClipboardException;
+  Collection<ClipboardSelection> getObjects() throws ClipboardException;
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @throws ClipboardException
-   * @see
-   */
-  public int size() throws ClipboardException;
+  int size() throws ClipboardException;
 
-  /**
-   * Method declaration
-   *
-   * @param index
-   * @return
-   * @throws ClipboardException
-   */
-  public ClipboardSelection getObject(int index) throws ClipboardException;
+  ClipboardSelection getObject(int index) throws ClipboardException;
 
-  /**
-   * Method declaration
-   *
-   * @param index
-   * @param setIt
-   * @throws ClipboardException
-   */
-  public void setSelected(int index, boolean setIt) throws ClipboardException;
+  void setSelected(int index, boolean setIt) throws ClipboardException;
 
-  /**
-   * Method declaration
-   *
-   * @param index
-   * @throws ClipboardException
-   */
-  public void removeObject(int index) throws ClipboardException;
+  void removeObject(int index) throws ClipboardException;
 
-  public void clear();
+  void clear();
 
-  /**
-   * Method declaration
-   *
-   * @throws ClipboardException
-   */
-  public void setMultiClipboard() throws ClipboardException;
+  void setMultiClipboard() throws ClipboardException;
 
-  /**
-   * Method declaration
-   *
-   * @throws ClipboardException
-   */
-  public void setSingleClipboard() throws ClipboardException;
+  void setSingleClipboard() throws ClipboardException;
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @throws ClipboardException
-   */
-  public int getCount() throws ClipboardException;
+  int getCount() throws ClipboardException;
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @throws ClipboardException
-   */
-  public String getMessageError() throws ClipboardException;
+  String getMessageError() throws ClipboardException;
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @throws ClipboardException
-   */
-  public Exception getExceptionError() throws ClipboardException;
+  Exception getExceptionError() throws ClipboardException;
 
-  /**
-   * Method declaration
-   *
-   * @param messageID
-   * @param e
-   * @throws ClipboardException
-   */
-  public void setMessageError(String messageID, Exception e) throws ClipboardException;
+  void setMessageError(String messageID, Exception e) throws ClipboardException;
 
 }

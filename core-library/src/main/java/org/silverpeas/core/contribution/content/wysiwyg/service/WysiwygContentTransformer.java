@@ -91,7 +91,7 @@ public class WysiwygContentTransformer {
 
   /**
    * Transforms all referenced content links in order to be handled in mail sending. A content
-   * can be for example an attachment.<br/>
+   * can be for example an attachment.<br>
    * The directive set by method {@link #modifyImageUrlAccordingToHtmlSizeDirective()} is applied.
    * @return the wysiwyg content transformed to be sent by mail.
    */

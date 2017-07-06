@@ -64,13 +64,6 @@ public class InvitationDao {
     return invitation;
   };
 
-  /**
-   * Create new invitation
-   * @param connection
-   * @param invitation
-   * @return int the id of invitation
-   * @throws SQLException
-   */
   int createInvitation(Connection connection, Invitation invitation) throws SQLException {
     int id = DBUtil.getNextId("sb_sn_invitation", "id");
     JdbcSqlQuery
@@ -84,13 +77,6 @@ public class InvitationDao {
     return id;
   }
 
-  /**
-   * Delete invitation return true when this invitation was deleting
-   * @param connection
-   * @param invitationId the invitation identifier
-   * @return boolean
-   * @throws SQLException
-   */
   public boolean deleteInvitation(Connection connection, int invitationId) throws SQLException {
     return JdbcSqlQuery.create(DELETE_INVITATION, invitationId).executeWith(connection) > 0;
   }
@@ -102,11 +88,11 @@ public class InvitationDao {
    * <li>Delete one invitation if only one invitation has been sent from sender to receiver</li>
    * <li>Delete two invitations if sender and receiver has sent an invitation</li>
    * </ul>
-   * @param connection
+   * @param connection connection to the database
    * @param invitationId the invitation identifier
    * @return true true when invitations from same sender identifier and receiver identifier are
    * deleted, false else if
-   * @throws SQLException
+   * @throws SQLException on SQL error
    */
   public boolean deleteSameInvitations(Connection connection, int invitationId) throws SQLException {
     return JdbcSqlQuery.create(DELETE_SAME_INVITATIONS, invitationId).executeWith(connection) > 0;
@@ -116,13 +102,6 @@ public class InvitationDao {
     return JdbcSqlQuery.create(DELETE_ALL_INVITATIONS, userId, userId).executeWith(connection) > 0;
   }
 
-  /**
-   * @param connection a Connection
-   * @param senderId the sender identifier
-   * @param receiverId the receiver identifier
-   * @return invitation between 2 users
-   * @throws SQLException
-   */
   public Invitation getInvitation(Connection connection, int senderId, int receiverId) throws
       SQLException {
     return JdbcSqlQuery
@@ -130,41 +109,15 @@ public class InvitationDao {
         .executeUniqueWith(connection, INVITATION_MAPPER);
   }
 
-  /**
-   * retrieve an invitation
-   * @param connection
-   * @param id
-   * @return Invitation
-   * @throws SQLException
-   * @return an invitation
-   */
-
   public Invitation getInvitation(Connection connection, int id) throws SQLException {
     return JdbcSqlQuery
         .create(SELECT_INVITATION_BY_ID, id)
         .executeUniqueWith(connection, INVITATION_MAPPER);
   }
 
-  /**
-   * return true if this invitation exist between 2 users
-   * @param connection
-   * @param senderId
-   * @param receiverId
-   * @return boolean
-   * @throws SQLException
-   */
-
   public boolean isExists(Connection connection, int senderId, int receiverId) throws SQLException {
     return getInvitation(connection, senderId, receiverId) != null;
   }
-
-  /**
-   * return All my invitations sented
-   * @param connection
-   * @param myId
-   * @return List<Invitation>
-   * @throws SQLException
-   */
 
   public List<Invitation> getAllMyInvitationsSent(Connection connection, int myId) throws
       SQLException {
@@ -173,13 +126,6 @@ public class InvitationDao {
         .executeWith(connection, INVITATION_MAPPER);
   }
 
-  /**
-   * return All my invitations received
-   * @param connection
-   * @param myId
-   * @return List<Invitation>
-   * @throws SQLException
-   */
   public List<Invitation> getAllMyInvitationsReceive(Connection connection, int myId) throws
       SQLException {
     return JdbcSqlQuery

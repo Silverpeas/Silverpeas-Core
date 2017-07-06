@@ -41,7 +41,7 @@ import java.util.Enumeration;
  * Therefore this class loader aims to manage the access to the resources in this particular
  * location; it acts as a bridge between the current hierarchy of class loaders and this particular
  * unmanaged location.
- * </p>
+ * <p>
  * By default, when a resource is asked, it looks for in the current hierarchy of class loaders
  * before to seek the resource into the resources directory in the Silverpeas home directory.
  * @author ehugonnet

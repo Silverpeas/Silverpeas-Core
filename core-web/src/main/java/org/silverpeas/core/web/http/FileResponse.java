@@ -141,7 +141,7 @@ public abstract class FileResponse {
   }
 
   /**
-   * Forces the file identifier.<br/>
+   * Forces the file identifier.<br>
    * If not forced, the absolute path of the file into Base64 is
    * computed.
    * @param fileId the file identifier.
@@ -153,8 +153,8 @@ public abstract class FileResponse {
   }
 
   /**
-   * Forces the mime type of the response.<br/>
-   * If not forced, the mime type is computed from the file itself.<br/>
+   * Forces the mime type of the response.<br>
+   * If not forced, the mime type is computed from the file itself.<br>
    * Even if a mime type has been forced, if the request contains into headers a valuated
    * {@code forceMimeType} parameter, the mime type from the request is taken into account.
    * @param mimeType the mime type to set.

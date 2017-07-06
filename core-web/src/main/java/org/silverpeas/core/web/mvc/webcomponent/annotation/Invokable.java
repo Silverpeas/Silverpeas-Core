@@ -36,7 +36,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeBefore} and {@link
  * org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeAfter} method annotations.
  * For now, an invokable method can not be a HTTP Method.
- * <p/>
+ * <p>
  * @author Yohann Chastagnier
  */
 @Inherited

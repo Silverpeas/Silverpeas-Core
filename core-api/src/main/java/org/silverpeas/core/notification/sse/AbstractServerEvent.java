@@ -39,7 +39,7 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 /**
  * It is an abstract implementation of a {@link ServerEvent}. It defines the common properties all
  * the concrete events should have. A concrete resource event can extend this class to inherit the
- * basic properties without to implement them by itself.<br/>
+ * basic properties without to implement them by itself.<br>
  * This abstraction handles the identifier of the event which is auto-generated. The start of
  * identifier counting is reset after each server start or restart
  * @author Yohann Chastagnier
@@ -52,7 +52,7 @@ public abstract class AbstractServerEvent implements ServerEvent {
   private BiFunction<String, User, String> dynamicData = null;
 
   /**
-   * Gets the Event Source URI on which the event is handled.<br/>
+   * Gets the Event Source URI on which the event is handled.<br>
    * If empty, then the event must be sent on all Event Sources.
    * @return an URI as string.
    */
@@ -99,10 +99,11 @@ public abstract class AbstractServerEvent implements ServerEvent {
   }
 
   /**
-   * Sets the specified data.<br/>
+   * Sets the specified data.<br>
    * Given data are ignored if {@link #withData(BiFunction)} has been called with non null
    * functional
    * interface.
+   * @param <T> a subtype of AbstractServerEvent
    * @param data the data the event must return to WEB client.
    * @return the instance itself.
    */
@@ -119,10 +120,11 @@ public abstract class AbstractServerEvent implements ServerEvent {
    * ServerEvent#send(HttpServletRequest, HttpServletResponse, String, User)} method. The functional
    * interface provides one
    * parameter: {@link User}, the user for which the server event will be sent. It produces the
-   * data to send.<br/>
+   * data to send.<br>
    * If a functional interface is given, data eventually set by {@link #withData(String)} are
    * ignored.
-   * @param dynamicData
+   * @param <T> a subtype of AbstractServerEvent
+   * @param dynamicData the data the vent must return to WEB client.
    * @return the instance itself.
    */
   @SuppressWarnings("unchecked")

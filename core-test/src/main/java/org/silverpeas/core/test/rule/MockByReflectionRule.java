@@ -37,7 +37,7 @@ import java.util.logging.Logger;
 import static java.text.MessageFormat.format;
 
 /**
- * This rule handles field injections. <br/>
+ * This rule handles field injections. <br>
  * The mechanism is very simple:
  * <ul>
  * <li>saving the previous value</li>

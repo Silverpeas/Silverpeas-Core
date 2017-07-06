@@ -79,7 +79,7 @@ public class SilverpeasJcrWebdavContext {
   }
 
   /**
-   * Initializing an instance from a computed webdavUrl.<br/>
+   * Initializing an instance from a computed webdavUrl.<br>
    * If no token is found from the given URL, no exception is thrown and {@link #getToken()} will
    * return an empty string.
    * @param webDavUrl the webdav url.

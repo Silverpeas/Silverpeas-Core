@@ -30,11 +30,11 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.EventListener;
 
 /**
- * This event listener is fired when a user has just been logged in.<br/>
+ * This event listener is fired when a user has just been logged in.<br>
  * Each implementation of this listener has to be registered by calling {@link
- * UserAuthenticationListenerRegistration#register(UserAuthenticationListener)}.<br/>
+ * UserAuthenticationListenerRegistration#register(UserAuthenticationListener)}.<br>
  * A tip to perform the registration is to implement {@link Initialization} interface. Indeed, each
- * class, that implements it, is called one time at server start.<br/>
+ * class, that implements it, is called one time at server start.<br>
  * (See QuickInfoUserAuthenticationListener for example)
  */
 public interface UserAuthenticationListener extends EventListener, Initialization {
@@ -51,7 +51,7 @@ public interface UserAuthenticationListener extends EventListener, Initializatio
 
   /**
    * This method is called just before redirecting the user to the home page, after a successful
-   * authentication.<br/>
+   * authentication.<br>
    * If it is necessary, the redirection can be overridden...
    * @param request the current user request.
    * @param user the current user.
@@ -63,7 +63,7 @@ public interface UserAuthenticationListener extends EventListener, Initializatio
 
   /**
    * This method is called just before redirecting the user to the home page, from the login
-   * access with an user session already opened.<br/>
+   * access with an user session already opened.<br>
    * If it is necessary, the redirection can be overridden...
    * @param request the current user request.
    * @param user the current user.

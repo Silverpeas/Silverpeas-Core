@@ -37,7 +37,7 @@ import static org.mockito.Mockito.when;
 
 /**
  * BE CAREFUL, this unit test verifies especially that a default width and a default height are
- * returned in any case.<br/>
+ * returned in any case.<br>
  * @author Yohann Chastagnier
  */
 public class ThumbnailSettingsTest {

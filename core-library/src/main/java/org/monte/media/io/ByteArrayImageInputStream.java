@@ -181,7 +181,7 @@ public class ByteArrayImageInputStream extends ImageInputStreamImpl2 {
 
   /**
    * Closing a <tt>ByteArrayInputStream</tt> has no effect. The methods in this class can be called
-   * after the stream has been closed without generating an <tt>IOException</tt>. <p>
+   * after the stream has been closed without generating an <tt>IOException</tt>.
    */
   @Override
   public void close() {

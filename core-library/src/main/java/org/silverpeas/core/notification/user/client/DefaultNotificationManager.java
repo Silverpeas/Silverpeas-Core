@@ -665,8 +665,8 @@ public class DefaultNotificationManager extends AbstractNotification
     // First Tests if the user is a guest
     // Then notify himself that he cant notify anyone
     if (UserAccessLevel.GUEST.equals(getUserAccessLevel(params.iFromUserId))) {
-      params.sMessage = m_Multilang.getString("guestNotAllowedBody1") + "<br/>"
-          + params.sTitle + "<br/><br/>"
+      params.sMessage = m_Multilang.getString("guestNotAllowedBody1") + "<br>"
+          + params.sTitle + "<br><br>"
           + m_Multilang.getString("guestNotAllowedBody2");
       params.sTitle = m_Multilang.getString("guestNotAllowedTitle");
       params.iMessagePriority = NotificationParameters.NORMAL;
@@ -1131,7 +1131,7 @@ public class DefaultNotificationManager extends AbstractNotification
       theExtraParams.put(SUBJECT, params.sTitle);
     } else if (params.iFromUserId < 0) {
       theMessage.append(m_Multilang.getString("subject")).append(" : ").append(params.sTitle)
-          .append("<br/><br/>");
+          .append("<br><br>");
     }
 
     String senderName;
@@ -1160,7 +1160,7 @@ public class DefaultNotificationManager extends AbstractNotification
       theExtraParams.put(FROM, senderName);
     } else {
       theMessage.append(m_Multilang.getString("from")).append(" : ").append(senderName).append(
-          "<br/><br/>");
+          "<br><br>");
     }
 
     // Set Url parameter
@@ -1249,7 +1249,7 @@ public class DefaultNotificationManager extends AbstractNotification
       theExtraParams.put(SUBJECT, params.sTitle);
     } else if (params.iFromUserId < 0) {
       theMessage.append(m_Multilang.getString("subject")).append(" : ").append(params.sTitle)
-          .append("<br/><br/>");
+          .append("<br><br>");
     }
 
     String senderName;
@@ -1360,7 +1360,7 @@ public class DefaultNotificationManager extends AbstractNotification
         theExtraParams.put(SUBJECT, params.sTitle);
       } else if (params.iFromUserId < 0) {
         theMessage.append(m_Multilang.getString("subject")).append(" : ").append(params.sTitle).
-            append("<br/><br/>");
+            append("<br><br>");
       }
 
       String senderName;
@@ -1389,7 +1389,7 @@ public class DefaultNotificationManager extends AbstractNotification
         theExtraParams.put(FROM, senderName);
       } else {
         theMessage.append(m_Multilang.getString("from")).append(" : ").append(senderName).append(
-            "<br/><br/>");
+            "<br><br>");
       }
 
       // Set Url parameter

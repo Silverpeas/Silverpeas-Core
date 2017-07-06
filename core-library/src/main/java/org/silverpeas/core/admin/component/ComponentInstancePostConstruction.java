@@ -59,7 +59,7 @@ public interface ComponentInstancePostConstruction {
   String NAME_SUFFIX = "InstancePostConstruction";
 
   /**
-   * Each workflow is an application but all of them uses the same post construction process.<br/>
+   * Each workflow is an application but all of them uses the same post construction process.<br>
    * So, when the name of a workflow component is detected, the post constructor implementation
    * retrieved will be the one named like this constant value.
    */

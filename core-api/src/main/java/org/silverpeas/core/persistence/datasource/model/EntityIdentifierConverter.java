@@ -46,6 +46,7 @@ public class EntityIdentifierConverter {
 
   /**
    * Converts the given String id into the right entity identifier.
+   * @param <T> the concrete type of the entity identifier.
    * @param idAsString the String representation of the identifier.
    * @return the entity identifier from its String representation.
    */
@@ -62,6 +63,7 @@ public class EntityIdentifierConverter {
 
   /**
    * Converts the given String ids into the right entity identifiers.
+   * @param <T> the concrete type of the entity identifier.
    * @param idsAsString one or more identifier as String value(s).
    * @return a collection of entity identifiers from their String representations.
    */
@@ -73,6 +75,7 @@ public class EntityIdentifierConverter {
 
   /**
    * Converts the given String ids into the right entity identifiers.
+   * @param <T> the concrete type of the entity identifier.
    * @param idsAsString a collection of identifiers as String values.
    * @return a collection of the entity identifiers from their String representations.
    */
@@ -90,6 +93,7 @@ public class EntityIdentifierConverter {
 
   /**
    * Gets the identifier class of the entity managed by the repository.
+   * @param <T> the concrete type of the entity identifier.
    * @return the class of the entity identifier.
    */
   @SuppressWarnings("unchecked")

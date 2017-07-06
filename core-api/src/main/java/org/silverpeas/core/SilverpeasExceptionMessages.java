@@ -81,9 +81,10 @@ public class SilverpeasExceptionMessages {
   /**
    * Computes a message about the failure to add a given resource with the specified
    * identifier.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught during the adding of a resource in
    * Silverpeas.
+   * </p>
    * @param resource the resource concerned by the failure; for example a user, a file, ...
    * @param id an identifier of the resource (a name, a unique identifier, ...)
    * @return an exception message.
@@ -95,9 +96,10 @@ public class SilverpeasExceptionMessages {
   /**
    * Computes a message about the failure to update a given resource with the specified
    * identifier.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught during the update of a resource in
    * Silverpeas.
+   * </p>
    * @param resource the resource concerned by the failure; for example a user, a file, ...
    * @param id an identifier of the resource (a name, a unique identifier, ...)
    * @return an exception message.
@@ -109,9 +111,10 @@ public class SilverpeasExceptionMessages {
   /**
    * Computes a message about the failure to delete a given resource with the specified
    * identifier.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught during the deletion of a resource in
    * Silverpeas.
+   * </p>
    * @param resource the resource concerned by the failure; for example a user, a file, ...
    * @param id an identifier of the resource (a name, a unique identifier, ...)
    * @return an exception message.
@@ -123,9 +126,10 @@ public class SilverpeasExceptionMessages {
   /**
    * Computes a message about the failure to move a given resource with the specified
    * identifier to the specified target with the specified identifier.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught during the move of a resource in
    * Silverpeas.
+   * </p>
    * @param resource the resource concerned by the failure; for example a user, a file, ...
    * @param id an identifier of the resource (a name, a unique identifier, ...)
    * @param target a resource into which the resource is moved (a bin, a folder, a space, ...)
@@ -139,9 +143,10 @@ public class SilverpeasExceptionMessages {
   /**
    * Computes a message about the failure to restore a given resource with the specified
    * identifier.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught during the restoration of a resource in
    * Silverpeas.
+   * </p>
    * @param resource the resource concerned by the failure; for example a user, a file, ...
    * @param id an identifier of the resource (a name, a unique identifier, ...)
    * @return an exception message.
@@ -153,9 +158,10 @@ public class SilverpeasExceptionMessages {
   /**
    * Computes a message about the failure to get a given resource with the specified
    * identifier.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught during the getting of a resource in
    * Silverpeas.
+   * </p>
    * @param resource the resource concerned by the failure; for example a user, a file, ...
    * @param id an identifier of the resource (a name, a unique identifier, ...)
    * @return an exception message.
@@ -166,9 +172,10 @@ public class SilverpeasExceptionMessages {
 
   /**
    * Computes a message about the failure to open a connection against a given service.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught while opening a connection to the
    * given service.
+   * </p>
    * @param service the service concerned by the connection.
    * @return an exception message.
    */
@@ -178,9 +185,10 @@ public class SilverpeasExceptionMessages {
 
   /**
    * Computes a message about the failure to close a connection with a given service.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught while closing a connection with the
    * given service.
+   * </p>
    * @param service the service concerned by the connection.
    * @return an exception message.
    */
@@ -190,9 +198,10 @@ public class SilverpeasExceptionMessages {
 
   /**
    * Computes a message about the failure of a connection with a given service.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught while connecting or accessing an
    * external service.
+   * </p>
    * @param service the service concerned by the connection.
    * @return an exception message.
    */
@@ -203,9 +212,10 @@ public class SilverpeasExceptionMessages {
   /**
    * Computes a message about the failure to validate the correctness of a given resource with the
    * specified identifier.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught during the validation of the correctness
    * of a resource in Silverpeas.
+   * </p>
    * @param resource the resource concerned by the failure; for example a user, a file, ...
    * @param id an identifier of the resource (a name, a unique identifier, ...)
    * @return an exception message.
@@ -217,9 +227,10 @@ public class SilverpeasExceptionMessages {
   /**
    * Computes a message about the failure to index the given resource with the
    * specified identifier.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught during the indexation of a resource in
    * Silverpeas.
+   * </p>
    * @param resource the resource concerned by the failure; for example a user, a file, ...
    * @param id an identifier of the resource (a name, a unique identifier, ...)
    * @return an exception message.
@@ -231,9 +242,10 @@ public class SilverpeasExceptionMessages {
   /**
    * Computes a message about the failure to unindex the given resource with the
    * specified identifier.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught during the deletion on the index
    * of a resource in Silverpeas.
+   * </p>
    * @param resource the resource concerned by the failure; for example a user, a file, ...
    * @param id an identifier of the resource (a name, a unique identifier, ...)
    * @return an exception message.
@@ -245,9 +257,10 @@ public class SilverpeasExceptionMessages {
   /**
    * Computes a message about the failure to render the given resource with the
    * specified identifier.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught during the rendering of resource in
    * Silverpeas.
+   * </p>
    * @param resource the resource concerned by the failure; for example a user, a file, ...
    * @param id an identifier of the resource (a name, a unique identifier, ...)
    * @return an exception message.
@@ -259,9 +272,10 @@ public class SilverpeasExceptionMessages {
   /**
    * Computes a message about the failure to open the given resource with the
    * specified identifier.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught during the opening of file in
    * Silverpeas.
+   * </p>
    * @param resource the resource concerned by the failure; for example a user, a file, ...
    * @return an exception message.
    */
@@ -272,9 +286,10 @@ public class SilverpeasExceptionMessages {
   /**
    * Computes a message about the failure to close the given resource with the
    * specified identifier.
-   * </p>
+   * <p>
    * This message is for when an exception has been caught during the closing of file in
    * Silverpeas.
+   * </p>
    * @param resource the resource concerned by the failure; for example a user, a file, ...
    * @return an exception message.
    */
@@ -305,10 +320,11 @@ public class SilverpeasExceptionMessages {
 
   /**
    * Computes a message about an unknown resource with the specified identifier.
-   * </p>
+   * <p>
    * Usually, this message is passed into an exception when the resource required to perform a
    * treatment doesn't exist or isn't found in a peculiar context. It's not necessary resulted from
    * an exception (in that case, we prefer {@code failureOnGetting} message).
+   * </p>
    * @param resource the resource concerned by the issue; for example a user, a file, ...
    * @param id an identifier of the resource (a name, a unique identifier, ...)
    * @return an exception message.

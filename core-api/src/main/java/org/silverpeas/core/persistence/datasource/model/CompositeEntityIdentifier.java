@@ -40,6 +40,7 @@ public interface CompositeEntityIdentifier extends ExternalEntityIdentifier {
   /**
    * Sets the value of this identifier from the specified values that will be part of this
    * composite identifier.
+   * @param values the identifier values from which this composite identifier will be built.
    * @return this entity identifier.
    */
   CompositeEntityIdentifier fromString(String... values);

@@ -78,7 +78,7 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
   /**
    * Create the document identified by the requested URI and from the content and some additional
    * parameters passed within the request.
-   * <p/>
+   * <p>
    * A {@link SimpleDocumentUploadData} is extracted from request parameters.
    * @return an HTTP response embodied an entity in a format expected by the client (that is
    * identified by the <code>xRequestedWith</code> parameter).

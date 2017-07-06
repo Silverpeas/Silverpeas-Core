@@ -583,9 +583,9 @@ public class AgendaHtmlView {
                   result.append(schedule.getStartHour())
                       .append(" - ")
                       .append(schedule.getEndHour())
-                      .append("<br/>");
+                      .append("<br>");
                 } else {
-                  result.append(schedule.getStartHour()).append("<br/>");
+                  result.append(schedule.getStartHour()).append("<br>");
                 }
               } else {
                 result.append("      <a href=\"javascript:onClick=viewJournal('")
@@ -596,9 +596,9 @@ public class AgendaHtmlView {
                   result.append(schedule.getStartHour())
                       .append(" - ")
                       .append(schedule.getEndHour())
-                      .append("<br/>");
+                      .append("<br>");
                 } else {
-                  result.append(schedule.getStartHour()).append("<br/>");
+                  result.append(schedule.getStartHour()).append("<br>");
                 }
                 result.append(WebEncodeHelper.javaStringToHtmlString(schedule.getName()))
                     .append("</a>");
@@ -612,9 +612,9 @@ public class AgendaHtmlView {
                 result.append(schedule.getStartHour())
                     .append(" - ")
                     .append(schedule.getEndHour())
-                    .append("<br/>");
+                    .append("<br>");
               } else {
-                result.append(schedule.getStartHour()).append("<br/>");
+                result.append(schedule.getStartHour()).append("<br>");
               }
               result.append(WebEncodeHelper.javaStringToHtmlString(schedule.getName())).append("</a>");
             }
@@ -728,7 +728,7 @@ public class AgendaHtmlView {
     result.append("  <tr bgcolor=\"#ffffff\">\n");
     result
         .append(
-            "    <td rowspan=\"2\" align=\"right\" valign=\"bottom\"> <img src=\"icons/1px.gif\" alt=\"\"/><br/>");
+            "    <td rowspan=\"2\" align=\"right\" valign=\"bottom\"> <img src=\"icons/1px.gif\" alt=\"\"/><br>");
     result.append("</td>\n");
     Calendar day = Calendar.getInstance();
 
@@ -853,7 +853,7 @@ public class AgendaHtmlView {
               }
               if (isOtherAgenda && schedule.getClassification().isPrivate()) {
                 if (starting.size() == 1) {
-                  tmpResult.append(schedule.getStartHour()).append("<br/>");
+                  tmpResult.append(schedule.getStartHour()).append("<br>");
                 }
                 color = "privateEvent";
               } else {
@@ -864,7 +864,7 @@ public class AgendaHtmlView {
                     schedule.getId()).append("')\"");
                 tmpResult.append(getInfoBulle(schedule));
                 if (starting.size() == 1) {
-                  tmpResult.append(schedule.getStartHour()).append("<br/>");
+                  tmpResult.append(schedule.getStartHour()).append("<br>");
                 }
                 tmpResult.append(WebEncodeHelper.javaStringToHtmlString(schedule.getName())).append(
                     "</a>");
@@ -894,13 +894,13 @@ public class AgendaHtmlView {
                 }
 
                 if (k + 1 < group.getContent().size()) {
-                  tmpResult.append("<br/>");
+                  tmpResult.append("<br>");
                 }
               }
             }
 
             if (m + 1 < starting.size()) {
-              tmpResult.append("<br/>");
+              tmpResult.append("<br>");
             }
           }
           maxRowSpan = ((maxRowSpan + 3) >> 2);
@@ -924,7 +924,7 @@ public class AgendaHtmlView {
     result.append("  <tr bgcolor=\"#ffffff\">\n");
     result
         .append(
-            "    <td rowspan=\"2\" align=\"right\" valign=\"bottom\"> <img src=\"icons/1px.gif\" alt=\"\"/><br/>");
+            "    <td rowspan=\"2\" align=\"right\" valign=\"bottom\"> <img src=\"icons/1px.gif\" alt=\"\"/><br>");
     result.append("</td>\n");
 
     try {

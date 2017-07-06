@@ -49,7 +49,7 @@ import java.util.Map;
 /**
  * A DateFieldDisplayer is an object which can display a TextField in HTML the content of a
  * TextField to a end user and can retrieve via HTTP any updated value.
- * <p/>
+ * <p>
  * @see Field
  * @see FieldTemplate
  * @see Form

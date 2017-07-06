@@ -38,7 +38,7 @@ import java.util.*;
  * <p> References:<br> JPEG File Interchange Format Version 1.02<br> <a
  * href="http://www.jpeg.org/public/jfif.pdf">http://www.jpeg.org/public/jfif.pdf</a> <p>
  * Pennebaker, W., Mitchell, J. (1993).<br> JPEG Still Image Data Compression Standard.<br> Chapmann
- * & Hall, New York.<br> ISBN 0-442-01272-1<br>
+ * &amp; Hall, New York.<br> ISBN 0-442-01272-1<br>
  *
  *
  * @author Werner Randelshofer, Hausmatt 10, CH-6405 Immensee
@@ -212,7 +212,7 @@ public class JFIFInputStream extends FilterInputStream {
    * Gets the current segment from the input stream.
    *
    * @return The current segment. Returns null, if we encountered the end of the stream.
-   * @throws java.io.IOException
+   * @throws java.io.IOException on error while accessing the image
    */
   public Segment getSegment() throws IOException {
     return segment;
@@ -222,7 +222,7 @@ public class JFIFInputStream extends FilterInputStream {
    * Gets the next segment from the input stream.
    *
    * @return The next segment. Returns null, if we encountered the end of the stream.
-   * @throws java.io.IOException
+   * @throws java.io.IOException on error while accessing the image
    */
   public Segment getNextSegment() throws IOException {
     // If we are inside of a marker segment, skip the
@@ -402,6 +402,8 @@ public class JFIFInputStream extends FilterInputStream {
 
   /**
    * Fully skips the specified number of bytes.
+   * @param n the number of bytes to skip
+   * @throws IOException if an I/O error occurs.
    */
   public final void skipFully(long n) throws IOException {
     long total = 0;

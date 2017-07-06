@@ -68,8 +68,9 @@ public class CollectionUtil {
   /**
    * Splits a collection into several collections. (Particularly useful for limitations of database
    * around the "in" clause)
+   * @param <T> the concrete type of the items in the list.
    * @param collection the collection to split
-   * @return the clices of the specified collection
+   * @return the slices of the specified collection
    */
   @SuppressWarnings("unchecked")
   public static <T> List<List<T>> splitList(final List<T> collection) {
@@ -79,8 +80,9 @@ public class CollectionUtil {
   /**
    * Splits a collection into several collections. (Particularly useful for limitations of database
    * around the "in" clause)
+   * @param <T> the concrete type of the items in the collection.
    * @param collection the collection to split
-   * @return the clices of the specified collection
+   * @return the slices of the specified collection
    */
   public static <T> Collection<Collection<T>> split(final Collection<T> collection) {
     return split(collection, SPLIT_BATCH_SIZE);
@@ -89,9 +91,10 @@ public class CollectionUtil {
   /**
    * Splits a collection into several collections. (Particularly useful for limitations of database
    * around the "in" clause)
+   * @param <T> the concrete type of the items in the collection.
    * @param collection the collection to split
    * @param collectionSizeMax the maximum elements in slice
-   * @return the clices of the specified collection
+   * @return the slices of the specified collection
    */
   @SuppressWarnings("unchecked")
   public static <T> Collection<Collection<T>> split(final Collection<T> collection,
@@ -154,6 +157,10 @@ public class CollectionUtil {
 
   /**
    * Null elements are not taking into account.
+   * @param <T> the concrete type of the items.
+   * @param c collection in which the items will be added
+   * @param elements the items to add
+   * @return true of the items are added, false otherwise.
    * @see Collections#addAll(java.util.Collection, Object[])
    */
   @SafeVarargs
@@ -168,11 +175,11 @@ public class CollectionUtil {
   }
 
   /**
-   * Makes an union between both of the given lists.<br/>
+   * Makes an union between both of the given lists.<br>
    * The result contains unique values.
    * @param list1 the first list.
    * @param list2 the second list.
-   * @param <T>
+   * @param <T> the type of the items in the list.
    * @return the union between the two lists.
    */
   public static <T> List<T> union(List<T> list1, List<T> list2) {
@@ -183,11 +190,11 @@ public class CollectionUtil {
   }
 
   /**
-   * Makes an intersection betwwen both of the given lists.<br/>
+   * Makes an intersection betwwen both of the given lists.<br>
    * The result contains unique values.
    * @param list1 the first list.
    * @param list2 the second list.
-   * @param <T>
+   * @param <T> the type of the items in the list
    * @return the intersection between the two lists.
    */
   public static <T> List<T> intersection(List<T> list1, List<T> list2) {

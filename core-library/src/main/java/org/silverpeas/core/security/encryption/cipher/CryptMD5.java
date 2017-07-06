@@ -38,11 +38,11 @@ import org.apache.commons.io.IOUtils;
 
 /**
  * The MD5 algorithm (Message Digest 5).
- * <p/>
+ * <p>
  * It is a one-way hashing function that compute a 128-bit digest of a message (generally a file).
  * It is not for encrypting password but for generating a digest of a content in order to sign it
  * and to ensure its integrity.
- * <p/>
+ * <p>
  * A first flaw (possibility to create collisions at the demand) was discovered in 1996. In
  * 2004, a chinese team broke it by discovering full collisions. Since, it was replaced first by
  * the SHA-1 algorithm and now the SHA-2 algorithms are used (SHA-256, SHA-512).

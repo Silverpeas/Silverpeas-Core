@@ -35,44 +35,45 @@ public interface QuotaService<T extends QuotaKey> {
 
   /**
    * Gets the current count from a given quota key
-   * @param key
-   * @return
+   * @param key the key
+   * @return the current count
+   * @throws QuotaException on error
    */
   long getCurrentCount(T key) throws QuotaException;
 
   /**
    * Initializes the quota of the resource for the given quota key.
-   * @param key
-   * @param maxCount
-   * @return
-   * @throws QuotaException
+   * @param key the key
+   * @param maxCount the maximum count
+   * @return the quota
+   * @throws QuotaException on error
    */
   Quota initialize(T key, long maxCount) throws QuotaException;
 
   /**
    * Initializes the quota of the resource for the given quota key.
-   * @param key
-   * @param minCount
-   * @param maxCount
-   * @return
-   * @throws QuotaException
+   * @param key the key
+   * @param minCount the minimum count
+   * @param maxCount the maximum count
+   * @return the quota
+   * @throws QuotaException on error
    */
   Quota initialize(T key, long minCount, long maxCount) throws QuotaException;
 
   /**
    * Initializes the quota of the resource for the given quota key and from an existing quota.
-   * @param key
-   * @param quota
-   * @return
-   * @throws QuotaException
+   * @param key the key
+   * @param quota a quota
+   * @return the quota
+   * @throws QuotaException on error
    */
   Quota initialize(T key, Quota quota) throws QuotaException;
 
   /**
    * Gets the quota of the resource from a given quota key.
    * A save operation is done if the current count has changed.
-   * @param key
-   * @return
+   * @param key the key
+   * @return the quota mapped with the key
    */
   Quota get(T key) throws QuotaException;
 
@@ -80,9 +81,9 @@ public interface QuotaService<T extends QuotaKey> {
    * Verifies if the quota is full or not enough from a given quota key.
    * If full then a quota full exception is throwed.
    * If not enough then a quota not enough exception is throwed.
-   * @param key
+   * @param key the key
    * @return the quota used by the verify treatment
-   * @throws QuotaException
+   * @throws QuotaException on error
    */
   Quota verify(T key) throws QuotaException;
 
@@ -91,17 +92,16 @@ public interface QuotaService<T extends QuotaKey> {
    * offset.
    * If full then a quota full exception is throwed.
    * If not enough then a quota not enough exception is throwed.
-   * @param key
-   * @param countingOffset
+   * @param key the key
+   * @param countingOffset a counting offiset
    * @return the quota used by the verify treatment
-   * @throws QuotaException
+   * @throws QuotaException on error
    */
   Quota verify(T key, AbstractQuotaCountingOffset countingOffset) throws QuotaException;
 
   /**
    * Removes quietly the quota of the resource from a given quota key.
-   * @param key
-   * @return
+   * @param key the key
    */
   void remove(T key);
 }

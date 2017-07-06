@@ -32,7 +32,7 @@ import java.io.Serializable;
  * An asynchronous notifier of resource events based on JMS. It is dedicated to be used in a
  * notification implying external or remote software components. It shouldn't be used to notify
  * Silverpeas inner components.
- * </p>
+ * <p>
  * The asynchronous notifiers should extend this class; they have just to implement the
  * {@code createResourceEventFrom} and the {@code getDestination} methods.
  * The notification by JMS is performed directly by this abstract class.

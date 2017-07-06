@@ -23,19 +23,18 @@
  */
 package org.silverpeas.core.notification.user.builder;
 
-import java.util.HashMap;
-import java.util.Map;
-
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
-import org.silverpeas.core.util.Link;
-import org.apache.commons.lang3.StringUtils;
-
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.Link;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author Yohann Chastagnier
@@ -90,7 +89,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
 
   /**
    * Gets the fileName of StringTemplate
-   * @return
+   * @return the StringTemplate filename
    */
   protected String getFileName() {
     // getContent() returns the fileName
@@ -141,10 +140,6 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     // Nothing to do
   }
 
-  /**
-   * Creates the template bases
-   * @return
-   */
   protected SilverpeasTemplate createTemplate() {
     SilverpeasTemplate template;
     if (OrganizationControllerProvider.getOrganisationController()
@@ -158,20 +153,10 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     return template;
   }
 
-  /**
-   * Performing notification data from a given language
-   * @param resource
-   */
   protected void perform(final T resource) {
     // Default : nothing to do
   }
 
-  /**
-   * Performing notification data from a given language
-   * @param language
-   * @param resource
-   * @param template
-   */
   protected abstract void performTemplateData(String language, T resource,
       SilverpeasTemplate template);
 
@@ -182,23 +167,22 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    * ResourceLocation is
    * empty , it will be filled by the NotificationManager with the given componentInstanceId of
    * NotificationMetaData
-   * @param language
-   * @param resource
-   * @param notificationResourceData
-   * @return
+   * @param language the language in ISO-639-2
+   * @param resource the resource concerned by the notification
+   * @param notificationResourceData data about the notification
    */
   protected abstract void performNotificationResource(String language, T resource,
       NotificationResourceData notificationResourceData);
 
   /**
    * Gets the string template path
-   * @return
+   * @return the StringTemplate file path
    */
   protected abstract String getTemplatePath();
 
   /**
    * Gets the string bundle key for contribution access link
-   * @return
+   * @return the string bundle key.
    */
   protected String getContributionAccessLinkLabelBundleKey() {
     return null;

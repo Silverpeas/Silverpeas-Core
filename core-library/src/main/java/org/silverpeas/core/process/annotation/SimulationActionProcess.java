@@ -38,7 +38,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Annotation to specify a service method that performs an action requesting simulation checks to
  * execute.
- * <p/>
+ * <p>
  * This annotation is always used with the method annotation {@link Action} and
  * @author Yohann Chastagnier
  */

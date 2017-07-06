@@ -33,9 +33,9 @@ import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlExecutorProvider.g
 
 /**
  * This class handles list of {@link JdbcSqlQuery} instance and provide a method execute to
- * perform each one.<br/>
+ * perform each one.<br>
  * As there is no sense that the collection handles other query than those of modification,
- * this collection is oriented to SQL query modifications.<br/>
+ * this collection is oriented to SQL query modifications.<br>
  * The queries are executed into processes (transactional or not) without
  * handling the connection to the database.
  * @author Yohann Chastagnier
@@ -54,6 +54,7 @@ public class JdbcSqlQueries extends ArrayList<JdbcSqlQuery> {
 
   /**
    * Executes all the queries contained into the list.
+   * @return the number of entities that were inserted, updated or deleted by the queries.
    * @throws SQLException on SQL error
    */
   public long execute() throws SQLException {
@@ -62,6 +63,8 @@ public class JdbcSqlQueries extends ArrayList<JdbcSqlQuery> {
 
   /**
    * Executes all the queries contained into the list.
+   * @param connection a connection to a database.
+   * @return the number of entities that were inserted, updated or deleted by the queries.
    * @throws SQLException on SQL error
    */
   public long executeWith(Connection connection) throws SQLException {

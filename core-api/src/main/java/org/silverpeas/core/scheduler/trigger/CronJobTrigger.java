@@ -35,6 +35,7 @@ import java.text.ParseException;
  * <code>MINUTES HOURS DAY_OF_MONTH MONTH DAY_OF_WEEK</code> with
  * </p>
  * <table cellspacing="8">
+ * <caption>Field definition</caption>
  * <tr>
  * <th align="left">Field Name</th>
  * <th align="left">Allowed Values</th>

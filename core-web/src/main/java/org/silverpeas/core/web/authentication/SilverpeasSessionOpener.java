@@ -55,7 +55,7 @@ import javax.servlet.http.HttpSession;
 
 /**
  * Service used to open an HTTP session in the Silverpeas platform.
- * <p/>
+ * <p>
  * It asks for a session opening to the session manager and then it creates all the required session
  * resources for Silverpeas and stores them into the user session.
  *
@@ -71,14 +71,14 @@ public class SilverpeasSessionOpener {
 
   /**
    * Opens a session in Silverpeas for the authenticated user behinds the specified HTTP request.
-   * <p/>
+   * <p>
    * In order a session to be opened in Silverpeas, the user has to be authenticated. The
    * authentication of the user is represented by an authentication key that is unique for each user
    * so that a user can be also identified by its key.
-   * <p/>
+   * <p>
    * With its authentication key and some attributes from the request,a session in Silverpeas can be
    * opened and set for the user.
-   * <p/>
+   * <p>
    * In the case a session was already opened for the user with the same web browser, the current
    * session is then taken into account and the user access information is updated. In this case, no
    * new session is opened and the previous one isn't invalidated. If this behavior isn't what you

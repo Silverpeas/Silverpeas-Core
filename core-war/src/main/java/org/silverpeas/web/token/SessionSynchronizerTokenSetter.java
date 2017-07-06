@@ -39,10 +39,10 @@ import javax.servlet.http.HttpSessionListener;
  * container so that it can be used with some credentials management function (password reseting,
  * new registration, ...) whereas the user isn't authentified; in this last case, the session token
  * is used as an anti-fuzzing token.
- * <p/>
+ * <p>
  * The aim of the session token is to protect the current user session from attempt of intrusively
  * use of it by anyone other that the user himself.
- * <p/>
+ * <p>
  * Because the web pages in Silverpeas has a deep use of HTML frames and of page relocation/reload,
  * in order the requests sent by these elements can be correctly taken in charge in the token
  * validation process, a cookie is created and valued with the session token.

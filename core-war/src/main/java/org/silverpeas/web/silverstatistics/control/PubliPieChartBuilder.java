@@ -38,8 +38,8 @@ import java.util.Map;
 import java.util.Vector;
 
 /**
- * <p/>
- * <p/>
+ * <p>
+ * <p>
  * @author CBONIN
  */
 public class PubliPieChartBuilder extends AbstractPieChartBuilder {

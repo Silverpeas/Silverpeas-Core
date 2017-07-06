@@ -58,7 +58,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * Fetch the current instance row from a resultSet.
    * @param rs result set
    * @return the current instance row from a resultSet.
-   * @throws SQLException
+   * @throws SQLException on error
    */
   protected ComponentInstanceRow fetchComponentInstance(ResultSet rs) throws SQLException {
     ComponentInstanceRow i = new ComponentInstanceRow();
@@ -105,7 +105,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * Returns the instance with the given id.
    * @param id the unique identifier of the component instance
    * @return the instance with the given id.
-   * @throws SQLException
+   * @throws SQLException on error
    */
   public ComponentInstanceRow getComponentInstance(int id) throws SQLException {
     return getUniqueRow(SELECT_INSTANCE_BY_ID, id);
@@ -115,7 +115,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * Returns the ComponentInstance of a given user role.
    * @param userRoleId id of user role
    * @return the ComponentInstance of a given user role.
-   * @throws SQLException
+   * @throws SQLException on error
    */
   public ComponentInstanceRow getComponentInstanceOfUserRole(int userRoleId)
       throws SQLException {
@@ -131,7 +131,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * Returns all the instances in a given space
    * @param spaceId the space id
    * @return all the instances in a given space
-   * @throws SQLException
+   * @throws SQLException on error
    */
   public ComponentInstanceRow[] getAllComponentInstancesInSpace(int spaceId)
       throws SQLException {
@@ -147,7 +147,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * Returns all the instance ids in a given space
    * @param spaceId the space id
    * @return all the instance ids in a given space
-   * @throws SQLException
+   * @throws SQLException on error
    */
   public String[] getAllComponentInstanceIdsInSpace(int spaceId) throws SQLException {
     List<String> ids = getIds(SELECT_ALL_SPACE_INSTANCE_IDS, spaceId);
@@ -161,7 +161,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   /**
    * Returns all components which has been removed but not definitely deleted
    * @return all components which has been removed but not definitely deleted
-   * @throws SQLException
+   * @throws SQLException on error
    */
   public ComponentInstanceRow[] getRemovedComponents() throws SQLException {
     List<ComponentInstanceRow> rows = getRows(SELECT_REMOVED_COMPONENTS);
@@ -176,7 +176,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * Returns the ComponentInstance whose fields match those of the given sample instance fields.
    * @param sampleInstance a row with the fields of the component instance
    * @return the ComponentInstance whose fields match those of the given sample instance fields.
-   * @throws SQLException
+   * @throws SQLException on error
    */
   public ComponentInstanceRow[] getAllMatchingComponentInstances(
       ComponentInstanceRow sampleInstance) throws SQLException {
@@ -190,7 +190,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   /**
    * Inserts in the database a new instance row.
    * @param instance a row with the fields of a component instance
-   * @throws SQLException
+   * @throws SQLException on error
    */
   public void createComponentInstance(ComponentInstanceRow instance)
       throws SQLException {
@@ -282,7 +282,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * Check if a named component already exists in given space
    * @param spaceId the space id
    * @param name the name of a component
-   * @throws SQLException
+   * @throws SQLException on error
    */
   public boolean isComponentIntoBasket(int spaceId, String name) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
@@ -304,7 +304,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
    * @param id the component id
    * @param tempLabel the temporary label
    * @param userId the user id that deletes the space
-   * @throws AdminPersistenceException
+   * @throws AdminPersistenceException on error
    */
   public void sendComponentToBasket(int id, String tempLabel, String userId)
       throws SQLException {
@@ -326,7 +326,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   /**
    * Remove the space from the basket Space will be available again
    * @param id the component id
-   * @throws SQLException
+   * @throws SQLException on error
    */
   public void restoreComponentFromBasket(int id) throws SQLException {
     try (Connection connection = DBUtil.openConnection();
@@ -386,7 +386,7 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
   /**
    * Delete a component instance and all his user role sets.
    * @param id the component instance identifier
-   * @throws SQLException
+   * @throws SQLException on error
    */
   public void removeComponentInstance(int id) throws SQLException {
     ComponentInstanceRow instance = getComponentInstance(id);
@@ -404,9 +404,6 @@ public class ComponentInstanceTable extends Table<ComponentInstanceRow> {
     updateRelation(DELETE_INSTANCE, id);
   }
 
-  /**
-   * Fetch the current space row from a resultSet.
-   */
   @Override
   protected ComponentInstanceRow fetchRow(ResultSet rs) throws SQLException {
     return fetchComponentInstance(rs);

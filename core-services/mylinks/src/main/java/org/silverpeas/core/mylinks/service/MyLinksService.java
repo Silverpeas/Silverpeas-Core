@@ -36,7 +36,7 @@ public interface MyLinksService {
   List<LinkDetail> getAllLinks(String userId);
 
   /**
-   * Gets all the links associated to the user represented by the given id.<br/>
+   * Gets all the links associated to the user represented by the given id.<br>
    * The result list is sorted by {@link LinkDetailComparator}.
    * @param userId a user identifier.
    * @return a sorted list of links, empty if no link found.

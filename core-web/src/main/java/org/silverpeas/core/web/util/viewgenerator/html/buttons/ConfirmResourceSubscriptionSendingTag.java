@@ -35,7 +35,7 @@ import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 
 /**
- * This TAG can be called into a {@link ButtonTag}.<br/>
+ * This TAG can be called into a {@link ButtonTag}.<br>
  * It permits to display a popup in order to ask to the user to confirm the subscription
  * notification sending linked to its modifications.
  */

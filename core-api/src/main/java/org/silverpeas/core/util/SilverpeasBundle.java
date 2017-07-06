@@ -68,20 +68,18 @@ public interface SilverpeasBundle {
    * objects in the list. The objects in the list are identified by their index in the list (from
    * 1 to n). The key used to find the asked value(s) is composed first by the list identifier,
    * an underscore separator, then by the index of the object in the list, a dot separator, and
-   * finally ends with the object's property name.<br/>
+   * finally ends with the object's property name.<br>
    * For example :
-   * <code>
    * <ul>
-   * <li>User_1.Name=firstName</li>
-   * <li>User_2.Name=lastName</li>
+   * <li><code>User_1.Name=firstName</code></li>
+   * <li><code>User_2.Name=lastName</code></li>
    * <li>...</li>
    * </ul>
-   * </code>
    * If the computed key isn't defined in the bundle, then no {@link MissingResourceException}
    * exception is thrown (for compatibility reason with Silverpeas versions lesser than 6).
    * @param list the identifier of the list in the bundle.
    * @param property the object's property for which the value will be fetch.
-   * iterated up to find an object whose the property is set. If max is >= 1 then the
+   * iterated up to find an object whose the property is set. If max is &gt;= 1 then the
    * specified property of the first max objects are read (if the property isn't set for an object,
    * it is set to an empty string).
    * @return an array of string with several values. If the property of an object to read exists but
@@ -98,25 +96,23 @@ public interface SilverpeasBundle {
    * objects in the list. The objects in the list are identified by their index in the list (from
    * 1 to n). The key used to find the asked value(s) is composed first by the list identifier,
    * an underscore separator, then by the index of the object in the list, a dot separator, and
-   * finally ends with the object's property name.<br/>
+   * finally ends with the object's property name.<br>
    * For example :
-   * <code>
    *   <ul>
-   *   <li>User_1.Name=firstName</li>
-   *   <li>User_2.Name=lastName</li>
+   *   <li><code>User_1.Name=firstName</code></li>
+   *   <li><code>User_2.Name=lastName</code></li>
    *   <li>...</li>
    *   </ul>
-   * </code>
    * If the computed key isn't defined in the bundle, then no {@link MissingResourceException}
    * exception is thrown (for compatibility reason with Silverpeas versions lesser than 6).
    * @param list the identifier of the list in the bundle.
    * @param property the object's property for which the value will be fetch.
    * @param max the maximum number of objects to read from 1 to n. If max is -1 then the list is
-   * iterated up to find an object whose the property is set. If max is >= 1 then the
+   * iterated up to find an object whose the property is set. If max is &gt;= 1 then the
    * specified property of the first max objects are read (if the property isn't set for an object,
    * it is set to an empty string).
    * @return an array of string with one property value (if max is 1) or with several values (if
-   * max = -1 or > 1). If the property of an object to read exists but isn't set, then an empty
+   * max = -1 or &gt; 1). If the property of an object to read exists but isn't set, then an empty
    * string is set in the array.
    * @throws MissingResourceException if the bundle doesn't exist.
    */

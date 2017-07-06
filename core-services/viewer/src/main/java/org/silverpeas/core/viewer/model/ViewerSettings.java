@@ -70,7 +70,7 @@ public class ViewerSettings {
   }
 
   /**
-   * Indicates if the split strategy is enabled.<br/>
+   * Indicates if the split strategy is enabled.<br>
    * Even if it is disabled, in some cases, the strategy is still used (when the default strategy
    * does not work for example).
    * @return true if enabled, false otherwise.
@@ -81,7 +81,7 @@ public class ViewerSettings {
   }
 
   /**
-   * Indicates if the silent conversion is enabled.<br/>
+   * Indicates if the silent conversion is enabled.<br>
    * The cache must be enabled.
    * @return true if enabled and if {@link #isCacheEnabled()} returns true, false otherwise.
    */
@@ -91,7 +91,7 @@ public class ViewerSettings {
 
   /**
    * Indicates if the cached files written with time to live method. Each time a viewer is
-   * accessing cached data, the time to live is reset.<br/>
+   * accessing cached data, the time to live is reset.<br>
    * If time to live is not enabled, then the file written into the cache are deleted only
    * according to the Silverpeas cache rules.
    * @return true if time to live, false otherwise.

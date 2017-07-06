@@ -26,10 +26,11 @@ package org.silverpeas.core;
 /**
  * A runtime exception thrown explicitly by a treatment in Silverpeas to signal a failure in its
  * execution.
- * </p>
+ * <p>
  * All the <em>unchecked exceptions</em> that are explicitly raised by a treatment in Silverpeas
  * should extend this class. An instance of this class can be directly used to throw an anonymous
  * exception in Silverpeas with, as a detailed message, the reason of the exception.
+ * </p>
  * @author mmoquillon
  */
 public class SilverpeasRuntimeException extends RuntimeException {

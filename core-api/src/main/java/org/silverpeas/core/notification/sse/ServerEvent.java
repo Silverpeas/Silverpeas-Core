@@ -34,7 +34,7 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * An event implying data the server has to push to client without the client requesting
- * Silverpeas. This event is called {@code Server Event}.<br/>
+ * Silverpeas. This event is called {@code Server Event}.<br>
  * Three elements compose a server event:
  * <ul>
  * <li>{@code id}, an identifier that identifies the event</li>
@@ -57,7 +57,7 @@ public interface ServerEvent {
   int CLIENT_RETRY = 5000;
 
   /**
-   * Gets the identifier of the server event.<br/>
+   * Gets the identifier of the server event.<br>
    * This identifier is unique during the lifetime of the server. After the server is restarted, the
    * counter starts again to zero.
    * @return the name as unique {@link ServerEventName} instance.
@@ -73,7 +73,7 @@ public interface ServerEvent {
   /**
    * The data to send.
    * @param receiverSessionId the identifier of the receiver session.
-   * @param receiver
+   * @param receiver the user that will receive the event in its WEB client.
    * @return the data as string.
    */
   String getData(final String receiverSessionId, final User receiver);
@@ -82,7 +82,7 @@ public interface ServerEvent {
    * Indicates if the given receiver (behind the session) is concerned by the event.
    * If not, the event is not sent.
    * @param receiverSessionId the identifier of the receiver session.
-   * @param receiver
+   * @param receiver the user that will receive the event in its WEB client.
    * @return true if given receiver is concerned, false otherwise.
    */
   default boolean isConcerned(final String receiverSessionId, final User receiver) {
@@ -91,7 +91,7 @@ public interface ServerEvent {
 
   /**
    * Sends the event by using the given response and taking into account the receiver linked to.
-   * <br/>
+   * <br>
    * If {@link #isConcerned(String, User)} indicates that the given receiver is not concerned, nothing is
    * sent.
    * @param request the request from which the communication has been opened.
@@ -99,6 +99,7 @@ public interface ServerEvent {
    * @param receiverSessionId the identifier of the receiver session.
    * @param receiver the receiver instance.
    * @return true if send has been performed, false otherwise.
+   * @throws IOException if the sending fails.
    */
   default boolean send(final HttpServletRequest request, HttpServletResponse response,
       final String receiverSessionId, final User receiver) throws IOException {

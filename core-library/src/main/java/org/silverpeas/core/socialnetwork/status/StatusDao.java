@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.socialnetwork.status;
 
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.util.StringUtil;
+
+import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,12 +37,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.StringUtil;
-
-import javax.inject.Singleton;
-
 @Singleton
 public class StatusDao {
 
@@ -46,13 +45,6 @@ public class StatusDao {
   private static final String SELECT_LAST_STATUS_BY_USERID =
       " SELECT * FROM sb_sn_status WHERE userid = ? ORDER BY creationdate DESC";
 
-  /**
-   * Change my Status
-   * @param connection
-   * @param status
-   * @return int
-   * @throws SQLException
-   */
   public int changeStatus(Connection connection, Status status) throws SQLException {
 
     int id = DBUtil.getNextId("sb_sn_status", "id");
@@ -71,13 +63,6 @@ public class StatusDao {
     return id;
   }
 
-  /**
-   * get last status for user
-   * @param connection
-   * @param userid
-   * @return Status
-   * @throws SQLException
-   */
   public Status getLastStatus(Connection connection, int userid) throws SQLException {
     Status status = new Status();
     ResultSet rs = null;
@@ -98,16 +83,6 @@ public class StatusDao {
     return status;
   }
 
-  /**
-   * get all my SocialInformation according to the type of data bes (PostgreSQL,Oracle,MMS)
-   * @throws SQLException
-   * @param connection
-   * @param userId
-   * @param begin
-   * @param end
-   * @return List<SocialInformationStatus>
-   * @throws SQLException
-   */
   public List<SocialInformation> getAllStatus(Connection connection, int userId, Date begin,
       Date end) throws SQLException {
     PreparedStatement pstmt = null;
@@ -128,16 +103,6 @@ public class StatusDao {
     }
   }
 
-  /**
-   * when data base is PostgreSQL get SocialInformation of my conatct according to number of Item
-   * and the first Index
-   * @param connection
-   * @param myContactsIds
-   * @param begin
-   * @param end
-   * @return List<SocialInformationStatus>
-   * @throws SQLException
-   */
   List<SocialInformation> getSocialInformationListOfMyContacts(Connection connection,
       List<String> myContactsIds, Date begin, Date end) throws SQLException {
     PreparedStatement pstmt = null;
@@ -175,11 +140,6 @@ public class StatusDao {
     return status_list;
   }
 
-  /**
-   * convert list of contact ids to string for using in the query SQL
-   * @param list
-   * @return String
-   */
   private static String toSqlString(List<String> list) {
     StringBuilder result = new StringBuilder(100);
     if (list == null || list.isEmpty()) {

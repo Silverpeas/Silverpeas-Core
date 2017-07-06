@@ -32,28 +32,11 @@ import java.util.List;
  * @author Bensalrm Nabil
  */
 public interface SocialPublicationsInterface {
-  /**
-   * get list of socialInformation according to number of Item and the first Index
-   * @param userId
-   * @param begin date
-   * @param end date
-   * @return
-   * @throws SilverpeasException
-   */
-  public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
+
+  List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
       throws SilverpeasException;
 
-  /**
-   * get list of socialInformation of my contacts according to ids of my contacts , number of Item
-   * and the first Index
-   * @param myId
-   * @param myContactsIds
-   * @param begin date
-   * @param end date
-   * @return
-   * @throws SilverpeasException
-   */
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
+  List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException;
 
 }

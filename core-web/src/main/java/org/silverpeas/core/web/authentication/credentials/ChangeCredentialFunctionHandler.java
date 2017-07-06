@@ -48,7 +48,7 @@ public abstract class ChangeCredentialFunctionHandler extends FunctionHandler {
       StringBuilder message = new StringBuilder(getM_Multilang().getString(messageBundleKey));
       String url = userCanTryAgainToLoginVerifier.verify().performRequestUrl(request, originalUrl);
       if (userCanTryAgainToLoginVerifier.isActivated()) {
-        message.append("<br/>");
+        message.append("<br>");
         message.append(userCanTryAgainToLoginVerifier.getMessage());
       }
       request.setAttribute("message", message.toString());

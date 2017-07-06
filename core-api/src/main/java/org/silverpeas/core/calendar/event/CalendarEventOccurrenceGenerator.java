@@ -62,6 +62,7 @@ public interface CalendarEventOccurrenceGenerator {
   /**
    * Generates the occurrences of the specified events and that occur in the period of time.
    * @param events the events.
+   * @param inPeriod the period of time the event instances occurs.
    * @return a set of event occurrences that occur in the specified period sorted by the date and
    * time at which they start.
    */

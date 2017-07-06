@@ -74,7 +74,7 @@ public class LogsAccessor {
   }
 
   /**
-   * Gets the specified last number of records from the specified log.<br/>
+   * Gets the specified last number of records from the specified log.<br>
    * Empty line at end of file is skipped.
    * @param log the log to access.
    * @param recordCount the number of records to get. O or a negative value means all the records.

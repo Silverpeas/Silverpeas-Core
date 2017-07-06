@@ -30,11 +30,11 @@ import java.util.List;
 
 /**
  * Centralizing the management of a thread in charge of processing in the background a batch of
- * {@link Request}.<br/>
- * When there is no more {@link Request} to perform, the thread ends.<br/>
+ * {@link Request}.<br>
+ * When there is no more {@link Request} to perform, the thread ends.<br>
  * When adding a new {@link Request} to perform, the request is added into a queue and the thread
- * is started if it is not running.<br/>
- * Requests are performed one after one.<br/>
+ * is started if it is not running.<br>
+ * Requests are performed one after one.<br>
  * All implementations of this abstract class have to handle final static variables:
  * <ul>
  *   <li>
@@ -93,7 +93,7 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
   }
 
   /**
-   * Sets the running state indicator.<br/>
+   * Sets the running state indicator.<br>
    * This method is called in a context of synchronization (please consult the code of {@link
    * #nextRequest()} method).
    */
@@ -167,7 +167,7 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
   }
 
   /**
-   * The process context given to the {@link Request#process(Object)} method.<br/>
+   * The process context given to the {@link Request#process(Object)} method.<br>
    * The process context instance is provided by {@link AbstractRequestTask#getProcessContext()}
    * method implementation.
    */

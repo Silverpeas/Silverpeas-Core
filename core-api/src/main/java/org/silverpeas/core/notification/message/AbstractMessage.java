@@ -35,9 +35,6 @@ public abstract class AbstractMessage implements Message {
   private final String content;
   private long displayLiveTime = 0;
 
-  /**
-   * Default constructor.
-   */
   protected AbstractMessage(String content) {
     this.content = content;
   }

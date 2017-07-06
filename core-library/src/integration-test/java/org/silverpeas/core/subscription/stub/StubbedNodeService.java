@@ -38,7 +38,7 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
 
 /**
  * Stubbed node service implementation in order to simulate treatment behavior without setting all
- * the data...<br/>
+ * the data...<br>
  * @author Yohann Chastagnier
  */
 @Singleton

@@ -55,7 +55,7 @@ import static org.silverpeas.core.notification.user.client.NotificationManagerSe
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
- * <p/>
+ * <p>
  * It acts as a mixin for the tags that which to include a specific tag in order to use the
  * functionality of the underlying plugin.
  * @author mmoquillon

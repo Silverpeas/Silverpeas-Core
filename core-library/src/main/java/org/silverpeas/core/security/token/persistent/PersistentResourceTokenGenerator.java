@@ -23,16 +23,13 @@
  */
 package org.silverpeas.core.security.token.persistent;
 
-import java.util.UUID;
 import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.security.token.TokenGenerationParameter;
 import org.silverpeas.core.security.token.TokenGenerator;
 import org.silverpeas.core.security.token.exception.TokenGenerationException;
-import org.silverpeas.core.security.token.Token;
-import org.silverpeas.core.security.token.TokenGenerationParameter;
-import org.silverpeas.core.security.token.TokenGenerator;
-import org.silverpeas.core.security.token.exception.TokenGenerationException;
+
+import java.util.UUID;
 
 /**
  * A generator of PersistentResourceToken instances.
@@ -50,7 +47,6 @@ public class PersistentResourceTokenGenerator implements TokenGenerator {
   /**
    * @param parameters both the identifier and the type of the resource the token to generate has to
    * be belong.
-   * @see {@link TokenGenerator}.
    */
   @Override
   public PersistentResourceToken generate(TokenGenerationParameter... parameters) {

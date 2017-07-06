@@ -44,7 +44,7 @@ import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
  * From a Servlet or a Web Service, this class handles the forwarding of the request to the media
- * embed player services.<br/>
+ * embed player services.<br>
  * The data necessary to perform this operation are set by the JavasScript plugin {@link
  * SupportedWebPlugins#EMBEDPLAYER}.
  * @author Yohann Chastagnier

@@ -27,7 +27,7 @@ import org.silverpeas.core.silvertrace.SilverTrace;
 
 /**
  * Deprecated exception. Please use instead {@link org.silverpeas.core.SilverpeasRuntimeException}
- * </p>
+ * <br>
  * SilverpeasRuntimeException est la racine de la hiérarchie des exception runtime silverpeas. Les
  * exceptions Runtime ne sont pas obligatoirement traitées par le développeur. C'est pourquoi leur
  * utilisation doit se faire après reflexion. La principale application des
@@ -80,8 +80,6 @@ import org.silverpeas.core.silvertrace.SilverTrace;
     }
   }
 
-  // WithNested methods
-  // ------------------
   /**
    * retourne l'exception qui a provoqué la creation de celle-ci. Permet l'encapsulation des
    * exception technique.
@@ -93,8 +91,6 @@ import org.silverpeas.core.silvertrace.SilverTrace;
     return nested;
   }
 
-  // FromModule methods
-  // ------------------
   /**
    * This function must be defined by the Classes that herit from this one
    *

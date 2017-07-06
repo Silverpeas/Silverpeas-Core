@@ -23,22 +23,19 @@
  */
 package org.silverpeas.core.clipboard.service;
 
+import org.silverpeas.core.clipboard.ClipboardException;
+import org.silverpeas.core.clipboard.ClipboardSelection;
+import org.silverpeas.core.index.indexing.model.IndexEntry;
+import org.silverpeas.core.silvertrace.SilverTrace;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
+import javax.transaction.Transactional;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
-import javax.transaction.Transactional;
-
-import org.silverpeas.core.index.indexing.model.IndexEntry;
-
-import org.silverpeas.core.clipboard.ClipboardException;
-import org.silverpeas.core.clipboard.ClipboardSelection;
-
-import org.silverpeas.core.silvertrace.SilverTrace;
 
 import static org.silverpeas.core.clipboard.ClipboardSelection.IndexFlavor;
 
@@ -63,12 +60,6 @@ public class MainClipboardService implements Clipboard, Serializable {
   private String errorMessage = null;
   private Exception error = null;
 
-  /**
-   * Copy a node.
-   *
-   * @param objectToCopy
-   * @throws ClipboardException
-   */
   @Override
   public void add(ClipboardSelection objectToCopy) throws ClipboardException {
     try {
@@ -121,34 +112,18 @@ public class MainClipboardService implements Clipboard, Serializable {
     }
   }
 
-  /**
-   * Paste a node.
-   *
-   * @return
-   */
   @Override
   public ClipboardSelection getObject() {
     count += 1;
     return lastObject;
   }
 
-  /**
-   * Return al the objects.
-   *
-   * @return
-   */
   @Override
   public Collection<ClipboardSelection> getObjects() {
     count += 1;
     return Collections.unmodifiableCollection(objectsInClipboard);
   }
 
-  /**
-   * Return the selected objects.
-   *
-   * @return
-   * @throws ClipboardException
-   */
   @Override
   public Collection<ClipboardSelection> getSelectedObjects() throws ClipboardException {
     try {
@@ -168,12 +143,6 @@ public class MainClipboardService implements Clipboard, Serializable {
     }
   }
 
-  /**
-   * Returns the number of elements in the clipboard.
-   *
-   * @return
-   * @throws ClipboardException
-   */
   @Override
   public int size() throws ClipboardException {
     try {
@@ -186,13 +155,6 @@ public class MainClipboardService implements Clipboard, Serializable {
     }
   }
 
-  /**
-   * Returns the element at the specified position in the clipboard.
-   *
-   * @param index
-   * @return
-   * @throws ClipboardException
-   */
   @Override
   public ClipboardSelection getObject(int index) throws ClipboardException {
     try {
@@ -205,9 +167,6 @@ public class MainClipboardService implements Clipboard, Serializable {
     }
   }
 
-  /**
-   * When paste is done.
-   */
   @Override
   public void PasteDone() {
     // As soon as one paste operation is done
@@ -221,13 +180,6 @@ public class MainClipboardService implements Clipboard, Serializable {
     }
   }
 
-  /**
-   * Returns the element at the specified position in the clipboard.
-   *
-   * @param index
-   * @param setIt
-   * @throws ClipboardException
-   */
   @Override
   public void setSelected(int index, boolean setIt) throws ClipboardException {
     try {
@@ -243,12 +195,6 @@ public class MainClipboardService implements Clipboard, Serializable {
     }
   }
 
-  /**
-   * Removes the element at the specified position in the clipboard.
-   *
-   * @param index
-   * @throws ClipboardException
-   */
   @Override
   public void removeObject(int index) throws ClipboardException {
     try {
@@ -262,22 +208,12 @@ public class MainClipboardService implements Clipboard, Serializable {
     }
   }
 
-  /**
-   * Removes all of the elements from the clipboard.
-   *
-   * @throws ClipboardException
-   */
   @Override
   public void clear() {
     objectsInClipboard.clear();
     lastObject = null;
   }
 
-  /**
-   * Switch the clipboard to multi mode.
-   *
-   * @throws ClipboardException
-   */
   @Override
   public void setMultiClipboard() throws ClipboardException {
     try {
@@ -302,22 +238,11 @@ public class MainClipboardService implements Clipboard, Serializable {
     multipleClipboardSupported = false;
   }
 
-  /**
-   * Get the count access of clipboard.
-   *
-   * @return
-   */
   @Override
   public int getCount() {
     return count;
   }
 
-  /**
-   * Method getMessageError
-   *
-   * @return
-   * @see
-   */
   @Override
   public String getMessageError() {
     String message = errorMessage;
@@ -333,22 +258,12 @@ public class MainClipboardService implements Clipboard, Serializable {
     return valret;
   }
 
-  /**
-   * - Method setMessageError
-   *
-   * @param messageID
-   * @param e
-   * @see
-   */
   @Override
   public void setMessageError(String messageID, Exception e) {
     errorMessage = messageID;
     error = e;
   }
 
-  /**
-   * Constructor.
-   */
   public MainClipboardService() {
 
   }

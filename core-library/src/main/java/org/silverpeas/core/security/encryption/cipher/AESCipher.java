@@ -28,14 +28,14 @@ package org.silverpeas.core.security.encryption.cipher;
  * established by the U.S. National Institute of Standards and Technology (NIST) in 2001. It has
  * been adopted by the U.S. government and is now used worldwide. It supersedes the Data Encryption
  * Standard (DES), which was published in 1977.
- * <p/>
+ * <p>
  * AES is based on a design principle known as a substitution-permutation network, and is fast in
  * both software and hardware. Unlike its predecessor DES, AES does not use a Feistel network. AES
  * is a variant of Rijndael which has a fixed block size of 128 bits, and a key size of 128, 192,
  * or 256 bits. By contrast, the Rijndael specification per se is specified with block and key
  * sizes
  * that may be any multiple of 32 bits, both with a minimum of 128 and a maximum of 256 bits.
- * <p/>
+ * <p>
  * This implementation provides the encryption and the decryption of text by using the AES
  * algorithm with which the CBC (Cipher Block Chaining) operation mode is applied. With CBC, a
  * random Initialization Vector (IV) is used in order to produce the ciphertext unique; for a same
@@ -44,7 +44,7 @@ package org.silverpeas.core.security.encryption.cipher;
  * implementation cannot decrypt the encrypted data that was computed by this implementation and it
  * cannot decrypt the ciphertext coming from another AES cipher implementation without having the
  * IV combined with the ciphertext.
- * </p>
+ * <p>
  * The cryptographic tasks in this implementation are based upon the AES cipher provided in the
  * Java Cryptography API. It supports both AES-128, AES-192, and AES-256, depending on the the size
  * of the key passed as argument in the encryption and in the decryption functions. In order to use

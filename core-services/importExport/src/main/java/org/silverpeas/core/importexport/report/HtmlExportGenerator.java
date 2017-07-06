@@ -52,7 +52,7 @@ import java.util.Set;
  */
 public class HtmlExportGenerator {
 
-  private static final String NEW_LINE = "<br/>\n";
+  private static final String NEW_LINE = "<br>\n";
   private String fileExportDir;
   private ExportReport exportReport;
   private LocalizationBundle messages;
@@ -82,7 +82,7 @@ public class HtmlExportGenerator {
       for (int i = 0; i < res.length(); i++) {
         switch (res.charAt(i)) {
           case '\n':
-            sb.append("<br/>");
+            sb.append("<br>");
             break;
           case '\t':
             sb.append("&nbsp;&nbsp;");

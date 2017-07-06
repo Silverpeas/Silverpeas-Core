@@ -34,13 +34,14 @@ import java.util.List;
 /**
  * A repository storing the entities managed or handled by Silverpeas. All entities that are
  * stored into such a repository are persisted over the runtime and then can be retrieved later.
- *
+ * <p>
  * When  an entity is stored into a repository, its unique identifier is then no more its local
  * and temporary OID (Object IDentifier) that is usually the address of its location in the
  * memory but a unique and permanent identifier that is usually its identifier in the persistence
  * context backed by the repository. This last identifier is then set when the entity is stored
  * into the repository.
- *
+ * </p>
+ * <p>
  * The repository isn't just a simple DAO (Data Access Object) to access the whole or some of the
  * entities properties but it is a business object from which entities are persisted and retrieved.
  * That means the persistence of the entities should be handled only through business operations
@@ -48,6 +49,7 @@ import java.util.List;
  * should return the entity in its completeness. The fetching of some of the entity's relationships
  * should be done through the repositories corresponding to the entities related by the
  * relationships.
+ * </p>
  * @author mmoquillon
  */
 public interface EntityRepository<T extends IdentifiableEntity> {
@@ -69,7 +71,8 @@ public interface EntityRepository<T extends IdentifiableEntity> {
 
   /**
    * Gets persisted entities by their ids.
-   * @return
+   * @param ids the unique identifiers of the entity to get.
+   * @return a list of entities.
    */
   default SilverpeasList<T> getById(String... ids) {
     return getById(Arrays.asList(ids));
@@ -77,7 +80,8 @@ public interface EntityRepository<T extends IdentifiableEntity> {
 
   /**
    * Gets persisted entities by their ids.
-   * @return
+   * @param ids the unique identifiers of the entity to get.
+   * @return a list of entities.
    */
   SilverpeasList<T> getById(Collection<String> ids);
 
@@ -117,7 +121,7 @@ public interface EntityRepository<T extends IdentifiableEntity> {
 
   /**
    * Deletes entities.
-   * @return
+   * @param entity the entity/entities to delete.
    */
   default void delete(T... entity) {
     delete(Arrays.asList(entity));
@@ -125,13 +129,13 @@ public interface EntityRepository<T extends IdentifiableEntity> {
 
   /**
    * Deletes entities.
-   * @return
+   * @param entities the entities to delete.
    */
   void delete(List<T> entities);
 
   /**
    * Deletes entities by their ids.
-   * @param ids
+   * @param ids the identifiers of the entities to delete.
    * @return number of deleted entities.
    */
   default long deleteById(final String... ids) {
@@ -140,7 +144,7 @@ public interface EntityRepository<T extends IdentifiableEntity> {
 
   /**
    * Deletes entities by their ids.
-   * @param ids
+   * @param ids the identifiers of the entities to delete.
    * @return number of deleted entities.
    */
   long deleteById(final Collection<String> ids);

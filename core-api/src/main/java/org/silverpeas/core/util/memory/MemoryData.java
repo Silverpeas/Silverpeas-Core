@@ -35,29 +35,14 @@ public class MemoryData {
 
   private final BigDecimal byteSize;
 
-  /**
-   * Hidden constructor
-   * @param byteSize
-   */
   public MemoryData(final long byteSize) {
     this.byteSize = new BigDecimal(String.valueOf(byteSize));
   }
 
-  /**
-   * Hidden constructor
-   * @param byteSize
-   */
   public MemoryData(final BigDecimal byteSize) {
     this.byteSize = byteSize;
   }
 
-  /**
-   * Converting a computer data storage value
-   * @param value
-   * @param from
-   * @param to
-   * @return
-   */
   public static BigDecimal convertTo(BigDecimal value, final MemoryUnit from, final MemoryUnit to) {
     final int fromPower = from.getPower();
     final int toPower = to.getPower();
@@ -71,10 +56,6 @@ public class MemoryData {
     return value;
   }
 
-  /**
-   * Gets the size in bytes.
-   * @return
-   */
   public BigDecimal getSize() {
     return getSizeConverted(MemoryUnit.B);
   }
@@ -87,11 +68,6 @@ public class MemoryData {
     return getSize().longValue();
   }
 
-  /**
-   * Gets the size converted to desired unit.
-   * @param to
-   * @return
-   */
   public BigDecimal getRoundedSizeConverted(final MemoryUnit to) {
     BigDecimal convertedSize = getSizeConverted(to);
     int nbMaximumFractionDigits = 2;
@@ -101,19 +77,10 @@ public class MemoryData {
     return convertedSize.setScale(nbMaximumFractionDigits, BigDecimal.ROUND_DOWN);
   }
 
-  /**
-   * Gets the size converted to desired unit.
-   * @param to
-   * @return
-   */
   public BigDecimal getSizeConverted(final MemoryUnit to) {
     return convertTo(byteSize, MemoryUnit.B, to);
   }
 
-  /**
-   * Gets the best unit (for display as example).
-   * @return
-   */
   public MemoryUnit getBestUnit() {
     MemoryUnit to = MemoryUnit.values()[MemoryUnit.values().length - 1];
     for (final MemoryUnit currentUnit : MemoryUnit.values()) {
@@ -125,46 +92,26 @@ public class MemoryData {
     return to;
   }
 
-  /**
-   * Gets the best unformatted value (for display as example).
-   * @return
-   */
   public BigDecimal getBestValue() {
     MemoryUnit bestUnit = getBestUnit();
     return getRoundedSizeConverted(bestUnit);
   }
 
 
-  /**
-   * Gets the best display value with or without the unit label.
-   * @return
-   */
   private String getBestDisplayValue(boolean valueOnly) {
     return getFormattedValue(getBestUnit(), valueOnly);
   }
 
 
-  /**
-   * Gets the best display value
-   * @return
-   */
   public String getBestDisplayValueOnly() {
     return getBestDisplayValue(true);
   }
 
-  /**
-   * Gets the best display value
-   * @return
-   */
   public String getBestDisplayValue() {
     return getBestDisplayValue(false);
   }
 
 
-  /**
-   * Gets the desired value with or without the unit label.
-   * @return
-   */
   private String getFormattedValue(final MemoryUnit to, boolean valueOnly) {
     BigDecimal bestDisplayValue = getRoundedSizeConverted(to);
     final StringBuilder sb = new StringBuilder(128);
@@ -177,18 +124,10 @@ public class MemoryData {
   }
 
 
-  /**
-   * Gets the desired value only
-   * @return
-   */
   public String getFormattedValueOnly(final MemoryUnit to) {
     return getFormattedValue(to, true);
   }
 
-  /**
-   * Gets the desired value with its label
-   * @return
-   */
   public String getFormattedValue(final MemoryUnit to) {
     return getFormattedValue(to, false);
   }

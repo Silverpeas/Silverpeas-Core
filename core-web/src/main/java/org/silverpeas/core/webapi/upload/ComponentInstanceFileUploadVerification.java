@@ -79,7 +79,7 @@ public interface ComponentInstanceFileUploadVerification {
 
   /**
    * Performs verification tasks in the behalf of the specified component instance and specified
-   * file data.<br/>
+   * file data.<br>
    * Verification, here, are performed before the upload of the file (so only on the filename
    * which could not represent the real mime-type...).
    * @param componentInstanceId the unique identifier of the component instance.
@@ -89,7 +89,7 @@ public interface ComponentInstanceFileUploadVerification {
 
   /**
    * Performs verification tasks in the behalf of the specified component instance and specified
-   * file.<br/>
+   * file.<br>
    * Verification, here, are performed just after the file has been uploaded, but before the
    * component instance is registering the file.
    * @param componentInstanceId the unique identifier of the component instance.

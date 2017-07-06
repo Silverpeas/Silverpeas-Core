@@ -44,7 +44,7 @@ import java.util.Map;
 /**
  * An XML handler to parse a dataset from an XML file (according to a schema close to the DbUnit
  * dataset one) and to transform it into a SQL script.
- * </p>
+ * <p>
  * Type of values are automatically guessed, so there is no need to convert some values on XML
  * data set.
  * @author mmoquillon
@@ -59,9 +59,9 @@ public class XmlDataSetHandler extends DefaultHandler {
    * The tool tries to connect to a database from default values of {@link ConConf}.
    * @param xmlDataSet the absolute path of the XML data set to parse.
    * @return the SQL insert script that corresponds to the given XML data setreturn
-   * @throws IOException
-   * @throws SAXException
-   * @throws ParserConfigurationException
+   * @throws IOException if an error occurs while accessing the data set
+   * @throws SAXException if an error occurs while parsing the data set
+   * @throws ParserConfigurationException if an error occurs with the parser configuration
    */
   public static String parseXmlDataSet(String xmlDataSet)
       throws IOException, SAXException, ParserConfigurationException {
@@ -74,9 +74,9 @@ public class XmlDataSetHandler extends DefaultHandler {
    * @param xmlDataSet the absolute path of the XML data set to parse.
    * @param conConf the configuration in order to open a database connection.
    * @return the SQL insert script that corresponds to the given XML data set
-   * @throws IOException
-   * @throws SAXException
-   * @throws ParserConfigurationException
+   * @throws IOException if an error occurs while accessing the data set
+   * @throws SAXException if an error occurs while parsing the data set
+   * @throws ParserConfigurationException if an error occurs with the parser configuration
    */
   public static String parseXmlDataSet(String xmlDataSet, ConConf conConf)
       throws IOException, SAXException, ParserConfigurationException {

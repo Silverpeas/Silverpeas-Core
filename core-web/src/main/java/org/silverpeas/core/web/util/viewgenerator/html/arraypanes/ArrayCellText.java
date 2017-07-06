@@ -60,10 +60,10 @@ public class ArrayCellText extends ArrayCell implements SimpleGraphicElement, Co
 
   /**
    * The text of the cell is computed from a {@link Function<T,String>} applied to the given
-   * instance parameter.<br/>
-   * The function takes in input the given instance and the result must be a {@link String}.<br/>
+   * instance parameter.<br>
+   * The function takes in input the given instance and the result must be a {@link String}.<br>
    * The advantage of this way of use is that the text is computed only when the line is displayed.
-   * So that can be see as a lazy computation.<br/>
+   * So that can be see as a lazy computation.<br>
    * Once the text computation is done, it is cached so that the computation is performed at most
    * one time.
    * @param instance the instance in input of the function.

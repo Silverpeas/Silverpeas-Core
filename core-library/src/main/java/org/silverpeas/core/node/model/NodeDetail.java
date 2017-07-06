@@ -588,7 +588,7 @@ public class NodeDetail extends AbstractI18NBean<NodeI18NDetail> implements Seri
 
   /**
    * Is the specified user can access this node?
-   * <p/>
+   * <p>
    * @param user a user in Silverpeas.
    * @return true if the user can access this node, false otherwise.
    */

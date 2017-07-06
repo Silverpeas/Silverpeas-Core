@@ -32,7 +32,7 @@ import java.util.Set;
  * Factory of password encryption objects implementing a given algorithm. It wraps the concrete
  * implementation of the <code>PasswordEncryption</code> interface used for encrypting a password
  * according to a chosen algorithm.
- * <p/>
+ * <p>
  * This factory provides all of the available password encryption supported by Silverpeas,
  * nevertheless it returns only the main encryption used by default in Silverpeas (the one that is
  * considered as the more robust and secure) with the <code>getDefaultPasswordEncryption()</code>
@@ -54,7 +54,7 @@ public class PasswordEncryptionProvider {
 
   /**
    * Gets the encryption that has computed the specified digest.
-   * <p/>
+   * <p>
    * As digests in password encryption are usually made up of an encryption algorithm identifier,
    * the factory can then find the algorithm that matches the specified digest. If the digest
    * doesn't contain any algorithm identifier, then the UnixDES is returned (yet it is the only one

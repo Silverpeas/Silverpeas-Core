@@ -23,17 +23,16 @@
  */
 package org.silverpeas.core.socialnetwork.relationship;
 
-import java.sql.SQLException;
-import java.util.List;
-
 import org.silverpeas.core.date.Date;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.socialnetwork.SocialNetworkException;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.provider.SocialRelationShipsInterface;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.sql.SQLException;
+import java.util.List;
 
 /**
  * @author Bensalem Nabil
@@ -44,15 +43,6 @@ public class SocialRelationShips implements SocialRelationShipsInterface {
   @Inject
   private RelationShipService relationShipService;
 
-  /**
-   * Get list of my socialInformationRelationShip (relationShips) according to number of Item and
-   * the first Index
-   * @param userId
-   * @param begin date
-   * @param end date
-   * @return List
-   * @throws SilverpeasException
-   */
   @Override
   public List<SocialInformation> getSocialInformationsList(String userId, Date begin, Date end)
       throws SilverpeasException {
@@ -64,16 +54,6 @@ public class SocialRelationShips implements SocialRelationShipsInterface {
     }
   }
 
-  /**
-   * Get list socialInformationRelationShip (relationShips) of my Contacts according to number of
-   * Item and the first Index
-   * @param myId
-   * @param myContactsIds
-   * @param begin date
-   * @param end date
-   * @return
-   * @throws SilverpeasException
-   */
   @Override
   public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException {

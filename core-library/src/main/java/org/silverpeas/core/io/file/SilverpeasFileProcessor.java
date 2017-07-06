@@ -60,9 +60,9 @@ public interface SilverpeasFileProcessor extends Comparable<SilverpeasFileProces
   }
 
   /**
-   * Gets the priority that permits to sort the processor list to execute.<br/>
-   * The more the value of the priority is high, the more the processor is executed first.<br/>
-   * The chained execution of processors that have the same priority could be known.<br/>
+   * Gets the priority that permits to sort the processor list to execute.<br>
+   * The more the value of the priority is high, the more the processor is executed first.<br>
+   * The chained execution of processors that have the same priority could be known.<br>
    * By default, the priority is set to 50.
    * @return the priority value.
    */

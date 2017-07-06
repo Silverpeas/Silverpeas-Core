@@ -40,7 +40,7 @@ import java.util.Map;
 
 /**
  * Class declaration Get stat size directory data from database
- * <p/>
+ * <p>
  * @author
  */
 public class SilverStatisticsPeasDAOVolumeServer {

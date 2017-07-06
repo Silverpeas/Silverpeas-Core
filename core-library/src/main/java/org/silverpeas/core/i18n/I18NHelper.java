@@ -44,8 +44,8 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 /**
- * This class permits to manage the activated and displayed content languages.<br/>
- * Be careful, this class handles possible content languages and not possible user languages.<br/>
+ * This class permits to manage the activated and displayed content languages.<br>
+ * Be careful, this class handles possible content languages and not possible user languages.<br>
  * The different user languages are managed by {@link DisplayI18NHelper}.
  */
 public class I18NHelper implements I18n {

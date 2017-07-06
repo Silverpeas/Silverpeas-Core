@@ -27,7 +27,7 @@ import org.silverpeas.core.util.URLUtil;
 
 /**
  * This class represents one version in the history of a versioned simple document.
- * <p/>
+ * <p>
  * The identifier of the component instance provided by this class is the one of the head version.
  * It is the same thing for the provided foreign identifier information.
  * To retrieve the real historised values of the version, please use methods for which the name

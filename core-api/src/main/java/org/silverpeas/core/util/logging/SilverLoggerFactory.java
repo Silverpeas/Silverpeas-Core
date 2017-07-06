@@ -31,12 +31,12 @@ import java.util.ServiceLoader;
 /**
  * A factory of logger instances. It wraps in fact the implementation of the Silverpeas Logging
  * Engine by wrapping and hence using a true logging backend.
- * </p>
+ * <p>
  * The factory isn't dedicated to be used by client code but by the
  * {@link org.silverpeas.core.util.logging.SilverLogger} class to obtain an instance of a logger
  * according to the actual active logging backend. By implementing this interface, the implementor
  * has the total control of any cache mechanism as well as of the loggers manufacture process.
- * </p>
+ * <p>
  * The bind between the {@link org.silverpeas.core.util.logging.SilverLoggerFactory}
  * interface and its implementation is performed by the Java SPI (Java Service Provider Interface).
  * Only the first available logger factory implementation is loaded.
@@ -66,7 +66,7 @@ public interface SilverLoggerFactory {
    * Gets a {@link org.silverpeas.core.util.logging.SilverLogger} instance for the specified
    * namespace. If a logger has already been created with the given namespace it is returned,
    * otherwise a new logger is manufactured and initialized.
-   * </p>
+   * <p>
    * The logging level of the returned logger will be set according to the logging configuration
    * found for the given logger namespace. If no level setting is found from the configuration or
    * if there is no configuration found for the specified namespace, then the logger level is set
@@ -74,7 +74,7 @@ public interface SilverLoggerFactory {
    * (non-null) level value. It is the responsibility of the implementation of the logger to take
    * care of the logging level inheritance and of the default log handlers/adapters used by
    * Silverpeas.
-   * </p>
+   * <p>
    * This method should not be invoked directly. It is dedicated to be used by the
    * {@link org.silverpeas.core.util.logging.SilverLogger#getLogger(String)} method or by the
    * implementation of the Silverpeas Logging Engine.
@@ -92,7 +92,7 @@ public interface SilverLoggerFactory {
    * Gets a {@link org.silverpeas.core.util.logging.SilverLogger} instance for the specified
    * namespace. If a logger has already been created with the given namespace it is returned,
    * otherwise a new logger is manufactured and initialized from the given logger configuration.
-   * </p>
+   * <p>
    * The logging level of the returned logger will be set according to the specified logging
    * configuration. If no level setting is found from the configuration or
    * if there is no configuration found for the specified namespace, then the logger level is set
@@ -100,7 +100,7 @@ public interface SilverLoggerFactory {
    * (non-null) level value. It is the responsibility of the implementation of the logger to take
    * care of the logging level inheritance and of the default log handlers/adapters used by
    * Silverpeas.
-   * </p>
+   * <p>
    * This method should not be invoked directly. It is dedicated to be used by the
    * {@link org.silverpeas.core.util.logging.SilverLogger#getLogger(String)} method or by the
    * implementation of the Silverpeas Logging Engine.

@@ -133,7 +133,7 @@ public class SilverStatisticsVolumeAlimentation {
 
   /**
    * Gets the component statistics qualifier defined into SilverStatistics.properties file
-   * associated to the component identified by the given name.<br/>
+   * associated to the component identified by the given name.<br>
    * If no qualifier is defined for the component, that is because it does not exist statistics
    * treatment for the component.
    * @param componentName the name of the component for which the qualifier is searched.

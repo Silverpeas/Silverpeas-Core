@@ -23,65 +23,29 @@
  */
 package org.silverpeas.core.socialnetwork.provider;
 
-import java.util.List;
-
 import org.silverpeas.core.date.Date;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
+import org.silverpeas.core.util.ServiceProvider;
+
+import java.util.List;
 
 public interface SocialEventsInterface {
 
-  public static SocialEventsInterface get() {
+  static SocialEventsInterface get() {
     return ServiceProvider.getService(SocialEventsInterface.class);
   }
 
-  /**
-   * get list of socialInformation according to number of Item and the first Index
-   * @return List <SocialInformation>
-   * @param userId
-   * @param classification (private or public)
-   * @param begin date
-   * @param end date
-   * @throws SilverpeasException
-   */
-  public List<SocialInformation> getSocialInformationsList(String userId, String classification,
+  List<SocialInformation> getSocialInformationsList(String userId, String classification,
       Date begin, Date end) throws SilverpeasException;
 
-  /**
-   * get the next Events of my contacts according to number of Item and the first Index
-   * @return: List <SocialInformation>
-   * @param myId
-   * @param myContactsIds
-   * @param begin date
-   * @param end date
-   * @throws SilverpeasException
-   */
-  public List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
+  List<SocialInformation> getSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds, Date begin, Date end) throws SilverpeasException;
 
-  /**
-   * get the Last Events of my contacts according to number of Item and the first Index
-   * @return: List <SocialInformation>
-   * @param myId
-   * @param myContactsIds
-   * @param begin date
-   * @param end date
-   * @throws SilverpeasException
-   */
-  public List<SocialInformation> getLastSocialInformationsListOfMyContacts(String myId,
+  List<SocialInformation> getLastSocialInformationsListOfMyContacts(String myId,
       List<String> myContactsIds,
       Date begin, Date end) throws SilverpeasException;
 
-  /**
-   * get the my last Events according to number of Item and the first Index
-   * @return: List <SocialInformation>
-   * @param myId
-   * @param begin date
-   * @param end date
-   * @throws SilverpeasException
-   */
-  public List<SocialInformation> getMyLastSocialInformationsList(String myId, Date begin, Date end)
+  List<SocialInformation> getMyLastSocialInformationsList(String myId, Date begin, Date end)
       throws SilverpeasException;
 }

@@ -38,7 +38,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * Annotation to specify a navigation step creation/update on a HTTP method of a {@link
  * WebComponentController}.
- * <p/>
+ * <p>
  * When a HTTP method with this annotation is called, one of the following internal treatment is
  * performed:
  * <ul>

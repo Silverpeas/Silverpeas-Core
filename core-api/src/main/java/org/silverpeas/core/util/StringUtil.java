@@ -93,7 +93,7 @@ public class StringUtil extends StringUtils {
   /**
    * <p>Returns either the passed in String, or if the String is
    * {@code not defined}, an empty String ("").</p>
-   * <p/>
+   * <p>
    * <pre>
    * StringUtil.defaultStringIfNotDefined(null)   = ""
    * StringUtil.defaultStringIfNotDefined("")     = ""
@@ -114,7 +114,7 @@ public class StringUtil extends StringUtils {
   /**
    * <p>Returns either the passed in String, or if the String is
    * {@code not defined}, the value of {@code defaultString}.</p>
-   * <p/>
+   * <p>
    * <pre>
    * StringUtil.defaultStringIfNotDefined(null, "NULL")   = "NULL"
    * StringUtil.defaultStringIfNotDefined("", "NULL")     = "NULL"
@@ -284,7 +284,7 @@ public class StringUtil extends StringUtils {
    * <li>when parsed with "@" as delimiter, <tt>aEmailAddress</tt> contains two tokens which
    * satisfy</li>
    * </ul>
-   * </p>
+   * <p>
    * The second condition arises since local email addresses, simply of the form "<tt>albert</tt>",
    * for example, are valid for {@link javax.mail.internet.InternetAddress}, but almost always
    * undesired.

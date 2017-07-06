@@ -41,14 +41,14 @@ import java.util.concurrent.ConcurrentMap;
  * of resources are handled by ResourceLocator: {@code org.silverpeas.core.util.LocalizationBundle} for
  * the localized resources (icons, messages, ...) and {@code org.silverpeas.core.util.SettingBundle} for
  * the configuration parameters.
- * </p>
+ * <p>
  * The localization bundles and the settings aren't provided in a classical way (id est by
  * injection point) because they aren't carried into the Silverpeas archive as it should usually be
  * done. Instead, they are located into a peculiar directory in the Silverpeas home directory so
  * that administrators can easily modify them by hand. The access to this directory is handled by
  * this class. If in the future, the mechanism requires to be modified, then this modification will
  * be transparent for the rest of the code.
- * </p>
+ * <p>
  * In order to keep stable the memory management with the resource bundles, ResourceLocator loads
  * the resource bundles on the demand and uses a cache to keep them in memory for all the running
  * time of Silverpeas so that they aren't collected by the garbage collector. Nevertheless, the
@@ -118,7 +118,7 @@ public class ResourceLocator {
   /**
    * Gets setting resource that is defined in an XML bundle under the specified full qualified name.
    * This resource is set of settings to configure some behaviours of a Silverpeas functionality.
-   * </p>
+   * <p>
    * To have a glance on the schema of the XML bundle, please see
    * {@code org.silverpeas.core.util.XmlSettingBundle}.
    * @param name the full qualified name of the localized resource to return. It maps the path
@@ -134,6 +134,7 @@ public class ResourceLocator {
   /**
    * Gets the Silverpeas general localized resource for the specified locale. If the locale is
    * null or empty or missing, then the root locale is taken into account.
+   * @param locale the locale for which the bundle is returned.
    * @return the bundle with the general localized resource.
    */
   public static LocalizationBundle getGeneralLocalizationBundle(String locale) {
@@ -152,7 +153,7 @@ public class ResourceLocator {
   /**
    * Resets any caches used directly or indirectly by the ResourceLocator. As consequence, the
    * bundles will be reloaded when accessing.
-   * </p>
+   * <p>
    * The cache containing the content of the bundles are usually expired at regularly time if a
    * such time was defined in the system properties of Silverpeas. Otherwise, this method should be
    * explicitly used to reset this cache and then to force the reload of the bundles' content.

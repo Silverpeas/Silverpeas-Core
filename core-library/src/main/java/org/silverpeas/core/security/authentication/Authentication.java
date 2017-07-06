@@ -112,7 +112,6 @@ public abstract class Authentication {
    * EXCEPTION_BAD_CREDENTIALS.
    * @param credential the user credential used in an authentication with Silverpeas.
    * @param newPassword user new password
-   * @return true if succeeded
    * @throws AuthenticationException if an error occurs while changing the user password.
    */
   public void changePassword(final AuthenticationCredential credential,

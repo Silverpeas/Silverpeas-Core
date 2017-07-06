@@ -49,7 +49,6 @@ import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
 /**
  * <p>Event about creation or deletion of relationship between users.</p>
- * <p>
  * <p>Fired just after SQL statement in RelationShipDao.java</p>
  * @author remipassmoilesel
  */
