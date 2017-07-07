@@ -32,10 +32,11 @@ import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar;
@@ -63,68 +64,33 @@ public abstract class AbstractWindow implements Window {
   public AbstractWindow() {
   }
 
-  /**
-   * Method declaration
-   * @param gef
-   * @see
-   */
   @Override
   public void init(GraphicElementFactory gef) {
     this.gef = gef;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getBody() {
     return this.body;
   }
 
-  /**
-   * Method declaration
-   * @param body
-   * @see
-   */
   @Override
   public void addBody(String body) {
     this.body = body;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public GraphicElementFactory getGEF() {
     return this.gef;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getIconsPath() {
     return GraphicElementFactory.getIconsPath();
   }
 
-  /**
-   * Method declaration
-   * @param width
-   * @see
-   */
   @Override
   public void setWidth(String width) {
     this.width = width;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   public String getWidth() {
     if (this.width == null) {
       this.width = "100%";
@@ -132,11 +98,6 @@ public abstract class AbstractWindow implements Window {
     return this.width;
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
   @Override
   public OperationPane getOperationPane() {
     if (this.operationPane == null) {
@@ -154,30 +115,37 @@ public abstract class AbstractWindow implements Window {
     MainSessionController msc = getGEF().getMainSessionController();
     OrganizationController organizationController =
         OrganizationControllerProvider.getOrganisationController();
-    boolean isComponentInstanceIdDefinedShareable =
-        StringUtil.isDefined(getGEF().getComponentIdOfCurrentRequest());
+    String componentId = getGEF().getComponentIdOfCurrentRequest();
+    boolean isComponentInstanceIdDefinedShareable = StringUtil.isDefined(componentId);
     if (isComponentInstanceIdDefinedShareable) {
       isComponentInstanceIdDefinedShareable =
-          !PersonalComponentInstance.from(getGEF().getComponentIdOfCurrentRequest()).isPresent();
+          !PersonalComponentInstance.from(componentId).isPresent();
     }
     if (isComponentInstanceIdDefinedShareable && organizationController
-        .isComponentManageable(getGEF().getComponentIdOfCurrentRequest(), msc.getUserId()) &&
-        getGEF().isComponentMainPage()) {
+        .isComponentManageable(componentId, msc.getUserId()) && getGEF().isComponentMainPage()) {
       String label = ResourceLocator.getGeneralLocalizationBundle(
           getGEF().getMultilang().getLocale().getLanguage())
               .getString("GML.operations.setupComponent");
-      String url = URLUtil.getApplicationURL() + "/R" + URLUtil.CMP_JOBSTARTPAGEPEAS +
-          "/jsp/SetupComponent?ComponentId=" + getGEF().getComponentIdOfCurrentRequest();
+      String url = "javascript:spUserNavigation.setupComponent('" +  componentId +"\')";
       this.operationPane.addOperation("useless", label, url);
       this.operationPane.addLine();
     }
   }
 
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
+  private void addOperationToSetupSpace() {
+    MainSessionController msc = getGEF().getMainSessionController();
+    String currentSpaceId = getGEF().getSpaceIdOfCurrentRequest();
+    if (msc.getCurrentUserDetail().isAccessAdmin() || ArrayUtil
+        .contains(msc.getUserManageableSpaceIds(), currentSpaceId)) {
+      String label = ResourceLocator.getGeneralLocalizationBundle(
+          getGEF().getMultilang().getLocale().getLanguage())
+          .getString("GML.operations.setupSpace");
+      String url = "javascript:spUserNavigation.setupSpace('" + currentSpaceId +"\')";
+      this.operationPane.addOperation("useless", label, url);
+      this.operationPane.addLine();
+    }
+  }
+
   @Override
   public BrowseBar getBrowseBar() {
     if (this.browseBar == null) {
@@ -215,8 +183,10 @@ public abstract class AbstractWindow implements Window {
       fileName = "welcome_" + language;
       message = getSilverpeasTemplate().applyFileTemplateOnComponent(component.getName(), fileName);
     } catch (Exception e) {
-
+      SilverLogger.getLogger(this)
+          .info("App '{0}' has no welcome message yet !", component.getName(), e);
     }
+
     if (!StringUtil.isDefined(message)) {
       return null;
     }
@@ -303,57 +273,59 @@ public abstract class AbstractWindow implements Window {
    * </ul>
    */
   protected void addSpaceOrComponentOperations() {
-    if (!isPopup() && !getGEF().getMainSessionController().getCurrentUserDetail().isAnonymous() &&
-        !OperationPaneType.personalSpace.equals(getOperationPane().getType())) {
-      boolean isComponentInstanceIdDefinedShareable =
-          StringUtil.isDefined(getGEF().getComponentIdOfCurrentRequest());
-      if (isComponentInstanceIdDefinedShareable) {
-        isComponentInstanceIdDefinedShareable =
-            !PersonalComponentInstance.from(getGEF().getComponentIdOfCurrentRequest()).isPresent();
+    boolean isComponentInstanceIdDefinedShareable =
+        StringUtil.isDefined(getGEF().getComponentIdOfCurrentRequest());
+    if (isComponentInstanceIdDefinedShareable) {
+      isComponentInstanceIdDefinedShareable =
+          !PersonalComponentInstance.from(getGEF().getComponentIdOfCurrentRequest()).isPresent();
+    }
+    if ((OperationPaneType.space.equals(getOperationPane().getType()) &&
+        StringUtil.isDefined(getGEF().getSpaceIdOfCurrentRequest())) ||
+        isComponentInstanceIdDefinedShareable) {
+      if (getOperationPane().nbOperations() > 0) {
+        getOperationPane().addLine();
       }
-      if ((OperationPaneType.space.equals(getOperationPane().getType()) &&
-          StringUtil.isDefined(getGEF().getSpaceIdOfCurrentRequest())) ||
-          isComponentInstanceIdDefinedShareable) {
-        if (getOperationPane().nbOperations() > 0) {
-          getOperationPane().addLine();
-        }
-        final String viewMgrLabel, addFavLabel;
-        final String viewMgrAction, addFavAction;
-        boolean addFavOperation = true;
-        LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle(
-            getGEF().getMultilang().getLocale().getLanguage());
-        if (OperationPaneType.space.equals(getOperationPane().getType())) {
-          viewMgrLabel = bundle.getString("GML.space.responsibles").replaceAll("''", "'");
-          viewMgrAction =
-              "displaySpaceResponsibles('" + getGEF().getMainSessionController().getUserId() +
-                  "','" + getGEF().getSpaceIdOfCurrentRequest() + "')";
-          addFavLabel = bundle.getString("GML.favorite.space.add");
-          addFavAction = "addFavoriteSpace('" + getGEF().getSpaceIdOfCurrentRequest() + "')";
-        } else {
-          viewMgrLabel = bundle.getString("GML.component.responsibles").replaceAll("''", "'");
-          viewMgrAction =
-              "displayComponentResponsibles('" + getGEF().getMainSessionController().getUserId() +
-                  "','" + getGEF().getComponentIdOfCurrentRequest() + "')";
-          addFavLabel = bundle.getString("GML.favorite.application.add");
-          addFavAction = "addFavoriteApp('" + getGEF().getComponentIdOfCurrentRequest() + "')";
-          addFavOperation = getGEF().isComponentMainPage();
-        }
-        if (addFavOperation) {
-          getOperationPane().addOperation("", addFavLabel, "javascript:" + addFavAction + ";",
-              "space-or-application-favorites-operation");
-        }
-        getOperationPane().addOperation("", viewMgrLabel, "javascript:" + viewMgrAction + ";",
-            "space-or-component-responsibles-operation");
+      final String viewMgrLabel, addFavLabel;
+      final String viewMgrAction, addFavAction;
+      boolean addFavOperation = true;
+      LocalizationBundle bundle = ResourceLocator.getGeneralLocalizationBundle(
+          getGEF().getMultilang().getLocale().getLanguage());
+      if (OperationPaneType.space.equals(getOperationPane().getType())) {
+        viewMgrLabel = bundle.getString("GML.space.responsibles").replaceAll("''", "'");
+        viewMgrAction =
+            "displaySpaceResponsibles('" + getGEF().getMainSessionController().getUserId() +
+                "','" + getGEF().getSpaceIdOfCurrentRequest() + "')";
+        addFavLabel = bundle.getString("GML.favorite.space.add");
+        addFavAction = "addFavoriteSpace('" + getGEF().getSpaceIdOfCurrentRequest() + "')";
+
+        addOperationToSetupSpace();
+
+      } else {
+        viewMgrLabel = bundle.getString("GML.component.responsibles").replaceAll("''", "'");
+        viewMgrAction =
+            "displayComponentResponsibles('" + getGEF().getMainSessionController().getUserId() +
+                "','" + getGEF().getComponentIdOfCurrentRequest() + "')";
+        addFavLabel = bundle.getString("GML.favorite.application.add");
+        addFavAction = "addFavoriteApp('" + getGEF().getComponentIdOfCurrentRequest() + "')";
+        addFavOperation = getGEF().isComponentMainPage();
       }
+      if (addFavOperation) {
+        getOperationPane().addOperation("", addFavLabel, "javascript:" + addFavAction + ";",
+            "space-or-application-favorites-operation");
+      }
+      getOperationPane().addOperation("", viewMgrLabel, "javascript:" + viewMgrAction + ";",
+          "space-or-component-responsibles-operation");
     }
   }
 
   @Override
   public String printBefore() {
     StringBuilder result = new StringBuilder(200);
-    String width = getWidth();
     int nbCols = 1;
-    addSpaceOrComponentOperations();
+    if (!isPopup() && !getGEF().getMainSessionController().getCurrentUserDetail().isAnonymous() &&
+        !OperationPaneType.personalSpace.equals(getOperationPane().getType())) {
+      addSpaceOrComponentOperations();
+    }
     if (getOperationPane().nbOperations() > 0) {
       nbCols = 2;
     }

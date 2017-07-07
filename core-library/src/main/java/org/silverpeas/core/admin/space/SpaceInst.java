@@ -36,6 +36,7 @@ import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.AbstractI18NBean;
@@ -794,5 +795,9 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
       }
     }
     spaceProfiles = newProfiles;
+  }
+
+  public String getPermalink() {
+    return URLUtil.getSimpleURL(URLUtil.URL_SPACE, getId());
   }
 }
