@@ -287,7 +287,11 @@ out.println(tabbedPane.print());
 <% } %>
 <view:areaOfOperationOfCreation/>
   <div class="rightContent" id="right-content-adminSpace">
+    <div id="goToApplication">
+      <a class="navigation-button" href="<%=space.getPermalink() %>"><span><%=resource.getString("JSPP.space.go")%></span></a>
+    </div>
     <viewTags:displayLastUserCRUD
+        permalink="<%=space.getPermalink() %>"
         displayHour="true"
         createDate="${space.createDate}" createdBy="${space.creator}"
         updateDate="${space.updateDate}" updatedBy="${space.updater}"/>
@@ -346,11 +350,10 @@ out.println(tabbedPane.print());
                 <td valign="baseline" width="100%"><%=pageType[m_firstPageType.intValue()] %>
                 </td>
               </tr>
-              <% if (availableLooks.size() >= 2) { %>
+              <% if (availableLooks.size() >= 2 && StringUtil.isDefined(spaceLook)) { %>
               <tr>
                 <td class="txtlibform"><%=resource.getString("JSPP.SpaceLook")%> :</td>
-                <td><%=spaceLook%>
-                </td>
+                <td><%=spaceLook%></td>
               </tr>
               <% } %>
               </tbody>

@@ -214,6 +214,7 @@ class WebCommonLookAndFeel {
 
     code.append(includeLayout(new ElementContainer(),
         LookHelper.getLookHelper(controller.getHttpSession())).toString()).append(STR_NEW_LINE);
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/silverpeas-user-navigation.js"));
 
     code.append(includeAngular(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
