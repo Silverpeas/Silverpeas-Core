@@ -37,6 +37,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -48,6 +49,7 @@ import java.util.StringTokenizer;
  * An interactive search to propose queries matching some results the user is expecting.
  *
  */
+@Singleton
 public class DidYouMeanSearcher {
   private List<SpellChecker> spellCheckers = null;
   private String query = null;

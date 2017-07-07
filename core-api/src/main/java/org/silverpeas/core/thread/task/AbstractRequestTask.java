@@ -33,7 +33,7 @@ import java.util.List;
  * {@link Request}.<br>
  * When there is no more {@link Request} to perform, the thread ends.<br>
  * When adding a new {@link Request} to perform, the request is added into a queue and the thread
- * is started if it is not running.<br>
+ * must be started if it is not running.<br>
  * Requests are performed one after one.<br>
  * All implementations of this abstract class have to handle final static variables:
  * <ul>
@@ -94,8 +94,8 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
 
   /**
    * Sets the running state indicator.<br>
-   * This method is called in a context of synchronization (please consult the code of {@link
-   * #nextRequest()} method).
+   * This method is called in a context of synchronization (please consult the code of
+   * {@link #nextRequest(boolean)} method).
    */
   protected abstract void taskIsEnding();
 
@@ -119,44 +119,83 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
    */
   @Override
   public final void run() {
-
-    Request<C> currentRequest = nextRequest();
+    debug("starting a thread in charge of request processing");
+    Request<C> currentRequest = nextRequest(true);
 
     // The loop condition must be verified on a private attribute of run method (not on the static
     // running attribute) in order to avoid concurrent access.
     while (currentRequest != null) {
       CacheServiceProvider.clearAllThreadCaches();
 
-        /*
-         * Each request is processed out of the synchronized block so the others threads (which put
-         * the requests) will not be blocked.
-         */
+      /*
+       * Each request is processed out of the synchronized block so the others threads (which put
+       * the requests) will not be blocked.
+       */
       try {
+        beforeRequestProcessing();
+        debug("processing a new request: {0}", currentRequest.getClass().getSimpleName());
         currentRequest.process(getProcessContext());
       } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
+        SilverLogger.getLogger(this).error(e);
       }
 
       // Getting the next request if any.
-      currentRequest = nextRequest();
+      debug("checking the next request to process");
+      currentRequest = nextRequest(false);
+      if (currentRequest == null) {
+        try {
+          debug("no more request to process, invoking afterNoMoreRequest method");
+          afterNoMoreRequest();
+        } catch (Exception e) {
+          SilverLogger.getLogger(this).error(e);
+        } finally {
+          // The execution of {@link #afterNoMoreRequest} can take a long time so watching for
+          // new request.
+          debug("checking if a request has been pushed during afterNoMoreRequest method execution");
+          currentRequest = nextRequest(true);
+        }
+      }
     }
+    debug("stopping a thread in charge of request processing");
+  }
+
+  /**
+   * Invoked just before processing a {@link Request}.
+   */
+  protected void beforeRequestProcessing() {
+  }
+
+  /**
+   * Invoked when it does not exist {@link Request} to process anymore.
+   * Is is called in any case, even if a severe error has been thrown.
+   */
+  protected void afterNoMoreRequest() {
   }
 
   /**
    * Gets the next request to process.
+   * @param callTaskIsEnding {@link #taskIsEnding()} is called if true.
    * @return the next request.
    */
-  private Request<C> nextRequest() {
+  private Request<C> nextRequest(boolean callTaskIsEnding) {
     synchronized (getRequestList()) {
       final Request<C> nextRequest;
       if (!getRequestList().isEmpty()) {
         nextRequest = getRequestList().remove(0);
       } else {
         nextRequest = null;
-        taskIsEnding();
+        if (callTaskIsEnding) {
+          debug("no more request to perform, invoking taskIsEnding method");
+          taskIsEnding();
+        }
       }
       return nextRequest;
     }
+  }
+
+  private void debug(String message, Object... parameters) {
+    SilverLogger.getLogger("silverpeas.core.thread")
+        .debug(getClass().getSimpleName() + " - " + message, parameters);
   }
 
   /**

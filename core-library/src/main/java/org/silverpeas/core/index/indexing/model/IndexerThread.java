@@ -23,7 +23,8 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.thread.ManagedThreadPool;
+import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
@@ -31,223 +32,172 @@ import java.util.List;
 import java.util.concurrent.Semaphore;
 
 /**
- * A thread IndexerThread index in the background a batch of index requests. All the public methods
- * are static, so only one thread runs and processes the requests.
+ * This task is in charge of processing indexation requests.
  */
-public class IndexerThread extends Thread {
+public class IndexerThread extends AbstractRequestTask<IndexerProcessContext> {
 
-  private static final int queueLimit = 200;
-  private static final Semaphore queueSemaphore = new Semaphore(queueLimit, true);
+  private static final int QUEUE_LIMIT = 200;
+  private static final Semaphore queueSemaphore = new Semaphore(QUEUE_LIMIT, true);
 
   /**
-   * Builds and starts the thread which will process all the requests. This method is synchonized on
-   * the requests queue in order to guarantee that only one IndexerThread is running.
-   * @param indexManager
+   * Please consult {@link AbstractRequestTask} documentation.
    */
-  static public void start(IndexManager indexManager) {
-    synchronized (requestList) {
-      if (indexerThread == null) {
-        indexerThread = new IndexerThread(indexManager);
-        indexerThread.start();
-      }
-    }
-  }
+  private static final List<Request<IndexerProcessContext>> requestList =
+      new ArrayList<>(QUEUE_LIMIT);
 
   /**
-   * Add a request 'add entry index'
-   * @param indexEntry
+   * Indicator that represents the simple state of the task running.
    */
-  static public void addIndexEntry(FullIndexEntry indexEntry) {
-    try {
-      queueSemaphore.acquire();
-      synchronized (requestList) {
-        requestList.add(new AddIndexEntryRequest(indexEntry));
-        requestList.notify();
-      }
-    } catch (InterruptedException e) {
-      SilverLogger.getLogger(IndexerThread.class).error(e.getLocalizedMessage(), e);
-    }
-  }
+  private static boolean running = false;
 
   /**
-   * Add a request 'remove entry index'
-   */
-  static public void removeIndexEntry(IndexEntryKey indexEntry) {
-    try {
-      queueSemaphore.acquire();
-      synchronized (requestList) {
-        requestList.add(new RemoveIndexEntryRequest(indexEntry));
-        requestList.notify();
-      }
-    } catch (InterruptedException e) {
-      SilverLogger.getLogger(IndexerThread.class).error(e.getLocalizedMessage(), e);
-    }
-  }
-
-  /**
-   * Process all the requests. When the queue is empty : sends an optimize query to the
-   * indexManager. This method should be private but is already declared public in the base class
-   * Thread.
-   */
-  @Override
-  public void run() {
-    Request request;
-
-    while (true) {
-      /*
-       * First, all the requests are processed until the queue becomes empty.
-       */
-      do {
-        CacheServiceProvider.clearAllThreadCaches();
-        request = null;
-
-        synchronized (requestList) {
-          if (!requestList.isEmpty()) {
-            request = requestList.remove(0);
-            queueSemaphore.release();
-          }
-        }
-
-        /*
-         * Each request is processed out of the synchronized block so the others threads (which put
-         * the requests) will not be blocked.
-         */
-        if (request != null) {
-          try {
-            request.process(indexManager);
-          } catch (Exception e) {
-            SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
-          }
-        }
-
-      } while (request != null);
-
-      /**
-       * Then the index writer is flushed.
-       */
-      indexManager.flush();
-
-      /*
-       * Finally, unless a new request has been made while optimisation, we wait the notification of
-       * a new request to be processed.
-       */
-      try {
-        synchronized (requestList) {
-          if (requestList.isEmpty()) {
-            requestList.wait();
-          }
-        }
-      } catch (InterruptedException e) {
-      }
-    }
-  }
-
-  /**
-   * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
-   * access will be synchronized on this list. Futhermore this list is used to synchronize the
-   * providers and the consumers of the list :
-   *
-   * <PRE>
-   * // provider
-   * synchronized(requestList)
-   * {
-   * requestList.add(...);
-   * requestList.notify();
-   * }
-   *
-   * // consumer
-   * synchronized(requestList)
-   * {
-   * requestList.wait();
-   * ... = requestList.remove(...);
-   * }
-   * </PRE>
-   */
-  static private final List<Request> requestList = new ArrayList<Request>(queueLimit);
-
-  /**
-   * All the requests are processed by a single background thread. This thread is built and started
-   * by the start method.
-   */
-  static private IndexerThread indexerThread = null;
-
-  /**
-   * All the requests will be sent to the IndexManager indexManager.
+   * This instance must be set with the thread which is pushing a new request and not the one
+   * which is processing the requests.
    */
   private final IndexManager indexManager;
 
   /**
-   * The constructor is private : only one IndexerThread will be created to process all the request.
+   * Hidden constructor in order to oblige the caller to use static methods.
+   * @param indexManager the instance of the manager of indexation.
    */
-  private IndexerThread(IndexManager indexManager) {
+  private IndexerThread(final IndexManager indexManager) {
+    super();
     this.indexManager = indexManager;
   }
 
-}
+  /**
+   * Builds and starts the task.
+   */
+  private static void startIfNotAlreadyDone() {
+    if (!running) {
+      running = true;
+      ManagedThreadPool.getPool().invoke(new IndexerThread(IndexManager.get()));
+    }
+  }
 
-/**
- * Each request must define a method called process which will process the request with a given
- * IndexManager.
- */
-interface Request {
+  private static void stop() {
+    running = false;
+  }
 
   /**
-   * Method declaration
-   * @param indexManager
+   * Add a request 'add entry index'.
+   * @param indexEntry the index entry ro process.
    */
-  void process(IndexManager indexManager);
+  public static void addIndexEntry(FullIndexEntry indexEntry) {
+    push(new AddIndexEntryRequest(indexEntry));
+  }
+
+  /**
+   * Add a request 'remove entry index'.
+   * @param indexEntry the index entry ro process.
+   */
+  public static void removeIndexEntry(IndexEntryKey indexEntry) {
+    push(new RemoveIndexEntryRequest(indexEntry));
+  }
+
+  private static void push(Request<IndexerProcessContext> request) {
+    try {
+      getLogger().debug("acquiring queue semaphore ({0} available permits before acquire)",
+          queueSemaphore.availablePermits());
+      queueSemaphore.acquire();
+      synchronized (requestList) {
+        getLogger().debug("pushing new request {0} ({1} requests queued before push)",
+            request.getClass().getSimpleName(), requestList.size());
+        requestList.add(request);
+        startIfNotAlreadyDone();
+      }
+    } catch (InterruptedException e) {
+      getLogger().error(e);
+    }
+  }
+
+  private static SilverLogger getLogger() {
+    return SilverLogger.getLogger(IndexerThread.class);
+  }
+
+  @Override
+  protected List<Request<IndexerProcessContext>> getRequestList() {
+    return requestList;
+  }
+
+  @Override
+  protected void taskIsEnding() {
+    stop();
+  }
+
+  @Override
+  protected void beforeRequestProcessing() {
+    super.beforeRequestProcessing();
+    getLogger().debug("releasing queue semaphore ({0} available permits before release)",
+        queueSemaphore.availablePermits());
+    queueSemaphore.release();
+  }
+
+  @Override
+  protected void afterNoMoreRequest() {
+    super.afterNoMoreRequest();
+    getLogger().debug("flushing manager of indexation");
+    indexManager.flush();
+  }
+
+  @Override
+  protected IndexerProcessContext getProcessContext() {
+    return new IndexerProcessContext(indexManager);
+  }
+}
+
+class IndexerProcessContext implements AbstractRequestTask.ProcessContext {
+  private final IndexManager indexManager;
+
+  IndexerProcessContext(final IndexManager indexManager) {
+    this.indexManager = indexManager;
+  }
+
+  IndexManager getIndexManager() {
+    return indexManager;
+  }
 }
 
 /**
  * An AddEntryIndex add an entry index.
  */
-class AddIndexEntryRequest implements Request {
+class AddIndexEntryRequest implements AbstractRequestTask.Request<IndexerProcessContext> {
+  private final FullIndexEntry indexEntry;
 
   /**
-   * Constructor declaration
-   * @param indexEntry
+   * @param indexEntry the index entry to process.
    */
-  public AddIndexEntryRequest(FullIndexEntry indexEntry) {
+  AddIndexEntryRequest(FullIndexEntry indexEntry) {
     this.indexEntry = indexEntry;
   }
 
   /**
-   * Method declaration
-   * @param indexManager
+   * @param context process context.
    */
   @Override
-  public void process(IndexManager indexManager) {
-
-    indexManager.addIndexEntry(indexEntry);
-
+  public void process(IndexerProcessContext context) {
+    context.getIndexManager().addIndexEntry(indexEntry);
   }
-
-  private final FullIndexEntry indexEntry;
 }
 
 /**
  * A RemoveEntryIndex remove an entry index.
  */
-class RemoveIndexEntryRequest implements Request {
+class RemoveIndexEntryRequest implements AbstractRequestTask.Request<IndexerProcessContext> {
+  private final IndexEntryKey indexEntry;
 
   /**
-   * Constructor declaration
-   * @param indexEntry
+   * @param indexEntry the index entry to process.
    */
-  public RemoveIndexEntryRequest(IndexEntryKey indexEntry) {
+  RemoveIndexEntryRequest(IndexEntryKey indexEntry) {
     this.indexEntry = indexEntry;
   }
 
   /**
-   * Method declaration
-   * @param indexManager
+   * @param context process context.
    */
   @Override
-  public void process(IndexManager indexManager) {
-
-    indexManager.removeIndexEntry(indexEntry);
-
+  public void process(IndexerProcessContext context) {
+    context.getIndexManager().removeIndexEntry(indexEntry);
   }
-
-  private final IndexEntryKey indexEntry;
 }
