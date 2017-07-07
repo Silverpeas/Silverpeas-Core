@@ -143,14 +143,14 @@ public class MailExtractorTest {
     String fileName = "Silverpeas test archivage 3_3 (html avec pieces jointes).msg";
     Calendar calendar = Calendar.getInstance();
     calendar.set(2013, 0, 21, 10, 11, 25);
-    String body = "Bonjour,<br><br>Ce mail est au format html est permet quelques fantaisies."
-        + "<br>Le glisser/d&eacute;poser des mails dans la GED est une nouvelle fonction "
-        + "tr&egrave;s<br>int&eacute;ressante.<br><br>R&eacute;alis&eacute;e &agrave; "
-        + "la demande d'Hydrostadium &lt;http://www.hydrostadium.com/&gt; ,<br>elle va &ecirc;tre "
-        + "certainement utilis&eacute;e par d'autres clients de la<br>communaut&eacute;.<br><br>"
-        + "-- <br>Nicolas EYSSERIC<br>Directeur produit<br>06 59 55 18 25 (Attention nouveau "
-        + "num&eacute;ro)<br>-----------------------------<br>Silverpeas<br>1, place Firmin "
-        + "Gautier<br>38000 Grenoble<br><br>";
+    String body = "Bonjour,<br/><br/>Ce mail est au format html est permet quelques fantaisies."
+        + "<br/>Le glisser/d&eacute;poser des mails dans la GED est une nouvelle fonction "
+        + "tr&egrave;s<br/>int&eacute;ressante.<br/><br/>R&eacute;alis&eacute;e &agrave; "
+        + "la demande d'Hydrostadium &lt;http://www.hydrostadium.com/&gt; ,<br/>elle va &ecirc;tre "
+        + "certainement utilis&eacute;e par d'autres clients de la<br/>communaut&eacute;.<br/><br/>"
+        + "-- <br/>Nicolas EYSSERIC<br/>Directeur produit<br/>06 59 55 18 25 (Attention nouveau "
+        + "num&eacute;ro)<br/>-----------------------------<br/>Silverpeas<br/>1, place Firmin "
+        + "Gautier<br/>38000 Grenoble<br/><br/>";
     testHTMLWithFiles(fileName, calendar, body);
 
   }

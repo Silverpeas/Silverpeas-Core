@@ -84,7 +84,7 @@ public class WebEncodeHelper {
     for (int i = 0; i < javastring.length(); i++) {
       switch (javastring.charAt(i)) {
         case '\n':
-          resSB.append("<br>");
+          resSB.append("<br/>");
           break;
         case '\r':
           break;
