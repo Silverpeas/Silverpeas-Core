@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -72,8 +72,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
   private static final String DEPRECATED_KEY_FILE_PATH =
       FileRepositoryManager.getSecurityDirPath() + ".did_key";
   private static final String KEY_SEP = " ";
-  private static List<EncryptionContentIterator> contentIterators =
-      new CopyOnWriteArrayList<EncryptionContentIterator>();
+  private static List<EncryptionContentIterator> contentIterators = new CopyOnWriteArrayList<>();
 
   protected DefaultContentEncryptionService() {
   }
@@ -110,90 +109,14 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
    * is running, will raise an IllegalStateException exception.
    *
    * @param key the new symmetric key in hexadecimal.
-   * @throws CipherKeyUpdateException if the replace of the cipher key has failed.
    * @throws CryptoException if an error while renewing the cipher of the encrypted contents with
    * the new cipher key.
    */
   @Override
-  public void updateCipherKey(final String key) throws CipherKeyUpdateException, CryptoException {
+  public void updateCipherKey(final String key) throws CryptoException {
     assertKeyIsInHexadecimal(key);
     assertKeyIsIn256Bits(key);
-    ConcurrentEncryptionTaskExecutor
-        .execute(new ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask() {
-      @Override
-      public boolean isPrivileged() {
-        return true;
-      }
-
-      @Override
-      public Void execute() throws CryptoException {
-        File backupedKeyFile = null;
-        File backupedDeprecatedKeyFile = null;
-        boolean restore = false;
-        try {
-          boolean renewContentCiphers = false;
-          File keyFile = new File(ACTUAL_KEY_FILE_PATH);
-          if (keyFile.exists()) {
-            renewContentCiphers = true;
-            backupedKeyFile = new File(ACTUAL_KEY_FILE_PATH + ".backup");
-            FileUtil.copyFile(keyFile, backupedKeyFile);
-            File deprecatedKeyFile = new File(DEPRECATED_KEY_FILE_PATH);
-            if (deprecatedKeyFile.exists()) {
-              backupedDeprecatedKeyFile = new File(DEPRECATED_KEY_FILE_PATH + ".backup");
-              FileUtil.moveFile(deprecatedKeyFile, backupedDeprecatedKeyFile);
-            }
-            FileUtil.moveFile(keyFile, deprecatedKeyFile);
-            setHidden(DEPRECATED_KEY_FILE_PATH);
-          }
-
-          Cipher cipher = getCipherForKeyEncryption();
-          CipherKey encryptionKey = cipher.generateCipherKey();
-          byte[] encryptedKey = cipher.encrypt(key, encryptionKey);
-          String encryptedContent = StringUtil.asBase64(encryptionKey.getRawKey()) + KEY_SEP
-              + StringUtil.asBase64(encryptedKey);
-          FileUtil.writeFile(keyFile, new StringReader(encryptedContent));
-          keyFile.setReadOnly();
-          setHidden(ACTUAL_KEY_FILE_PATH);
-
-          if (renewContentCiphers) {
-            EncryptionContentIterator[] iterators =
-                contentIterators.toArray(new EncryptionContentIterator[contentIterators.size()]);
-            CryptographicTask.renewEncryptionOf(iterators).execute();
-          }
-          return null;
-        } catch (IOException ex) {
-          restore = true;
-          throw new CipherKeyUpdateException("Cannot update the encryption key", ex);
-        } catch (CipherRenewingException ex) {
-          restore = true;
-          throw new CryptoException(ex.getMessage(), ex);
-        } finally {
-          try {
-            if (backupedKeyFile != null) {
-              if (restore) {
-                File keyFile = new File(ACTUAL_KEY_FILE_PATH);
-                FileUtil.copyFile(backupedKeyFile, keyFile);
-                keyFile.setReadOnly();
-                setHidden(ACTUAL_KEY_FILE_PATH);
-              }
-              FileUtil.forceDeletion(backupedKeyFile);
-            }
-            if (backupedDeprecatedKeyFile != null) {
-              if (restore) {
-                File keyFile = new File(DEPRECATED_KEY_FILE_PATH);
-                keyFile.delete();
-                FileUtil.copyFile(backupedDeprecatedKeyFile, keyFile);
-                keyFile.setReadOnly();
-                setHidden(DEPRECATED_KEY_FILE_PATH);
-              }
-              FileUtil.forceDeletion(backupedDeprecatedKeyFile);
-            }
-          } catch (IOException ex) {
-            SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-          }
-        }
-      }
-    });
+    ConcurrentEncryptionTaskExecutor.execute(new CipherKeyUpdater(key));
   }
 
   /**
@@ -417,7 +340,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
    */
   protected static Map<String, String> encryptContent(Map<String, String> content, Cipher cipher,
       CipherKey key) throws CryptoException {
-    Map<String, String> encryptedContents = new HashMap<String, String>(content.size());
+    Map<String, String> encryptedContents = new HashMap<>(content.size());
     for (Map.Entry<String, String> aContent : content.entrySet()) {
       if (aContent.getValue() != null) {
         byte[] theEncryptedContent = cipher.encrypt(aContent.getValue(), key);
@@ -439,7 +362,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
    */
   protected static Map<String, String> decryptContent(Map<String, String> encryptedContent,
       Cipher cipher, CipherKey key) throws CryptoException {
-    Map<String, String> content = new HashMap<String, String>(encryptedContent.size());
+    Map<String, String> content = new HashMap<>(encryptedContent.size());
     for (Map.Entry<String, String> anEncryptedContent : encryptedContent.entrySet()) {
       if (anEncryptedContent.getValue() != null) {
         String aContent = cipher.decrypt(StringUtil.fromBase64(anEncryptedContent.getValue()), key);
@@ -494,7 +417,8 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
   }
 
   private static void assertKeyIsIn256Bits(String key) {
-    if (key.length() != 64) {
+    final int keyBitsSize = 64;
+    if (key.length() != keyBitsSize) {
       throw new AssertionError("The encryption key '" + key + "' must be in 256 bits");
     }
   }
@@ -514,22 +438,13 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
     return cipherFactory.getCipher(CryptographicAlgorithmName.CAST5);
   }
 
-  private static void setHidden(String file) {
-    if (System.getProperty("os.name").toLowerCase().contains("windows")) {
-      try {
-        Runtime.getRuntime().exec("attrib +H " + file);
-      } catch (IOException ex) {
-        SilverLogger.getLogger(DefaultContentEncryptionService.class).warn(ex.getMessage());
-      }
-    }
-  }
-
   @Override
   public boolean isCipherKeyDefined() {
     try {
       getActualCipherKey();
       return true;
     } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
       return false;
     }
   }
@@ -569,6 +484,8 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
       try {
         wrapped.onError(content, ex);
       } catch (Exception e) {
+        SilverLogger.getLogger(this)
+            .error("Error while treating the catched CryptoException exception", e);
       }
       throw new CipherRenewingException(ex);
     }
@@ -581,6 +498,100 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
     @Override
     public void init() {
       wrapped.init();
+    }
+  }
+
+  private static class CipherKeyUpdater
+      implements ConcurrentEncryptionTaskExecutor.ConcurrentEncryptionTask {
+
+    private String key;
+
+    public CipherKeyUpdater(final String key) {
+      this.key = key;
+    }
+
+    @Override
+    public boolean isPrivileged() {
+      return true;
+    }
+
+    @Override
+    public Void execute() throws CryptoException {
+      File backupedKeyFile = null;
+      File backupedDeprecatedKeyFile = null;
+      boolean restore = false;
+      try {
+        boolean renewContentCiphers = false;
+        File keyFile = new File(ACTUAL_KEY_FILE_PATH);
+        if (keyFile.exists()) {
+          renewContentCiphers = true;
+          backupedKeyFile = new File(ACTUAL_KEY_FILE_PATH + ".backup");
+          FileUtil.copyFile(keyFile, backupedKeyFile);
+          File deprecatedKeyFile = new File(DEPRECATED_KEY_FILE_PATH);
+          if (deprecatedKeyFile.exists()) {
+            backupedDeprecatedKeyFile = new File(DEPRECATED_KEY_FILE_PATH + ".backup");
+            FileUtil.moveFile(deprecatedKeyFile, backupedDeprecatedKeyFile);
+          }
+          FileUtil.moveFile(keyFile, deprecatedKeyFile);
+          setHidden(DEPRECATED_KEY_FILE_PATH);
+        }
+
+        Cipher cipher = getCipherForKeyEncryption();
+        CipherKey encryptionKey = cipher.generateCipherKey();
+        byte[] encryptedKey = cipher.encrypt(key, encryptionKey);
+        String encryptedContent = StringUtil.asBase64(encryptionKey.getRawKey()) + KEY_SEP
+            + StringUtil.asBase64(encryptedKey);
+        FileUtil.writeFile(keyFile, new StringReader(encryptedContent));
+        keyFile.setReadOnly();
+        setHidden(ACTUAL_KEY_FILE_PATH);
+
+        if (renewContentCiphers) {
+          EncryptionContentIterator[] iterators =
+              contentIterators.toArray(new EncryptionContentIterator[contentIterators.size()]);
+          CryptographicTask.renewEncryptionOf(iterators).execute();
+        }
+        return null;
+      } catch (IOException ex) {
+        restore = true;
+        throw new CipherKeyUpdateException("Cannot update the encryption key", ex);
+      } catch (CipherRenewingException ex) {
+        restore = true;
+        throw new CryptoException(ex.getMessage(), ex);
+      } finally {
+        try {
+          if (backupedKeyFile != null) {
+            if (restore) {
+              File keyFile = new File(ACTUAL_KEY_FILE_PATH);
+              FileUtil.copyFile(backupedKeyFile, keyFile);
+              keyFile.setReadOnly();
+              setHidden(ACTUAL_KEY_FILE_PATH);
+            }
+            FileUtil.forceDeletion(backupedKeyFile);
+          }
+          if (backupedDeprecatedKeyFile != null) {
+            if (restore) {
+              File keyFile = new File(DEPRECATED_KEY_FILE_PATH);
+              keyFile.delete();
+              FileUtil.copyFile(backupedDeprecatedKeyFile, keyFile);
+              keyFile.setReadOnly();
+              setHidden(DEPRECATED_KEY_FILE_PATH);
+            }
+            FileUtil.forceDeletion(backupedDeprecatedKeyFile);
+          }
+        } catch (IOException ex) {
+          SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+        }
+      }
+    }
+
+    private void setHidden(String file) {
+      if (System.getProperty("os.name").toLowerCase().contains("windows")) {
+        try {
+          Runtime.getRuntime().exec("attrib +H " + file);
+        } catch (IOException ex) {
+          SilverLogger.getLogger(this).warn(ex);
+        }
+      }
     }
   }
 }

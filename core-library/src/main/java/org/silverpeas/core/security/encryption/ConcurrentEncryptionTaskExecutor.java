@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -23,8 +23,9 @@
  */
 package org.silverpeas.core.security.encryption;
 
-import java.util.concurrent.Semaphore;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
+
+import java.util.concurrent.Semaphore;
 
 /**
  * Executor of concurrent encryption tasks for the ContentEncryptionService instances. The
@@ -57,19 +58,19 @@ class ConcurrentEncryptionTaskExecutor {
    * @param task the task to execute.
    * @param <T> the return type of the task execution.
    * @return the result of the task execution.
-   * @throws CryptoException if an error has occured while executing the encryption task.
+   * @throws CryptoException if an error has occurred while executing the encryption task.
    */
-  public static <T> T execute(ConcurrentEncryptionTask task) throws CryptoException {
-    int token = task.isPrivileged() ? TOKEN_COUNT : 1;
+  public static <T> T execute(ConcurrentEncryptionTask task)
+      throws CryptoException {
     try {
-      acquireToken(token);
+      acquireMutex();
       return task.execute();
     } finally {
-      releaseToken(token);
+      releaseMutex();
     }
   }
 
-  private static synchronized void acquireToken(int token) {
+  private static synchronized void acquireMutex() {
     if (semaphore.availablePermits() == 0) {
       throw new IllegalStateException("The encryption is being updated: the content encryption "
           + "and decryption service is blocked");
@@ -81,14 +82,14 @@ class ConcurrentEncryptionTaskExecutor {
     }
   }
 
-  private static synchronized void releaseToken(int token) {
+  private static synchronized void releaseMutex() {
     semaphore.release();
   }
 
   /**
    * An encryption task to execute concurrently by this executor.
    */
-  public static interface ConcurrentEncryptionTask {
+  public interface ConcurrentEncryptionTask {
 
     /**
      * Is this task has to be ran in a privileged mode?
@@ -96,7 +97,7 @@ class ConcurrentEncryptionTaskExecutor {
      * @return true if this task has to be ran in a privileged mode, that is to say by blocking all
      * others concurrent tasks.
      */
-    public boolean isPrivileged();
+    boolean isPrivileged();
 
     /**
      * Executes the task.
@@ -105,6 +106,6 @@ class ConcurrentEncryptionTaskExecutor {
      * @return the result of the task.
      * @throws CryptoException if an error occurs while executing its encryption task.
      */
-    public <T> T execute() throws CryptoException;
+    <T> T execute() throws CryptoException;
   }
 }

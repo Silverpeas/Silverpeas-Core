@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -28,12 +28,15 @@ import java.util.Date;
 
 public class DateFormatter {
 
-  private static final SimpleDateFormat indexFormatter = new SimpleDateFormat("yyyy/MM/dd");
-  public final static String nullBeginDate = "0000/00/00";
-  public final static String nullEndDate = "9999/99/99";
+  public static final String NULL_BEGIN_DATE = "0000/00/00";
+  public static final String NULL_END_DATE = "9999/99/99";
+  private static final SimpleDateFormat INDEX_FORMATTER = new SimpleDateFormat("yyyy/MM/dd");
 
-  public synchronized static String date2IndexFormat(Date date) {
-    return indexFormatter.format(date);
+  private DateFormatter() {
+  }
+
+  public static synchronized String date2IndexFormat(Date date) {
+    return INDEX_FORMATTER.format(date);
   }
 
 }
