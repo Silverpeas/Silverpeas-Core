@@ -27,8 +27,8 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.behavior.IgnoreStoring;
 import org.silverpeas.core.notification.sse.behavior.KeepAlwaysLastStored;
 import org.silverpeas.core.notification.sse.behavior.StoreLastOnly;
-import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
+import org.silverpeas.core.thread.task.RequestTaskManager;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -57,40 +57,9 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
       Collections.synchronizedSet(new LinkedHashSet<>(2000));
 
   /**
-   * Please consult {@link AbstractRequestTask} documentation.
-   */
-  private static final List<Request> requestList = new ArrayList<>();
-
-  /**
    * A store of server events.
    */
   private static final ServerEventStore serverEventStore = new ServerEventStore();
-
-  /**
-   * Indicator that represents the simple state of the task running.
-   */
-  private static boolean running = false;
-
-  /**
-   * Hidden constructor in order to oblige the caller to use static methods.
-   */
-  private ServerEventDispatcherTask() {
-    super();
-  }
-
-  /**
-   * Builds and starts the task.
-   */
-  private static void startIfNotAlreadyDone() {
-    if (!running) {
-      running = true;
-      ManagedThreadPool.getPool().invoke(new ServerEventDispatcherTask());
-    }
-  }
-
-  private static void stop() {
-    running = false;
-  }
 
   /**
    * Unregister an {@link SilverpeasAsyncContext} instance.
@@ -178,20 +147,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
   }
 
   private static void push(Request request) {
-    synchronized (requestList) {
-      requestList.add(request);
-      startIfNotAlreadyDone();
-    }
-  }
-
-  @Override
-  protected List<Request> getRequestList() {
-    return requestList;
-  }
-
-  @Override
-  protected void taskIsEnding() {
-    stop();
+    RequestTaskManager.push(ServerEventDispatcherTask.class, request);
   }
 
   private static void push(final ServerEvent serverEventToDispatch,
@@ -279,8 +235,9 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
 
     /**
      * @param serverEventToDispatch the server event to dispatch.
-     * @param silverpeasAsyncContext
-     * @param completeAfterSend
+     * @param silverpeasAsyncContext the asynchronous context.
+     * @param completeAfterSend true if the complete async context method must be called after
+     * the send.
      */
     AimedServerEventDispatchRequest(final ServerEvent serverEventToDispatch,
         final SilverpeasAsyncContext silverpeasAsyncContext, final boolean completeAfterSend) {
@@ -340,7 +297,7 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
      * Gets server events from the store which the id is higher than the given one.
      * @param lastServerEventId the last identifier performed by the client.
      * @return a list of {@link ServerEvent} instances.
-     * @throws IOException
+     * @throws IOException on error.
      */
     List<ServerEvent> getFromId(long lastServerEventId) throws IOException {
       List<ServerEvent> serverEventsToSendAgain = new ArrayList<>();

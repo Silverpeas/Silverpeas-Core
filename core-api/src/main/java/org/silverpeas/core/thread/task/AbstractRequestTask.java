@@ -26,65 +26,22 @@ package org.silverpeas.core.thread.task;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.List;
+import java.util.concurrent.Callable;
 
 /**
  * Centralizing the management of a thread in charge of processing in the background a batch of
  * {@link Request}.<br>
- * When there is no more {@link Request} to perform, the thread ends.<br>
- * When adding a new {@link Request} to perform, the request is added into a queue and the thread
- * must be started if it is not running.<br>
+ * When there is no more {@link Request} to perform, the task ends.<br>
+ * When adding a new {@link Request} to perform, the request is added into a queue and the task
+ * is started if it is not running.<br>
  * Requests are performed one after one.<br>
- * All implementations of this abstract class have to handle final static variables:
- * <ul>
- *   <li>
- *     {@code List<Request<C>> requestList} (or another name): this is representing the list of
- *     {@link Request} to process. All access to this variable must be surrounded by a synchronized
- *     clause on static request list instance. The implementation of {@link #getRequestList()}
- *     must return this static instance.
- *     <pre>
- *     // From context of the {@link AbstractRequestTask} thread instance
- *     synchronized (getRequestList()) {
- *       ...
- *       getRequestList().remove(0);
- *       ...
- *     }
- *
- *     // From static context of the {@link AbstractRequestTask} class
- *     synchronized (requestList) {
- *       ...
- *       requestList.remove(0);
- *       ...
- *     }
- *     </pre>
- *   </li>
- *   <li>
- *     {@code List<Request<C>> requestList} (or another name): this is representing the simple
- *     running state of the task thread. All access to this variable must be surrounded by a
- *     synchronized clause on static request list instance. The implementation of
- *     {@link #taskIsEnding()} must set this static running indicator in order to indicate a not
- *     running state.
- *     <pre>
- *     // From context of the {@link AbstractRequestTask} thread instance
- *     synchronized (getRequestList()) {
- *       ...
- *       taskIsEnding();
- *       ...
- *     }
- *
- *     // From static context of the {@link AbstractRequestTask} child class
- *     synchronized (requestList) {
- *       ...
- *       running = false;
- *       ...
- *     }
- *     </pre>
- *   </li>
- * </ul>
+ * To add a request to process, use {@link RequestTaskManager#push(Class, Request)}
  * @param <C> the type of the context given to a {@link Request} processing.
  */
 public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessContext>
-    implements Runnable {
+    implements Callable<Void> {
+
+  RequestTaskManager.RequestTaskMonitor<? extends AbstractRequestTask, C> monitor = null;
 
   /**
    * Nothing is done for now.
@@ -93,17 +50,12 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
   }
 
   /**
-   * Sets the running state indicator.<br>
-   * This method is called in a context of synchronization (please consult the code of
-   * {@link #nextRequest(boolean)} method).
+   * @return 0 indicates no limit, value greater than 0 will block the threads pushing new request
+   * if the limit is reached until there is again possibility to push.
    */
-  protected abstract void taskIsEnding();
-
-  /**
-   * Gets the list of {@link Request} to process.
-   * @return a list of {@link Request}.
-   */
-  protected abstract List<Request<C>> getRequestList();
+  protected int getRequestQueueLimit() {
+    return 0;
+  }
 
   /**
    * Gets the context given for each request to process.
@@ -118,9 +70,8 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
    * base class Thread.
    */
   @Override
-  public final void run() {
-    debug("starting a thread in charge of request processing");
-    Request<C> currentRequest = nextRequest(true);
+  public final Void call() throws Exception {
+    Request<C> currentRequest = nextRequest();
 
     // The loop condition must be verified on a private attribute of run method (not on the static
     // running attribute) in order to avoid concurrent access.
@@ -132,7 +83,7 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
        * the requests) will not be blocked.
        */
       try {
-        beforeRequestProcessing();
+        monitor.releaseAccess();
         debug("processing a new request: {0}", currentRequest.getClass().getSimpleName());
         currentRequest.process(getProcessContext());
       } catch (Exception e) {
@@ -140,8 +91,7 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
       }
 
       // Getting the next request if any.
-      debug("checking the next request to process");
-      currentRequest = nextRequest(false);
+      currentRequest = nextRequest();
       if (currentRequest == null) {
         try {
           debug("no more request to process, invoking afterNoMoreRequest method");
@@ -151,18 +101,13 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
         } finally {
           // The execution of {@link #afterNoMoreRequest} can take a long time so watching for
           // new request.
-          debug("checking if a request has been pushed during afterNoMoreRequest method execution");
-          currentRequest = nextRequest(true);
+          debug("requests could be pushed during afterNoMoreRequest method execution");
+          currentRequest = nextRequest();
         }
       }
     }
-    debug("stopping a thread in charge of request processing");
-  }
-
-  /**
-   * Invoked just before processing a {@link Request}.
-   */
-  protected void beforeRequestProcessing() {
+    debug("no more request to perform, stopping a thread in charge of request processing");
+    return null;
   }
 
   /**
@@ -174,20 +119,16 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
 
   /**
    * Gets the next request to process.
-   * @param callTaskIsEnding {@link #taskIsEnding()} is called if true.
    * @return the next request.
    */
-  private Request<C> nextRequest(boolean callTaskIsEnding) {
-    synchronized (getRequestList()) {
+  private Request<C> nextRequest() {
+    synchronized (monitor.requestList) {
+      debug("checking the next request to process");
       final Request<C> nextRequest;
-      if (!getRequestList().isEmpty()) {
-        nextRequest = getRequestList().remove(0);
+      if (!monitor.requestList.isEmpty()) {
+        nextRequest = monitor.requestList.remove(0);
       } else {
         nextRequest = null;
-        if (callTaskIsEnding) {
-          debug("no more request to perform, invoking taskIsEnding method");
-          taskIsEnding();
-        }
       }
       return nextRequest;
     }
@@ -195,7 +136,7 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
 
   private void debug(String message, Object... parameters) {
     SilverLogger.getLogger("silverpeas.core.thread")
-        .debug(getClass().getSimpleName() + " - " + message, parameters);
+        .debug(getClass().getSimpleName() + " - consumer thread - " + message, parameters);
   }
 
   /**

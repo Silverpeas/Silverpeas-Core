@@ -23,60 +23,28 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
+import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Semaphore;
+import javax.inject.Inject;
 
 /**
  * This task is in charge of processing indexation requests.
  */
-public class IndexerThread extends AbstractRequestTask<IndexerProcessContext> {
+public class IndexerThread extends AbstractRequestTask<IndexerThread.IndexerProcessContext> {
 
   private static final int QUEUE_LIMIT = 200;
-  private static final Semaphore queueSemaphore = new Semaphore(QUEUE_LIMIT, true);
-
-  /**
-   * Please consult {@link AbstractRequestTask} documentation.
-   */
-  private static final List<Request<IndexerProcessContext>> requestList =
-      new ArrayList<>(QUEUE_LIMIT);
-
-  /**
-   * Indicator that represents the simple state of the task running.
-   */
-  private static boolean running = false;
 
   /**
    * This instance must be set with the thread which is pushing a new request and not the one
    * which is processing the requests.
    */
-  private final IndexManager indexManager;
+  @Inject
+  private IndexManager indexManager;
 
-  /**
-   * Hidden constructor in order to oblige the caller to use static methods.
-   * @param indexManager the instance of the manager of indexation.
-   */
-  private IndexerThread(final IndexManager indexManager) {
-    super();
-    this.indexManager = indexManager;
-  }
-
-  /**
-   * Builds and starts the task.
-   */
-  private static void startIfNotAlreadyDone() {
-    if (!running) {
-      running = true;
-      ManagedThreadPool.getPool().invoke(new IndexerThread(IndexManager.get()));
-    }
-  }
-
-  private static void stop() {
-    running = false;
+  private static SilverLogger getLogger() {
+    return SilverLogger.getLogger(IndexerThread.class);
   }
 
   /**
@@ -84,7 +52,7 @@ public class IndexerThread extends AbstractRequestTask<IndexerProcessContext> {
    * @param indexEntry the index entry ro process.
    */
   public static void addIndexEntry(FullIndexEntry indexEntry) {
-    push(new AddIndexEntryRequest(indexEntry));
+    RequestTaskManager.push(IndexerThread.class, new AddIndexEntryRequest(indexEntry));
   }
 
   /**
@@ -92,45 +60,12 @@ public class IndexerThread extends AbstractRequestTask<IndexerProcessContext> {
    * @param indexEntry the index entry ro process.
    */
   public static void removeIndexEntry(IndexEntryKey indexEntry) {
-    push(new RemoveIndexEntryRequest(indexEntry));
-  }
-
-  private static void push(Request<IndexerProcessContext> request) {
-    try {
-      getLogger().debug("acquiring queue semaphore ({0} available permits before acquire)",
-          queueSemaphore.availablePermits());
-      queueSemaphore.acquire();
-      synchronized (requestList) {
-        getLogger().debug("pushing new request {0} ({1} requests queued before push)",
-            request.getClass().getSimpleName(), requestList.size());
-        requestList.add(request);
-        startIfNotAlreadyDone();
-      }
-    } catch (InterruptedException e) {
-      getLogger().error(e);
-    }
-  }
-
-  private static SilverLogger getLogger() {
-    return SilverLogger.getLogger(IndexerThread.class);
+    RequestTaskManager.push(IndexerThread.class, new RemoveIndexEntryRequest(indexEntry));
   }
 
   @Override
-  protected List<Request<IndexerProcessContext>> getRequestList() {
-    return requestList;
-  }
-
-  @Override
-  protected void taskIsEnding() {
-    stop();
-  }
-
-  @Override
-  protected void beforeRequestProcessing() {
-    super.beforeRequestProcessing();
-    getLogger().debug("releasing queue semaphore ({0} available permits before release)",
-        queueSemaphore.availablePermits());
-    queueSemaphore.release();
+  protected int getRequestQueueLimit() {
+    return QUEUE_LIMIT;
   }
 
   @Override
@@ -144,60 +79,61 @@ public class IndexerThread extends AbstractRequestTask<IndexerProcessContext> {
   protected IndexerProcessContext getProcessContext() {
     return new IndexerProcessContext(indexManager);
   }
-}
 
-class IndexerProcessContext implements AbstractRequestTask.ProcessContext {
-  private final IndexManager indexManager;
+  static class IndexerProcessContext implements AbstractRequestTask.ProcessContext {
+    private final IndexManager indexManager;
 
-  IndexerProcessContext(final IndexManager indexManager) {
-    this.indexManager = indexManager;
-  }
+    IndexerProcessContext(final IndexManager indexManager) {
+      this.indexManager = indexManager;
+    }
 
-  IndexManager getIndexManager() {
-    return indexManager;
-  }
-}
-
-/**
- * An AddEntryIndex add an entry index.
- */
-class AddIndexEntryRequest implements AbstractRequestTask.Request<IndexerProcessContext> {
-  private final FullIndexEntry indexEntry;
-
-  /**
-   * @param indexEntry the index entry to process.
-   */
-  AddIndexEntryRequest(FullIndexEntry indexEntry) {
-    this.indexEntry = indexEntry;
+    IndexManager getIndexManager() {
+      return indexManager;
+    }
   }
 
   /**
-   * @param context process context.
+   * An AddEntryIndex add an entry index.
    */
-  @Override
-  public void process(IndexerProcessContext context) {
-    context.getIndexManager().addIndexEntry(indexEntry);
-  }
-}
+  static class AddIndexEntryRequest implements AbstractRequestTask.Request<IndexerProcessContext> {
+    private final FullIndexEntry indexEntry;
 
-/**
- * A RemoveEntryIndex remove an entry index.
- */
-class RemoveIndexEntryRequest implements AbstractRequestTask.Request<IndexerProcessContext> {
-  private final IndexEntryKey indexEntry;
+    /**
+     * @param indexEntry the index entry to process.
+     */
+    AddIndexEntryRequest(FullIndexEntry indexEntry) {
+      this.indexEntry = indexEntry;
+    }
+
+    /**
+     * @param context process context.
+     */
+    @Override
+    public void process(IndexerProcessContext context) {
+      context.getIndexManager().addIndexEntry(indexEntry);
+    }
+  }
 
   /**
-   * @param indexEntry the index entry to process.
+   * A RemoveEntryIndex remove an entry index.
    */
-  RemoveIndexEntryRequest(IndexEntryKey indexEntry) {
-    this.indexEntry = indexEntry;
-  }
+  static class RemoveIndexEntryRequest
+      implements AbstractRequestTask.Request<IndexerProcessContext> {
+    private final IndexEntryKey indexEntry;
 
-  /**
-   * @param context process context.
-   */
-  @Override
-  public void process(IndexerProcessContext context) {
-    context.getIndexManager().removeIndexEntry(indexEntry);
+    /**
+     * @param indexEntry the index entry to process.
+     */
+    RemoveIndexEntryRequest(IndexEntryKey indexEntry) {
+      this.indexEntry = indexEntry;
+    }
+
+    /**
+     * @param context process context.
+     */
+    @Override
+    public void process(IndexerProcessContext context) {
+      context.getIndexManager().removeIndexEntry(indexEntry);
+    }
   }
 }
