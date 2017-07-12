@@ -42,7 +42,8 @@ public class CalendarEvents {
   }
 
   /**
-   * Filters the calendar events.
+   * Filters the calendar events according to some predefined conditions. The different criterion
+   * can be combined together to build a more complete criterion.
    * @param filterConsumer a function accepting a {@link CalendarEventFilter} instance to set
    * the different filtering criteria.
    * @return itself.

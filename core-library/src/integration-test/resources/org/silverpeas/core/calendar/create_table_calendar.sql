@@ -153,6 +153,7 @@ CREATE TABLE IF NOT EXISTS SB_Cal_Calendar (
   title          VARCHAR(2000) NOT NULL,
   zoneId         VARCHAR(40)   NOT NULL,
   externalUrl    VARCHAR(250),
+  synchroDate    TIMESTAMP,
   createDate     TIMESTAMP     NOT NULL,
   createdBy      VARCHAR(40)   NOT NULL,
   lastUpdateDate TIMESTAMP     NOT NULL,
@@ -207,6 +208,7 @@ CREATE TABLE IF NOT EXISTS SB_Cal_Components (
 CREATE TABLE IF NOT EXISTS SB_Cal_Event (
   id             VARCHAR(40)   NOT NULL,
   externalId     VARCHAR(100)  NULL,
+  synchroDate    TIMESTAMP,
   componentId    VARCHAR(40)   NOT NULL,
   visibility     VARCHAR(50)   NOT NULL,
   recurrenceId   VARCHAR(40)   NULL,

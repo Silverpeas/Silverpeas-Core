@@ -25,6 +25,7 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.icalendar.ICalendarImporter;
+import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.Transaction;
@@ -46,9 +47,18 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
  * A processor of importation of events from an iCalendar source into the Silverpeas Calendar
  * Engine.
  * <p>
- * The processor consumes an input stream or a reader on an iCalendar source to produce
+ * The processor consumes an input stream or a reader of an iCalendar source to produce
  * the {@link CalendarEvent} and the {@link CalendarEventOccurrence} instances that will be then
- * saved into the Calendar data source of Silverpeas.
+ * saved into the Silverpeas calendar passed as argument. Any events or occurrences yet existing in
+ * the calendar will be updated. The occurrences in the calendar that aren't anymore referenced in
+ * the iCalendar source will be deleted. The import doesn't delete any events but only adds or
+ * updates the events from the iCalendar source.
+ * </p>
+ * <p>
+ * In the case of an import into a synchronized calendar, the import processor will consider the
+ * operation as being part of a synchronization with an external calendar. In that case, the events
+ * coming from the iCalendar source will be timestamped with the synchronization date of the
+ * synchronized calendar.
  * </p>
  * @author mmoquillon
  */
@@ -58,11 +68,25 @@ public class ICalendarEventImportProcessor {
   @Inject
   private ICalendarImporter iCalendarImporter;
 
+  @Inject
+  private CalendarEventRepository eventRepository;
+
   /**
    * Imports into the specified calendar in Silverpeas the events encoded in the iCalendar format
    * coming from the specified input stream.
+   * <p>
+   * All new events will be added in the given calendar. All already existing events in the calendar
+   * will be updated with their more recent counterpart in the iCalendar source. This policy is
+   * applied also on the occurrences of the events. unlike with the occurrences, any events in the
+   * calendar not present in the iCalendar source won't be touched. For a synchronized calendar,
+   * the imported events will be timestamped with calendar's synchronization date.
+   * </p>
+   * <p>
+   * The calendar must exist in Silverpeas otherwise an {@link IllegalArgumentException} is thrown.
+   * </p>
    * @param calendar a calendar in Silverpeas.
    * @param inputStream the input stream in which are encoded the events to import.
+   * @return the result of the import process.
    * @throws ImportException exception thrown if the import fails.
    */
   public ICalendarImportResult importInto(final Calendar calendar, final InputStream inputStream)
@@ -73,8 +97,19 @@ public class ICalendarEventImportProcessor {
   /**
    * Imports into the specified calendar in Silverpeas the events encoded in the iCalendar format
    * coming from the specified io reader.
+   *  <p>
+   * All new events will be added in the given calendar. All already existing events in the calendar
+   * will be updated with their more recent counterpart in the iCalendar source. This policy is
+   * applied also on the occurrences of the events. unlike with the occurrences, any events in the
+   * calendar not present in the iCalendar source won't be touched. For a synchronized calendar,
+   * the imported events will be timestamped with calendar's synchronization date.
+   * </p>
+   * <p>
+   * The calendar must exist in Silverpeas otherwise an {@link IllegalArgumentException} is thrown.
+   * </p>
    * @param calendar a calendar in Silverpeas.
    * @param reader the reader in which are encoded the events to import.
+   * @return the result of the import process.
    * @throws ImportException exception thrown if the import fails.
    */
   public ICalendarImportResult importInto(final Calendar calendar, final Reader reader)
@@ -82,15 +117,40 @@ public class ICalendarEventImportProcessor {
     return importInto(calendar, ImportDescriptor.withReader(reader));
   }
 
-  private ICalendarImportResult importInto(final Calendar calendar,
+  /**
+   * Imports into the specified calendar in Silverpeas the events encoded in the iCalendar format
+   * with the specified descriptor of import.
+   * <p>
+   * It is the effective import process dedicated to be used by the Silverpeas Calendar Engine to
+   * fetch and store calendar events coming from an external calendar. This process can be simply
+   * an importation of an iCalendar source content or a synchronization with an external calendar.
+   * The ony difference between an simple importation and a synchronization is that in the
+   * synchronization the calendar's synchronization date will be set for each event fetched from the
+   * iCalendar source; the behavior of the method doesn't change.
+   * </p>
+   * <p>
+   * The calendar must exist in Silverpeas otherwise an {@link IllegalArgumentException} is thrown.
+   * </p>
+   * @param calendar a calendar in Silverpeas.
+   * @param descriptor a descriptor of import with the iCalendar source from which the event will
+   * be parsed.
+   * @return the result of the import process.
+   * @throws ImportException exception thrown if the import fails.
+   */
+  protected ICalendarImportResult importInto(final Calendar calendar,
       final ImportDescriptor descriptor) throws ImportException {
+    if (!calendar.isPersisted()) {
+      throw new IllegalArgumentException(
+          "The calendar " + calendar.getTitle() + " (id = " + calendar.getId() +
+              ") doesn't exist in Silverpeas");
+    }
     final ICalendarImportResult importResult = new ICalendarImportResult();
     iCalendarImporter.imports(descriptor, events -> Transaction.performInOne(() -> {
       events.forEach(e -> {
         CalendarEvent event = e.getLeft();
         List<CalendarEventOccurrence> occurrences = e.getRight();
         adjustSomeProperties(event);
-        EventOperationResult result = doImport(calendar, event, occurrences);
+        EventOperationResult result = importEvent(calendar, event, occurrences);
         result.created().ifPresent(ce -> importResult.incAdded());
         result.updated().ifPresent(ue -> importResult.incUpdated());
       });
@@ -115,16 +175,19 @@ public class ICalendarEventImportProcessor {
    * @return the result of the importation. It has the event in the calendar if either the event
    * was updated or its modified occurrences saved.
    */
-  private EventOperationResult doImport(final Calendar calendar, final CalendarEvent event,
+  private EventOperationResult importEvent(final Calendar calendar, final CalendarEvent event,
       final List<CalendarEventOccurrence> occurrences) {
     OperationContext.fromCurrentRequester();
     OperationContext.addStates(IMPORT);
     try {
       return Transaction.performInOne(() -> {
-        final EventOperationResult result = importEvent(calendar, event);
+        if (calendar.isSynchronized() && calendar.getLastSynchronizationDate().isPresent()) {
+          event.setLastSynchronizationDate(calendar.getLastSynchronizationDate().get());
+        }
+        final EventOperationResult result = importEventOnly(calendar, event);
         if (!occurrences.isEmpty()) {
           EventOperationResult occurrenceImportResult =
-              importOccurrences(EventImportResult.eventFrom(result), occurrences);
+              importOccurrencesOnly(EventImportResult.eventFrom(result), occurrences);
           occurrenceImportResult.updated().ifPresent(e -> {
             if (!result.created().isPresent()) {
               result.withUpdated(e);
@@ -144,15 +207,17 @@ public class ICalendarEventImportProcessor {
     }
   }
 
-  private EventOperationResult importEvent(final Calendar calendar, final CalendarEvent event) {
+  private EventOperationResult importEventOnly(final Calendar calendar, final CalendarEvent event) {
     EventOperationResult result;
-
     Optional<CalendarEvent> persistedEvent = getExistingCalendarEvent(calendar, event);
     if (persistedEvent.isPresent()) {
       final CalendarEvent existingEvent = persistedEvent.get();
       result = new EventImportResult().withExisting(existingEvent);
       if (wasUpdated(event, existingEvent)) {
         result = existingEvent.updateFrom(event);
+      } else if (event.isSynchronized()) {
+        existingEvent.setLastSynchronizationDate(event.getLastSynchronizationDate());
+        eventRepository.save(existingEvent);
       }
     } else {
       result = new EventOperationResult().withCreated(event.planOn(calendar));
@@ -160,7 +225,7 @@ public class ICalendarEventImportProcessor {
     return result;
   }
 
-  private EventOperationResult importOccurrences(final CalendarEvent event,
+  private EventOperationResult importOccurrencesOnly(final CalendarEvent event,
       final List<CalendarEventOccurrence> occurrencesToImport) throws ImportException {
     final Mutable<EventOperationResult> result = Mutable.of(new EventOperationResult());
 

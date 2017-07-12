@@ -31,20 +31,62 @@ public class ICalendarImportResult {
 
   private int added = 0;
   private int updated = 0;
+  private int deleted = 0;
 
+  /**
+   * Gets the number of {@link Plannable} objects added in the calendar after an import a calendar
+   * content.
+   * @return the number of added calendar components.
+   */
   public int added() {
     return this.added;
   }
 
+  /**
+   * Gets the number of {@link Plannable} objects updated in the calendar after an import a calendar
+   * content.
+   * @return the number of updated calendar components.
+   */
   public int updated() {
     return this.updated;
   }
 
+  /**
+   * Gets the number of {@link Plannable} objects deleted in the calendar after an import a calendar
+   * content.
+   * @return the number of deleted calendar components.
+   */
+  public int deleted() {
+    return this.deleted;
+  }
+
+  /**
+   * Is there any result about the import process?
+   * @return false if the result is empty, that is to say there is no {@link Plannable} objects
+   * added, updated or deleted in the concerned calendar.
+   */
+  public boolean isEmpty() {
+    return added == 0 && updated == 0 && deleted == 0;
+  }
+
+  /**
+   * Increment the counter of added {@link Plannable} object of 1.
+   */
   void incAdded() {
     added += 1;
   }
 
+  /**
+   * Increment the counter of updated {@link Plannable} object of 1.
+   */
   void incUpdated() {
     updated += 1;
+  }
+
+  /**
+   * Increment the counter of deleted {@link Plannable} object of 1.
+   */
+  void incDeleted() {
+    deleted += 1;
   }
 }

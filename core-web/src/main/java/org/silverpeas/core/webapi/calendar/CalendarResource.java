@@ -277,7 +277,11 @@ public class CalendarResource extends AbstractCalendarResource {
   public Response synchronizeCalendar(@PathParam("calendarId") String calendarId) {
     final Calendar calendar = process(() -> Calendar.getById(calendarId)).execute();
     assertDataConsistency(getComponentId(), calendar);
-    getCalendarWebServiceProvider().synchronizeCalendar(calendar);
+    try {
+      getCalendarWebServiceProvider().synchronizeCalendar(calendar);
+    } catch (ImportException e) {
+      throw new WebApplicationException(e, INTERNAL_SERVER_ERROR);
+    }
     return Response.ok(asWebEntity(calendar)).build();
   }
 

@@ -90,6 +90,10 @@ public class ICal4JImporter implements ICalendarImporter {
     try {
       CalendarBuilder builder = new CalendarBuilder();
       Calendar calendar = builder.build(descriptor.getInputStream());
+      if (calendar.getComponents().isEmpty()) {
+        consumer.accept(Stream.empty());
+        return;
+      }
       calendar.validate();
 
       Mutable<ZoneId> zoneId = Mutable.of(ZoneOffset.systemDefault());

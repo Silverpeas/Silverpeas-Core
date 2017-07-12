@@ -53,12 +53,14 @@ public interface CalendarEventRepository extends EntityRepository<CalendarEvent>
   CalendarEvent getByExternalId(final Calendar calendar, final String externalId);
 
   /**
-   * Gets all the events that belongs to the specified calendar.<br/>
+   * Gets all the events that satisfies the specified filter<br/>
    * Please be careful to always close the streams in order to avoid memory leaks!!!
    * <pre>
-   *   try(Stream<CalendarEvent> event : streamAllFrom(calendar)) {
+   * {@code
+   *   try(Stream<CalendarEvent> event : streamAll(myFilter)) {
    *     // Performing the treatment
    *   }
+   * }
    * </pre>
    * @param filter a filter to apply on the calendar events to return. The filter can be empty and
    * then no filtering will be applied on the requested calendar events.

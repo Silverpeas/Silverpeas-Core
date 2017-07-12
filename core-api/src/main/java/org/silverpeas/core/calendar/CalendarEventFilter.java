@@ -25,10 +25,12 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.model.User;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A filter to apply on the calendar events that occur in a given window of time.
@@ -38,6 +40,7 @@ public class CalendarEventFilter {
 
   private List<Calendar> calendars = new ArrayList<>();
   private List<User> participants = new ArrayList<>();
+  private OffsetDateTime synchronizationDateLimit = null;
 
   CalendarEventFilter() {
 
@@ -84,6 +87,18 @@ public class CalendarEventFilter {
   }
 
   /**
+   * Filters on the specified synchronization datetime limit. Only events being synchronized before
+   * the specified datetime will be taken into account.
+   * @param dateTime an {@link OffsetDateTime} the last synchronization date of events shouldn't be
+   * after.
+   * @return itself.
+   */
+  public CalendarEventFilter onSynchronizationDateLimit(final OffsetDateTime dateTime) {
+    this.synchronizationDateLimit = dateTime;
+    return this;
+  }
+
+  /**
    * Gets a list of calendars on which the events to filter must be planned.
    * @return a list of calendars or an empty list if there is no filter on calendars.
    */
@@ -99,6 +114,15 @@ public class CalendarEventFilter {
    */
   public List<User> getParticipants() {
     return participants;
+  }
+
+  /**
+   * Gets the datetime before which all the last synchronization date of events should be.
+   * @return either a datetime or nothing if the criterion on the events synchronization date isn't
+   * set.
+   */
+  public Optional<OffsetDateTime> getSynchronizationDateLimit() {
+    return Optional.ofNullable(synchronizationDateLimit);
   }
 }
   

@@ -4,6 +4,7 @@ CREATE TABLE SB_Cal_Calendar (
   title          VARCHAR(2000) NOT NULL,
   zoneId         VARCHAR(40)   NOT NULL,
   externalUrl    VARCHAR(250),
+  synchroDate    DATETIME,
   createDate     DATETIME      NOT NULL,
   createdBy      VARCHAR(40)   NOT NULL,
   lastUpdateDate DATETIME      NOT NULL,
@@ -58,6 +59,7 @@ CREATE TABLE SB_Cal_Components (
 CREATE TABLE SB_Cal_Event (
   id             VARCHAR(40)   NOT NULL,
   externalId     VARCHAR(100)  NULL,
+  synchroDate    DATETIME,
   componentId    VARCHAR(40)   NOT NULL,
   visibility     VARCHAR(50)   NOT NULL,
   recurrenceId   VARCHAR(40)   NULL,

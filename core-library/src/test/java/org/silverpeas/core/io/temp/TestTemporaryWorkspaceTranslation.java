@@ -152,13 +152,13 @@ public class TestTemporaryWorkspaceTranslation {
     assertThat(test.lastModified(), is(0l));
 
     long createTime = System.currentTimeMillis() / 1000;
-    Thread.sleep(1001);
     test.create();
 
     assertThat(tempPath.listFiles(), arrayContainingInAnyOrder(descriptor, workspace));
     assertThat(test.getRootPath().exists(), is(true));
     assertThat(test.exists(), is(true));
-    assertThat(test.lastModified() / 1000, greaterThan(createTime));
+    assertThat(test.lastModified(), greaterThan(0l));
+    assertThat(test.lastModified() / 1000, greaterThanOrEqualTo(createTime));
   }
 
   @Test

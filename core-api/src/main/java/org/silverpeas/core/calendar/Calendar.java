@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.component.service.SilverpeasComponentInstancePr
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
+import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
@@ -50,6 +51,7 @@ import javax.persistence.Table;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.Year;
 import java.time.YearMonth;
 import java.time.ZoneId;
@@ -87,6 +89,9 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
 
   @Column(name = "externalUrl")
   private String externalUrl;
+
+  @Column(name = "synchroDate")
+  private OffsetDateTime synchronizationDate;
 
   /**
    * Necessary for JPA management.
@@ -229,11 +234,29 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
+   * Gets the last synchronization date of this calendar in the case this calendar is a synchronized
+   * one. If it is a synchronized calendar and its last synchronization date is empty, this means
+   * no synchronization was yet operated.
+   * @return optionally the date of its last synchronization date.
+   */
+  public Optional<OffsetDateTime> getLastSynchronizationDate() {
+    return Optional.ofNullable(this.synchronizationDate);
+  }
+
+  /**
    * Is this calendar synchronized with the events from an external calendar.
    * @return true if this calendar is synchronized with an external calendar.
    */
   public boolean isSynchronized() {
     return this.externalUrl != null;
+  }
+
+  /**
+   * Sets the date time at which this calendar is lastly synchronized.
+   * @param dateTime an {@link OffsetDateTime} value.
+   */
+  protected void setLastSynchronizationDate(final OffsetDateTime dateTime) {
+    this.synchronizationDate = dateTime;
   }
 
   /**
@@ -311,6 +334,22 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
       throw new IllegalStateException(
           "The calendar isn't persisted and then no action is available");
     }
+  }
+
+  /**
+   * Synchronizes this calendar. An {@link IllegalArgumentException} is thrown if this calendar
+   * isn't a synchronized one.
+   * <p>
+   * The synchronization is a peculiar and regular import process to update the calendar
+   * with its external counterpart in such a way this calendar is a mirror of the external one at a
+   * given time.
+   * </p>
+   * @return the result of the synchronization with the number of events added, updated and
+   * deleted in this calendar.
+   * @throws ImportException if the synchronization fails.
+   */
+  public ICalendarImportResult synchronize() throws ImportException {
+    return ICalendarEventSynchronization.get().synchronize(this);
   }
 
   /**

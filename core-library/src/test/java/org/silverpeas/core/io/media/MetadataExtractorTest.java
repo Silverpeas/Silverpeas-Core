@@ -86,7 +86,7 @@ public class MetadataExtractorTest {
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1122998040000L));
-    assertThat(result.getLastSaveDateTime().getTime(), is(1316063700000L));
+    assertThat(result.getLastSaveDateTime().getTime(), greaterThanOrEqualTo(1316063700000L));
     assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
     assertThat(result.getDefinition(), is(Definition.NULL));
     assertThat(result.getFramerate(), nullValue());
@@ -108,7 +108,7 @@ public class MetadataExtractorTest {
       assertThat(result.getSilverId(), is(nullValue()));
       assertThat(result.getSilverName(), is(nullValue()));
       assertThat(result.getCreationDate(), is(new Date(1315916400000L)));
-      assertThat(result.getLastSaveDateTime().getTime(), is(1316001900000L));
+      assertThat(result.getLastSaveDateTime().getTime(), greaterThanOrEqualTo(1316001900000L));
       assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
       assertThat(result.getDefinition(), is(Definition.NULL));
       assertThat(result.getFramerate(), nullValue());
@@ -130,7 +130,7 @@ public class MetadataExtractorTest {
     assertThat(result.getKeywords()[0], is("Tika Keywords Test"));
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
-    assertThat(result.getCreationDate().getTime(), is(1239874322000L));
+    assertThat(result.getCreationDate().getTime(), greaterThanOrEqualTo(1239874322000L));
     assertThat(result.getLastSaveDateTime(), is(nullValue()));
     assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
     assertThat(result.getDefinition(), is(Definition.NULL));
@@ -153,7 +153,7 @@ public class MetadataExtractorTest {
     assertThat(result.getKeywords()[1], is("logo"));
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
-    assertThat(result.getCreationDate().getTime(), is(1340963223000L));
+    assertThat(result.getCreationDate().getTime(), greaterThanOrEqualTo(1340963223000L));
     assertThat(result.getLastSaveDateTime(), is(nullValue()));
     assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
     assertThat(result.getDefinition(), is(Definition.of(1942, 1309)));
@@ -178,7 +178,7 @@ public class MetadataExtractorTest {
     assertThat(result.getSilverId(), is(nullValue()));
     assertThat(result.getSilverName(), is(nullValue()));
     assertThat(result.getCreationDate().getTime(), is(1141675593000L));
-    assertThat(result.getLastSaveDateTime().getTime(), is(1141672353000L));
+    assertThat(result.getLastSaveDateTime().getTime(), greaterThanOrEqualTo(1141672353000L));
     assertThat(result.getMemoryData().getSizeAsLong(), is(file.length()));
     assertThat(result.getDefinition(), is(Definition.NULL));
     assertThat(result.getFramerate(), nullValue());

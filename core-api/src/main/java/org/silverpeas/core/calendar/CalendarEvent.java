@@ -46,6 +46,7 @@ import org.silverpeas.core.util.StringUtil;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Date;
@@ -124,6 +125,29 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "WHERE c IN :calendars " +
             "AND (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds)" +
             "ORDER BY ob_1, ob_2, ob_3"),
+    @NamedQuery(name = "calendarEventsBeforeSynchronizationDate", query =
+        "SELECT distinct e" +
+            ", c.componentInstanceId as ob_1" +
+            ", c.id as ob_2" +
+            ", cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "WHERE e.synchronizationDate is not null " +
+            "AND e.synchronizationDate < :synchronizationDateLimit " +
+            "ORDER BY ob_1, ob_2, ob_3"),
+    @NamedQuery(name = "calendarEventsByCalendarBeforeSynchronizationDate", query =
+        "SELECT distinct e" +
+            ", c.componentInstanceId as ob_1" +
+            ", c.id as ob_2" +
+            ", cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "WHERE c IN :calendars " +
+            "AND e.synchronizationDate is not null " +
+            "AND e.synchronizationDate < :synchronizationDateLimit " +
+            "ORDER BY ob_1, ob_2, ob_3"),
     @NamedQuery(name = "calendarEventsByCalendarByPeriod", query = "SELECT distinct e" +
         ", c.componentInstanceId as ob_1" + ", c.id as ob_2" +
         ", cmp.period.startDateTime as ob_3 " + "FROM CalendarEvent e " + "JOIN e.component cmp " +
@@ -197,6 +221,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   @OneToOne(orphanRemoval = true, cascade = CascadeType.ALL)
   @JoinColumn(name = "recurrenceId", referencedColumnName = "id", unique = true)
   private Recurrence recurrence = Recurrence.NO_RECURRENCE;
+
+  @Column(name = "synchroDate")
+  private OffsetDateTime synchronizationDate;
 
   /**
    * Constructs a new calendar event that spawns to the specified period of time.
@@ -400,6 +427,30 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    */
   public boolean isExternal() {
     return this.externalId != null;
+  }
+
+  /**
+   * Gets the last date at which this event was synchronized from an external calendar.
+   * @return a date and time or null if this event isn't a synchronized one.
+   */
+  public OffsetDateTime getLastSynchronizationDate() {
+    return this.synchronizationDate;
+  }
+
+  /**
+   * Is this event comes from the synchronization of an external calendar?
+   * @return true if this event is a synchronized one, false otherwise.
+   */
+  public boolean isSynchronized() {
+    return isExternal() && this.synchronizationDate != null;
+  }
+
+  /**
+   * Sets the date time at which this event is lastly synchronized.
+   * @param dateTime an {@link OffsetDateTime} value.
+   */
+  protected void setLastSynchronizationDate(final OffsetDateTime dateTime) {
+    this.synchronizationDate = dateTime;
   }
 
   /**
@@ -850,6 +901,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     this.visibilityLevel = event.visibilityLevel;
     this.recurrence = event.recurrence;
     this.categories = event.categories;
+    this.synchronizationDate = event.synchronizationDate;
     this.component.setSequence(event.component.getSequence());
     return this.update();
   }

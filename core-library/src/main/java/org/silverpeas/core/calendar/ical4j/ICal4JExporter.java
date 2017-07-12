@@ -74,7 +74,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class ICal4JExporter implements ICalendarExporter {
 
-  private static final String MAILTO = "mailto:";
+  private static final String MAIL_TO = "mailto:";
   private static final String HIDDEN_DATA = "";
 
   @Inject
@@ -274,7 +274,7 @@ public class ICal4JExporter implements ICalendarExporter {
   private Organizer convertOrganizer(final User user) {
     try {
       final Organizer iCalEventOrganizer =
-          isDefined(user.geteMail()) ? new Organizer(MAILTO + user.geteMail()) : new Organizer();
+          isDefined(user.geteMail()) ? new Organizer(MAIL_TO + user.geteMail()) : new Organizer();
       iCalEventOrganizer.getParameters().add(new Cn(user.getDisplayedName()));
       return iCalEventOrganizer;
     } catch (URISyntaxException ex) {
@@ -304,11 +304,11 @@ public class ICal4JExporter implements ICalendarExporter {
       if (attendee instanceof InternalAttendee) {
         InternalAttendee internalAttendee = (InternalAttendee) attendee;
         iCalEventAttendee = isDefined(internalAttendee.getUser().geteMail()) ?
-            new Attendee(MAILTO + internalAttendee.getUser().geteMail()) : new Attendee();
+            new Attendee(MAIL_TO + internalAttendee.getUser().geteMail()) : new Attendee();
         iCalEventAttendee.getParameters()
             .add(new Cn(internalAttendee.getUser().getDisplayedName()));
       } else {
-        iCalEventAttendee = new Attendee(MAILTO + attendee.getId());
+        iCalEventAttendee = new Attendee(MAIL_TO + attendee.getId());
         iCalEventAttendee.getParameters().add(new Cn(attendee.getId()));
       }
       iCalEventAttendee.getParameters().add(CuType.INDIVIDUAL);
