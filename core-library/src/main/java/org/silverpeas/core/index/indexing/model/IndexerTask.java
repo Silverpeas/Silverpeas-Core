@@ -32,7 +32,7 @@ import javax.inject.Inject;
 /**
  * This task is in charge of processing indexation requests.
  */
-public class IndexerThread extends AbstractRequestTask<IndexerThread.IndexerProcessContext> {
+public class IndexerTask extends AbstractRequestTask<IndexerTask.IndexerProcessContext> {
 
   private static final int QUEUE_LIMIT = 200;
 
@@ -44,7 +44,7 @@ public class IndexerThread extends AbstractRequestTask<IndexerThread.IndexerProc
   private IndexManager indexManager;
 
   private static SilverLogger getLogger() {
-    return SilverLogger.getLogger(IndexerThread.class);
+    return SilverLogger.getLogger(IndexerTask.class);
   }
 
   /**
@@ -52,7 +52,7 @@ public class IndexerThread extends AbstractRequestTask<IndexerThread.IndexerProc
    * @param indexEntry the index entry ro process.
    */
   public static void addIndexEntry(FullIndexEntry indexEntry) {
-    RequestTaskManager.push(IndexerThread.class, new AddIndexEntryRequest(indexEntry));
+    RequestTaskManager.push(IndexerTask.class, new AddIndexEntryRequest(indexEntry));
   }
 
   /**
@@ -60,7 +60,7 @@ public class IndexerThread extends AbstractRequestTask<IndexerThread.IndexerProc
    * @param indexEntry the index entry ro process.
    */
   public static void removeIndexEntry(IndexEntryKey indexEntry) {
-    RequestTaskManager.push(IndexerThread.class, new RemoveIndexEntryRequest(indexEntry));
+    RequestTaskManager.push(IndexerTask.class, new RemoveIndexEntryRequest(indexEntry));
   }
 
   @Override

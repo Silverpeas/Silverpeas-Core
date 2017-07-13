@@ -45,7 +45,7 @@ public final class IndexEngineProxy {
    * @param entry the index to add.
    */
   public void add(FullIndexEntry entry) {
-    IndexerThread.addIndexEntry(entry);
+    IndexerTask.addIndexEntry(entry);
   }
 
   /**
@@ -53,7 +53,7 @@ public final class IndexEngineProxy {
    * @param entryKey the key of the entry in the indexes.
    */
   public void delete(IndexEntryKey entryKey) {
-    IndexerThread.removeIndexEntry(entryKey);
+    IndexerTask.removeIndexEntry(entryKey);
   }
 
   public static IndexEngineProxy get() {
