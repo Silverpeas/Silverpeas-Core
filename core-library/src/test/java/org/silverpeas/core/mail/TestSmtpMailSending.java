@@ -32,10 +32,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.mail.engine.MailSender;
 import org.silverpeas.core.mail.engine.MailSenderProvider;
+import org.silverpeas.core.mail.engine.MailSenderTask;
 import org.silverpeas.core.mail.engine.SmtpMailSender;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.Level;
 
 import javax.mail.Message;
 import javax.mail.Multipart;
@@ -69,6 +71,8 @@ public class TestSmtpMailSending {
     oldMailSender = MailSenderProvider.get();
     FieldUtils.writeDeclaredStaticField(MailSenderProvider.class, "mailSender",
         new StubbedSmtpMailSender(), true);
+    commonAPI4Test.injectIntoMockedBeanContainer(new MailSenderTask());
+    commonAPI4Test.setLoggerLevel(Level.DEBUG);
   }
 
   @After

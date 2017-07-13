@@ -29,7 +29,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestName;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.thread.task.RequestTaskManager.RequestTaskMonitor;
 import org.silverpeas.core.util.logging.Level;
@@ -40,9 +39,7 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.TimeoutException;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.hamcrest.Matchers.*;
 
 /**
  * @author silveryocha
@@ -51,9 +48,6 @@ public class RequestTaskManagerTest {
 
   private static int counter = 0;
   private static int afterNoMoreRequestCounter = 0;
-
-  @Rule
-  public TestName testName = new TestName();
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
