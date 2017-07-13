@@ -26,18 +26,17 @@ package org.silverpeas.core.index.indexing.model;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.LimitTokenCountAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.Field.Index;
-import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.LogDocMergePolicy;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.parser.Parser;
@@ -60,11 +59,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import static org.apache.lucene.document.Field.Index.ANALYZED;
-import static org.apache.lucene.document.Field.Index.NOT_ANALYZED;
-import static org.apache.lucene.document.Field.Store.NO;
-import static org.apache.lucene.document.Field.Store.YES;
-import static org.apache.lucene.util.Version.LUCENE_36;
 import static org.silverpeas.core.i18n.I18NHelper.defaultLocale;
 
 /**
@@ -226,8 +220,7 @@ public class IndexManager {
   public Analyzer getAnalyzer(String language) {
     Analyzer analyzer = WAAnalyzer.getAnalyzer(language);
     if (analyzer == null) {
-      analyzer
-          = new LimitTokenCountAnalyzer(new StandardAnalyzer(Version.LUCENE_36), maxFieldLength);
+      analyzer = new LimitTokenCountAnalyzer(new StandardAnalyzer(), maxFieldLength);
     }
     return analyzer;
   }
@@ -269,9 +262,9 @@ public class IndexManager {
         LogDocMergePolicy policy = new LogDocMergePolicy();
         policy.setMergeFactor(mergeFactor);
         policy.setMaxMergeDocs(maxMergeDocs);
-        IndexWriterConfig configuration = new IndexWriterConfig(LUCENE_36, getAnalyzer(
+        IndexWriterConfig configuration = new IndexWriterConfig(getAnalyzer(
             language)).setRAMBufferSizeMB(RAMBufferSizeMB).setMergePolicy(policy);
-        writer = new IndexWriter(FSDirectory.open(file), configuration);
+        writer = new IndexWriter(FSDirectory.open(file.toPath()), configuration);
       } catch (IOException e) {
         IOUtils.closeQuietly(writer);
         writer = null;
@@ -304,20 +297,19 @@ public class IndexManager {
   private Document makeDocument(FullIndexEntry indexEntry) {
     Document doc = new Document();
     // fields creation
-    doc.add(new Field(KEY, indexEntry.getPK().toString(), YES, NOT_ANALYZED));
+    doc.add(new Field(KEY, indexEntry.getPK().toString(), TextField.TYPE_STORED));
     Iterator<String> languages = indexEntry.getLanguages();
     if (indexEntry.getObjectType() != null && indexEntry.getObjectType().startsWith("Attachment")) {
       String lang = indexEntry.getLang();
       if (StringUtil.isDefined(indexEntry.getTitle(lang))) {
-        doc.add(new Field(getFieldName(TITLE, lang), indexEntry.getTitle(lang), YES, ANALYZED));
+        doc.add(new Field(getFieldName(TITLE, lang), indexEntry.getTitle(lang), TextField.TYPE_STORED));
       }
-      doc.add(new Field(getFieldName(FILENAME, lang), indexEntry.getFilename(), YES, NOT_ANALYZED));
+      doc.add(new Field(getFieldName(FILENAME, lang), indexEntry.getFilename(), TextField.TYPE_STORED));
     } else {
       while (languages.hasNext()) {
         String language = languages.next();
         if (indexEntry.getTitle(language) != null) {
-          doc.add(new Field(getFieldName(TITLE, language), indexEntry.getTitle(language), YES,
-              ANALYZED));
+          doc.add(new Field(getFieldName(TITLE, language), indexEntry.getTitle(language), TextField.TYPE_STORED));
         }
       }
     }
@@ -326,45 +318,45 @@ public class IndexManager {
       String language = languages.next();
       if (indexEntry.getPreview(language) != null) {
         doc.add(new Field(getFieldName(PREVIEW, language), indexEntry.getPreview(language),
-            YES, ANALYZED));
+            TextField.TYPE_STORED));
       }
       if (indexEntry.getKeywords(language) != null) {
         doc.add(new Field(getFieldName(KEYWORDS, language), indexEntry.getKeywords(language),
-            YES, Index.NO));
+            TextField.TYPE_NOT_STORED));
       }
     }
-    doc.add(new Field(CREATIONDATE, indexEntry.getCreationDate(), YES, NOT_ANALYZED));
-    doc.add(new Field(CREATIONUSER, indexEntry.getCreationUser(), YES, NOT_ANALYZED));
-    doc.add(new Field(LASTUPDATEDATE, indexEntry.getLastModificationDate(), YES, NOT_ANALYZED));
-    doc.add(new Field(LASTUPDATEUSER, indexEntry.getLastModificationUser(), YES, NOT_ANALYZED));
-    doc.add(new Field(STARTDATE, indexEntry.getStartDate(), YES, NOT_ANALYZED));
-    doc.add(new Field(ENDDATE, indexEntry.getEndDate(), YES, NOT_ANALYZED));
+    doc.add(new Field(CREATIONDATE, indexEntry.getCreationDate(), TextField.TYPE_STORED));
+    doc.add(new Field(CREATIONUSER, indexEntry.getCreationUser(), TextField.TYPE_STORED));
+    doc.add(new Field(LASTUPDATEDATE, indexEntry.getLastModificationDate(), TextField.TYPE_STORED));
+    doc.add(new Field(LASTUPDATEUSER, indexEntry.getLastModificationUser(), TextField.TYPE_STORED));
+    doc.add(new Field(STARTDATE, indexEntry.getStartDate(), TextField.TYPE_STORED));
+    doc.add(new Field(ENDDATE, indexEntry.getEndDate(), TextField.TYPE_STORED));
     if (indexEntry.getThumbnail() != null && indexEntry.getThumbnailMimeType() != null) {
-      doc.add(new Field(THUMBNAIL, indexEntry.getThumbnail(), YES, Index.NO));
-      doc.add(new Field(THUMBNAIL_MIMETYPE, indexEntry.getThumbnailMimeType(), YES, Index.NO));
+      doc.add(new Field(THUMBNAIL, indexEntry.getThumbnail(), TextField.TYPE_STORED));
+      doc.add(new Field(THUMBNAIL_MIMETYPE, indexEntry.getThumbnailMimeType(), TextField.TYPE_STORED));
       doc.add(new Field(THUMBNAIL_DIRECTORY,
-          indexEntry.getThumbnailDirectory(), YES, Index.NO));
+          indexEntry.getThumbnailDirectory(), TextField.TYPE_STORED));
     }
     if (indexEntry.isIndexId()) {
-      doc.add(new Field(CONTENT, indexEntry.getObjectId(), NO, NOT_ANALYZED));
+      doc.add(new Field(CONTENT, indexEntry.getObjectId(), TextField.TYPE_NOT_STORED));
     }
     if (!isWysiwyg(indexEntry)) {
       if (indexEntry.getObjectType() != null && indexEntry.getObjectType().startsWith("Attachment")) {
         String lang = indexEntry.getLang();
         if (indexEntry.getTitle(lang) != null) {
-          doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getTitle(lang), NO, ANALYZED));
+          doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getTitle(lang), TextField.TYPE_NOT_STORED));
         }
-        doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getFilename(), NO, NOT_ANALYZED));
-        doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getFilename(), NO, ANALYZED));
+        doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getFilename(), TextField.TYPE_NOT_STORED));
+        doc.add(new Field(getFieldName(HEADER, lang), indexEntry.getFilename(), TextField.TYPE_NOT_STORED));
       } else {
         languages = indexEntry.getLanguages();
         while (languages.hasNext()) {
           String language = languages.next();
           if (indexEntry.getTitle(language) != null) {
             doc.add(new Field(getFieldName(HEADER, language), indexEntry.getTitle(language).
-                toLowerCase(new Locale(language)), NO, ANALYZED));
+                toLowerCase(new Locale(language)), TextField.TYPE_NOT_STORED));
             doc.add(new Field(getFieldName(HEADER, language), indexEntry.getTitle(language).
-                toLowerCase(new Locale(language)), NO, NOT_ANALYZED));
+                toLowerCase(new Locale(language)), TextField.TYPE_NOT_STORED));
           }
         }
       }
@@ -373,23 +365,23 @@ public class IndexManager {
         String language = languages.next();
         if (indexEntry.getPreview(language) != null) {
           doc.add(new Field(getFieldName(HEADER, language), indexEntry.getPreview(language).
-              toLowerCase(new Locale(language)), NO, ANALYZED));
+              toLowerCase(new Locale(language)), TextField.TYPE_NOT_STORED));
         }
         if (indexEntry.getKeywords(language) != null) {
           doc.add(new Field(getFieldName(HEADER, language), indexEntry.getKeywords(language).
-              toLowerCase(new Locale(language)), NO, ANALYZED));
+              toLowerCase(new Locale(language)), TextField.TYPE_NOT_STORED));
         }
       }
       if (indexEntry.getObjectType() != null
           && indexEntry.getObjectType().startsWith("Attachment")) {
         String lang = indexEntry.getLang();
         if (indexEntry.getTitle(lang) != null) {
-          doc.add(new Field(getFieldName(CONTENT, lang), indexEntry.getTitle(lang), NO, ANALYZED));
+          doc.add(new Field(getFieldName(CONTENT, lang), indexEntry.getTitle(lang), TextField.TYPE_NOT_STORED));
         }
-        doc.add(new Field(getFieldName(CONTENT, lang), indexEntry.getFilename(), NO, NOT_ANALYZED));
-        doc.add(new Field(getFieldName(CONTENT, lang), indexEntry.getFilename(), NO, ANALYZED));
+        doc.add(new Field(getFieldName(CONTENT, lang), indexEntry.getFilename(), TextField.TYPE_NOT_STORED));
+        doc.add(new Field(getFieldName(CONTENT, lang), indexEntry.getFilename(), TextField.TYPE_NOT_STORED));
       } else {
-        doc.add(new Field(CONTENT, indexEntry.getTitle().toLowerCase(defaultLocale), NO, ANALYZED));
+        doc.add(new Field(CONTENT, indexEntry.getTitle().toLowerCase(defaultLocale), TextField.TYPE_NOT_STORED));
       }
       languages = indexEntry.getLanguages();
       while (languages.hasNext()) {
@@ -397,15 +389,15 @@ public class IndexManager {
 
         if (indexEntry.getTitle(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getTitle(language),
-              NO, NOT_ANALYZED));
+              TextField.TYPE_NOT_STORED));
         }
         if (indexEntry.getPreview(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getPreview(language).
-              toLowerCase(new Locale(language)), NO, ANALYZED));
+              toLowerCase(new Locale(language)), TextField.TYPE_NOT_STORED));
         }
         if (indexEntry.getKeywords(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getKeywords(language).
-              toLowerCase(new Locale(language)), NO, ANALYZED));
+              toLowerCase(new Locale(language)), TextField.TYPE_NOT_STORED));
         }
       }
     }
@@ -413,7 +405,7 @@ public class IndexManager {
     for (TextDescription t : list1) {
       if (t != null) {
         if (t.getContent() != null) {
-          doc.add(new Field(getFieldName(CONTENT, t.getLang()), t.getContent(), NO, ANALYZED));
+          doc.add(new Field(getFieldName(CONTENT, t.getLang()), t.getContent(), TextField.TYPE_NOT_STORED));
         }
       }
     }
@@ -436,7 +428,7 @@ public class IndexManager {
 
     Set<String> linkedFileIds = indexEntry.getLinkedFileIdsSet();
     for (String linkedFileId : linkedFileIds) {
-      doc.add(new Field(EMBEDDED_FILE_IDS, linkedFileId, YES, NOT_ANALYZED));
+      doc.add(new Field(EMBEDDED_FILE_IDS, linkedFileId, TextField.TYPE_STORED));
     }
 
     List<FieldDescription> list3 = indexEntry.getFields();
@@ -445,21 +437,21 @@ public class IndexManager {
       if (StringUtil.isDefined(field.getContent())) {
         // if a field is used for the sort or to generate a facet, it's stored in the lucene index
         String fieldName = getFieldName(field.getFieldName(), field.getLang());
-        Store storeAction;
+        FieldType storeAction;
         if (field.isStored() || SearchEnginePropertiesManager.getFieldsNameList().contains(field.
             getFieldName())) {
-          storeAction = YES;
+          storeAction = TextField.TYPE_STORED;
           fieldsForFacets.add(fieldName);
         } else {
-          storeAction = NO;
+          storeAction = TextField.TYPE_NOT_STORED;
         }
-        doc.add(new Field(fieldName, field.getContent(), storeAction, ANALYZED));
+        doc.add(new Field(fieldName, field.getContent(), storeAction));
       }
     }
     if (!fieldsForFacets.isEmpty()) {
       String stringForFacets = buildStringForFacets(fieldsForFacets);
       // adds all fields which generate facets
-      doc.add(new Field(FIELDS_FOR_FACETS, stringForFacets, YES, Index.NO));
+      doc.add(new Field(FIELDS_FOR_FACETS, stringForFacets, TextField.TYPE_STORED));
     }
 
     if (!isWysiwyg(indexEntry)) {
@@ -476,28 +468,27 @@ public class IndexManager {
         String language = languages.next();
         if (indexEntry.getTitle(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getTitle(language).
-              toLowerCase(new Locale(language)), NO, ANALYZED));
+              toLowerCase(new Locale(language)), TextField.TYPE_NOT_STORED));
         }
         if (indexEntry.getPreview(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getPreview(language).
-              toLowerCase(new Locale(language)), NO, ANALYZED));
+              toLowerCase(new Locale(language)), TextField.TYPE_NOT_STORED));
         }
         if (indexEntry.getKeywords(language) != null) {
           doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getKeywords(language).
-              toLowerCase(new Locale(language)), NO, ANALYZED));
+              toLowerCase(new Locale(language)), TextField.TYPE_NOT_STORED));
         }
       }
     }
     // Add server name inside Lucene doc
-    doc.add(new Field(SERVER_NAME, indexEntry.getServerName(), Store.YES, NOT_ANALYZED));
+    doc.add(new Field(SERVER_NAME, indexEntry.getServerName(), TextField.TYPE_STORED));
 
     if (indexEntry.getPaths() != null) {
       for (String path : indexEntry.getPaths()) {
-        doc.add(new Field(PATH, path, Store.YES, Index.NOT_ANALYZED));
+        doc.add(new Field(PATH, path, TextField.TYPE_STORED));
       }
     }
-    doc.add(new Field(ALIAS, Boolean.toString(indexEntry.isAlias()), Store.YES, Index.NO));
-
+    doc.add(new Field(ALIAS, Boolean.toString(indexEntry.isAlias()), TextField.TYPE_STORED));
 
     return doc;
   }
@@ -521,7 +512,6 @@ public class IndexManager {
    * Add file to Document
    */
   private void addFile(Document doc, FileDescription fileDescription) {
-
     File file = new File(fileDescription.getPath());
     if (!file.exists() || !file.isFile()) {
       return;
@@ -529,7 +519,8 @@ public class IndexManager {
     try {
       Reader reader = getReader(fileDescription);
       if (reader != null) {
-        Field field = new Field(getFieldName(CONTENT, fileDescription.getLang()), reader);
+        Field field = new Field(getFieldName(CONTENT, fileDescription.getLang()), reader,
+            TextField.TYPE_NOT_STORED);
         doc.add(field);
       }
     } catch (RuntimeException e) {

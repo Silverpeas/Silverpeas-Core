@@ -24,12 +24,10 @@
 package org.silverpeas.core.index.search.model;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.util.ArrayUtil;
@@ -82,12 +80,12 @@ public class DidYouMeanSearcher {
 
       // parses the query string to prepare the search
       Analyzer analyzer = indexManager.getAnalyzer(queryDescription.getRequestedLanguage());
-      QueryParser queryParser = new QueryParser(Version.LUCENE_36, field, analyzer);
+      QueryParser queryParser = new QueryParser(field, analyzer);
 
       Query parsedQuery;
       try {
         parsedQuery = queryParser.parse(queryDescription.getQuery());
-      } catch (ParseException exception) {
+      } catch (org.apache.lucene.queryparser.classic.ParseException exception) {
         throw new org.silverpeas.core.index.search.model.ParseException("DidYouMeanSearcher",
                 exception);
       }
@@ -102,7 +100,7 @@ public class DidYouMeanSearcher {
 
       try {
         while (tokens.hasMoreTokens()) {
-          SpellChecker spellCheck = new SpellChecker(FSDirectory.open(uploadIndexDir));
+          SpellChecker spellCheck = new SpellChecker(FSDirectory.open(uploadIndexDir.toPath()));
           spellCheckers.add(spellCheck);
           String token = tokens.nextToken().replaceAll("\"", "");
           for (String path : spellIndexPaths) {
@@ -113,7 +111,7 @@ public class DidYouMeanSearcher {
             if (file.exists()) {
 
               // create a spellChecker with the file object
-              FSDirectory directory = FSDirectory.open(file);
+              FSDirectory directory = FSDirectory.open(file.toPath());
               spellCheck.setSpellIndex(directory);
 
               // if the word exist in the dictionary, we stop the current treatment and search the

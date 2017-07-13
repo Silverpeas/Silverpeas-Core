@@ -76,7 +76,7 @@ public class DidYouMeanIndexer {
       return;
     }
     // initializes local variable
-    IndexReader indexReader = null;
+    /*IndexReader indexReader = null;
 
     try {
       // create a file object with given path
@@ -100,7 +100,7 @@ public class DidYouMeanIndexer {
           "root.EX_LOAD_IO_EXCEPTION", e);
     } finally {
       IOUtils.closeQuietly(indexReader);
-    }
+    }*/
 
   }
 
@@ -132,7 +132,7 @@ public class DidYouMeanIndexer {
       File file = new File(pathSpellChecker);
       if (file != null && file.exists()) {
         // create a spellChecker with the file object
-        SpellChecker spell = new SpellChecker(FSDirectory.open(file));
+        SpellChecker spell = new SpellChecker(FSDirectory.open(file.toPath()));
         // if index exists, clears his content
         if (spell != null) {
           spell.clearIndex();

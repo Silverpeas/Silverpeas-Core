@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
+import org.apache.lucene.index.DirectoryReader;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import java.io.File;
 import java.io.IOException;
@@ -32,7 +33,7 @@ import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.FSDirectory;
 
 public class IndexReadersCache {
-  private final static IndexReadersCache instance = new IndexReadersCache();
+  private static final IndexReadersCache instance = new IndexReadersCache();
   private Map<String, IndexReader> indexReaders;
 
   private IndexReadersCache() {
@@ -46,7 +47,8 @@ public class IndexReadersCache {
   public static synchronized IndexReader getIndexReader(String path) {
     if (!getInstance().indexReaders.containsKey(path)) {
       try {
-        getInstance().indexReaders.put(path, IndexReader.open(FSDirectory.open(new File(path))));
+        DirectoryReader iReader = DirectoryReader.open(FSDirectory.open(new File(path).toPath()));
+        getInstance().indexReaders.put(path, iReader);
       } catch (Exception e) {
         SilverTrace.warn("searchEngine", "IndexManager.getIndexReader()",
             "searchEngine.MSG_CANT_OPEN_INDEX_SEARCHER", e);

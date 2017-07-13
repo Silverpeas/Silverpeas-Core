@@ -23,24 +23,24 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.index.indexing.analysis.SilverTokenizer;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.lucene.analysis.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.LowerCaseFilter;
-import org.apache.lucene.analysis.StopFilter;
 import org.apache.lucene.analysis.TokenStream;
-import org.apache.lucene.analysis.fr.ElisionFilter;
+import org.apache.lucene.analysis.Tokenizer;
+import org.apache.lucene.analysis.core.LowerCaseFilter;
+import org.apache.lucene.analysis.core.StopFilter;
+import org.apache.lucene.analysis.fr.FrenchAnalyzer;
+import org.apache.lucene.analysis.miscellaneous.ASCIIFoldingFilter;
 import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
-import org.apache.lucene.util.Version;
+import org.apache.lucene.analysis.standard.StandardTokenizer;
+import org.apache.lucene.analysis.util.ElisionFilter;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 
-import java.io.Reader;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -61,7 +61,7 @@ public final class WAAnalyzer extends Analyzer {
    * @param language
    * @return
    */
-  static public Analyzer getAnalyzer(String language) {
+  public static Analyzer getAnalyzer(String language) {
     Analyzer analyzer = languageMap.get(language);
 
     if (analyzer == null) {
@@ -75,16 +75,15 @@ public final class WAAnalyzer extends Analyzer {
   /**
    * Returns a tokens stream built on top of the given reader.
    *
-   * @param reader
-   * @return
    */
-  public TokenStream tokenStream(Reader reader) {
-    TokenStream result = new SilverTokenizer(reader);
-    result = new StandardFilter(Version.LUCENE_36, result); // remove 's and . from token
-    result = new LowerCaseFilter(Version.LUCENE_36, result);
-    result = new StopFilter(Version.LUCENE_36, result, stopWords); // remove some unexplicit terms
+  @Override
+  protected TokenStreamComponents createComponents(final String s) {
+    final Tokenizer source = new StandardTokenizer();
+    TokenStream result = new StandardFilter(source); // remove 's and . from token
+    result = new LowerCaseFilter(result);
+    result = new StopFilter(result, FrenchAnalyzer.getDefaultStopSet()); // remove some unexplicit terms
     // according to the language
-    result = new ElisionFilter(Version.LUCENE_36, result); // remove [cdjlmnst-qu]' from token
+    result = new ElisionFilter(result, FrenchAnalyzer.DEFAULT_ARTICLES); // remove [cdjlmnst-qu]' from token
     if (snowballUsed) {
       // Important! Strings given to Snowball filter must contains accents
       // so accents must be removed after stemmer have done the job
@@ -93,12 +92,7 @@ public final class WAAnalyzer extends Analyzer {
     }
     // remove accents
     result = new ASCIIFoldingFilter(result);
-    return result;
-  }
-
-  @Override
-  public TokenStream tokenStream(String arg0, Reader reader) {
-    return tokenStream(reader);
+    return new TokenStreamComponents(source, result);
   }
 
   /**
