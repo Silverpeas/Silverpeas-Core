@@ -33,6 +33,8 @@ import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
+import org.silverpeas.core.persistence.datasource.repository.QueryCriteria;
+import org.silverpeas.core.persistence.datasource.repository.SimpleQueryCriteria;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.SecurableRequestCache;
 import org.silverpeas.core.security.authorization.AccessControlContext;
@@ -46,6 +48,7 @@ import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.net.MalformedURLException;
@@ -71,10 +74,15 @@ import static java.time.Month.DECEMBER;
  * @author mmoquillon
  */
 @Entity
+@NamedQueries({
 @NamedQuery(
     name = "calendarsByComponentInstanceId",
     query = "from Calendar c where c.componentInstanceId = :componentInstanceId " +
-            "order by c.componentInstanceId, c.title, c.id")
+            "order by c.componentInstanceId, c.title, c.id"),
+@NamedQuery(
+    name = "synchronizedCalendars",
+    query = "from Calendar c where c.externalUrl is not null"
+)})
 @Table(name = "sb_cal_calendar")
 public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> implements Securable {
 
@@ -168,6 +176,17 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    */
   public static CalendarEvents getEvents() {
     return new CalendarEvents();
+  }
+
+  /**
+   * Gets all the synchronized calendars in Silverpeas. A calendar is synchronized when it is
+   * the counterpart of an external remote calendar and it is regularly updated from this external
+   * calendar.
+   *
+   * @return a list of synchronized calendars.
+   */
+  public static List<Calendar> getSynchronizedCalendars() {
+    return CalendarRepository.get().getAllSynchronized();
   }
 
   @Override

@@ -25,14 +25,33 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.scheduler.Job;
+import org.silverpeas.core.scheduler.JobExecutionContext;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerException;
+import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.trigger.CronJobTrigger;
+import org.silverpeas.core.thread.ManagedThreadPool;
+import org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig;
+import org.silverpeas.core.thread.ManagedThreadPoolException;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.ParseException;
+import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.util.List;
+import java.util.MissingResourceException;
+import java.util.stream.Stream;
 
 /**
  * A processor of synchronization of calendar events from a remote calendar into the Silverpeas
@@ -58,13 +77,45 @@ import java.time.OffsetDateTime;
  * @author mmoquillon
  */
 @Singleton
-public class ICalendarEventSynchronization {
+public class ICalendarEventSynchronization implements Initialization {
+
+  private static final String CALENDAR_SETTINGS = "org.silverpeas.calendar.settings.calendar";
+
+  /**
+   * The namespace of the logger used to report the synchronization of a calendar.
+   */
+  public static final String REPORT_NAMESPACE = "silverpeas.core.calendar.synchronization";
 
   @Inject
   private ICalendarEventImportProcessor importer;
 
   private ICalendarEventSynchronization() {
 
+  }
+
+  @Override
+  public void init() throws Exception {
+    try {
+      final SettingBundle settings = ResourceLocator.getSettingBundle(CALENDAR_SETTINGS);
+      final String cron = settings.getString("calendar.synchronization.cron");
+
+      Scheduler scheduler = SchedulerProvider.getScheduler();
+      scheduler.unscheduleJob(getClass().getSimpleName());
+      scheduler.scheduleJob(new Job(getClass().getSimpleName()) {
+        @Override
+        public void execute(final JobExecutionContext context) throws Exception {
+          synchronizeAll();
+        }
+      }, CronJobTrigger.triggerAt(cron));
+    } catch (MissingResourceException | SchedulerException | ParseException e) {
+      SilverLogger.getLogger(this).error("The synchronization scheduling failed to start", e);
+    }
+  }
+
+  @Override
+  public void release() throws Exception {
+    Scheduler scheduler = SchedulerProvider.getScheduler();
+    scheduler.unscheduleJob(getClass().getSimpleName());
   }
 
   /**
@@ -115,6 +166,37 @@ public class ICalendarEventSynchronization {
     }
   }
 
+  /**
+   * Synchronizes all the synchronized calendars in Silverpeas with their remote external
+   * counterpart. Each synchronization of a calendar will be done as they were requested by their
+   * creator.
+   * <p>
+   * The synchronized calendars will be synchronized in a fixed pool of threads whose the size is
+   * provided by the <code>calendar.synchronization.processors</code> property in the
+   * <code>org.silverpeas.calendar.settings.calendar.properties</code> properties file. If no such
+   * number is set in the settings, then the size of the pool is computed by this method according
+   * to the number of available processors in the runtime. This will ensure that only a subset of
+   * calendars are synchronized simultaneously to avoid of overloading Silverpeas.
+   * </p>
+   * @throws ImportException if the synchronization fails to start for at least one of the
+   * calendar.
+   */
+  public void synchronizeAll() throws ImportException {
+    final SettingBundle settings = ResourceLocator.getSettingBundle(CALENDAR_SETTINGS);
+    int processors = settings.getInteger("calendar.synchronization.processors", 0);
+    if (processors <= 0) {
+      processors = Runtime.getRuntime().availableProcessors();
+    }
+    List<Calendar> calendars = Calendar.getSynchronizedCalendars();
+    try {
+      ManagedThreadPool.getPool()
+          .invokeAndAwaitTermination(synchronizationProcessorsOf(calendars),
+              ExecutionConfig.maxThreadPoolSizeOf(processors));
+    } catch (ManagedThreadPoolException e) {
+      throw new ImportException("Fail to synchronize the synchronized calendars!", e);
+    }
+  }
+
   private void removeDeletedEvents(final Calendar calendar, final ICalendarImportResult result) {
     Calendar.getEvents()
         .filter(f -> f.onCalendar(calendar)
@@ -124,6 +206,55 @@ public class ICalendarEventSynchronization {
           e.delete();
           result.incDeleted();
         });
+  }
+
+  private Stream<? extends Runnable> synchronizationProcessorsOf(final List<Calendar> calendars) {
+    return calendars.stream().map(c -> (Runnable) () -> {
+      try {
+        // we set the creator of the calendar as the requester for the synchronization in this
+        // thread
+        OperationContext.fromUser(c.getCreator());
+        ICalendarImportResult result = c.synchronize();
+        String report = generateReport(c, result);
+        SilverLogger.getLogger(REPORT_NAMESPACE).info(report);
+      } catch (ImportException e) {
+        SilverLogger.getLogger(REPORT_NAMESPACE)
+            .error("Calendar " + c.getId() + " ('" + c.getTitle() + "') synchronization failure",
+                e);
+      }
+    });
+  }
+
+  private String generateReport(final Calendar calendar, final ICalendarImportResult result) {
+    Duration duration =
+        Duration.between(calendar.getLastSynchronizationDate().get(), OffsetDateTime.now());
+    return new StringBuilder("Report of the synchronization of calendar ").append(calendar.getId())
+        .append(" ('")
+        .append(calendar.getTitle())
+        .append("')\n")
+        .append("author: ")
+        .append(calendar.getCreator().getDisplayedName())
+        .append(" (id '")
+        .append(calendar.getCreator().getDisplayedName())
+        .append("')")
+        .append("\n")
+        .append("Synchronization date: ")
+        .append(calendar.getLastSynchronizationDate().get())
+        .append("\n")
+        .append("Synchronization duration: ")
+        .append(duration.getSeconds())
+        .append(" seconds")
+        .append("\n")
+        .append("Number of events added: ")
+        .append(result.added())
+        .append("\n")
+        .append("Number of events updated: ")
+        .append(result.updated())
+        .append("\n")
+        .append("Number of events deleted: ")
+        .append(result.deleted())
+        .append("\n")
+        .toString();
   }
 }
   

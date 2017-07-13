@@ -85,7 +85,8 @@ public class OperationContext {
    * @return a new {@link OperationContext} for the current user.
    */
   public static OperationContext fromCurrentRequester() {
-    return getFromCache().withUser(User.getCurrentRequester());
+    OperationContext context = getFromCache();
+    return context.getUser() == null ? context.withUser(User.getCurrentRequester()) : context;
   }
 
   /**

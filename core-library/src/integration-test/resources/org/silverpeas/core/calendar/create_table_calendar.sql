@@ -1,4 +1,37 @@
-CREATE TABLE st_token (
+-- System required tables
+
+CREATE TABLE ST_Space
+(
+  id                    int PRIMARY KEY NOT NULL,
+  domainFatherId        int,
+  name                  varchar(100)  NOT NULL,
+  description           varchar(400),
+  createdBy             int,
+  firstPageType         int NOT NULL,
+  firstPageExtraParam   varchar(400),
+  orderNum              int DEFAULT (0) NOT NULL,
+  createTime            varchar(20),
+  updateTime            varchar(20),
+  removeTime            varchar(20),
+  spaceStatus           char(1),
+  updatedBy             int,
+  removedBy             int,
+  lang                  char(2),
+  isInheritanceBlocked  int default(0) NOT NULL,
+  look                  varchar(50),
+  displaySpaceFirst     smallint,
+  isPersonal            smallint
+);
+
+CREATE TABLE IF NOT EXISTS SB_ContentManager_Instance
+(
+  instanceId    int NOT NULL ,
+  componentId   varchar(100) NOT NULL ,
+  containerType varchar(100) NOT NULL ,
+  contentType   varchar(100) NOT NULL
+);
+
+CREATE TABLE ST_Token (
   id int8 NOT NULL ,
   tokenType varchar(50) NOT NULL ,
   resourceId varchar(50) NOT NULL ,

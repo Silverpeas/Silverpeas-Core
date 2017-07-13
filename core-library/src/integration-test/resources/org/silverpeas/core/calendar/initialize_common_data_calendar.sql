@@ -24,6 +24,7 @@ INSERT INTO sb_cal_calendar
   (id, instanceId, title, zoneid, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
 VALUES
   ('ID_CAL_WITHOUT_EVENT', 'instance_WE', 'title WE', 'UTC', '2016-07-28T16:50:00Z', '0', '2016-07-28T16:50:00Z', '0', 0),
+  ('ID_4', 'instance_C', 'title 4', 'UTC', '2016-07-28T16:50:00Z', '1', '2016-07-28T16:50:00Z', '1', 0),
   ('ID_3', 'instance_A', 'title 3', 'UTC', '2016-07-28T16:50:00Z', '0', '2016-07-28T16:50:00Z', '0', 0),
   ('ID_2', 'instance_B', 'title 2', 'UTC', '2016-07-28T16:50:00Z', '0', '2016-07-28T16:50:00Z', '0', 0),
   ('ID_1', 'instance_A', 'title 1', 'UTC', '2016-07-28T16:50:00Z', '0', '2016-07-28T16:55:00Z', '1', 1);

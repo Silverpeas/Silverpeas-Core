@@ -30,8 +30,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule;
@@ -67,6 +69,7 @@ public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
       "file://{0}/org/silverpeas/core/calendar/ICAL_EMPTY_TEST_SYNCHRO.ics";
   private static final String EXTERNAL_URL =
       "file://{0}/org/silverpeas/core/calendar/ICAL_TEST_SYNCHRO.ics";
+  private static final String PATTERN_EXTERNAL_URL = "file://{0}/org/silverpeas/core/calendar/{1}";
 
   static {
     // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
@@ -89,6 +92,8 @@ public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
     return CalendarWarBuilder.onWarForTestClass(CalendarSynchronizationIntegrationTest.class)
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
+        .addAsResource("org/silverpeas/util/logging")
+        .addAsResource("org/silverpeas/calendar/settings")
         .build();
   }
 
@@ -240,6 +245,43 @@ public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
     assertThat(events.size(), is(2));
     events.forEach(e -> {
       assertThat(e.getLastSynchronizationDate().toLocalDate(), is(LocalDate.now()));
+    });
+  }
+
+  @Test
+  public void synchronizeAllCalendars() throws Exception {
+    OperationContext.fromUser(User.getById("1"));
+    Calendar calendar = Calendar.getById("ID_1");
+    String externalCalendarUrl = MessageFormat.format(PATTERN_EXTERNAL_URL,
+        mavenTargetDirectoryRule.getResourceTestDirFile(), "ICAL-EXPORT-SP-GOO-2017-05-03_00.ics");
+    calendar.setExternalCalendarUrl(new URL(externalCalendarUrl));
+    calendar.save();
+
+    /*calendar = Calendar.getById("ID_2");
+    externalCalendarUrl = MessageFormat.format(PATTERN_EXTERNAL_URL,
+        mavenTargetDirectoryRule.getResourceTestDirFile(), "ICAL-EXPORT-YCH-2017-05-02_00.ics");
+    calendar.setExternalCalendarUrl(new URL(externalCalendarUrl));
+    calendar.save();
+
+    calendar = Calendar.getById("ID_3");
+    externalCalendarUrl = MessageFormat.format(PATTERN_EXTERNAL_URL,
+        mavenTargetDirectoryRule.getResourceTestDirFile(),
+        "ICAL-EXPORT-YCH-2017-05-02_01_EXCEP.ics");
+    calendar.setExternalCalendarUrl(new URL(externalCalendarUrl));
+    calendar.save();
+
+    calendar = Calendar.getById("ID_4");
+    externalCalendarUrl = MessageFormat.format(PATTERN_EXTERNAL_URL,
+        mavenTargetDirectoryRule.getResourceTestDirFile(),
+        "ICAL-EXPORT-YCH-2017-05-02_02_EXC_ATTENDEE.ics");
+    calendar.setExternalCalendarUrl(new URL(externalCalendarUrl));
+    calendar.save();*/
+
+    synchronization.synchronizeAll();
+
+    Calendar.getSynchronizedCalendars().stream().forEach(c -> {
+      assertThat(c.getLastSynchronizationDate().isPresent(), is(true));
+      assertThat(c.isEmpty(), is(false));
     });
   }
 

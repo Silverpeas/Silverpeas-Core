@@ -31,6 +31,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JImporter;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
+import org.silverpeas.core.calendar.repository.DefaultCalendarEventRepository;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.EncodingException;
 import org.silverpeas.core.test.BasicWarBuilder;
@@ -66,7 +67,8 @@ public class JSONCodecIntegrationTest {
     return BasicWarBuilder.onWarForTestClass(JSONCodecIntegrationTest.class).testFocusedOn(
         war -> war.addClasses(TestSerializableBean.class, TestBean.class, DecodingException.class,
             EncodingException.class, JSONCodec.class))
-        .addClasses(ICal4JImporter.class, ICal4JDateCodec.class, ICal4JRecurrenceCodec.class)
+        .addClasses(ICal4JImporter.class, ICal4JDateCodec.class, ICal4JRecurrenceCodec.class,
+            DefaultCalendarEventRepository.class)
         .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF").build();
   }
 

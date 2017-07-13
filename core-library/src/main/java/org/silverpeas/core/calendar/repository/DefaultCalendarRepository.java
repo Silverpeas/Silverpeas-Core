@@ -46,6 +46,11 @@ public class DefaultCalendarRepository extends SilverpeasJpaEntityRepository<Cal
   }
 
   @Override
+  public List<Calendar> getAllSynchronized() {
+    return findByNamedQuery("synchronizedCalendars", newNamedParameters());
+  }
+
+  @Override
   public void delete(final List<Calendar> calendars) {
     deleteAllEventsIn(calendars);
     super.delete(calendars);

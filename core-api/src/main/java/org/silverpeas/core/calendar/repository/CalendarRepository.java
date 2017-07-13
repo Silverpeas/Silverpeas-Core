@@ -51,4 +51,10 @@ public interface CalendarRepository extends EntityRepository<Calendar> {
    * @return a list containing the calendar instances which matched if any, empty list otherwise.
    */
   List<Calendar> getByComponentInstanceId(String componentInstanceId);
+
+  /**
+   * Gets all the calendars in Silverpeas synchronized with an external one.
+   * @return a list of synchronized calendars.
+   */
+  List<Calendar> getAllSynchronized();
 }
