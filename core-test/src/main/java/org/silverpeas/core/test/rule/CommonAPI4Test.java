@@ -29,6 +29,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.mockito.internal.util.MockUtil;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.service.GroupProvider;
 import org.silverpeas.core.admin.user.service.UserProvider;
@@ -38,6 +39,7 @@ import org.silverpeas.core.test.util.lang.TestSystemWrapper;
 import org.silverpeas.core.test.util.log.TestSilverpeasTrace;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 import org.silverpeas.core.util.logging.SilverLoggerProvider;
 
@@ -45,8 +47,14 @@ import javax.enterprise.concurrent.ManagedThreadFactory;
 import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.Handler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import static org.mockito.Mockito.*;
+import static org.silverpeas.core.util.logging.SilverLoggerProvider.ROOT_NAMESPACE;
 
 /**
  * @author Yohann Chastagnier
@@ -96,6 +104,38 @@ public class CommonAPI4Test implements TestRule {
 
   public TestContext getTestContext() {
     return testContext;
+  }
+
+  public void setLoggerLevel(Level level) {
+    final ConsoleHandler handler = new ConsoleHandler();
+    setLoggerHandler(handler);
+    handler.setFormatter(new SimpleFormatter());
+    switch (level) {
+      case INFO:
+        Logger.getLogger(ROOT_NAMESPACE).setLevel(java.util.logging.Level.INFO);
+        handler.setLevel(java.util.logging.Level.INFO);
+        break;
+      case DEBUG:
+        Logger.getLogger(ROOT_NAMESPACE).setLevel(java.util.logging.Level.FINE);
+        handler.setLevel(java.util.logging.Level.FINE);
+        break;
+      case WARNING:
+        Logger.getLogger(ROOT_NAMESPACE).setLevel(java.util.logging.Level.WARNING);
+        handler.setLevel(java.util.logging.Level.WARNING);
+        break;
+      case ERROR:
+        Logger.getLogger(ROOT_NAMESPACE).setLevel(java.util.logging.Level.SEVERE);
+        handler.setLevel(java.util.logging.Level.SEVERE);
+        break;
+    }
+  }
+
+  public void setLoggerHandler(final Handler handler) {
+    Logger.getLogger(ROOT_NAMESPACE).setUseParentHandlers(false);
+    if (Arrays.stream(Logger.getLogger(ROOT_NAMESPACE).getHandlers())
+        .filter(h -> handler.getClass().isInstance(h)).count() == 0) {
+      Logger.getLogger(ROOT_NAMESPACE).addHandler(handler);
+    }
   }
 
   @SuppressWarnings("unchecked")
@@ -170,7 +210,7 @@ public class CommonAPI4Test implements TestRule {
           .getBeanByType(ManagedThreadPool.class)).thenReturn(managedThreadPool);
     } catch (IllegalAccessException | NoSuchMethodException | InstantiationException |
         InvocationTargetException e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 

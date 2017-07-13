@@ -24,76 +24,38 @@
 package org.silverpeas.core.mail.engine;
 
 import org.silverpeas.core.mail.MailToSend;
-import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.task.AbstractRequestTask;
+import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Semaphore;
 
 /**
- * A thread MailSenderThread in the background a batch of mail sending. All the public methods
- * are static, so only one thread runs and processes the mail sending.<br>
- * When it get no more mail to send, the thread ends a new one will be instantiated on the next
+ * A task MailSenderTask runs in the background a batch of mail to send.<br>
+ * When it get no more mail to send, the task ends and a new one will be instantiated on the next
  * mail sending request.<br>
  * Priority is given to synchronous mail sending request.
  */
-public class MailSenderTask extends AbstractRequestTask<MailProcessContext> {
-
-  /**
-   * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
-   * access will be synchronized on this list. Furthermore this list is used to synchronize the
-   * providers and the consumers of the list.<br>
-   * When the list is empty, then the thread is killed. It will be instantiated again on the next
-   * mail to send.
-   */
-  private static final List<Request<MailProcessContext>> requestList = new ArrayList<>();
+public class MailSenderTask extends AbstractRequestTask<MailSenderTask.MailProcessContext> {
 
   /**
    * All the requests are processed by a single background thread. This thread is built and started
    * by the start method.
    */
-  private static boolean running = false;
   private static Semaphore orderedOneByOneSemaphore = new Semaphore(1, true);
-
-  /**
-   * The constructor is private : only one MailSenderThread will be created to process all the
-   * request.
-   */
-  private MailSenderTask() {
-  }
-
-  /**
-   * Builds and starts the thread which will process all the requests. This method is synchronized
-   * on the requests queue in order to guarantee that only one MailSenderThread is running.
-   */
-  private static void startIfNotAlreadyDone() {
-    if (!running) {
-      running = true;
-      ManagedThreadPool.getPool().invoke(new MailSenderTask());
-    }
-  }
-
-  private static void stop() {
-    running = false;
-  }
 
   /**
    * Add a mail to send.
    * @param mailToSend a mail to send.
    */
   public static void addMailToSend(MailToSend mailToSend) {
-    AddMailToSendRequest addMailToSendRequest = new AddMailToSendRequest(mailToSend);
+    MailToSendRequest mailToSendRequest = new MailToSendRequest(mailToSend);
     if (mailToSend.isAsynchronous()) {
-      synchronized (requestList) {
-        requestList.add(addMailToSendRequest);
-        startIfNotAlreadyDone();
-      }
+      RequestTaskManager.push(MailSenderTask.class, mailToSendRequest);
     } else {
       // The sending is performed synchronously
       try {
-        addMailToSendRequest.process(new MailProcessContext(orderedOneByOneSemaphore));
+        mailToSendRequest.process(new MailProcessContext(orderedOneByOneSemaphore));
       } catch (Exception e) {
         SilverLogger.getLogger(MailSenderTask.class).error(e.getLocalizedMessage(), e);
       }
@@ -101,59 +63,49 @@ public class MailSenderTask extends AbstractRequestTask<MailProcessContext> {
   }
 
   @Override
-  protected List<Request<MailProcessContext>> getRequestList() {
-    return requestList;
-  }
-
-  @Override
-  protected void taskIsEnding() {
-    stop();
-  }
-
-  @Override
   protected MailProcessContext getProcessContext() {
     return new MailProcessContext(orderedOneByOneSemaphore);
   }
-}
 
-class MailProcessContext implements AbstractRequestTask.ProcessContext {
-  private final Semaphore semaphore;
+  static class MailProcessContext implements AbstractRequestTask.ProcessContext {
+    private final Semaphore semaphore;
 
-  MailProcessContext(final Semaphore semaphore) {
-    this.semaphore = semaphore;
-  }
+    MailProcessContext(final Semaphore semaphore) {
+      this.semaphore = semaphore;
+    }
 
-  Semaphore getSemaphore() {
-    return semaphore;
-  }
-}
-
-/**
- * Permits to add a request of adding a mail to send.
- */
-class AddMailToSendRequest implements AbstractRequestTask.Request<MailProcessContext> {
-  private final MailToSend mailToSend;
-
-  /**
-   * Constructor declaration
-   * @param mailToSend the mail to send.
-   */
-  AddMailToSendRequest(MailToSend mailToSend) {
-    this.mailToSend = mailToSend;
+    Semaphore getSemaphore() {
+      return semaphore;
+    }
   }
 
   /**
-   * As {@link MailSenderTask} can send a mail synchronously or asynchronously, this method is
-   * synchronized to ensure that one send is performed at a same time laps.
-   * @param context the context of the request processing.
+   * Permits to add a request of adding a mail to send.
    */
-  @Override
-  public void process(final MailProcessContext context) throws InterruptedException {
-    try {
-      context.getSemaphore().acquire();
-      MailSenderProvider.get().send(mailToSend);
-    } finally {
-      context.getSemaphore().release();
+  static class MailToSendRequest implements AbstractRequestTask.Request<MailProcessContext> {
+    private final MailToSend mailToSend;
+
+    /**
+     * Constructor declaration
+     * @param mailToSend the mail to send.
+     */
+    MailToSendRequest(MailToSend mailToSend) {
+      this.mailToSend = mailToSend;
+    }
+
+    /**
+     * As {@link MailSenderTask} can send a mail synchronously or asynchronously, this method is
+     * synchronized to ensure that one send is performed at a same time laps.
+     * @param context the context of the request processing.
+     */
+    @Override
+    public void process(final MailProcessContext context) throws InterruptedException {
+      try {
+        context.getSemaphore().acquire();
+        MailSenderProvider.get().send(mailToSend);
+      } finally {
+        context.getSemaphore().release();
+      }
     }
   }
 }

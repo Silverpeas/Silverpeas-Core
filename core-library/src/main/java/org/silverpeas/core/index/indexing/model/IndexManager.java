@@ -50,6 +50,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
@@ -70,6 +71,7 @@ import static org.silverpeas.core.i18n.I18NHelper.defaultLocale;
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
  * an IndexManager between several threads use an IndexerThread.
  */
+@Singleton
 public class IndexManager {
 
   /**

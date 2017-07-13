@@ -31,6 +31,7 @@ import org.mockito.ArgumentCaptor;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.notification.sse.ServerEventDispatcherTask.ServerEventStore;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.util.logging.Level;
 
 import javax.servlet.AsyncContext;
 import javax.servlet.http.HttpServletRequest;
@@ -70,6 +71,8 @@ class AbstractServerEventDispatcherTaskTest {
     asyncContextMap.clear();
     serverEventStore.clear();
     FieldUtils.writeDeclaredStaticField(AbstractServerEvent.class, "idCounter", 0L, true);
+    commonAPI4Test.injectIntoMockedBeanContainer(new ServerEventDispatcherTask());
+    commonAPI4Test.setLoggerLevel(Level.DEBUG);
     new SseLogger().init();
   }
 

@@ -78,6 +78,7 @@ import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
@@ -1486,8 +1487,14 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         if (pathsByIndex.get(pk) == null) {
           pathsByIndex.put(pk, new ArrayList<String>());
         }
-        pathsByIndex.get(pk).add(
-            nodeService.getDetail(new NodePK(alias.getId(), alias.getInstanceId())).getFullPath());
+        try {
+          NodeDetail node = nodeService.getDetail(new NodePK(alias.getId(), alias.getInstanceId()));
+          pathsByIndex.get(pk).add(node.getFullPath());
+        } catch (Exception e) {
+          SilverLogger.getLogger(this)
+              .warn("Alias target {0} in component {1} no more exists", alias.getId(),
+                  alias.getInstanceId());
+        }
       }
     }
 

@@ -58,6 +58,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
+import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,6 +75,7 @@ import java.util.StringTokenizer;
  * The IndexSearcher class implements search over all the indexes. A IndexSearcher
  * manages a set of cached lucene IndexSearcher.
  */
+@Singleton
 public class IndexSearcher {
 
   public static QueryParser.Operator defaultOperand = QueryParser.AND_OPERATOR;
@@ -88,6 +90,7 @@ public class IndexSearcher {
    * abstract match the query.
    */
   private int secondaryFactor = 1;
+
   @Inject
   private IndexManager indexManager;
 
