@@ -42,6 +42,7 @@ import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.DELETE;
@@ -60,10 +61,12 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -87,6 +90,9 @@ import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.ass
 @Path(CALENDAR_BASE_URI + "/{componentInstanceId}")
 @Authorized
 public class CalendarResource extends AbstractCalendarResource {
+
+  private static final int DEFAULT_NB_MAX_NEXT_OCC = 10;
+  private static final int[] NEXT_OOC_MONTH_OFFSETS = {1, 6, 12, 1200};
 
   @QueryParam("zoneid")
   private String zoneId;
@@ -147,6 +153,9 @@ public class CalendarResource extends AbstractCalendarResource {
     calendarEntity.merge(calendar);
     Calendar createdCalendar =
         process(() -> getCalendarWebServiceProvider().saveCalendar(calendar)).execute();
+    if (createdCalendar.isSynchronized()) {
+      synchronizeCalendar(createdCalendar.getId());
+    }
     return asWebEntity(createdCalendar);
   }
 
@@ -168,9 +177,15 @@ public class CalendarResource extends AbstractCalendarResource {
       CalendarEntity calendarEntity) {
     final Calendar calendar = Calendar.getById(calendarId);
     assertDataConsistency(getComponentId(), calendar);
+    boolean synchronizedRequired = calendar.isSynchronized() &&
+        !calendar.getExternalCalendarUrl().toString()
+            .equals(calendarEntity.getExternalUrl().toString());
     calendarEntity.merge(calendar);
     Calendar updatedCalendar =
         process(() -> getCalendarWebServiceProvider().saveCalendar(calendar)).execute();
+    if (synchronizedRequired) {
+      synchronizeCalendar(updatedCalendar.getId());
+    }
     return asWebEntity(updatedCalendar);
   }
 
@@ -274,15 +289,51 @@ public class CalendarResource extends AbstractCalendarResource {
   @PUT
   @Path("{calendarId}/synchronization")
   @Produces(MediaType.APPLICATION_JSON)
+  @SuppressWarnings("UnusedReturnValue")
   public Response synchronizeCalendar(@PathParam("calendarId") String calendarId) {
     final Calendar calendar = process(() -> Calendar.getById(calendarId)).execute();
     assertDataConsistency(getComponentId(), calendar);
     try {
       getCalendarWebServiceProvider().synchronizeCalendar(calendar);
     } catch (ImportException e) {
-      throw new WebApplicationException(e, INTERNAL_SERVER_ERROR);
+      SilverLogger.getLogger(this).error(e);
+      getMessager().addError(getBundle()
+          .getStringWithParams("calendar.message.calendar.synchronize.error", calendar.getTitle()));
+      return Response.serverError().entity(asWebEntity(calendar)).build();
     }
     return Response.ok(asWebEntity(calendar)).build();
+  }
+
+  /**
+   * Gets the JSON representation of a list of calendar event occurrence.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   * occurrences.
+   * @see WebProcess#execute()
+   */
+  @GET
+  @Path(CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/" +
+      CalendarResourceURIs.CALENDAR_EVENT_OCCURRENCE_URI_PART + "/next")
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<CalendarEventOccurrenceEntity> getNextEventOccurrences(
+      @QueryParam("limit") Integer limit) {
+    final int nbOccLimit = (limit != null && limit > 0 && limit < 100) ? limit :
+        DEFAULT_NB_MAX_NEXT_OCC;
+    final List<Calendar> calendars =
+        process(() -> getCalendarWebServiceProvider().getCalendarsOf(getComponentId())).execute();
+    final LocalDate startDate =
+        getZoneId() != null ? LocalDateTime.now(getZoneId()).toLocalDate() : LocalDate.now();
+    final List<CalendarEventOccurrenceEntity> occurrences = new ArrayList<>();
+    for (int nbMonthsToAdd : NEXT_OOC_MONTH_OFFSETS) {
+      occurrences.clear();
+      LocalDate endDate = startDate.plusMonths(nbMonthsToAdd);
+      calendars.forEach(c -> occurrences.addAll(getEventOccurrencesOf(c, startDate, endDate)));
+      if (occurrences.size() >= nbOccLimit) {
+        break;
+      }
+    }
+    return occurrences.stream().sorted(Comparator.comparing(CalendarEventEntity::getStartDate))
+        .limit(nbOccLimit).collect(Collectors.toList());
   }
 
   /**
@@ -386,6 +437,26 @@ public class CalendarResource extends AbstractCalendarResource {
   }
 
   /**
+   * Gets the JSON representation of a calendar eventof an aimed event.
+   * If it doesn't exist, a 404 HTTP code is returned.
+   * @param calendarId the identifier of calendar the event must belong with.
+   * @param eventId the identifier of the aimed event.
+   * @return the response to the HTTP GET request with the JSON representation of the asked
+   * event.
+   * @see WebProcess#execute()
+   */
+  @GET
+  @Path("{calendarId}/" + CalendarResourceURIs.CALENDAR_EVENT_URI_PART + "/{eventId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public CalendarEventEntity getEvent(
+      @PathParam("calendarId") String calendarId, @PathParam("eventId") String eventId) {
+    final Calendar calendar = Calendar.getById(calendarId);
+    final CalendarEvent event = process(() -> CalendarEvent.getById(eventId)).execute();
+    assertDataConsistency(calendar.getComponentInstanceId(), calendar, event);
+    return asEventWebEntity(event);
+  }
+
+  /**
    * Creates a calendar event from the JSON representation of an occurrence and returns the
    * created event.<br/> If the user isn't authenticated, a 401 HTTP code is returned. If the user
    * isn't authorized to save the calendar, a 403 is returned. If a problem occurs when
@@ -409,7 +480,7 @@ public class CalendarResource extends AbstractCalendarResource {
   }
 
   /**
-   * Gets the JSON representation of a list of calendar event occurrence of an aimed event.
+   * Gets the JSON representation of a calendar event occurrence of an aimed event.
    * If it doesn't exist, a 404 HTTP code is returned.
    * @param calendarId the identifier of calendar the event must belong with.
    * @param eventId the identifier of event the returned occurrence must be linked with.
@@ -554,10 +625,16 @@ public class CalendarResource extends AbstractCalendarResource {
    */
   public CalendarEntity asWebEntity(Calendar calendar) {
     assertEntityIsDefined(calendar);
-    return CalendarEntity.fromCalendar(calendar)
-        .withURI(buildCalendarURI(getServiceBaseUri(), calendar))
-        .withICalPrivateURI(buildIcalPrivateURI(getHttpRequest(), getServiceBaseUri(), calendar))
-        .withICalPublicURI(buildIcalPublicURI(getHttpRequest(), getServiceBaseUri(), calendar));
+    final CalendarEntity calendarEntity = CalendarEntity.fromCalendar(calendar)
+        .withURI(buildCalendarURI(getServiceBaseUri(), calendar));
+    if (calendarEntity.isUserPersonal() || calendarEntity.canBeModified()) {
+      calendarEntity
+          .withICalPublicURI(buildIcalPublicURI(getHttpRequest(), getServiceBaseUri(), calendar))
+          .withICalPrivateURI(buildIcalPrivateURI(getHttpRequest(), getServiceBaseUri(), calendar));
+    } else {
+      calendarEntity.setExternalUrl(null);
+    }
+    return calendarEntity;
   }
 
   /**
@@ -618,6 +695,7 @@ public class CalendarResource extends AbstractCalendarResource {
         .withCalendarURI(buildCalendarURI(getServiceBaseUri(), occurrence.getCalendarEvent().getCalendar()))
         .withEventURI(buildEventURI(getServiceBaseUri(), occurrence.getCalendarEvent()))
         .withOccurrenceURI(buildOccurrenceURI(getServiceBaseUri(), occurrence))
+        .withOccurrenceViewURI(buildOccurrenceViewURI(occurrence))
         .withAttendees(attendeeEntities);
   }
 
@@ -637,11 +715,20 @@ public class CalendarResource extends AbstractCalendarResource {
         .withURI(buildOccurrenceAttendeeURI(getServiceBaseUri(), occurrence, attendee));
   }
 
+  @Override
+  protected String getBundleLocation() {
+    return "org.silverpeas.calendar.multilang.calendarBundle";
+  }
+
   protected String getServiceBaseUri() {
     return CALENDAR_BASE_URI;
   }
 
   private CalendarWebServiceProvider getCalendarWebServiceProvider() {
     return CalendarWebServiceProvider.get();
+  }
+
+  private WebMessager getMessager() {
+    return WebMessager.getInstance();
   }
 }

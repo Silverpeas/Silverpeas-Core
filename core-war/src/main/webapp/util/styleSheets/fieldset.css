@@ -137,6 +137,11 @@ label.txtlibform {
 padding-right:0;
 }
 
+span.txtlibform,
+span.txtsublibform {
+  padding-right:1px;
+}
+
 .field label,
 .field .label{
   display: table-cell;
@@ -144,6 +149,13 @@ padding-right:0;
   width: 180px;
   white-space: normal;
 }
+
+.field .champs label,
+.field .champs .label{
+  min-width: 100px;
+  width: inherit;
+}
+
 .row {
 	clear:both ;
 }
@@ -193,7 +205,7 @@ input.inputHour{
 .champs input.checkbox, .champs input.radio,  .champs input[type="radio"]{
 	width:13px;
 	vertical-align:middle;
-	margin:0 5px 0 15px;
+	margin:0;
 	border:0;
 	background-color:transparent;
 }

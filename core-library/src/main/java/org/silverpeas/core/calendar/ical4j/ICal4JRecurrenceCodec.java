@@ -188,8 +188,9 @@ public class ICal4JRecurrenceCodec {
     if (recur.getDayList() != null && !recur.getDayList().isEmpty()) {
       recurrence.on(recur.getDayList().stream().map(this::decode).collect(Collectors.toList()));
     }
-    if (vEvent.getProperty(ExDate.EXDATE) != null) {
-      DateList exDates = ((ExDate) vEvent.getProperty(ExDate.EXDATE)).getDates();
+    vEvent.getProperties(ExDate.EXDATE).forEach(e -> {
+      final DateList exDates = ((ExDate) e).getDates();
+
       // TODO activating following commented forEach after fix of EXDATE UTC management (iCal4J)
       // cf. https://github.com/ical4j/ical4j/issues/113 for example
 
@@ -214,7 +215,7 @@ public class ICal4JRecurrenceCodec {
         }
         recurrence.excludeEventOccurrencesStartingAt(dateToExclude);
       });
-    }
+    });
     return recurrence;
   }
 

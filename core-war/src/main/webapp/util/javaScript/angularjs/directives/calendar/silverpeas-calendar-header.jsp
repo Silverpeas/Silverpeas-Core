@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright (C) 2000 - 2016 Silverpeas
+  ~ Copyright (C) 2000 - 2017 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
   ~ As a special exception to the terms and conditions of version 3.0 of
   ~ the GPL, you may redistribute this Program in connection with Free/Libre
   ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
-  ~ FLOSS exception. You should have received a copy of the text describing
+  ~ FLOSS exception.  You should have received a copy of the text describing
   ~ the FLOSS exception, and it is also available here:
-  ~ "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
   ~
   ~ This program is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,30 +39,34 @@
 <fmt:message key="GML.day" var="dayLabel"/>
 <fmt:message key="GML.week" var="weekLabel"/>
 <fmt:message key="GML.month" var="monthLabel"/>
+<fmt:message key="calendar.message.event.occurrence.gotoPrevious" var="gotoPreviousOccurrenceLabel"/>
 
 <div class="silverpeas-calendar-header">
-  <silverpeas-tabs>
-    <silverpeas-tabs-item label="${dayLabel}" on-click="$ctrl.view({type:'${DAILY_VIEW_TYPE}'})"
-                          selected="$ctrl.timeWindowViewContext.viewType == '${DAILY_VIEW_TYPE}'"></silverpeas-tabs-item>
-    <silverpeas-tabs-item label="${weekLabel}" on-click="$ctrl.view({type:'${WEEKLY_VIEW_TYPE}'})"
-                          selected="$ctrl.timeWindowViewContext.viewType == '${WEEKLY_VIEW_TYPE}'"></silverpeas-tabs-item>
-    <silverpeas-tabs-item label="${monthLabel}" on-click="$ctrl.view({type:'${MONTHLY_VIEW_TYPE}'})"
-                          selected="$ctrl.timeWindowViewContext.viewType == '${MONTHLY_VIEW_TYPE}'"></silverpeas-tabs-item>
-  </silverpeas-tabs>
   <div class="sousNavBulle">
     <div id="navigation">
       <div id="currentScope">
+        <a href="#" ng-click="$ctrl.view({type:'${DAILY_VIEW_TYPE}'})"
+           ng-class="{'selected': $ctrl.timeWindowViewContext.viewType == '${DAILY_VIEW_TYPE}'}">${dayLabel}</a>
+        <a href="#" ng-click="$ctrl.view({type:'${WEEKLY_VIEW_TYPE}'})"
+           ng-class="{'selected': $ctrl.timeWindowViewContext.viewType == '${WEEKLY_VIEW_TYPE}'}">${weekLabel}</a>
+        <a href="#" ng-click="$ctrl.view({type:'${MONTHLY_VIEW_TYPE}'})"
+           ng-class="{'selected': $ctrl.timeWindowViewContext.viewType == '${MONTHLY_VIEW_TYPE}'}">${monthLabel}</a>
+        <span>-&#160;</span>
         <span id="today"> <a href="#" ng-click="$ctrl.timeWindow({type:'today'})" onfocus="this.blur()"><fmt:message key="GML.Today"/></a></span>
-        <a class="btn_navigation previous" href="#" ng-click="$ctrl.timeWindow({type:'previous'})" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowLeft.gif"/>"></a>
-        <span>
-          <input type="text" class="reference-day" style="visibility: hidden"
-                 ng-model="$ctrl.timeWindowViewContext.formattedReferenceDay"
-                 ng-change="$ctrl.referenceDayChanged()">
-          <span class="period-label" ng-click="$ctrl.chooseReferenceDay()">{{$ctrl.timeWindowViewContext.referencePeriodLabel}}</span>
-        </span>
-        <a class="btn_navigation next" href="#" ng-click="$ctrl.timeWindow({type:'next'})" onfocus="this.blur()"><img align="top" border="0" alt="" src="<c:url value="/util/icons/arrow/arrowRight.gif"/>"></a>
+        <input type="text" class="reference-day" style="visibility: hidden"
+               ng-model="$ctrl.timeWindowViewContext.formattedReferenceDay"
+               ng-change="$ctrl.referenceDayChanged()">
+        <a class="btn_navigation previous" href="#" ng-click="$ctrl.timeWindow({type:'previous'})" onfocus="this.blur()"><img border="0" alt="" src="<c:url value="/util/icons/arrow/arrowLeft.gif"/>"></a>
+        <div class="period-label" ng-click="$ctrl.chooseReferenceDay()">
+          <div class="inlineMessage goto-previous-occurrence" ng-if="$ctrl.timeWindowViewContext.backDay">
+            <span ng-click="$ctrl.timeWindow({type : 'referenceDay', day : $ctrl.timeWindowViewContext.backDay});$event.stopPropagation();">${gotoPreviousOccurrenceLabel}</span>
+          </div>
+          <span>{{$ctrl.timeWindowViewContext.referencePeriodLabel}}</span>
+        </div>
+        <a class="btn_navigation next" href="#" ng-click="$ctrl.timeWindow({type:'next'})" onfocus="this.blur()"><img border="0" alt="" src="<c:url value="/util/icons/arrow/arrowRight.gif"/>"></a>
       </div>
     </div>
+    <div ng-transclude></div>
     <div id="calendar-timezone">
       <span>{{$ctrl.timeWindowViewContext.zoneId}}</span>
     </div>

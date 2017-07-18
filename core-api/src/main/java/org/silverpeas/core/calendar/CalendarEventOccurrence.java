@@ -401,20 +401,6 @@ public class CalendarEventOccurrence
   }
 
   /**
-   * Is this occurrence occurs originally before the specified occurrence? If the start date of
-   * these occurrences weren't modified from their event, then this method behaves like
-   * {@link CalendarEventOccurrence#isBefore(CalendarEventOccurrence)}.
-   * @param occurrence the occurrence with which the original start date is compared.
-   * @return true if this occurrence originally starts before the specified another occurrence.
-   * False otherwise.
-   */
-  public boolean isOriginallyBefore(final CalendarEventOccurrence occurrence) {
-    return
-        getOriginalStartDate().toString().compareTo(occurrence.getOriginalStartDate().toString()) <
-            0;
-  }
-
-  /**
    * Is this occurrence actually occurs before the specified occurrence?
    * @param occurrence another occurrence with which the start date is compared.
    * @return true if this occurrence starts before the specified another one. False otherwise.

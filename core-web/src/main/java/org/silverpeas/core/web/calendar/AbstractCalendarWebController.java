@@ -93,7 +93,8 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
       } else if ("today".equals(timeWindow)) {
         getCalendarTimeWindowContext().today();
       } else if ("referenceDay".equals(timeWindow)) {
-        LocalDate date = LocalDate.parse(context.getRequest().getParameter("timeWindowDate"));
+        LocalDate date =
+            LocalDate.parse(context.getRequest().getParameter("timeWindowDate").split("T")[0]);
         getCalendarTimeWindowContext().setReferenceDay(Date.valueOf(date));
       }
     }

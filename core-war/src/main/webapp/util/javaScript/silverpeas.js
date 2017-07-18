@@ -1083,6 +1083,14 @@ if (typeof window.sp === 'undefined') {
        * @param date a data like the one given to the moment constructor.
        * @private
        */
+      displayAsDayDate : function(date) {
+        return sp.moment.make(date).format('LLLL').replaceAll(' [0-9]+:[0-9]+','');
+      },
+      /**
+       * Formats the given moment in order to display it as a date.
+       * @param date a data like the one given to the moment constructor.
+       * @private
+       */
       displayAsDate : function(date) {
         return sp.moment.make(date).format('L');
       },

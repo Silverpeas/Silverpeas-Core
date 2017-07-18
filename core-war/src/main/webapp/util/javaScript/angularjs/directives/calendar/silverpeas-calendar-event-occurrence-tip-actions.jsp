@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright (C) 2000 - 2016 Silverpeas
+  ~ Copyright (C) 2000 - 2017 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
   ~ As a special exception to the terms and conditions of version 3.0 of
   ~ the GPL, you may redistribute this Program in connection with Free/Libre
   ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
-  ~ FLOSS exception. You should have received a copy of the text describing
+  ~ FLOSS exception.  You should have received a copy of the text describing
   ~ the FLOSS exception, and it is also available here:
-  ~ "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
   ~
   ~ This program is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -37,6 +37,7 @@
 <fmt:message var="viewLabel" key="GML.view"/>
 <fmt:message var="modifyLabel" key="GML.modify"/>
 <fmt:message var="deleteLabel" key="GML.delete"/>
+<fmt:message var="goTofirstOccurrenceLabel" key="calendar.message.event.occurrence.gotoFirst"/>
 
 <p>
   <silverpeas-button-pane>
@@ -44,4 +45,9 @@
     <silverpeas-button ng-if="$ctrl.occurrence.canBeModified" ng-click="$ctrl.onModify({occurrence:$ctrl.occurrence})">${modifyLabel}</silverpeas-button>
     <silverpeas-button ng-if="$ctrl.occurrence.canBeDeleted" ng-click="$ctrl.onDelete({occurrence:$ctrl.occurrence})">${deleteLabel}</silverpeas-button>
   </silverpeas-button-pane>
+  <div class="goto-first-occurrence">
+    <a href="#" class="first-occurrence-label"
+       ng-if="$ctrl.occurrence.recurrence && !$ctrl.occurrence.firstEventOccurrence"
+       ng-click="$ctrl.onGoToFirstOccurrence({occurrence:$ctrl.occurrence})">${goTofirstOccurrenceLabel}</a>
+  </div>
 </p>

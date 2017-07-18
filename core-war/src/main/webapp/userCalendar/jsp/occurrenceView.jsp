@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright (C) 2000 - 2016 Silverpeas
+  ~ Copyright (C) 2000 - 2017 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
   ~ As a special exception to the terms and conditions of version 3.0 of
   ~ the GPL, you may redistribute this Program in connection with Free/Libre
   ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
-  ~ FLOSS exception. You should have received a copy of the text describing
+  ~ FLOSS exception.  You should have received a copy of the text describing
   ~ the FLOSS exception, and it is also available here:
-  ~ "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
   ~
   ~ This program is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -88,10 +88,12 @@
           calendar-event-occurrence="ceo">
       </silverpeas-calendar-event-view-main>
       <silverpeas-calendar-event-view-recurrence
-          calendar-event-occurrence="ceo">
+          calendar-event-occurrence="ceo"
+          ng-if="ceo.recurrence">
       </silverpeas-calendar-event-view-recurrence>
       <silverpeas-calendar-event-view-attendees
           calendar-event-occurrence="ceo"
+          ng-if="ceo.attendees && ceo.attendees.length"
           on-participation-answer="eventMng.eventAttendeeParticipationAnswer(ceo, attendee)">
       </silverpeas-calendar-event-view-attendees>
     </silverpeas-calendar-event-view>

@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright (C) 2000 - 2016 Silverpeas
+  ~ Copyright (C) 2000 - 2017 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
   ~ As a special exception to the terms and conditions of version 3.0 of
   ~ the GPL, you may redistribute this Program in connection with Free/Libre
   ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
-  ~ FLOSS exception. You should have received a copy of the text describing
+  ~ FLOSS exception.  You should have received a copy of the text describing
   ~ the FLOSS exception, and it is also available here:
-  ~ "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
   ~
   ~ This program is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -48,6 +48,7 @@
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 
 <fmt:message key="usercalendar.name" var="userCalendarLabel"/>
+<fmt:message key="GML.print" var="printLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.calendar.create" var="createCalendarLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.calendar.synchronized.create" var="createSynchronizedCalendarLabel" bundle="${calendarBundle}"/>
 <fmt:message key="calendar.menu.item.event.add" var="addEventLabel" bundle="${calendarBundle}"/>
@@ -67,15 +68,23 @@
 <body ng-controller="calendarController">
 <view:operationPane>
   <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
+    <view:operation action="javascript:print()" altText="${printLabel}"/>
+    <view:operationSeparator />
     <silverpeas-calendar-management api="calMng"
                                     on-created="userCalendar.addCalendar(calendar)"
                                     on-imported-events="userCalendar.refetchCalendars()"></silverpeas-calendar-management>
-    <view:operation action="angularjs:calMng.add()" altText="${createCalendarLabel}"/>
-    <view:operation action="angularjs:calMng.add(true)" altText="${createSynchronizedCalendarLabel}"/>
     <fmt:message key="userCalendar.icons.addEvent" var="opIcon" bundle="${icons}"/>
     <c:url var="opIcon" value="${opIcon}"/>
     <view:operationOfCreation action="angularjs:newEvent()"
                               altText="${addEventLabel}" icon="${opIcon}"/>
+    <fmt:message key="userCalendar.icons.addCalendar" var="opIcon" bundle="${icons}"/>
+    <c:url var="opIcon" value="${opIcon}"/>
+    <view:operationOfCreation action="angularjs:calMng.add()"
+                              altText="${createCalendarLabel}" icon="${opIcon}"/>
+    <fmt:message key="userCalendar.icons.addSynchronizedCalendar" var="opIcon" bundle="${icons}"/>
+    <c:url var="opIcon" value="${opIcon}"/>
+    <view:operationOfCreation action="angularjs:calMng.add(true)"
+                              altText="${createSynchronizedCalendarLabel}" icon="${opIcon}"/>
     <view:operationSeparator />
     <view:operation action="${userMainCalendar.getURI()}/export/ical"
                               altText="${exportYourEventLabel}"/>

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2016 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -57,7 +57,7 @@
            * Gets the occurrences of an event represented by the given uri.
            * @param eventUri uri of calendar to get.
            * @param period the period on which the occurrences must be computed.
-           * @returns {promise|a.fn.promise|*} a promise with the asked calendar as callbck
+           * @returns {promise|a.fn.promise|*} a promise with the asked occurrences as callback
            *     parameter.
            */
           this.getEventOccurrencesBetween = function(eventUri, period) {
@@ -74,9 +74,26 @@
           };
 
           /**
+           * Gets the event by its uri.
+           * @param eventUri uri of event to get.
+           * @returns {promise|a.fn.promise|*} a promise with the asked event as callback
+           *     parameter.
+           */
+          this.getEventByUri = function(eventUri) {
+            var adapter = RESTAdapter.get(eventUri, CalendarEvent);
+            var criteria = {
+              zoneid : context.zoneId
+            }
+            return adapter.find({
+              url : adapter.url,
+              criteria : adapter.criteria(criteria)
+            });
+          };
+
+          /**
            * Gets the occurrence by its uri.
            * @param occurrenceUri uri of occurrence to get.
-           * @returns {promise|a.fn.promise|*} a promise with the asked calendar as callbck
+           * @returns {promise|a.fn.promise|*} a promise with the asked occurrence as callbck
            *     parameter.
            */
           this.getEventOccurrenceByUri = function(occurrenceUri) {
@@ -111,6 +128,29 @@
                   userIds : userIds,
                   startDateOfWindowTime: SilverpeasCalendarTools.moment(period.startDateTime).toISOString(),
                   endDateOfWindowTime: SilverpeasCalendarTools.moment(period.endDateTime).toISOString(),
+                  zoneid: context.zoneId
+                })
+              });
+            } else {
+              var msgError = "Error: missing context.component attribute (component instance identifier)";
+              notyError(msgError);
+              sp.promise.rejectDirectlyWith(msgError);
+            }
+          };
+
+          /**
+           * Gets next occurrences from now according to the context set.
+           * @returns {promise|a.fn.promise|*} a promise with the asked occurrences as callbck
+           *     parameter.
+           */
+          this.getNextOccurrences = function() {
+            if (context.component) {
+              var url = baseUri + '/events/occurrences/next';
+              var adapter = RESTAdapter.get(url, function() {});
+              return adapter.find({
+                url : url,
+                criteria : adapter.criteria({
+                  limit : context.limit,
                   zoneid: context.zoneId
                 })
               });
@@ -252,17 +292,27 @@
         /**
          * Gets the calendar represented by the given uri.
          * @param calendarUri uri of calendar to get.
-         * @returns {promise|a.fn.promise|*} a promise with the asked calendar as callbck parameter.
+         * @returns {promise|a.fn.promise|*} a promise with the asked calendar as callback parameter.
          */
         this.getByUri = function(calendarUri) {
           return adapter.find({url: calendarUri});
         };
 
         /**
+         * Gets the event by its uri.
+         * @param eventUri uri of event to get.
+         * @returns {promise|a.fn.promise|*} a promise with the asked event as callback
+         *     parameter.
+         */
+        this.getEventByUri = function(eventUri) {
+          return CalendarEventOccurrence.getEventByUri(eventUri);
+        };
+
+        /**
          * Gets the event occurrences included into a period from an event uri.
          * @param eventUri uri of the event the occurrences must belong.
          * @param period the period on which the occurrences must be computed.
-         * @returns {promise|a.fn.promise|*} a promise with the asked calendar as callbck parameter.
+         * @returns {promise|a.fn.promise|*} a promise with the asked occurrences as callback parameter.
          */
         this.getEventOccurrencesBetween = function(eventUri, period) {
           return CalendarEventOccurrence.getEventOccurrencesBetween(eventUri, period);
@@ -271,7 +321,7 @@
         /**
          * Gets the occurrence by its uri.
          * @param occurrenceUri uri of occurrence to get.
-         * @returns {promise|a.fn.promise|*} a promise with the asked calendar as callbck
+         * @returns {promise|a.fn.promise|*} a promise with the asked occurrence as callback
          *     parameter.
          */
         this.getEventOccurrenceByUri = function(occurrenceUri) {
@@ -302,6 +352,15 @@
          */
         this.getParticipationCalendarsBetween = function(userIds, period) {
           return CalendarEventOccurrence.getParticipationCalendarsBetween(userIds, period);
+        };
+
+        /**
+         * Gets next occurrences from now according to the context set.
+         * @returns {promise|a.fn.promise|*} a promise with the asked occurrences as callbck
+         *     parameter.
+         */
+        this.getNextOccurrences = function() {
+          return CalendarEventOccurrence.getNextOccurrences();
         };
 
         /**

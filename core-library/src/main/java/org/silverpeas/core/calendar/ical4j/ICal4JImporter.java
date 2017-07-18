@@ -34,6 +34,7 @@ import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.Categories;
 import net.fortuna.ical4j.model.property.Description;
 import net.fortuna.ical4j.util.CompatibilityHints;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
@@ -47,17 +48,21 @@ import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection;
 import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import java.io.IOException;
+import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -65,12 +70,17 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import static org.apache.commons.io.IOUtils.toInputStream;
+import static org.silverpeas.core.util.StringUtil.isDefined;
+
 /**
  * Implementation of the {@link ICalendarImporter} interface by using the iCal4J library to perform
  * the deserialization of calendar events in the iCalendar format.
  * @author mmoquillon
  */
 public class ICal4JImporter implements ICalendarImporter {
+
+  private static final String CALENDAR_SETTINGS = "org.silverpeas.calendar.settings.calendar";
 
   @Inject
   private ICal4JDateCodec iCal4JDateCodec;
@@ -81,6 +91,7 @@ public class ICal4JImporter implements ICalendarImporter {
   private void init() {
     CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_UNFOLDING, true);
     CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_VALIDATION, true);
+    CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_OUTLOOK_COMPATIBILITY, true);
   }
 
   @Override
@@ -89,7 +100,7 @@ public class ICal4JImporter implements ICalendarImporter {
       throws ImportException {
     try {
       CalendarBuilder builder = new CalendarBuilder();
-      Calendar calendar = builder.build(descriptor.getInputStream());
+      Calendar calendar = builder.build(getCalendarInputStream(descriptor));
       if (calendar.getComponents().isEmpty()) {
         consumer.accept(Stream.empty());
         return;
@@ -144,6 +155,24 @@ public class ICal4JImporter implements ICalendarImporter {
     } catch (IOException | ParserException e) {
       throw new ImportException(e);
     }
+  }
+
+  private InputStream getCalendarInputStream(final ImportDescriptor descriptor) throws IOException {
+    final SettingBundle settings = ResourceLocator.getSettingBundle(CALENDAR_SETTINGS);
+    final String replacements =
+        settings.getString("calendar.import.ics.file.replace.before.process", "");
+    if (isDefined(replacements)) {
+      Mutable<String> icsContent = Mutable.of(IOUtils.toString(descriptor.getInputStream()));
+      Arrays.stream(replacements.split(";")).map(r -> {
+        String[] replacement = r.split("[~][~][~]");
+        return Pair.of(replacement[0], replacement[1]);
+      }).forEach(r -> {
+        String previous = icsContent.get();
+        icsContent.set(previous.replaceAll(r.getLeft(), r.getRight()));
+      });
+      return toInputStream(icsContent.get());
+    }
+    return descriptor.getInputStream();
   }
 
   private CalendarEventOccurrence occurrenceFromICalEvent(final Mutable<ZoneId> zoneId,

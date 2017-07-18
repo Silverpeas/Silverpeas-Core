@@ -9,9 +9,9 @@
   ~ As a special exception to the terms and conditions of version 3.0 of
   ~ the GPL, you may redistribute this Program in connection with Free/Libre
   ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
-  ~ FLOSS exception. You should have received a copy of the text describing
+  ~ FLOSS exception.  You should have received a copy of the text describing
   ~ the FLOSS exception, and it is also available here:
-  ~ "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
   ~
   ~ This program is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -49,26 +49,26 @@
   <legend>${recurrenceLabel}</legend>
   <div class="fields">
     <div class="field">
-      <span class="txtlibform">${periodicityLabel}</span>
+      <span class="txtlibform label">${periodicityLabel}</span>
       <div class="champs">
         <span>{{$ctrl.recurrence.label}}</span>
       </div>
     </div>
     <div class="field" ng-if="$ctrl.isRecurrence()">
-      <span class="txtlibform">${frequencyLabel}</span>
+      <span class="txtlibform label">${frequencyLabel}</span>
       <div class="champs">
         <span>{{$ctrl.ceo.recurrence.frequency.interval}}</span>
         <span>{{$ctrl.recurrence.shortLabel}}</span>
       </div>
     </div>
     <div class="field" ng-if="$ctrl.isWeekRecurrence()">
-      <label class="txtlibform">${theLabel}</label>
+      <label class="txtlibform label">${theLabel}</label>
       <div class="champs">
         <span ng-repeat="dayOfWeek in $ctrl.daysOfWeek"><span ng-if="!$first">, </span>{{dayOfWeek.label}}</span>
       </div>
     </div>
     <div class="field" ng-if="$ctrl.isMonthRecurrence()">
-      <label class="txtlibform">${monthRuleLabel}</label>
+      <label class="txtlibform label">${monthRuleLabel}</label>
       <div class="champs">
         <span ng-switch="$ctrl.month.rule">
           <span ng-switch-when="DAYOFMONTH">${monthRuleDayOfMonthLabel}</span>
@@ -77,7 +77,7 @@
       </div>
     </div>
     <div class="field" ng-if="$ctrl.isRecurrence()">
-      <label class="txtlibform">${endLabel}</label>
+      <label class="txtlibform label">${endLabel}</label>
       <div class="champs">
         <span ng-switch="$ctrl.endType">
           <span ng-switch-when="THE">

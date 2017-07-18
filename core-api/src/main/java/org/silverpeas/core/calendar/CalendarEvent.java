@@ -91,45 +91,41 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
     @NamedQuery(name = "calendarEventCount", query =
         "SELECT COUNT(e) FROM CalendarEvent e WHERE e.component.calendar = :calendar"),
     @NamedQuery(name = "calendarEvents", query =
-        "SELECT distinct e" +
-            ", c.componentInstanceId as ob_1" +
-            ", c.id as ob_2" +
-            ", cmp.period.startDateTime as ob_3 " +
+        "SELECT distinct e, c.componentInstanceId as ob_1, c.id as ob_2, cmp.period.startDateTime as ob_3 " +
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
             "ORDER BY ob_1, ob_2, ob_3"),
     @NamedQuery(name = "calendarEventByCalendarAndExternalId", query =
         "SELECT e FROM CalendarEvent e " +
-            "WHERE e.component.calendar = :calendar AND e.externalId = :externalId"),
+            "WHERE e.component.calendar = :calendar " +
+            "AND e.externalId = :externalId"),
     @NamedQuery(name = "calendarEventsByCalendar", query =
-        "SELECT distinct e" +
-            ", c.componentInstanceId as ob_1" +
-            ", c.id as ob_2" +
-            ", cmp.period.startDateTime as ob_3 " +
+        "SELECT distinct e, c.componentInstanceId as ob_1, c.id as ob_2, cmp.period.startDateTime as ob_3 " +
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
             "WHERE c IN :calendars " +
             "ORDER BY ob_1, ob_2, ob_3"),
-    @NamedQuery(name = "calendarEventsByParticipants", query = "SELECT distinct e" +
-        ", c.componentInstanceId as ob_1" + ", c.id as ob_2" +
-        ", cmp.period.startDateTime as ob_3 " + "FROM CalendarEvent e " + "JOIN e.component cmp " +
-        "JOIN cmp.calendar c " + "LEFT OUTER JOIN cmp.attendees.attendees a " +
+    @NamedQuery(name = "calendarEventsByParticipants", query =
+        "SELECT distinct e, c.componentInstanceId as ob_1, c.id as ob_2, cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "LEFT OUTER JOIN cmp.attendees.attendees a " +
             "WHERE (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds) " +
             "ORDER BY ob_1, ob_2, ob_3"),
-    @NamedQuery(name = "calendarEventsByCalendarByParticipants", query = "SELECT distinct e" +
-        ", c.componentInstanceId as ob_1" + ", c.id as ob_2" +
-        ", cmp.period.startDateTime as ob_3 " + "FROM CalendarEvent e " + "JOIN e.component cmp " +
-        "JOIN cmp.calendar c " + "LEFT OUTER JOIN cmp.attendees.attendees a " +
+    @NamedQuery(name = "calendarEventsByCalendarByParticipants", query =
+        "SELECT distinct e, c.componentInstanceId as ob_1, c.id as ob_2, cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "LEFT OUTER JOIN cmp.attendees.attendees a " +
             "WHERE c IN :calendars " +
-            "AND (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds)" +
+            "AND (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds) " +
             "ORDER BY ob_1, ob_2, ob_3"),
     @NamedQuery(name = "calendarEventsBeforeSynchronizationDate", query =
-        "SELECT distinct e" +
-            ", c.componentInstanceId as ob_1" +
-            ", c.id as ob_2" +
-            ", cmp.period.startDateTime as ob_3 " +
+        "SELECT distinct e, c.componentInstanceId as ob_1, c.id as ob_2, cmp.period.startDateTime as ob_3 " +
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
@@ -137,10 +133,7 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "AND e.synchronizationDate < :synchronizationDateLimit " +
             "ORDER BY ob_1, ob_2, ob_3"),
     @NamedQuery(name = "calendarEventsByCalendarBeforeSynchronizationDate", query =
-        "SELECT distinct e" +
-            ", c.componentInstanceId as ob_1" +
-            ", c.id as ob_2" +
-            ", cmp.period.startDateTime as ob_3 " +
+        "SELECT distinct e, c.componentInstanceId as ob_1, c.id as ob_2, cmp.period.startDateTime as ob_3 " +
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
@@ -148,55 +141,51 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "AND e.synchronizationDate is not null " +
             "AND e.synchronizationDate < :synchronizationDateLimit " +
             "ORDER BY ob_1, ob_2, ob_3"),
-    @NamedQuery(name = "calendarEventsByCalendarByPeriod", query = "SELECT distinct e" +
-        ", c.componentInstanceId as ob_1" + ", c.id as ob_2" +
-        ", cmp.period.startDateTime as ob_3 " + "FROM CalendarEvent e " + "JOIN e.component cmp " +
-        "JOIN cmp.calendar c " + "LEFT OUTER JOIN FETCH e.recurrence r " +
-        "WHERE c IN :calendars AND (" + "(cmp.period.startDateTime < :endDateTime AND " +
-        "  cmp.period.endDateTime > :startDateTime) OR " +
-            "(cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
-            "  (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))" +
-            " ORDER BY ob_1, ob_2, ob_3"),
-    @NamedQuery(name = "calendarEventsByPeriod", query =
-        "SELECT distinct e" +
-            ", c.componentInstanceId as ob_1" +
-            ", c.id as ob_2" +
-            ", cmp.period.startDateTime as ob_3 " +
+    @NamedQuery(name = "calendarEventsByCalendarByPeriod", query =
+        "SELECT distinct e, c.componentInstanceId as ob_1, c.id as ob_2, cmp.period.startDateTime as ob_3 " +
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
             "LEFT OUTER JOIN FETCH e.recurrence r " +
-            "WHERE (cmp.period.startDateTime < :endDateTime AND " +
-            "  cmp.period.endDateTime > :startDateTime) OR " +
-            "(cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
-            "  (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))"  +
-            " ORDER BY ob_1, ob_2, ob_3"),
-    @NamedQuery(name = "calendarEventsByParticipantsByPeriod", query = "SELECT distinct e" +
-        ", c.componentInstanceId as ob_1" + ", c.id as ob_2" +
-        ", cmp.period.startDateTime as ob_3 " + "FROM CalendarEvent e " + "JOIN e.component cmp " +
-        "JOIN cmp.calendar c " + "LEFT OUTER JOIN cmp.attendees.attendees a " +
+            "WHERE c IN :calendars " +
+            "AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
+            "     OR" +
+            "     (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))) " +
+            "ORDER BY ob_1, ob_2, ob_3"),
+    @NamedQuery(name = "calendarEventsByPeriod", query =
+        "SELECT distinct e, c.componentInstanceId as ob_1, c.id as ob_2, cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
             "LEFT OUTER JOIN FETCH e.recurrence r " +
-            "WHERE (cmp.createdBy IN :participantIds OR a.attendeeId in :participantIds) AND " +
-        "((cmp.period.startDateTime < :endDateTime AND " +
-        "   cmp.period.endDateTime > :startDateTime) OR " +
-            " (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
-            "   (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))" +
-            ")" +
-            " ORDER BY ob_1, ob_2, ob_3"),
-    @NamedQuery(name = "calendarEventsByCalendarByParticipantsByPeriod", query =
-        "SELECT distinct e" + ", c.componentInstanceId as ob_1" + ", c.id as ob_2" +
-            ", cmp.period.startDateTime as ob_3 " + "FROM CalendarEvent e " +
-            "JOIN e.component cmp " + "JOIN cmp.calendar c " +
+            "WHERE (cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
+            "OR (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)) "  +
+            "ORDER BY ob_1, ob_2, ob_3"),
+    @NamedQuery(name = "calendarEventsByParticipantsByPeriod", query = 
+        "SELECT distinct e, c.componentInstanceId as ob_1, c.id as ob_2, cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
             "LEFT OUTER JOIN cmp.attendees.attendees a " +
             "LEFT OUTER JOIN FETCH e.recurrence r " +
-            "WHERE c IN :calendars AND " +
-            "(cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds) AND " +
-            "((cmp.period.startDateTime < :endDateTime AND " +
-            "   cmp.period.endDateTime > :startDateTime) OR " +
-            " (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND " +
-            "   (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))"
-            +
-            " ORDER BY ob_1, ob_2, ob_3")})
+            "WHERE (cmp.createdBy IN :participantIds OR a.attendeeId in :participantIds) " +
+            "AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
+            "     OR" +
+            "     (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))) " +
+            "ORDER BY ob_1, ob_2, ob_3"),
+    @NamedQuery(name = "calendarEventsByCalendarByParticipantsByPeriod", query =
+        "SELECT distinct e, c.componentInstanceId as ob_1, c.id as ob_2, cmp.period.startDateTime as ob_3 " +
+            "FROM CalendarEvent e " +
+            "JOIN e.component cmp " +
+            "JOIN cmp.calendar c " +
+            "LEFT OUTER JOIN cmp.attendees.attendees a " +
+            "LEFT OUTER JOIN FETCH e.recurrence r " +
+            "WHERE c IN :calendars " +
+            "AND (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds) " +
+            "AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
+            "     OR" +
+            "     (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))) " +
+            "ORDER BY ob_1, ob_2, ob_3")})
 public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized, Securable {
 
@@ -896,6 +885,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       throw new IllegalStateException(
           THE_EVENT + this.getId() + " cannot be updated from another event");
     }
+    if (isRecurrent() && !event.isRecurrent()) {
+      this.deleteAllOccurrencesFromPersistence(true);
+    }
     event.component.copyTo(this.component);
     this.externalId = event.getExternalId();
     this.visibilityLevel = event.visibilityLevel;
@@ -1141,7 +1133,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private void checkOccurrence(final CalendarEventOccurrence occurrence) {
     if (occurrence == null || !this.equals(occurrence.getCalendarEvent())) {
       throw new IllegalArgumentException(
-          "The occurrence comes from a different event! " + "Current event is '" + this.getId() +
+          "The occurrence comes from a different event! Current event is '" + this.getId() +
               "' whereas the event of the occurrence is '" + occurrence.getCalendarEvent().getId() +
               "'");
     }

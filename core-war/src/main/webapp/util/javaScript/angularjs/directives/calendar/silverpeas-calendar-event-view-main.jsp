@@ -9,9 +9,9 @@
   ~ As a special exception to the terms and conditions of version 3.0 of
   ~ the GPL, you may redistribute this Program in connection with Free/Libre
   ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
-  ~ FLOSS exception. You should have received a copy of the text describing
+  ~ FLOSS exception.  You should have received a copy of the text describing
   ~ the FLOSS exception, and it is also available here:
-  ~ "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
   ~
   ~ This program is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -84,13 +84,13 @@
         <span ng-if="!$ctrl.ceo.onAllDay">{{$ctrl.endDate() | displayAsTime}}</span>
       </span>
     </div>
-    <div class="field">
+    <div class="field" ng-if="$ctrl.ceo.location">
       <span class="label txtlibform">${locationLabel}</span>
       <div class="champs">
         <span>{{$ctrl.ceo.location}}</span>
       </div>
     </div>
-    <div class="field">
+    <div class="field" ng-if="$ctrl.ceo.description">
       <span class="label txtlibform">${descriptionLabel}</span>
       <div class="champs">
         <span ng-bind-html="$ctrl.ceo.description | noHTML | newlines"></span>

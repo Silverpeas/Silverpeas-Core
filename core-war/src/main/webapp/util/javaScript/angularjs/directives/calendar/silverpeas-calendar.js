@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2016 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception. You should have received a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -113,6 +113,7 @@
             onEventOccurrenceView : '&?',
             onEventOccurrenceModify : '&?',
             onEventOccurrenceRemove : '&?',
+            onGoToFirstOccurrence : '&?',
             onEventAttendeeParticipationAnswer : '&?',
             onDayClick : '&',
             templates : '=?'
@@ -222,6 +223,15 @@
                         this.onEventOccurrenceRemove({occurrence : occurrence});
                       } else {
                         this.eventMng.removeOccurrence(occurrence);
+                      }
+                    }.bind(this);
+                    data.onGoToFirstOccurrence = function(occurrence) {
+                      if (this.onGoToFirstOccurrence) {
+                        this.onGoToFirstOccurrence({occurrence : occurrence});
+                      } else {
+                        CalendarService.getEventByUri(occurrence.eventUri).then(function(event) {
+                          this.api.changeTimeWindow('referenceDay', event.startDate, occurrence.startDate);
+                        }.bind(this));
                       }
                     }.bind(this);
                     data.onAttendeeParticipationAnswer = function(occurrence, attendee) {
@@ -344,13 +354,20 @@
              * Sends the new view context
              */
             var saveContext = function(params) {
+              var __backDay = this.timeWindowViewContext.backDay;
               var $ajaxConfig = sp.ajaxConfig(
                   context.componentUriBase + 'calendars/context').byPostMethod();
               if (angular.isObject(params)) {
                 $ajaxConfig.withParams(params);
               }
               return silverpeasAjax($ajaxConfig).then(function(request) {
-                this.api.setTimeWindowViewContext(request.responseAsJson());
+                var context = request.responseAsJson();
+                if (params && params.backDay) {
+                  context.backDay = params.backDay;
+                } else if (__backDay && params.view) {
+                  context.backDay = __backDay;
+                }
+                this.api.setTimeWindowViewContext(context);
               }.bind(this));
             }.bind(this);
 
@@ -406,8 +423,10 @@
               /**
                * Changes the current time window by the one specified.
                */
-              changeTimeWindow : function(type, day) {
-                return saveContext({"timeWindow" : type, "timeWindowDate" : day});
+              changeTimeWindow : function(type, day, backDay) {
+                return saveContext({
+                  "timeWindow" : type, "timeWindowDate" : day, "backDay" : backDay
+                });
               }.bind(this),
 
               //
@@ -497,7 +516,13 @@
               updateCalendar : function(calendar) {
                 this.api.getCalendars().updateElement(calendar, 'id');
                 _decorate();
-                this.api.redrawCalendars();
+                if (calendar.isSynchronized) {
+                  this.api.refetchCalendar(calendar).then(function() {
+                    this.api.redrawCalendars();
+                  }.bind(this));
+                } else {
+                  this.api.redrawCalendars();
+                }
               }.bind(this),
               /**
                * Deletes the given calendar from the calendar container linked directly to the
@@ -526,14 +551,22 @@
               refetchCalendars : function() {
                 _destroyEventDetails();
                 this.calendars.forEach(function(calendar) {
-                  if (!calendar.notVisible) {
-                    this.spCalendar.setEventSource(calendar,
-                        this.api.loadCalendarEventOccurrences(calendar));
-                  } else {
-                    this.spCalendar.registerEventSource(calendar,
-                        this.api.loadCalendarEventOccurrences(calendar));
-                  }
+                  this.api.refetchCalendar(calendar);
                 }.bind(this));
+              }.bind(this),
+              /**
+               * Refetches the calendars directly linked to the component instance.
+               * (Data reload by Ajax Requests)
+               * Returns a promise.
+               */
+              refetchCalendar : function(calendar) {
+                var promise = this.api.loadCalendarEventOccurrences(calendar);
+                if (!calendar.notVisible) {
+                  this.spCalendar.setEventSource(calendar, promise);
+                } else {
+                  this.spCalendar.registerEventSource(calendar, promise);
+                }
+                return promise;
               }.bind(this),
               /**
                * Refetches the event occurrences from the given calendar event.
@@ -721,6 +754,7 @@
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-header.jsp',
           restrict : 'E',
+          transclude : true,
           scope : {
             view : '&', timeWindow : '&', timeWindowViewContext : '='
           },
@@ -729,9 +763,7 @@
           controller : function($scope, $element, $attrs, $transclude) {
             this.referenceDayChanged = function() {
               var referenceDay = sp.moment.make(this.timeWindowViewContext.formattedReferenceDay, 'L');
-              var formattedReferenceDay = referenceDay.format();
-              var day = formattedReferenceDay.substr(0, formattedReferenceDay.indexOf('T'));
-              this.timeWindow({type : 'referenceDay', day : day});
+              this.timeWindow({type : 'referenceDay', day : referenceDay.format()});
             }
             this.chooseReferenceDay = function() {
               this.$referenceDayInput.datepicker("show");

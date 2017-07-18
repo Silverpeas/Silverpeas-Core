@@ -298,10 +298,11 @@ public class CalendarWebServiceProvider {
     ICalendarImportResult result = calendar.synchronize();
 
     silverLogger.info(
-        "end event synchronization of calendar {0} (id={1}), with {2} created events and {3} " +
-            "updated events", calendarTitle, calendarId, result.added(), result.updated());
+        "end event synchronization of calendar {0} (id={1}), with {2} created events, {3} updated" +
+            " events and {4} deleted events", calendarTitle, calendarId, result.added(),
+        result.updated(), result.deleted());
     successMessage("calendar.message.calendar.synchronized", calendar.getTitle(), result.added(),
-        result.updated());
+        result.updated(), result.deleted());
   }
 
   /**

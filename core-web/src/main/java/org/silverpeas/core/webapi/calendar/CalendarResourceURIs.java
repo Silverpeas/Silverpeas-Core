@@ -125,6 +125,21 @@ public final class CalendarResourceURIs {
   }
 
   /**
+   * Centralizes the build of a occurrence view page URI.
+   * @param occurrence the aimed occurrence.
+   * @return the URI of specified occurrence.
+   */
+  public static URI buildOccurrenceViewURI(CalendarEventOccurrence occurrence) {
+    if (occurrence == null) {
+      return null;
+    }
+    return getComponentUriBuilder(
+        occurrence.getCalendarEvent().getCalendar().getComponentInstanceId())
+        .path("calendars/occurrences")
+        .path(Base64.getEncoder().encodeToString(occurrence.getId().getBytes())).build();
+  }
+
+  /**
    * Centralizes the build of a calendar event attendee URI.
    * @param baseUri the base URI of the service.
    * @param occurrence the aimed occurrence.
@@ -171,5 +186,10 @@ public final class CalendarResourceURIs {
     return getEventUriBuilder(baseUri, occurrence.getCalendarEvent())
         .path(CALENDAR_EVENT_OCCURRENCE_URI_PART)
         .path(Base64.getEncoder().encodeToString(occurrence.getId().getBytes()));
+  }
+
+  private static UriBuilder getComponentUriBuilder(final String componentInstanceId) {
+    return UriBuilder.fromUri(URLUtil.getApplicationURL())
+        .path(URLUtil.getComponentInstanceURL(componentInstanceId));
   }
 }

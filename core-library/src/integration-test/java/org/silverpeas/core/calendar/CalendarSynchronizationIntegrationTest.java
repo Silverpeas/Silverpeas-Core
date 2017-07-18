@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.apache.commons.io.FilenameUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -56,6 +57,7 @@ import java.util.stream.Collectors;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.hasSize;
 
 /**
  * Integration test on the synchronization of a synchronized calendar.
@@ -102,10 +104,8 @@ public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
     List<DbSetupRule.TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.isEmpty(), is(true));
 
-    emptyExternalUrl =
-        MessageFormat.format(EMPTY_EXTERNAL_URL, mavenTargetDirectoryRule.getResourceTestDirFile());
-    externalUrl =
-        MessageFormat.format(EXTERNAL_URL, mavenTargetDirectoryRule.getResourceTestDirFile());
+    emptyExternalUrl = getFilePath(EMPTY_EXTERNAL_URL);
+    externalUrl = getFilePath(EXTERNAL_URL);
   }
 
   @Test
@@ -252,34 +252,35 @@ public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
   public void synchronizeAllCalendars() throws Exception {
     OperationContext.fromUser(User.getById("1"));
     Calendar calendar = Calendar.getById("ID_1");
-    String externalCalendarUrl = MessageFormat.format(PATTERN_EXTERNAL_URL,
-        mavenTargetDirectoryRule.getResourceTestDirFile(), "ICAL-EXPORT-SP-GOO-2017-05-03_00.ics");
+    String externalCalendarUrl =
+        getFilePath(PATTERN_EXTERNAL_URL, "ICAL-EXPORT-SP-GOO-2017-05-03_00.ics");
     calendar.setExternalCalendarUrl(new URL(externalCalendarUrl));
     calendar.save();
 
+    assertThat(calendar.getLastSynchronizationDate().isPresent(), is(false));
+
     /*calendar = Calendar.getById("ID_2");
-    externalCalendarUrl = MessageFormat.format(PATTERN_EXTERNAL_URL,
-        mavenTargetDirectoryRule.getResourceTestDirFile(), "ICAL-EXPORT-YCH-2017-05-02_00.ics");
+    externalCalendarUrl = getFilePath(PATTERN_EXTERNAL_URL, "ICAL-EXPORT-YCH-2017-05-02_00.ics");
     calendar.setExternalCalendarUrl(new URL(externalCalendarUrl));
     calendar.save();
 
     calendar = Calendar.getById("ID_3");
-    externalCalendarUrl = MessageFormat.format(PATTERN_EXTERNAL_URL,
-        mavenTargetDirectoryRule.getResourceTestDirFile(),
-        "ICAL-EXPORT-YCH-2017-05-02_01_EXCEP.ics");
+    externalCalendarUrl =
+        getFilePath(PATTERN_EXTERNAL_URL, "ICAL-EXPORT-YCH-2017-05-02_01_EXCEP.ics");
     calendar.setExternalCalendarUrl(new URL(externalCalendarUrl));
     calendar.save();
 
     calendar = Calendar.getById("ID_4");
-    externalCalendarUrl = MessageFormat.format(PATTERN_EXTERNAL_URL,
-        mavenTargetDirectoryRule.getResourceTestDirFile(),
-        "ICAL-EXPORT-YCH-2017-05-02_02_EXC_ATTENDEE.ics");
+    externalCalendarUrl =
+        getFilePath(PATTERN_EXTERNAL_URL, "ICAL-EXPORT-YCH-2017-05-02_02_EXC_ATTENDEE.ics");
     calendar.setExternalCalendarUrl(new URL(externalCalendarUrl));
     calendar.save();*/
 
     synchronization.synchronizeAll();
 
-    Calendar.getSynchronizedCalendars().stream().forEach(c -> {
+    final List<Calendar> synchronizedCalendars = Calendar.getSynchronizedCalendars();
+    assertThat(synchronizedCalendars, hasSize(1));
+    synchronizedCalendars.forEach(c -> {
       assertThat(c.getLastSynchronizationDate().isPresent(), is(true));
       assertThat(c.isEmpty(), is(false));
     });
@@ -331,6 +332,16 @@ public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
           .execute();
       return null;
     });
+  }
+
+  private String getFilePath(String pattern) {
+    return getFilePath(pattern, "");
+  }
+
+  private String getFilePath(String pattern, String filename) {
+    return FilenameUtils.normalize(MessageFormat
+            .format(pattern, mavenTargetDirectoryRule.getResourceTestDirFile().getPath(), filename),
+        true);
   }
 }
   

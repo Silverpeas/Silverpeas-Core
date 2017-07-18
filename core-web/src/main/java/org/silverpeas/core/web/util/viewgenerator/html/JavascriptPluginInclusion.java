@@ -46,6 +46,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.Operations
 
 import java.text.MessageFormat;
 
+import static java.util.Arrays.stream;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.chart.ChartSettings.getDefaultPieChartColorsAsJson;
 import static org.silverpeas.core.chart.ChartSettings.getThresholdOfPieCombination;
@@ -577,6 +578,13 @@ public class JavascriptPluginInclusion {
     includeAttendeeWebComponent(xhtml);
     includeDragAndDropUpload(xhtml, language);
 
+    SettingBundle calendarSettings = ResourceLocator
+        .getSettingBundle("org.silverpeas.calendar.settings.calendar");
+
+    xhtml.addElement(scriptContent(JavascriptSettingProducer.settingVariableName("CalendarSettings")
+        .add("c.c", stream(calendarSettings.getString("calendar.ui.colors").split(",")), true)
+        .produce()));
+
     LocalizationBundle bundle = ResourceLocator
         .getLocalizationBundle("org.silverpeas.calendar.multilang.calendarBundle", language);
     JavascriptBundleProducer bundleProducer =
@@ -620,6 +628,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-management.js"));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-event-management.js"));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-event-occurrence-tip.js"));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-event-occurrence-list.js"));
     xhtml.addElement(script(ANGULARJS_SERVICES_PATH + calendarPath + SILVERPEAS_CALENDAR));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + SILVERPEAS_CALENDAR));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-list.js"));

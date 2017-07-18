@@ -37,8 +37,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.InputStream;
 import java.io.Reader;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.silverpeas.core.persistence.datasource.repository.OperationContext.State.IMPORT;
@@ -193,6 +194,11 @@ public class ICalendarEventImportProcessor {
               result.withUpdated(e);
             }
           });
+          occurrenceImportResult.instance().ifPresent(i -> {
+            if (!result.created().isPresent() && !result.updated().isPresent()) {
+              result.withUpdated(i.getCalendarEvent());
+            }
+          });
         }
         return result;
       });
@@ -228,25 +234,19 @@ public class ICalendarEventImportProcessor {
   private EventOperationResult importOccurrencesOnly(final CalendarEvent event,
       final List<CalendarEventOccurrence> occurrencesToImport) throws ImportException {
     final Mutable<EventOperationResult> result = Mutable.of(new EventOperationResult());
+    final Map<String, CalendarEventOccurrence> existingOccurrences = new HashMap<>();
 
-    List<CalendarEventOccurrence> persistedOccurrences = event.getPersistedOccurrences();
-
-    final Iterator<CalendarEventOccurrence> existingOccurrences = persistedOccurrences.stream()
-        .sorted(CalendarEventOccurrence.COMPARATOR_BY_ORIGINAL_DATE_ASC).iterator();
-    final Mutable<CalendarEventOccurrence> currentExistingOccurrence =
-        Mutable.of(existingOccurrences.hasNext() ? existingOccurrences.next() : null);
+    event.getPersistedOccurrences()
+        .forEach(o -> existingOccurrences.put(o.getOriginalStartDate().toString(), o));
 
     occurrencesToImport.stream().sorted(CalendarEventOccurrence.COMPARATOR_BY_ORIGINAL_DATE_ASC)
         .forEach(o -> {
           o.setCalendarEvent(event);
           Optional<CalendarEventOccurrence> existingOccurrence =
-              currentExistingOccurrence.isPresent() ?
-                  findMatching(o, existingOccurrences, currentExistingOccurrence.get()) :
-                  Optional.empty();
+              Optional.ofNullable(existingOccurrences.remove(o.getOriginalStartDate().toString()));
           if (existingOccurrence.isPresent()) {
-            currentExistingOccurrence.set(existingOccurrence.get());
-            if (wasUpdated(o, currentExistingOccurrence.get())) {
-              result.set(currentExistingOccurrence.get().updateFrom(o));
+            if (wasUpdated(o, existingOccurrence.get())) {
+              result.set(existingOccurrence.get().updateFrom(o));
             }
           } else {
             // we save it directly into the persistence engine as the event could be not yet saved
@@ -256,6 +256,12 @@ public class ICalendarEventImportProcessor {
             result.get().withUpdated(o.getCalendarEvent());
           }
         });
+
+    // Deleting the existing occurrences which do not exist anymore
+    if (!existingOccurrences.isEmpty()) {
+      result.get().withUpdated(event);
+    }
+    existingOccurrences.forEach((originalStartDate, occurrence) -> event.deleteOnly(occurrence));
 
     return result.get();
   }
@@ -271,29 +277,14 @@ public class ICalendarEventImportProcessor {
   }
 
   private boolean wasUpdated(final CalendarEvent imported, final CalendarEvent existing) {
-    return imported.getLastUpdateDate().after(existing.getLastUpdateDate());
+    return imported.getLastUpdateDate().after(existing.getLastUpdateDate()) ||
+        (imported.getRecurrence() != null &&
+            !imported.getRecurrence().equals(existing.getRecurrence()));
   }
 
   private boolean wasUpdated(final CalendarEventOccurrence imported,
       final CalendarEventOccurrence existing) {
     return imported.getLastUpdateDate().after(existing.getLastUpdateDate());
-  }
-
-  private Optional<CalendarEventOccurrence> findMatching(final CalendarEventOccurrence imported,
-      Iterator<CalendarEventOccurrence> existingOccurrences,
-      final CalendarEventOccurrence fromOccurrence) {
-    CalendarEventOccurrence existingOccurrence = fromOccurrence;
-    while (existingOccurrences.hasNext() && existingOccurrence.isOriginallyBefore(imported)) {
-      existingOccurrence = existingOccurrences.next();
-    }
-    return matches(imported, existingOccurrence) ? Optional.of(existingOccurrence) :
-        Optional.empty();
-  }
-
-  private boolean matches(final CalendarEventOccurrence imported,
-      final CalendarEventOccurrence existing) {
-    return existing != null &&
-        imported.getOriginalStartDate().equals(existing.getOriginalStartDate());
   }
 
   private static class EventImportResult extends EventOperationResult {

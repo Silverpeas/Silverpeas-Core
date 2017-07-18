@@ -2505,7 +2505,7 @@ caption {
 }
 
 #myProfile #indexAndSearch #index a:hover, #publicProfile #indexAndSearch #index a:focus ,
-.sousNavBulle a:hover, .sousNavBulle a:focus {
+.sousNavBulle a:hover, .sousNavBulle a:focus, .sousNavBulle a.selected {
   background-color:#BFBFBF;
   color:#FFF;
 }
@@ -6022,7 +6022,7 @@ a.navigation-button {
 .access-list li .operation {
   position:absolute;
   right:0.25em;
-  top:2px;
+  top:0.8em;
 }
 
 .access-list li:first-child{
@@ -6333,7 +6333,7 @@ silverpeas-permalink .copy-to-clipboard .sp_button span {
   margin-bottom: 1em;
   cursor: pointer;
   box-shadow: 0 0 0 1px #bbb;
-  border: 2px solid #fff;
+  border: 2px solid; /*PRINT*/
 }
 
 .silverpeas-color-picker.active {
@@ -6342,8 +6342,31 @@ silverpeas-permalink .copy-to-clipboard .sp_button span {
   height: 25px;
 }
 
+@media screen {
+  .silverpeas-color-picker {
+    border-radius: 0 !important;
+    border-color: #fff !important;
+  }
+}
+
+@media print {
+  .silverpeas-color-picker {
+    height: 10px;
+    border-radius: 5px;
+    background-color: #fff !important;
+  }
+}
+
 .silverpeas-color-picker-set {
   max-width: 200px;
+}
+
+.silverpeas-color-picker-set .silverpeas-color-picker {
+  margin: 0.5em;
+}
+
+.silverpeas-color-picker-set .silverpeas-color-picker:last-child {
+  margin-left: 0.2em;
 }
 
 /**

@@ -56,9 +56,10 @@ import static org.silverpeas.core.calendar.CalendarEventUtil.formatTitle;
 public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
 
   private URI occurrenceUri;
+  private URI occurrenceViewUrl;
 
   private String occurrenceId;
-  private String lastStartDate;
+  private String originalStartDate;
   private boolean firstEventOccurrence;
 
   protected CalendarEventOccurrenceEntity() {
@@ -71,6 +72,17 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
 
   public static String decodeId(String occurrenceId) {
     return new String(StringUtil.fromBase64(occurrenceId));
+  }
+
+  /**
+   * Sets a URI of the view page of the occurrence.
+   * @param occurrenceViewUrl the occurrence web entity URI.
+   * @return itself.
+   */
+  @SuppressWarnings("unchecked")
+  public CalendarEventOccurrenceEntity withOccurrenceViewURI(final URI occurrenceViewUrl) {
+    this.occurrenceViewUrl = occurrenceViewUrl;
+    return this;
   }
 
   /**
@@ -122,6 +134,14 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
     this.occurrenceUri = occurrenceUri;
   }
 
+  public URI getOccurrenceViewUrl() {
+    return occurrenceViewUrl;
+  }
+
+  public void setOccurrenceViewUrl(final URI occurrenceViewUrl) {
+    this.occurrenceViewUrl = occurrenceViewUrl;
+  }
+
   public String getId() {
     return getOccurrenceId();
   }
@@ -138,12 +158,12 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
     this.occurrenceId = occurrenceId;
   }
 
-  public String getLastStartDate() {
-    return lastStartDate;
+  public String getOriginalStartDate() {
+    return originalStartDate;
   }
 
-  public void setLastStartDate(final String lastStartDate) {
-    this.lastStartDate = lastStartDate;
+  public void setOriginalStartDate(final String originalStartDate) {
+    this.originalStartDate = originalStartDate;
   }
 
   public boolean isFirstEventOccurrence() {
@@ -176,7 +196,7 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
     final CalendarEvent calEvent = calendarEventOccurrence.getCalendarEvent();
     decorate(calEvent, calEvent.getCalendar().getComponentInstanceId(), zoneId);
     this.occurrenceId = StringUtil.asBase64(calendarEventOccurrence.getId().getBytes());
-    this.lastStartDate = calendarEventOccurrence.getOriginalStartDate().toString();
+    this.originalStartDate = calendarEventOccurrence.getOriginalStartDate().toString();
     setFirstEventOccurrence(calendarEventOccurrence.getOriginalStartDate()
         .equals(calendarEventOccurrence.getCalendarEvent().getStartDate()));
     final CalendarComponent component = calendarEventOccurrence.asCalendarComponent();
@@ -199,7 +219,7 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
     ToStringBuilder builder = super.toStringBuilder();
     builder.append("occurrenceId", getId());
     builder.append("calendarZoneId", getCalendarZoneId());
-    builder.append("lastStartDate", getLastStartDate());
+    builder.append("originalStartDate", getOriginalStartDate());
     builder.append("firstEventOccurrence", isFirstEventOccurrence());
     return builder;
   }

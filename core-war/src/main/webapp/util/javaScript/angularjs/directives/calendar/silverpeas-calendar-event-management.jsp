@@ -1,5 +1,5 @@
 <%--
-  ~ Copyright (C) 2000 - 2016 Silverpeas
+  ~ Copyright (C) 2000 - 2017 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
   ~ As a special exception to the terms and conditions of version 3.0 of
   ~ the GPL, you may redistribute this Program in connection with Free/Libre
   ~ Open Source Software ("FLOSS") applications as described in Silverpeas's
-  ~ FLOSS exception. You should have received a copy of the text describing
+  ~ FLOSS exception.  You should have received a copy of the text describing
   ~ the FLOSS exception, and it is also available here:
-  ~ "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+  ~ "https://www.silverpeas.org/legal/floss_exception.html"
   ~
   ~ This program is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -39,8 +39,8 @@
 <c:set var="attendeeAnswerChoiceMessage"><fmt:message key='calendar.message.event.attendee.participation.update'><fmt:param value="{{$ctrl.occurrence.title}}"/></fmt:message></c:set>
 <c:set var="allOccurrenceMessage"><fmt:message key='calendar.message.event.recurrence.occurrence.all'/></c:set>
 <c:set var="allOccurrencePartMessage"><fmt:message key='calendar.message.event.recurrence.occurrence.attendee.participation.all'/></c:set>
-<c:set var="fromOccurrenceMessage"><fmt:message key='calendar.message.event.recurrence.occurrence.from'><fmt:param value="{{$ctrl.displayLastStartDate()}}"/></fmt:message></c:set>
-<c:set var="uniqueOccurrenceMessage"><fmt:message key='calendar.message.event.recurrence.occurrence.unique'><fmt:param value="{{$ctrl.displayLastStartDate()}}"/></fmt:message></c:set>
+<c:set var="fromOccurrenceMessage"><fmt:message key='calendar.message.event.recurrence.occurrence.from'><fmt:param value="{{$ctrl.displayOriginalStartDate()}}"/></fmt:message></c:set>
+<c:set var="uniqueOccurrenceMessage"><fmt:message key='calendar.message.event.recurrence.occurrence.unique'><fmt:param value="{{$ctrl.displayOriginalStartDate()}}"/></fmt:message></c:set>
 
 <div class="silverpeas-calendar-event-management-update-popin" style="display: none">
   <span>${updateChoiceMessage}</span>

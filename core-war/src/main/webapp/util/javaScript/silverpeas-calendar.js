@@ -37,8 +37,7 @@
     $window.CalendarBundle = new SilverpeasPluginBundle();
   }
 
-  var __potentialColors = ["#008cd6", "#7cb63e", "#eb9b0f", "#f53333", "#cf1a4d", "#7d2a70",
-    "#144476", "#458277", "#dc776f", "#7d5a5a", "#777777", "#000000"];
+  var __potentialColors = $window.CalendarSettings.get('c.c');
 
   var SilverpeasCalendarColorCache = SilverpeasCache.extend({
     getColor: function(calendar) {
@@ -175,7 +174,7 @@
         occurrenceUri : occurrence.occurrenceUri,
         calendarUri : occurrence.calendarUri,
         calendarZoneId : occurrence.calendarZoneId,
-        lastStartDate : occurrence.lastStartDate,
+        originalStartDate : occurrence.originalStartDate,
         firstEventOccurrence : occurrence.firstEventOccurrence,
         startDate : occurrence.startDate,
         endDate : occurrence.endDate,
@@ -469,7 +468,7 @@
     calendarOptions.currentDate = moment(calendarOptions.currentDate);
     var fullCalendarOptions = {
       header: false,
-      contentHeight:550,
+      contentHeight:640,
       monthNames: monthNames,
       dayNames: dayNames,
       dayNamesShort: shortDayNames,

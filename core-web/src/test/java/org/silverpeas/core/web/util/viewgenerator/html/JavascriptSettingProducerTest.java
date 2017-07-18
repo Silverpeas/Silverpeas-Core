@@ -57,10 +57,10 @@ public class JavascriptSettingProducerTest {
         .produce();
 
     assertThat(producedJs, is("window.UnitTestSettings=new SilverpeasPluginSettings({" +
-        "\"unit.test.label\":\"Ceci est un test unitaire\"," +
-        "\"unit.test.special.chars\":\"Apostrophe \\' et guillemets\\\"\"," +
-        "\"unit.test.html.chars\":\"<br\\/>{0}<span\\/>\"," +
-        "\"unit.test.simple.key.string\":\"simpleValue\"," +
+        "\"unit.test.label\":'Ceci est un test unitaire'," +
+        "\"unit.test.special.chars\":'Apostrophe \\' et guillemets\\\"'," +
+        "\"unit.test.html.chars\":'<br\\/>{0}<span\\/>'," +
+        "\"unit.test.simple.key.string\":'simpleValue'," +
         "\"unit.test.simple.key.boolean\":false," +
         "\"unit.test.simple.key.integer\":25," +
         "\"unit.test.simple.key.long\":65," +
