@@ -177,7 +177,7 @@
   <view:frame>
     <view:areaOfOperationOfCreation/>
     <div id="silvermail-list">
-      <view:arrayPane var="userNotificationInbox" routingAddress="Main">
+      <view:arrayPane var="userNotificationInbox" routingAddress="Main" numberLinesPerPage="<%=silvermailScc.getPagination().getPageSize()%>">
         <view:arrayColumn width="10" title="" sortable="false"/>
         <view:arrayColumn width="80" title="${dateLabel}" sortable="true"/>
         <view:arrayColumn width="30" title="${urlLabel}" sortable="false"/>
