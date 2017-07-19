@@ -82,7 +82,7 @@
     var checkboxMonitor = sp.selection.newCheckboxMonitor('#silvermail-list input[name=selection]');
 
     function newMessage() {
-      SP_openWindow("${newUserNotificationUrl}", 'notifyUserPopup', '700', '430', 'menubar=no,scrollbars=yes,statusbar=no');
+      SP_openWindow("${newUserNotificationUrl}", 'notifyUserPopup', '900', '430', 'menubar=no,scrollbars=yes,statusbar=no');
     }
 
     var _handleCheckboxesAndReloadList = function() {

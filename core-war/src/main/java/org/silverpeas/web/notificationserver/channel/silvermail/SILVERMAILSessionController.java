@@ -93,6 +93,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
         "org.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
         "org.silverpeas.notificationserver.channel.silvermail.settings.silvermailIcons");
     setComponentRootName(URLUtil.CMP_SILVERMAIL);
+    pagination = new PaginationPage(1, 25);
   }
 
   protected String getComponentInstName() {

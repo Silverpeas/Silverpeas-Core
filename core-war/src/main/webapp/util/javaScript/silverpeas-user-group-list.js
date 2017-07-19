@@ -317,15 +317,19 @@
         }, 0);
       }
     }
-    this.refresh().then(function() {
-      __selectize.on('item_remove', function(id) {
-        __updateIdContainers(id, false);
-      });
-      __selectize.on('item_add', function(id) {
-        __updateIdContainers(id, true);
-      });
-      this.notifyReady();
-    }.bind(this));
+    setTimeout(function() {
+      this.refresh().then(function() {
+        __selectize.on('item_remove', function(id) {
+          __updateIdContainers(id, false);
+        });
+        __selectize.on('item_add', function(id) {
+          __updateIdContainers(id, true);
+        });
+        setTimeout(function() {
+          this.notifyReady();
+        }.bind(this), 0);
+      }.bind(this));
+    }.bind(this), 0);
   };
 
   window.UserGroupSelect = function(options) {
@@ -499,7 +503,7 @@
       __internalOnReady();
       setTimeout(function() {
         this.notifyReady();
-      }.bind(this), 0);
+      }.bind(this), 100);
     }.bind(this);
 
     whenSilverpeasReady(function() {

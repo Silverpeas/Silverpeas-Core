@@ -153,15 +153,12 @@ padding-right:0;
 }
 
 .champs .select-user-group-container,
-.champs .select-user-group-container .search-input-container,
-.field .select-user-group-container,
-.field .select-user-group-container .search-input-container {
+.champs .select-user-group-container .search-input-container {
   width: 100%;
   margin: 0;
 }
 
-.champs .select-user-group-container .search-input-container .selectize-control,
-.field .select-user-group-container .search-input-container .selectize-control {
+.champs .select-user-group-container .search-input-container .selectize-control{
   width: 90%;
   background: #FFF;
 }
@@ -201,7 +198,7 @@ input.inputHour{
 }
 
 .champs input.checkbox:first-child, .champs input.radio:first-child,
- .champs input.radio.newline{
+.champs input.radio.newline{
 	margin-left:0;
 	border:0;
 }

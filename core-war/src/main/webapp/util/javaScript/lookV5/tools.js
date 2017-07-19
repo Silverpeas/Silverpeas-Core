@@ -29,5 +29,5 @@ function openPdc() {
 function notifyAdministrators() {
   SP_openWindow(getContext() +
       '/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&compoId=&theTargetsUsers=Administrators&theTargetsGroups=',
-      'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
+      'notifyUserPopup', '900', '400', 'menubar=no,scrollbars=no,statusbar=no');
 }
