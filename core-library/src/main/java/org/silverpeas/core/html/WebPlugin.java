@@ -37,9 +37,11 @@ public interface WebPlugin {
 
   /**
    * Include a plugin by its name.
+   * <p>The method returns a filled element container one time per request.</p>
    * @param plugin the aimed plugin.
    * @param language the aimed language.
-   *
+   * @return the element container filled with the necessary HTML tags to invoke the plugin, or
+   * empty if the initialization script has already been done into the context of the same request.
    */
   ElementContainer getHtml(SupportedWebPlugins plugin, final String language);
 }

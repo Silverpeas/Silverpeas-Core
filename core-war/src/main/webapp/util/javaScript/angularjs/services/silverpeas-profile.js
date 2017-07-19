@@ -64,7 +64,11 @@
               (typeof arguments[0] === 'number' || typeof arguments[0] === 'string')) {
             return adapter.find(arguments[0]);
           } else {
-            var url = adapter.url + (context.component ? '/application/' + context.component : '');
+            var componentId = context.component;
+            if (!componentId && arguments[0] && typeof arguments[0].component === 'string') {
+              componentId = arguments[0].component;
+            }
+            var url = adapter.url + (componentId ? '/application/' + componentId : '');
             var deferred = $q.defer();
             adapter.find({
               url : url,
@@ -141,7 +145,11 @@
           if (arguments.length === 1 && (typeof arguments[0] === 'number' || typeof arguments[0] === 'string')) {
             return adapter.find(arguments[0]);
           } else {
-            var url = adapter.url + (context.component ? '/application/' + context.component : '');
+            var componentId = context.component;
+            if (!componentId && arguments[0] && typeof arguments[0].component === 'string') {
+              componentId = arguments[0].component;
+            }
+            var url = adapter.url + (componentId ? '/application/' + componentId : '');
             var deferred = $q.defer();
             adapter.find({
               url : url,

@@ -315,4 +315,17 @@ public interface User extends Serializable, Comparable<User> {
    * connected.
    */
   String getDurationOfCurrentSession();
+
+  /**
+   * Indicates if a limitation exists about the number of receivers the user can notify manually.
+   * @return true if the limitation exists, false otherwise.
+   */
+  boolean isUserManualNotificationUserReceiverLimit();
+
+  /**
+   * Gets the maximum user receivers the user can notify manually.
+   * @return the maximum user receivers the user can notify manually. If the value is not greater
+   * than 0, the user is not limited.
+   */
+  int getUserManualNotificationUserReceiverLimitValue();
 }

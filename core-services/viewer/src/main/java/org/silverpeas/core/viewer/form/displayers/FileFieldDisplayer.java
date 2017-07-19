@@ -167,7 +167,7 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
         if (attachment != null) {
           String deleteImg = Util.getIcon("delete");
           String deleteLab = Util.getString("removeFile", contentLanguage);
-          html.append("&nbsp;<span id=\"div")
+          html.append("&nbsp;<span class=\"fileArea\" id=\"div")
               .append(fieldName)
               .append("\">")
               .append("<img alt=\"\" align=\"top\" src=\"")

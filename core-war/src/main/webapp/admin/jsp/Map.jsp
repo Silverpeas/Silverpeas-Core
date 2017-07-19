@@ -67,7 +67,7 @@
   <script type="text/javascript">
     function notifyAdministrators(context, compoId, users, groups) {
       SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main.jsp?popupMode=Yes&editTargets=No&theTargetsUsers=Administrators',
-          'notifyUserPopup', '700', '400', 'menubar=no,scrollbars=no,statusbar=no');
+          'notifyUserPopup', '900', '400', 'menubar=no,scrollbars=no,statusbar=no');
     }
 
     function openClipboard() {

@@ -44,10 +44,40 @@ import java.util.StringTokenizer;
  */
 public class SelectionPeasWrapperSessionController extends AbstractComponentSessionController {
 
+  private static final int USER_GROUP = 2;
+
   private String domainIdFilter = "";
   private String[] selectedUserIds;
   private String[] selectedGroupIds;
   private int selectable = SelectionUsersGroups.USER;
+  /**
+   * The HTML form name whose user element must be set.
+   */
+  private String formName = null;
+  /**
+   * The HTML input where the selected user id must be set.
+   */
+  private String elementId = null;
+  /**
+   * The HTML input where the selected user name must be set.
+   */
+  private String elementName = null;
+  /**
+   * The selected user (if any).
+   */
+  private UserDetail selectedUser = null;
+  /**
+   * The selected users (if any).
+   */
+  private UserDetail[] selectedUsers = null;
+  /**
+   * The selected user (if any).
+   */
+  private Group selectedGroup = null;
+  /**
+   * The selected users (if any).
+   */
+  private Group[] selectedGroups = null;
 
   /**
    * Standard Session Controller Constructeur
@@ -69,6 +99,13 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
   }
 
   /**
+   * Set the HTML form name whose user element must be set.
+   */
+  public void setFormName(String formName) {
+    this.formName = formName;
+  }
+
+  /**
    * Returns the HTML input where the selected user id must be set.
    */
   public String getElementId() {
@@ -76,10 +113,24 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
   }
 
   /**
+   * Set the HTML input where the selected user id must be set.
+   */
+  public void setElementId(String elementId) {
+    this.elementId = elementId;
+  }
+
+  /**
    * Returns the HTML input where the selected user name must be set.
    */
   public String getElementName() {
     return elementName;
+  }
+
+  /**
+   * Set the HTML input where the selected user name must be set.
+   */
+  public void setElementName(String elementName) {
+    this.elementName = elementName;
   }
 
   /**
@@ -108,27 +159,6 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
    */
   public Group[] getSelectedGroups() {
     return selectedGroups;
-  }
-
-  /**
-   * Set the HTML form name whose user element must be set.
-   */
-  public void setFormName(String formName) {
-    this.formName = formName;
-  }
-
-  /**
-   * Set the HTML input where the selected user id must be set.
-   */
-  public void setElementId(String elementId) {
-    this.elementId = elementId;
-  }
-
-  /**
-   * Set the HTML input where the selected user name must be set.
-   */
-  public void setElementName(String elementName) {
-    this.elementName = elementName;
   }
 
   /**
@@ -172,9 +202,10 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
   /**
    * Init the user panel.
    */
-  public String initSelectionPeas(boolean multiple, String instanceId, List<String> roles) {
-    String m_context = URLUtil.getApplicationURL();
-    String hostUrl = m_context + "/RselectionPeasWrapper/jsp/close";
+  public String initSelectionPeas(boolean multiple, String instanceId, List<String> roles,
+      final boolean showDeactivated, final boolean selectedUserLimit) {
+    String applicationContext = URLUtil.getApplicationURL();
+    String hostUrl = applicationContext + "/RselectionPeasWrapper/jsp/close";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -190,6 +221,15 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     sel.setPopupMode(false);
     sel.setSetSelectable(isGroupSelectable());
     sel.setElementSelectable(isUserSelectable());
+    if (selectedUserLimit && getUserDetail().isUserManualNotificationUserReceiverLimit()) {
+      sel.setSelectedUserLimit(getUserDetail().getUserManualNotificationUserReceiverLimitValue());
+    }
+
+    if ("hotSetting".equals(getFormName())) {
+      sel.setHtmlFormName("dummy");
+      sel.setHtmlFormElementId(getElementId());
+      sel.setHtmlFormElementName(getElementName());
+    }
 
     SelectionUsersGroups sug = new SelectionUsersGroups();
     if (StringUtil.isDefined(instanceId)) {
@@ -208,6 +248,7 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
     // Initialisation des éléments sélectionnés
     sel.setSelectedElements(selectedUserIds);
     sel.setSelectedSets(selectedGroupIds);
+    sel.setFilterOnDeactivatedState(!showDeactivated);
 
     return Selection.getSelectionURL();
   }
@@ -228,7 +269,8 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
           selectedGroup = OrganizationControllerProvider.getOrganisationController().getGroup(id);
         }
       }
-    } else {
+    }
+    if (isUserSelectable()) {
       if (sel.isMultiSelect()) {
         String[] ids = sel.getSelectedElements();
         selectedUsers = OrganizationControllerProvider.getOrganisationController().getUserDetails(ids);
@@ -254,11 +296,11 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
   }
 
   public boolean isUserSelectable() {
-    return SelectionUsersGroups.USER == selectable;
+    return SelectionUsersGroups.USER == selectable || selectable == USER_GROUP;
   }
 
   public boolean isGroupSelectable() {
-    return SelectionUsersGroups.GROUP == selectable;
+    return SelectionUsersGroups.GROUP == selectable || selectable == USER_GROUP;
   }
 
   public void setSelectedGroupId(String selectedId) {
@@ -279,41 +321,5 @@ public class SelectionPeasWrapperSessionController extends AbstractComponentSess
       this.selectedGroupIds = null;
     }
   }
-
-
-  /**
-   * The HTML form name whose user element must be set.
-   */
-  private String formName = null;
-
-  /**
-   * The HTML input where the selected user id must be set.
-   */
-  private String elementId = null;
-
-  /**
-   * The HTML input where the selected user name must be set.
-   */
-  private String elementName = null;
-
-  /**
-   * The selected user (if any).
-   */
-  private UserDetail selectedUser = null;
-
-  /**
-   * The selected users (if any).
-   */
-  private UserDetail[] selectedUsers = null;
-
-  /**
-   * The selected user (if any).
-   */
-  private Group selectedGroup = null;
-
-  /**
-   * The selected users (if any).
-   */
-  private Group[] selectedGroups = null;
 
 }

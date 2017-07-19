@@ -1,0 +1,89 @@
+/*
+ * Copyright (C) 2000 - 2017 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception. You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+.selectize-control{
+  border: 1px solid #999;
+}
+
+.selectize-input {
+  width: 100%;
+  position: initial;
+  border: none;
+  -webkit-box-sizing: inherit;
+  -moz-box-sizing: inherit;
+  box-sizing: inherit;
+  -webkit-box-shadow: inherit;
+  box-shadow: inherit;
+  -webkit-border-radius: inherit;
+  -moz-border-radius: inherit;
+  border-radius: inherit;
+  padding: 3px 0;
+}
+
+.selectize-control.single .selectize-input:after {
+  border-style: none;
+}
+
+.selectize-control .selectize-input.has-items {
+  padding: 0.5em 8% 0.5em 1%;
+  width: 91%;
+}
+
+.selectize-dropdown .active {
+  background-color: #0078d7;
+  color: #FFF;
+}
+
+.selectize-control.multi .selectize-input > div {
+  vertical-align: top;
+}
+
+.selectize-input.has-items > input,
+.selectize-control .hidden-domain .main-info {
+  line-height: 30px !important;
+}
+
+.selectize-control .type-user.hidden-domain .extra-info {
+  display: none;
+}
+
+.selectize-control.multi .selectize-input > div.active {
+  border: 1px dashed #0078d7;
+}
+
+.selectize-control .selectize-input > div {
+  cursor: pointer;
+  margin: 0 3px 3px 0;
+  padding: 2px 6px;
+  background: #f2f2f2;
+  color: #303030;
+  border: 0 solid #d0d0d0;
+}
+
+@media only screen and (max-width: 800px) {
+  .selectize-control .selectize-input.has-items {
+    padding: 0.5em 15% 0.5em 1%;
+    width: 84%;
+  }
+}

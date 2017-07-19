@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.ecs.xhtml.div;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -32,16 +34,19 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.MultipleUserField;
 import org.silverpeas.core.contribution.content.form.field.UserField;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.html.plugin.UserGroupSelectProducer;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
 
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.util.file.FileUploadUtil;
+
+import static org.silverpeas.core.contribution.content.form.displayers.UserFieldDisplayer
+    .produceMandatoryCheck;
+import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.SelectionType.USER;
+import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.withContainerId;
 
 /**
  * A MultipleUserFieldDisplayer is an object which can display a MultipleUserField in HTML and can
@@ -54,8 +59,7 @@ import org.silverpeas.core.util.file.FileUploadUtil;
  */
 public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleUserField> {
 
-  static final private String ROWS_DEFAULT_VALUE = "5";
-  static final private String COLS_DEFAULT_VALUE = "50";
+  private static final int NB_HTML_ELEMENTS = 2;
 
   /**
    * Returns the name of the managed types.
@@ -75,27 +79,9 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
    * </UL>
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template,
-      PagesContext PagesContext) throws java.io.IOException {
-    String language = PagesContext.getLanguage();
-
-    if (!template.getTypeName().equals(MultipleUserField.TYPE)) {
-
-
-    }
-    if (template.isMandatory()) {
-      StringBuilder html = new StringBuilder();
-      html.append("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      html.append("      errorMsg+=\"  - '")
-          .append(WebEncodeHelper.javaStringToJsString(template.getLabel(language)))
-          .append("' ").append(Util.getString("GML.MustBeFilled", language))
-          .append("\\n\";");
-      html.append("      errorNb++;");
-      html.append("   }");
-
-      out.println(html.toString());
-    }
-
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext)
+      throws java.io.IOException {
+    produceMandatoryCheck(out, template, pagesContext);
   }
 
   /**
@@ -109,73 +95,40 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
   @Override
   public void display(PrintWriter out, MultipleUserField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String language = pageContext.getLanguage();
-    String selectUserImg = Util.getIcon("userPanel");
-    String selectUserLab = Util.getString("userPanel", language);
+    final boolean writable =
+        !template.isHidden() && !template.isDisabled() && !template.isReadOnly();
+    final String language = pageContext.getLanguage();
+    final String selectUsersLab = Util.getString("usersPanel", language);
+    final String deleteUsersLab = Util.getString("clearUser", language);
+    final String fieldName = template.getFieldName();
+    final String rootContainerId = "select-user-group-" + fieldName;
+    final String userIds =
+        field.getTypeName().equals(MultipleUserField.TYPE) ? field.getStringValue() : "";
 
-    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
-    String rows =
-        (parameters.containsKey("rows")) ? parameters.get("rows") : ROWS_DEFAULT_VALUE;
-    String cols =
-        (parameters.containsKey("cols")) ? parameters.get("cols") : COLS_DEFAULT_VALUE;
-    boolean usersOfInstanceOnly = StringUtil.getBooleanValue(parameters.get("usersOfInstanceOnly"));
-    String roles = parameters.get("roles");
-    if (StringUtil.isDefined(roles)) {
-      usersOfInstanceOnly = true;
-    }
-
-    String userNames = "";
-    String userIds = "";
-    StringBuilder html = new StringBuilder();
-
-    String fieldName = template.getFieldName();
-
-    if (!field.getTypeName().equals(MultipleUserField.TYPE)) {
-
-    } else {
-      userIds = field.getStringValue();
-    }
-    if (!field.isNull()) {
-      userNames = field.getValue();
-    }
-    html.append("<input type=\"hidden\" id=\"").append(fieldName).append("\" name=\"")
-        .append(fieldName)
-        .append("\" value=\"").append(WebEncodeHelper.javaStringToHtmlString(userIds)).append("\" />");
-
-    String displayedElementId = fieldName + "_name";
-
-    if (!template.isHidden()) {
-      html.append("<textarea id=\"").append(displayedElementId).append("\" name=\"").append(fieldName)
-          .append("$$name\" disabled=\"disabled\" rows=\"").append(rows).append("\" cols=\"")
-          .append(cols)
-          .append("\">")
-          .append(WebEncodeHelper.javaStringToHtmlString(userNames)).append("</textarea>");
-    }
-
-    if (!template.isHidden() && !template.isDisabled()
-        && !template.isReadOnly()) {
-      html.append("&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('")
-          .append(URLUtil.getApplicationURL())
-          .append("/RselectionPeasWrapper/jsp/open?formName=").append(pageContext.getFormName())
-          .append("&elementId=").append(fieldName)
-          .append("&elementName=").append(displayedElementId)
-          .append("&selectedUsers=").append(userIds == null ? "" : userIds)
-          .append(usersOfInstanceOnly ? "&instanceId=" + pageContext.getComponentId() : "")
-          .append(StringUtil.isDefined(roles) ? "&roles=" + roles : "")
-          .append("&selectionMultiple=true")
-          .append("','selectUser',800,600,'');return false;\" >");
-
-      html.append("<img src=\"").append(selectUserImg).append(
-          "\" width=\"15\" height=\"15\" border=\"0\" alt=\"")
-          .append(selectUserLab).append("\" align=\"absmiddle\" title=\"").append(selectUserLab)
-          .append("\"/></a>");
-
-      if (template.isMandatory()) {
-        html.append(Util.getMandatorySnippet());
+    final UserGroupSelectProducer selectUsers = withContainerId(rootContainerId)
+        .withUserInputName(fieldName)
+        .selectionOf(USER)
+        .multiple(true)
+        .readOnly(!writable)
+        .hidden(template.isHidden())
+        .withUserIds(userIds)
+        .withUserPanelButtonLabel(selectUsersLab)
+        .withRemoveButtonLabel(deleteUsersLab);
+    if (writable) {
+      Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
+      String roles = parameters.get("roles");
+      boolean usersOfInstanceOnly =
+          StringUtil.getBooleanValue(parameters.get("usersOfInstanceOnly")) ||
+              StringUtil.isDefined(roles);
+      if (usersOfInstanceOnly) {
+        selectUsers.filterOnComponentId(pageContext.getComponentId());
       }
+      selectUsers.filterOnRoles(roles);
+      selectUsers.mandatory(template.isMandatory() && pageContext.useMandatory());
     }
 
-    out.println(html.toString());
+    out.println(new div().setID(rootContainerId));
+    out.println(selectUsers.produce());
   }
 
   /**
@@ -231,6 +184,6 @@ public class MultipleUserFieldDisplayer extends AbstractFieldDisplayer<MultipleU
   @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template,
       PagesContext pagesContext) {
-    return 2;
+    return NB_HTML_ELEMENTS;
   }
 }

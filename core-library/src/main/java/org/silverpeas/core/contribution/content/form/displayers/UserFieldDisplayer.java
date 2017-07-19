@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.form.displayers;
 
+import org.apache.ecs.xhtml.div;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -31,15 +32,18 @@ import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.UserField;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.html.plugin.UserGroupSelectProducer;
 import org.silverpeas.core.util.WebEncodeHelper;
 
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.SelectionType.USER;
+import static org.silverpeas.core.html.plugin.UserGroupSelectProducer.withContainerId;
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A UserFieldDisplayer is an object which can display a UserFiel in HTML and can retrieve via HTTP
@@ -50,6 +54,29 @@ import java.util.Map;
  * @see FieldDisplayer
  */
 public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
+
+  private static final int NB_HTML_ELEMENTS = 2;
+
+  /**
+   * The production is done from a static method because some other fields need to perform
+   * exactly the same check.
+   * @param out the writer into which the javascript is written.
+   * @param template the field template data.
+   * @param pagesContext the page context.
+   */
+  static void produceMandatoryCheck(final PrintWriter out, final FieldTemplate template,
+      final PagesContext pagesContext) {
+    final String language = pagesContext.getLanguage();
+    if (template.isMandatory() && pagesContext.useMandatory()) {
+      out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
+      out.println("      errorMsg+=\"  - '"
+          + WebEncodeHelper.javaStringToJsString(template.getLabel(language))
+          + "' " + Util.getString("GML.MustBeFilled", language)
+          + "\\n\";");
+      out.println("      errorNb++;");
+      out.println("   }");
+    }
+  }
 
   /**
    * Returns the name of the managed types.
@@ -70,21 +97,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
    */
   @Override
   public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pagesContext) {
-    String language = pagesContext.getLanguage();
-
-    if (!UserField.TYPE.equals(template.getTypeName())) {
-
-    }
-    if (template.isMandatory() && pagesContext.useMandatory()) {
-      out.println("   if (isWhitespace(stripInitialWhitespace(field.value))) {");
-      out.println("      errorMsg+=\"  - '"
-          + WebEncodeHelper.javaStringToJsString(template.getLabel(language))
-          + "' " + Util.getString("GML.MustBeFilled", language)
-          + "\\n\";");
-      out.println("      errorNb++;");
-      out.println("   }");
-    }
-
+    produceMandatoryCheck(out, template, pagesContext);
     Util.getJavascriptChecker(template.getFieldName(), pagesContext, out);
   }
 
@@ -95,91 +108,43 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
    * <ul>
    * <li>the field type is not a managed type.</li>
    * </ul>
-   * @throws FormException
+   * @throws FormException if exists an error
    */
   @Override
   public void display(PrintWriter out, UserField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String language = pageContext.getLanguage();
-    String selectUserImg = Util.getIcon("userPanel");
-    String selectUserLab = Util.getString("userPanel", language);
-    String deleteUserImg = Util.getIcon("delete");
-    String deleteUserLab = Util.getString("clearUser", language);
+    final boolean writable =
+        !template.isHidden() && !template.isDisabled() && !template.isReadOnly();
+    final String language = pageContext.getLanguage();
+    final String selectUserLab = Util.getString("userPanel", language);
+    final String deleteUserLab = Util.getString("clearUser", language);
+    final String fieldName = template.getFieldName();
+    final String rootContainerId = "select-user-group-" + fieldName;
+    final String userId = field.getTypeName().equals(UserField.TYPE) ? field.getUserId() : "";
 
-    String userName = "";
-    String userId = "";
-    String html = "";
-
-    String fieldName = template.getFieldName();
-
-    if (!field.getTypeName().equals(UserField.TYPE)) {
-
-    } else {
-      userId = field.getUserId();
-    }
-    if (!field.isNull()) {
-      userName = field.getValue();
-    }
-    html +=
-        "<input type=\"hidden\"" + " id=\"" + fieldName + "\" name=\"" + fieldName + "\" value=\""
-        + WebEncodeHelper.javaStringToHtmlString(userId) + "\"/>";
-
-    String displayedElementId = fieldName + "_name";
-
-    if (!template.isHidden()) {
-      html +=
-          "<input type=\"text\" disabled=\"disabled\" size=\"50\" "
-          + "id=\"" + displayedElementId + "\" name=\"" + fieldName + "$$name\" value=\""
-          + WebEncodeHelper.javaStringToHtmlString(userName) + "\"/>";
-    }
-
-    if (!template.isHidden() && !template.isDisabled() && !template.isReadOnly()) {
-
+    final UserGroupSelectProducer selectUser = withContainerId(rootContainerId)
+        .withUserInputName(fieldName)
+        .selectionOf(USER)
+        .multiple(false)
+        .readOnly(!writable)
+        .hidden(template.isHidden())
+        .withUserIds(userId)
+        .withUserPanelButtonLabel(selectUserLab)
+        .withRemoveButtonLabel(deleteUserLab);
+    if (writable) {
       Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
       String roles = parameters.get("roles");
       boolean usersOfInstanceOnly =
-          StringUtil.getBooleanValue(parameters.get("usersOfInstanceOnly"));
-      if (StringUtil.isDefined(roles)) {
-        usersOfInstanceOnly = true;
-      }
-
-      html +=
-          "&nbsp;<a href=\"#\" onclick=\"javascript:SP_openWindow('"
-          + URLUtil.getApplicationURL() + "/RselectionPeasWrapper/jsp/open"
-          + "?formName=" + pageContext.getFormName()
-          + "&elementId=" + fieldName
-          + "&elementName=" + displayedElementId
-          + "&selectedUser=" + ((userId == null) ? "" : userId);
+          getBooleanValue(parameters.get("usersOfInstanceOnly")) || isDefined(roles);
       if (usersOfInstanceOnly) {
-        html += "&instanceId=" + pageContext.getComponentId();
+        selectUser.filterOnComponentId(pageContext.getComponentId());
       }
-      if (StringUtil.isDefined(roles)) {
-        html += "&roles=" + roles;
-      }
-      html += "','selectUser',800,600,'');return false;\" >";
-      html += "<img src=\""
-          + selectUserImg
-          + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
-          + selectUserLab + "\" align=\"top\" title=\""
-          + selectUserLab + "\"/></a>";
-      html +=
-          "&nbsp;<a href=\"#\" onclick=\"javascript:"
-          + "$('#"+fieldName+"').val('');"
-          + "$('#"+displayedElementId+"').val('')"
-          + ";return false;"
-          + "\">";
-      html += "<img src=\""
-          + deleteUserImg
-          + "\" width=\"15\" height=\"15\" border=\"0\" alt=\""
-          + deleteUserLab + "\" align=\"top\" title=\""
-          + deleteUserLab + "\"/></a>";
-
-      if (template.isMandatory() && pageContext.useMandatory()) {
-        html += Util.getMandatorySnippet();
-      }
+      selectUser.filterOnRoles(roles);
+      selectUser.mandatory(template.isMandatory() && pageContext.useMandatory());
     }
 
-    out.println(html);
+    out.println(new div().setID(rootContainerId));
+    out.println(selectUser.produce());
   }
 
   @Override
@@ -187,7 +152,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
       PagesContext pageContext) throws FormException {
 
     if (UserField.TYPE.equals(field.getTypeName())) {
-      if (!StringUtil.isDefined(newId)) {
+      if (!isDefined(newId)) {
         field.setNull();
       } else {
         field.setUserId(newId);
@@ -209,7 +174,7 @@ public class UserFieldDisplayer extends AbstractFieldDisplayer<UserField> {
 
   @Override
   public int getNbHtmlObjectsDisplayed(FieldTemplate template, PagesContext pageContext) {
-    return 2;
+    return NB_HTML_ELEMENTS;
   }
 
 }

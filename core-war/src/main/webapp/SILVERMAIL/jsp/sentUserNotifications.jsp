@@ -125,7 +125,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
   </view:tabs>
   <view:frame>
     <div id="silvermail-sent-list">
-      <view:arrayPane var="userNotificationOutbox" routingAddress="SentUserNotifications.jsp">
+      <view:arrayPane var="userNotificationOutbox" routingAddress="SentUserNotifications.jsp" numberLinesPerPage="25">
         <view:arrayColumn width="80" title="${dateLabel}" compareOn="${n -> n.id}"/>
         <view:arrayColumn title="${subjectLabel}" compareOn="${n -> silfn:escapeHtml(n.data.title)}"/>
         <view:arrayColumn title="${sourceLabel}" compareOn="${n -> silfn:escapeHtml(n.data.source)}"/>

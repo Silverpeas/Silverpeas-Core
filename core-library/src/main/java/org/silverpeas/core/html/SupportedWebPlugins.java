@@ -176,6 +176,10 @@ public enum SupportedWebPlugins {
    */
   CHAT,
   /**
+   * External plugin to centralize the management of item selection
+   */
+  SELECTIZE,
+  /**
    * External plugin to centralize the management of lists of users and groups on client-side<br>
    * Please take a look on displayListOfUsersAndGroups.tag
    */

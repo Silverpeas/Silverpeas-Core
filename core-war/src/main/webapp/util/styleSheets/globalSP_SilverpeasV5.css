@@ -9,7 +9,7 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
+ * FLOSS exception. You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "https://www.silverpeas.org/legal/floss_exception.html"
  *
@@ -4067,6 +4067,106 @@ input.search:focus {
   color: #444;
 }
 
+.qtip-drop-down-silverpeas {
+  max-width: none !important;
+}
+
+.select-user-group-container .type-group,
+.select-user-group-container .type-user {
+  white-space: nowrap;
+}
+
+.select-user-group-container .selectize-control .type-group,
+.select-user-group-container .selectize-control .type-user {
+  display: flex;
+}
+
+.select-user-group-container .selectize-input .type-group,
+.select-user-group-container .selectize-input .type-user {
+  display: inline-flex;
+}
+
+.select-user-group-container .selectize-control .type-group img {
+  width: 16px;
+  height: 16px;
+  border: 6px solid transparent !important;
+  border-top: 8px solid transparent !important;
+}
+
+.select-user-group-container .selectize-control item {
+  position: relative;
+}
+
+.select-user-group-container .selectize-control img.user-avatar {
+  border: 1px solid #ccc;
+  width: auto;
+  height: 30px;
+  margin-right: 5px;
+}
+
+.select-user-group-container .selectize-control .main-info {
+  line-height: initial;
+}
+
+.select-user-group-container .selectize-control .selectize-input .main-info {
+  line-height: 30px;
+}
+
+.select-user-group-container .selectize-control .extra-info {
+  font-size: 7.5pt;
+  line-height: initial;
+}
+
+.select-user-group-container .selectize-control .selectize-input .extra-info {
+  display: none;
+}
+
+.select-user-group-container .search-input-container {
+  display: inline-flex;
+  align-items: center;
+  min-width: 250px;
+}
+
+.select-user-group-container .inline-layout {
+   float: left;
+}
+
+.field .select-user-group-container, .field .select-user-group-container .search-input-container {
+    width: 100%;
+    margin: 0;
+}
+
+.field .select-user-group-container .search-input-container .selectize-control {
+    width: 90%;
+    background: #FFF;
+}
+
+.select-user-group-container {
+  position: relative;
+}
+.select-user-group-container input.search {
+  border: 1px solid #999;
+  max-width: 75px;
+  vertical-align: middle;
+}
+
+.select-user-group-container .mandatory-icon {
+  margin-left:0.275em
+}
+
+.select-user-group-container a.user-panel-button,
+.select-user-group-container .remove-button {
+  z-index: 1;
+  position: absolute;
+  right: 11%;
+  top: 3px;
+}
+
+.select-user-group-container a.user-panel-button {
+  right: 11%;
+  margin-right: 24px;
+}
+
 .userPanel .listing_users, .userPanel .listing_groups  {
   position:relative;
 }
@@ -5348,8 +5448,11 @@ blockquote {
 }
 
 .forms .fields .fieldInput {
-  display:inline-block;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   padding: 0 0 0 15px;
+  
 }
 .forms .fields .fieldInput p {
   margin-top:0;
@@ -5361,10 +5464,11 @@ blockquote {
 }
 
 .forms .fields label {
-  display: inline-block;
+  display: block;
   padding: 0px 15px 7px 15px;
-  width:180px;
+  width: 180px;
   white-space: normal;
+  float: left;
 }
 
 #richContent .fields {
@@ -5424,6 +5528,34 @@ form .forms .fields > li:nth-child(even) {
   margin: 0 0 5px 0;
 }
 
+.forms .field .moreField{
+	display: block;
+    width: 100%;
+}
+
+.forms .field .fileArea img {
+	vertical-align:middle;
+}
+
+.forms .field .thumbnailArea,
+.forms .field .video{
+	width:100%;
+	padding: 0 0 0.5em 0;
+}
+
+.forms .field .repeatable-field-list .thumbnailArea,
+.forms .field .repeatable-field-list .video{
+	padding: 1.5em 0 0.25em 0;
+}
+.forms .field .repeatable-field-list .repeatable-field-list-element0 .thumbnailArea,
+.forms .field .repeatable-field-list .repeatable-field-list-element0 .video{
+	padding: 0 0 0.25em 0;
+}
+
+.forms .field .video > div {
+	display:inline-block;
+}
+
 .forms .field ul.repeatable-field-list li.field-occurrence-shown {
   margin: 0 0 2px 0;
 }
@@ -5435,7 +5567,6 @@ form .forms .fields > li:nth-child(even) {
 .forms .field-occurrence-hidden {
   display: none;
 }
-
 /*******************************/
 /* Profil */
 /*******************************/
@@ -5565,7 +5696,11 @@ div.user-card .field{
   padding:0 4px 2px 6px;
 }
 
-div.user-card .userToZoom{
+.userToZoom {
+  white-space: nowrap;
+}
+
+div.user-card .userToZoom {
   color:#000;
   font-weight:bold;
 }
@@ -5838,10 +5973,26 @@ a.navigation-button {
 }
 
 /** Generic list of users and groups **/
+.select-user-group-container .field {
+  margin-bottom: -10px;
+}
+.select-user-group-container .access-list:after {
+  content: '';
+  display: block;
+  height: 0;
+  width: 0;
+  clear: both;
+}
+
+.select-user-group-container .access-list li {
+  display: inline-flex;
+}
+
 .access-list {
   list-style-type:none;
   margin:0;
   padding:0;
+  white-space: nowrap;
 }
 
 .access-list li {
@@ -5854,6 +6005,7 @@ a.navigation-button {
   margin-bottom:1em;
   position:relative;
   background-color:#F6F6F6;
+  vertical-align: middle;
 }
 
 .access-list li img{
@@ -5863,8 +6015,8 @@ a.navigation-button {
 
 .access-list li img.user-avatar{
   border:1px solid #ccc;
-  width: 20px;
-  height:auto;
+  height: 30px;
+  width: auto;
 }
 
 .access-list li .operation {
@@ -6116,4 +6268,17 @@ ul.sm-map {
 
 .showActionsOnMouseOver:hover .actionShownOnMouseOver {
   display: block;
+}
+
+/*
+THIS TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
+ */
+.popup-compute-settings {
+  margin: 0;
+  height: auto;
+}
+
+.popup-compute-finally {
+  margin: 5px;
+  height: auto;
 }

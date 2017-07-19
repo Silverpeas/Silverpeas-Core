@@ -30,6 +30,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib prefix="plugins" tagdir="/WEB-INF/tags/silverpeas/plugins" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <c:set var="_language" value="${requestScope.resources.language}"/>
 <fmt:setLocale value="${_language}"/>
@@ -79,13 +80,6 @@
   <c:set var="listStyle" value="${listStyleOneFieldPerLine}"/>
 </c:if>
 
-<script type="text/javascript">
-  function removeRelatedUser(propertyName) {
-    $("#prop_"+propertyName).val("");
-    $("#user_"+propertyName).val("");
-  }
-</script>
-
 <div class="${listStyle}">
   <c:if test="${silfn:isDefined(user.eMail) and includeEmail}">
     <div class="field" id="email">
@@ -123,20 +117,12 @@
             <c:when test="${user.getPropertyType(propertyName) eq propertyTypeUser}">
               <jsp:useBean id="propertyValue" type="java.lang.String"/>
               <c:set var="anotherUser" value="<%=UserDetail.getById(propertyValue)%>"/>
-              <c:if test="${propertyUpdatable}">
-                <c:set var="checkedPropertyValue" value="${anotherUser == null ? '' : propertyValue}"/>
-                <input type="hidden" name="prop_${propertyName}" id="prop_${propertyName}" value="${checkedPropertyValue}"/>
-                <input type="text" disabled="disabled" readonly="readonly" id="user_${propertyName}" size="50" value="${anotherUser == null ? "" : anotherUser.displayedName}"/>
-                <a href="#" onclick="javascript:SP_openWindow('/silverpeas/RselectionPeasWrapper/jsp/open?elementId=prop_${propertyName}&elementName=user_${propertyName}&selectedUser=${silfn:escapeHtml(checkedPropertyValue)}&domainIdFilter=${user.domainId}','selectUser',800,600,'');return false;"/>
-                <img src="${iconUser}" width="15" height="15" border="0" alt="${labelUser}" align="top" title="${labelUser}"/></a>
-                <a href="#" onclick="javascript:removeRelatedUser('${propertyName}');return false;"/>
-                <img src="${iconDelete}" width="15" height="15" border="0" alt="${labelDelete}" align="top" title="${labelDelete}"/></a>
-              </c:if>
-              <c:if test="${not propertyUpdatable}">
-                <c:if test="${anotherUser != null}">
-                  <view:username userId="${propertyValue}"/>
-                </c:if>
-              </c:if>
+              <c:set var="checkedPropertyValue" value="${anotherUser == null ? '' : propertyValue}"/>
+              <viewTags:selectUsersAndGroups selectionType="USER"
+                                             domainIdFilter="${user.domainId}"
+                                             userIds="${{checkedPropertyValue}}"
+                                             userInputName="prop_${propertyName}"
+                                             readOnly="${not propertyUpdatable}" />
             </c:when>
             <c:when test="${user.getPropertyType(propertyName) eq propertyTypeBoolean}">
               <c:if test="${propertyUpdatable}">

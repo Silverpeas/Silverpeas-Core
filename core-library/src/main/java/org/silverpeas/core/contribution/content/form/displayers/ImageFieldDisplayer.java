@@ -133,7 +133,8 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
           thumbnailURL = "#";
         }
 
-        out.println("<div id=\"" + fieldName + "ThumbnailArea\" style=\"" + displayCSS + "\">");
+        out.println("<div id=\"" + fieldName + "ThumbnailArea\" class=\"thumbnailArea\" style=\"" +
+            displayCSS + "\">");
         out.println("<a id=\"" + fieldName + "ThumbnailLink\" href=\"" + imageURL +
             "\" target=\"_blank\">");
         out.println("<img alt=\"\" align=\"top\" src=\"" + thumbnailURL + "\" id=\"" + fieldName +

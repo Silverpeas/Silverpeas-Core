@@ -164,8 +164,8 @@ public class Util {
 
   public static void printOneMoreInputSnippet(String fieldName, PagesContext pageContext,
       PrintWriter out) {
-    out.println("<a href=\"#\" id=\"moreField-" + fieldName + "\" onclick=\"showOneMoreField('" +
-        fieldName + "');return false;\">");
+    out.println("<a href=\"#\" class=\"moreField\" id=\"moreField-" + fieldName +
+        "\" onclick=\"showOneMoreField('" + fieldName + "');return false;\">");
     out.println("<img src=\"" + Util.getIcon("add") + "\" width=\"14px\"> ");
     out.println(Util.getString("field.multivaluable.add", pageContext.getLanguage()));
     out.println("</a>");

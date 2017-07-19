@@ -212,6 +212,7 @@ public class VideoFieldDisplayer extends AbstractFileFieldDisplayer {
         name()).setID(fieldName + OPERATION_KEY);
     div selectionDiv = new div();
     selectionDiv.setID(fieldName + "Selection");
+    selectionDiv.setClass("videoFieldSelection");
     selectionDiv.addElement(fileInput);
     selectionDiv.addElement(attachmentInput);
     selectionDiv.addElement(operationInput);
