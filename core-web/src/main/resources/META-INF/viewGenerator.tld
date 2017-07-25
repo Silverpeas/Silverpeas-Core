@@ -1833,6 +1833,13 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>Defines if map contains description of spaces and apps</description>
+      <name>megaMenu</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag that checks the validity of the current session and forwards to the error page.</description>
