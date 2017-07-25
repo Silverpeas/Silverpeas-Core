@@ -691,7 +691,7 @@ public class CalendarResource extends AbstractCalendarResource {
     List<CalendarEventAttendeeEntity> attendeeEntities = occurrence.getAttendees().stream()
         .map(attendee -> asAttendeeWebEntity(occurrence, attendee))
         .collect(Collectors.toList());
-    return CalendarEventOccurrenceEntity.fromOccurrence(occurrence, getZoneId())
+    return CalendarEventOccurrenceEntity.fromOccurrence(occurrence, getComponentId(), getZoneId())
         .withCalendarURI(buildCalendarURI(getServiceBaseUri(), occurrence.getCalendarEvent().getCalendar()))
         .withEventURI(buildEventURI(getServiceBaseUri(), occurrence.getCalendarEvent()))
         .withOccurrenceURI(buildOccurrenceURI(getServiceBaseUri(), occurrence))

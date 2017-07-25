@@ -69,8 +69,7 @@ public class CalendarEventInternalParticipationView implements CalendarEventView
       if (filterOnParticipantIds.isEmpty() || filterOnParticipantIds.contains(createdBy)) {
         add(view, createdBy, occurrence);
       }
-      occurrence.getCalendarEvent()
-          .getAttendees()
+      occurrence.getAttendees()
           .stream()
           .filter(a -> a instanceof InternalAttendee)
           .filter(a -> filterOnParticipantIds.isEmpty() ||

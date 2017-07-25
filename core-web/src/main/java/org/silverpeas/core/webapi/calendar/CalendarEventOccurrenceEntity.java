@@ -66,8 +66,9 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
   }
 
   public static CalendarEventOccurrenceEntity fromOccurrence(
-      final CalendarEventOccurrence occurrence, final ZoneId zoneId) {
-    return new CalendarEventOccurrenceEntity().decorate(occurrence, zoneId);
+      final CalendarEventOccurrence occurrence, final String componentInstanceId,
+      final ZoneId zoneId) {
+    return new CalendarEventOccurrenceEntity().decorate(occurrence, componentInstanceId, zoneId);
   }
 
   public static String decodeId(String occurrenceId) {
@@ -192,7 +193,8 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
   }
 
   protected CalendarEventOccurrenceEntity decorate(
-      final CalendarEventOccurrence calendarEventOccurrence, final ZoneId zoneId) {
+      final CalendarEventOccurrence calendarEventOccurrence, final String componentInstanceId,
+      final ZoneId zoneId) {
     final CalendarEvent calEvent = calendarEventOccurrence.getCalendarEvent();
     decorate(calEvent, calEvent.getCalendar().getComponentInstanceId(), zoneId);
     this.occurrenceId = StringUtil.asBase64(calendarEventOccurrence.getId().getBytes());
@@ -204,8 +206,7 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
     setStartDate(formatDateWithOffset(component, calendarEventOccurrence.getStartDate(), zoneId));
     setEndDate(formatDateWithOffset(component, calendarEventOccurrence.getEndDate(), zoneId));
     setLastUpdateDate(component.getLastUpdateDate());
-    setTitle(
-        formatTitle(component, calEvent.getCalendar().getComponentInstanceId(), canBeAccessed()));
+    setTitle(formatTitle(component, componentInstanceId, canBeAccessed()));
     if (canBeAccessed()) {
       setDescription(component.getDescription());
       setLocation(component.getLocation());

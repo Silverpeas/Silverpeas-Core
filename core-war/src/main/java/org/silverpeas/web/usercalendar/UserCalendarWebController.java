@@ -138,8 +138,8 @@ public class UserCalendarWebController extends
     CalendarEventOccurrence userOccurrence = context.getUserCalendarEventOccurrenceById();
     if (userOccurrence != null) {
       CalendarEventOccurrenceEntity entity = CalendarEventOccurrenceEntity
-          .fromOccurrence(userOccurrence, getCalendarTimeWindowContext().getZoneId())
-          .withOccurrenceURI(
+          .fromOccurrence(userOccurrence, context.getComponentInstanceId(),
+              getCalendarTimeWindowContext().getZoneId()).withOccurrenceURI(
               buildOccurrenceURI(UserCalendarResource.USER_CALENDAR_BASE_URI, userOccurrence));
       context.getRequest().setAttribute("occurrence", entity);
 
