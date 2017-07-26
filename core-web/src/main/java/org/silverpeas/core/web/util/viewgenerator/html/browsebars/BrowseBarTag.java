@@ -23,16 +23,16 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
-import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.webcomponent.NavigationContext;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.web.util.viewgenerator.html.NeedWindowTag;
 import org.silverpeas.core.web.util.viewgenerator.html.window.Window;
 
 import javax.servlet.jsp.JspException;
+import java.util.Optional;
 
 public class BrowseBarTag extends NeedWindowTag {
 
@@ -90,12 +90,12 @@ public class BrowseBarTag extends NeedWindowTag {
       browseBar.setPath(path.toString());
     }
     if (StringUtil.isDefined(componentId)) {
-      ComponentInstLight component = OrganizationControllerProvider.getOrganisationController()
-          .getComponentInstLight(componentId);
-      if (component == null) {
-        browseBar.setComponentName(componentId);
-      } else {
+      Optional<SilverpeasComponentInstance> optionalComponentInstance =
+          SilverpeasComponentInstance.getById(componentId);
+      if (optionalComponentInstance.isPresent()) {
         browseBar.setComponentId(componentId);
+      } else {
+        browseBar.setComponentName(componentId);
       }
     }
     if (StringUtil.isDefined(spaceId)) {

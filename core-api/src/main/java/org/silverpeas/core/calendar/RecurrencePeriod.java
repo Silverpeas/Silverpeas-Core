@@ -31,7 +31,6 @@ import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.validation.constraints.NotNull;
-import java.time.OffsetDateTime;
 
 /**
  * A period of a recurrence. It defines the recurrence of a {@link Plannable} object in a calendar
@@ -49,6 +48,18 @@ public class RecurrencePeriod {
   @Enumerated(EnumType.STRING)
   @NotNull
   private TimeUnit timeUnit;
+
+  /**
+   * Constructs an empty recurrence period for the persistence engine.
+   */
+  protected RecurrencePeriod() {
+    // empty for JPA.
+  }
+
+  private RecurrencePeriod(int every, TimeUnit unit) {
+    this.interval = every;
+    this.timeUnit = unit;
+  }
 
   /**
    * Creates a recurrence period from the specified frequency statement that is expressed by a
@@ -127,35 +138,6 @@ public class RecurrencePeriod {
     return timeUnit == TimeUnit.YEAR;
   }
 
-  /**
-   * Gets the end of a recurrence with this period and by taking into account the date and time
-   * at which the recurrence starts and the number of times the recurrence occurs.
-   * @param recurrenceStart the start of a recurrence.
-   * @param count the number of times the recurrence should occur.
-   * @return the date time at which the recurrence ends.
-   */
-  public OffsetDateTime getRecurrenceEnd(OffsetDateTime recurrenceStart, int count) {
-    OffsetDateTime endDateTime;
-    int timeCount = count * getInterval();
-    switch (getUnit()) {
-      case DAY:
-        endDateTime = recurrenceStart.plusDays(timeCount);
-        break;
-      case WEEK:
-        endDateTime = recurrenceStart.plusWeeks(timeCount);
-        break;
-      case MONTH:
-        endDateTime = recurrenceStart.plusMonths(timeCount);
-        break;
-      case YEAR:
-        endDateTime = recurrenceStart.plusYears(timeCount);
-        break;
-      default:
-        throw new IllegalStateException("Recurrence unit not supported: " + getUnit().name());
-    }
-    return endDateTime;
-  }
-
   @Override
   public boolean equals(final Object o) {
     if (this == o) {
@@ -177,15 +159,6 @@ public class RecurrencePeriod {
   @Override
   public int hashCode() {
     return new HashCodeBuilder().append(interval).append(timeUnit).toHashCode();
-  }
-
-
-  protected RecurrencePeriod() {
-  }
-
-  private RecurrencePeriod(int every, TimeUnit unit) {
-    this.interval = every;
-    this.timeUnit = unit;
   }
 
 }

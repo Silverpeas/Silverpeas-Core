@@ -30,13 +30,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<%@ page import="org.silverpeas.core.importexport.report.ExportReport" %>
 <%@ page import="org.silverpeas.core.util.DateUtil" %>
 <%@ page import="org.silverpeas.core.util.file.FileRepositoryManager" %>
 
-<%
-  ExportReport report = (ExportReport) request.getAttribute("ExportReport");
-%>
+<c:set var="exportReport" value="${requestScope.ExportReport}"/>
+<jsp:useBean id="exportReport" type="org.silverpeas.core.importexport.report.ExportReport"/>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -55,37 +54,33 @@
   <view:frame>
     <view:board>
       <c:choose>
-        <c:when test="${ExportReport.error != null}">
-          <c:forEach var="element" items="${ExportReport.error.stackTrace}" >
-            <c:out value="${element}"  /> <br/>
+        <c:when test="${exportReport.error != null}">
+          <c:forEach var="element" items="${exportReport.error.stackTrace}" >
+            <c:out value="${element}"/> <br/>
           </c:forEach>
         </c:when>
         <c:otherwise>
           <table>
-		<tr>
+            <tr>
               <td class="txtlibform"><fmt:message key="importExportPeas.File"/> :</td>
-              <td><a href="<%=report.getZipFilePath()%>"><%=report.getZipFileName()%></a>
-              <a href="<%=report.getZipFilePath()%>"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle" alt="<%=report.getZipFileName()%>"/></a></td>
+              <td><a href="${exportReport.zipFilePath}">${exportReport.zipFileName}</a>
+              <a href="${exportReport.zipFilePath}"><img src="<%=FileRepositoryManager.getFileIcon("zip")%>" border="0" align="absmiddle" alt="${exportReport.zipFileName}"/></a></td>
             </tr>
             <tr>
               <td class="txtlibform"><fmt:message key="importExportPeas.FileSize"/> :</td>
-              <td><%=FileRepositoryManager.formatFileSize(report.getZipFileSize())%></td>
+              <td><%=FileRepositoryManager.formatFileSize(exportReport.getZipFileSize())%></td>
             </tr>
             <tr>
               <td class="txtlibform"><fmt:message key="importExportPeas.ExportDuration"/> :</td>
-              <td><%=DateUtil.formatDuration(report.getDuration())%></td>
+              <td><%=DateUtil.formatDuration(exportReport.getDuration())%></td>
             </tr>
           </table>
         </c:otherwise>
       </c:choose>
     </view:board>
-    <br/>
-    <center>
-      <view:buttonPane>
-        <view:button label="${closeButton}" action="javaScript:window.close();"/>
-      </view:buttonPane>
-    </center>
-    <br/>
+    <view:buttonPane>
+      <view:button label="${closeButton}" action="javaScript:window.close();"/>
+    </view:buttonPane>
   </view:frame>
 </view:window>
 </body>

@@ -50,15 +50,14 @@ import java.util.Date;
  * annotations. In most of cases you don't need to use them, but to override {@link
  * SilverpeasJpaEntity#performBeforePersist} or {@link SilverpeasJpaEntity#performBeforeUpdate}
  * methods without forgetting to invoke the super call.
- * @param <ENTITY> the class name of the represented entity.
- * @param <IDENTIFIER_TYPE> the unique identifier class used by the entity to identify it uniquely
+ * @param <E> the class name of the represented entity.
+ * @param <I> the unique identifier class used by the entity to identify it uniquely
  * in the persistence context.
  * @author Yohann Chastagnier
  */
 @MappedSuperclass
-public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
-    IDENTIFIER_TYPE extends EntityIdentifier>
-    extends AbstractJpaEntity<ENTITY, IDENTIFIER_TYPE> implements Entity<ENTITY, IDENTIFIER_TYPE> {
+public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends EntityIdentifier>
+    extends AbstractJpaEntity<E, I> implements Entity<E, I> {
 
   private static final long serialVersionUID = 5862667014447543891L;
 
@@ -108,7 +107,7 @@ public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFI
   }
 
   @Override
-  public ENTITY setCreator(final User creator) {
+  public E setCreator(final User creator) {
     createdByUser = creator;
     return createdBy((createdByUser != null) ? createdByUser.getId() : null);
   }
@@ -126,7 +125,7 @@ public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFI
   }
 
   @Override
-  public ENTITY setLastUpdater(final User updater) {
+  public E setLastUpdater(final User updater) {
     lastUpdatedByUser = updater;
     return setLastUpdatedBy((lastUpdatedByUser != null) ? lastUpdatedByUser.getId() : null);
   }
@@ -137,20 +136,20 @@ public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFI
   }
 
   @SuppressWarnings("unchecked")
-  public final ENTITY createdBy(final String createdBy) {
+  public final E createdBy(final String createdBy) {
     this.createdBySetManually =
         this.createdBySetManually || !isPersisted() || this.createdBy == null;
     if (this.createdBySetManually) {
       this.lastUpdatedBySetManually = false;
     }
     this.createdBy = createdBy;
-    return (ENTITY) this;
+    return (E) this;
   }
 
   @SuppressWarnings("unchecked")
-  public final ENTITY createdBy(final User creator) {
+  public final E createdBy(final User creator) {
     setCreator(creator);
-    return (ENTITY) this;
+    return (E) this;
   }
 
   @Override
@@ -159,9 +158,9 @@ public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFI
   }
 
   @SuppressWarnings("unchecked")
-  protected final ENTITY setCreateDate(final Date createDate) {
+  protected final E setCreateDate(final Date createDate) {
     this.createDate = createDate;
-    return (ENTITY) this;
+    return (E) this;
   }
 
   @Override
@@ -170,9 +169,9 @@ public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFI
   }
 
   @SuppressWarnings("unchecked")
-  protected final ENTITY setLastUpdateDate(final Date lastUpdateDate) {
+  protected final E setLastUpdateDate(final Date lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
-    return (ENTITY) this;
+    return (E) this;
   }
 
   @Override
@@ -181,17 +180,17 @@ public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFI
   }
 
   @SuppressWarnings("unchecked")
-  public final ENTITY setLastUpdatedBy(final String lastUpdatedBy) {
+  public final E setLastUpdatedBy(final String lastUpdatedBy) {
     this.lastUpdatedBySetManually =
         isPersisted() && this.createdBy != null && !this.createdBySetManually;
     this.lastUpdatedBy = lastUpdatedBy;
-    return (ENTITY) this;
+    return (E) this;
   }
 
   @SuppressWarnings("unchecked")
-  public final ENTITY setLastUpdatedBy(final User lastUpdater) {
+  public final E setLastUpdatedBy(final User lastUpdater) {
     setLastUpdater(lastUpdater);
-    return (ENTITY) this;
+    return (E) this;
   }
 
   @Override
@@ -200,9 +199,9 @@ public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFI
   }
 
   @SuppressWarnings("unchecked")
-  protected final ENTITY setVersion(final Long version) {
+  protected final E setVersion(final Long version) {
     this.version = version;
-    return (ENTITY) this;
+    return (E) this;
   }
 
   @Override
@@ -231,7 +230,7 @@ public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFI
     if (getClass() != obj.getClass()) {
       return false;
     }
-    final ENTITY other = (ENTITY) obj;
+    final E other = (E) obj;
     if (getId() != null && other.getId() != null) {
       EqualsBuilder matcher = new EqualsBuilder();
       matcher.append(getId(), other.getId());
@@ -246,7 +245,7 @@ public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFI
    */
   @SuppressWarnings({"unchecked", "CloneDoesntDeclareCloneNotSupportedException"})
   @Override
-  public ENTITY clone() {
+  public E clone() {
     SilverpeasJpaEntity clone = (SilverpeasJpaEntity) super.clone();
     if (clone != null) {
       clone.setCreator(null);
@@ -256,13 +255,9 @@ public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFI
       clone.setVersion(0L);
       clone.clearSystemData();
     }
-    return (ENTITY) clone;
+    return (E) clone;
   }
 
-  /**
-   * Performs some treatments before this entity is persisted into a repository. Don't forget to
-   * invoke {@code super.performBeforePersist()} before any additional statements.
-   */
   @Override
   protected void performBeforePersist() {
     OperationContext.getFromCache().applyToPersistOperation(this);
@@ -276,11 +271,6 @@ public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFI
     clearSystemData();
   }
 
-  /**
-   * Performs some treatments before its counterpart in a repository is updated with the changes in
-   * this entity. Don't forget to * invoke {@code super.performBeforePersist()} before any
-   * additional statements.
-   */
   @Override
   protected void performBeforeUpdate() {
     OperationContext.getFromCache().applyToUpdateOperation(this);
@@ -288,6 +278,10 @@ public abstract class SilverpeasJpaEntity<ENTITY extends Entity<ENTITY, IDENTIFI
         "lastUpdatedBy attribute of entity " + getClass().getName() + " must exists on update");
     setLastUpdateDate(new Timestamp((new Date()).getTime()));
     clearSystemData();
+  }
+
+  @Override
+  protected void performBeforeRemove() {
   }
 
   private void clearSystemData() {

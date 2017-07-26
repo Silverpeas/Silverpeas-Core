@@ -23,20 +23,26 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 
-import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
 
 public class ComponentInst extends AbstractI18NBean<ComponentI18N>
-    implements Serializable, Cloneable {
+    implements Cloneable, SilverpeasSharedComponentInstance {
 
   private static final long serialVersionUID = 1L;
   public static final String STATUS_REMOVED = "R";
@@ -101,15 +107,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return ci;
   }
 
-  protected String[] cloneStringArray(String[] src) {
-    if (src == null) {
-      return null;
-    }
-    String[] clonedArray = new String[src.length];
-    System.arraycopy(src, 0, clonedArray, 0, src.length);
-    return clonedArray;
-  }
-
+  @Override
   public String getId() {
     return name + id;
   }
@@ -148,6 +146,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     super.setName(sLabel);
   }
 
+  @Override
   public String getLabel() {
     return super.getName();
   }
@@ -224,6 +223,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     profiles.add(profileInst);
   }
 
+  @Override
   public String getSpaceId() {
     return domainFatherId;
   }
@@ -325,10 +325,12 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return getParameterValue(parameterName.name());
   }
 
+  @Override
   public String getLabel(String language) {
     return super.getName(language);
   }
 
+  @Override
   public boolean isHidden() {
     return isHidden;
   }
@@ -337,6 +339,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     this.isHidden = isHidden;
   }
 
+  @Override
   public boolean isPublic() {
     return isPublic;
   }
@@ -395,6 +398,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     profiles = newProfiles;
   }
 
+  @Override
   public boolean isWorkflow() {
     return WAComponent.get(getName()).get().isWorkflow();
   }
@@ -409,5 +413,13 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   public String getInternalLink() {
     return URLUtil.getURL(getName(), "", getId()) + "Main";
+  }
+
+  @Override
+  public Collection<SilverpeasRole> getSilverpeasRolesFor(final User user) {
+    Set<SilverpeasRole> silverpeasRoles =
+        SilverpeasRole.from(OrganizationController.get().getUserProfiles(user.getId(), getId()));
+    silverpeasRoles.remove(Manager);
+    return silverpeasRoles;
   }
 }

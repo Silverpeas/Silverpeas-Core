@@ -164,6 +164,11 @@
           } else {
             __logDebug("no promise to resolve about the body content loading on body layout load");
           }
+
+          var frameContentDocument = this.contentFrame.contentWindow.document;
+          frameContentDocument.body.setAttribute('tabindex', '-1');
+          frameContentDocument.body.focus();
+
           this.getContent().dispatchEvent("load");
           __hideProgressPopup();
         }.bind(this));

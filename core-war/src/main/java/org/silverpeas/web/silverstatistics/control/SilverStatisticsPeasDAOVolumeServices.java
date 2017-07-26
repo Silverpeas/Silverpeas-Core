@@ -67,7 +67,7 @@ public class SilverStatisticsPeasDAOVolumeServices {
     List<String> apps = new ArrayList<String>();
     List<String> counts = new ArrayList<String>();
     long count = 0;
-    Map<String, WAComponent> components = AdministrationServiceProvider.getAdminService().getAllComponents();
+    Map<String, WAComponent> components = AdministrationServiceProvider.getAdminService().getAllWAComponents();
     String label = null;
     while (rs.next()) {
       String componentName = rs.getString(1);

@@ -23,18 +23,19 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInst;
 import org.owasp.encoder.Encode;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.html.HtmlCleaner;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -78,6 +79,8 @@ public class BrowseBarComplete extends AbstractBrowseBar {
   }
 
   private String printBreadCrumb() {
+    OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
     StringBuilder result = new StringBuilder();
     String information = getExtraInformation();
     String path = getPath();
@@ -90,17 +93,20 @@ public class BrowseBarComplete extends AbstractBrowseBar {
 
     boolean emptyBreadCrumb = true;
 
+    SilverpeasComponentInstance componentInst = null;
+    if (StringUtil.isDefined(getComponentId())) {
+      componentInst = organizationController.getComponentInstance(getComponentId()).orElse(null);
+    }
+
     // Display spaces path from root to component
     String language = (getMainSessionController() == null) ? "" : getMainSessionController()
         .getFavoriteLanguage();
-    if (StringUtil.isDefined(getComponentId()) || StringUtil.isDefined(getSpaceId())) {
-      List<SpaceInst> spaces;
+    if (componentInst != null || StringUtil.isDefined(getSpaceId())) {
+      List<SpaceInst> spaces = Collections.emptyList();
 
-      OrganizationController organizationController =
-          OrganizationControllerProvider.getOrganisationController();
-      if (StringUtil.isDefined(getComponentId())) {
+      if (componentInst != null && !componentInst.isPersonal()) {
         spaces = organizationController.getSpacePathToComponent(getComponentId());
-      } else {
+      } else if (componentInst == null) {
         spaces = organizationController.getSpacePath(getSpaceId());
       }
       boolean firstSpace = true;
@@ -128,35 +134,33 @@ public class BrowseBarComplete extends AbstractBrowseBar {
         emptyBreadCrumb = false;
       }
 
-      if (StringUtil.isDefined(getComponentId())) {
+      if (componentInst != null) {
         // Display component's label
-        ComponentInstLight componentInstLight = organizationController.getComponentInstLight(
-                getComponentId());
-        if (componentInstLight != null) {
+        if (!componentInst.isPersonal()) {
           result.append(CONNECTOR);
-          result.append("<a href=\"");
-          if (!isClickable()) {
-            result.append("#");
-          } else if (StringUtil.isDefined(getComponentJavascriptCallback())) {
-            result.append("javascript:").append(getComponentJavascriptCallback()).append("('")
-                .append(getComponentId()).append("')");
-          } else {
-            result.append(URLUtil.getApplicationURL()).append(URLUtil.getURL(getSpaceId(),
-                getComponentId()));
-            if (ignoreComponentLink()) {
-              result.append("Main");
-            } else {
-              result.append(getComponentLink());
-            }
-          }
-          result.append("\"");
-          result.append(" class=\"component\"");
-          result.append(" id=\"bc_").append(componentInstLight.getId()).append("\"");
-          result.append(">");
-          result.append(Encode.forHtml(componentInstLight.getLabel(language)));
-          result.append("</a>");
-          emptyBreadCrumb = false;
         }
+        result.append("<a href=\"");
+        if (!isClickable()) {
+          result.append("#");
+        } else if (StringUtil.isDefined(getComponentJavascriptCallback())) {
+          result.append("javascript:").append(getComponentJavascriptCallback()).append("('")
+              .append(getComponentId()).append("')");
+        } else {
+          result.append(URLUtil.getApplicationURL()).append(URLUtil.getURL(getSpaceId(),
+              getComponentId()));
+          if (ignoreComponentLink()) {
+            result.append("Main");
+          } else {
+            result.append(getComponentLink());
+          }
+        }
+        result.append("\"");
+        result.append(" class=\"component\"");
+        result.append(" id=\"bc_").append(componentInst.getId()).append("\"");
+        result.append(">");
+        result.append(Encode.forHtml(componentInst.getLabel(language)));
+        result.append("</a>");
+        emptyBreadCrumb = false;
       }
     } else {
       if (getDomainName() != null) {

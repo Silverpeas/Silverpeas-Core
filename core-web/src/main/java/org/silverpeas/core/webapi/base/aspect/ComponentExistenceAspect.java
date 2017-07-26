@@ -26,6 +26,7 @@ package org.silverpeas.core.webapi.base.aspect;
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.webapi.base.WebResource;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
@@ -61,7 +62,8 @@ public class ComponentExistenceAspect {
       if (isDefined(instanceId)) {
         OrganizationController controller =
             OrganizationControllerProvider.getOrganisationController();
-        if (!controller.isComponentExist(instanceId) && !controller.isToolAvailable(instanceId) &&
+        if (!PersonalComponentInstance.from(instanceId).isPresent() &&
+            !controller.isComponentExist(instanceId) && !controller.isToolAvailable(instanceId) &&
             !controller.isAdminTool(instanceId)) {
           throw new WebApplicationException(Response.Status.NOT_FOUND);
         }

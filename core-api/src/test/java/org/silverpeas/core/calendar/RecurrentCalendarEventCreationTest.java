@@ -24,7 +24,6 @@
 package org.silverpeas.core.calendar;
 
 import org.junit.Test;
-import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 
@@ -111,12 +110,11 @@ public class RecurrentCalendarEventCreationTest {
 
   @Test
   public void createARecurringEventWithExceptionDates() {
-    CalendarEvent event = aTimelyEvent().recur(Recurrence.every(1, TimeUnit.WEEK)
+    CalendarEvent event = anAllDayEvent().recur(Recurrence.every(1, TimeUnit.WEEK)
         .excludeEventOccurrencesStartingAt(today.plusWeeks(2), today.plusWeeks(5)));
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.WEEK)));
     assertThat(event.getRecurrence().getExceptionDates(),
-        hasItems(today.plusWeeks(2).atStartOfDay().atOffset(ZoneOffset.UTC),
-            today.plusWeeks(5).atStartOfDay().atOffset(ZoneOffset.UTC)));
+        hasItems(today.plusWeeks(2), today.plusWeeks(5)));
     assertDefaultValuesOf(event);
     assertEventTimePeriodOf(event);
     assertTitleAndDescriptionOf(event);
@@ -242,7 +240,7 @@ public class RecurrentCalendarEventCreationTest {
   public void createARecurringEndlessEvent() {
     CalendarEvent event = anAllDayEvent().recur(Recurrence.every(1, TimeUnit.WEEK));
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.WEEK)));
-    assertThat(event.getRecurrence().getEndDate().isPresent(), is(false));
+    assertThat(event.getRecurrence().getRecurrenceEndDate().isPresent(), is(false));
     assertThat(event.getRecurrence().getRecurrenceCount(), is(NO_RECURRENCE_COUNT));
     assertDefaultValuesOf(event);
     assertEventTimePeriodOf(event);
@@ -252,12 +250,11 @@ public class RecurrentCalendarEventCreationTest {
   @Test
   public void createARecurringEventEndingAtGivenDate() {
     CalendarEvent event = anAllDayEvent().recur(
-        Recurrence.every(1, TimeUnit.WEEK).upTo(today.plusWeeks(4)));
+        Recurrence.every(1, TimeUnit.WEEK).until(today.plusWeeks(4)));
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.WEEK)));
-    assertThat(event.getRecurrence().getEndDate().isPresent(), is(true));
+    assertThat(event.getRecurrence().getRecurrenceEndDate().isPresent(), is(true));
     assertThat(event.getRecurrence().getRecurrenceCount(), is(NO_RECURRENCE_COUNT));
-    assertThat(event.getRecurrence().getEndDate().get(),
-        is(today.plusWeeks(4).atTime(23, 59).atOffset(ZoneOffset.UTC)));
+    assertThat(event.getRecurrence().getRecurrenceEndDate().get(), is(today.plusWeeks(4)));
     assertDefaultValuesOf(event);
     assertEventTimePeriodOf(event);
     assertTitleAndDescriptionOf(event);
@@ -266,12 +263,11 @@ public class RecurrentCalendarEventCreationTest {
   @Test
   public void createARecurringEventEndingAtGivenDateTime() {
     CalendarEvent event = anAllDayEvent().recur(
-        Recurrence.every(1, TimeUnit.WEEK).upTo(now.plusWeeks(4)));
+        Recurrence.every(1, TimeUnit.WEEK).until(now.plusWeeks(4)));
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.WEEK)));
-    assertThat(event.getRecurrence().getEndDate().isPresent(), is(true));
+    assertThat(event.getRecurrence().getRecurrenceEndDate().isPresent(), is(true));
     assertThat(event.getRecurrence().getRecurrenceCount(), is(NO_RECURRENCE_COUNT));
-    assertThat(event.getRecurrence().getEndDate().get(),
-        is(now.plusWeeks(4).withOffsetSameInstant(ZoneOffset.UTC)));
+    assertThat(event.getRecurrence().getRecurrenceEndDate().get(), is(today.plusWeeks(4)));
     assertDefaultValuesOf(event);
     assertEventTimePeriodOf(event);
     assertTitleAndDescriptionOf(event);
@@ -279,10 +275,9 @@ public class RecurrentCalendarEventCreationTest {
 
   @Test
   public void createARecurringEventEndingAfterGivenOccurrencesCount() {
-    CalendarEvent event = anAllDayEvent().recur(
-        Recurrence.every(1, TimeUnit.WEEK).upTo(10));
+    CalendarEvent event = anAllDayEvent().recur(Recurrence.every(1, TimeUnit.WEEK).until(10));
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.WEEK)));
-    assertThat(event.getRecurrence().getEndDate().isPresent(), is(false));
+    assertThat(event.getRecurrence().getRecurrenceEndDate().isPresent(), is(false));
     assertThat(event.getRecurrence().getRecurrenceCount(), is(10));
     assertDefaultValuesOf(event);
     assertEventTimePeriodOf(event);
@@ -301,11 +296,11 @@ public class RecurrentCalendarEventCreationTest {
 
   private void assertEventTimePeriodOf(CalendarEvent event) {
     if (event.isOnAllDay()) {
-      assertThat(event.getStartDateTime(), is(today.atStartOfDay().atOffset(ZoneOffset.UTC)));
-      assertThat(event.getEndDateTime(), is(today.atTime(23, 59).atOffset(ZoneOffset.UTC)));
+      assertThat(event.getStartDate(), is(today));
+      assertThat(event.getEndDate(), is(today.plusDays(1)));
     } else {
-      assertThat(event.getStartDateTime(), is(now.withOffsetSameInstant(ZoneOffset.UTC)));
-      assertThat(event.getEndDateTime(), is(after2Hours.withOffsetSameInstant(ZoneOffset.UTC)));
+      assertThat(event.getStartDate(), is(now.withOffsetSameInstant(ZoneOffset.UTC)));
+      assertThat(event.getEndDate(), is(after2Hours.withOffsetSameInstant(ZoneOffset.UTC)));
     }
   }
 

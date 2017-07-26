@@ -31,9 +31,6 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import java.sql.SQLException;
-import java.util.Collection;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author ebonnet
@@ -49,16 +46,8 @@ public class UniqueIntegerIdentifier implements EntityIdentifier {
     return new UniqueIntegerIdentifier().fromString(value);
   }
 
-  public static List<UniqueIntegerIdentifier> fromStrings(Collection<String> values) {
-    return values.stream().map(UniqueIntegerIdentifier::from).collect(Collectors.toList());
-  }
-
   public static UniqueIntegerIdentifier from(int value) {
     return new UniqueIntegerIdentifier().setId(value);
-  }
-
-  public static List<UniqueIntegerIdentifier> fromIntegers(Collection<Integer> values) {
-    return values.stream().map(UniqueIntegerIdentifier::from).collect(Collectors.toList());
   }
 
   public Integer getId() {
@@ -80,10 +69,17 @@ public class UniqueIntegerIdentifier implements EntityIdentifier {
     return setId(Integer.valueOf(id));
   }
 
+  /**
+   * Generates a new numeric identifier encoded in 32 bits.
+   * @param parameters the name of the SQL table in which are stored the entities and the name of
+   * the SQL column in the SQL table that stores the identifier values.
+   * @return a new numeric identifier encoded in 32 bits.
+   */
   @Override
-  public UniqueIntegerIdentifier generateNewId(final String tableName,
-      final String tableColumnIdName) {
+  public UniqueIntegerIdentifier generateNewId(String ... parameters) {
     try {
+      final String tableName = parameters[0];
+      final String tableColumnIdName = parameters[1];
       this.id = DBUtil.getNextId(tableName, tableColumnIdName);
     } catch (SQLException e) {
       throw new RuntimeException(e.getMessage(), e);

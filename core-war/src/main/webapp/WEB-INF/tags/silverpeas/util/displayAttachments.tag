@@ -37,9 +37,9 @@
 <%@ attribute name="resourceId" required="true"
               type="java.lang.String"
               description="The identifier of the resource which attachments are linked to" %>
-<%@ attribute name="greatestUserRole" required="true"
+<%@ attribute name="highestUserRole" required="true"
               type="org.silverpeas.core.admin.user.model.SilverpeasRole"
-              description="The greatest role the user has" %>
+              description="The highest role the user has" %>
 
 <%@ attribute name="hasToBeIndexed" required="false"
               type="java.lang.Boolean"
@@ -106,7 +106,7 @@
   <c:param name="ComponentId" value="${componentInstanceId}"/>
   <c:param name="Id" value="${resourceId}"/>
   <c:param name="Context" value="attachment"/>
-  <c:param name="Profile" value="${greatestUserRole.name}"/>
+  <c:param name="Profile" value="${highestUserRole.name}"/>
   <c:param name="IndexIt" value="${_paramHasToBeIndexed}"/>
   <c:param name="Language" value="${_paramContentLanguage}"/>
   <c:param name="Alias" value="${_paramAliasContext}"/>

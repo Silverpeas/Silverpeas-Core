@@ -112,7 +112,7 @@ public interface StatisticService {
 
   /**
    * Gets the last history detail of each object associated to a user. The result is sorted on
-   * the date time from the youngest to the oldest and limited according to the nbObjects parameter.
+   * the datetime from the youngest to the oldest and limited according to the nbObjects parameter.
    * @param userId
    * @param actionType
    * @param objectType

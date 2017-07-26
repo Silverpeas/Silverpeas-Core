@@ -52,11 +52,38 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
       </xs:documentation>
     </xs:annotation>
   </xs:element>
+  <xs:element name="PersonalComponent" type="PersonalComponentType">
+    <xs:annotation>
+      <xs:documentation>Copyright (C) 2000 - 2016 Silverpeas
+
+        This program is free software: you can redistribute it and/or modify
+        it under the terms of the GNU Affero General Public License as
+        published by the Free Software Foundation, either version 3 of the
+        License, or (at your option) any later version.
+
+        As a special exception to the terms and conditions of version 3.0 of
+        the GPL, you may redistribute this Program in connection with Free/Libre
+        Open Source Software ("FLOSS") applications as described in Silverpeas's
+        FLOSS exception.  You should have recieved a copy of the text describing
+        the FLOSS exception, and it is also available here:
+        "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU Affero General Public License for more details.
+
+        You should have received a copy of the GNU Affero General Public License
+        along with this program.  If not, see &lt;http://www.gnu.org/licenses/>.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:element>
 
   <xs:simpleType name="behavior" final="restriction" >
     <xs:restriction base="xs:string">
       <xs:enumeration value="topicTracker" />
       <xs:enumeration value="workflow" />
+      <xs:enumeration value="personal" />
     </xs:restriction>
   </xs:simpleType>
 
@@ -177,6 +204,29 @@ targetNamespace="http://silverpeas.org/xml/ns/component">
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+      <xs:element name="groupsOfParameters" minOccurs="0" maxOccurs="1">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element type="GroupOfParametersType" name="groupOfParameters" maxOccurs="unbounded" minOccurs="1"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="parameters" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element type="ParameterType" name="parameter" maxOccurs="unbounded" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="PersonalComponentType">
+    <xs:sequence>
+      <xs:element type="xs:string" minOccurs="1" maxOccurs="1" name="name"/>
+      <xs:element type="multilang" minOccurs="1" maxOccurs="1" name="label"/>
+      <xs:element type="multilang" minOccurs="1" maxOccurs="1" name="description"/>
+      <xs:element type="xs:boolean" minOccurs="1" maxOccurs="1" name="visible"/>
       <xs:element name="groupsOfParameters" minOccurs="0" maxOccurs="1">
         <xs:complexType>
           <xs:sequence>

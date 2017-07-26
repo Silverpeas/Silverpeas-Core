@@ -38,6 +38,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.defaultConfig;
 
@@ -115,12 +116,27 @@ public class ManagedThreadPool {
    */
   public void invokeAndAwaitTermination(List<? extends Runnable> runnables,
       ExecutionConfig config) throws ManagedThreadPoolException {
+   invokeAndAwaitTermination(runnables.stream(), config);
+  }
+
+  /**
+   * Invokes the given stream of {@link java.lang.Runnable} instances into a managed thread and
+   * waiting for the end of execution of all of it.<br>
+   * Each {@link java.lang.Runnable} instance in the stream will be used one managed thread.<br>
+   * If the application server has no more thread to supply, then the execution will wait until it
+   * exists one again available.
+   * @param runnables a stream of {@link java.lang.Runnable} instances to invoke.
+   * @param config the {@link java.lang.Runnable} instances execution configuration.
+   * @throws ManagedThreadPoolException if the invocation fails.
+   */
+  public void invokeAndAwaitTermination(Stream<? extends Runnable> runnables,
+      ExecutionConfig config) throws ManagedThreadPoolException {
     try {
       ExecutorService executorService = getExecutorService(config);
       List<Future<?>> threadExecutionResults = new ArrayList<>();
       try {
         threadExecutionResults
-            .addAll(runnables.stream().map(executorService::submit).collect(Collectors.toList()));
+            .addAll(runnables.map(executorService::submit).collect(Collectors.toList()));
       } finally {
         executorService.shutdown();
       }

@@ -24,13 +24,15 @@
 package org.silverpeas.web.look;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.space.PersonalSpaceController;
+import org.silverpeas.core.admin.space.PersonalSpaceManager;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchAxis;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
@@ -65,6 +67,9 @@ import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.MissingResourceException;
+
+import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
@@ -73,7 +78,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
   @Inject
   private OrganizationController organisationController;
   @Inject
-  private PersonalSpaceController personalSpaceController;
+  private PersonalSpaceManager personalSpaceManager;
   @Inject
   private UserFavoriteSpaceService userFavoriteSpaceService;
 
@@ -523,18 +528,15 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
         if (component != null && WAComponent.get(component.getName()).isPresent() &&
             !component.isHidden()) {
           boolean open = (targetComponentId != null && component.getId().equals(targetComponentId));
-          String url = URLUtil.getURL(component.getName(), null, component.getId()) + "Main";
 
           String kind = component.getName();
           if (component.isWorkflow()) {
             kind = "processManager";
           }
 
-          out.write("<item id=\"" + component.getId() + "\" name=\"" +
-              WebEncodeHelper.escapeXml(component.getLabel(language)) + "\" description=\"" +
-              WebEncodeHelper.escapeXml(component.getDescription(language)) +
-              "\" type=\"component\" kind=\"" + WebEncodeHelper.escapeXml(kind) + "\" level=\"" +
-              level + "\" open=\"" + open + "\" url=\"" + url + "\"/>");
+          ComponentItem.of(component).withLabel(component.getLabel(language))
+              .withDescription(component.getDescription(language)).ofKind(kind).atLevel(level)
+              .andOpen(open).write(out);
         }
       }
     }
@@ -669,129 +671,116 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
   protected void serializePersonalSpace(Writer writer, String userId, String language,
       LookHelper helper, SettingBundle settings, LocalizationBundle message) throws IOException {
+    User user = User.getById(userId);
+
     // Affichage de l'espace perso
-    writer.write("<spacePerso id=\"spacePerso\" type=\"space\" level=\"0\">");
+    List<ComponentItem> componentItems = new ArrayList<>();
     boolean isAnonymousAccess = helper.isAnonymousAccess();
 
     if (!isAnonymousAccess && settings.getBoolean("personnalSpaceVisible", true)) {
       if (settings.getBoolean("agendaVisible", true)) {
-        writer.write(
-            "<item id=\"agenda\" name=\"" + WebEncodeHelper.escapeXml(message.getString("Diary")) +
-                "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
-                "url=\"" +
-                URLUtil.getURL(URLUtil.CMP_AGENDA, null, null) + "Main\"/>");
+        componentItems
+            .add(ComponentItem.of(URLUtil.CMP_AGENDA).withLabel(message.getString("Diary")));
       }
       if (settings.getBoolean("todoVisible", true)) {
-        writer
-            .write("<item id=\"todo\" name=\"" + WebEncodeHelper.escapeXml(message.getString("ToDo")) +
-                "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
-                "url=\"" +
-                URLUtil.getURL(URLUtil.CMP_TODO, null, null) + "todo.jsp\"/>");
+        componentItems.add(ComponentItem.of(URLUtil.CMP_TODO).withLabel(message.getString("ToDo"))
+            .andComponentUrlSuffix("todo.jsp"));
       }
       if (settings.getBoolean("notificationVisible", true)) {
-        writer.write("<item id=\"notification\" name=\"" +
-            WebEncodeHelper.escapeXml(message.getString("Mail")) +
-            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-            URLUtil.getURL(URLUtil.CMP_SILVERMAIL, null, null) + "Main\"/>");
+        componentItems.add(
+            ComponentItem.of(URLUtil.CMP_SILVERMAIL).withLabel(message.getString("Mail"))
+                .withSpecificId("notification"));
       }
       if (settings.getBoolean("interestVisible", true)) {
-        writer.write("<item id=\"subscriptions\" name=\"" +
-            WebEncodeHelper.escapeXml(message.getString("MyInterestCenters")) +
-            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-            URLUtil.getURL(URLUtil.CMP_PDCSUBSCRIPTION, null, null) +
-            "subscriptionList.jsp\"/>");
+        componentItems.add(ComponentItem.of(URLUtil.CMP_PDCSUBSCRIPTION)
+            .withLabel(message.getString("MyInterestCenters")).withSpecificId("subscriptions")
+            .andComponentUrlSuffix("subscriptionList.jsp"));
       }
       if (settings.getBoolean("favRequestVisible", true)) {
-        writer.write("<item id=\"requests\" name=\"" +
-            WebEncodeHelper.escapeXml(message.getString("FavRequests")) +
-            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-            URLUtil.getURL(URLUtil.CMP_INTERESTCENTERPEAS, null, null) +
-            "iCenterList.jsp\"/>");
+        componentItems.add(ComponentItem.of(URLUtil.CMP_INTERESTCENTERPEAS)
+            .withLabel(message.getString("FavRequests")).withSpecificId("requests")
+            .andComponentUrlSuffix("iCenterList.jsp"));
       }
       if (settings.getBoolean("linksVisible", true)) {
-        writer.write(
-            "<item id=\"links\" name=\"" + WebEncodeHelper.escapeXml(message.getString("FavLinks")) +
-                "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
-                "url=\"" +
-                URLUtil.getURL(URLUtil.CMP_MYLINKSPEAS, null, null) + "Main\"/>");
+        componentItems.add(
+            ComponentItem.of(URLUtil.CMP_MYLINKSPEAS).withLabel(message.getString("FavLinks"))
+                .withSpecificId("links"));
       }
       if (settings.getBoolean("fileSharingVisible", true)) {
         if (!SharingServiceProvider.getSharingTicketService().getTicketsByUser(userId).isEmpty()) {
-          writer.write("<item id=\"sharingTicket\" name=\"" +
-              WebEncodeHelper.escapeXml(message.getString("FileSharing")) +
-              "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-              URLUtil.getURL(URLUtil.CMP_FILESHARING, null, null) + "Main\"/>");
+          componentItems.add(
+              ComponentItem.of(URLUtil.CMP_FILESHARING).withLabel(message.getString("FileSharing"))
+                  .withSpecificId("sharingTicket"));
         }
       }
       // mes connexions
       if (settings.getBoolean("webconnectionsVisible", true)) {
         WebConnectionsInterface webConnections = WebConnectionsInterface.get();
         if (webConnections.listWebConnectionsOfUser(userId).size() > 0) {
-          writer.write("<item id=\"webConnections\" name=\"" +
-              WebEncodeHelper.escapeXml(message.getString("WebConnections")) +
-              "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-              URLUtil.getURL(URLUtil.CMP_WEBCONNECTIONS, null, null) + "Main\"/>");
+          componentItems.add(ComponentItem.of(URLUtil.CMP_WEBCONNECTIONS)
+              .withLabel(message.getString("WebConnections")));
         }
       }
 
-      // fonctionnalité "Trouver une date"
       if (settings.getBoolean("scheduleEventVisible", false)) {
-        writer.write("<item id=\"scheduleevent\" name=\"" +
-            WebEncodeHelper.escapeXml(message.getString("ScheduleEvent")) +
-            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-            URLUtil.getURL(URLUtil.CMP_SCHEDULE_EVENT, null, null) + "Main\"/>");
+        componentItems.add(ComponentItem.of(URLUtil.CMP_SCHEDULE_EVENT)
+            .withLabel(message.getString("ScheduleEvent")).withSpecificId("scheduleevent"));
       }
 
       if (settings.getBoolean("customVisible", true)) {
-        writer.write("<item id=\"personalize\" name=\"" +
-            WebEncodeHelper.escapeXml(message.getString("Personalization")) +
-            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" url=\"" +
-            URLUtil.getURL(URLUtil.CMP_MYPROFILE, null, null) + "Main\"/>");
+        componentItems.add(
+            ComponentItem.of(URLUtil.CMP_MYPROFILE).withLabel(message.getString("Personalization"))
+                .withSpecificId("personalize"));
       }
       if (settings.getBoolean("mailVisible", true)) {
-        writer.write("<item id=\"notifAdmins\" name=\"" +
-            WebEncodeHelper.escapeXml(message.getString("Feedback")) +
-            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
-            "url=\"javascript:notifyAdministrators()\"/>");
+        componentItems.add(ComponentItem.of("notifAdmins").withLabel(message.getString("Feedback"))
+            .andFullComponentUrl("javascript:notifyAdministrators()"));
       }
       if (settings.getBoolean("clipboardVisible", true)) {
-        writer.write("<item id=\"clipboard\" name=\"" +
-            WebEncodeHelper.escapeXml(message.getString("Clipboard")) +
-            "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
-            "url=\"javascript:openClipboard()\"/>");
+        componentItems.add(ComponentItem.of("clipboard").withLabel(message.getString("Clipboard"))
+            .andFullComponentUrl("javascript:openClipboard()"));
       }
 
+      List<SilverpeasComponentInstance> instances = new ArrayList<>();
+      instances.addAll(personalSpaceManager.getVisiblePersonalComponentInstances(user));
+
       if (settings.getBoolean("PersonalSpaceAddingsEnabled", true)) {
-        SpaceInst personalSpace = personalSpaceController.getPersonalSpace(userId);
+        SpaceInst personalSpace = personalSpaceManager.getPersonalSpace(userId);
         if (personalSpace != null) {
-          for (ComponentInst component : personalSpace.getAllComponentsInst()) {
-            String label =
-                helper.getString("lookSilverpeasV5.personalSpace." + component.getName());
-            if (!StringUtil.isDefined(label)) {
-              label = component.getName();
-            }
-            String url = URLUtil.getURL(component.getName(), null, component.getId()) + "Main";
-            writer.write("<item id=\"" +
-                component.getId() +
-                "\" name=\"" +
-                WebEncodeHelper.escapeXml(label) +
-                "\" description=\"\" type=\"component\" kind=\"personalComponent\" level=\"1\" " +
-                "open=\"false\" url=\"" +
-                url + "\"/>");
-          }
+          instances.addAll(personalSpace.getAllComponentsInst());
         }
         int nbComponentAvailables =
-            personalSpaceController.getVisibleComponents(organisationController).size();
+            personalSpaceManager.getVisibleComponents(organisationController).size();
         if (nbComponentAvailables > 0) {
           if (personalSpace == null ||
               personalSpace.getAllComponentsInst().size() < nbComponentAvailables) {
-            writer.write("<item id=\"addComponent\" name=\"" +
-                WebEncodeHelper.escapeXml(helper.getString("lookSilverpeasV5.personalSpace.add")) +
-                "\" description=\"\" type=\"component\" kind=\"\" level=\"1\" open=\"false\" " +
-                "url=\"javascript:listComponents()\"/>");
+            componentItems.add(ComponentItem.of("addComponent")
+                .withLabel(helper.getString("lookSilverpeasV5.personalSpace.add"))
+                .andFullComponentUrl("javascript:listComponents()"));
           }
         }
       }
+
+      for (SilverpeasComponentInstance instance : instances) {
+        String label = "";
+        try {
+          label = helper.getString("lookSilverpeasV5.personalSpace." + instance.getName());
+        } catch (MissingResourceException ignore) {
+        }
+        if (isNotDefined(label)) {
+          label = instance.getLabel(helper.getLanguage());
+        }
+        ComponentItem componentItem = ComponentItem.of(instance).withLabel(label);
+        if (instance.isPersonal()) {
+          componentItems.add(0, componentItem);
+        } else {
+          componentItems.add((componentItems.size() - 1), componentItem);
+        }
+      }
+    }
+    writer.write("<spacePerso id=\"spacePerso\" type=\"space\" level=\"0\">");
+    for (ComponentItem componentItem : componentItems) {
+      componentItem.write(writer);
     }
     writer.write("</spacePerso>");
   }
@@ -843,5 +832,82 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       return space.isDisplaySpaceFirst();
     }
     return true;
+  }
+
+  private static class ComponentItem {
+    private final String name;
+    private String id;
+    private String label = "N/A";
+    private String description = "";
+    private String kind = "";
+    private String component = "component";
+    private int level = 1;
+    private boolean open = false;
+    private String componentUrl;
+
+    private ComponentItem(final String name) {
+      this.name = name;
+      this.id = name;
+    }
+
+    static ComponentItem of(final String name) {
+      return new ComponentItem(name).andFullComponentUrl(URLUtil.getURL(name, null, null) + "Main");
+    }
+
+    static ComponentItem of(final SilverpeasComponentInstance componentInstance) {
+      String kind = "personalComponent";
+      if (componentInstance.isPersonal()) {
+        kind += "NotRemovable";
+      }
+      return new ComponentItem(componentInstance.getId()).ofKind(kind).andFullComponentUrl(
+          URLUtil.getURL(componentInstance.getName(), null, componentInstance.getId()) + "Main");
+    }
+
+    void write(Writer writer) throws IOException {
+      writer.write(
+          "<item id=\"" + id + "\" name=\"" + WebEncodeHelper.escapeXml(label) + "\" description=\"" +
+              WebEncodeHelper.escapeXml(description) + "\" type=\"" + component + "\" kind=\"" + kind +
+              "\" level=\"" + level + "\" open=\"" + open + "\" " + "url=\"" + componentUrl + "\"/>");
+    }
+
+    ComponentItem withSpecificId(final String specificId) {
+      this.id = specificId;
+      return this;
+    }
+
+    ComponentItem withLabel(final String label) {
+      this.label = label;
+      return this;
+    }
+
+    ComponentItem withDescription(final String description) {
+      this.description = description;
+      return this;
+    }
+
+    ComponentItem ofKind(final String kind) {
+      this.kind = kind;
+      return this;
+    }
+
+    ComponentItem atLevel(final int level) {
+      this.level = level;
+      return this;
+    }
+
+    ComponentItem andOpen(final boolean open) {
+      this.open = open;
+      return this;
+    }
+
+    ComponentItem andComponentUrlSuffix(final String componentUrlSuffix) {
+      this.componentUrl = URLUtil.getURL(name, null, null) + componentUrlSuffix;
+      return this;
+    }
+
+    ComponentItem andFullComponentUrl(final String fullComponentUrl) {
+      this.componentUrl = fullComponentUrl;
+      return this;
+    }
   }
 }

@@ -178,7 +178,7 @@
         },
         position : {
           adjust : {
-            method : "none"
+            method : "flip"
           },
           my : "bottom left",
           at : "top left"

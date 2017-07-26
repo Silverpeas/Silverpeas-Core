@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -119,9 +119,9 @@ class WebCommonLookAndFeel {
     String defaultComponentCSS = null;
     String specificComponentCSS = null;
     if (StringUtil.isDefined(componentId)) {
-      ComponentInstLight component =
-          OrganizationControllerProvider.getOrganisationController().getComponentInstLight(
-              componentId);
+      SilverpeasComponentInstance component =
+          OrganizationControllerProvider.getOrganisationController()
+              .getComponentInstance(componentId).orElse(null);
       if (component != null) {
         String componentName = component.getName();
         String genericComponentName = getGenericComponentName(componentName);
@@ -177,6 +177,11 @@ class WebCommonLookAndFeel {
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap-global-bind.min.js"));
 
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
+        GraphicElementFactory.MOMENT_JS));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
+        GraphicElementFactory.MOMENT_TIMEZONE_JS));
+
     // append javascript
     // append javascript
     code.append("<script type=\"text/javascript\">var webContext='")
@@ -190,8 +195,6 @@ class WebCommonLookAndFeel {
         .append(addGlobalJSVariable(controller))
         .append("</script>\n");
 
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
-        GraphicElementFactory.MOMENT_JS));
     code.append(getJavaScriptTagWithVersion(contextPath + "/util/javaScript/" + SILVERPEAS_JS));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/jquery/" +
         GraphicElementFactory.JQUERY_JS));
@@ -291,8 +294,11 @@ class WebCommonLookAndFeel {
 
   @SuppressWarnings("StringBufferReplaceableByString")
   private String addGlobalJSVariable(MainSessionController controller) {
+    final String language = controller.getFavoriteLanguage();
     StringBuilder globalJSVariableBuilder = new StringBuilder();
-    globalJSVariableBuilder.append("var userLanguage = '").append(controller.getFavoriteLanguage())
+    globalJSVariableBuilder.append("moment.locale('").append(language).append("');")
+        .append(STR_NEW_LINE);
+    globalJSVariableBuilder.append("var userLanguage = '").append(language)
         .append("';").append(STR_NEW_LINE);
     globalJSVariableBuilder.append("function getUserLanguage() { return userLanguage;")
         .append(" }").append(STR_NEW_LINE);

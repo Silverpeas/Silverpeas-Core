@@ -26,6 +26,7 @@ package org.silverpeas.core.notification.message;
 import org.silverpeas.core.util.LocalizationBundle;
 
 import java.text.MessageFormat;
+import java.time.temporal.Temporal;
 
 /**
  * This utility class provides tools to display easily some dynamic notifications using the
@@ -63,6 +64,25 @@ public class MessageNotifier {
 
   public static Message addInfo(String message, Object... parameters) {
     return MessageManager.addInfo(format(message, parameters));
+  }
+
+  /**
+   * Formats the given temporal into an date ISO FORMAT that will be interpreted by the UI tools.
+   * @param temporal a temporal to format.
+   * @return the date ISO format.
+   */
+  public static String formatDate(Temporal temporal) {
+    return "${" + temporal.toString() + ",date}";
+  }
+
+  /**
+   * Formats the given temporal into an datetime ISO FORMAT that will be interpreted by the UI
+   * tools.
+   * @param temporal a temporal to format.
+   * @return the datetime ISO format.
+   */
+  public static String formatDateTime(Temporal temporal) {
+    return "${" + temporal.toString() + ",datetime}";
   }
 
   /**

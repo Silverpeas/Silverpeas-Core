@@ -33,7 +33,8 @@ import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
-import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -59,13 +60,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
 import static org.silverpeas.core.util.ArrayUtil.EMPTY_STRING_ARRAY;
 
 /**
@@ -185,18 +187,6 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public Map<String, WAComponent> getAllComponents() {
-    try {
-      return getAdminService().getAllComponents();
-    } catch (Exception e) {
-      if (!(e instanceof AdminException)) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-      }
-      return new HashMap<>();
-    }
-  }
-
-  @Override
   public CompoSpace[] getCompoForUser(String sUserId, String sCompoName) {
     try {
       return getAdminService().getCompoForUser(sUserId, sCompoName);
@@ -245,6 +235,23 @@ public class DefaultOrganizationController implements OrganizationController {
   // -------------------------------------------------------------------
   // COMPONENTS QUERIES
   // -------------------------------------------------------------------
+
+  @Override
+  public Optional<SilverpeasComponentInstance> getComponentInstance(
+      final String componentInstanceIdentifier) {
+    try {
+      if (StringUtil.isDefined(componentInstanceIdentifier)) {
+        return Optional
+            .ofNullable(getAdminService().getComponentInstance(componentInstanceIdentifier));
+      } else {
+        return Optional.empty();
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+      return Optional.empty();
+    }
+  }
+
   @Override
   public ComponentInst getComponentInst(String sComponentId) {
     try {
@@ -496,6 +503,20 @@ public class DefaultOrganizationController implements OrganizationController {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
     }
+  }
+
+  @Override
+  public Collection<SilverpeasRole> getUserSilverpeasRolesOn(final User user,
+      final String componentInstanceIdentifier) {
+    Optional<PersonalComponentInstance> personalComponentInstance =
+        PersonalComponentInstance.from(componentInstanceIdentifier);
+    if (personalComponentInstance.isPresent()) {
+      return personalComponentInstance.get().getSilverpeasRolesFor(user);
+    }
+    Set<SilverpeasRole> silverpeasRoles =
+        SilverpeasRole.from(getUserProfiles(user.getId(), componentInstanceIdentifier));
+    silverpeasRoles.remove(Manager);
+    return silverpeasRoles;
   }
 
   @Override

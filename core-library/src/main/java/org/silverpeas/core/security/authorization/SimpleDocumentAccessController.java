@@ -118,9 +118,9 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     boolean authorized = !userRoles.isEmpty();
     boolean isRoleVerificationRequired = false;
 
-    SilverpeasRole greatestUserRole = SilverpeasRole.getGreatestFrom(userRoles);
-    if (greatestUserRole == null) {
-      greatestUserRole = SilverpeasRole.reader;
+    SilverpeasRole highestUserRole = SilverpeasRole.getHighestFrom(userRoles);
+    if (highestUserRole == null) {
+      highestUserRole = SilverpeasRole.reader;
     }
 
     boolean downloadOperation = isDownloadActionFrom(context.getOperations());
@@ -141,7 +141,7 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     if (authorized && sharingOperation) {
       User user = User.getById(userId);
       authorized = !user.isAnonymous() && getComponentAccessController()
-          .isFileSharingEnabledForRole(object.getInstanceId(), greatestUserRole);
+          .isFileSharingEnabledForRole(object.getInstanceId(), highestUserRole);
       isRoleVerificationRequired = false;
     }
 
@@ -154,16 +154,16 @@ public class SimpleDocumentAccessController extends AbstractAccessController<Sim
     if (isRoleVerificationRequired) {
       if (isNodeAttachmentCase) {
         if (downloadOperation) {
-          authorized = greatestUserRole.isGreaterThan(SilverpeasRole.writer);
+          authorized = highestUserRole.isGreaterThan(SilverpeasRole.writer);
         } else {
-          authorized = greatestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
+          authorized = highestUserRole.isGreaterThanOrEquals(SilverpeasRole.admin);
         }
       } else {
-        if (SilverpeasRole.writer.equals(greatestUserRole)) {
+        if (SilverpeasRole.writer.equals(highestUserRole)) {
           authorized = userId.equals(foreignUserAuthor) ||
               getComponentAccessController().isCoWritingEnabled(object.getInstanceId());
         } else {
-          authorized = greatestUserRole.isGreaterThan(SilverpeasRole.writer);
+          authorized = highestUserRole.isGreaterThan(SilverpeasRole.writer);
         }
       }
     }

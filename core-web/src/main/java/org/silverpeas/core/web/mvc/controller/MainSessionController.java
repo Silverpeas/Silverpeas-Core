@@ -23,13 +23,14 @@
  */
 package org.silverpeas.core.web.mvc.controller;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.Parameter;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
@@ -406,38 +407,44 @@ public class MainSessionController implements Clipboard, SessionCloseable {
 
   /**
    * Helper function. Create a new CurrentSessionControl object and fill it with the values of the
-   * current space Id and component Id passed in parameters
+   * current space Id and component instance Id passed in parameters
    */
-  public ComponentContext createComponentContext(String sSpaceId,
-      String sComponent) {
-    ComponentContext newInfos = new ComponentContext();
+  @SuppressWarnings("ConstantConditions")
+  public ComponentContext createComponentContext(String spaceId, String componentInstanceId) {
+    ComponentContext componentContext = new ComponentContext();
 
     try {
       // Set the space
-      if (sSpaceId != null) {
-        SpaceInstLight spaceInst = getAdminService().getSpaceInstLightById(sSpaceId);
+      if (spaceId != null) {
+        SpaceInstLight spaceInst = getAdminService().getSpaceInstLightById(spaceId);
 
-        newInfos.setCurrentSpaceId(sSpaceId);
-        newInfos.setCurrentSpaceName(spaceInst.getName(getFavoriteLanguage()));
+        componentContext.setCurrentSpaceId(spaceId);
+        componentContext.setCurrentSpaceName(spaceInst.getName(getFavoriteLanguage()));
       }
       // Set the current component and profiles
-      if (sComponent != null) {
-        String sCurCompoLabel;
-        ComponentInst componentInst = getAdminService().getComponentInst(sComponent);
-
-        sCurCompoLabel = componentInst.getLabel(getFavoriteLanguage());
-        newInfos.setCurrentComponentId(sComponent);
-        newInfos.setCurrentComponentName(componentInst.getName());
-        newInfos.setCurrentComponentLabel(sCurCompoLabel);
-        newInfos.setCurrentProfile(getAdminService().getCurrentProfiles(this.getUserId(),
-            componentInst));
+      if (componentInstanceId != null) {
+        final SilverpeasComponentInstance componentInst =
+            getAdminService().getComponentInstance(componentInstanceId);
+        String sCurCompoLabel = componentInst.getLabel(getFavoriteLanguage());
+        componentContext.setCurrentComponentId(componentInstanceId);
+        componentContext.setCurrentComponentName(componentInst.getName());
+        componentContext.setCurrentComponentLabel(sCurCompoLabel);
+        if (componentInst.isPersonal()) {
+          Collection<SilverpeasRole> silverpeasRolesFor =
+              componentInst.getSilverpeasRolesFor(getCurrentUserDetail());
+          componentContext.setCurrentProfile(
+              silverpeasRolesFor.stream().map(SilverpeasRole::getName).toArray(String[]::new));
+        } else {
+          componentContext.setCurrentProfile(
+              getAdminService().getCurrentProfiles(this.getUserId(), componentInst.getId()));
+        }
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this)
           .error("can not create component context with spaceId={0} and componentId={1}",
-              new String[]{sSpaceId, sComponent}, e);
+              new String[]{spaceId, componentInstanceId}, e);
     }
-    return newInfos;
+    return componentContext;
   }
 
   public void initServerProps(String sName, String sPort) {

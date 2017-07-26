@@ -29,6 +29,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.InvokeBefore;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep;
 
+import javax.ws.rs.Produces;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -58,6 +59,7 @@ class Path {
   private final LowestRoleAccess lowestRoleAccess;
   private final NavigationStep navigationStep;
   private final Annotation redirectTo;
+  private final Produces produces;
   private final String[] invokeBeforeIdentifiers;
   private final String[] invokeAfterIdentifiers;
 
@@ -68,15 +70,18 @@ class Path {
    * @param resourceMethod the method that has to be called for the path.
    * @param navigationStep the identifier of the navigation step associated to the path.
    * @param redirectTo the redirection to be performed after the end of the treatment.
+   * @param produces the content to produce.
    * @param invokeBefore the list of identifiers of methods to invoke before the treatment of HTTP method.
    * @param invokeAfter the list of identifiers of methods to invoke before the treatment of HTTP
    */
   Path(final String path, final LowestRoleAccess lowestRoleAccess, final Method resourceMethod,
-      final NavigationStep navigationStep, final Annotation redirectTo, final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
+      final NavigationStep navigationStep, final Annotation redirectTo, final Produces produces,
+      final InvokeBefore invokeBefore, final InvokeAfter invokeAfter) {
     this.resourceMethod = resourceMethod;
     this.lowestRoleAccess = lowestRoleAccess;
     this.navigationStep = navigationStep;
     this.redirectTo = redirectTo;
+    this.produces = produces;
     this.invokeBeforeIdentifiers = invokeBefore != null ? invokeBefore.value() : new String[0];
     this.invokeAfterIdentifiers = invokeAfter != null ? invokeAfter.value() : new String[0];
     this.path = parsePath(path);
@@ -105,7 +110,7 @@ class Path {
                   ", but variable name not found");
         }
         if (pathVariables == null) {
-          pathVariables = new ArrayList<String>();
+          pathVariables = new ArrayList<>();
         }
         pathVariables.add(variableName.group(1).trim());
         newPathPart.append(REGEXP_SEPARATOR);
@@ -147,7 +152,7 @@ class Path {
       return false;
     }
 
-    Map<String, Set<String>> matchedPathVariables = new LinkedHashMap<String, Set<String>>();
+    Map<String, Set<String>> matchedPathVariables = new LinkedHashMap<>();
     for (; pathTokenizer.hasMoreTokens(); ) {
       String pathPart = pathTokenizer.nextToken();
       String registredPathPart = registredPathTokenizer.nextToken();
@@ -211,6 +216,14 @@ class Path {
    */
   public Annotation getRedirectTo() {
     return redirectTo;
+  }
+
+  /**
+   * Gets the production directive.
+   * @return
+   */
+  public Produces getProduces() {
+    return produces;
   }
 
   /**

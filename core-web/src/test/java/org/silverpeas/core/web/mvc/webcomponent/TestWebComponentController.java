@@ -25,17 +25,21 @@ package org.silverpeas.core.web.mvc.webcomponent;
 
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.*;
+import org.silverpeas.core.web.mvc.webcomponent.entity.WebEntity4Test;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -258,6 +262,28 @@ public class TestWebComponentController extends ParentTestWebComponentController
   public void redirectToWithVariableButSeveralValuesForSameVariable(
       TestWebComponentRequestContext context) {
     context.addRedirectVariable("anResourceId", "anAction");
+  }
+
+  @GET
+  @Path("/produces/entity")
+  @Produces(MediaType.APPLICATION_JSON)
+  public WebEntity4Test producesByReturningEntity(TestWebComponentRequestContext context) {
+    return new WebEntity4Test();
+  }
+
+  @GET
+  @Path("/produces/string")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String producesByReturningString(TestWebComponentRequestContext context) {
+    return JSONCodec.encode(new WebEntity4Test());
+  }
+
+  @GET
+  @Path("/produces/manually")
+  @Produces(MediaType.APPLICATION_JSON)
+  public void producesByHandlingResponseManually(TestWebComponentRequestContext context)
+      throws Exception {
+    context.getResponse().getWriter().append(JSONCodec.encode(new WebEntity4Test()));
   }
 
   @GET

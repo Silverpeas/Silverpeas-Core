@@ -23,43 +23,99 @@
  */
 package org.silverpeas.core.calendar.repository;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventFilter;
+import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
-import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
 import javax.inject.Singleton;
 import java.time.OffsetDateTime;
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Yohann Chastagnier
  */
 @Singleton
-public class DefaultCalendarEventRepository extends SilverpeasJpaEntityRepository<CalendarEvent>
+public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<CalendarEvent>
     implements CalendarEventRepository {
+
+  private static final String CALENDARS_PARAMETER = "calendars";
+  private static final String CALENDAR_PARAMETER = "calendar";
+
+  @Override
+  public CalendarEvent getByExternalId(final Calendar calendar, final String externalId) {
+    NamedParameters params =
+        newNamedParameters().add(CALENDAR_PARAMETER, calendar).add("externalId", externalId);
+    return getFromNamedQuery("calendarEventByCalendarAndExternalId", params);
+  }
+
+  @Override
+  public Stream<CalendarEvent> streamAll(final CalendarEventFilter filter) {
+    String namedQuery = "calendarEvents";
+    NamedParameters parameters = newNamedParameters();
+    if (!filter.getCalendars().isEmpty()) {
+      parameters.add(CALENDARS_PARAMETER, filter.getCalendars());
+      namedQuery += "ByCalendar";
+    }
+    if (!filter.getParticipants().isEmpty()) {
+      parameters.add("participantIds",
+          filter.getParticipants().stream().map(User::getId).collect(Collectors.toList()));
+      namedQuery += "ByParticipants";
+    }
+    if (filter.getSynchronizationDateLimit().isPresent()) {
+      parameters.add("synchronizationDateLimit", filter.getSynchronizationDateLimit().get());
+      if (namedQuery.contains("ByParticipants")) {
+        throw new UnsupportedOperationException(
+            "The filter on both participants and synchronization date isn't yet supported!");
+      }
+      namedQuery += "BeforeSynchronizationDate";
+    }
+    return streamByNamedQuery(namedQuery, parameters, Object[].class)
+        .map(o -> (CalendarEvent) o[0]);
+  }
 
   @Override
   public long size(final Calendar calendar) {
-    NamedParameters params = newNamedParameters()
-        .add("calendar", calendar);
+    NamedParameters params = newNamedParameters().add("calendar", calendar);
     return getFromNamedQuery("calendarEventCount", params, Long.class);
   }
 
   @Override
-  public List<CalendarEvent> getAllBetween(final Calendar calendar,
-      final OffsetDateTime startDateTime,
-      final OffsetDateTime endDateTime) {
-    NamedParameters params = newNamedParameters()
-        .add("startDateTime", startDateTime)
-        .add("endDateTime", endDateTime)
-        .add("calendar", calendar);
-    return findByNamedQuery("calendarEventsByPeriod", params);
+  public List<CalendarEvent> getAllBetween(final CalendarEventFilter filter,
+      final OffsetDateTime startDateTime, final OffsetDateTime endDateTime) {
+    String namedQuery = "calendarEvents";
+    NamedParameters parameters = newNamedParameters();
+    if (!filter.getCalendars().isEmpty()) {
+      parameters.add(CALENDARS_PARAMETER, filter.getCalendars());
+      namedQuery += "ByCalendar";
+    }
+    if (!filter.getParticipants().isEmpty()) {
+      parameters.add("participantIds",
+          filter.getParticipants().stream().map(User::getId).collect(Collectors.toList()));
+      namedQuery += "ByParticipants";
+    }
+
+    namedQuery += "ByPeriod";
+    parameters.add("startDateTime", startDateTime).add("endDateTime", endDateTime);
+    return streamByNamedQuery(namedQuery, parameters, Object[].class)
+        .map(o -> (CalendarEvent) o[0]).collect(Collectors.toList());
   }
 
   @Override
   public void deleteAll(final Calendar calendar) {
-    NamedParameters params = newNamedParameters().add("calendar", calendar);
-    deleteFromNamedQuery("calendarEventsDeleteAll", params);
+    NamedParameters params = newNamedParameters().add(CALENDAR_PARAMETER, calendar);
+    String idQuery =
+        "select e.id.id from CalendarEvent e where e.component.calendar = :calendar";
+    String eventBatchQuery = "select e from CalendarEvent e where e.id.id in :eventIds";
+    List<String> ids = listFromJpqlString(idQuery, params, String.class);
+    for(Collection<String> batchIds : split(ids)) {
+      params = newNamedParameters().add("eventIds", batchIds);
+      listFromJpqlString(eventBatchQuery, params).forEach(CalendarEvent::delete);
+    }
   }
 }

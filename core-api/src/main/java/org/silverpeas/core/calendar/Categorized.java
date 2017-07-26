@@ -36,5 +36,5 @@ public interface Categorized {
    * @return a collection of categories. If the object isn't categorized, then the returned
    * collection is empty.
    */
-  Categories getCategories();
+  CategorySet getCategories();
 }

@@ -48,6 +48,12 @@
         <viewTags:userPreferredLanguageSelector userPreferences="${preferences}"/>
       </td>
     </tr>
+    <tr id="zoneid">
+      <td class="txtlibform"><fmt:message key="${'myProfile.settings.FavoriteZoneId'}"/> :</td>
+      <td>
+        <viewTags:userPreferredZoneIdSelector userPreferences="${preferences}"/>
+      </td>
+    </tr>
     <c:choose>
       <c:when test="${empty availableLooks}">
         <input type="hidden" name="SelectedLook" value="<c:out value="${preferences.look}" />"/>

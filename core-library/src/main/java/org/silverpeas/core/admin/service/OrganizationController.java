@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.component.model.CompoSpace;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
-import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -43,8 +43,10 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ServiceProvider;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 public interface OrganizationController extends java.io.Serializable {
 
@@ -104,11 +106,6 @@ public interface OrganizationController extends java.io.Serializable {
   String[] getAvailCompoIdsAtRoot(String sClientSpaceId, String sUserId);
 
   /**
-   * Return all the components of silverpeas read in the xmlComponent directory
-   */
-  Map<String, WAComponent> getAllComponents();
-
-  /**
    * Return the tuples (space id, compo id) allowed for the given user and given component name
    *
    * @param sUserId
@@ -137,6 +134,17 @@ public interface OrganizationController extends java.io.Serializable {
   String[] getCompoId(String sCompoName);
 
   String getComponentParameterValue(String sComponentId, String parameterName);
+
+  /**
+   * Gets the component instance related to the given identifier.<br/>
+   * In contrary to {@link #getComponentInst(String)}, {@link #getComponentInstLight(String)}
+   * signatures, this one is able to return different kinds of implementation of {@link
+   * SilverpeasComponentInstance}.<br/>
+   * So, this signature is useful into contexts of transversal treatments.
+   * @param componentInstanceIdentifier the identifier of the requested component instance.
+   * @return an optional component instance.
+   */
+  Optional<SilverpeasComponentInstance> getComponentInstance(String componentInstanceIdentifier);
 
   /**
    * Return the component Instance corresponding to the given component id
@@ -257,6 +265,22 @@ public interface OrganizationController extends java.io.Serializable {
    * space
    */
   <T extends User> T[] getUsers(String sPrefixTableName, String sComponentName, String sProfile);
+
+  /**
+   * Gets the collection of silverpeas roles the given user has on the component instance
+   * represented by the given identifier.<br/>
+   * In contrary to {@link #getUserProfiles(String, String)},
+   * {@link #getUserProfiles(String, String, String)} or
+   * {@link #getUserProfiles(String, String, int, ObjectType)}
+   * signatures, this one is able to return user roles of different kinds of implementation of
+   * {@link SilverpeasComponentInstance}.<br/>
+   * So, this signature is useful into contexts of transversal treatments.<br/>
+   * BE CAREFUL, the manager role is never returned as it corresponds to a space role.
+   * @param componentInstanceIdentifier the identifier of the component instance.
+   * @return an optional component instance.
+   */
+  Collection<SilverpeasRole> getUserSilverpeasRolesOn(User user,
+      String componentInstanceIdentifier);
 
   String[] getUserProfiles(String userId, String componentId);
 

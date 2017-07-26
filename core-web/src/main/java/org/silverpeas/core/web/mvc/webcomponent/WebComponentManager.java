@@ -38,7 +38,9 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.UriBuilder;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
@@ -50,6 +52,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static org.silverpeas.core.web.mvc.webcomponent.PathExecutionResponse.hasProduced;
+import static org.silverpeas.core.web.mvc.webcomponent.PathExecutionResponse.navigateTo;
 
 /**
  * This class handles all the route paths of Web Resources.
@@ -165,6 +170,7 @@ public class WebComponentManager {
       LowestRoleAccess lowestRoleAccess = null;
       boolean isDefaultPath = false;
       Annotation redirectTo = null;
+      Produces produces = null;
       Invokable invokable = null;
       InvokeBefore invokeBefore = null;
       InvokeAfter invokeAfter = null;
@@ -185,7 +191,7 @@ public class WebComponentManager {
         } else if (annotation instanceof LowestRoleAccess) {
           if (lowestRoleAccess != null) {
             throw new IllegalArgumentException(
-                "Only one greatest Silverpeas Role must be specified for method: " +
+                "Only one lowest Silverpeas Role must be specified for method: " +
                     resourceMethod.getName());
           }
           lowestRoleAccess = (LowestRoleAccess) annotation;
@@ -201,6 +207,15 @@ public class WebComponentManager {
                     resourceMethod.getName());
           }
           redirectTo = annotation;
+        } else if (annotation instanceof Produces) {
+          produces = (Produces) annotation;
+          String[] toProduce = produces.value();
+          if (toProduce.length != 1 || !toProduce[0].equals(MediaType.APPLICATION_JSON)) {
+            throw new IllegalArgumentException(
+                "@Produces into WebComponentController can just handle " +
+                    MediaType.APPLICATION_JSON + " data for now (method " +
+                    resourceMethod.getName() + ")");
+          }
         } else if (annotation instanceof Invokable) {
           if (invokable != null) {
             throw new IllegalArgumentException(
@@ -228,18 +243,20 @@ public class WebComponentManager {
               "Http Method " + resourceMethod.getName() + " can not be annotated with @Invokable");
         }
 
-        if (redirectTo == null &&
-            !resourceMethod.getReturnType().isAssignableFrom(Navigation.class)) {
-          throw new IllegalArgumentException(resourceMethod.getName() +
-              " method must return a Navigation instance or be annotated by one of @RedirectTo..." +
-              " annotations");
+        int nbOutIndicated = 0;
+        if (redirectTo != null) {
+          nbOutIndicated += 1;
         }
-
-        if (redirectTo != null &&
-            resourceMethod.getReturnType().isAssignableFrom(Navigation.class)) {
+        if (resourceMethod.getReturnType().isAssignableFrom(Navigation.class)) {
+          nbOutIndicated += 1;
+        }
+        if (produces != null) {
+          nbOutIndicated += 1;
+        }
+        if (nbOutIndicated != 1) {
           throw new IllegalArgumentException(resourceMethod.getName() +
-              " method must, either return a Navigation instance, either be annotated by one of " +
-              "@RedirectTo... annotation");
+              " method must, either return a Navigation instance, either be annotated by " +
+              "@Produces, either be annotated by one of @RedirectTo... annotation");
         }
 
         for (Class<? extends Annotation> httpMethodClass : httpMethods) {
@@ -251,7 +268,7 @@ public class WebComponentManager {
           }
           List<org.silverpeas.core.web.mvc.webcomponent.Path> registeredPaths = httpMethodPaths
               .addPaths(paths, lowestRoleAccess, resourceMethod, navigationStep, redirectTo,
-                  invokeBefore, invokeAfter);
+                  produces, invokeBefore, invokeAfter);
           if (isDefaultPath) {
             if (webComponentManager.defaultPath != null) {
               throw new IllegalArgumentException(
@@ -304,12 +321,13 @@ public class WebComponentManager {
    * @param path the path that must be matched in finding of the method to invoke.
    * @param <CONTROLLER> the type of the resource which hosts the method that must be invoked.
    * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component context.
-   * @return the resulting navigation.
+   * @return the resulting of processing.
    * @throws Exception
    */
   @SuppressWarnings({"unchecked", "ConstantConditions"})
   public static <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> Navigation perform(
+      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> PathExecutionResponse
+  perform(
       CONTROLLER webComponentController, String path) throws Exception {
 
     // Retrieving the web component request context
@@ -324,10 +342,6 @@ public class WebComponentManager {
       webComponentController.onCreationCalled = true;
     }
 
-    // Common processing
-    webComponentRequestContext.beforeRequestProcessing();
-    webComponentController.beforeRequestProcessing(webComponentRequestContext);
-
     // Retrieving the web component manager
     WebComponentManager webComponentManager =
         managedWebComponentRouters.get(webComponentController.getClass().getName());
@@ -335,7 +349,7 @@ public class WebComponentManager {
     // Exucuting the treatments associated to the path
     try {
       return webComponentManager
-          .exucutePath(webComponentController, path, webComponentRequestContext);
+          .executePath(webComponentController, path, webComponentRequestContext);
     } catch (Exception e) {
       if (e instanceof WebApplicationException || (e instanceof InvocationTargetException &&
           ((InvocationTargetException) e)
@@ -355,12 +369,12 @@ public class WebComponentManager {
    * @param webComponentContext the context of the web component routing.
    * @param <CONTROLLER> the type of the resource which hosts the method that must be invoked.
    * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component context.
-   * @return the {@link Navigation} instance that
-   * contains the destination.
+   * @return the {@link PathExecutionResponse} instance.
    * @throws Exception
    */
   private <CONTROLLER extends WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>,
-      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> Navigation exucutePath(
+      WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> PathExecutionResponse
+  executePath(
       CONTROLLER webComponentController, String path,
       WEB_COMPONENT_REQUEST_CONTEXT webComponentContext) throws Exception {
     org.silverpeas.core.web.mvc.webcomponent.Path pathToPerform = null;
@@ -384,6 +398,10 @@ public class WebComponentManager {
       pathToPerform = defaultPath;
     }
 
+    // Common processing
+    webComponentContext.beforeRequestProcessing();
+    webComponentController.beforeRequestProcessing(webComponentContext);
+
     // Reset navigation context if necessary
     if (pathToPerform == defaultPath) {
       webComponentContext.getNavigationContext().clear();
@@ -391,8 +409,8 @@ public class WebComponentManager {
 
     // Has the user enough rights to access the aimed treatment?
     if (pathToPerform.getLowestRoleAccess() != null &&
-        (webComponentContext.getGreaterUserRole() == null ||
-            !webComponentContext.getGreaterUserRole()
+        (webComponentContext.getHighestUserRole() == null ||
+            !webComponentContext.getHighestUserRole()
                 .isGreaterThanOrEquals(pathToPerform.getLowestRoleAccess().value()))) {
       RedirectTo redirectTo = pathToPerform.getLowestRoleAccess().onError();
       if (StringUtil.isNotDefined(redirectTo.value())) {
@@ -403,7 +421,7 @@ public class WebComponentManager {
                 webComponentContext.getRequest().getRequestURI());
       }
       // A redirection is asked on an error
-      return webComponentContext.redirectTo(redirectTo);
+      return navigateTo(webComponentContext.redirectTo(redirectTo));
     }
 
     // Invoking all methods before the execution of the HTTP method.
@@ -411,14 +429,18 @@ public class WebComponentManager {
       invokables.get(invokeBeforeId).invoke(webComponentController, webComponentContext);
     }
 
-    // Calling finally the method behind the idenfied path.
-    final Navigation navigation;
-    if (pathToPerform.getResourceMethod().getReturnType().isAssignableFrom(Navigation.class)) {
-      navigation = (Navigation) pathToPerform.getResourceMethod()
-          .invoke(webComponentController, webComponentContext);
+    // Calling finally the method behind the identified path.
+    final PathExecutionResponse response;
+    if (pathToPerform.getProduces() != null) {
+      ResponseContentProducer.produce(webComponentContext, pathToPerform);
+      response = hasProduced(pathToPerform.getProduces());
+    } else if (pathToPerform.getResourceMethod().getReturnType()
+        .isAssignableFrom(Navigation.class)) {
+      response = navigateTo((Navigation) pathToPerform.getResourceMethod()
+          .invoke(webComponentController, webComponentContext));
     } else {
       pathToPerform.getResourceMethod().invoke(webComponentController, webComponentContext);
-      navigation = webComponentContext.redirectTo(pathToPerform.getRedirectTo());
+      response = navigateTo(webComponentContext.redirectTo(pathToPerform.getRedirectTo()));
     }
 
     // Invoking all methods after the execution of the HTTP method.
@@ -428,27 +450,29 @@ public class WebComponentManager {
 
     // Navigation navigation step
     NavigationContext navigationContext = webComponentContext.getNavigationContext();
-    final NavigationStep navigationStepIdentifier = pathToPerform.getNavigationStep();
-    if (navigationStepIdentifier != null) {
-      NavigationContext.NavigationStep navigationStep =
-          navigationContext.navigationStepFrom(navigationStepIdentifier.identifier());
-      // updating the URI of the navigation step
-      UriBuilder fullUriBuilder =
-          UriBuilder.fromUri(webComponentContext.getComponentUriBase()).path(path);
-      for (Map.Entry<String, String[]> entry : webComponentContext.getRequest().getParameterMap()
-          .entrySet()) {
-        fullUriBuilder.queryParam(entry.getKey(), entry.getValue());
+    if (response.navigation().isPresent()) {
+      final NavigationStep navigationStepIdentifier = pathToPerform.getNavigationStep();
+      if (navigationStepIdentifier != null) {
+        NavigationContext.NavigationStep navigationStep =
+            navigationContext.navigationStepFrom(navigationStepIdentifier.identifier());
+        // updating the URI of the navigation step
+        UriBuilder fullUriBuilder =
+            UriBuilder.fromUri(webComponentContext.getComponentUriBase()).path(path);
+        for (Map.Entry<String, String[]> entry : webComponentContext.getRequest().getParameterMap()
+            .entrySet()) {
+          fullUriBuilder.queryParam(entry.getKey(), entry.getValue());
+        }
+        navigationStep.withFullUri(fullUriBuilder.build().toString());
+        navigationStep.withContextIdentifier(navigationStepIdentifier.contextIdentifier());
+      } else {
+        navigationContext.noNavigationStep();
       }
-      navigationStep.withFullUri(fullUriBuilder.build().toString());
-      navigationStep.withContextIdentifier(navigationStepIdentifier.contextIdentifier());
-    } else {
-      navigationContext.noNavigationStep();
     }
 
     // Setting the navigation context attribute
     webComponentContext.getRequest().setAttribute("navigationContext", navigationContext);
 
     // Returning the navigation
-    return navigation;
+    return response;
   }
 }

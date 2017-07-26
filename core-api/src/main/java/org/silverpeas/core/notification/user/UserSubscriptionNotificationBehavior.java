@@ -32,7 +32,7 @@ import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
  * subscription notification.
  * @author Yohann Chastagnier
  */
-public interface UserSubscriptionNotificationBehavior {
+public interface UserSubscriptionNotificationBehavior extends RemoveSenderRecipientBehavior {
 
   /**
    * HTTP parameter that permits to indicate to the server that the subscription notification

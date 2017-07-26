@@ -37,18 +37,16 @@ public class OffLineInetAddressHostInfo implements HostInfo {
     String hostName;
     try {
       hostName = getInetAddressHostInfo().getHostName();
-    } catch (SocketException ex) {
-      hostName = ResourceLocator.getGeneralSettingBundle().getString("httpServerBase", "localhost");
-    } catch (NullPointerException ex) {
+    } catch (SocketException | NullPointerException ex) {
       hostName = ResourceLocator.getGeneralSettingBundle().getString("httpServerBase", "localhost");
     }
     return hostName;
   }
 
-   private synchronized InetAddressHostInfo getInetAddressHostInfo() throws SocketException {
-      if(hostInfo == null) {
-        hostInfo = new InetAddressHostInfo();
-      }
-     return hostInfo;
-   }
+  private synchronized InetAddressHostInfo getInetAddressHostInfo() throws SocketException {
+    if (hostInfo == null) {
+      hostInfo = new InetAddressHostInfo();
+    }
+    return hostInfo;
+  }
 }

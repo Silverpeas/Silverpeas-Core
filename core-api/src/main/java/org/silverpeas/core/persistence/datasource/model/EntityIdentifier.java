@@ -32,23 +32,35 @@ import java.io.Serializable;
  * By this way, all entities have a typed identifier that only the entity knows.
  * @author Yohann Chastagnier
  */
-public interface EntityIdentifier extends ResourceIdentifier, Serializable {
+public interface EntityIdentifier extends ResourceIdentifier, Serializable,
+    Comparable<EntityIdentifier> {
 
   /**
-   * Sets the id value from a String.
-   * @param id the String value of the identifier.
-   * @return the entity identifier instance.
+   * Sets the identifier's value from its given String representation.
+   * @param id the encoded value of the identifier.
+   * @return the identifier decoded from the specified String representation.
    */
   EntityIdentifier fromString(String id);
 
   /**
-   * Generate a new ID.
+   * Generates a new unique entity identifier.
    * "Auto-Increment" identifiers must implement this method.
-   * @param tableName the name of the database table for which the next identifier value has to be
-   * determined.
-   * @param tableColumnIdName the name of the identifier column from which the next identifier value
-   * has to be determined.
-   * @return the entity identifier instance.
+   * @param parameters the parameters required in the generation of the new identifier. Those
+   * depends on the kind of entity identifier and they must be documented in the concrete class.
+   * @return a new identifier.
    */
-  EntityIdentifier generateNewId(final String tableName, final String tableColumnIdName);
+  EntityIdentifier generateNewId(String... parameters);
+
+  /**
+   * Compares this identifier of entity with the specified one. The comparing is done by their
+   * String representation.
+   * @param o another entity identifier.
+   * @return a negative integer, zero, or a positive integer as this object is less than, equal to,
+   * or greater than the specified object.
+   * @see Comparable#compareTo(Object)
+   */
+  @Override
+  default int compareTo(final EntityIdentifier o) {
+    return asString().compareTo(o.asString());
+  }
 }

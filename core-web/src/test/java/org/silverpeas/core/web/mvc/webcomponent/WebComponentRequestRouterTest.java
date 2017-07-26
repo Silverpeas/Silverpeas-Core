@@ -56,6 +56,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.UriBuilder;
+import java.io.ByteArrayOutputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -105,13 +108,19 @@ public class WebComponentRequestRouterTest {
     return mockedOrganizationController;
   }
 
+  protected void verifyNoNavigation(TestResult testResult) throws Exception {
+    ServletContext servletContextMock = testResult.router.getServletContext();
+    verify(servletContextMock, times(0)).getRequestDispatcher(anyString());
+    verify(testResult.requestContext.getResponse(), times(1)).getWriter();
+  }
+
   protected void verifyDestination(WebComponentRequestRouter routerInstance,
       String expectedDestination) {
     ServletContext servletContextMock = routerInstance.getServletContext();
     verify(servletContextMock, times(1)).getRequestDispatcher(expectedDestination);
   }
 
-  private HttpRequest mockRequest(String path, SilverpeasRole greaterUserRole) {
+  private HttpRequest mockRequest(String path, SilverpeasRole highestUserRole) {
     HttpRequest request = mock(HttpRequest.class);
     HttpSession session = mock(HttpSession.class);
     MainSessionController mainSessionController = mock(MainSessionController.class);
@@ -146,7 +155,7 @@ public class WebComponentRequestRouterTest {
     when(mainSessionController.getCurrentUserDetail()).thenReturn(new UserDetail());
     ComponentContext componentContext = mock(ComponentContext.class);
     when(componentContext.getCurrentProfile())
-        .thenReturn(greaterUserRole != null ? new String[]{greaterUserRole.name()} : null);
+        .thenReturn(highestUserRole != null ? new String[]{highestUserRole.name()} : null);
     when(componentContext.getCurrentComponentName()).thenReturn("componentName");
     when(componentContext.getCurrentSpaceName()).thenReturn("spaceName");
     when(componentContext.getCurrentComponentLabel()).thenReturn("componentLabel");
@@ -202,14 +211,14 @@ public class WebComponentRequestRouterTest {
       WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT>, WEB_COMPONENT_REQUEST_CONTEXT
       extends WebComponentRequestContext<? extends WebComponentController>> {
     private Class<CONTROLLER> controllerClass = null;
-    private SilverpeasRole greaterUserRole = null;
+    private SilverpeasRole highestUserRole = null;
 
     protected ControllerTest(Class<CONTROLLER> controllerClass) {
       this.controllerClass = controllerClass;
     }
 
-    public ControllerTest setGreaterUserRole(SilverpeasRole greaterUserRole) {
-      this.greaterUserRole = greaterUserRole;
+    public ControllerTest setHighestUserRole(SilverpeasRole highestUserRole) {
+      this.highestUserRole = highestUserRole;
       return this;
     }
 
@@ -258,21 +267,22 @@ public class WebComponentRequestRouterTest {
 
       WebComponentRequestRouter routerInstance = initRequestRouterWith(controller.controllerClass);
       HttpServletResponse response = mock(HttpServletResponse.class);
+      when(response.getWriter()).thenReturn(new PrintWriter4Test(new ByteArrayOutputStream()));
       if (HttpMethod.GET.equals(httpMethod)) {
         routerInstance
-            .doGet(mockRequest("/componentName26/" + suffixPath, controller.greaterUserRole),
+            .doGet(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
                 response);
       } else if (HttpMethod.POST.equals(httpMethod)) {
         routerInstance
-            .doPost(mockRequest("/componentName26/" + suffixPath, controller.greaterUserRole),
+            .doPost(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
                 response);
       } else if (HttpMethod.PUT.equals(httpMethod)) {
         routerInstance
-            .doPut(mockRequest("/componentName26/" + suffixPath, controller.greaterUserRole),
+            .doPut(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
                 response);
       } else if (HttpMethod.DELETE.equals(httpMethod)) {
         routerInstance
-            .doDelete(mockRequest("/componentName26/" + suffixPath, controller.greaterUserRole),
+            .doDelete(mockRequest("/componentName26/" + suffixPath, controller.highestUserRole),
                 response);
       }
       WEB_COMPONENT_REQUEST_CONTEXT requestContext =
@@ -286,6 +296,19 @@ public class WebComponentRequestRouterTest {
       testResult.router = routerInstance;
       testResult.requestContext = requestContext;
       return testResult;
+    }
+  }
+
+  private static class PrintWriter4Test extends PrintWriter {
+    ByteArrayOutputStream baos;
+    PrintWriter4Test(final ByteArrayOutputStream out) {
+      super(out);
+      baos = out;
+    }
+
+    @Override
+    public String toString() {
+      return baos.toString();
     }
   }
 }

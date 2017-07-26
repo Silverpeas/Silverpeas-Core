@@ -49,6 +49,17 @@
      */
     init: function(options) {
       return __init($(this), options);
+    },
+
+    /**
+     * Gets API of first jQuery instance found.
+     */
+    api : function() {
+      var $instances = $(this);
+      if ($instances.length) {
+        return __getApi($instances[0]);
+      }
+      return undefined;
     }
   };
 
@@ -105,6 +116,8 @@
         uploadCount: 0
       };
 
+      __setApi($target, params);
+
       // Options
       var _options = __buildOptions(options);
 
@@ -124,6 +137,75 @@
   function __renderFileUploadContainer(params) {
     __handleFormSubmits(params);
     __renderBlocs(params);
+  }
+
+  /**
+   * Sets API methods.
+   * @param $target
+   * @param params
+   * @private
+   */
+  function __setApi($target, params) {
+    var _api = {
+      /**
+       * Resets the plugin.
+       */
+      reset : function() {
+        var $fileToDelete = $('.uploaded-file', params.$uploadedFileList);
+        $fileToDelete.trigger(EVENT.DELETE_FILE);
+      },
+      /**
+       * Verifies is the system is currently uploading files.
+       * True if an upload is currently performing, false otherwise.
+       */
+      verifyIsCurrentlySendingFiles : function() {
+        return (__getNbFilesBeingTransfer(params) > 0);
+      },
+      /**
+       * Checks that it does not exist an upload. Nothing is done if none.
+       * An exception is sent otherwise (with the appropriate i18n message).
+       */
+      checkNoFileSending : function() {
+        if (_api.verifyIsCurrentlySendingFiles()) {
+          throw params.options.labels.sendingWaitingWarning;
+        }
+      },
+      /**
+       * Encodes a set of form elements as a string for submission.
+       */
+      serialize : function() {
+        var serialization = '';
+        _api.serializeArray().forEach(function(input) {
+          if (serialization.length) {
+            serialization += '&'
+          }
+          serialization += input.name + '=' + input.value
+        });
+        return serialization;
+      },
+      /**
+       * Encodes a set of form elements as an array of names and values.
+       */
+      serializeArray : function() {
+        var serialization = [];
+        $('input, textarea', params.$uploadedFileList).each(function(index, input) {
+          var $input = $(input);
+          serialization.push({name : $input.attr("name"), value : $input.val()});
+        });
+        return serialization;
+      }
+    };
+    params._api = _api;
+    $target.data('fileUploadApi', _api);
+  }
+
+  /**
+   * Gets API methods.
+   * @param target
+   * @private
+   */
+  function __getApi(target) {
+    return $(target).data('fileUploadApi');
   }
 
   /**
@@ -278,11 +360,14 @@
 
     // File
     $uploadBloc.empty();
-    var $img = $('<div>').append($('<img>', {
-      title: chooseFileLabel,
-      alt: chooseFileLabel,
-      src: webContext + '/util/icons/create-action/addFile.png'
-    })).addClass('icon');
+    var $img = undefined;
+    if (params.options.dragAndDropDisplayIcon) {
+      $img = $('<div>').append($('<img>', {
+        title: chooseFileLabel,
+        alt: chooseFileLabel,
+        src: webContext + '/util/icons/create-action/addFile.png'
+      })).addClass('icon');
+    }
     var $fileInputs = $('<div>').addClass('fileinputs').addClass('input');
     var $form = $('<form>', {
       id: 'form-' + params.containerOriginId,
@@ -300,7 +385,9 @@
       $fileInput.css('position', 'absolute');
       $fileInput.css('top', '-10000px');
       $fileInput.css('right', '0');
-      $img.addClass('dng');
+      if ($img) {
+        $img.addClass('dng');
+      }
       $uploadBloc.addClass('dng');
       var $buttonInput = $('<div>').addClass('sp_button').addClass('button').append($('<a>').append(params.options.labels.browse).click(function() {
         $fileInput.click();
@@ -408,14 +495,20 @@
     // Verify that upload is possible
     if (__verifyUploadIsPossible(params, files.length)) {
 
-      // One sending per file
-      $(files).each(function(index, file) {
-        var uploadCommons = __performAppendUploadCommons(params, [file]);
+      if (!params.options.multiple) {
+        params._api.reset();
+      }
 
-        // Perform uploads
-        __appendUpload(params, new __UploadHandler(uploadCommons.uploadContext,
-                uploadCommons.$waitingEndOfUploadContainer, null, file));
-      });
+      setTimeout(function() {
+        // One sending per file
+        $(files).each(function(index, file) {
+          var uploadCommons = __performAppendUploadCommons(params, [file]);
+
+          // Perform uploads
+          __appendUpload(params, new __UploadHandler(uploadCommons.uploadContext,
+              uploadCommons.$waitingEndOfUploadContainer, null, file));
+        });
+      }, 0);
     }
     return true;
   }
@@ -706,6 +799,9 @@
     var $fileDetails = $('<div>').addClass('details');
     var $fileInfos = $('<div>').addClass('infos');
     var $fileTitleInfo = $('<div>').addClass('infos-title');
+    if (!params.options.infoInputs) {
+      $fileInfos.css("display", "none");
+    }
     var $fileDescriptionInfo = $('<div>').addClass('infos-description');
     $file.append($fileDetails, $fileInfos.append($fileTitleInfo, $fileDescriptionInfo));
 
@@ -890,6 +986,8 @@
     var agregatedOptions = {
       multiple: true,
       dragAndDropDisplay: true,
+      dragAndDropDisplayIcon: true,
+      infoInputs: true,
       jqueryFormSelector: '',
       nbFileLimit: 0,
       labels: {

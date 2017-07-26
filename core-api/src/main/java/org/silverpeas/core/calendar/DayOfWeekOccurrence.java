@@ -25,7 +25,6 @@ package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.EnumType;
@@ -47,6 +46,12 @@ public class DayOfWeekOccurrence {
    */
   public static final int ALL_OCCURRENCES = 0;
 
+  /**
+   * A constant that defines a specific value for the last day according to the recurrence rule.
+   * For example, for a monthly recurrence the last monday of each month.
+   */
+  public static final int LAST_DAY = -1;
+
   @Column(name = "recur_nth", nullable = false)
   @NotNull
   private int nth;
@@ -54,6 +59,21 @@ public class DayOfWeekOccurrence {
   @Enumerated(EnumType.ORDINAL)
   @NotNull
   private DayOfWeek dayOfWeek;
+
+  protected DayOfWeekOccurrence() {
+  }
+
+  private DayOfWeekOccurrence(int nth, final DayOfWeek dayOfWeek) {
+    if (nth < LAST_DAY) {
+      throw new IllegalArgumentException(
+          "The nth occurrence must be an integer greater than or equal to LAST_DAY constant value");
+    }
+    if (dayOfWeek == null) {
+      throw new IllegalArgumentException("The day of week must be indicated!");
+    }
+    this.nth = nth;
+    this.dayOfWeek = dayOfWeek;
+  }
 
   /**
    * Creates an instance of DayOfWeekOccurrence representing the nth occurrence of the specified day
@@ -117,17 +137,4 @@ public class DayOfWeekOccurrence {
     return new HashCodeBuilder().append(nth).append(dayOfWeek).toHashCode();
   }
 
-  protected DayOfWeekOccurrence() {
-  }
-
-  private DayOfWeekOccurrence(int nth, final DayOfWeek dayOfWeek) {
-    if (nth < 0) {
-      throw new IllegalArgumentException("The nth occurrence must be a positive value!");
-    }
-    if (dayOfWeek == null) {
-      throw new IllegalArgumentException("The day of week must be indicated!");
-    }
-    this.nth = nth;
-    this.dayOfWeek = dayOfWeek;
-  }
 }

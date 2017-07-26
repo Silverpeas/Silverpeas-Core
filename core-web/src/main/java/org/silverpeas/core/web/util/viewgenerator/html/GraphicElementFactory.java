@@ -108,6 +108,7 @@ public class GraphicElementFactory {
   private MainSessionController mainSessionController = null;
   public static final String defaultLookName = "Initial";
   protected static final String MOMENT_JS = "moment-with-locales.min.js";
+  protected static final String MOMENT_TIMEZONE_JS = "moment-timezone-with-data.min.js";
   protected static final String JQUERY_JS = "jquery-2.2.4.min.js";
   protected static final String JQUERYUI_JS = "jquery-ui.min.js";
   protected static final String JQUERYUI_CSS = "ui-lightness/jquery-ui.min.css";

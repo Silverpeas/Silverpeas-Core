@@ -27,14 +27,9 @@ import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 
-import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import javax.persistence.GeneratedValue;
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * @author Yohann Chastagnier
@@ -50,16 +45,8 @@ public class UuidIdentifier implements EntityIdentifier {
     return new UuidIdentifier().fromString(value);
   }
 
-  public static List<UuidIdentifier> fromStrings(Collection<String> values) {
-    return values.stream().map(UuidIdentifier::from).collect(Collectors.toList());
-  }
-
   public String getId() {
     return id;
-  }
-
-  private void setId(final String id) {
-    this.id = id;
   }
 
   @Override
@@ -73,8 +60,14 @@ public class UuidIdentifier implements EntityIdentifier {
     return this;
   }
 
+  /**
+   * Generates a new UUID.
+   * @param parameters some parameters to set up the identifier generation. They aren't taken into
+   * account.
+   * @return a new UUID.
+   */
   @Override
-  public UuidIdentifier generateNewId(final String tableName, final String tableColumnIdName) {
+  public UuidIdentifier generateNewId(String ... parameters) {
     id = UUID.randomUUID().toString();
     return this;
   }

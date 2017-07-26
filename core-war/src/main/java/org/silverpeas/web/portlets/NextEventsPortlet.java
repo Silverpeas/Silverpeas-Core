@@ -23,41 +23,22 @@
  */
 package org.silverpeas.web.portlets;
 
-import org.silverpeas.core.web.portlets.FormNames;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.web.tools.agenda.control.AgendaAccess;
-import org.silverpeas.core.web.tools.agenda.control.AgendaException;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.portlets.FormNames;
 
 import javax.portlet.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class NextEventsPortlet extends GenericPortlet implements FormNames {
+
+  private static final String NB_EVENTS = "nbEvents";
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
     PortletPreferences pref = request.getPreferences();
-    int nbEvents = Integer.parseInt(pref.getValue("nbEvents", "5"));
-
-    List<JournalHeader> events = new ArrayList<JournalHeader>();
-    try {
-      events = (List<JournalHeader>) AgendaAccess.getNextDaySchedulables(
-          UserDetail.getCurrentRequester().getId());
-
-      if (events.size() > nbEvents) {
-        events = events.subList(0, nbEvents);
-      }
-    } catch (AgendaException e) {
-      SilverTrace.error("portlet", "NextEvents", "portlet.ERROR", e);
-    }
-
-    request.setAttribute("Events", events.iterator());
-
+    int nbEvents = Integer.parseInt(pref.getValue(NB_EVENTS, "10"));
+    request.setAttribute(NB_EVENTS, nbEvents);
     include(request, response, "portlet.jsp");
   }
 
@@ -108,15 +89,14 @@ public class NextEventsPortlet extends GenericPortlet implements FormNames {
       // handle "cancel" button on edit page
       // return to view mode
       //
-      processEditCancelAction(request, response);
+      processEditCancelAction(response);
     }
   }
 
   /*
    * Process the "cancel" action for the edit page.
    */
-  private void processEditCancelAction(ActionRequest request,
-      ActionResponse response) throws PortletException {
+  private void processEditCancelAction(ActionResponse response) throws PortletException {
     response.setPortletMode(PortletMode.VIEW);
   }
 
@@ -132,13 +112,14 @@ public class NextEventsPortlet extends GenericPortlet implements FormNames {
     try {
       int nb = Integer.parseInt(nbItems);
 
-      if (nb < 0 || nb > 30)
+      if (nb < 0 || nb > 30) {
         throw new NumberFormatException();
+      }
 
       // store preference
       PortletPreferences pref = request.getPreferences();
       try {
-        pref.setValue("nbEvents", nbItems);
+        pref.setValue(NB_EVENTS, nbItems);
         pref.store();
       } catch (ValidatorException ve) {
         getPortletContext().log("could not set nbEvents", ve);

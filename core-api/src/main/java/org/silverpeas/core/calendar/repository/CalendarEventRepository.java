@@ -24,12 +24,14 @@
 package org.silverpeas.core.calendar.repository;
 
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventFilter;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * A persistence repository of calendar events. A calendar event is always persisted for a given
@@ -41,6 +43,30 @@ public interface CalendarEventRepository extends EntityRepository<CalendarEvent>
   static CalendarEventRepository get() {
     return ServiceProvider.getService(CalendarEventRepository.class);
   }
+
+  /**
+   * Gets an event by its external identifier which is unique into context of a calendar.
+   * @param calendar the calendar to search into.
+   * @param externalId the external identifier as string.
+   * @return the calendar event if any, null otherwise.
+   */
+  CalendarEvent getByExternalId(final Calendar calendar, final String externalId);
+
+  /**
+   * Gets all the events that satisfies the specified filter<br/>
+   * Please be careful to always close the streams in order to avoid memory leaks!!!
+   * <pre>
+   * {@code
+   *   try(Stream<CalendarEvent> event : streamAll(myFilter)) {
+   *     // Performing the treatment
+   *   }
+   * }
+   * </pre>
+   * @param filter a filter to apply on the calendar events to return. The filter can be empty and
+   * then no filtering will be applied on the requested calendar events.
+   * @return the events as a stream.
+   */
+  Stream<CalendarEvent> streamAll(final CalendarEventFilter filter);
 
   /**
    * Deletes all the events that belongs to the specified calendar.
@@ -56,17 +82,18 @@ public interface CalendarEventRepository extends EntityRepository<CalendarEvent>
   long size(final Calendar calendar);
 
   /**
-   * Gets all the events belonging to the specified calendar that occur between the two specified
-   * date and times.
-   * @param calendar the calendar with with events must be linked to.
-   * @param startDateTime the inclusive date and time in UTC/Greenwich at which begins the period in
+   * Gets all the events matching the specified filter and that occur between the two specified date
+   * and times.
+   * @param filter a filter to apply on the calendar events to return. The filter can be empty and
+   * then no filtering will be applied on the requested calendar events.
+   * @param startDateTime the inclusive datetime in UTC/Greenwich at which begins the period
+   * in which the events are get.
+   * @param endDateTime the inclusive datetime in UTC/Greenwich at which ends the period in
    * which the events are get.
-   * @param endDateTime the inclusive date and time in UTC/Greenwich at which ends the period in
-   * which the events are get.
-   * @return a list of events that occur between the two date times or an empty list if there
-   * is no events in the specified calendar between the two date times.
+   * @return a list of events filtering by the given filter and that occur between the two date
+   * times or an empty list if there is no events matching the specified arguments.
    */
-  List<CalendarEvent> getAllBetween(final Calendar calendar, OffsetDateTime startDateTime,
+  List<CalendarEvent> getAllBetween(CalendarEventFilter filter, OffsetDateTime startDateTime,
       OffsetDateTime endDateTime);
 
 }

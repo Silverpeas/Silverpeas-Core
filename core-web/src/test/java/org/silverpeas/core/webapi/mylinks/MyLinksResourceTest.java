@@ -47,6 +47,7 @@ import org.silverpeas.core.i18n.I18NHelper;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -80,8 +81,9 @@ public class MyLinksResourceTest {
 
     rest = spy(new MyLinksResource4Test());
     doReturn(new UserDetail()).when(rest).getUserDetail();
-    doReturn(new UserPreferences(CURRENT_USER_ID, "de", null, null, false, false, false,
-        UserMenuDisplay.ALL)).when(rest).getUserPreferences();
+    doReturn(
+        new UserPreferences(CURRENT_USER_ID, "de", ZoneId.of("Europe/Berlin"), null, null, false,
+            false, false, UserMenuDisplay.ALL)).when(rest).getUserPreferences();
     doReturn(mock(UriInfo.class)).when(rest).getUriInfo();
     doReturn(mock(MyLinksService.class)).when(rest).getMyLinksBm();
     doReturn(mock(OrganizationController.class)).when(rest).getOrganisationController();

@@ -23,22 +23,22 @@
  */
 package org.silverpeas.core.webapi.base;
 
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.message.MessageManager;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SilverpeasSettings;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.webapi.base.aspect.ComponentInstMustExistIfSpecified;
 import org.silverpeas.core.webapi.base.aspect.WebEntityMustBeValid;
-import org.silverpeas.core.util.SilverpeasSettings;
-import org.silverpeas.core.security.token.Token;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -80,13 +80,12 @@ public abstract class RESTWebService implements WebResource {
   private HttpServletResponse httpResponse;
   private UserDetail userDetail = null;
   private Collection<SilverpeasRole> userRoles = null;
-  private SilverpeasRole greaterUserRole;
+  private SilverpeasRole highestUserRole;
 
   private LocalizationBundle bundle = null;
 
   @Override
-  public void validateUserAuthentication(final UserPrivilegeValidation validation) throws
-      WebApplicationException {
+  public void validateUserAuthentication(final UserPrivilegeValidation validation) {
     HttpServletRequest request = getHttpServletRequest();
     SessionInfo session = validation.validateUserAuthentication(request);
     // Sent back the identifier of the spawned session in the HTTP response
@@ -110,8 +109,7 @@ public abstract class RESTWebService implements WebResource {
   }
 
   @Override
-  public void validateUserAuthorization(final UserPrivilegeValidation validation) throws
-      WebApplicationException {
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
     validation.validateUserAuthorizationOnComponentInstance(getUserDetail(), getComponentId());
   }
 
@@ -190,8 +188,8 @@ public abstract class RESTWebService implements WebResource {
    */
   protected Collection<SilverpeasRole> getUserRoles() {
     if (userRoles == null) {
-      userRoles = SilverpeasRole
-          .from(organizationController.getUserProfiles(getUserDetail().getId(), getComponentId()));
+      userRoles =
+          organizationController.getUserSilverpeasRolesOn(getUserDetail(), getComponentId());
     }
     return userRoles;
   }
@@ -232,44 +230,50 @@ public abstract class RESTWebService implements WebResource {
   }
 
   /**
-   * Gets the greater role of the user behind the service call.
+   * Gets the highest role of the user behind the service call.
    * @return
    */
-  public SilverpeasRole getGreaterUserRole() {
-    if (greaterUserRole == null) {
-      greaterUserRole = SilverpeasRole.getGreaterFrom(getUserRoles());
+  public SilverpeasRole getHighestUserRole() {
+    if (highestUserRole == null) {
+      highestUserRole = SilverpeasRole.getHighestFrom(getUserRoles());
     }
-    return greaterUserRole;
+    return highestUserRole;
   }
 
   /**
-   * This method permits to start the setting of a {@link RESTWebService
-   * .WebTreatment}.
+   * This method permits to start the setting of a {@link RESTWebService.WebTreatment}.
    * @param webTreatment
-   * @param <RETURN_VALUE>
+   * @param <R>
    * @return
    */
-  protected <RETURN_VALUE> WebProcess<RETURN_VALUE> process(
-      WebTreatment<RETURN_VALUE> webTreatment) {
-    return new WebProcess<RETURN_VALUE>(webTreatment);
+  protected <R> WebProcess<R> process(
+      WebTreatment<R> webTreatment) {
+    WebProcess<R> process = new WebProcess<>(webTreatment);
+    final String httpMethod = getHttpRequest().getMethod().toUpperCase();
+    if ("GET".equals(httpMethod)) {
+      // No lowest role as the access of the component has been already computed
+    } else {
+      process.lowestAccessRole(SilverpeasRole.writer);
+    }
+    return process;
   }
 
   /**
    * This class handles the execution of a {@link RESTWebService.WebTreatment}.
    * It provides the centralization of exception catches and handles the lowest role access that
    * must the user verify.
-   * @param <RETURN_VALUE> the type of the value returned by the web treatment.
+   * @param <R> the type of the value returned by the web treatment.
    * @return the value computed by the specified web treatment.
    */
-  protected final class WebProcess<RETURN_VALUE> {
-    private final WebTreatment<RETURN_VALUE> webTreatment;
+  protected final class WebProcess<R> {
+    private final WebTreatment<R> webTreatment;
     private SilverpeasRole lowestRoleAccess = null;
 
     /**
      * Default constructor.
      * @param webTreatment
      */
-    protected WebProcess(final WebTreatment<RETURN_VALUE> webTreatment) {
+    protected WebProcess(final WebTreatment<R> webTreatment) {
       this.webTreatment = webTreatment;
     }
 
@@ -278,7 +282,7 @@ public abstract class RESTWebService implements WebResource {
      * @param lowestRoleAccess
      * @return
      */
-    public WebProcess<RETURN_VALUE> lowestAccessRole(SilverpeasRole lowestRoleAccess) {
+    public WebProcess<R> lowestAccessRole(SilverpeasRole lowestRoleAccess) {
       this.lowestRoleAccess = lowestRoleAccess;
       return this;
     }
@@ -293,10 +297,10 @@ public abstract class RESTWebService implements WebResource {
      * If a problem occurs when processing the request, a 503 HTTP code is returned.
      * @return the value computed by the specified web treatment.
      */
-    public RETURN_VALUE execute() {
+    public R execute() {
       try {
-        if (lowestRoleAccess != null && (getGreaterUserRole() == null ||
-            !getGreaterUserRole().isGreaterThanOrEquals(lowestRoleAccess))) {
+        if (lowestRoleAccess != null && (getHighestUserRole() == null ||
+            !getHighestUserRole().isGreaterThanOrEquals(lowestRoleAccess))) {
           throw new WebApplicationException(Response.Status.FORBIDDEN);
         }
         return webTreatment.execute();
@@ -310,9 +314,10 @@ public abstract class RESTWebService implements WebResource {
 
   /**
    * Inner class handled by
-   * @param <RETURN_VALUE>
+   * @param <R>
    */
-  protected abstract class WebTreatment<RETURN_VALUE> {
-    public abstract RETURN_VALUE execute();
+  @FunctionalInterface
+  protected interface WebTreatment<R> {
+    R execute();
   }
 }

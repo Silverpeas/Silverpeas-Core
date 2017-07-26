@@ -126,6 +126,21 @@ function notyDebug(text, customOptions) {
 }
 
 /**
+ * Helper to close all Silverpeas notifications (but not the those which are closing automatically).
+ */
+function notyReset() {
+  if (top !== window && top.jQuery && typeof top.jQuery.noty === 'object') {
+    top.jQuery.noty.clearQueue();
+    top.jQuery.each(top.jQuery.noty.store, function(id, noty) {
+      if (noty.options.timeout) {
+        return;
+      }
+      setTimeout(function(){noty.close();}, 200);
+    });
+  }
+}
+
+/**
  * Helper.
  * @param text
  */
@@ -144,17 +159,17 @@ function __noty(customOptions) {
     if (typeof customOptions.text === 'string' && customOptions.text.indexOf('<body>')) {
       var $message = document.createElement("div");
       $message.innerHTML = customOptions.text;
-      customOptions.text = $message.innerHTML;
+      options.text = $message.innerHTML;
     }
+
+    options.text = sp.moment.formatText(options.text);
 
     return noty(options);
   }
 }
 
 (function(){
-  if (top !== window && top.jQuery && typeof top.jQuery.noty === 'object') {
-    top.jQuery.noty.closeAll();
-  }
+  notyReset();
 })();
 
 /**

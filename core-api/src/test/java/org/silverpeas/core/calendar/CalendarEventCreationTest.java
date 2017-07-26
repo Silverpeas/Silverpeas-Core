@@ -24,7 +24,6 @@
 package org.silverpeas.core.calendar;
 
 import org.junit.Test;
-import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.date.Period;
 
 import java.time.LocalDate;
@@ -53,8 +52,8 @@ public class CalendarEventCreationTest {
     LocalDate today = LocalDate.now();
     CalendarEvent event =
         CalendarEvent.on(today).withTitle(EVENT_TITLE).withDescription(EVENT_DESCRIPTION);
-    assertThat(event.getStartDateTime(), is(today.atStartOfDay().atOffset(ZoneOffset.UTC)));
-    assertThat(event.getEndDateTime(), is(today.atTime(23, 59).atOffset(ZoneOffset.UTC)));
+    assertThat(event.getStartDate(), is(today));
+    assertThat(event.getEndDate(), is(today.plusDays(1)));
     assertTitleAndDescriptionOf(event);
     assertDefaultValuesOf(event);
   }
@@ -66,8 +65,8 @@ public class CalendarEventCreationTest {
     CalendarEvent event = CalendarEvent.on(Period.between(today, dayAfterTomorrow))
         .withTitle(EVENT_TITLE)
         .withDescription(EVENT_DESCRIPTION);
-    assertThat(event.getStartDateTime(), is(today.atStartOfDay().atOffset(ZoneOffset.UTC)));
-    assertThat(event.getEndDateTime(), is(dayAfterTomorrow.atTime(23, 59).atOffset(ZoneOffset.UTC)));
+    assertThat(event.getStartDate(), is(today));
+    assertThat(event.getEndDate(), is(dayAfterTomorrow));
     assertTitleAndDescriptionOf(event);
     assertDefaultValuesOf(event);
   }
@@ -79,8 +78,8 @@ public class CalendarEventCreationTest {
     CalendarEvent event = CalendarEvent.on(Period.between(now, inThreeHours))
         .withTitle(EVENT_TITLE)
         .withDescription(EVENT_DESCRIPTION);
-    assertThat(event.getStartDateTime(), is(now.withOffsetSameInstant(ZoneOffset.UTC)));
-    assertThat(event.getEndDateTime(), is(inThreeHours.withOffsetSameInstant(ZoneOffset.UTC)));
+    assertThat(event.getStartDate(), is(now.withOffsetSameInstant(ZoneOffset.UTC)));
+    assertThat(event.getEndDate(), is(inThreeHours.withOffsetSameInstant(ZoneOffset.UTC)));
     assertTitleAndDescriptionOf(event);
     assertDefaultValuesOf(event);
   }

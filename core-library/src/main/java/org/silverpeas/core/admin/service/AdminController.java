@@ -346,7 +346,7 @@ public class AdminController implements java.io.Serializable {
   public Map<String, WAComponent> getAllComponents() {
 
     try {
-      return admin.getAllComponents();
+      return admin.getAllWAComponents();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getLocalizedMessage(), e);
       return new HashMap<String, WAComponent>();

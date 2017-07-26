@@ -32,8 +32,11 @@ import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.DataSetTest;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
+import java.sql.SQLException;
 import java.util.List;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -112,9 +115,24 @@ public abstract class BaseCalendarTest extends DataSetTest {
    */
   protected List<TableLine> getCalendarEventTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("ce.* from sb_cal_event ce")
-            .addSqlPart("join sb_cal_calendar c on c.id = ce.calendarId")
-            .addSqlPart("order by c.instanceId, ce.startDate, ce.endDate, ce.title, ce.id"));
+        JdbcSqlQuery.createSelect("ce.*, co.* from sb_cal_event ce")
+            .addSqlPart("join sb_cal_components co on co.id = ce.componentId")
+            .addSqlPart("join sb_cal_calendar c on c.id = co.calendarId")
+            .addSqlPart("order by c.instanceId, co.startDate, co.endDate, co.title, ce.id"));
+  }
+
+  /**
+   * Returns the calendar event persisted into sb_cal_event table corresponding to the given
+   * identifier of a calendar.
+   * @param id the id of a calendar.
+   * @return List of lines represented by a map between column name and value.
+   */
+  protected List<TableLine> getCalendarEventTableLinesByCalendarId(String id) throws Exception {
+    return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("ce.*, co.* from sb_cal_event ce")
+            .addSqlPart("join sb_cal_components co on co.id = ce.componentId")
+            .addSqlPart("join sb_cal_calendar c on c.id = co.calendarId")
+            .where("co.calendarId = ?", id));
   }
 
   /**
@@ -125,8 +143,10 @@ public abstract class BaseCalendarTest extends DataSetTest {
    */
   protected TableLine getCalendarEventTableLineById(String id) throws Exception {
     return JdbcSqlQuery.unique(getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
-        JdbcSqlQuery.createSelect("ce.* from sb_cal_event ce")
-            .addSqlPart("join sb_cal_calendar c on c.id = ce.calendarId").where("ce.id = ?", id)));
+        JdbcSqlQuery.createSelect("ce.*, co.* from sb_cal_event ce")
+            .addSqlPart("join sb_cal_components co on co.id = ce.componentId")
+            .addSqlPart("join sb_cal_calendar c on c.id = co.calendarId")
+            .where("ce.id = ?", id)));
   }
 
   protected List<TableLine> getAttributesTableLinesByEventId(String id) throws Exception {
@@ -137,5 +157,75 @@ public abstract class BaseCalendarTest extends DataSetTest {
   protected List<TableLine> getAttendeesTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("* from SB_Cal_Attendees"));
+  }
+
+  protected TableLine getCalendarComponentTableLineById(String id) throws Exception {
+    return JdbcSqlQuery.unique(getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from sb_cal_components")
+        .where("id = ?", id)));
+  }
+
+  protected TableLine getCalendarOccurrenceTableLineById(String id) throws SQLException {
+    return JdbcSqlQuery.unique(getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from sb_cal_occurrences").where("id = ?", id)));
+  }
+
+  protected List<TableLine> getCalendarOccurrencesTableLineByEventId(String eventId)
+      throws SQLException {
+    return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
+        JdbcSqlQuery.createSelect("* from sb_cal_occurrences").where("eventId = ?", eventId));
+  }
+
+  protected void assertEventProperties(final CalendarEvent actual, final CalendarEvent expected) {
+    assertThat(actual.getStartDate(), is(expected.getStartDate()));
+    assertThat(actual.getEndDate(), is(expected.getEndDate()));
+    assertThat(actual.isOnAllDay(), is(expected.isOnAllDay()));
+    assertThat(actual.getTitle(), is(expected.getTitle()));
+    assertThat(actual.getDescription(), is(expected.getDescription()));
+    assertThat(actual.getLocation(), is(expected.getLocation()));
+    assertThat(actual.getAttributes().isEmpty(), is(false));
+    assertThat(actual.getAttributes(), is(expected.getAttributes()));
+    assertThat(actual.getVisibilityLevel(), is(expected.getVisibilityLevel()));
+    assertThat(actual.getAttendees(), is(expected.getAttendees()));
+    assertThat(actual.getCategories(), is(expected.getCategories()));
+    assertThat(actual.isRecurrent(), is(false));
+  }
+
+  protected void assertEventIsOnlyUpdated(OperationResult result) {
+    assertThat(result.isEmpty(), is(false));
+    assertThat(result.instance().isPresent(), is(false));
+    assertThat(result.created().isPresent(), is(false));
+    assertThat(result.updated().isPresent(), is(true));
+  }
+
+  protected void assertAnEventIsOnlyCreated(OperationResult result) {
+    assertThat(result.isEmpty(), is(false));
+    assertThat(result.instance().isPresent(), is(false));
+    assertThat(result.updated().isPresent(), is(false));
+    assertThat(result.created().isPresent(), is(true));
+  }
+
+  protected void assertOccurrenceIsUpdated(OperationResult result) {
+    assertThat(result.isEmpty(), is(false));
+    assertThat(result.created().isPresent(), is(false));
+    assertThat(result.updated().isPresent(), is(false));
+    assertThat(result.instance().isPresent(), is(true));
+  }
+
+  protected void assertEventIsUpdated(OperationResult result) {
+    assertThat(result.isEmpty(), is(false));
+    assertThat(result.updated().isPresent(), is(true));
+  }
+
+  protected void assertAnEventIsCreated(OperationResult result) {
+    assertThat(result.isEmpty(), is(false));
+    assertThat(result.created().isPresent(), is(true));
+  }
+
+  protected void assertEventIsDeleted(final OperationResult result) {
+    assertThat(result.created().isPresent(), is(false));
+    assertThat(result.updated().isPresent(), is(false));
+    assertThat(result.instance().isPresent(), is(false));
+    assertThat(result.isEmpty(), is(true));
   }
 }

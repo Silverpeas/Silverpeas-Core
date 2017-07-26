@@ -404,6 +404,15 @@ out.println(window.printBefore());
                                                     readOnly="${not empty userObject.id}"/>
           </div>
         </div>
+        <!--User Zone Id-->
+        <div class="field" id="form-row-user-zone-id">
+          <label class="txtlibform"><fmt:message key="JDP.userPreferredZoneId"/></label>
+
+          <div class="champs">
+            <viewTags:userPreferredZoneIdSelector user="${not empty userObject.id ? userObject : null}"
+                                                  readOnly="${not empty userObject.id}"/>
+          </div>
+        </div>
       </div>
     </fieldset>
 

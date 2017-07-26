@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.importexport.ical;
 
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;

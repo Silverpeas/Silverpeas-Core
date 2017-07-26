@@ -81,6 +81,6 @@ public abstract class WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT exten
   protected void beforeRequestProcessing(WEB_COMPONENT_REQUEST_CONTEXT context) {
     context.getRequest().setAttribute("currentUser", context.getUser());
     context.getRequest().setAttribute("componentUriBase", context.getComponentUriBase());
-    context.getRequest().setAttribute("greaterUserRole", context.getGreaterUserRole());
+    context.getRequest().setAttribute("highestUserRole", context.getHighestUserRole());
   }
 }

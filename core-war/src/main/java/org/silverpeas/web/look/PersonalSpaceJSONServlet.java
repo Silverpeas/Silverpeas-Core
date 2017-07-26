@@ -27,8 +27,9 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.space.PersonalSpaceController;
+import org.silverpeas.core.admin.space.PersonalSpaceManager;
 import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.UserNotificationServerEvent;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
@@ -41,10 +42,10 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -55,14 +56,14 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.Function;
 
-public class PersonalSpaceJSONServlet extends HttpServlet {
+public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet {
 
   private static final long serialVersionUID = 8565616592829678418L;
 
   @Inject
   private OrganizationController organizationController;
   @Inject
-  private PersonalSpaceController personalSpaceController;
+  private PersonalSpaceManager personalSpaceManager;
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException,
@@ -74,10 +75,10 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
   public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException,
       IOException {
 
-
     HttpSession session = req.getSession(true);
     LookHelper helper = LookHelper.getLookHelper(session);
-    String userId = UserDetail.getCurrentRequester().getId();
+    User user = UserDetail.getCurrentRequester();
+    String userId = user.getId();
 
     res.setContentType("application/json");
 
@@ -86,23 +87,22 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     Writer writer = res.getWriter();
     if ("GetAvailableComponents".equals(action)) {
       Collection<WAComponent> components =
-          personalSpaceController.getVisibleComponents(organizationController);
-      SpaceInst space = personalSpaceController.getPersonalSpace(userId);
+          personalSpaceManager.getVisibleComponents(organizationController);
+      SpaceInst space = personalSpaceManager.getPersonalSpace(userId);
       if (space != null) {
         writer.write(getWAComponentsAsJSONArray(getNotUsedComponents(components, space), helper));
       } else {
         writer.write(getWAComponentsAsJSONArray(components, helper));
       }
     } else if ("GetComponents".equals(action)) {
-      SpaceInst space = personalSpaceController.getPersonalSpace(userId);
+      SpaceInst space = personalSpaceManager.getPersonalSpace(userId);
       if (space != null) {
         writer.write(getComponentsAsJSONArray(space.getAllComponentsInst(), helper));
       }
     } else if ("AddComponent".equals(action)) {
       String componentName = req.getParameter("ComponentName");
       try {
-        String componentId = personalSpaceController.addComponent(helper.getUserId(), componentName,
-            getComponentLabel(componentName, helper));
+        String componentId = personalSpaceManager.addComponent(user, componentName);
         writer.write(getResult(componentName, componentId, null, helper));
       } catch (Exception e) {
         writer.write(getResult(componentName, null, e, helper));
@@ -112,7 +112,7 @@ public class PersonalSpaceJSONServlet extends HttpServlet {
     } else if ("RemoveComponent".equals(action)) {
       String componentId = req.getParameter("ComponentId");
       try {
-        String componentName = personalSpaceController.removeComponent(userId, componentId);
+        String componentName = personalSpaceManager.removeComponent(userId, componentId);
         writer.write(getResult(componentName, componentId, null, helper));
       } catch (AdminException e) {
         writer.write(getResult(null, componentId, e, helper));

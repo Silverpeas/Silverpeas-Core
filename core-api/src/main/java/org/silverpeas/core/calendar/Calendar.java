@@ -23,26 +23,43 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
+import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
+import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.security.SecurableRequestCache;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.security.token.exception.TokenException;
+import org.silverpeas.core.security.token.exception.TokenRuntimeException;
+import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.Year;
 import java.time.YearMonth;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
+
+import static java.time.Month.DECEMBER;
 
 /**
  * A calendar is a particular system for scheduling and organizing events and activities that occur
@@ -55,22 +72,32 @@ import java.util.Optional;
  * @author mmoquillon
  */
 @Entity
+@NamedQueries({
 @NamedQuery(
     name = "calendarsByComponentInstanceId",
     query = "from Calendar c where c.componentInstanceId = :componentInstanceId " +
-            "order by c.componentInstanceId, c.title, c.id")
+            "order by c.componentInstanceId, c.title, c.id"),
+@NamedQuery(
+    name = "synchronizedCalendars",
+    query = "from Calendar c where c.externalUrl is not null"
+)})
 @Table(name = "sb_cal_calendar")
 public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> implements Securable {
 
   @Column(name = "instanceId", nullable = false)
   private String componentInstanceId;
 
-  @Column(name = "title")
+  @Column(name = "title", nullable = false)
   private String title;
 
-  @OneToMany(mappedBy = "calendar", fetch = FetchType.LAZY, cascade = {CascadeType.ALL},
-      orphanRemoval = true)
-  private List<CalendarEvent> events;
+  @Column(name = "zoneId", nullable = false)
+  private String zoneId;
+
+  @Column(name = "externalUrl")
+  private String externalUrl;
+
+  @Column(name = "synchroDate")
+  private OffsetDateTime synchronizationDate;
 
   /**
    * Necessary for JPA management.
@@ -79,13 +106,31 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
-   * Creates a new calendar with the specified component instance identifier.
-   * @param instanceId an identifier identifying an instance of a component in Silverpeas.
+   * Creates in the specified component instance a new calendar with the given title. The timezone
+   * identifier of the calendar is set to the default zone id of the platform on which runs
+   * Silverpeas.
+   * @param instanceId the identifier identifying an instance of a component in Silverpeas.
    * Usually, this identifier is the identifier of the component instance to which it belongs
    * (for example almanach32) or the identifier of the user personal calendar.
+   * @param title the title of the calendar.
    */
-  public Calendar(String instanceId) {
+  public Calendar(String instanceId, String title) {
     this.componentInstanceId = instanceId;
+    this.title = title;
+  }
+
+  /**
+   * Creates in the specified component instance a new calendar with the given title and for the
+   * specified zone ID.
+   * @param instanceId the identifier of an instance of a component in Silverpeas.
+   * Usually, this identifier is the identifier of the component instance to which it belongs
+   * (for example almanach32) or the identifier of the user personal calendar.
+   * @param title the title of the calendar.
+   * @param zoneId the identifier of a timezone.
+   */
+  public Calendar(String instanceId, String title, ZoneId zoneId) {
+    this(instanceId, title);
+    this.zoneId = zoneId.toString();
   }
 
   /**
@@ -111,6 +156,50 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
+   * Gets a calendar window of time defined between the two specified dates and from which the
+   * events occurring in the given period can be requested.
+   * @param start the start date of the period.
+   * @param end the end date of the period.
+   * @return a window of time that includes all the calendar events occurring in its specified
+   * period of time.
+   */
+  public static CalendarTimeWindow getTimeWindowBetween(final LocalDate start,
+      final LocalDate end) {
+    return new CalendarTimeWindow(start, end);
+  }
+
+  /**
+   * Gets a calendar events instance which permits to get (as stream) events.<br/>
+   * @return a calendar events instance.
+   */
+  public static CalendarEvents getEvents() {
+    return new CalendarEvents();
+  }
+
+  /**
+   * Gets all the synchronized calendars in Silverpeas. A calendar is synchronized when it is
+   * the counterpart of an external remote calendar and it is regularly updated from this external
+   * calendar.
+   *
+   * @return a list of synchronized calendars.
+   */
+  public static List<Calendar> getSynchronizedCalendars() {
+    return CalendarRepository.get().getAllSynchronized();
+  }
+
+  @Override
+  protected void performBeforePersist() {
+    super.performBeforePersist();
+    SecurableRequestCache.clear(getId());
+  }
+
+  @Override
+  protected void performBeforeUpdate() {
+    super.performBeforeUpdate();
+    SecurableRequestCache.clear(getId());
+  }
+
+  /**
    * Gets the identifier of the component instance which the calendar is attached.
    * @return the identifier of the component instance which the calendar is attached.
    */
@@ -124,6 +213,67 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
 
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  /**
+   * Gets the identifier of the location zone the calendar belongs to.
+   * @return the zone id as {@link ZoneId} instance.
+   */
+  public ZoneId getZoneId() {
+    return ZoneId.of(zoneId);
+  }
+
+  public void setZoneId(final ZoneId zoneId) {
+    this.zoneId = zoneId.toString();
+  }
+
+  /**
+   * Gets the URL of the external calendar with which this calendar is synchronized. This URL is
+   * used in the synchronization to fetch the content of the external calendar.
+   * @return either the URL of an external calendar or null if this calendar isn't synchronized with
+   * such an external calendar.
+   */
+  public URL getExternalCalendarUrl() {
+    try {
+      return new URL(this.externalUrl);
+    } catch (MalformedURLException e) {
+      return null;
+    }
+  }
+
+  /**
+   * Sets the URL of an external calendar with which this calendar will be synchronized. The URL
+   * will be used to get the content of the external calendar.
+   * @param calendarUrl the URL of a calendar external to Silverpeas.
+   */
+  public void setExternalCalendarUrl(final URL calendarUrl) {
+    this.externalUrl = calendarUrl.toString();
+  }
+
+  /**
+   * Gets the last synchronization date of this calendar in the case this calendar is a synchronized
+   * one. If it is a synchronized calendar and its last synchronization date is empty, this means
+   * no synchronization was yet operated.
+   * @return optionally the date of its last synchronization date.
+   */
+  public Optional<OffsetDateTime> getLastSynchronizationDate() {
+    return Optional.ofNullable(this.synchronizationDate);
+  }
+
+  /**
+   * Is this calendar synchronized with the events from an external calendar.
+   * @return true if this calendar is synchronized with an external calendar.
+   */
+  public boolean isSynchronized() {
+    return this.externalUrl != null;
+  }
+
+  /**
+   * Sets the date time at which this calendar is lastly synchronized.
+   * @param dateTime an {@link OffsetDateTime} value.
+   */
+  protected void setLastSynchronizationDate(final OffsetDateTime dateTime) {
+    this.synchronizationDate = dateTime;
   }
 
   /**
@@ -146,6 +296,8 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    */
   public void delete() {
     Transaction.performInOne(() -> {
+      PersistentResourceToken.removeToken(CalendarReference.fromCalendar(this));
+      this.clear();
       CalendarRepository calendarRepository = CalendarRepository.get();
       calendarRepository.delete(this);
       return null;
@@ -153,45 +305,45 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
-   * Gets a time window according to the specified period into which occurrences of events are
-   * requested.
-   * @param year the year during which the events occur.
-   * @return the initialized time window.
+   * Gets a window of time on this calendar defined by the specified period. The window of time
+   * will include only the events in this calendar that occur in the specified period.
+   * @param year the year during which the events in this calendar occur.
+   * @return the window of time including the events in this calendar occurring in the given period.
    */
   public CalendarTimeWindow in(final Year year) {
-    return new CalendarTimeWindow(this, year);
+    return between(year.atDay(1), year.atMonth(DECEMBER).atEndOfMonth());
   }
 
   /**
-   * Gets a time window according to the specified period into which occurrences of events are
-   * requested.
-   * @param yearMonth the month and year during which the events occur.
-   * @return the initialized time window.
+   * Gets a window of time on this calendar defined by the specified period. The window of time
+   * will include only the events in this calendar that occur in the specified period.
+   * @param yearMonth the month and year during which the events in this calendar occur.
+   * @return the window of time including the events in this calendar occurring in the given period.
    */
   public CalendarTimeWindow in(final YearMonth yearMonth) {
-    return new CalendarTimeWindow(this, yearMonth);
+    return between(yearMonth.atDay(1), yearMonth.atEndOfMonth());
   }
 
   /**
-   * Gets a time window according to the specified period into which occurrences of events are
-   * requested.
-   * @param day day during which the events occur.
-   * @return the initialized time window.
+   * Gets a window of time on this calendar defined by the specified period. The window of time
+   * will include only the events in this calendar that occur in the specified period.
+   * @param day day during which the events in this calendar occur.
+   * @return the window of time including the events in this calendar occurring in the given period.
    */
   public CalendarTimeWindow in(final LocalDate day) {
-    return new CalendarTimeWindow(this, day);
+    return between(day, day);
   }
 
   /**
-   * Gets a time window according to the specified period into which occurrences of events are
-   * requested.
+   * Gets a window of time on this calendar defined by the specified period. The window of time
+   * will include only the events in this calendar that occur in the specified period.
    * @param start the start date of the period.
    * @param end the end date of the period.
-   * @return the initialized time window.
+   * @return the window of time including the events in this calendar occurring in the given period.
    */
   public CalendarTimeWindow between(final LocalDate start, final LocalDate end) {
     verifyCalendarIsPersisted();
-    return new CalendarTimeWindow(this, start, end);
+    return Calendar.getTimeWindowBetween(start, end).filter(f -> f.onCalendar(this));
   }
 
   private void verifyCalendarIsPersisted() {
@@ -199,6 +351,22 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
       throw new IllegalStateException(
           "The calendar isn't persisted and then no action is available");
     }
+  }
+
+  /**
+   * Synchronizes this calendar. An {@link IllegalArgumentException} is thrown if this calendar
+   * isn't a synchronized one.
+   * <p>
+   * The synchronization is a peculiar and regular import process to update the calendar
+   * with its external counterpart in such a way this calendar is a mirror of the external one at a
+   * given time.
+   * </p>
+   * @return the result of the synchronization with the number of events added, updated and
+   * deleted in this calendar.
+   * @throws ImportException if the synchronization fails.
+   */
+  public ICalendarImportResult synchronize() throws ImportException {
+    return ICalendarEventSynchronization.get().synchronize(this);
   }
 
   /**
@@ -218,11 +386,26 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
+   * Gets either the calendar external event with the specified external identifier or nothing if no
+   * such event exists with the given external identifier. Such events come from either an external
+   * calendar with which this calendar is synchronized or from an import of an ics file (iCalendar
+   * document containing a collection of calendar component definitions).
+   * @param externalEventId the unique external identifier of the event to get.
+   * @return optionally an event with the specified identifier.
+   */
+  public Optional<CalendarEvent> externalEvent(String externalEventId) {
+    verifyCalendarIsPersisted();
+    CalendarEventRepository repository = CalendarEventRepository.get();
+    CalendarEvent event = repository.getByExternalId(this, externalEventId);
+    return Optional.ofNullable(event);
+  }
+
+  /**
    * Clears this calendar of all of the planned events.
    */
   public void clear() {
     verifyCalendarIsPersisted();
-    Transaction.getTransaction().perform(() -> {
+    Transaction.performInOne(() -> {
       CalendarEventRepository repository = CalendarEventRepository.get();
       repository.deleteAll(Calendar.this);
       return null;
@@ -237,5 +420,62 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
     verifyCalendarIsPersisted();
     CalendarEventRepository repository = CalendarEventRepository.get();
     return repository.size(this) == 0;
+  }
+
+  /**
+   * Is this calendar the personal one of the given user which is not modifiable?
+   * @param user the user to verify.
+   * @return true if it is, false otherwise.
+   */
+  public boolean isMainPersonalOf(final User user) {
+    return isPersonalOf(user) && getTitle().equals(user.getDisplayedName());
+  }
+
+  /**
+   * Is this calendar a personal one of the given user?
+   * @param user the user to verify.
+   * @return true if it is, false otherwise.
+   */
+  public boolean isPersonalOf(final User user) {
+    Optional<SilverpeasPersonalComponentInstance> instance =
+        SilverpeasPersonalComponentInstance.getById(getComponentInstanceId());
+    return instance.isPresent() && instance.get().getUser().getId().equals(user.getId());
+  }
+
+  /**
+   * Gets the token associated to the calendar.
+   * @return the token as string.
+   */
+  public String getToken() {
+    try {
+      CalendarReference ref = CalendarReference.fromCalendar(this);
+      return PersistentResourceToken.getOrCreateToken(ref).getValue();
+    } catch (TokenException e) {
+      throw new TokenRuntimeException(e.getMessage(), e);
+    }
+  }
+
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    return SecurableRequestCache.canBeAccessedBy(user, getId(), u -> {
+      AccessController<String> accessController =
+          AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+      return accessController.isUserAuthorized(u.getId(), getComponentInstanceId());
+    });
+  }
+
+  @Override
+  public boolean canBeModifiedBy(final User user) {
+    return SecurableRequestCache.canBeModifiedBy(user, getId(), u -> {
+      SilverpeasComponentInstance instance =
+          SilverpeasComponentInstanceProvider.get().getById(getComponentInstanceId()).get();
+      if (instance.isPersonal()) {
+        return getCreator().getId().equals(u.getId()) && !getTitle().equals(u.getDisplayedName());
+      }
+      AccessController<String> accessController =
+          AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+      return accessController.isUserAuthorized(u.getId(), getComponentInstanceId(),
+          AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+    });
   }
 }

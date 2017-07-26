@@ -28,8 +28,8 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ObjectFactory;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Singleton;
@@ -74,8 +74,7 @@ public class WAComponentRegistry implements Initialization {
     return ServiceProvider.getService(WAComponentRegistry.class);
   }
 
-  protected WAComponentRegistry() {
-
+  WAComponentRegistry() {
   }
 
   /**
@@ -88,7 +87,8 @@ public class WAComponentRegistry implements Initialization {
   public void init() throws Exception {
     Path descriptorHome = getWAComponentDescriptorHome();
     Files.find(descriptorHome, 2, (p, a) -> p.toFile().isFile() &&
-        "xml".equalsIgnoreCase(FilenameUtils.getExtension(p.toString()))).forEach(p -> {
+        "xml".equalsIgnoreCase(FilenameUtils.getExtension(p.toString())) &&
+        !p.getParent().toString().endsWith("personals")).forEach(p -> {
       WAComponent component = loadComponent(p.toFile());
       componentsByName.put(component.getName(), component);
     });
@@ -104,7 +104,7 @@ public class WAComponentRegistry implements Initialization {
   }
 
   /**
-   * Gets all the registered WAComponent instance indexed by their name.
+   * Gets all the registered WAComponent instances indexed by their name.
    * @return a dictionary of the available WAComponent instances indexed by their name.
    */
   public Map<String, WAComponent> getAllWAComponents() {

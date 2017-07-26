@@ -31,14 +31,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.calendar.event.CalendarEvent;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -49,6 +51,12 @@ import static org.hamcrest.Matchers.*;
  */
 @RunWith(Arquillian.class)
 public class CalendarManagementIntegrationTest extends BaseCalendarTest {
+
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
+  }
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
@@ -64,7 +72,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
   @Before
   public void verifyInitialData() throws Exception {
     // JPA and Basic SQL query must show that it exists no data
-    assertThat(getCalendarTableLines(), hasSize(3));
+    assertThat(getCalendarTableLines(), hasSize(5));
     assertThat(Calendar.getByComponentInstanceId(INSTANCE_ID), empty());
   }
 
@@ -108,8 +116,8 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
   public void createCalendarIntoPersistenceShouldWork() throws Exception{
     final Date testStartingDate = new Date();
 
-    Calendar newCalendar = new Calendar(INSTANCE_ID);
-    newCalendar.setTitle("a title");
+    Calendar newCalendar = new Calendar(INSTANCE_ID, "a title");
+    newCalendar.setZoneId(ZoneId.systemDefault());
 
     assertThat(newCalendar.getId(), nullValue());
     assertThat(newCalendar.getComponentInstanceId(), is(INSTANCE_ID));
@@ -127,11 +135,12 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
 
     // Verifying the data
     List<TableLine> persistedCalendars = getCalendarTableLines();
-    assertThat(persistedCalendars, hasSize(4));
+    assertThat(persistedCalendars, hasSize(6));
     TableLine persistedCalendar = getCalendarTableLineById(newCalendar.getId());
 
     assertThat(persistedCalendar.get("instanceId"), is(INSTANCE_ID));
     assertThat(persistedCalendar.get("title"), is("a title"));
+    assertThat(persistedCalendar.get("zoneId"), is(ZoneId.systemDefault().getId()));
     Date createDate = persistedCalendar.get("createDate");
     String createdBy = persistedCalendar.get("createdBy");
     assertThat(createDate, greaterThanOrEqualTo(testStartingDate));
@@ -161,20 +170,21 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
     TableLine beforeDeletion = getCalendarTableLineById("ID_3");
     List<TableLine> eventsBeforeDeletion = getCalendarEventTableLines();
     assertThat(beforeDeletion, notNullValue());
-    assertThat(eventsBeforeDeletion, hasSize(5));
+    assertThat(eventsBeforeDeletion, hasSize(6));
 
-    Calendar calendarToModify = Calendar.getById("ID_3");
-    calendarToModify.delete();
-    assertThat(calendarToModify.isPersisted(), is(false));
+    Calendar calendarToDelete = Calendar.getById("ID_3");
+    calendarToDelete.delete();
+    assertThat(calendarToDelete.isPersisted(), is(false));
+    assertThat(getCalendarTableLines(), hasSize(4));
 
 
     TableLine afterDeletion = getCalendarTableLineById("ID_3");
     List<TableLine> eventsAfterDeletion = getCalendarEventTableLines();
     assertThat(afterDeletion, nullValue());
-    assertThat(eventsAfterDeletion, hasSize(3));
+    assertThat(eventsAfterDeletion, hasSize(4));
 
     thrown.expect(IllegalStateException.class);
-    calendarToModify.event("ID_E_3");
+    calendarToDelete.event("ID_E_3");
   }
 
   @Test

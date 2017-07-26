@@ -109,9 +109,9 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
                   .append("');\" class=\"preview-file\" src=\"")
                   .append(webContext)
                   .append("/util/icons/preview.png\" alt=\"")
-                  .append(Util.getString("GML.preview", contentLanguage))
+                  .append(Util.getString("GML.preview.file", contentLanguage))
                   .append("\" title=\"")
-                  .append(Util.getString("GML.preview", contentLanguage))
+                  .append(Util.getString("GML.preview.file", contentLanguage))
                   .append("\"/>");
             }
             if (ViewerProvider.isViewable(attachmentFile)) {
@@ -120,9 +120,9 @@ public class FileFieldDisplayer extends AbstractFileFieldDisplayer {
                   .append("');\" class=\"view-file\" src=\"")
                   .append(webContext)
                   .append("/util/icons/view.png\" alt=\"")
-                  .append(Util.getString("GML.view", contentLanguage))
+                  .append(Util.getString("GML.view.file", contentLanguage))
                   .append("\" title=\"")
-                  .append(Util.getString("GML.view", contentLanguage))
+                  .append(Util.getString("GML.view.file", contentLanguage))
                   .append("\"/>");
             }
             if (attachment.isSharingAllowedForRolesFrom(

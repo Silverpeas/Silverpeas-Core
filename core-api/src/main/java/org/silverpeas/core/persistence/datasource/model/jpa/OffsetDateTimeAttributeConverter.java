@@ -41,11 +41,12 @@ public class OffsetDateTimeAttributeConverter
 
   @Override
   public Timestamp convertToDatabaseColumn(OffsetDateTime dateTime) {
-    return (dateTime == null ? null : Timestamp.from(dateTime.toInstant()));
+    return dateTime == null ? null :
+        Timestamp.valueOf(dateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime());
   }
 
   @Override
   public OffsetDateTime convertToEntityAttribute(Timestamp sqlTimestamp) {
-    return (sqlTimestamp == null ? null : sqlTimestamp.toInstant().atOffset(ZoneOffset.UTC));
+    return sqlTimestamp == null ? null : sqlTimestamp.toLocalDateTime().atOffset(ZoneOffset.UTC);
   }
 }

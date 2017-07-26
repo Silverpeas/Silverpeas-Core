@@ -352,11 +352,11 @@
     </function-signature>
   </function>
   <function>
-    <description>Gets the greatest role on the component represented by the given identifier the current user has.</description>
-    <name>getGreatestRoleOfCurrentUserOn</name>
-    <function-class>org.silverpeas.core.admin.user.model.SilverpeasRole</function-class>
+    <description>Gets the highest role on the component represented by the given identifier the current user has.</description>
+    <name>getHighestRoleOfCurrentUserOn</name>
+    <function-class>org.silverpeas.core.webapi.admin.component.SilverpeasComponentInstanceRoleProvider</function-class>
     <function-signature>
-      org.silverpeas.core.admin.user.model.SilverpeasRole getGreatestOfCurrentUserOn(java.lang.String)
+      org.silverpeas.core.admin.user.model.SilverpeasRole getHighestOfCurrentUserOn(java.lang.String)
     </function-signature>
   </function>
 </taglib>

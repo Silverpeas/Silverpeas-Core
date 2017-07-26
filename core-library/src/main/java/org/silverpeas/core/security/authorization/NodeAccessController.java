@@ -70,13 +70,13 @@ public class NodeAccessController extends AbstractAccessController<NodePK>
     Set<SilverpeasRole> userRoles = getUserRoles(userId, nodePK, context);
 
     if (sharingOperation) {
-      SilverpeasRole greatestUserRole = SilverpeasRole.getGreatestFrom(userRoles);
-      if (greatestUserRole == null) {
-        greatestUserRole = SilverpeasRole.reader;
+      SilverpeasRole highestUserRole = SilverpeasRole.getHighestFrom(userRoles);
+      if (highestUserRole == null) {
+        highestUserRole = SilverpeasRole.reader;
       }
       User user = User.getById(userId);
       authorized = !user.isAnonymous() && componentAccessController
-          .isFolderSharingEnabledForRole(nodePK.getInstanceId(), greatestUserRole);
+          .isFolderSharingEnabledForRole(nodePK.getInstanceId(), highestUserRole);
       isRoleVerificationRequired = false;
     }
 

@@ -47,6 +47,8 @@ import org.silverpeas.core.util.ServiceProvider;
 import javax.annotation.Resource;
 import javax.sql.DataSource;
 
+import java.time.ZoneId;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -65,17 +67,18 @@ public class PersonalizationServiceTest {
   public static final Operation TABLES_CREATION =
       Operations.sql("CREATE TABLE IF NOT EXISTS Personalization (" +
           "id varchar(100) PRIMARY KEY NOT NULL, languages varchar(100) NULL, " +
+          "zoneId varchar(100) NULL, " +
           "look varchar(50) NULL, personalWSpace varchar(50) NULL, " +
           "thesaurusStatus int NOT NULL, dragAndDropStatus int DEFAULT 1, " +
           "onlineEditingStatus int DEFAULT 1, webdavEditingStatus int DEFAULT 0, " +
           "menuDisplay varchar(50) DEFAULT 'DISABLE')");
   public static final Operation CLEAN_UP = Operations.deleteAllFrom("Personalization");
   public static final Operation USER_PREFERENCE_SET_UP = Operations.insertInto("Personalization")
-      .columns("id", "languages", "look", "personalwspace", "thesaurusstatus", "draganddropstatus",
+      .columns("id", "languages", "zoneId", "look", "personalwspace", "thesaurusstatus", "draganddropstatus",
           "webdaveditingstatus", "menuDisplay")
-      .values("1000", "fr", "Initial", "", 0, 1, 1, "DISABLE")
-      .values("1010", "en", "Silverpeas", "WA26", 0, 1, 1, "ALL")
-      .values("2020", "de", "Silverpeas_V6", "WA26", 1, 0, 1, "BOOKMARKS").build();
+      .values("1000", "fr", "Europe/Paris", "Initial", "", 0, 1, 1, "DISABLE")
+      .values("1010", "en", "UTC", "Silverpeas", "WA26", 0, 1, 1, "ALL")
+      .values("2020", "de", "Europe/Berlin", "Silverpeas_V6", "WA26", 1, 0, 1, "BOOKMARKS").build();
 
   @Before
   public void prepareDataSource() {
@@ -104,8 +107,9 @@ public class PersonalizationServiceTest {
   @Test
   public void testGetUserSettings() throws Exception {
     String userId = "1000";
-    UserPreferences expectedDetail = new UserPreferences(userId, "fr", "Initial", "", false,
-        true, true, UserMenuDisplay.DISABLE);
+    UserPreferences expectedDetail =
+        new UserPreferences(userId, "fr", ZoneId.of("Europe/Paris"), "Initial", "", false, true,
+            true, UserMenuDisplay.DISABLE);
     UserPreferences detail = service.getUserSettings(userId);
     assertThat(detail, notNullValue());
     assertThat(detail, PersonalizationMatcher.matches(expectedDetail));
@@ -113,14 +117,14 @@ public class PersonalizationServiceTest {
     userId = "1010";
     detail = service.getUserSettings(userId);
     assertThat(detail, notNullValue());
-    expectedDetail = new UserPreferences(userId, "en", "Silverpeas", "WA26", false, true, true,
+    expectedDetail = new UserPreferences(userId, "en", ZoneId.of("UTC"), "Silverpeas", "WA26", false, true, true,
         UserMenuDisplay.ALL);
     assertThat(detail, PersonalizationMatcher.matches(expectedDetail));
 
     userId = "5000";
     detail = service.getUserSettings(userId);
     assertThat(detail, notNullValue());
-    expectedDetail = new UserPreferences(userId, "fr", "Initial", "", false, true, true,
+    expectedDetail = new UserPreferences(userId, "fr", ZoneId.of("Europe/Paris"), "Initial", "", false, true, true,
         UserMenuDisplay.DEFAULT);
     assertThat(detail, PersonalizationMatcher.matches(expectedDetail));
   }
@@ -128,8 +132,9 @@ public class PersonalizationServiceTest {
   @Test
   public void testInsertPersonalizeDetail() throws Exception {
     String userId = "1020";
-    UserPreferences expectedDetail = new UserPreferences(userId, "fr", "Test", "WA500", false,
-        false, false, UserMenuDisplay.BOOKMARKS);
+    UserPreferences expectedDetail =
+        new UserPreferences(userId, "fr", ZoneId.of("Europe/Paris"), "Test", "WA500", false, false,
+            false, UserMenuDisplay.BOOKMARKS);
     service.saveUserSettings(expectedDetail);
     UserPreferences detail = service.getUserSettings(userId);
     assertThat(detail, notNullValue());

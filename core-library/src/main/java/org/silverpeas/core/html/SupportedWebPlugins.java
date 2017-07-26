@@ -145,6 +145,14 @@ public enum SupportedWebPlugins {
    */
   TOGGLE,
   /**
+   * Silverpeas plugin to handle tabs
+   */
+  TABS,
+  /**
+   * Silverpeas plugin to handle color picker
+   */
+  COLORPICKER,
+  /**
    * Lightweight slideshow. Easy to use but not only a few features.
    */
   LIGHTSLIDESHOW,

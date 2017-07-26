@@ -154,7 +154,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @Test
   public void lowerAccessRoleSuccess() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
-        onDefaultController().setGreaterUserRole(SilverpeasRole.publisher).defaultRequest()
+        onDefaultController().setHighestUserRole(SilverpeasRole.publisher).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST).changeSuffixPathWith("lowerRoleAccess")
             .perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -168,7 +168,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @Test
   public void lowerAccessRoleWithUserThatHasNotEnoughRights() throws Exception {
     TestResult testResult =
-        onDefaultController().setGreaterUserRole(SilverpeasRole.writer).defaultRequest()
+        onDefaultController().setHighestUserRole(SilverpeasRole.writer).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST).changeSuffixPathWith("lowerRoleAccess")
             .perform();
     verify(testResult.requestContext.getResponse(), times(1))
@@ -191,7 +191,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @Test
   public void lowerRoleAccessRedirectToInternalJspOnError() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
-        onDefaultController().setGreaterUserRole(SilverpeasRole.writer).defaultRequest()
+        onDefaultController().setHighestUserRole(SilverpeasRole.writer).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("lowerRoleAccessRedirectToInternalJspOnError").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -203,7 +203,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @Test
   public void lowerRoleAccessRedirectToInternalOnError() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
-        onDefaultController().setGreaterUserRole(SilverpeasRole.writer).defaultRequest()
+        onDefaultController().setHighestUserRole(SilverpeasRole.writer).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("lowerRoleAccessRedirectToInternalOnError").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -215,7 +215,7 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
   @Test
   public void lowerRoleAccessRedirectToOnError() throws Exception {
     TestResult<TestWebComponentRequestContext> testResult =
-        onDefaultController().setGreaterUserRole(SilverpeasRole.writer).defaultRequest()
+        onDefaultController().setHighestUserRole(SilverpeasRole.writer).defaultRequest()
             .changeHttpMethodWith(HttpMethod.POST)
             .changeSuffixPathWith("lowerRoleAccessRedirectToOnError").perform();
     verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
@@ -355,13 +355,12 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
       onController(MissingNavigationController.class).defaultRequest().perform();
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
-          is("home method must return a Navigation instance or be annotated by one of " +
-              "@RedirectTo... annotations")
+          is("home method must, either return a Navigation instance, either be annotated by " +
+              "@Produces, either be annotated by one of @RedirectTo... annotation")
       );
       throw e;
     }
   }
-
 
   @Test(expected = IllegalArgumentException.class)
   public void twoNavigationsSpecifiedOnHttpMethod() throws Exception {
@@ -369,8 +368,8 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
       onController(TwoNavigationsSpecifiedController.class).defaultRequest().perform();
     } catch (IllegalArgumentException e) {
       assertThat(e.getMessage(),
-          is("home method must, either return a Navigation instance, either be annotated by one " +
-              "of @RedirectTo... annotation")
+          is("home method must, either return a Navigation instance, either be annotated by " +
+              "@Produces, either be annotated by one of @RedirectTo... annotation")
       );
       throw e;
     }
@@ -406,6 +405,18 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
             is("specified path for method method1 already exists for method method2 -> " +
                 "a/b/c/d/resourceId-{anResourceId:[0-9]+}-test"));
       }
+      throw e;
+    }
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void notHandledProducesSpecifiedOnHttpMethod() throws Exception {
+    try {
+      onController(NotHandledProducesSpecifiedController.class).defaultRequest().perform();
+    } catch (IllegalArgumentException e) {
+      assertThat(e.getMessage(),
+          is("@Produces into WebComponentController can just handle application/json data for now" +
+              " (method producesNotJson)"));
       throw e;
     }
   }
@@ -584,6 +595,39 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
     Map<String, String> variables = testResult.requestContext.getPathVariables();
     assertThat(variables, notNullValue());
     assertThat(variables.size(), is(0));
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void producesByReturningEntity() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("/produces/entity")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyNoForbiddenUserAction(testResult);
+    verifyNoNavigation(testResult);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void producesByReturningString() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("/produces/string")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyNoForbiddenUserAction(testResult);
+    verifyNoNavigation(testResult);
+  }
+
+  @SuppressWarnings("unchecked")
+  @Test
+  public void producesByHandlingResponseManually() throws Exception {
+    TestResult testResult =
+        onDefaultController().defaultRequest().changeSuffixPathWith("/produces/manually")
+            .perform();
+    verify(testResult.requestContext.getResponse(), times(0)).sendError(anyInt());
+    verifyNoForbiddenUserAction(testResult);
+    verifyNoNavigation(testResult);
   }
 
   @SuppressWarnings("unchecked")

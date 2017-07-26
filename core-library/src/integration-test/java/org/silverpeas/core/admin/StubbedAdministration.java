@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.PasteDetail;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
@@ -173,12 +174,18 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
-  public Map<String, WAComponent> getAllComponents() {
+  public Map<String, WAComponent> getAllWAComponents() {
     return null;
   }
 
   @Override
   public ComponentInst getComponentInst(final String sClientComponentId) throws AdminException {
+    return null;
+  }
+
+  @Override
+  public SilverpeasComponentInstance getComponentInstance(final String componentInstanceIdentifier)
+      throws AdminException {
     return null;
   }
 

@@ -27,11 +27,12 @@ import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.Exporter;
 import org.silverpeas.core.importexport.NoDataToExportException;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.Writer;
+import java.util.function.Supplier;
 
 /**
  * An exporter of calendar events into a file in the iCal format.
@@ -39,22 +40,35 @@ import java.io.Writer;
 @Singleton
 public class ICalExporter implements Exporter<ExportableCalendar> {
 
+  private final ICalCodec iCalCodec;
+
   @Inject
-  private ICalCodec iCalCodec;
+  private ICalExporter(final ICalCodec iCalCodec) {
+    this.iCalCodec = iCalCodec;
+  }
+
+  /**
+   * Gets the iCalCodec used to encode calendar events in iCal formatted text.
+   * @return an iCal codec.
+   */
+  protected ICalCodec getICalCodec() {
+    return iCalCodec;
+  }
 
   /**
    * Exports the specified events with a writer in the iCal format. If no events are specified, then
    * a NoDataToExportException is thrown as no export can be done. The writer with which the events
    * have to be exported is provided by the specified export descriptor.
-   * @param calendar the calendar to export.
+   * @param supplier a supplier of the calendar to export.
    * @param descriptor the export descriptor in which is passed the writer with which the events
    * should be exported.
    * @throws ExportException if the export fails (an IO issue occurs with the writer, no events to
    * export, ...).
    */
   @Override
-  public void export(ExportDescriptor descriptor, ExportableCalendar calendar)
-      throws ExportException {
+  public void exports(final ExportDescriptor descriptor,
+      final Supplier<ExportableCalendar> supplier) throws ExportException {
+    ExportableCalendar calendar = supplier.get();
     if (calendar.isEmpty()) {
       throw new NoDataToExportException("To export to iCal, the calendar should have at least one"
           + " event");
@@ -70,23 +84,10 @@ public class ICalExporter implements Exporter<ExportableCalendar> {
           writer.close();
         }
       } catch (Exception ex) {
-        SilverTrace.error("export.ical", getClass().getSimpleName() + ".exportInICal()",
-            "root.EX_NO_MESSAGES", ex);
+        SilverLogger.getLogger(this).error(e);
       }
-      SilverTrace.error("export.ical", getClass().getSimpleName() + ".exportInICal()",
-          "roor.EX_NO_MESSAGES", e);
+      SilverLogger.getLogger(this).error(e);
       throw new ExportException(e.getMessage(), e);
     }
-  }
-
-  /**
-   * Gets the iCalCodec used to encode calendar events in iCal formatted text.
-   * @return an iCal codec.
-   */
-  protected ICalCodec getICalCodec() {
-    return iCalCodec;
-  }
-
-  private ICalExporter() {
   }
 }

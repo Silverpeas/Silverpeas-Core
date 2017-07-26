@@ -25,13 +25,17 @@ package org.silverpeas.core.web.calendar;
 
 import org.silverpeas.core.util.DateUtil;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.Calendar;
 import java.util.Date;
 
 /**
- * User: Yohann Chastagnier
- * Date: 23/04/13
+ * @author Yohann Chastagnier
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
 public class CalendarDateTime extends CalendarDay {
 
   private int hours;
@@ -54,40 +58,40 @@ public class CalendarDateTime extends CalendarDay {
   }
 
   /**
-   * Gets the hours of the date time (from 0 to 23).
-   * @return the hours of the date time.
+   * Gets the hours of the datetime (from 0 to 23).
+   * @return the hours of the datetime.
    */
   public int getHours() {
     return hours;
   }
 
   /**
-   * Gets the minutes of the date time (from 0 to 59).
-   * @return the minutes of the date time.
+   * Gets the minutes of the datetime (from 0 to 59).
+   * @return the minutes of the datetime.
    */
   public int getMinutes() {
     return minutes;
   }
 
   /**
-   * Gets the seconds of the date time (from 0 to 59).
-   * @return the seconds of the date time.
+   * Gets the seconds of the datetime (from 0 to 59).
+   * @return the seconds of the datetime.
    */
   public int getSeconds() {
     return seconds;
   }
 
   /**
-   * Gets the milliseconds of the date time (from 0 to 999).
-   * @return the milliseconds of the date time.
+   * Gets the milliseconds of the datetime (from 0 to 999).
+   * @return the milliseconds of the datetime.
    */
   public int getMilliseconds() {
     return milliseconds;
   }
 
   /**
-   * Gets this date time as a Date instance.
-   * @return the Date representation of this date time.
+   * Gets this datetime as a Date instance.
+   * @return the Date representation of this datetime.
    */
   public Date getDate() {
     Calendar calendar = Calendar.getInstance();

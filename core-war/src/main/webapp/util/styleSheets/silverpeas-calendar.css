@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
@@ -21,6 +21,57 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+.silverpeas-calendar-header .sousNavBulle {
+  padding:1em;
+  position:relative;
+  min-height:30px;
+}
+
+.silverpeas-calendar-header .sousNavBulle #calendar-timezone {
+  position:absolute;
+  top:1em;
+  right:1em;
+  color:#666;
+  background:transparent url(../icons/time-zone.png) 0 0 no-repeat;
+  line-height:24px;
+  height:28px;
+  padding-left:34px;
+}
+
+.silverpeas-calendar-header .btn_navigation.previous {
+  margin-right: 0;
+}
+
+.silverpeas-calendar-header .btn_navigation img {
+  height:10px;
+  vertical-align:middle;
+  padding-bottom: 0.15em;
+}
+
+.silverpeas-calendar-header .period-label {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+  width: 22em;
+  height: 1.6em;
+  line-height: 1.6em;
+  background: #fff url(../../util/icons/calendar_1.png) 0.105em 0.127em no-repeat;
+  padding-left: 18px;
+}
+
+.silverpeas-calendar-header .period-label span {
+  display: inline-block;
+  width: 21.5em;
+  padding-left: 0;
+  text-align: center;
+}
+
+.silverpeas-calendar-header input.reference-day {
+  width: 0;
+  padding: 0;
+  margin: 0;
+}
+
 .fc-widget-header {
   font-size:11px;
   color:#666;
@@ -40,8 +91,21 @@
   border-style:solid;
   color: #fff;
   background-color: #536ca6;
+  position:relative;
 }
 
+/* je prevois pour les evenements important */ 
+.fc-event.important::after{
+  content:' ';
+  background:transparent url(../icons/event-important.png) 0 0 no-repeat;
+  display:block;
+  width:25px;
+  height:20px;
+  position:absolute;
+  top: -4px;
+  right: -9px;
+  z-index: 10;
+}
 .fc-day-grid .fc-other-month {
   background-color:#ECECEC;
 }
@@ -49,4 +113,468 @@
 .fc-day-grid .fc-event-time {
   font-weight: normal;
   padding-right: 2px;
+}
+
+.fc-week-number {
+  background-color:#e2e2e2;
+}
+
+.fc-row.fc-rigid,
+.fc-time-grid-event {
+  overflow:inherit;
+}
+
+/**
+ * AngularJS component templates
+ */
+
+.silverpeas-calendar-container {
+  clear: left;
+}
+
+silverpeas-calendar-list > * {
+  float: left;
+}
+
+silverpeas-calendar-list ul {
+  display: inline-flex;
+  margin: 0.25em 0 0.15em 0;
+  padding: 0;
+}
+
+silverpeas-calendar-list ul li {
+  list-style: none;
+  padding: 2px;
+  margin-right: 10px;
+}
+
+silverpeas-calendar-list ul li .synchronized {
+  font-style: italic;
+}
+
+.silverpeas-calendar-management-import-popin .champs {
+  padding-top: 5px;
+  display: inline-flex;
+  height: auto;
+}
+
+.silverpeas-calendar-list-item {
+  display: inline-flex;
+  vertical-align: middle;
+  position: relative;
+  padding-right: 2em;
+  margin-right: 1em;
+}
+
+.silverpeas-calendar-list-item .check-visibility {
+  width: 13px;
+  height: 13px;
+  position: absolute;
+  top: 18px;
+  left: 18px;
+  text-indent: -10em;
+  overflow: hidden;
+  background: transparent url(../icons/checkbox-pack.png) 0 -13px no-repeat;
+}
+
+.silverpeas-calendar-list-item.unselected .check-visibility {
+  background: transparent url(../icons/checkbox-pack.png) 0 0 no-repeat;
+}
+
+.silverpeas-calendar-list-item .show-menu {
+  width: 13px;
+  height: 13px;
+  position: absolute;
+  top: 4px;
+  right: 0;
+  text-indent: -10em;
+  overflow: hidden;
+  background: transparent url(../icons/arrow/arrowBottom.gif) 0 0 no-repeat;
+  cursor: pointer;
+}
+
+.silverpeas-calendar-list-item .action.delete,
+.silverpeas-calendar-list-item .action.modify {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  text-indent: -13px;
+  overflow: hidden;
+  background: transparent url(../icons/cross.png) 0 0 no-repeat;
+  cursor: pointer;
+}
+
+.silverpeas-calendar-list-item .item-title {
+  display: inline-block;
+}
+
+.silverpeas-calendar-list-item .item-title div:nth-child(2) {
+  display: none;
+}
+
+.silverpeas-calendar-list-item .item-detail .remove-calendar {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  text-indent: -20em;
+  overflow: hidden;
+  background: transparent url(../icons/cross.png) 0 0 no-repeat;
+  cursor: pointer;
+}
+
+.silverpeas-calendar-list-item .action.modify {
+  background: transparent url(../icons/update.gif) 0 0 no-repeat;
+
+}
+
+.silverpeas-calendar-list-item div span,
+.silverpeas-calendar-list-item div a {
+  vertical-align: middle;
+}
+
+.silverpeas-calendar-list-item.unselected silverpeas-color-picker {
+  opacity: 0.2;
+}
+
+.silverpeas-calendar-list-item.unselected .ng-binding {
+  opacity: 0.7;
+}
+
+.silverpeas-calendar-list-item-menu ul {
+  padding: 0px;
+  margin: 0;
+}
+
+.silverpeas-calendar-list-item-menu li {
+  list-style: none;
+  margin: 0;
+  padding: 0.5em 0;
+}
+
+.silverpeas-calendar-list-item-menu li a {
+  display: block;
+  padding: 0.5em 1em;
+}
+
+.silverpeas-calendar-list-item-menu li a:hover {
+  background-color: #eee;
+}
+
+silverpeas-calendar-event-occurrence-tip-actions .sp_buttonPane {
+  display: inline-flex;
+}
+
+silverpeas-calendar-event-occurrence-tip-actions .goto-first-occurrence {
+  padding: 0;
+  margin: -10px 0 0 0;
+  height: 5px;
+}
+
+.goto-previous-occurrence {
+  position: absolute;
+  top: -2em;
+  left: 0;
+  height: 1.6em;
+  width: 23.25em;
+  margin: 0;
+  padding: 0;
+}
+
+.goto-previous-occurrence span {
+  height: 100%
+}
+
+.goto-previous-occurrence span,
+.goto-first-occurrence span,
+.goto-previous-occurrence a,
+.goto-first-occurrence a {
+  font-size: 0.75em;
+  font-weight: bold;
+  color: #666;
+  text-decoration: none;
+  border: none;
+}
+
+silverpeas-calendar-event-occurrence-tip .occurrence-description {
+  max-height: 200px;
+  overflow: auto;
+  display: block;
+  font-size: 90%;
+}
+
+silverpeas-calendar-event-occurrence-tip .occurrence-location {
+  text-align: right;
+  margin-bottom: 1em;
+}
+
+silverpeas-calendar-event-occurrence-tip .occurrence-location span {
+  background: #f7f7f7 url(../icons/marker.gif) 4px 8px no-repeat;
+  border-radius: 4px;
+  border: 1px solid #ebebeb;
+  display: inline-block;
+  padding: 4px 8px 4px 22px;
+  min-height: 16px;
+  font-size: 90%;
+}
+
+silverpeas-calendar-event-view .field,
+silverpeas-calendar-event-form .field {
+  width: 98%;
+  clear: both;
+}
+
+silverpeas-calendar-event-form .champs label {
+  font-weight: normal;
+}
+
+silverpeas-calendar-event-view-main legend,
+silverpeas-calendar-event-form-main legend {
+  background: transparent url(../../util/icons/mini_publi.gif) 11px 0px no-repeat;
+}
+
+silverpeas-calendar-event-view-recurrence legend,
+silverpeas-calendar-event-form-recurrence legend {
+  background: transparent url(../../util/icons/periodicity.gif) 11px 0px no-repeat;
+}
+
+silverpeas-calendar-event-form-recurrence .champs label {
+  font-weight: normal;
+  display: inline;
+}
+
+silverpeas-calendar-event-form-recurrence input[name="interval"],
+silverpeas-calendar-event-form-recurrence input[name="count"] {
+  width: 30px;
+}
+
+silverpeas-calendar-event-form-recurrence .month-rule-area {
+  padding-top: 5px;
+  display: inline-flex;
+}
+
+.silverpeas-calendar-event-management-update-popin ul li,
+.silverpeas-calendar-event-management-attendee-answer-popin ul li,
+.silverpeas-calendar-event-management-delete-popin ul li {
+  list-style: none;
+  padding: 2px;
+  margin-right: 10px;
+}
+
+.silverpeas-calendar-event-management-update-popin label,
+.silverpeas-calendar-event-management-attendee-answer-popin label,
+.silverpeas-calendar-event-management-delete-popin label {
+  font-weight: normal;
+}
+
+silverpeas-calendar-event-occurrence-list ul {
+  margin: 0 !important;
+  padding: 0 !important;
+  list-style: none none !important;
+}
+
+silverpeas-calendar-event-occurrence-list .day-events {
+  clear: both;
+  position: relative;
+  min-height: 50px;
+  padding: 3px 0 3px 58px;
+  background: none repeat scroll 0 0 #F0F0F0;
+  border-bottom: 1px solid #F0F0F0;
+  margin: 0;
+}
+
+silverpeas-calendar-event-occurrence-list .short-date {
+  display: inline-flex;
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  background: transparent url("../icons/calendar/bgCalendar.png") top left no-repeat;
+  height: 48px;
+  width: 47px;
+  color: #33529b;
+  line-height: 54px;
+  font-size: 1.2em;
+  text-align: center;
+  font-weight: bold;
+}
+
+silverpeas-calendar-event-occurrence-list .high-priority .short-date {
+  background-image: url("../icons/calendar/bgCalendarHight.png");
+}
+
+.portlet silverpeas-calendar-event-occurrence-list .short-date {
+  background: transparent url("../icons/calendar/bgCalendar-portlet.png") top left no-repeat;
+}
+
+.portlet silverpeas-calendar-event-occurrence-list .high-priority .short-date {
+  background-image: url("../icons/calendar/bgCalendarHight-portlet.png");
+}
+
+silverpeas-calendar-event-occurrence-list .short-date .day-in-month {
+  padding-left: 2px;
+  font-size: 1.3em;
+  color: #333;
+}
+
+silverpeas-calendar-event-occurrence-list .short-date .short-date-separator,
+silverpeas-calendar-event-occurrence-list .short-date .month-number {
+  padding-top: 2px
+}
+
+silverpeas-calendar-event-occurrence-list .long-date {
+  color:#304f98;
+  font-weight:bold;
+  text-transform: capitalize;
+}
+
+silverpeas-calendar-event-occurrence-list-item {
+  margin-bottom: 2px;
+}
+
+silverpeas-calendar-event-occurrence-list-item:last-child {
+  margin-bottom: 0;
+}
+
+silverpeas-calendar-event-occurrence-list-item .occurrence-name {
+  font-size: 1em;
+  margin-bottom: 2px;
+}
+
+silverpeas-calendar-event-occurrence-list-item .occurrence-name a {
+  font-weight: bold;
+  padding: 0;
+  margin: 0 0 10px 0;
+  color: #444443;
+}
+
+silverpeas-calendar-event-occurrence-list-item .occurrence-name .start-hour {
+  color: #666;
+}
+
+silverpeas-calendar-event-occurrence-list-item .occurrence-extra {
+  background-color: #FFFFFF;
+  padding: 1px 0;
+  border: 1px solid #CDCDCD;
+  border-radius: 15px;
+  display: table;
+  width: 98%;
+}
+
+silverpeas-calendar-event-occurrence-list-item .occurrence-extra div {
+  display: table-cell;
+  border: 0;
+  min-height: 16px;
+  vertical-align: middle;
+  text-align: left;
+  width: 90%;
+}
+
+silverpeas-calendar-event-occurrence-list-item .occurrence-extra div.bloc {
+  padding: 0 8px 0 27px;
+  font-size: 100%;
+  color: #333;
+  display: inline-block;
+  width: auto;
+  text-align: left;
+  background: transparent url('/silverpeas/util/icons/marker.gif') 6px center no-repeat;
+}
+
+/*
+jQuery plugin adjustments
+ */
+
+.ui-dialog-content .field > * {
+  padding: 5px 0;
+}
+
+.ui-dialog-content .field {
+  margin-bottom: 1em;
+  min-width: 250px;
+}
+
+/*
+SCREEN or PRINT specifics
+ */
+
+@media print {
+
+  #browseBar {
+    margin: 0;
+    padding: 0;
+    font-size: 6pt !important;
+  }
+
+  #browseBar #breadCrumb a:link {
+    font-size: 8pt !important;
+  }
+
+  .hautFrame {
+    border-radius: 0;
+    padding: 0;
+  }
+
+  .cellOperation,
+  .sp_goToTop,
+  #currentScope > *,
+  #menubar-creation-actions,
+  .silverpeas-calendar-list-item .check-visibility,
+  .silverpeas-calendar-list-item .show-menu,
+  .silverpeas-calendar-list-item.unselected {
+    display: none !important;
+  }
+
+  #currentScope .period-label {
+    background: none !important;
+    font-size: 8pt !important;
+    display: block !important;
+  }
+
+  .silverpeas-calendar-list-item .item-title a {
+    font-size: 8pt !important;
+  }
+
+  .silverpeas-calendar-header .sousNavBulle{
+    margin: 0;
+    padding: 0 0 0.3em 0;
+    min-height: inherit;
+    border-bottom: 1px solid #ccc;
+    background: none;
+  }
+
+  .silverpeas-calendar-header .sousNavBulle #calendar-timezone {
+    background: none  ;
+    top: 0;
+    line-height: inherit;
+    font-size: 8pt !important;
+    height: auto;
+  }
+
+  .fc-event {
+    color: #555;
+    font-weight: normal;
+    font-size: 8pt !important;
+    background-color: #fff !important;
+  }
+
+  .fc-event.important {
+    color: #000;
+    font-weight: normal;
+    font-size: 8pt !important;
+  }
+
+  .fc-event.important::after {
+    display: none;
+  }
+
+  .fc-day-grid-event .fc-content span {
+    font-size: 8pt !important;
+  }
+
+  .fc-day-grid-event .fc-time {
+    font-weight: normal;
+  }
+
+  .fc-scroller {
+    overflow: hidden !important;
+    height: auto !important;
+  }
 }

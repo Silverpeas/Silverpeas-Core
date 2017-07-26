@@ -24,14 +24,15 @@
 package org.silverpeas.core.io.upload;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 
 /**
  * This manager permits to retrieve from {@link HttpServletRequest} a collection of
@@ -46,27 +47,37 @@ public class FileUploadManager {
 
   /**
    * Retrieves from {@link HttpServletRequest} a collection of {@link UploadedFile}
-   *
-   * @param request
-   * @param uploader
-   * @return
    */
   @SuppressWarnings("unchecked")
   public static Collection<UploadedFile> getUploadedFiles(HttpServletRequest request,
       final User uploader) {
-    Collection<UploadedFile> uploadedFiles = new ArrayList<UploadedFile>();
+    Map<String, String> parameters = new HashMap<>();
     if (request != null) {
       Enumeration<String> attributeNames = request.getParameterNames();
       String attributeName;
       while (attributeNames.hasMoreElements()) {
         attributeName = attributeNames.nextElement();
-        if (attributeName.startsWith(UPLOADED_FILE_PREFIX_ID)) {
+        parameters.put(attributeName, request.getParameter(attributeName));
+      }
+    }
+    return getUploadedFiles(parameters, uploader);
+  }
+
+  /**
+   * Retrieves from {@link HttpServletRequest} a collection of {@link UploadedFile}
+   */
+  @SuppressWarnings("unchecked")
+  public static Collection<UploadedFile> getUploadedFiles(Map<String, String> parameters,
+      final User uploader) {
+    Collection<UploadedFile> uploadedFiles = new ArrayList<>();
+    if (parameters != null) {
+      parameters.forEach((name, value) -> {
+        if (name.startsWith(UPLOADED_FILE_PREFIX_ID)) {
           // If an attribute name starts with {@link UPLOADED_FILE_PREFIX_ID} an {@link
           // UploadedFile} is performed.
-          uploadedFiles.add(
-              UploadedFile.from(request, request.getParameter(attributeName), uploader));
+          uploadedFiles.add(UploadedFile.from(parameters, value, uploader));
         }
-      }
+      });
 
       // Security : unexisting uploaded files are removed from the result.
       uploadedFiles.remove(null);
@@ -75,9 +86,9 @@ public class FileUploadManager {
         UploadedFile uploadedFile = it.next();
         if (!uploadedFile.getFile().exists()) {
           it.remove();
-          SilverTrace.warn("upload", "FileUploadManager.getUploadedFiles", "EX_FILE_DOES_NOT_EXIST",
-              "UploadSessionId: " + uploadedFile.getUploadSession().getId() + " - FileName: " +
-                  uploadedFile.getFile().getName());
+          SilverLogger.getLogger(FileUploadManager.class)
+              .warn("file does not exist (UploadSessionId={0}, FileName={1})",
+                  uploadedFile.getUploadSession().getId(), uploadedFile.getFile().getName());
         }
       }
     }

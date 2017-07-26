@@ -31,12 +31,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.event.Attendee;
-import org.silverpeas.core.calendar.event.CalendarEvent;
-import org.silverpeas.core.calendar.event.InternalAttendee;
-import org.silverpeas.core.calendar.event.notification.AttendeeLifeCycleEvent;
-import org.silverpeas.core.calendar.event.notification.AttendeeNotifier;
-import org.silverpeas.core.calendar.event.notification.CalendarEventLifeCycleEvent;
+import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEvent;
+import org.silverpeas.core.calendar.notification.AttendeeNotifier;
+import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEvent;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.test.CalendarWarBuilder;
@@ -44,11 +41,12 @@ import org.silverpeas.core.test.CalendarWarBuilder;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.time.LocalDate;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -73,6 +71,12 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
   private static final String EVENT_TITLE = "an event";
   private static final String EVENT_DESCRIPTION = "a description";
   private static final String USER_ID = "1";
+
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
+  }
 
   @Inject
   private CalendarEventNotificationListener eventListener;
@@ -145,14 +149,17 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
     assertThat(eventListener.hasBeenNotified(), is(true));
     assertThat(eventListener.getRecievedNotifAction(), is(NotifAction.UPDATE));
 
-    assertThat(attendeeListener.hasBeenNotified(), is(false));
+    // Modifying recurrence reset the participation of attendees
+    assertThat(attendeeListener.hasBeenNotified(), is(true));
+    assertThat(attendeeListener.getRecievedNotifAction(),
+        contains(NotifAction.UPDATE, NotifAction.UPDATE));
   }
 
   @Test
   public void addingAnAttendeeSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     CalendarEvent event = calendar.event(EVENT_ID).get();
-    event.getAttendees().add(InternalAttendee.fromUser(User.getById("2")).to(event));
+    event.withAttendee(User.getById("2"));
     event.update();
 
     assertThat(eventListener.hasBeenNotified(), is(true));

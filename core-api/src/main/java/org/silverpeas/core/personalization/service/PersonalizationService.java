@@ -28,13 +28,13 @@ import org.silverpeas.core.personalization.UserPreferences;
 
 public interface PersonalizationService {
 
-  public final String DEFAULT_LOOK = "Initial";
+  String DEFAULT_LOOK = "Initial";
 
-  public final UserMenuDisplay DEFAULT_MENU_DISPLAY_MODE = UserMenuDisplay.DEFAULT;
+  UserMenuDisplay DEFAULT_MENU_DISPLAY_MODE = UserMenuDisplay.DEFAULT;
 
-  public void saveUserSettings(UserPreferences userPreferences);
+  void saveUserSettings(UserPreferences userPreferences);
 
-  public void resetDefaultSpace(String spaceId);
+  void resetDefaultSpace(String spaceId);
 
-  public UserPreferences getUserSettings(String userId);
+  UserPreferences getUserSettings(String userId);
 }

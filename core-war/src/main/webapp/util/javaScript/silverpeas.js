@@ -539,6 +539,61 @@ if (typeof SilverpeasClass === 'undefined') {
     return child;
   };
 }
+if (!window.SilverpeasCache) {
+  (function() {
+
+    function __clearCache(storage, name) {
+      storage.removeItem(name);
+    }
+
+    function __getCache(storage, name) {
+      var cache = storage.getItem(name);
+      if (!cache) {
+        cache = {};
+        __setCache(storage, name, cache);
+      } else {
+        cache = JSON.parse(cache);
+      }
+      return cache;
+    }
+
+    function __setCache(storage, name, cache) {
+      storage.setItem(name, JSON.stringify(cache));
+    }
+
+    window.SilverpeasCache = SilverpeasClass.extend({
+      initialize : function(cacheName) {
+        this.cacheName = cacheName;
+      },
+      getCacheStorage : function() {
+        return localStorage;
+      },
+      clear : function() {
+        __clearCache(this.getCacheStorage(), this.cacheName);
+      },
+      put : function(key, value) {
+        var cache = __getCache(this.getCacheStorage(), this.cacheName);
+        cache[key] = value;
+        __setCache(this.getCacheStorage(), this.cacheName, cache);
+      },
+      get : function(key) {
+        var cache = __getCache(this.getCacheStorage(), this.cacheName);
+        return cache[key];
+      },
+      remove : function(key) {
+        var cache = __getCache(this.getCacheStorage(), this.cacheName);
+        delete cache[key];
+        __setCache(this.getCacheStorage(), this.cacheName, cache);
+      }
+    });
+
+    window.SilverpeasSessionCache = SilverpeasCache.extend({
+      getCacheStorage : function() {
+        return sessionStorage;
+      }
+    });
+  })();
+}
 
 if (!window.SilverpeasAjaxConfig) {
   SilverpeasRequestConfig = SilverpeasClass.extend({
@@ -961,6 +1016,126 @@ if (typeof window.sp === 'undefined') {
         return Promise.reject(data);
       }
     },
+    moment : {
+      /**
+       * Creates a new moment by taking of offset if any.
+       * @param date
+       * @param format
+       */
+      make : function(date, format) {
+        if (typeof date === 'string' && !format) {
+          return date.length === 10 ? moment(date, 'YYYY-MM-DD') : moment.parseZone(date);
+        }
+        return moment.apply(undefined, arguments);
+      },
+      /**
+       * Gets the offset ('-01:00' for example) of the given zone id.
+       * @param zoneId the zone id ('Europe/Berlin' for example)
+       */
+      getOffsetFromZoneId : function(zoneId) {
+        return moment().tz(zoneId).format('Z');
+      },
+      /**
+       * Sets the given date at the given timezone.
+       * @param date a data like the one given to the moment constructor
+       * @param zoneId the zone id ('Europe/Berlin' for example)
+       */
+      atZoneIdSameInstant : function(date, zoneId) {
+        return sp.moment.make(date).tz(zoneId);
+      },
+      /**
+       * Sets the given date at the given timezone without changing the time.
+       * @param date a data like the one given to the moment constructor
+       * @param zoneId the zone id ('Europe/Berlin' for example)
+       */
+      atZoneIdSimilarLocal : function(date, zoneId) {
+        return sp.moment.make(date).utcOffset(sp.moment.getOffsetFromZoneId(zoneId), true);
+      },
+      /**
+       * Adjusts the the time minutes in order to get a rounded time.
+       * @param date a data like the one given to the moment constructor.
+       * @param hasToCurrentTime true to set current time, false otherwise
+       * @private
+       */
+      adjustTimeMinutes : function(date, hasToCurrentTime) {
+        var myMoment = sp.moment.make(date);
+        if (hasToCurrentTime) {
+          var $timeToSet = moment();
+          myMoment.hour($timeToSet.hour());
+          myMoment.minute($timeToSet.minute());
+        }
+        var minutes = myMoment.minutes();
+        var minutesToAdjust = minutes ? minutes % 10 : 0;
+        var offset = minutesToAdjust < 5 ? 0 : 10;
+        return myMoment.add((offset - minutesToAdjust), 'm');
+      },
+      /**
+       * Gets the nth day of month from the given moment in order to display it as a date.
+       * @param date a data like the one given to the moment constructor.
+       * @private
+       */
+      nthDayOfMonth : function(date) {
+        var dayInMonth = sp.moment.make(date).date();
+        return Math.ceil(dayInMonth / 7);
+      },
+      /**
+       * Formats the given moment in order to display it as a date.
+       * @param date a data like the one given to the moment constructor.
+       * @private
+       */
+      displayAsDayDate : function(date) {
+        return sp.moment.make(date).format('LLLL').replaceAll(' [0-9]+:[0-9]+','');
+      },
+      /**
+       * Formats the given moment in order to display it as a date.
+       * @param date a data like the one given to the moment constructor.
+       * @private
+       */
+      displayAsDate : function(date) {
+        return sp.moment.make(date).format('L');
+      },
+      /**
+       * Formats the given moment in order to display it as a time.
+       * @param time a data like the one given to the moment constructor.
+       * @private
+       */
+      displayAsTime : function(time) {
+        return moment.parseZone(time).format('HH:mm');
+      },
+      /**
+       * Formats the given moment in order to display it as a date time.
+       * @param date a data like the one given to the moment constructor.
+       * @private
+       */
+      displayAsDateTime : function(date) {
+        return sp.moment.displayAsDate(date) + sp.moment.make(date).format('LT');
+      },
+      /**
+       * Replaces from the given text date or date time which are specified into an ISO format.
+       * Two kinds of replacement are performed :
+       * - "${[ISO string date],date}" is replaced by a readable date
+       * - "${[ISO string date],datetime}" is replaced by a readable date and time
+       * @param text
+       * @returns {*}
+       */
+      formatText : function(text) {
+        var formattedText = text;
+        var dateOrDateTimeRegExp = /\$\{([^,]+),date(time|)}/g;
+        var match = dateOrDateTimeRegExp.exec(text);
+        while (match) {
+          var toReplace = match[0];
+          var temporal = match[1];
+          var isTime = match[2];
+          if (isTime) {
+            formattedText = formattedText.replace(toReplace, sp.moment.displayAsDateTime(temporal));
+          } else {
+            formattedText = formattedText.replace(toReplace, sp.moment.displayAsDate(temporal));
+          }
+          match = dateOrDateTimeRegExp.exec(text);
+        }
+        return formattedText;
+      }
+    },
     formConfig : function(url) {
       return new SilverpeasFormConfig(url);
     },
@@ -1008,6 +1183,17 @@ if (typeof window.sp === 'undefined') {
         }
       });
       return sp.promise.resolveDirectlyWith(html);
+    },
+    navigation : {
+      previousNextOn : function(target, onPreviousOrNext) {
+        var $document = jQuery(document);
+        Mousetrap.bind('left', function() {
+          onPreviousOrNext(true);
+        });
+        Mousetrap.bind('right', function() {
+          onPreviousOrNext(false);
+        });
+      }
     },
     selection : {
       newCheckboxMonitor : function(cssSelector) {

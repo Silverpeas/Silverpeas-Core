@@ -21,10 +21,12 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.stratelia.webactiv;
+package org.silverpeas.core.admin.user;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import java.util.EnumSet;
 
@@ -36,6 +38,9 @@ import static org.hamcrest.Matchers.*;
  * Date: 17/12/13
  */
 public class SilverpeasRoleTest {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void fromOneRoleAsString() {
@@ -162,11 +167,11 @@ public class SilverpeasRoleTest {
   }
 
   @Test
-  public void getGreaterFrom() {
-    assertThat(SilverpeasRole.getGreaterFrom(), nullValue());
-    assertThat(SilverpeasRole.getGreaterFrom(SilverpeasRole.writer, SilverpeasRole.admin),
+  public void getHighestFrom() {
+    assertThat(SilverpeasRole.getHighestFrom(), nullValue());
+    assertThat(SilverpeasRole.getHighestFrom(SilverpeasRole.writer, SilverpeasRole.admin),
         is(SilverpeasRole.admin));
-    assertThat(SilverpeasRole.getGreaterFrom(SilverpeasRole.writer, SilverpeasRole.writer),
+    assertThat(SilverpeasRole.getHighestFrom(SilverpeasRole.writer, SilverpeasRole.writer),
         is(SilverpeasRole.writer));
   }
 }

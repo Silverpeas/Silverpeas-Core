@@ -65,12 +65,29 @@ public class RequestParameterDecoderTest {
       public Object answer(final InvocationOnMock invocation) throws Throwable {
         String parameterName = (String) invocation.getArguments()[0];
         if (StringUtil.isDefined(parameterName)) {
-          if (parameterName.equals("aString")) {
-            return "&lt;a&gt;aStringValue&lt;/a&gt;";
-          } else if (parameterName.equals("aStringToUnescape")) {
-            return "&lt;a&gt;aStringValueToUnescape&lt;/a&gt;";
-          } else if (parameterName.equals("anUri")) {
-            return "/an/uri/";
+          switch (parameterName) {
+            case "aString":
+              return "&lt;a&gt;aStringValue&lt;/a&gt;";
+            case "aStringToUnescape":
+              return "&lt;a&gt;aStringValueToUnescape&lt;/a&gt;";
+            case "anUri":
+              return "/an/uri/";
+            case "anOffsetDateTime":
+              return "2009-01-02T23:54:26Z";
+            case "anInteger":
+              return "1";
+            case "anIntegerFromAnnotation":
+              return "2";
+            case "aLongFromAnnotation":
+              return "20";
+            case "aLong":
+              return "10";
+            case "aBoolean":
+              return "true";
+            case "aBooleanFromAnnotation":
+              return "false";
+            case "anEnum":
+              return EnumWithoutCreationAnnotation.VALUE_A.name();
           }
         }
         return null;
@@ -94,48 +111,6 @@ public class RequestParameterDecoderTest {
         return null;
       }
     });
-    when(httpRequestMock.getParameterAsInteger(anyString())).then(new Answer<Object>() {
-      @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
-        String parameterName = (String) invocation.getArguments()[0];
-        if (StringUtil.isDefined(parameterName)) {
-          if (parameterName.equals("anInteger")) {
-            return 1;
-          } else if (parameterName.equals("anIntegerFromAnnotation")) {
-            return 2;
-          }
-        }
-        return null;
-      }
-    });
-    when(httpRequestMock.getParameterAsLong(anyString())).then(new Answer<Object>() {
-      @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
-        String parameterName = (String) invocation.getArguments()[0];
-        if (StringUtil.isDefined(parameterName)) {
-          if (parameterName.equals("aLongFromAnnotation")) {
-            return 20L;
-          } else if (parameterName.equals("aLong")) {
-            return 10L;
-          }
-        }
-        return null;
-      }
-    });
-    when(httpRequestMock.getParameterAsBoolean(anyString())).then(new Answer<Object>() {
-      @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
-        String parameterName = (String) invocation.getArguments()[0];
-        if (StringUtil.isDefined(parameterName)) {
-          if (parameterName.equals("aBoolean")) {
-            return true;
-          } else if (parameterName.equals("aBooleanFromAnnotation")) {
-            return false;
-          }
-        }
-        return null;
-      }
-    });
     when(httpRequestMock.getParameterAsDate(anyString())).then(new Answer<Object>() {
       @Override
       public Object answer(final InvocationOnMock invocation) throws Throwable {
@@ -148,14 +123,16 @@ public class RequestParameterDecoderTest {
         return null;
       }
     });
-    when(httpRequestMock.getParameterAsEnum(anyString(), any(Class.class))).then(
-        new Answer<Object>() {
+    when(httpRequestMock.getParameterValues(anyString())).then(
+        new Answer<String[]>() {
           @Override
-          public Object answer(final InvocationOnMock invocation) throws Throwable {
+          public String[] answer(final InvocationOnMock invocation) throws Throwable {
             String parameterName = (String) invocation.getArguments()[0];
             if (StringUtil.isDefined(parameterName)) {
-              if (parameterName.equals("anEnum")) {
-                return EnumWithoutCreationAnnotation.VALUE_A;
+              if (parameterName.equals("strings")) {
+                return new String[]{"string_1", "string_2", "string_2"};
+              } else if (parameterName.equals("integers")) {
+                return new String[]{"1", "2", "2"};
               }
             }
             return null;
@@ -198,6 +175,9 @@ public class RequestParameterDecoderTest {
     assertThat(result.getAnEnum(), is(EnumWithoutCreationAnnotation.VALUE_A));
     assertThat(result.getAnUriNotInParameter(), nullValue());
     assertThat(result.getAnUri(), is(URI.create("/an/uri/")));
+    assertThat(result.getStrings(), containsInAnyOrder("string_1", "string_2"));
+    assertThat(result.getIntegers(), containsInAnyOrder(1, 2, 2));
+    assertThat(result.getOffsetDateTime().toString(), is("2009-01-02T23:54:26Z"));
   }
 
   @Test(expected = RuntimeException.class)

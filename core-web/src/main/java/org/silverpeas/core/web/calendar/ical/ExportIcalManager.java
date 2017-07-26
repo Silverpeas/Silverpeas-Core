@@ -25,8 +25,7 @@ package org.silverpeas.core.web.calendar.ical;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.calendar.event.ExternalAttendee;
-import org.silverpeas.core.calendar.event.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.date.Period;
@@ -34,7 +33,7 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.Exporter;
-import org.silverpeas.core.importexport.ExporterProvider;
+import org.silverpeas.core.importexport.ical.ICalExporterProvider;
 import org.silverpeas.core.importexport.ical.ExportableCalendar;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.Category;
@@ -120,7 +119,7 @@ public class ExportIcalManager {
     String calendarIcsFileName = AgendaSessionController.AGENDA_FILENAME_PREFIX
         + getUserId() + ".ics";
     String filePath = FileRepositoryManager.getTemporaryPath() + calendarIcsFileName;
-    Exporter<ExportableCalendar> iCalExporter = ExporterProvider.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = ICalExporterProvider.getICalExporter();
 
     try {
       FileWriter fileWriter = new FileWriter(filePath);
@@ -129,7 +128,7 @@ public class ExportIcalManager {
       if (events.isEmpty()) {
         returnCode = AgendaSessionController.EXPORT_EMPTY;
       } else {
-        iCalExporter.export(descriptor, ExportableCalendar.with(events));
+        iCalExporter.exports(descriptor, () -> ExportableCalendar.with(events));
       }
     } catch (Exception ex) {
       try {
@@ -171,7 +170,7 @@ public class ExportIcalManager {
     String calendarIcsFileName = AgendaSessionController.AGENDA_FILENAME_PREFIX
         + getUserId() + ".ics";
     String filePath = null;
-    Exporter<ExportableCalendar> iCalExporter = ExporterProvider.getICalExporter();
+    Exporter<ExportableCalendar> iCalExporter = ICalExporterProvider.getICalExporter();
 
     try {
       List<CalendarEvent> events = getCalendarEvents(null, null);
@@ -179,7 +178,7 @@ public class ExportIcalManager {
         filePath = FileRepositoryManager.getTemporaryPath() + calendarIcsFileName;
         FileWriter fileWriter = new FileWriter(filePath);
         ExportDescriptor descriptor = ExportDescriptor.withWriter(fileWriter);
-        iCalExporter.export(descriptor, ExportableCalendar.with(events));
+        iCalExporter.exports(descriptor, () -> ExportableCalendar.with(events));
       }
     } catch (Exception ex) {
       try {
@@ -270,7 +269,7 @@ public class ExportIcalManager {
         if (user != null) {
           String email = user.geteMail();
           if (StringUtil.isDefined(email)) {
-            event.getAttendees().add(ExternalAttendee.withEmail(email).to(event));
+            event.getAttendees().add(email);
           }
         }
       }

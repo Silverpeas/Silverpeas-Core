@@ -25,8 +25,8 @@ package org.silverpeas.web.calendar;
 
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagementProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.PeasCoreException;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.personalorganizer.service.CalendarException;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.personalorganizer.model.Classification;
@@ -135,7 +135,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
       }
 
     } catch (Exception e) {
-      SilverTrace.error("importCalendar", "ImportCalendarServlet.doPost", "xx", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       report = "Erreur lors du traitement par Silverpeas";
     }
 
@@ -146,7 +146,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
       out.flush();
       out.close();
     } catch (IOException e) {
-      SilverTrace.error("importCalendar", "ImportCalendarServlet.doPost", "xx", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
@@ -175,7 +175,6 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
    * @param userId	for security purpose, session id is given instead of user id directly
    * @return
    * @throws RemoteException
-   * @throws ImportCalendarException
    */
   private Map<String, JournalHeader> getExternalEvents(String userId) {
     Calendar cal = Calendar.getInstance();
@@ -220,8 +219,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
         result = ELEMENT_ADDED;
       }
     } catch (Exception e) {
-      SilverTrace.error("importCalendar", "ImportCalendarServlet.synchronizeJournalHeader",
-          "importCalendar.EX_SYNCHRO_JOURNAL_HEADER", e);
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
       result = SYNCHRO_ERROR;
     }
 
@@ -278,10 +276,10 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
   }
 
   /**
-   * Remove from Silverpeas events that don't exist anymore in external application
+   * Remove from Silverpeas events that don't exist anymore in external calendar
    *
-   * @param deletedEvents Hashtable with external events that exist in Silverpeas but no more in
-   * external application
+   * @param existingEvents map of events that exist in Silverpeas but no more in the
+   * external calendar
    *
    * @return the number of events deleted
    */
@@ -293,8 +291,7 @@ public class OutlookSyncCalendarServlet extends HttpServlet {
           calendarBm.removeJournal(event.getId());
           nbDeletedEvents++;
         } catch (Exception e) {
-          SilverTrace.error("importCalendar", "ImportCalendarServlet.cleanDeletedEvents",
-              "importCalendar.EX_REMOVE_JOURNAL_HEADER", e);
+          SilverLogger.getLogger(this).error(e.getMessage(), e);
         }
       }
     }

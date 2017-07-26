@@ -421,7 +421,7 @@ public class HistoryObjectDAO {
 
   /**
    * Gets the last history detail of each object associated to a user. The result is sorted on the
-   * date time from the youngest to the oldest
+   * datetime from the youngest to the oldest
    * @param con
    * @param userId
    * @param actionType

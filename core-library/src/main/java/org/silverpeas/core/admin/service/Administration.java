@@ -28,6 +28,8 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.PasteDetail;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
@@ -203,7 +205,23 @@ public interface Administration {
    * Return all the components of silverpeas read in the xmlComponent directory.
    * @return all the components of silverpeas read in the xmlComponent directory.
    */
-  Map<String, WAComponent> getAllComponents();
+  Map<String, WAComponent> getAllWAComponents();
+
+  /**
+   * Gets the component instance related to the given identifier.<br/>
+   * In contrary to {@link #getComponentInst(String)}, {@link #getComponentInstLight(String)}
+   * signatures, this one is able to return different kinds of implementation of {@link
+   * SilverpeasComponentInstance}:
+   * <ul>
+   *   <li>{@link PersonalComponentInstance}</li>
+   *   <li>{@link ComponentInstLight}</li>
+   * </ul>
+   * So, this signature is useful into contexts of transversal treatments.
+   * @param componentInstanceIdentifier the identifier of the requested component instance.
+   * @return an optional component instance.
+   */
+  SilverpeasComponentInstance getComponentInstance(String componentInstanceIdentifier)
+      throws AdminException;
 
   /**
    * Return the component Inst corresponding to the given ID

@@ -23,12 +23,17 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
+import org.silverpeas.core.html.plugin.AbstractPluginInitializationProducer;
 import org.silverpeas.core.util.SilverpeasBundle;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.util.Arrays.stream;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToJsString;
 
 /**
@@ -84,13 +89,32 @@ public class JavascriptSettingProducer {
   }
 
   /**
+   * Adds given key / value which will be an array of values.
+   * @param key the key to add.
+   * @param values the values to set.
+   * @param valuesAreStrings indicates if the values must be registered as string.
+   * @return itself.
+   */
+  protected JavascriptSettingProducer add(String key, Stream<Object> values,
+      boolean valuesAreStrings) {
+    Stream<String> decodedValues = values.map(String::valueOf)
+        .filter(StringUtil::isDefined)
+        .flatMap(v -> stream(v.split(",")));
+    if (valuesAreStrings) {
+      decodedValues = decodedValues.map(JavascriptSettingProducer::stringValue);
+    }
+    keySettings.put(key, decodedValues.collect(Collectors.joining(",", "[", "]")));
+    return this;
+  }
+
+  /**
    * Adds given key / value.
    * @param key the key to add.
    * @param value the boolean value associated to the key.
    * @return itself.
    */
   public JavascriptSettingProducer add(final String key, final String value) {
-    keySettings.put(key, "\"" + javaStringToJsString(value) + "\"");
+    keySettings.put(key, stringValue(value));
     return this;
   }
 
@@ -136,5 +160,9 @@ public class JavascriptSettingProducer {
     }
     js.append("});");
     return js.toString();
+  }
+
+  private static String stringValue(final String value) {
+    return "'" + javaStringToJsString(value) + "'";
   }
 }

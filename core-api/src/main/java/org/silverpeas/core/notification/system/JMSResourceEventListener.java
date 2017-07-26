@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.system;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -99,7 +100,7 @@ public abstract class JMSResourceEventListener<T extends AbstractResourceEvent>
       dispatchEvent(event);
     } catch (Exception e) {
       if (retryAtFailure()) {
-        throw new RuntimeException(e);
+        throw new SilverpeasRuntimeException(e);
       } else {
         SilverLogger.getLogger(this).error(e.getMessage(), e);
       }

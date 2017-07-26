@@ -26,7 +26,10 @@ package org.silverpeas.core.web.http;
 import javax.ws.rs.FormParam;
 import javax.xml.bind.annotation.XmlElement;
 import java.net.URI;
+import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author: Yohann Chastagnier
@@ -99,6 +102,15 @@ public class PoJo {
 
   @FormParam("")
   private URI anUri;
+
+  @FormParam("")
+  private Set<String> strings;
+
+  @FormParam("")
+  private List<Integer> integers;
+
+  @FormParam("anOffsetDateTime")
+  private OffsetDateTime offsetDateTime;
 
   private PoJo() {
     // To be instantiated
@@ -190,5 +202,17 @@ public class PoJo {
 
   public URI getAnUriNotInParameter() {
     return anUriNotInParameter;
+  }
+
+  public Set<String> getStrings() {
+    return strings;
+  }
+
+  public List<Integer> getIntegers() {
+    return integers;
+  }
+
+  public OffsetDateTime getOffsetDateTime() {
+    return offsetDateTime;
   }
 }

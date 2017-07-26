@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
+import org.silverpeas.core.web.util.viewgenerator.html.TagUtil;
+
 /**
  * @author neysseri
  * @version
@@ -47,19 +49,12 @@ public class ButtonSilverpeasV5 extends AbstractButton {
 
     if (disabled) {
       theAction = "#";
-    } else if (theAction.startsWith("angularjs:")) {
-      theAction = theAction.substring(10);
-      if (theAction.contains("{{") && theAction.contains("}}")) {
-        theAction = "ng-href=\"" + theAction + "\"";
-      } else {
-        theAction = "href=\"#\" ng-click=\"" + theAction + "\"";
-      }
-    } else {
-      theAction = "href=\"" + theAction + "\"";
     }
 
+    String href = TagUtil.formatHrefFromAction(theAction);
+
     StringBuilder str = new StringBuilder();
-    str.append("<a class=\"sp_button\" ").append(theAction)
+    str.append("<a class=\"sp_button\" ").append(href)
         .append(" >").append(label).append("</a>");
 
     return str.toString();

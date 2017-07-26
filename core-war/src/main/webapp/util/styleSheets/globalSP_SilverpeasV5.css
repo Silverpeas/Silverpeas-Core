@@ -31,6 +31,10 @@ body {
   color:#212121;
 }
 
+body:focus {
+  outline: none;
+}
+
 body.portlet {
   background-color:transparent;
 }
@@ -917,7 +921,7 @@ Style Utilise par le ViewGenerator
 /******  ViewGenerator *********/
 /****************************************/
 /* objet window */
-.cellBrowseBar  {    
+.cellBrowseBar  {
   border-bottom: 1px solid #ddd;
   padding-right: 230px;
   padding-bottom: 0.5em;
@@ -2505,7 +2509,7 @@ caption {
 }
 
 #myProfile #indexAndSearch #index a:hover, #publicProfile #indexAndSearch #index a:focus ,
-.sousNavBulle a:hover, .sousNavBulle a:focus {
+.sousNavBulle a:hover, .sousNavBulle a:focus, .sousNavBulle a.selected {
   background-color:#BFBFBF;
   color:#FFF;
 }
@@ -5452,7 +5456,7 @@ blockquote {
   flex-wrap: wrap;
   align-items: center;
   padding: 0 0 0 15px;
-  
+
 }
 .forms .fields .fieldInput p {
   margin-top:0;
@@ -6022,7 +6026,7 @@ a.navigation-button {
 .access-list li .operation {
   position:absolute;
   right:0.25em;
-  top:10px;
+  top:0.8em;
 }
 
 .access-list li:first-child{
@@ -6271,7 +6275,7 @@ ul.sm-map {
 }
 
 /*
-THIS TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
+THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
  */
 .popup-compute-settings {
   margin: 0;
@@ -6281,4 +6285,154 @@ THIS TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
 .popup-compute-finally {
   margin: 5px;
   height: auto;
+}
+
+/**
+ * AngularJS silverpeas-permalink component.
+ */
+
+silverpeas-permalink {
+  white-space:nowrap;
+}
+
+silverpeas-permalink input {
+  width: 90%;
+  border: 1px solid #cacaca;
+  color: #858585;
+}
+
+silverpeas-permalink .simple input {
+  height:26px;
+  width:80%;
+}
+
+silverpeas-permalink .copy-to-clipboard .sp_button  {
+  background:transparent url();
+  border-radius: 5px;
+  border: 0;
+  padding:0;
+}
+
+silverpeas-permalink .copy-to-clipboard .sp_button span {
+  display:inline-block;
+  text-indent:-30em;
+  overflow:hidden;
+  background:transparent url(../../admin/jsp/icons/icoOutilsClipboard.gif) 0.5em 0 no-repeat;
+  width: 16px;
+  height: 16px;
+  padding-left:0.5em;
+  vertical-align: middle;
+}
+
+/**
+ * AngularJS silverpeas-color-picker component.
+ */
+
+.silverpeas-color-picker {
+  position: relative;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 1em;
+  margin-bottom: 1em;
+  cursor: pointer;
+  box-shadow: 0 0 0 1px #bbb;
+  border: 2px solid; /*PRINT*/
+}
+
+.silverpeas-color-picker.active {
+  border: 2px solid #bbb;
+  width: 25px;
+  height: 25px;
+}
+
+@media screen {
+  .silverpeas-color-picker {
+    border-radius: 0 !important;
+    border-color: #fff !important;
+  }
+}
+
+@media print {
+  .silverpeas-color-picker {
+    height: 10px;
+    border-radius: 5px;
+    background-color: #fff !important;
+  }
+}
+
+.silverpeas-color-picker-set {
+  max-width: 200px;
+}
+
+.silverpeas-color-picker-set .silverpeas-color-picker {
+  margin: 0.5em;
+}
+
+.silverpeas-color-picker-set .silverpeas-color-picker:last-child {
+  margin-left: 0.2em;
+}
+
+/**
+ * AngularJS silverpeas-attendees component.
+ */
+
+silverpeas-attendees fieldset.empty {
+  min-height: 0;
+}
+
+silverpeas-attendees legend {
+  background: transparent url(../../util/icons/groups.png) 11px 0px no-repeat;
+}
+
+silverpeas-attendee .participation {
+  font-size: 100%;
+  font-style:italic;
+}
+
+silverpeas-attendees .simple-list {
+  padding:0 1em;
+  margin:1em 0 0 ;
+}
+
+silverpeas-attendee span.DECLINED  {
+  color:#AAA;
+}
+
+
+silverpeas-attendee .participation .ACCEPTED,
+silverpeas-attendee .participation .DECLINED  {
+  display:none;
+}
+
+silverpeas-attendee .participation > a{
+  margin:0 0.25em;
+}
+
+silverpeas-attendee .participation img{
+  vertical-align:middle;
+  width: 14px;
+}
+
+.participation .AWAITING {
+  background: transparent url(../icons/question_en_cours.gif) 0 0 no-repeat;
+  display: inline-block;
+  text-indent: -30em;
+  overflow: hidden;
+  width: 18px;
+  height: 16px;
+  vertical-align: middle;
+}
+
+silverpeas-attendee .presence {
+  font-weight: bold;
+  font-size: 0.7em;
+}
+
+silverpeas-attendee .not-answered {
+  opacity: 0.4;
+}
+
+#pdcFrame .pdcFrameGroup #razButton img {
+  vertical-align: middle;
 }

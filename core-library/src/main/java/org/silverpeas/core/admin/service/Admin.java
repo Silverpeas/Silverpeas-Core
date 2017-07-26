@@ -28,14 +28,7 @@ import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
 import org.silverpeas.core.admin.component.ComponentInstancePreDestruction;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
-import org.silverpeas.core.admin.component.model.CompoSpace;
-import org.silverpeas.core.admin.component.model.ComponentI18N;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.component.model.Parameter;
-import org.silverpeas.core.admin.component.model.PasteDetail;
-import org.silverpeas.core.admin.component.model.Profile;
-import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.component.model.*;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPSynchroUserItf;
@@ -736,8 +729,27 @@ class Admin implements Administration {
   // -------------------------------------------------------------------------
 
   @Override
-  public Map<String, WAComponent> getAllComponents() {
+  public Map<String, WAComponent> getAllWAComponents() {
     return componentRegistry.getAllWAComponents();
+  }
+
+  @Override
+  public SilverpeasComponentInstance getComponentInstance(final String componentInstanceIdentifier)
+      throws AdminException {
+    final SilverpeasComponentInstance instance;
+    try {
+      Optional<PersonalComponentInstance> personalComponentInstance =
+          PersonalComponentInstance.from(componentInstanceIdentifier);
+      if (personalComponentInstance.isPresent()) {
+        instance = personalComponentInstance.get();
+      } else {
+        instance = getComponentInstLight(componentInstanceIdentifier);
+      }
+      return instance;
+    } catch (Exception e) {
+      throw new AdminException(
+          failureOnGetting("Silverpeas component", componentInstanceIdentifier), e);
+    }
   }
 
   @Override
