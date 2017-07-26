@@ -37,7 +37,7 @@ public class NextEventsPortlet extends GenericPortlet implements FormNames {
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
     PortletPreferences pref = request.getPreferences();
-    int nbEvents = Integer.parseInt(pref.getValue(NB_EVENTS, "5"));
+    int nbEvents = Integer.parseInt(pref.getValue(NB_EVENTS, "10"));
     request.setAttribute(NB_EVENTS, nbEvents);
     include(request, response, "portlet.jsp");
   }

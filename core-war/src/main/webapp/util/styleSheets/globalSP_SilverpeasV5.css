@@ -31,6 +31,10 @@ body {
   color:#212121;
 }
 
+body:focus {
+  outline: none;
+}
+
 body.portlet {
   background-color:transparent;
 }
