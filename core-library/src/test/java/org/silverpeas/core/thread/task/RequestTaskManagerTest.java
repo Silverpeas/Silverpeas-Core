@@ -322,7 +322,7 @@ public class RequestTaskManagerTest {
 
   private RequestTaskMonitor waitForTaskEndingAfterFirstInit(final Class testClass)
       throws InterruptedException, ExecutionException {
-    Thread.sleep(100);
+    Thread.sleep(200);
     RequestTaskMonitor monitor = RequestTaskManager.tasks.get(testClass);
     // Waiting the end of the current task
     monitor.task.get();
@@ -346,7 +346,7 @@ public class RequestTaskManagerTest {
 
   private RequestTaskMonitor waitForTaskEndingAtEndOfTest(final Class testClass)
       throws InterruptedException {
-    Thread.sleep(100);
+    Thread.sleep(200);
     RequestTaskMonitor monitor = RequestTaskManager.tasks.get(testClass);
     int nbTry = 0;
     while (nbTry < 20) {
