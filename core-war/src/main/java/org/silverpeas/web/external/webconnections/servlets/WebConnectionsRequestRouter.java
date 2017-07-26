@@ -92,6 +92,7 @@ public class WebConnectionsRequestRouter extends
           // se connecter directement avec les données
           request.setAttribute("Connection", connection);
           request.setAttribute("Method", methodType);
+          request.setAttribute("IgnoreNewWindow", true);
           destination = getDestination("Redirect", webConnectionsSC, request);
         } else {
           // demander les paramètres de connexion
@@ -99,46 +100,44 @@ public class WebConnectionsRequestRouter extends
           addParam(request, webConnectionsSC);
           destination = rootDest + "connectionManager.jsp";
         }
-      } else if (function.equals("CreateConnection")) {
+      } else if ("CreateConnection".equals(function)) {
         // créé la connexion
         String componentId = request.getParameter("ComponentId");
         ConnectionDetail connection = new ConnectionDetail(componentId);
-        addParamToconnection(connection, request, webConnectionsSC);
+        addParamToConnection(connection, request, webConnectionsSC);
         if (!isAnonymousAccess(request)) {
           // As anonymous user, connection parameters are not stored
           webConnectionsSC.createConnection(connection);
         }
         request.setAttribute("Connection", connection);
         destination = getDestination("Redirect", webConnectionsSC, request);
-      } else if (function.equals("Redirect")) {
+      } else if ("Redirect".equals(function)) {
         ConnectionDetail connection = (ConnectionDetail) request.getAttribute("Connection");
-        String methodType = (String) request.getAttribute("Method");
         request.setAttribute("Connection", connection);
-        request.setAttribute("Method", methodType);
         destination = rootDest + "connection.jsp";
-      } else if (function.equals("ExitRedirect")) {
+      } else if ("ExitRedirect".equals(function)) {
         String componentId = request.getParameter("ComponentId");
         ConnectionDetail connection = new ConnectionDetail(componentId);
-        addParamToconnection(connection, request, webConnectionsSC);
+        addParamToConnection(connection, request, webConnectionsSC);
         request.setAttribute("Connection", connection);
         destination = getDestination("Redirect", webConnectionsSC, request);
-      } else if (function.equals("ViewConnections")) {
+      } else if ("ViewConnections".equals(function)) {
         // liste des connexions de l'utilisateur
         List<ConnectionDetail> connections = (List<ConnectionDetail>) webConnectionsSC
             .getConnectionsByUser();
         request.setAttribute("Connections", connections);
         destination = rootDest + "viewConnections.jsp";
-      } else if (function.equals("EditConnection")) {
+      } else if ("EditConnection".equals(function)) {
         addParam(request, webConnectionsSC);
         request.setAttribute("Action", "UpdateConnection");
         destination = rootDest + "connectionManager.jsp";
-      } else if (function.equals("UpdateConnection")) {
+      } else if ("UpdateConnection".equals(function)) {
         String connectionId = request.getParameter("ConnectionId");
         String login = request.getParameter("Login");
         String password = request.getParameter("Password");
         webConnectionsSC.updateConnection(connectionId, login, password);
         destination = getDestination("ViewConnections", webConnectionsSC, request);
-      } else if (function.equals("DeleteConnection")) {
+      } else if ("DeleteConnection".equals(function)) {
         String connectionId = request.getParameter("ConnectionId");
         webConnectionsSC.deleteConnection(connectionId);
         destination = getDestination("ViewConnections", webConnectionsSC, request);
@@ -154,7 +153,7 @@ public class WebConnectionsRequestRouter extends
     return destination;
   }
 
-  private void addParamToconnection(ConnectionDetail connection, HttpServletRequest request,
+  private void addParamToConnection(ConnectionDetail connection, HttpServletRequest request,
       WebConnectionsSessionController webConnectionsSC) {
     String login = request.getParameter("Login");
     if (!StringUtil.isDefined(login)) {
@@ -184,6 +183,8 @@ public class WebConnectionsRequestRouter extends
     connection.setParam(param);
     connection.setUserId(webConnectionsSC.getUserId());
     connection.setComponentName(componentName);
+    connection.setNewWindow(StringUtil.getBooleanValue(inst.getParameterValue("openNewWindow")));
+    connection.setMethod(inst.getParameterValue("method"));
   }
 
   private void addParam(HttpServletRequest request, WebConnectionsSessionController webConnectionsSC) {
@@ -204,10 +205,7 @@ public class WebConnectionsRequestRouter extends
 
   private boolean isAnonymousAccess(HttpServletRequest request) {
     LookHelper lookHelper = LookHelper.getLookHelper(request.getSession());
-    if (lookHelper != null) {
-      return lookHelper.isAnonymousAccess();
-    }
-    return false;
+    return lookHelper != null && lookHelper.isAnonymousAccess();
   }
 
 }

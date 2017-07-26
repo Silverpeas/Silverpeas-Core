@@ -30,10 +30,11 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="check.jsp" %>
 <%
-Collection 	connections 		= (Collection) request.getAttribute("Connections");
+Collection<ConnectionDetail> 	connections = (Collection<ConnectionDetail>) request.getAttribute("Connections");
 %>
 
 <%@page import="org.silverpeas.core.admin.service.OrganizationControllerProvider"%>
+<%@ page import="org.silverpeas.core.util.CollectionUtil" %>
 <html>
 <head>
   <view:looknfeel />
@@ -60,8 +61,7 @@ Collection 	connections 		= (Collection) request.getAttribute("Connections");
     </script>
   </head>
   <body>
-    <form name="readForm" action="" method="POST">
-      <view:browseBar />
+      <view:browseBar extraInformations='<%=resource.getString("webConnections.label")%>'/>
       <view:window>
         <view:frame>
 <%
@@ -71,11 +71,9 @@ Collection 	connections 		= (Collection) request.getAttribute("Connections");
       ArrayColumn columnOp = arrayPane.addArrayColumn(resource.getString("GML.operation"));
       columnOp.setSortable(false);
       // remplissage de l'ArrayPane avec les connexions
-      if ((connections != null) && (connections.size() != 0)) {
-        Iterator it = (Iterator) connections.iterator();
-        while (it.hasNext()) {
+      if (CollectionUtil.isNotEmpty(connections)) {
+        for(ConnectionDetail connection : connections) {
           ArrayLine line = arrayPane.addArrayLine();
-          ConnectionDetail connection = (ConnectionDetail) it.next();
           line.addArrayCellText(connection.getComponentName());
           ComponentInst inst = OrganizationControllerProvider
               .getOrganisationController().getComponentInst(connection.getComponentId());
@@ -99,15 +97,36 @@ Collection 	connections 		= (Collection) request.getAttribute("Connections");
   %>
         </view:frame>
       </view:window>
+
+    <form name="connectionForm" action="" method="post">
+      <input type="hidden" name="Login"/>
+      <input type="hidden" name="Password"/>
+      <input type="hidden" name="ConnectionId"/>
+      <input type="hidden" name="ComponentId"/>
     </form>
-    <form name="connectionForm" action="" Method="POST">
-        <input type="hidden" name ="Login">
-        <input type="hidden" name ="Password">
-        <input type="hidden" name ="ConnectionId">
-        <input type="hidden" name ="ComponentId">
+    <form name="deleteForm" action="DeleteConnection" method="post">
+      <input type="hidden" name="ConnectionId"/>
     </form>
-    <form name="deleteForm" action="DeleteConnection" Method="POST">
-        <input type="hidden" name="ConnectionId">
-    </form>
+
+    <div id="updateForm" style="display: none;">
+      <form name="categoryForm" action="CreateCategory" method="post">
+        <table cellpadding="5" width="100%">
+          <tr>
+            <td class="txtlibform"><fmt:message key="GML.title"/> :</td>
+            <td><input type="text" name="Name" id="categoryName" size="60" maxlength="150"/>
+              &nbsp;<img border="0" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/></td>
+          </tr>
+          <tr>
+            <td class="txtlibform"><fmt:message key="GML.description" /> :</td>
+            <td><input type="text" name="Description" id="categoryDescription" size="60" maxlength="150"/></td>
+          </tr>
+          <tr>
+            <td colspan="2"><img border="0" alt="mandatory" src="<c:out value="${mandatoryFieldUrl}" />" width="5" height="5"/> : <fmt:message key="GML.requiredField"/></td>
+          </tr>
+        </table>
+        <input type="hidden" name="CategoryId"/>
+      </form>
+    </div>
+
   </body>
 </html>
