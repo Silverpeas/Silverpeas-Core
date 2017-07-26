@@ -471,16 +471,21 @@ public class Recurrence implements Cloneable {
     if (recurrence == null) {
       return false;
     }
-    final boolean sameFrequency = recurrence.frequency.getUnit() == this.frequency.getUnit() &&
-        recurrence.frequency.getInterval() == this.frequency.getInterval();
     if (recurrence.count != this.count || !recurrence.daysOfWeek.equals(this.daysOfWeek) ||
-        !recurrence.startDate.equals(this.startDate) || !sameFrequency) {
+        !recurrence.startDate.equals(this.startDate) || !sameFrequencyAs(recurrence)) {
       return false;
     }
-    return (recurrence.endDateTime == NO_RECURRENCE_END_DATE &&
-        this.endDateTime == NO_RECURRENCE_END_DATE) ||
-        (recurrence.endDateTime != NO_RECURRENCE_END_DATE &&
-            recurrence.endDateTime.equals(this.endDateTime));
+    return sameEndTimeAs(recurrence);
+  }
+
+  private boolean sameFrequencyAs(final Recurrence recurrence) {
+    return recurrence.frequency.getUnit() == this.frequency.getUnit() &&
+           recurrence.frequency.getInterval() == this.frequency.getInterval();
+  }
+
+  private boolean sameEndTimeAs(final Recurrence recurrence) {
+    return (recurrence.endDateTime == NO_RECURRENCE_END_DATE && this.endDateTime == NO_RECURRENCE_END_DATE) ||
+           (recurrence.endDateTime != NO_RECURRENCE_END_DATE && recurrence.endDateTime.equals(this.endDateTime));
   }
 
   /**
@@ -501,7 +506,7 @@ public class Recurrence implements Cloneable {
       this.until(this.endDateTime.toLocalDate());
     }
     if (!this.exceptionDates.isEmpty()) {
-      Temporal[] exceptions = this.exceptionDates.stream().toArray(Temporal[]::new);
+      Temporal[] exceptions = this.exceptionDates.toArray(new Temporal[0]);
       this.exceptionDates.clear();
       this.excludeEventOccurrencesStartingAt(exceptions);
     }

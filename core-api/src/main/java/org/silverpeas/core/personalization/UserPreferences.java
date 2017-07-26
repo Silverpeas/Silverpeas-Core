@@ -63,7 +63,7 @@ public class UserPreferences
   @Column(name = "menuDisplay")
   private String menuDisplay = UserMenuDisplay.DEFAULT.name();
 
-  public UserPreferences() {
+  protected UserPreferences() {
   }
 
   public UserPreferences(String userId, String language, final ZoneId zoneId, String look,

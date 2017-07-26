@@ -1184,6 +1184,17 @@ if (typeof window.sp === 'undefined') {
       });
       return sp.promise.resolveDirectlyWith(html);
     },
+    navigation : {
+      previousNextOn : function(target, onPreviousOrNext) {
+        var $document = jQuery(document);
+        Mousetrap.bind('left', function() {
+          onPreviousOrNext(true);
+        });
+        Mousetrap.bind('right', function() {
+          onPreviousOrNext(false);
+        });
+      }
+    },
     selection : {
       newCheckboxMonitor : function(cssSelector) {
         return new function() {

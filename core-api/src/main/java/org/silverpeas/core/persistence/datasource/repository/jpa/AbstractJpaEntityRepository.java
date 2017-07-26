@@ -488,7 +488,7 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity>
   protected Class<T> getEntityClass() {
     Type type = this.getClass().getGenericSuperclass();
     if (type instanceof ParameterizedType) {
-      return ((Class<T>) ((ParameterizedType) type).getActualTypeArguments()[0]);
+      return (Class<T>) ((ParameterizedType) type).getActualTypeArguments()[0];
     } else {
       return (Class<T>) ((ParameterizedType) this.getClass().getSuperclass()
           .getGenericSuperclass()).getActualTypeArguments()[0];

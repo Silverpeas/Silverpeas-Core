@@ -27,10 +27,6 @@ package org.silverpeas.core.admin.component.service;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Optional;

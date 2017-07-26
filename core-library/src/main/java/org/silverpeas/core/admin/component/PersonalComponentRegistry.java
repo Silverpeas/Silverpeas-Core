@@ -24,6 +24,7 @@
 package org.silverpeas.core.admin.component;
 
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ServiceProvider;
@@ -61,50 +62,10 @@ import java.util.Optional;
 @Singleton
 public class PersonalComponentRegistry implements Initialization {
 
+  private static final int MAX_DEPTH = 2;
   private static Map<String, PersonalComponent> componentsByName = new HashMap<>();
 
-  /**
-   * Gets an instance of this PersonalComponentRegistry registry.
-   * @return a PersonalComponentRegistry instance.
-   */
-  public static PersonalComponentRegistry get() {
-    return ServiceProvider.getService(PersonalComponentRegistry.class);
-  }
-
   PersonalComponentRegistry() {
-  }
-
-  /**
-   * Initializes some resources required by the services or performs some initialization processes
-   * at Silverpeas startup.
-   * @throws Exception if an error occurs during the initialization process. In this case
-   * the Silverpeas startup fails.
-   */
-  @Override
-  public void init() throws Exception {
-    Path descriptorHome = getPersonalComponentDescriptorHome();
-    Files.find(descriptorHome, 2, (p, a) -> Files.isRegularFile(p) &&
-        "xml".equalsIgnoreCase(FilenameUtils.getExtension(p.toString()))).forEach(p -> {
-      PersonalComponent component = loadComponent(p.toFile());
-      componentsByName.put(component.getName(), component);
-    });
-  }
-
-  /**
-   * Gets the PersonalComponent instance registered under the specified name.
-   * @param componentName the name of the Silverpeas personal component.
-   * @return an optional PersonalComponent instance if such instance exists under the given name.
-   */
-  public Optional<PersonalComponent> getPersonalComponent(String componentName) {
-    return Optional.ofNullable(componentsByName.get(componentName));
-  }
-
-  /**
-   * Gets all the registered PersonalComponent instances indexed by their name.
-   * @return a dictionary of the available PersonalComponent instances indexed by their name.
-   */
-  public Map<String, PersonalComponent> getAllPersonalComponents() {
-    return Collections.unmodifiableMap(componentsByName);
   }
 
   /**
@@ -126,7 +87,48 @@ public class PersonalComponentRegistry implements Initialization {
             getValue();
       }
     } catch (IOException | JAXBException | XMLStreamException e) {
-      throw new RuntimeException(e.getMessage(), e);
+      throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
+  }
+
+  /**
+   * Gets an instance of this PersonalComponentRegistry registry.
+   * @return a PersonalComponentRegistry instance.
+   */
+  public static PersonalComponentRegistry get() {
+    return ServiceProvider.getService(PersonalComponentRegistry.class);
+  }
+
+  /**
+   * Initializes some resources required by the services or performs some initialization processes
+   * at Silverpeas startup.
+   * @throws Exception if an error occurs during the initialization process. In this case
+   * the Silverpeas startup fails.
+   */
+  @Override
+  public void init() throws Exception {
+    Path descriptorHome = getPersonalComponentDescriptorHome();
+    Files.find(descriptorHome, MAX_DEPTH, (p, a) -> Files.isRegularFile(p) &&
+        "xml".equalsIgnoreCase(FilenameUtils.getExtension(p.toString()))).forEach(p -> {
+      PersonalComponent component = loadComponent(p.toFile());
+      componentsByName.put(component.getName(), component);
+    });
+  }
+
+  /**
+   * Gets the PersonalComponent instance registered under the specified name.
+   * @param componentName the name of the Silverpeas personal component.
+   * @return an optional PersonalComponent instance if such instance exists under the given name.
+   */
+  public Optional<PersonalComponent> getPersonalComponent(String componentName) {
+    return Optional.ofNullable(componentsByName.get(componentName));
+  }
+
+  /**
+   * Gets all the registered PersonalComponent instances indexed by their name.
+   * @return a dictionary of the available PersonalComponent instances indexed by their name.
+   */
+  public Map<String, PersonalComponent> getAllPersonalComponents() {
+    return Collections.unmodifiableMap(componentsByName);
   }
 }

@@ -26,9 +26,13 @@ package org.silverpeas.core.security.authorization;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
 import java.util.EnumSet;
+import java.util.Set;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
  * User: Yohann Chastagnier
@@ -37,7 +41,7 @@ import java.util.EnumSet;
 public enum AccessControlOperation {
   unknown, creation, modification, deletion, download, sharing;
 
-  public static EnumSet<AccessControlOperation> PERSIST_ACTIONS =
+  public static final Set<AccessControlOperation> PERSIST_ACTIONS =
       EnumSet.of(creation, modification, deletion);
 
   @JsonValue
@@ -50,6 +54,8 @@ public enum AccessControlOperation {
     try {
       return valueOf(name);
     } catch (Exception e) {
+      SilverLogger.getLogger(AccessControlOperation.class)
+          .warn(unknown("access control operation", name), e);
       return unknown;
     }
   }

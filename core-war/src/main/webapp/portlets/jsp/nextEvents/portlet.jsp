@@ -61,6 +61,7 @@
       currentUserId : '${componentInstance.user.id}',
       currentUserLanguage : '${componentInstance.user.userPreferences.language}',
       component : '${componentInstance.id}',
+      componentUriBase : '${componentUriBase}',
       userRole: '${adminRole}',
       zoneId : '${userZoneId}',
       limit : '${nbMaxItems}'

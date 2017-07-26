@@ -45,11 +45,11 @@
   <div class="sousNavBulle">
     <div id="navigation">
       <div id="currentScope">
-        <a href="#" ng-click="$ctrl.view({type:'${DAILY_VIEW_TYPE}'})"
+        <a class="day-view" href="#" ng-click="$ctrl.view({type:'${DAILY_VIEW_TYPE}'})"
            ng-class="{'selected': $ctrl.timeWindowViewContext.viewType == '${DAILY_VIEW_TYPE}'}">${dayLabel}</a>
-        <a href="#" ng-click="$ctrl.view({type:'${WEEKLY_VIEW_TYPE}'})"
+        <a class="week-view" href="#" ng-click="$ctrl.view({type:'${WEEKLY_VIEW_TYPE}'})"
            ng-class="{'selected': $ctrl.timeWindowViewContext.viewType == '${WEEKLY_VIEW_TYPE}'}">${weekLabel}</a>
-        <a href="#" ng-click="$ctrl.view({type:'${MONTHLY_VIEW_TYPE}'})"
+        <a class="month-view" href="#" ng-click="$ctrl.view({type:'${MONTHLY_VIEW_TYPE}'})"
            ng-class="{'selected': $ctrl.timeWindowViewContext.viewType == '${MONTHLY_VIEW_TYPE}'}">${monthLabel}</a>
         <span>-&#160;</span>
         <span id="today"> <a href="#" ng-click="$ctrl.timeWindow({type:'today'})" onfocus="this.blur()"><fmt:message key="GML.Today"/></a></span>

@@ -23,8 +23,10 @@
  */
 package org.silverpeas.core.security.authorization;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -37,6 +39,9 @@ import static org.hamcrest.Matchers.is;
  * @author Yohann Chastagnier
  */
 public class AccessControlOperationTest {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void testGeneralities() {

@@ -36,10 +36,17 @@ import org.silverpeas.core.util.ServiceProvider;
 public class AccessControllerProvider {
 
   /**
+   * Hidden contructor.
+   */
+  private AccessControllerProvider() {
+  }
+
+  /**
    * Gets the access controller identified by the specified qualifier.
    * @param <T> the type of the resource that is used in the access control mechanism.
    * @return the asked access controller.
    */
+  @SuppressWarnings("unchecked")
   public static <T> AccessController<T> getAccessController(Class<?> type) {
     return (AccessController<T>) ServiceProvider.getService(type);
   }

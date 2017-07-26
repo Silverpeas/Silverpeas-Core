@@ -27,42 +27,20 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.EnumSet;
 import java.util.Set;
 
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
+
 public enum SilverpeasRole {
   admin, Manager, publisher, writer, privilegedUser, user, reader, supervisor;
 
   // Unfortunately, several codes of role can define the same role nature in Silverpeas ...
-  public static EnumSet<SilverpeasRole> READER_ROLES = EnumSet.of(user, reader);
-
-  @JsonValue
-  public String getName() {
-    return name();
-  }
-
-  /**
-   * Indicates if a role is greater than an other one.
-   * @param role
-   * @return
-   */
-  public boolean isGreaterThan(SilverpeasRole role) {
-    // For now, ordinal value is used ...
-    return ordinal() < role.ordinal();
-  }
-
-  /**
-   * Indicates if a role is greater than or equals an other one.
-   * @param role
-   * @return
-   */
-  public boolean isGreaterThanOrEquals(SilverpeasRole role) {
-    // For now, ordinal value is used ...
-    return ordinal() <= role.ordinal();
-  }
+  public static final Set<SilverpeasRole> READER_ROLES = EnumSet.of(user, reader);
 
   @JsonCreator
   public static SilverpeasRole from(String name) {
@@ -79,6 +57,7 @@ public enum SilverpeasRole {
           return role;
         }
       }
+      SilverLogger.getLogger(SilverpeasRole.class).warn(unknown("silverpeas role", name), e);
       return null;
     }
   }
@@ -107,19 +86,6 @@ public enum SilverpeasRole {
       }
     }
     return result;
-  }
-
-  public boolean isInRole(String... roles) {
-    try {
-      for (String aRole : roles) {
-        if (this == from(aRole)) {
-          return true;
-        }
-      }
-    } catch (IllegalArgumentException ex) {
-      return false;
-    }
-    return false;
   }
 
   /**
@@ -165,5 +131,43 @@ public enum SilverpeasRole {
 
     // For now, the highest is the first of the EnumSet
     return givenRoles.iterator().next();
+  }
+
+  @JsonValue
+  public String getName() {
+    return name();
+  }
+
+  /**
+   * Indicates if a role is greater than an other one.
+   * @param role
+   * @return
+   */
+  public boolean isGreaterThan(SilverpeasRole role) {
+    // For now, ordinal value is used ...
+    return ordinal() < role.ordinal();
+  }
+
+  /**
+   * Indicates if a role is greater than or equals an other one.
+   * @param role
+   * @return
+   */
+  public boolean isGreaterThanOrEquals(SilverpeasRole role) {
+    // For now, ordinal value is used ...
+    return ordinal() <= role.ordinal();
+  }
+
+  public boolean isInRole(String... roles) {
+    try {
+      for (String aRole : roles) {
+        if (this == from(aRole)) {
+          return true;
+        }
+      }
+    } catch (IllegalArgumentException ex) {
+      SilverLogger.getLogger(SilverpeasRole.class).warn(ex);
+    }
+    return false;
   }
 }

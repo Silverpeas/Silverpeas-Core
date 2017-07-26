@@ -55,7 +55,7 @@ public class CalendarEventUtil {
       final String componentInstanceId, boolean canBeAccessed) {
     String title = canBeAccessed ? component.getTitle() : null;
     if (!componentInstanceId.equals(component.getCalendar().getComponentInstanceId())) {
-      title = '#' + (title != null ? (title + '\n') : "");
+      title = title != null ? title + '\n' : "";
       title += '(' + component.getCalendar().getTitle() + ')';
     }
     return title;

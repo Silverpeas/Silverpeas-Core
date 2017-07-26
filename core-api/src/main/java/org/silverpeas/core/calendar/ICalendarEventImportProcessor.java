@@ -189,22 +189,27 @@ public class ICalendarEventImportProcessor {
         if (!occurrences.isEmpty()) {
           EventOperationResult occurrenceImportResult =
               importOccurrencesOnly(EventImportResult.eventFrom(result), occurrences);
-          occurrenceImportResult.updated().ifPresent(e -> {
-            if (!result.created().isPresent()) {
-              result.withUpdated(e);
-            }
-          });
-          occurrenceImportResult.instance().ifPresent(i -> {
-            if (!result.created().isPresent() && !result.updated().isPresent()) {
-              result.withUpdated(i.getCalendarEvent());
-            }
-          });
+          adjustOccurrenceImportResult(occurrenceImportResult, result);
         }
         return result;
       });
     } finally {
       OperationContext.removeStates(IMPORT);
     }
+  }
+
+  private void adjustOccurrenceImportResult(final EventOperationResult occurrenceImportResult,
+      final EventOperationResult result) {
+    occurrenceImportResult.updated().ifPresent(e -> {
+      if (!result.created().isPresent()) {
+        result.withUpdated(e);
+      }
+    });
+    occurrenceImportResult.instance().ifPresent(i -> {
+      if (!result.created().isPresent() && !result.updated().isPresent()) {
+        result.withUpdated(i.getCalendarEvent());
+      }
+    });
   }
 
   private void adjustSomeProperties(final CalendarEvent event) {

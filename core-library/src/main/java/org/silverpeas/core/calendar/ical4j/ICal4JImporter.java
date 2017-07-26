@@ -44,6 +44,7 @@ import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.calendar.icalendar.ICalendarImporter;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection;
@@ -89,6 +90,7 @@ public class ICal4JImporter implements ICalendarImporter {
 
   @PostConstruct
   private void init() {
+    CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_PARSING, true);
     CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_UNFOLDING, true);
     CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_RELAXED_VALIDATION, true);
     CompatibilityHints.setHintEnabled(CompatibilityHints.KEY_OUTLOOK_COMPATIBILITY, true);
@@ -144,6 +146,15 @@ public class ICal4JImporter implements ICalendarImporter {
           CalendarEventOccurrence occurrence = occurrenceFromICalEvent(zoneId, event, v);
           occurrences.add(occurrence);
         });
+
+        if (!event.isRecurrent() && !occurrences.isEmpty()) {
+          SilverLogger.getLogger(this).warn(
+              "event with uuid {0} has no recurrence set whereas {1,choice, 1#one linked " +
+                  "occurrence exists| 1<{1} linked occurrences exist}... Setting a default " +
+                  "recurrence (RRULE:FREQ=DAILY;COUNT=1) to get correct data for Silverpeas",
+              event.getExternalId(), occurrences.size());
+          event.recur(Recurrence.every(1, TimeUnit.DAY).until(1));
+        }
 
         // New event to perform
         events.add(Pair.of(event, occurrences));

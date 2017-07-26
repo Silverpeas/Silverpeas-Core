@@ -770,6 +770,12 @@
             };
             this.$postLink = function() {
               $timeout(function() {
+                this.$dayView = jQuery(angular.element(".day-view", $element));
+                this.$weekView = jQuery(angular.element(".week-view", $element));
+                this.$monthView = jQuery(angular.element(".month-view", $element));
+                this.$today = jQuery(angular.element("#today a", $element));
+                this.$previousButton = jQuery(angular.element(".previous", $element));
+                this.$nextButton = jQuery(angular.element(".next", $element));
                 this.$referenceDayInput = jQuery(angular.element(".reference-day", $element));
                 this.$referenceDayInput.datepicker({
                   showOn : '',
@@ -779,6 +785,36 @@
                   showOtherMonths: true,
                   selectOtherMonths: true
                 });
+                sp.navigation.previousNextOn(document, function(isPrevious) {
+                  if (isPrevious) {
+                    this.$previousButton.click();
+                  } else {
+                    this.$nextButton.click();
+                  }
+                }.bind(this));
+                Mousetrap.bind(['escape escape', 'shift+up', 'shift+down'], function() {
+                  this.$today.click();
+                }.bind(this));
+                function __viewNavigation(buttons) {
+                  var selected;
+                  for (var i = 0; i < buttons.length; i++) {
+                    var button = buttons[i];
+                    if (!selected) {
+                      selected = button.hasClass('selected');
+                    } else {
+                      button.click();
+                      break;
+                    }
+                  }
+                }
+                Mousetrap.bind('shift+left', function() {
+                  var buttons = [this.$monthView, this.$weekView, this.$dayView];
+                  __viewNavigation(buttons);
+                }.bind(this));
+                Mousetrap.bind('shift+right', function() {
+                  var buttons = [this.$dayView, this.$weekView, this.$monthView];
+                  __viewNavigation(buttons);
+                }.bind(this));
               }.bind(this), 0);
             }.bind(this);
           }

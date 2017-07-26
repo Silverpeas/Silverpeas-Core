@@ -59,26 +59,6 @@ import java.util.Optional;
     "groupsOfParameters", "parameters"})
 public class PersonalComponent implements SilverpeasComponent {
 
-  /**
-   * Gets the PersonalComponent instance with the specified name.
-   * @param componentName the unique name of the PersonalComponent to return.
-   * @return optionally a PersonalComponent instance with the given name.
-   */
-  public static Optional<PersonalComponent> get(String componentName) {
-    return PersonalComponentRegistry.get().getPersonalComponent(componentName);
-  }
-
-  /**
-   * Gets all the available PersonalComponent instances.
-   * @return a collection of PersonalComponent instance.
-   */
-  public static Collection<PersonalComponent> getAll() {
-    return PersonalComponentRegistry.get().getAllPersonalComponents().values();
-  }
-
-  @XmlTransient
-  private ParameterSorter sorter = new ParameterSorter();
-
   @XmlElement(required = true)
   protected String name;
   @XmlElement(required = true)
@@ -97,6 +77,25 @@ public class PersonalComponent implements SilverpeasComponent {
   protected List<Parameter> parameters;
   @XmlTransient
   protected Map<String, Parameter> indexedParametersByName = new HashMap<>();
+  @XmlTransient
+  private ParameterSorter sorter = new ParameterSorter();
+
+  /**
+   * Gets the PersonalComponent instance with the specified name.
+   * @param componentName the unique name of the PersonalComponent to return.
+   * @return optionally a PersonalComponent instance with the given name.
+   */
+  public static Optional<PersonalComponent> get(String componentName) {
+    return PersonalComponentRegistry.get().getPersonalComponent(componentName);
+  }
+
+  /**
+   * Gets all the available PersonalComponent instances.
+   * @return a collection of PersonalComponent instance.
+   */
+  public static Collection<PersonalComponent> getAll() {
+    return PersonalComponentRegistry.get().getAllPersonalComponents().values();
+  }
 
   @Override
   public String getName() {
@@ -164,6 +163,15 @@ public class PersonalComponent implements SilverpeasComponent {
   }
 
   /**
+   * Sets the value of the parameters property.
+   * @param parameters list of {@link Parameter}
+   */
+  public void setParameters(List<Parameter> parameters) {
+    this.parameters = parameters;
+    indexedParametersByName.clear();
+  }
+
+  /**
    * Gets defined parameters indexed by their names.
    * @return
    */
@@ -175,22 +183,13 @@ public class PersonalComponent implements SilverpeasComponent {
         indexedParametersByName.put(parameter.getName(), parameter);
       }
     }
-    List<GroupOfParameters> groupsOfParameters = getGroupsOfParameters();
-    for (GroupOfParameters group : groupsOfParameters) {
+    List<GroupOfParameters> groups = getGroupsOfParameters();
+    for (GroupOfParameters group : groups) {
       for (Parameter parameter : group.getParameters()) {
         indexedParametersByName.put(parameter.getName(), parameter);
       }
     }
     return indexedParametersByName;
-  }
-
-  /**
-   * Sets the value of the parameters property.
-   * @param parameters list of {@link Parameter}
-   */
-  public void setParameters(List<Parameter> parameters) {
-    this.parameters = parameters;
-    indexedParametersByName.clear();
   }
 
   @Override

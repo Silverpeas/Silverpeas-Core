@@ -77,28 +77,15 @@
 </div>
 
 <script type="text/javascript">
-  $(document).keydown(function(e) {
-    if ($(document.activeElement).is('input') || $(document.activeElement).is('textarea')) {
-      // if an 'input' or 'textarea' element have the focus, ignoring keydown
-      return true;
+  sp.navigation.previousNextOn(document, function(isPrevious) {
+    var button;
+    if (isPrevious) {
+      button = $('#previousButton').get(0);
+    } else {
+      button = $('#nextButton').get(0);
     }
-    var keyCode = eval(e.which);
-    if (37 == keyCode || keyCode == 39) {
-      if (typeof e.preventDefault === 'function') {
-        e.preventDefault();
-      }
-      var button;
-      if (37 == keyCode) {
-        // Previous
-        button = $('#previousButton').get(0);
-      } else if (39 == keyCode) {
-        // Next
-        button = $('#nextButton').get(0);
-      }
-      if (button) {
-        button.click();
-      }
-      return true;
+    if (button) {
+      button.click();
     }
   });
 </script>

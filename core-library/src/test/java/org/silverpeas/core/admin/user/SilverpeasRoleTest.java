@@ -23,8 +23,10 @@
  */
 package org.silverpeas.core.admin.user;
 
+import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import java.util.EnumSet;
 
@@ -36,6 +38,9 @@ import static org.hamcrest.Matchers.*;
  * Date: 17/12/13
  */
 public class SilverpeasRoleTest {
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Test
   public void fromOneRoleAsString() {
