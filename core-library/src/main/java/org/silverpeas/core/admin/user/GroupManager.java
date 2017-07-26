@@ -253,7 +253,8 @@ public class GroupManager {
   public List<GroupDetail> getDirectGroupsOfUser(String sUserId) throws
           AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      return groupDao.getDirectGroupsOfUser(connection, sUserId);
+      final List<GroupDetail> groups = groupDao.getDirectGroupsOfUser(connection, sUserId);
+      return setDirectUsersOfGroups(groups);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("direct groups of user", sUserId), e);
     }
@@ -306,7 +307,8 @@ public class GroupManager {
 
   public List<GroupDetail> getAllGroups() throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      return groupDao.getAllGroups(connection);
+      final List<GroupDetail> groups = groupDao.getAllGroups(connection);
+      return setDirectUsersOfGroups(groups);
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting("all", "groups"), e);
     }
@@ -320,11 +322,8 @@ public class GroupManager {
    */
   public List<GroupDetail> getAllRootGroups() throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      List<GroupDetail> rootGroups = groupDao.getAllRootGroups(connection);
-      for (GroupDetail group : rootGroups) {
-        setDirectUsersOfGroup(group);
-      }
-      return rootGroups;
+      List<GroupDetail> groups = groupDao.getAllRootGroups(connection);
+      return setDirectUsersOfGroups(groups);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("all root groups", ""), e);
     }
@@ -332,7 +331,8 @@ public class GroupManager {
 
   public List<GroupDetail> getSubGroups(final String groupId) throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      return groupDao.getDirectSubGroups(connection, groupId);
+      final List<GroupDetail> groups = groupDao.getDirectSubGroups(connection, groupId);
+      return setDirectUsersOfGroups(groups);
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting("all subgroups of group", groupId), e);
     }
@@ -340,7 +340,8 @@ public class GroupManager {
 
   public List<GroupDetail> getRecursivelySubGroups(final String groupId) throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
-      return getRecursivelySubGroups(connection, groupId);
+      final List<GroupDetail> groups = getRecursivelySubGroups(connection, groupId);
+      return setDirectUsersOfGroups(groups);
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting("recursively all subgroups of group", groupId), e);
     }
@@ -396,6 +397,12 @@ public class GroupManager {
     }
   }
 
+  /**
+   * Gets the group detail instance from group DAO without decoration data.
+   * @param groupId the aimed group id.
+   * @return the group detail instance without decoration data.
+   * @throws AdminException
+   */
   private GroupDetail getGroupDetail(String groupId) throws AdminException {
     try(Connection connection = DBUtil.openConnection()) {
       return groupDao.getGroup(connection, groupId);
@@ -407,15 +414,19 @@ public class GroupManager {
   /**
    * Get group information with the given id from Silverpeas
    *
-   * @param sGroupId
+   * @param groupId
    * @return
    * @throws AdminException
    */
-  public GroupDetail getGroup(String sGroupId) throws AdminException {
-    GroupDetail group = getGroupDetail(sGroupId);
+  public GroupDetail getGroup(String groupId) throws AdminException {
+    GroupDetail group = getGroupDetail(groupId);
     if (group != null) {
-      // Get the selected users for this group
-      setDirectUsersOfGroup(group);
+      try {
+        setDirectUsersOfGroup(group);
+      } catch (SQLException e) {
+        throw new AdminException(failureOnGetting("failure getting direct users of group", groupId),
+            e);
+      }
     }
     return group;
   }
@@ -490,9 +501,7 @@ public class GroupManager {
           AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       List<GroupDetail> groups = groupDao.getAllRootGroupsByDomainId(connection, sDomainId);
-      for (GroupDetail group : groups) {
-        setDirectUsersOfGroup(group);
-      }
+      setDirectUsersOfGroups(groups);
       return groups.toArray(new GroupDetail[groups.size()]);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("root groups in domain", sDomainId), e);
@@ -502,7 +511,8 @@ public class GroupManager {
   public List<GroupDetail> getSynchronizedGroups() throws AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       // Get groups of domain from Silverpeas database
-      return groupDao.getSynchronizedGroups(connection);
+      final List<GroupDetail> groups = groupDao.getSynchronizedGroups(connection);
+      return setDirectUsersOfGroups(groups);
     } catch (SQLException e) {
       throw new AdminException(failureOnGetting("synchronized groups", ""), e);
     }
@@ -848,15 +858,27 @@ public class GroupManager {
     }
   }
 
-  private void setDirectUsersOfGroup(final GroupDetail group) throws
-          AdminException {
-    try(Connection connection = DBUtil.openConnection()) {
-      List<String> userIds = userDao
-          .getDirectUserIdsInGroup(connection, group.getId());
-      group.setUserIds(userIds.toArray(new String[userIds.size()]));
-    } catch (Exception e) {
-      throw new AdminException(e);
+  private List<GroupDetail> setDirectUsersOfGroups(final List<GroupDetail> groups)
+      throws SQLException {
+    try (Connection connection = DBUtil.openConnection()) {
+      for (GroupDetail group : groups) {
+        setDirectUsersOfGroup(connection, group);
+      }
+      return groups;
     }
+  }
+
+  private GroupDetail setDirectUsersOfGroup(final GroupDetail group) throws SQLException {
+    try (Connection connection = DBUtil.openConnection()) {
+      return setDirectUsersOfGroup(connection, group);
+    }
+  }
+
+  private GroupDetail setDirectUsersOfGroup(final Connection connection, final GroupDetail group)
+      throws SQLException {
+    List<String> userIds = userDao.getDirectUserIdsInGroup(connection, group.getId());
+    group.setUserIds(userIds.toArray(new String[userIds.size()]));
+    return group;
   }
 
   /**
