@@ -86,8 +86,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
 
     Writer writer = res.getWriter();
     if ("GetAvailableComponents".equals(action)) {
-      Collection<WAComponent> components =
-          personalSpaceManager.getVisibleComponents(organizationController);
+      Collection<WAComponent> components = personalSpaceManager.getVisibleComponents();
       SpaceInst space = personalSpaceManager.getPersonalSpace(userId);
       if (space != null) {
         writer.write(getWAComponentsAsJSONArray(getNotUsedComponents(components, space), helper));

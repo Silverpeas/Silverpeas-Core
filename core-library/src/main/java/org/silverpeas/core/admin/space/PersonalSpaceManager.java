@@ -30,7 +30,6 @@ import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
@@ -52,11 +51,11 @@ public class PersonalSpaceManager {
   private static final String MESSAGES_LOCATION =
       "org.silverpeas.jobStartPagePeas.multilang.jobStartPagePeasBundle";
 
-  public static PersonalSpaceManager get() {
-    return ServiceProvider.getService(PersonalSpaceManager.class);
+  protected PersonalSpaceManager() {
   }
 
-  protected PersonalSpaceManager() {
+  public static PersonalSpaceManager get() {
+    return ServiceProvider.getService(PersonalSpaceManager.class);
   }
 
   /**
@@ -71,7 +70,7 @@ public class PersonalSpaceManager {
         .collect(Collectors.toList());
   }
 
-  public List<WAComponent> getVisibleComponents(OrganizationController orgaController) {
+  public List<WAComponent> getVisibleComponents() {
     Collection<WAComponent> components = WAComponent.getAll();
     return components.stream().filter(WAComponent::isVisibleInPersonalSpace)
         .collect(Collectors.toList());
@@ -108,7 +107,6 @@ public class PersonalSpaceManager {
       // if user has no personal space, creates one
       space = new SpaceInst();
       space.setCreatorUserId(userId);
-      // space.setDomainFatherId("0");
       space.setInheritanceBlocked(true);
       space.setLevel(0);
       space.setName("Personal space of user #" + userId);
@@ -149,7 +147,7 @@ public class PersonalSpaceManager {
     try {
       return getAdminService().getPersonalSpace(userId);
     } catch (AdminException e) {
-      SilverLogger.getLogger(this).warn(e.getMessage());
+      SilverLogger.getLogger(this).warn(e);
       return null;
     }
   }

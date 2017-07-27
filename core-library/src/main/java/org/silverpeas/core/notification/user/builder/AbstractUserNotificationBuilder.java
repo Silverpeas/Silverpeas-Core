@@ -209,8 +209,9 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
       }
     }
     if (this instanceof RemoveSenderRecipientBehavior && StringUtil.isInteger(getSender())) {
-      if (!(this instanceof UserSubscriptionNotificationBehavior)
-          || NotificationManagerSettings.isRemoveSenderFromSubscriptionNotificationReceiversEnabled()) {
+      final boolean excludeSender = !(this instanceof UserSubscriptionNotificationBehavior) ||
+          NotificationManagerSettings.isRemoveSenderFromSubscriptionNotificationReceiversEnabled();
+      if (excludeSender) {
         // The sender must be excluded from receivers when the notification concerns a subscription
         // and if it is enabled from the global parameter.
         getNotificationMetaData().addUserRecipientToExclude(new UserRecipient(getSender()));

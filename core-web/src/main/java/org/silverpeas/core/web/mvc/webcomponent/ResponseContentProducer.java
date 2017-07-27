@@ -38,15 +38,19 @@ import java.lang.reflect.InvocationTargetException;
  */
 public class ResponseContentProducer {
 
+  /**
+   * Hidden constructor.
+   */
+  private ResponseContentProducer(){
+  }
+
   static void produce(WebComponentRequestContext context, Path pathToPerform) {
     String contentType = pathToPerform.getProduces().value()[0];
     context.getResponse().setHeader("Content-Type", contentType + "; charset=UTF-8");
-    switch (contentType) {
-      case MediaType.APPLICATION_JSON:
-        handleJson(context, pathToPerform);
-        break;
-      default:
-        throw new IllegalArgumentException("only JSON producing is handled");
+    if (contentType.equals(MediaType.APPLICATION_JSON)) {
+      handleJson(context, pathToPerform);
+    } else {
+      throw new IllegalArgumentException("only JSON producing is handled");
     }
   }
 

@@ -749,8 +749,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
         if (personalSpace != null) {
           instances.addAll(personalSpace.getAllComponentsInst());
         }
-        int nbComponentAvailables =
-            personalSpaceManager.getVisibleComponents(organisationController).size();
+        int nbComponentAvailables = personalSpaceManager.getVisibleComponents().size();
         if (nbComponentAvailables > 0) {
           if (personalSpace == null ||
               personalSpace.getAllComponentsInst().size() < nbComponentAvailables) {

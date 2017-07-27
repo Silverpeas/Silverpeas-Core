@@ -40,25 +40,28 @@ public final class UserCalendarSettings {
    * The name of the User Calendar component in Silverpeas.
    */
   public static final String COMPONENT_NAME = "userCalendar";
-
   /**
    * The relative path of the properties file containing the settings of the User Calendar
    * component.
    */
   public static final String SETTINGS_PATH =
       "org.silverpeas.usercalendar.settings.UserCalendarSettings";
-
   /**
    * The relative path of the i18n bundle of the User Calendar component.
    */
   public static final String MESSAGES_PATH =
       "org.silverpeas.usercalendar.multilang.UserCalendarBundle";
-
   /**
    * The relative path of the properties file containing the references of the icons dedicated to
    * the User Calendar component.
    */
   public static final String ICONS_PATH = "org.silverpeas.usercalendar.settings.UserCalendarIcons";
+
+  /**
+   * Hidden constructor.
+   */
+  private UserCalendarSettings() {
+  }
 
   /**
    * Gets all the messages for the User Calendar component and translated in the specified
