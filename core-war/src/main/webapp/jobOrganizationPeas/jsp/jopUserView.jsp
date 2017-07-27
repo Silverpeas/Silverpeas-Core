@@ -29,6 +29,8 @@
 <%@ page import="org.silverpeas.core.admin.user.model.UserFull"%>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper"%>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.admin.user.model.Group" %>
+<%@ page import="org.silverpeas.core.util.CollectionUtil" %>
 
 <%@ include file="check.jsp" %>
 
@@ -37,6 +39,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%
 	response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -89,26 +92,12 @@
 
     <script type="text/javascript">
     <!--
-    function MM_reloadPage(init) {  //reloads the window if Nav4 resized
-        if (init == true)
-          with (navigator) {
-            if ((appName == "Netscape") && (parseInt(appVersion) == 4)) {
-              document.MM_pgW = innerWidth;
-              document.MM_pgH = innerHeight;
-              onresize = MM_reloadPage;
-            }
-          }
-        else if (innerWidth != document.MM_pgW || innerHeight != document.MM_pgH)
-          location.reload();
-      }
       function showPDCSubscription() {
         chemin = '<%=(m_context + URLUtil.getURL(URLUtil.CMP_PDCSUBSCRIPTION))%>showUserSubscriptions.jsp?userId=${userId}';
         largeur = "600";
         hauteur = "440";
         SP_openWindow(chemin, "pdcWindow", largeur, hauteur, "resizable=yes,scrollbars=yes");
       }
-
-      MM_reloadPage(true);
 
       var groupWindow = window;
       function openGroup(groupId) {
@@ -334,60 +323,13 @@
 			</fieldset>
 		</div>
 
-				<div class="cell">
-			<fieldset class="skinFieldset" id="identity-extra">
-			<legend class="without-img"><fmt:message key="JOP.profile.fieldset.extra"/></legend>
-					<ul class="fields">
-					<%
-		            String[] specificKeys = userInfos.getPropertiesNames();
-		            int nbStdInfos = 4;
-		            int nbInfos = nbStdInfos + specificKeys.length;
-		            String currentKey = null;
-		            for (int iSL = nbStdInfos; iSL < nbInfos; iSL++) {
-						currentKey = specificKeys[iSL - nbStdInfos];
-						// Not display the password !
-						if (!currentKey.startsWith("password")) {
-					%>
-					<!--Specific Info-->
-					<li id="form-row-<%=currentKey%>" class="field">
-							<label class="txtlibform">
-								<%=WebEncodeHelper.javaStringToHtmlString(userInfos.
-						    getSpecificLabel(resource.getLanguage(),
-							currentKey))%>
-					</label>
-							<div class="champs">
-								<%
-					            if ("STRING".equals(userInfos.getPropertyType(currentKey)) ||
-					                "USERID".equals(userInfos.getPropertyType(currentKey))) {
-								%>
-								<%=WebEncodeHelper.javaStringToHtmlString(userInfos.getValue(currentKey))%>
-								<%
-					            } else if ("BOOLEAN".equals(userInfos.getPropertyType(currentKey))) {
-
-					              if (userInfos.getValue(currentKey) != null &&
-					                  "1".equals(userInfos.getValue(currentKey))) {
-					            %>
-							<fmt:message key="GML.yes"/>
-					            <%
-					              } else if (userInfos.getValue(currentKey) == null ||
-					                  "".equals(userInfos.getValue(currentKey)) ||
-					                  "0".equals(userInfos.getValue(currentKey))) {
-					            %>
-							<fmt:message key="GML.no"/>
-					           <%
-					              }
-					            }
-					           %>
-							</div>
-		                </li>
-				<%
-				}
-			}
-				%>
-				</ul>
-			</fieldset>
+      <div class="cell">
+        <fieldset class="skinFieldset" id="identity-extra">
+          <legend class="without-img"><fmt:message key="JOP.profile.fieldset.extra"/></legend>
+          <viewTags:displayUserExtraProperties user="${userInfos}" readOnly="true" includeEmail="false"/>
+        </fieldset>
 			</div>
-			</div>
+    </div>
 		</c:if>
 
 		<c:if test="${not empty groupInfos}">
@@ -441,8 +383,8 @@
 
         <%
           // Groups (only for user and not for group view)
-          String[][] groups = (String[][]) request.getAttribute("groups");
-          if (groups != null && groups.length > 0) {
+          List<Group> groups = (List<Group>) request.getAttribute("userGroups");
+          if (CollectionUtil.isNotEmpty(groups)) {
         %>
 		<fieldset class="skinFieldset" id="profil-groups-belong">
         <legend><fmt:message key="JOP.groups"/></legend>
@@ -455,14 +397,14 @@
             arrayPane.addArrayColumn(resource.getString("GML.users"));
             arrayPane.addArrayColumn(resource.getString("GML.description"));
 
-            for (final String[] group : groups) {
+            for (final Group group : groups) {
               //création des ligne de l'arrayPane
               ArrayLine arrayLine = arrayPane.addArrayLine();
-              arrayLine.addArrayCellText("<a href=\"#\" onclick=\"openGroup('" + group[0] +
-                  "')\" rel=\"/silverpeas/JobDomainPeasGroupPathServlet?GroupId=" + group[0] +
-                  "\">" + group[1] + "</a>");
-              arrayLine.addArrayCellText(group[2]);
-              arrayLine.addArrayCellText(group[3]);
+              arrayLine.addArrayCellText("<a href=\"#\" onclick=\"openGroup('" + group.getId() +
+                  "')\" rel=\"/silverpeas/JobDomainPeasGroupPathServlet?GroupId=" + group.getId() +
+                  "\">" + group.getName() + "</a>");
+              arrayLine.addArrayCellText(group.getNbUsers());
+              arrayLine.addArrayCellText(group.getDescription());
             }
             if (arrayPane.getColumnToSort() == 0) {
               arrayPane.setColumnToSort(1);
