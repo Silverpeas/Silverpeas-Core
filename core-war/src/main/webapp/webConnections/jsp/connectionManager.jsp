@@ -47,14 +47,16 @@
 	}
 
 	Button validateButton;
-	Button cancelButton;
-	if (isCreation) {
+	Button cancelButton = null;
+  boolean isPopup = false;
+  if (isCreation) {
 		validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:redirect('"+connection.getComponentId()+"')", false);
 	} else {
+    isPopup = true;
 		validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=updateData();", false);
 		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close()", false);
 	}
+  window.setPopup(isPopup);
 %>
 
 <html>
@@ -177,7 +179,9 @@ else {
 <%
 	ButtonPane buttonPane = gef.getButtonPane();
   buttonPane.addButton(validateButton);
-  buttonPane.addButton(cancelButton);
+  if (cancelButton != null) {
+    buttonPane.addButton(cancelButton);
+  }
 	out.println(buttonPane.print());
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
