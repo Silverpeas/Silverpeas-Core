@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.joborganization.servlets;
 
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.web.joborganization.JobOrganizationPeasException;
 import org.silverpeas.web.joborganization.control.JobOrganizationPeasSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -39,13 +40,6 @@ public class JobOrganizationPeasRequestRouter extends
     ComponentRequestRouter<JobOrganizationPeasSessionController> {
   private static final long serialVersionUID = -3952939609496239407L;
 
-  /**
-   * Method declaration
-   * @param mainSessionCtrl
-   * @param componentContext
-   * @return
-   * @see
-   */
   @Override
   public JobOrganizationPeasSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -62,16 +56,6 @@ public class JobOrganizationPeasRequestRouter extends
     return "jobOrganizationPeas";
   }
 
-  /**
-   * This method has to be implemented by the component request rooter it has to compute a
-   * destination page
-   *
-   * @param function The entering request function (ex : "Main.jsp")
-   * @param jobOrganizationSC The component Session Control, build and initialised.
-   * @param request
-   * @return The complete destination URL for a forward (ex :
-   * "/almanach/jsp/almanach.jsp?flag=user")
-   */
   @Override
   public String getDestination(String function,
       JobOrganizationPeasSessionController jobOrganizationSC, HttpRequest request) {
@@ -81,40 +65,32 @@ public class JobOrganizationPeasRequestRouter extends
         jobOrganizationSC.isRightCopyReplaceActivated());
 
     try {
-      if (function.equals("Main")) {
+      if ("Main".equals(function)) {
         destination = jobOrganizationSC.initSelectionUserOrGroup();
-      } else if (function.equals("ViewUserOrGroup")) {
+      } else if ("ViewUserOrGroup".equals(function)) {
         // get user panel data
         jobOrganizationSC.backSelectionUserOrGroup();
         destination = "/jobOrganizationPeas/jsp/jopUserView.jsp";
-      } else if (function.equals("SelectRightsUserOrGroup")) {
+      } else if ("SelectRightsUserOrGroup".equals(function)) {
         destination = jobOrganizationSC.initSelectionRightsUserOrGroup();
       } else if (function.startsWith("AssignRights")) {
         if (!jobOrganizationSC.isRightCopyReplaceActivated()) {
           throwHttpForbiddenError();
         }
-        String choiceAssignRights = request.getParameter("choiceAssignRights"); //1 = replace rights | 2 = add rights
-        String sourceRightsId = request.getParameter("sourceRightsId");
-        String sourceRightsType = request.getParameter("sourceRightsType"); //Set | Element
-        boolean nodeAssignRights = request.getParameterAsBoolean("nodeAssignRights"); //true | false
 
-        try {
-          jobOrganizationSC.assignRights(choiceAssignRights, sourceRightsId, sourceRightsType, nodeAssignRights);
-          request.setAttribute("message", jobOrganizationSC.getString("JOP.assignRightsMessageOk"));
-        } catch(JobOrganizationPeasException e) {
-          request.setAttribute("message", jobOrganizationSC.getString("JOP.assignRightsMessageNOk"));
-        }
+        assignRights(jobOrganizationSC, request);
 
         destination = "/jobOrganizationPeas/jsp/jopUserView.jsp";
       }
 
       if (destination.endsWith("jopUserView.jsp")) {
-        if (jobOrganizationSC.getCurrentUserId() != null) { // l'utilisateur a sélectionné un user
+        // a user has been selected
+        if (jobOrganizationSC.getCurrentUserId() != null) {
           request.setAttribute("userid", jobOrganizationSC.getCurrentUserId());
           request.setAttribute("user", jobOrganizationSC.getCurrentUser());
-          request.setAttribute("groups", jobOrganizationSC.getCurrentUserGroups());
-        } else if (jobOrganizationSC.getCurrentGroupId() != null) {// l'utilisateur a sélectionné un
-          // group
+          request.setAttribute("userGroups", jobOrganizationSC.getCurrentUserGroups());
+        } else if (jobOrganizationSC.getCurrentGroupId() != null) {
+          // a group has been selected
           request.setAttribute("group", jobOrganizationSC.getCurrentGroup());
           request.setAttribute("superGroupName", jobOrganizationSC.getCurrentSuperGroupName());
         }
@@ -129,6 +105,26 @@ public class JobOrganizationPeasRequestRouter extends
     }
 
     return destination;
+  }
+
+  private void assignRights(JobOrganizationPeasSessionController jobOrganizationSC,
+      HttpRequest request) {
+    //1 = replace rights | 2 = add rights
+    String choiceAssignRights = request.getParameter("choiceAssignRights");
+    String sourceRightsId = request.getParameter("sourceRightsId");
+    //Set | Element
+    String sourceRightsType = request.getParameter("sourceRightsType");
+    //true | false
+    boolean nodeAssignRights = request.getParameterAsBoolean("nodeAssignRights");
+
+    try {
+      jobOrganizationSC
+          .assignRights(choiceAssignRights, sourceRightsId, sourceRightsType, nodeAssignRights);
+      request.setAttribute("message", jobOrganizationSC.getString("JOP.assignRightsMessageOk"));
+    } catch (JobOrganizationPeasException e) {
+      SilverLogger.getLogger(this).error(e);
+      request.setAttribute("message", jobOrganizationSC.getString("JOP.assignRightsMessageNOk"));
+    }
   }
 
 }

@@ -66,6 +66,16 @@ public class LocalizedComponent {
     return localizedProfiles;
   }
 
+  public LocalizedProfile getProfile(String name) {
+    List<LocalizedProfile> profiles = getProfiles();
+    for (LocalizedProfile profile : profiles) {
+      if (name.equals(profile.getName())) {
+        return profile;
+      }
+    }
+    return null;
+  }
+
   public String getRouter() {
     return realComponent.getRouter();
   }
