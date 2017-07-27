@@ -212,9 +212,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     } else {
       setManagedSpaceId(null, true);
     }
-    if (!spaceId.equals(spaceUserId)) {
-      setSubSpaceId(spaceUserId);
+    String subSpaceId = null;
+    if (spaceId != null && !spaceId.equals(spaceUserId)) {
+      subSpaceId = spaceUserId;
     }
+    setSubSpaceId(subSpaceId);
   }
 
   private String getShortSpaceId(String spaceId) {

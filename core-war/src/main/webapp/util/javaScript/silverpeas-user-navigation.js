@@ -24,7 +24,7 @@
 
 
 /*
-Silverpeas plugin which handles the behaviour about the connected users information.
+ Silverpeas plugin which handles the behaviour about the navigation of a user.
  */
 
 (function() {
@@ -47,7 +47,7 @@ Silverpeas plugin which handles the behaviour about the connected users informat
   }
 
   /**
-   * Handling the rendering of the Silverpeas's connected users.
+   * Handling the behaviour of the Silverpeas's user navigation.
    * @constructor
    */
   $window.spUserNavigation = new function() {
@@ -56,12 +56,12 @@ Silverpeas plugin which handles the behaviour about the connected users informat
      * Go to space administration (back office side)
      */
     this.setupSpace = function(spaceId) {
-      window.top.location = webContext+"/RjobManagerPeas/jsp/Main?SpaceId=" + spaceId;
+      window.top.location = webContext + "/RjobManagerPeas/jsp/Main?SpaceId=" + spaceId;
     };
 
     this.setupComponent = function(componentId) {
-      spLayout.getBody().getContent().load(webContext+"/RjobStartPagePeas/jsp/SetupComponent?ComponentId=" + componentId);
+      spLayout.getBody().getContent().load(
+          webContext + "/RjobStartPagePeas/jsp/SetupComponent?ComponentId=" + componentId);
     };
-
   };
 })();
