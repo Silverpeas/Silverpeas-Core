@@ -51,6 +51,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
   private String idCurrentServiceActif = null;
   private String idCurrentOperationActif = null;
   private boolean isManager = false;
+  private String directAccessToSpaceId;
 
   /**
    * Standard Session Controller Constructeur
@@ -335,7 +336,8 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
   public void changeServiceActif(String idNewService) {
     // mise a jour de l'id actif et de l'objet correspondant
-    if (this.idCurrentServiceActif != null) {// si = null, nous sommes dans la
+    if (this.idCurrentServiceActif != null) {
+      // si = null, nous sommes dans la
       // première initialisation de idCurrentServiceActif reset du flag actif du service courant
       services.get(this.idCurrentServiceActif).setActif(false);
     }
@@ -384,5 +386,13 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
   public String getIdDefaultService() {
     return "1";
+  }
+
+  public String getDirectAccessToSpaceId() {
+    return directAccessToSpaceId;
+  }
+
+  public void setDirectAccessToSpaceId(final String directAccessToSpaceId) {
+    this.directAccessToSpaceId = directAccessToSpaceId;
   }
 }

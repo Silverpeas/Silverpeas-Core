@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.jobmanager.servlets;
 
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.web.jobmanager.JobManagerService;
 import org.silverpeas.web.jobmanager.control.JobManagerPeasSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -76,16 +77,29 @@ public class JobManagerPeasRequestRouter extends
       HttpRequest request) {
     String destination = "";
 
-
     try {
       if (function.startsWith("Main")) {
+        String spaceId = request.getParameter("SpaceId");
+        if (StringUtil.isDefined(spaceId)) {
+          jobManagerSC.setDirectAccessToSpaceId(spaceId);
+          jobManagerSC.changeServiceActif("1");
+          jobManagerSC.changeOperationActif("12");
+        } else {
+          String service = request.getParameter("Service");
+          if (StringUtil.isDefined(service)) {
+            String operation = request.getParameter("Operation");
+            jobManagerSC.changeServiceActif(service);
+            jobManagerSC.changeOperationActif(operation);
+          }
+        }
         destination = "/jobManagerPeas/jsp/jobManager.jsp";
-      } else if (function.startsWith("TopBarManager"))// lors du permier
-      // accès=> via jobManager.jsp
-      {
+      } else if (function.startsWith("TopBarManager")) {
+        // lors du premier accès=> via jobManager.jsp
         // set le service actif par le service par defaut; active aussi une
         // opération par défaut pour ce service
-        jobManagerSC.changeServiceActif(jobManagerSC.getIdDefaultService());
+        if (!StringUtil.isDefined(jobManagerSC.getIdServiceActif())) {
+          jobManagerSC.changeServiceActif(jobManagerSC.getIdDefaultService());
+        }
         destination = this.setAttributes(request, jobManagerSC);
       } else if (function.startsWith("ChangeService")) {
         String idService = request.getParameter("Id");
@@ -104,9 +118,7 @@ public class JobManagerPeasRequestRouter extends
         // set idCurrentOperationActif avec cette id
         jobManagerSC.changeOperationActif(idOperation);
         destination = this.setAttributes(request, jobManagerSC);
-      }
-
-      else if (function.startsWith("SetMaintenanceMode")) {
+      } else if (function.startsWith("SetMaintenanceMode")) {
         jobManagerSC.setAppModeMaintenance(Boolean.parseBoolean(request.getParameter("mode")));
         destination = getDestination("ManageMaintenanceMode", jobManagerSC,
             request);
@@ -114,9 +126,7 @@ public class JobManagerPeasRequestRouter extends
         Boolean mode = jobManagerSC.isAppInMaintenance();
         request.setAttribute("mode", mode.toString());
         destination = "/jobManagerPeas/jsp/manageMaintenance.jsp";
-      }
-
-      else {
+      } else {
         destination = "/jobManagerPeas/jsp/" + function;
       }
     } catch (Exception e) {
@@ -137,8 +147,13 @@ public class JobManagerPeasRequestRouter extends
     request.setAttribute("Operation", jmpSC.getSubServices(jmpSC
         .getIdServiceActif()));
 
-    // l'objet URL est un string representatnt l'operation actice pour le service actif
-    request.setAttribute("URL", (jmpSC.getService(jmpSC.getIdOperationActif())).getUrl());
+    // l'objet URL est un string representatnt l'operation active pour le service actif
+    String url = jmpSC.getService(jmpSC.getIdOperationActif()).getUrl();
+    if (StringUtil.isDefined(jmpSC.getDirectAccessToSpaceId())) {
+      url += "?SpaceId="+jmpSC.getDirectAccessToSpaceId();
+      jmpSC.setDirectAccessToSpaceId(null);
+    }
+    request.setAttribute("URL", url);
     return "/jobManagerPeas/jsp/topBarManager.jsp";
   }
 }

@@ -199,10 +199,21 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public void setSpaceId(String spaceUserId) {
-    if (m_NavBarMgr.setCurrentSpace(spaceUserId)) {
-      setManagedSpaceId(spaceUserId, true);
+    String spaceId = spaceUserId;
+    if (StringUtil.isDefined(spaceId)) {
+      List<SpaceInstLight> path =
+          ServiceProvider.getService(AdminController.class).getPathToSpace(spaceId, true);
+      if (path.size() > 1) {
+        spaceId = path.get(0).getId();
+      }
+    }
+    if (m_NavBarMgr.setCurrentSpace(spaceId)) {
+      setManagedSpaceId(spaceId, true);
     } else {
       setManagedSpaceId(null, true);
+    }
+    if (!spaceId.equals(spaceUserId)) {
+      setSubSpaceId(spaceUserId);
     }
   }
 
