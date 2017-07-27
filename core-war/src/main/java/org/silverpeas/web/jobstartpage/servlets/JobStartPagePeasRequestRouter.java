@@ -174,6 +174,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
 
     if ("Main".equals(function)) {
       jobStartPageSC.init(); // Only ONCE
+      request.setAttribute("SpaceId", request.getParameter("SpaceId"));
       destination = "/jobStartPagePeas/jsp/jobStartPage.jsp";
     } else if (function.startsWith("GoToSpace")) {
       if (StringUtil.isDefined(request.getParameter("Espace"))) {
