@@ -155,8 +155,7 @@ public class AdminPersonalWebDelegate {
   private Map<String, WAComponent> getCachedNotUsedComponents() {
     if (indexedNotUsedComponents == null) {
       indexedNotUsedComponents = new LinkedHashMap<>();
-      for (final WAComponent component : getPersonalSpaceManager().getVisibleComponents(
-          getOrganisationController())) {
+      for (final WAComponent component : getPersonalSpaceManager().getVisibleComponents()) {
         if (!isComponentUsed(component)) {
           indexedNotUsedComponents.put(component.getName().toLowerCase(), component);
         }

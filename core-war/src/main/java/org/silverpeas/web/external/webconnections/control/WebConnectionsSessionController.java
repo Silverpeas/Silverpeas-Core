@@ -88,6 +88,8 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
     connection.setUserId(getUserId());
     connection.setUrl(url);
     connection.setComponentName(componentName);
+    connection.setNewWindow(StringUtil.getBooleanValue(inst.getParameterValue("openNewWindow")));
+    connection.setMethod(inst.getParameterValue("method"));
   }
 
   /**

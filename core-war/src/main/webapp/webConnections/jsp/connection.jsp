@@ -28,9 +28,10 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ include file="check.jsp" %>
+<c:set var="connection" value="${requestScope.Connection}" scope="page"/>
 <html>
   <head>
-    <title>_________________/ Silverpeas - Corporate portal organizer \_________________/</title>
     <view:looknfeel />
     <script language="javascript">
       function sendForm() {
@@ -39,13 +40,24 @@
     </script>
   </head>
   <body onload="javascript:sendForm()">
-    <c:set var="connection" value="${requestScope.Connection}" scope="page"/>
+  <view:browseBar path='<%=resource.getString("webConnections.label")%>' extraInformations=" > ${connection.componentName}"/>
+    <view:window>
+    <view:frame>
     <c:set var="connectionParams" value="${connection.param}" scope="page"/>
+    <c:set var="target" value=""/>
+    <c:if test="${connection.newWindow && !requestScope.IgnoreNewWindow}">
+      <c:set var="target" value="_blank"/>
+      <div class="inlineMessage">
+        <%=resource.getString("webConnections.explanation")%>
+      </div>
+    </c:if>
     <% pageContext.setAttribute("entries", ((java.util.Map)pageContext.getAttribute("connectionParams")).entrySet()); %>
-    <form name="connectionForm" action="<c:out value="${requestScope.Connection.url}"/>" method="<c:out value="${requestScope.Method}"/>">
+    <form name="connectionForm" action="<c:out value="${connection.url}"/>" method="<c:out value="${connection.method}"/>" target="${target}">
       <c:forEach items="${pageScope.entries}" var="connectionParam" >
         <input type="hidden" name="<c:out value="${connectionParam.key}" />" value="<c:out value="${connectionParam.value}" />"/>
       </c:forEach>
     </form>
+    </view:frame>
+    </view:window>
   </body>
 </html>

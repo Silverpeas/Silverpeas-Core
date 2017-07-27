@@ -28,6 +28,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.ServletRequest;
 import javax.ws.rs.FormParam;
@@ -78,10 +79,10 @@ public class RequestParameterDecoder {
    * Decodes the request parameters in order to return an object filled with their values.
    * @param request the {@link ServletRequest} that will be wrapped by {@link HttpRequest}
    * @param objectClass the class of the requested returned instance.
-   * @param <OBJECT> the type of the requested returned instance.
+   * @param <O> the type of the requested returned instance.
    * @return the decoded specified entity.
    */
-  public static <OBJECT> OBJECT decode(ServletRequest request, Class<OBJECT> objectClass) {
+  public static <O> O decode(ServletRequest request, Class<O> objectClass) {
     return decode(HttpRequest.decorate(request), objectClass);
   }
 
@@ -91,10 +92,10 @@ public class RequestParameterDecoder {
    * included
    * those of multipart request type.
    * @param objectClass the class of the requested returned instance.
-   * @param <OBJECT> the type of the requested returned instance.
+   * @param <O> the type of the requested returned instance.
    * @return the decoded specified entity.
    */
-  public static <OBJECT> OBJECT decode(HttpRequest request, Class<OBJECT> objectClass) {
+  public static <O> O decode(HttpRequest request, Class<O> objectClass) {
     return getInstance()._decode(request, objectClass);
   }
 
@@ -194,8 +195,8 @@ public class RequestParameterDecoder {
 
     try {
       return (E) fromMethod.invoke(null, enumValue);
-    } catch (Exception ignore) {
-      // ignore this exception as it should never occur
+    } catch (Exception e) {
+      SilverLogger.getLogger(RequestParameterDecoder.class).warn(e);
     }
 
     return null;
@@ -204,13 +205,13 @@ public class RequestParameterDecoder {
   /**
    * The private implementation.
    */
-  private <OBJECT> OBJECT _decode(HttpRequest request, Class<OBJECT> objectClass) {
+  private <O> O _decode(HttpRequest request, Class<O> objectClass) {
     try {
 
       // New instance
-      Constructor<OBJECT> constructor = objectClass.getDeclaredConstructor();
+      Constructor<O> constructor = objectClass.getDeclaredConstructor();
       constructor.setAccessible(true);
-      OBJECT newInstance = constructor.newInstance();
+      O newInstance = constructor.newInstance();
 
       // Reading all class fields.
       for (Field field : objectClass.getDeclaredFields()) {

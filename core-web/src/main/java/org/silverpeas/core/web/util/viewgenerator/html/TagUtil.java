@@ -29,6 +29,14 @@ package org.silverpeas.core.web.util.viewgenerator.html;
  */
 public class TagUtil {
 
+  private static final int ANGULAR_JS_LENGTH = 10;
+
+  /**
+   * Hidden constructor.
+   */
+  private TagUtil() {
+  }
+
   /**
    * Centralizes all the possibilities about the conversion of action into href.
    * @param action the action.
@@ -37,7 +45,7 @@ public class TagUtil {
   public static String formatHrefFromAction(final String action) {
     String href = "href=\"" + action + "\"";
     if (action.startsWith("angularjs:")) {
-      href = action.substring(10);
+      href = action.substring(ANGULAR_JS_LENGTH);
       if (href.contains("{{") && href.contains("}}")) {
         href = "ng-href=\"" + href + "\"";
       } else {

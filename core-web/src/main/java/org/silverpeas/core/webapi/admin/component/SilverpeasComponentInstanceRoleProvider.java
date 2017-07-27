@@ -44,6 +44,12 @@ public class SilverpeasComponentInstanceRoleProvider {
   private static final String HIGHEST_USER_ROLE_PREFIX = "@HIGHEST_COMPONENT_USER_ROLE_PREFIX@";
 
   /**
+   * Hidden constructor.
+   */
+  private SilverpeasComponentInstanceRoleProvider() {
+  }
+
+  /**
    * Gets the highest role on the component represented by the given identifier the current user
    * has.<br/>
    * The result is put into request cache in order to improve performances in case of multiple

@@ -84,7 +84,7 @@ public class ICalExporter implements Exporter<ExportableCalendar> {
           writer.close();
         }
       } catch (Exception ex) {
-        SilverLogger.getLogger(this).error(e);
+        SilverLogger.getLogger(this).error(ex);
       }
       SilverLogger.getLogger(this).error(e);
       throw new ExportException(e.getMessage(), e);

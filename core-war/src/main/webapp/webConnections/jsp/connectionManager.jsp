@@ -31,7 +31,7 @@
 	ConnectionDetail 	connection	= (ConnectionDetail) request.getAttribute("Connection");
 	String 				action		= (String) request.getAttribute("Action");
 	ComponentInst		inst		= (ComponentInst) request.getAttribute("ComponentInst");
-	boolean				isAnonymousAccess = ((Boolean) request.getAttribute("IsAnonymousAccess")).booleanValue();
+	boolean				isAnonymousAccess = (Boolean) request.getAttribute("IsAnonymousAccess");
 
 	String login = "";
 	String password = "";
@@ -40,30 +40,28 @@
 
 	description = inst.getDescription();
 	if (!isCreation) {
-	String nameLogin = inst.getParameterValue("login");
+	  String nameLogin = inst.getParameterValue("login");
 		login = (String) connection.getParam().get(nameLogin);
 		String namePassword = inst.getParameterValue("password");
 		password = (String) connection.getParam().get(namePassword);
 	}
 
-	// d�claration des boutons
 	Button validateButton;
-	Button cancelButton;
-	if (isCreation) {
+	Button cancelButton = null;
+  boolean isPopup = false;
+  if (isCreation) {
 		validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=sendData();", false);
-		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:redirect('"+connection.getComponentId()+"')", false);
-	}
-	else {
+	} else {
+    isPopup = true;
 		validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=updateData();", false);
 		cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:window.close()", false);
 	}
-
-
+  window.setPopup(isPopup);
 %>
 
 <html>
 <head>
-<view:looknfeel withCheckFormScript="true"/>
+<view:looknfeel withCheckFormScript="true" withFieldsetStyle="true"/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/dateUtils.js"></script>
 <script language="javascript">
 
@@ -132,62 +130,66 @@ else {
 	browseBar.setComponentName(inst.getLabel() + " > " + resource.getString("webConnections.updateConnection"));
 }
 
-	Board board	= gef.getBoard();
-
 	out.println(window.printBefore());
-    out.println(frame.printBefore());
+  out.println(frame.printBefore());
 %>
 
 	<% if (isAnonymousAccess) { %>
 		<div class="inlineMessage"><%=resource.getString("webConnections.parametersWillNotBeStored")%></div><br clear="all"/>
 	<% } %>
 
-<%
-    out.println(board.printBefore());
-%>
+<% if (isCreation) { %>
+  <div class="inlineMessage"><%=resource.getString("webConnections.addConnection.explanation")%></div><br/>
+<% } %>
 
 <form name="connectionForm" method="post" action="<%=m_context%>/RwebConnections/jsp/<%=action%>">
-<table cellpadding="5" width="100%">
-	<tr>
-		<td class="txtlibform"><%=resource.getString("GML.name") %> :</td>
-		<td><%=inst.getLabel()%></td>
-	</tr>
-	<% if (StringUtil.isDefined(description)) { %>
-		<tr>
-		<td class="txtlibform"><%=resource.getString("GML.description") %> :</td>
-		<td><%=description%></td>
-	</tr>
-	<% } %>
-	<tr>
-		<td class="txtlibform"><%=resource.getString("webConnections.login") %> :</td>
-		<td><input type="text" name="Login" size="80" maxlength="100" value="<%=login%>"/>
-			<img src="<%=resource.getIcon("webconnections.mandatory")%>" width="5" height="5"/>
-		</td>
-	</tr>
-	<tr>
-		<td class="txtlibform"><%=resource.getString("webConnections.password")%> :</td>
-		<td><input type="password" name="Password" size="80" maxlength="100" value="<%=password%>"/>
-			<input type="hidden" name="ConnectionId" value="<%=connection.getConnectionId()%>"/>
-			<input type="hidden" name="ComponentId" value="<%=connection.getComponentId()%>"/>
-		</td>
-	</tr>
-	<tr><td colspan="2">( <img src=<%=resource.getIcon("webconnections.mandatory")%> width="5" height="5"/> : <%=resource.getString("webconnections.mandatory")%> )</td></tr>
-</table>
+  <fieldset class="skinFieldset">
+    <legend><%=inst.getLabel()%></legend>
+    <div class="oneFieldPerLine">
+    <% if (StringUtil.isDefined(description)) { %>
+      <div class="field">
+        <label class="txtlibform"><%=resource.getString("GML.description") %></label>
+        <div class="champs">
+          <%=description%>
+        </div>
+      </div>
+    <% } %>
+    <div class="field">
+      <label class="txtlibform"><%=resource.getString("webConnections.login") %></label>
+      <div class="champs">
+        <input type="text" name="Login" maxlength="100" value="<%=login%>"/>
+        <img src="<%=resource.getIcon("webconnections.mandatory")%>" width="5" height="5"/>
+      </div>
+    </div>
+    <div class="field">
+      <label class="txtlibform"><%=resource.getString("webConnections.password") %></label>
+      <div class="champs">
+        <input type="password" name="Password" maxlength="100" value="<%=password%>"/>
+        <input type="hidden" name="ConnectionId" value="<%=connection.getConnectionId()%>"/>
+        <input type="hidden" name="ComponentId" value="<%=connection.getComponentId()%>"/>
+      </div>
+    </div>
+    </div>
+  </fieldset>
+  <div class="legend">
+    <img src="<%=resource.getIcon("webconnections.mandatory")%>" width="5" height="5"/> : <%=resource.getString("GML.mandatory")%>
+  </div>
 </form>
 
 <%
-	out.println(board.printAfter());
 	ButtonPane buttonPane = gef.getButtonPane();
-    buttonPane.addButton(validateButton);
+  buttonPane.addButton(validateButton);
+  if (cancelButton != null) {
     buttonPane.addButton(cancelButton);
-	out.println("<br/><center>"+buttonPane.print()+"</center><br/>");
+  }
+	out.println(buttonPane.print());
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</body>
 
 <form name="redirectForm" action="" method="post">
-	<input type="hidden" name="ComponentId" value="<%=connection.getComponentId()%>"/>
+  <input type="hidden" name="ComponentId" value="<%=connection.getComponentId()%>"/>
 </form>
 
+</body>
 </html>
