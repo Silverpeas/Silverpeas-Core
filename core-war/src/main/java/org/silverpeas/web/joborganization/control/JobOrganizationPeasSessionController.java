@@ -23,29 +23,30 @@
  */
 package org.silverpeas.web.joborganization.control;
 
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.LocalizedComponent;
+import org.silverpeas.core.admin.component.model.LocalizedProfile;
 import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.RightAssignationContext;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.web.joborganization.JobOrganizationPeasException;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.Group;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.service.RightAssignationContext;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.web.joborganization.JobOrganizationPeasException;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -54,14 +55,13 @@ import java.util.Map;
  * @author Thierry Leroi
  */
 public class JobOrganizationPeasSessionController extends AbstractComponentSessionController {
-  // View Group or User
 
   private String currentUserId = null;
   private String currentGroupId = null;
   private AdminController myAdminController = ServiceProvider.getService(AdminController.class);
   private UserFull currentUser = null;
   private Group currentGroup = null;
-  private String[][] currentGroups = null;
+  private List<Group> currentGroups = null;
   private String[] currentSpaces = null;
   private List<String[]> currentProfiles = null;
   private Map<String, WAComponent> componentOfficialNames = getAdminController().getAllComponents();
@@ -73,7 +73,6 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
    */
   public JobOrganizationPeasSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {
@@ -100,7 +99,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     currentProfiles = null;
   }
 
-  public AdminController getAdminController() {
+  private AdminController getAdminController() {
     return myAdminController;
   }
 
@@ -119,7 +118,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     resetCurrentArrays();
   }
 
-  public void setCurrentGroupId(String groupId) {
+  private void setCurrentGroupId(String groupId) {
     if (currentGroupId != null && !currentGroupId.equals(groupId)) {
       resetCurrentGroup();
     }
@@ -129,7 +128,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     }
   }
 
-  public void resetCurrentGroup() {
+  private void resetCurrentGroup() {
     currentGroupId = null;
     resetCurrentArrays();
   }
@@ -145,24 +144,13 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
   /**
    * @return an array of (id, name, number of users, description).
    */
-  public String[][] getCurrentUserGroups() {
+  @SuppressWarnings("unchecked")
+  public List<Group> getCurrentUserGroups() {
     if (currentGroups == null) {
       if (getCurrentUserId() == null) {
-        return null;
+        return Collections.emptyList();
       }
-      List<GroupDetail> groups = getAdminController().getDirectGroupsOfUser(
-          getCurrentUserId());
-      if (groups.isEmpty()) {
-        return null;
-      }
-      currentGroups = new String[groups.size()][4];
-      for (int iGrp = 0; iGrp < groups.size(); iGrp++) {
-        Group theCurrentGroup = groups.get(iGrp);
-        currentGroups[iGrp][0] = theCurrentGroup.getId();
-        currentGroups[iGrp][1] = theCurrentGroup.getName();
-        currentGroups[iGrp][2] = String.valueOf(theCurrentGroup.getUserIds().length);
-        currentGroups[iGrp][3] = theCurrentGroup.getDescription();
-      }
+      currentGroups = (List) getAdminController().getDirectGroupsOfUser(getCurrentUserId());
     }
     return currentGroups;
   }
@@ -222,7 +210,7 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
             getCurrentUserId());
       }
       if (spaceIds == null) {
-        return null;
+        return new String[0];
       }
       String[] spaceIdsBIS = new String[spaceIds.length];
       for (int j = 0; j < spaceIds.length; j++) {
@@ -243,54 +231,37 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
    */
   public List<String[]> getCurrentProfiles() {
     if (currentProfiles == null) {
-      List<String> distinctProfiles = new ArrayList<String>();
+      List<String> distinctProfiles = new ArrayList<>();
       String[] profileIds = null;
       if (getCurrentGroupId() != null) {
         profileIds = getAdminController().getProfileIdsOfGroup(
             getCurrentGroupId());
-      }
-      if (getCurrentUserId() != null) {
+      } else if (getCurrentUserId() != null) {
         profileIds = getAdminController().getProfileIds(getCurrentUserId());
       }
       if (profileIds == null) {
-        return null;
+        return Collections.emptyList();
       }
-      currentProfiles = new ArrayList<String[]>();
-      ProfileInst currentProfile;
-      ComponentInst currentComponent;
-      List<String> spaceIds = new ArrayList<String>();
+      currentProfiles = new ArrayList<>();
+      List<String> spaceIds = new ArrayList<>();
       for (String profileId : profileIds) {
-        currentProfile = getAdminController().getProfileInst(profileId);
-        currentComponent = getAdminController().getComponentInst(
+        ProfileInst currentProfile = getAdminController().getProfileInst(profileId);
+        ComponentInstLight currentComponent = getAdminController().getComponentInstLight(
             currentProfile.getComponentFatherId());
         String spaceId = currentComponent.getDomainFatherId();
         SpaceInstLight spaceInst = getAdminController().getSpaceInstLight(spaceId);
-        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {// on n'affiche
-          // pas les
-          // composants de
-          // l'espace
-          // personnel
+        if (currentComponent.getStatus() == null && !spaceInst.isPersonalSpace()) {
+          // Personal components are not displayed
           String dProfile = currentComponent.getId() + currentProfile.getName();
           if (!distinctProfiles.contains(dProfile)) {
-            String[] profile2Display = new String[6];
-            profile2Display[1] = currentComponent.getId();
-            profile2Display[2] = currentComponent.getName();
-            profile2Display[3] = currentComponent.getLabel();
-            profile2Display[4] = getComponentOfficialName(currentComponent.getName());
-            profile2Display[5] = currentProfile.getLabel();
-            if (!StringUtil.isDefined(profile2Display[5])) {
-              profile2Display[5] = getAdminController().getProfileLabelfromName(
-                  currentComponent.getName(), currentProfile.getName(), getLanguage());
-            }
-            currentProfiles.add(profile2Display);
+            currentProfiles.add(getProfileToDisplay(currentComponent, currentProfile));
             spaceIds.add(spaceId);
             distinctProfiles.add(dProfile);
           }
         }
       }
       String[] spaceNames =
-          getAdminController().getSpaceNames(spaceIds.toArray(new String[spaceIds.
-          size()]));
+          getAdminController().getSpaceNames(spaceIds.toArray(new String[spaceIds.size()]));
       for (int iProfile = 0; iProfile < currentProfiles.size(); iProfile++) {
         String[] profile2Display = currentProfiles.get(iProfile);
         profile2Display[0] = spaceNames[iProfile];
@@ -299,36 +270,41 @@ public class JobOrganizationPeasSessionController extends AbstractComponentSessi
     return currentProfiles;
   }
 
-  /**
-   * @return the official component name given the internal name
-   */
-  private String getComponentOfficialName(String internalName) {
-    try {
-      WAComponent component = componentOfficialNames.get(internalName);
-      if (component != null) {
-        return component.getLabel().get(getLanguage());
+  private String[] getProfileToDisplay(ComponentInstLight component, ProfileInst profile) {
+    String[] profile2Display = new String[6];
+    profile2Display[1] = component.getId();
+    profile2Display[2] = component.getName();
+    profile2Display[3] = component.getLabel();
+    LocalizedComponent localizedComponent = getLocalizedComponent(component.getName());
+    if (localizedComponent != null) {
+      profile2Display[4] = localizedComponent.getLabel();
+      LocalizedProfile localizedProfile = localizedComponent.getProfile(profile.getName());
+      if (localizedProfile != null) {
+        profile2Display[5] = localizedProfile.getLabel();
       }
-      return internalName;
-    } catch (Exception e) {
-      SilverTrace.error("jobOrganizationPeas",
-          "JobOrganizationPeasSessionController.getComponentOfficialName",
-          "root.MSG_GEN_PARAM_VALUE", "!!!!! ERROR getting official name="
-          + internalName, e);
-      return internalName;
     }
+    return profile2Display;
+  }
+
+  private LocalizedComponent getLocalizedComponent(String name) {
+    WAComponent component = componentOfficialNames.get(name);
+    if (component != null) {
+      return new LocalizedComponent(component, getLanguage());
+    }
+    return null;
   }
 
   /*
    * UserPanel initialization : a user or (exclusive) a group
    */
   public String initSelectionUserOrGroup() {
-    String m_context = URLUtil.getApplicationURL();
+    String mContext = URLUtil.getApplicationURL();
     String hostSpaceName = getString("JOP.pseudoSpace");
-    String cancelUrl = m_context
+    String cancelUrl = mContext
         + Selection.getSelectionURL();
     Pair<String, String> hostComponentName = new Pair<>(getString("JOP.pseudoPeas"),
         cancelUrl);
-    String hostUrl = m_context + getComponentUrl() + "ViewUserOrGroup";
+    String hostUrl = mContext + getComponentUrl() + "ViewUserOrGroup";
 
     Selection sel = getSelection();
     sel.resetAll();
