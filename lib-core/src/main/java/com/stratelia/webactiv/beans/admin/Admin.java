@@ -1672,7 +1672,7 @@ public class Admin {
     }
   }
 
-  public void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space) throws
+  private void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space) throws
       AdminException {
     setSpaceProfilesToComponent(component, space, false);
   }
@@ -1752,6 +1752,72 @@ public class Admin {
         domainDriverManager.releaseOrganizationSchema();
       }
     }
+
+    // Now that rights are applied on component, check rights on component objects to delete
+    // groups or users who have no more rights on component
+    checkObjectsProfiles(component.getId());
+  }
+
+  private void checkObjectsProfiles(String componentId) throws AdminException {
+    DomainDriverManager ddManager = DomainDriverManagerFactory.getCurrentDomainDriverManager();
+    List<ProfileInst> objectsProfiles = null;
+    String shortComponentId = getDriverComponentId(componentId);
+    try {
+      objectsProfiles = profiledObjectManager.getProfiles(ddManager, Integer.parseInt(shortComponentId));
+    } catch (Exception e) {
+      SilverTrace.warn(MODULE_ADMIN, "admin.checkObjectsProfiles", PARAM_MSG_KEY,
+          "Error when getting all component objects profiles "+componentId, e);
+    }
+    for (ProfileInst objectProfile : objectsProfiles) {
+      try {
+        List<String> groupIdsToRemove = new ArrayList<String>();
+        List<String> userIdsToRemove = new ArrayList<String>();
+        List<String> groupIds = objectProfile.getAllGroups();
+        for (String groupId : groupIds) {
+          if (!isComponentAvailableByGroup(componentId, groupId)) {
+            groupIdsToRemove.add(groupId);
+          }
+        }
+        List<String> userIds = objectProfile.getAllUsers();
+        for (String userId : userIds) {
+          if (!isComponentAvailable(componentId, userId)) {
+            userIdsToRemove.add(userId);
+          }
+        }
+        if (!groupIdsToRemove.isEmpty() || !userIdsToRemove.isEmpty()) {
+          for (String groupId : groupIdsToRemove) {
+            objectProfile.removeGroup(groupId);
+          }
+          for (String userId : userIdsToRemove) {
+            objectProfile.removeUser(userId);
+          }
+
+          ddManager.startTransaction(false);
+          profileManager.updateProfileInst(ddManager, objectProfile);
+          ddManager.commit();
+        }
+      } catch (Exception e) {
+        SilverTrace.warn(MODULE_ADMIN, "admin.checkObjectsProfiles", PARAM_MSG_KEY,
+            "Error when checking object profile "+objectProfile.getId(), e);
+      } finally {
+        ddManager.releaseOrganizationSchema();
+      }
+    }
+  }
+
+  private boolean isComponentAvailableByGroup(String componentId, String groupId)
+      throws AdminException {
+    try {
+      DomainDriverManager domainDriverManager = DomainDriverManagerFactory
+          .getCurrentDomainDriverManager();
+      List<String> groupIds = groupManager.getPathToGroup(domainDriverManager, groupId);
+      groupIds.add(groupId);
+      return componentManager.getAllowedComponentIds(-1, groupIds).contains(componentId);
+    } catch (Exception e) {
+      throw new AdminException("Admin.isComponentAvailableByGroup",
+          SilverpeasException.ERROR, "admin.EX_ERR_IS_COMPONENT_AVAILABLE",
+          "groupId : '" + groupId + "', component Id : '" + componentId + "'", e);
+    }
   }
 
   public void moveSpace(String spaceId, String fatherId) throws AdminException {
@@ -1787,13 +1853,13 @@ public class Admin {
       if (useProfileInheritance) {
         space = spaceManager.getSpaceInstById(domainDriverManager, shortSpaceId);
 
-        // inherited rights must be removed but local rights are preserved
-        List<SpaceProfileInst> inheritedProfiles = space.getInheritedProfiles();
-        for (SpaceProfileInst profile : inheritedProfiles) {
-          deleteSpaceProfileInst(profile.getId(), false);
-        }
-
-        if (!moveOnTop) {
+        if (moveOnTop) {
+          // inherited rights must be removed but local rights are preserved
+          List<SpaceProfileInst> inheritedProfiles = space.getInheritedProfiles();
+          for (SpaceProfileInst profile : inheritedProfiles) {
+            deleteSpaceProfileInst(profile.getId(), false);
+          }
+        } else {
           if (!space.isInheritanceBlocked()) {
             // space inherits rights from parent
             SpaceInst father = getSpaceInstById(shortFatherId);
@@ -1856,6 +1922,11 @@ public class Admin {
           "admin.EX_ERR_MOVE_Space", "spaceId = " + spaceId + ",  fatherId =" + fatherId, e);
     } finally {
       domainDriverManager.releaseOrganizationSchema();
+    }
+
+    String[] allComponentIds = getAllComponentIdsRecur(spaceId);
+    for (String componentId : allComponentIds) {
+      checkObjectsProfiles(componentId);
     }
   }
 
@@ -2209,7 +2280,7 @@ public class Admin {
         domainDriverManager.startTransaction(false);
       }
       profileManager
-          .updateProfileInst(groupManager, domainDriverManager, newProfile, rightAssignationMode);
+          .updateProfileInst(domainDriverManager, newProfile);
       if (StringUtil.isDefined(
           userId) && (newProfile.getObjectId() == -1 || newProfile.getObjectId() == 0)) {
         ComponentInst component = getComponentInst(newProfile.getComponentFatherId(), true, null);
@@ -5473,7 +5544,7 @@ public class Admin {
   /**
    * Return all the componentIds recursively in the subspaces available in webactiv given a space id
    */
-  public String[] getAllComponentIdsRecur(String sSpaceId) throws Exception {
+  public String[] getAllComponentIdsRecur(String sSpaceId) {
     List<ComponentInstLight> components = TreeCache.getComponentsInSpaceAndSubspaces(
         getDriverSpaceId(sSpaceId));
 

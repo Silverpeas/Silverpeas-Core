@@ -298,7 +298,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @return
    * @throws AdminPersistenceException
    */
-  public boolean isUserDirectlyInRole(int userId, int userRoleId) throws AdminPersistenceException {
+  private boolean isUserDirectlyInRole(int userId, int userRoleId) throws AdminPersistenceException {
     int[] ids = new int[] { userId, userRoleId };
     Integer result = getInteger(SELECT_COUNT_USERROLE_USER_REL, ids);
     return result != null && result >= 1;
@@ -346,12 +346,6 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws AdminPersistenceException
    */
   public void removeUserFromUserRole(int userId, int userRoleId) throws AdminPersistenceException {
-    if (!isUserDirectlyInRole(userId, userRoleId)) {
-      throw new AdminPersistenceException(
-          "UserRoleTable.removeUserFromUserRole", SilverpeasException.ERROR,
-          "admin.EX_ERR_USER_NOT_IN_USERROLE", "userrole id: '" + userRoleId
-          + "', user id: '" + userId + "'");
-    }
     int[] params = new int[] { userRoleId, userId };
     SynchroReport.debug("UserRoleTable.removeUserFromUserRole()",
         "Retrait de l'utilisateur d'ID " + userId + " du role d'ID "
@@ -399,7 +393,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @return
    * @throws AdminPersistenceException
    */
-  public boolean isGroupDirectlyInRole(int groupId, int userRoleId)
+  private boolean isGroupDirectlyInRole(int groupId, int userRoleId)
       throws AdminPersistenceException {
     int[] ids = new int[] { groupId, userRoleId };
     Integer result = getInteger(SELECT_COUNT_USERROLE_GROUP_REL, ids);
@@ -451,13 +445,6 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws AdminPersistenceException
    */
   public void removeGroupFromUserRole(int groupId, int userRoleId) throws AdminPersistenceException {
-    if (!isGroupDirectlyInRole(groupId, userRoleId)) {
-      throw new AdminPersistenceException("UserRoleTable.removeGroupFromUserRole",
-          SilverpeasException.ERROR,
-          "admin.EX_ERR_GROUP_NOT_IN_USERROLE",
-          "userrole id: '" + userRoleId + "', group id: '" + groupId + "'");
-    }
-
     int[] params = new int[] { userRoleId, groupId };
     SynchroReport.debug("UserRoleTable.removeGroupFromUserRole()",
         "Retrait du groupe d'ID " + groupId + " du role d'ID " + userRoleId

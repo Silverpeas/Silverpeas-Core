@@ -155,7 +155,9 @@ public class ComponentDAO {
     if (groupIds != null && groupIds.size() > 0) {
       componentIds.addAll(getAllAvailableComponentIds(con, groupIds, componentName));
     }
-    componentIds.addAll(getAllAvailableComponentIds(con, userId, componentName));
+    if (userId != -1) {
+      componentIds.addAll(getAllAvailableComponentIds(con, userId, componentName));
+    }
     return new ArrayList<String>(componentIds);
   }
 
