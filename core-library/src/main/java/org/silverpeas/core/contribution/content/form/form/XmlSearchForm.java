@@ -23,19 +23,20 @@
  */
 package org.silverpeas.core.contribution.content.form.form;
 
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.contribution.content.form.*;
+import org.silverpeas.core.contribution.content.form.AbstractForm;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.FieldDisplayer;
+import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.jsp.JspWriter;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * A Form is an object which can display in HTML the content of a DataRecord to a end user and can
@@ -46,14 +47,8 @@ import java.util.stream.Collectors;
  */
 public class XmlSearchForm extends AbstractForm {
 
-  private List<FieldTemplate> fieldTemplates = new ArrayList<>();
-  private String title = "";
-
   public XmlSearchForm(RecordTemplate template) throws FormException {
     super(template);
-    if (template != null) {
-      Collections.addAll(this.fieldTemplates, template.getFieldTemplates());
-    }
   }
 
   /**
@@ -67,7 +62,8 @@ public class XmlSearchForm extends AbstractForm {
    * </ul>
    */
   @Override
-  public void displayScripts(JspWriter jw, PagesContext PagesContext) {
+  public void displayScripts(JspWriter jw, PagesContext pagesContext) {
+      // No scripts displayed on search form
   }
 
   /**
@@ -81,119 +77,16 @@ public class XmlSearchForm extends AbstractForm {
    */
   @Override
   public String toString(PagesContext pagesContext, DataRecord record) {
-
     StringWriter sw = new StringWriter();
-    String language = pagesContext.getLanguage();
-    PrintWriter out = new PrintWriter(sw, true);
+    PrintWriter pw = new PrintWriter(sw, true);
+    display(pw, pagesContext, record);
+    return sw.toString();
+  }
 
-    if (pagesContext.getPrintTitle() && title != null && title.length() > 0) {
-      out.println("<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
-      out.println("<tr>");
-      out.println("<td CLASS=intfdcolor4 NOWRAP>");
-      out.println("<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=\"100%\">");
-      out.println("<tr>");
-      out.println("<td class=\"intfdcolor\" nowrap width=\"100%\">");
-      out.println("<img border=\"0\" src=\"" + Util.getIcon("px")
-          + "\" width=5><span class=txtNav>" + title + "</span>");
-      out.println("</td>");
-      out.println("</tr>");
-      out.println("</table>");
-      out.println("</td>");
-      out.println("</tr>");
-      out.println("</table>");
-    }
-    if (fieldTemplates != null && !fieldTemplates.isEmpty()) {
-      Iterator<FieldTemplate> itFields = this.fieldTemplates.iterator();
-      if (pagesContext.isBorderPrinted()) {
-        out
-            .println(
-            "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=intfdcolor4>");
-        out.println("<tr>");
-        out.println("<td nowrap>");
-        out
-            .println(
-            "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
-      } else {
-        out.println("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
-      }
-      out.print("<input TYPE=\"hidden\" NAME=id VALUE=\"");
-      out.print(record.getId());
-      out.println("\">");
-      PagesContext pc = new PagesContext(pagesContext);
-      pc.setNbFields(fieldTemplates.size());
-      pc.incCurrentFieldIndex(1);
-
-      // calcul lastFieldIndex
-      int lastFieldIndex = -1;
-      lastFieldIndex += Integer.parseInt(pc.getCurrentFieldIndex());
-      FieldDisplayer fieldDisplayer = null;
-
-      while (itFields.hasNext()) {
-        FieldTemplate fieldTemplate = itFields.next();
-        if (fieldTemplate != null) {
-          String fieldType = fieldTemplate.getTypeName();
-          String fieldDisplayerName = fieldTemplate.getDisplayerName();
-          try {
-            if (!StringUtil.isDefined(fieldDisplayerName)) {
-              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-            }
-
-            fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
-            if (fieldDisplayer != null) {
-              lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc);
-            }
-          } catch (FormException fe) {
-            SilverLogger.getLogger(this).error(fe.getMessage(), fe);
-          }
-        }
-      }
-      pc.setLastFieldIndex(lastFieldIndex);
-
-      itFields = this.fieldTemplates.iterator();
-      while (itFields.hasNext()) {
-        FieldTemplate fieldTemplate = itFields.next();
-        if (fieldTemplate != null) {
-          String fieldName = fieldTemplate.getFieldName();
-          String fieldLabel = fieldTemplate.getLabel(language);
-          String fieldType = fieldTemplate.getTypeName();
-          String fieldDisplayerName = fieldTemplate.getDisplayerName();
-          try {
-            if (!StringUtil.isDefined(fieldDisplayerName)) {
-              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-            }
-
-            fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
-          } catch (FormException fe) {
-            SilverLogger.getLogger(this).error(fe.getMessage(), fe);
-          }
-          if (fieldDisplayer != null) {
-            out.println("<tr align=center>");
-            if (StringUtil.isDefined(fieldLabel)) {
-              out.println("<td class=\"txtlibform\" align=left width=\"200\">");
-              out.println(fieldLabel);
-              out.println("</td>");
-            }
-            out.println("<td valign=\"baseline\" align=left>");
-            try {
-              fieldDisplayer.display(out, record.getField(fieldName), fieldTemplate, pc);
-            } catch (FormException fe) {
-              SilverLogger.getLogger(this).error(fe.getMessage(), fe);
-            }
-            out.println("</td>");
-            out.println("</tr>");
-
-            pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(fieldTemplate, pc));
-          }
-        }
-      }
-      if (pagesContext.isBorderPrinted()) {
-        out.println("</TABLE>");
-        out.println("</TD>");
-        out.println("</TR>");
-      }
-      out.println("</TABLE>");
-    }
-    return sw.getBuffer().toString();
+  @Override
+  public void display(JspWriter jw, PagesContext pageContext, DataRecord record) {
+    PrintWriter out = new PrintWriter(jw, true);
+    display(out, pageContext, record);
   }
 
   /**
@@ -205,254 +98,57 @@ public class XmlSearchForm extends AbstractForm {
    * <LI>a field has not the required type.
    * </UL>
    */
-  @Override
-  public void display(JspWriter jw, PagesContext pagesContext, DataRecord record) {
+  private void display(PrintWriter jw, PagesContext pagesContext, DataRecord record) {
+    String language = pagesContext.getLanguage();
+    PrintWriter out = new PrintWriter(jw, true);
 
-    try {
-      String language = pagesContext.getLanguage();
-      StringWriter sw = new StringWriter();
-      PrintWriter out = new PrintWriter(sw, true);
+    out.println("<div class=\"forms " + getFormName() + " mode-search\">");
 
-      if (pagesContext.getPrintTitle() && title != null && title.length() > 0) {
-        out.println("<table CELLPADDING=0 CELLSPACING=2 BORDER=0 WIDTH=\"98%\" CLASS=intfdcolor>");
-        out.println("<tr>");
-        out.println("<td CLASS=intfdcolor4 NOWRAP>");
-        out.println("<table CELLPADDING=0 CELLSPACING=0 BORDER=0 WIDTH=\"100%\">");
-        out.println("<tr>");
-        out.println("<td class=\"intfdcolor\" nowrap width=\"100%\">");
-        out.println("<img border=\"0\" src=\"" + Util.getIcon("px")
-            + "\" width=5><span class=txtNav>" + title + "</span>");
-        out.println("</td>");
-        out.println("</tr>");
-        out.println("</table>");
-        out.println("</td>");
-        out.println("</tr>");
-        out.println("</table>");
+    if (pagesContext.getPrintTitle() && StringUtil.isDefined(getTitle())) {
+      out.println("<h2 class=\"form-title\">");
+      out.println(getTitle());
+      out.println("</h2>");
+    }
+
+    List<FieldTemplate> listFields = getFieldTemplates();
+
+    if (listFields != null && !listFields.isEmpty()) {
+      if (pagesContext.isBorderPrinted()) {
+        out.println("<ul class=\"fields form-border\">");
+      } else {
+        out.println("<ul class=\"fields\">");
       }
 
-      Iterator<FieldTemplate> itFields = null;
-      if (fieldTemplates != null) {
-        itFields = this.fieldTemplates.iterator();
-      }
+      out.flush();
+      PagesContext pc = new PagesContext(pagesContext);
 
-      if (itFields != null && itFields.hasNext()) {
-        if (pagesContext.isBorderPrinted()) {
-          out
-              .println(
-              "<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\" class=intfdcolor4>");
-          out.println("<tr>");
-          out.println("<td nowrap>");
-          out
-              .println(
-              "<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\" class=\"contourintfdcolor\" width=\"100%\">");
-        } else {
-          out.println("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\">");
-        }
-        out.println("<input TYPE=\"hidden\" NAME=id VALUE=\"" + record.getId()
-            + "\">");
+      for (FieldTemplate fieldTemplate : listFields) {
+        String fieldName = fieldTemplate.getFieldName();
+        String fieldLabel = fieldTemplate.getLabel(language);
 
-        out.flush();
-        jw.write(sw.toString());
-        PagesContext pc = new PagesContext(pagesContext);
-        pc.setNbFields(fieldTemplates.size());
-        pc.incCurrentFieldIndex(1);
+        FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
 
-        // calcul lastFieldIndex
-        int lastFieldIndex = -1;
-        lastFieldIndex += Integer.parseInt(pc.getCurrentFieldIndex());
-        FieldTemplate fieldTemplate;
-        String fieldType;
-        String fieldDisplayerName;
-        FieldDisplayer fieldDisplayer = null;
+        if (fieldDisplayer != null) {
+          out.println("<li class=\"field field_" + fieldName + "\" id=\"form-row-" + fieldName
+              + "\">");
+          out.println("<label for=\"" + fieldName + "\">" + fieldLabel + "</label>");
+          out.println("<div class=\"fieldInput\">");
 
-        while (itFields.hasNext()) {
-          fieldTemplate = itFields.next();
-          if (fieldTemplate != null) {
-            fieldType = fieldTemplate.getTypeName();
-            fieldDisplayerName = fieldTemplate.getDisplayerName();
-            try {
-              if (fieldDisplayerName == null || fieldDisplayerName.equals("")) {
-                fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-              }
-
-              fieldDisplayer = getTypeManager().getDisplayer(fieldType,
-                  fieldDisplayerName);
-              if (fieldDisplayer != null) {
-                lastFieldIndex += fieldDisplayer.getNbHtmlObjectsDisplayed(
-                    fieldTemplate, pc);
-              }
-            } catch (FormException fe) {
-              SilverLogger.getLogger(this).error(fe.getMessage(), fe);
-            }
-          }
-        }
-        pc.setLastFieldIndex(lastFieldIndex);
-
-        String fieldLabel;
-        itFields = this.fieldTemplates.iterator();
-        while (itFields.hasNext()) {
-          fieldTemplate = itFields.next();
-          if (fieldTemplate != null) {
-            String fieldName = fieldTemplate.getFieldName();
-            fieldLabel = fieldTemplate.getLabel(language);
-            fieldType = fieldTemplate.getTypeName();
-            fieldDisplayerName = fieldTemplate.getDisplayerName();
-            try {
-              if (!StringUtil.isDefined(fieldDisplayerName)) {
-                fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-              }
-              fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
-            } catch (FormException fe) {
-              SilverLogger.getLogger(this).error(fe.getMessage(), fe);
-            }
-
-            if (fieldDisplayer != null) {
-              sw = new StringWriter();
-              out = new PrintWriter(sw, true);
-              out.println("<tr align=center>");
-              out.println("<td class=\"txtlibform\" align=left width=\"200\">");
-              if (StringUtil.isDefined(fieldLabel)) {
-                out.println(fieldLabel);
-              } else {
-                out.println("&nbsp;");
-              }
-              out.println("</td>");
-              out.println("<td valign=\"baseline\" align=left>");
-              try {
-                fieldDisplayer.display(out, record.getField(fieldName), fieldTemplate, pc);
-              } catch (FormException fe) {
-                SilverLogger.getLogger(this).error(fe.getMessage(), fe);
-              }
-              out.println("</td>");
-              out.println("</tr>");
-              out.flush();
-              jw.write(sw.toString());
-              pc.incCurrentFieldIndex(fieldDisplayer.getNbHtmlObjectsDisplayed(
-                  fieldTemplate, pc));
-            }
-          }
-        }
-        sw = new StringWriter();
-        out = new PrintWriter(sw, true);
-        if (pagesContext.isBorderPrinted()) {
-          out.println("</table>");
-          out.println("</td>");
-          out.println("</tr>");
-        }
-        out.println("</table>");
-        out.flush();
-        jw.write(sw.toString());
-      }
-    } catch (java.io.IOException fe) {
-      SilverLogger.getLogger(this).error(fe.getMessage(), fe);
-    }
-  }
-
-  private String getParameterValue(List<FileItem> items, String parameterName) {
-    FileItem item = getParameter(items, parameterName);
-    if (item != null && item.isFormField()) {
-      return item.getString();
-    }
-    return null;
-  }
-
-  private String getParameterValues(List<FileItem> items, String parameterName) {
-    StringBuilder values = new StringBuilder();
-    List<FileItem> params = getParameters(items, parameterName);
-    FileItem item;
-    for (int p = 0; p < params.size(); p++) {
-      item = params.get(p);
-      values.append(item.getString());
-      if (p < params.size() - 1) {
-        values.append("##");
-      }
-    }
-    return values.toString();
-  }
-
-  private FileItem getParameter(List<FileItem> items, String parameterName) {
-    for (FileItem item : items) {
-      if (parameterName.equals(item.getFieldName())) {
-        return item;
-      }
-    }
-    return null;
-  }
-
-  // for multi-values parameter (like checkbox)
-  private List<FileItem> getParameters(List<FileItem> items, String parameterName) {
-    return items.stream().filter(item -> parameterName.equals(item.getFieldName()))
-        .collect(Collectors.toList());
-  }
-
-  /**
-   * Get the form title
-   */
-  @Override
-  public String getTitle() {
-    return title;
-  }
-
-  /**
-   * Set the form title
-   */
-  @Override
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  @Override
-  public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext) {
-    boolean isEmpty = true;
-    Iterator<FieldTemplate> itFields = null;
-    if (fieldTemplates != null) {
-      itFields = this.fieldTemplates.iterator();
-    }
-    if (itFields != null && itFields.hasNext()) {
-      FieldDisplayer fieldDisplayer;
-      FieldTemplate fieldTemplate;
-      while (itFields.hasNext() || !isEmpty) {
-        fieldTemplate = itFields.next();
-        if (fieldTemplate != null) {
-          String fieldType = fieldTemplate.getTypeName();
-          String fieldDisplayerName = fieldTemplate.getDisplayerName();
           try {
-            if (!StringUtil.isDefined(fieldDisplayerName)) {
-              fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
-            }
-            fieldDisplayer = getTypeManager().getDisplayer(fieldType,
-                fieldDisplayerName);
-            if (fieldDisplayer != null) {
-              String itemName = fieldTemplate.getFieldName();
-              String itemValue;
-
-              if (Field.TYPE_FILE.equals(fieldType)) {
-                FileItem image = getParameter(items, itemName);
-                if (image != null && !image.isFormField()
-                    && StringUtil.isDefined(image.getName())) {
-                  isEmpty = false;
-                }
-              } else {
-                if (fieldDisplayerName.equals("checkbox")) {
-                  itemValue = getParameterValues(items, itemName);
-                } else {
-                  itemValue = getParameterValue(items, itemName);
-                }
-                if (StringUtil.isDefined(itemValue)) {
-                  isEmpty = false;
-                }
-              }
-            }
-          } catch (Exception e) {
-            SilverLogger.getLogger(this).error(e.getMessage(), e);
+            fieldDisplayer.display(out, record.getField(fieldName), fieldTemplate, pc);
+          } catch (FormException fe) {
+            SilverLogger.getLogger(this).error(fe.getMessage(), fe);
           }
+          out.println("</div>");
+          out.println("</li>");
+          out.flush();
         }
       }
-    }
-    return isEmpty;
-  }
 
-  private TypeManager getTypeManager() {
-    return TypeManager.getInstance();
+      out.println("</ul>");
+      out.println("</div>");
+
+      out.flush();
+    }
   }
 }
