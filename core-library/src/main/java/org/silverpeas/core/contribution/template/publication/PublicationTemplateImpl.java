@@ -261,17 +261,16 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   @Override
   public Form getSearchForm() throws PublicationTemplateException {
     Form searchForm = null;
-    // if (searchForm == null) {
     if (isSearchable()) {
       RecordTemplate templateForm = loadRecordTemplate(searchFileName);
       try {
         searchForm = new XmlSearchForm(templateForm);
+        searchForm.setFormName(FilenameUtils.getBaseName(this.fileName));
       } catch (FormException e) {
         throw new PublicationTemplateException("PublicationTemplateImpl.getUpdateForm",
             "form.EX_CANT_GET_FORM", null, e);
       }
     }
-    // }
     return searchForm;
   }
 

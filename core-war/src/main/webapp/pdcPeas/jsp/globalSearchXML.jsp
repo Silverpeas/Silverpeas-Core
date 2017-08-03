@@ -33,13 +33,12 @@
 
 <%@ include file="checkAdvancedSearch.jsp"%>
 <%
-// TODO chercher les clés dans Keys
 String sortOrder = request.getParameter("sortOrder");
 String sortImp = request.getParameter("sortImp");
 String SortResXForm = request.getParameter("SortResXForm");
 
 boolean				expertSearchVisible  = (Boolean) request.getAttribute("ExpertSearchVisible");
-List 				xmlForms 	= (List) request.getAttribute("XMLForms");
+List<PublicationTemplate> 	xmlForms 	= (List) request.getAttribute("XMLForms");
 PublicationTemplate template 	= (PublicationTemplate) request.getAttribute("Template");
 DataRecord			emptyData	= (DataRecord) request.getAttribute("Data");
 PagesContext		context		= (PagesContext) request.getAttribute("context");
@@ -53,9 +52,9 @@ if (template != null)
 	form 				= template.getSearchForm();
 }
 
-List			allComponents		= (List) request.getAttribute("ComponentList");
-List			allSpaces			= (List) request.getAttribute("SpaceList");
-QueryParameters query				= (QueryParameters) request.getAttribute("QueryParameters");
+List<ComponentInstLight>	allComponents		= (List) request.getAttribute("ComponentList");
+List<SpaceInstLight>	allSpaces	= (List) request.getAttribute("SpaceList");
+QueryParameters query	= (QueryParameters) request.getAttribute("QueryParameters");
 String			spaceSelected		= null;
 String			componentSelected	= null;
 String			title				= "";
@@ -80,21 +79,21 @@ if (!StringUtil.isDefined(pageId)) {
 <view:looknfeel/>
 <view:includePlugin name="wysiwyg"/>
 <script type="text/javascript">
-function sendXMLRequest()
-{
+function sendXMLRequest() {
 	if(document.XMLSearchForm != null) {
 		$.progressMessage();
+		$("#TitleNotInXMLForm").val($("#plainText").val());
 		document.XMLSearchForm.submit();
 	} else {
     jQuery.popup.error("<%=resource.getString("pdcPeas.choiceForm")%>");
 	}
 }
-function chooseTemplate()
-{
-	var valuePath = document.XMLTemplatesForm.xmlSearchSelectedForm.value;
+function chooseTemplate() {
+	var valuePath = document.XMLRestrictForm.xmlSearchSelectedForm.value;
 	if (valuePath.length > 0) {
 		$.progressMessage();
-		document.XMLTemplatesForm.submit();
+    document.XMLRestrictForm.action = "XMLSearchViewTemplate";
+		document.XMLRestrictForm.submit();
 	}
 }
 function viewXmlSearch(){
@@ -124,77 +123,62 @@ function viewXmlSearch(){
 
 	out.println("<div id=\"tabs\">" + tabs.print() + "</div>");
 	out.println(frame.printBefore());
-	out.println("<center>");
 
-	out.println("<div id=\"templates\">");
-	out.println(board.printBefore());
 	%>
-    <table border="0" cellspacing="0" cellpadding="5" width="100%">
-    <form name="XMLTemplatesForm" action="XMLSearchViewTemplate" method="post">
-	    <tr align="center">
-		    <td class="txtlibform" nowrap="nowrap" align="left" width="200"><%=resource.getString("pdcPeas.Template")%> :</td>
-		    <td align="left">
-			<select name="xmlSearchSelectedForm" size="1" onchange="chooseTemplate();return;">
-			<option value=""><%=resource.getString("GML.select")%></option>
-			<%
-			String selected = "";
-			PublicationTemplate oneTemplate = null;
-				for (int i=0;i<xmlForms.size();i++) {
-					selected	= "";
-					oneTemplate	= (PublicationTemplate) xmlForms.get(i);
+<div id="scope">
+<view:board>
+    <form name="XMLRestrictForm" action="XMLRestrictSearch" method="post">
+      <table border="0" cellspacing="0" cellpadding="5" width="100%">
+        <tr>
+          <td class="txtlibform" width="200"><%=resource.getString("pdcPeas.Template")%></td>
+          <td>
+            <select name="xmlSearchSelectedForm" size="1" onchange="chooseTemplate();return;">
+              <option value=""><%=resource.getString("GML.select")%></option>
+              <%
+                String selected = "";
+                for (PublicationTemplate oneTemplate : xmlForms) {
+                  selected	= "";
+                  if (oneTemplate.getFileName().equals(selectedTemplate)) {
+                    selected = " selected";
+                  }
 
-					if (oneTemplate.getFileName().equals(selectedTemplate))
-						selected = " selected";
-
-					out.println("<option value=\""+oneTemplate.getFileName()+"\""+selected+">"+oneTemplate.getName()+"</option>");
-				}
-			%>
-			</select>
-		    </td>
-	    </tr>
-	</form>
-	</table>
-	<%
-		out.println(board.printAfter());
-		out.println("<br/>");
-		out.println("</div>");
-		out.println("<div id=\"scope\">");
-		out.println(board.printBefore());
-	%>
-        <table border="0" cellspacing="0" cellpadding="5" width="100%">
-        <form name="XMLRestrictForm" action="XMLRestrictSearch" method="post">
-        <tr align="center" id="spaceList">
-          <td nowrap="nowrap" class="txtlibform" width="200"><%=resource.getString("pdcPeas.DomainSelect")%></td>
-          <td align="left"><select name="spaces" size="1" onchange="javascript:viewXmlSearch()">
+                  out.println("<option value=\""+oneTemplate.getFileName()+"\""+selected+">"+oneTemplate.getName()+"</option>");
+                }
+              %>
+            </select>
+          </td>
+        </tr>
+        <tr id="spaceList">
+          <td class="txtlibform" width="200"><%=resource.getString("pdcPeas.DomainSelect")%></td>
+          <td><select name="spaces" size="1" onchange="javascript:viewXmlSearch()">
             <%
 				out.println("<option value=\"\">"+resource.getString("pdcPeas.AllAuthors")+"</option>");
 				String			incr	= "";
-				SpaceInstLight 	space	= null;
-				for (int i=0;i<allSpaces.size();i++) {
+				for (SpaceInstLight 	space : allSpaces) {
 						selected	= "";
 						incr		= "";
-						space		= (SpaceInstLight) allSpaces.get(i);
-						if (space.getLevel() == 1)
-							incr = "&nbsp;&nbsp;";
+						if (space.getLevel() == 1) {
+              incr = "&nbsp;&nbsp;";
+            }
 
-						if (space.getId().equals(spaceSelected))
-							selected = " selected";
+						if (space.getId().equals(spaceSelected)) {
+              selected = " selected";
+            }
 
 						out.println("<option value=\""+space.getId()+"\""+selected+">"+incr+WebEncodeHelper.javaStringToHtmlString(space.getName(language))+"</option>");
 				}
              %>
              </select></td>
 	    </tr>
-		<tr align="center">
-			<td nowrap="nowrap" class="txtlibform" width="200"><%=resource.getString("pdcPeas.ComponentSelect")%></td>
-			<td align="left">
+    <% if (allComponents != null) {%>
+		<tr>
+			<td class="txtlibform" width="200"><%=resource.getString("pdcPeas.ComponentSelect")%></td>
+			<td>
 			<select name="componentSearch" size="1" onchange="javascript:viewXmlSearch()">
 			<option value=""><%=resource.getString("pdcPeas.AllAuthors")%></option>
 			<%
-				ComponentInstLight component = null;
-				for(int nI = 0; allComponents!=null && nI < allComponents.size(); nI++) {
+				for(ComponentInstLight component : allComponents) {
 						selected	= "";
-						component	= (ComponentInstLight) allComponents.get(nI);
 						if (component.getId().equals(componentSelected)){
 							selected = " selected";
 						}
@@ -204,36 +188,35 @@ function viewXmlSearch(){
 			</select>
 			</td>
 		</tr>
+    <% } %>
+        <tr>
+          <td width="200" class="txtlibform"><%=resource.getString("GML.search")%></td>
+          <td><input type="text" id="plainText" size="50" value="<%=title%>"/></td>
+        </tr>
 
 		<input type="hidden" name="SearchPageId" value="<%=pageId %>"/>
 		<input type="hidden" name="sortOrder" value="<%=sortOrder %>"/>
 		<input type="hidden" name="sortImp" value="<%=sortImp %>"/>
 		<input type="hidden" name="SortResXForm" value="<%=SortResXForm %>"/>
-		</form>
-        </table>
-		<%
-		out.println(board.printAfter());
-		out.println("<br/>");
-		out.println("</div>");
-		%>
-	<% if (form != null) {
-		out.println("<div id=\"template\">");
-		out.println(board.printBefore());
-		out.println("<form name=\"XMLSearchForm\" method=\"post\" action=\"XMLSearch\" enctype=\"multipart/form-data\">");
-		out.println("<table width=\"98%\" border=\"0\" cellspacing=\"0\" cellpadding=\"5\" id=\"extraTitle\"><tr>");
-		out.println("<td width=\"200\" class=\"txtlibform\">Titre :</td>");
-		out.println("<td><input type=\"text\" name=\"TitleNotInXMLForm\" size=\"36\" value=\""+title+"\"/></td>");
-		out.println("</tr></table>");
-		form.display(out, context, emptyData);
-		out.println("</form>");
-		out.println(board.printAfter());
-		out.println("</div>");
-		out.println("<br/>");
-	} %>
+		    </table>
+    </form>
+</view:board>
+</div>
+
+	<% if (form != null) { %>
+		<div id="template">
+      <form name="XMLSearchForm" method="post" action="XMLSearch" enctype="multipart/form-data">
+		  <input type="hidden" id="TitleNotInXMLForm" name="TitleNotInXMLForm" value="<%=title%>"/>
+      <%
+  		  form.display(out, context, emptyData);
+ 	    %>
+		  </form>
+      </div>
+		  <br/>
+	<% } %>
 <%
-	buttonPane.addButton((Button) gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:sendXMLRequest();", false));
+	buttonPane.addButton(gef.getFormButton(resource.getString("pdcPeas.search"), "javascript:sendXMLRequest();", false));
 	out.println(buttonPane.print());
-	out.println("</center>");
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
