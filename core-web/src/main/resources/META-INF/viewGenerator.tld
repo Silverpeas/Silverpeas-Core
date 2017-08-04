@@ -2378,7 +2378,7 @@
   </tag>
   <tag>
     <description>
-      Tag to print out the full path of an application
+      Tag to print out the full path of an application (and optionally to a node inside it)
     </description>
     <name>componentPath</name>
     <tag-class>org.silverpeas.core.web.util.viewgenerator.html.ComponentPathTag</tag-class>
@@ -2400,6 +2400,20 @@
     <attribute>
       <description>String to separate path items. ' > ' by default.</description>
       <name>separator</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>The unique identifier of the node</description>
+      <name>nodeId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Language of current user</description>
+      <name>language</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
