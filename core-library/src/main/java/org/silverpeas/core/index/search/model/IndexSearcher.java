@@ -195,45 +195,40 @@ public class IndexSearcher {
       rangeClauses.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
       rangeClauses.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
 
-      if (query.getXmlQuery() != null) {
-        booleanQuery.add(getXMLQuery(query), BooleanClause.Occur.MUST);
+      if (query.getMultiFieldQuery() != null) {
+        booleanQuery.add(getMultiFieldQuery(query), BooleanClause.Occur.MUST);
       } else {
-        if (query.getMultiFieldQuery() != null) {
-          booleanQuery.add(getMultiFieldQuery(query), BooleanClause.Occur.MUST);
-        } else {
-          TermRangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
-          if (!StringUtil.isDefined(query.getQuery()) && (query.isSearchBySpace() || query.
-              isSearchByComponentType()) && !query.isPeriodDefined()) {
-            rangeQuery = new TermRangeQuery(IndexManager.CREATIONDATE, "1900/01/01", "2200/01/01",
-                true, true);
-          }
-          if (rangeQuery != null) {
-            rangeClauses.add(rangeQuery, BooleanClause.Occur.MUST);
-          }
-          TermRangeQuery rangeQueryOnLastUpdateDate = getRangeQueryOnLastUpdateDate(query);
-          if (rangeQueryOnLastUpdateDate != null) {
-            rangeClauses.add(rangeQueryOnLastUpdateDate, BooleanClause.Occur.MUST);
-          }
-          TermQuery termQueryOnAuthor = getTermQueryOnAuthor(query);
-          if (termQueryOnAuthor != null) {
-            booleanQuery.add(termQueryOnAuthor, BooleanClause.Occur.MUST);
-          }
-          PrefixQuery termQueryOnFolder = getTermQueryOnFolder(query);
-          if (termQueryOnFolder != null) {
-            booleanQuery.add(termQueryOnFolder, BooleanClause.Occur.MUST);
-          }
+        TermRangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
+        if (!StringUtil.isDefined(query.getQuery()) && (query.isSearchBySpace() || query.
+            isSearchByComponentType()) && !query.isPeriodDefined()) {
+          rangeQuery = new TermRangeQuery(IndexManager.CREATIONDATE, "1900/01/01", "2200/01/01",
+              true, true);
+        }
+        if (rangeQuery != null) {
+          rangeClauses.add(rangeQuery, BooleanClause.Occur.MUST);
+        }
+        TermRangeQuery rangeQueryOnLastUpdateDate = getRangeQueryOnLastUpdateDate(query);
+        if (rangeQueryOnLastUpdateDate != null) {
+          rangeClauses.add(rangeQueryOnLastUpdateDate, BooleanClause.Occur.MUST);
+        }
+        TermQuery termQueryOnAuthor = getTermQueryOnAuthor(query);
+        if (termQueryOnAuthor != null) {
+          booleanQuery.add(termQueryOnAuthor, BooleanClause.Occur.MUST);
+        }
+        PrefixQuery termQueryOnFolder = getTermQueryOnFolder(query);
+        if (termQueryOnFolder != null) {
+          booleanQuery.add(termQueryOnFolder, BooleanClause.Occur.MUST);
+        }
 
-          try {
-            Query plainTextQuery = getPlainTextQuery(query, IndexManager.CONTENT);
-            if (plainTextQuery != null) {
-              booleanQuery.add(plainTextQuery, BooleanClause.Occur.MUST);
-            }
-          } catch (ParseException e) {
-            throw new org.silverpeas.core.index.search.model.ParseException("IndexSearcher", e);
+        try {
+          Query plainTextQuery = getPlainTextQuery(query, IndexManager.CONTENT);
+          if (plainTextQuery != null) {
+            booleanQuery.add(plainTextQuery, BooleanClause.Occur.MUST);
           }
+        } catch (ParseException e) {
+          throw new org.silverpeas.core.index.search.model.ParseException("IndexSearcher", e);
         }
       }
-
 
       // date range clauses are passed in the filter to optimize search performances
       // but the query cannot be empty : if so, then pass date range in the query
@@ -297,33 +292,6 @@ public class IndexSearcher {
     }
 
     return parsedQuery;
-  }
-
-  private Query getXMLQuery(QueryDescription query)
-      throws org.silverpeas.core.index.search.model.ParseException {
-    try {
-      Set<String> languages = I18NHelper.getAllSupportedLanguages();
-      Analyzer analyzer = indexManager.getAnalyzer(query.getRequestedLanguage());
-      BooleanQuery booleanQuery = new BooleanQuery();
-
-      String xmlTitle = query.getXmlTitle();
-      if (StringUtil.isDefined(xmlTitle)) {
-        Query headerQuery = getQuery(IndexManager.HEADER, xmlTitle, languages, analyzer);
-        booleanQuery.add(headerQuery, BooleanClause.Occur.MUST);
-      }
-
-      Map<String, String> xmlQuery = query.getXmlQuery();
-      for (String fieldName : xmlQuery.keySet()) {
-        Query fieldI18NQuery =
-            getQuery(fieldName, xmlQuery.get(fieldName), languages, analyzer);
-        booleanQuery.add(fieldI18NQuery, BooleanClause.Occur.MUST);
-      }
-
-
-      return booleanQuery;
-    } catch (org.apache.lucene.queryParser.ParseException e) {
-      throw new org.silverpeas.core.index.search.model.ParseException("IndexSearcher", e);
-    }
   }
 
   private Query getMultiFieldQuery(QueryDescription query)

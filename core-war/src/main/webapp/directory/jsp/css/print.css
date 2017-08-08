@@ -1,0 +1,5 @@
+.cellOperation, #indexAndSearch, .ArrayNavigation,
+#users .infoConnection, #users .userType, #users .status,
+#pagination, .sp_goToTop {
+  display: none;
+}

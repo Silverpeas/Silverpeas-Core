@@ -26,6 +26,7 @@ package org.silverpeas.web.directory.servlets;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -65,7 +66,6 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
   public String getDestination(String function, DirectorySessionController directorySC,
       HttpRequest request) {
     String destination = "";
-
 
     try {
       List<String> lDomainIds = processDomains(request, directorySC);
@@ -119,9 +119,10 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         users = directorySC.getCommonContacts(userId);
         destination = doPagination(request, users, directorySC);
       } else if ("searchByKey".equalsIgnoreCase(function)) {
-        String query = request.getParameter("key");
+        QueryDescription query = directorySC.buildQuery(request.getFileItems());
         boolean globalSearch = request.getParameterAsBoolean("Global");
-        if (StringUtil.isDefined(query)) {
+
+        if (query != null && !query.isEmpty()) {
           users = directorySC.getUsersByQuery(query, globalSearch);
           destination = doPagination(request, users, directorySC);
         } else {
@@ -157,6 +158,9 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         directorySC.sort(sort);
         users = directorySC.getLastListOfUsersCalled();
         destination = doPagination(request, users, directorySC);
+      } else if ("Clear".equals(function)) {
+        directorySC.clear();
+        destination = getDestination("Main", directorySC, request);
       }
     } catch (DirectoryException e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
@@ -181,7 +185,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
    * do pagination
    * @param request
    */
-  String doPagination(HttpServletRequest request, DirectoryItemList users,
+  String doPagination(HttpRequest request, DirectoryItemList users,
       DirectorySessionController directorySC) {
     int index = 0;
     if (StringUtil.isInteger(request.getParameter("Index"))) {
@@ -191,6 +195,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     if (StringUtil.isInteger(nbElementsPerPage)) {
       directorySC.setElementsByPage(Integer.parseInt(nbElementsPerPage));
     }
+    boolean doNotUseExtraForm = request.getParameterAsBoolean("DoNotUseExtraForm");
 
     HttpSession session = request.getSession();
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
@@ -210,6 +215,9 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     request.setAttribute("Query", directorySC.getCurrentQuery());
     request.setAttribute("Sort", directorySC.getCurrentSort());
     request.setAttribute("ShowHelp", false);
+    if (!doNotUseExtraForm) {
+      request.setAttribute("ExtraForm", directorySC.getExtraForm());
+    }
     processBreadCrumb(request, directorySC);
     return "/directory/jsp/directory.jsp";
   }

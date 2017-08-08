@@ -644,7 +644,7 @@ public class UserDetail implements User {
   @Override
   public String getAvatar() {
     String avatar = getAvatarFileName();
-    if (isAvatarPersonnalized()) {
+    if (isAvatarDefined()) {
       return AVATAR_BASEURI + avatar;
     }
     return User.DEFAULT_AVATAR_PATH;
@@ -659,7 +659,7 @@ public class UserDetail implements User {
     return avatar;
   }
 
-  private boolean isAvatarPersonnalized() {
+  public boolean isAvatarDefined() {
     return new File(FileRepositoryManager.getAvatarPath(), getAvatarFileName()).exists();
   }
 

@@ -44,6 +44,9 @@ import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.exception.UtilTrappedException;
@@ -60,25 +63,19 @@ import org.silverpeas.core.security.encryption.X509Factory;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.csv.CSVReader;
 import org.silverpeas.core.util.csv.Variant;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionException;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.web.directory.servlets.ImageProfil;
 import org.silverpeas.web.jobdomain.DomainNavigationStock;
 import org.silverpeas.web.jobdomain.GroupNavigationStock;
 import org.silverpeas.web.jobdomain.JobDomainPeasDAO;
@@ -213,7 +210,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @throws JobDomainPeasTrappedException
    */
   public String createUser(UserRequestData userRequestData, HashMap<String, String> properties,
-      HttpServletRequest req) throws JobDomainPeasException, JobDomainPeasTrappedException {
+      HttpRequest req) throws JobDomainPeasException, JobDomainPeasTrappedException {
     UserDetail theNewUser = new UserDetail();
     if (m_AdminCtrl.isUserByLoginAndDomainExist(userRequestData.getLogin(), targetDomainId)) {
       JobDomainPeasTrappedException te = new JobDomainPeasTrappedException(
@@ -224,7 +221,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
 
     theNewUser.setId("-1");
-    if ((targetDomainId != null) && (!targetDomainId.equals("-1")) && (targetDomainId.length() > 0)) {
+    if (StringUtil.isDefined(targetDomainId) && !targetDomainId.equals("-1")) {
       theNewUser.setDomainId(targetDomainId);
     }
     userRequestData.applyDataOnNewUser(theNewUser);
@@ -264,12 +261,16 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
         uf.setValue(entry.getKey(), entry.getValue());
       }
 
+      // process data of extra template
+      processDataOfExtraTemplate(uf.getId(), req);
+
       try {
         idRet = m_AdminCtrl.updateUserFull(uf);
       } catch (AdminException e) {
         throw new JobDomainPeasException(failureOnUpdate("user", uf.getId()), e);
       }
     }
+
     // regroupement de l'utilisateur dans un groupe
     regroupInGroup(properties, null);
     // If group is provided, add newly created user to it
@@ -452,11 +453,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    *
    * @param filePart
    * @param req the current HttpServletRequest
-   * @throws UtilTrappedException
    * @throws JobDomainPeasTrappedException
-   * @throws JobDomainPeasException
    */
-  public void importCsvUsers(FileItem filePart, UserRequestData data, HttpServletRequest req)
+  public void importCsvUsers(FileItem filePart, UserRequestData data, HttpRequest req)
       throws JobDomainPeasTrappedException {
     InputStream is;
     try {
@@ -871,9 +870,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    * @throws JobDomainPeasException
    */
   public void modifyUser(UserRequestData userRequestData, HashMap<String, String> properties,
-      HttpServletRequest req)
-      throws JobDomainPeasException {
-
+      HttpRequest req) throws JobDomainPeasException {
 
     UserFull theModifiedUser = m_AdminCtrl.getUserFull(userRequestData.getId());
     if (theModifiedUser == null) {
@@ -891,6 +888,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     for (Map.Entry<String, String> entry : properties.entrySet()) {
       theModifiedUser.setValue(entry.getKey(), entry.getValue());
     }
+
+    // process data of extra template
+    processDataOfExtraTemplate(theModifiedUser.getId(), req);
 
     String idRet;
     try {
@@ -1040,9 +1040,6 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   }
 
   public void importUser(String userLogin) throws JobDomainPeasException {
-
-
-
     String idRet = m_AdminCtrl.synchronizeImportUser(targetDomainId, userLogin);
     if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException(failureOnAdding("synchronized user", userLogin));
@@ -2136,5 +2133,28 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
     }
     return null;
+  }
+
+  private void processDataOfExtraTemplate(String userId, HttpRequest request) {
+    PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+    PublicationTemplate template = templateManager.getDirectoryTemplate();
+    if (template != null) {
+      try {
+        PagesContext context = getTemplateContext(userId);
+        templateManager.saveData(template.getFileName(), context, request.getFileItems());
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+        MessageNotifier.addError("Les données du formulaire n'ont pas été enregistrées !");
+      }
+    }
+  }
+
+  private PagesContext getTemplateContext(String userId) {
+    return PagesContext.getDirectoryContext(userId, getUserId(), getLanguage());
+  }
+
+  public void deleteUserAvatar(String userId) {
+    ImageProfil img = new ImageProfil(UserDetail.getById(userId).getAvatarFileName());
+    img.removeImage();
   }
 }

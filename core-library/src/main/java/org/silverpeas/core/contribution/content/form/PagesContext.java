@@ -107,20 +107,6 @@ public class PagesContext {
     setUserId(userId);
   }
 
-  public PagesContext(String formIndex, String language, boolean printTitle) {
-    setFormIndex(formIndex);
-    setLanguage(language);
-    setPrintTitle(printTitle);
-  }
-
-  public PagesContext(String formName, String formIndex, String language,
-      boolean printTitle) {
-    setFormIndex(formIndex);
-    setFormName(formName);
-    setLanguage(language);
-    setPrintTitle(printTitle);
-  }
-
   public PagesContext(String formName, String formIndex, String language,
       boolean printTitle, String componentId, String userId) {
     setFormIndex(formIndex);
@@ -350,6 +336,16 @@ public class PagesContext {
 
   public boolean isSharingContext() {
     return sharingContext != null;
+  }
+
+  public static PagesContext getDirectoryContext(String userId, String contributorId,
+      String userLanguage) {
+    PagesContext context = new PagesContext();
+    context.setComponentId("directory");
+    context.setObjectId(userId);
+    context.setUserId(contributorId);
+    context.setLanguage(userLanguage);
+    return context;
   }
 
 }

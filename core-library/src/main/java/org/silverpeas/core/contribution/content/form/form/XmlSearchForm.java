@@ -63,7 +63,9 @@ public class XmlSearchForm extends AbstractForm {
    */
   @Override
   public void displayScripts(JspWriter jw, PagesContext pagesContext) {
-      // No scripts displayed on search form
+    PrintWriter out = new PrintWriter(jw, true);
+    out.append(getJavascriptSnippet());
+    out.flush();
   }
 
   /**
@@ -121,6 +123,8 @@ public class XmlSearchForm extends AbstractForm {
 
       out.flush();
       PagesContext pc = new PagesContext(pagesContext);
+      pc.setUseMandatory(false);
+      pc.setIgnoreDefaultValues(true);
 
       for (FieldTemplate fieldTemplate : listFields) {
         String fieldName = fieldTemplate.getFieldName();

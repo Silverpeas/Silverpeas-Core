@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.pdc;
 
+import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.DateUtil;
@@ -161,10 +162,6 @@ public class QueryParameters implements java.io.Serializable {
     xmlQuery.put(field, query);
   }
 
-  public Map<String, String> getXmlQuery() {
-    return xmlQuery;
-  }
-
   public void clearXmlQuery() {
     xmlQuery = null;
   }
@@ -205,11 +202,13 @@ public class QueryParameters implements java.io.Serializable {
     }
 
     if (xmlQuery != null) {
-      query.setXmlQuery(xmlQuery);
+      for (String key : xmlQuery.keySet()) {
+        query.addFieldQuery(new FieldDescription(key, xmlQuery.get(key), searchingLanguage));
+      }
     }
 
     if (xmlTitle != null) {
-      query.setXmlTitle(xmlTitle);
+      query.setQuery(xmlTitle);
     }
 
     return query;

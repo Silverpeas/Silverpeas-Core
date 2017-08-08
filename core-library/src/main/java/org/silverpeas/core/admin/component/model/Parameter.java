@@ -39,6 +39,7 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.CollectionUtil;
 
 /**
  * <p>
@@ -227,7 +228,7 @@ public class Parameter implements Cloneable {
    * Objects of the following type(s) are allowed in the list {@link Parameter.Options }
    */
   public List<Option> getOptions() {
-    if (isXmlTemplate()) {
+    if (isXmlTemplate() && CollectionUtil.isEmpty(options)) {
       loadXmlTemplates();
     } else if (options == null) {
       options = new ArrayList<Option>();

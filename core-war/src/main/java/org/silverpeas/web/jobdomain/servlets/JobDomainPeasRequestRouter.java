@@ -144,14 +144,13 @@ public class JobDomainPeasRequestRouter extends
         jobDomainSC.returnIntoGroup(null);
         jobDomainSC.setDefaultTargetDomain();
         destination = "jobDomain.jsp";
-      } // USER Actions --------------------------------------------
-      else if (function.startsWith("user")) {
+      } else if (function.startsWith("user")) {
+        // USER Actions --------------------------------------------
         if (function.startsWith("userContent")) {
-          if ((request.getParameter("Iduser") != null)
-              && (request.getParameter("Iduser").length() > 0)) {
+          if (StringUtil.isDefined(request.getParameter("Iduser"))) {
             jobDomainSC.setTargetUser(request.getParameter("Iduser"));
           }
-        } else if (function.equals("userGetP12")) {
+        } else if ("userGetP12".equals(function)) {
           String userId = request.getParameter("Iduser");
           jobDomainSC.getP12(userId);
         } else if (function.startsWith("userCreate")) {
@@ -193,6 +192,8 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.activateUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userDelete")) {
           jobDomainSC.deleteUser(request.getParameter("Iduser"));
+        } else if (function.startsWith("userAvatarDelete")) {
+          jobDomainSC.deleteUserAvatar(request.getParameter("Iduser"));
         } else if (function.startsWith("userMS")) {
           UserRequestData userRequestData =
               RequestParameterDecoder.decode(request, UserRequestData.class);
@@ -239,7 +240,7 @@ public class JobDomainPeasRequestRouter extends
 
           destination = getDestination("displayUserImport", jobDomainSC,
               request);
-        } else if (function.equals("userImport")) {
+        } else if ("userImport".equals(function)) {
           String[] specificIds = request.getParameterValues("specificIds");
           // Massive users import
           if (specificIds != null) {
@@ -247,15 +248,14 @@ public class JobDomainPeasRequestRouter extends
             specificIds = new String[jobDomainSC.getListSelectedUsers().size()];
             jobDomainSC.getListSelectedUsers().toArray(specificIds);
             jobDomainSC.importUsers(specificIds);
-          } // Unitary user Import
-          else {
+          } else {
+            // Unitary user Import
             String specificId = request.getParameter("specificIds");
-
             if (StringUtil.isDefined(specificId)) {
               jobDomainSC.importUser(specificId);
             }
           }
-        } else if (function.equals("userImportAll")) {
+        } else if ("userImportAll".equals(function)) {
           Iterator<UserDetail> usersIt = jobDomainSC.getUsersToImport().iterator();
           ArrayList<String> listSelectedUsersIds = new ArrayList<>();
           while (usersIt.hasNext()) {
@@ -265,7 +265,7 @@ public class JobDomainPeasRequestRouter extends
           String[] specificIds = new String[jobDomainSC.getListSelectedUsers().size()];
           jobDomainSC.getListSelectedUsers().toArray(specificIds);
           jobDomainSC.importUsers(specificIds);
-        } else if (function.equals("userView")) {
+        } else if ("userView".equals(function)) {
           String specificId = request.getParameter("specificId");
 
           UserFull user = jobDomainSC.getUser(specificId);
@@ -277,7 +277,7 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.synchroUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userUnSynchro")) {
           jobDomainSC.unsynchroUser(request.getParameter("Iduser"));
-        } else if (function.equals("userOpen")) {
+        } else if ("userOpen".equals(function)) {
           String userId = request.getParameter("userId");
 
           OrganizationController orgaController = jobDomainSC.getOrganisationController();
@@ -320,8 +320,8 @@ public class JobDomainPeasRequestRouter extends
             destination = getDestination("groupContent", jobDomainSC, request);
           }
         }
-      } // GROUP Actions --------------------------------------------
-      else if (function.startsWith("group")) {
+      } else if (function.startsWith("group")) {
+        // GROUP Actions --------------------------------------------
         boolean bHaveToRefreshDomain = false;
 
         jobDomainSC.setTargetUser(null);
@@ -602,6 +602,7 @@ public class JobDomainPeasRequestRouter extends
               "myComponentURL"), jobDomainSC.getString("JDP.userUpdate") + "..."));
           request.setAttribute("minLengthLogin", jobDomainSC.getMinLengthLogin());
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
+
           destination = "userCreate.jsp";
         } else if (function.startsWith("displayUserMS")) {
           request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
@@ -828,4 +829,5 @@ public class JobDomainPeasRequestRouter extends
     }
     return properties;
   }
+
 }

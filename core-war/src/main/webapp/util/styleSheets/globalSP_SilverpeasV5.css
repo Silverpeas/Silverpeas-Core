@@ -2329,7 +2329,8 @@ caption {
   margin-right: 5px;
 }
 
-#directory #indexAndSearch #search #help {
+#directory #indexAndSearch #search #help,
+#directory #indexAndSearch #search #clear {
   line-height: 20px;
   margin-left: 5px;
 }
@@ -6433,4 +6434,84 @@ silverpeas-attendee .not-answered {
 
 #pdcFrame .pdcFrameGroup #razButton img {
   vertical-align: middle;
+}
+
+.admin-users .profile {
+  line-height:2em
+}
+
+.admin-users .profile .avatar {
+  position: absolute;
+  display: inline-block;
+  float: right;
+  padding: 4px;
+  border: 1px solid #CCC;
+  background-color: #FFF;
+  top: -0.3em;
+  right: -1em;
+}
+
+.admin-users .profile .avatar .operation {
+  position:absolute;
+  bottom:-1.5em;
+  right:-0.5em;
+  background-color:#FFF;
+  border-radius:4px;
+  opacity:0.8;
+  padding:2px;
+}
+
+.admin-users .profile .personna{
+  font-size:2em;
+}
+
+.admin-users .profile .lastConnection ,
+.admin-users .profile .access,
+.admin-users .profile .email{
+  margin-bottom:1em;
+}
+.admin-users .profile .lastConnection {
+  font-style:italic;
+  color:#666;
+  line-height: 1em;
+}
+
+.admin-users .profile .img-label {
+  margin-right:1em;
+}
+
+.admin-users .profile .user-zone-id,
+.admin-users .profile .language {
+  float:left;
+  width:65%;
+}
+
+.admin-users .profile .user-zone-id {
+  float:left;
+  width:35%;
+}
+
+.admin-users .profile #profiles-link {
+  text-align:left;
+  margin-top: 2em;
+}
+
+.admin-users .profile #profiles-link > span {
+  background-image: url("../../util/icons/characteristic.png");
+  background-repeat:no-repeat;
+  background-position:7px 7px;
+  text-align:left;
+  padding-left:34px;
+  display:block
+}
+.admin-users .profile #profiles-link > span > span{
+  display:block
+}
+
+.admin-users .profile .user-zone-id .img-label{
+  width:14px;
+}
+
+.admin-users .profile #identity-extra legend {
+  background:transparent url("/silverpeas/util/icons/addFiche.png") 9px 0 no-repeat;
 }

@@ -90,6 +90,7 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateUserEventListener;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.EncodingException;
 import org.silverpeas.core.exception.FromModule;
@@ -469,11 +470,14 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addPublicationTemplateFeatures() {
     addSecurityFeatures();
+    addIndexEngineFeatures();
+    addApacheFileUploadFeatures();
     addPackages(true, "org.silverpeas.core.contribution.template.publication");
     addPackages(false, "org.silverpeas.core.contribution.content.form");
     addPackages(false, "org.silverpeas.core.contribution.content.form.record");
     addPackages(false, "org.silverpeas.core.contribution.content.form.form");
     addAsResource("org/silverpeas/publicationTemplate/settings");
+    applyManually(war -> war.deleteClass(PublicationTemplateUserEventListener.class));
     return this;
   }
 

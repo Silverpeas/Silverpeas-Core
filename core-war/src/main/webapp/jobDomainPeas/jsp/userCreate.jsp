@@ -27,6 +27,7 @@
 <%@ page import="org.silverpeas.core.admin.user.constant.UserAccessLevel" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 <%@ page import="org.silverpeas.core.util.CollectionUtil" %>
+
 <%--
 
     Copyright (C) 2000 - 2017 Silverpeas
@@ -142,8 +143,7 @@
     });
   });
 
-function SubmitWithVerif()
-{
+function ifCorrectBasicFormExecute(callback) {
   var userLastNameInput = $("#userLastName");
   var errorMsg = "";
 
@@ -198,17 +198,14 @@ function SubmitWithVerif()
       var email = $("#userEMail").val();
       $.post('<%=m_context%>/JobDomainPeasAJAXServlet', {FirstName:firstName,LastName:lastName,Email:email,Action:'CheckUser'},
         function(data){
-          if (data == "ok")
-          {
-            document.userForm.submit();
-          }
-          else
-          {
+          if (data == "ok") {
+            callback.call(this);
+          } else {
             jQuery.popup.error("Création impossible...\nUn utilisateur de même nom, même prénom et même email existe déjà !");
           }
         }, 'text');
   <% } else { %>
-        document.userForm.submit();
+        callback.call(this);
       <% } %>
   } else {
     jQuery.popup.error(errorMsg);
@@ -227,6 +224,20 @@ function selectUnselect() {
   }
 <% } %>
 }
+
+function saveUser() {
+  if ($("#identity-template").length) {
+    ifCorrectBasicFormExecute(function() {
+      ifCorrectFormExecute(function() {
+        document.userForm.submit();
+      });
+    });
+  } else {
+    ifCorrectBasicFormExecute(function() {
+      document.userForm.submit();
+    });
+  }
+}
 </script>
 </head>
 <body>
@@ -234,7 +245,7 @@ function selectUnselect() {
 out.println(window.printBefore());
 %>
 <view:frame>
-  <form name="userForm" action="<%=action%>" method="post">
+  <form name="userForm" action="<%=action%>" method="post" enctype="multipart/form-data">
     <input type="hidden" name="Iduser" value="<% if (userObject.getId() != null) {
         out.print(userObject.getId());
       } %>"/>
@@ -449,6 +460,8 @@ out.println(window.printBefore());
       <viewTags:displayUserExtraProperties user="${userObject}" allFieldsUpdatable="<%=extraInfosUpdatable%>" readOnly="false" includeEmail="false"/>
     </fieldset>
 
+    <view:directoryExtraForm userId="${userObject.id}" edition="true"/>
+
     <div class="legend">
 	<img border="0" src="${context}${mandatoryIcon}" width="5" height="5"/> : <fmt:message key="GML.requiredField"/>
     </div>
@@ -456,9 +469,9 @@ out.println(window.printBefore());
 <br/>
 <%
   ButtonPane bouton = gef.getButtonPane();
-  bouton.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif()", false));
+  bouton.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:saveUser()", false));
   bouton.addButton(gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
-  out.println("<center>"+bouton.print()+"</center>");
+  out.println(bouton.print());
 %>
 </view:frame>
 <%

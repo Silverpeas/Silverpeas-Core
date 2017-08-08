@@ -83,6 +83,7 @@ public class UsersAndGroupsTest {
         .addIndexEngineFeatures()
         .addSilverpeasUrlFeatures()
         .addProcessFeatures()
+        .addPublicationTemplateFeatures()
         .addAsResource("org/silverpeas/jobStartPagePeas/settings")
         .addAsResource("org/silverpeas/core/admin/domain/driver")
         .addAsResource("org/silverpeas/index/search")
