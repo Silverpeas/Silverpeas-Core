@@ -45,6 +45,7 @@ String visible = "";
 String encrypted = "";
 String searchable = "";
 String action = "AddTemplate";
+String directoryUsage = "";
 List<String> visibilitySpaces = null;
 List<String> visibilityApplications = null;
 List<String> visibilityInstances = null;
@@ -63,6 +64,9 @@ if (template != null) {
 	if (template.isSearchable()) {
 		searchable = "checked=\"checked\"";
 	}
+	if (template.isDirectoryUsage()) {
+    directoryUsage = "checked=\"checked\"";
+  }
 	visibilitySpaces = template.getSpaces();
 	visibilityApplications = template.getApplications();
 	visibilityInstances = template.getInstances();
@@ -151,6 +155,13 @@ $(function () {
 	$('#template-spaces-visibility').tagit({triggerKeys:tagTriggerKeys});
 	$('#template-instances-visibility').tagit({triggerKeys:tagTriggerKeys});
 
+	<%if (template != null && template.isDirectoryUsage()) { %>
+    $(".notApplicableToDirectory").hide();
+  <% } %>
+  $("#DirectoryUsage").click(function() {
+    $(".notApplicableToDirectory").toggle();
+  });
+
 });
 </script>
 </head>
@@ -213,7 +224,11 @@ out.println(tabbedPane.print());
 <tr>
 <td class="txtlibform"><%=resource.getString("templateDesigner.visible")%> :</td><td><input type="checkbox" name="Visible" value="true" <%=visible%>/></td>
 </tr>
-<tr id="spaces-visibility">
+<tr>
+  <td class="txtlibform"><%=resource.getString("templateDesigner.header.directory")%></td>
+  <td><input type="checkbox" name="DirectoryUsage" id="DirectoryUsage" value="true" <%=directoryUsage%>/></td>
+</tr>
+<tr id="spaces-visibility" class="notApplicableToDirectory">
 	<td class="txtlibform"><%=resource.getString("templateDesigner.header.visible.spaces")%> :</td>
 	<td>
 		<ul id="template-spaces-visibility">
@@ -226,7 +241,7 @@ out.println(tabbedPane.print());
 		<input type="hidden" id="Visibility_Spaces" name="Visibility_Spaces"/>
 	</td>
 </tr>
-<tr id="applications-visibility">
+<tr id="applications-visibility" class="notApplicableToDirectory">
 	<td class="txtlibform"><%=resource.getString("templateDesigner.header.visible.applications")%> :</td>
 	<td><ul id="template-apps-visibility">
 		<% for (LocalizedComponent component : components) {
@@ -240,7 +255,7 @@ out.println(tabbedPane.print());
 		</ul>
 	</td>
 </tr>
-<tr id="instances-visibility">
+<tr id="instances-visibility" class="notApplicableToDirectory">
 	<td class="txtlibform"><%=resource.getString("templateDesigner.header.visible.instances")%> :</td>
 	<td>
 		<ul id="template-instances-visibility">

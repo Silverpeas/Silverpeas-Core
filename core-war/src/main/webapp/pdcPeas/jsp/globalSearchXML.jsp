@@ -42,12 +42,10 @@ List<PublicationTemplate> 	xmlForms 	= (List) request.getAttribute("XMLForms");
 PublicationTemplate template 	= (PublicationTemplate) request.getAttribute("Template");
 DataRecord			emptyData	= (DataRecord) request.getAttribute("Data");
 PagesContext		context		= (PagesContext) request.getAttribute("context");
-context.setUseMandatory(false);
 
 Form form = null;
 String selectedTemplate = null;
-if (template != null)
-{
+if (template != null) {
 	selectedTemplate 	= template.getFileName();
 	form 				= template.getSearchForm();
 }
@@ -58,13 +56,13 @@ QueryParameters query	= (QueryParameters) request.getAttribute("QueryParameters"
 String			spaceSelected		= null;
 String			componentSelected	= null;
 String			title				= "";
-if (query != null)
-{
+if (query != null) {
 	spaceSelected		= query.getSpaceId();
 	componentSelected	= query.getInstanceId();
 	title				= query.getXmlTitle();
-	if (title == null || "null".equals(title))
-		title = "";
+	if (title == null || "null".equals(title)) {
+    title = "";
+  }
 }
 
 String pageId = (String) request.getAttribute("PageId");

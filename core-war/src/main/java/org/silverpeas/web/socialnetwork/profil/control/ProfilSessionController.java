@@ -23,13 +23,12 @@
  */
 package org.silverpeas.web.socialnetwork.profil.control;
 
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.socialnetwork.SocialNetworkException;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import java.sql.SQLException;
 
@@ -45,15 +44,6 @@ public class ProfilSessionController extends AbstractComponentSessionController 
         "org.silverpeas.social.multilang.socialNetworkBundle",
         "org.silverpeas.social.settings.socialNetworkIcons",
         "org.silverpeas.social.settings.socialNetworkSettings");
-  }
-
-  /**
-   * get this user with full information
-   * @param userId
-   * @return UserFull
-   */
-  public UserFull getUserFul(String userId) {
-    return this.getOrganisationController().getUserFull(userId);
   }
 
   /*
@@ -72,4 +62,5 @@ public class ProfilSessionController extends AbstractComponentSessionController 
           SilverpeasException.ERROR, "root.EX_NO_MESSAGE", ex);
     }
   }
+
 }

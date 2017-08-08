@@ -297,6 +297,7 @@ public class TemplateDesignerRequestRouter extends
     String thumbnail = FileUploadUtil.getParameter(parameters, "Thumbnail");
     boolean searchable = StringUtil.getBooleanValue(FileUploadUtil.getParameter(parameters, "Searchable"));
     boolean encrypted = StringUtil.getBooleanValue(FileUploadUtil.getParameter(parameters, "Encrypted"));
+    boolean directoryUsage = request.getParameterAsBoolean("DirectoryUsage");
 
     PublicationTemplateImpl template = new PublicationTemplateImpl();
     template.setName(name);
@@ -304,6 +305,7 @@ public class TemplateDesignerRequestRouter extends
     template.setThumbnail(thumbnail);
     template.setVisible(visible);
     template.setDataEncrypted(encrypted);
+    template.setDirectoryUsage(directoryUsage);
 
     if (searchable) {
       template.setSearchFileName("dummy");

@@ -31,6 +31,9 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
+<%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
+<%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
+
 <fmt:setLocale value="${requestScope.resources.language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
@@ -54,6 +57,12 @@
 <c:set var="view" value="${silfn:defaultString(requestScope.View, VIEW_ALL)}"/>
 <c:set var="showHelp" value="${requestScope.ShowHelp}"/>
 
+<fmt:message key="GML.print" var="labelPrint"/>
+
+<%
+  Form extraForm = (Form) request.getAttribute("ExtraForm");
+%>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -62,7 +71,12 @@
   <view:looknfeel/>
   <view:includePlugin name="messageme"/>
   <view:includePlugin name="popup"/>
+  <link type="text/css" rel="stylesheet" href='<c:url value="/directory/jsp/css/print.css" />' media="print"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>
+  <% if (extraForm != null) {
+    extraForm.displayScripts(out, new PagesContext());
+  }
+  %>
   <script type="text/javascript">
     function viewIndex(index) {
       $.progressMessage();
@@ -93,6 +107,11 @@
         $.progressMessage();
         $(document.search).submit();
       }
+    }
+
+    function clear() {
+      $.progressMessage();
+      location.href = "Clear";
     }
 
     function sort(val) {
@@ -165,10 +184,30 @@
         return true;
       });
 
+      var flip = 0;
+
       $(document).ready(function() {
         <c:if test="${showHelp}">
           showAutoHelp();
         </c:if>
+
+        // hide all extra fields by default
+        $("#extraForm .field").hide();
+        // show fields according to Javascript file of specific form
+        try {
+          callbackShowExtraFields();
+        } catch (e) {}
+        // hide/show other fields
+        $("#advanced").click(function() {
+          if (flip%2 === 1){
+            $("#extraForm li").not(".alwaysShown").hide();
+            $("#advanced a").text("<fmt:message key="GML.search.advanced"/>");
+          } else {
+            $("#extraForm li").not(".alwaysShown").show();
+            $("#advanced a").text("<fmt:message key="GML.search.simple"/>");
+          }
+          flip++;
+        });
       });
     });
   </script>
@@ -176,16 +215,21 @@
 </head>
 <body id="directory">
 <view:browseBar extraInformations="${breadcrumb}"/>
+<view:operationPane>
+  <view:operation action="javascript:window.print()" altText="${labelPrint}"/>
+</view:operationPane>
 <view:window>
   <view:frame>
     <div id="indexAndSearch">
-
+      <form name="search" action="searchByKey" method="post" enctype="multipart/form-data">
       <div id="search">
-        <form name="search" action="searchByKey" method="post">
-          <input type="text" name="key" id="searchField" size="40" maxlength="60" value="${query}"/>
-          <fmt:message key="GML.search" var="buttonLabel"/>
-          <view:button label="${buttonLabel}" action="javascript:search()"/>
-        </form>
+        <input type="text" name="key" id="searchField" size="40" maxlength="60" value="${query}"/>
+        <fmt:message key="GML.search" var="buttonLabel"/>
+        <view:button label="${buttonLabel}" action="javascript:search()"/>
+        <% if (extraForm != null) { %>
+          <span id="advanced"><a href="#"><fmt:message key="GML.search.advanced"/></a></span>
+          <span id="clear"><a href="javascript:onclick=clear()"><fmt:message key="GML.search.clear"/></a></span>
+        <% } %>
         <span id="help"><a href="javascript:onclick=showHelp()"><fmt:message key="GML.help"/></a></span>
       </div>
 
@@ -203,6 +247,14 @@
         <a ${indexCSS} href="javascript:viewIndex('${VIEW_CONNECTED}')"><fmt:message key="directory.scope.connected"/></a>
       </div>
 
+      <% if (extraForm != null) { %>
+      <div id="extraForm">
+        <%
+          extraForm.display(out, new PagesContext());
+        %>
+      </div>
+      <% } %>
+
       <c:if test="${(scope == DIRECTORY_DEFAULT or scope == DIRECTORY_DOMAIN) and !(SORT_PERTINENCE == sort)}">
         <div id="sort">
           <fmt:message key="directory.sort"/>
@@ -213,6 +265,7 @@
           <a ${indexCSS} href="javascript:sort('${SORT_NEWEST}')"><fmt:message key="directory.sort.newest"/></a>
         </div>
       </c:if>
+      </form>
     </div>
     <div id="myContacts">
       <c:choose>

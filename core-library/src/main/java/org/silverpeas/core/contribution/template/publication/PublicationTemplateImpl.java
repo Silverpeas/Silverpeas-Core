@@ -24,6 +24,7 @@
 package org.silverpeas.core.contribution.template.publication;
 
 import org.apache.commons.io.FilenameUtils;
+import org.silverpeas.core.contribution.content.form.AbstractForm;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -79,6 +80,8 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private String description = "";
   @XmlElement(name = "image")
   private String thumbnail = "";
+  @XmlElement(required = true, defaultValue = "false")
+  private boolean directoryUsage = false;
   @XmlElement(required = true, defaultValue = "false")
   private boolean visible = false;
   @XmlElement(required = true, defaultValue = "false")
@@ -280,7 +283,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
 
   private Form getForm(String fileName, String fileType, boolean viewForm)
       throws PublicationTemplateException {
-    Form form;
+    AbstractForm form;
     RecordTemplate templateForm;
     String currentFileName = fileName;
 
@@ -314,6 +317,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
       }
     }
     form.setFormName(FilenameUtils.getBaseName(this.fileName));
+    form.setTitle(getName());
     return form;
   }
 
@@ -561,6 +565,15 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     return visible;
   }
 
+  @Override
+  public boolean isDirectoryUsage() {
+    return directoryUsage;
+  }
+
+  public void setDirectoryUsage(final boolean directoryUsage) {
+    this.directoryUsage = directoryUsage;
+  }
+
   public String getSearchFileName() {
     return searchFileName;
   }
@@ -640,6 +653,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     cloneTemplate.setSpaces(getSpaces());
     cloneTemplate.setApplications(getApplications());
     cloneTemplate.setInstances(getInstances());
+    cloneTemplate.setDirectoryUsage(isDirectoryUsage());
     return cloneTemplate;
   }
 

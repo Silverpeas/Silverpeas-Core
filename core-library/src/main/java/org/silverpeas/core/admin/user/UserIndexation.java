@@ -23,18 +23,15 @@
  */
 package org.silverpeas.core.admin.user;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.search.model.IndexSearcher;
-import org.silverpeas.core.index.search.model.MatchingIndexEntry;
-import org.silverpeas.core.index.search.model.ParseException;
-import org.silverpeas.core.index.search.model.QueryDescription;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -85,6 +82,9 @@ public class UserIndexation {
         }
         indexEntry.addTextContent(extraValues.toString());
 
+        //index data from directory templates
+        setTemplatesDataIntoIndex(userId, indexEntry);
+
         IndexEngineProxy.addIndexEntry(indexEntry);
       }
     } catch (Exception ex) {
@@ -92,37 +92,16 @@ public class UserIndexation {
     }
   }
 
-  public void unindexUser(String userId) {
-    FullIndexEntry indexEntry = new FullIndexEntry(COMPONENT_ID, OBJECT_TYPE, userId);
-    IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
-  }
-
-  /**
-   * Finds the users that match the specified query.
-   *
-   * The query is ran by the index searcher in order to find the indexes matching the request. Then
-   * the details about the found users are fetched from the data source.
-   *
-   * @param queryDescription a description of the query to pass to the index and search engine.
-   * @return a list of users matching the query.
-   */
-  public List<UserDetail> findUserFromQuery(final QueryDescription queryDescription) {
-    try {
-      List<UserDetail> foundUsers = new ArrayList<UserDetail>();
-      MatchingIndexEntry[] results = searcher.search(queryDescription);
-      for (MatchingIndexEntry aResult : results) {
-        if (OBJECT_TYPE.equals(aResult.getObjectType())) {
-          foundUsers.add(toUserDetail(aResult));
-        }
-      }
-      return foundUsers;
-    } catch (ParseException ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
+  private void setTemplatesDataIntoIndex(String userId, FullIndexEntry indexEntry) {
+    PublicationTemplateManager manager = PublicationTemplateManager.getInstance();
+    List<PublicationTemplate> templates = manager.getDirectoryTemplates();
+    for (PublicationTemplate template : templates) {
+      manager.setDataIntoIndex(template.getFileName(), "directory", userId, indexEntry);
     }
   }
 
-  private UserDetail toUserDetail(MatchingIndexEntry entry) {
-    return UserDetail.getById(entry.getObjectId());
+  public void unindexUser(String userId) {
+    FullIndexEntry indexEntry = new FullIndexEntry(COMPONENT_ID, OBJECT_TYPE, userId);
+    IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
   }
 }

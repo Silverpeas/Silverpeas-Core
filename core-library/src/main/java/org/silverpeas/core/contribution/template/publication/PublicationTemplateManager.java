@@ -38,9 +38,16 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
@@ -96,8 +103,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
   @PostConstruct
   private void setup() {
     try {
-      JAXB_CONTEXT =
-          JAXBContext.newInstance(PublicationTemplateImpl.class);
+      JAXB_CONTEXT = JAXBContext.newInstance(PublicationTemplateImpl.class);
     } catch (JAXBException e) {
       SilverLogger.getLogger(this).error("can not initialize JAXB_CONTEXT", e);
     }
@@ -134,8 +140,8 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
       }
       PublicationTemplate thePubTemplate = loadPublicationTemplate(fileName);
       RecordTemplate recordTemplate = thePubTemplate.getRecordTemplate();
-      return getGenericRecordSetManager().createRecordSet(externalId, recordTemplate, fileName,
-          thePubTemplate.isDataEncrypted());
+      return getGenericRecordSetManager()
+          .createRecordSet(externalId, recordTemplate, fileName, thePubTemplate.isDataEncrypted());
     } catch (FormException e) {
       throw new PublicationTemplateException(
           "PublicationTemplateManager.addDynamicPublicationTemplate", "form.EXP_INSERT_FAILED",
@@ -155,8 +161,8 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
    * @return
    * @throws PublicationTemplateException
    */
-  public PublicationTemplate getPublicationTemplate(String externalId,
-      String templateFileName) throws PublicationTemplateException {
+  public PublicationTemplate getPublicationTemplate(String externalId, String templateFileName)
+      throws PublicationTemplateException {
     String currentTemplateFileName = templateFileName;
     PublicationTemplate thePubTemplate = externalTemplates.get(externalId);
     if (thePubTemplate == null) {
@@ -188,8 +194,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     try {
       getGenericRecordSetManager().removeRecordSet(externalId);
     } catch (FormException e) {
-      throw new PublicationTemplateException(
-          "PublicationTemplateManager.removePublicationTemplate",
+      throw new PublicationTemplateException("PublicationTemplateManager.removePublicationTemplate",
           "form.EXP_DELETE_FAILED", "externalId=" + externalId, e);
     }
   }
@@ -216,8 +221,8 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
    * @return a PublicationTemplate object
    * @throws PublicationTemplateException
    */
-  public PublicationTemplate loadPublicationTemplate(String xmlFileName) throws
-      PublicationTemplateException {
+  public PublicationTemplate loadPublicationTemplate(String xmlFileName)
+      throws PublicationTemplateException {
 
     try {
       PublicationTemplateImpl publicationTemplate = templates.get(xmlFileName);
@@ -257,16 +262,15 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
    * @throws PublicationTemplateException
    * @throws CryptoException
    */
-  public void savePublicationTemplate(PublicationTemplate template) throws
-      PublicationTemplateException, CryptoException {
+  public void savePublicationTemplate(PublicationTemplate template)
+      throws PublicationTemplateException, CryptoException {
 
 
     String xmlFileName = template.getFileName();
 
     PublicationTemplate previousTemplate = loadPublicationTemplate(xmlFileName);
     boolean encryptionChanged =
-        previousTemplate != null &&
-            template.isDataEncrypted() != previousTemplate.isDataEncrypted();
+        previousTemplate != null && template.isDataEncrypted() != previousTemplate.isDataEncrypted();
 
     if (encryptionChanged) {
       if (template.isDataEncrypted()) {
@@ -315,9 +319,8 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
       try {
         String extension = FileRepositoryManager.getFileExtension(fileName);
         if ("xml".equalsIgnoreCase(extension)) {
-          PublicationTemplate template =
-              loadPublicationTemplate(fileName.substring(fileName.lastIndexOf(File.separator) + 1,
-              fileName.length()));
+          PublicationTemplate template = loadPublicationTemplate(
+              fileName.substring(fileName.lastIndexOf(File.separator) + 1, fileName.length()));
           if (onlyVisibles) {
             if (template.isVisible()) {
               publicationTemplates.add(template);
@@ -339,13 +342,13 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
    * @return only the visible PublicationTemplates
    * @throws PublicationTemplateException
    */
-  public List<PublicationTemplate> getPublicationTemplates()
-      throws PublicationTemplateException {
+  public List<PublicationTemplate> getPublicationTemplates() throws PublicationTemplateException {
     return getPublicationTemplates(true);
   }
 
   /**
-   * @param globalContext componentName It can be null. It is usefull when componentId is not defined.
+   * @param globalContext componentName It can be null. It is usefull when componentId is not
+   * defined.
    * @return
    * @throws PublicationTemplateException
    */
@@ -364,6 +367,21 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     return allowedTemplates;
   }
 
+  public List<PublicationTemplate> getDirectoryTemplates() {
+    List<PublicationTemplate> directoryTemplates = new ArrayList<>();
+    try {
+      List<PublicationTemplate> theTemplates = getPublicationTemplates(true);
+      for (PublicationTemplate template : theTemplates) {
+        if (template.isDirectoryUsage()) {
+          directoryTemplates.add(template);
+        }
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return directoryTemplates;
+  }
+
   public boolean isPublicationTemplateVisible(String templateName, GlobalContext globalContext)
       throws PublicationTemplateException {
     PublicationTemplate template = loadPublicationTemplate(templateName);
@@ -371,35 +389,40 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
   }
 
   private boolean isPublicationTemplateVisible(PublicationTemplate template, GlobalContext globalContext) {
+    if (template.isDirectoryUsage()) {
+      // this template is not available to components
+      return false;
+    }
+
     if (!template.isRestrictedVisibility()) {
       return true;
+    }
+
+    // template is restricted
+    // check it according to current space and component
+    if (template.isRestrictedVisibilityToInstance()) {
+      if (isTemplateVisibleAccordingToInstance(template, globalContext)) {
+        return true;
+      }
     } else {
-      // template is restricted
-      // check it according to current space and component
-      if (template.isRestrictedVisibilityToInstance()) {
-        if (isTemplateVisibleAccordingToInstance(template, globalContext)) {
+      OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
+      boolean allowed = true;
+      if (template.isRestrictedVisibilityToApplication()) {
+        if (!isTemplateVisibleAccordingToApplication(template, globalContext, oc)) {
+          allowed = false;
+        }
+      }
+      if (allowed) {
+        if (!template.isRestrictedVisibilityToSpace()) {
           return true;
-        }
-      } else {
-        OrganizationController oc =
-            OrganizationControllerProvider.getOrganisationController();
-        boolean allowed = true;
-        if (template.isRestrictedVisibilityToApplication()) {
-          if (!isTemplateVisibleAccordingToApplication(template, globalContext, oc)) {
-            allowed = false;
-          }
-        }
-        if (allowed) {
-          if (!template.isRestrictedVisibilityToSpace()) {
+        } else {
+          if (isTemplateVisibleAccordingToSpace(template, globalContext, oc)) {
             return true;
-          } else {
-            if (isTemplateVisibleAccordingToSpace(template, globalContext, oc)) {
-              return true;
-            }
           }
         }
       }
     }
+
     return false;
   }
 
@@ -510,4 +533,137 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     ContentEncryptionServiceProvider.getContentEncryptionService()
         .registerForRenewingContentCipher(contentIterator);
   }
+
+  public void saveData(String xmlFormName, PagesContext context, List<FileItem> items)
+      throws SilverpeasException {
+    if (context == null) {
+      throw new SilverpeasException("Context must be defined !");
+    }
+    if (StringUtil.isNotDefined(context.getComponentId()) ||
+        StringUtil.isNotDefined(context.getObjectId()) ||
+        StringUtil.isNotDefined(context.getLanguage()) ||
+        StringUtil.isNotDefined(context.getUserId())) {
+      throw new SilverpeasException(
+          "Context is not complete ! ComponentId, ObjectId, Language and UserId must be " +
+              "defined...");
+    }
+    if (StringUtil.isDefined(xmlFormName)) {
+      PublicationTemplate pub = getTemplateAndRegisterIt(xmlFormName, context);
+      try {
+        RecordSet set = pub.getRecordSet();
+        Form form = pub.getUpdateForm();
+        DataRecord data = set.getRecord(context.getObjectId());
+        if (data == null) {
+          data = set.getEmptyRecord();
+          data.setId(context.getObjectId());
+        }
+
+        // sauvegarde des données du formulaire
+        form.update(items, data, context);
+        set.save(data);
+      } catch (Exception e) {
+        throw new SilverpeasException("Unable to save data", e);
+      }
+    }
+  }
+
+  private PublicationTemplate getTemplateAndRegisterIt(String xmlFormName, PagesContext context)
+      throws SilverpeasException {
+    String shortName = getShortName(xmlFormName);
+    String externalId = context.getComponentId() + ":" + shortName;
+    PublicationTemplate pub;
+    try {
+      // récupération des données du formulaire (via le DataRecord)
+      pub = getPublicationTemplate(externalId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn("This template is not yet registered", e);
+      try {
+        addDynamicPublicationTemplate(externalId, shortName);
+        pub = getPublicationTemplate(externalId);
+      } catch (Exception templateException) {
+        throw new SilverpeasException("Unable to register template", templateException);
+      }
+    }
+    return pub;
+  }
+
+  public Form getFormAndData(String xmlFormName, PagesContext context, boolean readOnly)
+      throws SilverpeasException {
+    if (StringUtil.isNotDefined(xmlFormName)) {
+      return null;
+    }
+    PublicationTemplate pub = getTemplateAndRegisterIt(xmlFormName, context);
+    try {
+      RecordSet set = pub.getRecordSet();
+      Form form = pub.getUpdateForm();
+      if (readOnly) {
+        form = pub.getViewForm();
+      }
+      DataRecord data = set.getRecord(context.getObjectId());
+      if (data == null) {
+        if (readOnly) {
+          return null;
+        }
+        data = set.getEmptyRecord();
+        data.setId(context.getObjectId());
+      }
+      form.setData(data);
+      return form;
+    } catch (Exception e) {
+      throw new SilverpeasException("Unable to get data", e);
+    }
+  }
+
+  public void setDataIntoIndex(String xmlFormName, String componentId, String userId,
+      FullIndexEntry indexEntry) {
+    try {
+      String shortName = getShortName(xmlFormName);
+      PublicationTemplate usedTemplate = getPublicationTemplate(componentId + ":" + shortName);
+      RecordSet set = usedTemplate.getRecordSet();
+      set.indexRecord(userId, shortName, indexEntry);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+  }
+
+  public PublicationTemplate getDirectoryTemplate() {
+    List<PublicationTemplate> directoryTemplates = getDirectoryTemplates();
+    if (CollectionUtil.isNotEmpty(directoryTemplates)) {
+      return directoryTemplates.get(0);
+    }
+    return null;
+  }
+
+  public Form getDirectoryForm(PagesContext context, boolean viewMode) {
+    PublicationTemplate template = getDirectoryTemplate();
+    if (template != null) {
+      try {
+        return getFormAndData(template.getFileName(), context, viewMode);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
+    return null;
+  }
+
+  public void deleteDirectoryData(String userId) {
+    PublicationTemplate template = getDirectoryTemplate();
+    String shortName = getShortName(template.getFileName());
+    String externalId = "directory" + ":" + shortName;
+    template.setExternalId(externalId);
+    try {
+      template.getRecordSet().delete(userId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+  }
+
+  private String getShortName(String name) {
+    String shortName = name;
+    if (shortName.contains(".")) {
+      shortName = name.substring(name.indexOf("/") + 1, name.indexOf("."));
+    }
+    return shortName;
+  }
+
 }

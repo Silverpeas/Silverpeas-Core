@@ -134,4 +134,6 @@ public interface PublicationTemplate {
 
   public boolean isUpdateLayerExist();
 
+  public boolean isDirectoryUsage();
+
 }

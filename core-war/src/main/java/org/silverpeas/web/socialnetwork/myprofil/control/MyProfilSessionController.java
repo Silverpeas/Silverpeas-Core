@@ -23,27 +23,33 @@
  */
 package org.silverpeas.web.socialnetwork.myprofil.control;
 
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
-import org.silverpeas.core.socialnetwork.invitation.Invitation;
-import org.silverpeas.core.socialnetwork.invitation.InvitationService;
-import org.silverpeas.core.socialnetwork.model.ExternalAccount;
-import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
-import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
-import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.notification.message.MessageNotifier;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.AuthenticationServiceProvider;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.socialnetwork.invitation.Invitation;
+import org.silverpeas.core.socialnetwork.invitation.InvitationService;
+import org.silverpeas.core.socialnetwork.model.ExternalAccount;
+import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
+import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
+import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -51,6 +57,7 @@ import org.silverpeas.web.socialnetwork.invitation.model.InvitationUser;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -112,8 +119,8 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public void modifyUser(String idUser, String userLastName, String userFirstName, String userEMail,
-      String userAccessLevel, String oldPassword, String newPassword, String userLoginQuestion,
-      String userLoginAnswer, Map<String, String> properties)
+      String oldPassword, String newPassword, String userLoginQuestion,
+      String userLoginAnswer, HttpRequest request)
       throws AuthenticationException, AdminException {
     UserDetail user = UserDetail.getById(idUser);
 
@@ -141,12 +148,25 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
       }
 
       // process extra properties
-      for (Map.Entry<String, String> property : properties.entrySet()) {
-        if (theModifiedUser.isPropertyUpdatableByUser(property.getKey()) ||
-            (isAdmin() && theModifiedUser.isPropertyUpdatableByAdmin(property.getKey()))) {
-          theModifiedUser.setValue(property.getKey(), property.getValue());
+      Enumeration<String> parameters = request.getParameterNames();
+      String parameterName;
+      String property;
+      String propertiesPrefix = "prop_";
+      while (parameters.hasMoreElements()) {
+        parameterName = parameters.nextElement();
+        if (parameterName.startsWith(propertiesPrefix)) {
+          // remove prefix
+          property = parameterName.substring(propertiesPrefix.length(), parameterName.length());
+          if (theModifiedUser.isPropertyUpdatableByUser(property) ||
+              (isAdmin() && theModifiedUser.isPropertyUpdatableByAdmin(property))) {
+            theModifiedUser.setValue(property, request.getParameter(parameterName));
+          }
         }
       }
+
+      // process data from extra template
+      processDataOfExtraTemplate(request);
+
       adminCtrl.updateUserFull(theModifiedUser);
 
     } else {
@@ -228,5 +248,23 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
 
   public void unlinkSocialNetworkFromSilverpeas(SocialNetworkID networkId) {
     SocialNetworkService.getInstance().removeExternalAccount(getUserId(), networkId);
+  }
+
+  private void processDataOfExtraTemplate(HttpRequest request) {
+    PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+    PublicationTemplate template = templateManager.getDirectoryTemplate();
+    if (template != null) {
+      try {
+        PagesContext context = getTemplateContext();
+        templateManager.saveData(template.getFileName(), context, request.getFileItems());
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+        MessageNotifier.addError("Les données du formulaire n'ont pas été enregistrées !");
+      }
+    }
+  }
+
+  private PagesContext getTemplateContext() {
+    return PagesContext.getDirectoryContext(getUserId(), getUserId(), getLanguage());
   }
 }
