@@ -46,7 +46,7 @@ import java.util.List;
  */
 public class BrowseBarComplete extends AbstractBrowseBar {
 
-  private static final String CONNECTOR = "<span class=\"connector\">&nbsp;>&nbsp;</span>";
+  private static final String CONNECTOR = "<span class=\"connector\"> > </span>";
 
   /**
    * Constructor declaration

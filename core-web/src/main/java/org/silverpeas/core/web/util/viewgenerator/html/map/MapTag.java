@@ -45,6 +45,7 @@ public class MapTag extends TagSupport {
   private String callbackJSForMainSpace;
   private String callbackJSForApps;
   private String callbackJSForSubspaces;
+  private boolean megaMenu = false;
 
   public String getSpaceId() {
     return spaceId;
@@ -94,6 +95,14 @@ public class MapTag extends TagSupport {
     this.callbackJSForSubspaces = callbackJSForSubspaces;
   }
 
+  public boolean isMegaMenu() {
+    return megaMenu;
+  }
+
+  public void setMegaMenu(final boolean megaMenu) {
+    this.megaMenu = megaMenu;
+  }
+
   @Override
   public int doStartTag() throws JspException {
     try {
@@ -115,28 +124,29 @@ public class MapTag extends TagSupport {
     if (spaceInst != null) {
       String language = sessionController.getFavoriteLanguage();
 
-      String spaceHref =
-          "<a href=\"" + URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceInst.getId()) +
-              "\" target=\"_top\">";
-      if (spaceInst.getLevel() == 0 && StringUtil.isDefined(getCallbackJSForMainSpace())) {
-        spaceHref =
-            "<a href=\"javascript:" + getCallbackJSForMainSpace() + "('" + spaceInst.getId() +
-                "');\">";
-      } else if (spaceInst.getLevel() > 0 && StringUtil.isDefined(getCallbackJSForSubspaces())) {
-        spaceHref =
-            "<a href=\"javascript:" + getCallbackJSForSubspaces() + "('" + spaceInst.getId() +
-                "');\">";
+      String spaceHref = getSpaceHREF(spaceInst);
+
+      String hasMegaMenuLI = "";
+      String megaMenuUL="";
+      if (isMegaMenu() && spaceInst.isRoot()) {
+        hasMegaMenuLI = "has-mega-menu";
+        megaMenuUL = "mega-menu";
       }
 
-      result.append("<li class=\"space\" id=\"space-").append(spaceInst.getId()).append("\">");
+      result.append("<li class=\"space "+hasMegaMenuLI+"\" id=\"space-").append(spaceInst.getId()).append("\">");
       result.append(spaceHref).append(spaceInst.getName(language));
       result.append("</a>\n");
 
-      result.append("<ul>");
+      if (isMegaMenu() && !spaceInst.isRoot() && StringUtil.isDefined(spaceInst.getDescription(language))) {
+        result.append("<p class=\"megaMenu-spaceDescription\">"+spaceInst.getDescription(language)+"</p>");
+      }
+
+      result.append("<ul class=\""+megaMenuUL+"\">");
 
       if (displayAppsFirst) {
         // Get apps
         result.append(printApps(spaceId, showHiddenComponents));
+        result.append("<li class=\"clear\"></li>");
       }
 
       // Get sub spaces
@@ -150,6 +160,22 @@ public class MapTag extends TagSupport {
       result.append("</ul>\n");
     }
     return result.toString();
+  }
+
+  private String getSpaceHREF(SpaceInst spaceInst) {
+    String spaceHref =
+        "<a href=\"" + URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceInst.getId()) +
+            "\" target=\"_top\">";
+    if (spaceInst.isRoot() && StringUtil.isDefined(getCallbackJSForMainSpace())) {
+      spaceHref =
+          "<a href=\"javascript:" + getCallbackJSForMainSpace() + "('" + spaceInst.getId() +
+              "');\">";
+    } else if (!spaceInst.isRoot() && StringUtil.isDefined(getCallbackJSForSubspaces())) {
+      spaceHref =
+          "<a href=\"javascript:" + getCallbackJSForSubspaces() + "('" + spaceInst.getId() +
+              "');\">";
+    }
+    return spaceHref;
   }
 
   private String printSubspaces(String spaceId, boolean showHiddenComponents) {
@@ -173,12 +199,15 @@ public class MapTag extends TagSupport {
     OrganizationController organisationController =
         OrganizationControllerProvider.getOrganisationController();
     String[] appIds = organisationController.getAvailCompoIdsAtRoot(spaceId, userId);
+    int nbApp = 0;
     for (String appId : appIds) {
       ComponentInstLight componentInst = organisationController.getComponentInstLight(appId);
+      nbApp++;
       if (!componentInst.isHidden() || showHiddenComponents) {
         String label = componentInst.getLabel(language);
 
-        result.append("<li class=\"app\" id=\"app-").append(componentInst.getId()).append("\">");
+        result.append("<li class=\"app num").append(nbApp).append("\" id=\"app-")
+            .append(componentInst.getId()).append("\">");
 
         if (displayAppIcon) {
           // display component icon
@@ -196,6 +225,13 @@ public class MapTag extends TagSupport {
 
         // display component link
         result.append(href).append(label).append("</a>\n");
+
+        if (isMegaMenu() && StringUtil.isDefined(componentInst.getDescription(language))) {
+          result.append(
+              "<p class=\"megaMenu-appDescription\">" + componentInst.getDescription(language) +
+                  "</p>");
+        }
+
         result.append("</li>");
       }
     }
