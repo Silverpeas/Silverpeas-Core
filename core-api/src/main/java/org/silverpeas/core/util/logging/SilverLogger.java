@@ -206,4 +206,21 @@ public interface SilverLogger {
       log(Level.DEBUG, messageSupplier.get(), null, null);
     }
   }
+
+  /**
+   * Logs silently the specified error. The message is actually wiped out. This method is mainly
+   * dedicated to explicitly indicate the error is expected in some well-defined circumstances; it
+   * is a computation branch in the nominal execution flow.
+   * <p>
+   * Be caution by using this method; it is
+   * more efficient to use the if-else condition than the try-catch instruction to perform a
+   * default treatment on error cases. This method is to be used when a method marked as throwing
+   * an exception is invoked and for which the exception is, in the context of the invocation, can
+   * be expected.
+   * </p>
+   * @param error the error to wipe out.
+   */
+  default void silent(Throwable error) {
+    // nothing to log
+  }
 }

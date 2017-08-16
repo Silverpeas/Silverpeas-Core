@@ -49,6 +49,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.look.SilverpeasLook;
@@ -68,8 +69,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.MissingResourceException;
-
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
@@ -761,12 +760,11 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       }
 
       for (SilverpeasComponentInstance instance : instances) {
-        String label = "";
+        String label;
         try {
           label = helper.getString("lookSilverpeasV5.personalSpace." + instance.getName());
-        } catch (MissingResourceException ignore) {
-        }
-        if (isNotDefined(label)) {
+        } catch (MissingResourceException e) {
+          SilverLogger.getLogger(this).silent(e);
           label = instance.getLabel(helper.getLanguage());
         }
         ComponentItem componentItem = ComponentItem.of(instance).withLabel(label);
