@@ -47,7 +47,6 @@ import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
-import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.List;
 import java.util.TimeZone;
@@ -66,12 +65,30 @@ import static org.hamcrest.Matchers.hasSize;
 @RunWith(Arquillian.class)
 public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
 
+  /**
+   * Empty calendar for the tests below.
+   */
   private static final String CALENDAR_ID = "ID_CAL_WITHOUT_EVENT";
+  /**
+   * URL of an external calendar without any events.
+   */
   private static final String EMPTY_EXTERNAL_URL =
       "file://{0}/org/silverpeas/core/calendar/ICAL_EMPTY_TEST_SYNCHRO.ics";
+  /**
+   * URL of an external calendar with at least two events.
+   */
   private static final String EXTERNAL_URL =
       "file://{0}/org/silverpeas/core/calendar/ICAL_TEST_SYNCHRO.ics";
+  /**
+   * URL pattern of an external calendar in the tests below.
+   */
   private static final String PATTERN_EXTERNAL_URL = "file://{0}/org/silverpeas/core/calendar/{1}";
+  /**
+   * Date time to set the last update date of an already imported event in order to simulate the
+   * event was updated in the external calendar for some of the synchronization tests below. This
+   * date time takes into account the actual datetime of the event in the external calendar (ics).
+   */
+  private static final OffsetDateTime UPDATE_DATETIME = OffsetDateTime.parse("2017-06-11T13:51:54Z");
 
   static {
     // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
@@ -176,10 +193,7 @@ public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
 
     CalendarEvent event =
         Calendar.getEvents().filter(f -> f.onCalendar(calendar)).stream().findFirst().get();
-    OffsetDateTime updateDate =
-        OffsetDateTime.ofInstant(event.getLastUpdateDate().toInstant(), ZoneId.of("UTC"))
-            .minusMonths(1);
-    updateLastUpdateDate(event, updateDate);
+    updateLastUpdateDate(event, UPDATE_DATETIME);
 
     ICalendarImportResult result = calendar.synchronize();
     assertThat(result.added(), is(0));
@@ -220,11 +234,8 @@ public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
         .filter(f -> f.onCalendar(calendar))
         .stream()
         .collect(Collectors.toList());
-    OffsetDateTime updateDate =
-        OffsetDateTime.ofInstant(events.get(0).getLastUpdateDate().toInstant(), ZoneId.of("UTC"))
-            .minusMonths(1);
     final String externalId = UUID.randomUUID().toString();
-    updateLastUpdateDate(events.get(0), updateDate);
+    updateLastUpdateDate(events.get(0), UPDATE_DATETIME);
     updateExternalId(events.get(1), externalId);
 
     ICalendarImportResult result = calendar.synchronize();
