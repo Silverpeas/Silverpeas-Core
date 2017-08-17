@@ -219,8 +219,10 @@ public interface SilverLogger {
    * be expected.
    * </p>
    * @param error the error to wipe out.
+   * @return the logger itself.
    */
-  default void silent(Throwable error) {
+  default SilverLogger silent(Throwable error) {
     // nothing to log
+    return this;
   }
 }

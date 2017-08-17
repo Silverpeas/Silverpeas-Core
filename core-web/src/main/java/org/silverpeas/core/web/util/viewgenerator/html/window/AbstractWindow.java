@@ -178,13 +178,14 @@ public abstract class AbstractWindow implements Window {
 
   private String getWelcomeMessage(SilverpeasComponentInstance component, String language) {
     String message = null;
-    String fileName = null;
+    String fileName;
     try {
       fileName = "welcome_" + language;
       message = getSilverpeasTemplate().applyFileTemplateOnComponent(component.getName(), fileName);
     } catch (Exception e) {
       SilverLogger.getLogger(this)
-          .info("App '{0}' has no welcome message yet !", component.getName(), e);
+          .silent(e)
+          .info("App '{0}' has no welcome message yet !", component.getName());
     }
 
     if (!StringUtil.isDefined(message)) {
