@@ -26,7 +26,12 @@ package org.silverpeas.core.workflow.engine.model;
 import java.io.Serializable;
 
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlValue;
 
 /**
  * Class implementing the representation of the following elements of a Process Model:
@@ -37,12 +42,16 @@ import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
  * <li>&lt;title&gt;</li>
  * </ul>
  **/
-public class SpecificLabel extends AbstractReferrableObject
-    implements Serializable, ContextualDesignation {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
+public class SpecificLabel implements Serializable, ContextualDesignation {
 
   private static final long serialVersionUID = 3151220585995921545L;
+  @XmlValue
   private String content = "";
+  @XmlAttribute(name = "lang")
   private String language = "default";
+  @XmlAttribute
   private String role = "default";
 
   /**
@@ -105,11 +114,4 @@ public class SpecificLabel extends AbstractReferrableObject
     this.role = role;
   }
 
-  /**
-   * Get the unique key, used by equals method
-   * @return unique key
-   */
-  public String getKey() {
-    return (this.role + "|" + this.language);
-  }
 }

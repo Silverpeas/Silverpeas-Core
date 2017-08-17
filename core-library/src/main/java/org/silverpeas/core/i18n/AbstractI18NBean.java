@@ -25,6 +25,9 @@ package org.silverpeas.core.i18n;
 
 import org.silverpeas.core.util.StringUtil;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashMap;
@@ -32,13 +35,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+@XmlAccessorType(XmlAccessType.NONE)
 public abstract class AbstractI18NBean<T extends Translation> implements Serializable, I18NBean<T> {
   private static final long serialVersionUID = 756146888448232764L;
 
   /* Name of the bean */
+  @XmlElement
   private String name = "";
 
   /* Description of the bean */
+  @XmlElement
   private String description = "";
 
   private String language = null;

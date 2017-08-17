@@ -126,14 +126,6 @@
       <artifactId>jackrabbit-core</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.codehaus.castor</groupId>
-      <artifactId>castor-jdo</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.codehaus.castor</groupId>
-      <artifactId>castor</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-core</artifactId>
     </dependency>

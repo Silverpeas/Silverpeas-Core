@@ -25,6 +25,7 @@ package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -33,18 +34,30 @@ import org.silverpeas.core.workflow.api.model.RelatedGroup;
 import org.silverpeas.core.workflow.api.model.RelatedUser;
 import org.silverpeas.core.workflow.api.model.UserInRole;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * Class implementing the representation of the &lt;allowedUsers&gt;, &lt;workingUsers&gt;,
  * &lt;notifiedUsers&gt; and &lt;interestedUsers&gt; elements of a Process Model.
  **/
+@XmlAccessorType(XmlAccessType.NONE)
 public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   private static final long serialVersionUID = -6137211965745730173L;
-  private Vector<UserInRole> userInRoleList;
-  private Vector<RelatedUser> relatedUserList;
-  private Vector<RelatedGroup> relatedGroupList;
+  @XmlElement(name = "userInRole", type = UserInRoleImpl.class)
+  private List<UserInRole> userInRoleList;
+  @XmlElement(name = "relatedUser", type = RelatedUserImpl.class)
+  private List<RelatedUser> relatedUserList;
+  @XmlElement(name = "relatedGroup", type = RelatedGroupImpl.class)
+  private List<RelatedGroup> relatedGroupList;
+  @XmlAttribute
   private String role;
+  @XmlAttribute
   private String message;
+  @XmlAttribute
   private String senderId;
 
   /**
@@ -151,54 +164,12 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /*
    * (non-Javadoc)
-   * @see QualifiedUsers#getRelatedGroup(com.silverpeas
-   * .workflow.api.model.RelatedGroup)
-   */
-  @Override
-  public RelatedGroup getRelatedGroup(RelatedGroup relatedGroup) {
-    int idx = relatedGroupList.indexOf(relatedGroup);
-    if (idx >= 0) {
-      return relatedGroupList.get(idx);
-    }
-    return null;
-  }
-
-  /*
-   * (non-Javadoc)
    * @see QualifiedUsers#addRelatedUser(com.silverpeas
    * .workflow.api.model.RelatedUser)
    */
   @Override
   public void addRelatedUser(RelatedUser user) {
     relatedUserList.add(user);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see QualifiedUsers#addRelatedGroup(com.silverpeas
-   * .workflow.api.model.RelatedGroup)
-   */
-  @Override
-  public void addRelatedGroup(RelatedGroup group) {
-    relatedGroupList.add(group);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see QualifiedUsers#createRelatedUser()
-   */
-  @Override
-  public RelatedUser createRelatedUser() {
-    return new RelatedUserImpl();
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see QualifiedUsers#createRelatedGroup()
-   */
-  @Override
-  public RelatedGroup createRelatedGroup() {
-    return new RelatedGroupImpl();
   }
 
   /*
@@ -212,15 +183,6 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
 
   /*
    * (non-Javadoc)
-   * @see QualifiedUsers#iterateRelatedGroup()
-   */
-  @Override
-  public Iterator<RelatedGroup> iterateRelatedGroup() {
-    return relatedGroupList.iterator();
-  }
-
-  /*
-   * (non-Javadoc)
    * @see QualifiedUsers#removeRelatedUser(RelatedUser )
    */
   @Override
@@ -229,19 +191,6 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
       throw new WorkflowException("QualifiedUsersImpl.removeRelatedUser()",
           "workflowEngine.EX_RELATED_USER_NOT_FOUND", reference == null ? "<null>" : reference.
           getRelation() + ", " + reference.getRole());
-    }
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see QualifiedUsers#removeRelatedGroup(RelatedGroup)
-   */
-  @Override
-  public void removeRelatedGroup(RelatedGroup reference) throws WorkflowException {
-    if (!relatedGroupList.remove(reference)) {
-      throw new WorkflowException("QualifiedUsersImpl.removeRelatedGroup()",
-          "workflowEngine.EX_RELATED_GROUP_NOT_FOUND",
-          reference == null ? "<null>" : reference.getRole());
     }
   }
 

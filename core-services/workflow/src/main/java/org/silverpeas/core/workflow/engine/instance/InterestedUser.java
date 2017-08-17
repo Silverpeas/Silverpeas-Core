@@ -23,78 +23,42 @@
  */
 package org.silverpeas.core.workflow.engine.instance;
 
-import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.user.User;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
-import org.silverpeas.core.workflow.engine.WorkflowHub;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
-/**
- * @table SB_Workflow_InterestedUser
- * @depends ProcessInstanceImpl
- * @key-generator MAX
- */
-public class InterestedUser extends AbstractReferrableObject {
-  /**
-   * Used for persistence
-   * @primary-key
-   * @field-name id
-   * @field-type string
-   * @sql-type integer
-   */
-  private String id = null;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
-  /**
-   * @field-name userId
-   */
+@Entity
+@Table(name = "sb_workflow_interesteduser")
+public class InterestedUser extends BasicJpaEntity<InterestedUser, UniqueIntegerIdentifier> {
+
+  @Column
   private String userId = null;
 
-  /**
-   * @field-name usersRole
-   */
+  @Column
   private String usersRole = null;
 
-  /**
-   * @field-name groupId
-   */
+  @Column
   private String groupId = null;
 
-  /**
-   * @field-name processInstance
-   * @field-type ProcessInstanceImpl
-   * @sql-name instanceId
-   */
+  @ManyToOne
+  @JoinColumn(name = "instanceid", nullable = false)
   private ProcessInstanceImpl processInstance = null;
 
-  /**
-   * @field-name state
-   */
+  @Column
   private String state = null;
 
-  /**
-   * @field-name role
-   */
+  @Column
   private String role = null;
 
   /**
    * Default Constructor
    */
-  public InterestedUser() {
-  }
-
-  /**
-   * For persistence in database Get this object id
-   * @return this object id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * For persistence in database Set this object id
-   * @param this object id
-   */
-  public void setId(String id) {
-    this.id = id;
+  protected InterestedUser() {
   }
 
   /**
@@ -185,36 +149,22 @@ public class InterestedUser extends AbstractReferrableObject {
     this.processInstance = processInstance;
   }
 
-  /**
-   * Converts InterestedUser to User
-   * @return an object implementing User interface and containing user details
-   */
-  public User toUser() throws WorkflowException {
-    return WorkflowHub.getUserManager().getUser(this.getUserId());
-  }
-
-  /**
-   * Get User information from an array of workingUsers
-   * @param workingUsers an array of WorkingUser objects
-   * @return an array of objects implementing User interface and containing user details
-   */
-  static public User[] toUser(InterestedUser[] interestedUsers)
-      throws WorkflowException {
-    String[] userIds = new String[interestedUsers.length];
-
-    for (int i = 0; i < interestedUsers.length; i++) {
-      userIds[i] = interestedUsers[i].getUserId();
-    }
-
-    return WorkflowHub.getUserManager().getUsers(userIds);
-  }
-
-  /**
-   * This method has to be implemented by the referrable object it has to compute the unique key
-   * @return The unique key.
-   */
   public String getKey() {
-    return (this.getUserId() + "--" + this.getState() + "--" + this.getRole() + "--" + this
-        .getUsersRole());
+    return getUserId() + "--" + getState() + "--" + getRole() + "--" + getUsersRole();
+  }
+
+  @Override
+  public boolean equals(Object theOther) {
+    if (theOther instanceof String) {
+      return getKey().equals(theOther);
+    } else if (theOther instanceof InterestedUser){
+      return getKey().equals(((InterestedUser) theOther).getKey());
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return getKey().hashCode();
   }
 }

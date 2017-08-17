@@ -24,100 +24,86 @@
 /*
  * Created on 24 janv. 2005
  *
- * To change the template for this generated file go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 package org.silverpeas.core.importexport.model;
 
-import org.silverpeas.core.importexport.admin.ComponentsType;
-import org.silverpeas.core.node.importexport.NodeTreesType;
-import org.silverpeas.core.pdc.pdc.importexport.PdcType;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.node.importexport.NodeTreeType;
+import org.silverpeas.core.pdc.pdc.importexport.AxisType;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 /**
  * @author tleroi
  */
+@XmlRootElement(name = "SilverpeasExchange", namespace = "http://www.silverpeas.org/exchange")
+@XmlAccessorType(XmlAccessType.NONE)
 public class SilverPeasExchangeType {
 
+  @XmlAttribute
   private String targetComponentId;
+  @XmlAttribute
   private boolean usePOI = true;
-  private PublicationsType publicationsType;
-  private RepositoriesType repositoriesType;
-  private NodeTreesType nodeTreesType;
-  private PdcType pdcType;
-  private ComponentsType componentsType;
+  @XmlElementWrapper(name = "publications")
+  @XmlElement(name = "publication", namespace = "http://www.silverpeas.org/exchange")
+  private List<PublicationType> publicationsType;
+  @XmlElementWrapper(name = "repositories")
+  @XmlElement(name = "repository")
+  private List<RepositoryType> repositoriesType;
+  @XmlElementWrapper(name = "topicTrees")
+  @XmlElement(name = "topicTree")
+  private List<NodeTreeType> nodeTreesType;
+  @XmlElementWrapper(name = "pdc")
+  @XmlElement(name = "axis")
+  private List<AxisType> pdcType;
+  @XmlElementWrapper(name = "components")
+  @XmlElement(name = "component")
+  private List<ComponentInst> componentsType;
 
-  /**
-   * @return
-   */
+  public SilverPeasExchangeType() {
+    // This constructor is necessary with JAXB
+  }
+
   public String getTargetComponentId() {
     return targetComponentId;
   }
 
-  /**
-   * @param string
-   */
-  public void setTargetComponentId(String string) {
-    targetComponentId = string;
-  }
-
-  /**
-   * @return
-   */
-  public PublicationsType getPublicationsType() {
+  public List<PublicationType> getPublicationsType() {
     return publicationsType;
   }
 
-  /**
-   * @param type
-   */
-  public void setPublicationsType(PublicationsType type) {
+  public void setPublicationsType(List<PublicationType> type) {
     publicationsType = type;
   }
 
-  /**
-   * @return Returns the repositoriesType.
-   */
-  public RepositoriesType getRepositoriesType() {
+  public List<RepositoryType> getRepositoriesType() {
     return repositoriesType;
   }
 
-  /**
-   * @param repositoriesType The repositoriesType to set.
-   */
-  public void setRepositoriesType(RepositoriesType repositoriesType) {
-    this.repositoriesType = repositoriesType;
-  }
-
-  public NodeTreesType getNodeTreesType() {
+  public List<NodeTreeType> getNodeTreesType() {
     return nodeTreesType;
   }
 
-  public void setNodeTreesType(NodeTreesType nodeTreesType) {
+  public void setNodeTreesType(List<NodeTreeType> nodeTreesType) {
     this.nodeTreesType = nodeTreesType;
   }
 
-  public PdcType getPdcType() {
-    return pdcType;
-  }
-
-  public void setPdcType(PdcType pdcType) {
+  public void setPdcType(List<AxisType> pdcType) {
     this.pdcType = pdcType;
   }
 
-  public ComponentsType getComponentsType() {
-    return componentsType;
-  }
-
-  public void setComponentsType(ComponentsType componentsType) {
+  public void setComponentsType(List<ComponentInst> componentsType) {
     this.componentsType = componentsType;
   }
 
   public boolean isPOIUsed() {
     return usePOI;
-  }
-
-  public void setUsePOI(boolean b) {
-    usePOI = b;
   }
 
   public boolean getUsePOI() {

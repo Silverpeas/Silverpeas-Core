@@ -25,11 +25,20 @@ package org.silverpeas.core.pdc.classification;
 
 import org.silverpeas.core.exception.SilverpeasException;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class Value implements java.io.Serializable {
 
   private static final long serialVersionUID = 6903903413201603630L;
+  @XmlAttribute(name = "axisId")
   private int nAxisId = -1;
   private int physicalAxisId = -1;
+  @XmlAttribute(name = "pdcValuePath")
   private String sValue = null;
 
   // Constructor

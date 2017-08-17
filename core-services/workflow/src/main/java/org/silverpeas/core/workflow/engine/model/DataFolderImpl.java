@@ -35,6 +35,9 @@ import org.silverpeas.core.workflow.api.model.DataFolder;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Parameter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,9 +45,11 @@ import java.util.List;
  * Class implementing the representation of the &lt;dataFolder&gt; and &lt;userInfos&gt; elements of
  * a Process Model.
  **/
+@XmlAccessorType(XmlAccessType.NONE)
 public class DataFolderImpl implements DataFolder, Serializable {
 
   private static final long serialVersionUID = -2779065735195457809L;
+  @XmlElement(name = "item", type = ItemImpl.class)
   private List<Item> itemList;
 
   /**

@@ -26,6 +26,13 @@ package org.silverpeas.core.workflow.api.instance;
 import java.util.Date;
 
 public interface UpdatableHistoryStep extends HistoryStep {
+
+  public static final int ACTION_STATUS_PROCESSFAILED  = -1;
+  public static final int ACTION_STATUS_TOBEPROCESSED  = 0;
+  public static final int ACTION_STATUS_PROCESSED  = 1;
+  public static final int ACTION_STATUS_AFFECTATIONSDONE  = 2;
+  public static final int ACTION_STATUS_SAVED  = 3;
+
   /**
    * Set the process instance
    * @param instance process instance

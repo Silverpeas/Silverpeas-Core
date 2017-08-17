@@ -32,6 +32,7 @@ import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.persistence.AttributeOverride;
 import javax.persistence.EmbeddedId;
 import javax.persistence.EntityManager;
 import javax.persistence.MappedSuperclass;
@@ -194,7 +195,13 @@ public abstract class AbstractJpaEntity<T extends IdentifiableEntity, U extends 
       Class<?> classThatDeclaresTable =
           searchClassThatDeclaresAnnotation(Table.class, this.getClass());
       String tableName = classThatDeclaresTable.getAnnotation(Table.class).name();
-      this.id = (U) newIdentifierInstance().generateNewId(tableName, "id");
+      String primaryKey = "id";
+      final AttributeOverride attributeOverride =
+          classThatDeclaresTable.getAnnotation(AttributeOverride.class);
+      if (attributeOverride != null && primaryKey.equals(attributeOverride.name())) {
+        primaryKey = attributeOverride.column().name();
+      }
+      this.id = (U) newIdentifierInstance().generateNewId(tableName, primaryKey);
     }
     performBeforePersist();
   }

@@ -23,25 +23,19 @@
  */
 package org.silverpeas.core.workflow.api.error;
 
-import java.util.*;
-
 import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.user.User;
+
+import java.util.Date;
 
 public interface WorkflowError {
   /**
    * @return ProcessInstance
    */
   public ProcessInstance getProcessInstance() throws WorkflowException;
-
-  /**
-   * @return history step
-   */
-  public HistoryStep getHistoryStep() throws WorkflowException;
 
   /**
    * @return error message
@@ -67,11 +61,6 @@ public interface WorkflowError {
    * @return action date
    */
   public Date getActionDate();
-
-  /**
-   * @return user role
-   */
-  public String getUserRole();
 
   /**
    * @return resolved state

@@ -23,12 +23,21 @@
  */
 package org.silverpeas.core.importexport.coordinates;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * @author dlesimple
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class CoordinatePointType {
 
+  @XmlAttribute
   private int axisId;
+  @XmlAttribute
   private String value;
 
   /**

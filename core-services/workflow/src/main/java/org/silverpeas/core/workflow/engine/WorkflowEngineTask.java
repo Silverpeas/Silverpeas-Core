@@ -23,7 +23,8 @@
  */
 package org.silverpeas.core.workflow.engine;
 
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.thread.task.AbstractRequestTask;
+import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.event.QuestionEvent;
 import org.silverpeas.core.workflow.api.event.ResponseEvent;
@@ -31,156 +32,66 @@ import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
 import org.silverpeas.core.workflow.api.event.TaskSavedEvent;
 import org.silverpeas.core.workflow.api.event.TimeoutEvent;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * @author ebonnet
  */
-public class WorkflowEngineTask implements Runnable {
+public class WorkflowEngineTask extends AbstractRequestTask {
 
-  /**
-   * The requests are stored in a shared list of Requests. In order to guarantee serial access, all
-   * access will be synchronized on this list. Futhermore this list is used to synchronize the
-   * providers and the consumers of the list :
-   * <p>
-   * <PRE>
-   * // provider
-   * synchronized(requestList)
-   * {
-   * requestList.add(...);
-   * requestList.notify();
-   * }
-   * // consumer
-   * synchronized(requestList)
-   * {
-   * requestList.wait();
-   * ... = requestList.remove(...);
-   * }
-   * </PRE>
-   */
-  static private final List<Request> requestList = new ArrayList<>();
+  private WorkflowEngineTask() {
+    super();
+  }
 
   /**
    * Add a request 'TaskDoneEvent'
    */
-  static public void addTaskDoneRequest(TaskDoneEvent event) {
-    synchronized (requestList) {
-      TaskDoneRequest request = new TaskDoneRequest(event);
-      SilverLogger.getLogger(WorkflowEngineTask.class)
-          .debug("Add task done request: {0}", request.toString());
-      requestList.add(request);
-      requestList.notify();
-    }
+  public static void addTaskDoneRequest(TaskDoneEvent event) {
+    TaskDoneRequest request = TaskDoneRequest.get(event);
+    SilverLogger.getLogger(WorkflowEngineTask.class)
+        .info("Add task done request: {0}", request.toString());
+    push(request);
   }
 
   /**
    * Add a request 'TaskSavedEvent'
    */
   public static void addTaskSavedRequest(TaskSavedEvent event) {
-    synchronized (requestList) {
-      TaskSavedRequest request = new TaskSavedRequest(event);
-      SilverLogger.getLogger(WorkflowEngineTask.class)
-          .debug("Add task saved request: {0}", request.toString());
-      requestList.add(request);
-      requestList.notify();
-    }
+    TaskSavedRequest request = TaskSavedRequest.get(event);
+    SilverLogger.getLogger(WorkflowEngineTask.class)
+        .info("Add task saved request: {0}", request.toString());
+    push(request);
   }
 
   /**
    * Add a request 'QuestionEvent'
    */
-  static public void addQuestionRequest(QuestionEvent event) {
-    synchronized (requestList) {
-      QuestionRequest request = new QuestionRequest(event);
-      SilverLogger.getLogger(WorkflowEngineTask.class)
-          .debug("Add question request: {0}", request.toString());
-      requestList.add(request);
-      requestList.notify();
-    }
+  public static void addQuestionRequest(QuestionEvent event) {
+    QuestionRequest request = QuestionRequest.get(event);
+    SilverLogger.getLogger(WorkflowEngineTask.class)
+        .info("Add question request: {0}", request.toString());
+    push(request);
   }
 
   /**
    * Add a request 'ResponseEvent'
    */
-  static public void addResponseRequest(ResponseEvent event) {
-    synchronized (requestList) {
-      ResponseRequest request = new ResponseRequest(event);
-      SilverLogger.getLogger(WorkflowEngineTask.class)
-          .debug("Add response request: {0}", request.toString());
-      requestList.add(request);
-      requestList.notify();
-    }
+  public static void addResponseRequest(ResponseEvent event) {
+    ResponseRequest request = ResponseRequest.get(event);
+    SilverLogger.getLogger(WorkflowEngineTask.class)
+        .info("Add response request: {0}", request.toString());
+    push(request);
   }
 
   /**
    * Add a request 'TimeoutEvent'
    */
-  static public void addTimeoutRequest(TimeoutEvent event) {
-    synchronized (requestList) {
-      TimeoutRequest request = new TimeoutRequest(event);
-      SilverLogger.getLogger(WorkflowEngineTask.class)
-          .debug("Add timeout request: {0}", request.toString());
-      requestList.add(request);
-      requestList.notify();
-    }
+  public static void addTimeoutRequest(TimeoutEvent event) {
+    TimeoutRequest request = TimeoutRequest.get(event);
+    SilverLogger.getLogger(WorkflowEngineTask.class)
+        .info("Add timeout request: {0}", request.toString());
+    push(request);
   }
 
-
-  @Override
-  public void run() {
-    Request request;
-    try {
-      while (true) {
-
-        /*
-         * First, all the requests are processed until the queue becomes empty.
-         */
-        do {
-          CacheServiceProvider.clearAllThreadCaches();
-          request = null;
-
-          synchronized (requestList) {
-            if (!requestList.isEmpty()) {
-              request = requestList.remove(0);
-            }
-          }
-
-          /*
-           * Each request is processed out of the synchronized block so the others threads (which
-           * put the requests) will not be blocked.
-           */
-          if (request != null) {
-            try {
-              request.process();
-            } catch (Exception e) {
-              SilverLogger.getLogger(this)
-                  .error("Error while processing request: " + request.toString(), e);
-            }
-          }
-
-        } while (request != null);
-
-        /*
-         * Finally, we wait the notification of a new request to be processed.
-         */
-        try {
-          synchronized (requestList) {
-            if (requestList.isEmpty()) {
-              requestList.wait();
-            }
-          }
-        } catch (InterruptedException e) {
-
-        }
-      }
-    } catch (Exception e) {
-      /*
-       * Keep this log, we really need to know why this thread has been down. Problem can happen
-       * when external workflow is not synchronize with current Silverpeas platform version.
-       */
-      SilverLogger.getLogger(this).error("Exit from workflow thread loop", e);
-      throw new RuntimeException("End of thread", e);
-    }
+  private static void push(Request request) {
+    RequestTaskManager.push(WorkflowEngineTask.class, request);
   }
 }

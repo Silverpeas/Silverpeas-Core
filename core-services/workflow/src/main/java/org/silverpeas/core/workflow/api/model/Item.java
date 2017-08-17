@@ -27,7 +27,7 @@ import java.util.Iterator;
 
 import org.silverpeas.core.workflow.api.WorkflowException;
 
-import java.util.Hashtable;
+import java.util.Map;
 
 /**
  * Interface describing a representation of the &lt;item&gt; element of a Process Model.
@@ -63,18 +63,6 @@ public interface Item {
   public ContextualDesignations getDescriptions();
 
   /**
-   * Iterate through the descriptions
-   * @return an iterator
-   */
-  public Iterator<ContextualDesignation> iterateDescription();
-
-  /**
-   * Add a description Method needed primarily by Castor
-   * @param description
-   */
-  public void addDescription(ContextualDesignation description);
-
-  /**
    * Get label in specific language for the given role
    * @param language label's language
    * @param role role for which the label is
@@ -90,24 +78,6 @@ public interface Item {
    * @return an object containing the collection of the labels
    */
   public ContextualDesignations getLabels();
-
-  /**
-   * Iterate through the Labels
-   * @return an iterator
-   */
-  public Iterator<ContextualDesignation> iterateLabel();
-
-  /**
-   * Add a label Method needed primarily by Castor
-   * @param label
-   */
-  public void addLabel(ContextualDesignation label);
-
-  /**
-   * Create an object implementing ContextualDesignation Method needed primarily by Castor
-   * @return
-   */
-  public ContextualDesignation createDesignation();
 
   /**
    * Get value of computed attribute
@@ -204,5 +174,5 @@ public interface Item {
   /**
    * @return
    */
-  public Hashtable<String, String> getKeyValuePairs();
+  public Map<String, String> getKeyValuePairs();
 }

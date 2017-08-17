@@ -24,7 +24,9 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.silverpeas.core.contribution.content.form.DataRecord;
@@ -35,33 +37,38 @@ import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.model.AbstractDescriptor;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Form;
 import org.silverpeas.core.workflow.api.model.Input;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Parameter;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class implementing the representation of the &lt;form&gt; element of a Process Model.
  */
-public class FormImpl extends AbstractReferrableObject implements Form, AbstractDescriptor,
-    Serializable {
-  private static final long serialVersionUID = 1721380617586523435L;
+@XmlRootElement(name = "form")
+@XmlAccessorType(XmlAccessType.NONE)
+public class FormImpl implements Form, Serializable {
+
+  @XmlAttribute
+  @XmlID
   private String name;
+  @XmlAttribute
   private String role;
-  private String HTMLFileName;
-  private ContextualDesignations titles; // object storing the titles
-  private Vector<Input> inputList;
-
-  // ~ Instance fields related to AbstractDescriptor
-  // ////////////////////////////////////////////////////////
-
-  private AbstractDescriptor parent;
-  private boolean hasId = false;
-  private int id;
+  @XmlAttribute
+  private String htmlFileName;
+  @XmlElement(name = "title", type = SpecificLabel.class)
+  private List<ContextualDesignation> titles;
+  @XmlElement(name = "input", type = ItemRef.class)
+  private List<Input> inputList;
 
   /**
    * Constructor
@@ -71,18 +78,10 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
   }
 
   /**
-   * Constructor
-   */
-  public FormImpl(String name) {
-    this();
-    this.name = name;
-  }
-
-  /**
    * reset attributes
    */
   private void reset() {
-    titles = new SpecificLabelListHelper();
+    titles = new ArrayList<>();
     inputList = new Vector<>();
   }
 
@@ -108,7 +107,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    * @return form's name
    */
   public String getHTMLFileName() {
-    return this.HTMLFileName;
+    return this.htmlFileName;
   }
 
   /**
@@ -116,8 +115,8 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    * display the form
    * @return form's name
    */
-  public void setHTMLFileName(String HTMLFileName) {
-    this.HTMLFileName = HTMLFileName;
+  public void setHTMLFileName(String htmlFileName) {
+    this.htmlFileName = htmlFileName;
   }
 
   /**
@@ -126,7 +125,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    */
   public Input[] getInputs() {
     if (inputList == null) {
-      return null;
+      return new Input[0];
     }
     return inputList.toArray(new ItemRef[0]);
   }
@@ -185,16 +184,12 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
     inputList.remove(idx);
   }
 
-  // //////////////////
-  // titles
-  // //////////////////
-
   /*
    * (non-Javadoc)
    * @see Form#getTitles()
    */
   public ContextualDesignations getTitles() {
-    return titles;
+    return new SpecificLabelListHelper(titles);
   }
 
   /*
@@ -202,32 +197,7 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    * @see Form#getTitle(java.lang.String, java.lang.String)
    */
   public String getTitle(String role, String language) {
-    return titles.getLabel(role, language);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Form#addTitle(com.silverpeas.workflow
-   * .api.model.ContextualDesignation)
-   */
-  public void addTitle(ContextualDesignation title) {
-    titles.addContextualDesignation(title);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Form#iterateTitle()
-   */
-  public Iterator<ContextualDesignation> iterateTitle() {
-    return titles.iterateContextualDesignation();
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Form#createDesignation()
-   */
-  public ContextualDesignation createDesignation() {
-    return titles.createContextualDesignation();
+    return getTitles().getLabel(role, language);
   }
 
   /**
@@ -247,14 +217,6 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
   }
 
   /**
-   * Get the unique key, used by equals method
-   * @return unique key
-   */
-  public String getKey() {
-    return (this.name);
-  }
-
-  /**
    * Converts this object in a RecordTemplate object
    * @return the resulting RecordTemplate
    */
@@ -268,44 +230,47 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
    * @return the resulting DataRecord object with the default values set
    */
   public DataRecord getDefaultRecord(String role, String lang, DataRecord data)
-      throws FormException, WorkflowException {
-    String fieldName = "";
-    String value = "";
-    DataRecord defaultRecord = this.toRecordTemplate(role, lang)
-        .getEmptyRecord();
+      throws WorkflowException {
+    try {
+      String fieldName = "";
+      String value = "";
+      DataRecord defaultRecord = this.toRecordTemplate(role, lang).getEmptyRecord();
 
-    if (inputList == null) {
+      if (inputList == null) {
+        return defaultRecord;
+      }
+
+      // Add all fields description in the RecordTemplate
+      int count = 0;
+      for (int i = 0; i < inputList.size(); i++) {
+        // Get the input
+        Input input = inputList.get(i);
+
+        // Get the item name referenced by this input
+        Item item = input.getItem();
+        if (item == null) {
+          fieldName = "label#" + count;
+          count++;
+        } else {
+          fieldName = item.getName();
+        }
+        // Compute the default value
+        value = input.getValue();
+        if (data != null) {
+          value = DataRecordUtil.applySubstitution(value, data, lang);
+        }
+
+        // Set the field value
+        Field field = defaultRecord.getField(fieldName);
+        if (field != null) {
+          field.setStringValue(value);
+        }
+      }
+
       return defaultRecord;
+    } catch (FormException e) {
+      throw new WorkflowException(this.getClass().getName(), "Can't get default record", e);
     }
-
-    // Add all fields description in the RecordTemplate
-    int count = 0;
-    for (int i = 0; i < inputList.size(); i++) {
-      // Get the input
-      Input input = inputList.get(i);
-
-      // Get the item name referenced by this input
-      Item item = input.getItem();
-      if (item == null) {
-        fieldName = "label#" + count;
-        count++;
-      } else {
-        fieldName = item.getName();
-      }
-      // Compute the default value
-      value = input.getValue();
-      if (data != null) {
-        value = DataRecordUtil.applySubstitution(value, data, lang);
-      }
-
-      // Set the field value
-      Field field = defaultRecord.getField(fieldName);
-      if (field != null) {
-        field.setStringValue(value);
-      }
-    }
-
-    return defaultRecord;
   }
 
   /**
@@ -317,8 +282,9 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
     GenericRecordTemplate rt = new GenericRecordTemplate();
     String label = "";
 
-    if (inputList == null)
+    if (inputList == null) {
       return rt;
+    }
 
     int count = 0;
 
@@ -380,47 +346,4 @@ public class FormImpl extends AbstractReferrableObject implements Form, Abstract
     }
   }
 
-  /************* Implemented methods *****************************************/
-  // ~ Methods ////////////////////////////////////////////////////////////////
-
-  /*
-	 *
-	 */
-  public void setId(int id) {
-    this.id = id;
-    hasId = true;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#getId()
-   */
-  public int getId() {
-    return id;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#setParent(com.silverpeas
-   * .workflow.api.model.AbstractDescriptor)
-   */
-  public void setParent(AbstractDescriptor parent) {
-    this.parent = parent;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#getParent()
-   */
-  public AbstractDescriptor getParent() {
-    return parent;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#hasId()
-   */
-  public boolean hasId() {
-    return hasId;
-  }
 }

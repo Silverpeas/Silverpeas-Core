@@ -24,11 +24,18 @@
 package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.pdc.classification.Position;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 /**
  * @author Nicolas EYSSERIC
  */
+@XmlRootElement(name = "pdcPosition")
+@XmlAccessorType(XmlAccessType.NONE)
 public class ClassifyPosition extends Position<ClassifyValue> implements java.io.Serializable {
   private static final long serialVersionUID = 6588855414301219379L;
 
@@ -67,18 +74,11 @@ public class ClassifyPosition extends Position<ClassifyValue> implements java.io
         + " value=" + getValues();
   }
 
-  /**
-   * Méthodes nécéssaire pour le mapping castor du module importExport.
-   * @return
-   */
+  @XmlElement(name = "axisPosition")
   public List<ClassifyValue> getListClassifyValue() {
     return super.getValues();
   }
 
-  /**
-   * Méthodes nécéssaire pour le mapping castor du module importExport.
-   * @param values
-   */
   public void setListClassifyValue(List<ClassifyValue> values) {
     super.setValues(values);
   }

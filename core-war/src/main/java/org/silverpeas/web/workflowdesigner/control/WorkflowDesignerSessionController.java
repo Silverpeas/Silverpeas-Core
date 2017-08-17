@@ -171,7 +171,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
     try {
       // Load the process model from the XML file
       //
-      processModel = Workflow.getProcessModelManager().loadProcessModel(strProcessFileName, false);
+      processModel = Workflow.getProcessModelManager().loadProcessModel(strProcessFileName);
       processModelFileName = strProcessFileName;
 
       // check if a component descriptor exists for this process model
@@ -1489,7 +1489,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 * @return an object implementing ContextualDesignation
 */
   public ContextualDesignation createDesignation() {
-    ContextualDesignation designation = processModel.createDesignation();
+    ContextualDesignation designation = new SpecificLabel();
 
     designation.setLanguage(NEW_ELEMENT_NAME);
     return designation;
@@ -2973,7 +2973,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 
       // on charge le modele pour vérifier qu'il est valide
       try {
-        manager.loadProcessModel(name, false);
+        manager.loadProcessModel(name);
       } catch (Exception e) {
         // le modèle est invalide, on le supprime
         modelFile.delete();

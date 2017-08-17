@@ -23,15 +23,29 @@
  */
 package org.silverpeas.core.importexport.publication;
 
+import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.importexport.wysiwyg.WysiwygContentType;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * @author tleroi
  */
+@XmlRootElement(name = "publicationContent")
+@XmlAccessorType(XmlAccessType.NONE)
 public class PublicationContentType {
 
+  @XmlElement(name = "wysiwyg")
   private WysiwygContentType wysiwygContentType;
+  @XmlElement(name = "xmlModel")
   private XMLModelContentType xmlModelContentType;
+
+  public PublicationContentType() {
+    // This constructor is necessary with JAXB
+  }
 
   public XMLModelContentType getXMLModelContentType() {
     return xmlModelContentType;

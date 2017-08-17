@@ -24,9 +24,13 @@
 package org.silverpeas.core.pdc.classification;
 
 import org.silverpeas.core.exception.SilverpeasException;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import java.util.ArrayList;
 import java.util.List;
 
+@XmlAccessorType(XmlAccessType.NONE)
 public class Position<T extends Value> implements java.io.Serializable {
   private static final long serialVersionUID = -6444526234909683822L;
   private int nPositionId = -1;

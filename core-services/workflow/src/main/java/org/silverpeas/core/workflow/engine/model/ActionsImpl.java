@@ -32,11 +32,19 @@ import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.Actions;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Class implementing the representation of the &lt;actions&gt; element of a Process Model.
  **/
+@XmlRootElement(name = "actions")
+@XmlAccessorType(XmlAccessType.NONE)
 public class ActionsImpl implements Serializable, Actions {
   private static final long serialVersionUID = -8221333788348737417L;
+  @XmlElement(name = "action", type = ActionImpl.class)
   private List<Action> actionList;
 
   /**
@@ -87,7 +95,7 @@ public class ActionsImpl implements Serializable, Actions {
   @Override
   public Action[] getActions() {
     if (actionList == null) {
-      return null;
+      return new Action[0];
     }
     return actionList.toArray(new Action[actionList.size()]);
   }

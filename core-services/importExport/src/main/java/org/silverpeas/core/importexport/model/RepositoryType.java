@@ -29,40 +29,43 @@
  */
 package org.silverpeas.core.importexport.model;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * @author tleroi To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class RepositoryType {
 
-  public final static int NO_RECURSIVE = 0;
-  public final static int RECURSIVE_NOREPLICATE = 1;
-  public final static int RECURSIVE_REPLICATE = 2;
-  public final static String NO_RECURSIVE_STRING = "NO_RECURSIVE";
-  public final static String RECURSIVE_NOREPLICATE_STRING = "RECURSIVE_NOREPLICATE";
-  public final static String RECURSIVE_REPLICATE_STRING = "RECURSIVE_REPLICATE";
+  public static final int NO_RECURSIVE = 0;
+  public static final int RECURSIVE_NOREPLICATE = 1;
+  public static final int RECURSIVE_REPLICATE = 2;
+  private static final String NO_RECURSIVE_STRING = "NO_RECURSIVE";
+  private static final String RECURSIVE_NOREPLICATE_STRING = "RECURSIVE_NOREPLICATE";
+  private static final String RECURSIVE_REPLICATE_STRING = "RECURSIVE_REPLICATE";
+
+  @XmlAttribute
   private String path;
+  @XmlAttribute
   private String componentId;
+  @XmlAttribute
   private int topicId;
+  @XmlAttribute
   private String massiveType;
 
-  /**
-   * @return
-   */
+  public RepositoryType() {
+    // This constructor is necessary with JAXB
+  }
+
   public String getComponentId() {
     return componentId;
   }
 
-  /**
-   * @return
-   */
-  public String getMassiveType() {
-    return massiveType;
-  }
-
-  /**
-   * @return
-   */
   public int getMassiveTypeInt() {
     if (NO_RECURSIVE_STRING.equals(massiveType)) {
       return NO_RECURSIVE;
@@ -76,44 +79,22 @@ public class RepositoryType {
     return -1;
   }
 
-  /**
-   * @return
-   */
   public String getPath() {
     return path;
   }
 
-  /**
-   * @return
-   */
   public int getTopicId() {
     return topicId;
   }
 
-  /**
-   * @param string
-   */
   public void setComponentId(String string) {
     componentId = string;
   }
 
-  /**
-   * @param i
-   */
-  public void setMassiveType(String s) {
-    massiveType = s;
-  }
-
-  /**
-   * @param string
-   */
   public void setPath(String string) {
     path = string;
   }
 
-  /**
-   * @param i
-   */
   public void setTopicId(int i) {
     topicId = i;
   }

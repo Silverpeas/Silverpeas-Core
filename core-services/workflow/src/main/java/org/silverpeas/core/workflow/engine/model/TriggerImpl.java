@@ -24,21 +24,32 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.List;
 import java.util.Vector;
 
 import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.api.model.Trigger;
 import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Class implementing the representation of the &lt;trigger&gt; element of a Process Model.
  **/
+@XmlRootElement(name = "trigger")
+@XmlAccessorType(XmlAccessType.NONE)
 public class TriggerImpl extends AbstractReferrableObject implements Trigger, Serializable {
   private static final long serialVersionUID = -5923330362725539310L;
+  @XmlAttribute
   private String name;
+  @XmlAttribute
   private String className;
-  private Vector<Parameter> parameters;
+  @XmlElement(name = "param", type = ParameterImpl.class)
+  private List<Parameter> parameters;
 
   /**
    * Constructor
@@ -67,7 +78,7 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
 
   /**
    * Set the name of the Parameter
-   * @param parameter 's name
+   * @param name parameter's name
    */
   public void setName(String name) {
     this.name = name;
@@ -83,7 +94,7 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
 
   /**
    * Set the value of the Parameter
-   * @param parameter 's value
+   * @param className parameter's value
    */
   public void setClassName(String className) {
     this.className = className;
@@ -94,31 +105,21 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
    * @see AbstractReferrableObject#getKey()
    */
   public String getKey() {
-    if (name == null)
+    if (name == null) {
       return "";
-    else
-      return name;
+    }
+    return name;
   }
 
   public Parameter getParameter(String strName) {
     Parameter reference = new ParameterImpl();
-    int idx;
-
     reference.setName(strName);
-    idx = parameters.indexOf(reference);
+    int idx = parameters.indexOf(reference);
 
-    if (idx >= 0)
+    if (idx >= 0) {
       return parameters.get(idx);
-    else
-      return null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Item#createParameter()
-   */
-  public Parameter createParameter() {
-    return new ParameterImpl();
+    }
+    return null;
   }
 
   /*
@@ -128,13 +129,5 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
    */
   public void addParameter(Parameter parameter) {
     parameters.add(parameter);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Item#iterateParameters()
-   */
-  public Iterator<Parameter> iterateParameter() {
-    return parameters.iterator();
   }
 }

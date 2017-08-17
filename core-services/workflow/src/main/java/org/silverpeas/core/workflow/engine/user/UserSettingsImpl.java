@@ -27,51 +27,41 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
-import org.silverpeas.core.workflow.engine.jdo.WorkflowJDOManager;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.PersistenceException;
-import org.exolab.castor.jdo.QueryResults;
 
-import java.util.Vector;
+import javax.persistence.AttributeOverride;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.util.ArrayList;
+import java.util.List;
 
-/**
- * @table SB_Workflow_UserSettings
- * @key-generator MAX
- */
-public class UserSettingsImpl implements UserSettings {
-  /**
-   * Used for persistence
-   * @primary-key
-   * @field-name settingsId
-   * @field-type string
-   * @sql-type integer
-   */
-  private String settingsId = null;
+@Entity
+@Table(name = "sb_workflow_usersettings")
+@AttributeOverride(name = "id", column = @Column(name = "settingsid"))
+@NamedQueries({
+    @NamedQuery(name = "findByUserAndComponent",
+        query = "from UserSettingsImpl where userId = :userId and peasId = :componentId")})
+public class UserSettingsImpl extends BasicJpaEntity<UserSettingsImpl, UniqueIntegerIdentifier>
+    implements UserSettings {
 
-  /**
-   * @field-name userId
-   */
+  @Column
   private String userId = null;
-
-  /**
-   * @field-name peasId
-   */
+  @Column
   private String peasId = null;
 
-  /**
-   * Vector of all user informations
-   * @field-name userInfos
-   * @field-type UserInfoImpl
-   * @many-key settingsId
-   * @set-method castor_setUserInfos
-   * @get-method castor_getUserInfos
-   */
-  private Vector<UserInfo> userInfos = null;
+  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, mappedBy = "userSettings")
+  private List<UserInfoImpl> userInfos = null;
 
   /**
    * Default Constructor
@@ -93,72 +83,21 @@ public class UserSettingsImpl implements UserSettings {
    * return true if userInfos is not empty
    */
   public boolean isValid() {
-    return (userInfos != null && userInfos.size() > 0);
+    return CollectionUtil.isNotEmpty(userInfos);
   }
 
-  /**
-   * For persistence in database Get this object id
-   * @return this object id
-   */
-  public String getSettingsId() {
-    return settingsId;
+  public void reset() {
+    userInfos = new ArrayList<>();
   }
 
-  /**
-   * For persistence in database Set this object id
-   * @param settingsId this object id
-   */
-  public void setSettingsId(String settingsId) {
-    this.settingsId = settingsId;
-  }
-
-  /**
-   * Get the user id
-   * @return user id
-   */
+  @Override
   public String getUserId() {
     return userId;
   }
 
-  /**
-   * Set the user id
-   * @param userId user id
-   */
-  public void setUserId(String userId) {
-    this.userId = userId;
-  }
-
-  /**
-   * Get the peas id
-   * @return peas id
-   */
-  public String getPeasId() {
+  @Override
+  public String getComponentId() {
     return peasId;
-  }
-
-  /**
-   * Set the peas id
-   * @param peasId peas id
-   */
-  public void setPeasId(String peasId) {
-    this.peasId = peasId;
-  }
-
-  /**
-   * Remove all user infos
-   */
-  public void reset() {
-    userInfos = new Vector<>();
-  }
-
-  /**
-   * @return UserInfo[]
-   */
-  public UserInfo[] getUserInfos() {
-    if (userInfos != null)
-      return userInfos.toArray(new UserInfo[0]);
-    else
-      return null;
   }
 
   /**
@@ -167,95 +106,15 @@ public class UserSettingsImpl implements UserSettings {
   public UserInfo getUserInfo(String name) {
     UserInfoImpl userInfo = new UserInfoImpl(name, "");
     int index = userInfos.indexOf(userInfo);
-
-    if (index == -1)
-      return null;
-    else
+    if (index != -1) {
       return userInfos.get(index);
+    }
+    return null;
   }
 
-  /**
-   * Saves this settings in database
-   * @return the newly created settings id
-   */
-  public void save() throws WorkflowException {
-    Database db = null;
-    OQLQuery query = null;
-    QueryResults results;
-    UserSettingsImpl settings = null;
-
-    if (this.settingsId == null) {
-      this.create();
-    }
-
-    else
-      try {
-        // Constructs the query
-        db = WorkflowJDOManager.getDatabase();
-        db.begin();
-
-        query = db.getOQLQuery(
-            "SELECT settings " +
-            "FROM org.silverpeas.core.workflow.engine.user.UserSettingsImpl settings " +
-            "WHERE userId = $1 " +
-            "AND peasId = $2");
-
-        // Execute the query
-        query.bind(userId);
-        query.bind(peasId);
-        results = query.execute();
-
-        if (results.hasMore()) {
-          settings = (UserSettingsImpl) results.next();
-          settings.reset();
-
-          for (int i = 0; i < this.userInfos.size(); i++) {
-            UserInfo info = this.userInfos.get(i);
-            settings.addUserInfo(info.getName(), info.getValue());
-          }
-        }
-
-        db.commit();
-      } catch (PersistenceException pe) {
-        throw new WorkflowException("UserManagerImpl.getUserSettings",
-            "EX_ERR_CASTOR_GET_USER_SETTINGS", pe);
-      } finally {
-        WorkflowJDOManager.closeDatabase(db);
-      }
-
-    if (settings == null) {
-      this.create();
-    }
-
-  }
-
-  /**
-   * Update the settings with a given DataRecord
-   * @param data the data record
-   * @param template the record template
-   */
-  public void update(DataRecord data, RecordTemplate template) {
-    String[] fieldNames = template.getFieldNames();
-
-    for (int i = 0; fieldNames != null && i < fieldNames.length; i++) {
-      try {
-        Field field = data.getField(fieldNames[i]);
-        if (field == null) {
-          SilverTrace.warn("workflowEngine", "UserSettingsImpl.update",
-              "workflowEngine.EX_ERR_GET_FIELD", fieldNames[i]);
-          continue;
-        }
-
-        String value = field.getStringValue();
-        if (value != null) {
-          this.addUserInfo(fieldNames[i], value);
-        }
-      } catch (FormException e) {
-        SilverTrace.warn("workflowEngine", "UserSettingsImpl.update",
-            "workflowEngine.EX_ERR_GET_FIELD", "fieldName:" + fieldNames[i] +
-                " and data:" + ((data != null)? data.getId() : "null"));
-      }
-    }
+  @SuppressWarnings("unchecked")
+  public List<UserInfo> getUserInfos() {
+    return (List) userInfos;
   }
 
   /**
@@ -288,61 +147,6 @@ public class UserSettingsImpl implements UserSettings {
         }
       }
     }
-  }
-
-  /**
-   * Add an user information for this setting
-   * @param name key of user information
-   * @param value value of user information
-   */
-  private void addUserInfo(String name, String value) {
-    UserInfoImpl userInfo = new UserInfoImpl(name, value);
-    userInfo.setUserSettings(this);
-
-    int index = userInfos.indexOf(userInfo);
-    if (index == -1) {
-      userInfos.add(userInfo);
-    } else {
-      userInfos.set(index, userInfo);
-    }
-  }
-
-  /**
-   * Creates this settings in database
-   */
-  private void create() throws WorkflowException {
-    Database db = null;
-    try {
-      db = WorkflowJDOManager.getDatabase();
-      synchronized (db) {
-        db.begin();
-        db.create(this);
-        db.commit();
-      }
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("UserSettingsImpl.create",
-          "workflowEngine.EX_ERR_CASTOR_CREATE_USER_SETTINGS", pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-    }
-  }
-
-  // METHODS FOR CASTOR
-
-  /**
-   * Set the settings user informations
-   * @param userInfos user informations
-   */
-  public void castor_setUserInfos(Vector<UserInfo> userInfos) {
-    this.userInfos = userInfos;
-  }
-
-  /**
-   * Get the settings user informations
-   * @return user informations as a Vector
-   */
-  public Vector<UserInfo> castor_getUserInfos() {
-    return userInfos;
   }
 
 }

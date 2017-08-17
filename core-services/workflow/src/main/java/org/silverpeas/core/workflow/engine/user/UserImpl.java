@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.workflow.engine.user;
 
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
@@ -65,28 +66,18 @@ public final class UserImpl implements User {
    * Returns the user full name (firstname lastname)
    */
   public String getFullName() {
-    return userDetail.getFirstName() + " " + userDetail.getLastName();
+    return userDetail.getDisplayedName();
   }
-
-  /**
-   * returns all the known info for an user; Each returned value can be used as a parameter to the
-   * User method getInfo().
-   */
-  static public String[] getUserInfoNames() {
-    return infoNames;
-  }
-
-  static private String[] infoNames = { "bossId" };
 
   /**
    * Returns the named info
    */
   public String getInfo(String infoName) {
     if (userFull == null) {
-
       try {
         userFull = AdministrationServiceProvider.getAdminService().getUserFull(getUserId());
       } catch (AdminException e) {
+        SilverLogger.getLogger(this).error(e);
         return "";
       }
 

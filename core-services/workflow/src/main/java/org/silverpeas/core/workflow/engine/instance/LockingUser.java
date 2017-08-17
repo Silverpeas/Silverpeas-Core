@@ -23,48 +23,31 @@
  */
 package org.silverpeas.core.workflow.engine.instance;
 
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.Date;
 
-import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.user.User;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
-import org.silverpeas.core.workflow.engine.WorkflowHub;
+@Entity
+@Table(name = "sb_workflow_lockinguser")
+public class LockingUser extends BasicJpaEntity<LockingUser, UniqueIntegerIdentifier> {
 
-/**
- * @table SB_Workflow_LockingUser
- * @depends ProcessInstanceImpl
- * @key-generator MAX
- */
-public class LockingUser extends AbstractReferrableObject {
-  /**
-   * Used for persistence
-   * @primary-key
-   * @field-name id
-   * @field-type string
-   * @sql-type integer
-   */
-  private String id = null;
-
-  /**
-   * @field-name userId
-   */
+  @Column
   private String userId = null;
 
-  /**
-   * @field-name processInstance
-   * @field-type ProcessInstanceImpl
-   * @sql-name instanceId
-   */
+  @ManyToOne
+  @JoinColumn(name = "instanceid", nullable = false)
   private ProcessInstanceImpl processInstance = null;
 
-  /**
-   * @field-name state
-   */
+  @Column
   private String state = null;
 
-  /**
-   * @field-name lockDate
-   */
+  @Column
   private Date lockDate = null;
 
   /**
@@ -72,22 +55,6 @@ public class LockingUser extends AbstractReferrableObject {
    */
   public LockingUser() {
     lockDate = new Date();
-  }
-
-  /**
-   * For persistence in database Get this object id
-   * @return this object id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * For persistence in database Set this object id
-   * @param this object id
-   */
-  public void setId(String id) {
-    this.id = id;
   }
 
   /**
@@ -147,45 +114,28 @@ public class LockingUser extends AbstractReferrableObject {
   }
 
   /**
-   * Set the date when user locked the instance
-   * @param lockDate lock date
-   */
-  public void setLockDate(Date lockDate) {
-    this.lockDate = lockDate;
-  }
-
-  /**
-   * Converts LockingUser to User
-   * @return an object implementing User interface and containing user details
-   */
-  public User toUser() throws WorkflowException {
-    return WorkflowHub.getUserManager().getUser(this.getUserId());
-  }
-
-  /**
-   * Get User information from an array of lockingUsers
-   * @param lockingUsers an array of LockingUser objects
-   * @return an array of objects implementing User interface and containing user details
-   */
-  static public User[] toUser(LockingUser[] lockingUsers)
-      throws WorkflowException {
-    String[] userIds = new String[lockingUsers.length];
-
-    for (int i = 0; i < lockingUsers.length; i++) {
-      userIds[i] = lockingUsers[i].getUserId();
-    }
-
-    return WorkflowHub.getUserManager().getUsers(userIds);
-  }
-
-  /**
    * This method has to be implemented by the referrable object it has to compute the unique key
    * @return The unique key.
    */
-  public String getKey() {
-    if (this.getState() == null)
+  private String getKey() {
+    if (this.getState() == null) {
       return "";
-    else
-      return this.getState();
+    }
+    return this.getState();
+  }
+
+  @Override
+  public boolean equals(Object theOther) {
+    if (theOther instanceof String) {
+      return getKey().equals(theOther);
+    } else if (theOther instanceof LockingUser) {
+      return getKey().equals(((LockingUser) theOther).getKey());
+    }
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return getKey().hashCode();
   }
 }

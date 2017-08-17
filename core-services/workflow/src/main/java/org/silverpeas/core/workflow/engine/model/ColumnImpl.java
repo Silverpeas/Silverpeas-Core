@@ -23,29 +23,27 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-
-import org.silverpeas.core.workflow.api.model.AbstractDescriptor;
 import org.silverpeas.core.workflow.api.model.Column;
 import org.silverpeas.core.workflow.api.model.Item;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * Class implementing the representation of the &lt;column&gt; element of a Process Model.
  **/
-public class ColumnImpl extends AbstractReferrableObject implements Column, AbstractDescriptor,
-    Serializable {
+@XmlRootElement(name = "column")
+@XmlAccessorType(XmlAccessType.NONE)
+public class ColumnImpl implements Column, Serializable {
   private static final long serialVersionUID = 3766121048611753846L;
 
-  // ~ Instance fields ////////////////////////////////////////////////////////
-  private AbstractDescriptor parent;
-  private boolean hasId = false;
-  private int id;
-  private Item item;
-
-  /************* Implemented methods *****************************************/
-
-  // ~ Methods ////////////////////////////////////////////////////////////////
+  @XmlIDREF
+  @XmlAttribute
+  private ItemImpl item;
 
   /*
    * @see Column#getItem()
@@ -58,59 +56,6 @@ public class ColumnImpl extends AbstractReferrableObject implements Column, Abst
    * @see Column#setItem(Item)
    */
   public void setItem(Item item) {
-    this.item = item;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#setId(int)
-   */
-  public void setId(int id) {
-    this.id = id;
-    hasId = true;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#getId()
-   */
-  public int getId() {
-    return id;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#setParent(com.silverpeas
-   * .workflow.api.model.AbstractDescriptor)
-   */
-  public void setParent(AbstractDescriptor parent) {
-    this.parent = parent;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#getParent()
-   */
-  public AbstractDescriptor getParent() {
-    return parent;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractDescriptor#hasId()
-   */
-  public boolean hasId() {
-    return hasId;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see AbstractReferrableObject#getKey()
-   */
-  public String getKey() {
-    if (item == null)
-      return "";
-    else
-      return item.getName();
+    this.item = (ItemImpl) item;
   }
 }

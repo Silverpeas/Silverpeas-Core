@@ -23,22 +23,29 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 
 /**
  * @author neysseri
  */
+@XmlRootElement(name = "xmlField")
+@XmlAccessorType(XmlAccessType.NONE)
 public class XMLField implements Serializable {
 
   private static final long serialVersionUID = -825307243077524947L;
+  @XmlElement(name = "name")
   private String name;
+  @XmlElement(name = "value")
   private String value;
 
   public XMLField() {
   }
 
   public XMLField(String name, String value) {
-
     this.name = name;
     this.value = value;
   }

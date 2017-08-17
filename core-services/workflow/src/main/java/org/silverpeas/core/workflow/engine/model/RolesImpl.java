@@ -32,12 +32,20 @@ import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.Role;
 import org.silverpeas.core.workflow.api.model.Roles;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Class implementing the representation of the &lt;roles&gt; element of a Process Model.
  */
+@XmlRootElement(name = "roles")
+@XmlAccessorType(XmlAccessType.NONE)
 public class RolesImpl implements Serializable, Roles {
 
   private static final long serialVersionUID = 4241149699620983852L;
+  @XmlElement(name = "role", type = RoleImpl.class)
   private List<Role> roleList;
 
   /**
@@ -89,7 +97,7 @@ public class RolesImpl implements Serializable, Roles {
   @Override
   public Role[] getRoles() {
     if (roleList == null) {
-      return null;
+      return new Role[0];
     }
     return roleList.toArray(new Role[roleList.size()]);
   }

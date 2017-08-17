@@ -46,16 +46,15 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.importexport.attachment.AttachmentPK;
+import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.importexport.model.ImportExportException;
-import org.silverpeas.core.importexport.model.RepositoriesType;
 import org.silverpeas.core.importexport.model.RepositoryType;
 import org.silverpeas.core.importexport.publication.PublicationContentType;
-import org.silverpeas.core.importexport.publication.XMLModelContentType;
 import org.silverpeas.core.importexport.report.ImportReportManager;
 import org.silverpeas.core.importexport.report.MassiveReport;
 import org.silverpeas.core.importexport.report.UnitReport;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
-import org.silverpeas.core.importexport.versioning.VersioningImportExport;
+import org.silverpeas.core.importexport.versioning.VersioningImport;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.mail.extractor.Extractor;
@@ -108,16 +107,14 @@ public class RepositoriesTypeManager {
   /**
    * Méthode métier du moteur d'importExport créant toutes les publications massives définies au
    * niveau du fichier d'import xml passé en paramètre au moteur d'importExport.
-   *
-   * @param repositoriesType - objet mappé par castor contenant toutes les informations de création
+   * @param repositoryTypes - objet contenant toutes les informations de création
    * des publications du path défini
    * @return un objet ComponentReport contenant les informations de création des publications
    * unitaires et nécéssaire au rapport détaillé
    */
-  public void processImport(RepositoriesType repositoriesType, ImportSettings settings,
+  public void processImport(List<RepositoryType> repositoryTypes, ImportSettings settings,
       ImportReportManager reportManager) {
-    List<RepositoryType> listRep_Type = repositoriesType.getListRepositoryType();
-    Iterator<RepositoryType> itListRep_Type = listRep_Type.iterator();
+    Iterator<RepositoryType> itListRep_Type = repositoryTypes.iterator();
 
     while (itListRep_Type.hasNext()) {
       RepositoryType rep_Type = itListRep_Type.next();
@@ -426,7 +423,7 @@ public class RepositoriesTypeManager {
         // ... and save it
         if (isVersioningUsed) {
           // versioning mode
-          VersioningImportExport versioningIE = new VersioningImportExport(userDetail);
+          VersioningImport versioningIE = new VersioningImport(userDetail);
           versioningIE.importDocuments(pubDetail.getPK().getId(), componentId,
               documents, pubDetail.isIndexable());
         } else {

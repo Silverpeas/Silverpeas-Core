@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
-import java.util.Iterator;
-
 /**
  * Interface describing a representation of the &lt;participant&gt; element of a Process Model.
  */
@@ -37,13 +35,13 @@ public interface Participant {
 
   /**
    * Set the name of this participant
-   * @param participant 's name
+   * @param name participant's name
    */
   public void setName(String name);
 
   /**
    * Get description in specific language for the given role
-   * @param lang description's language
+   * @param language description's language
    * @param role role for which the description is
    * @return wanted description as a String object. If description is not found, search description
    * with given role and default language, if not found again, return the default description in
@@ -59,19 +57,8 @@ public interface Participant {
   public ContextualDesignations getDescriptions();
 
   /**
-   * Iterate through the descriptions
-   * @return an iterator
-   */
-  public Iterator<ContextualDesignation> iterateDescription();
-
-  /**
-   * Add a description Method needed primarily by Castor
-   */
-  public void addDescription(ContextualDesignation description);
-
-  /**
    * Get label in specific language for the given role
-   * @param lang label's language
+   * @param language label's language
    * @param role role for which the label is
    * @return wanted label as a String object. If label is not found, search label with given role
    * and default language, if not found again, return the default label in given language, if not
@@ -85,22 +72,6 @@ public interface Participant {
    * @return an object containing the collection of the labels
    */
   public ContextualDesignations getLabels();
-
-  /**
-   * Iterate through the Labels
-   * @return an iterator
-   */
-  public Iterator<ContextualDesignation> iterateLabel();
-
-  /**
-   * Add a label Method needed primarily by Castor
-   */
-  public void addLabel(ContextualDesignation label);
-
-  /**
-   * Create an object implementing ContextualDesignation Method needed primarily by Castor
-   */
-  public ContextualDesignation createDesignation();
 
   /**
    * Get the state that defined participant has resolved
