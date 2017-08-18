@@ -29,17 +29,31 @@ import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.TimeOutAction;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Representation of the &lt;timeoutAction&gt; element of a Process Model.
  * @author Ludovic Bertin
  */
+@XmlRootElement(name = "timeOutAction")
+@XmlAccessorType(XmlAccessType.NONE)
 public class TimeOutActionImpl implements TimeOutAction, Serializable {
 
   private static final long serialVersionUID = -7434214806057433378L;
-  private Action action = null;
+  @XmlIDREF
+  @XmlAttribute
+  private ActionImpl action = null;
+  @XmlAttribute
   private String delay = null;
+  @XmlAttribute
   private int order = 0;
-  private Item dateItem = null;
+  @XmlIDREF
+  @XmlAttribute
+  private ItemImpl dateItem = null;
 
   /*
    * (non-Javadoc)
@@ -51,7 +65,7 @@ public class TimeOutActionImpl implements TimeOutAction, Serializable {
   }
 
   public void setAction(Action action) {
-    this.action = action;
+    this.action = (ActionImpl) action;
   }
 
   public void setDelay(String delay) {
@@ -60,13 +74,6 @@ public class TimeOutActionImpl implements TimeOutAction, Serializable {
 
   public void setOrder(int order) {
     this.order = order;
-  }
-
-  /**
-   * @param dateItem the dateItem to set
-   */
-  public void setDateItem(Item dateItem) {
-    this.dateItem = dateItem;
   }
 
   /*
@@ -94,29 +101,6 @@ public class TimeOutActionImpl implements TimeOutAction, Serializable {
   @Override
   public Item getDateItem() {
     return dateItem;
-  }
-
-  /**
-   * Get the timeout action order
-   * @return order (as a String)
-   */
-  public String castor_getOrder() {
-    if (order > 0)
-      return String.valueOf(order);
-    else
-      return null;
-  }
-
-  /**
-   * Set the timeout action order
-   * @param order timeout order
-   */
-  public void castor_setOrder(String order) {
-    try {
-      this.order = (Integer.valueOf(order)).intValue();
-    } catch (NumberFormatException e) {
-      this.order = 0;
-    }
   }
 
 }

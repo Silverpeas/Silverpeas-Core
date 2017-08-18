@@ -32,12 +32,20 @@ import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.Participant;
 import org.silverpeas.core.workflow.api.model.Participants;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Class implementing the representation of the &lt;participants&gt; element of a Process Model.
  **/
+@XmlRootElement(name = "participants")
+@XmlAccessorType(XmlAccessType.NONE)
 public class ParticipantsImpl implements Serializable, Participants {
 
   private static final long serialVersionUID = 2184206918365803850L;
+  @XmlElement(name = "participant", type = ParticipantImpl.class)
   private List<Participant> participantList;
 
   /**
@@ -73,7 +81,7 @@ public class ParticipantsImpl implements Serializable, Participants {
   @Override
   public Participant[] getParticipants() {
     if (participantList == null) {
-      return null;
+      return new Participant[0];
     }
     return participantList.toArray(new Participant[participantList.size()]);
   }

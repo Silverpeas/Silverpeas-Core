@@ -28,16 +28,29 @@ import java.io.Serializable;
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Participant;
 import org.silverpeas.core.workflow.api.model.RelatedUser;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class implementing the representation of the &lt;relatedUser&gt; element of a Process Model.
  **/
-public class RelatedUserImpl extends AbstractReferrableObject implements RelatedUser, Serializable {
+@XmlRootElement(name = "relatedUser")
+@XmlAccessorType(XmlAccessType.NONE)
+public class RelatedUserImpl implements RelatedUser, Serializable {
   private static final long serialVersionUID = -7371460894690406952L;
-  private Participant participant;
-  private Item folderItem;
+  @XmlIDREF
+  @XmlAttribute
+  private ParticipantImpl participant;
+  @XmlIDREF
+  @XmlAttribute
+  private ItemImpl folderItem;
+  @XmlAttribute
   private String relation;
+  @XmlAttribute
   private String role;
 
   /**
@@ -60,7 +73,7 @@ public class RelatedUserImpl extends AbstractReferrableObject implements Related
    * .workflow.api.model.Participant)
    */
   public void setParticipant(Participant participant) {
-    this.participant = participant;
+    this.participant = (ParticipantImpl) participant;
   }
 
   /**
@@ -75,7 +88,7 @@ public class RelatedUserImpl extends AbstractReferrableObject implements Related
    * @param folderItem item to refer
    */
   public void setFolderItem(Item folderItem) {
-    this.folderItem = folderItem;
+    this.folderItem = (ItemImpl) folderItem;
   }
 
   /**
@@ -109,34 +122,35 @@ public class RelatedUserImpl extends AbstractReferrableObject implements Related
     this.role = role;
   }
 
-  /*
-   * @see AbstractReferrableObject#getKey()
-   */
-  public String getKey() {
-    StringBuffer sb = new StringBuffer();
-
-    if (participant instanceof AbstractReferrableObject) {
-      sb.append(((AbstractReferrableObject) participant).getKey());
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
     }
 
-    sb.append("|");
+    final RelatedUserImpl that = (RelatedUserImpl) o;
 
-    if (folderItem instanceof AbstractReferrableObject) {
-      sb.append(((AbstractReferrableObject) folderItem).getKey());
+    if (participant != null ? !participant.equals(that.participant) : that.participant != null) {
+      return false;
     }
-
-    sb.append("|");
-
-    if (relation != null) {
-      sb.append(relation);
+    if (folderItem != null ? !folderItem.equals(that.folderItem) : that.folderItem != null) {
+      return false;
     }
-
-    sb.append("|");
-
-    if (role != null) {
-      sb.append(role);
+    if (relation != null ? !relation.equals(that.relation) : that.relation != null) {
+      return false;
     }
+    return role != null ? role.equals(that.role) : that.role == null;
+  }
 
-    return sb.toString();
+  @Override
+  public int hashCode() {
+    int result = participant != null ? participant.hashCode() : 0;
+    result = 31 * result + (folderItem != null ? folderItem.hashCode() : 0);
+    result = 31 * result + (relation != null ? relation.hashCode() : 0);
+    result = 31 * result + (role != null ? role.hashCode() : 0);
+    return result;
   }
 }

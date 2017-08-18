@@ -23,15 +23,13 @@
  */
 package org.silverpeas.core.workflow.engine;
 
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.workflow.api.ErrorManager;
 import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.core.workflow.api.TaskManager;
-import org.silverpeas.core.workflow.api.TimeoutManager;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowEngine;
-import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * The workflowHub manages all the workflow components implementations. This singleton builds the
@@ -40,51 +38,44 @@ import org.silverpeas.core.util.ServiceProvider;
 public class WorkflowHub {
 
   /**
-   * @return the TimeoutManager
-   */
-  public static TimeoutManager getTimeoutManager() throws WorkflowException {
-    return ServiceProvider.getService(TimeoutManager.class);
-  }
-
-  /**
    * @return the ProcessModelManager
    */
-  public static ProcessModelManager getProcessModelManager() throws WorkflowException {
+  public static ProcessModelManager getProcessModelManager() {
     return ServiceProvider.getService(ProcessModelManager.class);
   }
 
   /**
    * @return the ProcessInstanceManager
    */
-  public static ProcessInstanceManager getProcessInstanceManager() throws WorkflowException {
+  public static ProcessInstanceManager getProcessInstanceManager() {
     return ServiceProvider.getService(ProcessInstanceManager.class);
   }
 
   /**
    * @return the UserManager
    */
-  public static UserManager getUserManager() throws WorkflowException {
+  public static UserManager getUserManager() {
     return ServiceProvider.getService(UserManager.class);
   }
 
   /**
    * @return the WorkflowEngine
    */
-  public static WorkflowEngine getWorkflowEngine() throws WorkflowException {
+  public static WorkflowEngine getWorkflowEngine() {
     return ServiceProvider.getService(WorkflowEngine.class);
   }
 
   /**
    * @return the TaskManager
    */
-  public static TaskManager getTaskManager() throws WorkflowException {
+  public static TaskManager getTaskManager() {
     return ServiceProvider.getService(TaskManager.class);
   }
 
   /**
    * @return the ErrorManager
    */
-  public static ErrorManager getErrorManager() throws WorkflowException {
+  public static ErrorManager getErrorManager() {
     return ServiceProvider.getService(ErrorManager.class);
   }
 }

@@ -69,7 +69,13 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.xml.DateAdapter;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 import java.io.PrintWriter;
 import java.io.Serializable;
 import java.io.StringWriter;
@@ -86,21 +92,35 @@ import static org.silverpeas.core.util.StringUtil.split;
 /**
  * This object contains the description of a publication
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     implements SilverContentInterface, SilverpeasContent, Rateable, Serializable, Cloneable {
 
   private static final long serialVersionUID = 9199848912262605680L;
   private PublicationPK pk;
   private String infoId;
+  @XmlElement(name = "creationDate")
+  @XmlJavaTypeAdapter(DateAdapter.class)
   private Date creationDate;
+  @XmlElement(name = "beginDate")
+  @XmlJavaTypeAdapter(DateAdapter.class)
   private Date beginDate;
+  @XmlElement(name = "endDate")
+  @XmlJavaTypeAdapter(DateAdapter.class)
   private Date endDate;
+  @XmlElement(name = "creatorId")
   private String creatorId;
+  @XmlElement(name = "creatorName")
   private String creatorName;
+  @XmlElement(name = "importance")
   private int importance;
+  @XmlElement(name = "version")
   private String version;
+  @XmlElement(name = "keywords")
   private String keywords;
   private String content;
+  @XmlElement(name = "status")
   private String status;
   private Date updateDate;
   private String updaterId;
@@ -139,7 +159,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   private ContributionRating contributionRating;
 
   /**
-   * Default contructor, required for castor mapping in importExport.
+   * Default contructor, required for JAXB mapping in importExport.
    */
   public PublicationDetail() {
     // Nothing to do

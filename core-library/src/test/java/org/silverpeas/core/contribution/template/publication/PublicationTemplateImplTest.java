@@ -23,22 +23,18 @@
  */
 package org.silverpeas.core.contribution.template.publication;
 
+import org.junit.Assert;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.xml.Unmarshaller;
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.admin.component.model.GlobalContext;
-import org.xml.sax.InputSource;
 
 import java.io.File;
-import java.io.FileInputStream;
 
 import static org.silverpeas.core.contribution.template.publication.Assertion.assertEquals;
 import static java.io.File.separatorChar;
@@ -53,8 +49,7 @@ import static org.junit.Assert.assertThat;
 public class PublicationTemplateImplTest {
   private static final char SEPARATOR = separatorChar;
 
-  public File MAPPINGS_PATH;
-  public File TEMPLATES_PATH;
+  private File TEMPLATES_PATH;
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
@@ -64,7 +59,6 @@ public class PublicationTemplateImplTest {
     final File targetDir = getFile(
         PublicationTemplateImplTest.class.getProtectionDomain().getCodeSource().getLocation()
             .getFile());
-    MAPPINGS_PATH = getFile(targetDir, "templateRepository", "mapping");
     TEMPLATES_PATH = getFile(targetDir, "templateRepository");
 
     PublicationTemplateManager.templateDir = TEMPLATES_PATH.getPath();
@@ -75,7 +69,6 @@ public class PublicationTemplateImplTest {
     String xmlFileName = "template" + SEPARATOR + "data.xml";
     // Pay attention to not declare org.silverpeas.core.contribution.content.form.displayers.PdcPositionsFieldDisplayer
     // inside types.properties cause this class is not available inside silverpeas-core project
-    RecordTemplate expectedTemplate = getExpectedRecordTemplate(xmlFileName);
     PublicationTemplateImpl instance = new PublicationTemplateImpl();
     instance.setDataFileName(xmlFileName);
     instance.setFileName("personne.xml");
@@ -83,22 +76,8 @@ public class PublicationTemplateImplTest {
     FieldTemplate fieldTemplate = result.getFieldTemplate("civilite");
     Field field = fieldTemplate.getEmptyField();
     assertThat(field, is(notNullValue()));
-    assertEquals(expectedTemplate, result);
-  }
-
-  /**
-   * Gets the expected record template from the specified file in which it is serialized in XML.
-   * @param xmlFileName the name of the file in which is serialized the record template.
-   * @return the record template that is serialized in the specified XML file.
-   * @throws Exception if the record template cannot be deserialized.
-   */
-  private RecordTemplate getExpectedRecordTemplate(final String xmlFileName) throws Exception {
-    Mapping mapping = new Mapping();
-    mapping.loadMapping(getFile(MAPPINGS_PATH, "templateMapping.xml").getPath());
-    Unmarshaller unmarshaller = new Unmarshaller(mapping);
-    RecordTemplate template = (GenericRecordTemplate) unmarshaller
-        .unmarshal(new InputSource(new FileInputStream(getFile(TEMPLATES_PATH, xmlFileName))));
-    return template;
+    Assert.assertEquals("Civilité", fieldTemplate.getLabel("fr"));
+    Assert.assertEquals(2, fieldTemplate.getParametersObj().size());
   }
 
   @Test

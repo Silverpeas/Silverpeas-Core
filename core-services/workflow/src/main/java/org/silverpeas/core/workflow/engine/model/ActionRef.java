@@ -29,12 +29,22 @@ import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.AllowedAction;
 import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
+
 /**
  * Class implementing the representation of the &lt;allow&gt; element of a Process Model.
  **/
+@XmlAccessorType(XmlAccessType.NONE)
 public class ActionRef extends AbstractReferrableObject implements Serializable, AllowedAction {
   private static final long serialVersionUID = -8866828437819862983L;
-  private Action action; // The reference to the allowed action
+
+  @XmlIDREF
+  @XmlAttribute(name = "action")
+  // The reference to the allowed action
+  private ActionImpl action;
 
   /**
    * Get the referred action
@@ -48,7 +58,14 @@ public class ActionRef extends AbstractReferrableObject implements Serializable,
    * @param action action to refer
    */
   public void setAction(Action action) {
-    this.action = action;
+    this.action = (ActionImpl) action;
+  }
+
+  public String getActionName() {
+    if (action != null) {
+      return action.getName();
+    }
+    return null;
   }
 
   /*
@@ -56,9 +73,10 @@ public class ActionRef extends AbstractReferrableObject implements Serializable,
    * @see AbstractReferrableObject#getKey()
    */
   public String getKey() {
-    if (getAction() != null)
+    if (getAction() != null) {
       return getAction().getName();
-    else
+    } else {
       return "";
+    }
   }
 }

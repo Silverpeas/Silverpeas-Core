@@ -26,14 +26,23 @@
  */
 package org.silverpeas.core.node.importexport;
 
-/**
- * Class used for Castor (un)marshalling
- * @author sdevolder
- */
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class NodePositionType {
 
+  @XmlAttribute(name = "topicId")
   private int id = -1;
+  @XmlAttribute
   private String explicitPath;
+
+  public NodePositionType() {
+    // This constructor is necessary with JAXB
+  }
 
   public int getId() {
     return id;
@@ -41,10 +50,6 @@ public class NodePositionType {
 
   public void setId(int i) {
     id = i;
-  }
-
-  public void setExplicitPath(String explicitPath) {
-    this.explicitPath = explicitPath;
   }
 
   public String getExplicitPath() {

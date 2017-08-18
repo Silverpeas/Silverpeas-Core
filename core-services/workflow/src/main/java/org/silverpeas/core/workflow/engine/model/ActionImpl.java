@@ -24,37 +24,47 @@
 package org.silverpeas.core.workflow.engine.model;
 
 import java.io.Serializable;
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.silverpeas.core.workflow.api.model.AbstractDescriptor;
 import org.silverpeas.core.workflow.api.model.Action;
 import org.silverpeas.core.workflow.api.model.Consequences;
 import org.silverpeas.core.workflow.api.model.ContextualDesignation;
 import org.silverpeas.core.workflow.api.model.ContextualDesignations;
 import org.silverpeas.core.workflow.api.model.Form;
 import org.silverpeas.core.workflow.api.model.QualifiedUsers;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlID;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class implementing the representation of the &lt;action&gt; element of a Process Model.
  **/
-public class ActionImpl extends AbstractReferrableObject implements Action, AbstractDescriptor,
-    Serializable {
+@XmlRootElement(name = "action")
+@XmlAccessorType(XmlAccessType.NONE)
+public class ActionImpl implements Action, Serializable {
   private static final long serialVersionUID = -6984785710903135661L;
+  @XmlID
+  @XmlAttribute
   private String name;
+  @XmlAttribute
   private String kind;
-  private ContextualDesignations labels;
-  private ContextualDesignations descriptions;
+  @XmlElement(name = "label", type = SpecificLabel.class)
+  private List<ContextualDesignation> labels;
+  @XmlElement(name = "description", type = SpecificLabel.class)
+  private List<ContextualDesignation> descriptions;
+  @XmlElement(type = QualifiedUsersImpl.class)
   private QualifiedUsers allowedUsers;
-  private Form form;
+  @XmlIDREF
+  @XmlAttribute
+  private FormImpl form;
+  @XmlElement(type = ConsequencesImpl.class)
   private Consequences consequences;
-
-  // ~ Instance fields related to AbstractDescriptor
-  // ////////////////////////////////////////////////////////
-
-  private AbstractDescriptor parent;
-  private boolean hasId = false;
-  private int id;
 
   /**
    * Constructor
@@ -64,29 +74,12 @@ public class ActionImpl extends AbstractReferrableObject implements Action, Abst
   }
 
   /**
-   * Constructor
-   * @param name action name
-   */
-  public ActionImpl(String name) {
-    this();
-    this.name = name;
-  }
-
-  /**
    * reset attributes
    */
   private void reset() {
-    labels = new SpecificLabelListHelper();
-    descriptions = new SpecificLabelListHelper();
+    labels = new ArrayList<>();
+    descriptions = new ArrayList<>();
     kind = "update";
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Action#createDesignation()
-   */
-  public ContextualDesignation createDesignation() {
-    return labels.createContextualDesignation();
   }
 
   /*
@@ -94,7 +87,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action, Abst
    * @see Action#getLabels()
    */
   public ContextualDesignations getLabels() {
-    return labels;
+    return new SpecificLabelListHelper(labels);
   }
 
   /*
@@ -102,24 +95,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action, Abst
    * @see Action#getLabel(java.lang.String, java.lang.String)
    */
   public String getLabel(String role, String language) {
-    return labels.getLabel(role, language);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Action#addLabel(com.silverpeas.workflow
-   * .api.model.ContextualDesignation)
-   */
-  public void addLabel(ContextualDesignation label) {
-    labels.addContextualDesignation(label);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Action#iterateLabel()
-   */
-  public Iterator<ContextualDesignation> iterateLabel() {
-    return labels.iterateContextualDesignation();
+    return getLabels().getLabel(role, language);
   }
 
   /**
@@ -167,7 +143,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action, Abst
    * @see Action#getDescriptions()
    */
   public ContextualDesignations getDescriptions() {
-    return descriptions;
+    return new SpecificLabelListHelper(descriptions);
   }
 
   /*
@@ -176,24 +152,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action, Abst
    * java.lang.String)
    */
   public String getDescription(String role, String language) {
-    return descriptions.getLabel(role, language);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Action#addDescription(com.silverpeas.
-   * workflow.api.model.ContextualDesignation)
-   */
-  public void addDescription(ContextualDesignation description) {
-    descriptions.addContextualDesignation(description);
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see Action#iterateDescription()
-   */
-  public Iterator<ContextualDesignation> iterateDescription() {
-    return descriptions.iterateContextualDesignation();
+    return getDescriptions().getLabel(role, language);
   }
 
   /**
@@ -231,7 +190,7 @@ public class ActionImpl extends AbstractReferrableObject implements Action, Abst
    * @param form associated form
    **/
   public void setForm(Form form) {
-    this.form = form;
+    this.form = (FormImpl) form;
   }
 
   /**
@@ -258,28 +217,4 @@ public class ActionImpl extends AbstractReferrableObject implements Action, Abst
     return name;
   }
 
-  /************* Implemented methods *****************************************/
-
-  // ~ Methods ////////////////////////////////////////////////////////////////
-
-  public void setId(int id) {
-    this.id = id;
-    hasId = true;
-  }
-
-  public int getId() {
-    return id;
-  }
-
-  public void setParent(AbstractDescriptor parent) {
-    this.parent = parent;
-  }
-
-  public AbstractDescriptor getParent() {
-    return parent;
-  }
-
-  public boolean hasId() {
-    return hasId;
-  }
 }

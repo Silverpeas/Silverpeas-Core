@@ -23,54 +23,36 @@
  */
 package org.silverpeas.core.importexport.versioning;
 
-import java.util.Date;
-
-import org.silverpeas.core.ForeignPK;
+import java.util.List;
 
 import org.silverpeas.core.WAPrimaryKey;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class Document implements java.io.Serializable, Cloneable {
 
   private static final long serialVersionUID = 1L;
-  public final static int STATUS_CHECKINED = 0;
-  public final static int STATUS_CHECKOUTED = 1;
 
   private DocumentPK pk;
   private WAPrimaryKey foreignKey;
+  @XmlElement(name = "name")
   private String name;
+  @XmlElement(name = "description")
   private String description;
   private int status;
-  private int ownerId;
-  private Date lastCheckOutDate;
-  private String additionalInfo;
   private String instanceId;
-  private int typeWorkList;
-  private int currentWorkListOrder;
-  private int orderNumber;
 
-  private Date alertDate = null; // date d'alerte pour la notification
-  // intermediaire
-  private Date expiryDate = null; // date d'expiration
-
-  private VersionsType versionsType; // used by import/export engine
+  @XmlElementWrapper(name = "versions")
+  @XmlElement(name = "version", namespace = "http://www.silverpeas.org/exchange")
+  private List<DocumentVersion> versionsType;
 
   public Document() {
-  }
-
-  public Document(DocumentPK pk, WAPrimaryKey foreignKey, String name,
-      String description, int status, int ownerId, Date lastCheckOutDate,
-      String additionalInfo, String instanceId, int typeWorkList, int currentWorkListOrder) {
-    this.pk = pk;
-    this.foreignKey = foreignKey;
-    this.name = name;
-    this.description = description;
-    this.status = status;
-    this.ownerId = ownerId;
-    this.lastCheckOutDate = lastCheckOutDate;
-    this.additionalInfo = additionalInfo;
-    this.instanceId = instanceId;
-    this.typeWorkList = typeWorkList;
-    this.currentWorkListOrder = currentWorkListOrder;
   }
 
   public DocumentPK getPk() {
@@ -79,14 +61,6 @@ public class Document implements java.io.Serializable, Cloneable {
 
   public void setPk(DocumentPK pk) {
     this.pk = pk;
-  }
-
-  public WAPrimaryKey getForeignKey() {
-    return foreignKey;
-  }
-
-  public void setForeignKey(ForeignPK foreignKey) {
-    this.foreignKey = foreignKey;
   }
 
   public String getName() {
@@ -113,30 +87,6 @@ public class Document implements java.io.Serializable, Cloneable {
     this.status = status;
   }
 
-  public int getOwnerId() {
-    return ownerId;
-  }
-
-  public void setOwnerId(int ownerId) {
-    this.ownerId = ownerId;
-  }
-
-  public Date getLastCheckOutDate() {
-    return lastCheckOutDate;
-  }
-
-  public void setLastCheckOutDate(Date lastCheckOutDate) {
-    this.lastCheckOutDate = lastCheckOutDate;
-  }
-
-  public String getAdditionalInfo() {
-    return additionalInfo;
-  }
-
-  public void setAdditionalInfo(String additionalInfo) {
-    this.additionalInfo = additionalInfo;
-  }
-
   public String getInstanceId() {
     return instanceId;
   }
@@ -145,32 +95,13 @@ public class Document implements java.io.Serializable, Cloneable {
     this.instanceId = instanceId;
   }
 
-  public int getTypeWorkList() {
-    return typeWorkList;
-  }
-
-  public void setTypeWorkList(int typeWorkList) {
-    this.typeWorkList = typeWorkList;
-  }
-
-  public int getCurrentWorkListOrder() {
-    return currentWorkListOrder;
-  }
-
-  public void setCurrentWorkListOrder(int currentWorkListOrder) {
-    this.currentWorkListOrder = currentWorkListOrder;
-  }
-
   /**
    * Overriden toString method for debug/trace purposes
    */
   public String toString() {
     return "Worker object : [ pk = " + pk + ", foreignKey = " + foreignKey
         + ", name = " + name + ", description = " + description + ", status = "
-        + status + ", ownerId = " + ownerId + ", lastCheckOutDate = "
-        + lastCheckOutDate + ", additionalInfo = " + additionalInfo
-        + ", instanceId = " + instanceId + ", typeWorkList = " + typeWorkList
-        + ", currentWorkListOrder = " + currentWorkListOrder + " ];";
+        + status + ", instanceId = " + instanceId + " ];";
   }
 
   /**
@@ -184,36 +115,12 @@ public class Document implements java.io.Serializable, Cloneable {
     }
   }
 
-  public Date getAlertDate() {
-    return alertDate;
-  }
-
-  public void setAlertDate(Date alertDate) {
-    this.alertDate = alertDate;
-  }
-
-  public Date getExpiryDate() {
-    return expiryDate;
-  }
-
-  public void setExpiryDate(Date expiryDate) {
-    this.expiryDate = expiryDate;
-  }
-
-  public VersionsType getVersionsType() {
+  public List<DocumentVersion> getVersionsType() {
     return versionsType;
   }
 
-  public void setVersionsType(VersionsType versionsType) {
-    this.versionsType = versionsType;
-  }
-
-  public int getOrderNumber() {
-    return orderNumber;
-  }
-
-  public void setOrderNumber(int orderNumber) {
-    this.orderNumber = orderNumber;
+  public void setVersionsType(List<DocumentVersion> versions) {
+    versionsType = versions;
   }
 
   @Override
@@ -242,36 +149,8 @@ public class Document implements java.io.Serializable, Cloneable {
     if (this.status != other.status) {
       return false;
     }
-    if (this.ownerId != other.ownerId) {
-      return false;
-    }
-    if (this.lastCheckOutDate != other.lastCheckOutDate &&
-        (this.lastCheckOutDate == null || !this.lastCheckOutDate.equals(other.lastCheckOutDate))) {
-      return false;
-    }
-    if ((this.additionalInfo == null) ? (other.additionalInfo != null) : !this.additionalInfo
-        .equals(other.additionalInfo)) {
-      return false;
-    }
     if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId
         .equals(other.instanceId)) {
-      return false;
-    }
-    if (this.typeWorkList != other.typeWorkList) {
-      return false;
-    }
-    if (this.currentWorkListOrder != other.currentWorkListOrder) {
-      return false;
-    }
-    if (this.orderNumber != other.orderNumber) {
-      return false;
-    }
-    if (this.alertDate != other.alertDate &&
-        (this.alertDate == null || !this.alertDate.equals(other.alertDate))) {
-      return false;
-    }
-    if (this.expiryDate != other.expiryDate &&
-        (this.expiryDate == null || !this.expiryDate.equals(other.expiryDate))) {
       return false;
     }
     return true;
@@ -285,15 +164,7 @@ public class Document implements java.io.Serializable, Cloneable {
     hash = 41 * hash + (this.name != null ? this.name.hashCode() : 0);
     hash = 41 * hash + (this.description != null ? this.description.hashCode() : 0);
     hash = 41 * hash + this.status;
-    hash = 41 * hash + this.ownerId;
-    hash = 41 * hash + (this.lastCheckOutDate != null ? this.lastCheckOutDate.hashCode() : 0);
-    hash = 41 * hash + (this.additionalInfo != null ? this.additionalInfo.hashCode() : 0);
     hash = 41 * hash + (this.instanceId != null ? this.instanceId.hashCode() : 0);
-    hash = 41 * hash + this.typeWorkList;
-    hash = 41 * hash + this.currentWorkListOrder;
-    hash = 41 * hash + this.orderNumber;
-    hash = 41 * hash + (this.alertDate != null ? this.alertDate.hashCode() : 0);
-    hash = 41 * hash + (this.expiryDate != null ? this.expiryDate.hashCode() : 0);
     return hash;
   }
 

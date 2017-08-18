@@ -119,25 +119,16 @@ public class TaskManagerImpl extends AbstractTaskManager {
   @Override
   public void unAssignTask(Task task) throws WorkflowException {
     String componentId = task.getProcessInstance().getModelId();
-    ComponentInst compoInst;
-
-    try {
-      compoInst = AdministrationServiceProvider.getAdminService().getComponentInst(componentId);
-    } catch (AdminException e) {
-      throw new WorkflowException("TaskManagerImpl.unassignTask",
-          "workflowEngine.EX_GET_COMPONENT_INST", e);
-    }
 
     if (task.getUser() != null) {
-      calendar.removeToDoFromExternal(compoInst.getDomainFatherId(), componentId,
-          getExternalId(task));
+      calendar.removeToDoFromExternal(null, componentId, getExternalId(task));
     } else {
       String role = task.getUserRoleName();
       List<User> usersInRole = task.getProcessInstance().getUsersInRole(role);
       for (User userInRole : usersInRole) {
         TaskImpl taskImpl =
             new TaskImpl(userInRole, role, task.getProcessInstance(), task.getState());
-        calendar.removeToDoFromExternal(compoInst.getDomainFatherId(), componentId,
+        calendar.removeToDoFromExternal(null, componentId,
             getExternalId(taskImpl, userInRole.getUserId()));
       }
     }

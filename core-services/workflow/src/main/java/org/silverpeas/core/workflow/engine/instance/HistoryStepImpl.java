@@ -30,6 +30,8 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
@@ -40,71 +42,64 @@ import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 
-/**
- * @table SB_Workflow_HistoryStep
- * @depends ProcessInstanceImpl
- * @key-generator MAX
- */
-public class HistoryStepImpl implements UpdatableHistoryStep, Comparable<HistoryStep> {
-  /**
-   * Used for persistence
-   * @primary-key
-   * @field-name id
-   * @field-type string
-   * @sql-type integer
-   */
-  private String id = null;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "sb_workflow_historystep")
+public class HistoryStepImpl extends BasicJpaEntity<HistoryStepImpl, UniqueIntegerIdentifier>
+    implements UpdatableHistoryStep, Comparable<HistoryStep> {
 
   /**
    * Process instance whose an action has been logged by this history step
-   * @field-name processInstance
-   * @field-type ProcessInstanceImpl
-   * @sql-name instanceId
    */
+  @ManyToOne
+  @JoinColumn(name = "instanceid", nullable = false)
   private ProcessInstanceImpl processInstance = null;
 
   /**
    * Id of user whose action has been logged in this history step.
-   * @field-name userId
    */
+  @Column
   private String userId = null;
 
   /**
    * Role under which user did the action logged in this history step.
-   * @field-name userRoleName
    */
+  @Column
   private String userRoleName = null;
 
   /**
    * Name of action that has been logged by this history step
-   * @field-name action
    */
+  @Column
   private String action = null;
 
   /**
    * Date of action that has been logged by this history step
-   * @field-name actionDate
-   * @sql-type timestamp
    */
+  @Column
   private Date actionDate = null;
 
   /**
    * Name of the state that has been resolved by action that has been logged by this history step
-   * @field-name resolvedState
    */
+  @Column
   private String resolvedState = null;
 
   /**
    * Name of the state that must be resulted from action that has been logged by this history step
-   * @field-name resultingState
-   * @sql-name toState
    */
+  @Column(name = "tostate")
   private String resultingState = null;
 
   /**
    * Resulting status of action
-   * @field-name actionStatus
    */
+  @Column
   private int actionStatus = 0;
 
   /**
@@ -114,20 +109,9 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable<History
     setTodayAsActionDate();
   }
 
-  /**
-   * For persistence in database Get this object id
-   * @return this object id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * For persistence in database Set this object id
-   * @param this object id
-   */
-  public void setId(String id) {
-    this.id = id;
+  public HistoryStepImpl(int id) {
+    setTodayAsActionDate();
+    setId(String.valueOf(id));
   }
 
   /**
@@ -140,7 +124,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable<History
 
   /**
    * Set the process instance
-   * @param instance process instance
+   * @param processInstance process instance
    */
   public void setProcessInstance(ProcessInstance processInstance) {
     this.processInstance = (ProcessInstanceImpl) processInstance;
@@ -221,7 +205,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable<History
   /**
    * Set the today as date when the action has been done
    */
-  public void setTodayAsActionDate() {
+  private void setTodayAsActionDate() {
     GregorianCalendar calendar = new GregorianCalendar();
     this.actionDate = calendar.getTime();
   }
@@ -301,7 +285,7 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable<History
     if (form == null) {
       return null;
     }
-    String formId = id;
+    String formId = getId();
     try {
       RecordSet formSet = model.getFormRecordSet(form.getName());
       return formSet.getRecord(formId);
@@ -326,14 +310,14 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable<History
     if (form == null) {
       return;
     }
-    String formId = id;
+    String formId = getId();
     try {
       RecordSet formSet = model.getFormRecordSet(form.getName());
       // In case of draft step, have to delete previous record if it exists
       if (this.actionStatus == 3) {
         DataRecord previousRecord = formSet.getRecord(formId);
         if (previousRecord != null) {
-          formSet.delete(previousRecord);
+          formSet.delete(formId);
         }
       }
       data.setId(formId);
@@ -364,10 +348,10 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable<History
     if (form == null) {
       return;
     }
-    String formId = id;
+    String formId = getId();
     try {
       RecordSet formSet = model.getFormRecordSet(form.getName());
-      formSet.delete(getActionRecord());
+      formSet.delete(formId);
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl",
           "workflowEngine.EXP_UNKNOWN_FORM", "form=" + form.getName() + "("
@@ -375,12 +359,11 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable<History
     }
   }
 
-  public int compareTo(HistoryStep arg0) {
-    if (arg0 == null) {
+  public int compareTo(HistoryStep anotherStep) {
+    if (anotherStep == null) {
       return 0;
     }
-    HistoryStep anotherStep = arg0;
-    int stepId = Integer.parseInt(this.id);
+    int stepId = Integer.parseInt(getId());
     int anotherStepId = Integer.parseInt(anotherStep.getId());
     return stepId - anotherStepId;
   }
@@ -400,6 +383,6 @@ public class HistoryStepImpl implements UpdatableHistoryStep, Comparable<History
 
   @Override
   public int hashCode() {
-    return new HashCodeBuilder().append(this.id).toHashCode();
+    return new HashCodeBuilder().append(getId()).toHashCode();
   }
 }

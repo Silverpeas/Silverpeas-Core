@@ -23,43 +23,26 @@
  */
 package org.silverpeas.core.workflow.engine.user;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
 import org.silverpeas.core.workflow.engine.exception.UnknownUserException;
-import org.silverpeas.core.workflow.engine.jdo.WorkflowJDOManager;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.OQLQuery;
-import org.exolab.castor.jdo.PersistenceException;
-import org.exolab.castor.jdo.QueryResults;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import javax.inject.Singleton;
 import java.util.Arrays;
-import java.util.Hashtable;
 
 /**
  * A UserManager implementation built upon the silverpeas user management system.
  */
 @Singleton
 public class UserManagerImpl implements UserManager {
-
-
-  static final private Hashtable<String, UserSettings> userSettings =
-      new Hashtable<>();
-
-  /**
-   * The constructor builds and set the shared OrganisationController.
-   */
-  public UserManagerImpl() {
-  }
 
   /**
    * Returns the user with the given userId
@@ -91,31 +74,6 @@ public class UserManagerImpl implements UserManager {
       users[i] = getUser(userIds[i]);
     }
     return users;
-  }
-
-  /**
-   * Returns all the roles of a given user relative to a processModel.
-   * @param user
-   * @param modelId
-   * @return
-   * @throws WorkflowException
-   */
-  @Override
-  public String[] getRoleNames(User user, String modelId) throws WorkflowException {
-    String roleNames[] = null;
-    try {
-      // the modelId is the peasId.
-      ComponentInst peas = AdministrationServiceProvider.getAdminService().getComponentInst(modelId);
-      roleNames = AdministrationServiceProvider.getAdminService().getCurrentProfiles(user.getUserId(), peas);
-    } catch (AdminException e) {
-      throw new WorkflowException("UserManagerImpl.getRoleNames",
-          "workflowEngine.EXP_UNKNOWN_ROLE", e);
-    }
-
-    if (roleNames == null) {
-      roleNames = new String[0];
-    }
-    return roleNames;
   }
 
   /**
@@ -157,21 +115,10 @@ public class UserManagerImpl implements UserManager {
   }
 
   /**
-   * returns all the known info for an user; Each returned value can be used as a parameter to the
-   * User method getInfo().
-   * @return
-   */
-  @Override
-  public String[] getUserInfoNames() {
-    return UserImpl.getUserInfoNames();
-  }
-
-  /**
    * returns the userDetail of a userId.
    */
   private UserDetail getUserDetail(String userId) throws WorkflowException {
-    UserDetail userDetail =  OrganizationControllerProvider.getOrganisationController()
-        .getUserDetail(userId);
+    UserDetail userDetail =  UserDetail.getById(userId);
     if (userDetail == null) {
       throw new UnknownUserException("UserManagerImpl.getUserDetail", userId);
     }
@@ -205,7 +152,7 @@ public class UserManagerImpl implements UserManager {
   @Override
   public User getRelatedUser(User user, String relation, String peasId)
       throws WorkflowException {
-    UserSettings settings = this.getUserSettings(user.getUserId(), peasId);
+    UserSettings settings = UserSettingsService.get().get(user.getUserId(), peasId);
     if (settings == null) {
       throw new WorkflowException("UserManagerImpl.getRelatedUser",
           "workflowEngine.EXP_NO_USER_SETTING", "user id : " + user.getUserId());
@@ -221,78 +168,4 @@ public class UserManagerImpl implements UserManager {
     return getUser(info.getValue());
   }
 
-  /**
-   * Get the user settings in database The full list of information is described in the process
-   * model
-   * @param userId the user Id
-   * @param peasId the id of workflow peas associated to that information
-   * @return UserSettings
-   * @throws WorkflowException
-   * @see ProcessModel
-   */
-  @Override
-  public UserSettings getUserSettings(String userId, String peasId) throws WorkflowException {
-    Database db = null;
-    OQLQuery query = null;
-    QueryResults results;
-    UserSettings settings = null;
-
-    settings = userSettings.get(userId + "_" + peasId);
-    if (settings == null) {
-      try {
-        // Constructs the query
-        db = WorkflowJDOManager.getDatabase(true);
-        db.begin();
-        query = db.getOQLQuery(
-            "SELECT settings " +
-            "FROM org.silverpeas.core.workflow.engine.user.UserSettingsImpl settings " +
-            "WHERE userId = $1 " +
-            "AND peasId = $2");
-        // Execute the query
-        query.bind(userId);
-        query.bind(peasId);
-        results = query.execute();
-        if (results.hasMore()) {
-          settings = (UserSettings) results.next();
-        }
-        db.commit();
-
-        if (settings == null) {
-          settings = getEmptyUserSettings(userId, peasId);
-        }
-
-        userSettings.put(userId + "_" + peasId, settings);
-      } catch (PersistenceException pe) {
-        throw new WorkflowException("UserManagerImpl.getUserSettings",
-            "EX_ERR_CASTOR_GET_USER_SETTINGS", pe);
-      } finally {
-        WorkflowJDOManager.closeDatabase(db);
-      }
-    }
-    return settings;
-  }
-
-  /**
-   * @param userId
-   * @param peasId
-   * @throws WorkflowException
-   */
-  @Override
-  public void resetUserSettings(String userId, String peasId)
-      throws WorkflowException {
-    userSettings.remove(userId + "_" + peasId);
-  }
-
-  /**
-   * Get an empty user settings in database The full list of information is described in the process
-   * model
-   * @param userId the user Id
-   * @param peasId the id of workflow peas associated to that information
-   * @return UserSettings
-   * @see ProcessModel
-   */
-  @Override
-  public UserSettings getEmptyUserSettings(String userId, String peasId) {
-    return new UserSettingsImpl(userId, peasId);
-  }
 }

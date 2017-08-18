@@ -30,13 +30,19 @@ import com.lowagie.text.pdf.PdfCopy;
 import com.lowagie.text.pdf.PdfImportedPage;
 import com.lowagie.text.pdf.PdfReader;
 import com.lowagie.text.pdf.SimpleBookmark;
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.importexport.admin.AdminImportExport;
+import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.coordinates.CoordinateImportExport;
 import org.silverpeas.core.importexport.coordinates.CoordinatesPositionsType;
 import org.silverpeas.core.importexport.model.ImportExportErrorHandler;
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.model.PublicationType;
-import org.silverpeas.core.importexport.model.PublicationsType;
 import org.silverpeas.core.importexport.model.SilverPeasExchangeType;
 import org.silverpeas.core.importexport.report.ExportPDFReport;
 import org.silverpeas.core.importexport.report.ExportReport;
@@ -45,32 +51,17 @@ import org.silverpeas.core.importexport.report.HtmlExportPublicationGenerator;
 import org.silverpeas.core.importexport.report.ImportReport;
 import org.silverpeas.core.importexport.report.ImportReportManager;
 import org.silverpeas.core.importexport.report.UnitReport;
-import org.silverpeas.core.node.importexport.NodeImportExport;
-import org.silverpeas.core.node.importexport.NodePositionType;
-import org.silverpeas.core.node.importexport.NodeTreesType;
-import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
-import org.silverpeas.core.pdc.pdc.importexport.PdcPositionsType;
-import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.coordinates.model.Coordinate;
 import org.silverpeas.core.node.coordinates.model.CoordinatePoint;
+import org.silverpeas.core.node.importexport.NodeImportExport;
+import org.silverpeas.core.node.importexport.NodePositionType;
+import org.silverpeas.core.node.importexport.NodeTreeType;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.model.NodeRuntimeException;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.apache.commons.io.IOUtils;
-import org.exolab.castor.mapping.Mapping;
-import org.exolab.castor.mapping.MappingException;
-import org.exolab.castor.xml.MarshalException;
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-import org.exolab.castor.xml.ValidationException;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.importexport.attachment.AttachmentDetail;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
+import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -78,18 +69,20 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WAAttributeValuePair;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Inject;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-import javax.xml.transform.stream.StreamSource;
+import javax.inject.Singleton;
+import javax.xml.XMLConstants;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
@@ -97,6 +90,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -115,15 +109,16 @@ import static org.silverpeas.core.util.Charsets.UTF_8;
  * Classe devant être instanciée au niveau controleur pour utiliser le moteur d'import export.
  * @author sDevolder.
  */
+@Singleton
 public class ImportExport extends AbstractExportProcess {
 
   private static final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.importExport.settings.mapping");
-  public final static String iframePublication = "publications";
-  public final static String iframeIndexPublications = "indexPublications";
-  public final static int EXPORT_FULL = 0;
-  public final static int EXPORT_FILESONLY = 1;
-  public final static int EXPORT_PUBLICATIONSONLY = 2;
+  public static final String IFRAME_PUBLICATION = "publications";
+  public static final String IFRAME_INDEX_PUBLICATIONS = "indexPublications";
+  public static final int EXPORT_FULL = 0;
+  public static final int EXPORT_FILESONLY = 1;
+  public static final int EXPORT_PUBLICATIONSONLY = 2;
 
   @Inject
   private CoordinateImportExport coordinateImportExport;
@@ -134,8 +129,19 @@ public class ImportExport extends AbstractExportProcess {
   @Inject
   private RepositoriesTypeManager repositoriesTypeManager;
 
+  private JAXBContext jaxbContext = null;
+
   protected ImportExport() {
 
+  }
+
+  @PostConstruct
+  private void setup() {
+    try {
+      jaxbContext = JAXBContext.newInstance(SilverPeasExchangeType.class);
+    } catch (JAXBException e) {
+      SilverLogger.getLogger(this).error("Cannot initialize jaxbContext", e);
+    }
   }
 
   /**
@@ -146,145 +152,55 @@ public class ImportExport extends AbstractExportProcess {
    */
   void saveToSilverpeasExchangeFile(SilverPeasExchangeType silverPeasExchangeType,
       String xmlToExportPath) throws ImportExportException {
-
-    Writer writer = null;
-    Mapping mapping = new Mapping();
-
     try {
-      String mappingDir = settings.getString("mappingDir");
-      String mappingFileName = settings.getString("importExportMapping");
-      if (!mappingDir.endsWith("/")) {
-        mappingDir += "/";
-      }
-      // Load mapping and instantiate a Marshaller
-      mapping.loadMapping(new URL(mappingDir + mappingFileName));
-
-      writer = new OutputStreamWriter(new FileOutputStream(xmlToExportPath), UTF_8);
-      Marshaller mar = new Marshaller(writer);
       // URI du schéma et chemin du fichier XSD associé.
       String xsdPublicId = settings.getString("xsdPublicId");
       String xsdSystemId = settings.getString("xsdDefaultSystemId");
-      mar.setSchemaLocation(xsdPublicId + " " + xsdSystemId);
-      mar.setNamespaceMapping("sp", xsdPublicId);
-      mar.setEncoding(UTF_8.name());
-      mar.setMapping(mapping);
-      mar.marshal(silverPeasExchangeType);
 
-    } catch (MappingException | IOException me) {
-      throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_LOADING_XML_MAPPING_FAILED", "XML Filename : ", me);
-    } catch (MarshalException me) {
+      Marshaller mar = jaxbContext.createMarshaller();
+      mar.setProperty(Marshaller.JAXB_ENCODING, "UTF-8");
+      mar.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+      mar.setProperty(Marshaller.JAXB_SCHEMA_LOCATION, xsdPublicId + " " + xsdSystemId);
+      mar.marshal(silverPeasExchangeType, new File(xmlToExportPath));
+
+    } catch (JAXBException me) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_UNMARSHALLING_FAILED", "XML Filename : ", me);
-    } catch (ValidationException ve) {
-      throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_PARSING_FAILED", "XML Filename : ", ve);
-    } catch (Exception ioe) {
-      throw new ImportExportException("ImportExport.loadSilverpeasExchange", "importExport.",
-          "XML Filename : ", ioe);
-    } finally {
-      IOUtils.closeQuietly(writer);
     }
   }
 
   /**
    * Méthode retournant l'arbre des objets mappés sur le fichier xml passé en paramètre.
-   * @param xmlFileName le fichier xml interprêté par Castor
-   * @return Un objet SilverPeasExchangeType contenant le mapping d'un fichier XML Castor
+   * @param xmlFileName le fichier xml interprêté par JAXB
+   * @return Un objet SilverPeasExchangeType contenant le mapping d'un fichier XML
    * @throws ImportExportException
    */
-  SilverPeasExchangeType loadSilverpeasExchange(String xmlFileName) throws ImportExportException {
+  private SilverPeasExchangeType loadSilverpeasExchange(String xmlFileName) throws ImportExportException {
     try {
-      InputSource xmlInputSource = new InputSource(xmlFileName);
-      String xsdPublicId = settings.getString("xsdPublicId");
+      File xmlInputSource = new File(xmlFileName);
       String xsdSystemId = settings.getString("xsdDefaultSystemId");
 
-      // Load and parse default XML schema for import/export
-      SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema",
-          "com.sun.org.apache.xerces.internal.jaxp.validation.XMLSchemaFactory", null);
-      Schema schema = schemaFactory.newSchema(new StreamSource(xsdSystemId));
+      SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
+      Schema schema = sf.newSchema(new URL(xsdSystemId));
 
-      // Create an XML parser for loading XML import file
-      SAXParserFactory factory = SAXParserFactory
-          .newInstance("com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl", null);
-      factory.setValidating(false);
-      factory.setNamespaceAware(true);
-      factory.setSchema(schema);
-      SAXParser parser = factory.newSAXParser();
-
-      // First try to determine to load the XML file using the default
-      // XML-Schema
-      ImportExportErrorHandler errorHandler = new ImportExportErrorHandler();
-      XMLReader xmlReader = parser.getXMLReader();
-      xmlReader.setErrorHandler(errorHandler);
-
-      try {
-        xmlReader.parse(xmlInputSource);
-
-      } catch (SAXException ex) {
-        // If case the default schema is not the one specified by the XML import file,
-        // try to get the right XML-schema and namespace (this is done by parsing without
-        // validation)
-        ImportExportNamespaceHandler nsHandler = new ImportExportNamespaceHandler();
-        factory.setSchema(null);
-        parser = factory.newSAXParser();
-        xmlReader = parser.getXMLReader();
-        xmlReader.setContentHandler(nsHandler);
-        xmlReader.setFeature("http://xml.org/sax/features/namespace-prefixes", true);
-        xmlReader.parse(xmlInputSource);
-
-        // If OK, extract the name and location of the schema
-        String nsSpec = nsHandler.getNsSpec();
-        if (nsSpec == null || xsdPublicId.equals(nsSpec)) {
-          throw ex;
-        }
-
-        String nsVersion = extractUriNameIndex(nsSpec);
-        if (nsVersion.length() == 0) {
-          throw ex;
-        }
-
-        String altXsdSystemId = settings.getString("xsdSystemId");
-        altXsdSystemId = altXsdSystemId.replace("*", nsVersion);
-        if ((altXsdSystemId == null) || (altXsdSystemId.equals(xsdSystemId))) {
-          throw ex;
-        }
-        // Try again to load, parse and validate the XML import file,
-        // using the new schema specification
-        schema = schemaFactory.newSchema(new StreamSource(altXsdSystemId));
-        factory.setSchema(schema);
-        parser = factory.newSAXParser();
-        xmlReader = parser.getXMLReader();
-        xmlReader.setErrorHandler(errorHandler);
-        xmlReader.parse(xmlInputSource);
-      }
-
-      // Mapping file for Castor
-      String mappingDir = settings.getString("mappingDir");
-      String mappingFileName = settings.getString("importExportMapping");
-      String mappingFile = mappingDir + mappingFileName;
-      Mapping mapping = new Mapping();
-
-      // Load mapping and instantiate a Unmarshaller
-      mapping.loadMapping(mappingFile);
-      Unmarshaller unmar = new Unmarshaller(SilverPeasExchangeType.class);
-      unmar.setMapping(mapping);
-      unmar.setValidation(false);
-
-      // Unmarshall the process model
+      // Unmarshall the import model
+      Unmarshaller unmarshaller = jaxbContext.createUnmarshaller();
+      unmarshaller.setSchema(schema);
+      unmarshaller.setEventHandler(new ImportExportErrorHandler());
       SilverPeasExchangeType silverpeasExchange =
-          (SilverPeasExchangeType) unmar.unmarshal(xmlInputSource);
+          (SilverPeasExchangeType) unmarshaller.unmarshal(xmlInputSource);
+
       return silverpeasExchange;
 
-    } catch (MappingException | IOException me) {
-      throw new ImportExportException("ImportExport.loadSilverpeasExchange",
-          "importExport.EX_LOADING_XML_MAPPING_FAILED",
-          "XML Filename " + xmlFileName + ": " + me.getLocalizedMessage(), me);
-    } catch (MarshalException me) {
+    } catch (JAXBException me) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_UNMARSHALLING_FAILED",
           "XML Filename " + xmlFileName + ": " + me.getLocalizedMessage(), me);
-    } catch (ValidationException | SAXException | ParserConfigurationException ve) {
+    } catch (MalformedURLException ue) {
+      throw new ImportExportException("ImportExport.loadSilverpeasExchange",
+          "importExport.EX_UNMARSHALLING_FAILED",
+          "XML Filename " + xmlFileName + ": " + ue.getLocalizedMessage(), ue);
+    } catch (SAXException ve) {
       throw new ImportExportException("ImportExport.loadSilverpeasExchange",
           "importExport.EX_PARSING_FAILED",
           "XML Filename " + xmlFileName + ": " + ve.getLocalizedMessage(), ve);
@@ -292,45 +208,9 @@ public class ImportExport extends AbstractExportProcess {
   }
 
   /**
-   * Cherche et retourne un nom de ressource extrait du chemin d'un URI donné.
-   * @param uri l'URI dans lequel on cherche le nom de ressource.
-   * @return le nom de ressource dans la chaîne uri ou chaîne vide (jamais null) sir uri est
-   * <caode>null</code> ou vide ou s'il n'y a pas de ressource indiquée par uri.
-   */
-  private String extractUriNameIndex(String uri) {
-
-    if (uri == null || uri.length() == 0) {
-      return "";
-    }
-
-    int first = 0;
-    int last = uri.length();
-
-    int i = uri.lastIndexOf('#');
-    if (i >= 0) {
-      last = i;
-    }
-    i = uri.lastIndexOf('?', last);
-    if (i >= 0) {
-      last = i;
-    }
-
-    i = uri.lastIndexOf('/', last);
-    if (i >= 0) {
-      first = i + 1;
-    }
-    i = uri.indexOf("://") + 2;
-    if (i >= 2 && i > first && i < last) {
-      first = i + 1;
-    }
-
-    return uri.substring(first, last);
-  }
-
-  /**
    * Méthode faisant appel au moteur d'importExport de silver peas, des publications définie dans
    * le
-   * fichier xml passé en paramètre sont générées grace à l'outil castor.
+   * fichier xml passé en paramètre sont générées grace à JAXB.
    * @param userDetail - information sur l'utilisateur utilisant le moteur importExport
    * @param xmlFileName - fichier xml définissant les import et/ou export à effectuer
    * @return un rapport détaillé sur l'execution de l'import/export
@@ -394,7 +274,7 @@ public class ImportExport extends AbstractExportProcess {
       case ImportExport.EXPORT_FILESONLY:
         report = processExportOfFilesOnly(userDetail, listItemsToExport, rootPK);
         break;
-      case ImportExport.EXPORT_PUBLICATIONSONLY:
+      default:
         report = processExportOfPublicationsOnly(userDetail, listItemsToExport, rootPK);
     }
     return report;
@@ -425,13 +305,13 @@ public class ImportExport extends AbstractExportProcess {
         }
       }
       // Exportation des publications
-      PublicationsType publicationsType;
+      List<PublicationType> publicationsType;
       try {
         // création des répertoires avec le nom des thèmes et des publications
         publicationsType = pubTypMgr
             .processExport(exportReport, userDetail, listItemsToExport, fileExportDir.getPath(),
                 true, true, rootPK);
-        if (publicationsType == null) {
+        if (publicationsType.isEmpty()) {
           // les noms des thèmes et des publication est trop long ou au moins > 200 caractères
           // création des répertoires avec les Id des thèmes et des publications
           try {
@@ -463,19 +343,19 @@ public class ImportExport extends AbstractExportProcess {
       // Récupération de la liste de id des composants
       Set<String> componentIds = new HashSet<>();
       List<ClassifyPosition> listClassifyPosition = new ArrayList<>();
-      List<PublicationType> listPubType = publicationsType.getListPublicationType();
+      List<PublicationType> listPubType = publicationsType;
       for (PublicationType pubType : listPubType) {
         componentIds.add(pubType.getComponentId());
-        PdcPositionsType pdcPos = pubType.getPdcPositionsType();
+        List<ClassifyPosition> pdcPos = pubType.getPdcPositionsType();
         if (pdcPos != null) {
-          listClassifyPosition.addAll(pdcPos.getListClassifyPosition());
+          listClassifyPosition.addAll(pdcPos);
         }
       }
       List<String> listComponentId = new ArrayList<String>(componentIds);
       // Exportation des composants liés aux publications exportées
       silverPeasExch.setComponentsType(adminIE.getComponents(listComponentId));
       // Exportation des Arbres de topics liés aux publications exportées
-      NodeTreesType nodeTreesType = nodeImportExport.getTrees(listComponentId);
+      List<NodeTreeType> nodeTreesType = nodeImportExport.getTrees(listComponentId);
       silverPeasExch.setNodeTreesType(nodeTreesType);
       // Exportation des pdcs liés aux publications exportées
       if (!listClassifyPosition.isEmpty()) {
@@ -569,7 +449,7 @@ public class ImportExport extends AbstractExportProcess {
   }
 
   private void createTreeview(String rootId, String thisExportDir, String tempDir,
-      NodeTreesType nodeTreesType, HtmlExportGenerator htmlGenerator,
+      List<NodeTreeType> nodeTreesType, HtmlExportGenerator htmlGenerator,
       Map<String, List<String>> topicIds) throws ImportExportException {
     Writer fileWriter;
     File fileHTML = new File(tempDir + thisExportDir + separator + "index.html");
@@ -587,15 +467,13 @@ public class ImportExport extends AbstractExportProcess {
     }
   }
 
-  private Map<String, List<String>> prepareTopicsMap(PublicationsType publicationsType) {
-    List<PublicationType> listPubType = publicationsType.getListPublicationType();
+  private Map<String, List<String>> prepareTopicsMap(List<PublicationType> listPubType) {
     Map<String, List<String>> topicIds = new HashMap<>(listPubType.size());
 
     for (PublicationType publicationType : listPubType) {
       String pubId = Integer.toString(publicationType.getId());
       // pour chaque publication : parcourir ses noeuds
-      List<NodePositionType> listNodePositionType = publicationType.getNodePositionsType().
-          getListNodePositionType();
+      List<NodePositionType> listNodePositionType = publicationType.getNodePositionsType();
       for (NodePositionType nodePositionType : listNodePositionType) {
         // pour chaque topic : récupérer l'Id
         String topicId = String.valueOf(nodePositionType.getId());
@@ -781,7 +659,7 @@ public class ImportExport extends AbstractExportProcess {
       }
 
       // Exportation des publications
-      PublicationsType publicationsType;
+      List<PublicationType> publicationsType;
       try {
         // création des répertoires avec le nom des publications
         publicationsType = pubTypMgr
@@ -793,9 +671,8 @@ public class ImportExport extends AbstractExportProcess {
 
       // Récupération de la liste de id des composants
       Set<String> listComponentId = new HashSet<>();
-      List<PublicationType> listPubType = publicationsType.getListPublicationType();
       String componentId = null;
-      for (PublicationType pubType : listPubType) {
+      for (PublicationType pubType : publicationsType) {
         listComponentId.add(pubType.getComponentId());
         componentId = pubType.getComponentId();
       }
@@ -818,7 +695,7 @@ public class ImportExport extends AbstractExportProcess {
           List<String> positionsLabels =
               coordinateImportExport.getCombinationLabels(combination, componentId);
           fileWriter
-              .write(h.kmaxPublicationsToHTML(positionsLabels, timeCriteria, iframePublication));
+              .write(h.kmaxPublicationsToHTML(positionsLabels, timeCriteria, IFRAME_PUBLICATION));
         } catch (IOException ex) {
           throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
         } finally {
@@ -880,7 +757,7 @@ public class ImportExport extends AbstractExportProcess {
             fileWriter =
                 new OutputStreamWriter(new FileOutputStream(unclassifiedFileHTML.getPath(), true),
                     UTF_8);
-            fileWriter.write(unbalanced.toHtmlSommairePublication(iframePublication));
+            fileWriter.write(unbalanced.toHtmlSommairePublication(IFRAME_PUBLICATION));
           } catch (IOException ex) {
             throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", ex);
           } finally {
@@ -1032,7 +909,7 @@ public class ImportExport extends AbstractExportProcess {
               if (fileHTML.exists()) {
                 fileWriter =
                     new OutputStreamWriter(new FileOutputStream(fileHTML.getPath(), true), UTF_8);
-                fileWriter.write(s.toHtmlSommairePublication(iframePublication));
+                fileWriter.write(s.toHtmlSommairePublication(IFRAME_PUBLICATION));
               }
             } finally {
               IOUtils.closeQuietly(fileWriter);

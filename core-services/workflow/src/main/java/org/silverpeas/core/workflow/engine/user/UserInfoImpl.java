@@ -23,46 +23,35 @@
  */
 package org.silverpeas.core.workflow.engine.user;
 
+import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
 
-/**
- * @table SB_Workflow_UserInfo
- * @depends UserSettingsImpl
- * @key-generator MAX
- */
-public class UserInfoImpl extends AbstractReferrableObject implements UserInfo {
-  /**
-   * Used for persistence
-   * @primary-key
-   * @field-name id
-   * @field-type string
-   * @sql-type integer
-   */
-  private String id = null;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
-  /**
-   * @field-name name
-   */
+@Entity
+@Table(name = "sb_workflow_userinfo")
+public class UserInfoImpl extends BasicJpaEntity<UserInfoImpl, UniqueIntegerIdentifier>
+    implements UserInfo {
+
+  @Column
   private String name = null;
-
-  /**
-   * @field-name value
-   */
+  @Column
   private String value = null;
 
-  /**
-   * @field-name userSettings
-   * @field-type UserSettingsImpl
-   * @sql-name settingsId
-   */
+  @ManyToOne
+  @JoinColumn(name = "settingsid", nullable = false)
   private UserSettingsImpl userSettings = null;
 
   /**
    * Default Constructor
    */
-  public UserInfoImpl() {
+  protected UserInfoImpl() {
   }
 
   /**
@@ -73,75 +62,37 @@ public class UserInfoImpl extends AbstractReferrableObject implements UserInfo {
     this.value = value;
   }
 
-  /**
-   * For persistence in database Get this object id
-   * @return this object id
-   */
-  public String getId() {
-    return id;
-  }
-
-  /**
-   * For persistence in database Set this object id
-   * @param this object id
-   */
-  public void setId(String id) {
-    this.id = id;
-  }
-
-  /**
-   * Get the info name
-   * @return info name
-   */
   public String getName() {
     return name;
   }
 
-  /**
-   * Get the info name
-   * @return info name
-   */
-  public void setName(String name) {
-    this.name = name;
-  }
-
-  /**
-   * Get the info value
-   * @return info value
-   */
   public String getValue() {
     return value;
   }
 
-  /**
-   * Get the info value
-   * @return info value
-   */
   public void setValue(String value) {
     this.value = value;
   }
 
   /**
-   * Get the user settings to which this info is for
-   * @return user settings
-   */
-  public UserSettings getUserSettings() {
-    return userSettings;
-  }
-
-  /**
    * Set the user settings to which this info is for
-   * @param user settings
+   * @param userSettings settings
    */
   public void setUserSettings(UserSettings userSettings) {
     this.userSettings = (UserSettingsImpl) userSettings;
   }
 
-  /**
-   * This method has to be implemented by the referrable object it has to compute the unique key
-   * @return The unique key.
-   */
-  public String getKey() {
-    return this.getName();
+  @Override
+  public boolean equals(Object theOther) {
+    if (theOther instanceof UserInfoImpl) {
+      return getName().equals(((UserInfoImpl) theOther).getName());
+    }
+    return false;
   }
+
+  @Override
+  public int hashCode() {
+    return getName().hashCode();
+  }
+
 }

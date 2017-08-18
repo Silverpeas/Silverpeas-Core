@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.workflow.engine;
 
-import org.exolab.castor.jdo.Database;
-import org.exolab.castor.jdo.PersistenceException;
-import org.silverpeas.core.thread.ManagedThreadPool;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.TaskManager;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
@@ -37,6 +36,7 @@ import org.silverpeas.core.workflow.api.event.ResponseEvent;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
 import org.silverpeas.core.workflow.api.event.TaskSavedEvent;
 import org.silverpeas.core.workflow.api.instance.Actor;
+import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;
 import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
 import org.silverpeas.core.workflow.api.model.Action;
@@ -44,12 +44,14 @@ import org.silverpeas.core.workflow.api.model.ProcessModel;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.task.Task;
 import org.silverpeas.core.workflow.api.user.User;
+import org.silverpeas.core.workflow.engine.instance.HistoryStepImpl;
+import org.silverpeas.core.workflow.engine.instance.HistoryStepRepository;
 import org.silverpeas.core.workflow.engine.instance.LockingUser;
 import org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl;
-import org.silverpeas.core.workflow.engine.jdo.WorkflowJDOManager;
+import org.silverpeas.core.workflow.engine.instance.ProcessInstanceRepository;
 import org.silverpeas.core.workflow.engine.model.StateImpl;
 
-import javax.annotation.PostConstruct;
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.Date;
 
@@ -59,14 +61,14 @@ import java.util.Date;
 @Singleton
 public class WorkflowEngineImpl implements WorkflowEngine {
 
-  @PostConstruct
-  public void start() {
-    // Use the ManagedThreadPool in order to access container context (JPA and Transaction)
-    ManagedThreadPool.getPool().invoke(new WorkflowEngineTask());
-  }
+  @Inject
+  private ProcessInstanceRepository repository;
+
+  @Inject
+  private HistoryStepRepository historyStepRepository;
 
   /**
-   * A task has been done and sent to the workflow Enginewhich has to process it.
+   * A task has been done and sent to the workflow Engine which has to process it.
    * @param event the task event that has been done.
    */
   public void process(TaskDoneEvent event) throws WorkflowException {
@@ -74,150 +76,81 @@ public class WorkflowEngineImpl implements WorkflowEngine {
   }
 
   /**
-   * A task has been done and sent to the workflow Enginewhich has to process it.
+   * A task has been done and sent to the workflow Engine which has to process it.
    * @param event the task event that has been done.
    */
   public void process(TaskDoneEvent event, boolean ignoreControls) throws WorkflowException {
-
     boolean creationEvent = false;
     ProcessModel model = event.getProcessModel();
-    Database db = null;
-    UpdatableProcessInstance instance = null;
+    ProcessInstance instance = event.getProcessInstance();
 
     // Tests if action is creation
     Action action = model.getAction(event.getActionName());
-    if (action != null && action.getKind().equals("create")) {
+    if (action != null && "create".equals(action.getKind())) {
       if (!event.isResumingAction()) {
         UpdatableProcessInstanceManager instanceManager =
             (UpdatableProcessInstanceManager) WorkflowHub.getProcessInstanceManager();
-        instance =
-            (UpdatableProcessInstance) instanceManager.createProcessInstance(model.getModelId());
+        instance = instanceManager.createProcessInstance(model.getModelId());
         event.setProcessInstance(instance);
-      } else {
-        instance = (UpdatableProcessInstance) event.getProcessInstance();
       }
       creationEvent = true;
-    } else {
-      instance = (UpdatableProcessInstance) event.getProcessInstance();
     }
 
     if (!ignoreControls) {
-      try {
-        // Get database connection
-        db = WorkflowJDOManager.getDatabase();
-
-        // begin transaction
-        db.begin();
-
-        // Re-load process instance
-        instance =
-            (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-        // Do workflow stuff
-        try {
-          // Over-locks the process instance by admin
-          this.manageLocks(event, instance);
-
-          // Tests if user is declared as a working user
-          if (!creationEvent) {
-            this.manageRights(event, instance);
-          }
-
-          // Tests if user is declared as the working user for this state
-          if (!creationEvent) {
-            this.checkUserLock(event, instance);
-          }
-
-          // Checks the datas associated to the event
-          /* xoxox a faire en concordance avec les specs du form manager */
-
-        } catch (WorkflowException we) {
-          db.rollback();
-          throw new WorkflowException("WorkflowEngineImpl.process",
-              "workflowEngine.EX_ERR_PROCESS_EVENT", we);
-        }
-
-        // commit
-        db.commit();
-      } catch (PersistenceException pe) {
-        throw new WorkflowException("WorkflowEngineImpl.process",
-            "workflowEngine.EX_ERR_PROCESS_EVENT", pe);
-      } finally {
-        WorkflowJDOManager.closeDatabase(db);
-      }
+      processControls(event, instance.getInstanceId(), creationEvent);
     }
 
     // All is OK, send the TaskDoneEvent to the WorkflowEngineThread
     WorkflowEngineTask.addTaskDoneRequest(event);
   }
 
+  private void processControls(GenericEvent event, String id, boolean creation) throws WorkflowException {
+    Transaction.performInOne(() -> {
+      UpdatableProcessInstance instance = repository.getById(id);
+
+      try {
+        // Over-locks the process instance by admin
+        this.manageLocks(instance);
+
+        if (!creation) {
+          // Tests if user is declared as a working user
+          this.manageRights(event, instance);
+
+          // Tests if user is declared as the working user for this state
+          this.checkUserLock(event, instance);
+        } else if (event instanceof TaskSavedEvent){
+          instance.lock(new StateImpl(""), event.getUser());
+        }
+
+        repository.save((ProcessInstanceImpl) instance);
+      } catch (WorkflowException we) {
+        throw new WorkflowException("WorkflowEngineImpl.processControls",
+            "workflowEngine.EX_ERR_PROCESS_EVENT", we);
+      }
+      return null;
+    });
+  }
+
   /**
-   * A task has been saved and sent to the workflow Enginewhich has to process it.
+   * A task has been saved and sent to the workflow Engine which has to process it.
    * @param event the task event that has been saved.
    */
   public void process(TaskSavedEvent event) throws WorkflowException {
-
     boolean creationEvent = false;
     ProcessModel model = event.getProcessModel();
-    Database db = null;
-    UpdatableProcessInstance instance;
+    ProcessInstance instance = event.getProcessInstance();
 
     // Tests if action is creation
     Action action = model.getAction(event.getActionName());
-    if (event.isFirstTimeSaved() && action != null && action.getKind().equals("create")) {
+    if (event.isFirstTimeSaved() && action != null && "create".equals(action.getKind())) {
       UpdatableProcessInstanceManager instanceManager =
           (UpdatableProcessInstanceManager) WorkflowHub.getProcessInstanceManager();
-      instance =
-          (UpdatableProcessInstance) instanceManager.createProcessInstance(model.getModelId());
+      instance = instanceManager.createProcessInstance(model.getModelId());
       event.setProcessInstance(instance);
       creationEvent = true;
-    } else {
-      instance = (UpdatableProcessInstance) event.getProcessInstance();
     }
 
-    try {
-      // Get database connection
-      db = WorkflowJDOManager.getDatabase();
-
-      // begin transaction
-      db.begin();
-
-      // Re-load process instance
-      instance =
-          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-      // Do workflow stuff
-      try {
-        // Over-locks the process instance by admin
-        this.manageLocks(event, instance);
-
-        // Tests if user is declared as a working user
-        if (!creationEvent) {
-          this.manageRights(event, instance);
-        } else {
-          instance.lock(new StateImpl(""), event.getUser());
-        }
-        // Tests if user is declared as the working user for this state
-        if (!creationEvent) {
-          this.checkUserLock(event, instance);
-        }
-        // Checks the datas associated to the event
-        /* xoxox a faire en concordance avec les specs du form manager */
-
-      } catch (WorkflowException we) {
-        db.rollback();
-        throw new WorkflowException("WorkflowEngineImpl.process",
-            "workflowEngine.EX_ERR_PROCESS_EVENT", we);
-      }
-
-      // commit
-      db.commit();
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("WorkflowEngineImpl.process",
-          "workflowEngine.EX_ERR_PROCESS_EVENT", pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-    }
+    processControls(event, instance.getInstanceId(), creationEvent);
 
     // All is OK, send the TaskDoneEvent to the WorkflowEngineThread
     WorkflowEngineTask.addTaskSavedRequest(event);
@@ -228,48 +161,9 @@ public class WorkflowEngineImpl implements WorkflowEngine {
    * @param event the question event containing all necessary information
    */
   public void process(QuestionEvent event) throws WorkflowException {
-    UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
-    Database db = null;
+    ProcessInstance instance = event.getProcessInstance();
 
-    try {
-      // Get database connection
-      db = WorkflowJDOManager.getDatabase();
-
-      // begin transaction
-      db.begin();
-
-      // Re-load process instance
-      instance =
-          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-      // Do workflow stuff
-      try {
-        // Over-locks the process instance by admin
-        this.manageLocks(event, instance);
-
-        // Tests if user is declared as a working user
-        this.manageRights(event, instance);
-
-        // Tests if user is declared as the working user for this state
-        this.checkUserLock(event, instance);
-
-        // Checks the datas associated to the event
-        /* xoxox a faire en concordance avec les specs du form manager */
-
-      } catch (WorkflowException we) {
-        db.rollback();
-        throw new WorkflowException("WorkflowEngineImpl.process",
-            "workflowEngine.EX_ERR_PROCESS_EVENT", we);
-      }
-
-      // commit
-      db.commit();
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("WorkflowEngineImpl.process",
-          "workflowEngine.EX_ERR_PROCESS_EVENT", pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-    }
+    processControls(event, instance.getInstanceId(), false);
 
     // All is OK, send the QuestionEvent to the WorkflowEngineThread
     WorkflowEngineTask.addQuestionRequest(event);
@@ -280,48 +174,9 @@ public class WorkflowEngineImpl implements WorkflowEngine {
    * @param event the response event containing all necessary information
    */
   public void process(ResponseEvent event) throws WorkflowException {
-    UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
-    Database db = null;
+    ProcessInstance instance = event.getProcessInstance();
 
-    try {
-      // Get database connection
-      db = WorkflowJDOManager.getDatabase();
-
-      // begin transaction
-      db.begin();
-
-      // Re-load process instance
-      instance =
-          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-      // Do workflow stuff
-      try {
-        // Over-locks the process instance by admin
-        this.manageLocks(event, instance);
-
-        // Tests if user is declared as a working user
-        this.manageRights(event, instance);
-
-        // Tests if user is declared as the working user for this state
-        this.checkUserLock(event, instance);
-
-        // Checks the datas associated to the event
-        /* xoxox a faire en concordance avec les specs du form manager */
-
-      } catch (WorkflowException we) {
-        db.rollback();
-        throw new WorkflowException("WorkflowEngineImpl.process",
-            "workflowEngine.EX_ERR_PROCESS_EVENT", we);
-      }
-
-      // commit
-      db.commit();
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("WorkflowEngineImpl.process",
-          "workflowEngine.EX_ERR_PROCESS_EVENT", pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
-    }
+    processControls(event, instance.getInstanceId(), false);
 
     // All is OK, send the ResponseEvent to the WorkflowEngineThread
     WorkflowEngineTask.addResponseRequest(event);
@@ -335,103 +190,96 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       Actor[] assignedActors, User user) throws WorkflowException {
     // Get the process instance
     ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
-    Database db = null;
-    UpdatableHistoryStep step;
+    String id = instance.getInstanceId();
+    Mutable<UpdatableHistoryStep> step = Mutable.of(null);
 
-    // Get the task manager
+    // first create the history step
+    Transaction.performInOne(()-> {
+      UpdatableProcessInstance processInstance = repository.getById(id);
+
+      UpdatableHistoryStep newStep = (UpdatableHistoryStep) instanceManager.createHistoryStep();
+      newStep.setUserId(user.getUserId());
+      newStep.setAction("#reAssign#");
+      newStep.setActionDate(new Date());
+      newStep.setUserRoleName("supervisor");
+      newStep.setResolvedState("DummyStateFromReassignment");
+      // To be processed
+      newStep.setActionStatus(0);
+      newStep.setProcessInstance(processInstance);
+
+      historyStepRepository.save((HistoryStepImpl) newStep);
+
+      step.set(newStep);
+      return newStep;
+    });
+
+    // add the new step to the processInstance
+    instance.addHistoryStep(step.get());
+
+    Transaction.performInOne(()-> {
+      UpdatableProcessInstance processInstance = repository.getById(id);
+
+      UpdatableHistoryStep currentStep =
+          (UpdatableHistoryStep) processInstance.getHistoryStep(step.get().getId());
+      // only to set the current step to that step
+      processInstance.updateHistoryStep(currentStep);
+
+      unassignTasksToWorkingUsers(unAssignedActors, processInstance);
+      removeWorkingUsersFromProcessInstance(unAssignedActors, processInstance);
+      assignTasksToWorkingUsers(assignedActors, user, processInstance);
+      addWorkingUsersToProcessInstance(assignedActors, processInstance);
+
+      currentStep.setActionStatus(UpdatableHistoryStep.ACTION_STATUS_AFFECTATIONSDONE);
+      processInstance.updateHistoryStep(currentStep);
+
+      repository.save((ProcessInstanceImpl) processInstance);
+
+      return null;
+    });
+  }
+
+  private void addWorkingUsersToProcessInstance(final Actor[] assignedActors,
+      final UpdatableProcessInstance processInstance) throws WorkflowException {
+    // Declare these working users in instance
+    for (final Actor assignedActor : assignedActors) {
+      processInstance.addWorkingUser(assignedActor.getUser(), assignedActor.getState(),
+          assignedActor.getUserRoleName());
+    }
+  }
+
+  private void assignTasksToWorkingUsers(final Actor[] assignedActors, final User user,
+      final UpdatableProcessInstance processInstance) throws WorkflowException {
+    // Assign tasks to these working users
     TaskManager taskManager = WorkflowHub.getTaskManager();
+    Task[] tasks = taskManager.createTasks(assignedActors, processInstance);
+    for (final Task task : tasks) {
+      taskManager.assignTask(task, user);
+    }
+  }
 
-    try {
-      // Get database connection
-      db = WorkflowJDOManager.getDatabase();
+  private void removeWorkingUsersFromProcessInstance(final Actor[] unAssignedActors,
+      final UpdatableProcessInstance processInstance) throws WorkflowException {
+    // Remove these working users from instance
+    for (final Actor unAssignedActor : unAssignedActors) {
+      processInstance.removeWorkingUser(unAssignedActor.getUser(), unAssignedActor.getState(),
+          unAssignedActor.getUserRoleName());
+    }
+  }
 
-      // begin transaction
-      db.begin();
-
-      // Re-load process instance
-      instance =
-          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-
-      // first create the history step
-      try {
-        step = (UpdatableHistoryStep) instanceManager.createHistoryStep();
-        step.setUserId(user.getUserId());
-        step.setAction("#reAssign#");
-        step.setActionDate(new Date());
-        step.setUserRoleName("supervisor");
-        step.setResolvedState("DummyStateFromReassignment");
-        step.setActionStatus(0); // To be processed
-
-        // add the new step to the processInstance
-        instance.addHistoryStep(step);
-      } catch (WorkflowException we) {
-        db.rollback();
-        throw new WorkflowException("WorkflowEngineImpl.assignActors", "EX_ERR_REASSIGN_ACTORS",
-            we);
-      }
-
-      // commit
-      db.commit();
-
-      // then do affectations
-      db.begin();
-
-      // Re-load process instance
-      instance =
-          (UpdatableProcessInstance) db.load(ProcessInstanceImpl.class, instance.getInstanceId());
-      step = (UpdatableHistoryStep) instance.getHistoryStep(step.getId());
-      instance.updateHistoryStep(step); // only to set the current step of
-      // instance to that step
-
-      // first create the history step
-      try {
-        // Unassign tasks to these working users
-        Task[] tasks = taskManager.createTasks(unAssignedActors, instance);
-        for (final Task task : tasks) {
-          taskManager.unAssignTask(task);
-        }
-
-        // Remove these working users from instance
-        for (final Actor unAssignedActor : unAssignedActors) {
-          instance.removeWorkingUser(unAssignedActor.getUser(), unAssignedActor.getState(),
-              unAssignedActor.getUserRoleName());
-        }
-
-        // Assign tasks to these working users
-        tasks = taskManager.createTasks(assignedActors, instance);
-        for (final Task task : tasks) {
-          taskManager.assignTask(task, user);
-        }
-
-        // Declare these working users in instance
-        for (final Actor assignedActor : assignedActors) {
-          instance.addWorkingUser(assignedActor.getUser(), assignedActor.getState(),
-              assignedActor.getUserRoleName());
-        }
-
-        step.setActionStatus(2);
-        instance.updateHistoryStep(step);
-      } catch (WorkflowException we) {
-        db.rollback();
-        throw new WorkflowException("WorkflowEngineImpl.reAssignActors", "EX_ERR_REASSIGN_ACTORS",
-            we);
-      }
-
-      // commit
-      db.commit();
-    } catch (PersistenceException pe) {
-      throw new WorkflowException("WorkflowEngine.reAssignActors",
-          "workflowEngine.EX_ERR_REASSIGN_ACTORS", pe);
-    } finally {
-      WorkflowJDOManager.closeDatabase(db);
+  private void unassignTasksToWorkingUsers(final Actor[] unAssignedActors,
+      final UpdatableProcessInstance processInstance) throws WorkflowException {
+    // Unassign tasks to these working users
+    TaskManager taskManager = WorkflowHub.getTaskManager();
+    Task[] tasks = taskManager.createTasks(unAssignedActors, processInstance);
+    for (final Task task : tasks) {
+      taskManager.unAssignTask(task);
     }
   }
 
   /**
    * Over-locks the process instance by admin
    */
-  private void manageLocks(GenericEvent event, UpdatableProcessInstance instance)
-      throws WorkflowException {
+  private void manageLocks(UpdatableProcessInstance instance) throws WorkflowException {
     if (instance != null) {
       instance.lock();
     } else {
@@ -445,17 +293,13 @@ public class WorkflowEngineImpl implements WorkflowEngine {
    */
   private void manageRights(GenericEvent event, UpdatableProcessInstance instance)
       throws WorkflowException {
-    State resolvedState;
-    User actor;
-    Actor[] wkUsers;
     boolean validUser = false;
-
-    resolvedState = event.getResolvedState();
+    State resolvedState = event.getResolvedState();
     if (resolvedState == null) {
       resolvedState = new StateImpl("");
     }
-    actor = event.getUser();
-    wkUsers = instance.getWorkingUsers(resolvedState.getName(), event.getUserRoleName());
+    User actor = event.getUser();
+    Actor[] wkUsers = instance.getWorkingUsers(resolvedState.getName(), event.getUserRoleName());
     if (wkUsers != null) {
       for (final Actor wkUser : wkUsers) {
         if (wkUser.getUser().equals(actor)) {
@@ -474,16 +318,12 @@ public class WorkflowEngineImpl implements WorkflowEngine {
    */
   private void checkUserLock(GenericEvent event, UpdatableProcessInstance instance)
       throws WorkflowException {
-    State resolvedState;
-    LockingUser lockingUser;
-    User actor;
-
-    resolvedState = event.getResolvedState();
+    State resolvedState = event.getResolvedState();
     if (resolvedState == null) {
       resolvedState = new StateImpl("");
     }
-    lockingUser = instance.getLockingUser(resolvedState.getName());
-    actor = event.getUser();
+    LockingUser lockingUser = instance.getLockingUser(resolvedState.getName());
+    User actor = event.getUser();
 
     if (lockingUser == null) {
       throw new WorkflowException("WorkflowEngineImpl.process(TaskDoneEvent)",

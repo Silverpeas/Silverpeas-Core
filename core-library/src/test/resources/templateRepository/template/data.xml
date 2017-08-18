@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
 
     Copyright (C) 2000 - 2017 Silverpeas
@@ -34,7 +34,7 @@
         <isDisabled>false</isDisabled>
         <isHidden>false</isHidden>
         <label>
-            <labelName>Civilit�</labelName>
+            <labelName>Civilité</labelName>
             <language>fr</language>
         </label>
         <parameter>
@@ -55,7 +55,7 @@
         <isDisabled>false</isDisabled>
         <isHidden>false</isHidden>
         <label>
-            <labelName>Pr�nom</labelName>
+            <labelName>Prénom</labelName>
             <language>fr</language>
         </label>
     </fieldTemplate>
@@ -94,7 +94,7 @@
         <isDisabled>false</isDisabled>
         <isHidden>false</isHidden>
         <label>
-            <labelName>N� s�curit� sociale</labelName>
+            <labelName>N° sécurité sociale</labelName>
             <language>fr</language>
         </label>
         <parameter>

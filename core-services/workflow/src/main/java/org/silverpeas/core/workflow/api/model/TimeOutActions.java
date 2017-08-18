@@ -23,30 +23,10 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
-import java.util.Iterator;
-
 /**
  * Interface describing a representation of the &lt;timeoutActions&gt; element of a Process Model.
  */
 public interface TimeOutActions {
-
-  /**
-   * Iterate through the AllowedAction objects
-   * @return an iterator
-   */
-  public Iterator<TimeOutAction> iterateTimeOutAction();
-
-  /**
-   * Create an TimeOutAction
-   * @return an object implementing TimeOutAction
-   */
-  public TimeOutAction createTimeOutAction();
-
-  /**
-   * Add a timeOutAction to the collection
-   * @param timeOutAction to be added
-   */
-  public void addTimeOutAction(TimeOutAction timeOutAction);
 
   /**
    * Get timeout actions

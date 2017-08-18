@@ -35,7 +35,7 @@ public interface RelatedUser {
 
   /**
    * Set the referred participant
-   * @param Participant object
+   * @param participant Participant object
    */
   public void setParticipant(Participant participant);
 

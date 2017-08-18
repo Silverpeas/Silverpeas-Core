@@ -27,16 +27,25 @@ import java.io.Serializable;
 
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.RelatedGroup;
-import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlIDREF;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  * Class implementing the representation of the &lt;relatedUser&gt; element of a Process Model.
  **/
-public class RelatedGroupImpl extends AbstractReferrableObject implements RelatedGroup,
-    Serializable {
+@XmlRootElement(name = "relatedGroup")
+@XmlAccessorType(XmlAccessType.NONE)
+public class RelatedGroupImpl implements RelatedGroup, Serializable {
 
   private static final long serialVersionUID = 383421738010797483L;
-  private Item folderItem;
+  @XmlIDREF
+  @XmlAttribute
+  private ItemImpl folderItem;
+  @XmlAttribute
   private String role;
 
   /**
@@ -58,7 +67,7 @@ public class RelatedGroupImpl extends AbstractReferrableObject implements Relate
    * @param folderItem item to refer
    */
   public void setFolderItem(Item folderItem) {
-    this.folderItem = folderItem;
+    this.folderItem = (ItemImpl) folderItem;
   }
 
   /**
@@ -77,20 +86,27 @@ public class RelatedGroupImpl extends AbstractReferrableObject implements Relate
     this.role = role;
   }
 
-  /*
-   * @see AbstractReferrableObject#getKey()
-   */
-  public String getKey() {
-    StringBuffer sb = new StringBuffer();
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
 
-    if (folderItem instanceof AbstractReferrableObject)
-      sb.append(((AbstractReferrableObject) folderItem).getKey());
+    final RelatedGroupImpl that = (RelatedGroupImpl) o;
 
-    sb.append("|");
+    if (folderItem != null ? !folderItem.equals(that.folderItem) : that.folderItem != null) {
+      return false;
+    }
+    return role != null ? role.equals(that.role) : that.role == null;
+  }
 
-    if (role != null)
-      sb.append(role);
-
-    return sb.toString();
+  @Override
+  public int hashCode() {
+    int result = folderItem != null ? folderItem.hashCode() : 0;
+    result = 31 * result + (role != null ? role.hashCode() : 0);
+    return result;
   }
 }

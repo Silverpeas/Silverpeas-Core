@@ -95,13 +95,10 @@ public interface ProcessModelManager {
   /**
    * load a process model definition from xml file to java objects
    * @param processFileName the xml file name that contains process model definition
-   * @param absolutePath true if xml file name contains the full path, else concat with the
-   * directory defined in castorSettings.properties
    * @return a ProcessModel object
    * @throws WorkflowException when something goes wrong or the file cannot be found
    */
-  ProcessModel loadProcessModel(String processFileName,
-      boolean absolutePath) throws WorkflowException;
+  ProcessModel loadProcessModel(String processFileName) throws WorkflowException;
 
   /**
    * Get all the "process manager" peas ids

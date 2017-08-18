@@ -86,8 +86,7 @@ public class AttachmentImportExport {
   }
 
   public List<AttachmentDetail> importAttachments(String pubId, String componentId,
-      List<AttachmentDetail> attachments, boolean indexIt) throws
-      FileNotFoundException {
+      List<AttachmentDetail> attachments, boolean indexIt) throws FileNotFoundException {
     FormTemplateImportExport xmlIE = null;
     for (AttachmentDetail attDetail : attachments) {
       //TODO check user id
@@ -112,7 +111,7 @@ public class AttachmentImportExport {
       } catch (Exception e) {
         SilverTrace.error("attachment", "AttachmentImportExport.importAttachments()",
             "root.MSG_GEN_PARAM_VALUE", e);
-        SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(e, attDetail.getLanguage());
+        SilverpeasTransverseErrorUtil.throwTransverseErrorIfAny(e, null);
       } finally {
         IOUtils.closeQuietly(input);
       }
@@ -143,8 +142,7 @@ public class AttachmentImportExport {
     SimpleDocumentPK attachmentPk = new SimpleDocumentPK(null, componentId);
     ForeignPK foreignKey = new ForeignPK(pubId, componentId);
     List<SimpleDocument> existingAttachments = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment,
-        attachment.getLanguage());
+        listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
 
     String logicalName = attachment.getLogicalName();
     if (!StringUtil.isDefined(logicalName)) {
@@ -155,8 +153,6 @@ public class AttachmentImportExport {
     if (!StringUtil.isDefined(updateRule) || "null".equalsIgnoreCase(updateRule)) {
       updateRule = AttachmentDetail.IMPORT_UPDATE_RULE_ADD;
     }
-
-
 
     // Verification s'il existe un attachment de meme nom, si oui, ajout
     // d'un suffixe au nouveau fichier
@@ -169,8 +165,8 @@ public class AttachmentImportExport {
       creationDate = new Date();
     }
     SimpleDocument ad_toCreate = new SimpleDocument(attachmentPk, pubId, -1, false,
-        new SimpleAttachment(attachment.getLogicalName(), attachment.getLanguage(), attachment.
-        getTitle(), attachment.getInfo(), attachment.getSize(),
+        new SimpleAttachment(attachment.getLogicalName(), null, attachment.
+        getTitle(), attachment.getDescription(), attachment.getSize(),
         FileUtil.getMimeType(attachment.getPhysicalName()), userId, creationDate, attachment.
         getXmlForm()));
     return AttachmentServiceProvider.getAttachmentService().createAttachment(ad_toCreate, input,
@@ -178,13 +174,12 @@ public class AttachmentImportExport {
   }
 
   private String computeUniqueName(AttachmentDetail attachment, int increment,
-      List<SimpleDocument> existingAttachments,
-      String logicalName, String updateRule) {
+      List<SimpleDocument> existingAttachments, String logicalName, String updateRule) {
     String uniqueName = logicalName;
     int incrementSuffixe = increment;
     for (SimpleDocument ad_toCreate : existingAttachments) {
       if (ad_toCreate.getFilename().equals(uniqueName)) {
-        if ((ad_toCreate.getSize() != attachment.getSize())
+        if (ad_toCreate.getSize() != attachment.getSize()
             && AttachmentDetail.IMPORT_UPDATE_RULE_ADD.equalsIgnoreCase(updateRule)) {
           uniqueName = attachment.getLogicalName();
           int extPosition = logicalName.lastIndexOf('.');
@@ -245,11 +240,7 @@ public class AttachmentImportExport {
           copyAttachment(attachment, exportPath);
           String physicalName = relativeExportPath + File.separator + FileServerUtils.
               replaceAccentChars(attachment.getFilename());
-          AttachmentDetail attachDetail = new AttachmentDetail(new AttachmentPK(attachment.getId(),
-              attachment.getInstanceId()), physicalName, attachment.getFilename(), attachment.
-              getDescription(), attachment.getContentType(),
-              attachment.getSize(), attachment.getDocumentType().toString(), attachment.
-              getCreated(), new ForeignPK(attachment.getForeignId(), attachment.getInstanceId()));
+          AttachmentDetail attachDetail = new AttachmentDetail(attachment, physicalName);
           listToReturn.add(attachDetail);
         }
       }

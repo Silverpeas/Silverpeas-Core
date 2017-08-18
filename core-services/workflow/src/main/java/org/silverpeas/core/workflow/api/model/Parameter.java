@@ -35,7 +35,7 @@ public interface Parameter {
 
   /**
    * Set the name of the Parameter
-   * @param parameter 's name
+   * @param name parameter's name
    */
   public void setName(String name);
 
@@ -47,7 +47,7 @@ public interface Parameter {
 
   /**
    * Set the value of the Parameter
-   * @param parameter 's value
+   * @param value parameter's value
    */
   public void setValue(String value);
 }

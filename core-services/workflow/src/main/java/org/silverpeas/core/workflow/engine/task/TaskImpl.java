@@ -40,10 +40,17 @@ import org.silverpeas.core.workflow.api.user.User;
  */
 public class TaskImpl extends AbstractTaskImpl {
 
+  private ProcessInstance processInstance = null;
+  private State state = null;
+  private HistoryStep[] backSteps = null;
+  private Question[] pendingQuestions = null;
+  private Question[] relevantQuestions = null;
+  private Question[] sentQuestions = null;
+
   /**
    * Builds a TaskImpl.
    */
-  public TaskImpl(User user, String roleName, ProcessInstance processInstance,
+  TaskImpl(User user, String roleName, ProcessInstance processInstance,
       State state) throws WorkflowException {
     super(user, roleName, processInstance.getProcessModel());
     this.processInstance = processInstance;
@@ -51,7 +58,7 @@ public class TaskImpl extends AbstractTaskImpl {
     this.backSteps = null;
   }
 
-  public TaskImpl(User user, String roleName, String groupId, ProcessInstance processInstance,
+  TaskImpl(User user, String roleName, String groupId, ProcessInstance processInstance,
       State state) throws WorkflowException {
     super(user, roleName, groupId, processInstance.getProcessModel());
     this.processInstance = processInstance;
@@ -59,15 +66,10 @@ public class TaskImpl extends AbstractTaskImpl {
     this.backSteps = null;
   }
 
-  @Override
-  public void setProcessInstance(ProcessInstance processInstance) {
-    this.processInstance = processInstance;
-  }
-
   /**
    * Builds a TaskImpl.
    */
-  public TaskImpl(User user, String roleName, ProcessInstance processInstance,
+  TaskImpl(User user, String roleName, ProcessInstance processInstance,
       State state, HistoryStep[] backSteps, Question[] sentQuestions,
       Question[] relevantQuestions, Question[] pendingQuestions)
       throws WorkflowException {
@@ -78,6 +80,11 @@ public class TaskImpl extends AbstractTaskImpl {
     this.sentQuestions = (sentQuestions != null ? sentQuestions.clone() : null);
     this.relevantQuestions = (relevantQuestions != null ? relevantQuestions.clone() : null);
     this.pendingQuestions = (pendingQuestions != null ? pendingQuestions.clone() : null);
+  }
+
+  @Override
+  public void setProcessInstance(ProcessInstance processInstance) {
+    this.processInstance = processInstance;
   }
 
   /**
@@ -143,13 +150,4 @@ public class TaskImpl extends AbstractTaskImpl {
     return actionNames;
   }
 
-  /*
-   * Internal fields
-   */
-  private ProcessInstance processInstance = null;
-  private State state = null;
-  private HistoryStep[] backSteps = null;
-  private Question[] pendingQuestions = null;
-  private Question[] relevantQuestions = null;
-  private Question[] sentQuestions = null;
 }

@@ -23,14 +23,13 @@
  */
 package org.silverpeas.core.workflow.api.instance;
 
-import java.util.Date;
-
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
-import org.silverpeas.core.workflow.api.model.State;
-import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.user.User;
+
+import java.util.Date;
 
 public interface UpdatableProcessInstance extends ProcessInstance {
   /**
@@ -41,7 +40,7 @@ public interface UpdatableProcessInstance extends ProcessInstance {
 
   /**
    * Set the workflow model id
-   * @param instanceId model id
+   * @param modelId model id
    */
   public void setModelId(String modelId);
 
@@ -53,7 +52,7 @@ public interface UpdatableProcessInstance extends ProcessInstance {
   /**
    * @param step
    */
-  public void updateHistoryStep(HistoryStep step) throws WorkflowException;
+  public void updateHistoryStep(HistoryStep step);
 
   /**
    * Cancel all the atomic operations since the step where first action had occured
@@ -63,7 +62,7 @@ public interface UpdatableProcessInstance extends ProcessInstance {
   public void reDoState(String state, Date actionDate) throws WorkflowException;
 
   /**
-   * @param itemName
+   * @param name
    * @param value
    */
   public void setField(String name, Field value) throws WorkflowException;
@@ -99,23 +98,20 @@ public interface UpdatableProcessInstance extends ProcessInstance {
   /**
    * @param user
    */
-  public void addWorkingUser(User user, State state, String role)
-      throws WorkflowException;
+  public void addWorkingUser(User user, State state, String role) throws WorkflowException;
 
   public void addWorkingUser(Actor actor, State state) throws WorkflowException;
 
   /**
    * @param user
    */
-  public void removeWorkingUser(User user, State state, String role)
-      throws WorkflowException;
+  public void removeWorkingUser(User user, State state, String role) throws WorkflowException;
 
   /**
    * Remove all working users for given state
    * @param state state for which the user is interested
    */
-  public void removeWorkingUsers(State state)
-      throws WorkflowException;
+  public void removeWorkingUsers(State state) throws WorkflowException;
 
   /**
    * Add an user in the interested user list
@@ -123,8 +119,7 @@ public interface UpdatableProcessInstance extends ProcessInstance {
    * @param state state for which the user is interested
    * @param role role name under which the user is interested
    */
-  public void addInterestedUser(User user, State state, String role)
-      throws WorkflowException;
+  public void addInterestedUser(User user, State state, String role) throws WorkflowException;
 
   public void addInterestedUser(Actor actor, State state) throws WorkflowException;
 
@@ -134,8 +129,7 @@ public interface UpdatableProcessInstance extends ProcessInstance {
    * @param state state for which the user is interested
    * @param role role name under which the user is interested
    */
-  public void removeInterestedUser(User user, State state, String role)
-      throws WorkflowException;
+  public void removeInterestedUser(User user, State state, String role) throws WorkflowException;
 
   /**
    * Remove all interested users for given state

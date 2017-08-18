@@ -23,10 +23,6 @@
  */
 package org.silverpeas.core.workflow.api.instance;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Vector;
-
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -37,25 +33,15 @@ import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.instance.ActionAndState;
 import org.silverpeas.core.workflow.engine.instance.LockingUser;
 
+import java.util.Date;
+import java.util.List;
+
 public interface ProcessInstance {
 
   /**
    * @return ProcessModel
    */
   public ProcessModel getProcessModel() throws WorkflowException;
-
-  /**
-   * @return String
-   */
-  public String create() throws WorkflowException;
-
-  /**
-    */
-  public void delete() throws WorkflowException;
-
-  /**
-    */
-  public void update() throws WorkflowException;
 
   /**
    * Get the workflow instance id
@@ -96,7 +82,7 @@ public interface ProcessInstance {
   /**
    * @return Vector
    */
-  public Vector<Participant> getParticipants() throws WorkflowException;
+  public List<Participant> getParticipants() throws WorkflowException;
 
   /**
    * Get the last user who resolved the given state
@@ -115,14 +101,12 @@ public interface ProcessInstance {
   /**
    * @return DataRecord
    */
-  public DataRecord getAllDataRecord(String role, String lang)
-      throws WorkflowException;
+  public DataRecord getAllDataRecord(String role, String lang) throws WorkflowException;
 
   /**
    * Returns a DataRecord which will be used to represent this process instance as a row in a list.
    */
-  public DataRecord getRowDataRecord(String role, String lang)
-      throws WorkflowException;
+  public DataRecord getRowDataRecord(String role, String lang) throws WorkflowException;
 
   /**
    * @return DataRecord
@@ -159,8 +143,7 @@ public interface ProcessInstance {
    * @param state
    * @return User[]
    */
-  public Actor[] getWorkingUsers(String state, String role)
-      throws WorkflowException;
+  public Actor[] getWorkingUsers(String state, String role) throws WorkflowException;
 
   /**
    * Returns all the state name assigned to the user with given role
@@ -168,8 +151,7 @@ public interface ProcessInstance {
    * @param roleName
    * @return String[]
    */
-  public String[] getAssignedStates(User user, String roleName)
-      throws WorkflowException;
+  public String[] getAssignedStates(User user, String roleName) throws WorkflowException;
 
   /**
    * @param state
@@ -257,11 +239,6 @@ public interface ProcessInstance {
    * Recent the most recent step where the named action has been performed.
    */
   public HistoryStep getMostRecentStep(String actionName);
-
-  /**
-   * Recent the most recent step where an action has been performed on the given state.
-   */
-  public HistoryStep getMostRecentStep(State state);
 
   /**
    * Get all the steps where given user (with given role) can go back from the given state

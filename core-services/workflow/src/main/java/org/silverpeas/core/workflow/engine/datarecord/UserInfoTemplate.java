@@ -34,6 +34,7 @@ import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.api.user.UserInfo;
 import org.silverpeas.core.workflow.api.user.UserSettings;
+import org.silverpeas.core.workflow.engine.user.UserSettingsService;
 
 /**
  * A UserInfoTemplate builds fields giving information about user
@@ -75,7 +76,7 @@ public class UserInfoTemplate extends ProcessInstanceFieldTemplate {
         }
 
         else {
-          UserSettings settings = Workflow.getUserManager().getUserSettings(
+          UserSettings settings = UserSettingsService.get().get(
               step.getUser().getUserId(), instance.getModelId());
           UserInfo info = settings.getUserInfo(shortFieldName);
 

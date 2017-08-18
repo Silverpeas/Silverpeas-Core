@@ -23,18 +23,14 @@
  */
 package org.silverpeas.core.node.importexport;
 
-import java.rmi.RemoteException;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+
+import javax.inject.Inject;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.node.model.NodeRuntimeException;
-
-import javax.inject.Inject;
 
 /**
  * Classe de gestion des node pour le bus d'importExport
@@ -62,14 +58,11 @@ public class NodeImportExport {
 
   /**
    * Méthode de récupération de l'arborescence totale des topics d'un liste de composants
-   *
    * @param listComponentId - liste des ids des composants dont on veut l'arborescence des topics
-   * @return un object NodeTreesType utilisé par le mapping castor du module d ' ImportExport
+   * @return un object NodeTreesType utilisé par le mapping JAXB du module d ' ImportExport
    */
-  public NodeTreesType getTrees(List<String> listComponentId) {
-
-    NodeTreesType nodeTreesType = new NodeTreesType();
-    List<NodeTreeType> listNodeTreeType = new ArrayList<NodeTreeType>(listComponentId.size());
+  public List<NodeTreeType> getTrees(List<String> listComponentId) {
+    List<NodeTreeType> listNodeTreeType = new ArrayList<>(listComponentId.size());
 
     // Parcours de la liste des id des composants dont on veut récupérer
     // l'arborescence de thèmes
@@ -79,18 +72,13 @@ public class NodeImportExport {
       nodeTreeType.setComponentId(componentId);
 
       NodePK nodePK = new NodePK(NodePK.ROOT_NODE_ID, "useless", componentId);
-      try {// Récupérarion du thème racine
-        NodeDetail nodeDetail = getNodeService().getDetail(nodePK);
-        nodeTreeType.setNodeDetail(nodeDetail);
-        // Récupération de l'arbre des nodes de façon récursive
-        nodeDetail.setChildrenDetails(getRecursiveTree(nodePK));
-      } catch (RemoteException ex) {
-        throw new NodeRuntimeException("NodeImportExport.getNodeService()",
-            SilverpeasRuntimeException.ERROR, "node.GETTING_NODES_BY_FATHER_FAILED", ex);
-      }
+      // Get root folder
+      NodeDetail nodeDetail = getNodeService().getDetail(nodePK);
+      nodeTreeType.setNodeDetail(nodeDetail);
+      // Récupération de l'arbre des nodes de façon récursive
+      nodeDetail.setChildrenDetails(getRecursiveTree(nodePK));
     }
-    nodeTreesType.setListNodeTreeType(listNodeTreeType);
-    return nodeTreesType;
+    return listNodeTreeType;
   }
 
   /**
@@ -98,9 +86,8 @@ public class NodeImportExport {
    *
    * @param nodePK - le nodePK du node père dont on cherche les fils
    * @return une Collection des fils du père
-   * @throws RemoteException
    */
-  private Collection<NodeDetail> getRecursiveTree(NodePK nodePK) throws RemoteException {
+  private Collection<NodeDetail> getRecursiveTree(NodePK nodePK) {
     Collection<NodeDetail> listChildrenDetails = getNodeService().getChildrenDetails(nodePK);
     if (listChildrenDetails != null && !listChildrenDetails.isEmpty()) {
       for (NodeDetail nodeDetail : listChildrenDetails) {

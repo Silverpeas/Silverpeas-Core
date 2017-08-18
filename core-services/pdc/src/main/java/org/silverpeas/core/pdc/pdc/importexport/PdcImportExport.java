@@ -58,21 +58,6 @@ public class PdcImportExport {
 
   }
 
-  // Méthodes
-  /**
-   * Méthodes créant les liens entre les silverObjectId et les positions définies dans un xml mappé
-   * dans la classe PdcPositionsType.
-   * @param silverObjectId - id de l'objet à lier au pdc
-   * @param componentId - id du composant ...
-   * @param positions - object contenant les classes classifyValue contenant les axes du pdc à lier
-   * @return false si une des données est incorrecte, true sinon
-   * @throws PdcException
-   */
-  public boolean addPositions(int silverObjectId, String componentId, PdcPositionsType positions)
-      throws PdcException {
-    return addPositions(silverObjectId, componentId, positions.getListClassifyPosition());
-  }
-
   /**
    * Classifies the specified content on the PdC with the specified classification positions.
    * @param silverObjectId the unique identifier of the content in Silverpeas.
@@ -128,12 +113,10 @@ public class PdcImportExport {
     List<ClassifyPosition> validPositions = new ArrayList<ClassifyPosition>();
     // récupération des axes à utiliser pour le classement
     List<UsedAxis> usedAxis = getPdcManager().getUsedAxisToClassify(componentId, silverObjectId);
-    if (usedAxis != null && !usedAxis.isEmpty()) {
-      if (positions != null) {
-        for (ClassifyPosition classifyPos : positions) {
-          if (isValidPosition(usedAxis, classifyPos)) {
-            validPositions.add(classifyPos);
-          }
+    if (usedAxis != null && !usedAxis.isEmpty() && positions != null) {
+      for (ClassifyPosition classifyPos : positions) {
+        if (isValidPosition(usedAxis, classifyPos)) {
+          validPositions.add(classifyPos);
         }
       }
     }
@@ -171,9 +154,8 @@ public class PdcImportExport {
       String valueId = position.getValueOnAxis(axis.getAxisId());
       if (valueId == null) {
         return false;
-      } else {
-        return true;
       }
+      return true;
     }
     // le classement sur cet axe est facultatif
     return true;
@@ -185,9 +167,8 @@ public class PdcImportExport {
     String path = value.getValue();
     String leafId = extractLeaf(path);
 
-    Value existingValue = null;
     try {
-      existingValue = getPdcManager().getValue(Integer.toString(axisId), leafId);
+      Value existingValue = getPdcManager().getValue(Integer.toString(axisId), leafId);
 
       if (existingValue == null) {
         return false;
@@ -220,7 +201,7 @@ public class PdcImportExport {
       throws PdcException {
     List<ClassifyPosition> list = getPdcManager().getPositions(silverObjectId, sComponentId);
     if (list.isEmpty()) {
-      return null;
+      return new ArrayList<>();
     }
     return list;
   }
@@ -235,7 +216,7 @@ public class PdcImportExport {
    * @return un objet PdcType contenant les axes recherchés
    * @throws PdcException
    */
-  public PdcType getPdc(List<ClassifyPosition> listClassifyPosition) throws PdcException {
+  public List<AxisType> getPdc(List<ClassifyPosition> listClassifyPosition) throws PdcException {
 
     // On construit une liste des axes à exporter
     Set<Integer> set = new HashSet<Integer>();
@@ -247,9 +228,7 @@ public class PdcImportExport {
     }
 
     // On parcours la liste des axes à exporter
-    PdcType pdcType = new PdcType();
-    List<AxisType> listAxisType = new ArrayList<AxisType>();
-    pdcType.setListAxisType(listAxisType);
+    List<AxisType> listAxisType = new ArrayList<>();
     for (Integer axis : set) {
       // Récupération de la "value" root de l'axe
       Value valueRoot = getPdcManager().getRoot(Integer.toString(axis));
@@ -262,7 +241,7 @@ public class PdcImportExport {
       List<PdcValueType> listPdcValueType = getValueTree(axis, valueRoot.getPK().getId());
       axisType.setListPdcValueType(listPdcValueType);
     }
-    return pdcType;
+    return listAxisType;
   }
 
   /**

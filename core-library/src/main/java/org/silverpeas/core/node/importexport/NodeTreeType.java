@@ -28,14 +28,28 @@ package org.silverpeas.core.node.importexport;
 
 import org.silverpeas.core.node.model.NodeDetail;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
- * Classe utilisée pour le (un)marshalling Castor
+ * Classe utilisée pour le (un)marshalling
  * @author sdevolder
  */
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.NONE)
 public class NodeTreeType {
 
+  @XmlAttribute
   private String componentId;
+  @XmlElement(name = "topic")
   private NodeDetail nodeDetail;
+
+  public NodeTreeType() {
+    // This constructor is necessary with JAXB
+  }
 
   /**
    * @return

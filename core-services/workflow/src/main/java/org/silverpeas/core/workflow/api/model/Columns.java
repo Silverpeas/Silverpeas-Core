@@ -74,8 +74,4 @@ public interface Columns {
    */
   public Column createColumn();
 
-  /**
-   * Remove all column objects from the collection
-   */
-  public void removeAllColumns();
 }

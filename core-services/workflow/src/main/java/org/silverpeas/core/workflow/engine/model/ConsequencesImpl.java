@@ -29,14 +29,21 @@ import java.util.Iterator;
 import org.silverpeas.core.workflow.api.model.Consequence;
 import org.silverpeas.core.workflow.api.model.Consequences;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Class implementing the representation of the &lt;consequences&gt; element of a Process Model.
  */
+@XmlRootElement(name = "consequences")
+@XmlAccessorType(XmlAccessType.NONE)
 public class ConsequencesImpl implements Consequences, Serializable {
   private static final long serialVersionUID = 931366159263133929L;
+  @XmlElement(name = "consequence", type = ConsequenceImpl.class)
   private List<Consequence> consequenceList;
 
   /**
