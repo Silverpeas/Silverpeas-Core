@@ -2,19 +2,16 @@ package org.silverpeas.core.workflow.engine;
 
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.TaskManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.event.GenericEvent;
 import org.silverpeas.core.workflow.api.event.QuestionEvent;
 import org.silverpeas.core.workflow.api.instance.Participant;
 import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;
 import org.silverpeas.core.workflow.api.instance.UpdatableProcessInstance;
 import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.task.Task;
-import org.silverpeas.core.workflow.engine.instance.HistoryStepImpl;
-import org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl;
 
 /**
  * A QuestionRequest indicates the workflow engine that a user ask a back to a precedent
@@ -22,65 +19,28 @@ import org.silverpeas.core.workflow.engine.instance.ProcessInstanceImpl;
  */
 class QuestionRequest extends AbstractRequest {
 
-  private QuestionEvent event;
-
   protected QuestionRequest() {
   }
 
   public static QuestionRequest get(final QuestionEvent event) {
     QuestionRequest request = ServiceProvider.getService(QuestionRequest.class);
-    request.event = event;
+    request.setEvent(event);
     return request;
   }
 
   @Override
   public void process(final Object context) throws InterruptedException {
-
     // Get the process instance
+    GenericEvent event = getEvent();
     UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
     String id = instance.getInstanceId();
-    ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
-    Mutable<UpdatableHistoryStep> step = Mutable.of(null);
 
-    Transaction.performInOne(()-> {
-      UpdatableProcessInstance processInstance = getProcessInstanceRepository().getById(id);
+    UpdatableHistoryStep step =
+        Transaction.performInOne(() -> createHistoryNewStep(new HistoryStepDescriptor()
+            .withActionName("#question#")
+            .withProcessInstance(instance)));
 
-      // first create the history newStep
-      UpdatableHistoryStep newStep = (UpdatableHistoryStep) instanceManager.createHistoryStep();
-      newStep.setUserId(event.getUser().getUserId());
-      newStep.setAction("#question#");
-      newStep.setActionDate(event.getActionDate());
-      newStep.setUserRoleName(event.getUserRoleName());
-      if (event.getResolvedState() != null) {
-        newStep.setResolvedState(event.getResolvedState().getName());
-      }
-      // To be processed
-      newStep.setActionStatus(0);
-      newStep.setProcessInstance(processInstance);
-
-      // add the new newStep to the processInstance
-      getHistoryStepRepository().save((HistoryStepImpl) newStep);
-
-      step.set(newStep);
-      return newStep;
-    });
-
-    Transaction.performInOne(()-> {
-      UpdatableProcessInstance processInstance = getProcessInstanceRepository().getById(id);
-
-      // Do workflow stuff
-      try {
-        processEvent(processInstance, step.get().getId());
-        getProcessInstanceRepository().save((ProcessInstanceImpl) processInstance);
-      } catch (WorkflowException we) {
-        saveError(processInstance, event, we);
-
-        throw new WorkflowException("WorkflowEngineThread.process",
-            "workflowEngine.EX_ERR_PROCESS_ADD_TASKSAVED_REQUEST", we);
-      }
-
-      return null;
-    });
+    processProcessInstance(id, event, step);
   }
 
   protected boolean processEvent(UpdatableProcessInstance instance, String stepId)
@@ -93,6 +53,7 @@ class QuestionRequest extends AbstractRequest {
 
     // add the question
     String question;
+    QuestionEvent event = getEvent();
     try {
       question = (String) event.getDataRecord().getField("Content").getObjectValue();
     } catch (FormException fe) {

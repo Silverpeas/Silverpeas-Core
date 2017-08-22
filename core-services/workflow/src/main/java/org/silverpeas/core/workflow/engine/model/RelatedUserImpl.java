@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.Participant;
 import org.silverpeas.core.workflow.api.model.RelatedUser;
@@ -34,6 +32,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * Class implementing the representation of the &lt;relatedUser&gt; element of a Process Model.
@@ -52,13 +51,6 @@ public class RelatedUserImpl implements RelatedUser, Serializable {
   private String relation;
   @XmlAttribute
   private String role;
-
-  /**
-   * Constructor
-   */
-  public RelatedUserImpl() {
-    super();
-  }
 
   /**
    * Get the referred participant

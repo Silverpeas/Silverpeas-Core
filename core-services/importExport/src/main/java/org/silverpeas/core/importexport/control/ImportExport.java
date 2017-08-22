@@ -306,37 +306,26 @@ public class ImportExport extends AbstractExportProcess {
       }
       // Exportation des publications
       List<PublicationType> publicationsType;
-      try {
-        // création des répertoires avec le nom des thèmes et des publications
-        publicationsType = pubTypMgr
-            .processExport(exportReport, userDetail, listItemsToExport, fileExportDir.getPath(),
-                true, true, rootPK);
-        if (publicationsType.isEmpty()) {
-          // les noms des thèmes et des publication est trop long ou au moins > 200 caractères
-          // création des répertoires avec les Id des thèmes et des publications
-          try {
-            exportReport = new ExportReport();
-            exportReport.setDateDebut(new Date());
-            // détruire le répertoire et tout ce qu'il contient
-            fileExportDir.delete();
-            try {
-              FileFolderManager.deleteFolder(fileExportDir.getPath());
-            } catch (Exception ex) {
-              throw new ImportExportException("ImportExport", "importExport.EX_CANT_DELETE_FOLDER",
-                  ex);
-            }
-            thisExportDir = generateExportDirName(userDetail, "export");
-            tempDir = FileRepositoryManager.getTemporaryPath();
-            fileExportDir = new File(tempDir + thisExportDir);
-            publicationsType = pubTypMgr
-                .processExport(exportReport, userDetail, listItemsToExport, fileExportDir.getPath(),
-                    false, true, rootPK);
-          } catch (IOException e) {
-            throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e);
-          }
+      // création des répertoires avec le nom des thèmes et des publications
+      publicationsType = pubTypMgr.processExport(exportReport, userDetail, listItemsToExport,
+          fileExportDir.getPath(), true, true, rootPK);
+      if (publicationsType.isEmpty()) {
+        // les noms des thèmes et des publication est trop long ou au moins > 200 caractères
+        // création des répertoires avec les Id des thèmes et des publications
+        exportReport = new ExportReport();
+        exportReport.setDateDebut(new Date());
+        // détruire le répertoire et tout ce qu'il contient
+        fileExportDir.delete();
+        try {
+          FileFolderManager.deleteFolder(fileExportDir.getPath());
+        } catch (Exception ex) {
+          throw new ImportExportException("ImportExport", "importExport.EX_CANT_DELETE_FOLDER", ex);
         }
-      } catch (IOException e1) {
-        throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
+        thisExportDir = generateExportDirName(userDetail, "export");
+        tempDir = FileRepositoryManager.getTemporaryPath();
+        fileExportDir = new File(tempDir + thisExportDir);
+        publicationsType = pubTypMgr.processExport(exportReport, userDetail, listItemsToExport,
+            fileExportDir.getPath(), false, true, rootPK);
       }
       silverPeasExch.setPublicationsType(publicationsType);
 
@@ -660,14 +649,10 @@ public class ImportExport extends AbstractExportProcess {
 
       // Exportation des publications
       List<PublicationType> publicationsType;
-      try {
-        // création des répertoires avec le nom des publications
-        publicationsType = pubTypMgr
-            .processExport(exportReport, userDetail, itemsToExport, fileExportDir.getPath(), false,
-                true, null);
-      } catch (IOException e) {
-        throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e);
-      }
+      // création des répertoires avec le nom des publications
+      publicationsType =
+          pubTypMgr.processExport(exportReport, userDetail, itemsToExport, fileExportDir.getPath(),
+              false, true, null);
 
       // Récupération de la liste de id des composants
       Set<String> listComponentId = new HashSet<>();
@@ -994,14 +979,9 @@ public class ImportExport extends AbstractExportProcess {
 
     File fileExportDir = createExportDir(userDetail);
 
-    try {
-      // création des répertoires avec le nom des thèmes et des publications
-      pubTypMgr
-          .processExport(exportReport, userDetail, listItemsToExport, fileExportDir.getPath(), true,
-              rootPK != null, rootPK);
-    } catch (IOException e1) {
-      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e1);
-    }
+    // création des répertoires avec le nom des thèmes et des publications
+    pubTypMgr.processExport(exportReport, userDetail, listItemsToExport, fileExportDir.getPath(),
+        true, rootPK != null, rootPK);
 
     // Création du zip
     createZipFile(fileExportDir, exportReport);

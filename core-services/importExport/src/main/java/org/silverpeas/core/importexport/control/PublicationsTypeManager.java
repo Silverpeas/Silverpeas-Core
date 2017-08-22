@@ -118,7 +118,7 @@ public class PublicationsTypeManager {
    */
   public List<PublicationType> processExport(ExportReport exportReport, UserDetail userDetail,
       List<WAAttributeValuePair> listItemsToExport, String exportPath, boolean useNameForFolders,
-      boolean bExportPublicationPath, NodePK rootPK) throws ImportExportException, IOException {
+      boolean bExportPublicationPath, NodePK rootPK) throws ImportExportException {
     AttachmentImportExport attachmentIE = new AttachmentImportExport(userDetail);
     List<PublicationType> listPubType = new ArrayList<>();
     String wysiwygText = null;
@@ -138,31 +138,35 @@ public class PublicationsTypeManager {
       // Récupération des topics (il y en a au moins un)
       String exportPublicationRelativePath;
       String exportPublicationPath;
-      if (gedIE.isKmax()) {
-        publicationType.setCoordinatesPositionsType(new CoordinatesPositionsType());
-        exportPublicationRelativePath =
-            createPathDirectoryForKmaxPublicationExport(exportPath, componentId,
-                componentInst.getLabel(), publicationDetail, useNameForFolders);
-        exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
-      } else {
-        fillPublicationType(gedIE, publicationType, rootPK);
-        // Création de l'arborescence de dossiers pour la création de l'export de publication
-        NodePositionType nodePositionType = publicationType.getNodePositionsType().get(0);
-        String nodeInstanceId = componentId;
-        if (rootPK != null) {
-          nodeInstanceId = rootPK.getInstanceId();
-          if (!nodeInstanceId.equals(componentId)) {
-            // case of aliases
-            componentInst = OrganizationControllerProvider.getOrganisationController().
-                getComponentInstLight(nodeInstanceId);
+        if (gedIE.isKmax()) {
+          publicationType.setCoordinatesPositionsType(new CoordinatesPositionsType());
+          try {
+            exportPublicationRelativePath =
+                createPathDirectoryForKmaxPublicationExport(exportPath, componentId, componentInst
+                    .getLabel(), publicationDetail, useNameForFolders);
+          } catch (IOException e) {
+            throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e);
           }
+          exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
+        } else {
+          fillPublicationType(gedIE, publicationType, rootPK);
+          // Création de l'arborescence de dossiers pour la création de l'export de publication
+          NodePositionType nodePositionType = publicationType.getNodePositionsType().get(0);
+          String nodeInstanceId = componentId;
+          if (rootPK != null) {
+            nodeInstanceId = rootPK.getInstanceId();
+            if (!nodeInstanceId.equals(componentId)) {
+              // case of aliases
+              componentInst = OrganizationControllerProvider.getOrganisationController().
+                  getComponentInstLight(nodeInstanceId);
+            }
+          }
+          exportPublicationRelativePath =
+              createPathDirectoryForPublicationExport(exportPath, nodePositionType.getId(),
+                  nodeInstanceId, componentInst.getLabel(), publicationDetail, useNameForFolders,
+                  bExportPublicationPath);
+          exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
         }
-        exportPublicationRelativePath =
-            createPathDirectoryForPublicationExport(exportPath, nodePositionType.getId(),
-                nodeInstanceId, componentInst.getLabel(), publicationDetail, useNameForFolders,
-                bExportPublicationPath);
-        exportPublicationPath = exportPath + separator + exportPublicationRelativePath;
-      }
       // To avoid problems with Winzip
       if (exportPublicationPath.length() > 250) {
         return Collections.emptyList();
@@ -378,7 +382,7 @@ public class PublicationsTypeManager {
    */
   private String createPathDirectoryForPublicationExport(String exportPath, int topicId,
       String componentId, String componentLabel, PublicationDetail pub, boolean useNameForFolders,
-      boolean exportPublicationPath) throws IOException {
+      boolean exportPublicationPath) throws ImportExportException {
     String pubNameForm = pub.getPK().getId();
     if (useNameForFolders) {
       pubNameForm = DirectoryUtils.formatToDirectoryNamingCompliant(pub.getName());
@@ -412,7 +416,11 @@ public class PublicationsTypeManager {
     // ZIP API manage only ASCII characters. So directories are created in ASCII too.
     String relativeExportPathAscii = FileServerUtils.replaceAccentChars(relativeExportPath.
         toString());
-    createASCIIPath(pathToCreate.toString());
+    try {
+      createASCIIPath(pathToCreate.toString());
+    } catch (IOException e) {
+      throw new ImportExportException("ImportExport", "root.EX_CANT_WRITE_FILE", e);
+    }
 
     return relativeExportPathAscii;
   }

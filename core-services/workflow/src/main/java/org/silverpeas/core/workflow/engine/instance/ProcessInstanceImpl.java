@@ -1582,6 +1582,9 @@ public class ProcessInstanceImpl
       for (UndoHistoryStep undoStep : someUndoSteps) {
         String action = undoStep.getAction();
         StringTokenizer st = new StringTokenizer(undoStep.getParameters(), "##");
+        // The number of parameters must be : 3 or 2
+        final int maxParametersCount = 3;
+        final int minParametersCount = 2;
 
         if ("addActiveState".equals(action)) {
           String state = undoStep.getParameters();
@@ -1590,8 +1593,7 @@ public class ProcessInstanceImpl
           String state = undoStep.getParameters();
           this.addActiveState(state, null);
         } else if ("addWorkingUser".equals(action)) {
-          // The number of parameters must be : 3 or 2
-          if (st.countTokens() != 3 && st.countTokens() != 2) {
+          if (st.countTokens() != maxParametersCount && st.countTokens() != minParametersCount) {
             throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
                 "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getId() +
                 ", method addWorkingUser - found:" + st.countTokens() + " instead of 2 or 3");
@@ -1605,8 +1607,7 @@ public class ProcessInstanceImpl
           this.removeWorkingUser(user, state, role);
           this.unLock(state, user);
         } else if ("removeWorkingUser".equals(action)) {
-          // The number of parameters must be : 3 or 2
-          if (st.countTokens() != 3 && st.countTokens() != 2) {
+          if (st.countTokens() != maxParametersCount && st.countTokens() != minParametersCount) {
             throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
                 "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getId() +
                 ", method addWorkingUser - found:" + st.countTokens() + " instead of 2 or 3");

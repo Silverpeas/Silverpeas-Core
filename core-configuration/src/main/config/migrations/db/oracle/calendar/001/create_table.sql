@@ -1,7 +1,7 @@
 CREATE TABLE SB_Cal_Calendar (
   id             VARCHAR(40)   NOT NULL,
   instanceId     VARCHAR(30)   NOT NULL,
-  title          VARCHAR(255) NOT NULL,
+  title          VARCHAR(255)  NOT NULL,
   zoneId         VARCHAR(40)   NOT NULL,
   externalUrl    VARCHAR(250),
   synchroDate    TIMESTAMP,
@@ -64,8 +64,8 @@ CREATE TABLE SB_Cal_Event (
   visibility     VARCHAR(50)   NOT NULL,
   recurrenceId   VARCHAR(40)   NULL,
   CONSTRAINT PK_Event PRIMARY KEY (id),
-  CONSTRAINT FK_Calendar FOREIGN KEY (calendarId) REFERENCES SB_Cal_Calendar(id),
-  CONSTRAINT FK_Recurrence FOREIGN KEY (recurrenceId) REFERENCES SB_Cal_Recurrence(id)
+  CONSTRAINT FK_Event_Component  FOREIGN KEY (componentId) REFERENCES SB_Cal_Components(id),
+  CONSTRAINT FK_Event_Recurrence FOREIGN KEY (recurrenceId) REFERENCES SB_Cal_Recurrence(id)
 );
 
 CREATE TABLE SB_Cal_Occurrences (

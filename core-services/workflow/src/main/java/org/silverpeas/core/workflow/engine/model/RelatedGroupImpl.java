@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-
 import org.silverpeas.core.workflow.api.model.Item;
 import org.silverpeas.core.workflow.api.model.RelatedGroup;
 
@@ -33,6 +31,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
  * Class implementing the representation of the &lt;relatedUser&gt; element of a Process Model.
@@ -47,13 +46,6 @@ public class RelatedGroupImpl implements RelatedGroup, Serializable {
   private ItemImpl folderItem;
   @XmlAttribute
   private String role;
-
-  /**
-   * Constructor
-   */
-  public RelatedGroupImpl() {
-    super();
-  }
 
   /**
    * Get the referred item
