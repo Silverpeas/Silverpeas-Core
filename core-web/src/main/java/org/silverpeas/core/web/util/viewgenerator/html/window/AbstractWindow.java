@@ -185,7 +185,7 @@ public abstract class AbstractWindow implements Window {
     } catch (Exception e) {
       SilverLogger.getLogger(this)
           .silent(e)
-          .info("App '{0}' has no welcome message yet !", component.getName());
+          .info("App ''{0}'' has no welcome message yet !", component.getName());
     }
 
     if (!StringUtil.isDefined(message)) {
