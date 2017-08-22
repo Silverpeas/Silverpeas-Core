@@ -45,7 +45,7 @@
           transclude : true,
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : function() {
 
             this.formValidationRegistry = [];
 
@@ -121,7 +121,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : ['$scope', '$element', function($scope, $element) {
             this.getMessages = function() {
               return this.calendarEventApi.messages;
             }.bind(this);
@@ -325,7 +325,7 @@
                 angular.element(focusSelector, $element).focus();
               }.bind(this), 0);
             }.bind(this);
-          }
+          }]
         };
       }]);
 
@@ -344,7 +344,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : function() {
             this.getMessages = function() {
               return this.calendarEventApi.messages;
             }.bind(this);
@@ -582,7 +582,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : ['$scope', function($scope) {
             this.getMessages = function() {
               return this.calendarEventApi.messages;
             }.bind(this);
@@ -619,7 +619,7 @@
               initialize();
               this.initUserPanelUrl = context.componentUriBase  + 'calendars/events/attendees/select';
             }.bind(this);
-          }
+          }]
         };
       }]);
 
@@ -638,7 +638,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : function() {
             this.getMessages = function() {
               return this.calendarEventApi.messages;
             }.bind(this);

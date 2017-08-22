@@ -41,7 +41,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : ['$scope', function($scope) {
             var _afterInitialization = false;
 
             this.getTemplate = function() {
@@ -148,7 +148,7 @@
               _attendeeProcessor();
               _afterInitialization = true;
             }.bind(this);
-          }
+          }]
         };
       }]);
 
@@ -168,7 +168,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : function() {
             this.isUserAttendee = function() {
               return __isUserAttendee(this.attendee);
             }.bind(this);

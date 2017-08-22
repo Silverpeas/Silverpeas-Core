@@ -36,7 +36,7 @@
       },
       controllerAs : '$ctrl',
       bindToController : true,
-      controller : function($scope, $element, $attrs, $transclude) {
+      controller : function() {
       }
     };
   });
@@ -55,7 +55,7 @@
       },
       controllerAs : '$ctrl',
       bindToController : true,
-      controller : function($scope, $element, $attrs, $transclude) {
+      controller : function() {
       }
     };
   });

@@ -120,7 +120,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : ['$scope', '$element', function($scope, $element) {
             applyReadyBehaviorOn(this);
             var calendarInitialized = false;
 
@@ -744,7 +744,7 @@
                 eventOccurrence : 'silverpeas-calendar-event-occurrence-tip'
               }, this.templates);
             }.bind(this);
-          }
+          }]
         };
       }]);
 
@@ -760,7 +760,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : ['$element', function($element) {
             this.referenceDayChanged = function() {
               var referenceDay = sp.moment.make(this.timeWindowViewContext.formattedReferenceDay, 'L');
               this.timeWindow({type : 'referenceDay', day : referenceDay.format()});
@@ -817,7 +817,7 @@
                 }.bind(this));
               }.bind(this), 0);
             }.bind(this);
-          }
+          }]
         };
       }]);
 

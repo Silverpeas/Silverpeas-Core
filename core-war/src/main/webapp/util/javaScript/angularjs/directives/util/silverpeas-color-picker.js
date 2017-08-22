@@ -34,7 +34,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : ['$element', function($element) {
 
             /**
              * Color selection
@@ -67,7 +67,7 @@
                 this.qtipApi = TipManager.simpleSelect(this.dom.result, this.dom.popin);
               }.bind(this), 100);
             }
-          }
+          }]
         };
       }]);
 })();

@@ -59,7 +59,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : ['$scope', '$element', function($scope, $element) {
 
             this.valueChanged = function() {
               var errors = isDateValid({
@@ -122,7 +122,7 @@
                 });
               }.bind(this));
             }.bind(this);
-          }
+          }]
         };
       }]);
 })();

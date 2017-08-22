@@ -39,7 +39,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : ['$element', function($element) {
             this.$postLink = function() {
               this.dom = {
                 updatePopin : angular.element('.silverpeas-calendar-event-management-update-popin', $element),
@@ -198,7 +198,7 @@
                 }
               }.bind(this)
             };
-          }
+          }]
         };
       }]);
 })();

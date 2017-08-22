@@ -41,7 +41,7 @@
           transclude : true,
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : ['$scope', function($scope) {
 
             this.valueChanged = function() {
               var errors = isDateValid({
@@ -88,7 +88,7 @@
               }
               this.valueChanged();
             }.bind(this);
-          }
+          }]
         };
       }]);
 })();

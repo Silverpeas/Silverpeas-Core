@@ -39,7 +39,7 @@
       },
       controllerAs : '$ctrl',
       bindToController : true,
-      controller : function($scope, $element, $attrs, $transclude) {
+      controller : function() {
       }
     };
   });
@@ -58,14 +58,14 @@
       },
       controllerAs : '$ctrl',
       bindToController : true,
-      controller : function($scope, $element, $attrs, $transclude) {
+      controller : ['$scope', '$element', function($scope, $element) {
         /**
          * Listening to jquery $destroy event (triggered by jQuery on DOM removing).
          */
         $element.on('$destroy', function() {
           $scope.$destroy();
         }.bind(this));
-      }
+      }]
     };
   });
 })();

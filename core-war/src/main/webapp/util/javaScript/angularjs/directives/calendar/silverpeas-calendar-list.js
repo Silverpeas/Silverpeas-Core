@@ -43,7 +43,7 @@
       },
       controllerAs : '$ctrl',
       bindToController : true,
-      controller : function($scope, $element, $attrs, $transclude) {
+      controller : function() {
       }
     };
   });
@@ -67,7 +67,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : ['$element', function($element) {
 
             /**
              * Just after template compilation
@@ -100,7 +100,7 @@
                 });
               }.bind(this), 200);
             }
-          }
+          }]
         };
       }]);
 })();

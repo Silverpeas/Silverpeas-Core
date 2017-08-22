@@ -40,7 +40,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : ['$element', function($element) {
             var _fileUploadApi;
 
             this.api = {
@@ -103,7 +103,7 @@
                 _fileUploadApi = this.$fileUpload.fileUpload('api');
               }.bind(this));
             }.bind(this);
-          }
+          }]
         };
       }]);
 })();

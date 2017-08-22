@@ -37,7 +37,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : ['$scope', function($scope) {
             var __today;
             var __tomorrow;
             this.occurrencesGroupedByDay = [];
@@ -89,7 +89,7 @@
               }
               return context.component;
             };
-          }
+          }]
         };
       }]);
 
@@ -105,7 +105,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : function() {
             this.hasTime = function() {
               return this.occurrence.startDate.split('T').length > 1;
             };

@@ -38,7 +38,7 @@
       },
       controllerAs : '$ctrl',
       bindToController : true,
-      controller : function($scope, $element, $attrs, $transclude) {
+      controller : ['$element', function($element) {
         this.getTemplate = function() {
           return this.simple ? '###silverpeas.permalink.simple' : '###silverpeas.permalink.full';
         };
@@ -53,7 +53,7 @@
             this.simple = true;
           }
         };
-      }
+      }]
     };
   });
 })();

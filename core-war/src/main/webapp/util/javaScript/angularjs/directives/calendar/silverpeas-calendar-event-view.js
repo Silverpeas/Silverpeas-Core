@@ -40,7 +40,7 @@
           transclude : true,
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : function() {
           }
         };
       }]);
@@ -57,7 +57,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : function() {
 
             this.startDate = function() {
               return this.ceo.startDate;
@@ -91,7 +91,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : function() {
             this.isRecurrence = function() {
               return this.recurrenceType  !== 'NONE';
             }.bind(this);
@@ -162,7 +162,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function($scope, $element, $attrs, $transclude) {
+          controller : function() {
           }
         };
       }]);
