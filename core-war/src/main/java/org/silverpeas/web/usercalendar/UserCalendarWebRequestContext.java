@@ -23,93 +23,22 @@
  */
 package org.silverpeas.web.usercalendar;
 
-import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
+import org.silverpeas.core.web.calendar.AbstractCalendarWebRequestContext;
 
-import javax.ws.rs.WebApplicationException;
-import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.temporal.Temporal;
-import java.util.List;
-
-import static javax.ws.rs.core.Response.Status.NOT_FOUND;
-import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
-import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity.decodeId;
+import static org.silverpeas.core.calendar.ComponentInstanceCalendars.getByComponentInstanceId;
 
 /**
  * @author Yohann Chastagnier
  */
 public class UserCalendarWebRequestContext
-    extends WebComponentRequestContext<UserCalendarWebController> {
-
-  private List<Calendar> userCalendars;
+    extends AbstractCalendarWebRequestContext<UserCalendarWebController> {
 
   @Override
   public void beforeRequestProcessing() {
-    userCalendars = Calendar.getByComponentInstanceId(getComponentInstanceId());
-    if (userCalendars.isEmpty()) {
+    super.beforeRequestProcessing();
+    if (getComponentInstanceCalendars().isEmpty()) {
       UserCalendarInitialization.initialize(getComponentInstanceId());
-      userCalendars = Calendar.getByComponentInstanceId(getComponentInstanceId());
+      setComponentInstanceCalendars(getByComponentInstanceId(getComponentInstanceId()));
     }
-  }
-
-  /**
-   * Gets the user calendars.
-   * @return list of calendars.
-   */
-  private List<Calendar> getUserCalendars() {
-    return userCalendars;
-  }
-
-  /**
-   * Gets the user main calendar.
-   * @return the main calendar of the user.
-   */
-  Calendar getMainUserCalendar() {
-    for (Calendar calendar : getUserCalendars()) {
-      if (calendar.isMainPersonalOf(getUser())) {
-        return calendar;
-      }
-    }
-    throw new WebApplicationException(NOT_FOUND);
-  }
-
-  /**
-   * Gets the user calendar corresponding to the identifier contained into request as {@code
-   * calendarId} parameter name.
-   * @return a calendar.
-   * @throw WebApplicationException when calendarId is set but is not linked to the current user.
-   */
-  Temporal getOccurrenceStartDate() {
-    String startDate = getRequest().getParameter("occurrenceStartDate");
-    if (isDefined(startDate)) {
-      if (startDate.contains("T")) {
-        return OffsetDateTime.parse(startDate);
-      } else {
-        return LocalDate.parse(startDate);
-      }
-    }
-    return null;
-  }
-
-  /**
-   * Gets the user event occurrence corresponding to the identifier contained into request as
-   * {@code occurrenceId} parameter name.
-   * @return an event.
-   * @throw WebApplicationException when calendarId is set but is not linked to the current user.
-   */
-  CalendarEventOccurrence getUserCalendarEventOccurrenceById() {
-    CalendarEventOccurrence event = null;
-    String occurrenceId = getPathVariables().get("occurrenceId");
-    if (isDefined(occurrenceId)) {
-      final String decodedId = decodeId(occurrenceId);
-      event = CalendarEventOccurrence.getById(decodedId).orElse(null);
-      if (event == null) {
-        throw new WebApplicationException(unknown("user calendar", decodedId), NOT_FOUND);
-      }
-    }
-    return event;
   }
 }

@@ -25,8 +25,9 @@ package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
-import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.importexport.ImportException;
@@ -43,6 +44,8 @@ import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.exception.TokenRuntimeException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.Mutable;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -59,6 +62,7 @@ import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 
+import static java.text.MessageFormat.format;
 import static java.time.Month.DECEMBER;
 
 /**
@@ -84,6 +88,11 @@ import static java.time.Month.DECEMBER;
 @Table(name = "sb_cal_calendar")
 public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> implements Securable {
 
+  /**
+   * The reference to identify the main calendar of an instance
+   */
+  private static final String MAIN_TITLE_REF = "###main###";
+
   @Column(name = "instanceId", nullable = false)
   private String componentInstanceId;
 
@@ -107,16 +116,15 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
 
   /**
    * Creates in the specified component instance a new calendar with the given title. The timezone
-   * identifier of the calendar is set to the default zone id of the platform on which runs
-   * Silverpeas.
+   * identifier of the calendar is set to the default zone id of the platform on which Silverpeas
+   * runs.
    * @param instanceId the identifier identifying an instance of a component in Silverpeas.
    * Usually, this identifier is the identifier of the component instance to which it belongs
    * (for example almanach32) or the identifier of the user personal calendar.
    * @param title the title of the calendar.
    */
   public Calendar(String instanceId, String title) {
-    this.componentInstanceId = instanceId;
-    this.title = title;
+    this(instanceId, title, DisplayI18NHelper.getDefaultZoneId());
   }
 
   /**
@@ -129,8 +137,24 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    * @param zoneId the identifier of a timezone.
    */
   public Calendar(String instanceId, String title, ZoneId zoneId) {
-    this(instanceId, title);
+    this.componentInstanceId = instanceId;
+    this.title = title;
     this.zoneId = zoneId.toString();
+  }
+
+  /**
+   * Creates for the specified component instance a new main calendar with the given title. The
+   * timezone identifier of the calendar is set to the default zone id of the platform on which
+   * Silverpeas runs.
+   * <p>A main calendar is a calendar that can not be deleted while the linked component instance is
+   * existing. The title is also set automatically from the instance.</p>
+   * @param instance an instance of a component in Silverpeas.
+   * Usually, this identifier is the identifier of the component instance to which it belongs
+   * (for example almanach32) or the identifier of the user personal calendar.
+   * @return the initialized main calendar.
+   */
+  public static Calendar newMainCalendar(final SilverpeasComponentInstance instance) {
+    return new Calendar(instance.getId(), MAIN_TITLE_REF);
   }
 
   /**
@@ -207,12 +231,38 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
     return componentInstanceId;
   }
 
+  /**
+   * Gets the title of the calendar. If the calendar is the main one of a component instance, then
+   * the title is taken from the component instance name.
+   * @return the title of the calendar.
+   */
   public String getTitle() {
+    if (isMain()) {
+      SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
+      final String cacheKey = MAIN_TITLE_REF + getId();
+      Mutable<String> mainTitle = Mutable.ofNullable(cache.get(cacheKey, String.class));
+      if (!mainTitle.isPresent()) {
+        SilverpeasComponentInstance.getById(getComponentInstanceId()).ifPresent(i -> {
+          if (i.isPersonal()) {
+            mainTitle.set(((SilverpeasPersonalComponentInstance) i).getUser().getDisplayedName());
+          } else {
+            mainTitle.set(i.getLabel());
+          }
+        });
+        cache.put(cacheKey, mainTitle.get());
+      }
+      return mainTitle.get();
+    }
     return this.title;
   }
 
   public void setTitle(String title) {
-    this.title = title;
+    if (!isMain()) {
+      this.title = title;
+    } else {
+      throw new IllegalArgumentException(
+          "not possible to set title on the main calendar of a component instance");
+    }
   }
 
   /**
@@ -282,6 +332,14 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    * activities.
    */
   public void save() {
+    if(!isPersisted() && isMain()) {
+      getByComponentInstanceId(getComponentInstanceId()).forEach(c -> {
+        if (c.isMain()) {
+          throw new IllegalStateException(
+              format("instance {0} has already a main calendar", getComponentInstanceId()));
+        }
+      });
+    }
     Transaction.performInOne(() -> {
       CalendarRepository calendarRepository = CalendarRepository.get();
       calendarRepository.save(this);
@@ -423,12 +481,20 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
+   * Is this calendar the main one of the linked component instance.
+   * @return true if it is, false otherwise.
+   */
+  public boolean isMain() {
+    return MAIN_TITLE_REF.equals(this.title);
+  }
+
+  /**
    * Is this calendar the personal one of the given user which is not modifiable?
    * @param user the user to verify.
    * @return true if it is, false otherwise.
    */
   public boolean isMainPersonalOf(final User user) {
-    return isPersonalOf(user) && getTitle().equals(user.getDisplayedName());
+    return isMain() && isPersonalOf(user);
   }
 
   /**
@@ -467,10 +533,8 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   @Override
   public boolean canBeModifiedBy(final User user) {
     return SecurableRequestCache.canBeModifiedBy(user, getId(), u -> {
-      SilverpeasComponentInstance instance =
-          SilverpeasComponentInstanceProvider.get().getById(getComponentInstanceId()).get();
-      if (instance.isPersonal()) {
-        return getCreator().getId().equals(u.getId()) && !getTitle().equals(u.getDisplayedName());
+      if (isMain()) {
+        return false;
       }
       AccessController<String> accessController =
           AccessControllerProvider.getAccessController(ComponentAccessControl.class);

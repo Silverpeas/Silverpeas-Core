@@ -26,13 +26,13 @@ package org.silverpeas.core.webapi.calendar;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -42,6 +42,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.ZoneId;
 import java.util.Date;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * It represents the state of a calendar in a calendar as transmitted within the body of
@@ -62,6 +64,7 @@ public class CalendarEntity implements WebEntity {
   private String title;
   private String zoneId;
   private URI externalUrl;
+  private boolean main;
   private boolean userMainPersonal;
   private boolean userPersonal;
   private String ownerName;
@@ -149,6 +152,11 @@ public class CalendarEntity implements WebEntity {
   }
 
   @XmlElement
+  public boolean isMain() {
+    return main;
+  }
+
+  @XmlElement
   public boolean isUserMainPersonal() {
     return userMainPersonal;
   }
@@ -196,6 +204,7 @@ public class CalendarEntity implements WebEntity {
     } catch (URISyntaxException e) {
       SilverLogger.getLogger(this).warn(e);
     }
+    this.main = calendar.isMain();
     this.userMainPersonal = calendar.isMainPersonalOf(currentUser);
     this.userPersonal = calendar.isPersonalOf(currentUser);
     this.ownerName = calendar.getCreator().getDisplayedName();
@@ -233,10 +242,11 @@ public class CalendarEntity implements WebEntity {
         throw new WebApplicationException(e);
       }
     }
-    if(PersonalComponentInstance.from(calendar.getComponentInstanceId()).isPresent()) {
-      calendar.setZoneId(User.getCurrentRequester().getUserPreferences().getZoneId());
-    } else {
+    if (isDefined(getZoneId())) {
       calendar.setZoneId(ZoneId.of(getZoneId()));
+    } else {
+      throw new WebApplicationException("zoneId must exist into calendar attributes",
+          Response.Status.NOT_ACCEPTABLE);
     }
     return calendar;
   }

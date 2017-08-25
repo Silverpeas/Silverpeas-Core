@@ -49,7 +49,7 @@ public final class Mutable<T> {
    * Constructs an instance with null value.
    */
   private Mutable() {
-    this(null);
+    this.value =  null;
   }
 
   /**
@@ -58,11 +58,12 @@ public final class Mutable<T> {
    * @throws NullPointerException if value is null
    */
   private Mutable(T value) {
+    Objects.requireNonNull(value);
     this.value = value;
   }
 
   /**
-   * Returns an {@code Mutable} with the specified value (which can be null).
+   * Returns an {@code Mutable} with the specified value.
    * @param <T> the class of the value
    * @param value the value to be present, which must be non-null
    * @return an {@code Mutable} with the value present
@@ -70,6 +71,25 @@ public final class Mutable<T> {
    */
   public static <T> Mutable<T> of(T value) {
     return new Mutable<>(value);
+  }
+
+  /**
+   * Returns an {@code Mutable} with the specified value which can be null.
+   * @param <T> the class of the value
+   * @param value the value to be present, which must be null
+   * @return an {@code Mutable} with the value present
+   */
+  public static <T> Mutable<T> ofNullable(T value) {
+    return value == null ? new Mutable<>():new Mutable<>(value);
+  }
+
+  /**
+   * Returns an empty {@¢ode Mutable}. Its value is by default null.
+   * @param <T> class of the value.
+   * @return a {@code Mutable} with a null value.
+   */
+  public static <T> Mutable<T> empty() {
+    return new Mutable<>();
   }
 
   /**
@@ -175,7 +195,7 @@ public final class Mutable<T> {
     if (!isPresent()) {
       return new Mutable<>();
     } else {
-      return Mutable.of(mapper.apply(value));
+      return Mutable.ofNullable(mapper.apply(value));
     }
   }
 
