@@ -57,16 +57,34 @@
           NAVIGATION MANAGEMENT
            */
 
+          function __getOccurrenceViewUrl(occurrence, suffix) {
+            var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id;
+            if (occurrence.occurrenceViewUrl.indexOf('/userCalendar') < 0) {
+              // Case of events coming from shared component instances
+              uri = occurrence.occurrenceViewUrl;
+            }
+            if (suffix) {
+              uri = uri + suffix;
+            }
+            var params = {};
+            var componentName = context.component.replace(/[1-9]+.*$/, '');
+            if (uri.indexOf('/' + componentName) < 0) {
+              params.previousPageFullUri = location.href;
+            }
+            return sp.formatUrl(uri, params);
+          }
+
           $scope.newEvent = function(startMoment) {
             var uri = context.componentUriBase + 'calendars/events/new';
             $scope.goToPage(uri, {startMoment : startMoment});
           };
+
           $scope.viewEventOccurrence = function(occurrence) {
-            var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id;
+            var uri = __getOccurrenceViewUrl(occurrence);
             $scope.goToPage(uri);
           };
           $scope.editEventOccurrence = function(occurrence) {
-            var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id + '/edit';
+            var uri = __getOccurrenceViewUrl(occurrence, '/edit');
             $scope.goToPage(uri);
           };
           $scope.getVisibleCalendars = function(calendars) {

@@ -53,6 +53,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.web.mvc.webcomponent.NavigationContext.NavigationStep
+    .PREVIOUS_PAGE_FULL_URI_ID;
 import static org.silverpeas.core.web.mvc.webcomponent.PathExecutionResponse.hasProduced;
 import static org.silverpeas.core.web.mvc.webcomponent.PathExecutionResponse.navigateTo;
 
@@ -466,6 +469,17 @@ public class WebComponentManager {
         navigationStep.withContextIdentifier(navigationStepIdentifier.contextIdentifier());
       } else {
         navigationContext.noNavigationStep();
+      }
+
+      // previous uri can be inserted into navigation
+      final String previousPageFullUri =
+          webComponentContext.getRequest().getParameter(PREVIOUS_PAGE_FULL_URI_ID);
+      if (isDefined(previousPageFullUri)) {
+        if (!PREVIOUS_PAGE_FULL_URI_ID
+            .equals(navigationContext.getPreviousNavigationStep().getIdentifier())) {
+          navigationContext.insertNewPreviousNavigationStep(PREVIOUS_PAGE_FULL_URI_ID);
+        }
+        navigationContext.getPreviousNavigationStep().withFullUri(previousPageFullUri);
       }
     }
 

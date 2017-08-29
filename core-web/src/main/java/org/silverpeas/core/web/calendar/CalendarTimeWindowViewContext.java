@@ -42,6 +42,11 @@ import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
+
+import static java.util.Arrays.asList;
+import static java.util.EnumSet.of;
+import static org.silverpeas.core.web.calendar.CalendarViewType.*;
 
 /**
  * Handles a time window context for calendar managements.
@@ -52,12 +57,13 @@ import java.util.EnumSet;
 public class CalendarTimeWindowViewContext implements Serializable {
 
   private final static EnumSet<PeriodType> DISPLAY_WEEK_PERIODS =
-      EnumSet.of(PeriodType.week, PeriodType.day);
+      of(PeriodType.week, PeriodType.day);
 
   private String locale = null;
   private ZoneId zoneId = null;
   private final String componentInstanceId;
-  private CalendarViewType viewType = CalendarViewType.MONTHLY;
+  private List<CalendarViewType> availableViewTypes = asList(NEXT_EVENTS, DAILY, WEEKLY, MONTHLY);
+  private CalendarViewType viewType = MONTHLY;
   private CalendarDay referenceDay;
   private CalendarPeriod referencePeriod;
   private boolean withWeekend = true;
@@ -90,13 +96,21 @@ public class CalendarTimeWindowViewContext implements Serializable {
    * Reset to null all filters.
    */
   public CalendarTimeWindowViewContext resetFilters() {
-    setViewType(CalendarViewType.MONTHLY);
+    setViewType(MONTHLY);
     today();
     return this;
   }
 
   public String getComponentInstanceId() {
     return componentInstanceId;
+  }
+
+  public List<CalendarViewType> getAvailableViewTypes() {
+    return availableViewTypes;
+  }
+
+  public void setAvailableViewTypes(final List<CalendarViewType> availableViewTypes) {
+    this.availableViewTypes = availableViewTypes;
   }
 
   public CalendarViewType getViewType() {
@@ -133,8 +147,7 @@ public class CalendarTimeWindowViewContext implements Serializable {
     // Reference date
     Calendar cal = DateUtil.convert(date, locale);
     final Date referenceDate;
-    if (!withWeekend &&
-        (viewType.equals(CalendarViewType.WEEKLY) || viewType.equals(CalendarViewType.DAILY))) {
+    if (!withWeekend && (viewType.equals(WEEKLY) || viewType.equals(DAILY))) {
       switch (cal.get(Calendar.DAY_OF_WEEK)) {
         case Calendar.SATURDAY:
           if (Calendar.SATURDAY == DateUtil.getFirstDayOfWeek(locale)) {

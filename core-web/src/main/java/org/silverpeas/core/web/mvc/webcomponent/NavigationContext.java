@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
-import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.model.SimpleCache;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToNavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;
 import org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarTag;
@@ -62,23 +62,39 @@ import java.util.List;
  * In that case, the complete stack of navigation steps is browsed to generate browse bar element
  * parts. {@link NavigationContext.NavigationStep} element with no label defined is ignored in
  * this generation treatment.
- * @param <WEB_COMPONENT_REQUEST_CONTEXT> the type of the web component request context.
+ * @param <C> the type of the web component request context.
  * @author: Yohann Chastagnier
  */
-public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext> {
+public class NavigationContext<C extends WebComponentRequestContext> {
+
+  private final NavigationStep baseNavigationStep;
+  private final List<NavigationContextListener> listeners =
+      new ArrayList<NavigationContextListener>();
+  private C webComponentRequestContext;
+  private NavigationStep currentNavigationStep;
+  private NavigationStep previousNavigationStep;
+  /**
+   * Default hidden constructor.
+   * @param webComponentRequestContext the context of the request associated to the current web
+   * component controller.
+   */
+  NavigationContext(C webComponentRequestContext) {
+    this.webComponentRequestContext = webComponentRequestContext;
+    baseNavigationStep = new NavigationStep(null).withSuffixUri("Main");
+    currentNavigationStep = baseNavigationStep;
+    previousNavigationStep = baseNavigationStep;
+  }
 
   /**
    * Sets the navigation context to the specified context associated to the current web controller.
    * @param context the context into which the navigation context must be set.
    */
   @SuppressWarnings("unchecked")
-  public static <WEB_COMPONENT_REQUEST_CONTEXT extends WebComponentRequestContext>
-  NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> get(
-      WEB_COMPONENT_REQUEST_CONTEXT context) {
+  public static <T extends WebComponentRequestContext> NavigationContext<T> get(T context) {
     String cacheKey = "NavigationContext@" + context.getComponentUriBase();
     SimpleCache sessionCache =
         CacheServiceProvider.getSessionCacheService().getCache();
-    NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> navigationContext =
+    NavigationContext<T> navigationContext =
         sessionCache.get(cacheKey, NavigationContext.class);
     if (navigationContext == null) {
       navigationContext = new NavigationContext<>(context);
@@ -87,25 +103,6 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
       navigationContext.webComponentRequestContext = context;
     }
     return navigationContext;
-  }
-
-  private final NavigationStep baseNavigationStep;
-  private WEB_COMPONENT_REQUEST_CONTEXT webComponentRequestContext;
-  private NavigationStep currentNavigationStep;
-  private NavigationStep previousNavigationStep;
-  private final List<NavigationContextListener> listeners =
-      new ArrayList<NavigationContextListener>();
-
-  /**
-   * Default hidden constructor.
-   * @param webComponentRequestContext the context of the request associated to the current web
-   * component controller.
-   */
-  NavigationContext(WEB_COMPONENT_REQUEST_CONTEXT webComponentRequestContext) {
-    this.webComponentRequestContext = webComponentRequestContext;
-    baseNavigationStep = new NavigationStep(null).withSuffixUri("Main");
-    currentNavigationStep = baseNavigationStep;
-    previousNavigationStep = baseNavigationStep;
   }
 
   /**
@@ -120,7 +117,7 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
    * Gets the context of the request associated to the current web component controller.
    * @return the above described context.
    */
-  public WEB_COMPONENT_REQUEST_CONTEXT getWebComponentRequestContext() {
+  public C getWebComponentRequestContext() {
     return webComponentRequestContext;
   }
 
@@ -201,6 +198,23 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
   }
 
   /**
+   * Method to insert a new previous navigation step on current step.
+   * It permits to force manually a previous page url when needed.
+   * @param previousStepIdentifier the identifier of the new previous navigation step.
+   * @return the new previous {@link NavigationStep} instance
+   */
+  @SuppressWarnings("unchecked")
+  public NavigationStep insertNewPreviousNavigationStep(String previousStepIdentifier) {
+    NavigationStep newPrevious = new NavigationStep(previousStepIdentifier);
+    previousNavigationStep.withNext(newPrevious);
+    newPrevious.withNext(currentNavigationStep);
+    newPrevious.withPrevious(previousNavigationStep);
+    currentNavigationStep.withPrevious(newPrevious);
+    previousNavigationStep = currentNavigationStep.getPrevious();
+    return newPrevious;
+  }
+
+  /**
    * When no {@link org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep} is not
    * specified to a called HTTP Web Controller method, then the mechanism calls this method.
    * <p>
@@ -273,6 +287,7 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
    * This class is used for automatically set informatons to a browse bar element.
    */
   public class NavigationStep {
+    static final String PREVIOUS_PAGE_FULL_URI_ID = "previousPageFullUri";
     private final String identifier;
     private String contextIdentifier;
     private NavigationStep previous;
@@ -293,7 +308,7 @@ public class NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT extends WebComponen
      * Gets the navigation context the navigation step is associated to.
      * @return
      */
-    public NavigationContext<WEB_COMPONENT_REQUEST_CONTEXT> getNavigationContext() {
+    public NavigationContext<C> getNavigationContext() {
       return NavigationContext.this;
     }
 

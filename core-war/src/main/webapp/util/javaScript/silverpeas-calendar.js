@@ -262,6 +262,13 @@
     __logDebug("initializing the plugin");
 
     /**
+     * Clears all resources related to the silverpeas calendar instance.
+     */
+    this.clear = function() {
+      this.$fc.fullCalendar('destroy');
+    }.bind(this);
+
+    /**
      * Navigates to the given date.
      * @param date the date to navigate to, can be a Moment object, or anything the Moment
      *     constructor accepts.

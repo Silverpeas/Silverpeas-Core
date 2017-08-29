@@ -61,11 +61,11 @@
       items.forEach(function(item) {
         var isVisible = true;
         if (typeof item['notVisible'] === 'boolean') {
-          isVisible = item['notVisible'] !== visible;
+          isVisible = item['notVisible'] === false;
         } else if (typeof item['visible'] === 'boolean') {
-          isVisible = item['visible'] === visible;
+          isVisible = item['visible'] === true;
         }
-        if (isVisible) {
+        if (isVisible === visible) {
           filteredItems.push(item);
         }
       });
@@ -101,8 +101,8 @@
   });
 
   angular.module('silverpeas.directives').directive('silverpeasCalendar',
-      ['$compile', '$timeout', 'context', 'CalendarService',
-        function($compile, $timeout, context, CalendarService) {
+      ['$compile', '$timeout', 'context', 'CalendarService', 'visibleFilter',
+        function($compile, $timeout, context, CalendarService, visibleFilter) {
         return {
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar.jsp',
@@ -121,9 +121,6 @@
           controllerAs : '$ctrl',
           bindToController : true,
           controller : ['$scope', '$element', function($scope, $element) {
-            applyReadyBehaviorOn(this);
-            var calendarInitialized = false;
-
 
             /**
              * Sets from a calendar and a list of occurrences the attributes attempted by
@@ -428,6 +425,18 @@
                   "timeWindow" : type, "timeWindowDate" : day, "backDay" : backDay
                 });
               }.bind(this),
+              /**
+               * Indicates if the view is one with a calendar.
+               */
+              isCalendarView : function() {
+                return typeof this.spCalendar !== 'undefined';
+              }.bind(this),
+              /**
+               * Indicates if the view is next event one.
+               */
+              isNextEventView : function() {
+                return !this.api.isCalendarView();
+              }.bind(this),
 
               //
               // COMMON CALENDAR DEFINITIONS
@@ -446,9 +455,12 @@
                 } else {
                   this.api.getCalendars().removeElement(calendar, 'id');
                 }
-                this.spCalendar.removeEventSource(calendar);
+                if (this.spCalendar) {
+                  this.spCalendar.removeEventSource(calendar);
+                }
                 _decorate();
                 this.api.redrawCalendars();
+                this.api.refetchNextOccurrences();
               }.bind(this),
               /**
                * Sets to the given calendar the specified color.
@@ -458,6 +470,7 @@
                 SilverpeasCalendarTools.setCalendarColor(calendar, color);
                 _decorate();
                 this.api.redrawCalendars();
+                this.api.refetchNextOccurrences();
               }.bind(this),
               /**
                * Gets the potential colors which are available for calendars of any types.
@@ -472,19 +485,22 @@
               toggleCalendarVisibility : function(calendar) {
                 SilverpeasCalendarTools.toggleCalendarVisibility(calendar);
                 this.api.redrawCalendars();
+                this.api.refetchNextOccurrences();
               }.bind(this),
               /**
                * Redraws (or draw) the UI by taking into account all kinds of calendar handled by
                * the component.
                */
               redrawCalendars : function() {
-                __getAllCalendars().forEach(function(calendar) {
-                  if (!calendar.notVisible) {
-                    this.spCalendar.showEventSource(calendar);
-                  } else {
-                    this.spCalendar.hideEventSource(calendar);
-                  }
-                }.bind(this));
+                if (this.spCalendar) {
+                  __getAllCalendars().forEach(function(calendar) {
+                    if (!calendar.notVisible) {
+                      this.spCalendar.showEventSource(calendar);
+                    } else {
+                      this.spCalendar.hideEventSource(calendar);
+                    }
+                  }.bind(this));
+                }
               }.bind(this),
 
               //
@@ -519,9 +535,11 @@
                 if (calendar.isSynchronized) {
                   this.api.refetchCalendar(calendar).then(function() {
                     this.api.redrawCalendars();
+                    this.api.refetchNextOccurrences();
                   }.bind(this));
                 } else {
                   this.api.redrawCalendars();
+                  this.api.refetchNextOccurrences();
                 }
               }.bind(this),
               /**
@@ -561,10 +579,12 @@
                */
               refetchCalendar : function(calendar) {
                 var promise = this.api.loadCalendarEventOccurrences(calendar);
-                if (!calendar.notVisible) {
-                  this.spCalendar.setEventSource(calendar, promise);
-                } else {
-                  this.spCalendar.registerEventSource(calendar, promise);
+                if (this.spCalendar) {
+                  if (!calendar.notVisible) {
+                    this.spCalendar.setEventSource(calendar, promise);
+                  } else {
+                    this.spCalendar.registerEventSource(calendar, promise);
+                  }
                 }
                 return promise;
               }.bind(this),
@@ -574,6 +594,9 @@
                * (Data reload by Ajax Requests)
                */
               refetchCalendarEvent : function(event) {
+                if (!this.api.isCalendarView()) {
+                  return;
+                }
                 var _eventId = event.id;
                 var _eventUri = event.uri;
 
@@ -597,6 +620,29 @@
                         }
                       });
                     }.bind(this));
+              }.bind(this),
+              /**
+               * Refetches the next occurrence view.
+               */
+              refetchNextOccurrences : function() {
+                if (!this.api.isNextEventView()) {
+                  return;
+                }
+                var toExclude = [];
+                visibleFilter(this.api.getCalendars(), false).forEach(function(calendar) {
+                  toExclude.push(calendar.id)
+                });
+                var userIds = [];
+                visibleFilter(this.api.getParticipationCalendars(), true).forEach(function(participant) {
+                  userIds.push(participant.userId);
+                });
+                var parameters = {
+                  userIds : userIds,
+                  calendarIdsToExclude : toExclude
+                }
+                CalendarService.getNextOccurrences(parameters).then(function(occurrences) {
+                  this.nextOccurrences = occurrences;
+                }.bind(this));
               }.bind(this),
 
               //
@@ -641,28 +687,28 @@
                * (Data reload by Ajax Requests)
                */
               refetchParticipationCalendars : function() {
-                this.ready(function() {
-                  _destroyEventDetails();
-                  this.api.loadParticipationCalendars(this.participationUserIds).then(
-                      function(partipationCalendars) {
-                        this.participationCalendars.forEach(function(participationCalendar) {
-                          if (partipationCalendars.indexOfElement(participationCalendar, 'uri') < 0) {
-                            this.api.removeCalendar(participationCalendar);
-                          }
-                        }.bind(this));
-                        this.participationCalendars = partipationCalendars;
-                        _decorate();
-                        partipationCalendars.forEach(function(participationCalendar) {
-                          if (!participationCalendar.notVisible) {
-                            this.spCalendar.setEventSource(participationCalendar,
-                                participationCalendar.occurrences);
-                          } else {
-                            this.spCalendar.registerEventSource(participationCalendar,
-                                participationCalendar.occurrences);
-                          }
-                        }.bind(this));
+                _destroyEventDetails();
+                return this.api.loadParticipationCalendars(this.participationUserIds).then(
+                  function(partipationCalendars) {
+                    this.participationCalendars.forEach(function(participationCalendar) {
+                      if (partipationCalendars.indexOfElement(participationCalendar, 'uri') < 0) {
+                        this.api.removeCalendar(participationCalendar);
+                      }
+                    }.bind(this));
+                    this.participationCalendars = partipationCalendars;
+                    _decorate();
+                    if (this.spCalendar) {
+                      partipationCalendars.forEach(function(participationCalendar) {
+                        if (!participationCalendar.notVisible) {
+                          this.spCalendar.setEventSource(participationCalendar,
+                              participationCalendar.occurrences);
+                        } else {
+                          this.spCalendar.registerEventSource(participationCalendar,
+                              participationCalendar.occurrences);
+                        }
                       }.bind(this));
-                }.bind(this));
+                    }
+                  }.bind(this));
               }.bind(this)
             };
 
@@ -692,16 +738,34 @@
             /**
              * A listener on changes about time window view context.
              */
+
+            var __deferredCalendarLoad = sp.promise.deferred();
             $scope.$watch('$ctrl.timeWindowViewContext', function(twvc, oldTwvc) {
-              if (twvc.viewType) {
-                if (!calendarInitialized) {
-                  calendarInitialized = true;
+              if (!this.calendars && twvc.viewType) {
+                CalendarService.list().then(function(calendars) {
+                  this.calendars = calendars;
+                  _decorate();
+                  __deferredCalendarLoad.resolve();
+                }.bind(this));
+              }
+              if (twvc.viewType === this.viewTypes.nextEvents) {
+                if (this.spCalendar) {
+                  this.spCalendar.clear();
+                  this.spCalendar = undefined;
+                }
+                __deferredCalendarLoad.promise.then(function() {
+                  $timeout(function() {
+                    _destroyEventDetails();
+                    this.api.refetchNextOccurrences();
+                  }.bind(this), 0);
+                }.bind(this));
+              } else if (twvc.viewType) {
+                this.nextOccurrences = undefined;
+                if (!this.spCalendar) {
                   this.spCalendar = initializeCalendar(twvc)
-                  CalendarService.list().then(function(calendars) {
-                    this.calendars = calendars;
-                    _decorate();
+                  __deferredCalendarLoad.promise.then(function() {
                     this.api.refetchCalendars();
-                    this.notifyReady()
+                    this.api.refetchParticipationCalendars();
                   }.bind(this));
                   // This call is just for initializing the cache of templates about the event occurrence tip
                   // directive
@@ -723,7 +787,15 @@
              */
             $scope.$watchCollection('$ctrl.participationUserIds', function() {
               if (!_partipationCalendarsChangedInternally) {
-                this.api.refetchParticipationCalendars();
+                __deferredCalendarLoad.promise.then(function() {
+                  var promise = this.api.refetchParticipationCalendars();
+                  if (this.api.isNextEventView()) {
+                    promise.then(function() {
+                      this.api.refetchNextOccurrences();
+                    }.bind(this));
+                  }
+                  return promise;
+                }.bind(this));
               }
               _partipationCalendarsChangedInternally = false;
             }.bind(this));
@@ -767,6 +839,23 @@
             }
             this.chooseReferenceDay = function() {
               this.$referenceDayInput.datepicker("show");
+            };
+            this.isSelectedViewType = function(viewType) {
+              return viewType === this.timeWindowViewContext.viewType;
+            };
+            this.getViewTypeLabel = function(viewType) {
+              switch (viewType) {
+                case this.viewTypes.nextEvents :
+                  return this.labels.nextEvents;
+                case this.viewTypes.day :
+                  return this.labels.day;
+                case this.viewTypes.week :
+                  return this.labels.week;
+                case this.viewTypes.month :
+                  return this.labels.month;
+                case this.viewTypes.year :
+                  return this.labels.year;
+              }
             };
             this.$postLink = function() {
               $timeout(function() {

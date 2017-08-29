@@ -143,15 +143,19 @@
            * @returns {promise|a.fn.promise|*} a promise with the asked occurrences as callbck
            *     parameter.
            */
-          this.getNextOccurrences = function() {
+          this.getNextOccurrences = function(parameters) {
             if (context.component) {
+              parameters = extendsObject({}, parameters);
               var url = baseUri + '/events/occurrences/next';
               var adapter = RESTAdapter.get(url, function() {});
               return adapter.find({
                 url : url,
                 criteria : adapter.criteria({
                   limit : context.limit,
-                  zoneid: context.zoneId
+                  zoneid: context.zoneId,
+                  calendarIdsToInclude: parameters.calendarIdsToInclude,
+                  calendarIdsToExclude: parameters.calendarIdsToExclude,
+                  userIds: parameters.userIds
                 })
               });
             } else {
@@ -359,8 +363,8 @@
          * @returns {promise|a.fn.promise|*} a promise with the asked occurrences as callbck
          *     parameter.
          */
-        this.getNextOccurrences = function() {
-          return CalendarEventOccurrence.getNextOccurrences();
+        this.getNextOccurrences = function(parameters) {
+          return CalendarEventOccurrence.getNextOccurrences(parameters);
         };
 
         /**

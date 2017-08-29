@@ -119,7 +119,8 @@
     component : '${componentId}',
     componentUriBase : '${componentUriBase}',
     userRole: '${highestUserRole}',
-    zoneId : '${timeWindowViewContext.zoneId.toString()}'
+    zoneId : '${timeWindowViewContext.zoneId.toString()}',
+    limit : 25
   });
 </script>
 </body>

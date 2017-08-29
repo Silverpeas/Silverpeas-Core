@@ -59,7 +59,7 @@
   <span class="{{$ctrl.attendee.participationStatus}}" title="{{$ctrl.getParticipationStatusLabel()}}">{{$ctrl.getParticipationStatusLabel()}}</span>
   <span ng-if="$ctrl.attendee.participationStatus != 'AWAITING'">
     <img ng-init="p = $ctrl.getParticipationStatusDefinition($ctrl.attendee.participationStatus)"
-         src="{{'${iconPrefixUrl}' + p.icon}}" alt="{{p.label}}">
+         src="${iconPrefixUrl}{{p.icon}}" alt="{{p.label}}">
   </span>
 </span>
 <span class="participation" ng-if="!$ctrl.isWriteMode && !$ctrl.isUserZoom()">
@@ -69,7 +69,7 @@
      ng-click="$ctrl.answer(participationStatus.name)"
      ng-class="{'not-answered':$ctrl.attendee.participationStatus != participationStatus.name}"
      title="{{participationStatus.label}}">
-    <img src="{{'${iconPrefixUrl}' + participationStatus.icon}}" alt="{{participationStatus.label}}">
+    <img src="${iconPrefixUrl}{{participationStatus.icon}}" alt="{{participationStatus.label}}">
   </a>
 </span>
 <span class="presence" ng-if="$ctrl.isWriteMode">

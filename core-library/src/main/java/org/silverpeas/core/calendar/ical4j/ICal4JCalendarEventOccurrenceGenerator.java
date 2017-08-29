@@ -77,8 +77,8 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
       final Period inPeriod) {
     List<CalendarEventOccurrence> occurrences = new ArrayList<>();
     events.forEach(event -> {
-      VEvent vEvent = fromCalendarEvent(event);
-      PeriodList periodList = vEvent.calculateRecurrenceSet(fromPeriod(inPeriod));
+      final VEvent vEvent = fromCalendarEvent(event);
+      PeriodList periodList = getPeriodList(vEvent, inPeriod);
       periodList.forEach(occurPeriod -> {
         final Temporal occurStart;
         final Temporal occurEnd;
@@ -188,6 +188,14 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
       }
     }
     return vEvent;
+  }
+
+  private PeriodList getPeriodList(final VEvent vEvent,
+      final Period inPeriod) {
+    final net.fortuna.ical4j.model.Period icalPeriod = fromPeriod(inPeriod);
+    PeriodList periodList = vEvent.calculateRecurrenceSet(icalPeriod);
+    periodList.removeIf(period -> period.getEnd().equals(icalPeriod.getStart()));
+    return periodList;
   }
 
   private net.fortuna.ical4j.model.Period fromPeriod(final Period period) {

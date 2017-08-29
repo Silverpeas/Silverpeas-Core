@@ -67,6 +67,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -317,17 +318,42 @@ public class CalendarResource extends AbstractCalendarResource {
   @Produces(MediaType.APPLICATION_JSON)
   public List<CalendarEventOccurrenceEntity> getNextEventOccurrences(
       @QueryParam("limit") Integer limit) {
-    final int nbOccLimit = (limit != null && limit > 0 && limit < 100) ? limit :
-        DEFAULT_NB_MAX_NEXT_OCC;
+    // read request parameters
+    CalendarEventOccurrenceRequestParameters params = RequestParameterDecoder
+        .decode(getHttpRequest(), CalendarEventOccurrenceRequestParameters.class);
+    // load calendars
     final List<Calendar> calendars =
         process(() -> getCalendarWebServiceProvider().getCalendarsOf(getComponentId())).execute();
+    // includes/excludes
+    final Set<String> calendarIdsToExclude = params.getCalendarIdsToExclude();
+    final Set<String> calendarIdsToInclude = params.getCalendarIdsToInclude();
+    calendarIdsToInclude.removeAll(calendarIdsToExclude);
+    calendars.removeIf(c -> calendarIdsToExclude.contains(c.getId()));
+    if (!calendarIdsToInclude.isEmpty()) {
+      calendars.forEach(c -> calendarIdsToInclude.remove(c.getId()));
+      calendarIdsToInclude.forEach(i -> {
+        Calendar calendarToInclude = Calendar.getById(i);
+        if (calendarToInclude.canBeAccessedBy(getUserDetail())) {
+          calendars.add(calendarToInclude);
+        }
+      });
+    }
+    // participants
+    Set<User> usersToInclude = params.getUsers();
+    // loading occurrences
+    final int nbOccLimit =
+        (limit != null && limit > 0 && limit < 100) ? limit : DEFAULT_NB_MAX_NEXT_OCC;
     final LocalDate startDate =
         getZoneId() != null ? LocalDateTime.now(getZoneId()).toLocalDate() : LocalDate.now();
-    final List<CalendarEventOccurrenceEntity> occurrences = new ArrayList<>();
+    final Set<CalendarEventOccurrenceEntity> occurrences = new HashSet<>();
     for (int nbMonthsToAdd : NEXT_OOC_MONTH_OFFSETS) {
       occurrences.clear();
       LocalDate endDate = startDate.plusMonths(nbMonthsToAdd);
       calendars.forEach(c -> occurrences.addAll(getEventOccurrencesOf(c, startDate, endDate)));
+      if (!usersToInclude.isEmpty()) {
+        getAllEventOccurrencesFrom(startDate, endDate, usersToInclude)
+            .forEach(p -> occurrences.addAll(p.getOccurrences()));
+      }
       if (occurrences.size() >= nbOccLimit) {
         break;
       }

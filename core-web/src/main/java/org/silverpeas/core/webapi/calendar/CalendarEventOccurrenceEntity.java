@@ -25,6 +25,8 @@
 package org.silverpeas.core.webapi.calendar;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
@@ -223,5 +225,25 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
     builder.append("originalStartDate", getOriginalStartDate());
     builder.append("firstEventOccurrence", isFirstEventOccurrence());
     return builder;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    final CalendarEventOccurrenceEntity that = (CalendarEventOccurrenceEntity) o;
+
+    return new EqualsBuilder().append(occurrenceId, that.occurrenceId).isEquals();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(17, 37).append(occurrenceId).toHashCode();
   }
 }

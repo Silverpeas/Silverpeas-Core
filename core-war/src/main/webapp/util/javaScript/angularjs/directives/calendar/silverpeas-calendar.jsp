@@ -32,9 +32,12 @@
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle"/>
 
+<view:setConstant var="NEXT_EVENTS_VIEW_TYPE" constant="org.silverpeas.core.web.calendar.CalendarViewType.NEXT_EVENTS"/>
+
 <fmt:message var="closeLabel" key="GML.close"/>
 
 <div style="display: none">
+  <span ng-init="$ctrl.viewTypes.nextEvents = '${NEXT_EVENTS_VIEW_TYPE}'"></span>
   <span ng-init="$ctrl.labels.close = '${silfn:escapeJs(closeLabel)}'"></span>
 </div>
 
@@ -59,5 +62,8 @@
                             calendars="$ctrl.calendars"
                             participation-calendars="$ctrl.participationCalendars">
   </silverpeas-calendar-list>
-  <div class="silverpeas-calendar-container"></div>
+  <div class="silverpeas-calendar-container" ng-show="$ctrl.api.isCalendarView()"></div>
+  <silverpeas-calendar-event-occurrence-list ng-if="$ctrl.nextOccurrences" occurrences="$ctrl.nextOccurrences"
+                                             on-event-occurrence-click="$ctrl.onEventOccurrenceView({occurrence:occurrence})">
+  </silverpeas-calendar-event-occurrence-list>
 </div>
