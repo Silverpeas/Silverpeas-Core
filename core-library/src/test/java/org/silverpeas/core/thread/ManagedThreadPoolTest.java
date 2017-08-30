@@ -218,7 +218,7 @@ public class ManagedThreadPoolTest {
     log("Verifying that caller of the invoke method get back the hand immediately...");
     TimeData duration = result.getLeft();
     List<Future<Long>> futures = result.getRight();
-    assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(100L));
+    assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(200L));
     assertThat(futures, hasSize(5));
     Thread.sleep(100);
     log("Verifying that no processes is ended...");
