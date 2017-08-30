@@ -78,8 +78,8 @@ public class LoggerConfigurationManagerTest {
   @Test
   public void allConfigurationFilesAreLoaded() {
     manager = LoggerConfigurationManager.get();
-    assertThat(manager.getLoggerConfigurations().size(), is(4));
-    assertThat(manager.getLoggerConfigurations().size(), is(4));
+    assertThat(manager.getLoggerConfigurations().size(), is(5));
+    assertThat(manager.getLoggerConfigurations().size(), is(5));
   }
 
   @Test
