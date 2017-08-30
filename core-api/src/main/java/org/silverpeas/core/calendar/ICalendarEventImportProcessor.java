@@ -42,6 +42,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static org.silverpeas.core.calendar.CalendarComponent.DESCRIPTION_MAX_LENGTH;
+import static org.silverpeas.core.calendar.CalendarComponent.TITLE_MAX_LENGTH;
 import static org.silverpeas.core.persistence.datasource.repository.OperationContext.State.IMPORT;
 
 /**
@@ -150,7 +152,7 @@ public class ICalendarEventImportProcessor {
       events.forEach(e -> {
         CalendarEvent event = e.getLeft();
         List<CalendarEventOccurrence> occurrences = e.getRight();
-        adjustSomeProperties(event);
+        adjustSomeProperties(event.asCalendarComponent());
         EventOperationResult result = importEvent(calendar, event, occurrences);
         result.created().ifPresent(ce -> importResult.incAdded());
         result.updated().ifPresent(ue -> importResult.incUpdated());
@@ -212,9 +214,18 @@ public class ICalendarEventImportProcessor {
     });
   }
 
-  private void adjustSomeProperties(final CalendarEvent event) {
-    if (StringUtil.isNotDefined(event.getTitle())) {
-      event.withTitle("N/A");
+  private void adjustSomeProperties(final CalendarComponent component) {
+    if (StringUtil.isNotDefined(component.getTitle())) {
+      component.setTitle("N/A");
+    } else if (component.getTitle().length() > TITLE_MAX_LENGTH) {
+      component.setTitle(StringUtil.truncate(component.getTitle().trim(), TITLE_MAX_LENGTH));
+    }
+    if (component.getDescription().length() > DESCRIPTION_MAX_LENGTH) {
+      component.setDescription(
+          StringUtil.truncate(component.getDescription().trim(), DESCRIPTION_MAX_LENGTH));
+    }
+    if (component.getLocation().length() > TITLE_MAX_LENGTH) {
+      component.setLocation(StringUtil.truncate(component.getLocation().trim(), TITLE_MAX_LENGTH));
     }
   }
 
@@ -247,6 +258,7 @@ public class ICalendarEventImportProcessor {
     occurrencesToImport.stream().sorted(CalendarEventOccurrence.COMPARATOR_BY_ORIGINAL_DATE_ASC)
         .forEach(o -> {
           o.setCalendarEvent(event);
+          adjustSomeProperties(o.asCalendarComponent());
           Optional<CalendarEventOccurrence> existingOccurrence =
               Optional.ofNullable(existingOccurrences.remove(o.getOriginalStartDate().toString()));
           if (existingOccurrence.isPresent()) {

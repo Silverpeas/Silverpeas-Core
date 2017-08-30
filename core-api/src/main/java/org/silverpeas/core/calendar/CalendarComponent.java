@@ -58,6 +58,9 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
 @Table(name = "sb_cal_components")
 public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, UuidIdentifier> {
 
+  static final int DESCRIPTION_MAX_LENGTH = 2000;
+  static final int TITLE_MAX_LENGTH = 255;
+
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
   @JoinColumn(name = "calendarId", referencedColumnName = "id", nullable = false)
   private Calendar calendar;
@@ -66,14 +69,16 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
   private Period period;
 
   @Column(name = "title", nullable = false)
-  @Size(min = 1)
+  @Size(min = 1, max = TITLE_MAX_LENGTH)
   @NotNull
   private String title;
 
   @Column(name = "description")
+  @Size(max = DESCRIPTION_MAX_LENGTH)
   private String description;
 
   @Column(name = "location")
+  @Size(max = TITLE_MAX_LENGTH)
   private String location;
 
   @Column(name = "priority", nullable = false)
