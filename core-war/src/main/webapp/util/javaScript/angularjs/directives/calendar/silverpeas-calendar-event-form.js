@@ -149,15 +149,15 @@
                 if (!title || title.isNotDefined()) {
                   SilverpeasError.add(
                       this.getMessages().mandatory.replace('@name@', this.labels.title));
-                } else if (title.nbChars() > 2000) {
+                } else if (title.nbChars() > 255) {
                   SilverpeasError.add(this.getMessages().nbMax.replace('@name@',
-                      this.labels.description).replace('@length@', '2000'));
+                      this.labels.description).replace('@length@', '255'));
                 }
                 // Description
                 var description = this.data.description;
-                if (description && description.isDefined() && description.nbChars() > 4000) {
+                if (description && description.isDefined() && description.nbChars() > 2000) {
                   SilverpeasError.add(this.getMessages().nbMax.replace('@name@',
-                      this.labels.description).replace('@length@', '4000'));
+                      this.labels.description).replace('@length@', '2000'));
                 }
                 // Location
                 var location = this.data.location;
