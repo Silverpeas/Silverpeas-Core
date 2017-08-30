@@ -24,6 +24,7 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
@@ -36,11 +37,6 @@ import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.SecurableRequestCache;
-import org.silverpeas.core.security.authorization.AccessControlContext;
-import org.silverpeas.core.security.authorization.AccessControlOperation;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.*;
@@ -1039,11 +1035,17 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   public boolean canBeModifiedBy(final User user) {
     return SecurableRequestCache.canBeModifiedBy(user, getId(), u -> {
       boolean isCalendarSynchronized = getCalendar().getExternalCalendarUrl() != null;
-      AccessController<String> accessController =
-          AccessControllerProvider.getAccessController(ComponentAccessControl.class);
-      return !isCalendarSynchronized && accessController
-          .isUserAuthorized(u.getId(), getCalendar().getComponentInstanceId(),
-              AccessControlContext.init().onOperationsOf(AccessControlOperation.modification));
+      if (!isCalendarSynchronized && canBeAccessedBy(u)) {
+        final SilverpeasRole highestUserSilverpeas =
+            SilverpeasComponentInstance.getById(getCalendar().getComponentInstanceId()).get()
+                .getHighestSilverpeasRolesFor(u);
+        if (highestUserSilverpeas == SilverpeasRole.writer) {
+          return u.getId().equals(getCreator().getId());
+        }
+        return highestUserSilverpeas != null &&
+            highestUserSilverpeas.isGreaterThanOrEquals(SilverpeasRole.publisher);
+      }
+      return false;
     });
   }
 

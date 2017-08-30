@@ -74,8 +74,7 @@ public class UserCalendarResource extends CalendarResource {
       final LocalDate startDate, final LocalDate endDate) {
     List<CalendarEventOccurrenceEntity> result =
         super.getEventOccurrencesOf(calendar, startDate, endDate);
-    if (calendar.getCreatedBy().equals(getUserDetail().getId()) &&
-        calendar.getTitle().equals(getUserDetail().getDisplayedName())) {
+    if (calendar.isMainPersonalOf(getUserDetail())) {
       // Add occurrence participation of user
       List<CalendarEventOccurrenceEntity> participationOccurrences =
           getAllEventOccurrencesFrom(startDate, endDate, Collections.singleton(getUserDetail()))

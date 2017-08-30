@@ -175,7 +175,7 @@ public class ICal4JImporter implements ICalendarImporter {
     if (isDefined(replacements)) {
       Mutable<String> icsContent = Mutable.of(IOUtils.toString(descriptor.getInputStream()));
       Arrays.stream(replacements.split(";")).map(r -> {
-        String[] replacement = r.split("[~][~][~]");
+        String[] replacement = r.split("[/]");
         return Pair.of(replacement[0], replacement[1]);
       }).forEach(r -> {
         String previous = icsContent.get();

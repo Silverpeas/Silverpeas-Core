@@ -49,11 +49,15 @@
 
 <c:set var="occurrenceStartDate" value="${requestScope.occurrenceStartDate}"/>
 <c:set var="occurrenceUri" value=""/>
-<c:if test="${requestScope.occurrence != null}">
-  <c:set var="occurrenceUri" value="${requestScope.occurrence.occurrenceUri}"/>
+<c:set var="occurrence" value="${requestScope.occurrence}"/>
+<c:set var="occurrenceEditable" value="${highestUserRole.isGreaterThanOrEquals(adminRole)}"/>
+<c:if test="${occurrence != null}">
+  <jsp:useBean id="occurrence" type="org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity"/>
+  <c:set var="occurrenceUri" value="${occurrence.occurrenceUri}"/>
+  <c:set var="occurrenceEditable" value="${occurrence.canBeModified()}"/>
 </c:if>
 
-<c:if test="${not highestUserRole.isGreaterThanOrEquals(adminRole)}">
+<c:if test="${!occurrenceEditable}">
   <c:redirect url="/Error403.jsp"/>
 </c:if>
 

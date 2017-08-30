@@ -159,7 +159,7 @@ public class CalendarEventOccurrence
    */
   public static Optional<CalendarEventOccurrence> getById(final String id) {
     CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-    Mutable<CalendarEventOccurrence> occurrence = Mutable.of(repository.getById(id));
+    Mutable<CalendarEventOccurrence> occurrence = Mutable.ofNullable(repository.getById(id));
     if (!occurrence.isPresent()) {
       Pair<String, Temporal> explodedId = explodeId(id);
       final String eventId = explodedId.getLeft();

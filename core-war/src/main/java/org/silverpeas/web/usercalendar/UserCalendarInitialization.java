@@ -27,7 +27,6 @@ package org.silverpeas.web.usercalendar;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * Handles the initialization of a calendar linked to a user.
@@ -40,41 +39,12 @@ class UserCalendarInitialization {
   }
 
   private void init(final String userCalendarInstanceId) {
-    PersonalComponentInstance.from(userCalendarInstanceId).ifPresent(personalComponentInstance -> {
-      final User user = personalComponentInstance.getUser();
+    PersonalComponentInstance.from(userCalendarInstanceId).ifPresent(i -> {
+      final User user = i.getUser();
 
-      /*
-      Creating the calendar
-       */
-
-      Calendar userCalendar = new Calendar(userCalendarInstanceId,
-          user.getDisplayedName(),
-          user.getUserPreferences().getZoneId());
+      Calendar userCalendar = Calendar.newMainCalendar(i);
+      userCalendar.setZoneId(user.getUserPreferences().getZoneId());
       userCalendar.save();
-
-      /*
-      Migrating all the data
-       */
-
-      migrate(user, userCalendar);
     });
-  }
-
-  /**
-   * Migrating the calendar data associated to a user from the old structure to the new one.<br/>
-   * This method of migration has been chosen because of the high complexity of making migration
-   * scripts whereas all functional services are already implemented on production instance.<br/>
-   * TODO userCalendar After some production releases, this method should be deleted.
-   */
-  private void migrate(final User user, final Calendar userCalendar) {
-    SilverLogger.getLogger(this)
-        .info("migrating the personal calendar of user ''{0}'' ({1})", user.getId(),
-            userCalendar.getId());
-
-    // TODO userCalendar writing here the migration
-
-    SilverLogger.getLogger(this)
-        .info("migration of the personal calendar of user ''{0}'' ({1}) is terminated",
-            user.getId(), userCalendar.getId());
   }
 }

@@ -28,93 +28,47 @@ var userCalendar = angular.module('silverpeas.usercalendar',
 
 /* the main controller of the application */
 userCalendar.controller('mainController',
-    ['$controller', 'context', 'CalendarService', '$scope', 'visibleFilter', 'defaultFilter',
-      function($controller, context, CalendarService, $scope, visibleFilter, defaultFilter) {
-    $controller('silverpeasCalendarController', {$scope : $scope});
+    ['$controller', 'CalendarService', '$scope', function($controller, CalendarService, $scope) {
+      $controller('silverpeasCalendarController', {$scope : $scope});
 
-    $scope.getCalendarService = function() {
-      return CalendarService;
-    };
-    $scope.newEvent = function(startMoment) {
-      var uri = context.componentUriBase + 'calendars/events/new';
-      $scope.goToPage(uri, {startMoment : startMoment});
-    };
-    $scope.viewEventOccurrence = function(occurrence) {
-      var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id;
-      $scope.goToPage(uri);
-    };
-    $scope.editEventOccurrence = function(occurrence) {
-      var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id + '/edit';
-      $scope.goToPage(uri);
-    };
-    $scope.getVisibleCalendars = function(calendars) {
-      var visibleCalendars = visibleFilter(calendars, true);
-      if (visibleCalendars && !visibleCalendars.length) {
-        visibleCalendars = defaultFilter(calendars, true);
-      }
-      return visibleCalendars;
-    };
-    $scope.defaultVisibility = SilverpeasCalendarConst.visibilities[1].name;
-  }]);
+      $scope.getCalendarService = function() {
+        return CalendarService;
+      };
+
+      $scope.defaultVisibility = SilverpeasCalendarConst.visibilities[1].name;
+    }]);
 
 /* the calendar controller of the application */
-userCalendar.controller('calendarController', ['$controller', 'context', 'CalendarService', '$scope',
-  function($controller, context, CalendarService, $scope) {
-    $controller('mainController', {$scope : $scope});
+userCalendar.controller('calendarController',
+    ['$controller', 'context', '$scope', function($controller, context, $scope) {
+      $controller('mainController', {$scope : $scope});
 
-    $scope.participationIds = $scope.participation.getParticipants() || [];
-    $scope.selectUsersForViewingTheirEvents = function() {
-      var uri = context.componentUriBase  + 'calendars/events/users/participation';
-      SP_openUserPanel({
-        url : uri,
-        params : {
-          "UserPanelCurrentUserIds" : $scope.participationIds,
-          "UserPanelCurrentGroupIds" : []
-        }
-      }, "userPanel");
-    };
-    $scope.$watchCollection('participationIds', function(participationIds) {
-      participationIds.removeElement(context.currentUserId);
-      $scope.participationIds = angular.copy(participationIds);
-      $scope.participation.setParticipants(participationIds);
-    });
-  }]);
+      $scope.participationIds = $scope.participation.getParticipants() || [];
+      $scope.selectUsersForViewingTheirEvents = function() {
+        var uri = context.componentUriBase + 'calendars/events/users/participation';
+        SP_openUserPanel({
+          url : uri, params : {
+            "UserPanelCurrentUserIds" : $scope.participationIds, "UserPanelCurrentGroupIds" : []
+          }
+        }, "userPanel");
+      };
+      $scope.$watchCollection('participationIds', function(participationIds) {
+        participationIds.removeElement(context.currentUserId);
+        $scope.participationIds = angular.copy(participationIds);
+        $scope.participation.setParticipants(participationIds);
+      });
+    }]);
 
 /* the edit controller of the application */
-userCalendar.controller('editController',
-    ['$controller', 'context', 'CalendarService', '$scope', '$timeout',
-      function($controller, context, CalendarService, $scope, $timeout) {
-        $controller('mainController', {$scope : $scope});
+userCalendar.controller('editController', ['$controller', '$scope', function($controller, $scope) {
+  $controller('mainController', {$scope : $scope});
 
-        $scope.loadCalendarsFromContext().then(function(calendars) {
-          $scope.calendars = $scope.getVisibleCalendars(calendars);
-          $scope.reloadEventOccurrence(context.occurrenceUri).then(function(reloadedOccurrence) {
-            if (!reloadedOccurrence.uri && context.occurrenceStartDate) {
-              reloadedOccurrence.startDate = context.occurrenceStartDate;
-              reloadedOccurrence.onAllDay = context.occurrenceStartDate.indexOf('T') < 0;
-            }
-            if (!reloadedOccurrence.calendar && $scope.calendars && $scope.calendars.length) {
-              reloadedOccurrence.calendar = $scope.calendars[0];
-            }
-            $timeout(function() {
-              $scope.ceo = reloadedOccurrence;
-            }, 0);
-          });
-        });
-      }]);
+  $scope.loadOccurrenceFromContext();
+}]);
 
 /* the view controller of the application */
-userCalendar.controller('viewController',
-    ['$controller', 'context', 'CalendarService', '$scope', '$timeout',
-      function($controller, context, CalendarService, $scope, $timeout) {
-        $controller('mainController', {$scope : $scope});
-        $scope.reloadView = function() {
-          $scope.reloadEventOccurrence(context.occurrenceUri).then(
-              function(reloadedOccurrence) {
-                $timeout(function() {
-                  $scope.ceo = reloadedOccurrence;
-                }, 0);
-              });
-        };
-        $scope.reloadView();
-      }]);
+userCalendar.controller('viewController', ['$controller', '$scope', function($controller, $scope) {
+  $controller('mainController', {$scope : $scope});
+
+  $scope.reloadOccurrenceFromContext();
+}]);

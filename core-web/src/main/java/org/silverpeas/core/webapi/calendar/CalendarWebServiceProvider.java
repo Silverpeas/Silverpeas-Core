@@ -32,6 +32,7 @@ import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.ComponentInstanceCalendars;
 import org.silverpeas.core.calendar.ICalendarEventImportProcessor;
 import org.silverpeas.core.calendar.ICalendarImportResult;
 import org.silverpeas.core.calendar.Plannable;
@@ -45,7 +46,6 @@ import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
@@ -206,17 +206,7 @@ public class CalendarWebServiceProvider {
    * @return the list of calendars.
    */
   List<Calendar> getCalendarsOf(final String componentInstanceId) {
-    // Retrieving the calendars
-    List<Calendar> entities = Calendar.getByComponentInstanceId(componentInstanceId);
-    // Sorting them by ascending creation date
-    entities.sort(new AbstractComplexComparator<Calendar>() {
-      @Override
-      protected ValueBuffer getValuesToCompare(final Calendar object) {
-        return new ValueBuffer().append(object.getCreateDate());
-      }
-    });
-    // Returning the result
-    return entities;
+    return ComponentInstanceCalendars.getByComponentInstanceId(componentInstanceId);
   }
 
   /**
@@ -233,7 +223,7 @@ public class CalendarWebServiceProvider {
     if (calendar.isPersisted()) {
       checkUserIsCreator(owner, calendar);
       Calendar oldCalendar = Calendar.getById(calendar.getId());
-      if (owner.getDisplayedName().equals(oldCalendar.getTitle())) {
+      if (oldCalendar.isMain()) {
         throw new WebApplicationException("", Response.Status.FORBIDDEN);
       }
     }
@@ -254,7 +244,7 @@ public class CalendarWebServiceProvider {
   void deleteCalendar(Calendar calendar) {
     User owner = User.getCurrentRequester();
     checkUserIsCreator(owner, calendar);
-    if (owner.getDisplayedName().equals(calendar.getTitle())) {
+    if (calendar.isMain()) {
       throw new WebApplicationException("", Response.Status.FORBIDDEN);
     }
     calendar.delete();

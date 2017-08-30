@@ -78,7 +78,7 @@
     <div class="field">
       <label class="txtlibform" for="sp_cal_event_form_main_title">{{$ctrl.labels.title}}</label>
       <div class="champs">
-        <input id="sp_cal_event_form_main_title" name="title" size="50" maxlength="2000"
+        <input id="sp_cal_event_form_main_title" name="title" size="50" maxlength="255"
                ng-model="$ctrl.data.title">&nbsp;<img border="0" src="${mandatoryIcons}" width="5" height="5">
       </div>
     </div>
@@ -91,7 +91,7 @@
     </div>
     <div class="field">
       <label class="txtlibform" for="sp_cal_event_form_main_tz">{{$ctrl.labels.timezone}}</label>
-      <div class="champs">
+      <div class="champs" id="sp_cal_event_form_main_tz">
         <span>{{$ctrl.zoneId}}</span>
       </div>
     </div>
@@ -147,7 +147,7 @@
     <div class="field">
       <label class="txtlibform" for="sp_cal_event_form_main_desc">{{$ctrl.labels.description}}</label>
       <div class="champs">
-        <textarea id="sp_cal_event_form_main_desc" name="description" rows="6" cols="50" maxlength="4000"
+        <textarea id="sp_cal_event_form_main_desc" name="description" rows="6" cols="50" maxlength="2000"
                   ng-model="$ctrl.data.description"></textarea>
       </div>
     </div>

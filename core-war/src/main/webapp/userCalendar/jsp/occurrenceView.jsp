@@ -36,9 +36,6 @@
 <view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle" var="calendarBundle"/>
 <c:url var="componentUriBase" value="${requestScope.componentUriBase}"/>
 
-<fmt:message var="modifyMenuLabel" key="GML.modify"/>
-
-<view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 <c:set var="highestUserRole"        value="${requestScope.highestUserRole}"/>
 
 <c:set var="currentUser"            value="${requestScope.currentUser}"/>
@@ -47,6 +44,8 @@
 <c:set var="timeWindowViewContext"  value="${requestScope.timeWindowViewContext}"/>
 <jsp:useBean id="timeWindowViewContext" type="org.silverpeas.web.usercalendar.UserCalendarTimeWindowViewContext"/>
 
+<c:set var="occurrence" value="${requestScope.occurrence}"/>
+<jsp:useBean id="occurrence" type="org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity"/>
 <c:set var="occurrenceUri" value="${requestScope.occurrence.occurrenceUri}"/>
 
 <fmt:message var="back" key="GML.back"/>
@@ -69,9 +68,9 @@
 <view:operationPane>
   <silverpeas-calendar-event-management api="eventMng"
                                         on-occurrence-deleted="goToPage('${backUri}')"
-                                        on-event-attendee-participation-updated="reloadView()">
+                                        on-event-attendee-participation-updated="reloadOccurrenceFromContext()">
   </silverpeas-calendar-event-management>
-  <c:if test="${highestUserRole.isGreaterThanOrEquals(adminRole)}">
+  <c:if test="${occurrence.canBeModified()}">
     <view:operation
         action="angularjs:editEventOccurrence(ceo)"
         altText="${modifyLabel}"/>

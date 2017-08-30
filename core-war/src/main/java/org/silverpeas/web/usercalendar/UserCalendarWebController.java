@@ -84,15 +84,15 @@ public class UserCalendarWebController extends
   @Override
   protected void beforeRequestProcessing(final UserCalendarWebRequestContext context) {
     super.beforeRequestProcessing(context);
-    CalendarEventOccurrence userOccurrence = context.getUserCalendarEventOccurrenceById();
+    CalendarEventOccurrence userOccurrence = context.getCalendarEventOccurrenceById();
     if (userOccurrence != null &&
         !userOccurrence.getCalendarEvent().canBeModifiedBy(context.getUser())) {
       context.getRequest().setAttribute("highestUserRole", SilverpeasRole.user);
     }
-    Calendar userMainCalendar = context.getMainUserCalendar();
+    Calendar userMainCalendar = context.getMainCalendar();
     context.getRequest().setAttribute("userMainCalendar",
         CalendarEntity.fromCalendar(userMainCalendar)
-            .withURI(buildCalendarURI(CALENDAR_BASE_URI, userMainCalendar)));
+            .withURI(buildCalendarURI(UserCalendarResource.USER_CALENDAR_BASE_URI, userMainCalendar)));
     timeWindowViewContext.setZoneId(userMainCalendar.getZoneId());
     context.getRequest().setAttribute("timeWindowViewContext", timeWindowViewContext);
   }
@@ -135,7 +135,7 @@ public class UserCalendarWebController extends
   @NavigationStep(identifier = EVENT_VIEW_NS_ID)
   @RedirectToInternalJsp("occurrenceView.jsp")
   public void viewOccurrence(UserCalendarWebRequestContext context) {
-    CalendarEventOccurrence userOccurrence = context.getUserCalendarEventOccurrenceById();
+    CalendarEventOccurrence userOccurrence = context.getCalendarEventOccurrenceById();
     if (userOccurrence != null) {
       CalendarEventOccurrenceEntity entity = CalendarEventOccurrenceEntity
           .fromOccurrence(userOccurrence, context.getComponentInstanceId(),

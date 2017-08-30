@@ -34,44 +34,102 @@
   });
 
   angular.module('silverpeas.controllers').controller('silverpeasCalendarController',
-      ['context', '$scope', 'CalendarService', function(context, $scope, CalendarService) {
-        $scope.getCalendarService = function() {
-          alert('Please implement this method into the child controller.')
-        };
-        $scope.participation = new ParticipationCache(context.componentUriBase + "_participation");
+      ['context', '$scope', 'CalendarService', '$timeout', 'visibleFilter', 'defaultFilter',
+        function(context, $scope, CalendarService, $timeout, visibleFilter, defaultFilter) {
+          $scope.getCalendarService = function() {
+            alert('Please implement this method into the child controller.')
+          };
+          $scope.participation =
+              new ParticipationCache(context.componentUriBase + "_participation");
 
-        $scope.loadCalendarsFromContext = function() {
-          return CalendarService.list().then(function(calendars) {
-            SilverpeasCalendarTools.decorateCalendars(calendars);
-            return calendars;
-          });
-        };
+          $scope.goToPage = function(uri, context) {
+            var formConfig = sp.formConfig(uri);
+            if (context && context.startMoment) {
+              formConfig.withParam("occurrenceStartDate", context.startMoment.format())
+            }
+            silverpeasFormSubmit(formConfig);
+          };
 
-        $scope.goToPage = function(uri, context) {
-          var formConfig = sp.formConfig(uri);
-          if (context && context.startMoment) {
-            formConfig.withParam("occurrenceStartDate", context.startMoment.format())
-          }
-          silverpeasFormSubmit(formConfig);
-        };
+          $scope.defaultVisibility = SilverpeasCalendarConst.visibilities[0].name;
+          $scope.defaultPriority = SilverpeasCalendarConst.priorities[0].name;
 
-        $scope.reloadEventOccurrence = function(occurrenceUri) {
-          if (occurrenceUri) {
-            return CalendarService.getEventOccurrenceByUri(occurrenceUri)
-                .then(function(reloadedOccurrence) {
-                  return CalendarService.getByUri(reloadedOccurrence.calendarUri).then(
-                      function(calendar) {
-                        reloadedOccurrence.calendar = calendar;
-                        return reloadedOccurrence;
-                      })
-                });
-          } else {
-            return sp.promise.resolveDirectlyWith(
-                SilverpeasCalendarTools.extractEventOccurrenceEntityData());
-          }
-        };
+          /*
+          NAVIGATION MANAGEMENT
+           */
 
-        $scope.defaultVisibility = SilverpeasCalendarConst.visibilities[0].name;
-        $scope.defaultPriority = SilverpeasCalendarConst.priorities[0].name;
-      }]);
+          $scope.newEvent = function(startMoment) {
+            var uri = context.componentUriBase + 'calendars/events/new';
+            $scope.goToPage(uri, {startMoment : startMoment});
+          };
+          $scope.viewEventOccurrence = function(occurrence) {
+            var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id;
+            $scope.goToPage(uri);
+          };
+          $scope.editEventOccurrence = function(occurrence) {
+            var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id + '/edit';
+            $scope.goToPage(uri);
+          };
+          $scope.getVisibleCalendars = function(calendars) {
+            var visibleCalendars = visibleFilter(calendars, true);
+            if (visibleCalendars && !visibleCalendars.length) {
+              visibleCalendars = defaultFilter(calendars, true);
+            }
+            return visibleCalendars;
+          };
+
+          /*
+          OCCURRENCE MANAGEMENT
+           */
+
+          $scope.loadCalendarsFromContext = function() {
+            return CalendarService.list().then(function(calendars) {
+              SilverpeasCalendarTools.decorateCalendars(calendars);
+              return calendars;
+            });
+          };
+
+          $scope.loadOccurrenceFromContext = function() {
+            $scope.loadCalendarsFromContext().then(function(calendars) {
+              $scope.calendars = $scope.getVisibleCalendars(calendars);
+              return $scope.reloadEventOccurrence(context.occurrenceUri).then(
+                  function(reloadedOccurrence) {
+                    if (!reloadedOccurrence.uri && context.occurrenceStartDate) {
+                      reloadedOccurrence.startDate = context.occurrenceStartDate;
+                      reloadedOccurrence.onAllDay = context.occurrenceStartDate.indexOf('T') < 0;
+                    }
+                    if (!reloadedOccurrence.calendar && $scope.calendars &&
+                        $scope.calendars.length) {
+                      reloadedOccurrence.calendar = $scope.calendars[0];
+                    }
+                    $timeout(function() {
+                      $scope.ceo = reloadedOccurrence;
+                    }, 0);
+                  });
+            });
+          };
+
+          $scope.reloadOccurrenceFromContext = function() {
+            $scope.reloadEventOccurrence(context.occurrenceUri).then(function(reloadedOccurrence) {
+              $timeout(function() {
+                $scope.ceo = reloadedOccurrence;
+              }, 0);
+            });
+          };
+
+          $scope.reloadEventOccurrence = function(occurrenceUri) {
+            if (occurrenceUri) {
+              return CalendarService.getEventOccurrenceByUri(occurrenceUri)
+                  .then(function(reloadedOccurrence) {
+                    return CalendarService.getByUri(reloadedOccurrence.calendarUri).then(
+                        function(calendar) {
+                          reloadedOccurrence.calendar = calendar;
+                          return reloadedOccurrence;
+                        })
+                  });
+            } else {
+              return sp.promise.resolveDirectlyWith(
+                  SilverpeasCalendarTools.extractEventOccurrenceEntityData());
+            }
+          };
+        }]);
 })();

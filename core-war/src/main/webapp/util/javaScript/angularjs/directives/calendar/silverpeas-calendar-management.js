@@ -24,8 +24,8 @@
 
 (function() {
   angular.module('silverpeas.directives').directive('silverpeasCalendarManagement',
-      ['$timeout', 'CalendarService', 'synchronizedFilter',
-        function($timeout, CalendarService, synchronizedFilter) {
+      ['$timeout', 'context', 'CalendarService', 'synchronizedFilter',
+        function($timeout, context, CalendarService, synchronizedFilter) {
         return {
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-management.jsp',
@@ -71,7 +71,7 @@
                 }.bind(this), 0);
               }.bind(this),
               "add" : function(isSynchronized) {
-                this.api.modify({isSynchronized : isSynchronized});
+                this.api.modify({zoneId : context.zoneId, isSynchronized : isSynchronized});
               }.bind(this),
               "modify" : function(calendarToModify) {
                 notyReset();
