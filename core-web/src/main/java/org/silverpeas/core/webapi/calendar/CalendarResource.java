@@ -342,7 +342,7 @@ public class CalendarResource extends AbstractCalendarResource {
     Set<User> usersToInclude = params.getUsers();
     // loading occurrences
     final int nbOccLimit =
-        (limit != null && limit > 0 && limit < 100) ? limit : DEFAULT_NB_MAX_NEXT_OCC;
+        (limit != null && limit > 0 && limit <= 100) ? limit : DEFAULT_NB_MAX_NEXT_OCC;
     final LocalDate startDate =
         getZoneId() != null ? LocalDateTime.now(getZoneId()).toLocalDate() : LocalDate.now();
     final Set<CalendarEventOccurrenceEntity> occurrences = new HashSet<>();

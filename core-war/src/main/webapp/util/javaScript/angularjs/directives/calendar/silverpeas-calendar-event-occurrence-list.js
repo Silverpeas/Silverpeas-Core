@@ -33,28 +33,53 @@
           scope : {
             occurrences : '=',
             onEventOccurrenceClick : '&?',
-            noOccurrenceLabel : '@'
+            noOccurrenceLabel : '@',
+            groupByMonth : '=',
+            occurrencesGroupedByDay : '=?',
+            occurrencesGroupedByMonth : '=?'
           },
           controllerAs : '$ctrl',
           bindToController : true,
           controller : ['$scope', function($scope) {
-            var __today;
-            var __tomorrow;
-            this.occurrencesGroupedByDay = [];
-            $scope.$watchCollection('$ctrl.occurrences', function() {
-              if (!this.occurrences || !this.occurrences.length) {
-                return this.occurrences;
+            function __groupByMonth(occurrences) {
+              if (!occurrences || !occurrences.length) {
+                return occurrences;
+              }
+              var previousMonthId;
+              var groupedByMonth = [];
+              var monthOccurrences;
+              occurrences.forEach(function(occurrence) {
+                // Rupture
+                var __occStartMoment = sp.moment.make(occurrence.startDate);
+                var monthId = __occStartMoment.format('MMMMYYYY');
+                if (!previousMonthId || previousMonthId !== monthId) {
+                  monthOccurrences = [];
+                  monthOccurrences.monthId = monthId;
+                  monthOccurrences.monthLabel = __occStartMoment.format('MMMM YYYY');
+                  monthOccurrences.selected = true;
+                  groupedByMonth.push(monthOccurrences);
+                }
+                previousMonthId = monthId;
+                // Adding the occurrence into the month group
+                monthOccurrences.push(occurrence);
+              });
+              return groupedByMonth;
+            }
+
+            function __groupByDay(occurrences) {
+              if (!occurrences || !occurrences.length) {
+                return occurrences;
               }
               var previous;
-              this.occurrencesGroupedByDay = [];
+              var groupedByDay = [];
               var dayOccurrences;
-              this.occurrences.forEach(function(occurrence) {
+              occurrences.forEach(function(occurrence) {
                 // Rupture
                 var dayDate = occurrence.startDate.split('T')[0];
                 if (!previous || previous !== dayDate) {
                   dayOccurrences = [];
                   dayOccurrences.dayDate = dayDate;
-                  this.occurrencesGroupedByDay.push(dayOccurrences);
+                  groupedByDay.push(dayOccurrences);
                 }
                 previous = dayDate;
                 // Adding the occurrence into the day group
@@ -62,17 +87,27 @@
                 if (occurrence.priority === 'HIGH') {
                   dayOccurrences.containsAtLeastOneImportant = true;
                 }
-              }.bind(this));
-              // Today and tomorrow
-              var $today = sp.moment.atZoneIdSameInstant(moment(), context.zoneId);
-              __today = sp.moment.displayAsDayDate($today);
-              __tomorrow = sp.moment.displayAsDayDate($today.add(1, 'days'));
-            }.bind(this));
-            this.getStartDayNumberInMonth = function(date) {
+              });
+              return groupedByDay;
+            }
+
+            var __today;
+            var __tomorrow;
+
+            this.getDayInWeek = function(date) {
+              return sp.moment.make(date).format('dddd');
+            };
+            this.getDayNumberInMonth = function(date) {
               return sp.moment.make(date).format('DD');
             };
             this.getMonthNumber = function(date) {
               return sp.moment.make(date).format('MM');
+            };
+            this.getMonthName = function(date) {
+              return sp.moment.make(date).format('MMMM');
+            };
+            this.getYear = function(date) {
+              return sp.moment.make(date).format('YYYY');
             };
             this.getDayDate = function(date) {
               var dayDateLabel = sp.moment.displayAsDayDate(date);
@@ -89,6 +124,23 @@
               }
               return context.component;
             };
+
+            this.$onInit = function() {
+              // Today and tomorrow
+              var $today = sp.moment.atZoneIdSameInstant(moment(), context.zoneId);
+              __today = sp.moment.displayAsDayDate($today);
+              __tomorrow = sp.moment.displayAsDayDate($today.add(1, 'days'));
+            }
+
+            $scope.$watchCollection('$ctrl.occurrences', function() {
+              if (this.groupByMonth) {
+                this.occurrencesGroupedByDay = undefined;
+                this.occurrencesGroupedByMonth = __groupByMonth(this.occurrences);
+              } else {
+                this.occurrencesGroupedByMonth = undefined;
+                this.occurrencesGroupedByDay = __groupByDay(this.occurrences);
+              }
+            }.bind(this));
           }]
         };
       }]);
@@ -101,6 +153,7 @@
           restrict : 'E',
           scope : {
             occurrence : '=',
+            groupByMonth : '=',
             onClick : '&?'
           },
           controllerAs : '$ctrl',

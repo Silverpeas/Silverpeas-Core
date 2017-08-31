@@ -828,7 +828,10 @@
           restrict : 'E',
           transclude : true,
           scope : {
-            view : '&', timeWindow : '&', timeWindowViewContext : '='
+            view : '&',
+            timeWindow : '&',
+            timeWindowViewContext : '=',
+            nextEventMonths : '='
           },
           controllerAs : '$ctrl',
           bindToController : true,
@@ -859,9 +862,7 @@
             };
             this.$postLink = function() {
               $timeout(function() {
-                this.$dayView = jQuery(angular.element(".day-view", $element));
-                this.$weekView = jQuery(angular.element(".week-view", $element));
-                this.$monthView = jQuery(angular.element(".month-view", $element));
+                this.$viewButtons = jQuery(angular.element(".view-button", $element));
                 this.$today = jQuery(angular.element("#today a", $element));
                 this.$previousButton = jQuery(angular.element(".previous", $element));
                 this.$nextButton = jQuery(angular.element(".next", $element));
@@ -887,7 +888,7 @@
                 function __viewNavigation(buttons) {
                   var selected;
                   for (var i = 0; i < buttons.length; i++) {
-                    var button = buttons[i];
+                    var button = angular.element(buttons[i]);
                     if (!selected) {
                       selected = button.hasClass('selected');
                     } else {
@@ -897,12 +898,13 @@
                   }
                 }
                 Mousetrap.bind('shift+left', function() {
-                  var buttons = [this.$monthView, this.$weekView, this.$dayView];
+                  var buttons = [];
+                  Array.prototype.push.apply(buttons, this.$viewButtons);
+                  buttons.reverse()
                   __viewNavigation(buttons);
                 }.bind(this));
                 Mousetrap.bind('shift+right', function() {
-                  var buttons = [this.$dayView, this.$weekView, this.$monthView];
-                  __viewNavigation(buttons);
+                  __viewNavigation(this.$viewButtons);
                 }.bind(this));
               }.bind(this), 0);
             }.bind(this);

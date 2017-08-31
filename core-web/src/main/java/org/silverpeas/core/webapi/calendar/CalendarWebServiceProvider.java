@@ -41,7 +41,6 @@ import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportException;
-import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -183,8 +182,9 @@ public class CalendarWebServiceProvider {
    * @return the calendar event.
    */
   public CalendarEvent createEvent(Calendar calendar, CalendarEvent event) {
-    User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, calendar);
+    if (!calendar.canBeAccessedBy(User.getCurrentRequester())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
     event.planOn(calendar);
     successMessage("calendar.message.event.created", event.getTitle());
     return event;
@@ -220,12 +220,8 @@ public class CalendarWebServiceProvider {
     User owner = User.getCurrentRequester();
     String successfulMessageKey = calendar.isPersisted() ? "calendar.message.calendar.updated" :
         "calendar.message.calendar.created";
-    if (calendar.isPersisted()) {
-      checkUserIsCreator(owner, calendar);
-      Calendar oldCalendar = Calendar.getById(calendar.getId());
-      if (oldCalendar.isMain()) {
-        throw new WebApplicationException("", Response.Status.FORBIDDEN);
-      }
+    if (calendar.isPersisted() && !calendar.canBeModifiedBy(User.getCurrentRequester())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
     calendar.save();
     String userLanguage = owner.getUserPreferences().getLanguage();
@@ -243,9 +239,8 @@ public class CalendarWebServiceProvider {
    */
   void deleteCalendar(Calendar calendar) {
     User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, calendar);
-    if (calendar.isMain()) {
-      throw new WebApplicationException("", Response.Status.FORBIDDEN);
+    if (!calendar.canBeDeletedBy(User.getCurrentRequester())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
     calendar.delete();
     String userLanguage = owner.getUserPreferences().getLanguage();
@@ -325,8 +320,9 @@ public class CalendarWebServiceProvider {
    */
   List<CalendarEvent> saveOccurrence(final CalendarEventOccurrence occurrence,
       OccurrenceEventActionMethodType updateMethodType, final ZoneId zoneId) {
-    User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, occurrence.getCalendarEvent().asCalendarComponent());
+    if (!occurrence.getCalendarEvent().canBeModifiedBy(User.getCurrentRequester())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
     OccurrenceEventActionMethodType methodType = updateMethodType == null ? ALL : updateMethodType;
 
     final String originalTitle = occurrence.getCalendarEvent().getTitle();
@@ -390,8 +386,9 @@ public class CalendarWebServiceProvider {
    */
   CalendarEvent deleteOccurrence(CalendarEventOccurrence occurrence,
       OccurrenceEventActionMethodType deleteMethodType, final ZoneId zoneId) {
-    User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, occurrence.getCalendarEvent().asCalendarComponent());
+    if (!occurrence.getCalendarEvent().canBeDeletedBy(User.getCurrentRequester())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
     OccurrenceEventActionMethodType methodType = deleteMethodType == null ? ALL : deleteMethodType;
 
     final EventOperationResult result;
@@ -580,18 +577,6 @@ public class CalendarWebServiceProvider {
   }
 
   /**
-   * Centralization of checking if the specified user is the creator of the specified entity.
-   * @param user the user to verify.
-   * @param entity the calendar to check.
-   */
-  private void checkUserIsCreator(User user, Entity entity) {
-    assertEntityIsDefined(entity);
-    if (!user.equals(entity.getCreator())) {
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
-    }
-  }
-
-  /**
    * Push a success message to the current user.
    * @param messageKey the key of the message.
    * @param params the message parameters.
@@ -606,5 +591,4 @@ public class CalendarWebServiceProvider {
   private WebMessager getMessager() {
     return WebMessager.getInstance();
   }
-
 }

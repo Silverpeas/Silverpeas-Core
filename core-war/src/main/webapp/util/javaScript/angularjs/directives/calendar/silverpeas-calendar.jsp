@@ -50,7 +50,8 @@
   </silverpeas-calendar-event-management>
   <silverpeas-calendar-header time-window-view-context="$ctrl.timeWindowViewContext"
                               view="$ctrl.api.changeView(type)"
-                              time-window="$ctrl.api.changeTimeWindow(type, day)">
+                              time-window="$ctrl.api.changeTimeWindow(type, day)"
+                              next-event-months="$ctrl.nextEventMonths">
   </silverpeas-calendar-header>
   <silverpeas-calendar-list on-calendar-color-select="$ctrl.api.setCalendarColor(calendar,color)"
                             on-calendar-visibility-toggle="$ctrl.api.toggleCalendarVisibility(calendar)"
@@ -64,6 +65,8 @@
   </silverpeas-calendar-list>
   <div class="silverpeas-calendar-container" ng-show="$ctrl.api.isCalendarView()"></div>
   <silverpeas-calendar-event-occurrence-list ng-if="$ctrl.nextOccurrences" occurrences="$ctrl.nextOccurrences"
+                                             group-by-month="true"
+                                             occurrences-grouped-by-month="$ctrl.nextEventMonths"
                                              on-event-occurrence-click="$ctrl.onEventOccurrenceView({occurrence:occurrence})">
   </silverpeas-calendar-event-occurrence-list>
 </div>

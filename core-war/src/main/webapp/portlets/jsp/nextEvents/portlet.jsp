@@ -51,7 +51,8 @@
 <view:script src="/portlets/jsp/nextEvents/javaScript/angularjs/nextevents.js"/>
 
 <div class="portlet" id="ng-app" ng-app="silverpeas.nextevents" ng-controller="mainController">
-  <silverpeas-calendar-event-occurrence-list ng-if="occurrences"
+  <silverpeas-calendar-event-occurrence-list
+      ng-if="occurrences"
       no-occurrence-label="${noEventLabel}"
       occurrences="occurrences"
       on-event-occurrence-click="viewEventOccurrence(occurrence)">

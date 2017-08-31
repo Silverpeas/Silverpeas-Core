@@ -39,6 +39,7 @@
 <view:setConstant var="YEARLY_VIEW_TYPE" constant="org.silverpeas.core.web.calendar.CalendarViewType.YEARLY"/>
 
 <fmt:message key="calendar.label.event.nextEvents" var="nextEventLabel"/>
+<fmt:message key="GML.allMP" var="allLabel"/>
 <fmt:message key="GML.day" var="dayLabel"/>
 <fmt:message key="GML.week" var="weekLabel"/>
 <fmt:message key="GML.month" var="monthLabel"/>
@@ -63,7 +64,7 @@
     <div id="navigation">
       <div id="currentScope">
         <a ng-repeat="viewType in $ctrl.timeWindowViewContext.availableViewTypes"
-           class="{{viewType.toLowerCase()}}-view" href="javascript:void(0)"
+           class="view-button" href="javascript:void(0)"
            ng-click="$ctrl.view({type:viewType})"
            ng-class="{'selected': $ctrl.isSelectedViewType(viewType)}">{{$ctrl.getViewTypeLabel(viewType)}}</a>
         <span ng-hide="$ctrl.isSelectedViewType($ctrl.viewTypes.nextEvents)">
@@ -80,6 +81,13 @@
             <span>{{$ctrl.timeWindowViewContext.referencePeriodLabel}}</span>
           </div>
           <a class="btn_navigation next" href="#" ng-click="$ctrl.timeWindow({type:'next'})" onfocus="this.blur()"><img border="0" alt="" src="<c:url value="/util/icons/arrow/arrowRight.gif"/>"></a>
+        </span>
+        <span ng-if="$ctrl.isSelectedViewType($ctrl.viewTypes.nextEvents) && $ctrl.nextEventMonths.length">
+          <span>-&#160;</span>
+          <a ng-repeat="nextEventMonth in $ctrl.nextEventMonths"
+             class="next-event-month-filter" href="javascript:void(0)"
+             ng-click="nextEventMonth.selected = !nextEventMonth.selected"
+             ng-class="{'selected': nextEventMonth.selected}">{{nextEventMonth.monthLabel}}</a>
         </span>
       </div>
     </div>
