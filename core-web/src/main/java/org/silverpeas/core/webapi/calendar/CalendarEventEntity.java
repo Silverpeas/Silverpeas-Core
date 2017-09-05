@@ -78,6 +78,7 @@ public class CalendarEventEntity implements WebEntity {
   private Priority priority;
   private CalendarEventRecurrenceEntity recurrence;
   private List<CalendarEventAttendeeEntity> attendees = new ArrayList<>();
+  private List<CalendarEventAttributeEntity> attributes = new ArrayList<>();
   private String ownerName;
   private Date createDate;
   private Date lastUpdateDate;
@@ -116,13 +117,23 @@ public class CalendarEventEntity implements WebEntity {
   }
 
   /**
-   * Sets attendees to linked calendar entity.
-   * @param attendees the linked calendar event attendees web entity URI.
+   * Sets attendees to linked calendar event entity.
+   * @param attendees the linked calendar event attendees web entity.
    * @return itself.
    */
   public CalendarEventEntity withAttendees(
       final List<CalendarEventAttendeeEntity> attendees) {
     this.attendees = attendees;
+    return this;
+  }
+
+  /**
+   * Sets attributes to linked calendar event entity.
+   * @param attributes the linked calendar event attributes web entity.
+   * @return itself.
+   */
+  public CalendarEventEntity withAttributes(final List<CalendarEventAttributeEntity> attributes) {
+    this.attributes = attributes;
     return this;
   }
 
@@ -261,6 +272,14 @@ public class CalendarEventEntity implements WebEntity {
 
   public void setAttendees(final List<CalendarEventAttendeeEntity> attendees) {
     withAttendees(attendees);
+  }
+
+  public List<CalendarEventAttributeEntity> getAttributes() {
+    return attributes;
+  }
+
+  public void setAttributes(final List<CalendarEventAttributeEntity> attributes) {
+    withAttributes(attributes);
   }
 
   @XmlElement

@@ -142,7 +142,16 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     try (Stream<CalendarEvent> events = Calendar.getEvents()
         .filter(f -> f.onParticipants(User.getById(USER_ID))).stream()) {
       List<CalendarEvent> allEvents = events.collect(Collectors.toList());
-      assertThat(allEvents, hasSize(3));
+      assertThat(allEvents, hasSize(2));
+    }
+  }
+
+  @Test
+  public void getAllEventsLinkedToUser0() {
+    try (Stream<CalendarEvent> events = Calendar.getEvents()
+        .filter(f -> f.onParticipants(User.getById("0"))).stream()) {
+      List<CalendarEvent> allEvents = events.collect(Collectors.toList());
+      assertThat(allEvents, hasSize(0));
     }
   }
 
@@ -151,7 +160,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
     try (Stream<CalendarEvent> events = Calendar.getEvents()
         .filter(f -> f.onParticipants(User.getById("0"), User.getById(USER_ID))).stream()) {
       List<CalendarEvent> allEvents = events.collect(Collectors.toList());
-      assertThat(allEvents, hasSize(6));
+      assertThat(allEvents, hasSize(2));
     }
   }
 

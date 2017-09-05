@@ -100,26 +100,6 @@ public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalenda
    * Whatever the calendars, get the occurrences of events in which participate some given users
    * and in a given period of time.
    * <p>
-   * Input: the author of the events that occur in the given a period of time.
-   * Output: the expected occurrences.
-   */
-  @Test
-  public void getOccurrencesForAGivenAuthor() {
-    List<CalendarEventOccurrence> occurrences =
-        Calendar.getTimeWindowBetween(LocalDate.of(2016, 1, 1), LocalDate.of(2016, 1, 9))
-            .filter(f -> f.onParticipants(User.getById("0")))
-            .getEventOccurrences();
-
-    assertThat(occurrences.size(), is(3));
-    assertThat(occurrences.get(0).getCalendarEvent().getId(), is("ID_E_2"));
-    assertThat(occurrences.get(1).getCalendarEvent().getId(), is("ID_E_1"));
-    assertThat(occurrences.get(2).getCalendarEvent().getId(), is("ID_E_3"));
-  }
-
-  /**
-   * Whatever the calendars, get the occurrences of events in which participate some given users
-   * and in a given period of time.
-   * <p>
    * Input: an attendee in some events that occur in the given a period of time.
    * Output: the expected occurrences.
    */
@@ -130,33 +110,8 @@ public class CalendarEventOccurrenceFilteringIntegrationTest extends BaseCalenda
             .filter(f -> f.onParticipants(User.getById("1")))
             .getEventOccurrences();
 
-    assertThat(occurrences.size(), is(2));
-    assertThat(occurrences.get(0).getCalendarEvent().getId(), is("ID_E_4"));
-  }
-
-  /**
-   * Whatever the calendars, get the occurrences of events in which participate some given users
-   * and in a given period of time.
-   * <p>
-   * Input: an author in some both non-recurring and recurring events that occur in a given a
-   * period of time.
-   * Output: the expected occurrences.
-   */
-  @Test
-  public void getOccurrencesFromRecurrentEventsWithGivenParticipants() {
-    List<CalendarEventOccurrence> occurrences =
-        Calendar.getTimeWindowBetween(LocalDate.of(2016, 1, 9), LocalDate.of(2016, 1, 24))
-            .filter(f -> f.onParticipants(User.getById("0")))
-            .getEventOccurrences();
-
-    assertThat(occurrences.size(), is(5));
-    assertThat(occurrences.get(0).getCalendarEvent().getId(), is("ID_E_2"));
-    assertThat(occurrences.get(1).getCalendarEvent().getId(), is("ID_E_1"));
-    assertThat(occurrences.get(2).getCalendarEvent().getId(), is("ID_E_3"));
-    assertThat(occurrences.get(3).getCalendarEvent().getId(), is("ID_E_5"));
-    assertThat(occurrences.get(4).getCalendarEvent().getId(), is("ID_E_5"));
-    assertThat(occurrences.get(3).getStartDate(), is(LocalDate.of(2016, 1, 9)));
-    assertThat(occurrences.get(4).getStartDate(), is(LocalDate.of(2016, 1, 23)));
+    assertThat(occurrences.size(), is(1));
+    assertThat(occurrences.get(0).getCalendarEvent().getId(), is("ID_E_1"));
   }
 
   /**

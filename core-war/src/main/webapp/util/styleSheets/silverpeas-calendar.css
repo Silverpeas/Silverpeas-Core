@@ -90,6 +90,32 @@
   background-color: #BFBFBF;
 }
 
+.silverpeas-calendar-header a.calendar-view-mode,
+.silverpeas-calendar-header a.list-view-mode {
+  display:inline-block;
+  width:19px;
+  height:17px;
+  vertical-align:middle;
+}
+
+.silverpeas-calendar-header a.calendar-view-mode {
+  background: #FFF url(../icons/calendar-mode.png) no-repeat center center;
+}
+
+.silverpeas-calendar-header a.list-view-mode {
+  background: #FFF url(../icons/list-mode.png) no-repeat center center;
+}
+
+.silverpeas-calendar-header a.calendar-view-mode.selected,
+.silverpeas-calendar-header a.calendar-view-mode:hover {
+  background: #BFBFBF url(../icons/calendar-mode-active.png) no-repeat center center;
+}
+
+.silverpeas-calendar-header a.list-view-mode.selected,
+.silverpeas-calendar-header a.list-view-mode:hover {
+  background: #BFBFBF url(../icons/list-mode-active.png) no-repeat center center;
+}
+
 .fc-widget-header {
   font-size:11px;
   color:#666;
@@ -646,7 +672,7 @@ SCREEN or PRINT specifics
 
   .cellOperation,
   .sp_goToTop,
-  #currentScope > *,
+  silverpeas-calendar-header .top-part > *,
   #menubar-creation-actions,
   .silverpeas-calendar-list-item .check-visibility,
   .silverpeas-calendar-list-item .show-menu,
@@ -654,10 +680,20 @@ SCREEN or PRINT specifics
     display: none !important;
   }
 
-  #currentScope .period-label {
+  .silverpeas-calendar-header .time-cursor {
+    display: block !important;
+  }
+
+  .silverpeas-calendar-header .time-cursor > * {
+    display: none !important;
+  }
+
+  silverpeas-calendar-header .top-part .period-label {
     background: none !important;
     font-size: 8pt !important;
     display: block !important;
+    text-align: center;
+    width: 90%;
   }
 
   .silverpeas-calendar-list-item .item-title a {
@@ -667,7 +703,7 @@ SCREEN or PRINT specifics
   .silverpeas-calendar-header .sousNavBulle{
     margin: 0;
     padding: 0 0 0.3em 0;
-    min-height: inherit;
+    min-height: 14px;
     border-bottom: 1px solid #ccc;
     background: none;
   }
@@ -703,6 +739,14 @@ SCREEN or PRINT specifics
 
   .fc-day-grid-event .fc-time {
     font-weight: normal;
+  }
+
+  .fc-event-dot {
+    border: 2px solid;
+    border-radius: 10px;
+    height: 5px;
+    width: 5px;
+    background-color: #fff !important;
   }
 
   .fc-scroller {

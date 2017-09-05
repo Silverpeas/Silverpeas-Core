@@ -99,6 +99,7 @@ public class JavascriptPluginInclusion {
   private static final String JQUERY_CALENDAR = "fullcalendar.min.js";
   private static final String SILVERPEAS_CALENDAR = "silverpeas-calendar.js";
   private static final String STYLESHEET_JQUERY_CALENDAR = "fullcalendar.min.css";
+  private static final String PRINT_STYLESHEET_JQUERY_CALENDAR = "fullcalendar.print.min.css";
   private static final String STYLESHEET_SILVERPEAS_CALENDAR = "silverpeas-calendar.css";
   private static final String SILVERPEAS_DATEPICKER = "silverpeas-defaultDatePicker.js";
   private static final String SILVERPEAS_DATE_UTILS = "dateUtils.js";
@@ -285,9 +286,22 @@ public class JavascriptPluginInclusion {
   }
 
   /**
+   * Centralization of print instantiation.
+   * @param href the URL of the print css source.
+   * @return the representation of the print css.
+   */
+  public static Element print(String href) {
+    final Element link = link(href);
+    if (link instanceof link) {
+      ((link) link).setMedia("print");
+    }
+    return link;
+  }
+
+  /**
    * Centralization of link instantiation.
-   * @param href
-   * @return
+   * @param href the URL of the css source.
+   * @return the representation of the css.
    */
   public static Element link(String href) {
     String key = "$jsPlugin$css$" + href;
@@ -600,6 +614,7 @@ public class JavascriptPluginInclusion {
     bundleProducer.add("c.m", bundle.getString("GML.month"));
     bundleProducer.add("c.w", bundle.getString("GML.week"));
     bundleProducer.add("c.d", bundle.getString("GML.day"));
+    bundleProducer.add("c.e.n", bundle.getString("calendar.label.event.none"));
     bundleProducer.add("c.e.v.public", bundle.getString("calendar.label.event.visibility.public"));
     bundleProducer.add("c.e.v.private", bundle.getString("calendar.label.event.visibility.private"));
     bundleProducer.add("c.e.p.normal", bundle.getString("calendar.label.event.priority.normal"));
@@ -621,6 +636,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(scriptContent(bundleProducer.produce()));
 
     xhtml.addElement(link(JQUERY_CSS_PATH + STYLESHEET_JQUERY_CALENDAR));
+    xhtml.addElement(print(JQUERY_CSS_PATH + PRINT_STYLESHEET_JQUERY_CALENDAR));
     xhtml.addElement(link(STYLESHEET_PATH + STYLESHEET_SILVERPEAS_CALENDAR));
     xhtml.addElement(script(JQUERY_PATH + JQUERY_CALENDAR));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_CALENDAR));

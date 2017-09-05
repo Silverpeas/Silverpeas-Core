@@ -205,7 +205,7 @@ public class CalendarWebServiceProvider {
    * @param componentInstanceId the identifier of the component instance.
    * @return the list of calendars.
    */
-  List<Calendar> getCalendarsOf(final String componentInstanceId) {
+  public List<Calendar> getCalendarsOf(final String componentInstanceId) {
     return ComponentInstanceCalendars.getByComponentInstanceId(componentInstanceId);
   }
 

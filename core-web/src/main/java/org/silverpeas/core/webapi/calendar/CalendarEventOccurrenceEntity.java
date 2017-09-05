@@ -123,6 +123,18 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
     return this;
   }
 
+  /**
+   * Sets attributes to the occurrence entity.
+   * @param attributes the attributes entity to set.
+   * @return itself.
+   */
+  @Override
+  public CalendarEventOccurrenceEntity withAttributes(
+      final List<CalendarEventAttributeEntity> attributes) {
+    super.withAttributes(attributes);
+    return this;
+  }
+
   @Override
   @XmlElement(defaultValue = "")
   public URI getURI() {

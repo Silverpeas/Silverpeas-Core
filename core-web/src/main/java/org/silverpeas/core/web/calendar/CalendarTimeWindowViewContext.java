@@ -56,14 +56,15 @@ import static org.silverpeas.core.web.calendar.CalendarViewType.*;
 @XmlAccessorType(XmlAccessType.PROPERTY)
 public class CalendarTimeWindowViewContext implements Serializable {
 
-  private final static EnumSet<PeriodType> DISPLAY_WEEK_PERIODS =
+  private static final EnumSet<PeriodType> DISPLAY_WEEK_PERIODS =
       of(PeriodType.week, PeriodType.day);
 
   private String locale = null;
   private ZoneId zoneId = null;
   private final String componentInstanceId;
-  private List<CalendarViewType> availableViewTypes = asList(NEXT_EVENTS, DAILY, WEEKLY, MONTHLY);
+  private List<CalendarViewType> availableViewTypes = asList(NEXT_EVENTS, DAILY, WEEKLY, MONTHLY, YEARLY);
   private CalendarViewType viewType = MONTHLY;
+  private boolean listViewMode = false;
   private CalendarDay referenceDay;
   private CalendarPeriod referencePeriod;
   private boolean withWeekend = true;
@@ -122,6 +123,14 @@ public class CalendarTimeWindowViewContext implements Serializable {
     setReferenceDay(referenceDay.getDate());
   }
 
+  public boolean isListViewMode() {
+    return listViewMode;
+  }
+
+  public void setListViewMode(final boolean listViewMode) {
+    this.listViewMode = listViewMode;
+  }
+
   public CalendarPeriod getReferencePeriod() {
     return referencePeriod;
   }
@@ -151,16 +160,16 @@ public class CalendarTimeWindowViewContext implements Serializable {
       switch (cal.get(Calendar.DAY_OF_WEEK)) {
         case Calendar.SATURDAY:
           if (Calendar.SATURDAY == DateUtil.getFirstDayOfWeek(locale)) {
-            referenceDate = DateUtils.addDays(date, (offset >= 0 ? 2 : -1));
+            referenceDate = DateUtils.addDays(date, offset >= 0 ? 2 : -1);
           } else {
-            referenceDate = DateUtils.addDays(date, (offset > 0 ? 2 : -1));
+            referenceDate = DateUtils.addDays(date, offset > 0 ? 2 : -1);
           }
           break;
         case Calendar.SUNDAY:
           if (Calendar.SUNDAY == DateUtil.getFirstDayOfWeek(locale)) {
-            referenceDate = DateUtils.addDays(date, (offset >= 0 ? 1 : -2));
+            referenceDate = DateUtils.addDays(date, offset >= 0 ? 1 : -2);
           } else {
-            referenceDate = DateUtils.addDays(date, (offset > 0 ? 1 : -2));
+            referenceDate = DateUtils.addDays(date, offset > 0 ? 1 : -2);
           }
           break;
         default:

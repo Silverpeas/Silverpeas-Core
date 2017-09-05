@@ -120,7 +120,7 @@
     componentUriBase : '${componentUriBase}',
     userRole: '${highestUserRole}',
     zoneId : '${timeWindowViewContext.zoneId.toString()}',
-    limit : 25
+    limit : 50
   });
 </script>
 </body>

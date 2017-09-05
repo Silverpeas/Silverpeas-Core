@@ -1195,6 +1195,20 @@ if (typeof window.sp === 'undefined') {
         });
       }
     },
+    element : {
+      isInView: function (element, fullyInView, view) {
+        var viewTop = !view ? jQuery(window).scrollTop() : jQuery(view).offset().top;
+        var viewBottom = viewTop + jQuery(view).height();
+        var elementTop = jQuery(element).offset().top;
+        var elementBottom = elementTop + jQuery(element).height();
+
+        if (fullyInView === true) {
+          return ((viewTop < elementTop) && (viewBottom > elementBottom));
+        } else {
+          return ((elementTop <= viewBottom) && (elementBottom >= viewTop));
+        }
+      }
+    },
     selection : {
       newCheckboxMonitor : function(cssSelector) {
         return new function() {

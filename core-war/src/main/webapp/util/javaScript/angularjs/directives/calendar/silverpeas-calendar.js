@@ -190,6 +190,11 @@
              */
             var _eventOccurrenceRender = function(occurrence, $element, view) {
               occurrence.$element = $element;
+              var $eventDotElement = angular.element('.fc-event-dot', $element);
+              if ($eventDotElement.length) {
+                var __eventDotElement = $eventDotElement[0];
+                __eventDotElement.style.borderColor = __eventDotElement.style.backgroundColor;
+              }
             };
             var _eventOccurrenceClick = function(occurrence) {
               if (!occurrence.canBeAccessed) {
@@ -272,15 +277,52 @@
                       at : (contentLimit < bodyLimit ? "top left" : "top right")
                     }
                   };
+                  var $markerOfListView = angular.element('.fc-event-dot', $occContainer);
+                  if ($markerOfListView.length) {
+                    qTipOptions.position.target = $markerOfListView;
+                    qTipOptions.position.adjust = {x : 4};
+                    qTipOptions.events = {
+                      hidden : function(event, api) {
+                        if ($markerOfListView.$tip$ && $markerOfListView.$tip$shown) {
+                          $scrollContainer.unbind("scroll", $markerOfListView.$tip$listener);
+                          $markerOfListView.$tip$.destroy();
+                          $markerOfListView.$tip$ = undefined;
+                          $markerOfListView.$tip$listener = undefined;
+                          $markerOfListView.$tip$shown = undefined;
+                        }
+                      }
+                    };
+                  }
                   if (!occurrence.onAllDay) {
                     qTipOptions.position = extendsObject(qTipOptions.position, {
                       viewport : $occurrenceContainer,
                       container : $occurrenceContainer
                     });
                   }
-                  TipManager.simpleDetails($occContainer, function() {
+                  var $tipApi = TipManager.simpleDetails($occContainer, function() {
                     return $content
                   }, qTipOptions);
+                  if ($markerOfListView.length) {
+                    $markerOfListView.$tip$shown = true;
+                    var $scrollContainer = angular.element('.fc-scroller', $element);
+                    var __listener = function() {
+                      if (sp.element.isInView($markerOfListView, true, $scrollContainer)) {
+                        if (!$markerOfListView.$tip$shown) {
+                          $tipApi.show();
+                          $markerOfListView.$tip$shown = true;
+                        }
+                        $tipApi.reposition();
+                      } else {
+                        if ($markerOfListView.$tip$shown) {
+                          $tipApi.hide();
+                          $markerOfListView.$tip$shown = false;
+                        }
+                      }
+                    };
+                    $markerOfListView.$tip$ = $tipApi;
+                    $markerOfListView.$tip$listener = __listener;
+                    $scrollContainer.bind("scroll", __listener);
+                  }
                   resolve();
                 }.bind(this));
               }.bind(this));
@@ -383,8 +425,9 @@
              */
             var __getAjaxCurrentTimeWindowPeriod = function() {
               var ref = __getCurrentDateMomentFromTimeWindowViewContext(this.timeWindowViewContext);
-              var $dateMin = sp.moment.make(ref).startOf('month').add(-1, 'weeks');
-              var $dateMax = sp.moment.make(ref).endOf('month').add(2, 'weeks');
+              var timeUnit = this.timeWindowViewContext.viewType === 'YEARLY' ? 'year' : 'month';
+              var $dateMin = sp.moment.make(ref).startOf(timeUnit).add(-1, 'weeks');
+              var $dateMax = sp.moment.make(ref).endOf(timeUnit).add(2, 'weeks');
               return {startDateTime : $dateMin, endDateTime : $dateMax};
             }.bind(this);
 
@@ -414,8 +457,8 @@
               /**
                * Changes the current view by the one specified.
                */
-              changeView : function(type) {
-                return saveContext({"view" : type});
+              changeView : function(type, listViewMode) {
+                return saveContext({"view" : type, "listViewMode" : listViewMode});
               }.bind(this),
               /**
                * Changes the current time window by the one specified.
@@ -436,6 +479,13 @@
                */
               isNextEventView : function() {
                 return !this.api.isCalendarView();
+              }.bind(this),
+              /**
+               * Indicates if the view is one with a calendar.
+               */
+              isListDisplayMode : function() {
+                return typeof this.api.isCalendarView &&
+                    (this.timeWindowViewContext.viewType === 'YEARLY' || this.timeWindowViewContext.listViewMode);
               }.bind(this),
 
               //
@@ -720,6 +770,7 @@
               var calendarOptions = {
                 allDaySlot : true,
                 view : twvc.viewType,
+                listMode : twvc.listViewMode,
                 weekends : twvc.withWeekend,
                 timezone : twvc.zoneId,
                 firstDayOfWeek : twvc.firstDayOfWeek,
@@ -773,8 +824,9 @@
                 } else {
                   _destroyEventDetails();
                   this.spCalendar.gotoDate(__getCurrentDateMomentFromTimeWindowViewContext(twvc));
-                  this.spCalendar.changeView(twvc.viewType);
-                  if (oldTwvc && oldTwvc.viewType === twvc.viewType) {
+                  this.spCalendar.changeView(twvc.viewType, twvc.listViewMode);
+                  if (oldTwvc &&
+                      (oldTwvc.viewType === twvc.viewType || twvc.viewType === 'YEARLY' || oldTwvc.viewType === 'YEARLY')) {
                     this.api.refetchCalendars();
                     this.api.refetchParticipationCalendars();
                   }
@@ -846,6 +898,11 @@
             this.isSelectedViewType = function(viewType) {
               return viewType === this.timeWindowViewContext.viewType;
             };
+            this.hasToDisplayViewMode = function() {
+              return this.viewTypes.day === this.timeWindowViewContext.viewType ||
+                  this.viewTypes.week === this.timeWindowViewContext.viewType ||
+                  this.viewTypes.month === this.timeWindowViewContext.viewType;
+            };
             this.getViewTypeLabel = function(viewType) {
               switch (viewType) {
                 case this.viewTypes.nextEvents :
@@ -863,7 +920,7 @@
             this.$postLink = function() {
               $timeout(function() {
                 this.$viewButtons = jQuery(angular.element(".view-button", $element));
-                this.$today = jQuery(angular.element("#today a", $element));
+                this.$todayButton = jQuery(angular.element(".today-button", $element));
                 this.$previousButton = jQuery(angular.element(".previous", $element));
                 this.$nextButton = jQuery(angular.element(".next", $element));
                 this.$referenceDayInput = jQuery(angular.element(".reference-day", $element));
@@ -883,7 +940,7 @@
                   }
                 }.bind(this));
                 Mousetrap.bind(['escape escape', 'shift+up', 'shift+down'], function() {
-                  this.$today.click();
+                  this.$todayButton.click();
                 }.bind(this));
                 function __viewNavigation(buttons) {
                   var selected;

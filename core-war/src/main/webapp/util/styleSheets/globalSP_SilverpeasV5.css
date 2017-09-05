@@ -6322,6 +6322,14 @@ silverpeas-permalink .copy-to-clipboard .sp_button span {
 }
 
 /**
+ * AngularJS silverpeas-button component.
+ */
+
+silverpeas-button {
+  white-space:nowrap;
+}
+
+/**
  * AngularJS silverpeas-color-picker component.
  */
 

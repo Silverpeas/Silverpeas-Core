@@ -49,7 +49,7 @@
                                         on-event-attendee-participation-updated="$ctrl.api.refetchCalendarEvent(updatedEvent)">
   </silverpeas-calendar-event-management>
   <silverpeas-calendar-header time-window-view-context="$ctrl.timeWindowViewContext"
-                              view="$ctrl.api.changeView(type)"
+                              view="$ctrl.api.changeView(type,listViewMode)"
                               time-window="$ctrl.api.changeTimeWindow(type, day)"
                               next-event-months="$ctrl.nextEventMonths">
   </silverpeas-calendar-header>
@@ -58,7 +58,7 @@
                             on-calendar-updated="$ctrl.api.updateCalendar(calendar)"
                             on-calendar-deleted="$ctrl.api.deleteCalendar(calendar)"
                             on-calendar-removed="$ctrl.api.removeCalendar(calendar)"
-                            on-calendar-synchronized="$ctrl.api.refetchCalendars()"
+                            on-calendar-synchronized="$ctrl.api.refetchCalendars();$ctrl.api.refetchNextOccurrences()"
                             calendar-potential-colors="$ctrl.api.getCalendarPotentialColors()"
                             calendars="$ctrl.calendars"
                             participation-calendars="$ctrl.participationCalendars">

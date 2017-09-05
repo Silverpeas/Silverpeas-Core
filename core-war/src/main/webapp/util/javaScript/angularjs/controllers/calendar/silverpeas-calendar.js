@@ -59,7 +59,8 @@
 
           function __getOccurrenceViewUrl(occurrence, suffix) {
             var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id;
-            if (occurrence.occurrenceViewUrl.indexOf('/userCalendar') < 0) {
+            var fromSharedComponent = occurrence.occurrenceViewUrl.indexOf('/userCalendar') < 0;
+            if (fromSharedComponent) {
               // Case of events coming from shared component instances
               uri = occurrence.occurrenceViewUrl;
             }
@@ -67,8 +68,7 @@
               uri = uri + suffix;
             }
             var params = {};
-            var componentName = context.component.replace(/[1-9]+.*$/, '');
-            if (uri.indexOf('/' + componentName) < 0) {
+            if (fromSharedComponent && uri.indexOf('/' + context.component + '/') < 0) {
               params.previousPageFullUri = location.href;
             }
             return sp.formatUrl(uri, params);

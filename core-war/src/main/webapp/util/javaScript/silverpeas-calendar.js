@@ -281,8 +281,8 @@
      * Changes the view of the calendar by applying the given one.
      * @param viewName the name of the requested view.
      */
-    this.changeView = function(viewName) {
-      this.$fc.fullCalendar('changeView', __getFullCalendarView(viewName));
+    this.changeView = function(viewName, displayAsList) {
+      this.$fc.fullCalendar('changeView', __getFullCalendarView(viewName, displayAsList));
     }.bind(this);
 
     var __eventSourceCache = {};
@@ -474,6 +474,7 @@
     var calendarOptions = extendsObject({}, options);
     calendarOptions.currentDate = moment(calendarOptions.currentDate);
     var fullCalendarOptions = {
+      locale: userLanguage,
       header: false,
       contentHeight:640,
       monthNames: monthNames,
@@ -503,13 +504,15 @@
       slotLabelFormat: 'HH:mm',
       weekNumbers : true,
       weekNumberTitle : $window.CalendarBundle.get("c.w").substring(0, 1),
+      listDayFormat : 'LL',
+      noEventsMessage : $window.CalendarBundle.get("c.e.n"),
       views: {
         agendaWeek: {
           columnFormat: 'ddd DD'
         }
       },
       firstDay: calendarOptions.firstDayOfWeek - 1,
-      defaultView: __getFullCalendarView(calendarOptions.view),
+      defaultView: __getFullCalendarView(calendarOptions.view, calendarOptions.listMode),
       dayClick: function(momentDate, jsEvent, view) {
         if (calendarOptions.onday) {
           var dayDate = momentDate.format("YYYY-MM-DD[T]HH:mm");
@@ -562,21 +565,21 @@
    * Gets the default fullCalendar view from the Silverpeas's one.
    * @private
    */
-  function __getFullCalendarView(view) {
+  function __getFullCalendarView(view, displayAsList) {
     if (typeof view === 'string') {
       view = view.toLowerCase();
     }
     if (view === 'monthly') {
-      return 'month';
+      return displayAsList ? 'listMonth' : 'month';
     }
     else if (view === 'yearly') {
-      return 'year';
+      return 'listYear';
     }
     else if (view === 'weekly') {
-      return 'agendaWeek';
+      return displayAsList ? 'listWeek' : 'agendaWeek';
     }
     else if (view === 'daily') {
-      return 'agendaDay';
+      return displayAsList ? 'listDay' : 'agendaDay';
     }
     return view;
   }

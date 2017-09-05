@@ -47,6 +47,9 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.silverpeas.core.util.StringUtil.getBooleanValue;
+import static org.silverpeas.core.util.StringUtil.isDefined;
+
 /**
  * Common behaviors about WEB component controllers which handle the rendering of a calendar.
  * @param <WEB_COMPONENT_REQUEST_CONTEXT>
@@ -83,6 +86,10 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
         CalendarViewType.from(context.getRequest().getParameter("view"));
     if (calendarViewType != null) {
       getCalendarTimeWindowContext().setViewType(calendarViewType);
+    }
+    String listViewMode = context.getRequest().getParameter("listViewMode");
+    if (isDefined(listViewMode)) {
+      getCalendarTimeWindowContext().setListViewMode(getBooleanValue(listViewMode));
     }
     String timeWindow = context.getRequest().getParameter("timeWindow");
     if (StringUtil.isDefined(timeWindow)) {

@@ -108,13 +108,13 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
-            "LEFT OUTER JOIN cmp.attendees.attendees a " +
-            "WHERE (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds) " +
+            "JOIN cmp.attendees.attendees a " +
+            "WHERE a.attendeeId IN :participantIds " +
             "OR e.id IN (SELECT occ_e.id " +
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +
             "            JOIN occ_o.component occ_cmp " +
-            "            LEFT OUTER JOIN occ_cmp.attendees.attendees occ_a " +
+            "            JOIN occ_cmp.attendees.attendees occ_a " +
             "            WHERE occ_a.attendeeId IN :participantIds" +
             "           )" +
             "ORDER BY ob_1, ob_2, ob_3"),
@@ -123,15 +123,14 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
-            "LEFT OUTER JOIN cmp.attendees.attendees a " +
-            "WHERE (c IN :calendars " +
-            "       AND (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds)) " +
+            "JOIN cmp.attendees.attendees a " +
+            "WHERE (c IN :calendars AND a.attendeeId IN :participantIds) " +
             "OR e.id IN (SELECT occ_e.id " +
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +
             "            JOIN occ_o.component occ_cmp " +
             "            JOIN occ_cmp.calendar occ_c " +
-            "            LEFT OUTER JOIN occ_cmp.attendees.attendees occ_a " +
+            "            JOIN occ_cmp.attendees.attendees occ_a " +
             "            WHERE occ_c IN :calendars " +
             "            AND occ_a.attendeeId IN :participantIds" +
             "           )" +
@@ -193,9 +192,9 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
-            "LEFT OUTER JOIN cmp.attendees.attendees a " +
+            "JOIN cmp.attendees.attendees a " +
             "LEFT OUTER JOIN FETCH e.recurrence r " +
-            "WHERE ((cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds) " +
+            "WHERE (a.attendeeId IN :participantIds " +
             "       AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
             "            OR" +
             "            (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
@@ -203,7 +202,7 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +
             "            JOIN occ_o.component occ_cmp " +
-            "            LEFT OUTER JOIN occ_cmp.attendees.attendees occ_a " +
+            "            JOIN occ_cmp.attendees.attendees occ_a " +
             "            LEFT OUTER JOIN occ_e.recurrence occ_r " +
             "            WHERE occ_a.attendeeId IN :participantIds " +
             "            AND (occ_cmp.period.startDateTime < :endDateTime AND occ_cmp.period.endDateTime > :startDateTime)" +
@@ -214,10 +213,10 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
-            "LEFT OUTER JOIN cmp.attendees.attendees a " +
+            "JOIN cmp.attendees.attendees a " +
             "LEFT OUTER JOIN FETCH e.recurrence r " +
             "WHERE (c IN :calendars " +
-            "       AND (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds) " +
+            "       AND a.attendeeId IN :participantIds " +
             "       AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
             "            OR (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
             "OR e.id IN (SELECT occ_e.id " +
@@ -225,7 +224,7 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "            JOIN occ_o.event occ_e " +
             "            JOIN occ_o.component occ_cmp " +
             "            JOIN occ_cmp.calendar occ_c " +
-            "            LEFT OUTER JOIN occ_cmp.attendees.attendees occ_a " +
+            "            JOIN occ_cmp.attendees.attendees occ_a " +
             "            LEFT OUTER JOIN occ_e.recurrence occ_r " +
             "            WHERE occ_c IN :calendars " +
             "            AND occ_a.attendeeId IN :participantIds " +

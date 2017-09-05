@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2016 Silverpeas
+ * Copyright (C) 2000 - 2017 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -116,9 +116,19 @@ public class CalendarResource extends AbstractCalendarResource {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<CalendarEntity> getCalendars() {
-    List<Calendar> calendars =
-        process(() -> getCalendarWebServiceProvider().getCalendarsOf(getComponentId())).execute();
+    List<Calendar> calendars = getComponentInstanceCalendars();
     return asWebEntities(calendars);
+  }
+
+  /**
+   * Getting all the calendar handled by a component instance.
+   * <p>This centralization is useful for components which handles other agendas than those linked
+   * to the instance.</p>
+   * @return all the calendars handled by the component instance.
+   */
+  protected List<Calendar> getComponentInstanceCalendars() {
+    return process(() -> getCalendarWebServiceProvider().getCalendarsOf(getComponentId()))
+        .execute();
   }
 
   /**
@@ -322,8 +332,7 @@ public class CalendarResource extends AbstractCalendarResource {
     CalendarEventOccurrenceRequestParameters params = RequestParameterDecoder
         .decode(getHttpRequest(), CalendarEventOccurrenceRequestParameters.class);
     // load calendars
-    final List<Calendar> calendars =
-        process(() -> getCalendarWebServiceProvider().getCalendarsOf(getComponentId())).execute();
+    final List<Calendar> calendars = getComponentInstanceCalendars();
     // includes/excludes
     final Set<String> calendarIdsToExclude = params.getCalendarIdsToExclude();
     final Set<String> calendarIdsToInclude = params.getCalendarIdsToInclude();
@@ -342,7 +351,7 @@ public class CalendarResource extends AbstractCalendarResource {
     Set<User> usersToInclude = params.getUsers();
     // loading occurrences
     final int nbOccLimit =
-        (limit != null && limit > 0 && limit <= 100) ? limit : DEFAULT_NB_MAX_NEXT_OCC;
+        (limit != null && limit > 0 && limit <= 500) ? limit : DEFAULT_NB_MAX_NEXT_OCC;
     final LocalDate startDate =
         getZoneId() != null ? LocalDateTime.now(getZoneId()).toLocalDate() : LocalDate.now();
     final Set<CalendarEventOccurrenceEntity> occurrences = new HashSet<>();
@@ -720,12 +729,16 @@ public class CalendarResource extends AbstractCalendarResource {
     List<CalendarEventAttendeeEntity> attendeeEntities = occurrence.getAttendees().stream()
         .map(attendee -> asAttendeeWebEntity(occurrence, attendee))
         .collect(Collectors.toList());
+    List<CalendarEventAttributeEntity> attributeEntities = occurrence.getAttributes().stream()
+            .map(this::asAttributeWebEntity)
+            .collect(Collectors.toList());
     return CalendarEventOccurrenceEntity.fromOccurrence(occurrence, getComponentId(), getZoneId())
         .withCalendarURI(calendarUri(getUri(), occurrence.getCalendarEvent().getCalendar()))
         .withEventURI(eventURI(getUri(), occurrence.getCalendarEvent()))
         .withOccurrenceURI(occurrenceURI(getUri(), occurrence))
         .withOccurrenceViewURI(occurrenceViewURI(occurrence))
-        .withAttendees(attendeeEntities);
+        .withAttendees(attendeeEntities)
+        .withAttributes(attributeEntities);
   }
 
   /**
@@ -742,6 +755,15 @@ public class CalendarResource extends AbstractCalendarResource {
     assertEntityIsDefined(attendee);
     return CalendarEventAttendeeEntity.from(attendee)
         .withURI(occurrenceAttendeeURI(getUri(), occurrence, attendee));
+  }
+
+  /**
+   * Converts the calendar event attribute into its corresponding web entity.
+   * @param nameAndValue the data which represents an attribute.
+   * @return the corresponding calendar event attribute entity.
+   */
+  public CalendarEventAttributeEntity asAttributeWebEntity(Map.Entry<String, String> nameAndValue) {
+    return CalendarEventAttributeEntity.from(nameAndValue);
   }
 
   @Override
