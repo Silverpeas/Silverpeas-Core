@@ -86,6 +86,11 @@ public enum SupportedWebPlugins {
    */
   CALENDAR,
   /**
+   * Silverpeas plugin to render a pane with the attachments of a given Silverpeas resource
+   * (publication, suggestion, event, ...) in a given component instance.
+   */
+  ATTACHMENT,
+  /**
    * The CKEditor script to write and render WYSIWYG content.
    */
   WYSIWYG,

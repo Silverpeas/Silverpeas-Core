@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.contribution.publication.model;
 
-import org.silverpeas.core.i18n.Translation;
+import org.silverpeas.core.i18n.BeanTranslation;
 
 import java.io.Serializable;
 
-public class PublicationI18N extends Translation implements Serializable {
+public class PublicationI18N extends BeanTranslation implements Serializable {
 
   private static final long serialVersionUID = -3608883875752659027L;
 

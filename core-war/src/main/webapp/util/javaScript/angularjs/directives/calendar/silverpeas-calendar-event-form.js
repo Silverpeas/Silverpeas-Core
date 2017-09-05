@@ -657,7 +657,7 @@
                 }
               }.bind(this),
               updateData : function(ceo) {
-                ceo.uploadedFileParameters = this.fileUpload.serializeArray();
+                ceo.attachmentParameters = this.fileUpload.serializeArray();
               }.bind(this)
             };
 

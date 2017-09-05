@@ -79,6 +79,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     WebPluginConsumerRegistry.add(SELECTIZE, (xhtml, language) -> includeSelectize(xhtml));
     WebPluginConsumerRegistry.add(LISTOFUSERSANDGROUPS, (xhtml, language) -> includeListOfUsersAndGroups(xhtml, language));
     WebPluginConsumerRegistry.add(USERNOTIFICATION, (xhtml, language) -> includeUserNotification(xhtml));
+    WebPluginConsumerRegistry.add(ATTACHMENT, (xhtml, language) -> includeAttachmentPane(xhtml));
   }
 
   @Override

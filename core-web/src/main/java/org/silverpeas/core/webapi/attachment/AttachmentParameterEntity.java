@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2017 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,22 +21,42 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.contribution.model;
+package org.silverpeas.core.webapi.attachment;
+
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 /**
- * An internationalized contribution. It supports different languages and regional specificities
- * (i18n). Any contribution supporting the translation of some of its properties in different
- * language should implements this interface.
- *
+ * A web entity representing a parameter of an attachment to a calendar event in
+ * creation.
  * @author mmoquillon
  */
-public interface I18nContribution extends Contribution {
+@XmlRootElement
+@XmlAccessorType(XmlAccessType.PROPERTY)
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class AttachmentParameterEntity implements Serializable {
 
-  /**
-   * Gets a translation of this contribution in the specified language.
-   * @param language the ISO 639-1 code of the language.
-   * @return a translation of the contribution in the specified language.
-   */
-  <T extends ContributionTranslation> T getTranslation(String language);
+  private String name;
+  private String value;
 
+  public String getName() {
+    return name;
+  }
+
+  public void setName(final String name) {
+    this.name = name;
+  }
+
+  public String getValue() {
+    return value;
+  }
+
+  public void setValue(final String value) {
+    this.value = value;
+  }
 }
+  

@@ -33,6 +33,7 @@ import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.webapi.attachment.AttachmentParameterEntity;
 import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -47,6 +48,8 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatDateWithOffset;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatTitle;
@@ -85,6 +88,7 @@ public class CalendarEventEntity implements WebEntity {
   private boolean canBeAccessed;
   private boolean canBeModified;
   private boolean canBeDeleted;
+  private List<AttachmentParameterEntity> attachmentParameters = new ArrayList<>();
 
   protected CalendarEventEntity() {
   }
@@ -313,6 +317,24 @@ public class CalendarEventEntity implements WebEntity {
   @XmlElement
   public boolean canBeDeleted() {
     return canBeDeleted;
+  }
+
+  /**
+   * Gets the parameters of the attachments of this event.
+   * <p>
+   * At creation time, files can be attached to the event but attachment can only be done to
+   * existing contributions and not to contributions not yet effectively created. So, to do such an
+   * attachment the files are first transparently uploaded in the background and for each uploaded
+   * file a set of parameters is returned to the UI in order to retrieve them later in Silverpeas.
+   * Once the creation of the event is validated by the user and the event is eventually created,
+   * the attachment parameters sent with this Web representation are used to get the previously
+   * uploaded files to be attached to the created event.
+   * </p>
+   * @return all the parameters about any previously uploaded files to attach to this event.
+   */
+  Map<String, String[]> getAttachmentParameters() {
+    return attachmentParameters.stream()
+        .collect(Collectors.toMap(p -> p.getName(), p -> new String[]{p.getValue()}));
   }
 
   /**

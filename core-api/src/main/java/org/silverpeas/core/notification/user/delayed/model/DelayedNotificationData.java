@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.notification.user.delayed.model;
 
-import org.silverpeas.core.admin.i18n.I18n;
+import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.client.constant.NotifChannel;

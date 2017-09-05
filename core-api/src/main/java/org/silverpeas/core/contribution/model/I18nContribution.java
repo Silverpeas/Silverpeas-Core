@@ -21,38 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.node.model;
+package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.i18n.BeanTranslation;
+import org.silverpeas.core.i18n.Translation;
 
-public class NodeI18NDetail extends BeanTranslation implements java.io.Serializable {
-
-  private static final long serialVersionUID = 1L;
-
-  public NodeI18NDetail(String lang, String nodeName, String nodeDescription) {
-    super(lang, nodeName, nodeDescription);
-  }
-
-  public NodeI18NDetail(int id, String lang, String nodeName,
-      String nodeDescription) {
-    super(id, lang, nodeName, nodeDescription);
-  }
-
-  public int getNodeId() {
-    return new Integer(super.getObjectId());
-  }
-
-  public void setNodeId(String id) {
-    super.setObjectId(id);
-  }
+/**
+ * An internationalized contribution. It supports different languages and regional specificity
+ * (i18n). Any contribution supporting the translation of some of its properties in different
+ * language should implements this interface.
+ *
+ * @author mmoquillon
+ */
+public interface I18nContribution extends Contribution {
 
   /**
-   * Return the object table name
-   * @return the table name of the object
-   * @since 1.0
+   * Gets a translation of this contribution in the specified language.
+   * @param language the ISO 639-1 code of the language.
+   * @return a translation of the contribution in the specified language.
    */
-  public String getTableName() {
-    return "SB_Node_NodeI18N";
-  }
+  <T extends Translation> T getTranslation(String language);
 
 }

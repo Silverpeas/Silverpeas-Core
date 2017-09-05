@@ -583,6 +583,11 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
+  static public ElementContainer includeAttachmentPane(final ElementContainer xhtml) {
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-attachment.js"));
+    return xhtml;
+  }
+
   public static ElementContainer includeCalendar(final ElementContainer xhtml,
       final String language) {
     includeQTip(xhtml);

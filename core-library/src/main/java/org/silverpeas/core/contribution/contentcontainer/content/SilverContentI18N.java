@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.contribution.contentcontainer.content;
 
-import org.silverpeas.core.i18n.Translation;
+import org.silverpeas.core.i18n.BeanTranslation;
 
 /**
  * This class allows the result jsp page of the global search to show all features (name,
  * description, location)
  */
-public class SilverContentI18N extends Translation implements java.io.Serializable {
+public class SilverContentI18N extends BeanTranslation implements java.io.Serializable {
 
   private static final long serialVersionUID = 1L;
 

@@ -35,7 +35,7 @@ import static org.hamcrest.Matchers.sameInstance;
 /**
  * @author Yohann Chastagnier
  */
-public class TranslationTest {
+public class BeanTranslationTest {
 
   private TestI18NBean testI18NBean = new TestI18NBean();
 
@@ -92,7 +92,7 @@ public class TranslationTest {
     }
   }
 
-  public class TestI18N extends Translation {
+  public class TestI18N extends BeanTranslation {
     private static final long serialVersionUID = 353607407808930532L;
 
     private String value;

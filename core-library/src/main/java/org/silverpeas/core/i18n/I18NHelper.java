@@ -24,7 +24,6 @@
 package org.silverpeas.core.i18n;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.i18n.I18n;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
@@ -261,7 +260,7 @@ public class I18NHelper implements I18n {
         lang = translation.getLanguage();
       }
     }
-    List<String> languages = new ArrayList<String>(bean.getTranslations().keySet());
+    List<String> languages = new ArrayList<>(bean.getTranslations().keySet());
     return getHTMLLinks(languages, lang);
   }
 
@@ -292,7 +291,7 @@ public class I18NHelper implements I18n {
     for (I18NLanguage lang : languages) {
       I18NLanguage newLang = new I18NLanguage(lang.getCode(), lang.getLabel());
       if (bean != null) {
-        Translation translation = bean.getTranslation(newLang.getCode());
+        BeanTranslation translation = (BeanTranslation) bean.getTranslation(newLang.getCode());
         if (translation != null) {
           newLang.setTranslationId(translation.getId());
         }

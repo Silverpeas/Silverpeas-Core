@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.Translation;
+import org.silverpeas.core.i18n.Translation;
 
 /**
  * Translation of a contribution's content in a given language.

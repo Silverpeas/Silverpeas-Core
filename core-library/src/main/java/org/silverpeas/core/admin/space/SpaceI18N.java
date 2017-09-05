@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.admin.space;
 
-import org.silverpeas.core.i18n.Translation;
+import org.silverpeas.core.i18n.BeanTranslation;
 import org.silverpeas.core.admin.persistence.SpaceI18NRow;
 
-public class SpaceI18N extends Translation {
+public class SpaceI18N extends BeanTranslation {
 
   private static final long serialVersionUID = 7054435736300537280L;
 

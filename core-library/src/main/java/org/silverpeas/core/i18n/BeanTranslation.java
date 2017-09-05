@@ -25,7 +25,7 @@ package org.silverpeas.core.i18n;
 
 import java.io.Serializable;
 
-public class Translation implements Serializable, Cloneable {
+public class BeanTranslation implements Translation, Serializable, Cloneable {
 
   private static final long serialVersionUID = -3879515108587719162L;
   private int id = -1;
@@ -34,11 +34,11 @@ public class Translation implements Serializable, Cloneable {
   private String name = "";
   private String description = "";
 
-  protected Translation() {
+  protected BeanTranslation() {
     // Nothing is done
   }
 
-  protected Translation(String lang, String name, String description) {
+  protected BeanTranslation(String lang, String name, String description) {
     if (lang != null) {
       setLanguage(lang);
     }
@@ -46,12 +46,12 @@ public class Translation implements Serializable, Cloneable {
     setDescription(description);
   }
 
-  protected Translation(int id, String lang, String name, String description) {
+  protected BeanTranslation(int id, String lang, String name, String description) {
     this(lang, name, description);
     setId(id);
   }
 
-  public Translation(Translation otherTranslation) {
+  public BeanTranslation(BeanTranslation otherTranslation) {
     setId(otherTranslation.getId());
     setObjectId(otherTranslation.getObjectId());
     setLanguage(otherTranslation.getLanguage());
@@ -100,9 +100,9 @@ public class Translation implements Serializable, Cloneable {
   }
 
   @Override
-  protected Translation clone() {
+  protected BeanTranslation clone() {
     try {
-      return (Translation) super.clone();
+      return (BeanTranslation) super.clone();
     } catch (CloneNotSupportedException e) {
       return null;
     }

@@ -21,18 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core;
+package org.silverpeas.core.i18n;
 
 /**
- * A translation of the properties of a bean supporting the i18n features. A such bean can be
- * a user's contribution or a contribution's content or a transverse business entity in Silverpeas.
- * All objects that represent a translation of a given i18n bean in different languages
- * must implement either this interface or one of its more-typed children interfaces:
- * <ul>
- *   <li>{@code org.silverpeas.core.contribution.ContributionTranslation} for the contributions,</li>
- *   <li>{@code org.silverpeas.core.contribution.model.ContributionContentTranslation} for the
- *   contribution content.</li>
- * </ul>
+ * A translation of a text, a property of of a resource supporting the i18n features. Such a bean
+ * can be a user's contribution or a contribution's content or a transverse business entity in
+ * Silverpeas. All objects that represent a translation of a given i18n or l10n bean
+ * must implement either this interface or one of its more-typed children interfaces/classes.
  * <p>
  *   For example, as the <code>Publication</code> is a i18n contribution, it must be able to
  *   return a <code>PublicationTranslation</code> instance for each translation asked in a given

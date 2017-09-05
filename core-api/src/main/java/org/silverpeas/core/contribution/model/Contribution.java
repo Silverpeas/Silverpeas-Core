@@ -23,46 +23,30 @@
  */
 package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.IdentifiableResource;
+import org.silverpeas.core.admin.user.model.User;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * A contribution in Silverpeas. A contribution is an identifiable resource that is pushed by a
- * user onto Silverpeas and that is manageable by the users within Silverpeas.
+ * user onto Silverpeas and that is manageable by the users within Silverpeas. A contribution has
+ * always a content that can be of any type (simple text, WYSIWYG, form, image, ...).
  * @author mmoquillon
  */
-public interface Contribution extends IdentifiableResource {
+public interface Contribution extends Serializable {
 
   /**
    * Gets the unique identifier of this contribution.
    * @return the unique identifier of the contribution.
    */
-  ContributionIdentifier getId();
-
-  /**
-   * Gets the content of this contribution. A contribution can support several type of contents.
-   * @param <T> the concrete or generic type of the content.
-   * @return the content of this contribution or null if this contribution has not yet a content or
-   * it doesn't support any content.
-   */
-  <T extends ContributionContent> T getContent();
-
-  /**
-   * Does this contribution have a content?
-   * @return true of this contribution has a content. False if this contribution has not yet a
-   * content or doesn't support any content.
-   */
-  default boolean hasContent() {
-    return getContent() != null;
-  }
+  ContributionIdentifier getContributionId();
 
   /**
    * Gets the user that has created this content.
    * @return the detail about the user that has created this content.
    */
-  UserDetail getCreator();
+  User getCreator();
 
   /**
    * Gets the date at which this content was created.
@@ -99,7 +83,7 @@ public interface Contribution extends IdentifiableResource {
    * @param user a user in Silverpeas.
    * @return true if the user can access this content, false otherwise.
    */
-  boolean canBeAccessedBy(UserDetail user);
+  boolean canBeAccessedBy(User user);
 
   /**
    * Gets the type of this contribution. The type is a label that identifies uniquely a kind of
@@ -109,5 +93,14 @@ public interface Contribution extends IdentifiableResource {
    */
   default String getContributionType() {
     return getClass().getSimpleName();
+  }
+
+  /**
+   * Is this contribution indexable? By default true.
+   * @return a boolean indicating if this contribution can be taken in charge by the Indexation
+   * Engine. By default, any contribution in Silverpeas are indexable unless specified otherwise.
+   */
+  default boolean isIndexable() {
+    return true;
   }
 }

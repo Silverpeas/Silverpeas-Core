@@ -29,6 +29,9 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
@@ -232,7 +235,7 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "           ) " +
             "ORDER BY ob_1, ob_2, ob_3")})
 public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
-    implements Plannable, Recurrent, Categorized, Prioritized, Securable {
+    implements Plannable, Recurrent, Categorized, Prioritized, Contribution, Securable, WithAttachment {
 
   private static final long serialVersionUID = 1L;
   public static final String THE_EVENT = "The event ";
@@ -351,6 +354,11 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   protected void performBeforeUpdate() {
     super.performBeforeUpdate();
     SecurableRequestCache.clear(getId());
+  }
+
+  @Override
+  public ContributionIdentifier getContributionId() {
+    return ContributionIdentifier.from(getCalendar().getComponentInstanceId(), getId());
   }
 
   /**
@@ -1031,6 +1039,11 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   @Override
+  public String getContributionType() {
+    return getClass().getSimpleName();
+  }
+
+  @Override
   public boolean canBeModifiedBy(final User user) {
     return SecurableRequestCache.canBeModifiedBy(user, getId(), u -> {
       boolean isCalendarSynchronized = getCalendar().getExternalCalendarUrl() != null;
@@ -1137,6 +1150,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private void notify(ResourceEvent.Type type, CalendarEvent... events) {
     CalendarEventLifeCycleEventNotifier notifier = CalendarEventLifeCycleEventNotifier.get();
     notifier.notifyEventOn(type, events);
+
   }
 
   private CalendarEvent createNewEventSince(final CalendarEventOccurrence occurrence) {

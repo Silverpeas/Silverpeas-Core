@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.notification.system.asynchronous;
 
+import org.silverpeas.core.notification.system.GenericTestResource;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
@@ -76,6 +77,7 @@ public class AsynchronousNotificationIntegrationTest {
           WarBuilder4LibCore warBuilder = ((WarBuilder4LibCore) war);
           warBuilder.addSynchAndAsynchResourceEventFeatures();
           warBuilder.addClasses(TestResource.class, TestResourceEvent.class,
+              GenericTestResource.class,
               TestResourceEventBucket.class, JMSQueueTestResourceEventNotifier.class,
               JMSQueueTestResourceEventListener.class, JMSTopicTestResourceEventNotifier.class,
               JMSTopicTestResourceEventListener.class, JMSTopicTestResourceEventListener2.class,

@@ -27,7 +27,6 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -35,7 +34,7 @@ import java.util.Date;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-public class TestResource implements Serializable {
+public class TestResource implements GenericTestResource {
 
   @XmlElement
   private String id ;
@@ -53,10 +52,12 @@ public class TestResource implements Serializable {
     this.modificationDate = modificationDate;
   }
 
+  @Override
   public String getId() {
     return id;
   }
 
+  @Override
   public String getName() {
     return name;
   }

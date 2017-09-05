@@ -42,7 +42,10 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.I18nContribution;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
@@ -95,7 +98,8 @@ import static org.silverpeas.core.util.StringUtil.split;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
-    implements SilverContentInterface, SilverpeasContent, Rateable, Serializable, Cloneable {
+    implements I18nContribution, SilverContentInterface, SilverpeasContent, Rateable, Serializable,
+    Cloneable, WithAttachment {
 
   private static final long serialVersionUID = 9199848912262605680L;
   private PublicationPK pk;
@@ -486,6 +490,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   }
 
+  @Override
+  public PublicationI18N getTranslation(final String language) {
+    return super.getTranslation(language);
+  }
+
   public PublicationPK getPK() {
     return pk;
   }
@@ -584,9 +593,13 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return endDate;
   }
 
-  @Override
   public String getCreatorId() {
     return creatorId;
+  }
+
+  @Override
+  public ContributionIdentifier getContributionId() {
+    return ContributionIdentifier.from(getInstanceId(), getId());
   }
 
   @Override

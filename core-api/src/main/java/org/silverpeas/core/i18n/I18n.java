@@ -21,38 +21,37 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.node.model;
+package org.silverpeas.core.i18n;
 
-import org.silverpeas.core.i18n.BeanTranslation;
+import org.silverpeas.core.util.ServiceProvider;
 
-public class NodeI18NDetail extends BeanTranslation implements java.io.Serializable {
+import java.util.Set;
 
-  private static final long serialVersionUID = 1L;
+/**
+ * This interface defines all the i18n related stuff as it is configured in Silverpeas: the default
+ * language, all the languages supported in the current Silverpeas, and so on.
+ * @author mmoquillon
+ */
+public interface I18n {
 
-  public NodeI18NDetail(String lang, String nodeName, String nodeDescription) {
-    super(lang, nodeName, nodeDescription);
-  }
-
-  public NodeI18NDetail(int id, String lang, String nodeName,
-      String nodeDescription) {
-    super(id, lang, nodeName, nodeDescription);
-  }
-
-  public int getNodeId() {
-    return new Integer(super.getObjectId());
-  }
-
-  public void setNodeId(String id) {
-    super.setObjectId(id);
+  /**
+   * Gets an instance of {@link I18n}.
+   * @return an instance of {@link I18n}
+   */
+  static I18n get() {
+    return ServiceProvider.getService(I18n.class);
   }
 
   /**
-   * Return the object table name
-   * @return the table name of the object
-   * @since 1.0
+   * Gets the default language of the platform when no one is explicitly specified.
+   * @return the ISO 639-1 code of the default language.
    */
-  public String getTableName() {
-    return "SB_Node_NodeI18N";
-  }
+  String getDefaultLanguage();
 
+  /**
+   * Gets the languages that are supported by the platform and from which users can choose their
+   * preferred one.
+   * @return an array of ISO 639-1 codes of languages.
+   */
+  Set<String> getSupportedLanguages();
 }

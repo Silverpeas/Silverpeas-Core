@@ -28,7 +28,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodeI18NDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.owasp.encoder.Encode;
-import org.silverpeas.core.i18n.Translation;
+import org.silverpeas.core.i18n.BeanTranslation;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlElement;
@@ -113,7 +113,7 @@ public class NodeEntity implements WebEntity {
     // set translations
     Map<String, NodeI18NDetail> theTranslations = node.getTranslations();
     List<NodeTranslationEntity> translationEntities = new ArrayList<NodeTranslationEntity>();
-    for (Translation translation : theTranslations.values()) {
+    for (BeanTranslation translation : theTranslations.values()) {
       NodeTranslationEntity translationEntity =
           new NodeTranslationEntity(translation.getId(), translation.getLanguage(), node);
       translationEntities.add(translationEntity);

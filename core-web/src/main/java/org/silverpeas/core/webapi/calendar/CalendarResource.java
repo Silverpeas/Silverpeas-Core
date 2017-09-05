@@ -34,6 +34,8 @@ import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.contribution.attachment.model.Attachments;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportException;
@@ -508,9 +510,13 @@ public class CalendarResource extends AbstractCalendarResource {
       CalendarEventEntity eventEntity) {
     final Calendar calendar = Calendar.getById(calendarId);
     assertDataConsistency(getComponentId(), calendar);
-    CalendarEvent createdEvent = process(() -> getCalendarWebServiceProvider()
-        .createEvent(calendar, eventEntity.getMergedEvent()))
-        .execute();
+    CalendarEvent createdEvent = process(() -> {
+      final CalendarEvent event =
+          getCalendarWebServiceProvider().createEvent(calendar, eventEntity.getMergedEvent());
+      Attachments.from(eventEntity.getAttachmentParameters())
+          .attachTo(LocalizedContribution.from(event, getUserPreferences().getLanguage()));
+      return event;
+    }).execute();
     return asEventWebEntity(createdEvent);
   }
 

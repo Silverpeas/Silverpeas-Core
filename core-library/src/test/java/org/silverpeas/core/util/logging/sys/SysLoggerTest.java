@@ -30,7 +30,10 @@ import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.lang.reflect.Method;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -51,10 +54,13 @@ public class SysLoggerTest {
   public MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);
 
   @Before
-  public void initEnvVariables() {
+  public void initEnvVariables() throws Exception {
     SystemWrapper.get()
         .getenv()
         .put("SILVERPEAS_HOME", mavenTargetDirectory.getResourceTestDirFile().getPath());
+    // to clean up all the weaker references to the yet loaded loaders (to force to load them from
+    // their configuration)
+    System.gc();
   }
 
   @Test

@@ -69,7 +69,7 @@
               serializeArray : function() {
                 return _fileUploadApi.serializeArray();
               }.bind(this)
-            }
+            };
 
             /**
              * Just after template compilation

@@ -41,6 +41,7 @@
 <%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
+<%@ page import="org.silverpeas.core.util.logging.SilverLogger" %>
 
 <%@ include file="checkAttachment.jsp"%>
 
@@ -374,6 +375,10 @@
 </c:if>
 
 <script type="text/javascript">
+  console.log('DISPLAY ATTACHED FILES !!!!!!');
+  console.log("Resource Id: ${param.Id}");
+  console.log("Component Id: ${param.ComponentId}");
+  console.log("Document Type: ${sessionScope["Silverpeas_Attachment_Context"]}");
   <c:url var="allVersionsUrl" value="/RVersioningPeas/jsp/ViewAllVersions">
     <c:param name="ComponentId" value="${componentId}" />
     <c:param name="fromAlias" value="${silfn:booleanValue(param.Alias)}"/>

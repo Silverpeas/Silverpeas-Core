@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2017 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,37 +21,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.admin.i18n;
+package org.silverpeas.core.contribution;
 
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.notification.system.AbstractResourceEvent;
+import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.util.Set;
+import javax.ejb.Singleton;
 
 /**
- * This interface defines all the i18n related stuff as it is configured in Silverpeas: the default
- * language, all the languages supported in the current Silverpeas, and so on.
+ * Processor listening for events on a contribution to perform additional tasks relative to the
+ * contribution concerned by the received event. Such tasks are commonly for allocating, cleaning up
+ * or updating the resources that allocated for the contribution (like the attachments for example).
  * @author mmoquillon
  */
-public interface I18n {
+@Singleton
+public class ContributionEventProcessor
+    extends CDIResourceEventListener<AbstractResourceEvent<? extends Contribution>> {
 
-  /**
-   * Gets an instance of {@link I18n}.
-   * @return an instance of {@link I18n}
-   */
-  static I18n get() {
-    return ServiceProvider.getService(I18n.class);
+  @Override
+  public void onDeletion(final AbstractResourceEvent<? extends Contribution> event)
+      throws Exception {
+    ServiceProvider.getAllServices(ContributionDeletion.class)
+        .forEach(s -> s.delete(event.getTransition().getBefore()));
   }
-
-  /**
-   * Gets the default language of the platform when no one is explicitly specified.
-   * @return the ISO 639-1 code of the default language.
-   */
-  String getDefaultLanguage();
-
-  /**
-   * Gets the languages that are supported by the platform and from which users can choose their
-   * preferred one.
-   * @return an array of ISO 639-1 codes of languages.
-   */
-  Set<String> getSupportedLanguages();
 }
+  
