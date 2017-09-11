@@ -22,6 +22,8 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
+<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
+
 <%@ include file="check.jsp" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
@@ -44,6 +46,7 @@
 <jsp:useBean id="timeWindowViewContext" type="org.silverpeas.web.usercalendar.UserCalendarTimeWindowViewContext"/>
 <c:set var="userMainCalendar"  value="${requestScope.userMainCalendar}"/>
 <jsp:useBean id="userMainCalendar" type="org.silverpeas.core.webapi.calendar.CalendarEntity"/>
+<c:set var="nextEventViewLimit" value='<%=ResourceLocator.getSettingBundle("org.silverpeas.calendar.settings.calendar").getInteger("calendar.nextEvents.limit")%>'/>
 
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
 
@@ -120,7 +123,7 @@
     componentUriBase : '${componentUriBase}',
     userRole: '${highestUserRole}',
     zoneId : '${timeWindowViewContext.zoneId.toString()}',
-    limit : 50
+    limit : ${nextEventViewLimit}
   });
 </script>
 </body>

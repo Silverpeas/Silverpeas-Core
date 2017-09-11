@@ -84,7 +84,9 @@ public class CalendarEventEntity implements WebEntity {
   private List<CalendarEventAttributeEntity> attributes = new ArrayList<>();
   private String ownerName;
   private Date createDate;
+  private String createdById;
   private Date lastUpdateDate;
+  private String lastUpdatedById;
   private boolean canBeAccessed;
   private boolean canBeModified;
   private boolean canBeDeleted;
@@ -296,12 +298,25 @@ public class CalendarEventEntity implements WebEntity {
     return createDate;
   }
 
+  @XmlElement
+  public String getCreatedById() {
+    return createdById;
+  }
+
   public Date getLastUpdateDate() {
     return lastUpdateDate;
   }
 
   protected void setLastUpdateDate(final Date lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
+  }
+
+  public String getLastUpdatedById() {
+    return lastUpdatedById;
+  }
+
+  public void setLastUpdatedById(final String lastUpdatedById) {
+    this.lastUpdatedById = lastUpdatedById;
   }
 
   @XmlElement
@@ -402,6 +417,15 @@ public class CalendarEventEntity implements WebEntity {
       newAttendeeIds.add(attendeeEntity.getId());
     }
     component.getAttendees().removeIf(attendee -> !newAttendeeIds.contains(attendee.getId()));
+    List<String> newAttributeNames = new ArrayList<>(getAttributes().size());
+    for (CalendarEventAttributeEntity attributeEntity : getAttributes()) {
+      if (isDefined(attributeEntity.getValue())) {
+        component.getAttributes().set(attributeEntity.getName(), attributeEntity.getValue());
+        newAttributeNames.add(attributeEntity.getName());
+      }
+    }
+    component.getAttributes()
+        .removeIf(attribute -> !newAttributeNames.contains(attribute.getKey()));
   }
 
   protected CalendarEventEntity decorate(final CalendarEvent calendarEvent,
@@ -415,8 +439,10 @@ public class CalendarEventEntity implements WebEntity {
     onAllDay = calendarEvent.isOnAllDay();
     startDate = formatDateWithOffset(component, calendarEvent.getStartDate(), zoneId);
     endDate = formatDateWithOffset(component, calendarEvent.getEndDate(), zoneId);
-    createDate = calendarEvent.getCreationDate();
-    lastUpdateDate = calendarEvent.getLastUpdateDate();
+    createDate = component.getCreateDate();
+    createdById = component.getCreatedBy();
+    lastUpdateDate = component.getLastUpdateDate();
+    lastUpdatedById = component.getLastUpdatedBy();
     ownerName = calendarEvent.getCreator().getDisplayedName();
     canBeAccessed = calendarEvent.canBeAccessedBy(currentUser);
     title = formatTitle(component, componentInstanceId, canBeAccessed);
@@ -456,7 +482,9 @@ public class CalendarEventEntity implements WebEntity {
     builder.append("recurrence", getRecurrence());
     builder.append("ownerName", getOwnerName());
     builder.append("createDate", getCreateDate());
+    builder.append("createdById", getCreatedById());
     builder.append("lastUpdateDate", getLastUpdateDate());
+    builder.append("lastUpdatedById", getLastUpdatedById());
     return builder;
   }
 }

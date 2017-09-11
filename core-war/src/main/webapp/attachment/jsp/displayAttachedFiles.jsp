@@ -200,7 +200,7 @@
 %>
 
 <c:if test="${!empty pageScope.attachments  || (silfn:isDefined(userProfile) && ('user' != userProfile))}">
-<div class="attachments bgDegradeGris attachmentDragAndDrop${param.Id}">
+<div class="attachments bgDegradeGris attachmentDragAndDrop${fn:replace(param.Id,'=','_')}">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
   <c:if test="${contextualMenuEnabled}">
   <div id="attachment-creation-actions"><a class="menubar-creation-actions-item" href="javascript:addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
@@ -375,10 +375,6 @@
 </c:if>
 
 <script type="text/javascript">
-  console.log('DISPLAY ATTACHED FILES !!!!!!');
-  console.log("Resource Id: ${param.Id}");
-  console.log("Component Id: ${param.ComponentId}");
-  console.log("Document Type: ${sessionScope["Silverpeas_Attachment_Context"]}");
   <c:url var="allVersionsUrl" value="/RVersioningPeas/jsp/ViewAllVersions">
     <c:param name="ComponentId" value="${componentId}" />
     <c:param name="fromAlias" value="${silfn:booleanValue(param.Alias)}"/>
@@ -1405,7 +1401,7 @@
 
 <view:progressMessage/>
 <c:if test="${contextualMenuEnabled && dragAndDropEnable}">
-  <viewTags:attachmentDragAndDrop domSelector=".attachmentDragAndDrop${param.Id}"
+  <viewTags:attachmentDragAndDrop domSelector=".attachmentDragAndDrop${fn:replace(param.Id,'=','_')}"
                                   highestUserRole="${highestUserRole}"
                                   componentInstanceId="${componentId}"
                                   resourceId="${param.Id}"

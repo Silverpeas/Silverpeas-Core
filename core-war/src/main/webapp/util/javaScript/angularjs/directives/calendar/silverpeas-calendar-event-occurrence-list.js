@@ -162,6 +162,9 @@
             this.hasTime = function() {
               return this.occurrence.startDate.split('T').length > 1;
             };
+            this.performExternalLink = function() {
+              sp.formConfig(this.occurrence.externalUrl()).toTarget("_blank").submit();
+            };
           }
         };
       }]);

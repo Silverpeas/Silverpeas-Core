@@ -161,12 +161,21 @@
   $window.SilverpeasCalendarTools = new function() {
 
     /**
+     * Init a new occurrence entity instance.
+     */
+    this.newEventOccurrenceEntity = function() {
+      var occurrence = this.extractEventOccurrenceEntityData();
+      this.applyEventOccurrenceEntityAttributeWrappers(occurrence);
+      return occurrence;
+    };
+
+    /**
      * Extracts from an UI JavaScript bean the necessary data about the representation of an
      * occurrence which can be sent to the server.
      * @param occurrence
      */
     this.extractEventOccurrenceEntityData = function(occurrence) {
-      occurrence = occurrence ? occurrence : {};
+      occurrence = occurrence ? occurrence : {attendees:[],attributes:[]};
       return {
         id : occurrence.id,
         uri : occurrence.uri,
@@ -190,12 +199,47 @@
         priority : occurrence.priority,
         recurrence : occurrence.recurrence,
         attendees : occurrence.attendees,
+        attributes : occurrence.attributes,
         ownerName : occurrence.ownerName,
         createDate : occurrence.createDate,
+        createdById : occurrence.createdById,
         lastUpdateDate : occurrence.lastUpdateDate,
+        lastUpdatedById: occurrence.lastUpdatedById,
         canBeAccessed : occurrence.canBeAccessed,
         canBeModified : occurrence.canBeModified,
         canBeDeleted : occurrence.canBeDeleted
+      }
+    };
+
+    /**
+     * Applies to the given occurrence entity the getters and setters which are wrapping the
+     * attributes map.
+     * @param occurrence
+     */
+    this.applyEventOccurrenceEntityAttributeWrappers = function(occurrence) {
+      if (occurrence) {
+        /**
+         * Wrapper over attributes xhich permits to register easily an external url.
+         * @param externalUrl
+         */
+        if (!occurrence.externalUrl) {
+          occurrence.externalUrl = function(externalUrl) {
+            var externalUrlAttribute;
+            if (arguments.length) {
+              externalUrlAttribute = {name : 'externalUrl', value : externalUrl};
+              if (!this.attributes.updateElement(externalUrlAttribute, 'name')) {
+                this.attributes.addElement(externalUrlAttribute);
+              }
+              return externalUrl;
+            } else {
+              externalUrlAttribute = this.attributes.getElement({name : 'externalUrl'}, 'name');
+              if (externalUrlAttribute) {
+                return externalUrlAttribute.value;
+              }
+              return undefined;
+            }
+          };
+        }
       }
     };
 

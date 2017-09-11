@@ -23,27 +23,19 @@
  */
 
 (function() {
-  angular.module('silverpeas.directives').directive('silverpeasAttachment',
+  angular.module('silverpeas.directives').directive('silverpeasSingleResourceView',
       [function() {
         return {
-          template: '<div ng-include src="$ctrl.getTemplateUrl()"></div>',
+          template: '<div class="rightContent" ng-transclude="extra"></div>' +
+                    '<div class="principalContent" ng-transclude="main"></div>',
           restrict : 'E',
-          scope: {
-            componentId: '@',
-            resourceId: '@',
-            readOnly: '@'
+          transclude: {
+            main: 'paneMain',
+            extra: 'paneExtra'
           },
           controllerAs: '$ctrl',
           bindToController: true,
           controller : [function() {
-            //function used on the ng-include to resolve the template
-            this.getTemplateUrl = function() {
-              var config = sp.ajaxConfig(webContext + '/util/javaScript/angularjs/directives/util/silverpeas-attachment.jsp');
-              config.withParam('componentId', this.componentId);
-              config.withParam('resourceId', encodeURIComponent(this.resourceId));
-              config.withParam('readOnly', this.readOnly);
-              return config.getUrl();
-            }
           }]
         }
       }]);

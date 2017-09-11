@@ -812,17 +812,19 @@ class Admin implements Administration {
 
   @Override
   public String getComponentParameterValue(String componentId, String parameterName) {
-    try {
-      ComponentInst component = getComponentInst(componentId);
-      if (component == null) {
-        SilverLogger.getLogger(this).error("Component " + componentId + " not found!");
-        return StringUtil.EMPTY;
+    if (!PersonalComponentInstance.from(componentId).isPresent()) {
+      try {
+        ComponentInst component = getComponentInst(componentId);
+        if (component == null) {
+          SilverLogger.getLogger(this).error("Component " + componentId + " not found!");
+          return StringUtil.EMPTY;
+        }
+        return component.getParameterValue(parameterName);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
       }
-      return component.getParameterValue(parameterName);
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e);
-      return "";
     }
+    return "";
   }
 
   @Override

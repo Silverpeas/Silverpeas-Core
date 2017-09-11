@@ -27,14 +27,20 @@
   min-height:30px;
 }
 
+silverpeas-calendar-event-view-main .calendar-timezone,
+.silverpeas-calendar-header .sousNavBulle #calendar-timezone {
+  position:absolute;
+  color:#666;
+  background:transparent url(../icons/time-zone.png) 0 0 no-repeat;
+  padding-left:28px;
+}
+
 .silverpeas-calendar-header .sousNavBulle #calendar-timezone {
   position:absolute;
   top:1em;
   right:1em;
-  color:#666;
-  background:transparent url(../icons/time-zone.png) 0 0 no-repeat;
-  line-height:24px;
   height:28px;
+  line-height:24px;
   padding-left:34px;
 }
 
@@ -138,7 +144,30 @@
   position:relative;
 }
 
-/* je prevois pour les evenements important */ 
+silverpeas-calendar-event-view silverpeas-calendar-event-view-attendees {
+  display: table;
+  width: 98%;
+  border-radius: 15px;
+  padding: 8px 0;
+}
+
+
+silverpeas-calendar-event-view-main .occurrence-name .important {
+  content:' ';
+  background:transparent url(../icons/event-important.png) 0 0 no-repeat;
+  display:block;
+  width:25px;
+  height:20px;
+}
+
+silverpeas-calendar-event-view-main .occurrence-name .private {
+  content:' ';
+  background:transparent url(../icons/masque.gif) 0 0 no-repeat;
+  display:block;
+  width:25px;
+  height:20px;
+}
+
 .fc-event.important::after{
   content:' ';
   background:transparent url(../icons/event-important.png) 0 0 no-repeat;
@@ -150,6 +179,7 @@
   right: -9px;
   z-index: 10;
 }
+
 .fc-day-grid .fc-other-month {
   background-color:#ECECEC;
 }
@@ -346,19 +376,33 @@ silverpeas-calendar-event-occurrence-tip .occurrence-description {
   font-size: 90%;
 }
 
-silverpeas-calendar-event-occurrence-tip .occurrence-location {
+silverpeas-calendar-event-occurrence-tip .occurrence-extra {
+  display: inline-block;
+  width: 100%;
+}
+
+silverpeas-calendar-event-occurrence-tip .occurrence-location,
+silverpeas-calendar-event-occurrence-tip .occurrence-external-link {
   text-align: right;
   margin-bottom: 1em;
 }
 
-silverpeas-calendar-event-occurrence-tip .occurrence-location span {
-  background: #f7f7f7 url(../icons/marker.gif) 4px 8px no-repeat;
+silverpeas-calendar-event-occurrence-tip .occurrence-location span,
+silverpeas-calendar-event-occurrence-tip .occurrence-external-link a {
   border-radius: 4px;
   border: 1px solid #ebebeb;
   display: inline-block;
   padding: 4px 8px 4px 22px;
   min-height: 16px;
   font-size: 90%;
+}
+
+silverpeas-calendar-event-occurrence-tip .occurrence-location span {
+  background: #f7f7f7 url(../icons/marker.gif) 4px 8px no-repeat;
+}
+
+silverpeas-calendar-event-occurrence-tip .occurrence-external-link a {
+  background: #f7f7f7 url(../icons/webLink.gif) 4px 8px no-repeat;
 }
 
 silverpeas-calendar-event-view .field,
@@ -371,12 +415,47 @@ silverpeas-calendar-event-form .champs label {
   font-weight: normal;
 }
 
+silverpeas-calendar-event-view-main .occurrence-name {
+  display: inline-flex;
+  font-size: 130%;
+  font-weight: bold;
+  padding: 0;
+  margin: 0 0 10px 0;
+}
+
+silverpeas-calendar-event-view-main .occurrence-name span {
+  margin-left: 10px;
+}
+
+silverpeas-calendar-event-view-main .occurrence-name span:first-child {
+  margin-left: 0;
+}
+
+silverpeas-calendar-event-view-main > div:first-of-type {
+  padding-bottom: 15px;
+  line-height:24px;
+}
+
+silverpeas-calendar-event-view-main > div:first-of-type > span {
+  line-height:24px;
+  margin-right: 10px;
+}
+
 silverpeas-calendar-event-view-main legend,
 silverpeas-calendar-event-form-main legend {
   background: transparent url(../../util/icons/mini_publi.gif) 11px 0 no-repeat;
 }
 
-silverpeas-calendar-event-view-recurrence legend,
+silverpeas-calendar-event-view-recurrence h4 {
+  background: transparent url(../../util/icons/periodicity.gif) top right no-repeat;
+}
+
+silverpeas-calendar-event-view-recurrence .fields .field span,
+silverpeas-calendar-event-view-recurrence .fields .field label,
+silverpeas-calendar-event-view-recurrence .fields .field div {
+  padding: 5px 0 0 0;
+}
+
 silverpeas-calendar-event-form-recurrence legend {
   background: transparent url(../../util/icons/periodicity.gif) 11px 0 no-repeat;
 }
@@ -564,12 +643,21 @@ silverpeas-calendar-event-occurrence-list-item .occurrence-name {
   color: #666;
 }
 
+silverpeas-calendar-event-view-main .occurrence-extra,
 silverpeas-calendar-event-occurrence-list-item .occurrence-extra {
   display: table;
   width: 98%;
   border: 1px solid #CDCDCD;
   background-color: #EFEFEF;
   border-radius: 15px;
+  padding: 15px 0;
+}
+
+silverpeas-calendar-event-view-main .occurrence-extra {
+  margin-bottom: 15px;
+}
+
+silverpeas-calendar-event-occurrence-list-item .occurrence-extra {
   padding: 4px 0;
 }
 
@@ -578,6 +666,7 @@ silverpeas-calendar-event-occurrence-list-item .occurrence-extra {
   padding: 1px 0;
 }
 
+silverpeas-calendar-event-view-main .occurrence-extra div,
 silverpeas-calendar-event-occurrence-list-item .occurrence-extra div {
   display: table-cell;
   border-left: 2px solid #dcdcdc;
@@ -587,6 +676,7 @@ silverpeas-calendar-event-occurrence-list-item .occurrence-extra div {
   width: 33%;
 }
 
+silverpeas-calendar-event-view-main .occurrence-extra div:first-child,
 silverpeas-calendar-event-occurrence-list-item .occurrence-extra div:first-child {
   border: 0;
 }
@@ -596,13 +686,20 @@ silverpeas-calendar-event-occurrence-list-item .occurrence-extra div:first-child
   width: 90%;
 }
 
+silverpeas-calendar-event-view-main .occurrence-extra .bloc,
 silverpeas-calendar-event-occurrence-list-item .occurrence-extra .bloc {
   padding: 0 10px 0 37px;
-  font-size: 110%;
   color: #333;
   display: inline-block;
   width: auto;
   text-align: left;
+}
+
+silverpeas-calendar-event-view-main .occurrence-extra .bloc,
+silverpeas-calendar-event-view-main .occurrence-extra .bloc a,
+silverpeas-calendar-event-occurrence-list-item .occurrence-extra .bloc,
+silverpeas-calendar-event-occurrence-list-item .occurrence-extra .bloc a {
+  font-size: 110%;
 }
 
 .display-grouped-by-day silverpeas-calendar-event-occurrence-list-item .occurrence-extra .bloc {
@@ -610,10 +707,12 @@ silverpeas-calendar-event-occurrence-list-item .occurrence-extra .bloc {
   font-size: 100%;
 }
 
+silverpeas-calendar-event-view-main .bloc span,
 silverpeas-calendar-event-occurrence-list-item .bloc span {
   display: block;
 }
 
+silverpeas-calendar-event-view-main .occurrence-location .bloc,
 silverpeas-calendar-event-occurrence-list-item .occurrence-location .bloc {
   background: transparent url('../icons/marker.gif') 17px center no-repeat;
 }
@@ -622,18 +721,28 @@ silverpeas-calendar-event-occurrence-list-item .occurrence-location .bloc {
   background: transparent url('../icons/marker.gif') 6px center no-repeat;
 }
 
+silverpeas-calendar-event-view-main .occurrence-external-link .bloc,
 silverpeas-calendar-event-occurrence-list-item .occurrence-external-link .bloc {
   background: transparent url('../icons/webLink.gif') 17px center no-repeat;
+  text-decoration: underline;
 }
 
+silverpeas-calendar-event-view-main .occurrence-date .bloc,
 silverpeas-calendar-event-occurrence-list-item .occurrence-date .bloc {
   background: transparent url('../icons/calendar_2.gif') 12px center no-repeat;
 }
 
+silverpeas-calendar-event-view-main .occurrence-description,
 silverpeas-calendar-event-occurrence-list-item .occurrence-description {
   margin-top: 10px;
   color: #333;
   width: 98%;
+}
+
+silverpeas-calendar-event-view-main .occurrence-description p{
+  border-left: 6px solid #e4e4e4;
+  color: #666666;
+  padding: 8px;
 }
 
 /*

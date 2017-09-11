@@ -83,18 +83,27 @@
   <view:frame>
     <silverpeas-calendar-event-view ng-if="ceo"
                                     calendar-event-occurrence="ceo">
-      <silverpeas-calendar-event-view-main
-          calendar-event-occurrence="ceo">
-      </silverpeas-calendar-event-view-main>
-      <silverpeas-calendar-event-view-recurrence
-          calendar-event-occurrence="ceo"
-          ng-if="ceo.recurrence">
-      </silverpeas-calendar-event-view-recurrence>
-      <silverpeas-calendar-event-view-attendees
-          calendar-event-occurrence="ceo"
-          ng-if="ceo.attendees && ceo.attendees.length"
-          on-participation-answer="eventMng.eventAttendeeParticipationAnswer(ceo, attendee)">
-      </silverpeas-calendar-event-view-attendees>
+      <pane-main>
+        <silverpeas-calendar-event-view-main
+            calendar-event-occurrence="ceo">
+        </silverpeas-calendar-event-view-main>
+        <silverpeas-calendar-event-view-attendees
+            calendar-event-occurrence="ceo"
+            ng-if="ceo.attendees && ceo.attendees.length"
+            on-participation-answer="eventMng.eventAttendeeParticipationAnswer(ceo, attendee)">
+        </silverpeas-calendar-event-view-attendees>
+      </pane-main>
+      <pane-extra>
+        <silverpeas-calendar-event-view-recurrence
+            calendar-event-occurrence="ceo"
+            ng-if="ceo.recurrence">
+        </silverpeas-calendar-event-view-recurrence>
+        <silverpeas-calendar-event-view-attachment
+            calendar-event-occurrence="ceo">
+        </silverpeas-calendar-event-view-attachment>
+        <silverpeas-calendar-event-view-crud
+            calendar-event-occurrence="ceo"></silverpeas-calendar-event-view-crud>
+      </pane-extra>
     </silverpeas-calendar-event-view>
     <view:buttonPane>
       <view:button label="${back}" action="${backUri}"/>

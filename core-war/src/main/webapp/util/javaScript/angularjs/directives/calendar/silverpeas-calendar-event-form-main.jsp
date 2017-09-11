@@ -39,6 +39,7 @@
 <fmt:message var="titleLabel" key="GML.title"/>
 <fmt:message var="descriptionLabel" key="GML.description"/>
 <fmt:message var="locationLabel" key="calendar.label.event.location"/>
+<fmt:message var="externalUrlLabel" key="calendar.label.event.externalUrl"/>
 <fmt:message var="onAllDayLabel" key="calendar.label.event.onallday"/>
 <fmt:message var="timezoneLabel" key="calendar.label.timezone"/>
 <fmt:message var="startDateLabel" key="GML.dateBegin"/>
@@ -53,6 +54,7 @@
   <span ng-init="$ctrl.labels.title = '${silfn:escapeJs(titleLabel)}'"></span>
   <span ng-init="$ctrl.labels.description = '${silfn:escapeJs(descriptionLabel)}'"></span>
   <span ng-init="$ctrl.labels.location = '${silfn:escapeJs(locationLabel)}'"></span>
+  <span ng-init="$ctrl.labels.externalUrl = '${silfn:escapeJs(externalUrlLabel)}'"></span>
   <span ng-init="$ctrl.labels.onAllDay = '${silfn:escapeJs(onAllDayLabel)}'"></span>
   <span ng-init="$ctrl.labels.timezone = '${silfn:escapeJs(timezoneLabel)}'"></span>
   <span ng-init="$ctrl.labels.startDate = '${silfn:escapeJs(startDateLabel)}'"></span>
@@ -142,6 +144,14 @@
       <div class="champs">
         <input id="sp_cal_event_form_main_loc" name="title" size="50" maxlength="255"
                ng-model="$ctrl.data.location">
+      </div>
+    </div>
+    <div class="field">
+      <label class="txtlibform" for="sp_cal_event_form_main_extUrl">{{$ctrl.labels.externalUrl}}</label>
+      <div class="champs">
+        <input id="sp_cal_event_form_main_extUrl" name="title" size="50" maxlength="255"
+               ng-model="$ctrl.data.externalUrl"
+               ng-model-options="{getterSetter: true}">
       </div>
     </div>
     <div class="field">

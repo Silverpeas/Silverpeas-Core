@@ -124,12 +124,12 @@
           calendar-event-api="userCalendarEventApi"
           data="data">
       </silverpeas-calendar-event-form-attendees>
-      <%--<silverpeas-calendar-event-form-attachments--%>
-          <%--ng-if="!data.id"--%>
-          <%--form-validation-priority="3"--%>
-          <%--calendar-event-api="userCalendarEventApi"--%>
-          <%--data="data">--%>
-      <%--</silverpeas-calendar-event-form-attachments>--%>
+      <silverpeas-calendar-event-form-attachments
+          ng-if="!data.id"
+          form-validation-priority="3"
+          calendar-event-api="userCalendarEventApi"
+          data="data">
+      </silverpeas-calendar-event-form-attachments>
     </silverpeas-calendar-event-form>
   </view:frame>
 </view:window>

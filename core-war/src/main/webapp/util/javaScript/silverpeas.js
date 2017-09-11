@@ -666,6 +666,9 @@ if (!window.SilverpeasAjaxConfig) {
     },
     getTarget : function() {
       return this.target;
+    },
+    submit : function() {
+      return silverpeasFormSubmit(this);
     }
   });
   SilverpeasAjaxConfig = SilverpeasRequestConfig.extend({
@@ -683,6 +686,9 @@ if (!window.SilverpeasAjaxConfig) {
     },
     getHeaders : function() {
       return this.headers;
+    },
+    execute : function() {
+      return silverpeasAjax(this);
     }
   });
 }
@@ -796,7 +802,9 @@ if (typeof window.silverpeasAjax === 'undefined') {
           "silverpeasFormSubmit function need an instance of SilverpeasFormConfig as first parameter.");
       return;
     }
-    window.top.jQuery.progressMessage();
+    if (!silverpeasFormConfig.getTarget()) {
+      window.top.jQuery.progressMessage();
+    }
     var selector = "form[target=silverpeasFormSubmit]";
     var form = document.querySelector(selector);
     if (!form) {

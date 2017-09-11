@@ -146,7 +146,7 @@
                   });
             } else {
               return sp.promise.resolveDirectlyWith(
-                  SilverpeasCalendarTools.extractEventOccurrenceEntityData());
+                  SilverpeasCalendarTools.newEventOccurrenceEntity());
             }
           };
         }]);

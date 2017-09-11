@@ -39,6 +39,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Spliterator;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -103,6 +104,16 @@ public class AttributeSet implements Cloneable, Iterable<Map.Entry<String, Strin
    */
   public void remove(String name) {
     attributes.remove(name);
+  }
+
+  /**
+   * Removes all of the attributes that match the specified filter.
+   * @param filter the predicate against which each attribute is filtered.
+   * @return the updated attributes in this calendar component.
+   */
+  public AttributeSet removeIf(final Predicate<Map.Entry<String, String>> filter) {
+    attributes.entrySet().removeIf(filter);
+    return this;
   }
 
   /**

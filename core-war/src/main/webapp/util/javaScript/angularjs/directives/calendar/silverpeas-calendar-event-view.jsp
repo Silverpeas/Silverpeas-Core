@@ -21,14 +21,8 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<c:set var="userLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
-<fmt:setLocale value="${userLanguage}"/>
-<view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle"/>
-
-<div ng-transclude></div>
+<silverpeas-single-resource-view>
+  <pane-main ng-transclude="main"></pane-main>
+  <pane-extra ng-transclude="extra"></pane-extra>
+</silverpeas-single-resource-view>

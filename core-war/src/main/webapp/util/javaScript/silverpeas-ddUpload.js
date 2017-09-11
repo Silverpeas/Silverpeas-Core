@@ -84,7 +84,7 @@ var dragAndDropUploadEnabled = window.File;
 
     this.monitor = new DragAndDropUploadMonitor(this);
 
-    document.addEventListener('DOMContentLoaded', function() {
+    whenSilverpeasReady(function() {
       this.container = __renderContainer(this);
       this.container.addEventListener('drop', function(event) {
         if (!this.context.mute) {

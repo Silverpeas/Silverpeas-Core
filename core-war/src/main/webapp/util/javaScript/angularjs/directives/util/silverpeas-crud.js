@@ -23,27 +23,44 @@
  */
 
 (function() {
-  angular.module('silverpeas.directives').directive('silverpeasAttachment',
+  angular.module('silverpeas.directives').directive('silverpeasCrud',
       [function() {
         return {
-          template: '<div ng-include src="$ctrl.getTemplateUrl()"></div>',
+          template: '<div ng-include src="$ctrl.getTemplateUrl()" onload="$ctrl.performTransclusions()"></div>',
           restrict : 'E',
           scope: {
-            componentId: '@',
-            resourceId: '@',
-            readOnly: '@'
+            createDate: '@',
+            createdBy: '@',
+            lastUpdateDate: '@',
+            lastUpdatedBy: '@',
+            permalink: '@',
+            permalinkAlt: '@',
+            permalinkIconUrl: '@'
           },
           controllerAs: '$ctrl',
           bindToController: true,
-          controller : [function() {
+          controller : ['$timeout', function($timeout) {
+
             //function used on the ng-include to resolve the template
             this.getTemplateUrl = function() {
-              var config = sp.ajaxConfig(webContext + '/util/javaScript/angularjs/directives/util/silverpeas-attachment.jsp');
-              config.withParam('componentId', this.componentId);
-              config.withParam('resourceId', encodeURIComponent(this.resourceId));
-              config.withParam('readOnly', this.readOnly);
+              var config = sp.ajaxConfig(webContext + '/util/javaScript/angularjs/directives/util/silverpeas-crud.jsp');
+              config.withParam('createDate', this.createDate);
+              config.withParam('createdBy', this.createdBy);
+              if (this.createDate !== this.lastUpdateDate) {
+                config.withParam('lastUpdateDate', this.lastUpdateDate);
+                config.withParam('lastUpdatedBy', this.lastUpdatedBy);
+              }
+              config.withParam('permalink', this.permalink);
+              config.withParam('permalinkAlt', this.permalinkAlt);
+              config.withParam('permalinkIconUrl', this.permalinkIconUrl);
               return config.getUrl();
-            }
+            };
+
+            // function used to perform the before and after transclusions
+            this.performTransclusions = function() {
+              $timeout(function() {
+              }, 0);
+            };
           }]
         }
       }]);

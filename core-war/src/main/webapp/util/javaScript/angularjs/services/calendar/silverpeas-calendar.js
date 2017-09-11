@@ -51,6 +51,7 @@
           // the type CalendarEventOccurrence
           var CalendarEventOccurrence = function() {
             this.type = 'CalendarEventOccurrence';
+            SilverpeasCalendarTools.applyEventOccurrenceEntityAttributeWrappers(this);
           };
 
           /**
@@ -147,7 +148,7 @@
             if (context.component) {
               parameters = extendsObject({}, parameters);
               var url = baseUri + '/events/occurrences/next';
-              var adapter = RESTAdapter.get(url, function() {});
+              var adapter = RESTAdapter.get(url, CalendarEventOccurrence);
               return adapter.find({
                 url : url,
                 criteria : adapter.criteria({

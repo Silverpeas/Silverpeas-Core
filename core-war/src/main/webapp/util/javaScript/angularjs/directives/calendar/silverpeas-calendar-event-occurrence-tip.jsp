@@ -21,8 +21,13 @@
   ~ You should have received a copy of the GNU Affero General Public License
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
-<div class="occurrence-location"  ng-if="$ctrl.occurrence.location">
-  <span  ng-bind-html="$ctrl.occurrence.location | noHTML | newlines"></span>
+<div class="occurrence-extra">
+  <div class="occurrence-location"  ng-if="$ctrl.occurrence.location">
+    <span ng-bind-html="$ctrl.occurrence.location | noHTML | newlines"></span>
+  </div>
+  <div class="occurrence-external-link"  ng-if="$ctrl.occurrence.externalUrl()">
+    <a target="_blank" href="{{$ctrl.occurrence.externalUrl()}}">{{$ctrl.occurrence.externalUrl()}}</a>
+  </div>
 </div>
 <div>
   <span class="occurrence-description" ng-bind-html="$ctrl.occurrence.description | noHTML | newlines"></span>

@@ -165,6 +165,12 @@
                   SilverpeasError.add(this.getMessages().nbMax.replace('@name@',
                       this.labels.location).replace('@length@', '255'));
                 }
+                // ExternalUrl
+                var externalUrl = this.data.externalUrl();
+                if (externalUrl && externalUrl.isDefined() && externalUrl.nbChars() > 255) {
+                  SilverpeasError.add(this.getMessages().nbMax.replace('@name@',
+                      this.labels.externalUrl).replace('@length@', '255'));
+                }
                 // Period
                 var dateTimeValidations = [{
                   status : this.data.startDateStatus,
@@ -221,6 +227,7 @@
                 ceo.title = this.data.title;
                 ceo.description = this.data.description;
                 ceo.location = this.data.location;
+                ceo.externalUrl(this.data.externalUrl());
                 ceo.onAllDay = this.data.onAllDay;
                 ceo.visibility = this.data.visibility;
                 ceo.priority = this.data.priority;

@@ -51,7 +51,7 @@
 
 <script type="text/ng-template" id="###silverpeas.calendar.event.occurrence-list-item.display-grouped-by-month">
   <h2 class="occurrence-name">{{$ctrl.occurrence.title}}</h2>
-  <div class="occurrence-extra" ng-if="$ctrl.occurrence.location || !$ctrl.occurrence.onAllDay">
+  <div class="occurrence-extra" ng-if="$ctrl.occurrence.location || !$ctrl.occurrence.onAllDay || $ctrl.occurrence.externalUrl()">
     <div class="occurrence-location" ng-if="$ctrl.occurrence.location">
       <div class="bloc"><span>{{$ctrl.occurrence.location}}</span></div>
     </div>
@@ -59,6 +59,12 @@
       <div class="bloc">
         <span>${fromLabel} {{$ctrl.occurrence.startDate | displayAsTime}}</span>
         <span>${toLabel} {{$ctrl.occurrence.endDate | displayAsDate}} ${atLabel} {{$ctrl.occurrence.endDate | displayAsTime}}</span>
+      </div>
+    </div>
+    <div class="occurrence-external-link" ng-if="$ctrl.occurrence.externalUrl()">
+      <div class="bloc" ng-click="$ctrl.performExternalLink();$event.stopPropagation()">
+        <a target="_blank" href="javascript:void(0)"
+           ng-click="$ctrl.performExternalLink();$event.stopPropagation()">{{$ctrl.occurrence.externalUrl()}}</a>
       </div>
     </div>
   </div>

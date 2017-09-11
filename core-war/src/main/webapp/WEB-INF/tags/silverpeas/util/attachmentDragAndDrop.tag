@@ -29,7 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<c:set var="userLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment"/>
 
@@ -79,7 +79,7 @@
 <jsp:useBean id="publisherRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
 
-  <c:set var="domIdSuffix" value="${fn:replace(resourceId, '-', '_')}"/>
+  <c:set var="domIdSuffix" value="${fn:replace(fn:replace(resourceId, '=', '_'), '-', '_')}"/>
 
   <c:set var="_ddIsI18n" value="${silfn:isI18n() && silfn:isDefined(contentLanguage)}"/>
 

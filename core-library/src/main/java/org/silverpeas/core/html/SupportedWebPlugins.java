@@ -208,5 +208,14 @@ public enum SupportedWebPlugins {
   /**
    * External plugin to centralize the management of Silverpeas's user notification
    */
-  USERNOTIFICATION
+  USERNOTIFICATION,
+  /**
+   * Silverpeas plugin to render a pane with the attachments of a given Silverpeas resource
+   * (publication, suggestion, event, ...) in a given component instance.
+   */
+  CRUD,
+  /**
+   * Silverpeas plugin to render panes (view layout).
+   */
+  PANES
 }

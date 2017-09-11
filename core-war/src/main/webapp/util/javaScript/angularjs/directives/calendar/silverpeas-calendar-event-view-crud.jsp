@@ -22,11 +22,8 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<silverpeas-crud create-date="{{$ctrl.ceo.createDate}}"
+                 created-by="{{$ctrl.ceo.createdById}}"
+                 last-update-date="{{$ctrl.ceo.lastUpdateDate}}"
+                 last-updated-by="{{$ctrl.ceo.lastUpdatedById}}"></silverpeas-crud>
 
-<c:set var="componentId" value="${param.componentId}"/>
-<c:set var="resourceId"  value="${param.resourceId}"/>
-<c:set var="readOnly"    value="${param.readOnly}"/>
-
-<view:attachmentPane componentId="${componentId}" resourceId="${resourceId}" readOnly="${readOnly}"/>
