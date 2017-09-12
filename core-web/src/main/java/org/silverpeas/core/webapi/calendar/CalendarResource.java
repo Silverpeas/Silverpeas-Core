@@ -514,7 +514,7 @@ public class CalendarResource extends AbstractCalendarResource {
       final CalendarEvent event =
           getCalendarWebServiceProvider().createEvent(calendar, eventEntity.getMergedEvent());
       Attachments.from(eventEntity.getAttachmentParameters())
-          .attachTo(LocalizedContribution.from(event, getUserPreferences().getLanguage()));
+          .attachTo(LocalizedContribution.from(event));
       return event;
     }).execute();
     return asEventWebEntity(createdEvent);
