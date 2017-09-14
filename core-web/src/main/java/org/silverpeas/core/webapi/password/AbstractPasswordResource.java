@@ -78,11 +78,11 @@ public abstract class AbstractPasswordResource extends RESTWebService {
   /**
    * Due to the particularity of this WEB Service according to authentication, the language is
    * handled at this level.
-   * @return
+   * @return the language code
    */
   protected String getLanguage() {
     String language = I18NHelper.defaultLanguage;
-    if (getUserDetail() != null) {
+    if (getUser() != null) {
       language = getUserPreferences().getLanguage();
     }
     return language;

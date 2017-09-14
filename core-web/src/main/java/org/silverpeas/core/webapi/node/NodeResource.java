@@ -23,25 +23,33 @@
  */
 package org.silverpeas.core.webapi.node;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.node.model.NodeDetail;
-
 /**
  * A REST Web resource providing access to a node through private mode.
  */
 @Service
 @RequestScoped
-@Path("private/nodes/{componentId}")
+@Path(NodeResource.PATH + "/{componentId}")
 @Authorized
 public class NodeResource extends AbstractNodeResource {
+
+  static final String PATH = "private/nodes";
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
@@ -70,7 +78,7 @@ public class NodeResource extends AbstractNodeResource {
 
   @Override
   protected boolean isNodeReadable(NodeDetail node) {
-    return node.canBeAccessedBy(getUserDetail());
+    return node.canBeAccessedBy(UserDetail.from(getUser()));
   }
 
 }

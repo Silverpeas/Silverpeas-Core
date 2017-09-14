@@ -37,6 +37,11 @@ public abstract class AbstractCalendarResource extends RESTWebService {
   private String componentInstanceId;
 
   @Override
+  protected String getResourceBasePath() {
+    return CalendarResourceURIs.CALENDAR_BASE_URI;
+  }
+
+  @Override
   public String getComponentId() {
     return componentInstanceId;
   }

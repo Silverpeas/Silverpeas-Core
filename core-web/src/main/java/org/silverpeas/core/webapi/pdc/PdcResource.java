@@ -23,26 +23,31 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
-import java.util.List;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
+
 import javax.inject.Inject;
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
+import java.util.List;
 
-import static org.silverpeas.core.webapi.pdc.PdcEntity.*;
-
-import javax.ws.rs.*;
-
-import static org.silverpeas.core.webapi.pdc.PdcServiceProvider.inComponentOfId;
 import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.webapi.pdc.PdcEntity.*;
+import static org.silverpeas.core.webapi.pdc.PdcServiceProvider.inComponentOfId;
 
 /**
  * A REST Web resource that represents the classification plan (named PdC).
@@ -61,9 +66,11 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 @Service
 @RequestScoped
-@Path("pdc")
+@Path(PdcResource.PATH)
 @Authenticated
 public class PdcResource extends RESTWebService {
+
+  static final String PATH = "pdc";
 
   @Inject
   private PdcServiceProvider pdcServiceProvider;
@@ -109,7 +116,7 @@ public class PdcResource extends RESTWebService {
       return aPdcEntityWithUsedAxis(
           axis,
           inLanguage(userPreferences.getLanguage()),
-          atURI(getUriInfo().getRequestUri()),
+          atURI(getUri().getRequestUri()),
           withThesaurusAccordingTo(userPreferences));
     } catch (ContentManagerException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
@@ -138,13 +145,18 @@ public class PdcResource extends RESTWebService {
       return aPdcEntityWithAxis(
           axis,
           inLanguage(userPreferences.getLanguage()),
-          atURI(getUriInfo().getRequestUri()),
+          atURI(getUri().getRequestUri()),
           withThesaurusAccordingTo(userPreferences));
     } catch (WebApplicationException ex) {
       throw ex;
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
+  }
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
   }
 
   @Override
@@ -176,7 +188,7 @@ public class PdcResource extends RESTWebService {
   private UserThesaurusHolder withThesaurusAccordingTo(UserPreferences userPreferences) {
     UserThesaurusHolder thesaurus = NoThesaurus;
     if (userPreferences.isThesaurusEnabled()) {
-      thesaurus = pdcServiceProvider().getThesaurusOfUser(getUserDetail());
+      thesaurus = pdcServiceProvider().getThesaurusOfUser(UserDetail.from(getUser()));
     }
     return thesaurus;
   }

@@ -23,28 +23,35 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
-import java.net.URI;
 import javax.inject.Inject;
 import javax.validation.ConstraintViolationException;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
+import java.net.URI;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
-import static org.silverpeas.core.pdc.pdc.model.PdcClassification
-    .aPredefinedPdcClassificationForComponentInstance;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPredefinedPdcClassificationForComponentInstance;
 import static org.silverpeas.core.webapi.pdc.PdcClassificationEntity.*;
-
-import javax.ws.rs.*;
 
 /**
  * A REST Web resource that represents the predefined classifications on the PdC to classify the
@@ -84,15 +91,21 @@ import javax.ws.rs.*;
  */
 @Service
 @RequestScoped
-@Path("pdc/classification/{componentId:[a-zA-Z]+[0-9]+}")
+@Path(PdcClassificationResource.PATH + "/{componentId:[a-zA-Z]+[0-9]+}")
 @Authorized
 public class PdcPredefinedClassificationResource extends RESTWebService {
 
-  private static final String BASE_URI_PATH = "pdc/classification/{componentId:[a-zA-Z]+[0-9]+}";
+  private static final String BASE_URI_PATH = PdcClassificationResource.PATH +
+      "/{componentId:[a-zA-Z]+[0-9]+}";
   @Inject
   private PdcServiceProvider pdcServiceProvider;
   @PathParam("componentId")
   private String componentId;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PdcClassificationResource.PATH;
+  }
 
   @Override
   public String getComponentId() {
@@ -235,7 +248,7 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
       theClassificationEntity.setModifiable(classification.isModifiable());
       if (userPreferences.isThesaurusEnabled()) {
         UserThesaurusHolder theUserThesaurus =
-            pdcServiceProvider().getThesaurusOfUser(getUserDetail());
+            pdcServiceProvider().getThesaurusOfUser(UserDetail.from(getUser()));
         theClassificationEntity.withSynonymsFrom(theUserThesaurus);
       }
     }
@@ -243,7 +256,7 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   }
 
   private PdcClassification fromWebEntity(final PdcClassificationEntity entity) {
-    String nodeId = getUriInfo().getQueryParameters().getFirst("nodeId");
+    String nodeId = getUri().getQueryParameters().getFirst("nodeId");
     PdcClassification classification =
         aPredefinedPdcClassificationForComponentInstance(getComponentId()).
             forNode(nodeId).
@@ -267,11 +280,11 @@ public class PdcPredefinedClassificationResource extends RESTWebService {
   private URI theUriOf(final PdcClassification classification) {
     URI uri;
     if (classification.isPredefinedForANode()) {
-      uri = getUriInfo().getBaseUriBuilder().path(BASE_URI_PATH)
+      uri = getUri().getBaseUriBuilder().path(BASE_URI_PATH)
           .queryParam("nodeId", classification.getNodeId())
           .build(classification.getComponentInstanceId());
     } else {
-      uri = getUriInfo().getBaseUriBuilder().path(BASE_URI_PATH).build(classification.
+      uri = getUri().getBaseUriBuilder().path(BASE_URI_PATH).build(classification.
           getComponentInstanceId());
     }
     return uri;

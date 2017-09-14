@@ -27,7 +27,7 @@ import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
-import org.silverpeas.core.webapi.base.WebResource;
+import org.silverpeas.core.webapi.base.ProtectedWebResource;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import javax.annotation.Priority;
@@ -52,8 +52,8 @@ public class ComponentExistenceAspect {
   @AroundInvoke
   public Object processAuthorization(InvocationContext context) throws Exception {
     Object target = context.getTarget();
-    if (target instanceof WebResource) {
-      WebResource resource = (WebResource) target;
+    if (target instanceof ProtectedWebResource) {
+      ProtectedWebResource resource = (ProtectedWebResource) target;
       String instanceId = null;
       try {
         instanceId = resource.getComponentId();

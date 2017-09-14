@@ -23,7 +23,17 @@
  */
 package org.silverpeas.core.webapi.publication;
 
-import java.util.List;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.attachment.util.SharingContext;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.security.ShareableNode;
+import org.silverpeas.core.sharing.services.SharingServiceProvider;
+import org.silverpeas.core.webapi.attachment.AttachmentEntity;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -33,32 +43,27 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.core.sharing.services.SharingServiceProvider;
-import org.silverpeas.core.contribution.attachment.util.SharingContext;
-
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.attachment.AttachmentEntity;
-import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.sharing.security.ShareableNode;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import java.util.List;
 
 /**
  * A REST Web resource providing access to publications through sharing mode.
  */
 @Service
 @RequestScoped
-@Path("sharing/publications/{token}")
+@Path(SharedPublicationResource.PATH + "/{token}")
 public class SharedPublicationResource extends AbstractPublicationResource {
+
+  static final String PATH = "sharing/publications";
 
   @PathParam("token")
   private String token;
 
   private Ticket ticket;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @Override
   public String getComponentId() {
@@ -74,9 +79,9 @@ public class SharedPublicationResource extends AbstractPublicationResource {
     PublicationPK pk =
         new PublicationPK(String.valueOf(this.ticket.getSharedObjectId()), getComponentId());
 
-    PublicationDetail publication = super.getPublicationBm().getDetail(pk);
+    PublicationDetail publication = super.getPublicationService().getDetail(pk);
 
-    String baseUri = super.getUriInfo().getBaseUri().toString();
+    String baseUri = getUri().getBaseUri().toString();
     SharingContext context = new SharingContext(baseUri, token);
     PublicationEntity entity = super.getPublicationEntity(publication, true).withSharedContent(
         context);
@@ -109,7 +114,7 @@ public class SharedPublicationResource extends AbstractPublicationResource {
     List<AttachmentEntity> attachments = publication.getAttachments();
     if (attachments != null) {
       for (AttachmentEntity attachment : attachments) {
-        attachment.withSharedUri(super.getUriInfo().getBaseUri().toString(), token);
+        attachment.withSharedUri(getUri().getBaseUri().toString(), token);
       }
     }
   }
@@ -117,7 +122,7 @@ public class SharedPublicationResource extends AbstractPublicationResource {
   @Override
   protected boolean isNodeReadable(NodePK nodePK) {
     nodePK.setComponentName(getComponentId());
-    NodeDetail node = super.getNodeBm().getDetail(nodePK);
+    NodeDetail node = super.geetNodeService().getDetail(nodePK);
     ShareableNode nodeResource = new ShareableNode(token, node);
     return this.ticket.getAccessControl().isReadable(nodeResource);
   }

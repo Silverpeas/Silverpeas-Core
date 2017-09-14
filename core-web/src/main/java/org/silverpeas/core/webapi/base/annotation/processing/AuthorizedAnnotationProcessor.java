@@ -25,7 +25,7 @@ package org.silverpeas.core.webapi.base.annotation.processing;
 
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.webapi.base.WebResource;
+import org.silverpeas.core.webapi.base.ProtectedWebResource;
 
 import javax.annotation.Priority;
 import javax.inject.Inject;
@@ -49,8 +49,8 @@ public class AuthorizedAnnotationProcessor {
   @AroundInvoke
   public Object processAuthorization(InvocationContext context) throws Exception {
     Object target = context.getTarget();
-    if (target instanceof WebResource) {
-      WebResource resource = (WebResource) target;
+    if (target instanceof ProtectedWebResource) {
+      ProtectedWebResource resource = (ProtectedWebResource) target;
       resource.validateUserAuthentication(validation);
       resource.validateUserAuthorization(validation);
     }

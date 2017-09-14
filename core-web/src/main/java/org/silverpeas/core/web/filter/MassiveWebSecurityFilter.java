@@ -29,12 +29,12 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.SilverpeasWebResource;
 import org.silverpeas.core.web.filter.exception.WebSecurityException;
 import org.silverpeas.core.web.filter.exception.WebSqlInjectionSecurityException;
 import org.silverpeas.core.web.filter.exception.WebXssInjectionSecurityException;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.util.security.SecuritySettings;
-import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -62,8 +62,7 @@ public class MassiveWebSecurityFilter implements Filter {
   private static final SilverLogger logger = SilverLogger.getLogger("silverpeas.core.security");
 
   private final static String WEB_SERVICES_URI_PREFIX =
-      UriBuilder.fromUri(URLUtil.getApplicationURL())
-          .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).build().toString();
+      SilverpeasWebResource.getBasePathBuilder().build().toString();
 
   private final static String WEB_PAGES_URI_PREFIX =
       UriBuilder.fromUri(URLUtil.getApplicationURL()).path("RwebPages").build().toString();

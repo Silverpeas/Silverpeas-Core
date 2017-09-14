@@ -101,6 +101,15 @@ public class UserDetail implements User {
   private Integer notifManualReceiverLimit;
 
   /**
+   * Gets a {@link UserDetail} form of the specified user.
+   * @param user a user.
+   * @return a user detail.
+   */
+  public static final UserDetail from(final User user) {
+    return (UserDetail) user;
+  }
+
+  /**
    * Gets the detail about the specified user.
    * @param userId the unique identifier of the user to get.
    * @return the detail about the user with the specified identifier or null if no such user exists.

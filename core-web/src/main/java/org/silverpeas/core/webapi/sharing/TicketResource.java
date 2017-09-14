@@ -23,17 +23,18 @@
  */
 package org.silverpeas.core.webapi.sharing;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.sharing.services.SharingTicketService;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
 import org.silverpeas.core.web.sharing.notification.FileSharingUserNotification;
-import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -45,21 +46,24 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.silverpeas.core.util.logging.SilverLogger.*;
-
 @Service
 @RequestScoped
-@Path("mytickets/")
+@Path(TicketResource.PATH)
 @Authorized
 public class TicketResource extends RESTWebService {
 
+  static final String PATH = "mytickets";
+
   private String componentId = null;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @Override
   public String getComponentId() {
@@ -69,15 +73,15 @@ public class TicketResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<TicketEntity> getMyTickets() {
-    String baseUri = getUriInfo().getBaseUri().toString();
     List<Ticket> sharingTickets =
-        SharingServiceProvider.getSharingTicketService().getTicketsByUser(getUserDetail().getId());
+        SharingServiceProvider.getSharingTicketService().getTicketsByUser(getUser().getId());
     if (CollectionUtil.isEmpty(sharingTickets)) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
     List<TicketEntity> tickets = new ArrayList<>(sharingTickets.size());
     for (Ticket ticket : sharingTickets) {
-      tickets.add(TicketEntity.fromTicket(ticket, getMyTicketUri(baseUri, ticket.getToken())));
+      tickets.add(TicketEntity.fromTicket(ticket,
+          getUri().getWebResourcePathBuilder().path(ticket.getToken()).build()));
     }
     return tickets;
   }
@@ -91,7 +95,7 @@ public class TicketResource extends RESTWebService {
     validateUserAuthorizationOn(componentId);
     Ticket ticket;
     try {
-      ticket = ticketEntity.toTicket(getUserDetail());
+      ticket = ticketEntity.toTicket(UserDetail.from(getUser()));
     } catch (ParseException e) {
       return Response.serverError().build();
     }
@@ -113,17 +117,6 @@ public class TicketResource extends RESTWebService {
     this.componentId = componentId;
     UserPrivilegeValidation validation = UserPrivilegeValidation.get();
     validateUserAuthorization(validation);
-  }
-
-  private URI getMyTicketUri(String baseUri, String ticketId) {
-    URI uri;
-    try {
-      uri = new URI(baseUri + "mytickets/" + ticketId);
-    } catch (URISyntaxException ex) {
-      getLogger(this).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
-    }
-    return uri;
   }
 
   private SharingTicketService getFileSharingService() {

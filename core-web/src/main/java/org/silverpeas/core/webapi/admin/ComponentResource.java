@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.admin;
 
+import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
@@ -43,7 +44,9 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.UriInfo;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,6 +72,19 @@ public class ComponentResource extends AbstractAdminResource {
 
   @XmlTransient
   private String fullComponentId;
+
+  @Context
+  private UriInfo uriInfo;
+
+  @Override
+  protected String getResourceBasePath() {
+    return COMPONENTS_BASE_URI;
+  }
+
+  @Override
+  public WebResourceUri getUri() {
+    return new WebResourceUri(getResourceBasePath(), getHttpServletRequest(), uriInfo);
+  }
 
   /**
    * Gets the JSON representation of the specified existing ComponentInstLight.
@@ -135,22 +151,29 @@ public class ComponentResource extends AbstractAdminResource {
           if (roleEntity == null) {
             roleEntity = UsersAndGroupsRoleEntity
                 .createFrom(role, resource.getString("JSPP." + role.getName()));
-            roleEntity
-                .withURI(buildURIOfComponentUsersAndGroupsRoles(componentId, role, getUriInfo()))
-                .withParentURI(buildURIOfComponent(componentId, getUriInfo()));
+            roleEntity.withURI(getUri().getWebResourcePathBuilder()
+                .path(componentId)
+                .path(USERS_AND_GROUPS_ROLES_URI_PART)
+                .queryParam("roles", role.getName())
+                .build())
+                .withParentURI(getUri().getWebResourcePathBuilder().path(componentId).build());
             result.put(role, roleEntity);
           }
 
           // Users
           for (String userId : profile.getAllUsers()) {
-            roleEntity.addUser(buildURI(getUriInfo().getBaseUri().toString(),
-                ProfileResourceBaseURIs.USERS_BASE_URI, userId));
+            roleEntity.addUser(getUri().getBaseUriBuilder()
+                .path(ProfileResourceBaseURIs.USERS_BASE_URI)
+                .path(userId)
+                .build());
           }
 
           // Groups
           for (String groupId : profile.getAllGroups()) {
-            roleEntity.addGroup(buildURI(getUriInfo().getBaseUri().toString(),
-                ProfileResourceBaseURIs.GROUPS_BASE_URI, groupId));
+            roleEntity.addGroup(getUri().getBaseUriBuilder()
+                .path(ProfileResourceBaseURIs.GROUPS_BASE_URI)
+                .path(groupId)
+                .build());
           }
         }
       }
@@ -173,8 +196,8 @@ public class ComponentResource extends AbstractAdminResource {
     if (!StringUtil.isDefined(fullComponentId)) {
       final Collection<ComponentInstLight> components = loadComponents(componentId);
       final ComponentInstLight component =
-          (components.isEmpty() ? null : components.iterator().next());
-      fullComponentId = (component != null ? component.getId() : componentId);
+          components.isEmpty() ? null : components.iterator().next();
+      fullComponentId = component != null ? component.getId() : componentId;
     }
     return fullComponentId;
   }

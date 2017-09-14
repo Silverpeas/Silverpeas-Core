@@ -39,8 +39,15 @@ import java.text.MessageFormat;
 
 public class AbstractSimpleDocumentResource extends RESTWebService {
 
+  static final String PATH = "documents";
+
   @PathParam("componentId")
   private String componentId;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @Override
   public String getComponentId() {

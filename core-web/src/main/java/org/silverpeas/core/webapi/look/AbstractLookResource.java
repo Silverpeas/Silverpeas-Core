@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.webapi.look;
 
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
+
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
-
-import org.silverpeas.core.webapi.base.RESTWebService;
 
 /**
  * Centralizations of look resource processings
@@ -74,7 +73,7 @@ public abstract class AbstractLookResource extends RESTWebService {
     // If the look helper is not accessible, then the user is not authorized
     if (lookDelegate == null) {
       lookDelegate =
-          LookWebDelegate.getInstance(getUserDetail(), getUserPreferences(),
+          LookWebDelegate.getInstance(getUser(), getUserPreferences(),
               getHttpServletRequest());
     }
     return (lookDelegate != null && lookDelegate.getHelper() != null);

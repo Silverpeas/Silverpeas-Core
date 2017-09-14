@@ -652,7 +652,7 @@ function removePosition(position, positions) {
         if (settings.update.activated) {
           positionLabel.append(
                   $('<a>', {
-            href: 'javascript:return false;',
+            href: 'javascript:void(0);',
             title: settings.update.title + ' ' + (posindex + 1)
           }).addClass('edit').
                   append($('<img>', {
@@ -665,7 +665,7 @@ function removePosition(position, positions) {
 
         if (settings.deletion.activated) {
           positionLabel.append($('<a>', {
-            href: 'javascript:return false;',
+            href: 'javascript:void(0);',
             title: settings.deletion.title + ' ' + (posindex + 1)
           }).addClass('delete').
                   append($('<img>', {
@@ -684,7 +684,7 @@ function removePosition(position, positions) {
     }
     if (settings.addition.activated) {
       $('<a>', {
-        href: 'javascript:return false;'
+        href: 'javascript:void(0);'
       }).addClass('add_position').html(settings.addition.title).click(function() {
         settings.onAddition();
       }).appendTo($("#" + settings.id + '_allpositions'));
@@ -1082,7 +1082,7 @@ function removePosition(position, positions) {
     // the same axis
     if (settings.multiValuation) {
       $('<a>', {
-        href: 'javascript:return false;',
+        href: 'javascript:void(0);',
         title: settings.anotherValueLegend
       }).addClass('another-value').click(function() {
         duplicateAxis($axisDiv, settings, selectedPositions, anAxis);
@@ -1195,7 +1195,7 @@ function removePosition(position, positions) {
 
       if (!settings.dialogBox && settings.onValuesSelected) {
         $thisPdcAxisValuesSelector.append($('<a>', {
-          href: 'javascript:return false;'
+          href: 'javascript:void(0);'
         }).addClass('valid_position').
            addClass('sp_button').
            html(settings.labelOk).click(function() {

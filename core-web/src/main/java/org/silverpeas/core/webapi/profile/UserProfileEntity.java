@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.profile;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.webapi.base.WebEntity;
@@ -116,8 +117,8 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
    * @param user the user details to decorate.
    * @return a web entity representing the profile of a user.
    */
-  public static UserProfileEntity fromUser(final UserDetail user) {
-    return new UserProfileEntity(user);
+  public static UserProfileEntity fromUser(final User user) {
+    return new UserProfileEntity(UserDetail.from(user));
   }
 
   /**

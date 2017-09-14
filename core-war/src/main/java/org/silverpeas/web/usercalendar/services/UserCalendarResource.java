@@ -74,17 +74,14 @@ public class UserCalendarResource extends CalendarResource {
       final LocalDate startDate, final LocalDate endDate) {
     List<CalendarEventOccurrenceEntity> result =
         super.getEventOccurrencesOf(calendar, startDate, endDate);
-    if (calendar.isMainPersonalOf(getUserDetail())) {
+    if (calendar.isMainPersonalOf(getUser())) {
       // Add occurrence participation of user
       List<CalendarEventOccurrenceEntity> participationOccurrences =
-          getAllEventOccurrencesFrom(startDate, endDate, Collections.singleton(getUserDetail()))
+          getAllEventOccurrencesFrom(startDate, endDate, Collections.singleton(getUser()))
               .get(0).getOccurrences();
       result.addAll(participationOccurrences);
     }
     return result;
   }
 
-  protected String getServiceBaseUri() {
-    return USER_CALENDAR_BASE_URI;
-  }
 }

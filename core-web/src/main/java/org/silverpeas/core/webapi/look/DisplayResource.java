@@ -23,7 +23,9 @@
  */
 package org.silverpeas.core.webapi.look;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -31,9 +33,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
+import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
 
 /**
  * A REST Web resource giving space data.
@@ -44,6 +44,11 @@ import org.silverpeas.core.annotation.Service;
 @Path(LookResourceURIs.DISPLAY_BASE_URI)
 @Authenticated
 public class DisplayResource extends AbstractLookResource {
+
+  @Override
+  protected String getResourceBasePath() {
+    return LookResourceURIs.DISPLAY_BASE_URI;
+  }
 
   /**
    * Gets the JSON representation of the user display context.
@@ -59,7 +64,7 @@ public class DisplayResource extends AbstractLookResource {
   public DisplayUserContextEntity getUserContext() {
     try {
       return DisplayUserContextEntity.createFrom(getLookDelegate().getHelper(),
-          getUserPreferences()).withURI(getUriInfo().getRequestUri());
+          getUserPreferences()).withURI(getUri().getRequestUri());
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -73,7 +78,6 @@ public class DisplayResource extends AbstractLookResource {
    */
   @Override
   public String getComponentId() {
-    throw new UnsupportedOperationException(
-        "The DisplayResource doesn't belong to any component instance ids");
+    return null;
   }
 }

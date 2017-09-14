@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
@@ -69,9 +70,11 @@ import static org.silverpeas.core.webapi.pdc.PdcServiceProvider.inComponentOfId;
  */
 @Service
 @RequestScoped
-@Path("pdc/classification/{componentId:[a-zA-Z]+[0-9]+}/{contentId}")
+@Path(PdcClassificationResource.PATH + "/{componentId:[a-zA-Z]+[0-9]+}/{contentId}")
 @Authorized
 public class PdcClassificationResource extends RESTWebService {
+
+  static final String PATH = "pdc/classification";
 
   @Inject
   private PdcServiceProvider pdcServiceProvider;
@@ -79,6 +82,11 @@ public class PdcClassificationResource extends RESTWebService {
   private String componentId;
   @PathParam("contentId")
   private String contentId;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @Override
   public String getComponentId() {
@@ -102,7 +110,7 @@ public class PdcClassificationResource extends RESTWebService {
   @Produces({MediaType.APPLICATION_JSON})
   public PdcClassificationEntity getPdCClassification() {
     try {
-      URI itsURI = getUriInfo().getAbsolutePath();
+      URI itsURI = getUri().getRequestUri();
       return thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI));
     } catch (ContentManagerException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
@@ -169,8 +177,8 @@ public class PdcClassificationResource extends RESTWebService {
           forContentOfId(getContentId()),
           inComponentOfId(getComponentId()));
       String positionId = String.valueOf(position.getPositionId());
-      URI newPositionURI = getUriInfo().getAbsolutePathBuilder().path(positionId).build();
-      URI itsURI = getUriInfo().getAbsolutePath();
+      URI newPositionURI = getUri().getAbsolutePathBuilder().path(positionId).build();
+      URI itsURI = getUri().getAbsolutePath();
       return Response.created(newPositionURI).
           entity(thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI))).
           build();
@@ -211,8 +219,9 @@ public class PdcClassificationResource extends RESTWebService {
           position,
           forContentOfId(getContentId()),
           inComponentOfId(getComponentId()));
-      URI itsURI = getUriInfo().getBaseUriBuilder().path(
-          "pdc/classification/{componentId}/{contentId}").build(getComponentId(), getContentId());
+      URI itsURI = getUri().getWebResourcePathBuilder()
+          .path("{componentId}/{contentId}")
+          .build(getComponentId(), getContentId());
       return thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI));
     } catch (ContentManagerException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
@@ -235,7 +244,7 @@ public class PdcClassificationResource extends RESTWebService {
         atURI(uri));
     if (userPreferences.isThesaurusEnabled()) {
       UserThesaurusHolder theUserThesaurus =
-          pdcServiceProvider().getThesaurusOfUser(getUserDetail());
+          pdcServiceProvider().getThesaurusOfUser(UserDetail.from(getUser()));
       theClassificationEntity.withSynonymsFrom(theUserThesaurus);
     }
     return theClassificationEntity;

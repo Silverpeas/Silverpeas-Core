@@ -47,6 +47,11 @@ import javax.ws.rs.core.Response.Status;
 @Authenticated
 public class MessageResource extends AbstractMessageResource {
 
+  @Override
+  protected String getResourceBasePath() {
+    return MessageResourceURIs.MESSAGE_BASE_URI;
+  }
+
   /**
    * User authentication is not necessary for this WEB Service. The authentication processing is
    * used here to identify the user behind the call if possible.

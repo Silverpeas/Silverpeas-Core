@@ -23,17 +23,17 @@
  */
 package org.silverpeas.core.webapi.admin;
 
-import java.net.URI;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
-
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
+import java.net.URI;
 
 /**
  * The space instance light entity is a SpaceInstLight object that is exposed in the web as
@@ -74,9 +74,11 @@ public abstract class AbstractPersonnalEntity extends AbstractTypeEntity {
 
   @SuppressWarnings("unchecked")
   public <T extends AbstractPersonnalEntity> T withUriBase(final URI uriBase) {
-    uri =
-        AdminResourceURIs
-            .buildURI(uriBase.toString(), AdminResourceURIs.SPACES_BASE_URI, AdminResourceURIs.SPACES_PERSONAL_URI_PART, getUriIdentifier());
+    uri = UriBuilder.fromUri(uriBase)
+        .path(AdminResourceURIs.SPACES_BASE_URI)
+        .path(AdminResourceURIs.SPACES_PERSONAL_URI_PART)
+        .path(getUriIdentifier())
+        .build();
     return (T) this;
   }
 

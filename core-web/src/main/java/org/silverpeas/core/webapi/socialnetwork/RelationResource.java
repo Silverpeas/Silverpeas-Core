@@ -43,9 +43,11 @@ import javax.ws.rs.core.Response;
  * request.
  */
 @RequestScoped
-@Path("relations")
+@Path(RelationResource.PATH)
 @Authenticated
 public class RelationResource extends RESTWebService {
+
+  static final String PATH = "relations";
 
   @Inject
   private RelationShipService relationShipService;
@@ -55,7 +57,7 @@ public class RelationResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public Response deleteRelation(@PathParam("userId") final String userId) {
     boolean removed = relationShipService
-        .removeRelationShip(Integer.parseInt(getUserDetail().getId()), Integer.parseInt(userId));
+        .removeRelationShip(Integer.parseInt(getUser().getId()), Integer.parseInt(userId));
     if (removed) {
       return Response.ok().build();
     } else {
@@ -64,8 +66,12 @@ public class RelationResource extends RESTWebService {
   }
 
   @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
+
+  @Override
   public String getComponentId() {
-    throw new UnsupportedOperationException(
-        "The RelationShipResource doesn't belong to any component instances");
+    return null;
   }
 }

@@ -43,9 +43,12 @@ import javax.ws.rs.core.MediaType;
  */
 @Service
 @RequestScoped
-@Path("mypreferences")
+@Path(MyPreferencesResource.PATH)
 @Authenticated
 public class MyPreferencesResource extends RESTWebService {
+
+  static final String PATH = "mypreferences";
+
   @Override
   public String getComponentId() {
     return null;
@@ -58,7 +61,12 @@ public class MyPreferencesResource extends RESTWebService {
     UserPreferences userPref = getUserPreferences();
     userPref.setLanguage(preferences.getLanguage());
     PersonalizationServiceProvider.getPersonalizationService().saveUserSettings(userPref);
-    preferences.setURI(getUriInfo().getRequestUri());
+    preferences.setURI(getUri().getRequestUri());
     return preferences;
+  }
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
   }
 }

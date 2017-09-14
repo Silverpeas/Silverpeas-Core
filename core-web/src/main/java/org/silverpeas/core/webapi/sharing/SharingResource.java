@@ -37,17 +37,21 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
-import java.net.URISyntaxException;
-
-import static org.silverpeas.core.util.logging.SilverLogger.*;
 
 @Service
 @RequestScoped
-@Path("sharing/{token}")
+@Path(SharingResource.PATH + "/{token}")
 public class SharingResource extends RESTWebService {
+
+  static final String PATH = "sharing";
 
   @PathParam("token")
   private String token;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @Override
   public String getComponentId() {
@@ -57,25 +61,17 @@ public class SharingResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public SharingEntity getSharing() {
-    String baseUri = getUriInfo().getBaseUri().toString();
     Ticket ticket = SharingServiceProvider.getSharingTicketService().getTicket(token);
     if (ticket == null || !ticket.isValid()) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
-    URI webApplicationRootUri = getWebApplicationRootUri(baseUri, ticket.getComponentId(),
-        String.valueOf(ticket.getSharedObjectId()));
-    return new SharingEntity(getUriInfo().getRequestUri(), webApplicationRootUri, ticket);
-  }
-
-  private URI getWebApplicationRootUri(String baseUri, String componentId, String nodeId) {
-    URI uri;
-    try {
-      uri = new URI(baseUri + "sharing/nodes/" + componentId + "/" + token + "/" + nodeId);
-    } catch (URISyntaxException ex) {
-      getLogger(this).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
-    }
-    return uri;
+    URI webApplicationRootUri = getUri().getWebResourcePathBuilder()
+        .path("nodes")
+        .path(ticket.getComponentId())
+        .path(token)
+        .path(String.valueOf(ticket.getSharedObjectId()))
+        .build();
+    return new SharingEntity(getUri().getRequestUri(), webApplicationRootUri, ticket);
   }
 
 }

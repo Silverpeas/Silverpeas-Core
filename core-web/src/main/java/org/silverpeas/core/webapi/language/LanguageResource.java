@@ -40,11 +40,18 @@ import java.util.List;
 
 @Service
 @RequestScoped
-@Path("languages")
+@Path(LanguageResource.PATH)
 @Authenticated
 public class LanguageResource extends RESTWebService {
 
   private static final String MY_PROFILE_SETTINGS_LANGUAGE_KEY = "myProfile.settings.language_";
+
+  static final String PATH = "languages";
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @Override
   public String getComponentId() {
@@ -61,7 +68,7 @@ public class LanguageResource extends RESTWebService {
     for (String language : DisplayI18NHelper.getLanguages()) {
       LanguageEntity entity = new LanguageEntity(language, multilang.getString(
           MY_PROFILE_SETTINGS_LANGUAGE_KEY + language));
-      entity.setURI(getUriInfo().getRequestUriBuilder().path(language).build());
+      entity.setURI(getUri().getRequestUriBuilder().path(language).build());
       languages.add(entity);
     }
     return languages;

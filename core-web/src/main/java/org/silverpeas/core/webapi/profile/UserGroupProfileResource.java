@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.profile;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
@@ -113,8 +114,8 @@ public class UserGroupProfileResource extends RESTWebService {
 
     // Domains
     String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
-    if (getUserDetail().isDomainRestricted()) {
-      domainId = getUserDetail().getDomainId();
+    if (getUser().isDomainRestricted()) {
+      domainId = getUser().getDomainId();
       criteriaBuilder.withMixedDomainId();
     }
 
@@ -128,8 +129,8 @@ public class UserGroupProfileResource extends RESTWebService {
     criteriaBuilder.withDomainId(domainId).withName(name).withPaginationPage(fromPage(page));
 
     ListSlice<Group> allGroups = getOrganisationController().searchGroups(criteriaBuilder.build());
-    UserGroupProfileEntity[] entities = asWebEntity(allGroups, locatedAt(getUriInfo().
-        getAbsolutePath()));
+    UserGroupProfileEntity[] entities =
+        asWebEntity(allGroups, locatedAt(getUri().getAbsolutePath()));
     return Response.ok(entities).
         header(RESPONSE_HEADER_GROUPSIZE, allGroups.originalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, allGroups.originalListSize()).build();
@@ -170,8 +171,8 @@ public class UserGroupProfileResource extends RESTWebService {
     String[] roleNames = (isDefined(roles) ? roles.split(",") : new String[0]);
     String domainId = (Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain);
     UserGroupsSearchCriteriaBuilder criteriaBuilder;
-    if (getUserDetail().isDomainRestricted()) {
-      domainId = getUserDetail().getDomainId();
+    if (getUser().isDomainRestricted()) {
+      domainId = getUser().getDomainId();
       criteriaBuilder = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withComponentInstanceId(instanceId).
           withRoles(roleNames).
@@ -197,7 +198,7 @@ public class UserGroupProfileResource extends RESTWebService {
     }
 
     ListSlice<Group> groups = getOrganisationController().searchGroups(criteriaBuilder.build());
-    URI groupsUri = getUriInfo().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
+    URI groupsUri = getUri().getBaseUriBuilder().path(GROUPS_BASE_URI).build();
     return Response.ok(asWebEntity(groups, locatedAt(groupsUri))).
         header(RESPONSE_HEADER_GROUPSIZE, groups.originalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, groups.originalListSize()).build();
@@ -215,8 +216,8 @@ public class UserGroupProfileResource extends RESTWebService {
   public UserGroupProfileEntity getGroup(@PathParam("path") String groupPath) {
     String[] groupIds = groupPath.split("/groups/");
     String groupId = groupIds[groupIds.length - 1];
-    Group theGroup = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
-    return asWebEntity(theGroup, identifiedBy(getUriInfo().getAbsolutePath()));
+    Group theGroup = profileService.getGroupAccessibleToUser(groupId, UserDetail.from(getUser()));
+    return asWebEntity(theGroup, identifiedBy(getUri().getAbsolutePath()));
   }
 
   /**
@@ -241,10 +242,10 @@ public class UserGroupProfileResource extends RESTWebService {
       @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
     String[] groupIds = groups.split("/groups/?");
     String groupId = groupIds[groupIds.length - 1]; // we don't check the correctness of the path
-    profileService.getGroupAccessibleToUser(groupId, getUserDetail());
+    profileService.getGroupAccessibleToUser(groupId, UserDetail.from(getUser()));
     UserGroupsSearchCriteriaBuilder criteriaBuilder;
-    if (getUserDetail().isDomainRestricted()) {
-      String domainId = getUserDetail().getDomainId();
+    if (getUser().isDomainRestricted()) {
+      String domainId = getUser().getDomainId();
       criteriaBuilder = UserGroupsSearchCriteriaBuilder.aSearchCriteria().
           withSuperGroupId(groupId).
           withDomainId(domainId).
@@ -265,16 +266,19 @@ public class UserGroupProfileResource extends RESTWebService {
     }
 
     ListSlice<Group> subgroups = getOrganisationController().searchGroups(criteriaBuilder.build());
-    return Response.ok(asWebEntity(subgroups, locatedAt(getUriInfo().getAbsolutePath()))).
+    return Response.ok(asWebEntity(subgroups, locatedAt(getUri().getAbsolutePath()))).
         header(RESPONSE_HEADER_GROUPSIZE, subgroups.originalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, subgroups.originalListSize()).build();
   }
 
   @Override
+  protected String getResourceBasePath() {
+    return GROUPS_BASE_URI;
+  }
+
+  @Override
   public String getComponentId() {
-    throw new UnsupportedOperationException(
-        "The UserGroupProfileResource doesn't belong to any component"
-        + " instances");
+    return null;
   }
 
   protected static URI locatedAt(final URI uri) {

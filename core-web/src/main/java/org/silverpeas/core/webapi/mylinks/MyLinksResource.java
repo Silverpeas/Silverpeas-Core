@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.webapi.mylinks;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.mylinks.service.MyLinksService;
-import org.silverpeas.core.mylinks.model.LinkDetail;
-import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.mylinks.model.LinkDetail;
+import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -49,11 +49,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.silverpeas.core.util.logging.SilverLogger.*;
 
 /**
  * A REST Web resource representing user favorite links. It is a web service that provides an access
@@ -61,11 +58,18 @@ import static org.silverpeas.core.util.logging.SilverLogger.*;
  */
 @Service
 @RequestScoped
-@Path("mylinks")
+@Path(MyLinksResource.PATH)
 @Authorized
 public class MyLinksResource extends RESTWebService {
 
   private static final String PATH_SEPARATOR = " > ";
+
+  static final String PATH = "mylinks";
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   /**
    * Gets the JSON representation of the user favorite links.
@@ -89,8 +93,8 @@ public class MyLinksResource extends RESTWebService {
    * @return
    */
   protected List<LinkDetail> getAllUserLinks() {
-    UserDetail curUser = getUserDetail();
-    return getMyLinksBm().getAllLinks(curUser.getId());
+    User curUser = getUser();
+    return getMyLinksService().getAllLinks(curUser.getId());
   }
 
   /**
@@ -101,10 +105,10 @@ public class MyLinksResource extends RESTWebService {
    * user.
    */
   protected LinkDetail getUserLink(String linkId) {
-    LinkDetail userLink = getMyLinksBm().getLink(linkId);
+    LinkDetail userLink = getMyLinksService().getLink(linkId);
     if (userLink == null) {
       throw new WebApplicationException(Status.NOT_FOUND);
-    } else if (!getUserDetail().getId().equals(userLink.getUserId())) {
+    } else if (!getUser().getId().equals(userLink.getUserId())) {
       throw new WebApplicationException(Status.FORBIDDEN);
     }
     return userLink;
@@ -127,8 +131,8 @@ public class MyLinksResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public MyLinkEntity addLink(final MyLinkEntity newLink) {
     LinkDetail linkDetail = newLink.toLinkDetail();
-    linkDetail.setUserId(getUserDetail().getId());
-    getMyLinksBm().createLink(linkDetail);
+    linkDetail.setUserId(getUser().getId());
+    getMyLinksService().createLink(linkDetail);
     return getMyLink(String.valueOf(linkDetail.getLinkId()));
   }
 
@@ -140,8 +144,8 @@ public class MyLinksResource extends RESTWebService {
     verifyCurrentUserIsOwner(updatedLink);
     checkMandatoryLinkData(updatedLink);
     LinkDetail linkDetail = updatedLink.toLinkDetail();
-    linkDetail.setUserId(getUserDetail().getId());
-    getMyLinksBm().updateLink(linkDetail);
+    linkDetail.setUserId(getUser().getId());
+    getMyLinksService().updateLink(linkDetail);
     return getMyLink(String.valueOf(linkDetail.getLinkId()));
   }
 
@@ -151,7 +155,7 @@ public class MyLinksResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public Response deleteLink(final @PathParam("linkId") String linkId) {
     verifyCurrentUserIsOwner(linkId);
-    getMyLinksBm().deleteLinks(new String[]{linkId});
+    getMyLinksService().deleteLinks(new String[]{linkId});
     return Response.ok().build();
   }
 
@@ -161,7 +165,7 @@ public class MyLinksResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public MyLinkEntity addSpaceLink(@PathParam("id") String spaceId) {
     if (StringUtil.isDefined(spaceId) &&
-        getOrganisationController().isSpaceAvailable(spaceId, getUserDetail().getId())) {
+        getOrganisationController().isSpaceAvailable(spaceId, getUser().getId())) {
       SpaceInstLight newFavoriteSpace = getOrganisationController().getSpaceInstLightById(spaceId);
       String userLanguage = getUserPreferences().getLanguage();
       LinkDetail linkDetail = new LinkDetail();
@@ -171,8 +175,8 @@ public class MyLinksResource extends RESTWebService {
       linkDetail.setDescription(newFavoriteSpace.getDescription(userLanguage));
       linkDetail.setVisible(true);
       linkDetail.setPopup(false);
-      linkDetail.setUserId(getUserDetail().getId());
-      getMyLinksBm().createLink(linkDetail);
+      linkDetail.setUserId(getUser().getId());
+      getMyLinksService().createLink(linkDetail);
       return getMyLink(String.valueOf(linkDetail.getLinkId()));
     }
     throw new WebApplicationException(Status.BAD_REQUEST);
@@ -206,7 +210,7 @@ public class MyLinksResource extends RESTWebService {
       if (!userLink.hasPosition() || userLink.getPosition() != finalPosition) {
         userLink.setHasPosition(true);
         userLink.setPosition(finalPosition);
-        getMyLinksBm().updateLink(userLink);
+        getMyLinksService().updateLink(userLink);
       }
     }
 
@@ -231,7 +235,7 @@ public class MyLinksResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public MyLinkEntity addAppLink(@PathParam("id") String applicationId) {
     if (StringUtil.isDefined(applicationId) &&
-        getOrganisationController().isComponentAvailable(applicationId, getUserDetail().getId())) {
+        getOrganisationController().isComponentAvailable(applicationId, getUser().getId())) {
       ComponentInstLight newFavoriteApp =
           getOrganisationController().getComponentInstLight(applicationId);
       String userLanguage = getUserPreferences().getLanguage();
@@ -243,8 +247,8 @@ public class MyLinksResource extends RESTWebService {
       linkDetail.setDescription(newFavoriteApp.getDescription(userLanguage));
       linkDetail.setVisible(true);
       linkDetail.setPopup(false);
-      linkDetail.setUserId(getUserDetail().getId());
-      getMyLinksBm().createLink(linkDetail);
+      linkDetail.setUserId(getUser().getId());
+      getMyLinksService().createLink(linkDetail);
       return getMyLink(String.valueOf(linkDetail.getLinkId()));
     }
     throw new WebApplicationException(Status.BAD_REQUEST);
@@ -290,22 +294,15 @@ public class MyLinksResource extends RESTWebService {
 
   @Override
   public String getComponentId() {
-    // Dont need to return a component identifier
+    // no need to return a component identifier
     return null;
   }
 
   private URI getLinkUri(LinkDetail link) {
-    URI uri;
-    try {
-      uri = new URI(getUriInfo().getBaseUri() + "/mylinks/" + link.getLinkId());
-    } catch (URISyntaxException e) {
-      getLogger(MyLinksResource.class).error(e.getMessage(), e);
-      throw new RuntimeException(e.getMessage(), e);
-    }
-    return uri;
+    return getUri().getWebResourcePathBuilder().path(String.valueOf(link.getLinkId())).build();
   }
 
-  protected MyLinksService getMyLinksBm() {
+  protected MyLinksService getMyLinksService() {
     try {
       return ServiceProvider.getService(MyLinksService.class);
     } catch (Exception e) {

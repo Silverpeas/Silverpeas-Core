@@ -46,11 +46,18 @@ import static org.silverpeas.core.util.StringUtil.isNotDefined;
  */
 @Service
 @RequestScoped
-@Path("media/player/embed")
+@Path(EmbedMediaPlayerResource.PATH)
 public class EmbedMediaPlayerResource extends RESTWebService {
 
   private static final int DEFAULT_WIDTH = 600;
   private static final int DEFAULT_HEIGHT = 400;
+
+  static final String PATH = "media/player/embed";
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @GET
   public View getEmbedContent() {

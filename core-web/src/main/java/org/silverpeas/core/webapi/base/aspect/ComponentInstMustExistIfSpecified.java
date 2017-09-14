@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.webapi.base.aspect;
 
-import org.silverpeas.core.webapi.base.WebResource;
+import org.silverpeas.core.webapi.base.ProtectedWebResource;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 
 import javax.interceptor.InterceptorBinding;
@@ -37,7 +37,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Existence of {@link ComponentInst} is verified on each method execution of a {@link
- * WebResource} instance which the class is annotated with this annotation.
+ * ProtectedWebResource} instance which the class is annotated with this annotation.
  * @author Yohann Chastagnier
  */
 @InterceptorBinding

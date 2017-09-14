@@ -45,12 +45,19 @@ import java.util.List;
  */
 @Service
 @RequestScoped
-@Path("private/publications/{componentId}")
+@Path(PublicationResource.PATH + "/{componentId}")
 @Authorized
 public class PublicationResource extends AbstractPublicationResource {
 
+  static final String PATH = "private/publications";
+
   @PathParam("componentId")
   protected String componentId;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @Override
   public String getComponentId() {
@@ -75,7 +82,7 @@ public class PublicationResource extends AbstractPublicationResource {
         List<AttachmentEntity> attachments = publication.getAttachments();
         if (attachments != null) {
           for (AttachmentEntity attachment : attachments) {
-            attachment.withUri(super.getUriInfo().getBaseUri().toString());
+            attachment.withUri(getUri().getBaseUri().toString());
           }
         }
       }
@@ -84,7 +91,7 @@ public class PublicationResource extends AbstractPublicationResource {
 
   @Override
   protected boolean isNodeReadable(NodePK nodePK) {
-    return nodeAccessController.isUserAuthorized(super.getUserDetail().getId(), nodePK);
+    return nodeAccessController.isUserAuthorized(super.getUser().getId(), nodePK);
   }
 
   protected URI identifiedBy(URI uri) {

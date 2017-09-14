@@ -23,21 +23,19 @@
  */
 package org.silverpeas.core.webapi.admin;
 
-import static org.silverpeas.core.webapi.admin.AdminResourceURIs.SPACES_BASE_URI;
-import static org.silverpeas.core.webapi.admin.AdminResourceURIs.buildURI;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 
-import java.net.URI;
-
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import java.net.URI;
 
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-
-import org.silverpeas.core.admin.space.SpaceInstLight;
+import static org.silverpeas.core.webapi.admin.AdminResourceURIs.SPACES_BASE_URI;
 
 /**
  * The space instance light entity is a SpaceInstLight object that is exposed in the web as
@@ -91,7 +89,7 @@ public class SpaceAppearanceEntity extends AbstractTypeEntity {
    */
   public SpaceAppearanceEntity withURI(final URI uri) {
     this.uri = uri;
-    spaceURI = buildURI(getStringBaseURI(), spaceId);
+    spaceURI = UriBuilder.fromUri(getStringBaseURI()).path(spaceId).build();
     return this;
   }
 

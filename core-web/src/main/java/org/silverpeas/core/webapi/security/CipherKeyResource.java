@@ -68,6 +68,11 @@ public class CipherKeyResource extends RESTWebService {
   private DefaultContentEncryptionService contentEncryptionService;
 
   @Override
+  protected String getResourceBasePath() {
+    return WEB_PATH;
+  }
+
+  @Override
   public String getComponentId() {
     return Administration.ADMIN_COMPONENT_ID;
   }

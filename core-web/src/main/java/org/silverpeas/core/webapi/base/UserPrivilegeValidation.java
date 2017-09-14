@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.webapi.base;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.ServiceProvider;
 
@@ -97,7 +97,7 @@ public interface UserPrivilegeValidation {
    * @param instanceId the unique identifier of the accessed component instance.
    * @throws WebApplicationException exception if the validation failed.
    */
-  void validateUserAuthorizationOnComponentInstance(UserDetail user, String instanceId)
+  void validateUserAuthorizationOnComponentInstance(User user, String instanceId)
               throws WebApplicationException;
 
   /**
@@ -108,6 +108,6 @@ public interface UserPrivilegeValidation {
    * @param doc the document accessed.
    * @throws WebApplicationException exception if the validation failed.
    */
-  void validateUserAuthorizationOnAttachment(HttpServletRequest request, UserDetail user,
+  void validateUserAuthorizationOnAttachment(HttpServletRequest request, User user,
       SimpleDocument doc) throws WebApplicationException;
 }

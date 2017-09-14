@@ -25,6 +25,7 @@ package org.silverpeas.core.webapi.admin;
 
 import org.silverpeas.core.admin.space.SpaceInstLight;
 
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -86,10 +87,18 @@ public class SpaceEntity extends StructureElementEntity<SpaceEntity> {
   @Override
   public SpaceEntity withURI(final URI uri) {
     super.withURI(uri);
-    spacesURI = buildURI(getStringBaseURI(), getId(), SPACES_SPACES_URI_PART);
-    componentsURI = buildURI(getStringBaseURI(), getId(), SPACES_COMPONENTS_URI_PART);
-    contentURI = buildURI(getStringBaseURI(), getId(), SPACES_CONTENT_URI_PART);
-    appearanceURI = buildURI(getStringBaseURI(), getId(), SPACES_APPEARANCE_URI_PART);
+    spacesURI =
+        UriBuilder.fromUri(getStringBaseURI()).path(getId()).path(SPACES_SPACES_URI_PART).build();
+    componentsURI = UriBuilder.fromUri(getStringBaseURI())
+        .path(getId())
+        .path(SPACES_COMPONENTS_URI_PART)
+        .build();
+    contentURI =
+        UriBuilder.fromUri(getStringBaseURI()).path(getId()).path(SPACES_CONTENT_URI_PART).build();
+    appearanceURI = UriBuilder.fromUri(getStringBaseURI())
+        .path(getId())
+        .path(SPACES_APPEARANCE_URI_PART)
+        .build();
     return this;
   }
 

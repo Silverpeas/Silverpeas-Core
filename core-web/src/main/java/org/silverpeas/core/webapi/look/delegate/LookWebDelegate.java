@@ -23,24 +23,24 @@
  */
 package org.silverpeas.core.webapi.look.delegate;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.web.look.SilverpeasLook;
-import org.silverpeas.core.personalization.UserMenuDisplay;
-import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceService;
 import org.silverpeas.core.admin.space.UserFavoriteSpaceServiceProvider;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.space.model.UserFavoriteSpaceVO;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.look.LookHelper;
+import org.silverpeas.core.web.look.SilverpeasLook;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
-import org.silverpeas.core.admin.service.OrganizationController;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Yohann Chastagnier
@@ -49,7 +49,7 @@ public class LookWebDelegate {
 
   private OrganizationController organizationController;
 
-  private final UserDetail user;
+  private final User user;
   private final UserPreferences userPreference;
 
   private final LookHelper lookHelper;
@@ -84,7 +84,8 @@ public class LookWebDelegate {
    * @param space
    */
   public void addToUserFavorites(final SpaceInstLight space) {
-    getUserFavoriteSpaceService().addUserFavoriteSpace(new UserFavoriteSpaceVO(getUser(), space));
+    getUserFavoriteSpaceService().addUserFavoriteSpace(
+        new UserFavoriteSpaceVO(UserDetail.from(getUser()), space));
     clearFavoriteCache();
   }
 
@@ -93,8 +94,8 @@ public class LookWebDelegate {
    * @param space
    */
   public void removeFromUserFavorites(final SpaceInstLight space) {
-    getUserFavoriteSpaceService().removeUserFavoriteSpace(new UserFavoriteSpaceVO(getUser(),
-        space));
+    getUserFavoriteSpaceService().removeUserFavoriteSpace(
+        new UserFavoriteSpaceVO(UserDetail.from(getUser()), space));
     clearFavoriteCache();
   }
 
@@ -183,7 +184,7 @@ public class LookWebDelegate {
    * @param request
    * @return
    */
-  public static LookWebDelegate getInstance(final UserDetail user,
+  public static LookWebDelegate getInstance(final User user,
       final UserPreferences userPreference, final HttpServletRequest request) {
     return new LookWebDelegate(user, userPreference, request);
   }
@@ -194,7 +195,7 @@ public class LookWebDelegate {
    * @param userPreference
    * @param request
    */
-  private LookWebDelegate(final UserDetail user, final UserPreferences userPreference,
+  private LookWebDelegate(final User user, final UserPreferences userPreference,
       final HttpServletRequest request) {
     this.user = user;
     this.userPreference = userPreference;
@@ -229,7 +230,7 @@ public class LookWebDelegate {
   /**
    * @return
    */
-  private UserDetail getUser() {
+  private User getUser() {
     return user;
   }
 

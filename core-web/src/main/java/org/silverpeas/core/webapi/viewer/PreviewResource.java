@@ -75,9 +75,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  */
 @Service
 @RequestScoped
-@Path("preview/{componentId}")
+@Path(PreviewResource.PATH + "/{componentId}")
 @Authorized
 public class PreviewResource extends RESTWebService {
+
+  static final String PATH = "preview";
 
   @Inject
   private AttachmentService attachmentService;
@@ -106,7 +108,7 @@ public class PreviewResource extends RESTWebService {
       // Retrieve attachment data
       final SimpleDocument attachment = attachmentService
           .searchDocumentById(new SimpleDocumentPK(id, getComponentId()),
-              (StringUtil.isNotDefined(language) ? getUserPreferences().getLanguage() : language));
+              StringUtil.isNotDefined(language) ? getUserPreferences().getLanguage() : language);
 
       // Checking availability
       if (attachment == null) {
@@ -133,13 +135,18 @@ public class PreviewResource extends RESTWebService {
    */
   protected PreviewEntity asWebEntity(final Preview preview) {
     return PreviewEntity.createFrom(getHttpServletRequest(), preview).withURI(
-        getUriInfo().getRequestUri());
+        getUri().getRequestUri());
+  }
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
   }
 
   /*
-   * (non-Javadoc)
-   * @see com.silverpeas.web.RESTWebService#getComponentId()
-   */
+     * (non-Javadoc)
+     * @see com.silverpeas.web.RESTWebService#getComponentId()
+     */
   @Override
   public String getComponentId() {
     return componentId;

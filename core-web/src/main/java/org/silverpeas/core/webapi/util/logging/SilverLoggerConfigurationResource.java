@@ -47,9 +47,11 @@ import javax.ws.rs.core.Response;
  */
 @Service
 @RequestScoped
-@Path("logging/{logger}/configuration")
+@Path(SilverLoggerConfigurationResource.PATH + "/{logger}/configuration")
 @Authenticated
 public class SilverLoggerConfigurationResource extends RESTWebService {
+
+  static final String PATH = "logging";
 
   @PathParam("logger")
   private String namespace;
@@ -72,13 +74,17 @@ public class SilverLoggerConfigurationResource extends RESTWebService {
     }
     return LoggerConfigurationEntity.toWebEntity(
         configManager.getLoggerConfiguration(namespace))
-        .withAsURi(getUriInfo().getRequestUri());
+        .withAsURi(getUri().getRequestUri());
   }
 
   @Override
-  public void validateUserAuthorization(final UserPrivilegeValidation validation)
-      throws WebApplicationException {
-    if (!getUserDetail().isAccessAdmin()) {
+  protected String getResourceBasePath() {
+    return PATH;
+  }
+
+  @Override
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
+    if (!getUser().isAccessAdmin()) {
       throw new WebApplicationException("Only administrators can play with logger configurations!",
           Response.Status.FORBIDDEN);
     }

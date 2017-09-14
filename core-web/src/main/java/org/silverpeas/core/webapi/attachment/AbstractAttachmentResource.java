@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
-import java.io.OutputStream;
-
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -56,15 +54,12 @@ public abstract class AbstractAttachmentResource extends RESTWebService {
     if (!isFileReadable(attachment)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
-    StreamingOutput data = new StreamingOutput() {
-      @Override
-      public void write(OutputStream output) throws WebApplicationException {
-        try {
-          AttachmentServiceProvider.getAttachmentService().getBinaryContent(
-              output, attachment.getPk(), attachment.getLanguage());
-        } catch (Exception e) {
-          throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
-        }
+    StreamingOutput data = output -> {
+      try {
+        AttachmentServiceProvider.getAttachmentService().getBinaryContent(
+            output, attachment.getPk(), attachment.getLanguage());
+      } catch (Exception e) {
+        throw new WebApplicationException(e, Status.INTERNAL_SERVER_ERROR);
       }
     };
     return Response.ok().entity(data).type(attachment.getContentType()).build();

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.webapi.comment;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.comment.CommentRuntimeException;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
-import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -46,7 +46,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -54,9 +53,11 @@ import java.util.List;
  * a comment referenced by its URL.
  */
 @RequestScoped
-@Path("comments/{componentId}/{contentType}/{contentId}")
+@Path(CommentResource.PATH + "/{componentId}/{contentType}/{contentId}")
 @Authorized
 public class CommentResource extends RESTWebService {
+
+  static final String PATH = "comments";
 
   @Inject
   private CommentService commentService;
@@ -66,6 +67,11 @@ public class CommentResource extends RESTWebService {
   private String contentType;
   @PathParam("contentId")
   private String contentId;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   /**
    * Gets the JSON representation of the specified existing comment. If the comment doesn't exist, a
@@ -81,7 +87,7 @@ public class CommentResource extends RESTWebService {
   public CommentEntity getComment(@PathParam("commentId") String onCommentId) {
     try {
       Comment theComment = commentService().getComment(byPK(onCommentId, inComponentId()));
-      URI commentURI = getUriInfo().getRequestUri();
+      URI commentURI = getUri().getRequestUri();
       return asWebEntity(theComment, identifiedBy(commentURI));
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
@@ -137,8 +143,7 @@ public class CommentResource extends RESTWebService {
       }
       Comment savedComment = commentService().getComment(comment.getCommentPK());
       URI commentURI =
-          getUriInfo().getRequestUriBuilder().path(savedComment.getCommentPK().getId()).
-              build();
+          getUri().getRequestUriBuilder().path(savedComment.getCommentPK().getId()).build();
       return Response.created(commentURI).
           entity(asWebEntity(savedComment, identifiedBy(commentURI))).build();
     } catch (CommentRuntimeException ex) {
@@ -176,8 +181,7 @@ public class CommentResource extends RESTWebService {
       } else {
         commentService().updateComment(comment);
       }
-      URI commentURI = getUriInfo().getRequestUriBuilder().path(comment.getCommentPK().getId()).
-          build();
+      URI commentURI = getUri().getRequestUriBuilder().path(comment.getCommentPK().getId()).build();
       return asWebEntity(comment, identifiedBy(commentURI));
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
@@ -258,8 +262,7 @@ public class CommentResource extends RESTWebService {
     CommentEntity[] entities = new CommentEntity[comments.size()];
     for (int i = 0; i < comments.size(); i++) {
       Comment comment = comments.get(i);
-      URI commentURI = getUriInfo().getRequestUriBuilder().path(comment.getCommentPK().getId()).
-          build();
+      URI commentURI = getUri().getRequestUriBuilder().path(comment.getCommentPK().getId()).build();
       entities[i] = asWebEntity(comment, identifiedBy(commentURI));
     }
     return entities;
@@ -305,20 +308,5 @@ public class CommentResource extends RESTWebService {
             getContentId())) {
       throw new WebApplicationException(Status.NOT_FOUND);
     }
-  }
-
-  /**
-   * Gets a comparator of comments by their identifier, from the lower to the higher one.
-   * @return a comparator of comments.
-   */
-  protected static Comparator<Comment> byId() {
-    return new Comparator<Comment>() {
-
-      @Override
-      public int compare(Comment left, Comment right) {
-        return left.getCommentPK().getId().compareTo(right.getCommentPK().getId());
-      }
-
-    };
   }
 }

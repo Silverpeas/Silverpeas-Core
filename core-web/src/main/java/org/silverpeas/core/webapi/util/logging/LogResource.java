@@ -54,8 +54,10 @@ import java.util.stream.Collectors;
 @Service
 @RequestScoped
 @Authorized
-@Path("logging/logs/{logName}")
+@Path(LogResource.PATH + "/{logName}")
 public class LogResource extends RESTWebService {
+
+  static final String PATH = SilverLoggerConfigurationResource.PATH + "/logs";
 
   @Inject
   private LogsAccessor logsAccessor;
@@ -97,8 +99,13 @@ public class LogResource extends RESTWebService {
   }
 
   @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
+
+  @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {
-    if (!getUserDetail().isAccessAdmin()) {
+    if (!getUser().isAccessAdmin()) {
       throw new WebApplicationException("Only administrators can play with logger configurations!",
           Response.Status.FORBIDDEN);
     }

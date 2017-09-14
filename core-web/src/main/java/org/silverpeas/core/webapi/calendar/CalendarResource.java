@@ -253,7 +253,7 @@ public class CalendarResource extends AbstractCalendarResource {
     final Calendar calendar = process(() -> Calendar.getById(calendarId)).execute();
     assertDataConsistency(getComponentId(), calendar);
     try {
-      FileUploadManager.getUploadedFiles(getHttpRequest(), getUserDetail())
+      FileUploadManager.getUploadedFiles(getHttpRequest(), getUser())
           .forEach(uploadedFile -> performImportEventAsICalendarFormat(calendar, uploadedFile));
     } catch (WebApplicationException e) {
       SilverLogger.getLogger(this).error(e);
@@ -364,7 +364,7 @@ public class CalendarResource extends AbstractCalendarResource {
       final LocalDate startDate, final LocalDate endDate, final Set<User> users) {
     Map<String, List<CalendarEventOccurrence>> occurrences = process(
         () -> getCalendarWebServiceProvider()
-            .getAllEventOccurrencesByUserIds(Pair.of(getComponentId(), getUserDetail()), startDate,
+            .getAllEventOccurrencesByUserIds(Pair.of(getComponentId(), getUser()), startDate,
                 endDate, users)).execute();
     List<ParticipantCalendarEventOccurrencesEntity> webEntities = new ArrayList<>();
     users.forEach(user -> webEntities.add(ParticipantCalendarEventOccurrencesEntity.from(user)
@@ -589,7 +589,7 @@ public class CalendarResource extends AbstractCalendarResource {
       @PathParam("calendarId") String calendarId, @PathParam("eventId") String eventId,
       @PathParam("occurrenceId") String occurrenceId, @PathParam("attendeeId") String attendeeId,
       CalendarEventAttendeeAnswerEntity answerEntity) {
-    if(StringUtil.isLong(attendeeId) && !getUserDetail().getId().equals(attendeeId)) {
+    if(StringUtil.isLong(attendeeId) && !getUser().getId().equals(attendeeId)) {
       throw new WebApplicationException(FORBIDDEN);
     }
     final Calendar originalCalendar = Calendar.getById(calendarId);
@@ -626,11 +626,11 @@ public class CalendarResource extends AbstractCalendarResource {
   public CalendarEntity asWebEntity(Calendar calendar) {
     assertEntityIsDefined(calendar);
     final CalendarEntity calendarEntity = CalendarEntity.fromCalendar(calendar)
-        .withURI(buildCalendarURI(getServiceBaseUri(), calendar));
+        .withURI(calendarUri(getUri(), calendar));
     if (calendarEntity.isUserPersonal() || calendarEntity.canBeModified()) {
       calendarEntity
-          .withICalPublicURI(buildIcalPublicURI(getHttpRequest(), getServiceBaseUri(), calendar))
-          .withICalPrivateURI(buildIcalPrivateURI(getHttpRequest(), getServiceBaseUri(), calendar));
+          .withICalPublicURI(iCalPublicURI(getUri(), calendar))
+          .withICalPrivateURI(iCalPrivateURI(getUri(), calendar));
     } else {
       calendarEntity.setExternalUrl(null);
     }
@@ -660,8 +660,11 @@ public class CalendarResource extends AbstractCalendarResource {
     CalendarEventEntity entity = cache.get(event.getId(), CalendarEventEntity.class);
     if (entity == null) {
       entity = CalendarEventEntity.fromEvent(event, getComponentId(), getZoneId())
-          .withEventURI(buildEventURI(getServiceBaseUri(), event))
-          .withCalendarURI(buildCalendarURI(getServiceBaseUri(), event.getCalendar()));
+          .withEventURI(getUri().getWebResourcePathBuilder().path(event.getCalendar().getId())
+              .path(CALENDAR_EVENT_URI_PART)
+              .path(event.getId()).build())
+          .withCalendarURI(getUri().getWebResourcePathBuilder().path(event.getCalendar().getId())
+              .build());
       cache.put(event.getId(), entity);
     }
     return entity;
@@ -692,10 +695,10 @@ public class CalendarResource extends AbstractCalendarResource {
         .map(attendee -> asAttendeeWebEntity(occurrence, attendee))
         .collect(Collectors.toList());
     return CalendarEventOccurrenceEntity.fromOccurrence(occurrence, getComponentId(), getZoneId())
-        .withCalendarURI(buildCalendarURI(getServiceBaseUri(), occurrence.getCalendarEvent().getCalendar()))
-        .withEventURI(buildEventURI(getServiceBaseUri(), occurrence.getCalendarEvent()))
-        .withOccurrenceURI(buildOccurrenceURI(getServiceBaseUri(), occurrence))
-        .withOccurrenceViewURI(buildOccurrenceViewURI(occurrence))
+        .withCalendarURI(calendarUri(getUri(), occurrence.getCalendarEvent().getCalendar()))
+        .withEventURI(eventURI(getUri(), occurrence.getCalendarEvent()))
+        .withOccurrenceURI(occurrenceURI(getUri(), occurrence))
+        .withOccurrenceViewURI(occurrenceViewURI(occurrence))
         .withAttendees(attendeeEntities);
   }
 
@@ -712,16 +715,12 @@ public class CalendarResource extends AbstractCalendarResource {
       final CalendarEventOccurrence occurrence, Attendee attendee) {
     assertEntityIsDefined(attendee);
     return CalendarEventAttendeeEntity.from(attendee)
-        .withURI(buildOccurrenceAttendeeURI(getServiceBaseUri(), occurrence, attendee));
+        .withURI(occurrenceAttendeeURI(getUri(), occurrence, attendee));
   }
 
   @Override
   protected String getBundleLocation() {
     return "org.silverpeas.calendar.multilang.calendarBundle";
-  }
-
-  protected String getServiceBaseUri() {
-    return CALENDAR_BASE_URI;
   }
 
   private CalendarWebServiceProvider getCalendarWebServiceProvider() {

@@ -29,7 +29,6 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.GET;
@@ -42,23 +41,15 @@ import java.util.List;
 
 @Service
 @RequestScoped
-@Path("documents/{componentId}/resource/{id}")
+@Path(AbstractSimpleDocumentResource.PATH + "/{componentId}/resource/{id}")
 @Authorized
-public class SimpleDocumentListResource extends RESTWebService {
+public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
 
   @PathParam("id")
   private String resourceId;
 
-  @PathParam("componentId")
-  private String componentId;
-
   public String getResourceId() {
     return resourceId;
-  }
-
-  @Override
-  public String getComponentId() {
-    return componentId;
   }
 
   /**

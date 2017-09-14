@@ -23,20 +23,20 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.security.ShareableAttachment;
 import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.ZipUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.output.ByteArrayOutputStream;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -61,11 +61,18 @@ import java.util.UUID;
  */
 @Service
 @RequestScoped
-@Path("sharing/attachments/{componentId}/{token}")
+@Path(SharedAttachmentResource.PATH + "/{componentId}/{token}")
 public class SharedAttachmentResource extends AbstractAttachmentResource {
+
+  static final String PATH = "sharing/attachments";
 
   @PathParam("token")
   private String token;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @GET
   @Path("{id}/{name}")
@@ -101,11 +108,13 @@ public class SharedAttachmentResource extends AbstractAttachmentResource {
     }
     try {
       File zipFile = FileUtils.getFile(folderToZip.getPath() + ".zip");
-      URI downloadUri =
-          getUriInfo().getBaseUriBuilder().path("sharing").path("attachments").path(componentId)
-              .path(getToken()).path("zipcontent").path(zipFile.getName()).build();
+      URI downloadUri = getUri().getWebResourcePathBuilder()
+          .path(getToken())
+          .path("zipcontent")
+          .path(zipFile.getName())
+          .build();
       long size = ZipUtil.compressPathToZip(folderToZip, zipFile);
-      return new ZipEntity(getUriInfo().getRequestUri(), downloadUri.toString(), size);
+      return new ZipEntity(getUri().getRequestUri(), downloadUri.toString(), size);
     } catch (IllegalArgumentException e) {
       throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
     } catch (UriBuilderException e) {

@@ -30,9 +30,8 @@ import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.web.WebResourceUri;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Base64;
@@ -57,71 +56,68 @@ public final class CalendarResourceURIs {
 
   /**
    * Centralizes the build of a calendar URI.
-   * @param baseUri the base URI of the service.
+   * @param uri the request uri.
+   * web resource for a given component instance.
    * @param calendar the aimed calendar.
    * @return the URI of specified calendar.
    */
-  public static URI buildCalendarURI(String baseUri, Calendar calendar) {
+  public static URI calendarUri(final WebResourceUri uri, final Calendar calendar) {
     if (calendar == null || !calendar.isPersisted()) {
       return null;
     }
-    return getCalendarUriBuilder(baseUri, calendar).build();
+    return getCalendarUriBuilder(uri, calendar).build();
   }
 
   /**
    * Centralizes the build of a ical private URI.
-   * @param request the current request.
-   * @param baseUri the base URI of the service.
+   * @param uri the request URI.
    * @param calendar the aimed calendar.
    * @return the URI of specified calendar.
    */
-  public static URI buildIcalPrivateURI(final HttpServletRequest request, String baseUri,
-      Calendar calendar) {
+  public static URI iCalPrivateURI(final WebResourceUri uri, final Calendar calendar) {
     if (calendar == null || !calendar.isPersisted()) {
       return null;
     }
-    return getICalUriBuilder(request, baseUri).path("private").path(calendar.getToken()).build();
+    return getICalUriBuilder(uri).path("private").path(calendar.getToken()).build();
   }
 
   /**
    * Centralizes the build of a ical public URI.
-   * @param request the current request.
-   * @param baseUri the base URI of the service.
+   * @param uri the request URI
    * @param calendar the aimed calendar.
    * @return the URI of specified calendar.
    */
-  public static URI buildIcalPublicURI(final HttpServletRequest request, String baseUri,
-      Calendar calendar) {
+  public static URI iCalPublicURI(final WebResourceUri uri, Calendar calendar) {
     if (calendar == null || !calendar.isPersisted()) {
       return null;
     }
-    return getICalUriBuilder(request, baseUri).path("public").path(calendar.getId()).build();
+    return getICalUriBuilder(uri).path("public").path(calendar.getId()).build();
   }
 
   /**
    * Centralizes the build of a calendar event URI.
-   * @param baseUri the base URI of the service.
+   * @param uri the request URI
    * @param event the aimed calendar event.
    * @return the URI of specified calendar event.
    */
-  public static URI buildEventURI(String baseUri, CalendarEvent event) {
+  public static URI eventURI(WebResourceUri uri, CalendarEvent event) {
     if (event == null) {
       return null;
     }
-    return getEventUriBuilder(baseUri, event).build();
+    return getEventUriBuilder(uri, event).build();
   }
 
   /**
    * Centralizes the build of a occurrence URI.
-   * @param baseUri the base URI of the service.
+   * @param uri the request URI
    * @param occurrence the aimed occurrence.
    * @return the URI of specified occurrence.
    */
-  public static URI buildOccurrenceURI(String baseUri, CalendarEventOccurrence occurrence) {
+  public static URI occurrenceURI(final WebResourceUri uri, CalendarEventOccurrence occurrence) {
     if (occurrence == null) {
       return null;
     }
-    return getOccurrenceUriBuilder(baseUri, occurrence).build();
+    return getOccurrenceUriBuilder(uri, occurrence).build();
   }
 
   /**
@@ -129,7 +125,7 @@ public final class CalendarResourceURIs {
    * @param occurrence the aimed occurrence.
    * @return the URI of specified occurrence.
    */
-  public static URI buildOccurrenceViewURI(CalendarEventOccurrence occurrence) {
+  public static URI occurrenceViewURI(CalendarEventOccurrence occurrence) {
     if (occurrence == null) {
       return null;
     }
@@ -141,49 +137,37 @@ public final class CalendarResourceURIs {
 
   /**
    * Centralizes the build of a calendar event attendee URI.
-   * @param baseUri the base URI of the service.
+   * @param uri the request URI
    * @param occurrence the aimed occurrence.
    *@param attendee the aimed calendar event attendee.  @return the URI of specified calendar event.
    */
-  public static URI buildOccurrenceAttendeeURI(String baseUri,
+  public static URI occurrenceAttendeeURI(final WebResourceUri uri,
       final CalendarEventOccurrence occurrence, Attendee attendee) {
     if (attendee == null) {
       return null;
     }
-    return getOccurrenceUriBuilder(baseUri, occurrence)
+    return getOccurrenceUriBuilder(uri, occurrence)
         .path(CALENDAR_EVENT_ATTENDEE_URI_PART).path(attendee.getId())
         .build();
   }
 
-  private static UriBuilder getBaseUri(final HttpServletRequest request, final String baseUri) {
-    return UriBuilder.fromUri(URLUtil.getFullApplicationURL(request))
-        .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(baseUri);
+  private static UriBuilder getICalUriBuilder(final WebResourceUri uri) {
+    return uri.getAbsoluteWebResourcePathBuilder().path("ical");
   }
 
-  private static UriBuilder getBaseUri(final String baseUri) {
-    return UriBuilder.fromUri(URLUtil.getApplicationURL())
-        .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(baseUri);
+  private static UriBuilder getCalendarUriBuilder(final WebResourceUri uri, final Calendar calendar) {
+    return uri.getWebResourcePathBuilder().path(calendar.getId());
   }
 
-  private static UriBuilder getICalUriBuilder(final HttpServletRequest request, final String baseUri) {
-    return getBaseUri(request, baseUri).path("ical");
-  }
-
-  private static UriBuilder getCalendarUriBuilder(final String baseUri, final Calendar calendar) {
-    return getBaseUri(baseUri)
-        .path(calendar.getComponentInstanceId())
-        .path(calendar.getId());
-  }
-
-  private static UriBuilder getEventUriBuilder(final String baseUri, final CalendarEvent event) {
-    return getCalendarUriBuilder(baseUri, event.getCalendar())
+  private static UriBuilder getEventUriBuilder(final WebResourceUri uri, final CalendarEvent event) {
+    return getCalendarUriBuilder(uri, event.getCalendar())
         .path(CALENDAR_EVENT_URI_PART)
         .path(event.getId());
   }
 
-  private static UriBuilder getOccurrenceUriBuilder(final String baseUri,
+  private static UriBuilder getOccurrenceUriBuilder(final WebResourceUri uri,
       final CalendarEventOccurrence occurrence) {
-    return getEventUriBuilder(baseUri, occurrence.getCalendarEvent())
+    return getEventUriBuilder(uri, occurrence.getCalendarEvent())
         .path(CALENDAR_EVENT_OCCURRENCE_URI_PART)
         .path(Base64.getEncoder().encodeToString(occurrence.getId().getBytes()));
   }

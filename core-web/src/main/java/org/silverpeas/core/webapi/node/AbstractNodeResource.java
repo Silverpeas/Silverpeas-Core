@@ -23,18 +23,17 @@
  */
 package org.silverpeas.core.webapi.node;
 
-import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
-
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
+import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A REST Web resource providing access to a node.
@@ -60,9 +59,9 @@ public abstract class AbstractNodeResource extends RESTWebService {
     if (!isNodeReadable(node)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
-    URI uri = super.getUriInfo().getRequestUriBuilder().path(node.getNodePK().getId()).build();
-    if (super.getUriInfo().getRequestUri().toString().endsWith("/" + NodePK.ROOT_NODE_ID)) {
-      uri = super.getUriInfo().getRequestUri();
+    URI uri = getUri().getRequestUriBuilder().path(node.getNodePK().getId()).build();
+    if (getUri().getRequestUri().toString().endsWith("/" + NodePK.ROOT_NODE_ID)) {
+      uri = getUri().getRequestUri();
     }
     NodeEntity entity = NodeEntity.fromNodeDetail(node, uri);
     entity.getState().setOpened(true);
@@ -85,7 +84,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
       if (!isNodeReadable(node)) {
         throw new WebApplicationException(Status.UNAUTHORIZED);
       }
-      URI uri = super.getUriInfo().getRequestUri();
+      URI uri = getUri().getRequestUri();
       return NodeEntity.fromNodeDetail(node, uri);
     }
   }
@@ -102,7 +101,7 @@ public abstract class AbstractNodeResource extends RESTWebService {
     if (!isNodeReadable(node)) {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
-    String requestUri = super.getUriInfo().getRequestUri().toString();
+    String requestUri = getUri().getRequestUri().toString();
     String uri = requestUri.substring(0, requestUri.lastIndexOf("/"));
     NodeEntity entity = NodeEntity.fromNodeDetail(node, uri);
     if (nodeId.equals(NodePK.ROOT_NODE_ID)) {

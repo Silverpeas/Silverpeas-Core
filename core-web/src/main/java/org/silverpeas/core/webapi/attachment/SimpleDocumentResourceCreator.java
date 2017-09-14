@@ -71,7 +71,7 @@ import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
  */
 @Service
 @RequestScoped
-@Path("documents/{componentId}/document/create")
+@Path(AbstractSimpleDocumentResource.PATH + "/{componentId}/document/create")
 @Authorized
 public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResource {
 
@@ -165,7 +165,7 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
           attachmentContext = DocumentType.valueOf(uploadData.getContext());
         }
         SimpleDocumentPK pk = new SimpleDocumentPK(null, getComponentId());
-        String userId = getUserDetail().getId();
+        String userId = getUser().getId();
         SimpleDocument document;
         boolean needCreation = true;
         boolean publicDocument = true;
@@ -217,7 +217,7 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         // in the case the document is a CAD one, process it for Actify
         ActifyDocumentProcessor.getProcessor().process(document);
 
-        URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
+        URI attachmentUri = getUri().getRequestUriBuilder().path("document").path(document.
             getLanguage()).build();
         return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
       }

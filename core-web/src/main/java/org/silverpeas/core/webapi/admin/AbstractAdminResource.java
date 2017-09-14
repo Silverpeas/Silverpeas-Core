@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.webapi.admin;
 
-import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.security.authorization.SpaceAccessControl;
 import org.silverpeas.core.webapi.admin.delegate.AdminPersonalWebDelegate;
 import org.silverpeas.core.webapi.admin.tools.AbstractTool;
+import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.look.delegate.LookWebDelegate;
 
 import javax.inject.Inject;
@@ -185,7 +185,8 @@ public abstract class AbstractAdminResource extends RESTWebService {
       userFavoriteSpace.append(getLookDelegate().getUserFavorite(space, forceGettingFavorite));
     }
     return SpaceEntity.createFrom(space, getUserPreferences().getLanguage())
-        .withURI(AdminResourceURIs.buildURIOfSpace(space, getUriInfo()))
+        .withURI(
+            getUri().getWebResourcePathBuilder().path(String.valueOf(space.getLocalId())).build())
         .addUserFavorites(userFavoriteSpace.toString());
   }
 
@@ -200,7 +201,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
       final String wallpaper, final String css) {
     checkNotFoundStatus(space);
     return SpaceAppearanceEntity.createFrom(space, look, wallpaper, css).withURI(
-        AdminResourceURIs.buildURIOfSpaceAppearance(space, getUriInfo()));
+        getUri().getWebResourcePathBuilder().path(String.valueOf(space.getLocalId())).build());
   }
 
   /**
@@ -210,8 +211,9 @@ public abstract class AbstractAdminResource extends RESTWebService {
    */
   protected ComponentEntity asWebEntity(final ComponentInstLight component) {
     checkNotFoundStatus(component);
+    String componentId = getUri().getPathParameters().getFirst("componentId");
     return ComponentEntity.createFrom(component, getUserPreferences().getLanguage()).withURI(
-        AdminResourceURIs.buildURIOfComponent(component, getUriInfo()));
+        getUri().getWebResourcePathBuilder().path(componentId == null ? "" : componentId).build());
   }
 
   /**
@@ -223,7 +225,8 @@ public abstract class AbstractAdminResource extends RESTWebService {
     checkNotFoundStatus(component);
     return PersonalComponentEntity
         .createFrom(component, getAdminPersonalDelegate().getComponentLabel(component),
-            getUserPreferences().getLanguage()).withUriBase(getUriInfo().getBaseUri());
+            getUserPreferences().getLanguage())
+        .withUriBase(getUri().getBaseUri());
   }
 
   /**
@@ -233,7 +236,8 @@ public abstract class AbstractAdminResource extends RESTWebService {
    */
   protected PersonalComponentEntity asWebPersonalEntity(final ComponentInst component) {
     checkNotFoundStatus(component);
-    return PersonalComponentEntity.createFrom(component).withUriBase(getUriInfo().getBaseUri());
+    return PersonalComponentEntity.createFrom(component)
+        .withUriBase(getUri().getBaseUri());
   }
 
   /**
@@ -243,7 +247,8 @@ public abstract class AbstractAdminResource extends RESTWebService {
    */
   protected PersonalToolEntity asWebPersonalEntity(final AbstractTool tool) {
     checkNotFoundStatus(tool);
-    return PersonalToolEntity.createFrom(tool).withUriBase(getUriInfo().getBaseUri());
+    return PersonalToolEntity.createFrom(tool)
+        .withUriBase(getUri().getBaseUri());
   }
 
   /**
@@ -277,8 +282,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    */
   protected AdminPersonalWebDelegate getAdminPersonalDelegate() {
     if (adminPersonalDelegate == null) {
-      adminPersonalDelegate =
-          AdminPersonalWebDelegate.getInstance(getUserDetail(), getUserPreferences(),
+      adminPersonalDelegate = AdminPersonalWebDelegate.getInstance(getUser(), getUserPreferences(),
               getLookDelegate());
     }
     return adminPersonalDelegate;
@@ -289,7 +293,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
    * @param spaceId the space identifier
    */
   protected void verifyUserAuthorizedToAccessSpace(final String spaceId) {
-    if (!spaceAccessController.isUserAuthorized(getUserDetail().getId(), spaceId)) {
+    if (!spaceAccessController.isUserAuthorized(getUser().getId(), spaceId)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }
@@ -310,8 +314,7 @@ public abstract class AbstractAdminResource extends RESTWebService {
   protected boolean isUserAuthorizedToAccessLookContext() {
     // If the look helper is not accessible, then the user is not authorized
     if (lookDelegate == null) {
-      lookDelegate =
-          LookWebDelegate.getInstance(getUserDetail(), getUserPreferences(),
+      lookDelegate = LookWebDelegate.getInstance(getUser(), getUserPreferences(),
               getHttpServletRequest());
     }
     return (lookDelegate != null && lookDelegate.getHelper() != null);

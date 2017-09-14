@@ -25,6 +25,7 @@ package org.silverpeas.core.webapi.attachment;
 
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
@@ -72,7 +73,7 @@ import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
 
 @Service
 @RequestScoped
-@Path("documents/{componentId}/document/{id}")
+@Path(AbstractSimpleDocumentResource.PATH + "/{componentId}/document/{id}")
 @Authorized
 public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
@@ -94,7 +95,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Produces(MediaType.APPLICATION_JSON)
   public SimpleDocumentEntity getDocument(final @PathParam("lang") String lang) {
     SimpleDocument attachment = getSimpleDocument(lang);
-    URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(attachment.
+    URI attachmentUri = getUri().getRequestUriBuilder().path("document").path(attachment.
         getLanguage()).build();
     return SimpleDocumentEntity.fromAttachment(attachment).withURI(attachmentUri);
   }
@@ -184,7 +185,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         isPublic = uploadData.getVersionType() == DocumentVersion.TYPE_PUBLIC_VERSION;
         document.setPublicDocument(isPublic);
       }
-      document.setUpdatedBy(getUserDetail().getId());
+      document.setUpdatedBy(getUser().getId());
       document.setLanguage(uploadData.getLanguage());
       document.setTitle(uploadData.getTitle());
       document.setDescription(uploadData.getDescription());
@@ -209,7 +210,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         document.setSize(tempFile.length());
         InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
         if (!StringUtil.isDefined(document.getEditedBy())) {
-          document.edit(getUserDetail().getId());
+          document.edit(getUser().getId());
         }
 
         AttachmentServiceProvider.getAttachmentService().updateAttachment(document, content, true,
@@ -232,7 +233,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
           isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
           File content = new File(document.getAttachmentPath());
           AttachmentServiceProvider.getAttachmentService()
-              .lock(document.getId(), getUserDetail().getId(), document.getLanguage());
+              .lock(document.getId(), getUser().getId(), document.getLanguage());
           AttachmentServiceProvider.getAttachmentService()
               .updateAttachment(document, content, true, true);
         } else {
@@ -243,7 +244,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
         }
       }
       UnlockContext unlockContext =
-          new UnlockContext(document.getId(), getUserDetail().getId(), uploadData.getLanguage(),
+          new UnlockContext(document.getId(), getUser().getId(), uploadData.getLanguage(),
               uploadData.getComment());
       if (isWebdav) {
         unlockContext.addOption(UnlockOption.WEBDAV);
@@ -255,10 +256,10 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
       }
       AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
       if (isWebdav) {
-        WebDavTokenProducer.deleteToken(getUserDetail(), document.getId());
+        WebDavTokenProducer.deleteToken(getUser(), document.getId());
       }
       document = getSimpleDocument(uploadData.getLanguage());
-      URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(document.
+      URI attachmentUri = getUri().getRequestUriBuilder().path("document").path(document.
           getLanguage()).build();
       return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
     } catch (RuntimeException re) {
@@ -280,7 +281,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       SimpleDocument attachment = getSimpleDocument(lang);
       if (lang.equals(attachment.getLanguage())) {
-        URI attachmentUri = getUriInfo().getRequestUriBuilder().path("document").path(lang).build();
+        URI attachmentUri = getUri().getRequestUriBuilder().path("document").path(lang).build();
         result.add(SimpleDocumentEntity.fromAttachment(attachment).withURI(attachmentUri));
       }
     }
@@ -304,7 +305,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) throws
       WebApplicationException {
-    validation.validateUserAuthorizationOnAttachment(getHttpServletRequest(), getUserDetail(),
+    validation.validateUserAuthorizationOnAttachment(getHttpServletRequest(), getUser(),
         getSimpleDocument(null));
   }
 
@@ -342,7 +343,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Produces(MediaType.APPLICATION_JSON)
   public String lock(@PathParam("lang") final String language) {
     boolean result = AttachmentServiceProvider.getAttachmentService().lock(getSimpleDocumentId(),
-        getUserDetail().getId(), language);
+        getUser().getId(), language);
     return MessageFormat.format("'{'\"status\":{0}}", result);
   }
 
@@ -420,7 +421,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
       @FormParam("comment") final String comment) {
     UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
     SimpleDocument document = getSimpleDocument(defaultLanguage);
-    UnlockContext unlockContext = new UnlockContext(getSimpleDocumentId(), getUserDetail().getId(),
+    UnlockContext unlockContext = new UnlockContext(getSimpleDocumentId(), getUser().getId(),
         defaultLanguage, comment);
     if (force) {
       unlockContext.addOption(UnlockOption.FORCE);
@@ -433,7 +434,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     }
     boolean result = AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
     if (result) {
-      WebDavTokenProducer.deleteToken(getUserDetail(), document.getId());
+      WebDavTokenProducer.deleteToken(getUser(), document.getId());
     }
     return MessageFormat.format("'{'\"status\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
         result, document.getOldSilverpeasId(), document.getId());

@@ -73,11 +73,13 @@ import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
  */
 @Service
 @RequestScoped
-@Path("fileUpload")
+@Path(FileUploadResource.PATH)
 @Authenticated
 public class FileUploadResource extends RESTWebService {
 
   private static final Semaphore requestLimit = new Semaphore(50, true);
+  static final String PATH = "fileUpload";
+
 
   @Inject
   private ComponentAccessControl componentAccessController;
@@ -196,7 +198,7 @@ public class FileUploadResource extends RESTWebService {
 
       if (StringUtil.isDefined(fileUploadData.getComponentInstanceId()) &&
           !componentAccessController
-              .isUserAuthorized(getUserDetail().getId(), fileUploadData.getComponentInstanceId())) {
+              .isUserAuthorized(getUser().getId(), fileUploadData.getComponentInstanceId())) {
         throw new WebApplicationException(Response.Status.FORBIDDEN);
       }
 
@@ -349,10 +351,15 @@ public class FileUploadResource extends RESTWebService {
     }
   }
 
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
+
   /*
-   * (non-Javadoc)
-   * @see com.silverpeas.web.RESTWebService#getComponentId()
-   */
+     * (non-Javadoc)
+     * @see com.silverpeas.web.RESTWebService#getComponentId()
+     */
   @Override
   public String getComponentId() {
     return getHttpRequest().getHeader(FileUploadData.X_COMPONENT_INSTANCE_ID);

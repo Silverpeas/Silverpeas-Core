@@ -31,7 +31,6 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.PersonalSpaceManager;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.admin.tools.AbstractTool;
@@ -51,7 +50,7 @@ public class AdminPersonalWebDelegate {
 
   private OrganizationController organizationController;
 
-  private final UserDetail user;
+  private final User user;
   private final UserPreferences userPreference;
 
   private final LookWebDelegate lookDelegate;
@@ -228,7 +227,7 @@ public class AdminPersonalWebDelegate {
    * @param lookDelegate a delegate of the Web look
    * é@return a delegate
    */
-  public static AdminPersonalWebDelegate getInstance(final UserDetail user,
+  public static AdminPersonalWebDelegate getInstance(final User user,
       final UserPreferences userPreference, final LookWebDelegate lookDelegate) {
     return new AdminPersonalWebDelegate(user, userPreference, lookDelegate);
   }
@@ -239,7 +238,7 @@ public class AdminPersonalWebDelegate {
    * @param userPreference the user preference
    * @param lookDelegate
    */
-  private AdminPersonalWebDelegate(final UserDetail user, final UserPreferences userPreference,
+  private AdminPersonalWebDelegate(final User user, final UserPreferences userPreference,
       final LookWebDelegate lookDelegate) {
     this.user = user;
     this.userPreference = userPreference;

@@ -55,8 +55,15 @@ import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.ass
  */
 @Service
 @RequestScoped
-@Path(CALENDAR_BASE_URI + "/ical")
+@Path(ICalendarResource.PATH)
 public class ICalendarResource extends RESTWebService {
+
+  static final String PATH = CALENDAR_BASE_URI + "/ical";
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   /**
    * Gets the JSON representation of a calendar represented by the given identifier.

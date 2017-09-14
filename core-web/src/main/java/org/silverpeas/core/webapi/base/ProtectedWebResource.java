@@ -23,39 +23,16 @@
  */
 package org.silverpeas.core.webapi.base;
 
+import org.silverpeas.core.web.SilverpeasWebResource;
+
 import javax.ws.rs.WebApplicationException;
 
 /**
- * A Web resource is a resource representing an entity in Silverpeas that is accessible from the
- * Web. This entity can a be contribution, a contribution's content, or a any business entities
- * (like the user profiles for example).
- * <p>
- * Named as <code>Target</code> in the JAX-RS jargon, as being the endpoint of an URI-based HTTP
- * communication, the Web resource acts in fact, for the Web clients, as a proxy of the entities it
- * is intended to represent and, as such it is uniquely identified by a base URI at which the
- * entities are meant be exposed on the Web. As a proxy, it plays the role of a translator, as it
- * translates the expected HTTP requests in business methods implying the entity(ies) targeted by
- * the requested URI, and then it translates the answer of those methods in an HTTP response that
- * is sent back to the requester; usually, the response carries a representation of the entity(ies)
- * implying in the treatment according to the negotiated format (specified in MIME).
- * </p>
- * <p>
- *   So, an entity that is accessible on the Web is then structured in the following way:
- * </p>
- * <ul>
- *   <li>The entity itself defining the business operations through which the applications in
- *   Silverpeas manage it. This entity has no knowledge of the Web and of how to be interfaced
- *   with.</li>
- *   <li>The Web resource, proxying the entity for the Web and translating the HTTP-verbs in
- *   business operations implying the entity(ies) targeted by the exact requested URI.
- *   </li>
- *   <li>The entity Web state (aka entity state representation for the Web), ready to be encoded
- *   into the negotiated representation format (usually in JSON) and that represents the state of
- *   the entity at the time the HTTP request is answered.</li>
- * </ul>
+ * A protected Web resource is a Web resource in Silvepreas that can require the user to be
+ * authenticated or authorized to access the instances of the resource.
  * @author mmoquillon
  */
-public interface WebResource {
+public interface ProtectedWebResource extends SilverpeasWebResource {
 
   /**
    * Validates the authentication of the user requesting this web service. If no session was opened
@@ -89,10 +66,4 @@ public interface WebResource {
    */
   void validateUserAuthorization(final UserPrivilegeValidation validation) throws
       WebApplicationException;
-
-  /**
-   * Gets the identifier of the component instance to which the requested resource belongs to.
-   * @return the identifier of the Silverpeas component instance.
-   */
-  String getComponentId();
 }

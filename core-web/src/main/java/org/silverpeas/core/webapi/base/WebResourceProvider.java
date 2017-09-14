@@ -23,11 +23,16 @@
  */
 package org.silverpeas.core.webapi.base;
 
+import org.silverpeas.core.web.SilverpeasWebResource;
+
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 /**
- * This class permits to specify the prefix "services" for all URI of Silverpeas WEb Services.
+ * A provider of Silverpeas Web resources for the JAX-RS framework. It defines at which base URI
+ * the Web resources in Silverpeas are defined and listening for incoming requests.
  */
-@ApplicationPath("/services")
-public class WebResourceProvider extends Application {}
+@ApplicationPath(SilverpeasWebResource.BASE_PATH)
+public class WebResourceProvider extends Application {
+
+}

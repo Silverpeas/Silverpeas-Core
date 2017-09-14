@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.base;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.session.SessionInfo;
@@ -178,7 +179,7 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
    * @throws WebApplicationException exception if the validation failed.
    */
   @Override
-  public void validateUserAuthorizationOnComponentInstance(final UserDetail user, String instanceId)
+  public void validateUserAuthorizationOnComponentInstance(final User user, String instanceId)
       throws WebApplicationException {
     if (user == null || !componentAccessController.isUserAuthorized(user.getId(), instanceId)) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
@@ -195,7 +196,7 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
    */
   @Override
   public void validateUserAuthorizationOnAttachment(final HttpServletRequest request,
-      final UserDetail user, SimpleDocument doc) throws WebApplicationException {
+      final User user, SimpleDocument doc) throws WebApplicationException {
     AccessControlContext context = AccessControlContext.init();
     if (HttpMethod.PUT.equals(request.getMethod())) {
       context.onOperationsOf(AccessControlOperation.creation);

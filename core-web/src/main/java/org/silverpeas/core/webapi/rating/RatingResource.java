@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.rating;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
@@ -51,9 +52,11 @@ import javax.ws.rs.core.Response.Status;
  */
 @Service
 @RequestScoped
-@Path("rating/{componentId}/{contributionType}/{contributionId}")
+@Path(RatingResource.PATH + "/{componentId}/{contributionType}/{contributionId}")
 @Authorized
 public class RatingResource extends RESTWebService {
+
+  static final String PATH = "rating";
 
   @PathParam("componentId")
   private String componentId;
@@ -65,6 +68,11 @@ public class RatingResource extends RESTWebService {
   @Override
   protected String getBundleLocation() {
     return "org.silverpeas.notation.multilang.notation";
+  }
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
   }
 
   @Override
@@ -81,7 +89,7 @@ public class RatingResource extends RESTWebService {
   public RaterRatingEntity getRaterRating() {
     try {
       ContributionRating contributionRating = RatingService.get().getRating(getRatingPK());
-      return asWebEntity(contributionRating.getRaterRating(getUserDetail()));
+      return asWebEntity(contributionRating.getRaterRating(UserDetail.from(getUser())));
     } catch (Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
@@ -107,7 +115,8 @@ public class RatingResource extends RESTWebService {
   }
 
   private RaterRatingPK getRaterRatingPK() {
-    return new RaterRatingPK(contributionId, componentId, contributionType, getUserDetail());
+    return new RaterRatingPK(contributionId, componentId, contributionType,
+        UserDetail.from(getUser()));
   }
 
   /**

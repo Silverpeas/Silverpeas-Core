@@ -57,6 +57,11 @@ public class PasswordResource extends AbstractPasswordResource {
   protected static int nbMatchingCombinedRules =
       settings.getInteger("password.combination.nbMatchingRules", 0);
 
+  @Override
+  protected String getResourceBasePath() {
+    return PasswordResourceURIs.PASSWORD_BASE_URI;
+  }
+
   /**
    * User authentication is not necessary for this WEB Service. The authentication processing is
    * used here to identify the user behind the call if possible.

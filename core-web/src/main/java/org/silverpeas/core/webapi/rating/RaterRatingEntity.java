@@ -23,18 +23,16 @@
  */
 package org.silverpeas.core.webapi.rating;
 
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.rating.model.Rateable;
 import org.silverpeas.core.contribution.rating.model.RaterRating;
 import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.web.SilverpeasWebResource;
+import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
-import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -205,8 +203,7 @@ public class RaterRatingEntity implements WebEntity {
     if (raterRating == null) {
       return null;
     }
-    return UriBuilder.fromUri(URLUtil.getApplicationURL())
-        .path(RESTWebService.REST_WEB_SERVICES_URI_BASE).path(
+    return SilverpeasWebResource.getBasePathBuilder().path(
             RatingResourceURIs.RATER_RATING_BASE_URI)
         .path(raterRating.getRating().getInstanceId())
         .path(raterRating.getRating().getContributionType())

@@ -75,9 +75,11 @@ import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
  */
 @Service
 @RequestScoped
-@Path("view/{componentId}")
+@Path(DocumentViewResource.PATH + "/{componentId}")
 @Authorized
 public class DocumentViewResource extends RESTWebService {
+
+  static final String PATH = "view";
 
   @Inject
   private AttachmentService attachmentService;
@@ -107,7 +109,7 @@ public class DocumentViewResource extends RESTWebService {
       // Retrieve attachment data
       final SimpleDocument attachment = attachmentService
           .searchDocumentById(new SimpleDocumentPK(id, getComponentId()),
-              (StringUtil.isNotDefined(language) ? getUserPreferences().getLanguage() : language));
+              StringUtil.isNotDefined(language) ? getUserPreferences().getLanguage() : language);
 
       // Checking availability
       if (attachment == null) {
@@ -134,13 +136,18 @@ public class DocumentViewResource extends RESTWebService {
    */
   protected DocumentViewEntity asWebEntity(final DocumentView documentView) {
     return DocumentViewEntity.createFrom(documentView, getUserPreferences().getLanguage()).withURI(
-        getUriInfo().getRequestUri());
+        getUri().getRequestUri());
+  }
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
   }
 
   /*
-   * (non-Javadoc)
-   * @see com.silverpeas.web.RESTWebService#getComponentId()
-   */
+     * (non-Javadoc)
+     * @see com.silverpeas.web.RESTWebService#getComponentId()
+     */
   @Override
   public String getComponentId() {
     return componentId;

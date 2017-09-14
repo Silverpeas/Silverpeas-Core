@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.attachment;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -30,20 +36,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-
 /**
  * A REST Web resource providing access to attachments through private mode.
  */
 @Service
 @RequestScoped
-@Path("private/attachments/{componentId}")
+@Path(AttachmentResource.PATH + "/{componentId}")
 @Authorized
 public class AttachmentResource extends AbstractAttachmentResource {
+
+  static final String PATH = "private/attachments";
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @GET
   @Path("{id}/{name}")
@@ -54,7 +61,7 @@ public class AttachmentResource extends AbstractAttachmentResource {
 
   @Override
   protected boolean isFileReadable(SimpleDocument attachment) {
-    return attachment.canBeAccessedBy(getUserDetail());
+    return attachment.canBeAccessedBy(UserDetail.from(getUser()));
   }
 
 }

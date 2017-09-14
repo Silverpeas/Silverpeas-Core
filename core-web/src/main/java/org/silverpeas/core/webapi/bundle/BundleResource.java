@@ -66,11 +66,17 @@ import java.util.Properties;
  */
 
 @RequestScoped
-@Path("bundles")
+@Path(BundleResource.PATH)
 @Authenticated
 public class BundleResource extends RESTWebService {
 
   private static final String GENERAL_SETTINGS = "org.silverpeas.general";
+  static final String PATH = "bundles";
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @Override
   public String getComponentId() {
@@ -216,7 +222,7 @@ public class BundleResource extends RESTWebService {
    */
   private String getLanguage() {
     String language = I18NHelper.defaultLanguage;
-    if (getUserDetail() != null) {
+    if (getUser() != null) {
       language = getUserPreferences().getLanguage();
     }
     return language;

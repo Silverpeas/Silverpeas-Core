@@ -23,6 +23,14 @@
  */
 package org.silverpeas.core.webapi.thumbnail;
 
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
+
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
@@ -30,23 +38,17 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
-import org.silverpeas.core.webapi.base.RESTWebService;
-
 /**
  * A REST Web resource representing a given thumbnail.
  * It is a web service that provides an access to a thumbnail referenced by its URL.
  */
 @Service
 @RequestScoped
-@Path("thumbnail/{componentId}/{contributionType}/{contributionId}")
+@Path(ThumbnailResource.PATH + "/{componentId}/{contributionType}/{contributionId}")
 @Authorized
 public class ThumbnailResource extends RESTWebService {
+
+  static final String PATH = "thumbnail";
 
   @PathParam("componentId")
   private String componentId;
@@ -57,6 +59,11 @@ public class ThumbnailResource extends RESTWebService {
 
   @Inject
   private ThumbnailService thumbnailService;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @Override
   public String getComponentId() {
@@ -74,19 +81,11 @@ public class ThumbnailResource extends RESTWebService {
     }
   }
 
-  public void setContributionType(String contributionType) {
-    this.contributionType = contributionType;
-  }
-
-  public String getContributionType() {
+  private String getContributionType() {
     return contributionType;
   }
 
-  public void setContributionId(String contributionId) {
-    this.contributionId = contributionId;
-  }
-
-  public String getContributionId() {
+  private String getContributionId() {
     return contributionId;
   }
 

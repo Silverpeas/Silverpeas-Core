@@ -41,7 +41,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriBuilder;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -56,9 +55,11 @@ import static org.silverpeas.core.webapi.socialnetwork.invitation.InvitationEnti
  * the invitations belonging to another user cannot be fetched by him.
  */
 @RequestScoped
-@Path("invitations")
+@Path(InvitationResource.PATH)
 @Authenticated
 public class InvitationResource extends RESTWebService {
+
+  static final String PATH = "invitations";
 
   @Inject
   private InvitationService invitationService;
@@ -68,8 +69,8 @@ public class InvitationResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public List<InvitationEntity> getReceivedInvitations() {
     List<Invitation> invitations = invitationService.getAllMyInvitationsReceive(Integer.valueOf(
-            getUserDetail().getId()));
-    return asWebEntities(invitations, locatedAt(getUriInfo().getAbsolutePathBuilder()));
+            getUser().getId()));
+    return asWebEntities(invitations, locatedAt(getUri().getAbsolutePathBuilder()));
   }
 
   @Path("outbox")
@@ -77,8 +78,8 @@ public class InvitationResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public List<InvitationEntity> getSentInvitations() {
     List<Invitation> invitations = invitationService.getAllMyInvitationsSent(Integer.valueOf(
-            getUserDetail().getId()));
-    return asWebEntities(invitations, locatedAt(getUriInfo().getAbsolutePathBuilder()));
+            getUser().getId()));
+    return asWebEntities(invitations, locatedAt(getUri().getAbsolutePathBuilder()));
   }
 
   @Path("{id}")
@@ -86,7 +87,7 @@ public class InvitationResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public InvitationEntity getInvitation(@PathParam("id") final Integer id) {
     Invitation invitation = invitationService.getInvitation(id);
-    return asWebEntity(invitation, locatedAt(getUriInfo().getAbsolutePathBuilder()));
+    return asWebEntity(invitation, locatedAt(getUri().getAbsolutePathBuilder()));
   }
 
   @DELETE
@@ -112,16 +113,20 @@ public class InvitationResource extends RESTWebService {
     Invitation invitation = new Invitation();
     invitation.setReceiverId(invitationEntity.getReceiverId());
     invitation.setMessage(invitationEntity.getMessage());
-    invitation.setSenderId(Integer.parseInt(getUserDetail().getId()));
+    invitation.setSenderId(Integer.parseInt(getUser().getId()));
     int id = invitationService.invite(invitation);
     invitationEntity.setId(id);
     return Response.ok(invitationEntity).build();
   }
 
   @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
+
+  @Override
   public String getComponentId() {
-    throw new UnsupportedOperationException("The InvitationResource doesn't belong to any component"
-            + " instances");
+    return null;
   }
 
   private static UriBuilder locatedAt(final UriBuilder uri) {

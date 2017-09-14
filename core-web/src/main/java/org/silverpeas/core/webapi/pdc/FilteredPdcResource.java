@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.pdc.pdc.model.AxisValueCriterion;
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import org.silverpeas.core.annotation.RequestScoped;
@@ -52,12 +53,19 @@ import static org.silverpeas.core.util.logging.SilverLogger.*;
  */
 @Service
 @RequestScoped
-@Path("pdc/filter")
+@Path(FilteredPdcResource.PATH)
 @Authenticated
 public class FilteredPdcResource extends RESTWebService {
 
+  static final String PATH = "pdc/filter";
+
   @Inject
   private PdcServiceProvider pdcServiceProvider;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   /**
    * Gets a PdC containing only the axis and the axis's value that were used in the classification
@@ -98,7 +106,7 @@ public class FilteredPdcResource extends RESTWebService {
         onWorkspace(workspaceId).
         onComponentInstance(componentId).
         onSecondaryAxisInclusion(withSecondaryAxis).
-        onUser(getUserDetail());
+        onUser(UserDetail.from(getUser()));
     setAxisValues(criteria, axisValues);
     try {
       List<UsedAxis> axis = pdcServiceProvider().getAxisUsedInClassificationsByCriteria(criteria);
@@ -106,7 +114,7 @@ public class FilteredPdcResource extends RESTWebService {
       return aPdcEntityWithUsedAxis(
           withAxis(axis),
           inLanguage(userPreferences.getLanguage()),
-          atURI(getUriInfo().getRequestUri()),
+          atURI(getUri().getRequestUri()),
           withThesaurusAccordingTo(userPreferences));
     } catch (Exception ex) {
       getLogger(this).error(ex.getMessage(), ex);
@@ -132,7 +140,7 @@ public class FilteredPdcResource extends RESTWebService {
   private UserThesaurusHolder withThesaurusAccordingTo(UserPreferences userPreferences) {
     UserThesaurusHolder thesaurus = NoThesaurus;
     if (userPreferences.isThesaurusEnabled()) {
-      thesaurus = pdcServiceProvider().getThesaurusOfUser(getUserDetail());
+      thesaurus = pdcServiceProvider().getThesaurusOfUser(UserDetail.from(getUser()));
     }
     return thesaurus;
   }

@@ -25,6 +25,7 @@ package org.silverpeas.core.webapi.base;
 
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.personalization.UserPreferences;
@@ -33,8 +34,9 @@ import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SilverpeasSettings;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.SilverpeasWebResource;
+import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.webapi.base.aspect.ComponentInstMustExistIfSpecified;
@@ -58,9 +60,7 @@ import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_SESSI
  */
 @ComponentInstMustExistIfSpecified
 @WebEntityMustBeValid
-public abstract class RESTWebService implements WebResource {
-  public static final String REST_WEB_SERVICES_URI_BASE =
-      SilverpeasSettings.getRestWebServicesUriBase();
+public abstract class RESTWebService implements ProtectedWebResource {
 
   /**
    * The HTTP header parameter that provides the real size of an array of resources. It is for
@@ -83,6 +83,27 @@ public abstract class RESTWebService implements WebResource {
   private SilverpeasRole highestUserRole;
 
   private LocalizationBundle bundle = null;
+
+  @Override
+  public WebResourceUri getUri() {
+    String path = getResourceBasePath();
+    String componentId = getComponentId();
+    if (!path.endsWith("/")) {
+      path += "/";
+    }
+    if (StringUtil.isDefined(componentId)) {
+      path += componentId;
+    }
+    return new WebResourceUri(path, getHttpServletRequest(), uriInfo);
+  }
+
+  /**
+   * Gets the base path of the web resource relative to the root path of all of the web resources
+   * in Silverpeas as given by {@link SilverpeasWebResource#getBasePath()}.
+   * @return the relative path that identifies this REST web service among all other REST web
+   * services.
+   */
+  protected abstract String getResourceBasePath();
 
   @Override
   public void validateUserAuthentication(final UserPrivilegeValidation validation) {
@@ -110,19 +131,10 @@ public abstract class RESTWebService implements WebResource {
 
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {
-    validation.validateUserAuthorizationOnComponentInstance(getUserDetail(), getComponentId());
+    validation.validateUserAuthorizationOnComponentInstance(getUser(), getComponentId());
   }
 
   public abstract String getComponentId();
-
-  /**
-   * Gets information about the URI with which this web service was invoked.
-   *
-   * @return an UriInfo instance.
-   */
-  public UriInfo getUriInfo() {
-    return uriInfo;
-  }
 
   /**
    * Gets the HTTP servlet request mapped with the execution context of this web service.
@@ -137,6 +149,7 @@ public abstract class RESTWebService implements WebResource {
    * Gets the HTTP request mapped with the execution context of this web service.
    * @return the HTTP request.
    */
+  @Override
   public HttpRequest getHttpRequest() {
     if (httpRequest == null) {
       httpRequest = (HttpRequest) getHttpServletRequest().getAttribute(HttpRequest.class.getName());
@@ -162,7 +175,7 @@ public abstract class RESTWebService implements WebResource {
    *
    * @return the detail about the user.
    */
-  protected UserDetail getUserDetail() {
+  protected User getUser() {
     return userDetail;
   }
 
@@ -178,7 +191,7 @@ public abstract class RESTWebService implements WebResource {
    */
   protected UserPreferences getUserPreferences() {
     return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(
-        getUserDetail().getId());
+        getUser().getId());
   }
 
   /**
@@ -189,7 +202,7 @@ public abstract class RESTWebService implements WebResource {
   protected Collection<SilverpeasRole> getUserRoles() {
     if (userRoles == null) {
       userRoles =
-          organizationController.getUserSilverpeasRolesOn(getUserDetail(), getComponentId());
+          organizationController.getUserSilverpeasRolesOn(getUser(), getComponentId());
     }
     return userRoles;
   }

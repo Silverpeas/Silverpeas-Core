@@ -53,10 +53,10 @@ public abstract class AbstractMessageResource extends RESTWebService {
   /**
    * Due to the particularity of this WEB Service according to authentication, the language is
    * handled at this level.
-   * @return
+   * @return the language code
    */
   protected String getLanguage() {
-    if (getUserDetail() != null) {
+    if (getUser() != null) {
       return getUserPreferences().getLanguage();
     }
     return I18NHelper.defaultLanguage;

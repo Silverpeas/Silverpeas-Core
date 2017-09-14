@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.annotation.RequestScoped;
@@ -99,7 +100,7 @@ public class UserProfileResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public UserProfileEntity checkUserToken() {
     try {
-      return UserProfileEntity.fromUser(getUserDetail()).withAsUri(getUriInfo().getRequestUri());
+      return UserProfileEntity.fromUser(getUser()).withAsUri(getUri().getRequestUri());
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {
@@ -143,11 +144,11 @@ public class UserProfileResource extends RESTWebService {
       @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
     String domainId = Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain;
     if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
-      Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
+      Group group = profileService.getGroupAccessibleToUser(groupId, UserDetail.from(getUser()));
       domainId = group.getDomainId();
     }
-    if (getUserDetail().isDomainRestricted()) {
-      domainId = getUserDetail().getDomainId();
+    if (getUser().isDomainRestricted()) {
+      domainId = getUser().getDomainId();
     }
     UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder
         .aSearchCriteria().withDomainId(domainId).
@@ -169,7 +170,7 @@ public class UserProfileResource extends RESTWebService {
     }
     ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
     return Response.ok(
-        asWebEntity(users, locatedAt(getUriInfo().getAbsolutePath()))).
+        asWebEntity(users, locatedAt(getUri().getAbsolutePath()))).
         header(RESPONSE_HEADER_USERSIZE, users.originalListSize()).
         header(RESPONSE_HEADER_ARRAYSIZE, users.originalListSize()).build();
   }
@@ -188,7 +189,7 @@ public class UserProfileResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public UserProfileEntity getUser(@PathParam("userId") String userId,
       @QueryParam("extended") boolean extended) {
-    final URI uri = identifiedBy(getUriInfo().getAbsolutePath());
+    final URI uri = identifiedBy(getUri().getAbsolutePath());
     if (extended) {
       return asWebEntity(getUserFullMatching(userId), uri);
     } else {
@@ -242,11 +243,11 @@ public class UserProfileResource extends RESTWebService {
     String[] roleNames = isDefined(roles) ? roles.split(",") : null;
     String domainId = null;
     if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
-      Group group = profileService.getGroupAccessibleToUser(groupId, getUserDetail());
+      Group group = profileService.getGroupAccessibleToUser(groupId, UserDetail.from(getUser()));
       domainId = group.getDomainId();
     }
-    if (getUserDetail().isDomainRestricted()) {
-      domainId = getUserDetail().getDomainId();
+    if (getUser().isDomainRestricted()) {
+      domainId = getUser().getDomainId();
     }
     UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder
         .aSearchCriteria().withDomainId(domainId).
@@ -264,7 +265,7 @@ public class UserProfileResource extends RESTWebService {
     }
 
     ListSlice<UserDetail> users = getOrganisationController().searchUsers(criteriaBuilder.build());
-    URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
+    URI usersUri = getUri().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
         asWebEntity(users, locatedAt(usersUri))).
         header(RESPONSE_HEADER_USERSIZE, users.originalListSize()).
@@ -309,7 +310,7 @@ public class UserProfileResource extends RESTWebService {
       @QueryParam("domain") String domain,
       @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
     String domainId = Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain;
-    UserDetail theUser = getUserDetailMatching(userId);
+    User theUser = getUserDetailMatching(userId);
     String[] roleNames = isDefined(roles) ? roles.split(",") : null;
     String[] contactIds = getContactIds(theUser.getId());
     ListSlice<UserDetail> contacts;
@@ -332,9 +333,9 @@ public class UserProfileResource extends RESTWebService {
 
       contacts = getOrganisationController().searchUsers(criteriaBuilder.build());
     } else {
-      contacts = new ListSlice<UserDetail>(0, 0, 0);
+      contacts = new ListSlice<>(0, 0, 0);
     }
-    URI usersUri = getUriInfo().getBaseUriBuilder().path(USERS_BASE_URI).build();
+    URI usersUri = getUri().getBaseUriBuilder().path(USERS_BASE_URI).build();
     return Response.ok(
         asWebEntity(contacts, locatedAt(usersUri))).
         header(RESPONSE_HEADER_USERSIZE, contacts.originalListSize()).
@@ -342,10 +343,13 @@ public class UserProfileResource extends RESTWebService {
   }
 
   @Override
+  protected String getResourceBasePath() {
+    return USERS_BASE_URI;
+  }
+
+  @Override
   public String getComponentId() {
-    throw new UnsupportedOperationException(
-        "The UserProfileResource doesn't belong to any component"
-        + " instances");
+    return null;
   }
 
   protected static URI locatedAt(final URI uri) {
@@ -385,8 +389,8 @@ public class UserProfileResource extends RESTWebService {
     if (theUser == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
-    if (!theUser.isAccessAdmin() && getUserDetail().isDomainRestricted() && !theUser.getDomainId().
-        equals(getUserDetail().getDomainId())) {
+    if (!theUser.isAccessAdmin() && getUser().isDomainRestricted() && !theUser.getDomainId().
+        equals(getUser().getDomainId())) {
       Logger.getLogger(getClass().getName()).log(Level.WARNING, "The user with id {0} isn''t "
           + "authorized to access the profile of user with id {1}", new Object[]{theUser.getId(),
             userId});
@@ -422,9 +426,9 @@ public class UserProfileResource extends RESTWebService {
    * @param identifier an identifier.
    * @return the detail about a user.
    */
-  private UserDetail getUserDetailMatching(String identifier) {
+  private User getUserDetailMatching(String identifier) {
     if (isCurrentUser(identifier)) {
-      return getUserDetail();
+      return getUser();
     } else {
       return getUserDetailById(identifier);
     }
@@ -440,7 +444,7 @@ public class UserProfileResource extends RESTWebService {
    */
   private UserFull getUserFullMatching(String identifier) {
     if (isCurrentUser(identifier)) {
-      return getUserFullById(getUserDetail().getId());
+      return getUserFullById(getUser().getId());
     } else {
       return getUserFullById(identifier);
     }

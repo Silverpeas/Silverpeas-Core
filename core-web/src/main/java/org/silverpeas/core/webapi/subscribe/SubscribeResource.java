@@ -76,9 +76,11 @@ import java.text.MessageFormat;
 */
 @Service
 @RequestScoped
-@Path("subscribe/{componentId}")
+@Path(SubscribeResource.PATH + "/{componentId}")
 @Authorized
 public class SubscribeResource extends RESTWebService {
+
+  static final String PATH = "subscribe";
 
   @PathParam("componentId")
   private String componentId;
@@ -87,12 +89,12 @@ public class SubscribeResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public String subscribeToComponent() {
     try {
-      Subscription subscription = new ComponentSubscription(getUserDetail().getId(), componentId);
+      Subscription subscription = new ComponentSubscription(getUser().getId(), componentId);
       SubscriptionServiceProvider.getSubscribeService().subscribe(subscription);
       ComponentInstLight component = getOrganisationController().getComponentInstLight(componentId);
       MessageNotifier.addSuccess(MessageFormat
           .format(getBundle().getString("GML.subscribe.success"),
-              component.getLabel(getUserDetail().getUserPreferences().getLanguage())));
+              component.getLabel(getUser().getUserPreferences().getLanguage())));
       return "OK";
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
@@ -106,7 +108,7 @@ public class SubscribeResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public String subscribeToTopic(@PathParam("id") String topicId) {
     try {
-      Subscription subscription = new NodeSubscription(getUserDetail().getId(), new NodePK(topicId,
+      Subscription subscription = new NodeSubscription(getUser().getId(), new NodePK(topicId,
               componentId));
       SubscriptionServiceProvider.getSubscribeService().subscribe(subscription);
       return "OK";
@@ -119,6 +121,11 @@ public class SubscribeResource extends RESTWebService {
 
   protected URI identifiedBy(URI uri) {
     return uri;
+  }
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
   }
 
   @Override

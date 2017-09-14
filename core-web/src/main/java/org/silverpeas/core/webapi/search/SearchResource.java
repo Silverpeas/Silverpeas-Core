@@ -55,9 +55,11 @@ import java.util.List;
  */
 @Service
 @RequestScoped
-@Path("search")
+@Path(SearchResource.PATH)
 @Authenticated
 public class SearchResource extends RESTWebService {
+
+  static final String PATH = "search";
 
   private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
@@ -98,7 +100,7 @@ public class SearchResource extends RESTWebService {
   }
 
   private void setComponents(QueryDescription queryDescription, String spaceId, String appId) {
-    String userId = getUserDetail().getId();
+    String userId = getUser().getId();
     if (!StringUtil.isDefined(spaceId) && !StringUtil.isDefined(appId)) {
       String[] appIds = getOrganisationController().getAvailCompoIds(userId);
       for (String id : appIds) {
@@ -170,6 +172,11 @@ public class SearchResource extends RESTWebService {
       }
     }
     queryDescription.setFieldQueries(formQuery);
+  }
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
   }
 
   @Override

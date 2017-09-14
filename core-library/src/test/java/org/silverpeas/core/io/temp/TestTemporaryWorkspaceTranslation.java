@@ -86,7 +86,7 @@ public class TestTemporaryWorkspaceTranslation {
     assertThat(tempPath.listFiles(), arrayContainingInAnyOrder(descriptor, workspace));
     assertThat(test.getRootPath().exists(), is(true));
     assertThat(test.exists(), is(true));
-    assertThat(test.lastModified() / 1000, greaterThan(createTime));
+    assertThat(test.lastModified() / 1000, greaterThanOrEqualTo(createTime));
     assertThat(readFileToString(descriptor), is(TRANSLATION_ID_KEY + workspace.getName()));
 
     test.create();
@@ -95,7 +95,7 @@ public class TestTemporaryWorkspaceTranslation {
     assertThat(tempPath.listFiles(), arrayContainingInAnyOrder(descriptor, workspace));
     assertThat(test.getRootPath().exists(), is(true));
     assertThat(test.exists(), is(true));
-    assertThat(test.lastModified() / 1000, greaterThan(createTime));
+    assertThat(test.lastModified() / 1000, greaterThanOrEqualTo(createTime));
     assertThat(readFileToString(descriptor), is(TRANSLATION_ID_KEY + workspace.getName()));
   }
 

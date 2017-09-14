@@ -23,29 +23,36 @@
  */
 package org.silverpeas.core.webapi.node;
 
+import org.silverpeas.core.annotation.RequestScoped;
+import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.security.ShareableNode;
+import org.silverpeas.core.sharing.services.SharingServiceProvider;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import org.silverpeas.core.annotation.RequestScoped;
-import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.sharing.security.ShareableNode;
-import org.silverpeas.core.sharing.services.SharingServiceProvider;
-import org.silverpeas.core.node.model.NodeDetail;
-
 /**
  * A REST Web resource providing access to a node through sharing mode.
  */
 @Service
 @RequestScoped
-@Path("sharing/nodes/{componentId}/{token}")
+@Path(SharedNodeResource.PATH + "/{componentId}/{token}")
 public class SharedNodeResource extends AbstractNodeResource {
+
+  static final String PATH = "sharing/nodes";
 
   @PathParam("token")
   private String token;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)

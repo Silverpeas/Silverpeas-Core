@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.web.calendar.AbstractCalendarWebController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -45,7 +46,8 @@ import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.time.temporal.Temporal;
 
-import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.*;
+import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.calendarUri;
+import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.occurrenceURI;
 
 @WebComponentController(UserCalendarSettings.COMPONENT_NAME)
 public class UserCalendarWebController extends
@@ -92,7 +94,7 @@ public class UserCalendarWebController extends
     Calendar userMainCalendar = context.getMainCalendar();
     context.getRequest().setAttribute("userMainCalendar",
         CalendarEntity.fromCalendar(userMainCalendar)
-            .withURI(buildCalendarURI(UserCalendarResource.USER_CALENDAR_BASE_URI, userMainCalendar)));
+            .withURI(calendarUri(fromBaseUri(context), userMainCalendar)));
     timeWindowViewContext.setZoneId(userMainCalendar.getZoneId());
     context.getRequest().setAttribute("timeWindowViewContext", timeWindowViewContext);
   }
@@ -140,7 +142,7 @@ public class UserCalendarWebController extends
       CalendarEventOccurrenceEntity entity = CalendarEventOccurrenceEntity
           .fromOccurrence(userOccurrence, context.getComponentInstanceId(),
               getCalendarTimeWindowContext().getZoneId()).withOccurrenceURI(
-              buildOccurrenceURI(UserCalendarResource.USER_CALENDAR_BASE_URI, userOccurrence));
+              occurrenceURI(fromBaseUri(context), userOccurrence));
       context.getRequest().setAttribute("occurrence", entity);
 
       context.getNavigationContext().navigationStepFrom(EVENT_VIEW_NS_ID)
@@ -162,5 +164,11 @@ public class UserCalendarWebController extends
   @LowestRoleAccess(SilverpeasRole.admin)
   public void editOccurrence(UserCalendarWebRequestContext context) {
     viewOccurrence(context);
+  }
+
+  private WebResourceUri fromBaseUri(final UserCalendarWebRequestContext context) {
+    return new WebResourceUri(UserCalendarResource.USER_CALENDAR_BASE_URI + "/" +
+        context.getComponentInstanceId(),
+        context.getRequest(), null);
   }
 }

@@ -58,6 +58,11 @@ public class ContributionContentResource extends AbstractContributionResource {
   private static final String CONTRIBUTION_CONTENT_URI_PART = "content";
   private static final String CONTRIBUTION_CONTENT_FORM_URI_PART = "form";
 
+  @Override
+  protected String getResourceBasePath() {
+    return CONTRIBUTION_BASE_URI;
+  }
+
   @PathParam("componentInstanceId")
   private String componentInstanceId;
 
@@ -162,13 +167,13 @@ public class ContributionContentResource extends AbstractContributionResource {
       if (formView != null) {
         PagesContext context =
             new PagesContext("myForm", "0", getUserPreferences().getLanguage(), false,
-                getComponentId(), getUserDetail().getId());
+                getComponentId(), getUser().getId());
         context.setObjectId(contributionId);
         form.withRenderedView(formView.toString(context, data));
       }
 
       // Returning the contribution content entity
-      URI formUri = getUriInfo().getBaseUriBuilder()
+      URI formUri = getUri().getBaseUriBuilder()
           .segment(CONTRIBUTION_BASE_URI, getComponentId(), getContributionId(),
               CONTRIBUTION_CONTENT_URI_PART, CONTRIBUTION_CONTENT_FORM_URI_PART, formId)
           .build();

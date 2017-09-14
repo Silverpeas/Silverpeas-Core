@@ -23,26 +23,23 @@
  */
 package org.silverpeas.core.webapi.publication;
 
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.webapi.base.RESTWebService;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import static org.silverpeas.core.util.logging.SilverLogger.*;
 
 /**
  * A REST Web resource providing access to publications.
@@ -63,7 +60,7 @@ public abstract class AbstractPublicationResource extends RESTWebService {
       throw new WebApplicationException(Status.UNAUTHORIZED);
     }
 
-    Collection<PublicationDetail> publications = getPublicationBm().getDetailsByFatherPK(
+    Collection<PublicationDetail> publications = getPublicationService().getDetailsByFatherPK(
         nodePK, null, true);
 
     List<PublicationEntity> entities = new ArrayList<>();
@@ -98,18 +95,13 @@ public abstract class AbstractPublicationResource extends RESTWebService {
   protected abstract boolean isNodeReadable(NodePK nodePK);
 
   private URI getURI(PublicationDetail publication) {
-    String baseUri = super.getUriInfo().getAbsolutePath().toString();
-    URI uri;
-    try {
-      uri = new URI(baseUri + "/publication/" + publication.getPK().getId());
-    } catch (URISyntaxException ex) {
-      getLogger(this).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
-    }
-    return uri;
+    return getUri().getAbsolutePathBuilder()
+        .path("publication")
+        .path(publication.getPK().getId())
+        .build();
   }
 
-  protected NodeService getNodeBm() {
+  protected NodeService geetNodeService() {
     try {
       return NodeService.get();
     } catch (Exception e) {
@@ -117,7 +109,7 @@ public abstract class AbstractPublicationResource extends RESTWebService {
     }
   }
 
-  protected PublicationService getPublicationBm() {
+  protected PublicationService getPublicationService() {
     try {
       return ServiceProvider.getService(PublicationService.class);
     } catch (Exception e) {

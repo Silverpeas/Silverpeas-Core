@@ -57,9 +57,10 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 @Service
 @RequestScoped
-@Path("authentication")
+@Path(AuthenticationResource.PATH)
 public class AuthenticationResource extends RESTWebService {
 
+  static final String PATH = "authentication";
   private static Pattern AUTHORIZATION_PATTERN = Pattern.compile("(?i)^Basic (.*)");
 
   // the first ':' character is the separator according to the RFC 2617 in basic digest
@@ -128,6 +129,11 @@ public class AuthenticationResource extends RESTWebService {
     } catch (final Exception ex) {
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
+  }
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
   }
 
   @Override

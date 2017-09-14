@@ -23,21 +23,23 @@
  */
 package org.silverpeas.core.webapi.node;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.base.RESTWebService;
-
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
+
+import javax.inject.Inject;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A REST Web resource representing a list of node. It is a web service that provides an access to a
@@ -45,15 +47,22 @@ import org.silverpeas.core.node.model.NodePK;
  */
 @Service
 @RequestScoped
-@Path("nodes/{instanceId}")
+@Path(ListNodeResource.PATH + "/{instanceId}")
 @Authorized
 public class ListNodeResource extends RESTWebService {
+
+  static final String PATH = "nodes";
 
   @Inject
   private NodeService nodeService;
 
   @PathParam("instanceId")
   private String instanceId;
+
+  @Override
+  protected String getResourceBasePath() {
+    return PATH;
+  }
 
   @Override
   public String getComponentId() {
@@ -68,7 +77,7 @@ public class ListNodeResource extends RESTWebService {
    * @return true if the current user has the admin role
    */
   private boolean isUserAdmin() {
-    String[] profiles = getOrganisationController().getUserProfiles(getUserDetail().getId(),
+    String[] profiles = getOrganisationController().getUserProfiles(getUser().getId(),
         getComponentId());
     for (String profile : profiles) {
       if (SilverpeasRole.admin.equals(SilverpeasRole.valueOf(profile))) {

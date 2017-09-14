@@ -70,6 +70,11 @@ import static org.silverpeas.core.webapi.admin.AdminResourceURIs.*;
 @Authenticated
 public class SpaceResource extends AbstractAdminResource {
 
+  @Override
+  protected String getResourceBasePath() {
+    return SPACES_BASE_URI;
+  }
+
   /**
    * Gets the JSON representation of root spaces.
    * If it doesn't exist, a 404 HTTP code is returned.
@@ -86,7 +91,7 @@ public class SpaceResource extends AbstractAdminResource {
       @QueryParam(FORCE_GETTING_FAVORITE_PARAM) final boolean forceGettingFavorite) {
     try {
       return asWebEntities(SpaceEntity.class,
-          loadSpaces(getAdminServices().getAllRootSpaceIds(getUserDetail().getId())),
+          loadSpaces(getAdminServices().getAllRootSpaceIds(getUser().getId())),
           forceGettingFavorite);
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -166,8 +171,11 @@ public class SpaceResource extends AbstractAdminResource {
           if (roleEntity == null) {
             roleEntity = UsersAndGroupsRoleEntity
                 .createFrom(role, resource.getString("JSPP." + role.getName()));
-            roleEntity.withURI(buildURIOfSpaceUsersAndGroupsRoles(spaceId, role, getUriInfo()))
-                .withParentURI(buildURIOfSpace(spaceId, getUriInfo()));
+            roleEntity.withURI(getUri().getWebResourcePathBuilder()
+                .path(spaceId)
+                .path(USERS_AND_GROUPS_ROLES_URI_PART)
+                .queryParam("roles", role.getName())
+                .build()).withParentURI(getUri().getWebResourcePathBuilder().path(spaceId).build());
             result.put(role, roleEntity);
           }
 
@@ -175,8 +183,8 @@ public class SpaceResource extends AbstractAdminResource {
           final List<String> groupIds;
           if (role == SilverpeasRole.Manager) {
             SpaceProfile admins = getOrganisationController().getSpaceProfile(spaceId, role);
-            userIds = new ArrayList<String>(admins.getAllUserIds());
-            groupIds = new ArrayList<String>(admins.getAllGroupIds());
+            userIds = new ArrayList<>(admins.getAllUserIds());
+            groupIds = new ArrayList<>(admins.getAllGroupIds());
           } else {
             userIds = profile.getAllUsers();
             groupIds = profile.getAllGroups();
@@ -184,14 +192,18 @@ public class SpaceResource extends AbstractAdminResource {
 
           // Users
           for (String userId : userIds) {
-            roleEntity.addUser(buildURI(getUriInfo().getBaseUri().toString(),
-                ProfileResourceBaseURIs.USERS_BASE_URI, userId));
+            roleEntity.addUser(getUri().getBaseUriBuilder()
+                .path(ProfileResourceBaseURIs.USERS_BASE_URI)
+                .path(userId)
+                .build());
           }
 
           // Groups
           for (String groupId : groupIds) {
-            roleEntity.addGroup(buildURI(getUriInfo().getBaseUri().toString(),
-                ProfileResourceBaseURIs.GROUPS_BASE_URI, groupId));
+            roleEntity.addGroup(getUri().getBaseUriBuilder()
+                .path(ProfileResourceBaseURIs.GROUPS_BASE_URI)
+                .path(groupId)
+                .build());
           }
         }
       }
@@ -265,7 +277,7 @@ public class SpaceResource extends AbstractAdminResource {
     try {
       verifyUserAuthorizedToAccessSpace(spaceId);
       return asWebEntities(SpaceEntity.class,
-          loadSpaces(getAdminServices().getAllSubSpaceIds(spaceId, getUserDetail().getId())),
+          loadSpaces(getAdminServices().getAllSubSpaceIds(spaceId, getUser().getId())),
           forceGettingFavorite);
     } catch (final WebApplicationException ex) {
       throw ex;
@@ -291,7 +303,7 @@ public class SpaceResource extends AbstractAdminResource {
     try {
       verifyUserAuthorizedToAccessSpace(spaceId);
       return asWebEntities(ComponentEntity.class,
-          loadComponents(getAdminServices().getAllComponentIds(spaceId, getUserDetail().getId())));
+          loadComponents(getAdminServices().getAllComponentIds(spaceId, getUser().getId())));
     } catch (final WebApplicationException ex) {
       throw ex;
     } catch (final Exception ex) {

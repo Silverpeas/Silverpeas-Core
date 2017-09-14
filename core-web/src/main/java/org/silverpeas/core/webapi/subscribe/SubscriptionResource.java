@@ -47,6 +47,7 @@
 */
 package org.silverpeas.core.webapi.subscribe;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
@@ -127,7 +128,7 @@ public class SubscriptionResource extends RESTWebService {
         subscriptions = SubscriptionServiceProvider.
             getSubscribeService().getByResource(ComponentSubscriptionResource.from(componentId));
       }
-      return asWebEntities(subscriptions.filterOnDomainVisibilityFrom(getUserDetail()));
+      return asWebEntities(subscriptions.filterOnDomainVisibilityFrom(UserDetail.from(getUser())));
     } catch (CommentRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
@@ -173,7 +174,7 @@ public class SubscriptionResource extends RESTWebService {
       }
       return asSubscriberWebEntities(SubscriptionServiceProvider.
           getSubscribeService().getSubscribers(subscriptionResource)
-          .filterOnDomainVisibilityFrom(getUserDetail()));
+          .filterOnDomainVisibilityFrom(UserDetail.from(getUser())));
     } catch (SubscribeRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
     } catch (Exception ex) {
@@ -244,18 +245,17 @@ public class SubscriptionResource extends RESTWebService {
       }
     } catch (SubscribeRuntimeException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
+    } catch (WebApplicationException ex) {
+      throw ex;
     } catch (Exception ex) {
-      if (ex instanceof WebApplicationException) {
-        throw (WebApplicationException) ex;
-      }
       throw new WebApplicationException(ex, Status.SERVICE_UNAVAILABLE);
     }
   }
 
   /**
    * Gets WEB entity collection representing the given subscription collection.
-   * @param subscriptions
-   * @return
+   * @param subscriptions a collection of subscriptions
+   * @return a collection of subscription entities
    */
   protected Collection<SubscriptionEntity> asWebEntities(Collection<Subscription> subscriptions) {
     Collection<SubscriptionEntity> entities =
@@ -268,8 +268,8 @@ public class SubscriptionResource extends RESTWebService {
 
   /**
    * Gets the WEB entity representing the given subscription.
-   * @param subscription
-   * @return
+   * @param subscription a subscription
+   * @return a subscription entity
    */
   protected SubscriptionEntity asWebEntity(final Subscription subscription) {
     return SubscriptionEntity.from(subscription);
@@ -277,8 +277,8 @@ public class SubscriptionResource extends RESTWebService {
 
   /**
    * Gets WEB entity collection representing the given subscriber collection.
-   * @param subscribers
-   * @return
+   * @param subscribers a collection of subscribers in subscriptions
+   * @return a collection of subscriber entities.
    */
   protected Collection<SubscriberEntity> asSubscriberWebEntities(
       Collection<SubscriptionSubscriber> subscribers) {
@@ -291,11 +291,16 @@ public class SubscriptionResource extends RESTWebService {
 
   /**
    * Gets the WEB entity representing the given subscriber.
-   * @param subscriber
-   * @return
+   * @param subscriber a subscriber in a subscription
+   * @return a subscriber entity
    */
   protected SubscriberEntity asSubscriberWebEntity(final SubscriptionSubscriber subscriber) {
     return SubscriberEntity.from(subscriber);
+  }
+
+  @Override
+  protected String getResourceBasePath() {
+    return SubscriptionResourceURIs.SUBSCRIPTION_BASE_URI;
   }
 
   @Override

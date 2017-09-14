@@ -23,15 +23,16 @@
  */
 package org.silverpeas.core.webapi.admin;
 
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -40,7 +41,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import java.net.URI;
 
 import static org.silverpeas.core.webapi.admin.AdminResourceURIs.USERS_AND_GROUPS_ROLES_URI_PART;
-import static org.silverpeas.core.webapi.admin.AdminResourceURIs.buildURI;
 
 /**
  * The component instance light entity is a ComponentInstLight object that is exposed in the web as
@@ -98,9 +98,10 @@ public abstract class StructureElementEntity<T extends StructureElementEntity<T>
   @SuppressWarnings("unchecked")
   public T withURI(final URI uri) {
     this.uri = uri;
-    this.parentURI = buildURI(StringUtil.isDefined(parentId) && !SpaceInstLight.isRoot(parentId) ?
-        getStringParentBaseURI() : null, parentId);
-    this.usersAndGroupsRolesURI = buildURI(uri.toString(), USERS_AND_GROUPS_ROLES_URI_PART);
+    this.parentURI = StringUtil.isDefined(parentId) && !SpaceInstLight.isRoot(parentId) ?
+        UriBuilder.fromUri(getStringParentBaseURI()).path(parentId).build() : URI.create("");
+    this.usersAndGroupsRolesURI =
+        UriBuilder.fromUri(uri).path(USERS_AND_GROUPS_ROLES_URI_PART).build();
     return (T) this;
   }
 

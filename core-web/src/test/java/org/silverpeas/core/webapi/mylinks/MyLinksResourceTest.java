@@ -23,15 +23,6 @@
  */
 package org.silverpeas.core.webapi.mylinks;
 
-import org.silverpeas.core.mylinks.service.MyLinksService;
-import org.silverpeas.core.mylinks.model.LinkDetail;
-import org.silverpeas.core.mylinks.model.LinkDetailComparator;
-import org.silverpeas.core.personalization.UserMenuDisplay;
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.After;
 import org.junit.Before;
@@ -40,13 +31,23 @@ import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.mylinks.model.LinkDetail;
+import org.silverpeas.core.mylinks.model.LinkDetailComparator;
+import org.silverpeas.core.mylinks.service.MyLinksService;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.web.WebResourceUri;
 
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
+import javax.ws.rs.core.UriBuilder;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
@@ -80,17 +81,19 @@ public class MyLinksResourceTest {
     I18NHelper.isI18nContentActivated = false;
 
     rest = spy(new MyLinksResource4Test());
-    doReturn(new UserDetail()).when(rest).getUserDetail();
+    UserDetail user = new UserDetail();
+    user.setId(CURRENT_USER_ID);
+    doReturn(user).when(rest).getUser();
     doReturn(
         new UserPreferences(CURRENT_USER_ID, "de", ZoneId.of("Europe/Berlin"), null, null, false,
             false, false, UserMenuDisplay.ALL)).when(rest).getUserPreferences();
-    doReturn(mock(UriInfo.class)).when(rest).getUriInfo();
-    doReturn(mock(MyLinksService.class)).when(rest).getMyLinksBm();
+    doReturn(mock(WebResourceUri.class)).when(rest).getUri();
+    doReturn(mock(MyLinksService.class)).when(rest).getMyLinksService();
     doReturn(mock(OrganizationController.class)).when(rest).getOrganisationController();
 
-    rest.getUserDetail().setId(CURRENT_USER_ID);
-    when(rest.getUriInfo().getBaseUri()).thenReturn(URI.create(PATH_BASE));
-    service = rest.getMyLinksBm();
+    when(rest.getUri().getWebResourcePathBuilder()).thenAnswer(invocationOnMock ->
+        UriBuilder.fromUri(PATH_BASE).path(MyLinksResource.PATH));
+    service = rest.getMyLinksService();
     orgaCtrl = rest.getOrganisationController();
   }
 
@@ -543,7 +546,7 @@ public class MyLinksResourceTest {
   }
 
   private List<LinkDetail> initLinkPositions(Integer... positions) {
-    List<LinkDetail> links = new ArrayList<LinkDetail>();
+    List<LinkDetail> links = new ArrayList<>();
     for (Integer position : positions) {
       LinkDetail link = new LinkDetail();
       link.setLinkId(links.size() + 10);
@@ -559,7 +562,7 @@ public class MyLinksResourceTest {
   }
 
   private List<Pair<Integer, Integer>> extractLinkIdPositions(List<LinkDetail> links) {
-    List<Pair<Integer, Integer>> linkIdPositions = new ArrayList<Pair<Integer, Integer>>();
+    List<Pair<Integer, Integer>> linkIdPositions = new ArrayList<>();
     for (LinkDetail link : links) {
       linkIdPositions.add(of(link.getLinkId(), link.getPosition()));
     }
@@ -567,7 +570,7 @@ public class MyLinksResourceTest {
   }
 
   private List<Pair<String, Integer>> extractLinkEntityUriPositions(List<MyLinkEntity> links) {
-    List<Pair<String, Integer>> linkUriPositions = new ArrayList<Pair<String, Integer>>();
+    List<Pair<String, Integer>> linkUriPositions = new ArrayList<>();
     for (MyLinkEntity link : links) {
       linkUriPositions.add(of(link.getURI().toString(), link.getPosition()));
     }
@@ -577,8 +580,8 @@ public class MyLinksResourceTest {
   private static class MyLinksResource4Test extends MyLinksResource {
 
     @Override
-    protected UserDetail getUserDetail() {
-      return super.getUserDetail();
+    protected User getUser() {
+      return super.getUser();
     }
 
     @Override
