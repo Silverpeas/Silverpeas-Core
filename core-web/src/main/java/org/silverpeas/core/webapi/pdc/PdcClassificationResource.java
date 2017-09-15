@@ -220,8 +220,8 @@ public class PdcClassificationResource extends RESTWebService {
           forContentOfId(getContentId()),
           inComponentOfId(getComponentId()));
       URI itsURI = getUri().getWebResourcePathBuilder()
-          .path("{componentId}/{contentId}")
-          .build(getComponentId(), getContentId());
+          .path("{contentId}")
+          .build(getContentId());
       return thePdcClassificationOfTheRequestedResource(identifiedBy(itsURI));
     } catch (ContentManagerException ex) {
       throw new WebApplicationException(ex, Status.NOT_FOUND);
