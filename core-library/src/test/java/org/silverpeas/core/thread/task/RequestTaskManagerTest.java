@@ -325,8 +325,10 @@ public class RequestTaskManagerTest {
     Thread.sleep(200);
     RequestTaskMonitor monitor = RequestTaskManager.tasks.get(testClass);
     // Waiting the end of the current task
-    monitor.task.get();
-    monitor.taskWatcher.get();
+    if (monitor.task != null) {
+      monitor.task.get();
+      monitor.taskWatcher.get();
+    }
     // Checking status
     assertThatThreadsAreStoppedAndMonitorsAreCleanedAndQueuesAreConsummed(monitor);
     assertThat(counter, is(1));
