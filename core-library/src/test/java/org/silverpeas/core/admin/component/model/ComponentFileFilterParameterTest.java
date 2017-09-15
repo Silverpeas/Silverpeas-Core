@@ -21,14 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.admin.component.parameter;
+package org.silverpeas.core.admin.component.model;
 
-import com.stratelia.webactiv.beans.admin.ComponentInst;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.Mockito;
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import java.io.File;
 import java.net.URL;
@@ -44,8 +45,6 @@ import static org.mockito.Mockito.when;
  * /rep1/file.pdf
  * /rep1/rep2/file.pptx
  * <p>
- * User: Yohann Chastagnier
- * Date: 17/12/12
  */
 public class ComponentFileFilterParameterTest {
   private static final String AUTHORIZED_GLOBALLY = "   *.doc    jpg,*.pptx";
@@ -56,7 +55,10 @@ public class ComponentFileFilterParameterTest {
   private static final String PARSED_AUTHORIZED_COMPONENT = "odp, pdf, ppt";
   private static final String FORBIDDEN_COMPONENT = "*.gif, pdf, pptx,   *   .doc.xml";
   private static final String PARSED_FORBIDDEN_COMPONENT = "gif, pdf, pptx, doc.xml";
-  private ComponentInst component = Mockito.mock(ComponentInst.class);
+  private SilverpeasComponentInstance component = Mockito.mock(SilverpeasComponentInstance.class);
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
   @Before
   public void beforeTest() {
@@ -124,7 +126,7 @@ public class ComponentFileFilterParameterTest {
     // Settings
     ComponentFileFilterParameter.defaultAuthorizedFiles = AUTHORIZED_GLOBALLY;
     ComponentFileFilterParameter.defaultForbiddenFiles = FORBIDDEN_GLOBALLY;
-    when(component.getParameterValue(ComponentInstanceParameterName.forbiddenFileExtension))
+    when(component.getParameterValue(ComponentInstanceParameterName.forbiddenFileExtension.name()))
         .thenReturn(FORBIDDEN_COMPONENT);
     // Test
     ComponentFileFilterParameter test = ComponentFileFilterParameter.from(component);
@@ -147,9 +149,9 @@ public class ComponentFileFilterParameterTest {
     // Settings
     ComponentFileFilterParameter.defaultAuthorizedFiles = AUTHORIZED_GLOBALLY;
     ComponentFileFilterParameter.defaultForbiddenFiles = FORBIDDEN_GLOBALLY;
-    when(component.getParameterValue(ComponentInstanceParameterName.forbiddenFileExtension))
+    when(component.getParameterValue(ComponentInstanceParameterName.forbiddenFileExtension.name()))
         .thenReturn(FORBIDDEN_COMPONENT);
-    when(component.getParameterValue(ComponentInstanceParameterName.authorizedFileExtension))
+    when(component.getParameterValue(ComponentInstanceParameterName.authorizedFileExtension.name()))
         .thenReturn(AUTHORIZED_COMPONENT);
     // Test
     ComponentFileFilterParameter test = ComponentFileFilterParameter.from(component);
@@ -173,9 +175,9 @@ public class ComponentFileFilterParameterTest {
     // Settings
     ComponentFileFilterParameter.defaultAuthorizedFiles = AUTHORIZED_GLOBALLY;
     ComponentFileFilterParameter.defaultForbiddenFiles = FORBIDDEN_GLOBALLY;
-    when(component.getParameterValue(ComponentInstanceParameterName.forbiddenFileExtension))
+    when(component.getParameterValue(ComponentInstanceParameterName.forbiddenFileExtension.name()))
         .thenReturn(FORBIDDEN_COMPONENT);
-    when(component.getParameterValue(ComponentInstanceParameterName.authorizedFileExtension))
+    when(component.getParameterValue(ComponentInstanceParameterName.authorizedFileExtension.name()))
         .thenReturn(AUTHORIZED_COMPONENT);
     // Test
     ComponentFileFilterParameter.from(component).verifyFileAuthorized(getFile("file.pptx"));
@@ -187,9 +189,9 @@ public class ComponentFileFilterParameterTest {
     // Settings
     ComponentFileFilterParameter.defaultAuthorizedFiles = AUTHORIZED_GLOBALLY;
     ComponentFileFilterParameter.defaultForbiddenFiles = FORBIDDEN_GLOBALLY;
-    when(component.getParameterValue(ComponentInstanceParameterName.forbiddenFileExtension))
+    when(component.getParameterValue(ComponentInstanceParameterName.forbiddenFileExtension.name()))
         .thenReturn(FORBIDDEN_COMPONENT);
-    when(component.getParameterValue(ComponentInstanceParameterName.authorizedFileExtension))
+    when(component.getParameterValue(ComponentInstanceParameterName.authorizedFileExtension.name()))
         .thenReturn(AUTHORIZED_COMPONENT);
     // Test
     ComponentFileFilterParameter.from(component).verifyFileAuthorized(getFile("file.pdf"));

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.space;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
@@ -76,6 +77,41 @@ public class PersonalSpaceManager {
         .collect(Collectors.toList());
   }
 
+  /**
+   * Gets the personal space instance linked to the given user.
+   * <p>If it does not yet exist, then it is created.</p>
+   * @param user a user.
+   * @return the {@link SpaceInst} instance.
+   */
+  public SpaceInst getOrCreatePersonalSpace(final User user) {
+    SpaceInst space = getPersonalSpace(user.getId());
+    if (space == null) {
+      String userId = user.getId();
+      // if user has no personal space, creates one
+      space = new SpaceInst();
+      space.setCreatorUserId(userId);
+      space.setInheritanceBlocked(true);
+      space.setLevel(0);
+      space.setName("Personal space of user #" + userId);
+      space.setPersonalSpace(true);
+
+      // user is admin on space to be admin on each components
+      SpaceProfileInst profile = new SpaceProfileInst();
+      profile.setName("admin");
+      profile.addUser(userId);
+      profile.setInherited(false);
+      space.getAllSpaceProfilesInst().add(profile);
+
+      // add component to space
+      try {
+        getAdminService().addSpaceInst(userId, space);
+      } catch (AdminException e) {
+        throw new SilverpeasRuntimeException(e);
+      }
+    }
+    return space;
+  }
+
   public String addComponent(User user, String componentName)
       throws AdminException, QuotaException {
     Optional<WAComponent> optionalWAComponent = WAComponent.get(componentName);
@@ -101,33 +137,11 @@ public class PersonalSpaceManager {
     }
     component.setParameters(parameters);
 
-    SpaceInst space = getPersonalSpace(userId);
-
-    if (space == null) {
-      // if user has no personal space, creates one
-      space = new SpaceInst();
-      space.setCreatorUserId(userId);
-      space.setInheritanceBlocked(true);
-      space.setLevel(0);
-      space.setName("Personal space of user #" + userId);
-      space.setPersonalSpace(true);
-
-      // user is admin on space to be admin on each components
-      SpaceProfileInst profile = new SpaceProfileInst();
-      profile.setName("admin");
-      profile.addUser(userId);
-      profile.setInherited(false);
-      space.getAllSpaceProfilesInst().add(profile);
-
-      // add component to space
-      space.addComponentInst(component);
-      getAdminService().addSpaceInst(userId, space);
-
-    } else {
-      // if user has his personal space, just add component in it
-      component.setDomainFatherId(space.getId());
-      getAdminService().addComponentInst(userId, component);
-    }
+    SpaceInst space = getOrCreatePersonalSpace(user);
+    // add component in personal space
+    component.setDomainFatherId(space.getId());
+    getAdminService().addComponentInst(userId, component);
+    // returning the identifier of the component instance
     return component.getId();
   }
 

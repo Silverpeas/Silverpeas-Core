@@ -102,9 +102,11 @@ public class ComponentAccessController extends AbstractAccessController<String>
         getComponentParameterValue(componentId, componentParameterName));
   }
 
+  @SuppressWarnings("ConstantConditions")
   @Override
   public boolean isTopicTrackerSupported(String componentId) {
-    return getOrganisationController().getComponentInst(componentId).isTopicTracker();
+    return getOrganisationController().getComponentInstance(componentId).orElse(null)
+        .isTopicTracker();
   }
 
   @Override

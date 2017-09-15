@@ -122,9 +122,17 @@ public interface SilverpeasComponentInstance extends Serializable {
 
   /**
    * Indicates if the component instance is a workflow one.
-   * @return true if is a workflow, false otherwise.
+   * @return true if it is a workflow, false otherwise.
    */
   default boolean isWorkflow() {
+    return false;
+  }
+
+  /**
+   * Indicates if the component instance is a topic tracker.
+   * @return true if it is a topic tracker, false otherwise.
+   */
+  default boolean isTopicTracker() {
     return false;
   }
 
@@ -144,5 +152,14 @@ public interface SilverpeasComponentInstance extends Serializable {
    */
   default SilverpeasRole getHighestSilverpeasRolesFor(User user) {
     return SilverpeasRole.getHighestFrom(getSilverpeasRolesFor(user));
+  }
+
+  /**
+   * Gets the value of component instance parameter.
+   * @param parameterName the name of the parameter.
+   * @return the value of the parameter, empty string when the parameter does not exist.
+   */
+  default String getParameterValue(String parameterName) {
+    return "";
   }
 }

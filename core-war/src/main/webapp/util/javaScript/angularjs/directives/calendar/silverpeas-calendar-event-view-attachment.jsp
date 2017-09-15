@@ -22,7 +22,7 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<silverpeas-attachment component-id="{{$ctrl.getComponentInstanceId()}}"
-                       resource-id="{{$ctrl.ceo.id}}"
+<silverpeas-attachment component-id="{{$ctrl.ceo.componentInstanceId()}}"
+                       resource-id="{{$ctrl.ceo.eventId}}"
                        read-only="{{!$ctrl.ceo.canBeModified}}">
 </silverpeas-attachment>

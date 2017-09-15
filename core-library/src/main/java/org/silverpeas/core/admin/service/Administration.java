@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.component.model.Parameter;
 import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
@@ -1087,13 +1088,16 @@ public interface Administration {
   String[] getAllSubSpaceIds(String sSpaceId, String sUserId) throws Exception;
 
   /**
-   * Return all the components Id in the subspaces available in webactiv given a space id
+   * Returns all the component identifiers of the space represented by the given identifier.
+   * <p>Component instance of sub spaces are not retrieved.</p>
+   * <p>It returns also ids of {@link SilverpeasPersonalComponentInstance} instances.</p>
    */
   String[] getAllComponentIds(String sSpaceId) throws Exception;
 
   /**
-   * Return all the componentIds recursively in the subspaces available in webactiv given a space
-   * id
+   * Returns all the component identifiers of the space, and its sub spaces, represented by the
+   * given identifier.
+   * <p>It returns also ids of {@link SilverpeasPersonalComponentInstance} instances.</p>
    */
   String[] getAllComponentIdsRecur(String sSpaceId) throws Exception;
 
@@ -1107,7 +1111,10 @@ public interface Administration {
    * @param inAllSpaces
    * @return Array of componentsIds
    * @author dlesimple
+   * @deprecated please use {@link #getAllComponentIds(String)} or
+   * {@link #getAllComponentIdsRecur(String)}
    */
+  @Deprecated
   String[] getAllComponentIdsRecur(String sSpaceId, String sUserId, String componentNameRoot,
       boolean inCurrentSpace, boolean inAllSpaces) throws Exception;
 

@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.admin.space.quota.process.check.exception;
 
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.quota.model.Quota;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.util.URLUtil;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -37,7 +38,7 @@ public class DataStorageQuotaException extends RuntimeException {
   private static final long serialVersionUID = 1663450786546676632L;
   private final Quota quota;
   private final SpaceInst space;
-  private final ComponentInstLight fromComponent;
+  private final SilverpeasComponentInstance fromComponent;
   private String language;
 
   /**
@@ -47,7 +48,7 @@ public class DataStorageQuotaException extends RuntimeException {
    * @param fromComponent
    */
   public DataStorageQuotaException(final Quota quota, final SpaceInst space,
-      final ComponentInstLight fromComponent) {
+      final SilverpeasComponentInstance fromComponent) {
     this.quota = quota;
     this.space = space;
     this.fromComponent = (fromComponent != null) ? fromComponent : new ComponentInstLight();
@@ -84,7 +85,7 @@ public class DataStorageQuotaException extends RuntimeException {
   /**
    * @return the fromComponent
    */
-  public ComponentInstLight getFromComponent() {
+  public SilverpeasComponentInstance getFromComponent() {
     return fromComponent;
   }
 
@@ -93,7 +94,7 @@ public class DataStorageQuotaException extends RuntimeException {
    */
   @SuppressWarnings("UnusedDeclaration")
   public String getFromComponentUrl() {
-    return (isDefined(fromComponent.getId())) ? URLUtil.getApplicationURL() +
+    return isDefined(fromComponent.getId()) ? URLUtil.getApplicationURL() +
         URLUtil.getURL(fromComponent.getName(), null, fromComponent.getId()) + "Main" : "";
   }
 }

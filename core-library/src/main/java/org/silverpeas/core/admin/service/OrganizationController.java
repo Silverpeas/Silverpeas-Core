@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -354,12 +355,16 @@ public interface OrganizationController extends java.io.Serializable {
   String[] getAllSubSpaceIds(String sSpaceId, String sUserId);
 
   /**
-   * Return all the components Id available in webactiv given a space id (driver format)
+   * Returns all the component identifiers of the space represented by the given identifier.
+   * <p>Component instance of sub spaces are not retrieved.</p>
+   * <p>It returns also ids of {@link SilverpeasPersonalComponentInstance} instances.</p>
    */
   String[] getAllComponentIds(String sSpaceId);
 
   /**
-   * Return all the components Id recursively available in webactiv given a space id (driver format)
+   * Returns all the component identifiers of the space, and its sub spaces, represented by the
+   * given identifier.
+   * <p>It returns also ids of {@link SilverpeasPersonalComponentInstance} instances.</p>
    */
   String[] getAllComponentIdsRecur(String sSpaceId);
 
@@ -368,6 +373,8 @@ public interface OrganizationController extends java.io.Serializable {
    * silverpeas) available in silverpeas given a userId and a componentNameRoot
    *
    * @author dlesimple
+   * @deprecated please use {@link #getAllComponentIds(String)} or
+   * {@link #getAllComponentIdsRecur(String)}
    * @param sSpaceId
    * @param sUserId
    * @param sComponentRootName
@@ -375,6 +382,7 @@ public interface OrganizationController extends java.io.Serializable {
    * @param inAllSpaces
    * @return Array of componentsIds
    */
+  @Deprecated
   String[] getAllComponentIdsRecur(String sSpaceId, String sUserId, String sComponentRootName,
       boolean inCurrentSpace, boolean inAllSpaces);
 

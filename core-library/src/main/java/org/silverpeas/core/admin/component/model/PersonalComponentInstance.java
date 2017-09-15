@@ -24,7 +24,7 @@
 
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.NotSupportedException;
+import org.silverpeas.core.admin.space.PersonalSpaceManager;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -113,7 +113,8 @@ public class PersonalComponentInstance implements SilverpeasPersonalComponentIns
   @Override
   public String getSpaceId() {
     // TODO as for component instances, SpaceInstance interface must be coded...
-    throw new NotSupportedException("The personal space identifier is not yet handled...");
+    // For now, existing personal space mechanism is used (registering a space tagged as personal)
+    return PersonalSpaceManager.get().getOrCreatePersonalSpace(getUser()).getId();
   }
 
   @Override

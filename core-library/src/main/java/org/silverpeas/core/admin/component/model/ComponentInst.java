@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -44,6 +43,7 @@ import java.util.List;
 import java.util.Set;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
@@ -212,6 +212,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   public void setRemoverUserId(String removerUserId) {
     this.removerUserId = removerUserId;
+    remover = null;
   }
 
   public String getUpdaterUserId() {
@@ -220,6 +221,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   public void setUpdaterUserId(String updaterUserId) {
     this.updaterUserId = updaterUserId;
+    updater = null;
   }
 
   public int getNumProfileInst() {
@@ -315,21 +317,13 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return null;
   }
 
+  @Override
   public String getParameterValue(String parameterName) {
     Parameter param = getParameter(parameterName);
     if (param != null) {
       return param.getValue();
     }
     return "";
-  }
-
-  /**
-   * Gets a component instance parameter from a centralized parameter name.
-   * @param parameterName the parameter name
-   * @return a component instance parameter from a centralized parameter name.
-   */
-  public String getParameterValue(ComponentInstanceParameterName parameterName) {
-    return getParameterValue(parameterName.name());
   }
 
   @Override
@@ -369,30 +363,28 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   public void setCreatorUserId(String creatorUserId) {
     this.creatorUserId = creatorUserId;
+    creator = null;
   }
 
   public UserDetail getCreator() {
+    if (creator == null && isDefined(creatorUserId)) {
+      creator = UserDetail.getById(creatorUserId);
+    }
     return creator;
   }
 
-  public void setCreator(UserDetail creator) {
-    this.creator = creator;
-  }
-
   public UserDetail getUpdater() {
+    if (updater == null && isDefined(updaterUserId)) {
+      updater = UserDetail.getById(updaterUserId);
+    }
     return updater;
   }
 
-  public void setUpdater(UserDetail updater) {
-    this.updater = updater;
-  }
-
   public UserDetail getRemover() {
+    if (remover == null && isDefined(removerUserId)) {
+      remover = UserDetail.getById(removerUserId);
+    }
     return remover;
-  }
-
-  public void setRemover(UserDetail remover) {
-    this.remover = remover;
   }
 
   public void removeInheritedProfiles() {
@@ -410,6 +402,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
     return WAComponent.get(getName()).get().isWorkflow();
   }
 
+  @Override
   public boolean isTopicTracker() {
     return WAComponent.get(getName()).get().isTopicTracker();
   }

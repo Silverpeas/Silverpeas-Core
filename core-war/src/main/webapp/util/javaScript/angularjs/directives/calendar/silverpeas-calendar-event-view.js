@@ -177,8 +177,7 @@
       }]);
 
   angular.module('silverpeas.directives').directive('silverpeasCalendarEventViewAttachment',
-      ['context',
-        function(context) {
+      [function() {
           return {
             templateUrl : webContext +
             '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-view-attachment.jsp',
@@ -189,9 +188,6 @@
             controllerAs : '$ctrl',
             bindToController : true,
             controller : [function() {
-              this.getComponentInstanceId = function() {
-                return context.component;
-              };
             }]
           };
         }]);

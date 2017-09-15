@@ -219,7 +219,7 @@
     this.applyEventOccurrenceEntityAttributeWrappers = function(occurrence) {
       if (occurrence) {
         /**
-         * Wrapper over attributes xhich permits to register easily an external url.
+         * Wrapper over attributes which permits to register easily an external url.
          * @param externalUrl
          */
         if (!occurrence.externalUrl) {
@@ -238,6 +238,16 @@
               }
               return undefined;
             }
+          };
+        }
+        /**
+         * Gets the component instance url.
+         * @param externalUrl
+         */
+        if (!occurrence.componentInstanceId) {
+          occurrence.componentInstanceId = function() {
+            var instanceRegExp = new RegExp(webContext + '/services/[^/]+/([^/]+)/.+', "g");
+            return instanceRegExp.exec(this.calendarUri)[1];
           };
         }
       }

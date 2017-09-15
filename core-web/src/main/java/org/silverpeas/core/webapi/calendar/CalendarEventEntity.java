@@ -347,7 +347,8 @@ public class CalendarEventEntity implements WebEntity {
    * </p>
    * @return all the parameters about any previously uploaded files to attach to this event.
    */
-  Map<String, String[]> getAttachmentParameters() {
+  @XmlElement
+  public Map<String, String[]> getAttachmentParameters() {
     return attachmentParameters.stream()
         .collect(Collectors.toMap(p -> p.getName(), p -> new String[]{p.getValue()}));
   }

@@ -156,11 +156,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     if (!StringUtil.isDefined(getManagedSpaceId())) {
       return null;
     }
-    SpaceInst space = adminController.getSpaceInstById("WA" + getManagedSpaceId());
-    space.setCreator(getUserDetail(space.getCreatorUserId()));
-    space.setUpdater(getUserDetail(space.getUpdaterUserId()));
-    space.setRemover(getUserDetail(space.getRemoverUserId()));
-    return space;
+    return adminController.getSpaceInstById("WA" + getManagedSpaceId());
   }
 
   public void setManagedSpaceId(String sId, boolean isManagedSpaceRoot) {
@@ -1110,13 +1106,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public ComponentInst getComponentInst(String sInstanceId) {
-    ComponentInst component = adminController.getComponentInst(sInstanceId);
-
-    component.setCreator(getUserDetail(component.getCreatorUserId()));
-    component.setUpdater(getUserDetail(component.getUpdaterUserId()));
-    component.setRemover(getUserDetail(component.getRemoverUserId()));
-
-    return component;
+    return adminController.getComponentInst(sInstanceId);
   }
 
   public String updateComponentInst(ComponentInst componentInst) {

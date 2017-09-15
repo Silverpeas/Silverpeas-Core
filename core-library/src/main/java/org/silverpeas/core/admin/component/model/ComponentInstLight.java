@@ -32,12 +32,14 @@ import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
+import javax.persistence.Transient;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * The class ComponentInstLight is the representation in memory of a component instance
@@ -70,6 +72,10 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
   private boolean isInheritanceBlocked = false;
   private boolean hidden = false;
   private boolean publicApp = false;
+
+  /** Used only in the aim to improve performances */
+  @Transient
+  private ComponentInst cachedComponentInst;
 
   /**
    * Constructor
@@ -306,6 +312,7 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     return WAComponent.get(getName()).get().isWorkflow();
   }
 
+  @Override
   public boolean isTopicTracker() {
     return WAComponent.get(getName()).get().isTopicTracker();
   }
@@ -328,6 +335,11 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
   }
 
   @Override
+  public String getParameterValue(final String parameterName) {
+    return getCachedComponentInst().getParameterValue(parameterName);
+  }
+
+  @Override
   public boolean equals(Object obj) {
     if (this == obj) {
       return true;
@@ -347,5 +359,16 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
       return false;
     }
     return true;
+  }
+
+  /**
+   * Gets the linked {@link ComponentInst}.
+   * @return the linked {@link ComponentInst}.
+   */
+  private ComponentInst getCachedComponentInst() {
+    if (cachedComponentInst == null && isDefined(getId())) {
+      cachedComponentInst = OrganizationController.get().getComponentInst(getId());
+    }
+    return cachedComponentInst;
   }
 }

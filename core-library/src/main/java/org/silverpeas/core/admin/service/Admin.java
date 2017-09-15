@@ -812,19 +812,16 @@ class Admin implements Administration {
 
   @Override
   public String getComponentParameterValue(String componentId, String parameterName) {
-    if (!PersonalComponentInstance.from(componentId).isPresent()) {
-      try {
-        ComponentInst component = getComponentInst(componentId);
-        if (component == null) {
-          SilverLogger.getLogger(this).error("Component " + componentId + " not found!");
-          return StringUtil.EMPTY;
-        }
-        return component.getParameterValue(parameterName);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e);
+    try {
+      SilverpeasComponentInstance componentInstance = getComponentInstance(componentId);
+      if (componentInstance != null) {
+        return componentInstance.getParameterValue(parameterName);
       }
+      SilverLogger.getLogger(this).error(failureOnGetting("component instance", componentId));
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
     }
-    return "";
+    return StringUtil.EMPTY;
   }
 
   @Override
@@ -3708,10 +3705,10 @@ class Admin implements Administration {
 
     // Get the compo of this space
     SpaceInst spaceInst = getSpaceInstById(sSpaceId);
-    List<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
+    List<SilverpeasComponentInstance> alCompoInst = spaceInst.getAllComponentInstances();
 
     if (alCompoInst != null) {
-      for (ComponentInst anAlCompoInst : alCompoInst) {
+      for (SilverpeasComponentInstance anAlCompoInst : alCompoInst) {
         alCompoIds.add(anAlCompoInst.getId());
       }
     }
@@ -3728,6 +3725,13 @@ class Admin implements Administration {
     for (ComponentInstLight component : components) {
       componentIds.add(component.getId());
     }
+
+    final SpaceInst space = getSpaceInstById(sSpaceId);
+    if (space.isPersonalSpace()) {
+      PersonalComponent.getAll().forEach(
+          p -> componentIds.add(PersonalComponentInstance.from(space.getCreator(), p).getId()));
+    }
+
     return componentIds.toArray(new String[componentIds.size()]);
   }
 

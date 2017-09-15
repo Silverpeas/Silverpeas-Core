@@ -1078,7 +1078,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     }
   }
 
-  private void deleteFromPersistence(final boolean notify) {
+  private void deleteFromPersistence(final boolean notifyAttendee) {
     if (isPersisted()) {
       Transaction.getTransaction().perform(() -> {
         CalendarEventRepository repository = CalendarEventRepository.get();
@@ -1086,8 +1086,8 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         return null;
       });
     }
-    if (notify) {
-      notify(ResourceEvent.Type.DELETION, this);
+    notify(ResourceEvent.Type.DELETION, this);
+    if (notifyAttendee) {
       notifyAttendees(this.getAttendees(), null);
     }
   }
