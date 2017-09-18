@@ -26,6 +26,7 @@ package org.silverpeas.core.web.calendar;
 
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -37,18 +38,22 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
 import org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.occurrenceURI;
 
 /**
  * Common behaviors about WEB component controllers which handle the rendering of a calendar.
@@ -59,7 +64,10 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
     extends
     org.silverpeas.core.web.mvc.webcomponent.WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT> {
 
+  private static final int STRING_MAX_LENGTH = 50;
+
   private Selection userPanelSelection = null;
+
 
   public AbstractCalendarWebController(final MainSessionController controller,
       final ComponentContext context, final String multilangFileName, final String iconFileName,
@@ -161,6 +169,25 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
       attendeeSelectionParams.setComponentId(getComponentId());
     }
     return attendeeSelectionParams;
+  }
+
+  protected void processViewOccurrence(final AbstractCalendarWebRequestContext context,
+      final String navigationStepId) {
+    CalendarEventOccurrence occurrence = context.getCalendarEventOccurrenceById();
+    if (occurrence != null) {
+      CalendarEventOccurrenceEntity entity =
+          CalendarEventOccurrenceEntity.fromOccurrence(occurrence, context.getComponentInstanceId(),
+              getCalendarTimeWindowContext().getZoneId())
+              .withOccurrenceURI(occurrenceURI(context.getCalendarBaseUri(), occurrence));
+      context.getRequest().setAttribute("occurrence", entity);
+
+      context.getNavigationContext()
+          .navigationStepFrom(navigationStepId)
+          .withLabel(StringUtil.truncate(entity.getTitle(), STRING_MAX_LENGTH))
+          .setUriMustBeUsedByBrowseBar(false);
+    } else {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
   }
 
   private String initSelection(SelectionUsersGroups sug, String goFunction, List<String> userIds,

@@ -26,8 +26,6 @@ package org.silverpeas.web.usercalendar;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.web.calendar.AbstractCalendarWebController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -37,17 +35,12 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.NavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.WebComponentController;
 import org.silverpeas.core.webapi.calendar.CalendarEntity;
-import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
-import org.silverpeas.web.usercalendar.services.UserCalendarResource;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
 import java.time.temporal.Temporal;
 
 import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.calendarUri;
-import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.occurrenceURI;
 
 @WebComponentController(UserCalendarSettings.COMPONENT_NAME)
 public class UserCalendarWebController extends
@@ -55,7 +48,6 @@ public class UserCalendarWebController extends
 
   // Some navigation step identifier definitions
   private static final String EVENT_VIEW_NS_ID = "eventViewNavStepIdentifier";
-  private static final int STRING_MAX_LENGTH = 50;
 
   private UserCalendarTimeWindowViewContext timeWindowViewContext;
 
@@ -94,7 +86,7 @@ public class UserCalendarWebController extends
     Calendar userMainCalendar = context.getMainCalendar();
     context.getRequest().setAttribute("userMainCalendar",
         CalendarEntity.fromCalendar(userMainCalendar)
-            .withURI(calendarUri(fromBaseUri(context), userMainCalendar)));
+            .withURI(calendarUri(context.getCalendarBaseUri(), userMainCalendar)));
     timeWindowViewContext.setZoneId(userMainCalendar.getZoneId());
     context.getRequest().setAttribute("timeWindowViewContext", timeWindowViewContext);
   }
@@ -137,20 +129,7 @@ public class UserCalendarWebController extends
   @NavigationStep(identifier = EVENT_VIEW_NS_ID)
   @RedirectToInternalJsp("occurrenceView.jsp")
   public void viewOccurrence(UserCalendarWebRequestContext context) {
-    CalendarEventOccurrence userOccurrence = context.getCalendarEventOccurrenceById();
-    if (userOccurrence != null) {
-      CalendarEventOccurrenceEntity entity = CalendarEventOccurrenceEntity
-          .fromOccurrence(userOccurrence, context.getComponentInstanceId(),
-              getCalendarTimeWindowContext().getZoneId()).withOccurrenceURI(
-              occurrenceURI(fromBaseUri(context), userOccurrence));
-      context.getRequest().setAttribute("occurrence", entity);
-
-      context.getNavigationContext().navigationStepFrom(EVENT_VIEW_NS_ID)
-          .withLabel(StringUtil.truncate(entity.getTitle(), STRING_MAX_LENGTH))
-          .setUriMustBeUsedByBrowseBar(false);
-    } else {
-      throw new WebApplicationException(Response.Status.NOT_FOUND);
-    }
+    processViewOccurrence(context, EVENT_VIEW_NS_ID);
   }
 
   /**
@@ -164,11 +143,5 @@ public class UserCalendarWebController extends
   @LowestRoleAccess(SilverpeasRole.admin)
   public void editOccurrence(UserCalendarWebRequestContext context) {
     viewOccurrence(context);
-  }
-
-  private WebResourceUri fromBaseUri(final UserCalendarWebRequestContext context) {
-    return new WebResourceUri(UserCalendarResource.USER_CALENDAR_BASE_URI + "/" +
-        context.getComponentInstanceId(),
-        context.getRequest(), null);
   }
 }

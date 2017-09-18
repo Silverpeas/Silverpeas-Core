@@ -26,6 +26,7 @@ package org.silverpeas.core.web.calendar;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.ComponentInstanceCalendars;
+import org.silverpeas.core.web.WebResourceUri;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 
 import javax.ws.rs.WebApplicationException;
@@ -63,6 +64,26 @@ public abstract class AbstractCalendarWebRequestContext<T extends AbstractCalend
   protected void setComponentInstanceCalendars(
       final ComponentInstanceCalendars componentInstanceCalendars) {
     this.componentInstanceCalendars = componentInstanceCalendars;
+  }
+
+  /**
+   * The URI base path of the web resources managed by the application relative to the root web
+   * resources path. This is for computing the URI of the web resources so that they can be loaded
+   * in the web pages.
+   * @return the base path of the calendars exposed in the web relative to
+   * {@link org.silverpeas.core.web.SilverpeasWebResource#BASE_PATH}
+   */
+  protected abstract String getWebResourceBasePath();
+
+  /**
+   * Gets the base URI at which all the calendars managed by this application are exposed in the
+   * Web.
+   * @return a {@link WebResourceUri} representing the base URI of all the calendars managed by the
+   * current component instance.
+   */
+  public WebResourceUri getCalendarBaseUri() {
+    return new WebResourceUri(getWebResourceBasePath() + "/" + getWebResourceBasePath(),
+        getRequest());
   }
 
   /**

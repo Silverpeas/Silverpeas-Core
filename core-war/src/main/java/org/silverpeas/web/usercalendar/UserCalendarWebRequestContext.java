@@ -24,6 +24,7 @@
 package org.silverpeas.web.usercalendar;
 
 import org.silverpeas.core.web.calendar.AbstractCalendarWebRequestContext;
+import org.silverpeas.web.usercalendar.services.UserCalendarResource;
 
 import static org.silverpeas.core.calendar.ComponentInstanceCalendars.getByComponentInstanceId;
 
@@ -40,5 +41,10 @@ public class UserCalendarWebRequestContext
       UserCalendarInitialization.initialize(getComponentInstanceId());
       setComponentInstanceCalendars(getByComponentInstanceId(getComponentInstanceId()));
     }
+  }
+
+  @Override
+  protected String getWebResourceBasePath() {
+    return UserCalendarResource.USER_CALENDAR_BASE_URI;
   }
 }

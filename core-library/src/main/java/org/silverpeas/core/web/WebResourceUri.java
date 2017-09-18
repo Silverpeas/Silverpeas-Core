@@ -93,6 +93,12 @@ public class WebResourceUri {
     this.uriInfo = uriInfo;
   }
 
+  public WebResourceUri(final String webResourcePath, final HttpServletRequest request) {
+    this.webResourcePath = webResourcePath;
+    this.request = request;
+    this.uriInfo = null;
+  }
+
   /**
    * Gets the current HTTP request targeting this URI.
    * @return the current HTTP request
@@ -174,7 +180,7 @@ public class WebResourceUri {
    * @return the {@link UriBuilder} initialized with the path of the requested URI.
    */
   public UriBuilder getPathBuilder() {
-    return SilverpeasWebResource.getBasePathBuilder().path(uriInfo.getPath());
+    return SilverpeasWebResource.getBasePathBuilder().path(request.getPathInfo());
   }
 
   /**
@@ -222,7 +228,7 @@ public class WebResourceUri {
    * @return the {@link UriBuilder} initialized with the absolute path of the request.
    */
   public UriBuilder getAbsolutePathBuilder() {
-    return SilverpeasWebResource.getBaseUriBuilder(request).path(uriInfo.getPath());
+    return SilverpeasWebResource.getBaseUriBuilder(request).path(request.getPathInfo());
   }
 
   /**

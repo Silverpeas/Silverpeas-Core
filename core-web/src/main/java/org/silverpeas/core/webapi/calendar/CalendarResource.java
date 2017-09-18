@@ -344,7 +344,7 @@ public class CalendarResource extends AbstractCalendarResource {
       calendars.forEach(c -> calendarIdsToInclude.remove(c.getId()));
       calendarIdsToInclude.forEach(i -> {
         Calendar calendarToInclude = Calendar.getById(i);
-        if (calendarToInclude.canBeAccessedBy(getUserDetail())) {
+        if (calendarToInclude.canBeAccessedBy(getUser())) {
           calendars.add(calendarToInclude);
         }
       });
@@ -777,7 +777,7 @@ public class CalendarResource extends AbstractCalendarResource {
     return "org.silverpeas.calendar.multilang.calendarBundle";
   }
 
-  private CalendarWebServiceProvider getCalendarWebServiceProvider() {
+  protected CalendarWebServiceProvider getCalendarWebServiceProvider() {
     return CalendarWebServiceProvider.get();
   }
 
