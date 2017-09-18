@@ -67,6 +67,7 @@ public class CalendarEventEntity implements WebEntity {
 
   private URI eventUri;
   private URI calendarUri;
+  private URI eventPermalinkUrl;
 
   private String eventId;
   private String calendarId;
@@ -123,6 +124,17 @@ public class CalendarEventEntity implements WebEntity {
   }
 
   /**
+   * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
+   * @param permalinkUrl the web entity URI.
+   * @return itself.
+   */
+  @SuppressWarnings("unchecked")
+  public CalendarEventEntity withEventPermalinkURL(final URI permalinkUrl) {
+    this.eventPermalinkUrl = permalinkUrl;
+    return this;
+  }
+
+  /**
    * Sets attendees to linked calendar event entity.
    * @param attendees the linked calendar event attendees web entity.
    * @return itself.
@@ -166,6 +178,14 @@ public class CalendarEventEntity implements WebEntity {
 
   protected void setCalendarUri(final URI calendarUri) {
     this.calendarUri = calendarUri;
+  }
+
+  public URI getEventPermalinkUrl() {
+    return eventPermalinkUrl;
+  }
+
+  public void setEventPermalinkUrl(final URI eventPermalinkUrl) {
+    this.eventPermalinkUrl = eventPermalinkUrl;
   }
 
   public String getId() {

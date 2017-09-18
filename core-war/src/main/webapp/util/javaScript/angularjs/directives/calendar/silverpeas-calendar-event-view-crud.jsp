@@ -25,5 +25,6 @@
 <silverpeas-crud create-date="{{$ctrl.ceo.createDate}}"
                  created-by="{{$ctrl.ceo.createdById}}"
                  last-update-date="{{$ctrl.ceo.lastUpdateDate}}"
-                 last-updated-by="{{$ctrl.ceo.lastUpdatedById}}"></silverpeas-crud>
+                 last-updated-by="{{$ctrl.ceo.lastUpdatedById}}"
+                 permalink="{{$ctrl.ceo.eventPermalinkUrl}}"></silverpeas-crud>
 

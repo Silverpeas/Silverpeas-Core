@@ -25,6 +25,8 @@ package org.silverpeas.web;
 
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -184,7 +186,8 @@ public class AutoRedirectServlet extends HttpServlet {
       MainSessionController mainController) {
     return StringUtil.isDefined(componentId) &&
         !StringUtil.isAlpha(componentId) &&
-        !organizationController.isComponentAvailable(componentId, mainController.getUserId());
+        !AccessControllerProvider.getAccessController(ComponentAccessControl.class)
+            .isUserAuthorized(mainController.getUserId(), componentId);
   }
 
   private boolean isSilverpeasIdValid(String silverpeasId) {

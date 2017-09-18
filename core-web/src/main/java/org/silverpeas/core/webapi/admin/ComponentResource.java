@@ -82,7 +82,7 @@ public class ComponentResource extends AbstractAdminResource {
   }
 
   @Override
-  public WebResourceUri getUri() {
+  protected WebResourceUri initWebResourceUri() {
     return new WebResourceUri(getResourceBasePath(), getHttpServletRequest(), uriInfo);
   }
 

@@ -35,7 +35,7 @@
    */
   angular.module('silverpeas.directives').directive('silverpeasButtonPane', function() {
     return {
-      templateUrl: webContext + '/util/javaScript/angularjs/directives/silverpeas-button-pane.html',
+      template: '<div class="sp_buttonPane" ng-transclude></div>',
       transclude: true,
       scope: true,
       restrict: 'E'
@@ -57,7 +57,7 @@
    */
   angular.module('silverpeas.directives').directive('silverpeasButton', function() {
     return {
-      templateUrl: webContext + '/util/javaScript/angularjs/directives/silverpeas-button.html',
+      template: '<a class="sp_button" href="javascript:void(0)" ng-transclude></a>',
       transclude: true,
       scope: true,
       restrict: 'E'

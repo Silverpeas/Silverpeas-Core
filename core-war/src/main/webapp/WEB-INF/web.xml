@@ -237,6 +237,10 @@
     <servlet-class>org.silverpeas.web.servlets.GoToPublication</servlet-class>
   </servlet>
   <servlet>
+    <servlet-name>GoToContribution</servlet-name>
+    <servlet-class>org.silverpeas.core.web.servlets.GoToContribution</servlet-class>
+  </servlet>
+  <servlet>
     <servlet-name>GoToTopic</servlet-name>
     <servlet-class>org.silverpeas.web.servlets.GoToTopic</servlet-class>
   </servlet>
@@ -691,6 +695,10 @@
   <servlet-mapping>
     <servlet-name>GoToPublication</servlet-name>
     <url-pattern>/Publication/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>GoToContribution</servlet-name>
+    <url-pattern>/Contribution/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>GoToTopic</servlet-name>

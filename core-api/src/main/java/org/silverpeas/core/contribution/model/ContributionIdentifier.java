@@ -33,6 +33,11 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.text.MessageFormat;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A contribution identifier is an identifier that identifies uniquely a contribution in Silverpeas
@@ -47,49 +52,99 @@ import java.text.MessageFormat;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ContributionIdentifier implements ResourceIdentifier, Serializable {
 
-  private static final String ABSOLUTE_ID_FORMAT = "{0}:{1}";
+  private static final String ABSOLUTE_ID_FORMAT = "{0}:{1}:{2}";
+  private static final Pattern ABSOLUTE_ID_PATTERN =
+      Pattern.compile("^(?<instanceId>[^:]+):(?<type>[^:]+):(?<localId>[^:]+)$");
 
   @XmlElement(required = true)
   @NotNull
   private String instanceId;
   @XmlElement(required = true)
   @NotNull
+  private String type;
+  @XmlElement(required = true)
+  @NotNull
   private String localId;
+
+  protected ContributionIdentifier() {
+  }
 
   /**
    * Constructs a new contribution identifier from the specified component instance identifier and
    * from the local identifier of the contribution.
    * @param instanceId the unique identifier of the instance.
    * @param localId the local identifier of the contribution.
+   * @param type the type of the contribution.
+   */
+  protected ContributionIdentifier(String instanceId, String localId, String type) {
+    this.localId = localId;
+    this.instanceId = instanceId;
+    this.type = type;
+  }
+
+  /**
+   * Decodes the contribution identifier from the given string.
+   * @param contributionId a contribution identifier as string.
+   * @return a {@link ContributionIdentifier} which represents the given id as string.
+   */
+  public static ContributionIdentifier decode(String contributionId) {
+    final Matcher matcher = ABSOLUTE_ID_PATTERN.matcher(contributionId);
+    if (matcher.matches()) {
+      final String instanceId = matcher.group("instanceId");
+      final String type = matcher.group("type");
+      final String localId = matcher.group("localId");
+      if (isDefined(instanceId) && isDefined(localId) && isDefined(type)) {
+        return ContributionIdentifier.from(instanceId, localId, type);
+      }
+    }
+    throw new IllegalArgumentException(failureOnGetting("contribution id from", contributionId));
+  }
+
+  /**
+   * Constructs a new contribution identifier from the specified component instance identifier and
+   * from the local identifier of the contribution. The type of the contribution is main one
+   * handled by the component.
+   * @param instanceId the unique identifier of the instance.
+   * @param localId the local identifier of the contribution.
    * @return an contribution identifier.
    */
-  public static final ContributionIdentifier from(String instanceId, String localId) {
-    return new ContributionIdentifier(instanceId, localId);
+  public static ContributionIdentifier from(String instanceId, String localId) {
+    return from(instanceId, localId, CoreContributionType.MAIN.name());
+  }
+
+  /**
+   * Constructs a new contribution identifier from the specified component instance identifier and
+   * from the local identifier of the contribution. The type of the contribution is main one
+   * handled by the component.
+   * @param key an old and deprecated representation of an identifier of Silverpeas.
+   * @return an contribution identifier.
+   */
+  public static ContributionIdentifier from(WAPrimaryKey key) {
+    return new ContributionIdentifier(key.getInstanceId(), key.getId(),
+        CoreContributionType.MAIN.name());
+  }
+
+  /**
+   * Constructs a new contribution identifier from the specified component instance identifier and
+   * from the local identifier of the contribution.
+   * @param instanceId the unique identifier of the instance.
+   * @param localId the local identifier of the contribution.
+   * @param type the type of the contribution.
+   * @return an contribution identifier.
+   */
+  public static ContributionIdentifier from(String instanceId, String localId, String type) {
+    return new ContributionIdentifier(instanceId, localId, type);
   }
 
   /**
    * Constructs a new contribution identifier from the specified component instance identifier and
    * from the local identifier of the contribution.
    * @param key an old and deprecated representation of an identifier of Silverpeas.
+   * @param type the type of the contribution.
    * @return an contribution identifier.
    */
-  public static final ContributionIdentifier from(WAPrimaryKey key) {
-    return new ContributionIdentifier(key.getInstanceId(), key.getId());
-  }
-
-  protected ContributionIdentifier() {
-
-  }
-
-  /**
-   * Constructs a new contribution identifier from the specified component instance identifier and
-   * from the local identifier of the contribution.
-   * @param instanceId the unique identifier of the instance.
-   * @param localId the local identifier of the contribution.
-   */
-  public ContributionIdentifier(String instanceId, String localId) {
-    this.localId = localId;
-    this.instanceId = instanceId;
+  public static ContributionIdentifier from(WAPrimaryKey key, String type) {
+    return new ContributionIdentifier(key.getInstanceId(), key.getId(), type);
   }
 
   /**
@@ -103,7 +158,8 @@ public class ContributionIdentifier implements ResourceIdentifier, Serializable 
    */
   @Override
   public String asString() {
-    return MessageFormat.format(ABSOLUTE_ID_FORMAT, getComponentInstanceId(), getLocalId());
+    return MessageFormat
+        .format(ABSOLUTE_ID_FORMAT, getComponentInstanceId(), getType(), getLocalId());
   }
 
   /**
@@ -124,5 +180,13 @@ public class ContributionIdentifier implements ResourceIdentifier, Serializable 
    */
   public String getComponentInstanceId() {
     return instanceId;
+  }
+
+  /**
+   * Gets the type of the contribution.
+   * @return the type of the contribution as string.
+   */
+  public String getType() {
+    return type;
   }
 }

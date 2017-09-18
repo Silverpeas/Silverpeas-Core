@@ -227,6 +227,15 @@ public class URLUtil {
     return getServerURL(request) + getApplicationURL();
   }
 
+  /**
+   * Gets the absolute application URL when the treatment is executed into the context of a HTTP
+   * request.
+   * @return the absolute application URL as string.
+   */
+  public static String getAbsoluteApplicationURL() {
+    return getCurrentServerURL() + getApplicationURL();
+  }
+
   public static void setCurrentServerUrl(HttpServletRequest request) {
     CacheServiceProvider.getRequestCacheService().getCache()
         .put(URLUtil.class.getName() + ".currentServerURL", getServerURL(request));

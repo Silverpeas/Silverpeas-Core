@@ -84,8 +84,31 @@ public abstract class RESTWebService implements ProtectedWebResource {
 
   private LocalizationBundle bundle = null;
 
+  private WebResourceUri webResourceUri;
+
   @Override
   public WebResourceUri getUri() {
+    if (webResourceUri == null) {
+      webResourceUri = initWebResourceUri();
+    }
+    return webResourceUri;
+  }
+
+  /**
+   * Default initialization of {@link WebResourceUri} instance for all WEB services extending
+   * {@link RESTWebService} class.
+   * <p>
+   * This method can be overrated in case the default initialization is not satisfying a right
+   * behavior.
+   * </p>
+   * <p>
+   * In any case, the {@link WebResourceUri} is computed one time (and only one) per request and
+   * the
+   * result of computation is provided by {@link #getUri()} method.
+   * </p>
+   * @return a {@link WebResourceUri} instance.
+   */
+  protected WebResourceUri initWebResourceUri() {
     String path = getResourceBasePath();
     String componentId = getComponentId();
     if (!path.endsWith("/")) {

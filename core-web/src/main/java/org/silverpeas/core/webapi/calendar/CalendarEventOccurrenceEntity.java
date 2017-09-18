@@ -59,6 +59,7 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
 
   private URI occurrenceUri;
   private URI occurrenceViewUrl;
+  private URI occurrenceEditionUrl;
 
   private String occurrenceId;
   private String originalStartDate;
@@ -83,8 +84,19 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
    * @return itself.
    */
   @SuppressWarnings("unchecked")
-  public CalendarEventOccurrenceEntity withOccurrenceViewURI(final URI occurrenceViewUrl) {
-    this.occurrenceViewUrl = occurrenceViewUrl;
+  public CalendarEventOccurrenceEntity withOccurrenceViewURL(final URI occurrenceViewUrl) {
+    setOccurrenceViewUrl(occurrenceViewUrl);
+    return this;
+  }
+
+  /**
+   * Sets a URI of the edition page of the occurrence.
+   * @param occurrenceEditionUrl the occurrence web entity URI.
+   * @return itself.
+   */
+  @SuppressWarnings("unchecked")
+  public CalendarEventOccurrenceEntity withOccurrenceEditionURL(final URI occurrenceEditionUrl) {
+    setOccurrenceEditionUrl(occurrenceEditionUrl);
     return this;
   }
 
@@ -108,6 +120,12 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
   @Override
   public CalendarEventOccurrenceEntity withCalendarURI(final URI calendarUri) {
     super.withCalendarURI(calendarUri);
+    return this;
+  }
+
+  @Override
+  public CalendarEventOccurrenceEntity withEventPermalinkURL(final URI permalinkUrl) {
+    super.withEventPermalinkURL(permalinkUrl);
     return this;
   }
 
@@ -155,6 +173,14 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
 
   public void setOccurrenceViewUrl(final URI occurrenceViewUrl) {
     this.occurrenceViewUrl = occurrenceViewUrl;
+  }
+
+  public URI getOccurrenceEditionUrl() {
+    return occurrenceEditionUrl;
+  }
+
+  public void setOccurrenceEditionUrl(final URI occurrenceEditionUrl) {
+    this.occurrenceEditionUrl = occurrenceEditionUrl;
   }
 
   public String getId() {

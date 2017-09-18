@@ -24,15 +24,40 @@
 
 package org.silverpeas.core.admin.component.model;
 
+import org.silverpeas.core.admin.component.WAComponentRegistry;
+import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Yohann Chastagnier
  */
 public interface SilverpeasComponent {
+
+  /**
+   * Gets a silverpeas component from the specified component instance identifier.
+   * @param componentInstanceId a component instance identifier as string.
+   * @return an optional silverpeas component of {@link SilverpeasComponent}.
+   */
+  static Optional<SilverpeasComponent> getByInstanceId(String componentInstanceId) {
+    if (!StringUtil.isDefined(componentInstanceId)) {
+      return Optional.empty();
+    }
+    final Mutable<SilverpeasComponent> silverpeasComponent = Mutable.empty();
+    SilverpeasComponentInstanceProvider.get().getById(componentInstanceId).ifPresent(i -> {
+      final String componentName = i.getName();
+      WAComponent.get(componentName).ifPresent(silverpeasComponent::set);
+      if (!silverpeasComponent.isPresent()) {
+        PersonalComponent.get(componentName).ifPresent(silverpeasComponent::set);
+      }
+    });
+    return Optional.ofNullable(silverpeasComponent.orElse(null));
+  }
 
   /**
    * Gets the value of the name property.
@@ -74,6 +99,15 @@ public interface SilverpeasComponent {
       return getDescription().get(lang);
     }
     return getDescription().get(DisplayI18NHelper.getDefaultLanguage());
+  }
+
+  /**
+   * Indicates if the component instance is a personal one.<br/>
+   * A personal component instance is linked to a user.
+   * @return true if it is a personal one, false otherwise.
+   */
+  default boolean isPersonal() {
+    return false;
   }
 
   /**

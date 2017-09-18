@@ -83,5 +83,4 @@ public class UserCalendarResource extends CalendarResource {
     }
     return result;
   }
-
 }

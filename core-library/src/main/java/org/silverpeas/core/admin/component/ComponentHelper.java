@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.component;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -30,9 +31,11 @@ import org.silverpeas.core.util.StringUtil;
 import javax.inject.Singleton;
 
 /**
+ * @deprecated use {@link SilverpeasComponent#getByInstanceId(String)} instead.
  * @author ehugonnet
  */
 @Singleton
+@Deprecated
 public class ComponentHelper {
 
   public static ComponentHelper get() {
@@ -42,6 +45,7 @@ public class ComponentHelper {
   protected ComponentHelper() {
   }
 
+  @Deprecated
   public String getWAComponentName(String componentId) {
     if (!StringUtil.isDefined(componentId)) {
       return componentId;
@@ -57,6 +61,7 @@ public class ComponentHelper {
     return componentName.toString().toLowerCase();
   }
 
+  @Deprecated
   public WAComponent getWAComponent(String componentId) {
     if (!StringUtil.isDefined(componentId)) {
       return null;

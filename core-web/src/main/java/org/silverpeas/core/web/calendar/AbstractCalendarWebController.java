@@ -33,13 +33,13 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.webcomponent.WebComponentController;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
-import org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider;
 
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -53,16 +53,13 @@ import java.util.List;
 
 import static org.silverpeas.core.util.StringUtil.getBooleanValue;
 import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.occurrenceURI;
 
 /**
  * Common behaviors about WEB component controllers which handle the rendering of a calendar.
- * @param <WEB_COMPONENT_REQUEST_CONTEXT>
+ * @param <C>
  */
-public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEXT extends
-    WebComponentRequestContext>
-    extends
-    org.silverpeas.core.web.mvc.webcomponent.WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT> {
+public abstract class AbstractCalendarWebController<C extends WebComponentRequestContext>
+    extends WebComponentController<C> {
 
   private static final int STRING_MAX_LENGTH = 50;
 
@@ -76,10 +73,6 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
     userPanelSelection = getSelection();
   }
 
-  protected CalendarWebServiceProvider getWebServiceProvider() {
-    return CalendarWebServiceProvider.get();
-  }
-
   protected abstract <T extends CalendarTimeWindowViewContext> T getCalendarTimeWindowContext();
 
   /**
@@ -89,7 +82,7 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
   @POST
   @Path("calendars/context")
   @Produces(MediaType.APPLICATION_JSON)
-  public <T extends CalendarTimeWindowViewContext> T view(WEB_COMPONENT_REQUEST_CONTEXT context) {
+  public <T extends CalendarTimeWindowViewContext> T view(C context) {
     CalendarViewType calendarViewType =
         CalendarViewType.from(context.getRequest().getParameter("view"));
     if (calendarViewType != null) {
@@ -120,7 +113,7 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
   @Path("calendars/events/users/participation")
   @RedirectTo("{userPanelUri}")
   @LowestRoleAccess(SilverpeasRole.admin)
-  public void viewParticipationOfUsers(WEB_COMPONENT_REQUEST_CONTEXT context) {
+  public void viewParticipationOfUsers(C context) {
     List<String> userIds = (List<String>) StringUtil
         .splitString(context.getRequest().getParameter("UserPanelCurrentUserIds"), ',');
     List<String> groupIds = (List<String>) StringUtil
@@ -148,7 +141,7 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
   @Path("calendars/events/attendees/select")
   @RedirectTo("{userPanelUri}")
   @LowestRoleAccess(SilverpeasRole.admin)
-  public void modifyAttendees(WEB_COMPONENT_REQUEST_CONTEXT context) {
+  public void modifyAttendees(C context) {
     List<String> userIds = (List<String>) StringUtil
         .splitString(context.getRequest().getParameter("UserPanelCurrentUserIds"), ',');
     List<String> groupIds = (List<String>) StringUtil
@@ -177,8 +170,8 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
     if (occurrence != null) {
       CalendarEventOccurrenceEntity entity =
           CalendarEventOccurrenceEntity.fromOccurrence(occurrence, context.getComponentInstanceId(),
-              getCalendarTimeWindowContext().getZoneId())
-              .withOccurrenceURI(occurrenceURI(context.getCalendarBaseUri(), occurrence));
+              getCalendarTimeWindowContext().getZoneId()).withOccurrenceURI(
+              context.uri().ofOccurrence(occurrence));
       context.getRequest().setAttribute("occurrence", entity);
 
       context.getNavigationContext()
@@ -200,7 +193,7 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
     userPanelSelection.setGoBackURL(goUrl);
     userPanelSelection.setElementSelectable(true);
     userPanelSelection.setSelectedElements(userIds);
-    // TODO for now groups are not handled, but it will be the case in the future
+    // for now groups are not handled, but it will be the case in the future
     userPanelSelection.setSetSelectable(false);
     userPanelSelection.setSelectedSets(groupIds);
     userPanelSelection.setHostPath(null);

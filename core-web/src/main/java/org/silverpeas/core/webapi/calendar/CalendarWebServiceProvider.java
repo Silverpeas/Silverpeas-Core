@@ -25,6 +25,8 @@
 package org.silverpeas.core.webapi.calendar;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.admin.component.model.PersonalComponent;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
@@ -61,6 +63,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.silverpeas.core.calendar.CalendarEventUtil.getDateWithOffset;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
@@ -541,7 +544,7 @@ public class CalendarWebServiceProvider {
 
   /**
    * Gets all event occurrences associated to users and contained a the time window specified
-   * by the start and end datetimes.<br/>
+   * by the start and end date times.<br/>
    * Attendees which have answered negatively about their presence are not taken into account.
    * The occurrences are sorted from the lowest to the highest date and mapped by user identifiers.
    * @param currentUserAndComponentInstanceId the current user and current the component instance
@@ -554,14 +557,19 @@ public class CalendarWebServiceProvider {
   Map<String, List<CalendarEventOccurrence>> getAllEventOccurrencesByUserIds(
       final Pair<String, User> currentUserAndComponentInstanceId, LocalDate startDate,
       LocalDate endDate, Collection<User> users) {
-    // Retrieving the occurrences
-    List<CalendarEventOccurrence> entities =
-        Calendar.getTimeWindowBetween(startDate, endDate)
-            .filter(f -> f.onParticipants(users))
-            .getEventOccurrences();
+    // Retrieving the occurrences from personal calendars
+    final List<Calendar> personalCalendars = new ArrayList<>();
+    users.forEach(u -> personalCalendars.addAll(getCalendarsOf(
+        PersonalComponentInstance.from(u, PersonalComponent.get("userCalendar").get()).getId())));
+    final List<CalendarEventOccurrence> entities = new ArrayList<>();
+    personalCalendars.forEach(p -> entities.addAll(getEventOccurrencesOf(p, startDate, endDate)));
+    entities.addAll(
+        Calendar.getTimeWindowBetween(startDate, endDate).filter(f -> f.onParticipants(users))
+            .getEventOccurrences());
     // Getting the occurrences by users
     Map<String, List<CalendarEventOccurrence>> result =
-        new CalendarEventInternalParticipationView(users).apply(entities);
+        new CalendarEventInternalParticipationView(users)
+            .apply(entities.stream().distinct().collect(Collectors.toList()));
     final String currentUserId = currentUserAndComponentInstanceId.getRight().getId();
     if (result.containsKey(currentUserId)) {
       List<CalendarEventOccurrence> currentUserOccurrences = result.get(currentUserId);

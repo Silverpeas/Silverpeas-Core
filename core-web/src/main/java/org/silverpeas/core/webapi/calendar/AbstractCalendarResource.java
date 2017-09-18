@@ -24,9 +24,13 @@
 
 package org.silverpeas.core.webapi.calendar;
 
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.RESTWebService;
 
+import javax.inject.Inject;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.QueryParam;
+import java.time.ZoneId;
 
 /**
  * @author Yohann Chastagnier
@@ -36,6 +40,20 @@ public abstract class AbstractCalendarResource extends RESTWebService {
   @PathParam("componentInstanceId")
   private String componentInstanceId;
 
+  @QueryParam("zoneid")
+  private String zoneId;
+
+  @Inject
+  private CalendarResourceURIs uri;
+
+  /**
+   * Gets the zoneId into which dates must be set.
+   * @return a {@link ZoneId} instance if zoneid parameter has been set, null otherwise.
+   */
+  public ZoneId getZoneId() {
+    return StringUtil.isDefined(zoneId) ? ZoneId.of(zoneId) : null;
+  }
+
   @Override
   protected String getResourceBasePath() {
     return CalendarResourceURIs.CALENDAR_BASE_URI;
@@ -44,5 +62,9 @@ public abstract class AbstractCalendarResource extends RESTWebService {
   @Override
   public String getComponentId() {
     return componentInstanceId;
+  }
+
+  public CalendarResourceURIs uri() {
+    return uri;
   }
 }

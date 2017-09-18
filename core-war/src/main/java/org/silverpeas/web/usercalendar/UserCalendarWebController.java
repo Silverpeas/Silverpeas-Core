@@ -40,8 +40,6 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import java.time.temporal.Temporal;
 
-import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.calendarUri;
-
 @WebComponentController(UserCalendarSettings.COMPONENT_NAME)
 public class UserCalendarWebController extends
     AbstractCalendarWebController<UserCalendarWebRequestContext> {
@@ -86,7 +84,7 @@ public class UserCalendarWebController extends
     Calendar userMainCalendar = context.getMainCalendar();
     context.getRequest().setAttribute("userMainCalendar",
         CalendarEntity.fromCalendar(userMainCalendar)
-            .withURI(calendarUri(context.getCalendarBaseUri(), userMainCalendar)));
+            .withURI(context.uri().ofCalendar(userMainCalendar)));
     timeWindowViewContext.setZoneId(userMainCalendar.getZoneId());
     context.getRequest().setAttribute("timeWindowViewContext", timeWindowViewContext);
   }

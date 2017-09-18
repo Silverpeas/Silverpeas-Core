@@ -237,6 +237,8 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
 public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized, Contribution, Securable, WithAttachment {
 
+  public static final String TYPE = CalendarEvent.class.getSimpleName();
+
   private static final long serialVersionUID = 1L;
   public static final String THE_EVENT = "The event ";
 
@@ -1040,7 +1042,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   @Override
   public String getContributionType() {
-    return getClass().getSimpleName();
+    return TYPE;
   }
 
   @Override

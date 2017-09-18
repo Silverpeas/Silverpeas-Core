@@ -105,6 +105,16 @@ public interface SilverpeasWebResource {
   }
 
   /**
+   * Gets the absolute base path of all the web resources relative to the root path of the
+   * Silverpeas URL by taking into account the settings on the application URL. All the web
+   * resources are defined from this absolute base URI.
+   * @return the absolute base path from which all the web resources are defined as a string.
+   */
+  static String getAbsoluteBasePath() {
+    return URLUtil.getAbsoluteApplicationURL() + BASE_PATH;
+  }
+
+  /**
    * Gets the base path of all the web resources relative to the root path of the Silverpeas URL
    * in the form of a {@link UriBuilder} . All the web resources are defined from this base URI.
    * @return the {@link UriBuilder} initialized with the base path from which all the web resources

@@ -25,6 +25,7 @@ package org.silverpeas.core.admin.component;
 
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Optional;
 
@@ -87,7 +88,8 @@ public interface ComponentInstancePreDestruction {
             NAME_SUFFIX;
       }
       return Optional.of(ServiceProvider.getService(name));
-    } catch (IllegalStateException ex) {
+    } catch (IllegalStateException e) {
+      SilverLogger.getLogger(ComponentInstancePreDestruction.class).silent(e);
       return Optional.empty();
     }
   }

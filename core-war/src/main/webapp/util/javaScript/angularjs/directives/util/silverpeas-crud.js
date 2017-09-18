@@ -41,6 +41,16 @@
           bindToController: true,
           controller : ['$timeout', function($timeout) {
 
+            this.getFormattedPermalink = function() {
+              var result = this.permalink;
+              if (this.permalink.startsWith(silverpeasUrl)) {
+                result = this.permalink.replace(silverpeasUrl, webContext);
+              } else if (!this.permalink.startsWith(webContext)) {
+                result = webContext + this.permalink;
+              }
+              return result;
+            };
+
             //function used on the ng-include to resolve the template
             this.getTemplateUrl = function() {
               var config = sp.ajaxConfig(webContext + '/util/javaScript/angularjs/directives/util/silverpeas-crud.jsp');
@@ -50,7 +60,7 @@
                 config.withParam('lastUpdateDate', this.lastUpdateDate);
                 config.withParam('lastUpdatedBy', this.lastUpdatedBy);
               }
-              config.withParam('permalink', this.permalink);
+              config.withParam('permalink', this.getFormattedPermalink());
               config.withParam('permalinkAlt', this.permalinkAlt);
               config.withParam('permalinkIconUrl', this.permalinkIconUrl);
               return config.getUrl();

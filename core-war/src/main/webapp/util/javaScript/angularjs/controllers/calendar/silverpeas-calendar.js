@@ -57,16 +57,9 @@
           NAVIGATION MANAGEMENT
            */
 
-          function __getOccurrenceViewUrl(occurrence, suffix) {
-            var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id;
-            var fromSharedComponent = occurrence.occurrenceViewUrl.indexOf('/userCalendar') < 0;
-            if (fromSharedComponent) {
-              // Case of events coming from shared component instances
-              uri = occurrence.occurrenceViewUrl;
-            }
-            if (suffix) {
-              uri = uri + suffix;
-            }
+          function __getOccurrenceViewUrl(occurrence, edition) {
+            var uri = edition ? occurrence.occurrenceEditionUrl : occurrence.occurrenceViewUrl;
+            var fromSharedComponent = uri.indexOf('/userCalendar') < 0;
             var params = {};
             if (fromSharedComponent && uri.indexOf('/' + context.component + '/') < 0) {
               params.previousPageFullUri = location.href;
@@ -84,7 +77,7 @@
             $scope.goToPage(uri);
           };
           $scope.editEventOccurrence = function(occurrence) {
-            var uri = __getOccurrenceViewUrl(occurrence, '/edit');
+            var uri = __getOccurrenceViewUrl(occurrence, true);
             $scope.goToPage(uri);
           };
           $scope.getVisibleCalendars = function(calendars) {

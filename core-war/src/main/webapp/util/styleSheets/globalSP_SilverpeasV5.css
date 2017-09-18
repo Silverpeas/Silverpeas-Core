@@ -6303,6 +6303,11 @@ silverpeas-permalink .simple input {
   width:80%;
 }
 
+.sp_button.copy-to-clipboard {
+  position: absolute;
+}
+
+.sp_button.copy-to-clipboard,
 silverpeas-permalink .copy-to-clipboard .sp_button  {
   background:transparent url();
   border-radius: 5px;
@@ -6310,6 +6315,7 @@ silverpeas-permalink .copy-to-clipboard .sp_button  {
   padding:0;
 }
 
+.sp_button.copy-to-clipboard span,
 silverpeas-permalink .copy-to-clipboard .sp_button span {
   display:inline-block;
   text-indent:-30em;

@@ -24,8 +24,11 @@
 package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
@@ -85,7 +88,9 @@ import static org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNo
         "= :event")})
 public class CalendarEventOccurrence
     extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
-    implements IdentifiableEntity, Occurrence {
+    implements IdentifiableEntity, Occurrence, Contribution {
+
+  public static final String TYPE = CalendarEventOccurrence.class.getSimpleName();
 
   public static final Comparator<CalendarEventOccurrence> COMPARATOR_BY_ORIGINAL_DATE_ASC =
       Comparator.comparing(o -> o.getOriginalStartDate().toString());
@@ -213,6 +218,33 @@ public class CalendarEventOccurrence
       }
     });
     return occurrences;
+  }
+
+  @Override
+  public ContributionIdentifier getContributionId() {
+    return ContributionIdentifier
+        .from(getCalendarEvent().getCalendar().getComponentInstanceId(), getId(),
+            getContributionType());
+  }
+
+  @Override
+  public User getCreator() {
+    return component.getCreator();
+  }
+
+  @Override
+  public Date getCreationDate() {
+    return component.getCreateDate();
+  }
+
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    return getCalendarEvent().canBeAccessedBy(user);
+  }
+
+  @Override
+  public String getContributionType() {
+    return TYPE;
   }
 
   /**

@@ -147,6 +147,11 @@ public class PersonalComponent implements SilverpeasComponent {
     return visible;
   }
 
+  @Override
+  public boolean isPersonal() {
+    return true;
+  }
+
   /**
    * Sets the value of the visible property.
    */

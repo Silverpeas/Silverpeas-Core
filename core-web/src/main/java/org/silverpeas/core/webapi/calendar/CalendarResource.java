@@ -25,6 +25,8 @@
 package org.silverpeas.core.webapi.calendar;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
@@ -64,7 +66,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -78,9 +79,11 @@ import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
+import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
 import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.CALENDAR;
 import static org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity.decodeId;
-import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.*;
+import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.CALENDAR_BASE_URI;
 import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertDataConsistency;
 import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertEntityIsDefined;
 
@@ -96,17 +99,6 @@ public class CalendarResource extends AbstractCalendarResource {
 
   private static final int DEFAULT_NB_MAX_NEXT_OCC = 10;
   private static final int[] NEXT_OOC_MONTH_OFFSETS = {1, 6, 12, 1200};
-
-  @QueryParam("zoneid")
-  private String zoneId;
-
-  /**
-   * Gets the zoneId into which dates must be set.
-   * @return a {@link ZoneId} instance if zoneid parameter has been set, null otherwise.
-   */
-  public ZoneId getZoneId() {
-    return StringUtil.isDefined(zoneId) ? ZoneId.of(zoneId) : null;
-  }
 
   /**
    * Gets the JSON representation of a list of calendar.
@@ -667,11 +659,17 @@ public class CalendarResource extends AbstractCalendarResource {
   public CalendarEntity asWebEntity(Calendar calendar) {
     assertEntityIsDefined(calendar);
     final CalendarEntity calendarEntity = CalendarEntity.fromCalendar(calendar)
-        .withURI(calendarUri(getUri(), calendar));
-    if (calendarEntity.isUserPersonal() || calendarEntity.canBeModified()) {
+        .withURI(uri().ofCalendar(calendar));
+    SilverpeasRole highestCalendarRole =
+        SilverpeasComponentInstance.getById(calendar.getComponentInstanceId()).get()
+            .getHighestSilverpeasRolesFor(getUser());
+    if (calendarEntity.isUserPersonal() ||
+        (highestCalendarRole != null && highestCalendarRole.isGreaterThanOrEquals(admin))) {
       calendarEntity
-          .withICalPublicURI(iCalPublicURI(getUri(), calendar))
-          .withICalPrivateURI(iCalPrivateURI(getUri(), calendar));
+          .withICalPublicURI(uri().ofICalPublic(calendar))
+          .withICalPrivateURI(uri().ofICalPrivate(calendar));
+    } else if (highestCalendarRole != null && highestCalendarRole.isGreaterThanOrEquals(user)) {
+      calendarEntity.withICalPublicURI(uri().ofICalPublic(calendar));
     } else {
       calendarEntity.setExternalUrl(null);
     }
@@ -701,11 +699,8 @@ public class CalendarResource extends AbstractCalendarResource {
     CalendarEventEntity entity = cache.get(event.getId(), CalendarEventEntity.class);
     if (entity == null) {
       entity = CalendarEventEntity.fromEvent(event, getComponentId(), getZoneId())
-          .withEventURI(getUri().getWebResourcePathBuilder().path(event.getCalendar().getId())
-              .path(CALENDAR_EVENT_URI_PART)
-              .path(event.getId()).build())
-          .withCalendarURI(getUri().getWebResourcePathBuilder().path(event.getCalendar().getId())
-              .build());
+          .withEventURI(uri().ofEvent(event))
+          .withCalendarURI(uri().ofCalendar(event.getCalendar()));
       cache.put(event.getId(), entity);
     }
     return entity;
@@ -739,10 +734,12 @@ public class CalendarResource extends AbstractCalendarResource {
             .map(this::asAttributeWebEntity)
             .collect(Collectors.toList());
     return CalendarEventOccurrenceEntity.fromOccurrence(occurrence, getComponentId(), getZoneId())
-        .withCalendarURI(calendarUri(getUri(), occurrence.getCalendarEvent().getCalendar()))
-        .withEventURI(eventURI(getUri(), occurrence.getCalendarEvent()))
-        .withOccurrenceURI(occurrenceURI(getUri(), occurrence))
-        .withOccurrenceViewURI(occurrenceViewURI(occurrence))
+        .withCalendarURI(uri().ofCalendar(occurrence.getCalendarEvent().getCalendar()))
+        .withEventURI(uri().ofEvent(occurrence.getCalendarEvent()))
+        .withOccurrenceURI(uri().ofOccurrence(occurrence))
+        .withEventPermalinkURL(uri().ofEventPermalink(occurrence))
+        .withOccurrenceViewURL(uri().ofOccurrenceView(occurrence))
+        .withOccurrenceEditionURL(uri().ofOccurrenceEdition(occurrence))
         .withAttendees(attendeeEntities)
         .withAttributes(attributeEntities);
   }
@@ -760,7 +757,7 @@ public class CalendarResource extends AbstractCalendarResource {
       final CalendarEventOccurrence occurrence, Attendee attendee) {
     assertEntityIsDefined(attendee);
     return CalendarEventAttendeeEntity.from(attendee)
-        .withURI(occurrenceAttendeeURI(getUri(), occurrence, attendee));
+        .withURI(uri().ofOccurrenceAttendee(occurrence, attendee));
   }
 
   /**
