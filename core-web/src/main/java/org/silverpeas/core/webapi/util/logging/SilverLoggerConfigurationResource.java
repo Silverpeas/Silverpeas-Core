@@ -23,14 +23,12 @@
  */
 package org.silverpeas.core.webapi.util.logging;
 
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 import org.silverpeas.core.util.logging.LoggerConfigurationManager.LoggerConfiguration;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
@@ -47,11 +45,11 @@ import javax.ws.rs.core.Response;
  */
 @Service
 @RequestScoped
-@Path(SilverLoggerConfigurationResource.PATH + "/{logger}/configuration")
+@Path(SilverLoggerConfigurationResource.LOGGING_PATH + "/{logger}/configuration")
 @Authenticated
-public class SilverLoggerConfigurationResource extends RESTWebService {
+public class SilverLoggerConfigurationResource extends AbstractLoggingResource {
 
-  static final String PATH = "logging";
+  static final String LOGGING_PATH = "logging";
 
   @PathParam("logger")
   private String namespace;
@@ -79,23 +77,7 @@ public class SilverLoggerConfigurationResource extends RESTWebService {
 
   @Override
   protected String getResourceBasePath() {
-    return PATH;
+    return LOGGING_PATH;
   }
 
-  @Override
-  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
-    if (!getUser().isAccessAdmin()) {
-      throw new WebApplicationException("Only administrators can play with logger configurations!",
-          Response.Status.FORBIDDEN);
-    }
-  }
-
-  /**
-   * Gets the identifier of the component instance to which the requested resource belongs to.
-   * @return the identifier of the Silverpeas component instance.
-   */
-  @Override
-  public String getComponentId() {
-    return null;
-  }
 }

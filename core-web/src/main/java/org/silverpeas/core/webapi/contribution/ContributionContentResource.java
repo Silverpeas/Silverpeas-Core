@@ -58,16 +58,16 @@ public class ContributionContentResource extends AbstractContributionResource {
   private static final String CONTRIBUTION_CONTENT_URI_PART = "content";
   private static final String CONTRIBUTION_CONTENT_FORM_URI_PART = "form";
 
-  @Override
-  protected String getResourceBasePath() {
-    return CONTRIBUTION_BASE_URI;
-  }
-
   @PathParam("componentInstanceId")
   private String componentInstanceId;
 
   @PathParam("contributionId")
   private String contributionId;
+
+  @Override
+  protected String getResourceBasePath() {
+    return CONTRIBUTION_BASE_URI;
+  }
 
   @Override
   public String getComponentId() {

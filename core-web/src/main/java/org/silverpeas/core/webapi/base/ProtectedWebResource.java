@@ -47,8 +47,7 @@ public interface ProtectedWebResource extends SilverpeasWebResource {
    * @throws WebApplicationException if the authentication isn't valid (no authentication and
    * authentication failure).
    */
-  void validateUserAuthentication(final UserPrivilegeValidation validation) throws
-      WebApplicationException;
+  void validateUserAuthentication(final UserPrivilegeValidation validation);
 
   /**
    * Validates the authorization of the user to request this web service. For doing, the user must
@@ -64,6 +63,5 @@ public interface ProtectedWebResource extends SilverpeasWebResource {
    * @throws WebApplicationException if the rights of the user are not enough to access this web
    * resource.
    */
-  void validateUserAuthorization(final UserPrivilegeValidation validation) throws
-      WebApplicationException;
+  void validateUserAuthorization(final UserPrivilegeValidation validation);
 }

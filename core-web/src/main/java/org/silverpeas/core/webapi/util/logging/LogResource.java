@@ -30,8 +30,6 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.util.logging.LogsAccessor;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.inject.Inject;
@@ -54,10 +52,10 @@ import java.util.stream.Collectors;
 @Service
 @RequestScoped
 @Authorized
-@Path(LogResource.PATH + "/{logName}")
-public class LogResource extends RESTWebService {
+@Path(LogResource.LOGS_PATH + "/{logName}")
+public class LogResource extends AbstractLoggingResource {
 
-  static final String PATH = SilverLoggerConfigurationResource.PATH + "/logs";
+  static final String LOGS_PATH = SilverLoggerConfigurationResource.LOGGING_PATH + "/logs";
 
   @Inject
   private LogsAccessor logsAccessor;
@@ -100,23 +98,7 @@ public class LogResource extends RESTWebService {
 
   @Override
   protected String getResourceBasePath() {
-    return PATH;
+    return LOGS_PATH;
   }
 
-  @Override
-  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
-    if (!getUser().isAccessAdmin()) {
-      throw new WebApplicationException("Only administrators can play with logger configurations!",
-          Response.Status.FORBIDDEN);
-    }
-  }
-
-  /**
-   * Gets the identifier of the component instance to which the requested resource belongs to.
-   * @return the identifier of the Silverpeas component instance.
-   */
-  @Override
-  public String getComponentId() {
-    return null;
-  }
 }

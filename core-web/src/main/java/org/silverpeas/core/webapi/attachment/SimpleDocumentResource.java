@@ -25,7 +25,6 @@ package org.silverpeas.core.webapi.attachment;
 
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.ForeignPK;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
