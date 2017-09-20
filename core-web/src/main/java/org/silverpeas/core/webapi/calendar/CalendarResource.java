@@ -738,6 +738,7 @@ public class CalendarResource extends AbstractCalendarResource {
         .withEventURI(uri().ofEvent(occurrence.getCalendarEvent()))
         .withOccurrenceURI(uri().ofOccurrence(occurrence))
         .withEventPermalinkURL(uri().ofEventPermalink(occurrence))
+        .withOccurrencePermalinkURL(uri().ofOccurrencePermalink(occurrence))
         .withOccurrenceViewURL(uri().ofOccurrenceView(occurrence))
         .withOccurrenceEditionURL(uri().ofOccurrenceEdition(occurrence))
         .withAttendees(attendeeEntities)

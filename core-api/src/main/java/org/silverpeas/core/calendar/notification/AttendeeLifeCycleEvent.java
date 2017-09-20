@@ -24,6 +24,9 @@
 package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.notification.system.AbstractResourceEvent;
 
 import javax.validation.constraints.NotNull;
@@ -36,14 +39,27 @@ import javax.validation.constraints.NotNull;
  */
 public class AttendeeLifeCycleEvent extends AbstractResourceEvent<Attendee> {
 
+  private Contribution eventOrOccurrence;
+
   /**
    * Constructs a new lifecycle event with the specified type and with the specified {@link
    * Attendee} instances representing each of them a state in a transition in the lifecycle of
    * an attendee.
+   * @param eventOrOccurrence the contribution in relation with the action.
    * @param type the type of the event in the lifecycle of an attendee.
    * @param attendees the different states of an attendee concerned by the event in its lifecycle.
    */
-  public AttendeeLifeCycleEvent(final Type type, @NotNull final Attendee... attendees) {
+  public AttendeeLifeCycleEvent(final Contribution eventOrOccurrence, final Type type,
+      @NotNull final Attendee... attendees) {
     super(type, attendees);
+    this.eventOrOccurrence = eventOrOccurrence;
+  }
+
+  /**
+   * Gets the event or occurrence related to the notification.
+   * @return the contribution which is a {@link CalendarEvent} or a {@link CalendarEventOccurrence}.
+   */
+  public Contribution getEventOrOccurrence() {
+    return eventOrOccurrence;
   }
 }

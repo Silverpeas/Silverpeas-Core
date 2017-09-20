@@ -6292,6 +6292,10 @@ silverpeas-permalink {
   white-space:nowrap;
 }
 
+silverpeas-crud silverpeas-permalink {
+  white-space:normal;
+}
+
 silverpeas-permalink input {
   width: 90%;
   border: 1px solid #cacaca;

@@ -49,6 +49,7 @@
 <c:set var="occurrenceUri" value="${requestScope.occurrence.occurrenceUri}"/>
 
 <fmt:message var="back" key="GML.back"/>
+<fmt:message key="GML.notify" var="notifyLabel"/>
 <fmt:message var="modifyLabel" key="GML.modify"/>
 <fmt:message key="GML.delete" var="deleteLabel"/>
 
@@ -70,7 +71,11 @@
                                         on-occurrence-deleted="goToPage('${backUri}')"
                                         on-event-attendee-participation-updated="reloadOccurrenceFromContext()">
   </silverpeas-calendar-event-management>
+  <view:operation
+      action="angularjs:notifyEventOccurrence(ceo)"
+      altText="${notifyLabel}"/>
   <c:if test="${occurrence.canBeModified()}">
+    <view:operationSeparator/>
     <view:operation
         action="angularjs:editEventOccurrence(ceo)"
         altText="${modifyLabel}"/>

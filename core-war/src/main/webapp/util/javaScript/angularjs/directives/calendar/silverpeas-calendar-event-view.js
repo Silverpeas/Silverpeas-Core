@@ -205,6 +205,12 @@
             controllerAs : '$ctrl',
             bindToController : true,
             controller : [function() {
+              this.getTemplate = function() {
+                if (this.ceo.recurrence && !this.ceo.firstEventOccurrence) {
+                  return '###silverpeas.calendar.event.view.crud.several';
+                }
+                return '###silverpeas.calendar.event.view.crud.single';
+              };
             }]
           };
         }]);

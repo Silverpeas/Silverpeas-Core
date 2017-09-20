@@ -1,1 +1,1 @@
-$sender$ das Veranstaltung <b>$event.title$</b> aktualisiert
+$senderName$ das Veranstaltung <b>$event.title$</b> aktualisiert

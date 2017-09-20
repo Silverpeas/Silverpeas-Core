@@ -200,7 +200,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   }
 
   private String getSource(String componentId) {
-    final Mutable<String> source = Mutable.of(null);
+    final Mutable<String> source = Mutable.empty();
     if (StringUtil.isDefined(componentId)) {
       SilverpeasComponentInstance.getById(componentId).filter(i -> !i.isPersonal()).ifPresent(i -> {
         SpaceInstLight space = OrganizationController.get().getSpaceInstLightById(i.getSpaceId());

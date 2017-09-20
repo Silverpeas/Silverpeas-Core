@@ -50,7 +50,7 @@ public class PdcSubscriptionDeletionUserNotification
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return true;
   }
 

@@ -29,9 +29,10 @@ import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
+import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 
+import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.util.Base64;
@@ -47,6 +48,9 @@ public final class CalendarResourceURIs {
   static final String CALENDAR_EVENT_ATTENDEE_URI_PART = "attendees";
   static final String CALENDAR_EVENT_OCCURRENCE_URI_PART = "occurrences";
   static final String CALENDAR_BASE_URI = "calendar";
+
+  @Inject
+  private ComponentInstanceRoutingMapProviderByInstance routingMapProvider;
 
   /**
    * Centralizes the build of a calendar URI.
@@ -111,7 +115,7 @@ public final class CalendarResourceURIs {
   /**
    * Centralizes the build of an event permalink URI.
    * @param occurrence the aimed occurrence.
-   * @return the URI of specified occurrence.
+   * @return the permalink URI of specified occurrence.
    */
   URI ofEventPermalink(CalendarEventOccurrence occurrence) {
     if (occurrence == null) {
@@ -120,6 +124,20 @@ public final class CalendarResourceURIs {
     final CalendarEvent event = occurrence.getCalendarEvent();
     final String instanceId = event.getCalendar().getComponentInstanceId();
     return getRoutingMap(instanceId).absolute().getPermalink(event.getContributionId());
+  }
+
+  /**
+   * Centralizes the build of an occurrence permalink URI.
+   * @param occurrence te aimed occurrence.
+   * @return the permalink URI of specified occurrence.
+   */
+  URI ofOccurrencePermalink(final CalendarEventOccurrence occurrence) {
+    if (occurrence == null) {
+      return null;
+    }
+    final CalendarEvent event = occurrence.getCalendarEvent();
+    final String instanceId = event.getCalendar().getComponentInstanceId();
+    return getRoutingMap(instanceId).absolute().getPermalink(occurrence.getContributionId());
   }
 
   /**
@@ -188,6 +206,6 @@ public final class CalendarResourceURIs {
   }
 
   private ComponentInstanceRoutingMapProvider getRoutingMap(final String componentInstanceId) {
-    return ComponentInstanceRoutingMap.getByInstanceId(componentInstanceId);
+    return routingMapProvider.getByInstanceId(componentInstanceId);
   }
 }

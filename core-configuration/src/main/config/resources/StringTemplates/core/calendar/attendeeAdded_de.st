@@ -1,1 +1,1 @@
-$sender$ bittet um Ihre Teilnahme an der Veranstaltung<b>$event.title$</b>
+$senderName$ bittet um Ihre Teilnahme an der Veranstaltung<b>$event.title$</b>

@@ -77,6 +77,8 @@
 <%-- Permalink --%>
 <%@ attribute name="permalink" required="false" type="java.lang.String"
               description="A permalink to display" %>
+<%@ attribute name="permalinkLabel" required="false" type="java.lang.String"
+              description="A permalink label to display" %>
 <%@ attribute name="permalinkHelp" required="false" type="java.lang.String"
               description="The permalink help." %>
 <%@ attribute name="permalinkIconUrl" required="false" type="java.lang.String"
@@ -133,7 +135,7 @@
     </div>
   </c:if>
 
-  <viewTags:displayPermalinkInfo permalink="${permalink}" permalinkHelp="${permalinkHelp}" permalinkIconUrl="${permalinkIconUrl}"/>
+  <viewTags:displayPermalinkInfo link="${permalink}" label="${permalinkLabel}" help="${permalinkHelp}" iconUrl="${permalinkIconUrl}"/>
 
   <jsp:invoke fragment="afterCommonContentBloc"/>
   <br clear="all"/>

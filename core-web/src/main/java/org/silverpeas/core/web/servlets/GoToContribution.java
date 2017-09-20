@@ -27,10 +27,11 @@ import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMap;
+import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.util.servlet.GoTo;
 
+import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URI;
@@ -44,6 +45,9 @@ import static org.silverpeas.core.util.StringUtil.fromBase64;
  */
 public class GoToContribution extends GoTo {
 
+  @Inject
+  private ComponentInstanceRoutingMapProviderByInstance routingMapProvider;
+
   @Override
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
@@ -54,7 +58,7 @@ public class GoToContribution extends GoTo {
     setGefSpaceId(req, componentInstanceId);
 
     final ComponentInstanceRoutingMapProvider routingMap =
-        ComponentInstanceRoutingMap.getByInstanceId(componentInstanceId);
+        this.routingMapProvider.getByInstanceId(componentInstanceId);
     final URI page;
     if (User.getCurrentRequester() != null) {
       // a user is connected, going to the requested page

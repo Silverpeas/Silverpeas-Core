@@ -34,11 +34,23 @@
       transclude : true,
       scope : {
         link : '=',
+        label : '@',
+        help : '@',
+        iconUrl : '@',
         simple : '=?'
       },
       controllerAs : '$ctrl',
       bindToController : true,
       controller : ['$element', function($element) {
+        //function used on the ng-include to resolve the template
+        this.getFullTemplateUrl = function() {
+          var config = sp.ajaxConfig(webContext + '/util/javaScript/angularjs/directives/silverpeas-permalink-wrapper.jsp');
+          config.withParam('link', encodeURIComponent(this.getFormattedPermalinkForWrapper()));
+          config.withParam('label', this.label ? encodeURIComponent(this.label) : this.label);
+          config.withParam('help', this.help ? encodeURIComponent(this.help) : this.help);
+          config.withParam('iconUrl', this.iconUrl);
+          return config.getUrl();
+        }
         this.getTemplate = function() {
           return this.simple ? '###silverpeas.permalink.simple' : '###silverpeas.permalink.full';
         };
@@ -52,6 +64,16 @@
           if (typeof this.simple === 'undefined') {
             this.simple = true;
           }
+        };
+
+        this.getFormattedPermalinkForWrapper = function() {
+          var result = this.link;
+          if (this.link.startsWith(silverpeasUrl)) {
+            result = this.link.replace(silverpeasUrl, webContext);
+          } else if (!this.link.startsWith(webContext)) {
+            result = webContext + this.link;
+          }
+          return result;
         };
       }]
     };

@@ -23,17 +23,20 @@
  */
 package org.silverpeas.core.contribution.publication.datereminder;
 
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
 import org.silverpeas.core.datereminder.provider.DateReminderProcess;
 import org.silverpeas.core.datereminder.provider.DateReminderProcessRegistration;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.persistence.EntityReference;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.text.MessageFormat;
 
 /**
  * An implementation of <code>DateReminderProcess</code>.
@@ -59,19 +62,25 @@ public class PublicationDateReminderProcess implements DateReminderProcess, Init
   @Override
   public EntityReference perform(final PersistentResourceDateReminder resourceDateReminder)
       throws NotificationManagerException {
-
-    LocalizationBundle message = ResourceLocator
-        .getLocalizationBundle("org.silverpeas.dateReminder.multilang.dateReminder",
-            DisplayI18NHelper.getDefaultLanguage());
-
-    //Perform date reminder about publication : send a notification
-    PublicationDateReminderUserNotification publicationDateReminderUserNotification =
-        new PublicationDateReminderUserNotification(resourceDateReminder, message);
-    UserNotificationHelper.buildAndSend(publicationDateReminderUserNotification);
-
-    //Return EntityReference
     PublicationNoteReference pubNoteReference =
         resourceDateReminder.getResource(PublicationNoteReference.class);
+
+    if (pubNoteReference.getEntity() != null) {
+      LocalizationBundle message = ResourceLocator
+          .getLocalizationBundle("org.silverpeas.dateReminder.multilang.dateReminder",
+              DisplayI18NHelper.getDefaultLanguage());
+
+      //Perform date reminder about publication : send a notification
+      PublicationDateReminderUserNotification publicationDateReminderUserNotification =
+          new PublicationDateReminderUserNotification(resourceDateReminder, message);
+      UserNotificationHelper.buildAndSend(publicationDateReminderUserNotification);
+    } else {
+      SilverLogger.getLogger(this).warn(MessageFormat
+          .format("publication with id {0} does not exist anymore, reminder is marked as processed",
+              pubNoteReference.getId()));
+    }
+
+    //Return EntityReference
     return pubNoteReference;
   }
 }

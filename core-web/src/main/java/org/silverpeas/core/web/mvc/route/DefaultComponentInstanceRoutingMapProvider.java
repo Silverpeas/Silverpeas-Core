@@ -25,8 +25,6 @@
 package org.silverpeas.core.web.mvc.route;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.cache.model.SimpleCache;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -37,12 +35,10 @@ import org.silverpeas.core.web.SilverpeasWebResource;
 import java.util.Optional;
 
 /**
- * Provides implementations of {@link ComponentInstanceRoutingMap} in order to get relative or
- * absolute path without the implementations of {@link ComponentInstanceRoutingMap} care about it.
+ * The default implementation of {@link ComponentInstanceRoutingMapProvider} interface.
  * @author silveryocha
  */
-public class ComponentInstanceRoutingMapProvider {
-  private static String CACHE_KEY_PREFIX = ComponentInstanceRoutingMap.class.getName() + "###";
+class DefaultComponentInstanceRoutingMapProvider implements ComponentInstanceRoutingMapProvider {
 
   private String instanceId;
   private SilverpeasComponentInstance componentInstance;
@@ -50,31 +46,12 @@ public class ComponentInstanceRoutingMapProvider {
   private AbstractComponentInstanceRoutingMap relativeToSilverpeasRoutingMap;
   private AbstractComponentInstanceRoutingMap absoluteRoutingMap;
 
-  private ComponentInstanceRoutingMapProvider(final String instanceId) {
+  DefaultComponentInstanceRoutingMapProvider(final String instanceId) {
     this.instanceId = instanceId;
     this.componentInstance = SilverpeasComponentInstance.getById(instanceId).orElse(null);
   }
 
-  static ComponentInstanceRoutingMapProvider getByInstanceId(String instanceId) {
-    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
-    String cacheKey = CACHE_KEY_PREFIX + instanceId;
-
-    final Mutable<ComponentInstanceRoutingMapProvider> componentRoutingMap =
-        Mutable.ofNullable(cache.get(cacheKey, ComponentInstanceRoutingMapProvider.class));
-    if (componentRoutingMap.isPresent()) {
-      return componentRoutingMap.get();
-    }
-
-    final ComponentInstanceRoutingMapProvider routingMapProvider =
-        new ComponentInstanceRoutingMapProvider(instanceId);
-    cache.put(cacheKey, routingMapProvider);
-    return routingMapProvider;
-  }
-
-  /**
-   * All the URI provided by the {@link ComponentInstanceRoutingMap} instance will not be prefixed.
-   * @return the {@link ComponentInstanceRoutingMap} instance.
-   */
+  @Override
   public ComponentInstanceRoutingMap relative() {
     if (relativeRoutingMap == null) {
       relativeRoutingMap = newRoutingMap().init(instanceId, componentInstance, StringUtil.EMPTY,
@@ -83,11 +60,7 @@ public class ComponentInstanceRoutingMapProvider {
     return relativeRoutingMap;
   }
 
-  /**
-   * All the URI provided by the {@link ComponentInstanceRoutingMap} instance will be prefixed with
-   * the URI part of the Silverpeas application name.
-   * @return the {@link ComponentInstanceRoutingMap} instance.
-   */
+  @Override
   public ComponentInstanceRoutingMap relativeToSilverpeas() {
     if (relativeToSilverpeasRoutingMap == null) {
       relativeToSilverpeasRoutingMap = newRoutingMap()
@@ -97,11 +70,7 @@ public class ComponentInstanceRoutingMapProvider {
     return relativeToSilverpeasRoutingMap;
   }
 
-  /**
-   * All the URI provided by the {@link ComponentInstanceRoutingMap} instance will be prefixed with
-   * the server URL and the URI part of the Silverpeas application name.
-   * @return the {@link ComponentInstanceRoutingMap} instance.
-   */
+  @Override
   public ComponentInstanceRoutingMap absolute() {
     if (absoluteRoutingMap == null) {
       absoluteRoutingMap = newRoutingMap()

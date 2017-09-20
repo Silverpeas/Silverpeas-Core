@@ -615,7 +615,7 @@ public class CalendarEventOccurrence
       this.component.incrementSequence();
       return repository.save(this);
     });
-    notifyAttendees(previous != null ? previous.getAttendees() : null, saved.getAttendees());
+    notifyAttendees(this, previous != null ? previous.getAttendees() : null, saved.getAttendees());
     return saved;
   }
 
@@ -630,7 +630,7 @@ public class CalendarEventOccurrence
       repository.delete(this);
       return null;
     });
-    notifyAttendees(this.getAttendees(), null);
+    notifyAttendees(this, this.getAttendees(), null);
   }
 
   /**

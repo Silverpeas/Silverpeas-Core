@@ -65,19 +65,6 @@ public interface ComponentInstanceRoutingMap {
   String WORKFLOW_ROUTING_NAME = "processManager" + NAME_SUFFIX;
 
   /**
-   * Gets the provider of {@link ComponentInstanceRoutingMap} according to the given identifier
-   * of component instance.
-   * @param instanceId the identifier of a component instance from which the qualified name of the
-   * implementation will be extracted.
-   * @return a {@link ComponentInstanceRoutingMapProvider} instance which provides several
-   * {@link ComponentInstanceRoutingMap} instance according to the requested types of URI
-   * (absolute, relative,...).
-   */
-  static ComponentInstanceRoutingMapProvider getByInstanceId(String instanceId) {
-    return ComponentInstanceRoutingMapProvider.getByInstanceId(instanceId);
-  }
-
-  /**
    * Gets the identifier of the component instance which the current implementation is linked to.
    * @return an identifier of component instance as string.
    */

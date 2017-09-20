@@ -60,6 +60,7 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
   private URI occurrenceUri;
   private URI occurrenceViewUrl;
   private URI occurrenceEditionUrl;
+  private URI occurrencePermalinkUrl;
 
   private String occurrenceId;
   private String originalStartDate;
@@ -97,6 +98,17 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
   @SuppressWarnings("unchecked")
   public CalendarEventOccurrenceEntity withOccurrenceEditionURL(final URI occurrenceEditionUrl) {
     setOccurrenceEditionUrl(occurrenceEditionUrl);
+    return this;
+  }
+
+  /**
+   * Sets a permalink URI to this entity. With this URI, it can then be accessed through the Web.
+   * @param permalinkUrl the web entity URI.
+   * @return itself.
+   */
+  @SuppressWarnings("unchecked")
+  public CalendarEventOccurrenceEntity withOccurrencePermalinkURL(final URI permalinkUrl) {
+    this.occurrencePermalinkUrl = permalinkUrl;
     return this;
   }
 
@@ -181,6 +193,14 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
 
   public void setOccurrenceEditionUrl(final URI occurrenceEditionUrl) {
     this.occurrenceEditionUrl = occurrenceEditionUrl;
+  }
+
+  public URI getOccurrencePermalinkUrl() {
+    return occurrencePermalinkUrl;
+  }
+
+  public void setOccurrencePermalinkUrl(final URI occurrencePermalinkUrl) {
+    this.occurrencePermalinkUrl = occurrencePermalinkUrl;
   }
 
   public String getId() {

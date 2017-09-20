@@ -84,7 +84,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
     getNotificationMetaData().setAction(getAction());
     getNotificationMetaData().setComponentId(getComponentInstanceId());
     getNotificationMetaData().setSender(getSender());
-    getNotificationMetaData().setSendImmediately(isSendImmediatly());
+    getNotificationMetaData().setSendImmediately(isSendImmediately());
   }
 
   /**
@@ -137,7 +137,7 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    * Forces the sending immediatly if true
    * @return
    */
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return false;
   }
 

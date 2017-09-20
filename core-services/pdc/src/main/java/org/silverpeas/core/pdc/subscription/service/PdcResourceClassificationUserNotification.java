@@ -46,7 +46,7 @@ public class PdcResourceClassificationUserNotification
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     /**
      * TODO for now, pdc notifications can not be handled by delayed notification mechanism. When
      * it will be the case, don't forget to remove this overridden method

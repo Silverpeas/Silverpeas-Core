@@ -34,34 +34,47 @@
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="generalBundle"/>
 
 <%-- Permalink --%>
-<%@ attribute name="permalink" required="false" type="java.lang.String"
+<%@ attribute name="link" required="false" type="java.lang.String"
               description="A permalink to display" %>
-<%@ attribute name="permalinkHelp" required="false" type="java.lang.String"
+<%@ attribute name="label" required="false" type="java.lang.String"
+              description="The label to display" %>
+<%@ attribute name="help" required="false" type="java.lang.String"
               description="The permalink help." %>
-<%@ attribute name="permalinkIconUrl" required="false" type="java.lang.String"
+<%@ attribute name="iconUrl" required="false" type="java.lang.String"
               description="The permalink url" %>
-<c:if test="${empty permalinkIconUrl}">
-  <c:url var="permalinkIconUrl" value="/util/icons/link.gif"/>
+<c:if test="${empty label}">
+  <fmt:message var="label" key="GML.permalink" bundle="${generalBundle}"/>
+</c:if>
+<c:if test="${empty iconUrl}">
+  <c:url var="iconUrl" value="/util/icons/link.gif"/>
 </c:if>
 
-<c:if test="${not empty permalink}">
+
+<c:set var="__Permalink_TAG_ID" value="0"/>
+<c:if test="${not empty link}">
+  <c:set var="__Permalink_TAG_ID" value="${link.hashCode() < 0 ? -link.hashCode() : link.hashCode()}"/>
+</c:if>
+<c:set var="__lastUserCrud" value="__lastUserCrud${__Permalink_TAG_ID}"/>
+<c:set var="__inputId" value="permalink-input-${__Permalink_TAG_ID}"/>
+
+<c:if test="${not empty link}">
   <c:url value="/" var="applicationPrefix"/>
-  <c:set value="/${fn:replace(permalink, applicationPrefix, '')}" var="permalink"/>
+  <c:set value="/${fn:replace(link, applicationPrefix, '')}" var="permalink"/>
   <p id="permalinkInfo">
-    <a title="${permalinkHelp}" href="<c:url value="${permalink}"/>">
-      <img border="0" alt="${permalinkHelp}" title="${permalinkHelp}" src="${permalinkIconUrl}"/>
-    </a> <fmt:message key="GML.permalink" bundle="${generalBundle}"/>
-    <input type="text" value="${silfn:fullApplicationURL(pageContext.request)}${permalink}" onfocus="__lastUserCrud.select();" class="inputPermalink"/>
+    <a title="${help}" href="<c:url value="${permalink}"/>">
+      <img border="0" alt="${help}" title="${help}" src="${iconUrl}"/>
+    </a> ${label}
+    <input id="${__inputId}" type="text" value="${silfn:fullApplicationURL(pageContext.request)}${permalink}" onfocus="${__lastUserCrud}.select();" class="inputPermalink"/>
     <fmt:message var="permalinkCopyLabel" key="GML.permalink.copy" bundle="${generalBundle}"/>
-    <a class="sp_button copy-to-clipboard" title="${permalinkCopyLabel}" href="javascript:void(0)" onclick="__lastUserCrud.copyLink();">
+    <a class="sp_button copy-to-clipboard" title="${permalinkCopyLabel}" href="javascript:void(0)" onclick="${__lastUserCrud}.copyLink();">
       <span>${permalinkCopyLabel}</span>
     </a>
   </p>
   <fmt:message var="permalinkCopyOkMessage" key="GML.permalink.copy.ok" bundle="${generalBundle}"/>
   <script type="text/javascript">
-    var __lastUserCrud = new function() {
+    var ${__lastUserCrud} = new function() {
       this.select = function() {
-        var $input = jQuery('input.inputPermalink')[0];
+        var $input = jQuery('#${__inputId}')[0];
         $input.select();
       };
       this.copyLink = function() {

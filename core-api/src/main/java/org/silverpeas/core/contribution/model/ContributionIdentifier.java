@@ -54,7 +54,7 @@ public class ContributionIdentifier implements ResourceIdentifier, Serializable 
 
   private static final String ABSOLUTE_ID_FORMAT = "{0}:{1}:{2}";
   private static final Pattern ABSOLUTE_ID_PATTERN =
-      Pattern.compile("^(?<instanceId>[^:]+):(?<type>[^:]+):(?<localId>[^:]+)$");
+      Pattern.compile("^(?<instanceId>[^:]+):(?<type>[^:]+):(?<localId>.+)$");
 
   @XmlElement(required = true)
   @NotNull

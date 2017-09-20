@@ -129,7 +129,7 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     String sharedObjectType = getResource().getSharedObjectType();
     if (Ticket.NODE_TYPE.equals(sharedObjectType)) {
       return NODE_SHARING_TEMPLATE_FILE_NAME;
@@ -204,8 +204,8 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
   }
 
   @Override
-  protected boolean isSendImmediatly() {
-    return super.isSendImmediatly();
+  protected boolean isSendImmediately() {
+    return super.isSendImmediately();
   }
 
   @Override
@@ -215,9 +215,9 @@ public class FileSharingUserNotification extends AbstractTemplateUserNotificatio
 
   @Override
   protected String getContributionAccessLinkLabelBundleKey() {
-    if (NODE_SHARING_TEMPLATE_FILE_NAME.equals(getFileName())) {
+    if (NODE_SHARING_TEMPLATE_FILE_NAME.equals(getTemplateFileName())) {
       return "sharing.notification.notifFolderLinkLabel";
-    } else if (PUBLI_SHARING_TEMPLATE_FILE_NAME.equals(getFileName())) {
+    } else if (PUBLI_SHARING_TEMPLATE_FILE_NAME.equals(getTemplateFileName())) {
       return "sharing.notification.notifPublicationLinkLabel";
     }
     //else FILE_TYPE or VERSION_TYPE

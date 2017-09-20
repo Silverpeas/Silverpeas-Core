@@ -83,7 +83,7 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
     Date deadLine = calendar.getTime();
     Collection<PersistentResourceDateReminder> listResourceDateReminder =
         DateReminderServiceProvider.getDateReminderService().listAllDateReminderMaturing(deadLine);
-    boolean performed = false;
+    boolean performed;
     EntityReference entityReference = null;
     for (PersistentResourceDateReminder resourceDateReminder : listResourceDateReminder) {
       for (DateReminderProcess dateReminderProcess : DateReminderProcessRegistration
@@ -117,6 +117,7 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
+    // nothing to perform at the end
   }
 
   @Override

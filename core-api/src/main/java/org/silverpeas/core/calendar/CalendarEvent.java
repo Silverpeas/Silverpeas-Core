@@ -759,7 +759,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       return this;
     });
     notify(ResourceEvent.Type.CREATION, event);
-    notifyAttendees(null, event.getAttendees());
+    notifyAttendees(this, null, event.getAttendees());
     return event;
   }
 
@@ -1090,7 +1090,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     }
     notify(ResourceEvent.Type.DELETION, this);
     if (notifyAttendee) {
-      notifyAttendees(this.getAttendees(), null);
+      notifyAttendees(this, this.getAttendees(), null);
     }
   }
 
@@ -1103,7 +1103,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
           return repository.save(this);
         });
         notify(ResourceEvent.Type.UPDATE, before.get(), event);
-        notifyAttendees(before.get().getAttendees(), this.getAttendees());
+        notifyAttendees(this, before.get().getAttendees(), this.getAttendees());
         return event;
       }
     }

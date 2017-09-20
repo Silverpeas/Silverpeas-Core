@@ -1,1 +1,1 @@
-$sender$ $participation$ an der Veranstaltung <b>$event.title$</b>
+$senderName$ $participation$ an der Veranstaltung <b>$event.title$</b>

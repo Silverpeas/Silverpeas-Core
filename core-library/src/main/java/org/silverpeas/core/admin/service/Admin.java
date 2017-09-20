@@ -74,6 +74,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ResourceLocator;
@@ -4706,32 +4707,44 @@ class Admin implements Administration {
       AdminException {
     List<String> userIds = null;
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
-      List<String> listOfRoleNames = null;
+      List<String> listOfRoleNames = Collections.emptyList();
       if (searchCriteria.isCriterionOnRoleNamesSet()) {
         listOfRoleNames = Arrays.asList(searchCriteria.getCriterionOnRoleNames());
       }
-      ComponentInst instance = getComponentInst(searchCriteria.getCriterionOnComponentInstanceId());
-      if (((listOfRoleNames != null && !listOfRoleNames.isEmpty())) || !instance.isPublic()) {
-        List<ProfileInst> profiles;
-        if (searchCriteria.isCriterionOnResourceIdSet()) {
-          profiles = getProfileInstsFor(searchCriteria.getCriterionOnResourceId(), instance.getId());
-        } else {
-          profiles = instance.getAllProfilesInst();
-        }
+      SilverpeasComponentInstance instance =
+          getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
+      if (!listOfRoleNames.isEmpty() || !instance.isPublic()) {
         userIds = new ArrayList<>();
-        for (ProfileInst aProfile : profiles) {
-          if (listOfRoleNames == null || listOfRoleNames.isEmpty() || listOfRoleNames.
-              contains(aProfile.getName())) {
-            userIds.addAll(aProfile.getAllUsers());
+        if (!instance.isPersonal()) {
+          List<ProfileInst> profiles;
+          if (searchCriteria.isCriterionOnResourceIdSet()) {
+            profiles =
+                getProfileInstsFor(searchCriteria.getCriterionOnResourceId(), instance.getId());
+          } else {
+            profiles = getComponentInst(instance.getId()).getAllProfilesInst();
+          }
+          for (ProfileInst aProfile : profiles) {
+            if (listOfRoleNames.isEmpty() || listOfRoleNames.
+                contains(aProfile.getName())) {
+              userIds.addAll(aProfile.getAllUsers());
 
-            // users of the groups (and recursively of their subgroups) playing the role
-            List<String> groupIds = aProfile.getAllGroups();
-            List<String> allGroupIds = new ArrayList<>();
-            for (String aGroupId : groupIds) {
-              allGroupIds.add(aGroupId);
-              allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
+              // users of the groups (and recursively of their subgroups) playing the role
+              List<String> groupIds = aProfile.getAllGroups();
+              List<String> allGroupIds = new ArrayList<>();
+              for (String aGroupId : groupIds) {
+                allGroupIds.add(aGroupId);
+                allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
+              }
+              userIds.addAll(userManager.getAllUserIdsInGroups(allGroupIds));
             }
-            userIds.addAll(userManager.getAllUserIdsInGroups(allGroupIds));
+          }
+        } else {
+          final User user = ((SilverpeasPersonalComponentInstance) instance).getUser();
+          final Collection<String> userRoles =
+              instance.getSilverpeasRolesFor(user).stream().map(Enum::name)
+                  .collect(Collectors.toList());
+          if (!CollectionUtil.intersection(userRoles, listOfRoleNames).isEmpty()) {
+            userIds.add(user.getId());
           }
         }
         if (userIds.isEmpty()) {
@@ -4805,22 +4818,26 @@ class Admin implements Administration {
     SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
     GroupSearchCriteriaForDAO criteria = factory.getGroupSearchCriteriaDAO();
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
-      List<String> listOfRoleNames = new ArrayList<>();
+      List<String> listOfRoleNames = Collections.emptyList();
       if (searchCriteria.isCriterionOnRoleNamesSet()) {
         listOfRoleNames = Arrays.asList(searchCriteria.getCriterionOnRoleNames());
       }
-      ComponentInst instance = getComponentInst(searchCriteria.getCriterionOnComponentInstanceId());
+      SilverpeasComponentInstance instance =
+          getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
       if (!listOfRoleNames.isEmpty() || !instance.isPublic()) {
-        List<ProfileInst> profiles;
-        if (searchCriteria.isCriterionOnResourceIdSet()) {
-          profiles = getProfileInstsFor(searchCriteria.getCriterionOnResourceId(), instance.getId());
-        } else {
-          profiles = instance.getAllProfilesInst();
-        }
         List<String> roleIds = new ArrayList<>();
-        for (ProfileInst aProfile : profiles) {
-          if (listOfRoleNames.isEmpty() || listOfRoleNames.contains(aProfile.getName())) {
-            roleIds.add(aProfile.getId());
+        if (!instance.isPersonal()) {
+          List<ProfileInst> profiles;
+          if (searchCriteria.isCriterionOnResourceIdSet()) {
+            profiles =
+                getProfileInstsFor(searchCriteria.getCriterionOnResourceId(), instance.getId());
+          } else {
+            profiles = getComponentInst(instance.getId()).getAllProfilesInst();
+          }
+          for (ProfileInst aProfile : profiles) {
+            if (listOfRoleNames.isEmpty() || listOfRoleNames.contains(aProfile.getName())) {
+              roleIds.add(aProfile.getId());
+            }
           }
         }
         criteria.onRoleNames(roleIds.toArray(new String[roleIds.size()]));

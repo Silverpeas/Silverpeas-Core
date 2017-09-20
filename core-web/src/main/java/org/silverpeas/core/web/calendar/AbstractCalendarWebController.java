@@ -27,20 +27,25 @@ package org.silverpeas.core.web.calendar;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.notification.user
+    .CalendarEventOccurrenceNotifyUserNotificationBuilder;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.web.mvc.webcomponent.Navigation;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentController;
-import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -58,7 +63,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * Common behaviors about WEB component controllers which handle the rendering of a calendar.
  * @param <C>
  */
-public abstract class AbstractCalendarWebController<C extends WebComponentRequestContext>
+public abstract class AbstractCalendarWebController<C extends AbstractCalendarWebRequestContext>
     extends WebComponentController<C> {
 
   private static final int STRING_MAX_LENGTH = 50;
@@ -107,6 +112,30 @@ public abstract class AbstractCalendarWebController<C extends WebComponentReques
       }
     }
     return getCalendarTimeWindowContext();
+  }
+
+  @GET
+  @Path("calendars/occurrences/{occurrenceId}/notify")
+  public Navigation notifyManuallyUsersGroups(C context) {
+    CalendarEventOccurrence occurrence = context.getCalendarEventOccurrenceById();
+
+    AlertUser sel = context.getUserManualNotificationForParameterization();
+    sel.resetAll();
+
+    // Browse bar settings
+    sel.setHostSpaceName(context.getSpaceLabel());
+    sel.setHostComponentId(context.getComponentInstanceId());
+    Pair<String, String> hostComponentName = new Pair<>(context.getComponentInstanceLabel(), null);
+    sel.setHostComponentName(hostComponentName);
+
+    // The notification
+    sel.setNotificationMetaData(UserNotificationHelper.build(
+        new CalendarEventOccurrenceNotifyUserNotificationBuilder(occurrence, context.getUser())));
+
+    SelectionUsersGroups sug = new SelectionUsersGroups();
+    sug.setComponentId(context.getComponentInstanceId());
+    sel.setSelectionUsersGroups(sug);
+    return context.redirectToNotifyManuallyUsers();
   }
 
   @POST

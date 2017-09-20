@@ -24,6 +24,8 @@
 package org.silverpeas.core.notification.user.builder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
@@ -32,6 +34,8 @@ import org.silverpeas.core.notification.user.UserSubscriptionNotificationSending
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
+import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
 /**
  * @author Yohann Chastagnier
@@ -91,7 +95,9 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
     final NotificationResourceData notificationResourceData = new NotificationResourceData();
     notificationResourceData.setComponentInstanceId(getNotificationMetaData().getComponentId());
     notificationResourceData.setResourceUrl(getNotificationMetaData().getLink());
-    if (resource instanceof SilverpeasContent) {
+    if (resource instanceof Contribution) {
+      fill(notificationResourceData, (Contribution) resource);
+    } else if (resource instanceof SilverpeasContent) {
       fill(notificationResourceData, (SilverpeasContent) resource);
     }
     return notificationResourceData;
@@ -102,7 +108,14 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
 
   protected String getResourceURL(final T resource) {
     String resourceUrl = null;
-    if (resource instanceof SilverpeasContent) {
+    if (resource instanceof Contribution) {
+      Contribution contribution = (Contribution) resource;
+      final ComponentInstanceRoutingMapProvider routingMapProvider =
+          ComponentInstanceRoutingMapProviderByInstance.get()
+              .getByInstanceId(contribution.getContributionId().getComponentInstanceId());
+      resourceUrl =
+          routingMapProvider.absolute().getPermalink(contribution.getContributionId()).toString();
+    } else if (resource instanceof SilverpeasContent) {
       resourceUrl = URLUtil.getSearchResultURL((SilverpeasContent) resource);
     }
     if (StringUtils.isBlank(resourceUrl)) {
@@ -115,7 +128,7 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return getResource() instanceof SilverpeasToolContent;
   }
 
@@ -135,5 +148,15 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
       final SilverpeasContent silverpeasContent) {
     notificationResourceData.setResourceId(silverpeasContent.getId());
     notificationResourceData.setResourceType(silverpeasContent.getContributionType());
+  }
+
+  private void fill(final NotificationResourceData notificationResourceData,
+      final Contribution contribution) {
+    final ContributionIdentifier contributionId = contribution.getContributionId();
+    notificationResourceData.setComponentInstanceId(contributionId.getComponentInstanceId());
+    notificationResourceData.setResourceId(contributionId.getLocalId());
+    notificationResourceData.setResourceType(contributionId.getType());
+    notificationResourceData.setResourceName(contribution.getTitle());
+    notificationResourceData.setResourceDescription(contribution.getDescription());
   }
 }

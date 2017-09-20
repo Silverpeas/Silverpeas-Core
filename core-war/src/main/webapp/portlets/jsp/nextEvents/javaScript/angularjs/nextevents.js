@@ -27,8 +27,8 @@ var nextEvents = angular.module('silverpeas.nextevents',
     ['silverpeas.services', 'silverpeas.components', 'silverpeas.controllers']);
 
 /* the main controller of the application */
-nextEvents.controller('mainController', ['$controller', 'context', 'CalendarService', '$scope',
-  function($controller, context, CalendarService, $scope) {
+nextEvents.controller('mainController', ['$controller', 'CalendarService', '$scope',
+  function($controller, CalendarService, $scope) {
     $controller('silverpeasCalendarController', {$scope : $scope});
 
     CalendarService.getNextOccurrences().then(function(occurrences) {

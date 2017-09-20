@@ -50,7 +50,7 @@ public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<Attendee
   public void onDeletion(final AttendeeLifeCycleEvent event) throws Exception {
     Attendee attendee = event.getTransition().getBefore();
     UserNotification notification =
-        new AttendeeNotificationBuilder(attendee.getCalendarComponent(), NotifAction.UPDATE).from(
+        new AttendeeNotificationBuilder(event.getEventOrOccurrence(), NotifAction.UPDATE).from(
             User.getCurrentRequester())
             .to(attendee)
             .about(UpdateCause.ATTENDEE_REMOVING, attendee)
@@ -75,7 +75,7 @@ public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<Attendee
     Attendee after = event.getTransition().getAfter();
     if (before.getPresenceStatus() != after.getPresenceStatus()) {
       UserNotification notification =
-          new AttendeeNotificationBuilder(after.getCalendarComponent(), NotifAction.UPDATE).from(
+          new AttendeeNotificationBuilder(event.getEventOrOccurrence(), NotifAction.UPDATE).from(
               User.getCurrentRequester())
               .to(after)
               .about(UpdateCause.ATTENDEE_PRESENCE, after)
@@ -83,7 +83,7 @@ public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<Attendee
       notification.send();
     } else if (before.getParticipationStatus() != after.getParticipationStatus()) {
       UserNotification notification =
-          new AttendeeNotificationBuilder(after.getCalendarComponent(), NotifAction.UPDATE).from(
+          new AttendeeNotificationBuilder(event.getEventOrOccurrence(), NotifAction.UPDATE).from(
               User.getCurrentRequester()).to(concernedAttendeesIn(after.getCalendarComponent()))
               .about(UpdateCause.ATTENDEE_PARTICIPATION, after)
               .build();
@@ -101,7 +101,7 @@ public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<Attendee
   public void onCreation(final AttendeeLifeCycleEvent event) throws Exception {
     Attendee attendee = event.getTransition().getAfter();
     UserNotification notification =
-        new AttendeeNotificationBuilder(attendee.getCalendarComponent(), NotifAction.UPDATE).from(
+        new AttendeeNotificationBuilder(event.getEventOrOccurrence(), NotifAction.UPDATE).from(
             User.getCurrentRequester())
             .to(attendee)
             .about(UpdateCause.ATTENDEE_ADDING, attendee)

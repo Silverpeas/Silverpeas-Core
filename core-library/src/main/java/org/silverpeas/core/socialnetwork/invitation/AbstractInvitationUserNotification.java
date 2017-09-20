@@ -51,7 +51,7 @@ public abstract class AbstractInvitationUserNotification
   }
 
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     if (isInvitation()) {
       return "sendInvitation";
     }
@@ -98,7 +98,7 @@ public abstract class AbstractInvitationUserNotification
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return true;
   }
 }

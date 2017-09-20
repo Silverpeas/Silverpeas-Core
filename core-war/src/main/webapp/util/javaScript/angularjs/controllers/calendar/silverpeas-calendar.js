@@ -43,11 +43,17 @@
               new ParticipationCache(context.componentUriBase + "_participation");
 
           $scope.goToPage = function(uri, context) {
-            var formConfig = sp.formConfig(uri);
+            var ajaxConfig = sp.ajaxConfig(uri);
             if (context && context.startMoment) {
-              formConfig.withParam("occurrenceStartDate", context.startMoment.format())
+              ajaxConfig.withParam("occurrenceStartDate", context.startMoment.format())
             }
-            silverpeasFormSubmit(formConfig);
+            spLayout.getBody().getContent().load(ajaxConfig.getUrl());
+          };
+
+          $scope.openPage = function(uri) {
+            var windowName = "userPanelWindow";
+            var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
+            SP_openUserPanel(uri, windowName, windowParams);
           };
 
           $scope.defaultVisibility = SilverpeasCalendarConst.visibilities[0].name;
@@ -72,6 +78,10 @@
             $scope.goToPage(uri, {startMoment : startMoment});
           };
 
+          $scope.notifyEventOccurrence = function(occurrence) {
+            var uri = occurrence.occurrenceViewUrl + "/notify";
+            $scope.openPage(uri);
+          };
           $scope.viewEventOccurrence = function(occurrence) {
             var uri = __getOccurrenceViewUrl(occurrence);
             $scope.goToPage(uri);

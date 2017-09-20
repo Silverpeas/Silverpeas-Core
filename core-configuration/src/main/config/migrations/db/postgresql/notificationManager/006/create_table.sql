@@ -62,7 +62,7 @@ CREATE TABLE st_delayednotifusersetting (
 CREATE TABLE st_notificationresource (
    id 					int8 NOT NULL ,
    componentInstanceId	varchar(50) NOT NULL ,
-   resourceId			varchar(50) NOT NULL ,
+   resourceId			varchar(500) NOT NULL ,
    resourceType			varchar(50) NOT NULL ,
    resourceName			varchar(500) NOT NULL ,
    resourceDescription	varchar(2000) NULL ,

@@ -33,7 +33,8 @@
 <c:set var="lastUpdateDate" value='<%=request.getParameter("lastUpdateDate") != null ? Date.from(Instant.ofEpochMilli(HttpRequest.decorate(request).getParameterAsLong("lastUpdateDate"))) : null%>'/>
 <c:set var="lastUpdatedBy" value="${param.lastUpdatedBy}"/>
 <c:set var="permalink" value="${param.permalink}"/>
-<c:set var="permalinkAlt" value="${param.permalinkAlt}"/>
+<c:set var="permalinkLabel" value="${param.permalinkLabel}"/>
+<c:set var="permalinkHelp" value="${param.permalinkHelp}"/>
 <c:set var="permalinkIconUrl" value="${param.permalinkIconUrl}"/>
 
 <viewTags:displayLastUserCRUD displayHour="true"
@@ -42,6 +43,9 @@
                               updateDate="${lastUpdateDate}"
                               updatedById="${lastUpdatedBy}"
                               permalink="${permalink}"
-                              permalinkHelp="${permalinkAlt}"
+                              permalinkLabel="${permalinkLabel}"
+                              permalinkHelp="${permalinkHelp}"
                               permalinkIconUrl="${permalinkIconUrl}">
+  <jsp:attribute name="beforeCommonContentBloc"><div class="beforeCommonContentBloc"></div></jsp:attribute>
+  <jsp:attribute name="afterCommonContentBloc"><div class="afterCommonContentBloc"></div></jsp:attribute>
 </viewTags:displayLastUserCRUD>

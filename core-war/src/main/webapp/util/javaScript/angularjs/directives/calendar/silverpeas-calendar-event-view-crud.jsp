@@ -22,9 +22,42 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<silverpeas-crud create-date="{{$ctrl.ceo.createDate}}"
-                 created-by="{{$ctrl.ceo.createdById}}"
-                 last-update-date="{{$ctrl.ceo.lastUpdateDate}}"
-                 last-updated-by="{{$ctrl.ceo.lastUpdatedById}}"
-                 permalink="{{$ctrl.ceo.eventPermalinkUrl}}"></silverpeas-crud>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
+<c:set var="userLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
+<fmt:setLocale value="${userLanguage}"/>
+<view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle"/>
+
+<fmt:message var="firstPermalinkLabel" key="calendar.label.occurrence.first.permalink"/>
+<fmt:message var="currentPermalinkLabel" key="calendar.label.occurrence.current.permalink"/>
+
+<script type="text/ng-template" id="###silverpeas.calendar.event.view.crud.single">
+  <silverpeas-crud create-date="{{$ctrl.ceo.createDate}}"
+                   created-by="{{$ctrl.ceo.createdById}}"
+                   last-update-date="{{$ctrl.ceo.lastUpdateDate}}"
+                   last-updated-by="{{$ctrl.ceo.lastUpdatedById}}"
+                   permalink="{{$ctrl.ceo.eventPermalinkUrl}}"></silverpeas-crud>
+</script>
+
+<script type="text/ng-template" id="###silverpeas.calendar.event.view.crud.several">
+  <silverpeas-crud create-date="{{$ctrl.ceo.createDate}}"
+                   created-by="{{$ctrl.ceo.createdById}}"
+                   last-update-date="{{$ctrl.ceo.lastUpdateDate}}"
+                   last-updated-by="{{$ctrl.ceo.lastUpdatedById}}"
+                   permalink="{{$ctrl.ceo.eventPermalinkUrl}}"
+                   permalink-label="${firstPermalinkLabel}"
+                   show-after="true">
+    <after-slot>
+      <silverpeas-permalink simple="false"
+                            link="$ctrl.ceo.occurrencePermalinkUrl"
+                            label="${currentPermalinkLabel}"></silverpeas-permalink>
+    </after-slot>
+  </silverpeas-crud>
+</script>
+
+<div ng-include="$ctrl.getTemplate()"></div>
 

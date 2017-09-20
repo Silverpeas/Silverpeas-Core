@@ -73,7 +73,7 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
   public CommentUserNotification(final CommentService commentService, final Comment comment,
       final SilverpeasContent commentedContent, final String subjectKey,
       final LocalizationBundle componentMessages, final Set<String> recipients) {
-    super(commentedContent, null, "commented");
+    super(commentedContent);
     this.commentService = commentService;
     this.comment = comment;
     this.subjectKey = subjectKey;
@@ -148,6 +148,11 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
   }
 
   @Override
+  protected String getTemplateFileName() {
+    return "commented";
+  }
+
+  @Override
   protected NotifAction getAction() {
     return NotifAction.COMMENT;
   }
@@ -163,7 +168,7 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return (getResource() instanceof SilverpeasToolContent);
   }
 

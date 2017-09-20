@@ -29,17 +29,25 @@
           template: '<div ng-include src="$ctrl.getTemplateUrl()" onload="$ctrl.performTransclusions()"></div>',
           restrict : 'E',
           scope: {
+            showBefore : '=?',
+            showAfter : '=?',
             createDate: '@',
             createdBy: '@',
             lastUpdateDate: '@',
             lastUpdatedBy: '@',
             permalink: '@',
-            permalinkAlt: '@',
+            permalinkLabel: '@',
+            permalinkHelp: '@',
             permalinkIconUrl: '@'
+          },
+          transclude : {
+            before : '?beforeSlot',
+            after : '?afterSlot'
           },
           controllerAs: '$ctrl',
           bindToController: true,
-          controller : ['$timeout', function($timeout) {
+          controller : ['$timeout', '$transclude', '$element',
+            function($timeout, $transclude, $element) {
 
             this.getFormattedPermalink = function() {
               var result = this.permalink;
@@ -61,15 +69,38 @@
                 config.withParam('lastUpdatedBy', this.lastUpdatedBy);
               }
               config.withParam('permalink', this.getFormattedPermalink());
-              config.withParam('permalinkAlt', this.permalinkAlt);
+              config.withParam('permalinkLabel', this.permalinkLabel);
+              config.withParam('permalinkHelp', this.permalinkHelp);
               config.withParam('permalinkIconUrl', this.permalinkIconUrl);
               return config.getUrl();
             };
 
             // function used to perform the before and after transclusions
             this.performTransclusions = function() {
+              var $beforeSlot = angular.element('.beforeCommonContentBloc', $element);
+              if (!this.showBefore) {
+                $beforeSlot.remove();
+              }
+              var $afterSlot = angular.element('.afterCommonContentBloc', $element);
+              if (!this.showAfter) {
+                $afterSlot.remove();
+              }
               $timeout(function() {
-              }, 0);
+                if (this.showBefore && $transclude.isSlotFilled('before')) {
+                  $transclude(function($before) {
+                    $beforeSlot.append($before);
+                  }.bind(this), null, 'before');
+                } else {
+                  $beforeSlot.remove();
+                }
+                if (this.showAfter && $transclude.isSlotFilled('after')) {
+                  $transclude(function($after) {
+                    $afterSlot.append($after);
+                  }.bind(this), null, 'after');
+                } else {
+                  $afterSlot.remove();
+                }
+              }.bind(this), 0);
             };
           }]
         }
