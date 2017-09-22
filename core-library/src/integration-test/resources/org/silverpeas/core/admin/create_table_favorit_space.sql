@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS ST_User (
   expirationDate                TIMESTAMP,
   state                         VARCHAR(30)          NOT NULL,
   stateSaveDate                 TIMESTAMP            NOT NULL,
+  notifManualReceiverLimit      INT,
   CONSTRAINT PK_User PRIMARY KEY (id),
   CONSTRAINT UN_User_1 UNIQUE (specificId, domainId),
   CONSTRAINT UN_User_2 UNIQUE (login, domainId),

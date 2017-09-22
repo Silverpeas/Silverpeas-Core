@@ -196,6 +196,7 @@
         calendar : occurrence.calendar,
         title : occurrence.title,
         description : occurrence.description,
+        content : occurrence.content,
         location : occurrence.location,
         onAllDay : occurrence.onAllDay,
         visibility : occurrence.visibility,

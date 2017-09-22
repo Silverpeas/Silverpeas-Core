@@ -23,19 +23,19 @@
  */
 package org.silverpeas.web.directory.control;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.web.directory.model.DirectoryItemList;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.domain.model.Domain;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
+import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.test.TestBeanContainer;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.component.ComponentHelper;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.web.directory.model.DirectoryItemList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -61,8 +61,15 @@ public class DirectorySessionControllerTest {
     mockOrganizationController = mock(OrganizationController.class);
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(OrganizationController.class))
         .thenReturn(mockOrganizationController);
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(ComponentHelper.class))
-        .thenReturn(mock(ComponentHelper.class));
+
+    SilverpeasComponentInstanceProvider mockProvider =
+        mock(SilverpeasComponentInstanceProvider.class);
+    when(mockProvider.getComponentName(anyString())).thenAnswer(i -> {
+      String componentName = i.getArgumentAt(0, String.class);
+      return componentName;
+    });
+    when(TestBeanContainer.getMockedBeanContainer()
+        .getBeanByType(SilverpeasComponentInstanceProvider.class)).thenReturn(mockProvider);
   }
 
   @Test

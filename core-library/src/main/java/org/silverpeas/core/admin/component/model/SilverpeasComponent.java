@@ -24,10 +24,7 @@
 
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.admin.component.WAComponentRegistry;
-import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.HashMap;
@@ -35,6 +32,8 @@ import java.util.List;
 import java.util.Optional;
 
 /**
+ * A component in Silverpeas. It is either a multi-user application or a personal application.
+ *
  * @author Yohann Chastagnier
  */
 public interface SilverpeasComponent {
@@ -48,20 +47,17 @@ public interface SilverpeasComponent {
     if (!StringUtil.isDefined(componentInstanceId)) {
       return Optional.empty();
     }
-    final Mutable<SilverpeasComponent> silverpeasComponent = Mutable.empty();
-    SilverpeasComponentInstanceProvider.get().getById(componentInstanceId).ifPresent(i -> {
-      final String componentName = i.getName();
-      WAComponent.get(componentName).ifPresent(silverpeasComponent::set);
-      if (!silverpeasComponent.isPresent()) {
-        PersonalComponent.get(componentName).ifPresent(silverpeasComponent::set);
-      }
-    });
-    return Optional.ofNullable(silverpeasComponent.orElse(null));
+    Optional<? extends SilverpeasComponent> component =
+        WAComponent.getByInstanceId(componentInstanceId);
+    if (!component.isPresent()) {
+      component = PersonalComponent.getByInstanceId(componentInstanceId);
+    }
+    return Optional.ofNullable(component.orElse(null));
   }
 
   /**
-   * Gets the value of the name property.
-   * @return possible object is {@link String }
+   * Gets the type of the component.
+   * @return the application name.
    */
   String getName();
 

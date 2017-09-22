@@ -359,4 +359,12 @@
       org.silverpeas.core.admin.user.model.SilverpeasRole getHighestOfCurrentUserOn(java.lang.String)
     </function-signature>
   </function>
+  <function>
+    <description>Gets the registry of WYSIWYG editor configurations for Silverpeas components.</description>
+    <name>getWysiwygEditorConfigRegistry</name>
+    <function-class>org.silverpeas.core.web.mvc.util.WysiwygEditorConfigRegistry</function-class>
+    <function-signature>
+      org.silverpeas.core.web.mvc.util.WysiwygEditorConfigRegistry get()
+    </function-signature>
+  </function>
 </taglib>

@@ -24,6 +24,7 @@
 package org.silverpeas.core.web.mvc.controller;
 
 import org.silverpeas.core.admin.component.constant.ComponentInstanceParameterName;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
@@ -39,6 +40,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.util.AlertUser;
@@ -50,7 +52,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.List;
-
 
 
 /**
@@ -76,9 +77,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
 
   public AbstractComponentSessionController(MainSessionController controller,
       String spaceId, String componentId) {
-    this.controller = controller;
-    this.context = controller.createComponentContext(spaceId, componentId);
-    setComponentRootName(URLUtil.getComponentNameFromComponentId(componentId));
+    this(controller, controller.createComponentContext(spaceId, componentId));
   }
 
   public AbstractComponentSessionController(MainSessionController controller,
@@ -87,29 +86,27 @@ public abstract class AbstractComponentSessionController implements ComponentSes
   }
 
   public AbstractComponentSessionController(MainSessionController controller,
-      ComponentContext context, String resourceFileName) {
-    this.controller = controller;
-    this.context = context;
-    setComponentRootName(URLUtil.getComponentNameFromComponentId(getComponentId()));
-    setResourceFileName(resourceFileName);
+      ComponentContext context, String localizedMessagesBundleName) {
+    this(controller, context, localizedMessagesBundleName, null);
   }
 
   public AbstractComponentSessionController(MainSessionController controller,
-      ComponentContext context, String multilangFileName, String iconFileName) {
-    this.controller = controller;
-    this.context = context;
-    setComponentRootName(URLUtil.getComponentNameFromComponentId(getComponentId()));
-    setLocalizationBundle(multilangFileName);
-    setIconFileName(iconFileName);
+      ComponentContext context, String localizedMessagesBundleName, String iconFileName) {
+    this(controller, context, localizedMessagesBundleName, iconFileName, null);
   }
 
   public AbstractComponentSessionController(MainSessionController controller,
-      ComponentContext context, String multilangFileName, String iconFileName,
+      ComponentContext context, String localizedMessagesBundleName, String iconFileName,
       String settingsFileName) {
     this.controller = controller;
     this.context = context;
-    setComponentRootName(URLUtil.getComponentNameFromComponentId(getComponentId()));
-    setLocalizationBundle(multilangFileName);
+    if (StringUtil.isDefined(context.getCurrentComponentName())) {
+      setComponentRootName(context.getCurrentComponentName());
+    } else {
+      setComponentRootName(
+          SilverpeasComponentInstance.getComponentName(context.getCurrentComponentId()));
+    }
+    setLocalizationBundle(localizedMessagesBundleName);
     setIconFileName(iconFileName);
     this.settingsFile = settingsFileName;
   }
@@ -144,7 +141,7 @@ public abstract class AbstractComponentSessionController implements ComponentSes
     String theLanguage = getLanguage();
     if ((theLanguage != null) || (message == null)) {
       if (message == null || messageLanguage == null || !messageLanguage.equals(theLanguage)) {
-        setResourceFileName(messageFile);
+        setLocalizationBundle(messageFile);
       }
     }
     if (message == null) {
@@ -458,10 +455,6 @@ public abstract class AbstractComponentSessionController implements ComponentSes
 
   protected ComponentAccessController getComponentAccessController() {
     return ServiceProvider.getService(ComponentAccessController.class);
-  }
-
-  private void setResourceFileName(String resourceFileName) {
-    setLocalizationBundle(resourceFileName);
   }
 
   private void setLocalizationBundle(String bundleName) {

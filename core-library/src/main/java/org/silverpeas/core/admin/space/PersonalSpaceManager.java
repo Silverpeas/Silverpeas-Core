@@ -114,7 +114,7 @@ public class PersonalSpaceManager {
 
   public String addComponent(User user, String componentName)
       throws AdminException, QuotaException {
-    Optional<WAComponent> optionalWAComponent = WAComponent.get(componentName);
+    Optional<WAComponent> optionalWAComponent = WAComponent.getByName(componentName);
     if (!optionalWAComponent.isPresent() || !optionalWAComponent.get().isVisibleInPersonalSpace()) {
       LocalizationBundle messages = getMessages(user.getUserPreferences().getLanguage());
       String errorText = messages.getString("JSPP.ErrorUnknownComponent");

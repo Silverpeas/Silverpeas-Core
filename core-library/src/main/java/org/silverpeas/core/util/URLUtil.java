@@ -23,7 +23,8 @@
  */
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.admin.component.ComponentHelper;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
@@ -158,7 +159,7 @@ public class URLUtil {
       return "";
     }
     if (!isDefined(sureCompName)) {
-      sureCompName = getComponentNameFromComponentId(sComponentId);
+      sureCompName = SilverpeasComponentInstance.getComponentName(sComponentId);
     }
     String specialString = settings.getString(sureCompName, "");
     if (isDefined(specialString)) {
@@ -189,7 +190,7 @@ public class URLUtil {
    * @return la nouvelle URL
    */
   public static String getNewComponentURL(String spaceId, String componentId) {
-    String sureCompName = getComponentNameFromComponentId(componentId);
+    String sureCompName = ComponentInst.getComponentName(componentId);
     return buildStandardURL(sureCompName, componentId);
   }
 
@@ -202,16 +203,6 @@ public class URLUtil {
   private static String buildStandardURL(String componentName, String sComponentId) {
     return '/' + AdministrationServiceProvider.getAdminService().getRequestRouter(componentName) + '/'
         + sComponentId + '/';
-  }
-
-  /**
-   * Returns kmelia for parameter kmelia23
-   *
-   * @param sClientComponentId
-   * @return
-   */
-  public static String getComponentNameFromComponentId(String sClientComponentId) {
-    return ComponentHelper.get().getWAComponentName(sClientComponentId);
   }
 
   /**

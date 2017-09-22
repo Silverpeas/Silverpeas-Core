@@ -209,7 +209,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
     } catch (MissingResourceException e) {
       SilverLogger.getLogger(this).silent(e);
       label = PersonalComponentInstance
-          .from(User.getCurrentRequester(), PersonalComponent.get(componentName).get())
+          .from(User.getCurrentRequester(), PersonalComponent.getByName(componentName).get())
           .getLabel(helper.getLanguage());
     }
     if (!StringUtil.isDefined(label)) {

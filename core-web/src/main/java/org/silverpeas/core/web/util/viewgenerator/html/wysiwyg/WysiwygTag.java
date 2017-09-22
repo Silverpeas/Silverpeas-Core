@@ -23,11 +23,10 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.wysiwyg;
 
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -39,14 +38,13 @@ public class WysiwygTag extends TagSupport {
   private static final long serialVersionUID = -7606894410387540973L;
 
   private String replace;
-  private String height = "500";
-  private String width = "100%";
-  private String language = "en";
-  private String toolbar = "Default";
-  private String spaceId;
-  private String spaceName;
+  private String height;
+  private String width;
+  private String language;
+  private String toolbar;
+  private String spaceLabel;
   private String componentId;
-  private String componentName;
+  private String componentLabel;
   private String browseInfo;
   private String objectId;
   private boolean displayFileBrowser = true;
@@ -91,20 +89,12 @@ public class WysiwygTag extends TagSupport {
     this.replace = replace;
   }
 
-  public String getSpaceId() {
-    return spaceId;
+  public String getSpaceLabel() {
+    return spaceLabel;
   }
 
-  public void setSpaceId(String spaceId) {
-    this.spaceId = spaceId;
-  }
-
-  public String getSpaceName() {
-    return spaceName;
-  }
-
-  public void setSpaceName(String spaceName) {
-    this.spaceName = spaceName;
+  public void setSpaceLabel(String spaceLabel) {
+    this.spaceLabel = spaceLabel;
   }
 
   public String getComponentId() {
@@ -115,12 +105,12 @@ public class WysiwygTag extends TagSupport {
     this.componentId = componentId;
   }
 
-  public String getComponentName() {
-    return componentName;
+  public String getComponentLabel() {
+    return componentLabel;
   }
 
-  public void setComponentName(String componentName) {
-    this.componentName = componentName;
+  public void setComponentLabel(String componentLabel) {
+    this.componentLabel = componentLabel;
   }
 
   public String getBrowseInfo() {
@@ -149,27 +139,31 @@ public class WysiwygTag extends TagSupport {
 
   @Override
   public int doEndTag() throws JspException {
-    Wysiwyg wysiwyg = new Wysiwyg();
-    wysiwyg.setReplace(getReplace());
-    wysiwyg.setWidth(getWidth());
-    wysiwyg.setHeight(getHeight());
-    wysiwyg.setLanguage(getLanguage());
-    wysiwyg.setToolbar(getToolbar());
-    wysiwyg.setServerURL(URLUtil.getServerURL((HttpServletRequest) pageContext.getRequest()));
+    WysiwygEditor wysiwygEditor = new WysiwygEditor(getComponentId());
+    wysiwygEditor.setReplace(getReplace());
+    if (StringUtil.isDefined(getWidth())) {
+      wysiwygEditor.setWidth(getWidth());
+    }
+    if (StringUtil.isDefined(getHeight())) {
+      wysiwygEditor.setHeight(getHeight());
+    }
+    if (StringUtil.isDefined(getLanguage())) {
+      wysiwygEditor.setLanguage(getLanguage());
+    }
+    if (StringUtil.isDefined(getToolbar())) {
+      wysiwygEditor.setToolbar(getToolbar());
+    }
 
     HttpSession session = pageContext.getSession();
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    if(getSpaceId() != null) {
-      session.setAttribute("WYSIWYG_SpaceId", getSpaceId());
-    }
-    if(getSpaceName() != null) {
-      session.setAttribute("WYSIWYG_SpaceName", URLDecoder.decode(getSpaceName()));
+    if (getSpaceLabel() != null) {
+      session.setAttribute("WYSIWYG_SpaceLabel", URLDecoder.decode(getSpaceLabel()));
     }
     if(getComponentId() != null) {
       session.setAttribute("WYSIWYG_ComponentId", getComponentId());
     }
-    if(getComponentName() != null) {
-      session.setAttribute("WYSIWYG_ComponentName", URLDecoder.decode(getComponentName()));
+    if (getComponentLabel() != null) {
+      session.setAttribute("WYSIWYG_ComponentLabel", URLDecoder.decode(getComponentLabel()));
     }
     if(getBrowseInfo() != null) {
       session.setAttribute("WYSIWYG_BrowseInfo", URLDecoder.decode(getBrowseInfo()));
@@ -177,17 +171,17 @@ public class WysiwygTag extends TagSupport {
     if(getObjectId() != null) {
       session.setAttribute("WYSIWYG_ObjectId", getObjectId());
     }
-    session.setAttribute("WYSIWYG_Language", getLanguage());
+    session.setAttribute("WYSIWYG_Language", wysiwygEditor.getLanguage());
 
     SettingBundle settings = gef.getFavoriteLookSettings();
     if (settings != null) {
-      wysiwyg.setCustomCSS(settings.getString("StyleSheet", ""));
+      wysiwygEditor.setCustomCSS(settings.getString("StyleSheet", ""));
     }
 
-    wysiwyg.setDisplayFileBrowser(getDisplayFileBrowser());
+    wysiwygEditor.setDisplayFileBrowser(getDisplayFileBrowser());
 
     try {
-      pageContext.getOut().println(wysiwyg.print());
+      pageContext.getOut().println(wysiwygEditor.print());
     } catch (IOException e) {
       throw new JspException("WysiwygTag tag", e);
     }

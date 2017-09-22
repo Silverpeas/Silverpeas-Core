@@ -29,6 +29,7 @@ import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
@@ -430,6 +431,15 @@ public class CalendarEventOccurrence
    */
   public Date getLastUpdateDate() {
     return this.component.getLastUpdateDate();
+  }
+
+  /**
+   * Gets the content of this event occurrence. The content is the one of the event and it cannot
+   * be modified per occurrence but for the whole event occurrence(s).
+   * @return optionally the content of the event.
+   */
+  public Optional<WysiwygContent> getContent() {
+    return getCalendarEvent().getContent();
   }
 
   /**

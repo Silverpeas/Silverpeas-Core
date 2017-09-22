@@ -26,11 +26,14 @@ package org.silverpeas.core.util.logging;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
+import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -54,6 +57,9 @@ public class LogAnnotationIntegrationTest {
   @Rule
   public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
 
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
   @Inject
   private AnAnnotatedObject anAnnotatedObject;
   @Inject
@@ -65,8 +71,17 @@ public class LogAnnotationIntegrationTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(LogAnnotationIntegrationTest.class)
         .addCommonBasicUtilities()
-        .addCommonUserBeans()
+        .addCommonUserBeans().addAsResource("org/silverpeas/util/logging/")
         .build();
+  }
+
+  @Before
+  public void SetUpTestContext() {
+    commonAPI4Test.setLoggerLevel(Level.DEBUG);
+    SystemWrapper.get()
+        .getenv()
+        .put("SILVERPEAS_HOME", mavenTargetDirectoryRule.getBuildDirFile().getAbsolutePath());
+
   }
 
   @Test

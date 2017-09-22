@@ -31,7 +31,6 @@ import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import org.silverpeas.core.chat.ChatUser;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.ContactPK;
@@ -592,10 +591,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   private UserFragmentVO getUserFragment(UserItem user, SilverpeasTemplate template) {
-    ChatUser userDetail = ChatUser.fromUser(user.getUserDetail());
-    template.setAttribute("user", userDetail);
-    if (StringUtil.isDefined(userDetail.getStatus())) {
-      template.setAttribute("status", javaStringToHtmlParagraphe(userDetail.getStatus()));
+    UserDetail otherUser = user.getUserDetail();
+    UserDetail currentUser = getUserDetail();
+    template.setAttribute("user", otherUser);
+    if (StringUtil.isDefined(otherUser.getStatus())) {
+      template.setAttribute("status", javaStringToHtmlParagraphe(otherUser.getStatus()));
     } else {
       template.setAttribute("status", null);
     }
@@ -603,14 +603,14 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     template.setAttribute(CONTEXT_ATTR, URLUtil.getApplicationURL());
     template.setAttribute("notMyself", !user.getOriginalId().equals(getUserId()));
     template.setAttribute("chatEnabled", ChatServer.isEnabled());
-    template.setAttribute("aContact", userDetail.isInRelationWith(getUserId()));
-    Invitation invitationSent = getUserDetail().getInvitationSentTo(userDetail.getId());
+    template.setAttribute("aContact", otherUser.isInRelationWith(getUserId()));
+    Invitation invitationSent = currentUser.getInvitationSentTo(otherUser.getId());
     if (invitationSent != null) {
       template.setAttribute("invitationSent", invitationSent.getId());
     } else {
       template.setAttribute("invitationSent", null);
     }
-    Invitation invitationReceived = getUserDetail().getInvitationReceivedFrom(userDetail.getId());
+    Invitation invitationReceived = currentUser.getInvitationReceivedFrom(otherUser.getId());
     if (invitationReceived != null) {
       template.setAttribute("invitationReceived",invitationReceived.getId());
     } else {

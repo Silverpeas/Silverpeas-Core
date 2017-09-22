@@ -74,7 +74,7 @@ public class ComponentInstanceThumbnailDeletionIntegrationTest {
     return WarBuilder4LibCore
         .onWarForTestClass(ComponentInstanceThumbnailDeletionIntegrationTest.class)
         .addDatabaseToolFeatures().addSilverpeasExceptionBases().addFileRepositoryFeatures()
-        .addProcessFeatures().addApacheFileUploadFeatures()
+        .addProcessFeatures()
         .addComponentInstanceDeletionFeatures()
         .testFocusedOn(war -> war
             .addPackages(true, "org.silverpeas.core.io.media.image.thumbnail")

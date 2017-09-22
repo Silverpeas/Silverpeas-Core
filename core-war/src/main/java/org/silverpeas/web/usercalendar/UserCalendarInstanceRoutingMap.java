@@ -47,8 +47,8 @@ public class UserCalendarInstanceRoutingMap extends AbstractCalendarInstanceRout
       final User user = User.getCurrentRequester();
       if (user != null) {
         // always redirecting the current user on its own instance
-        instance = PersonalComponentInstance
-            .from(user, PersonalComponent.get(UserCalendarSettings.COMPONENT_NAME).get());
+        instance = PersonalComponentInstance.from(user,
+            PersonalComponent.getByName(UserCalendarSettings.COMPONENT_NAME).get());
       }
       baseForPages = "/R" + instance.getName() + "/" + instance.getId();
     }

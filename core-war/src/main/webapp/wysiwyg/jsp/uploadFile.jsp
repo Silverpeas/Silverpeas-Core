@@ -68,10 +68,9 @@ String EncodeURL(String javastring) {
   }
 %>
 <%
-String spaceId = (String) session.getAttribute("WYSIWYG_SpaceId");
-String spaceName = (String) session.getAttribute("WYSIWYG_SpaceName");
+String spaceLabel = (String) session.getAttribute("WYSIWYG_SpaceLabel");
 String componentId = (String) session.getAttribute("WYSIWYG_ComponentId");
-String componentName = (String) session.getAttribute("WYSIWYG_ComponentName");
+String componentLabel = (String) session.getAttribute("WYSIWYG_ComponentLabel");
 String browseInformation = (String) session.getAttribute("WYSIWYG_BrowseInfo");
 String objectId = (String) session.getAttribute("WYSIWYG_ObjectId");
 String language = (String) session.getAttribute("WYSIWYG_Language");
@@ -113,8 +112,8 @@ function returnHtmlEditor() {
   Window window = gef.getWindow();
   window.setPopup(true);
   BrowseBar browseBar = window.getBrowseBar();
-  browseBar.setDomainName(spaceName);
-  browseBar.setComponentName(componentName);
+  browseBar.setDomainName(spaceLabel);
+  browseBar.setComponentName(componentLabel);
   browseBar.setPath(browseInformation);
   browseBar.setClickable(false);
 

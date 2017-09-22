@@ -1865,77 +1865,70 @@
     </tag-class>
     <body-content>JSP</body-content>
     <attribute>
-      <description>Id of HTML element to replace by wysiwyg editor</description>
+      <description>Identifier of the HTML element to replace with the wysiwyg editor</description>
       <name>replace</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>Width of wysiwyg editor</description>
+      <description>Width of the wysiwyg editor</description>
       <name>width</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>Height of wysiwyg editor</description>
+      <description>Height of the wysiwyg editor</description>
       <name>height</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>Language of wysiwyg editor UI</description>
+      <description>An ISO 631-1 code to set the l10n of the wysiwyg editor UI</description>
       <name>language</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>Toolbar used by wysiwyg editor</description>
+      <description>Name of the toolbar to use by the wysiwyg editor</description>
       <name>toolbar</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>Id of current space</description>
-      <name>spaceId</name>
+      <description>Label of the current space for the breadcrumb (browse bar)</description>
+      <name>spaceLabel</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>Name of current space</description>
-      <name>spaceName</name>
-      <required>false</required>
-      <rtexprvalue>true</rtexprvalue>
-      <type>java.lang.String</type>
-    </attribute>
-    <attribute>
-      <description>Id of current component</description>
+      <description>Identifier of the current component instance</description>
       <name>componentId</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>Name of current component</description>
-      <name>componentName</name>
+      <description>Label of the current component instance for the breadcrumb (browse bar)</description>
+      <name>componentLabel</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>Name of current object for browseBar</description>
+      <description>Name of the current resource for the breadcrumb (browse bar)</description>
       <name>browseInfo</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>Id of current object</description>
+      <description>Identifier of the current resource to which the WYSIWYG content is attached</description>
       <name>objectId</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
@@ -2181,28 +2174,28 @@
     <tag-class>org.silverpeas.core.web.jstl.view.WysiwygDisplayerTag</tag-class>
     <body-content>empty</body-content>
     <attribute>
-      <description>The language of the wysiwyg to display.</description>
+      <description>The l10n of the editor UI. An ISO 631-1 code</description>
       <name>language</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>The id of the component to which this wysiwyg is attached.</description>
+      <description>The identifier of the component instance to which this wysiwyg is attached.</description>
       <name>componentId</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>The id of the object to which this wysiwyg is attached.</description>
+      <description>The identifier of the contribution to which this wysiwyg is attached.</description>
       <name>objectId</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
     <attribute>
-      <description>The id of the classification scheme axis to which this wysiwyg is attached for highlighting.</description>
+      <description>The identifier of the classification scheme axis to which this wysiwyg is attached for highlighting.</description>
       <name>axisId</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>

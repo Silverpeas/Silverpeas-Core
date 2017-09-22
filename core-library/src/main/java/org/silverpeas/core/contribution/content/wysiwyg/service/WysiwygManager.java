@@ -39,10 +39,12 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEventNotifier;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
+import org.silverpeas.core.contribution.model.WysiwygContent;
+import org.silverpeas.core.contribution.service.WysiwygContentRepository;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
@@ -78,7 +80,7 @@ import java.util.regex.Pattern;
  * Central service to manage Wysiwyg.
  */
 @Singleton
-public class WysiwygManager {
+public class WysiwygManager implements WysiwygContentRepository {
 
   protected WysiwygManager() {
     // hidden constructor
@@ -356,6 +358,13 @@ public class WysiwygManager {
     }
   }
 
+  @Override
+  public void delete(final WysiwygContent content) {
+    final LocalizedContribution contribution = content.getContribution();
+    deleteFile(contribution.getContributionId().getComponentInstanceId(),
+        contribution.getContributionId().getLocalId(), contribution.getLanguage());
+  }
+
   /**
    * Creation of the file and its attachment.
    * @param content the WYSIWYG content to create.
@@ -370,15 +379,16 @@ public class WysiwygManager {
     if (!StringUtil.isDefined(content.getData())) {
       return;
     }
+    LocalizedContribution contribution = content.getContribution();
     String fileName =
-        getWysiwygFileName(content.getContributionId().getLocalId(), content.getLanguage());
-    String language = I18NHelper.checkLanguage(content.getLanguage());
+        getWysiwygFileName(contribution.getContributionId().getLocalId(), contribution.getLanguage());
+    String language = I18NHelper.checkLanguage(contribution.getLanguage());
     String textHtml = content.getData();
-    String userId = content.getAuthorId();
+    String userId = content.getAuthor().getId();
     SimpleDocumentPK docPk =
-        new SimpleDocumentPK(null, content.getContributionId().getComponentInstanceId());
+        new SimpleDocumentPK(null, content.getContribution().getContributionId().getComponentInstanceId());
     SimpleDocument document =
-        new SimpleDocument(docPk, content.getContributionId().getLocalId(), 0, false, userId,
+        new SimpleDocument(docPk, contribution.getContributionId().getLocalId(), 0, false, userId,
             new SimpleAttachment(fileName, language, fileName, null, textHtml.length(),
                 MimeTypes.HTML_MIME_TYPE, userId, new Date(), null));
     document.setDocumentType(context);
@@ -436,21 +446,22 @@ public class WysiwygManager {
    * @param indexIt should the content be indexed?
    */
   private void saveFile(final WysiwygContent content, boolean indexIt) {
-    String lang = I18NHelper.checkLanguage(content.getLanguage());
+    LocalizedContribution contribution = content.getContribution();
+    String lang = I18NHelper.checkLanguage(contribution.getLanguage());
     DocumentType wysiwygType = DocumentType.wysiwyg;
-    String fileName = getWysiwygFileName(content.getContributionId().getLocalId(), lang);
+    String fileName = getWysiwygFileName(contribution.getContributionId().getLocalId(), lang);
     SimpleDocument document =
-        searchAttachmentDetail(content.getContributionId(), wysiwygType, lang);
+        searchAttachmentDetail(contribution.getContributionId(), wysiwygType, lang);
     if (document != null) {
       // Load old content
-      WysiwygContent beforeUpdateContent = load(content.getContributionId(), lang);
+      WysiwygContent beforeUpdateContent = getByContribution(contribution);
       if (!document.getLanguage().equals(lang)) {
         document.setFilename(fileName);
       }
       document.setLanguage(lang);
       document.setSize(content.getData().getBytes(Charsets.UTF_8).length);
       document.setDocumentType(wysiwygType);
-      document.setUpdatedBy(content.getAuthorId());
+      document.setUpdatedBy(content.getAuthor().getId());
       if (document.getSize() > 0) {
         AttachmentServiceProvider.getAttachmentService().updateAttachment(document,
             new ByteArrayInputStream(content.getData().getBytes(Charsets.UTF_8)), indexIt, false);
@@ -463,20 +474,12 @@ public class WysiwygManager {
     }
   }
 
-  /**
-   * Removes and recreates the file attached
-   * @param content the updated WYSIWYG content.
-   */
   public void updateFileAndAttachment(final WysiwygContent content) {
-    updateFileAndAttachment(content, true);
+    saveFile(content, content.getContribution().isIndexable());
   }
 
-  public void updateFileAndAttachment(final WysiwygContent content, boolean indexIt) {
-    saveFile(content, indexIt);
-  }
-
-  public void save(final WysiwygContent content, boolean indexIt) {
-    saveFile(content, indexIt);
+  public void save(final WysiwygContent content) {
+    saveFile(content, content.getContribution().isIndexable());
   }
 
   /**
@@ -565,17 +568,17 @@ public class WysiwygManager {
 
   /**
    * Load wysiwyg content.
-   * @param id the unique identifier of the contribution to which the WYSIWYG is related.
-   * @param language the language of the content.
+   * @param contribution the localized contribution for which the content has to be loaded.
    * @return the wysiwyg content.
    */
-  public WysiwygContent load(final ContributionIdentifier id, String language) {
-    String content = internalLoad(id, language);
+  @Override
+  public WysiwygContent getByContribution(final LocalizedContribution contribution) {
+    String content = internalLoad(contribution.getContributionId(), contribution.getLanguage());
     if (I18NHelper.isI18nContentEnabled() && content != null && StringUtil.isNotDefined(content)) {
       List<String> languages = new ArrayList<>(I18NHelper.getAllSupportedLanguages());
-      languages.remove(language);
+      languages.remove(contribution.getLanguage());
       for (String lang : languages) {
-        content = internalLoad(id, lang);
+        content = internalLoad(contribution.getContributionId(), lang);
         if (content == null || StringUtil.isDefined(content)) {
           break;
         }
@@ -584,7 +587,7 @@ public class WysiwygManager {
     if (content == null) {
       content = "";
     }
-    return new WysiwygContent(id, content);
+    return new WysiwygContent(contribution, content);
   }
 
   /**
@@ -668,12 +671,12 @@ public class WysiwygManager {
     }
   }
 
-  public boolean haveGotWysiwygToDisplay(final ContributionIdentifier id, String language) {
-    return haveGotWysiwyg(id, language);
+  public boolean haveGotWysiwygToDisplay(final LocalizedContribution contribution) {
+    return haveGotWysiwyg(contribution);
   }
 
-  public boolean haveGotWysiwyg(final ContributionIdentifier id, String language) {
-    WysiwygContent wysiwygContent = load(id, language);
+  public boolean haveGotWysiwyg(final LocalizedContribution contribution) {
+    WysiwygContent wysiwygContent = getByContribution(contribution);
     return !wysiwygContent.isEmpty();
   }
 

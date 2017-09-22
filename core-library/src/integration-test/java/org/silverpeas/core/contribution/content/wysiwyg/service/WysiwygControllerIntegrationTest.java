@@ -57,12 +57,16 @@ import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
 public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
+  
+  private static final String USER_ID = "3";
 
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(WysiwygControllerIntegrationTest.class)
         .addJcrFeatures()
         .addWysiwygFeatures()
+        .addAsResource(DATABASE_CREATION_SCRIPT)
+        .addAsResource(DATASET_SCRIPT)
         .build();
   }
 
@@ -213,7 +217,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "<mark>EN_Content_FileServer_ComponentId=blog974";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
@@ -234,7 +238,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     assertThat(WysiwygController.load(destComponentId, destMessageId, "fr"), is(""));
     assertThat(WysiwygController.load(destComponentId, destMessageId, "en"), is(""));
 
-    WysiwygController.copy(componentId, messageId, destComponentId, destMessageId, "26");
+    WysiwygController.copy(componentId, messageId, destComponentId, destMessageId, USER_ID);
 
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "en"), hasSize(1));
@@ -262,7 +266,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String messageId = "18";
     String expectedContent =
         "<mark>EN_Content_FileServer_ComponentId=blog974_/componentId/blog974/attachmentId/18/";
-    String userId = "7";
+    String userId =USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     language = "fr";
@@ -292,7 +296,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     assertThat(WysiwygController.load(destComponentId, destMessageId, "fr"), is(""));
     assertThat(WysiwygController.load(destComponentId, destMessageId, "en"), is(""));
 
-    WysiwygController.copy(componentId, messageId, destComponentId, destMessageId, "26");
+    WysiwygController.copy(componentId, messageId, destComponentId, destMessageId, USER_ID);
 
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "en"), hasSize(1));
@@ -330,7 +334,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String expectedContent =
         "<mark>EN_Content_FileServer_ComponentId=blog974_/componentId/blog974/attachmentId/" +
             image.getId() + "/";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     language = "fr";
@@ -365,7 +369,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     assertThat(WysiwygController.load(destComponentId, destMessageId, "fr"), is(""));
     assertThat(WysiwygController.load(destComponentId, destMessageId, "en"), is(""));
 
-    WysiwygController.copy(componentId, messageId, destComponentId, destMessageId, "26");
+    WysiwygController.copy(componentId, messageId, destComponentId, destMessageId, USER_ID);
 
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "en"), hasSize(1));
@@ -410,7 +414,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String expectedContent =
         "EN_Content_FileServer_ComponentId=blog974_/componentId/blog974/attachmentId/" +
             image.getId() + "/";
-    String userId = "7";
+    String userId =USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     language = "fr";
@@ -495,7 +499,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String expectedContent =
         "<mark>EN_Content_FileServer_ComponentId=blog974_/componentId/blog974/attachmentId/" +
             image.getId() + "/";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     language = "fr";
@@ -539,7 +543,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     assertThat(WysiwygController.load(destComponentId, destMessageId, "fr"), is(""));
     assertThat(WysiwygController.load(destComponentId, destMessageId, "en"), is(""));
 
-    WysiwygController.copy(componentId, messageId, destComponentId, destMessageId, "26");
+    WysiwygController.copy(componentId, messageId, destComponentId, destMessageId, USER_ID);
 
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "en"), hasSize(1));
@@ -570,7 +574,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "<mark>EN_Content_FileServer_ComponentId=blog974";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
@@ -617,7 +621,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String messageId = "18";
     String expectedContent =
         "<mark>EN_Content_FileServer_ComponentId=blog974_/componentId/blog974/attachmentId/18/";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     language = "fr";
@@ -681,7 +685,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String expectedContent =
         "<mark>EN_Content_FileServer_ComponentId=blog974_/componentId/blog974/attachmentId/" +
             image.getId() + "/";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     language = "fr";
@@ -753,7 +757,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String expectedContent =
         "EN_Content_FileServer_ComponentId=blog974_/componentId/blog974/attachmentId/" +
             image.getId() + "/";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     language = "fr";
@@ -832,7 +836,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String expectedContent =
         "<mark>EN_Content_FileServer_ComponentId=blog974_/componentId/blog974/attachmentId/" +
             image.getId() + "/";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     language = "fr";
@@ -906,7 +910,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "<mark>EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Jcr State
@@ -980,7 +984,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
   public void testLoadLegacyEmptyFRWysiwygAndJcrENwysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    WysiwygController.save("ENContent", componentId, messageId, "26", "en", false);
+    WysiwygController.save("ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Jcr State
     ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
@@ -1003,7 +1007,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
   public void testLoadLegacyFRWysiwygAndJcrEmptyENwysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    WysiwygController.save("<mark>ENContent", componentId, messageId, "26", "en", false);
+    WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "LegacyContent");
     // Empty EN wysiwyg ...
     ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
@@ -1028,7 +1032,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
   public void testLoadLegacyEmptyFRWysiwygAndJcrEmptyENwysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    WysiwygController.save("<mark>ENContent", componentId, messageId, "26", "en", false);
+    WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Empty EN wysiwyg ...
     ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
@@ -1054,7 +1058,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     expectedContent = "<mark>FR_Content";
@@ -1079,7 +1083,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     expectedContent = "<mark>FR_Content";
@@ -1103,7 +1107,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     expectedContent = "<mark>FR_Content";
@@ -1139,7 +1143,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "<mark>EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Jcr State
@@ -1213,7 +1217,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
   public void testHavegotwysiwygtodisplayLegacyEmptyFRWysiwygAndJcrENwysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    WysiwygController.save("ENContent", componentId, messageId, "26", "en", false);
+    WysiwygController.save("ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Jcr State
     ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
@@ -1236,7 +1240,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
   public void testHavegotwysiwygtodisplayLegacyFRWysiwygAndJcrEmptyENwysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    WysiwygController.save("<mark>ENContent", componentId, messageId, "26", "en", false);
+    WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "LegacyContent");
     // Empty EN wysiwyg ...
     ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
@@ -1262,7 +1266,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
       throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    WysiwygController.save("<mark>ENContent", componentId, messageId, "26", "en", false);
+    WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Empty EN wysiwyg ...
     ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
@@ -1288,7 +1292,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     expectedContent = "<mark>FR_Content";
@@ -1312,7 +1316,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     expectedContent = "<mark>FR_Content";
@@ -1348,7 +1352,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "<mark>EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Jcr State
@@ -1422,7 +1426,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
   public void testHavegotwysiwygLegacyEmptyFRWysiwygAndJcrENwysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    WysiwygController.save("ENContent", componentId, messageId, "26", "en", false);
+    WysiwygController.save("ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Jcr State
     ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
@@ -1445,7 +1449,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
   public void testHavegotwysiwygLegacyFRWysiwygAndJcrEmptyENwysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    WysiwygController.save("<mark>ENContent", componentId, messageId, "26", "en", false);
+    WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "LegacyContent");
     // Empty EN wysiwyg ...
     ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
@@ -1470,7 +1474,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
   public void testHavegotwysiwygLegacyEmptyFRWysiwygAndJcrEmptyENwysiwyg() throws Exception {
     String componentId = "blog974";
     String messageId = "18";
-    WysiwygController.save("<mark>ENContent", componentId, messageId, "26", "en", false);
+    WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Empty EN wysiwyg ...
     ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
@@ -1496,7 +1500,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     expectedContent = "<mark>FR_Content";
@@ -1520,7 +1524,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     expectedContent = "<mark>FR_Content";
@@ -1575,7 +1579,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
     List<SimpleDocument> wysiwygs = listWysiwygs(resourceTestPK);
@@ -1634,7 +1638,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
     List<SimpleDocument> wysiwygs = listWysiwygs(resourceTestPK);
@@ -1669,7 +1673,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
@@ -1692,7 +1696,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
@@ -1722,7 +1726,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
@@ -1769,9 +1773,9 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     assertThat(rightFrWrongEn_en.getFilename(), is("foreignId_A_wysiwyg_fr.txt"));
 
     WysiwygController.save("contentFR_updated", rightFrWrongEn_fr.getInstanceId(),
-        rightFrWrongEn_fr.getForeignId(), "26", rightFrWrongEn_fr.getLanguage(), false);
+        rightFrWrongEn_fr.getForeignId(), USER_ID, rightFrWrongEn_fr.getLanguage(), false);
     WysiwygController.save("contentEN_updated", rightFrWrongEn_en.getInstanceId(),
-        rightFrWrongEn_en.getForeignId(), "26", rightFrWrongEn_en.getLanguage(), false);
+        rightFrWrongEn_en.getForeignId(), USER_ID, rightFrWrongEn_en.getLanguage(), false);
 
     rightFrWrongEn_fr = getJcr().assertContent(rightFrWrongEn.getId(), "fr", "contentFR_updated");
     rightFrWrongEn_en = getJcr().assertContent(rightFrWrongEn.getId(), "en", "contentEN_updated");
@@ -1796,9 +1800,9 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     assertThat(rightFrWrongEn_fr.getFilename(), is("foreignId_A_wysiwyg_fr.txt"));
 
     WysiwygController.save("contentFR_updated", rightFrWrongEn_fr.getInstanceId(),
-        rightFrWrongEn_fr.getForeignId(), "26", rightFrWrongEn_fr.getLanguage(), false);
+        rightFrWrongEn_fr.getForeignId(), USER_ID, rightFrWrongEn_fr.getLanguage(), false);
     WysiwygController.save("contentEN_created", rightFrWrongEn_fr.getInstanceId(),
-        rightFrWrongEn_fr.getForeignId(), "26", "en", false);
+        rightFrWrongEn_fr.getForeignId(), USER_ID, "en", false);
 
     rightFrWrongEn_fr = getJcr().assertContent(rightFrWrongEn.getId(), "fr", "contentFR_updated");
     rightFrWrongEn_en = getJcr().assertContent(rightFrWrongEn.getId(), "en", "contentEN_created");
@@ -1814,7 +1818,7 @@ public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
     String componentId = "blog974";
     String messageId = "18";
     String expectedContent = "EN_Content";
-    String userId = "7";
+    String userId = USER_ID;
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 

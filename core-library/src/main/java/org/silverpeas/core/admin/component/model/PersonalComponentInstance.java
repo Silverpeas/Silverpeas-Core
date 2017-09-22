@@ -58,6 +58,24 @@ public class PersonalComponentInstance implements SilverpeasPersonalComponentIns
   }
 
   /**
+   * Gets the name of the personal component from which the specified instance was spawn. By
+   * convention, the identifiers of the component instances are made up of the name of the
+   * component followed by a number (the user identifier) plus additional stuff. This method is a
+   * way to get directly the component name from an instance identifier.
+   * @param componentInstanceId the unique identifier of a component instance.
+   * @return the name of the personal component or null if the specified identifier doesn't match
+   * the rule of a personal component instance identifier.
+   */
+  public static String getComponentName(final String componentInstanceId) {
+    String componentName = null;
+    Matcher matcher = INSTANCE_IDENTIFIER_PATTERN.matcher(componentInstanceId);
+    if (matcher.matches()) {
+      componentName = matcher.group(COMPONENT_NAME_INDEX);
+    }
+    return componentName;
+  }
+
+  /**
    * Gets the personal component instance from an instance identifier.
    * @param personalComponentInstanceId identifier of a personal component instance.
    * @return optionally an instance of {@link PersonalComponentInstance}.
@@ -72,7 +90,7 @@ public class PersonalComponentInstance implements SilverpeasPersonalComponentIns
     Matcher matcher = INSTANCE_IDENTIFIER_PATTERN.matcher(personalComponentInstanceId);
     if (matcher.find()) {
       Optional<PersonalComponent> personalComponent =
-          PersonalComponent.get(matcher.group(COMPONENT_NAME_INDEX));
+          PersonalComponent.getByName(matcher.group(COMPONENT_NAME_INDEX));
       User user = User.getById(matcher.group(USER_ID_INDEX));
       if (personalComponent.isPresent() && user != null) {
         instance = from(user, personalComponent.get());

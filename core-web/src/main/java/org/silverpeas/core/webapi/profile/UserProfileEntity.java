@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.webapi.profile;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.servlet.ServletContext;
 import javax.validation.constraints.NotNull;
@@ -46,8 +46,8 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.uriOfUser;
 import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.webapi.profile.ProfileResourceBaseURIs.uriOfUser;
 
 /**
  * The profile of a user that is web entity in the WEB. It is a web entity representing the profile
@@ -292,10 +292,9 @@ public class UserProfileEntity extends UserDetail implements WebEntity {
     this.user.setLogin(sLogin);
   }
 
-  @Override
   @XmlElement(defaultValue = "")
   public String getStatus() {
-    return user.getStatus();
+    return this.user.getStatus();
   }
 
   public void setStatus(String newStatus) {

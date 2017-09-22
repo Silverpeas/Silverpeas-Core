@@ -560,7 +560,8 @@ public class CalendarWebServiceProvider {
     // Retrieving the occurrences from personal calendars
     final List<Calendar> personalCalendars = new ArrayList<>();
     users.forEach(u -> personalCalendars.addAll(getCalendarsOf(
-        PersonalComponentInstance.from(u, PersonalComponent.get("userCalendar").get()).getId())));
+        PersonalComponentInstance.from(u, PersonalComponent.getByName("userCalendar").get())
+            .getId())));
     final List<CalendarEventOccurrence> entities = new ArrayList<>();
     personalCalendars.forEach(p -> entities.addAll(getEventOccurrencesOf(p, startDate, endDate)));
     entities.addAll(

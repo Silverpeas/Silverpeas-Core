@@ -304,6 +304,7 @@ public interface User extends Serializable, Comparable<User> {
   String getSmallAvatar();
 
   /**
+  /**
    * Gets the current status filled by the user itself.
    * @return current status as string.
    */

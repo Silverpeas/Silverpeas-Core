@@ -226,6 +226,7 @@
                 ceo.calendar = this.data.calendar;
                 ceo.title = this.data.title;
                 ceo.description = this.data.description;
+                ceo.content = this.data.content;
                 ceo.location = this.data.location;
                 ceo.externalUrl(this.data.externalUrl());
                 ceo.onAllDay = this.data.onAllDay;

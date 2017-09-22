@@ -43,8 +43,8 @@ public interface Contribution extends Serializable {
   ContributionIdentifier getContributionId();
 
   /**
-   * Gets the user that has created this content.
-   * @return the detail about the user that has created this content.
+   * Gets the user that has created this contribution.
+   * @return the user that has created this contribution.
    */
   User getCreator();
 

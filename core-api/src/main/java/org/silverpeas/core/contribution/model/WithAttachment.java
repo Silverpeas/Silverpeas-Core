@@ -25,7 +25,10 @@ package org.silverpeas.core.contribution.model;
 
 /**
  * An interface to indicate that a resource or a contribution supports attachments. All resources
- * or contributions for which files can be attached should implement this interface.
+ * or contributions for which files can be attached should implement this interface. This interface
+ * is used in Silverpeas Core for performing transverse operations on attachments like, for
+ * example, the deletion of the attachments of a contribution when this contribution is being
+ * deleted.
  * @author mmoquillon
  */
 public interface WithAttachment {

@@ -31,7 +31,9 @@ import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WithAttachment;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
@@ -264,6 +266,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   @Column(name = "synchroDate")
   private OffsetDateTime synchronizationDate;
 
+  @Transient
+  private WysiwygContent content;
+
   /**
    * Constructs a new calendar event that spawns to the specified period of time.
    * @param period a period of time in which this event occurs.
@@ -361,6 +366,25 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   @Override
   public ContributionIdentifier getContributionId() {
     return ContributionIdentifier.from(getCalendar().getComponentInstanceId(), getId());
+  }
+
+  /**
+   * Gets optionally the rich content of this event.
+   * @return the rich content of this event as an {@link Optional} value.
+   */
+  public Optional<WysiwygContent> getContent() {
+    if (content == null && isPlanned()) {
+      content = WysiwygContent.getContent(LocalizedContribution.from(this));
+    }
+    return Optional.ofNullable(content);
+  }
+
+  /**
+   * Sets the rich content of this event.
+   * @param content the content to set.
+   */
+  public void setContent(final WysiwygContent content) {
+    this.content = content;
   }
 
   /**
@@ -754,7 +778,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       if (!isPersisted()) {
         CalendarEventRepository repository = CalendarEventRepository.get();
         setCalendar(calendar);
-        return repository.save(this);
+        CalendarEvent savedEvent = repository.save(this);
+        savedEvent.getContent().ifPresent(WysiwygContent::save);
+        return savedEvent;
       }
       return this;
     });
@@ -1085,6 +1111,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       Transaction.getTransaction().perform(() -> {
         CalendarEventRepository repository = CalendarEventRepository.get();
         repository.delete(this);
+        getContent().ifPresent(WysiwygContent::delete);
         return null;
       });
     }
@@ -1100,6 +1127,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       if (before.isPresent()) {
         CalendarEvent event = Transaction.getTransaction().perform(() -> {
           CalendarEventRepository repository = CalendarEventRepository.get();
+          getContent().filter(WysiwygContent::isModified).ifPresent(WysiwygContent::save);
           return repository.save(this);
         });
         notify(ResourceEvent.Type.UPDATE, before.get(), event);

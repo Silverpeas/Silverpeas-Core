@@ -50,10 +50,9 @@
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%
-  String spaceId = "";
   String componentId = "";
-  String spaceName = "";
-  String componentName = "";
+  String spaceLabel = "";
+  String componentLabel = "";
   String objectId = "";
   String language = "";
   String contentLanguage = "";
@@ -80,10 +79,9 @@
   if ("SaveHtmlAndExit".equals(actionWysiwyg) || "Refresh".equals(actionWysiwyg) ||
       "SaveHtml".equals(actionWysiwyg)) {
     codeWysiwyg = request.getParameter("editor1");
-    spaceId = (String) session.getAttribute("WYSIWYG_SpaceId");
-    spaceName = (String) session.getAttribute("WYSIWYG_SpaceName");
+    spaceLabel = (String) session.getAttribute("WYSIWYG_SpaceLabel");
     componentId = (String) session.getAttribute("WYSIWYG_ComponentId");
-    componentName = (String) session.getAttribute("WYSIWYG_ComponentName");
+    componentLabel = (String) session.getAttribute("WYSIWYG_ComponentLabel");
     objectId = (String) session.getAttribute("WYSIWYG_ObjectId");
     browseInformation = (String) session.getAttribute("WYSIWYG_BrowseInfo");
     language = (String) session.getAttribute("WYSIWYG_Language");
@@ -137,14 +135,9 @@
     }
   } else if ("Load".equals(actionWysiwyg)) {
 
-    spaceId = request.getParameter("SpaceId");
-    if (spaceId == null) {
-      spaceId = (String) request.getAttribute("SpaceId");
-    }
-
-    spaceName = request.getParameter("SpaceName");
-    if (spaceName == null) {
-      spaceName = (String) request.getAttribute("SpaceName");
+    spaceLabel = request.getParameter("SpaceLabel");
+    if (spaceLabel == null) {
+      spaceLabel = (String) request.getAttribute("SpaceLabel");
     }
 
     componentId = request.getParameter("ComponentId");
@@ -152,9 +145,9 @@
       componentId = (String) request.getAttribute("ComponentId");
     }
 
-    componentName = request.getParameter("ComponentName");
-    if (componentName == null) {
-      componentName = (String) request.getAttribute("ComponentName");
+    componentLabel = request.getParameter("ComponentLabel");
+    if (componentLabel == null) {
+      componentLabel = (String) request.getAttribute("ComponentLabel");
     }
 
     objectId = request.getParameter("ObjectId");
@@ -289,7 +282,7 @@
 
   window.onload = function() {
     <view:wysiwyg replace="editor1" language="<%=language %>"
-      spaceId="<%=spaceId%>" spaceName="<%=spaceName%>" componentId="<%=componentId%>" componentName="<%=componentName%>"
+      spaceLabel="<%=spaceLabel%>" componentId="<%=componentId%>" componentLabel="<%=componentLabel%>"
       browseInfo="<%=browseInformation%>" objectId="<%=objectId%>" />
 
     if ($.trim($(".wysiwyg-fileStorage").text()).length == 0) {

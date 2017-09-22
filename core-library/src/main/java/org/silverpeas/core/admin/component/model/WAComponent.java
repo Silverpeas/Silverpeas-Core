@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * <p>
@@ -61,12 +60,22 @@ import java.util.function.Supplier;
 public class WAComponent implements SilverpeasComponent {
 
   /**
-   * Gets the WAComponent instance with the specified name.
+   * Gets the WAComponent object with the specified name.
    * @param componentName the unique name of the WAComponent to return.
    * @return optionally a WAComponent instance with the given name.
    */
-  public static Optional<WAComponent> get(String componentName) {
+  public static Optional<WAComponent> getByName(String componentName) {
     return WAComponentRegistry.get().getWAComponent(componentName);
+  }
+
+  /**
+   * Gets the WAComponent object representing the component to which the specified instance is
+   * related.
+   * @param componentInstanceId the unique identifier of a component instance.
+   * @return optionally a WAComponent object related to the component instance.
+   */
+  public static Optional<WAComponent> getByInstanceId(String componentInstanceId) {
+    return getByName(ComponentInst.getComponentName(componentInstanceId));
   }
 
   /**

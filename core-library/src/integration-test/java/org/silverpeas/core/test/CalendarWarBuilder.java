@@ -24,6 +24,7 @@
 package org.silverpeas.core.test;
 
 import org.silverpeas.core.calendar.CalendarEventOccurrenceBuilder;
+import org.silverpeas.core.test.stub.StubbedWysiwygContentRepository;
 
 /**
  * @author Yohann Chastagnier
@@ -43,7 +44,7 @@ public class CalendarWarBuilder extends WarBuilder4LibCore {
     addJpaPersistenceFeatures();
     addNotificationFeatures();
     addPackages(true, "org.silverpeas.core.notification.user.delayed.model");
-    addClasses(CalendarEventOccurrenceBuilder.class);
+    addClasses(CalendarEventOccurrenceBuilder.class, StubbedWysiwygContentRepository.class);
   }
 
   /**

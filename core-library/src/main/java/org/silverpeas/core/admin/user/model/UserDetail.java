@@ -60,10 +60,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
-    .getUserManualNotificationRecipientLimit;
-import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
-    .isUserManualNotificationRecipientLimitEnabled;
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getUserManualNotificationRecipientLimit;
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.isUserManualNotificationRecipientLimitEnabled;
 import static org.silverpeas.core.util.StringUtil.areStringEquals;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -690,6 +688,42 @@ public class UserDetail implements User {
     return PersonalizationServiceProvider.getPersonalizationService().getUserSettings(getId());
   }
 
+  /**
+   * Indicates if the current user is in relation with a user represented by the given identifier.
+   * @param userId the identifier of user which the current user is potentially in relation with.
+   * @return true if the current user is in relation with the user represented by
+   * the given identifier, false otherwise.
+   */
+  public boolean isInRelationWith(String userId) {
+    RelationShipService relation = RelationShipService.get();
+    try {
+      return relation.isInRelationShip(Integer.parseInt(userId), Integer.parseInt(getId()));
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return false;
+  }
+
+  public Invitation getInvitationSentTo(String userId) {
+    return getInvitation(getId(), userId);
+  }
+
+  public Invitation getInvitationReceivedFrom(String userId) {
+    return getInvitation(userId, getId());
+  }
+
+  private Invitation getInvitation(String fromUserId, String toUserId) {
+    InvitationService invitationService = InvitationService.get();
+    Invitation invitation = null;
+    try {
+      invitation =
+          invitationService.getInvitation(Integer.parseInt(fromUserId), Integer.parseInt(toUserId));
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return invitation;
+  }
+
   @Override
   public boolean isConnected() {
     SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
@@ -733,42 +767,6 @@ public class UserDetail implements User {
       return DateUtil.formatDuration(new Date().getTime() - getLastLoginDate().getTime());
     }
     return "";
-  }
-
-  /**
-   * Indicates if the current user is in relation with a user represented by the given identifier.
-   * @param userId the identifier of user which the current user is potentially in relation with.
-   * @return true if the current user is in relation with the user represented by
-   * the given identifier, false otherwise.
-   */
-  public boolean isInRelationWith(String userId) {
-    RelationShipService relation = RelationShipService.get();
-    try {
-      return relation.isInRelationShip(Integer.parseInt(userId), Integer.parseInt(getId()));
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e);
-    }
-    return false;
-  }
-
-  public Invitation getInvitationSentTo(String userId) {
-    return getInvitation(getId(), userId);
-  }
-
-  public Invitation getInvitationReceivedFrom(String userId) {
-    return getInvitation(userId, getId());
-  }
-
-  private Invitation getInvitation(String fromUserId, String toUserId) {
-    InvitationService invitationService = InvitationService.get();
-    Invitation invitation = null;
-    try {
-      invitation =
-          invitationService.getInvitation(Integer.parseInt(fromUserId), Integer.parseInt(toUserId));
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e);
-    }
-    return invitation;
   }
 
   @Override

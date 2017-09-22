@@ -82,6 +82,7 @@ public class JavascriptPluginInclusion {
   private static final String ANGULAR_LOCALE_JS = "angular-locale_{0}.js";
   private static final String ANGULAR_SANITIZE_JS = "angular-sanitize.min.js";
   private static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
+  private static final String ANGULAR_CKEDITOR_JS = "ng-ckeditor.js";
   private static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
   private static final String SILVERPEAS_BUTTON_ANGULAR_JS = "silverpeas-button.js";
   private static final String SILVERPEAS_EMBED_PLAYER = "silverpeas-embed-player.js";
@@ -133,7 +134,7 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_PASSWORD = "silverpeas-password.js";
   private static final String STYLESHEET_PASSWORD = "silverpeas-password.css";
   private static final String WYSIWYG_PATH = URLUtil.getApplicationURL() + "/wysiwyg/jsp/";
-  private static String JAVASCRIPT_CKEDITOR;
+  private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
   private static final String SILVERPEAS_WYSIWYG_TOOLBAR = "javaScript/wysiwygToolBar.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
@@ -168,12 +169,6 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_CHART_I18N_ST = "chartBundle";
   private static final String SILVERPEAS_LIST_OF_USERS_AND_GROUPS_JS =
       "silverpeas-user-group-list.js";
-
-  static {
-    SettingBundle wysiwygSettings =
-        ResourceLocator.getSettingBundle("org.silverpeas.wysiwyg.settings.wysiwygSettings");
-    JAVASCRIPT_CKEDITOR = wysiwygSettings.getString("baseDir", "ckeditor") + "/ckeditor.js";
-  }
 
   /**
    * Hidden constructor.
@@ -512,6 +507,7 @@ public class JavascriptPluginInclusion {
   static ElementContainer includeWysiwygEditor(final ElementContainer xhtml) {
     xhtml.addElement(script(WYSIWYG_PATH + JAVASCRIPT_CKEDITOR));
     xhtml.addElement(script(WYSIWYG_PATH + SILVERPEAS_WYSIWYG_TOOLBAR));
+    xhtml.addElement(script(ANGULARJS_PATH + ANGULAR_CKEDITOR_JS));
     return xhtml;
   }
 
@@ -594,6 +590,7 @@ public class JavascriptPluginInclusion {
     includeDatePicker(xhtml, language);
     includeAttendeeWebComponent(xhtml);
     includeDragAndDropUpload(xhtml, language);
+    includeWysiwygEditor(xhtml);
 
     SettingBundle calendarSettings = ResourceLocator
         .getSettingBundle("org.silverpeas.calendar.settings.calendar");
@@ -643,6 +640,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(link(STYLESHEET_PATH + STYLESHEET_SILVERPEAS_CALENDAR));
     xhtml.addElement(script(JQUERY_PATH + JQUERY_CALENDAR));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_CALENDAR));
+
     String calendarPath = "calendar/";
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-management.js"));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-event-management.js"));

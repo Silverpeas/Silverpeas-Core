@@ -276,8 +276,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   private WarBuilder4LibCore addBundleBaseFeatures() {
     if (!contains(MimeTypes.class)) {
+      addMavenDependencies("commons-fileupload:commons-fileupload");
       addClasses(FileUtil.class, Mail.class, MimeTypes.class, MetaData.class, Definition.class,
-          RelativeFileAccessException.class, MetadataExtractor.class);
+          RelativeFileAccessException.class, MetadataExtractor.class, MultiSilverpeasBundle.class);
       addAsResource("org/silverpeas/general.properties");
       addAsResource("org/silverpeas/multilang/generalMultilang.properties");
       addAsResource("org/silverpeas/lookAndFeel/generalLook.properties");
@@ -763,15 +764,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addMavenDependencies("org.im4java:im4java", "org.apache.tika:tika-core",
         "org.apache.tika:tika-parsers");
     addPackages(true, "org.silverpeas.core.io.media.image");
-    return this;
-  }
-
-  /**
-   * Add apache file upload libraries in web archive (war)
-   * @return the instance of the war builder with apache file upload
-   */
-  public WarBuilder4LibCore addApacheFileUploadFeatures() {
-    addMavenDependencies("commons-fileupload:commons-fileupload");
     return this;
   }
 

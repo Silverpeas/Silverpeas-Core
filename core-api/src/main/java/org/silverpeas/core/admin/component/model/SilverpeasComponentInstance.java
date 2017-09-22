@@ -34,6 +34,8 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
+ * An instance of a component. It can be either an instance of a multi-user applications or
+ * an instance of a personal application.
  * @author Yohann Chastagnier
  */
 public interface SilverpeasComponentInstance extends Serializable {
@@ -45,6 +47,15 @@ public interface SilverpeasComponentInstance extends Serializable {
    */
   static Optional<SilverpeasComponentInstance> getById(String componentInstanceId) {
     return SilverpeasComponentInstanceProvider.get().getById(componentInstanceId);
+  }
+
+  /**
+   * Gets the name of the Silverpeas component from which the specified instance was spawn.
+   * @param componentInstanceId the unique identifier of a component instance.
+   * @return the name of a component.
+   */
+  static String getComponentName(final String componentInstanceId) {
+    return SilverpeasComponentInstanceProvider.get().getComponentName(componentInstanceId);
   }
 
   /**

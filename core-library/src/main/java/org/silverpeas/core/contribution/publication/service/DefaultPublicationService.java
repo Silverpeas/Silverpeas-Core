@@ -25,7 +25,6 @@ package org.silverpeas.core.contribution.publication.service;
 
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.admin.component.ComponentHelper;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdminException;
@@ -110,8 +109,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   private CoordinatesService coordinatesService;
   @Inject
   private RatingService ratingService;
-  @Inject
-  private ComponentHelper componentHelper;
   @Inject
   private PublicationEventNotifier notifier;
 
@@ -1635,7 +1632,9 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   private boolean isRatingEnabled(WAPrimaryKey pk) {
-    WAComponent componentDefinition = componentHelper.getWAComponent(pk.getInstanceId());
+    WAComponent componentDefinition = WAComponent.getByInstanceId(pk.getInstanceId())
+        .orElseThrow(() -> new org.silverpeas.core.SilverpeasRuntimeException(
+            "The component instance '" + pk.getInstanceId() + " doesn't exit!"));
     return componentDefinition.hasParameterDefined("publicationRating");
   }
 

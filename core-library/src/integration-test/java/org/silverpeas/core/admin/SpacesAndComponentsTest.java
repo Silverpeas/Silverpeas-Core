@@ -23,18 +23,6 @@
  */
 package org.silverpeas.core.admin;
 
-import org.silverpeas.core.admin.component.model.PasteDetail;
-import org.silverpeas.core.admin.component.WAComponentRegistry;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.user.model.ProfileInst;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.space.SpaceProfileInst;
-import org.silverpeas.core.admin.service.cache.TreeCache;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
@@ -42,16 +30,27 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.space.SpaceServiceProvider;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.component.WAComponentRegistry;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.PasteDetail;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.Administration;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.cache.TreeCache;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.space.SpaceProfileInst;
+import org.silverpeas.core.admin.space.SpaceServiceProvider;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.admin.component.ComponentHelper;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.memory.MemoryData;
 import org.silverpeas.core.util.memory.MemoryUnit;
@@ -101,8 +100,7 @@ public class SpacesAndComponentsTest {
         .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.container")
         .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.content")
         .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
-            MemoryData.class, SpaceServiceProvider.class, ComponentHelper.class,
-            AttachmentServiceProvider.class)
+            MemoryData.class, SpaceServiceProvider.class, AttachmentServiceProvider.class)
         .build();
   }
 

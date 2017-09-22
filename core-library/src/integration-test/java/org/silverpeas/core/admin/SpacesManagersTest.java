@@ -30,7 +30,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.component.ComponentHelper;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.space.SpaceProfileInst;
@@ -75,7 +74,7 @@ public class SpacesManagersTest {
         .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.container")
         .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.content")
         .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
-            MemoryData.class, SpaceServiceProvider.class, ComponentHelper.class,
+            MemoryData.class, SpaceServiceProvider.class,
             AttachmentServiceProvider.class)
         .build();
   }

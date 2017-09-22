@@ -77,11 +77,13 @@ public class WebComponentManagerTest extends WebComponentRequestRouterTest {
 
   @Test
   public void veryfingWebComponentControllerInitialize() throws Exception {
+    ComponentContext componentContext = mock(ComponentContext.class);
+    when(componentContext.getCurrentComponentId()).thenReturn("componentName26");
     TestResult testResult = onDefaultController().defaultRequest().perform();
     assertThat(testResult.router.getSessionControlBeanName(),
         is("TestWebComponentControllerIdentifier"));
     assertThat(testResult.router.createComponentSessionController(mock(MainSessionController.class),
-        mock(ComponentContext.class)), instanceOf(TestWebComponentController.class));
+        componentContext), instanceOf(TestWebComponentController.class));
   }
 
   @Test

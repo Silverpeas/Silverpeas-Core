@@ -67,4 +67,14 @@ public interface SilverpeasComponentInstanceProvider {
    * SilverpeasPersonalComponentInstance}.
    */
   Optional<SilverpeasPersonalComponentInstance> getPersonalById(String personalComponentInstanceId);
+
+  /**
+   * Gets the name of the component from which the specified instance was spawn. The component
+   * instance identifier is made up of the name of the component with a local identifier that
+   * is peculiar to the type of the component. This method is a centralized way to get the component
+   * name from a component instance identifier.
+   * @param componentInstanceId the unique identifier of the component instance.
+   * @return
+   */
+  String getComponentName(String componentInstanceId);
 }

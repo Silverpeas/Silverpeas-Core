@@ -77,3 +77,6 @@
 <div class="occurrence-description" ng-if="$ctrl.ceo.description">
   <p ng-bind-html="$ctrl.ceo.description | noHTML | newlines"></p>
 </div>
+<div class="occurrence-content" ng-if="$ctrl.ceo.content">
+  <p ng-bind-html="$ctrl.ceo.content"></p>
+</div>

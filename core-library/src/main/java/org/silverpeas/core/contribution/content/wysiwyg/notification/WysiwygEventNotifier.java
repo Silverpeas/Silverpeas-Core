@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.notification;
 
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.notification.system.CDIResourceEventNotifier;
 import org.silverpeas.core.notification.system.ResourceEvent;
 

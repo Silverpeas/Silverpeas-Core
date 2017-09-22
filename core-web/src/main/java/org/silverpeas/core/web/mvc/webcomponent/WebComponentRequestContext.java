@@ -23,25 +23,25 @@
  */
 package org.silverpeas.core.web.mvc.webcomponent;
 
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.subscription.util.SubscriptionManagementContext;
-import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.web.mvc.util.RoutingException;
+import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternalJsp;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToNavigationStep;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToPreviousNavigationStep;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.LocalizationBundle;
 
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.UriBuilder;
-import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
-import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -337,20 +337,20 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
       String returnPath, boolean indexIt) {
     try {
       getRequest().setAttribute("subscriptionManagementContext", subscriptionManagementContext);
-      getRequest().setAttribute("SpaceId", getSpaceId());
-      getRequest()
-          .setAttribute("SpaceName", URLEncoder.encode(getSpaceLabel(), CharEncoding.UTF_8));
-      getRequest().setAttribute("ComponentId", getComponentInstanceId());
-      getRequest().setAttribute("ComponentName",
-          URLEncoder.encode(getComponentInstanceLabel(), CharEncoding.UTF_8));
-      getRequest().setAttribute("ObjectId", objectId);
-      getRequest().setAttribute("Language", controller.getLanguage());
-      getRequest().setAttribute("ReturnUrl", URLUtil.getApplicationURL() +
-          URLUtil.getURL(getComponentName(), "useless", getComponentInstanceId()) +
-          returnPath);
-      getRequest().setAttribute("UserId", String.valueOf(indexIt));
-      return redirectTo("/wysiwyg/jsp/htmlEditor.jsp");
-    } catch (UnsupportedEncodingException e) {
+
+      WysiwygRouting routing = new WysiwygRouting();
+      WysiwygRouting.WysiwygRoutingContext context =
+          new WysiwygRouting.WysiwygRoutingContext().withSpaceLabel(getSpaceLabel())
+              .withComponentLabel(getComponentInstanceLabel())
+              .withContributionId(ContributionIdentifier.from(getComponentInstanceId(), objectId))
+              .withLanguage(controller.getLanguage())
+              .withComeBackUrl(URLUtil.getApplicationURL() +
+                  URLUtil.getURL(getComponentName(), "useless", getComponentInstanceId()) +
+                  returnPath)
+              .withIndexation(indexIt);
+
+      return redirectTo(routing.getWysiwygEditorPath(context, getRequest()));
+    } catch (RoutingException e) {
       throw new RuntimeException(e);
     }
   }

@@ -76,7 +76,7 @@ public interface ComponentInstancePostConstruction {
   static Optional<ComponentInstancePostConstruction> get(String constructionName) {
     try {
       final String name;
-      if (WAComponent.get(constructionName).get().isWorkflow()) {
+      if (WAComponent.getByName(constructionName).get().isWorkflow()) {
         name = WORKFLOW_POST_CONSTRUCTION;
       } else {
         name = constructionName.substring(0, 1).toLowerCase() + constructionName.substring(1) +

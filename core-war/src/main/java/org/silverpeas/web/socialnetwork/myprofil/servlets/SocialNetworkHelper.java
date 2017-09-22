@@ -26,11 +26,11 @@ package org.silverpeas.web.socialnetwork.myprofil.servlets;
 import org.silverpeas.core.socialnetwork.connectors.SocialNetworkConnector;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
-import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
 import org.silverpeas.core.socialnetwork.service.AccessToken;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkAuthorizationException;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.web.socialnetwork.myprofil.control.MyProfilSessionController;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -124,7 +124,7 @@ public class SocialNetworkHelper {
       return;
     }
 
-    String status = myProfilSC.getUserFul(myProfilSC.getUserId()).getStatus();
+    String status = myProfilSC.getUserFull(myProfilSC.getUserId()).getStatus();
     socialNetworkService.storeAuthorizationToken(request.getSession(true), networkId,
         authorizationToken);
     connector.updateStatus(authorizationToken, status);

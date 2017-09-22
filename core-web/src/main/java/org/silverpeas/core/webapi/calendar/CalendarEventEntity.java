@@ -74,6 +74,7 @@ public class CalendarEventEntity implements WebEntity {
   private String calendarZoneId;
   private String title;
   private String description;
+  private String content;
   private String location;
   private boolean onAllDay;
   private String startDate;
@@ -234,6 +235,14 @@ public class CalendarEventEntity implements WebEntity {
 
   protected void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getContent() {
+    return content;
+  }
+
+  protected void setContent(final String content) {
+    this.content = content;
   }
 
   public String getLocation() {
@@ -413,6 +422,10 @@ public class CalendarEventEntity implements WebEntity {
    */
   @XmlTransient
   void applyOn(final CalendarEvent event) {
+    String currentText = getContent() == null ? "" : getContent();
+    event.getContent()
+        .filter(c -> !c.getData().contentEquals(currentText))
+        .ifPresent(c -> c.setData(currentText));
     event.withVisibilityLevel(getVisibility());
     if (getRecurrence() != null) {
       getRecurrence().applyOn(event, getPeriod());
@@ -469,6 +482,8 @@ public class CalendarEventEntity implements WebEntity {
     title = formatTitle(component, componentInstanceId, canBeAccessed);
     if (canBeAccessed) {
       description = calendarEvent.getDescription();
+      content =
+          calendarEvent.getContent().isPresent() ? calendarEvent.getContent().get().getData() : "";
       location = calendarEvent.getLocation();
       visibility = calendarEvent.getVisibilityLevel();
       priority = calendarEvent.getPriority();

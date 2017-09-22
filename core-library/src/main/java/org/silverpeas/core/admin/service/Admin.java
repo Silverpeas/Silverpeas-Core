@@ -81,7 +81,6 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -4950,9 +4949,8 @@ class Admin implements Administration {
     // Execute specific paste by the component
     try {
       pasteDetail.setToComponentId(sComponentId);
-      String componentRootName = URLUtil.getComponentNameFromComponentId(pasteDetail.
-          getFromComponentId());
-      String className = componentRootName + ApplicationResourcePasting.NAME_SUFFIX;
+      String className = ComponentInst.getComponentName(pasteDetail.getFromComponentId()) +
+          ApplicationResourcePasting.NAME_SUFFIX;
       ApplicationResourcePasting componentPaste = ServiceProvider.getService(className);
       componentPaste.paste(pasteDetail);
     } catch (IllegalStateException e) {

@@ -309,12 +309,12 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
 
   @Override
   public boolean isWorkflow() {
-    return WAComponent.get(getName()).get().isWorkflow();
+    return WAComponent.getByName(getName()).get().isWorkflow();
   }
 
   @Override
   public boolean isTopicTracker() {
-    return WAComponent.get(getName()).get().isTopicTracker();
+    return WAComponent.getByName(getName()).get().isTopicTracker();
   }
 
   public String getIcon(boolean bigOne) {

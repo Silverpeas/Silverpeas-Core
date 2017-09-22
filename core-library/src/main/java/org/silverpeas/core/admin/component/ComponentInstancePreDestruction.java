@@ -81,7 +81,7 @@ public interface ComponentInstancePreDestruction {
   static Optional<ComponentInstancePreDestruction> get(String destructionName) {
     try {
       final String name;
-      if (WAComponent.get(destructionName).get().isWorkflow()) {
+      if (WAComponent.getByName(destructionName).get().isWorkflow()) {
         name = WORKFLOW_PRE_DESTRUCTION;
       } else {
         name = destructionName.substring(0, 1).toLowerCase() + destructionName.substring(1) +

@@ -524,7 +524,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
       int level = space.getLevel() + 1;
       for (String componentId : componentIds) {
         ComponentInst component = organisationController.getComponentInst(componentId);
-        if (component != null && WAComponent.get(component.getName()).isPresent() &&
+        if (component != null && WAComponent.getByName(component.getName()).isPresent() &&
             !component.isHidden()) {
           boolean open = (targetComponentId != null && component.getId().equals(targetComponentId));
 
