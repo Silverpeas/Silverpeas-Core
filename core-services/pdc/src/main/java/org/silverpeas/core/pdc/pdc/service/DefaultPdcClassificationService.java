@@ -23,7 +23,11 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
+import org.silverpeas.core.NotSupportedException;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
@@ -39,7 +43,9 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.text.MessageFormat;
 import java.util.List;
+import java.util.Optional;
 
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -209,33 +215,34 @@ public class DefaultPdcClassificationService implements PdcClassificationService
   }
 
   /**
-   * Classifies the specified content on the PdC with the specified classification. If the content
-   * is already classified, then the given classification replaces the existing one. The content
-   * must exist in Silverpeas before being classified. If an error occurs while classifying the
-   * content, a runtime exception PdcRuntimeException is thrown.
-   * @param content the Silverpeas content to classify.
-   * @param withClassification the classification with which the content is positioned on the PdC.
+   * Classifies the specified contribution on the PdC with the specified classification. If the
+   * contribution is already classified, then the given classification replaces the existing one.
+   * The contribution must exist in Silverpeas before being classified. If an error occurs while
+   * classifying the contribution, a runtime exception PdcRuntimeException is thrown.
+   * @param contribution the Silverpeas contribution to classify.
+   * @param withClassification the classification with which the contribution is positioned on
+   * the PdC.
    * @param alertSubscribers indicates if subscribers must be notified or not
    */
   @Override
-  public void classifyContent(final SilverpeasContent content,
-      final PdcClassification withClassification, boolean alertSubscribers) throws PdcRuntimeException {
+  public void classifyContent(final Contribution contribution,
+      final PdcClassification withClassification, boolean alertSubscribers) {
     List<ClassifyPosition> classifyPositions = withClassification.getClassifyPositions();
     try {
-      int silverObjectId = Integer.valueOf(content.getSilverpeasContentId());
+      final ContributionIdentifier contributionId = contribution.getContributionId();
+      int silverObjectId = getOrCreateSilverpeasContentId(contribution);
+      final String componentInstanceId = contributionId.getComponentInstanceId();
       List<ClassifyPosition> existingPositions =
-          getPdcManager().getPositions(silverObjectId, content.
-                  getComponentInstanceId());
+          getPdcManager().getPositions(silverObjectId, componentInstanceId);
       for (ClassifyPosition aClassifyPosition : classifyPositions) {
-        int positionId = getPdcManager().addPosition(silverObjectId, aClassifyPosition, content.
-            getComponentInstanceId(), alertSubscribers);
+        int positionId = getPdcManager()
+            .addPosition(silverObjectId, aClassifyPosition, componentInstanceId, alertSubscribers);
         aClassifyPosition.setPositionId(positionId);
       }
       if (!existingPositions.isEmpty()) {
         for (ClassifyPosition anExistingPosition : existingPositions) {
           if (!isFound(anExistingPosition, classifyPositions)) {
-            getPdcManager().deletePosition(anExistingPosition.getPositionId(),
-                content.getComponentInstanceId());
+            getPdcManager().deletePosition(anExistingPosition.getPositionId(), componentInstanceId);
           }
         }
       }
@@ -243,6 +250,44 @@ public class DefaultPdcClassificationService implements PdcClassificationService
       throw new PdcRuntimeException(getClass().getSimpleName() + ".classifyContent()", ex.
           getErrorLevel(), ex.getMessage(), ex);
     }
+  }
+
+  /**
+   * <p>
+   * Gets the silverpeas content identifier (the identifier of the content handled by the PDC
+   * indeed) from a contribution instance. If it does not exists it is created.
+   * </p>
+   * <p>
+   * Old mechanism has not been refactored, so when the contribution is a {@link SilverpeasContent}
+   * one, then the silverpeas content id is retrieved from
+   * {@link SilverpeasContent#getSilverpeasContentId()}
+   * implemented by the contribution.
+   * </p>
+   * <p>
+   * Otherwise, the silverpeas content id is get or created by using the right implementation of
+   * {@link ContentInterface}.<br/>
+   * If no implementation exists, and so that no silverpeas content id can be get or created, a
+   * {@link NotSupportedException} is thrown because the process is in a case where no classification
+   * should be used.
+   * </p>
+   * @param contribution a contribution.
+   * @return the content identifier as integer.
+   */
+  private int getOrCreateSilverpeasContentId(final Contribution contribution) {
+    if (contribution instanceof SilverpeasContent) {
+      return Integer.valueOf(((SilverpeasContent) contribution).getSilverpeasContentId());
+    }
+    final ContributionIdentifier contributionId = contribution.getContributionId();
+
+    Optional<ContentInterface> contentInterface =
+        ContentInterface.getByInstanceId(contributionId.getComponentInstanceId());
+    if (contentInterface.isPresent()) {
+      return contentInterface.get().getOrCreateSilverContentId(contribution);
+    }
+
+    throw new NotSupportedException(MessageFormat
+        .format("contribution {0} must implements WithPdcClassification to be taken in charge",
+            contributionId.asString()));
   }
 
   /**

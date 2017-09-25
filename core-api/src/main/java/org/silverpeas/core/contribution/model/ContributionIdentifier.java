@@ -25,6 +25,8 @@ package org.silverpeas.core.contribution.model;
 
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.contribution.ContributionLocator;
+import org.silverpeas.core.util.Mutable;
 
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -51,6 +53,8 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 public class ContributionIdentifier implements ResourceIdentifier, Serializable {
+
+  public static final String MISSING_PART = "?";
 
   private static final String ABSOLUTE_ID_FORMAT = "{0}:{1}:{2}";
   private static final Pattern ABSOLUTE_ID_PATTERN =
@@ -83,7 +87,15 @@ public class ContributionIdentifier implements ResourceIdentifier, Serializable 
   }
 
   /**
+   * <p>
    * Decodes the contribution identifier from the given string.
+   * </p>
+   * <p>
+   * If the decoded contribution identifier is partially filled (component instance identifier
+   * is missing for example), then the {@link ContributionLocator} is used to attempt to locate
+   * the contribution behind the contribution identifier. If it is located, the component
+   * instance identifier found is taken into account.
+   * </p>
    * @param contributionId a contribution identifier as string.
    * @return a {@link ContributionIdentifier} which represents the given id as string.
    */
@@ -94,7 +106,13 @@ public class ContributionIdentifier implements ResourceIdentifier, Serializable 
       final String type = matcher.group("type");
       final String localId = matcher.group("localId");
       if (isDefined(instanceId) && isDefined(localId) && isDefined(type)) {
-        return ContributionIdentifier.from(instanceId, localId, type);
+        final Mutable<ContributionIdentifier> contributionIdentifier =
+            Mutable.of(ContributionIdentifier.from(instanceId, localId, type));
+        if (MISSING_PART.equals(instanceId)) {
+          ContributionLocator.get().locateByLocalIdAndType(localId, type)
+              .ifPresent(contributionIdentifier::set);
+        }
+        return contributionIdentifier.get();
       }
     }
     throw new IllegalArgumentException(failureOnGetting("contribution id from", contributionId));
@@ -106,10 +124,12 @@ public class ContributionIdentifier implements ResourceIdentifier, Serializable 
    * handled by the component.
    * @param instanceId the unique identifier of the instance.
    * @param localId the local identifier of the contribution.
+   * @param type the type of the contribution.
    * @return an contribution identifier.
    */
-  public static ContributionIdentifier from(String instanceId, String localId) {
-    return from(instanceId, localId, CoreContributionType.MAIN.name());
+  public static ContributionIdentifier from(String instanceId, String localId,
+      CoreContributionType type) {
+    return from(instanceId, localId, type.name());
   }
 
   /**
@@ -121,7 +141,7 @@ public class ContributionIdentifier implements ResourceIdentifier, Serializable 
    */
   public static ContributionIdentifier from(WAPrimaryKey key) {
     return new ContributionIdentifier(key.getInstanceId(), key.getId(),
-        CoreContributionType.MAIN.name());
+        CoreContributionType.UNKNOWN.name());
   }
 
   /**

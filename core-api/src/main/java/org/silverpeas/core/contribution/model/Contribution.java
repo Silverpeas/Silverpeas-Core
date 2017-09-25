@@ -24,6 +24,10 @@
 package org.silverpeas.core.contribution.model;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.security.Securable;
+import org.silverpeas.core.security.authorization.AccessController;
+import org.silverpeas.core.security.authorization.AccessControllerProvider;
+import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -34,7 +38,7 @@ import java.util.Date;
  * always a content that can be of any type (simple text, WYSIWYG, form, image, ...).
  * @author mmoquillon
  */
-public interface Contribution extends Serializable {
+public interface Contribution extends Serializable, Securable {
 
   /**
    * Gets the unique identifier of this contribution.
@@ -55,6 +59,23 @@ public interface Contribution extends Serializable {
   Date getCreationDate();
 
   /**
+   * Gets the last user that has modified this contribution.<br/>
+   * When some old entities can not provide a modifier, then the creator is returned.
+   * @return the detail about the user that has modified this contribution.
+   */
+  User getLastModifier();
+
+  /**
+   * Gets the date at which this content was modified.
+   * <p>
+   * Some beans can not handle both creation and modification dates. In a such case, both methods
+   * ({@link #getCreationDate()} and this method) returns the same date.
+   * </p>
+   * @return the date at which this content was created.
+   */
+  Date getLastModificationDate();
+
+  /**
    * Gets the title of this contribution if any. By default returns an empty String.
    * @return the contribution's title in the specified language.
    * Can be empty if no title was set or no title is defined for a such contribution.
@@ -73,19 +94,6 @@ public interface Contribution extends Serializable {
   }
 
   /**
-   * Is the specified user can access this contribution?
-   * <p>
-   * A user can access a contribution if it has enough rights to access the application instance
-   * in which is managed this contribution. In the case the application instance distributes its
-   * contribution along of a categorization tree and the nodes of this tree support access rights,
-   * then the user must have also the rights to access the node to which belongs the content.
-   * </p>
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this content, false otherwise.
-   */
-  boolean canBeAccessedBy(User user);
-
-  /**
    * Gets the type of this contribution. The type is a label that identifies uniquely a kind of
    * contribution handled by a Silverpeas application.
    * By default, this method returns the simple name of the class implementing this interface.
@@ -102,5 +110,28 @@ public interface Contribution extends Serializable {
    */
   default boolean isIndexable() {
     return true;
+  }
+
+  /**
+   * Is the specified user can access this contribution?
+   * <p>
+   * By default {@link Securable#canBeAccessedBy(User)} is implemented so that a user can access
+   * a contribution if it has enough rights to access the application instance in which is
+   * managed this contribution.<br/>
+   * Indeed, this behavior is mostly the common one.<br/>
+   * But In the case the application instance distributes its contribution along of a
+   * categorization tree and the nodes of this tree support access rights, then the user must
+   * have also the rights to access the node to which belongs the content.<br/>
+   * Of course it could exist other access rules...
+   * </p>
+   * @param user a user in Silverpeas.
+   * @return true if the user can access this content, false otherwise.
+   */
+  @Override
+  default boolean canBeAccessedBy(final User user) {
+    AccessController<String> accessController =
+        AccessControllerProvider.getAccessController(ComponentAccessControl.class);
+    return accessController
+        .isUserAuthorized(user.getId(), getContributionId().getComponentInstanceId());
   }
 }

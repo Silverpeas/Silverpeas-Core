@@ -149,4 +149,22 @@ public interface SilverpeasComponent {
    * @return the list of groups of parameters.
    */
   List<GroupOfParameters> getGroupsOfParameters();
+
+  /**
+   * Is this component is a workflow?
+   * @return true if this component satisfies the behavior of a workflow, that is to say if it
+   * defines a workflow. False if it is a regular Silverpeas.
+   * application.
+   */
+  default boolean isWorkflow() {
+    return false;
+  }
+
+  /**
+   * Is this component is a topic tracker?
+   * @return true if this component satisfies the behavior of a topic tracker.
+   */
+  default boolean isTopicTracker() {
+    return false;
+  }
 }

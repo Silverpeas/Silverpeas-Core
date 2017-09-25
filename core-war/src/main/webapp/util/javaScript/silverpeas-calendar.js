@@ -250,8 +250,15 @@
          */
         if (!occurrence.componentInstanceId) {
           occurrence.componentInstanceId = function() {
+            var calendarUri = this.calendarUri;
+            if (!calendarUri) {
+              if (!this.calendar || !this.calendar.uri) {
+                throw 'calendar uri can not be read from calendarUri or calendar.uri';
+              }
+              calendarUri = this.calendar.uri;
+            }
             var instanceRegExp = new RegExp(webContext + '/services/[^/]+/([^/]+)/.+', "g");
-            return instanceRegExp.exec(this.calendarUri)[1];
+            return instanceRegExp.exec(calendarUri)[1];
           };
         }
       }

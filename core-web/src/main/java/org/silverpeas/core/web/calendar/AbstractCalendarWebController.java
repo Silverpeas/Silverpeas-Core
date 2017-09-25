@@ -40,9 +40,11 @@ import org.silverpeas.core.web.mvc.webcomponent.Navigation;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentController;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
+import org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -55,8 +57,7 @@ import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.silverpeas.core.util.StringUtil.getBooleanValue;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.StringUtil.*;
 
 /**
  * Common behaviors about WEB component controllers which handle the rendering of a calendar.
@@ -234,5 +235,19 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
     // Add extra params
     userPanelSelection.setExtraParams(sug);
     return Selection.getSelectionURL();
+  }
+
+  /**
+   * Handles the incoming from a search result URL.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("searchResult")
+  @RedirectToInternal("calendars/occurrences/{occurrenceId}")
+  public void searchResult(AbstractCalendarWebRequestContext context) {
+    context.getNavigationContext().clear();
+    final CalendarEventOccurrence occurrence = CalendarWebServiceProvider.get()
+        .getFirstCalendarEventOccurrenceFromEventId(context.getRequest().getParameter("Id"));
+    context.addRedirectVariable("occurrenceId", asBase64(occurrence.getId().getBytes()));
   }
 }

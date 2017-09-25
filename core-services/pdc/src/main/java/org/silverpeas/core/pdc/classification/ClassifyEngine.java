@@ -23,15 +23,16 @@
  */
 package org.silverpeas.core.pdc.classification;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentPostUpdate;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -53,7 +54,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 @Singleton
 @Transactional
-public class ClassifyEngine {
+public class ClassifyEngine implements SilverContentPostUpdate {
   // Maximum number of axis processed by the classifyEngine (from properties)
   private int nbMaxAxis = 0;
   // Helper object to build all the SQL statements
@@ -93,9 +94,15 @@ public class ClassifyEngine {
    * Constructor
    */
   protected ClassifyEngine() {
+    // Nothing to do.
   }
 
-  static public void clearCache() {
+  @Override
+  public void postSilverpeasContentUpdate(final int silverContentId) {
+    clearCache();
+  }
+
+  private static void clearCache() {
     getInstance().m_hSinglePertinentAxis.clear();
   }
 

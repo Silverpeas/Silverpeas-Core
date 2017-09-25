@@ -27,9 +27,6 @@ import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import java.util.Date;
 
@@ -142,7 +139,13 @@ public class Comment implements SilverpeasContent {
     this.modification_date = new Date(modification_date.getTime());
   }
 
-  public Date getModificationDate() {
+  @Override
+  public User getLastModifier() {
+    return getCreator();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
     Date date = null;
     if (this.modification_date != null) {
       date = new Date(this.modification_date.getTime());
@@ -173,7 +176,7 @@ public class Comment implements SilverpeasContent {
     str.append("getCreationDate() = ").append(getCreationDate())
         .append(", \n");
     str.append("getModificationDate() = ").append(
-        getModificationDate());
+        getLastModificationDate());
     return str.toString();
   }
 
@@ -208,28 +211,5 @@ public class Comment implements SilverpeasContent {
   @Override
   public String getContributionType() {
     return CONTRIBUTION_TYPE;
-  }
-
-  /**
-   * Is the specified user can access this comment?
-   * <p>
-   * A user can access a comment if it has enough rights to access the application instance in
-   * which is managed this comment.
-   * <p>
-   * Be caution, the access control on the commented resource is usually more reliable than using
-   * this method.
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this comment, false otherwise.
-   */
-  @Override
-  public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
-  }
-
-  @Override
-  public String getSilverpeasContentId() {
-    return "";
   }
 }

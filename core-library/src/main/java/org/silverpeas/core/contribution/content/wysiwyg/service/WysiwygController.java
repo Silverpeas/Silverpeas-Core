@@ -23,21 +23,23 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWYG;
 
 /**
  * Central service to manage Wysiwyg.
@@ -388,7 +390,7 @@ public class WysiwygController {
 
       @Override
       public ContributionIdentifier getContributionId() {
-        return ContributionIdentifier.from(componentId, objectId);
+        return ContributionIdentifier.from(componentId, objectId, WYSIWYG);
       }
 
       @Override
@@ -398,6 +400,16 @@ public class WysiwygController {
 
       @Override
       public Date getCreationDate() {
+        return null;
+      }
+
+      @Override
+      public User getLastModifier() {
+        return null;
+      }
+
+      @Override
+      public Date getLastModificationDate() {
         return null;
       }
 

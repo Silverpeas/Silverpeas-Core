@@ -61,7 +61,7 @@ public class ContentPeas {
       this.init("almanach", "org.silverpeas.components.almanach.AlmanachContentManager");
     } else if ("quizz".equals(sContentDescriptorPath)) {
       this.init("quizz", "org.silverpeas.components.quizz.QuizzContentManager");
-    } else if (sContentDescriptorPath.equals("forums")) {
+    } else if ("forums".equals(sContentDescriptorPath)) {
       this.init("forums", "org.silverpeas.components.forums.ForumsContentManager");
     } else if ("pollingStation".equals(sContentDescriptorPath)) {
       this.init("pollingStation", "com.stratelia.webactiv.survey.SurveyContentManager");
@@ -73,7 +73,7 @@ public class ContentPeas {
       this.init("webSites", "org.silverpeas.components.websites.WebSitesContentManager");
     } else if ("gallery".equals(sContentDescriptorPath)) {
       this.init("gallery", "org.silverpeas.components.gallery.GalleryContentManager");
-    } else if (sContentDescriptorPath.equals("blog")) {
+    } else if ("blog".equals(sContentDescriptorPath)) {
       this.init("blog", "org.silverpeas.components.blog.BlogContentManager");
     }
   }

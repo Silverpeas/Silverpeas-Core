@@ -32,7 +32,6 @@ import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
@@ -95,10 +94,10 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
     final NotificationResourceData notificationResourceData = new NotificationResourceData();
     notificationResourceData.setComponentInstanceId(getNotificationMetaData().getComponentId());
     notificationResourceData.setResourceUrl(getNotificationMetaData().getLink());
-    if (resource instanceof Contribution) {
-      fill(notificationResourceData, (Contribution) resource);
-    } else if (resource instanceof SilverpeasContent) {
+    if (resource instanceof SilverpeasContent) {
       fill(notificationResourceData, (SilverpeasContent) resource);
+    } else if (resource instanceof Contribution) {
+      fill(notificationResourceData, (Contribution) resource);
     }
     return notificationResourceData;
   }
@@ -108,21 +107,18 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
 
   protected String getResourceURL(final T resource) {
     String resourceUrl = null;
-    if (resource instanceof Contribution) {
+    if (resource instanceof SilverpeasContent) {
+      resourceUrl = URLUtil.getSearchResultURL((SilverpeasContent) resource);
+    } else if (resource instanceof Contribution) {
       Contribution contribution = (Contribution) resource;
       final ComponentInstanceRoutingMapProvider routingMapProvider =
           ComponentInstanceRoutingMapProviderByInstance.get()
               .getByInstanceId(contribution.getContributionId().getComponentInstanceId());
       resourceUrl =
           routingMapProvider.absolute().getPermalink(contribution.getContributionId()).toString();
-    } else if (resource instanceof SilverpeasContent) {
-      resourceUrl = URLUtil.getSearchResultURL((SilverpeasContent) resource);
     }
     if (StringUtils.isBlank(resourceUrl)) {
       resourceUrl = "";
-      SilverTrace.warn("NotificationBuider",
-          "AbstractResourceNotificationBuilder.getResourceURL(T resource)",
-          "notificationBuider.RESOURCE_URL_IS_EMPTY");
     }
     return resourceUrl;
   }

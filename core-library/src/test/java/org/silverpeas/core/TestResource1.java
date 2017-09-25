@@ -59,6 +59,16 @@ public class TestResource1 implements SilverpeasContent {
   }
 
   @Override
+  public User getLastModifier() {
+    return null;
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return null;
+  }
+
+  @Override
   public String getTitle() {
     return null;
   }

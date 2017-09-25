@@ -228,7 +228,7 @@ public class QuestionContainerDAOTest extends DataSetTest {
     }
     assertEquals("2012-01-12", result.getBeginDate());
     assertEquals("RAS", result.getComment());
-    assertEquals("2012-01-12", result.getCreationDate());
+    assertEquals(java.sql.Date.valueOf("2012-01-12"), result.getCreationDate());
     assertEquals("0", result.getCreatorId());
     assertEquals("Expression française sur les fruits et légumes", result.getDescription());
     assertEquals(0, result.getMaxTime());

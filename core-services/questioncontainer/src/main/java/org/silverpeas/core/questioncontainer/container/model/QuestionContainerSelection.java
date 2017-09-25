@@ -32,7 +32,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
-import java.util.Date;
 
 public class QuestionContainerSelection extends ClipboardSelection implements Serializable {
 
@@ -83,7 +82,7 @@ public class QuestionContainerSelection extends ClipboardSelection implements Se
 
     keyData.setTitle(m_questionContainer.getHeader().getName());
     keyData.setAuthor(m_questionContainer.getHeader().getCreatorId());
-    keyData.setCreationDate(new Date(m_questionContainer.getHeader().getCreationDate()));
+    keyData.setCreationDate(m_questionContainer.getHeader().getCreationDate());
 
     keyData.setDesc(m_questionContainer.getHeader().getDescription());
     try {

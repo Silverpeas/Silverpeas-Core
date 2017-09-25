@@ -31,5 +31,5 @@ import javax.inject.Named;
  * @author silveryocha
  */
 @Named
-public class DefaultComponentInstanceRoutingMap extends AbstractComponentInstanceRoutingMap {
+public final class DefaultComponentInstanceRoutingMap extends AbstractComponentInstanceRoutingMap {
 }

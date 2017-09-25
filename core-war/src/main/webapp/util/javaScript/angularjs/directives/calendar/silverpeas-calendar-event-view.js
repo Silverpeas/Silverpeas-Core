@@ -214,4 +214,21 @@
             }]
           };
         }]);
+
+  angular.module('silverpeas.directives').directive('silverpeasCalendarEventViewPdcClassification',
+      [function() {
+        return {
+          template : '<silverpeas-pdc-classification-view instance-id="{{$ctrl.ceo.componentInstanceId()}}"' +
+                                                         'resource-id="{{$ctrl.ceo.eventId}}"' +
+                                                         'preview="true"></silverpeas-pdc-classification-view>',
+          restrict : 'E',
+          scope : {
+            ceo : '=calendarEventOccurrence'
+          },
+          controllerAs : '$ctrl',
+          bindToController : true,
+          controller : [function() {
+          }]
+        };
+      }]);
 })();

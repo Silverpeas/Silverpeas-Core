@@ -23,12 +23,16 @@
  */
 package org.silverpeas.core.questioncontainer.container.model;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.i18n.AbstractBean;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.text.ParseException;
 import java.util.Collection;
+import java.util.Date;
 
 public class QuestionContainerHeader extends AbstractBean
     implements java.io.Serializable, SilverContentInterface {
@@ -133,6 +137,7 @@ public class QuestionContainerHeader extends AbstractBean
     return pk;
   }
 
+  @Override
   public String getTitle() {
     return getName();
   }
@@ -141,12 +146,26 @@ public class QuestionContainerHeader extends AbstractBean
     return comment;
   }
 
+  @Override
   public String getCreatorId() {
     return creatorId;
   }
 
-  public String getCreationDate() {
-    return creationDate;
+  @Override
+  public Date getCreationDate() {
+    if (creationDate != null) {
+      try {
+        return DateUtil.parse(creationDate);
+      } catch (ParseException e) {
+        SilverLogger.getLogger(this).warn(e);
+      }
+      try {
+        return DateUtil.parseISO8601Date(creationDate);
+      } catch (ParseException e) {
+        SilverLogger.getLogger(this).warn(e);
+      }
+    }
+    return null;
   }
 
   public String getBeginDate() {
@@ -259,30 +278,36 @@ public class QuestionContainerHeader extends AbstractBean
 
   // methods to be implemented by SilverContentInterface
 
+  @Override
   public String getURL() {
     return "searchResult?Type=QuestionContainer&Id=" + getId();
   }
 
+  @Override
   public String getId() {
     return getPK().getId();
   }
 
+  @Override
   public String getInstanceId() {
     return getPK().getComponentName();
   }
 
+  @Override
   public String getDate() {
-    return getCreationDate();
+    return creationDate;
   }
 
+  @Override
   public String getSilverCreationDate() {
-    return getCreationDate();
+    return getDate();
   }
 
   public void setIconUrl(String iconUrl) {
     this.iconUrl = iconUrl;
   }
 
+  @Override
   public String getIconUrl() {
     return this.iconUrl;
   }

@@ -43,6 +43,8 @@ import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
+import org.silverpeas.core.pdc.pdc.model.PdcClassification;
+import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
@@ -82,6 +84,7 @@ import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.admin;
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.user;
 import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.CALENDAR;
+import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity.decodeId;
 import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.CALENDAR_BASE_URI;
 import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertDataConsistency;
@@ -507,6 +510,10 @@ public class CalendarResource extends AbstractCalendarResource {
           getCalendarWebServiceProvider().createEvent(calendar, eventEntity.getMergedEvent());
       Attachments.from(eventEntity.getAttachmentParameters())
           .attachTo(LocalizedContribution.from(event));
+      if (!eventEntity.getPdcClassification().isUndefined()) {
+        List<PdcPosition> pdcPositions = eventEntity.getPdcClassification().getPdcPositions();
+        aPdcClassificationOfContent(event).withPositions(pdcPositions).classifyContent(event);
+      }
       return event;
     }).execute();
     return asEventWebEntity(createdEvent);

@@ -34,12 +34,14 @@ import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.CalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.ComponentInstanceCalendars;
 import org.silverpeas.core.calendar.ICalendarEventImportProcessor;
 import org.silverpeas.core.calendar.ICalendarImportResult;
 import org.silverpeas.core.calendar.Plannable;
 import org.silverpeas.core.calendar.icalendar.ICalendarExporter;
 import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportException;
@@ -57,6 +59,7 @@ import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -65,6 +68,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.singletonList;
 import static org.silverpeas.core.calendar.CalendarEventUtil.getDateWithOffset;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.ALL;
@@ -78,8 +82,13 @@ public class CalendarWebServiceProvider {
 
   private final SilverLogger silverLogger = SilverLogger.getLogger(Plannable.class);
 
+  private static final int END_YEAR_OFFSET = 3;
+
   @Inject
   private ICalendarExporter iCalendarExporter;
+
+  @Inject
+  private CalendarEventOccurrenceGenerator generator;
 
   @Inject
   private ICalendarEventImportProcessor iCalendarEventImportProcessor;
@@ -526,6 +535,25 @@ public class CalendarWebServiceProvider {
       default:
         throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
+  }
+
+  /**
+   * Gets the first occurrence of an event from the identifier of an event.
+   * @param eventId an event identifier.
+   * @return the first {@link CalendarEventOccurrence} instance of an event.
+   */
+  public CalendarEventOccurrence getFirstCalendarEventOccurrenceFromEventId(final String eventId) {
+    CalendarEvent event = CalendarEvent.getById(eventId);
+    final Temporal startTemporal = event.getStartDate();
+    final Temporal endTemporal;
+    if (!event.isRecurrent()) {
+      endTemporal = event.getEndDate();
+    } else {
+      endTemporal = event.getEndDate().plus(END_YEAR_OFFSET, ChronoUnit.YEARS);
+    }
+    return generator
+        .generateOccurrencesOf(singletonList(event), Period.between(startTemporal, endTemporal))
+        .get(0);
   }
 
   /**

@@ -30,5 +30,5 @@ package org.silverpeas.core.contribution.model;
  * @author silveryocha
  */
 public enum CoreContributionType {
-  MAIN, EVENT
+  UNKNOWN, WYSIWYG
 }

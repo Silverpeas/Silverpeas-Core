@@ -107,4 +107,13 @@ public class Classified implements SilverpeasContent {
     unauthorizedUsers.add(user.getId());
   }
 
+  @Override
+  public User getLastModifier() {
+    return getCreator();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return getCreationDate();
+  }
 }

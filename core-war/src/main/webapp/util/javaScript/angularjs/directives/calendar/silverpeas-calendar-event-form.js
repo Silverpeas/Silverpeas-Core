@@ -28,80 +28,76 @@
     return formA.getFormValidationPriority() - formB.getFormValidationPriority();
   }
 
-  angular.module('silverpeas.directives').directive('silverpeasCalendarEventForm',
-      ['$timeout', function($timeout) {
-        return {
-          templateUrl : webContext +
-          '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form.jsp',
-          restrict : 'E',
-          scope : {
-            calendarEventOccurrence : '=',
-            data : '=',
-            api : '=?',
-            onAddValidated : '&',
-            onModifyOccurrenceValidated : '&',
-            onCancel : '&'
-          },
-          transclude : true,
-          controllerAs : '$ctrl',
-          bindToController : true,
-          controller : function() {
+  angular.module('silverpeas.directives').directive('silverpeasCalendarEventForm', [function() {
+    return {
+      templateUrl : webContext +
+      '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form.jsp',
+      restrict : 'E',
+      scope : {
+        calendarEventOccurrence : '=',
+        data : '=',
+        api : '=?',
+        onAddValidated : '&',
+        onModifyOccurrenceValidated : '&',
+        onCancel : '&'
+      },
+      transclude : true,
+      controllerAs : '$ctrl',
+      bindToController : true,
+      controller : function() {
 
-            this.formValidationRegistry = [];
+        this.formValidationRegistry = [];
 
-            /**
-             * Performs validation on all linked forms
-             */
-            var _validate = function() {
-              var existsAtLeastOneError = false;
-              this.formValidationRegistry.forEach(function(form) {
-                existsAtLeastOneError = !form.validate() || existsAtLeastOneError;
-              });
-              return !SilverpeasError.show() && !existsAtLeastOneError;
-            }.bind(this);
+        /**
+         * Performs validation on all linked forms
+         */
+        var _validate = function() {
+          var existsAtLeastOneError = false;
+          this.formValidationRegistry.forEach(function(form) {
+            existsAtLeastOneError = !form.validate() || existsAtLeastOneError;
+          });
+          return !SilverpeasError.show() && !existsAtLeastOneError;
+        }.bind(this);
 
-            /**
-             * Performs updating of source data from internal one.
-             */
-            var _updateData = function() {
-              this.formValidationRegistry.forEach(function(form) {
-                form.updateData(this.calendarEventOccurrence);
-              }.bind(this));
-            }.bind(this);
+        /**
+         * Performs updating of source data from internal one.
+         */
+        var _updateData = function() {
+          this.formValidationRegistry.forEach(function(form) {
+            form.updateData(this.calendarEventOccurrence);
+          }.bind(this));
+        }.bind(this);
 
-            this.api = {
-              handleFormValidation : function(formValidationApi) {
-                this.formValidationRegistry.push(formValidationApi);
-                this.formValidationRegistry.sort(__sortFormsByPriority);
-              }.bind(this),
-              validate : function() {
-                notyReset();
-                if (_validate()) {
-                  _updateData();
-                  var originalCalendarUri = this.calendarEventOccurrence.calendarUri;
-                  if (!originalCalendarUri) {
-                    this.onAddValidated({event : this.calendarEventOccurrence});
-                  } else {
-                    this.onModifyOccurrenceValidated({
-                      occurrence : this.calendarEventOccurrence,
-                      previousOccurrence : this.previousData
-                    });
-                  }
-                }
-              }.bind(this),
-              cancel : function() {
-                notyReset();
-                this.onCancel();
-              }.bind(this)
-            };
-
-            this.$onInit = function() {
-              this.data = angular.copy(this.calendarEventOccurrence);
-              this.previousData = angular.copy(this.calendarEventOccurrence);
-            }.bind(this);
-          }
+        this.api = {
+          handleFormValidation : function(formValidationApi) {
+            this.formValidationRegistry.push(formValidationApi);
+            this.formValidationRegistry.sort(__sortFormsByPriority);
+          }.bind(this), validate : function() {
+            notyReset();
+            if (_validate()) {
+              _updateData();
+              var originalCalendarUri = this.calendarEventOccurrence.calendarUri;
+              if (!originalCalendarUri) {
+                this.onAddValidated({event : this.calendarEventOccurrence});
+              } else {
+                this.onModifyOccurrenceValidated({
+                  occurrence : this.calendarEventOccurrence, previousOccurrence : this.previousData
+                });
+              }
+            }
+          }.bind(this), cancel : function() {
+            notyReset();
+            this.onCancel();
+          }.bind(this)
         };
-      }]);
+
+        this.$onInit = function() {
+          this.data = angular.copy(this.calendarEventOccurrence);
+          this.previousData = angular.copy(this.calendarEventOccurrence);
+        }.bind(this);
+      }
+    };
+  }]);
 
   angular.module('silverpeas.directives').directive('silverpeasCalendarEventFormMain',
       ['$timeout', 'context', 'synchronizedFilter', 'defaultFilter',
@@ -576,13 +572,12 @@
       }]);
 
   angular.module('silverpeas.directives').directive('silverpeasCalendarEventFormAttendees',
-      ['$timeout', 'context',
-        function($timeout, context) {
-          return {
+      ['context', function(context) {
+        return {
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form-attendees.jsp',
           restrict : 'E',
-          require: 'silverpeasCalendarEventForm',
+          require : 'silverpeasCalendarEventForm',
           scope : {
             calendarEventApi : '=',
             data : '=',
@@ -619,26 +614,20 @@
               }
             }.bind(this));
 
-            var initialize = function() {
-            }.bind(this);
-
             this.$onInit = function() {
               this.calendarEventApi.handleFormValidation(this.api);
-              initialize();
-              this.initUserPanelUrl = context.componentUriBase  + 'calendars/events/attendees/select';
+              this.initUserPanelUrl = context.componentUriBase + 'calendars/events/attendees/select';
             }.bind(this);
           }]
         };
       }]);
 
   angular.module('silverpeas.directives').directive('silverpeasCalendarEventFormAttachments',
-      ['$timeout', 'context',
-        function($timeout, context) {
-          return {
-          templateUrl : webContext +
-          '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form-attachments.jsp',
+      [function() {
+        return {
+          template : '<silverpeas-file-upload api="$ctrl.fileUpload" display-into-fieldset="true"></silverpeas-file-upload>',
           restrict : 'E',
-          require: 'silverpeasCalendarEventForm',
+          require : 'silverpeasCalendarEventForm',
           scope : {
             calendarEventApi : '=',
             data : '=',
@@ -646,11 +635,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function() {
-            this.getMessages = function() {
-              return this.calendarEventApi.messages;
-            }.bind(this);
-
+          controller : [function() {
             this.api = {
               getFormValidationPriority : function() {
                 return this.formValidationPriority ? this.formValidationPriority : 0
@@ -663,20 +648,49 @@
                   notyInfo(errorMsg);
                   return false;
                 }
-              }.bind(this),
-              updateData : function(ceo) {
+              }.bind(this), updateData : function(ceo) {
                 ceo.attachmentParameters = this.fileUpload.serializeArray();
               }.bind(this)
             };
 
-            var initialize = function() {
+            this.$onInit = function() {
+              this.calendarEventApi.handleFormValidation(this.api);
             }.bind(this);
+          }]
+        };
+      }]);
+
+  angular.module('silverpeas.directives').directive('silverpeasCalendarEventFormPdcClassification',
+      [function() {
+          return {
+          template : '<silverpeas-pdc-classification-new ng-if="!$ctrl.data.occurrenceId" api="$ctrl.pdcApi" instance-id="{{$ctrl.data.componentInstanceId()}}"></silverpeas-pdc-classification-new>' +
+                     '<silverpeas-pdc-classification-edit ng-if="$ctrl.data.occurrenceId" api="$ctrl.pdcApi" instance-id="{{$ctrl.data.componentInstanceId()}}" resource-id="{{$ctrl.data.eventId}}"></silverpeas-pdc-classification-edit>',
+          restrict : 'E',
+          require: 'silverpeasCalendarEventForm',
+          scope : {
+            calendarEventApi : '=',
+            data : '=',
+            formValidationPriority : '=?'
+          },
+          controllerAs : '$ctrl',
+          bindToController : true,
+          controller : [function() {
+            this.api = {
+              getFormValidationPriority : function() {
+                return this.formValidationPriority ? this.formValidationPriority : 0
+              }.bind(this),
+              validate : function() {
+                return this.pdcApi.validateClassification();
+              }.bind(this),
+              updateData : function(ceo) {
+                ceo.pdcClassification = this.pdcApi.getPositions();
+              }.bind(this)
+            };
 
             this.$onInit = function() {
               this.calendarEventApi.handleFormValidation(this.api);
-              initialize();
             }.bind(this);
-          }
+          }]
         };
       }]);
 })();

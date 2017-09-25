@@ -83,6 +83,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerE
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentPostUpdate;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionContent;
@@ -327,7 +328,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(WAPrimaryKey.class, ForeignPK.class, SimpleDocumentPK.class, PasteDetail.class,
           PasteDetailFromToPK.class);
     }
-    addClasses(ContentManager.class);
+    addClasses(ContentManager.class, SilverContentPostUpdate.class);
     addClasses(JoinStatement.class);
     addClasses(ContentManagerProvider.class);
     addClasses(ContentPeas.class);

@@ -239,6 +239,16 @@ public class CalendarEventOccurrence
   }
 
   @Override
+  public User getLastModifier() {
+    return component.getLastUpdater();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return component.getLastUpdateDate();
+  }
+
+  @Override
   public boolean canBeAccessedBy(final User user) {
     return getCalendarEvent().canBeAccessedBy(user);
   }

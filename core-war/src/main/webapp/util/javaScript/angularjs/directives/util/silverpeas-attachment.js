@@ -38,7 +38,7 @@
           controller : [function() {
             //function used on the ng-include to resolve the template
             this.getTemplateUrl = function() {
-              var config = sp.ajaxConfig(webContext + '/util/javaScript/angularjs/directives/util/silverpeas-attachment.jsp');
+              var config = sp.ajaxConfig(webContext + '/util/javaScript/angularjs/directives/util/silverpeas-attachment-wrapper.jsp');
               config.withParam('componentId', this.componentId);
               config.withParam('resourceId', encodeURIComponent(this.resourceId));
               config.withParam('readOnly', this.readOnly);

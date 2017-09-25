@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.pdc.pdc.service;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
 import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcRuntimeException;
@@ -72,7 +72,7 @@ public interface PdcClassificationService {
    * @return a predefined classification on the PdC ready to be used to classify a content published
    * in the specified node or an empty classification.
    */
-  public PdcClassification findAPreDefinedClassification(String nodeId, String instanceId);
+  PdcClassification findAPreDefinedClassification(String nodeId, String instanceId);
 
   /**
    * Gets the predefined classification on the PdC that was set for any new contents in the
@@ -85,7 +85,7 @@ public interface PdcClassificationService {
    * @return a predefined classification on the PdC associated with the specified node or with the
    * specified component instance or an empty classification.
    */
-  public PdcClassification getPreDefinedClassification(String nodeId, String instanceId);
+  PdcClassification getPreDefinedClassification(String nodeId, String instanceId);
 
   /**
    * Gets the predefined classification on the PdC that was set for any new contents managed in the
@@ -96,7 +96,7 @@ public interface PdcClassificationService {
    * @return a predefined classification on the PdC ready to be used to classify a content published
    * within the component instance or an empty classification.
    */
-  public PdcClassification getPreDefinedClassification(String instanceId);
+  PdcClassification getPreDefinedClassification(String instanceId);
 
   /**
    * Saves the specified predefined classification on the PdC. If a predefined classification
@@ -108,7 +108,7 @@ public interface PdcClassificationService {
    * predefined classification will serv for the whole component instance.
    * @param classification either the saved predefined classification or NONE_CLASSIFICATION.
    */
-  public PdcClassification savePreDefinedClassification(final PdcClassification classification);
+  PdcClassification savePreDefinedClassification(final PdcClassification classification);
 
   /**
    * Deletes the predefined classification set for the specified node in the specified component
@@ -118,7 +118,7 @@ public interface PdcClassificationService {
    * be deleted.
    * @param instanceId the unique identifier of the component instance to which the node belongs.
    */
-  public void deletePreDefinedClassification(String nodeId, String instanceId);
+  void deletePreDefinedClassification(String nodeId, String instanceId);
 
   /**
    * Classifies the specified content on the PdC with the specified classification. If the content
@@ -128,9 +128,10 @@ public interface PdcClassificationService {
    * @param content the Silverpeas content to classify.
    * @param withClassification the classification with which the content is positioned on the PdC.
    * @param alertSubscribers indicates if subscribers must be notified or not
+   * @throws PdcRuntimeException on error.
    */
-  public void classifyContent(final SilverpeasContent content,
-          final PdcClassification withClassification, boolean alertSubscribers) throws PdcRuntimeException;
+  void classifyContent(final Contribution content, final PdcClassification withClassification,
+      boolean alertSubscribers);
 
   /**
    * Some values come to be removed from the PdC. Triggers the update of all concerned
@@ -146,7 +147,7 @@ public interface PdcClassificationService {
    * </ul>
    * @param deletedValues the values that are removed from a PdC's axis.
    */
-  public void axisValuesDeleted(final List<PdcAxisValue> deletedValues);
+  void axisValuesDeleted(final List<PdcAxisValue> deletedValues);
 
   /**
    * An axis comes to be removed from the PdC. Triggers the update of all concerned classifications
@@ -161,5 +162,5 @@ public interface PdcClassificationService {
    * </ul>
    * @param axisId the unique identifier of the axis.
    */
-  public void axisDeleted(String axisId);
+  void axisDeleted(String axisId);
 }

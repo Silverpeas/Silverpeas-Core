@@ -907,10 +907,10 @@ function removePosition(position, positions) {
   function informOfNewPositions($thisPdcAxisValuesSelector, settings, selectedPositions) {
     var positions = selectedPositions.all();
     if (positions.length === 0) {
-      alert(settings.positionError);
+      $.popup.error(settings.positionError);
     } else {
       if (!areMandatoryAxisValued(settings.axis, positions)) {
-        alert(settings.mandatoryAxisError);
+        $.popup.error(settings.mandatoryAxisError);
       } else {
         if (settings.dialogBox)
           $thisPdcAxisValuesSelector.dialog("close");

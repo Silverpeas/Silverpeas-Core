@@ -50,6 +50,8 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWYG;
+
 /**
  * @param <CONTROLLER>
  * @author Yohann Chastagnier
@@ -342,7 +344,7 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
       WysiwygRouting.WysiwygRoutingContext context =
           new WysiwygRouting.WysiwygRoutingContext().withSpaceLabel(getSpaceLabel())
               .withComponentLabel(getComponentInstanceLabel())
-              .withContributionId(ContributionIdentifier.from(getComponentInstanceId(), objectId))
+              .withContributionId(ContributionIdentifier.from(getComponentInstanceId(), objectId, WYSIWYG))
               .withLanguage(controller.getLanguage())
               .withComeBackUrl(URLUtil.getApplicationURL() +
                   URLUtil.getURL(getComponentName(), "useless", getComponentInstanceId()) +

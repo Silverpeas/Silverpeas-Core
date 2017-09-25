@@ -24,19 +24,13 @@
 
 package org.silverpeas.core.web.calendar;
 
-import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.CalendarEventOccurrenceGenerator;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.date.Period;
 import org.silverpeas.core.web.mvc.route.AbstractComponentInstanceRoutingMap;
+import org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider;
 
-import javax.inject.Inject;
 import java.net.URI;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.Temporal;
 
-import static java.util.Collections.singletonList;
 import static org.silverpeas.core.util.StringUtil.asBase64;
 
 /**
@@ -45,11 +39,6 @@ import static org.silverpeas.core.util.StringUtil.asBase64;
  */
 public abstract class AbstractCalendarInstanceRoutingMap
     extends AbstractComponentInstanceRoutingMap {
-
-  private static final int END_YEAR_OFFSET = 3;
-
-  @Inject
-  private CalendarEventOccurrenceGenerator generator;
 
   @Override
   public URI getViewPage(final ContributionIdentifier contributionIdentifier) {
@@ -60,17 +49,8 @@ public abstract class AbstractCalendarInstanceRoutingMap
   }
 
   private URI getEventViewPage(final ContributionIdentifier contributionIdentifier) {
-    CalendarEvent event = CalendarEvent.getById(contributionIdentifier.getLocalId());
-    final Temporal startTemporal = event.getStartDate();
-    final Temporal endTemporal;
-    if (!event.isRecurrent()) {
-      endTemporal = event.getEndDate();
-    } else {
-      endTemporal = event.getEndDate().plus(END_YEAR_OFFSET, ChronoUnit.YEARS);
-    }
-    final CalendarEventOccurrence occurrence = generator
-        .generateOccurrencesOf(singletonList(event), Period.between(startTemporal, endTemporal))
-        .get(0);
+    final CalendarEventOccurrence occurrence = CalendarWebServiceProvider.get()
+        .getFirstCalendarEventOccurrenceFromEventId(contributionIdentifier.getLocalId());
     return newUriBuilder(getBaseForPages(), "calendars/occurrences",
         asBase64(occurrence.getId().getBytes())).build();
   }

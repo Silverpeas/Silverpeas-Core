@@ -118,7 +118,7 @@ public class CommentRequesterIntegrationTest {
     assertEquals(author.getDisplayedName(), savedComment.getOwner());
     assertEquals(message, savedComment.getMessage());
     assertEquals(creationDate, savedComment.getCreationDate());
-    assertNull(savedComment.getModificationDate());
+    assertNull(savedComment.getLastModificationDate());
   }
 
   @Test
@@ -185,7 +185,7 @@ public class CommentRequesterIntegrationTest {
     assertEquals("user10", result.getOwner());
     assertEquals("my comments", result.getMessage());
     assertEquals(DateUtil.parseDate("2019/10/15"), result.getCreationDate());
-    assertNull(result.getModificationDate());
+    assertNull(result.getLastModificationDate());
   }
 
   /**
@@ -201,7 +201,7 @@ public class CommentRequesterIntegrationTest {
     assertEquals("user10", result.getOwner());
     assertEquals("my comments", result.getMessage());
     assertEquals(DateUtil.parseDate("2019/10/15"), result.getCreationDate());
-    assertNull(result.getModificationDate());
+    assertNull(result.getLastModificationDate());
     commentRequester.deleteComment(con, pk);
     result = commentRequester.getComment(con, pk);
     assertNull(result);
@@ -220,7 +220,7 @@ public class CommentRequesterIntegrationTest {
     assertEquals("user10", comment.getOwner());
     assertEquals("my comments", comment.getMessage());
     assertEquals(DateUtil.parseDate("2019/10/15"), comment.getCreationDate());
-    assertNull(comment.getModificationDate());
+    assertNull(comment.getLastModificationDate());
     String newResourceType = "RtypeTestUpdate";
     String newMessage = "A dummy message";
     Date modificationDate = aDate();
@@ -237,7 +237,7 @@ public class CommentRequesterIntegrationTest {
     assertEquals(newMessage, result.getMessage());
     assertEquals(newResourceType, result.getResourceType());
     assertEquals(DateUtil.parseDate("2019/10/15"), result.getCreationDate());
-    assertEquals(modificationDate, result.getModificationDate());
+    assertEquals(modificationDate, result.getLastModificationDate());
     assertNotNull(result.getForeignKey());
     assertEquals(foreignKey.getId(), result.getForeignKey().getId());
     assertEquals(pk, result.getCommentPK());
@@ -256,7 +256,7 @@ public class CommentRequesterIntegrationTest {
     assertEquals("user10", result.getOwner());
     assertEquals("my comments", result.getMessage());
     assertEquals(DateUtil.parseDate("2019/10/15"), result.getCreationDate());
-    assertNull(result.getModificationDate());
+    assertNull(result.getLastModificationDate());
     assertEquals("500", result.getForeignKey().getId());
     assertEquals("instanceId10", result.getCommentPK().getInstanceId());
     assertEquals("1000", result.getCommentPK().getId());
@@ -273,7 +273,7 @@ public class CommentRequesterIntegrationTest {
     assertEquals("my comments", result.getMessage());
     assertEquals(targetResourceType, result.getResourceType());
     assertEquals(DateUtil.parseDate("2019/10/15"), result.getCreationDate());
-    assertNull(result.getModificationDate());
+    assertNull(result.getLastModificationDate());
     assertEquals(targetForeignKey.getId(), result.getForeignKey().getId());
     assertNull(result.getForeignKey().getInstanceId());
     assertEquals("1000", result.getCommentPK().getId());
@@ -287,7 +287,7 @@ public class CommentRequesterIntegrationTest {
     assertEquals("my comments are good", result.getMessage());
     assertEquals(targetResourceType, result.getResourceType());
     assertEquals(DateUtil.parseDate("2019/10/18"), result.getCreationDate());
-    assertEquals(DateUtil.parseDate("2020/06/16"), result.getModificationDate());
+    assertEquals(DateUtil.parseDate("2020/06/16"), result.getLastModificationDate());
     assertEquals(targetForeignKey.getId(), result.getForeignKey().getId());
     assertNull(result.getForeignKey().getInstanceId());
     assertEquals("1001", result.getCommentPK().getId());

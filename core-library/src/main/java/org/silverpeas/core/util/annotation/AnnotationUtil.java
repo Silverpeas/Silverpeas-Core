@@ -29,6 +29,8 @@ import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.model.PasteDetailFromToPK;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.util.MapUtil;
 
@@ -163,7 +165,11 @@ public class AnnotationUtil {
       Map<Class<? extends Annotation>, List<Object>> parameterValues,
       Class<? extends Annotation> annotationClass, Object object) {
     WAPrimaryKey waPrimaryKey = null;
-    if (object instanceof SilverpeasContent) {
+    if (object instanceof Contribution) {
+      ContributionIdentifier contributionIdentifier = ((Contribution) object).getContributionId();
+      waPrimaryKey =
+          new ForeignPK(contributionIdentifier.getLocalId(), contributionIdentifier.getComponentInstanceId());
+    } else if (object instanceof SilverpeasContent) {
       SilverpeasContent silverpeasContent = (SilverpeasContent) object;
       waPrimaryKey =
           new ForeignPK(silverpeasContent.getId(), silverpeasContent.getComponentInstanceId());

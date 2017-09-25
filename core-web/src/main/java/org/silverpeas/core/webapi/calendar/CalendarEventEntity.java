@@ -35,6 +35,7 @@ import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.webapi.attachment.AttachmentParameterEntity;
 import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -93,6 +94,7 @@ public class CalendarEventEntity implements WebEntity {
   private boolean canBeModified;
   private boolean canBeDeleted;
   private List<AttachmentParameterEntity> attachmentParameters = new ArrayList<>();
+  private PdcClassificationEntity pdcClassification;
 
   protected CalendarEventEntity() {
   }
@@ -380,6 +382,21 @@ public class CalendarEventEntity implements WebEntity {
   public Map<String, String[]> getAttachmentParameters() {
     return attachmentParameters.stream()
         .collect(Collectors.toMap(p -> p.getName(), p -> new String[]{p.getValue()}));
+  }
+
+  /**
+   * Gets the pdc classification of this event.
+   * <p>
+   * PDC classification can be set on the save of an event.<br/>
+   * Once the creation of the event is validated by the user and the event is eventually created,
+   * the PDC classification sent with this Web representation is used with PDC services.
+   * </p>
+   * @return all the parameters about any previously uploaded files to attach to this event.
+   */
+  @XmlElement
+  public PdcClassificationEntity getPdcClassification() {
+    return pdcClassification != null ? pdcClassification :
+        PdcClassificationEntity.undefinedClassification();
   }
 
   /**

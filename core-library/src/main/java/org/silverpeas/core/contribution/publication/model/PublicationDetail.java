@@ -44,7 +44,6 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerP
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.I18nContribution;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
@@ -98,7 +97,7 @@ import static org.silverpeas.core.util.StringUtil.split;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
 public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
-    implements I18nContribution, SilverContentInterface, SilverpeasContent, Rateable, Serializable,
+    implements I18nContribution, SilverContentInterface, Rateable, Serializable,
     Cloneable, WithAttachment {
 
   private static final long serialVersionUID = 9199848912262605680L;
@@ -599,12 +598,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   @Override
   public ContributionIdentifier getContributionId() {
-    return ContributionIdentifier.from(getInstanceId(), getId());
-  }
-
-  @Override
-  public User getCreator() {
-    return User.getById(getCreatorId());
+    return ContributionIdentifier.from(getInstanceId(), getId(), getContributionType());
   }
 
   public int getImportance() {
@@ -675,6 +669,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
 
   public String getUpdaterId() {
     return updaterId;
+  }
+
+  @Override
+  public User getLastModifier() {
+    return updaterId != null ? User.getById(updaterId) : null;
   }
 
   public String getAuthor() {
@@ -1197,11 +1196,6 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     int hash = 7;
     hash = 23 * hash + (this.pk != null ? this.pk.hashCode() : 0);
     return hash;
-  }
-
-  @Override
-  public String getComponentInstanceId() {
-    return getPK().getInstanceId();
   }
 
   @Override

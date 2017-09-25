@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.date.DateTime;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -118,6 +119,16 @@ public class TextContent implements SilverpeasContent {
   @Override
   public DateTime getCreationDate() {
     return this.creationDate;
+  }
+
+  @Override
+  public User getLastModifier() {
+    return getCreator();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return getCreationDate();
   }
 
   /**

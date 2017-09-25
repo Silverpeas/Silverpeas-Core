@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.pdc.pdc.model;
 
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.pdc.model.constraints.UniquePositions;
@@ -124,6 +126,18 @@ public class PdcClassification
       String inComponentInstanceId) {
     return new PdcClassification().modifiable().ofContent(contentId).inComponentInstance(
         inComponentInstanceId);
+  }
+
+  /**
+   * Creates an empty classification on the PdC of the specified content represented by the given
+   * {@link Contribution}. By default, the classification of a content can be updated.
+   * @param contribution the contribution aimed for classification.
+   * @return an empty classification on the PdC.
+   */
+  public static PdcClassification aPdcClassificationOfContent(Contribution contribution) {
+    final ContributionIdentifier contributionId = contribution.getContributionId();
+    return aPdcClassificationOfContent(contributionId.getLocalId(),
+        contributionId.getComponentInstanceId());
   }
 
   /**
@@ -358,7 +372,7 @@ public class PdcClassification
    * Subscribers are notified if at least one of their subscription matches given classification.
    * @param content the Silverpeas content to classify.
    */
-  public void classifyContent(final SilverpeasContent content) {
+  public void classifyContent(final Contribution content) {
     classifyContent(content, true);
   }
 
@@ -370,7 +384,7 @@ public class PdcClassification
    * @param content the Silverpeas content to classify.
    * @param alertSubscribers indicates if subscribers must be notified or not
    */
-  public void classifyContent(final SilverpeasContent content, boolean alertSubscribers) {
+  public void classifyContent(final Contribution content, boolean alertSubscribers) {
     if (!isEmpty()) {
       PdcClassificationService service = PdcClassificationService.get();
       service.classifyContent(content, this, alertSubscribers);

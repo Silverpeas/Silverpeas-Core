@@ -237,7 +237,8 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "           ) " +
             "ORDER BY ob_1, ob_2, ob_3")})
 public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
-    implements Plannable, Recurrent, Categorized, Prioritized, Contribution, Securable, WithAttachment {
+    implements Plannable, Recurrent, Categorized, Prioritized, Contribution, Securable,
+    WithAttachment {
 
   public static final String TYPE = CalendarEvent.class.getSimpleName();
 
@@ -297,6 +298,16 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   public static CalendarEvent getById(final String id) {
     CalendarEventRepository calendarEventRepository = CalendarEventRepository.get();
     return calendarEventRepository.getById(id);
+  }
+
+  /**
+   * Gets list of calendar event by their identifier.
+   * @param ids the identifiers of the aimed calendar events.
+   * @return the instance of the aimed calendar event or null if it does not exist.
+   */
+  public static List<CalendarEvent> getByIds(final List<String> ids) {
+    CalendarEventRepository calendarEventRepository = CalendarEventRepository.get();
+    return calendarEventRepository.getById(ids);
   }
 
   /**
@@ -365,7 +376,8 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   @Override
   public ContributionIdentifier getContributionId() {
-    return ContributionIdentifier.from(getCalendar().getComponentInstanceId(), getId());
+    return ContributionIdentifier
+        .from(getCalendar().getComponentInstanceId(), getId(), getContributionType());
   }
 
   /**
@@ -411,6 +423,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * Gets the user who created and planned this event.
    * @return the user that has authored this event.
    */
+  @Override
   public User getCreator() {
     return this.component.getCreator();
   }
@@ -423,8 +436,19 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return this.component.getLastUpdater();
   }
 
+  @Override
   public Date getCreationDate() {
     return this.component.getCreateDate();
+  }
+
+  @Override
+  public User getLastModifier() {
+    return this.component.getLastUpdater();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return this.component.getLastUpdateDate();
   }
 
   public Date getLastUpdateDate() {
@@ -587,6 +611,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * @return a description about this event or an empty string if no description is attached to this
    * event.
    */
+  @Override
   public String getDescription() {
     return component.getDescription();
   }
@@ -730,6 +755,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * Is this event occurring on all the day(s)?
    * @return true if this event is occurring on all its day(s).
    */
+  @Override
   public boolean isOnAllDay() {
     return getPeriod().isInDays();
   }

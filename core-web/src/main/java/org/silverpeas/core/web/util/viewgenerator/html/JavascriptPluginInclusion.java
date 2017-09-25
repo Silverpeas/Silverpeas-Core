@@ -43,6 +43,7 @@ import org.silverpeas.core.web.look.LayoutConfiguration;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.util.security.SecuritySettings;
 import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationsOfCreationAreaTag;
+import org.silverpeas.core.web.util.viewgenerator.html.pdc.BaseClassificationPdCTag;
 
 import java.text.MessageFormat;
 
@@ -350,9 +351,23 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  static ElementContainer includePdc(final ElementContainer xhtml) {
+  static ElementContainer includePdc(final ElementContainer xhtml, final String language) {
+    final JavascriptSettingProducer settingProducer =
+        JavascriptSettingProducer.settingVariableName("PdcSettings");
+    settingProducer.add("pdc.e.i", BaseClassificationPdCTag.PDC_CLASSIFICATION_WIDGET_TAG_ID);
+    xhtml.addElement(scriptContent(settingProducer.produce()));
+
+    LocalizationBundle bundle = ResourceLocator
+        .getLocalizationBundle("org.silverpeas.pdcPeas.multilang.pdcBundle", language);
+    JavascriptBundleProducer bundleProducer =
+        JavascriptBundleProducer.bundleVariableName("PdcBundle");
+    bundleProducer.add("pdc.e.ma", bundle.getString("pdcPeas.theContent") + " " +
+        bundle.getString("pdcPeas.MustContainsMandatoryAxis"));
+    xhtml.addElement(scriptContent(bundleProducer.produce()));
+
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PDC_WIDGET));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PDC));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-pdc.js"));
     return xhtml;
   }
 
@@ -581,6 +596,7 @@ public class JavascriptPluginInclusion {
   }
 
   static ElementContainer includeCalendar(final ElementContainer xhtml, final String language) {
+    includePdc(xhtml, language);
     includePanes(xhtml);
     includeCrud(xhtml);
     includeAttachment(xhtml);

@@ -22,8 +22,9 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
 
-<silverpeas-file-upload
-    api="$ctrl.fileUpload"
-    display-into-fieldset="true">
-</silverpeas-file-upload>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
+<c:set var="instanceId" value="${param.instanceId}"/>
+
+<view:pdcNewContentClassification componentId="${instanceId}"/>

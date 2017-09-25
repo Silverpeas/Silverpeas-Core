@@ -35,6 +35,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Optional;
 
+import static org.silverpeas.core.contribution.model.ContributionIdentifier.MISSING_PART;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -91,8 +92,10 @@ public abstract class AbstractComponentInstanceRoutingMap implements ComponentIn
 
   @Override
   public URI getPermalink(final ContributionIdentifier contributionIdentifier) {
+    ContributionIdentifier permalinkContributionId = ContributionIdentifier
+        .from(MISSING_PART, contributionIdentifier.getLocalId(), contributionIdentifier.getType());
     return newUriBuilder("/Contribution",
-        StringUtil.asBase64(contributionIdentifier.asString().getBytes())).build();
+        StringUtil.asBase64(permalinkContributionId.asString().getBytes())).build();
   }
 
   @Override

@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.i18n.Translation;
-import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.i18n.I18n;
+import org.silverpeas.core.i18n.Translation;
 
 import java.util.Date;
 
@@ -95,6 +95,16 @@ public interface LocalizedContribution extends Contribution, Translation {
       @Override
       public Date getCreationDate() {
         return contribution.getCreationDate();
+      }
+
+      @Override
+      public User getLastModifier() {
+        return contribution.getLastModifier();
+      }
+
+      @Override
+      public Date getLastModificationDate() {
+        return contribution.getLastModificationDate();
       }
 
       @Override
