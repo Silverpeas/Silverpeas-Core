@@ -29,6 +29,7 @@ import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.regex.Matcher;
@@ -91,8 +92,13 @@ public class SharingContext {
     String name = parts[ArrayUtil.indexOf(parts, "name") + 1];
     String id = parts[ArrayUtil.indexOf(parts, "attachmentId") + 1];
     String instanceId = parts[ArrayUtil.indexOf(parts, "componentId") + 1];
-    return getBaseURI() + "sharing/attachments/" + instanceId + "/" + getToken() +
-        "/" + id + "/" + name;
+    return UriBuilder.fromUri(getBaseURI())
+        .path("sharing/attachments")
+        .path(instanceId)
+        .path(getToken())
+        .path(id)
+        .path(name)
+        .build().toString();
   }
 
   /**
@@ -103,10 +109,13 @@ public class SharingContext {
   public URI getSharedUriOf(SimpleDocument attachment) {
     URI sharedUri;
     try {
-      sharedUri =
-          URI.create(getBaseURI() + "sharing/attachments/" + attachment.getInstanceId() + "/" +
-              getToken() + "/" + attachment.getId() + "/" +
-              URLEncoder.encode(attachment.getFilename(), CharEncoding.UTF_8));
+      sharedUri = UriBuilder.fromUri(getBaseURI())
+          .path("sharing/attachments")
+          .path(attachment.getInstanceId())
+          .path(getToken())
+          .path(attachment.getId())
+          .path(URLEncoder.encode(attachment.getFilename(), CharEncoding.UTF_8))
+          .build();
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);

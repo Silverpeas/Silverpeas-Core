@@ -31,6 +31,7 @@ import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.ws.rs.core.UriBuilder;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -114,9 +115,13 @@ public class AttachmentEntity implements WebEntity {
   public void withSharedUri(String baseURI, String token) {
     URI sharedUri;
     try {
-      sharedUri = string2URI(baseURI + "sharing/attachments/" + instanceId + "/"
-          + token + "/" + id + "/"
-          + URLEncoder.encode(logicalName, CharEncoding.UTF_8));
+      sharedUri = UriBuilder.fromUri(baseURI)
+          .path("sharing/attachments")
+          .path(instanceId)
+          .path(token)
+          .path(id)
+          .path(URLEncoder.encode(logicalName, CharEncoding.UTF_8))
+          .build();
     } catch (UnsupportedEncodingException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
@@ -127,24 +132,17 @@ public class AttachmentEntity implements WebEntity {
   public void withUri(String baseURI) {
     URI privateUri;
     try {
-      privateUri = string2URI(baseURI + "private/attachments/" + instanceId + "/"
-          + id + "/" + URLEncoder.encode(logicalName, CharEncoding.UTF_8));
+      privateUri = UriBuilder.fromUri(baseURI)
+          .path("private/attachments")
+          .path(instanceId)
+          .path(id)
+          .path(URLEncoder.encode(logicalName, CharEncoding.UTF_8))
+          .build();
     } catch (UnsupportedEncodingException ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
       throw new RuntimeException(ex.getMessage(), ex);
     }
     this.uri = privateUri;
-  }
-
-  private URI string2URI(String str) {
-    URI uri;
-    try {
-      uri = new URI(str);
-    } catch (URISyntaxException ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-      throw new RuntimeException(ex.getMessage(), ex);
-    }
-    return uri;
   }
 
 }
