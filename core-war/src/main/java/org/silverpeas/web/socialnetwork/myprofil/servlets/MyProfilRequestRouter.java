@@ -40,7 +40,6 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
@@ -56,10 +55,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import static org.silverpeas.web.socialnetwork.myprofil.servlets.MyProfileRoutes.*;
@@ -258,7 +254,7 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
     return contacts;
   }
 
-  private void updateUserFull(HttpServletRequest request, MyProfilSessionController sc) {
+  private void updateUserFull(HttpRequest request, MyProfilSessionController sc) {
     SettingBundle rl = ResourceLocator.getSettingBundle(
         "org.silverpeas.personalization.settings.personalizationPeasSettings");
     SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
@@ -293,26 +289,12 @@ public class MyProfilRequestRouter extends ComponentRequestRouter<MyProfilSessio
         userLoginAnswer = currentUser.getLoginAnswer();
       }
 
-      // process extra properties
-      Map<String, String> properties = new HashMap<>();
-      Enumeration<String> parameters = request.getParameterNames();
-      String parameterName;
-      String property;
-      while (parameters.hasMoreElements()) {
-        parameterName = parameters.nextElement();
-        if (parameterName.startsWith("prop_")) {
-          property = parameterName.substring(5, parameterName.length()); // remove s"prop_"
-          properties.put(property, request.getParameter(parameterName));
-        }
-      }
-
       sc.modifyUser(currentUser.getId(), WebEncodeHelper.htmlStringToJavaString(userLastName),
           WebEncodeHelper.htmlStringToJavaString(userFirstName),
           WebEncodeHelper.htmlStringToJavaString(userEmail),
-          WebEncodeHelper.htmlStringToJavaString(request.getParameter("userAccessLevel")),
           WebEncodeHelper.htmlStringToJavaString(request.getParameter("OldPassword")),
           WebEncodeHelper.htmlStringToJavaString(request.getParameter("NewPassword")),
-          userLoginQuestion, userLoginAnswer, properties);
+          userLoginQuestion, userLoginAnswer, request);
       request.setAttribute("MessageOK", sc.getString("myProfile.MessageOK"));
     } catch (AuthenticationBadCredentialException e) {
       request.setAttribute("MessageNOK", sc.getString("myProfile.Error_bad_credential"));

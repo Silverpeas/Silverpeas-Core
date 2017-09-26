@@ -80,7 +80,7 @@
 </c:if>
 
 <div id="identity">
-<form name="UserForm" action="<%=MyProfileRoutes.UpdateMyInfos %>" method="post">
+<form name="UserForm" action="<%=MyProfileRoutes.UpdateMyInfos %>" method="post" enctype="multipart/form-data">
 <fieldset id="identity-main" class="skinFieldset">
 <legend><fmt:message key="myProfile.identity.fieldset.main" /></legend>
 <table border="0" cellspacing="0" cellpadding="5" width="100%">
@@ -177,16 +177,19 @@
       <viewTags:displayUserExtraProperties user="<%=userFull%>" readOnly="false" includeEmail="false"/>
     </fieldset>
   </c:if>
+
+  <view:directoryExtraForm userId="<%=userFull.getId()%>" edition="true"/>
+
  </form>
  </div>
  <br clear="all"/>
  <%
 		ButtonPane buttonPane = gef.getButtonPane();
 		if (updateIsAllowed) {
-			Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=submitForm();", false);
+			Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onclick=saveUser();", false);
 			buttonPane.addButton(validateButton);
 		}
-		Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=history.back();", false);
+		Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:onclick=history.back();", false);
 		buttonPane.addButton(cancelButton);
 		out.println(buttonPane.print());
 %>
@@ -198,7 +201,7 @@
     $('#newPassword').password();
   });
 
-	function submitForm() {
+	function ifCorrectBasicFormExecute(callback) {
 		var errorMsg = "";
 		<% if (updateLastNameIsAllowed) { %>
 			var namefld = document.UserForm.userLastName.value;
@@ -221,9 +224,23 @@
 		}
 		%>
 		if (errorMsg == "") {
-			document.UserForm.submit();
+      callback.call(this);
 		} else {
       jQuery.popup.error(errorMsg);
 		}
 	}
+
+  function saveUser() {
+    if ($("#identity-template").length) {
+      ifCorrectBasicFormExecute(function() {
+        ifCorrectFormExecute(function() {
+          document.UserForm.submit();
+        });
+      });
+    } else {
+      ifCorrectBasicFormExecute(function() {
+        document.UserForm.submit();
+      });
+    }
+  }
 </script>

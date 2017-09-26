@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.directory.control;
 
+import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -35,6 +36,16 @@ import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.contact.model.CompleteContact;
 import org.silverpeas.core.contact.model.ContactPK;
 import org.silverpeas.core.contact.service.ContactService;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Field;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.form.XmlSearchForm;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.search.SearchEngineProvider;
 import org.silverpeas.core.index.search.model.MatchingIndexEntry;
 import org.silverpeas.core.index.search.model.QueryDescription;
@@ -54,6 +65,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -132,6 +144,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private String initSort = SORT_ALPHA;
   private String currentSort = SORT_ALPHA;
   private String previousSort = SORT_ALPHA;
+
+  // Extra form session objects
+  private PublicationTemplate xmlTemplate = null;
+  private DataRecord xmlData = null;
+  private boolean xmlTemplateLoaded = false;
 
   /**
    * Standard Session Controller Constructeur
@@ -278,16 +295,15 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   /**
-   * get all User that their lastname or first name like "Key"
-   * @param query the search query
+   * get all users corresponding to search request
+   * @param queryDescription the search request
    * @param globalSearch true if it's a search outside directory (direct from URL)
    * @throws DirectoryException
    * @see
    */
-  public DirectoryItemList getUsersByQuery(String query, boolean globalSearch)
-      throws DirectoryException {
+  public DirectoryItemList getUsersByQuery(QueryDescription queryDescription,
+      boolean globalSearch) throws DirectoryException {
     setCurrentView(VIEW_QUERY);
-    setCurrentQuery(query);
     if (globalSearch) {
       setCurrentDirectory(DIRECTORY_DEFAULT);
     }
@@ -296,12 +312,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
     setCurrentSort(SORT_PERTINENCE);
     DirectoryItemList results = new DirectoryItemList();
-
-    QueryDescription queryDescription = new QueryDescription(query);
-    queryDescription.addComponent("users");
-    for (String appId : getContactComponentIds()) {
-      queryDescription.addComponent(appId);
-    }
 
     try {
       List<MatchingIndexEntry> plainSearchResults = SearchEngineProvider.getSearchEngine().search(
@@ -799,4 +809,96 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
     return allUsers.getItemByUniqueId(itemId);
   }
+
+  public Form getExtraForm() {
+    PublicationTemplate template = getExtraTemplate();
+    if (template != null) {
+      try {
+        Form searchForm = template.getSearchForm();
+        if (xmlData != null) {
+          searchForm.setData(xmlData);
+        } else {
+          searchForm.setData(template.getRecordSet().getEmptyRecord());
+        }
+        return searchForm;
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
+    return null;
+  }
+
+  private PublicationTemplate getExtraTemplate() {
+    if (xmlTemplate == null && !xmlTemplateLoaded) {
+      PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
+      xmlTemplate = templateManager.getDirectoryTemplate();
+      xmlTemplateLoaded = true;
+    }
+    return xmlTemplate;
+  }
+
+  private void saveExtraRequest(List<FileItem> items) {
+    PublicationTemplateImpl template = (PublicationTemplateImpl) getExtraTemplate();
+    if (template != null) {
+      // build a dataRecord object storing user's entries
+      try {
+        RecordTemplate searchTemplate = template.getSearchTemplate();
+        DataRecord data = searchTemplate.getEmptyRecord();
+
+        PagesContext context = new PagesContext("useless", "useless", getLanguage(), getUserId());
+
+        XmlSearchForm searchForm = (XmlSearchForm) template.getSearchForm();
+        searchForm.update(items, data, context);
+
+        // xmlQuery is in the data object, store it into session
+        xmlData = data;
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
+  }
+
+  public QueryDescription buildQuery(List<FileItem> items) {
+    String query = FileUploadUtil.getParameter(items, "key");
+    QueryDescription queryDescription = new QueryDescription(query);
+    queryDescription.addComponent("users");
+    for (String appId : getContactComponentIds()) {
+      queryDescription.addComponent(appId);
+    }
+
+    setCurrentQuery(query);
+    saveExtraRequest(items);
+
+    buildExtraQuery(queryDescription);
+    return queryDescription;
+  }
+
+  private void buildExtraQuery(QueryDescription query) {
+    PublicationTemplateImpl template = (PublicationTemplateImpl) getExtraTemplate();
+    if (template == null) {
+      return;
+    }
+    // build the xmlSubQuery according to the dataRecord object
+    String templateFileName = template.getFileName();
+    String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
+    if (xmlData != null) {
+      for (String fieldName : xmlData.getFieldNames()) {
+        try {
+          Field field = xmlData.getField(fieldName);
+          String fieldValue = field.getStringValue();
+          if (fieldValue != null && fieldValue.trim().length() > 0) {
+            String fieldQuery = fieldValue.trim().replaceAll("##", " AND ");
+            query.addFieldQuery(new FieldDescription(templateName + "$$" + fieldName, fieldQuery, getLanguage()));
+          }
+        } catch (Exception e) {
+          SilverLogger.getLogger(this).error(e);
+        }
+      }
+    }
+  }
+
+  public void clear() {
+    xmlData = null;
+  }
+
 }

@@ -35,3 +35,5 @@
 <div class="tab-content">
 <viewTags:displayUserExtraProperties user="<%=userFull%>" readOnly="true" includeEmail="true"/>
 </div>
+
+<view:directoryExtraForm userId="<%=userFull.getId()%>"/>

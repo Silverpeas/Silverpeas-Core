@@ -92,7 +92,7 @@ public abstract class AbstractForm implements Form {
    */
   @Override
   public String getTitle() {
-    return (title == null ? "" : title);
+    return title == null ? "" : title;
   }
 
   /**
@@ -135,13 +135,7 @@ public abstract class AbstractForm implements Form {
       }
 
       if (!jsAdded) {
-        if (!fieldTemplates.isEmpty()) {
-          FieldTemplate fieldTemplate = fieldTemplates.get(0);
-          if (StringUtil.isDefined(fieldTemplate.getTemplateName())) {
-            out.append("<script type=\"text/javascript\" src=\"/weblib/xmlForms/")
-                .append(fieldTemplate.getTemplateName()).append(".js\"></script>\n");
-          }
-        }
+        out.append(getJavascriptSnippet());
       }
 
       PagesContext pc = new PagesContext(pagesContext);
@@ -306,7 +300,7 @@ public abstract class AbstractForm implements Form {
           if (fieldDisplayerName == null || fieldDisplayerName.isEmpty()) {
             fieldDisplayerName = getTypeManager().getDisplayerName(fieldType);
           }
-          if ((!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg)) {
+          if (!"wysiwyg".equals(fieldDisplayerName) || updateWysiwyg) {
             FieldDisplayer fieldDisplayer = getTypeManager().getDisplayer(fieldType, fieldDisplayerName);
             if (fieldDisplayer != null) {
               for (int occ=0; occ<fieldTemplate.getMaximumNumberOfOccurrences(); occ++) {
@@ -495,6 +489,22 @@ public abstract class AbstractForm implements Form {
       SilverLogger.getLogger(this).error("getting a field displayer instance", fe);
     }
     return null;
+  }
+
+  protected String getJavascriptSnippet() {
+    if (!fieldTemplates.isEmpty()) {
+      FieldTemplate fieldTemplate = fieldTemplates.get(0);
+      if (StringUtil.isDefined(fieldTemplate.getTemplateName())) {
+        return "<script type=\"text/javascript\" src=\"/weblib/xmlForms/" +
+            fieldTemplate.getTemplateName() + ".js\"></script>\n";
+      }
+    }
+    return "";
+  }
+
+  @Override
+  public String toString(PagesContext pageContext) {
+    return toString(pageContext, getData());
   }
 
 }
