@@ -108,6 +108,8 @@ public interface Form {
 
   public String toString(PagesContext pagesContext, DataRecord record);
 
+  public String toString(PagesContext pagesContext);
+
   public boolean isEmpty(List<FileItem> items, DataRecord record, PagesContext pagesContext);
 
   public void setFormName(String name);

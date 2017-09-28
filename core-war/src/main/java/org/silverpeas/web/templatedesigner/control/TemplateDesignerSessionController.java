@@ -214,6 +214,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     this.template.setDescription(updatedTemplate.getDescription());
     this.template.setThumbnail(updatedTemplate.getThumbnail());
     this.template.setVisible(updatedTemplate.isVisible());
+    this.template.setDirectoryUsage(updatedTemplate.isDirectoryUsage());
     this.template.setDataEncrypted(updatedTemplate.isDataEncrypted());
     this.template.setViewLayerFileName(updatedTemplate.getViewLayerFileName());
     this.template.setViewLayerAction(updatedTemplate.getViewLayerAction());

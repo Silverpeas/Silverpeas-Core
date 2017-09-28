@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.socialnetwork.profil.servlets;
 
+import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.socialnetwork.SocialNetworkException;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -67,9 +68,7 @@ public class ProfilRequestRouter extends ComponentRequestRouter<ProfilSessionCon
         destination = context + "/RContactProfile/jsp/Main?userId=" + userId;
       } else {
         // this is not one of my contacts
-        request.setAttribute("userFull", profileSC.getUserFul(userId));
-        request.setAttribute("UserDetail", profileSC.getUserDetail(userId));
-        request.setAttribute("Settings", profileSC.getSettings());
+        request.setAttribute("userFull", UserFull.getById(userId));
         destination = "/socialNetwork/jsp/profil/profilPublic.jsp";
       }
     }

@@ -92,6 +92,7 @@ public class HistorisedAttachmentServiceIntegrationTest extends JcrIntegrationTe
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(DocumentRepositoryIntegrationTest.class)
         .addJcrFeatures()
+        .addPublicationTemplateFeatures()
         .testFocusedOn(war -> war.addAsResource("LibreOffice.odt"))
         .build();
   }
