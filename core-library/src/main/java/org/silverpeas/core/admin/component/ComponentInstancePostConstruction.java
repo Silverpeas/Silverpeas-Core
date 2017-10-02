@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.component;
 
-import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -75,14 +74,8 @@ public interface ComponentInstancePostConstruction {
   @SuppressWarnings("Duplicates")
   static Optional<ComponentInstancePostConstruction> get(String constructionName) {
     try {
-      final String name;
-      if (WAComponent.getByName(constructionName).get().isWorkflow()) {
-        name = WORKFLOW_POST_CONSTRUCTION;
-      } else {
-        name = constructionName.substring(0, 1).toLowerCase() + constructionName.substring(1) +
-            NAME_SUFFIX;
-      }
-      return Optional.of(ServiceProvider.getService(name));
+      return Optional.of(ServiceProvider
+          .getServiceByComponentInstanceAndNameSuffix(constructionName, NAME_SUFFIX));
     } catch (IllegalStateException e) {
       SilverLogger.getLogger(ComponentInstancePostConstruction.class).silent(e);
       return Optional.empty();

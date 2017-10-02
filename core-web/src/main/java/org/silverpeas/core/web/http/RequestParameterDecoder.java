@@ -319,15 +319,15 @@ public class RequestParameterDecoder {
       value = asOffsetDateTime(parameterValue);
     } else if (parameterClass.isAssignableFrom(Long.class)) {
       value = asLong(parameterValue);
-    } else if (parameterClass.getName().equals("long")) {
+    } else if ("long".equals(parameterClass.getName())) {
       value = asLong(parameterValue);
     } else if (parameterClass.isAssignableFrom(Integer.class)) {
       value = asInteger(parameterValue);
-    } else if (parameterClass.getName().equals("int")) {
+    } else if ("int".equals(parameterClass.getName())) {
       value = asInteger(parameterValue);
     } else if (parameterClass.isAssignableFrom(Boolean.class)) {
-      value = asBoolean(parameterValue);
-    } else if (parameterClass.getName().equals("boolean")) {
+      value = parameterValue != null ? asBoolean(parameterValue) : null;
+    } else if ("boolean".equals(parameterClass.getName())) {
       value = asBoolean(parameterValue);
     } else if (parameterClass.isEnum()) {
       value = asEnum(parameterValue, (Class) parameterClass);

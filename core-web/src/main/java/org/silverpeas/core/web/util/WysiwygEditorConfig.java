@@ -29,6 +29,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
 import java.util.ArrayList;
@@ -39,7 +40,7 @@ import java.util.List;
  * Currently it depends on the CKEditor.
  * @author mmoquillon
  */
-public class WysiwygEditorConfig {
+public class WysiwygEditorConfig implements Cloneable {
 
   private static final SettingBundle DEFAULT_WYSIWYG_SETTINGS =
       ResourceLocator.getSettingBundle("org.silverpeas.wysiwyg.settings.wysiwygSettings");
@@ -272,6 +273,18 @@ public class WysiwygEditorConfig {
    */
   public void setFileBrowserDisplayed(final boolean fileBrowserDisplayed) {
     this.fileBrowserDisplayed = fileBrowserDisplayed;
+  }
+
+  @Override
+  public WysiwygEditorConfig clone() {
+    try {
+      WysiwygEditorConfig clone = (WysiwygEditorConfig) super.clone();
+      clone.wysiwygSettings = this.wysiwygSettings;
+      return clone;
+    } catch (CloneNotSupportedException e) {
+      SilverLogger.getLogger(this).error(e);
+      return null;
+    }
   }
 }
   

@@ -68,7 +68,9 @@ public class WysiwygEditorConfigRegistry {
    * editor configuration.
    */
   public WysiwygEditorConfig get(final String componentName) {
-    return configsPerComponents.computeIfAbsent(componentName, n -> new WysiwygEditorConfig(n));
+    final WysiwygEditorConfig config =
+        configsPerComponents.computeIfAbsent(componentName, WysiwygEditorConfig::new);
+    return config.clone();
   }
 }
   

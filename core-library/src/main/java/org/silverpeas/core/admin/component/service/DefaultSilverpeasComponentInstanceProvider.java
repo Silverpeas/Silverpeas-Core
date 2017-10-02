@@ -32,11 +32,13 @@ import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstan
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.inject.Singleton;
 import java.util.Optional;
 
 /**
  * @author Yohann Chastagnier
  */
+@Singleton
 public class DefaultSilverpeasComponentInstanceProvider
     implements SilverpeasComponentInstanceProvider {
 

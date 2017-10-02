@@ -65,7 +65,6 @@
   <span ng-init="$ctrl.labels.atTime = '${silfn:escapeJs(atTimeLabel)}'"></span>
   <span ng-init="$ctrl.labels.visibility = '${silfn:escapeJs(visibilityLabel)}'"></span>
   <span ng-init="$ctrl.labels.priority = '${silfn:escapeJs(priorityLabel)}'"></span>
-  <span ng-init='$ctrl.wysiwygEditorConfig = ${silfn:getWysiwygEditorConfigRegistry().get('calendar').toJSON()}'></span>
 </div>
 <fieldset class="skinFieldset">
   <legend>{{$ctrl.labels.mainInfo}}</legend>
@@ -164,7 +163,7 @@
                   ng-model="$ctrl.data.description"></textarea>
       </div>
     </div>
-    <div class="field">
+    <div class="field" ng-if="$ctrl.wysiwygEditorConfig">
       <label class="txtlibform" for="sp_cal_event_form_main_content">{{$ctrl.labels.content}}</label>
       <div class="champs">
         <ng-ckeditor id="sp_cal_event_form_main_content" ng-model="$ctrl.data.content" ng-config="$ctrl.wysiwygEditorConfig"></ng-ckeditor>

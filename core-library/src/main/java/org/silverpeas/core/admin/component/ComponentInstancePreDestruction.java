@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.admin.component;
 
-import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -80,14 +79,8 @@ public interface ComponentInstancePreDestruction {
   @SuppressWarnings("Duplicates")
   static Optional<ComponentInstancePreDestruction> get(String destructionName) {
     try {
-      final String name;
-      if (WAComponent.getByName(destructionName).get().isWorkflow()) {
-        name = WORKFLOW_PRE_DESTRUCTION;
-      } else {
-        name = destructionName.substring(0, 1).toLowerCase() + destructionName.substring(1) +
-            NAME_SUFFIX;
-      }
-      return Optional.of(ServiceProvider.getService(name));
+      return Optional.of(ServiceProvider
+          .getServiceByComponentInstanceAndNameSuffix(destructionName, NAME_SUFFIX));
     } catch (IllegalStateException e) {
       SilverLogger.getLogger(ComponentInstancePreDestruction.class).silent(e);
       return Optional.empty();

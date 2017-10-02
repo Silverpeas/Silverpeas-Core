@@ -40,7 +40,7 @@ public class CalendarInitialization implements Initialization {
     WysiwygEditorConfig wysiwygEditorConfig = new WysiwygEditorConfig(DEFAULT_COMPONENT_NAME);
     wysiwygEditorConfig.setToolbar(DEFAULT_COMPONENT_NAME);
     wysiwygEditorConfig.setFileBrowserDisplayed(true);
-    wysiwygEditorConfig.setWidth("98%");
+    wysiwygEditorConfig.setWidth("90%");
     wysiwygEditorConfig.setHeight("300px");
     WysiwygEditorConfigRegistry.get().register(DEFAULT_COMPONENT_NAME, wysiwygEditorConfig);
   }

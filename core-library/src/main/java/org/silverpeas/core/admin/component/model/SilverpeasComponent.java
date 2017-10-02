@@ -39,6 +39,23 @@ import java.util.Optional;
 public interface SilverpeasComponent {
 
   /**
+   * Gets a silverpeas component from the specified name.
+   * @param componentName a component name.
+   * @return an optional silverpeas component of {@link SilverpeasComponent}.
+   */
+  static Optional<SilverpeasComponent> getByName(String componentName) {
+    if (!StringUtil.isDefined(componentName)) {
+      return Optional.empty();
+    }
+    Optional<? extends SilverpeasComponent> component = WAComponent.getByName(componentName);
+    if (!component.isPresent()) {
+      component = PersonalComponent.getByName(componentName);
+    }
+    return Optional.ofNullable(component.orElse(null));
+  }
+
+
+  /**
    * Gets a silverpeas component from the specified component instance identifier.
    * @param componentInstanceId a component instance identifier as string.
    * @return an optional silverpeas component of {@link SilverpeasComponent}.

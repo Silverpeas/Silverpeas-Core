@@ -43,7 +43,6 @@ import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
-import org.silverpeas.core.pdc.pdc.model.PdcClassification;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -505,9 +504,11 @@ public class CalendarResource extends AbstractCalendarResource {
       CalendarEventEntity eventEntity) {
     final Calendar calendar = Calendar.getById(calendarId);
     assertDataConsistency(getComponentId(), calendar);
+    final String volatileEventId = eventEntity.getEventId();
     CalendarEvent createdEvent = process(() -> {
-      final CalendarEvent event =
-          getCalendarWebServiceProvider().createEvent(calendar, eventEntity.getMergedEvent());
+      final CalendarEvent event = getCalendarWebServiceProvider()
+          .createEvent(calendar, eventEntity.getMergedEvent(calendar.getComponentInstanceId()),
+              volatileEventId);
       Attachments.from(eventEntity.getAttachmentParameters())
           .attachTo(LocalizedContribution.from(event));
       if (!eventEntity.getPdcClassification().isUndefined()) {

@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.webapi.upload;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.util.Optional;
@@ -68,11 +67,10 @@ public interface ComponentInstanceFileUploadVerification {
    */
   static Optional<ComponentInstanceFileUploadVerification> get(String componentInstanceId) {
     try {
-      final ComponentInstLight componentInstLight =
-          OrganizationController.get().getComponentInstLight(componentInstanceId);
-      final String name = componentInstLight.getName() + NAME_SUFFIX;
-      return Optional.of(ServiceProvider.getService(name));
-    } catch (IllegalStateException ex) {
+      return Optional.of(ServiceProvider
+          .getServiceByComponentInstanceAndNameSuffix(componentInstanceId, NAME_SUFFIX));
+    } catch (IllegalStateException e) {
+      SilverLogger.getLogger(ComponentInstanceFileUploadVerification.class).warn(e);
       return Optional.empty();
     }
   }

@@ -29,7 +29,6 @@ import java.util.HashSet;
 import java.util.Set;
 
 import static org.hamcrest.Matchers.*;
-import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 
 public class VolatileResourceCacheTest {

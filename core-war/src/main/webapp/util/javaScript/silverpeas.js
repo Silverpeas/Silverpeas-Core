@@ -1155,10 +1155,12 @@ if (typeof window.sp === 'undefined') {
       if (params) {
         for (var key in params) {
           var paramList = params[key];
-          if (!paramList) {
+          var typeOfParamList = typeof paramList;
+          if (!paramList && typeOfParamList !== 'boolean') {
             continue;
           }
-          if (typeof paramList !== 'object') {
+          console.log(paramList);
+          if (typeOfParamList !== 'object') {
             paramList = [paramList];
           }
           if (paramPart.length > 1) {
@@ -1353,6 +1355,44 @@ if (typeof window.sp === 'undefined') {
         jQuery('.pageJumper input', $container).each(function(index, jumperInput) {
           jumperInput.ajax = __ajaxRequest;
         });
+      }
+    },
+    volatileIdentifier : {
+      newOn : function(componentInstanceId) {
+        var url = webContext + '/services/volatile/' + componentInstanceId + '/new';
+        return sp.ajaxConfig(url).execute().then(function(request) {
+          return request.responseText;
+        });
+      }
+    },
+    editor : {
+      wysiwyg : {
+        configFor : function(resourceId, componentInstanceId, options) {
+          var params = extendsObject({
+            configName : undefined,
+            height : undefined,
+            width : undefined,
+            language : undefined,
+            toolbar : undefined,
+            toolbarStartExpanded : undefined,
+            fileBrowserDisplayed : undefined,
+            stylesheet : undefined
+          }, options);
+          var url = webContext + '/services/wysiwyg/editor/' + componentInstanceId + '/' +
+              resourceId;
+          var ajaxConfig = sp.ajaxConfig(url);
+          ajaxConfig.withParam("configName", params.configName);
+          ajaxConfig.withParam("height", params.height);
+          ajaxConfig.withParam("width", params.width);
+          ajaxConfig.withParam("language", params.language);
+          ajaxConfig.withParam("toolbar", params.toolbar);
+          ajaxConfig.withParam("toolbarStartExpanded", params.toolbarStartExpanded);
+          ajaxConfig.withParam("fileBrowserDisplayed", params.fileBrowserDisplayed);
+          ajaxConfig.withParam("stylesheet", params.stylesheet);
+          return ajaxConfig.execute().then(function(request) {
+            return JSON.parse(request.responseText);
+          });
+        }
       }
     }
   };

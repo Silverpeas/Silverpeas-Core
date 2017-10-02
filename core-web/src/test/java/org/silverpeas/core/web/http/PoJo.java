@@ -83,7 +83,7 @@ public class PoJo {
   private Boolean aBoolean;
 
   @FormParam("aBooleanFromAnnotation")
-  private boolean aPrimitiveBoolean;
+  private boolean aPrimitiveBoolean = true;
 
   @FormParam("")
   private Date aDateNotInParameter;

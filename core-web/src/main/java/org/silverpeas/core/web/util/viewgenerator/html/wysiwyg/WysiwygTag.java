@@ -156,21 +156,14 @@ public class WysiwygTag extends TagSupport {
 
     HttpSession session = pageContext.getSession();
     GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    if (getSpaceLabel() != null) {
-      session.setAttribute("WYSIWYG_SpaceLabel", URLDecoder.decode(getSpaceLabel()));
-    }
-    if(getComponentId() != null) {
-      session.setAttribute("WYSIWYG_ComponentId", getComponentId());
-    }
-    if (getComponentLabel() != null) {
-      session.setAttribute("WYSIWYG_ComponentLabel", URLDecoder.decode(getComponentLabel()));
-    }
-    if(getBrowseInfo() != null) {
-      session.setAttribute("WYSIWYG_BrowseInfo", URLDecoder.decode(getBrowseInfo()));
-    }
-    if(getObjectId() != null) {
-      session.setAttribute("WYSIWYG_ObjectId", getObjectId());
-    }
+    session.setAttribute("WYSIWYG_SpaceLabel",
+        getSpaceLabel() != null ? URLDecoder.decode(getSpaceLabel()) : null);
+    session.setAttribute("WYSIWYG_ComponentId", getComponentId());
+    session.setAttribute("WYSIWYG_ComponentLabel",
+        getComponentLabel() != null ? URLDecoder.decode(getComponentLabel()) : null);
+    session.setAttribute("WYSIWYG_BrowseInfo",
+        getBrowseInfo() != null ? URLDecoder.decode(getBrowseInfo()) : null);
+    session.setAttribute("WYSIWYG_ObjectId", getObjectId());
     session.setAttribute("WYSIWYG_Language", wysiwygEditor.getLanguage());
 
     SettingBundle settings = gef.getFavoriteLookSettings();

@@ -66,6 +66,7 @@ import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
+import org.silverpeas.core.cache.VolatileResourceCleaner;
 import org.silverpeas.core.calendar.ical4j.ICal4JCalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JExporter;
@@ -425,6 +426,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
           FileServerUtils.class);
       addPackages(true, "org.silverpeas.core.persistence.jcr");
       addPackages(true, "org.silverpeas.core.contribution.attachment");
+      addClasses(VolatileResourceCleaner.class);
       addAsResource("org/silverpeas/util/attachment/Attachment.properties");
       addAsResource("silverpeas-jcr.cnd");
       addAsResource(JcrContext.REPOSITORY_IN_MEMORY_XML.substring(1));

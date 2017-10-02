@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.test.stub;
 
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.service.WysiwygContentRepository;
@@ -43,6 +44,11 @@ public class StubbedWysiwygContentRepository implements WysiwygContentRepository
 
   @Override
   public void delete(final WysiwygContent content) {
+
+  }
+
+  @Override
+  public void deleteByContribution(final Contribution contribution) {
 
   }
 }

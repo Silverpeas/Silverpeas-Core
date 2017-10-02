@@ -41,21 +41,21 @@ import java.util.Optional;
 class DefaultComponentInstanceRoutingMapProvider implements ComponentInstanceRoutingMapProvider {
 
   private String instanceId;
-  private SilverpeasComponentInstance componentInstance;
+  private String componentName;
   private AbstractComponentInstanceRoutingMap relativeRoutingMap;
   private AbstractComponentInstanceRoutingMap relativeToSilverpeasRoutingMap;
   private AbstractComponentInstanceRoutingMap absoluteRoutingMap;
 
   DefaultComponentInstanceRoutingMapProvider(final String instanceId) {
     this.instanceId = instanceId;
-    this.componentInstance = SilverpeasComponentInstance.getById(instanceId).orElse(null);
+    this.componentName = SilverpeasComponentInstance.getComponentName(instanceId);
   }
 
   @Override
   public ComponentInstanceRoutingMap relative() {
     if (relativeRoutingMap == null) {
-      relativeRoutingMap = newRoutingMap().init(instanceId, componentInstance, StringUtil.EMPTY,
-              SilverpeasWebResource.BASE_PATH + getWebResourceBase());
+      relativeRoutingMap = newRoutingMap().init(instanceId, StringUtil.EMPTY,
+          SilverpeasWebResource.BASE_PATH + getWebResourceBase());
     }
     return relativeRoutingMap;
   }
@@ -63,9 +63,8 @@ class DefaultComponentInstanceRoutingMapProvider implements ComponentInstanceRou
   @Override
   public ComponentInstanceRoutingMap relativeToSilverpeas() {
     if (relativeToSilverpeasRoutingMap == null) {
-      relativeToSilverpeasRoutingMap = newRoutingMap()
-          .init(instanceId, componentInstance, URLUtil.getApplicationURL(),
-              SilverpeasWebResource.getBasePath() + getWebResourceBase());
+      relativeToSilverpeasRoutingMap = newRoutingMap().init(instanceId, URLUtil.getApplicationURL(),
+          SilverpeasWebResource.getBasePath() + getWebResourceBase());
     }
     return relativeToSilverpeasRoutingMap;
   }
@@ -73,16 +72,15 @@ class DefaultComponentInstanceRoutingMapProvider implements ComponentInstanceRou
   @Override
   public ComponentInstanceRoutingMap absolute() {
     if (absoluteRoutingMap == null) {
-      absoluteRoutingMap = newRoutingMap()
-          .init(instanceId, componentInstance, URLUtil.getAbsoluteApplicationURL(),
-              SilverpeasWebResource.getAbsoluteBasePath() + getWebResourceBase());
+      absoluteRoutingMap = newRoutingMap().init(instanceId, URLUtil.getAbsoluteApplicationURL(),
+          SilverpeasWebResource.getAbsoluteBasePath() + getWebResourceBase());
     }
     return absoluteRoutingMap;
   }
 
   private String getWebResourceBase() {
-    return "/" + Optional.ofNullable(componentInstance)
-        .map(silverpeasComponentInstance -> silverpeasComponentInstance.getName().toLowerCase())
+    return "/" + Optional.ofNullable(componentName)
+        .map(String::toLowerCase)
         .orElseGet(() -> instanceId.toLowerCase());
   }
 
@@ -92,17 +90,11 @@ class DefaultComponentInstanceRoutingMapProvider implements ComponentInstanceRou
    */
   private AbstractComponentInstanceRoutingMap newRoutingMap() {
     final Mutable<AbstractComponentInstanceRoutingMap> componentRoutingMap = Mutable.empty();
-    if (componentInstance != null) {
+    if (componentName != null) {
       try {
-        final String name;
-        if (componentInstance.isWorkflow()) {
-          name = ComponentInstanceRoutingMap.WORKFLOW_ROUTING_NAME;
-        } else {
-          final String componentName = componentInstance.getName();
-          name = componentName.substring(0, 1).toLowerCase() + componentName.substring(1) +
-              ComponentInstanceRoutingMap.NAME_SUFFIX;
-        }
-        componentRoutingMap.set(ServiceProvider.getService(name));
+        componentRoutingMap.set(ServiceProvider
+            .getServiceByComponentInstanceAndNameSuffix(componentName,
+                ComponentInstanceRoutingMap.NAME_SUFFIX));
       } catch (IllegalStateException e) {
         SilverLogger.getLogger(ComponentInstanceRoutingMap.class).silent(e);
       }

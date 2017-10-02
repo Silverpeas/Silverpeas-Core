@@ -322,6 +322,12 @@
             }.bind(this);
 
             this.$postLink = function() {
+              sp.editor.wysiwyg.configFor(this.data.eventId, this.data.componentInstanceId(),
+                  {configName : "calendar"}).then(function(wysiwygEditorConfig) {
+                $timeout(function() {
+                  this.wysiwygEditorConfig = wysiwygEditorConfig;
+                }.bind(this), 0);
+              }.bind(this));
               $timeout(function() {
                 var focusSelector = !this.data.title ?
                     '#sp_cal_event_form_main_title' :

@@ -22,31 +22,26 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.calendar;
+package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
-
-import java.text.MessageFormat;
-import java.util.Optional;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
- * Contribution manager centralization about the calendar event resources.
+ * This API permits ti get data about component specified into sub hidden projects at core-api
+ * level.
  * @author silveryocha
  */
-public class AbstractCalendarComponentInstanceContributionManager
-    implements ComponentInstanceContributionManager {
+public interface SilverpeasComponentDataProvider {
 
-  @Override
-  public Optional<Contribution> getById(final ContributionIdentifier contributionId) {
-    final String localId = contributionId.getLocalId();
-    if (CalendarEventOccurrence.TYPE.equals(contributionId.getType())) {
-      return Optional.ofNullable(CalendarEventOccurrence.getById(localId).orElse(null));
-    } else if (CalendarEvent.TYPE.equals(contributionId.getType())) {
-      return Optional.ofNullable(CalendarEvent.getById(localId));
-    }
-    throw new IllegalStateException(
-        MessageFormat.format("type {0} is not handled", contributionId.getType()));
+  static SilverpeasComponentDataProvider get() {
+    return ServiceProvider.getService(SilverpeasComponentDataProvider.class);
   }
+
+  /**
+   * Indicates if the component referenced by the given name is a workflow.
+   * @param componentName a component name.
+   * @return true if it is a workflow, false otherwise.
+   * @throws IllegalStateException when the component name is not found into registry.
+   */
+  boolean isWorkflow(String componentName);
 }

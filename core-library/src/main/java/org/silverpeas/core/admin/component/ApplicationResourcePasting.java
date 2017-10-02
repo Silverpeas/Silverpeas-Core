@@ -46,7 +46,7 @@ public interface ApplicationResourcePasting {
   /**
    * The suffix of the name any bean implementing this interface should have.
    */
-  static final String NAME_SUFFIX = "ResourcePasting";
+  String NAME_SUFFIX = "ResourcePasting";
 
   /**
    * Pastes all the resources of component instance referred by the pasteDetail information to
@@ -54,6 +54,5 @@ public interface ApplicationResourcePasting {
    * @param pasteDetail the pasting information.
    * @throws RuntimeException if an error occurs during the pasting process.
    */
-  void paste(PasteDetail pasteDetail) throws RuntimeException;
-
+  void paste(PasteDetail pasteDetail);
 }

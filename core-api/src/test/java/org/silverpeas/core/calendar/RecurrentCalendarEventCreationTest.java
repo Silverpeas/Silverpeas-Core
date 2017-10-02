@@ -263,7 +263,7 @@ public class RecurrentCalendarEventCreationTest {
   @Test
   public void createARecurringEventEndingAtGivenDateTime() {
     CalendarEvent event = anAllDayEvent().recur(
-        Recurrence.every(1, TimeUnit.WEEK).until(now.plusWeeks(4)));
+        Recurrence.every(1, TimeUnit.WEEK).until(today.plusWeeks(4)));
     assertThat(event.getRecurrence().getFrequency(), is(RecurrencePeriod.every(1, TimeUnit.WEEK)));
     assertThat(event.getRecurrence().getRecurrenceEndDate().isPresent(), is(true));
     assertThat(event.getRecurrence().getRecurrenceCount(), is(NO_RECURRENCE_COUNT));

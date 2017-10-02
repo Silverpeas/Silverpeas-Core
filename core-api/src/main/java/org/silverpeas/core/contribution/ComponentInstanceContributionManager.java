@@ -55,6 +55,8 @@ public interface ComponentInstanceContributionManager {
    * Gets the {@link Contribution} instance linked to the given contribution identifier.
    * @param contributionId the representation of contribution identifier.
    * @return the optional {@link Contribution} instance.
+   * @throws IllegalStateException when the type of the contribution is not handled by the
+   * implementation.
    */
   Optional<Contribution> getById(ContributionIdentifier contributionId);
 }

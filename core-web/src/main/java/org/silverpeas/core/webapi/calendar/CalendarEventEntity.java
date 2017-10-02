@@ -54,6 +54,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
+    .getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatDateWithOffset;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatTitle;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -419,12 +421,14 @@ public class CalendarEventEntity implements WebEntity {
   /**
    * Get the persistent data representation of an event merged with the entity data.
    * The data of the entity are applied to the returned instance.
+   * @param componentInstanceId identifier of the component instance host.
    * @return a {@link CalendarEvent} instance.
    */
   @XmlTransient
-  CalendarEvent getMergedEvent() {
+  CalendarEvent getMergedEvent(final String componentInstanceId) {
     final CalendarEvent event;
-    if (isDefined(getEventId())) {
+    if (isDefined(getEventId()) &&
+        !getSessionVolatileResourceCacheService().contains(getEventId(), componentInstanceId)) {
       event = CalendarEvent.getById(getEventId());
     } else {
       event = CalendarEvent.on(getPeriod());

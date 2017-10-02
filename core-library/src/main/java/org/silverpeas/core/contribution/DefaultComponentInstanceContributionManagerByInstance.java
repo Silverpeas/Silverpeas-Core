@@ -25,7 +25,6 @@
 package org.silverpeas.core.contribution;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
-import org.silverpeas.core.admin.component.model.SilverpeasComponent;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.Mutable;
@@ -55,18 +54,9 @@ class DefaultComponentInstanceContributionManagerByInstance
     }
 
     try {
-      SilverpeasComponent component = SilverpeasComponent.getByInstanceId(instanceId).orElseThrow(
-          () -> new IllegalArgumentException(
-              MessageFormat.format("no component exists for {0}", instanceId)));
-      final String name;
-      if (component.isWorkflow()) {
-        name = ComponentInstanceContributionManagerByInstance.WORKFLOW_ROUTING_NAME;
-      } else {
-        final String componentName = component.getName();
-        name = componentName.substring(0, 1).toLowerCase() + componentName.substring(1) +
-            ComponentInstanceContributionManagerByInstance.NAME_SUFFIX;
-      }
-      componentInstanceManager.set(ServiceProvider.getService(name));
+      componentInstanceManager.set(ServiceProvider
+          .getServiceByComponentInstanceAndNameSuffix(instanceId,
+              ComponentInstanceContributionManagerByInstance.NAME_SUFFIX));
     } catch (IllegalStateException e) {
       throw new SilverpeasRuntimeException(MessageFormat
           .format("no ComponentInstanceContributionManager implementation for {0}", instanceId), e);

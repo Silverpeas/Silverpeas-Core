@@ -43,14 +43,15 @@ public class UserCalendarInstanceRoutingMap extends AbstractCalendarInstanceRout
   @Override
   protected String getBaseForPages() {
     if (baseForPages == null) {
-      SilverpeasComponentInstance instance = getInstance();
       final User user = User.getCurrentRequester();
       if (user != null) {
         // always redirecting the current user on its own instance
-        instance = PersonalComponentInstance.from(user,
+        SilverpeasComponentInstance instance = PersonalComponentInstance.from(user,
             PersonalComponent.getByName(UserCalendarSettings.COMPONENT_NAME).get());
+        baseForPages = "/R" + instance.getName() + "/" + instance.getId();
+      } else {
+        baseForPages = super.getBaseForPages();
       }
-      baseForPages = "/R" + instance.getName() + "/" + instance.getId();
     }
     return baseForPages;
   }

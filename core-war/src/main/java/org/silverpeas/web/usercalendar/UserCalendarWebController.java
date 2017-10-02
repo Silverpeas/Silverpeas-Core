@@ -38,7 +38,6 @@ import org.silverpeas.core.webapi.calendar.CalendarEntity;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import java.time.temporal.Temporal;
 
 @WebComponentController(UserCalendarSettings.COMPONENT_NAME)
 public class UserCalendarWebController extends
@@ -111,10 +110,7 @@ public class UserCalendarWebController extends
   @RedirectToInternalJsp("occurrenceEdit.jsp")
   @LowestRoleAccess(SilverpeasRole.admin)
   public void newEvent(UserCalendarWebRequestContext context) {
-    Temporal startDate = context.getOccurrenceStartDate();
-    if (startDate != null) {
-      context.getRequest().setAttribute("occurrenceStartDate", startDate.toString());
-    }
+    processNewEvent(context);
   }
 
   /**

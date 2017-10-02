@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.contribution.model;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.ResourceIdentifier;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.ContributionLocator;
@@ -208,5 +210,26 @@ public class ContributionIdentifier implements ResourceIdentifier, Serializable 
    */
   public String getType() {
     return type;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    final ContributionIdentifier that = (ContributionIdentifier) o;
+
+    return new EqualsBuilder().append(instanceId, that.instanceId).append(type, that.type)
+        .append(localId, that.localId).isEquals();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(17, 37).append(instanceId).append(type).append(localId).toHashCode();
   }
 }

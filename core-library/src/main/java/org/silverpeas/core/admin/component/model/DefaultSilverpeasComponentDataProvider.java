@@ -22,31 +22,25 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.silverpeas.core.calendar;
+package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import javax.inject.Singleton;
 
-import java.text.MessageFormat;
-import java.util.Optional;
+import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 /**
- * Contribution manager centralization about the calendar event resources.
  * @author silveryocha
  */
-public class AbstractCalendarComponentInstanceContributionManager
-    implements ComponentInstanceContributionManager {
+@Singleton
+public class DefaultSilverpeasComponentDataProvider implements SilverpeasComponentDataProvider {
 
   @Override
-  public Optional<Contribution> getById(final ContributionIdentifier contributionId) {
-    final String localId = contributionId.getLocalId();
-    if (CalendarEventOccurrence.TYPE.equals(contributionId.getType())) {
-      return Optional.ofNullable(CalendarEventOccurrence.getById(localId).orElse(null));
-    } else if (CalendarEvent.TYPE.equals(contributionId.getType())) {
-      return Optional.ofNullable(CalendarEvent.getById(localId));
-    }
-    throw new IllegalStateException(
-        MessageFormat.format("type {0} is not handled", contributionId.getType()));
+  public boolean isWorkflow(final String componentName) {
+    return getComponent(componentName).isWorkflow();
+  }
+
+  private SilverpeasComponent getComponent(final String componentName) {
+    return SilverpeasComponent.getByName(componentName)
+        .orElseThrow(() -> new IllegalStateException(unknown("component", componentName)));
   }
 }

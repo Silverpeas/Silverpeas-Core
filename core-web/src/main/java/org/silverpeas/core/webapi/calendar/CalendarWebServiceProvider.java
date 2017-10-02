@@ -25,6 +25,7 @@
 package org.silverpeas.core.webapi.calendar;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
@@ -41,6 +42,7 @@ import org.silverpeas.core.calendar.ICalendarImportResult;
 import org.silverpeas.core.calendar.Plannable;
 import org.silverpeas.core.calendar.icalendar.ICalendarExporter;
 import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
@@ -70,6 +72,10 @@ import java.util.stream.Collectors;
 
 import static java.util.Collections.singletonList;
 import static org.silverpeas.core.calendar.CalendarEventUtil.getDateWithOffset;
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider
+    .getAttachmentService;
+import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController
+    .wysiwygPlaceHaveChanged;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.ALL;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.UNIQUE;
@@ -191,13 +197,27 @@ public class CalendarWebServiceProvider {
    * saved (from a controller, a WEB service...)
    * @param calendar the calendar on which the event is added.
    * @param event the event to create.
+   * @param volatileEventId the volatile identifier used to attach the images on WYSIWYG editor.
    * @return the calendar event.
    */
-  public CalendarEvent createEvent(Calendar calendar, CalendarEvent event) {
+  public CalendarEvent createEvent(Calendar calendar, CalendarEvent event, String volatileEventId) {
     if (!calendar.canBeAccessedBy(User.getCurrentRequester())) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
     event.planOn(calendar);
+
+    // Attaching all documents linked to volatile identifier to the persisted one
+    final String finalEventId = event.getId();
+    final String instanceId = calendar.getComponentInstanceId();
+    final ForeignPK volatileAttachmentSourcePK = new ForeignPK(volatileEventId, instanceId);
+    final ForeignPK finalAttachmentSourcePK = new ForeignPK(finalEventId, instanceId);
+    final List<SimpleDocumentPK> movedDocumentPks = getAttachmentService()
+        .moveAllDocuments(volatileAttachmentSourcePK, finalAttachmentSourcePK);
+    if (!movedDocumentPks.isEmpty()) {
+      // Change images path in wysiwyg
+      wysiwygPlaceHaveChanged(instanceId, volatileEventId, instanceId, finalEventId);
+    }
+
     successMessage("calendar.message.event.created", event.getTitle());
     return event;
   }

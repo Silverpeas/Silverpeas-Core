@@ -4949,11 +4949,12 @@ class Admin implements Administration {
     // Execute specific paste by the component
     try {
       pasteDetail.setToComponentId(sComponentId);
-      String className = ComponentInst.getComponentName(pasteDetail.getFromComponentId()) +
-          ApplicationResourcePasting.NAME_SUFFIX;
-      ApplicationResourcePasting componentPaste = ServiceProvider.getService(className);
+      ApplicationResourcePasting componentPaste = ServiceProvider
+          .getServiceByComponentInstanceAndNameSuffix(pasteDetail.getFromComponentId(),
+              ApplicationResourcePasting.NAME_SUFFIX);
       componentPaste.paste(pasteDetail);
     } catch (IllegalStateException e) {
+      SilverLogger.getLogger(this).silent(e);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }

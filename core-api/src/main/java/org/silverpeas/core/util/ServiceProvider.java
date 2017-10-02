@@ -23,6 +23,10 @@
  */
 package org.silverpeas.core.util;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponentDataProvider;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+
+import javax.inject.Named;
 import java.lang.annotation.Annotation;
 import java.util.Iterator;
 import java.util.ServiceLoader;
@@ -83,8 +87,7 @@ public final class ServiceProvider {
    * specified qualifiers can be found.
    * @see BeanContainer#getBeanByType(Class, java.lang.annotation.Annotation...)
    */
-  public static <T> T getService(Class<T> type, Annotation... qualifiers)
-      throws IllegalStateException {
+  public static <T> T getService(Class<T> type, Annotation... qualifiers) {
     return beanContainer().getBeanByType(type, qualifiers);
   }
 
@@ -102,7 +105,7 @@ public final class ServiceProvider {
    * @throws java.lang.IllegalStateException if no bean can be found with the specified name.
    * @see BeanContainer#getBeanByName(String)
    */
-  public static <T> T getService(String name) throws IllegalStateException {
+  public static <T> T getService(String name) {
     return beanContainer().getBeanByName(name);
   }
 
@@ -123,6 +126,54 @@ public final class ServiceProvider {
    */
   public static <T> Set<T> getAllServices(Class<T> type, Annotation... qualifiers) {
     return beanContainer().getAllBeansByType(type, qualifiers);
+  }
+
+  /**
+   * <p>
+   * Some API are defined at a high level, core-api for example, and be implemented by several
+   * services or component services.
+   * </p>
+   * <p>
+   * This method offers to provide an implementation of an API by observing following convention of
+   * service naming: <br/><code>[COMPONENT NAME][SERVICE NAME
+   * SUFFIX]</code><br/><code>kmeliaInstancePostConstruction</code> for example, where
+   * <code>kmelia</code> the component name and <code>InstancePostConstruction</code> the service
+   * name suffix.
+   * </p>
+   * <p>
+   * To be provided by this way, an implementation of an API must use {@link Named}
+   * annotation and fill {@link Named#value()} in case where the implementation class name does not
+   * correspond to <code>[COMPONENT NAME][SERVICE NAME SUFFIX]</code> concatenation.
+   * </p>
+   * <p>
+   * This way of service implementation getting take care about silverpeas components which have a
+   * workflow behavior. In case of workflow component, the implementation provided will be the one
+   * satisfying the service name <code>processManager[SERVICE NAME SUFFIX]</code>.
+   * </p>
+   * @param componentInstanceIdOrComponentName a component instance identifier of a component name.
+   * @param nameSuffix a service name suffix.
+   * @param <T> the type of the bean to return.
+   * @return the bean matching the specified name.
+   * @throws java.lang.IllegalStateException if no bean can be found with the specified name.
+   * @throws java.lang.IllegalArgumentException if componentInstanceIdOrComponentName is not found.
+   * @see BeanContainer#getBeanByName(String)
+   */
+  public static <T> T getServiceByComponentInstanceAndNameSuffix(
+      final String componentInstanceIdOrComponentName, final String nameSuffix) {
+    final Mutable<String> componentName = Mutable.ofNullable(
+        SilverpeasComponentInstance.getComponentName(componentInstanceIdOrComponentName));
+    if (!componentName.isPresent()) {
+      componentName.set(componentInstanceIdOrComponentName);
+    }
+    final String serviceName;
+    if (SilverpeasComponentDataProvider.get().isWorkflow(componentName.get())) {
+      serviceName = "processManager" + nameSuffix;
+    } else {
+      serviceName =
+          componentName.get().substring(0, 1).toLowerCase() + componentName.get().substring(1) +
+              nameSuffix;
+    }
+    return getService(serviceName);
   }
 
   private static BeanContainer beanContainer() {

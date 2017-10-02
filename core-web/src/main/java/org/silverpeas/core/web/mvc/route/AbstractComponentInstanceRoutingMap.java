@@ -25,7 +25,6 @@
 package org.silverpeas.core.web.mvc.route;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponent;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.util.StringUtil;
@@ -46,7 +45,6 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 public abstract class AbstractComponentInstanceRoutingMap implements ComponentInstanceRoutingMap {
 
   private String instanceId;
-  private SilverpeasComponentInstance instance;
   private String uriBuilderBase;
   private String baseForPages;
   private String webResourceBase;
@@ -56,10 +54,9 @@ public abstract class AbstractComponentInstanceRoutingMap implements ComponentIn
 
   @SuppressWarnings("unchecked")
   <T extends AbstractComponentInstanceRoutingMap> T init(final String instanceId,
-      final SilverpeasComponentInstance instance, final String uriBuilderBase,
+      final String uriBuilderBase,
       final String webResourceBase) {
     this.instanceId = instanceId;
-    this.instance = instance;
     this.uriBuilderBase = uriBuilderBase;
     this.webResourceBase = webResourceBase;
     return (T) this;
@@ -68,10 +65,6 @@ public abstract class AbstractComponentInstanceRoutingMap implements ComponentIn
   @Override
   public String getInstanceId() {
     return instanceId;
-  }
-
-  protected SilverpeasComponentInstance getInstance() {
-    return instance;
   }
 
   @Override

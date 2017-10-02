@@ -58,13 +58,6 @@ public interface ComponentInstanceRoutingMap {
   String NAME_SUFFIX = "InstanceRoutingMap";
 
   /**
-   * Each workflow is an application but all of them uses the same routing map.<br>
-   * So, when the name of a workflow component is detected, the routing map implementation
-   * retrieved will be the one named like this constant value.
-   */
-  String WORKFLOW_ROUTING_NAME = "processManager" + NAME_SUFFIX;
-
-  /**
    * Gets the identifier of the component instance which the current implementation is linked to.
    * @return an identifier of component instance as string.
    */

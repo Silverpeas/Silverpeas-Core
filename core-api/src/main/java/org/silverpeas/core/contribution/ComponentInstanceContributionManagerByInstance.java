@@ -41,13 +41,6 @@ public interface ComponentInstanceContributionManagerByInstance {
    */
   String NAME_SUFFIX = "InstanceContributionManager";
 
-  /**
-   * Each workflow is an application but all of them uses the same routing map.<br>
-   * So, when the name of a workflow component is detected, the routing map implementation
-   * retrieved will be the one named like this constant value.
-   */
-  String WORKFLOW_ROUTING_NAME = "processManager" + NAME_SUFFIX;
-
   static ComponentInstanceContributionManagerByInstance get() {
     return ServiceProvider.getService(ComponentInstanceContributionManagerByInstance.class);
   }

@@ -165,7 +165,7 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "LEFT OUTER JOIN FETCH e.recurrence r " +
             "WHERE (c IN :calendars " +
             "       AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
-            "           OR (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
+            "           OR (cmp.period.endDateTime <= :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
             "OR e.id IN (SELECT occ_e.id " +
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +
@@ -183,7 +183,7 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "JOIN cmp.calendar c " +
             "LEFT OUTER JOIN FETCH e.recurrence r " +
             "WHERE ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
-            "       OR (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))) " +
+            "       OR (cmp.period.endDateTime <= :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))) " +
             "OR e.id IN (SELECT occ_e.id " +
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +
@@ -202,7 +202,7 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "WHERE (a.attendeeId IN :participantIds " +
             "       AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
             "            OR" +
-            "            (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
+            "            (cmp.period.endDateTime <= :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
             "OR e.id IN (SELECT occ_e.id " +
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +
@@ -223,7 +223,7 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "WHERE (c IN :calendars " +
             "       AND a.attendeeId IN :participantIds " +
             "       AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
-            "            OR (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
+            "            OR (cmp.period.endDateTime <= :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
             "OR e.id IN (SELECT occ_e.id " +
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +

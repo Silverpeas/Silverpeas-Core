@@ -55,6 +55,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.temporal.Temporal;
 import java.util.List;
 
 import static org.silverpeas.core.util.StringUtil.*;
@@ -190,6 +191,13 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
       attendeeSelectionParams.setComponentId(getComponentId());
     }
     return attendeeSelectionParams;
+  }
+
+  protected void processNewEvent(final AbstractCalendarWebRequestContext context) {
+    final Temporal startDate = context.getOccurrenceStartDate();
+    if (startDate != null) {
+      context.getRequest().setAttribute("occurrenceStartDate", startDate.toString());
+    }
   }
 
   protected void processViewOccurrence(final AbstractCalendarWebRequestContext context,
