@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.service;
 
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 
@@ -51,4 +52,13 @@ public interface WysiwygContentRepository {
    * @param content the content to remove.
    */
   void delete(WysiwygContent content);
+
+  /**
+   * Deletes all the contents of the specified contribution in the repository. If the contribution
+   * has several WYSIWYG contents, that is one per localization for example, then all of those
+   * contents will be deleted. Otherwise only the single WYSIWYG content of the contribution,
+   * whatever its localization will be deleted.
+   * @param contribution the contribution for which all the WYSIWYG contents will be deleted.
+   */
+  void deleteByContribution(Contribution contribution);
 }

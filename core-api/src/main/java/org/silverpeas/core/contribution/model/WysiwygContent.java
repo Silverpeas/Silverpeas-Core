@@ -55,6 +55,20 @@ public class WysiwygContent implements ContributionContent<String> {
   }
 
   /**
+   * Deletes all the WYSIWYG contents of the specified contribution. If the given contribution is
+   * an I18n one (a multi-localized contribution) then all of its WYSIWYG contents, one per
+   * localization, will be deleted. In the case of a single one localized contribution, only this
+   * single WYSIWYG content will be deleted. If the contribution has no WYSIWYG contents, nothing is
+   * done.
+   * @param contribution the contribution for which the WYSIWYG contents have to be deleted.
+   */
+  public static void deleteAllContents(final Contribution contribution) {
+    WysiwygContentRepository repository =
+        ServiceProvider.getService(WysiwygContentRepository.class);
+    repository.deleteByContribution(contribution);
+  }
+
+  /**
    * Constructs a new WYSIWYG content for the specified contribution with the given rich text.
    * @param contribution the contribution related by the content.
    * @param richText the data of the content. If null then an empty text is set.
@@ -62,6 +76,14 @@ public class WysiwygContent implements ContributionContent<String> {
   public WysiwygContent(final LocalizedContribution contribution, final String richText) {
     this.contribution = contribution;
     this.text = richText == null ? "" : richText;
+  }
+
+  /**
+   * Constructs an empty WYSIWYG content for the specified contribution.
+   * @param contribution the contribution related by the content.
+   */
+  public WysiwygContent(final LocalizedContribution contribution) {
+    this(contribution, "");
   }
 
   /**
@@ -102,12 +124,17 @@ public class WysiwygContent implements ContributionContent<String> {
   }
 
   /**
-   * Modifies the text of this content. The content will then be marked as modified.
+   * Modifies the text of this content. The content is effectively modified only if the specified
+   * text is different to the actual one; in such a case, the content is marked as modified and
+   * is then elective for the next storage update.
    * @param richTest the new text to set. If null then an empty text is set.
    */
   public void setData(final String richTest) {
-    this.text = richTest == null ? "" : richTest;
-    this.modified = true;
+    String newText = richTest == null ? "" : richTest;
+    if (!newText.contentEquals(this.text)) {
+      this.text = newText;
+      this.modified = true;
+    }
   }
 
   /**

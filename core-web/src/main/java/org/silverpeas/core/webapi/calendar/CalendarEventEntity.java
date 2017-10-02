@@ -32,6 +32,8 @@ import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.VisibilityLevel;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.webapi.attachment.AttachmentParameterEntity;
 import org.silverpeas.core.webapi.base.WebEntity;
@@ -440,9 +442,13 @@ public class CalendarEventEntity implements WebEntity {
   @XmlTransient
   void applyOn(final CalendarEvent event) {
     String currentText = getContent() == null ? "" : getContent();
-    event.getContent()
-        .filter(c -> !c.getData().contentEquals(currentText))
-        .ifPresent(c -> c.setData(currentText));
+    if (event.getContent().isPresent()) {
+      event.getContent().get().setData(currentText);
+    } else if (!currentText.isEmpty()) {
+      WysiwygContent content = new WysiwygContent(LocalizedContribution.from(event));
+      content.setData(currentText);
+      event.setContent(content);
+    }
     event.withVisibilityLevel(getVisibility());
     if (getRecurrence() != null) {
       getRecurrence().applyOn(event, getPeriod());

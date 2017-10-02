@@ -1137,7 +1137,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       Transaction.getTransaction().perform(() -> {
         CalendarEventRepository repository = CalendarEventRepository.get();
         repository.delete(this);
-        getContent().ifPresent(WysiwygContent::delete);
+        WysiwygContent.deleteAllContents(this);
         return null;
       });
     }

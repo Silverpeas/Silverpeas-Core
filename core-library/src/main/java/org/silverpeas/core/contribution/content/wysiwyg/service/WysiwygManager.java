@@ -41,6 +41,7 @@ import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.content.wysiwyg.notification.WysiwygEventNotifier;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
@@ -363,6 +364,12 @@ public class WysiwygManager implements WysiwygContentRepository {
     final LocalizedContribution contribution = content.getContribution();
     deleteFile(contribution.getContributionId().getComponentInstanceId(),
         contribution.getContributionId().getLocalId(), contribution.getLanguage());
+  }
+
+  @Override
+  public void deleteByContribution(final Contribution contribution) {
+    deleteWysiwygAttachments(contribution.getContributionId().getComponentInstanceId(),
+        contribution.getContributionId().getLocalId());
   }
 
   /**
