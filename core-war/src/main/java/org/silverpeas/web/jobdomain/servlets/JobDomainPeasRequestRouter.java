@@ -145,14 +145,22 @@ public class JobDomainPeasRequestRouter extends
         jobDomainSC.returnIntoGroup(null);
         jobDomainSC.setDefaultTargetDomain();
         destination = "jobDomain.jsp";
+      } else if ("PreviousUser".equals(function)) {
+        UserDetail user = jobDomainSC.getPrevious();
+        jobDomainSC.setTargetUser(user.getId());
+        destination = "userContent.jsp";
+      } else if ("NextUser".equals(function)) {
+        UserDetail user = jobDomainSC.getNext();
+        jobDomainSC.setTargetUser(user.getId());
+        destination = "userContent.jsp";
       } else if (function.startsWith("user")) {
         // USER Actions --------------------------------------------
+        String userId = request.getParameter("Iduser");
         if (function.startsWith("userContent")) {
-          if (StringUtil.isDefined(request.getParameter("Iduser"))) {
-            jobDomainSC.setTargetUser(request.getParameter("Iduser"));
+          if (StringUtil.isDefined(userId)) {
+            jobDomainSC.setTargetUser(userId);
           }
         } else if ("userGetP12".equals(function)) {
-          String userId = request.getParameter("Iduser");
           jobDomainSC.getP12(userId);
         } else if (function.startsWith("userCreate")) {
           UserRequestData userRequestData =
@@ -184,17 +192,17 @@ public class JobDomainPeasRequestRouter extends
 
           jobDomainSC.modifyUser(userRequestData, properties, request);
         } else if (function.startsWith("userBlock")) {
-          jobDomainSC.blockUser(request.getParameter("Iduser"));
+          jobDomainSC.blockUser(userId);
         } else if (function.startsWith("userUnblock")) {
-          jobDomainSC.unblockUser(request.getParameter("Iduser"));
+          jobDomainSC.unblockUser(userId);
         } else if (function.startsWith("userDeactivate")) {
-          jobDomainSC.deactivateUser(request.getParameter("Iduser"));
+          jobDomainSC.deactivateUser(userId);
         } else if (function.startsWith("userActivate")) {
-          jobDomainSC.activateUser(request.getParameter("Iduser"));
+          jobDomainSC.activateUser(userId);
         } else if (function.startsWith("userDelete")) {
-          jobDomainSC.deleteUser(request.getParameter("Iduser"));
+          jobDomainSC.deleteUser(userId);
         } else if (function.startsWith("userAvatarDelete")) {
-          jobDomainSC.deleteUserAvatar(request.getParameter("Iduser"));
+          jobDomainSC.deleteUserAvatar(userId);
         } else if (function.equals("userViewRights")) {
           request.setAttribute("UserProfiles", jobDomainSC.getCurrentProfiles());
         } else if (function.startsWith("userMS")) {
@@ -276,17 +284,16 @@ public class JobDomainPeasRequestRouter extends
 
           destination = "userView.jsp";
         } else if (function.startsWith("userSynchro")) {
-          jobDomainSC.synchroUser(request.getParameter("Iduser"));
+          jobDomainSC.synchroUser(userId);
         } else if (function.startsWith("userUnSynchro")) {
-          jobDomainSC.unsynchroUser(request.getParameter("Iduser"));
+          jobDomainSC.unsynchroUser(userId);
         } else if ("userOpen".equals(function)) {
-          String userId = request.getParameter("userId");
+          userId = request.getParameter("userId");
 
-          OrganizationController orgaController = jobDomainSC.getOrganisationController();
-          UserDetail user = orgaController.getUserDetail(userId);
+          UserDetail user = UserDetail.getById(userId);
           String domainId = user.getDomainId();
           if (domainId == null) {
-            domainId = "-1";
+            domainId = Domain.MIXED_DOMAIN_ID;
           }
 
           // not refresh the domain
@@ -422,7 +429,7 @@ public class JobDomainPeasRequestRouter extends
           } else {
             destination = "/admin/jsp/accessForbidden.jsp";
           }
-        } else if (function.equals("groupViewRights")) {
+        } else if ("groupViewRights".equals(function)) {
           request.setAttribute("GroupProfiles", jobDomainSC.getCurrentProfiles());
         }
 
@@ -760,6 +767,7 @@ public class JobDomainPeasRequestRouter extends
               isUserInAtLeastOneGroupManageableByCurrentUser());
         }
         request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
+        request.setAttribute("Index", jobDomainSC.getIndex());
         request.setAttribute("UserGroups", jobDomainSC.getCurrentUserGroups());
         request.setAttribute("UserManageableSpaces", jobDomainSC.getManageablesSpaces());
         request.setAttribute("UserManageableGroups", jobDomainSC.getManageablesGroups());
