@@ -45,7 +45,6 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -64,6 +63,7 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import java.util.StringTokenizer;
 
@@ -203,7 +203,7 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.deleteUser(userId);
         } else if (function.startsWith("userAvatarDelete")) {
           jobDomainSC.deleteUserAvatar(userId);
-        } else if (function.equals("userViewRights")) {
+        } else if ("userViewRights".equals(function)) {
           request.setAttribute("UserProfiles", jobDomainSC.getCurrentProfiles());
         } else if (function.startsWith("userMS")) {
           UserRequestData userRequestData =
@@ -219,7 +219,7 @@ public class JobDomainPeasRequestRouter extends
             jobDomainSC.modifyUserFull(userRequestData, properties);
           }
         } else if (function.startsWith("userSearchToImport")) {
-          Hashtable<String, String> query;
+          Map<String, String> query;
           List<UserDetail> users;
           jobDomainSC.clearListSelectedUsers();
           jobDomainSC.setIndexOfFirstItemToDisplay("0");
@@ -313,7 +313,7 @@ public class JobDomainPeasRequestRouter extends
             if (groupDomainId == null) {
               groupDomainId = "-1";
             }
-            if (!groupDomainId.equals("-1")) {
+            if (!"-1".equals(groupDomainId)) {
               jobDomainSC.goIntoGroup(group.getId());
               break;
             }
@@ -353,8 +353,7 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("groupSet")) {
           jobDomainSC.returnIntoGroup(null);
           jobDomainSC.goIntoGroup(request.getParameter("Idgroup"));
-        } // Operation functions
-        else if (function.startsWith("groupCreate")) {
+        } else if (function.startsWith("groupCreate")) {
           bHaveToRefreshDomain = jobDomainSC.createGroup(request.getParameter("Idparent"),
               WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupName")),
               WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupDescription")),
@@ -375,22 +374,21 @@ public class JobDomainPeasRequestRouter extends
           bHaveToRefreshDomain = jobDomainSC.unsynchroGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupImport")) {
           bHaveToRefreshDomain = jobDomainSC.importGroup(WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupName")));
-        } else if (function.equals("groupManagersView")) {
+        } else if ("groupManagersView".equals(function)) {
           List<List> groupManagers = jobDomainSC.getGroupManagers();
 
           request.setAttribute("Users", groupManagers.get(0));
           request.setAttribute("Groups", groupManagers.get(1));
 
           destination = "groupManagers.jsp";
-        } else if (function.equals("groupManagersChoose")) {
+        } else if ("groupManagersChoose".equals(function)) {
           List<String> userIds = (List<String>) StringUtil
               .splitString(request.getParameter("UserPanelCurrentUserIds"), ',');
           List<String> groupIds = (List<String>) StringUtil
               .splitString(request.getParameter("UserPanelCurrentGroupIds"), ',');
-          jobDomainSC.initUserPanelForGroupManagers((String) request.getAttribute("myComponentURL"),
-              userIds, groupIds);
+          jobDomainSC.initUserPanelForGroupManagers(userIds, groupIds);
           destination = Selection.getSelectionURL();
-        } else if (function.equals("groupManagersUpdate")) {
+        } else if ("groupManagersUpdate".equals(function)) {
           List<String> userIds = (List<String>) StringUtil
               .splitString(request.getParameter("roleItems" + "UserPanelCurrentUserIds"), ',');
           List<String> groupIds = (List<String>) StringUtil
@@ -398,7 +396,7 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.updateGroupProfile(userIds, groupIds);
 
           destination = getDestination("groupManagersView", jobDomainSC, request);
-        } else if (function.equals("groupOpen")) {
+        } else if ("groupOpen".equals(function)) {
           String groupId = request.getParameter("groupId");
 
           if (jobDomainSC.isAccessGranted() || jobDomainSC.isGroupManagerOnGroup(groupId)) {
@@ -461,8 +459,7 @@ public class JobDomainPeasRequestRouter extends
         } else {
           if (function.startsWith("domainContent")) {
             jobDomainSC.returnIntoGroup(null);
-          } // Operation functions
-          else if (function.startsWith("domainCreate")) {
+          } else if (function.startsWith("domainCreate")) {
             String newDomainId = jobDomainSC.createDomain(WebEncodeHelper.htmlStringToJavaString
                     (request.getParameter("domainName")),
                 WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
@@ -662,7 +659,7 @@ public class JobDomainPeasRequestRouter extends
             template.applyFileTemplate("register_" + jobDomainSC.getLanguage()));
 
         destination = "welcome.jsp";
-      } else if (function.equals("Pagination")) {
+      } else if ("Pagination".equals(function)) {
         processSelection(request, jobDomainSC);
 
         // traitement de la pagination : passage des parametres
@@ -706,7 +703,7 @@ public class JobDomainPeasRequestRouter extends
       if (jobDomainSC.getTargetDomain() != null) {
         request.setAttribute("domainObject", jobDomainSC.getTargetDomain());
       }
-      if (destination.equals("domainContent.jsp")) {
+      if ("domainContent.jsp".equals(destination)) {
         jobDomainSC.refresh();
         long domainRight = jobDomainSC.getDomainActions();
         request.setAttribute("theUser", jobDomainSC.getUserDetail());
@@ -722,8 +719,7 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("isOnlyGroupManager", jobDomainSC.isOnlyGroupManager());
         request.setAttribute("isUserAddingAllowedForGroupManager", jobDomainSC.
             isUserAddingAllowedForGroupManager());
-      } else if (destination.equals("groupContent.jsp")
-          || destination.equals("exportgroup.jsp")) {
+      } else if ("groupContent.jsp".equals(destination) || "exportgroup.jsp".equals(destination)) {
         long domainRight = jobDomainSC.getDomainActions();
 
         request.setAttribute("groupObject", jobDomainSC.getTargetGroup());
@@ -774,7 +770,7 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("IsRightCopyReplaceEnabled",
             jobDomainSC.isRightCopyReplaceEnabled());
 
-      } else if (destination.equals("domainNavigation.jsp")) {
+      } else if ("domainNavigation.jsp".equals(destination)) {
         List<Domain> domains = jobDomainSC.getAllDomains();
         if (domains.size() == 1) {
           jobDomainSC.setTargetDomain(domains.get(0).getId());
@@ -787,7 +783,7 @@ public class JobDomainPeasRequestRouter extends
         } else {
           request.setAttribute("URLForContent", "welcome");
         }
-      } else if (destination.equals("groupManagers.jsp")) {
+      } else if ("groupManagers.jsp".equals(destination)) {
         request.setAttribute("groupObject", jobDomainSC.getTargetGroup());
         request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
             "myComponentURL"), null));
@@ -846,7 +842,8 @@ public class JobDomainPeasRequestRouter extends
     while (parameters.hasMoreElements()) {
       String parameterName = parameters.nextElement();
       if (parameterName.startsWith("prop_")) {
-        String property = parameterName.substring(5, parameterName.length()); // remove "prop_"
+        // remove "prop_"
+        String property = parameterName.substring(5, parameterName.length());
         properties.put(property, request.getParameter(parameterName));
       }
     }
