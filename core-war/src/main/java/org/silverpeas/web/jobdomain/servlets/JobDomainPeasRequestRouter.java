@@ -45,6 +45,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -194,6 +195,8 @@ public class JobDomainPeasRequestRouter extends
           jobDomainSC.deleteUser(request.getParameter("Iduser"));
         } else if (function.startsWith("userAvatarDelete")) {
           jobDomainSC.deleteUserAvatar(request.getParameter("Iduser"));
+        } else if (function.equals("userViewRights")) {
+          request.setAttribute("UserProfiles", jobDomainSC.getCurrentProfiles());
         } else if (function.startsWith("userMS")) {
           UserRequestData userRequestData =
               RequestParameterDecoder.decode(request, UserRequestData.class);
@@ -238,8 +241,7 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute("Query", query);
           request.setAttribute("Users", users);
 
-          destination = getDestination("displayUserImport", jobDomainSC,
-              request);
+          destination = getDestination("displayUserImport", jobDomainSC, request);
         } else if ("userImport".equals(function)) {
           String[] specificIds = request.getParameterValues("specificIds");
           // Massive users import
@@ -356,8 +358,8 @@ public class JobDomainPeasRequestRouter extends
               WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupDescription")),
               request.getParameter("groupRule"));
         } else if (function.startsWith("groupAddRemoveUsers")) {
-          bHaveToRefreshDomain = jobDomainSC.updateGroupSubUsers(
-              jobDomainSC.getTargetGroup().getId(), jobDomainSC.getSelectedUsersIds());
+          bHaveToRefreshDomain = jobDomainSC
+              .updateGroupSubUsers(jobDomainSC.getTargetGroup().getId(), jobDomainSC.getSelectedUsersIds());
         } else if (function.startsWith("groupDelete")) {
           bHaveToRefreshDomain = jobDomainSC.deleteGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupSynchro")) {
@@ -365,8 +367,7 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("groupUnSynchro")) {
           bHaveToRefreshDomain = jobDomainSC.unsynchroGroup(request.getParameter("Idgroup"));
         } else if (function.startsWith("groupImport")) {
-          bHaveToRefreshDomain = jobDomainSC.importGroup(WebEncodeHelper.htmlStringToJavaString(
-              request.getParameter("groupName")));
+          bHaveToRefreshDomain = jobDomainSC.importGroup(WebEncodeHelper.htmlStringToJavaString(request.getParameter("groupName")));
         } else if (function.equals("groupManagersView")) {
           List<List> groupManagers = jobDomainSC.getGroupManagers();
 
@@ -421,6 +422,8 @@ public class JobDomainPeasRequestRouter extends
           } else {
             destination = "/admin/jsp/accessForbidden.jsp";
           }
+        } else if (function.equals("groupViewRights")) {
+          request.setAttribute("GroupProfiles", jobDomainSC.getCurrentProfiles());
         }
 
         if (destination.length() <= 0) {
@@ -453,51 +456,40 @@ public class JobDomainPeasRequestRouter extends
             jobDomainSC.returnIntoGroup(null);
           } // Operation functions
           else if (function.startsWith("domainCreate")) {
-            String newDomainId = jobDomainSC.createDomain(WebEncodeHelper.htmlStringToJavaString(
-                request
-                .getParameter("domainName")),
+            String newDomainId = jobDomainSC.createDomain(WebEncodeHelper.htmlStringToJavaString
+                    (request.getParameter("domainName")),
                 WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
                 WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
                 WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
-                WebEncodeHelper.htmlStringToJavaString(request
-                    .getParameter("domainAuthentication")),
-                WebEncodeHelper
-                .htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainAuthentication")),
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
                 WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLCreate")) {
-            String newDomainId = jobDomainSC.createSQLDomain(WebEncodeHelper.htmlStringToJavaString(
-                request
-                .getParameter("domainName")), WebEncodeHelper.htmlStringToJavaString(request
-                    .getParameter("domainDescription")), WebEncodeHelper
-                .htmlStringToJavaString(request.getParameter("silverpeasServerURL")), request
-                .getParameter("userDomainQuotaMaxCount"));
+            String newDomainId = jobDomainSC.createSQLDomain(WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainName")),
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
+                request.getParameter("userDomainQuotaMaxCount"));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainModify")) {
-            String modifiedDomainId = jobDomainSC.modifyDomain(WebEncodeHelper.htmlStringToJavaString(
-                request.
-                getParameter("domainName")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
+            String modifiedDomainId = jobDomainSC.modifyDomain(WebEncodeHelper.htmlStringToJavaString(request.
+                    getParameter("domainName")), WebEncodeHelper.htmlStringToJavaString(request
+                    .getParameter("domainDescription")),
                 WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
                 WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
-                WebEncodeHelper
-                .htmlStringToJavaString(request.getParameter("domainAuthentication")),
-                WebEncodeHelper
-                .htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainAuthentication")),
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
                 WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + modifiedDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLModify")) {
             String modifiedDomainId = jobDomainSC.modifySQLDomain(WebEncodeHelper.
-                htmlStringToJavaString(request
-                    .getParameter("domainName")), WebEncodeHelper.htmlStringToJavaString(request
-                    .getParameter("domainDescription")), WebEncodeHelper
-                .htmlStringToJavaString(request.getParameter("silverpeasServerURL")), request
-                .getParameter("userDomainQuotaMaxCount"));
-            request.setAttribute("URLForContent", "domainNavigation?Iddomain="
-                + modifiedDomainId);
+                    htmlStringToJavaString(request.getParameter("domainName")), WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
+                WebEncodeHelper.htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
+                request.getParameter("userDomainQuotaMaxCount"));
+            request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + modifiedDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainDelete")) {
             jobDomainSC.deleteDomain();
@@ -525,8 +517,8 @@ public class JobDomainPeasRequestRouter extends
             jobDomainSC.synchroSQLDomain();
             destination = "domainSynchroPing.jsp";
           } else if (function.startsWith("domainRefresh")) {
-            request.setAttribute("URLForContent", "domainNavigation?Iddomain="
-                + jobDomainSC.getTargetDomain().getId());
+            request.setAttribute("URLForContent",
+                "domainNavigation?Iddomain=" + jobDomainSC.getTargetDomain().getId());
             destination = "goBack.jsp";
           }
 
@@ -545,61 +537,55 @@ public class JobDomainPeasRequestRouter extends
           newGroup.setSuperGroupId(request.getParameter("Idgroup"));
           request.setAttribute("groupObject", newGroup);
           request.setAttribute("action", "groupCreate");
-          request.setAttribute("groupsPath", jobDomainSC.getPath(
-              (String) request.getAttribute("myComponentURL"), jobDomainSC
-              .getString("JDP.groupAdd")
-              + "..."));
+          request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute("myComponentURL"),
+              jobDomainSC.getString("JDP.groupAdd") + "..."));
           destination = "groupCreate.jsp";
         } else if (function.startsWith("displayGroupModify")) {
           request.setAttribute("groupObject", jobDomainSC.getTargetGroup());
           request.setAttribute("action", "groupModify");
-          request.setAttribute("groupsPath", jobDomainSC.getPath(
-              (String) request.getAttribute("myComponentURL"), jobDomainSC.getString(
-                  "JDP.groupUpdate") + "..."));
+          request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute("myComponentURL"),
+              jobDomainSC.getString("JDP.groupUpdate") + "..."));
           destination = "groupCreate.jsp";
         } else if (function.startsWith("displayGroupImport")) {
-          request.setAttribute("groupsPath", jobDomainSC.getPath(
-              (String) request.getAttribute("myComponentURL"), jobDomainSC.getString(
-                  "JDP.groupImport") + "..."));
+          request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute
+                  ("myComponentURL"),
+              jobDomainSC.getString("JDP.groupImport") + "..."));
           destination = "groupImport.jsp";
         } else if (function.startsWith("displaySelectUserOrGroup")) {
           destination = jobDomainSC.initSelectionPeasForOneGroupOrUser((String) request.
-              getAttribute(
-                  "myComponentURL"));
+              getAttribute("myComponentURL"));
         } else if (function.startsWith("displayAddRemoveUsers")) {
-          destination = jobDomainSC.initSelectionPeasForGroups((String) request.getAttribute(
-              "myComponentURL"));
+          destination = jobDomainSC.initSelectionPeasForGroups((String) request.getAttribute("myComponentURL"));
         } else if (function.startsWith("displayUserCreate")) {
           DomainDriverManager domainDriverManager =
               DomainDriverManagerProvider.getCurrentDomainDriverManager();
-          DomainDriver domainDriver = domainDriverManager.getDomainDriver(
-              jobDomainSC.getTargetDomain().getId());
+          DomainDriver domainDriver =
+              domainDriverManager.getDomainDriver(jobDomainSC.getTargetDomain().getId());
           UserFull newUser = new UserFull(domainDriver);
           newUser.setPasswordAvailable(true);
 
           request.setAttribute("userObject", newUser);
           request.setAttribute("action", "userCreate");
-          request.setAttribute("groupsPath", jobDomainSC.getPath(
-              (String) request.getAttribute("myComponentURL"),
+          request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute("myComponentURL"),
               jobDomainSC.getString("JDP.userAdd") + "..."));
           request.setAttribute("minLengthLogin", jobDomainSC.getMinLengthLogin());
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
           // if community management is activated, add groups on this user is manager
           if (JobDomainSettings.m_UseCommunityManagement) {
-            request.setAttribute("GroupsManagedByCurrentUser", jobDomainSC
-                .getUserManageableGroups());
+            request.setAttribute("GroupsManagedByCurrentUser", jobDomainSC.getUserManageableGroups());
           }
 
           destination = "userCreate.jsp";
         } else if (function.startsWith("displayUsersCsvImport")) {
-          request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
-              "myComponentURL"), jobDomainSC.getString("JDP.csvImport") + "..."));
+          request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute
+                  ("myComponentURL"),
+              jobDomainSC.getString("JDP.csvImport") + "..."));
           destination = "usersCsvImport.jsp";
         } else if (function.startsWith("displayUserModify")) {
           request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
           request.setAttribute("action", "userModify");
-          request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
-              "myComponentURL"), jobDomainSC.getString("JDP.userUpdate") + "..."));
+          request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute("myComponentURL"),
+              jobDomainSC.getString("JDP.userUpdate") + "..."));
           request.setAttribute("minLengthLogin", jobDomainSC.getMinLengthLogin());
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
 
@@ -607,8 +593,8 @@ public class JobDomainPeasRequestRouter extends
         } else if (function.startsWith("displayUserMS")) {
           request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
           request.setAttribute("action", "userMS");
-          request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
-              "myComponentURL"), jobDomainSC.getString("JDP.userUpdate") + "..."));
+          request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute("myComponentURL"),
+              jobDomainSC.getString("JDP.userUpdate") + "..."));
           request.setAttribute("minLengthLogin", jobDomainSC.getMinLengthLogin());
           request.setAttribute("CurrentUser", jobDomainSC.getUserDetail());
 
@@ -617,8 +603,8 @@ public class JobDomainPeasRequestRouter extends
           request.setAttribute("SelectedIds", jobDomainSC.getListSelectedUsers());
           request.setAttribute("FirstUserIndex", jobDomainSC.
               getIndexOfFirstItemToDisplay());
-          request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
-              "myComponentURL"), jobDomainSC.getString("JDP.userImport") + "..."));
+          request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute("myComponentURL"),
+              jobDomainSC.getString("JDP.userImport") + "..."));
           request.setAttribute("properties", jobDomainSC.getPropertiesToImport());
           destination = "userImport.jsp";
         } else if (function.startsWith("displayDomainCreate")) {
@@ -650,15 +636,12 @@ public class JobDomainPeasRequestRouter extends
         jobDomainSC.returnIntoGroup(null);
         request.setAttribute("DisplayOperations", jobDomainSC.getUserDetail().isAccessAdmin());
 
-        SettingBundle rs = ResourceLocator.getSettingBundle(
-            "org.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings");
+        SettingBundle rs = ResourceLocator.getSettingBundle("org.silverpeas.jobDomainPeas.settings.jobDomainPeasSettings");
         Properties configuration = new Properties();
         configuration
             .setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR, rs.getString("templatePath"));
-        configuration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString(
-            "customersTemplatePath"));
-        SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(
-            configuration);
+        configuration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR, rs.getString("customersTemplatePath"));
+        SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplate(configuration);
 
         // setting domains to welcome template
         List<Domain> allDomains = jobDomainSC.getAllDomains();
@@ -685,6 +668,28 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("Query", jobDomainSC.getQueryToImport());
         request.setAttribute("Users", jobDomainSC.getUsersToImport());
         destination = getDestination("displayUserImport", jobDomainSC, request);
+      } else if ("SelectRightsUserOrGroup".equals(function)) {
+        destination = jobDomainSC.initSelectionRightsUserOrGroup();
+      } else if ("AssignSameRights".equals(function)) {
+        if (!jobDomainSC.isRightCopyReplaceEnabled()) {
+          throwHttpForbiddenError();
+        }
+        //1 = replace rights | 2 = add rights
+        String choiceAssignRights = request.getParameter("choiceAssignRights");
+        String sourceRightsId = request.getParameter("sourceRightsId");
+        //Set | Element
+        String sourceRightsType = request.getParameter("sourceRightsType");
+        //true | false
+        boolean nodeAssignRights = request.getParameterAsBoolean("nodeAssignRights");
+
+        jobDomainSC
+              .assignRights(choiceAssignRights, sourceRightsId, sourceRightsType, nodeAssignRights);
+
+        if (jobDomainSC.getTargetUserDetail() != null) {
+          destination = "userContent.jsp";
+        } else {
+          destination = "groupContent.jsp";
+        }
       } else {
         destination = function;
       }
@@ -731,7 +736,11 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("isGroupManagerDirectlyOnThisGroup", jobDomainSC.
             isGroupManagerDirectlyOnCurrentGroup());
         request.setAttribute("isOnlyGroupManager", jobDomainSC.isOnlyGroupManager());
-      } else if (destination.equals("userContent.jsp")) {
+
+        request.setAttribute("ManageableSpaces", jobDomainSC.getManageablesSpaces());
+        request.setAttribute("IsRightCopyReplaceEnabled",
+            jobDomainSC.isRightCopyReplaceEnabled());
+      } else if ("userContent.jsp".equals(destination)) {
         request.setAttribute("groupsPath", jobDomainSC.getPath((String) request.getAttribute(
             "myComponentURL"), null));
 
@@ -751,6 +760,12 @@ public class JobDomainPeasRequestRouter extends
               isUserInAtLeastOneGroupManageableByCurrentUser());
         }
         request.setAttribute("userObject", jobDomainSC.getTargetUserFull());
+        request.setAttribute("UserGroups", jobDomainSC.getCurrentUserGroups());
+        request.setAttribute("UserManageableSpaces", jobDomainSC.getManageablesSpaces());
+        request.setAttribute("UserManageableGroups", jobDomainSC.getManageablesGroups());
+        request.setAttribute("IsRightCopyReplaceEnabled",
+            jobDomainSC.isRightCopyReplaceEnabled());
+
       } else if (destination.equals("domainNavigation.jsp")) {
         List<Domain> domains = jobDomainSC.getAllDomains();
         if (domains.size() == 1) {

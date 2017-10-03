@@ -21,36 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.web.jobmanager;
+package org.silverpeas.web.jobdomain;
 
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
+import java.util.ArrayList;
 
-/**
- * This class manage the informations needed for job manager
- * @t.leroi
- */
-public class JobManagerSettings {
+public class ComponentProfilesList extends ArrayList<ComponentProfiles> {
 
-  public static boolean IsKMVisible = false;
-  public static boolean IsToolSpecificAuthentVisible = false;
-  public static boolean IsToolWorkflowDesignerVisible = false;
-  public static boolean IsTemplateDesignerVisible = false;
-  public static boolean IsPortletDeployerVisible = false;
-
-  static {
-    SettingBundle rs = ResourceLocator.getSettingBundle(
-        "org.silverpeas.jobManagerPeas.settings.jobManagerPeasSettings");
-
-    IsKMVisible = rs.getBoolean("IsKMVisible", false);
-    IsToolSpecificAuthentVisible = rs.getBoolean("IsToolSpecificAuthentVisible", false);
-    IsToolWorkflowDesignerVisible = rs.getBoolean("IsToolWorkflowDesignerVisible", false);
-    IsTemplateDesignerVisible = rs.getBoolean("IsTemplateDesignerVisible", false);
-    IsPortletDeployerVisible = rs.getBoolean("IsPortletDeployerVisible", false);
+  public ComponentProfiles get(String componentId) {
+    for (ComponentProfiles componentProfiles : this) {
+      if (componentProfiles.getComponent().getLocalId() == Integer.parseInt(componentId)) {
+        return componentProfiles;
+      }
+    }
+    return null;
   }
-
-  private JobManagerSettings() {
-
-  }
-
 }

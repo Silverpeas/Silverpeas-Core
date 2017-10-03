@@ -98,4 +98,8 @@ public class LocalizedComponent {
   public boolean isVisibleInPersonalSpace() {
     return realComponent.isVisibleInPersonalSpace();
   }
+
+  public String getLanguage() {
+    return lang;
+  }
 }

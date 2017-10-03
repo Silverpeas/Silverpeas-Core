@@ -25,7 +25,9 @@ package org.silverpeas.web.jobdomain.servlets;
 
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
 
 import javax.servlet.ServletException;
@@ -37,9 +39,10 @@ import java.io.IOException;
 import java.io.Writer;
 import java.util.List;
 
-public class JobDomainPeasGroupPathServlet extends HttpServlet {
+public class JobDomainPeasItemPathServlet extends HttpServlet {
 
   private static final long serialVersionUID = 1L;
+  private static final String SEPARATOR = " > ";
 
   @Override
   protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -56,43 +59,72 @@ public class JobDomainPeasGroupPathServlet extends HttpServlet {
     JobDomainPeasSessionController sc =
         (JobDomainPeasSessionController) session.getAttribute("Silverpeas_" + "jobDomainPeas");
 
-    String groupId = getGroupId(req);
-    String result = getGroupPath(sc, groupId);
-
+    String groupId = req.getParameter("GroupId");
+    String componentId = req.getParameter("ComponentId");
+    String spaceId = req.getParameter("SpaceId");
+    String result = "";
+    if (StringUtil.isDefined(groupId)) {
+      result = getGroupPath(sc, groupId);
+    } else if (StringUtil.isDefined(spaceId)) {
+      result = getSpacePath(sc, spaceId);
+    } else if (StringUtil.isDefined(componentId)) {
+      result = getComponentPath(sc, componentId);
+    }
     Writer writer = resp.getWriter();
     writer.write(result);
-  }
-
-  private String getGroupId(HttpServletRequest req) {
-    return req.getParameter("GroupId");
   }
 
   private String getGroupPath(JobDomainPeasSessionController sc, String groupId) {
     StringBuilder groupPath = new StringBuilder();
 
-    OrganizationController orgaController = sc.getOrganisationController();
-    Group group = orgaController.getGroup(groupId);
-    String domainId = group.getDomainId();
-    if (domainId == null) {
-      domainId = "-1";
-    }
-    Domain domain = orgaController.getDomain(domainId);
+    OrganizationController oc = OrganizationController.get();
+    Group group = Group.getById(groupId);
+    Domain domain = oc.getDomain(group.getDomainId());
 
     // nom du domaine
-    if ("-1".equals(domainId)) {// domaine mixte
+    if (domain.isMixedOne()) {
       groupPath.append(sc.getString("JDP.domainMixt"));
     } else {
       groupPath.append(domain.getName());
     }
 
     // nom du(des) groupe(s) pères
-    List<String> groupList = orgaController.getPathToGroup(groupId);
+    List<String> groupList = oc.getPathToGroup(groupId);
     for (String elementGroupId : groupList) {
-      groupPath.append(" > ").append(orgaController.getGroup(elementGroupId).getName());
+      groupPath.append(SEPARATOR).append(Group.getById(elementGroupId).getName());
     }
 
     // nom du groupe
-    groupPath.append(" > ").append(group.getName());
+    groupPath.append(SEPARATOR).append(group.getName());
     return groupPath.toString();
   }
+
+  private String getComponentPath(JobDomainPeasSessionController sc, String componentId) {
+    StringBuilder componentPath = new StringBuilder();
+
+    OrganizationController oc = OrganizationController.get();
+
+    List<SpaceInst> spaceList = oc.getSpacePathToComponent(componentId);
+    for (SpaceInst space : spaceList) {
+      componentPath.append(space.getName(sc.getLanguage())).append(SEPARATOR);
+    }
+
+    componentPath.append(oc.getComponentInstLight(componentId).getLabel(sc.getLanguage()));
+    return componentPath.toString();
+  }
+
+  private String getSpacePath(JobDomainPeasSessionController sc, String spaceId) {
+    StringBuilder path = new StringBuilder();
+
+    OrganizationController oc = OrganizationController.get();
+
+    // Espace > Sous-espaces
+    List<SpaceInst> spaceList = oc.getSpacePath(spaceId);
+    for (SpaceInst space : spaceList) {
+      path.append(space.getName(sc.getLanguage())).append(SEPARATOR);
+    }
+
+    return path.toString();
+  }
+
 }
