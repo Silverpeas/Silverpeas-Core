@@ -6361,6 +6361,16 @@ ul.sm-map {
   background:transparent url("/silverpeas/util/icons/addFiche.png") 9px 0 no-repeat;
 }
 
+.admin-user div#pagination {
+  padding: 0.5em 0;
+  line-height: 1.2em;
+  float: right;
+}
+
+.admin-user div#pagination img {
+  vertical-align: bottom;
+}
+
 /*
 THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
  */

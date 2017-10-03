@@ -82,6 +82,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionException;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.core.web.util.ListIndex;
 import org.silverpeas.web.directory.servlets.ImageProfil;
 import org.silverpeas.web.jobdomain.*;
 
@@ -126,6 +127,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   // pagination de la liste des résultats
   private int indexOfFirstItemToDisplay = 0;
   boolean refreshDomain = true;
+  private ListIndex currentIndex = new ListIndex(0);
+  private List<UserDetail> sessionUsers = new ArrayList<>();
 
   private static final Properties templateConfiguration = new Properties();
   private static final String USER_ACCOUNT_TEMPLATE_FILE = "userAccount_email";
@@ -174,6 +177,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    */
   public void setTargetUser(String userId) {
     m_TargetUserId = userId;
+    processIndex(m_TargetUserId);
   }
 
   public UserDetail getTargetUserDetail() throws JobDomainPeasException {
@@ -1274,7 +1278,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     } else { // Domain case
       usDetails = m_TargetDomain.getUserPage();
     }
-    return Arrays.asList(usDetails);
+    setSessionUsers(Arrays.asList(usDetails));
+    return getSessionUsers();
   }
 
   public String getPath(String baseURL, String toAppendAtEnd)
@@ -2316,4 +2321,31 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       MessageNotifier.addError(getString("JDP.rights.assign.MessageNOk"));
     }
   }
+
+  private List<UserDetail> getSessionUsers() {
+    return sessionUsers;
+  }
+
+  private void setSessionUsers(List<UserDetail> users) {
+    sessionUsers = users;
+  }
+
+  public ListIndex getIndex() {
+    return currentIndex;
+  }
+
+  private void processIndex(String userId) {
+    UserDetail user = UserDetail.getById(userId);
+    currentIndex.setCurrentIndex(getSessionUsers().indexOf(user));
+    currentIndex.setNbItems(getSessionUsers().size());
+  }
+
+  public UserDetail getPrevious() {
+    return getSessionUsers().get(currentIndex.getPreviousIndex());
+  }
+
+  public UserDetail getNext() {
+    return getSessionUsers().get(currentIndex.getNextIndex());
+  }
+
 }

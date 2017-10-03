@@ -55,6 +55,7 @@
 
 <c:set var="userInfos" value="${requestScope.userObject}" />
 <jsp:useBean id="userInfos" type="org.silverpeas.core.admin.user.model.UserFull"/>
+<c:set var="listIndex" value="${requestScope.Index}" />
 
 <c:set var="lastName" value="${userInfos.lastName}" />
 <c:set var="displayedLastName"><view:encodeHtml string="${lastName}" /></c:set>
@@ -297,6 +298,7 @@ out.println(window.printBefore());
       <fmt:message key="JDP.user.state.${userInfos.state.name}" />
     </div>
   </c:if>
+  <viewTags:displayIndex nbItems="${listIndex.nbItems}" index="${listIndex.currentIndex}" linkSuffix="User"/>
   <div class="table profile">
     <div class="cell showActionsOnMouseOver">
       <fieldset class="skinFieldset" id="identity-profil">
@@ -336,7 +338,19 @@ out.println(window.printBefore());
               </c:otherwise>
             </c:choose>
           </div>
-          <div class="lastConnection"><fmt:message key="GML.user.lastConnection"/> <view:formatDateTime value="${userInfos.lastLoginDate}"/></div>
+          <c:if test="${not empty userInfos.lastLoginDate || not empty userInfos.creationDate}">
+            <div class="lastConnection">
+              <c:if test="${not empty userInfos.lastLoginDate}">
+                <fmt:message key="GML.user.lastConnection"/> <view:formatDateTime value="${userInfos.lastLoginDate}"/>
+              </c:if>
+              <c:if test="${not empty userInfos.lastLoginDate && not empty userInfos.creationDate}">
+                 -
+              </c:if>
+              <c:if test="${not empty userInfos.creationDate}">
+                <fmt:message key="GML.creationDate"/> <view:formatDateTime value="${userInfos.creationDate}"/>
+              </c:if>
+            </div>
+          </c:if>
           <div class="domain"><img class="img-label" src="../../util/icons/component/domainSmall.gif" alt="Domaine" title="Domaine"  />${userInfos.domain.name}</div>
           <div class="access"> <span class="login"><img class="img-label" src="../../util/icons/Login.gif" alt="<fmt:message key="GML.login"/>" title="<fmt:message key="GML.login"/>" />${displayedLogin}</span></div>
           <div class="email"><img  class="img-label" src="../../admin/jsp/icons/icoOutilsMail.gif" alt="Login" title="Login" /> <a href="mailto:${displayedEmail}">${displayedEmail}</a></div>
