@@ -318,6 +318,7 @@ if (showTabs) {
 
   arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
   arrayPaneUser.setTitle(resource.getString("GML.users") + " (" +  subUsers.size() + ")");
+  arrayPaneUser.setExportData(true);
 
   arrayPaneUser.addArrayColumn(resource.getString("JDP.userState"));
   arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
