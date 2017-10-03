@@ -5599,11 +5599,14 @@ form .forms .fields > li:nth-child(even) {
     background: url("../icons/groups.png") no-repeat scroll 7px 0 transparent;
 }
 
-#profil-spaces-management legend {
+.admin-user #manageable-spaces legend,
+.admin-group #manageable-spaces legend,
+.admin-user #user-manageable-groups legend {
     background: url("../icons/cog.png") no-repeat scroll 11px 0 transparent;
 }
 
-#profiles legend {
+.admin-user #user-profiles legend,
+.admin-group #group-profiles legend {
     background: url("../icons/characteristic.png") no-repeat scroll 11px 0 transparent;
 }
 
@@ -6434,11 +6437,11 @@ silverpeas-attendee .not-answered {
   vertical-align: middle;
 }
 
-.admin-users .profile {
+.admin-user .profile {
   line-height:2em
 }
 
-.admin-users .profile .avatar {
+.admin-user .profile .avatar {
   position: absolute;
   display: inline-block;
   float: right;
@@ -6449,7 +6452,7 @@ silverpeas-attendee .not-answered {
   right: -1em;
 }
 
-.admin-users .profile .avatar .operation {
+.admin-user .profile .avatar .operation {
   position:absolute;
   bottom:-1.5em;
   right:-0.5em;
@@ -6459,42 +6462,42 @@ silverpeas-attendee .not-answered {
   padding:2px;
 }
 
-.admin-users .profile .personna{
+.admin-user .profile .personna{
   font-size:2em;
 }
 
-.admin-users .profile .lastConnection ,
-.admin-users .profile .access,
-.admin-users .profile .email{
+.admin-user .profile .lastConnection ,
+.admin-user .profile .access,
+.admin-user .profile .email{
   margin-bottom:1em;
 }
-.admin-users .profile .lastConnection {
+.admin-user .profile .lastConnection {
   font-style:italic;
   color:#666;
   line-height: 1em;
 }
 
-.admin-users .profile .img-label {
+.admin-user .profile .img-label {
   margin-right:1em;
 }
 
-.admin-users .profile .user-zone-id,
-.admin-users .profile .language {
+.admin-user .profile .user-zone-id,
+.admin-user .profile .language {
   float:left;
   width:65%;
 }
 
-.admin-users .profile .user-zone-id {
+.admin-user .profile .user-zone-id {
   float:left;
   width:35%;
 }
 
-.admin-users .profile #profiles-link {
+.admin-user .profile #profiles-link {
   text-align:left;
   margin-top: 2em;
 }
 
-.admin-users .profile #profiles-link > span {
+.admin-user .profile #profiles-link > span {
   background-image: url("../../util/icons/characteristic.png");
   background-repeat:no-repeat;
   background-position:7px 7px;
@@ -6502,14 +6505,14 @@ silverpeas-attendee .not-answered {
   padding-left:34px;
   display:block
 }
-.admin-users .profile #profiles-link > span > span{
+.admin-user .profile #profiles-link > span > span{
   display:block
 }
 
-.admin-users .profile .user-zone-id .img-label{
+.admin-user .profile .user-zone-id .img-label{
   width:14px;
 }
 
-.admin-users .profile #identity-extra legend {
+.admin-user .profile #identity-extra legend {
   background:transparent url("/silverpeas/util/icons/addFiche.png") 9px 0 no-repeat;
 }

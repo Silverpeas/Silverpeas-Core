@@ -33,19 +33,15 @@
 <%@ include file="check.jsp" %>
 <%
   Collection<NodeSubscriptionBean> subscriptions = (Collection) request.getAttribute("subscriptions");
-  String currentUserId = (String) request.getAttribute("currentUserId");
   String userId = (String) request.getAttribute("userId");
   String action = (String) request.getAttribute("action");
 
-  OrganizationController organizationCtrl = sessionController.getOrganisationController();
   final String rootPath = resource.getString("Path");
 
   boolean isReadOnly = false;
   if (action != null && action.equals("showUserSubscriptions")) {
     isReadOnly = true;
   }
-
-  String language = resource.getLanguage();
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

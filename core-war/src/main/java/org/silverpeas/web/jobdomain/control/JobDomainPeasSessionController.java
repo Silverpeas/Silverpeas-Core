@@ -24,6 +24,9 @@
 package org.silverpeas.web.jobdomain.control;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.LocalizedComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainServiceProvider;
 import org.silverpeas.core.admin.domain.DomainType;
@@ -37,11 +40,15 @@ import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.RightAssignationContext;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.GroupProfileInst;
+import org.silverpeas.core.admin.user.model.ProfileInst;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.contribution.content.form.PagesContext;
@@ -76,15 +83,7 @@ import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionException;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.web.directory.servlets.ImageProfil;
-import org.silverpeas.web.jobdomain.DomainNavigationStock;
-import org.silverpeas.web.jobdomain.GroupNavigationStock;
-import org.silverpeas.web.jobdomain.JobDomainPeasDAO;
-import org.silverpeas.web.jobdomain.JobDomainPeasException;
-import org.silverpeas.web.jobdomain.JobDomainPeasTrappedException;
-import org.silverpeas.web.jobdomain.JobDomainSettings;
-import org.silverpeas.web.jobdomain.NavigationStock;
-import org.silverpeas.web.jobdomain.SynchroUserWebServiceItf;
-import org.silverpeas.web.jobdomain.UserRequestData;
+import org.silverpeas.web.jobdomain.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
@@ -105,6 +104,9 @@ import static org.silverpeas.core.personalization.service.PersonalizationService
  * @author
  */
 public class JobDomainPeasSessionController extends AbstractComponentSessionController {
+
+  public static final String REPLACE_RIGHTS = "1";
+  public static final String ADD_RIGHTS = "2";
 
   public static final String IMPORT_CSV_USERS_OPERATION =
       "JobDomainPeasSessionController.importCsvUsers";
@@ -160,8 +162,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
   public boolean isAccessGranted() {
     return !getUserManageableGroupIds().isEmpty() || getUserDetail().isAccessAdmin()
-        || getUserDetail().
-        isAccessDomainManager();
+        || getUserDetail().isAccessDomainManager();
   }
 
   public void setRefreshDomain(boolean refreshDomain) {
@@ -178,8 +179,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public UserDetail getTargetUserDetail() throws JobDomainPeasException {
     UserDetail valret = null;
 
-    if ((m_TargetUserId != null) && (m_TargetUserId.length() > 0)) {
-      valret = getOrganisationController().getUserDetail(m_TargetUserId);
+    if (StringUtil.isDefined(m_TargetUserId)) {
+      valret = UserDetail.getById(m_TargetUserId);
       if (valret == null) {
         throw new JobDomainPeasException(unknown("user", m_TargetUserId));
       }
@@ -190,8 +191,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public UserFull getTargetUserFull() throws JobDomainPeasException {
     UserFull valret = null;
 
-    if ((m_TargetUserId != null) && (m_TargetUserId.length() > 0)) {
-      valret = getOrganisationController().getUserFull(m_TargetUserId);
+    if (StringUtil.isDefined(m_TargetUserId)) {
+      valret = UserFull.getById(m_TargetUserId);
       if (valret == null) {
         throw new JobDomainPeasException(unknown("user", m_TargetUserId));
       }
@@ -1179,8 +1180,8 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return isGroupManagerOnGroup(group.getId());
   }
 
-  public Group getTargetGroup() throws JobDomainPeasException {
-    if (m_GroupsPath.size() <= 0) {
+  public Group getTargetGroup() {
+    if (m_GroupsPath.isEmpty()) {
       return null;
     }
     return m_GroupsPath.lastElement().getThisGroup();
@@ -2156,5 +2157,163 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
   public void deleteUserAvatar(String userId) {
     ImageProfil img = new ImageProfil(UserDetail.getById(userId).getAvatarFileName());
     img.removeImage();
+  }
+
+  @SuppressWarnings("unchecked")
+  public List<Group> getCurrentUserGroups() {
+    return (List) m_AdminCtrl.getDirectGroupsOfUser(m_TargetUserId);
+  }
+
+  public List<SpaceInstLight> getManageablesSpaces() {
+    String[] spaceIds = new String[0];
+    if (StringUtil.isDefined(m_TargetUserId)) {
+      if (User.getById(m_TargetUserId).isAccessAdmin()) {
+        return Collections.emptyList();
+      }
+      spaceIds = m_AdminCtrl.getUserManageableSpaceIds(m_TargetUserId);
+    } else if (getTargetGroup() != null) {
+      spaceIds = m_AdminCtrl.getGroupManageableSpaceIds(getTargetGroup().getId());
+    }
+
+    if (ArrayUtil.isEmpty(spaceIds)) {
+      return Collections.emptyList();
+    }
+
+    List<SpaceInstLight> spaces = new ArrayList<>();
+    for (String spaceId : spaceIds) {
+      spaces.add(m_AdminCtrl.getSpaceInstLight(spaceId));
+    }
+
+    return spaces;
+  }
+
+  public List<Group> getManageablesGroups() {
+    if (User.getById(m_TargetUserId).isAccessAdmin()) {
+      return Collections.emptyList();
+    }
+
+    List<Group> groups = new ArrayList<>();
+    try {
+      List<String> ids =
+          AdministrationServiceProvider.getAdminService().getUserManageableGroupIds(m_TargetUserId);
+      for (String id : ids) {
+        groups.add(Group.getById(id));
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return groups;
+  }
+
+  /**
+   * @return list of (array[space name, component id, component label, component name, profile
+   * name])
+   */
+  public ComponentProfilesList getCurrentProfiles() {
+    ComponentProfilesList allProfiles = new ComponentProfilesList();
+    String[] profileIds = new String[0];
+    if (StringUtil.isDefined(m_TargetUserId)) {
+      profileIds = m_AdminCtrl.getProfileIds(m_TargetUserId);
+    } else if (getTargetGroup() != null) {
+      profileIds = m_AdminCtrl.getProfileIdsOfGroup(getTargetGroup().getId());
+    }
+    if (ArrayUtil.isEmpty(profileIds)) {
+      return allProfiles;
+    }
+    for (String profileId : profileIds) {
+      ProfileInst currentProfile = m_AdminCtrl.getProfileInst(profileId);
+      ComponentProfiles componentProfiles = allProfiles.get(currentProfile.getComponentFatherId());
+      if (componentProfiles == null) {
+        ComponentInstLight currentComponent =
+            m_AdminCtrl.getComponentInstLight(currentProfile.getComponentFatherId());
+        if (currentComponent.getStatus() == null && !currentComponent.isPersonal()) {
+          LocalizedComponent localizedComponent = getLocalizedComponent(currentComponent.getName());
+          componentProfiles = new ComponentProfiles(currentComponent, localizedComponent);
+          SpaceInstLight space = m_AdminCtrl.getSpaceInstLight(currentComponent.getSpaceId());
+          componentProfiles.setSpace(space);
+          allProfiles.add(componentProfiles);
+        }
+      }
+      componentProfiles.addProfile(currentProfile);
+    }
+    return allProfiles;
+  }
+
+  private Map<String, LocalizedComponent> localizedComponents = new HashMap<>();
+
+  private LocalizedComponent getLocalizedComponent(String name) {
+    LocalizedComponent localizedComponent = localizedComponents.get(name);
+    if (localizedComponent == null) {
+      try {
+        WAComponent component = WAComponent.get(name).get();
+        localizedComponent = new LocalizedComponent(component, getLanguage());
+        localizedComponents.put(name, localizedComponent);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).warn(e);
+      }
+    }
+    return localizedComponent;
+  }
+
+  public boolean isRightCopyReplaceEnabled() {
+    return getUserDetail().isAccessAdmin() &&
+        getSettings().getBoolean("admin.profile.rights.copyReplace.activated", false);
+  }
+
+  /*
+   * UserPanel initialization : a user or (exclusive) a group
+   */
+  public String initSelectionRightsUserOrGroup() {
+    Selection sel = getSelection();
+    sel.resetAll();
+    sel.setFilterOnDeactivatedState(false);
+    sel.setHostPath(null);
+
+    sel.setHtmlFormName("rightsForm");
+    sel.setHtmlFormElementName("sourceRightsName");
+    sel.setHtmlFormElementId("sourceRightsId");
+    sel.setHtmlFormElementType("sourceRightsType");
+
+    sel.setMultiSelect(false);
+    sel.setPopupMode(true);
+    return Selection.getSelectionURL();
+  }
+
+  public void assignRights(String choiceAssignRights, String sourceRightsId,
+      String sourceRightsType, boolean nodeAssignRights) {
+
+    try {
+      if (REPLACE_RIGHTS.equals(choiceAssignRights) || ADD_RIGHTS.equals(choiceAssignRights)) {
+        RightAssignationContext.MODE operationMode =
+            REPLACE_RIGHTS.equals(choiceAssignRights) ?
+                RightAssignationContext.MODE.REPLACE : RightAssignationContext.MODE.COPY;
+
+        if (Selection.TYPE_SELECTED_ELEMENT.equals(sourceRightsType)) {
+          if (StringUtil.isDefined(m_TargetUserId)) {
+            m_AdminCtrl
+                .assignRightsFromUserToUser(operationMode, sourceRightsId, m_TargetUserId,
+                    nodeAssignRights, getUserId());
+          } else if (getTargetGroup() != null) {
+            m_AdminCtrl
+                .assignRightsFromUserToGroup(operationMode, sourceRightsId, getTargetGroup().getId(),
+                    nodeAssignRights, getUserId());
+          }
+        } else if (Selection.TYPE_SELECTED_SET.equals(sourceRightsType)) {
+          if (StringUtil.isDefined(m_TargetUserId)) {
+            m_AdminCtrl
+                .assignRightsFromGroupToUser(operationMode, sourceRightsId, m_TargetUserId,
+                    nodeAssignRights, getUserId());
+          } else if (getTargetGroup() != null) {
+            m_AdminCtrl
+                .assignRightsFromGroupToGroup(operationMode, sourceRightsId, getTargetGroup().getId(),
+                    nodeAssignRights, getUserId());
+          }
+        }
+        MessageNotifier.addSuccess(getString("JDP.rights.assign.MessageOk"));
+      }
+    } catch (AdminException e) {
+      SilverLogger.getLogger(this).error(e);
+      MessageNotifier.addError(getString("JDP.rights.assign.MessageNOk"));
+    }
   }
 }

@@ -56,7 +56,6 @@ public class URLUtil {
   public final static String CMP_JOBMANAGERPEAS = "jobManagerPeas";
   public final static String CMP_JOBDOMAINPEAS = "jobDomainPeas";
   public final static String CMP_JOBSTARTPAGEPEAS = "jobStartPagePeas";
-  public final static String CMP_JOBORGANIZATIONPEAS = "jobOrganizationPeas";
   public final static String CMP_JOBSEARCHPEAS = "jobSearchPeas";
   public final static String CMP_ALERTUSERPEAS = "alertUserPeas";
   public final static String CMP_SILVERSTATISTICSPEAS = "silverStatisticsPeas";
