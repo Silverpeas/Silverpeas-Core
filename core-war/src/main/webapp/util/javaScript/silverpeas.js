@@ -103,6 +103,25 @@ if (!Array.prototype.addElement) {
       return false;
     }
   });
+  Object.defineProperty(Array.prototype, 'extractElementAttribute', {
+    enumerable : false, value : function(attributeName, mapper) {
+      var isMapper = typeof mapper === 'function';
+      var attributeValues = [];
+      for (var i = 0; i < this.length; i++) {
+        var element = this[i];
+        if (element) {
+          var attributeValue = element[attributeName];
+          if (typeof attributeValue !== 'undefined') {
+            if (isMapper) {
+              attributeValue = mapper.call(this, attributeValue);
+            }
+            attributeValues.push(attributeValue);
+          }
+        }
+      }
+      return attributeValues;
+    }
+  });
 }
 
 if (!String.prototype.startsWith) {
@@ -689,6 +708,11 @@ if (!window.SilverpeasAjaxConfig) {
     },
     execute : function() {
       return silverpeasAjax(this);
+    },
+    getJsonResponse : function() {
+      return silverpeasAjax(this).then(function(request) {
+        return request.responseAsJson();
+      });
     }
   });
 }
@@ -773,9 +797,10 @@ if (typeof window.silverpeasAjax === 'undefined') {
             resolve({
               readyState : jqXHR.readyState,
               responseText : jqXHR.responseText,
-              status : jqXHR.status, statusText : jqXHR.statusText, responseAsJson : function() {
-                return typeof jqXHR.responseText === 'string' ? JSON.parse(jqXHR.responseText) :
-                    jqXHR.responseText;
+              status : jqXHR.status,
+              statusText : jqXHR.statusText,
+              responseAsJson : function() {
+                return typeof jqXHR.responseText === 'string' ? JSON.parse(jqXHR.responseText) : jqXHR.responseText;
               }
             });
           },
@@ -1159,7 +1184,6 @@ if (typeof window.sp === 'undefined') {
           if (!paramList && typeOfParamList !== 'boolean') {
             continue;
           }
-          console.log(paramList);
           if (typeOfParamList !== 'object') {
             paramList = [paramList];
           }
@@ -1378,21 +1402,27 @@ if (typeof window.sp === 'undefined') {
             fileBrowserDisplayed : undefined,
             stylesheet : undefined
           }, options);
-          var url = webContext + '/services/wysiwyg/editor/' + componentInstanceId + '/' +
-              resourceId;
-          var ajaxConfig = sp.ajaxConfig(url);
-          ajaxConfig.withParam("configName", params.configName);
-          ajaxConfig.withParam("height", params.height);
-          ajaxConfig.withParam("width", params.width);
-          ajaxConfig.withParam("language", params.language);
-          ajaxConfig.withParam("toolbar", params.toolbar);
-          ajaxConfig.withParam("toolbarStartExpanded", params.toolbarStartExpanded);
-          ajaxConfig.withParam("fileBrowserDisplayed", params.fileBrowserDisplayed);
-          ajaxConfig.withParam("stylesheet", params.stylesheet);
-          return ajaxConfig.execute().then(function(request) {
-            return JSON.parse(request.responseText);
-          });
+          var url = webContext + '/services/wysiwyg/editor/' + componentInstanceId + '/' + resourceId;
+          return sp.ajaxConfig(url).withParams(params).getJsonResponse();
         }
+      }
+    },
+    search : {
+      on : function(queryDescription) {
+        if (typeof queryDescription === 'string') {
+          queryDescription = {query : queryDescription};
+        }
+        var params = extendsObject({
+          query : undefined,
+          taxonomyPosition : undefined,
+          spaceId : undefined,
+          appId : undefined,
+          startDate : undefined,
+          endDate : undefined,
+          form : undefined
+        }, queryDescription);
+        var url = webContext + '/services/search';
+        return sp.ajaxConfig(url).withParams(params).getJsonResponse();
       }
     }
   };

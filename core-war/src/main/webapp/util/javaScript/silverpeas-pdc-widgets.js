@@ -103,26 +103,26 @@ function uriOfPdC(resource) {
  * @return {string} the URI of the filtered PdC used in the classification of contents.
  */
 function uriOfUsedPdc(filter) {
-  var uri = filter.context + '/services/pdc/filter/used';
+  var ajaxConfig = sp.ajaxConfig(filter.context + '/services/pdc/filter/used');
   if (filter) {
     if (filter.workspace && filter.workspace.length > 0) {
-      uri += '?workspaceId=' + filter.workspace;
+      ajaxConfig.withParam('workspaceId', filter.workspace);
     }
     if (filter.component && filter.component.length > 0) {
-      uri += (uri.lastIndexOf('?') > 0 ? '&' : '?') + 'componentId=' + filter.component;
+      ajaxConfig.withParam('componentId', filter.component);
     }
     if (filter.values && filter.values.length > 0) {
       var flattenedValues = filter.values[0].axisId + ':' + filter.values[0].id;
       for (var i = 1; i < filter.values.length; i++) {
         flattenedValues += ',' + filter.values[i].axisId + ':' + filter.values[i].id;
       }
-      uri += (uri.lastIndexOf('?') > 0 ? '&' : '?') + 'values=' + flattenedValues;
+      ajaxConfig.withParam('values', flattenedValues);
     }
     if (filter.withSecondaryAxis) {
-      uri += (uri.lastIndexOf('?') > 0 ? '&' : '?') + 'withSecondaryAxis=' + filter.withSecondaryAxis;
+      ajaxConfig.withParam('withSecondaryAxis', filter.withSecondaryAxis);
     }
   }
-  return uri;
+  return ajaxConfig.getUrl();
 }
 
 /**
@@ -951,11 +951,18 @@ function removePosition(position, positions) {
   function reloadAxis(axisToDisplay, settings, selectedPositions) {
     settings.parent.children().remove();
     for (var i = 0; i < axisToDisplay.length; i++) {
+      var $label = $('<label>', {
+        'for': settings.id + '_' + axisToDisplay[i].id + '_0'
+      }).addClass('txtlibform').html(axisToDisplay[i].name);
+      var $field = $('<div>').addClass('field');
+      if (!settings.labelInsideSelect) {
+        $field.append($label);
+      }
+      $field.appendTo(settings.parent);
+
       var currentAxisDiv = $('<div>', {
         id: settings.id + '_' + axisToDisplay[i].id
-      }).addClass('champs pdcAxis').appendTo($('<div>').addClass('field').append($('<label >', {
-        'for': settings.id + '_' + axisToDisplay[i].id + '_0'
-      }).addClass('txtlibform').html(axisToDisplay[i].name)).appendTo(settings.parent));
+      }).addClass('champs pdcAxis').appendTo($field);
 
       renderAxis(currentAxisDiv, settings, selectedPositions, axisToDisplay[i]);
     }
@@ -1175,7 +1182,7 @@ function removePosition(position, positions) {
 
       // browse the axis of the PdC and for each of them print out a select HTML element
       $.each(settings.axis, function(axisindex, anAxis) {
-        var label = $('<label >', {
+        var label = $('<label>', {
           'for' : settings.id + '_' + anAxis.id + '_0'
         }).addClass('txtlibform').html(anAxis.name);
         var parentDiv = $('<div>').addClass('field');

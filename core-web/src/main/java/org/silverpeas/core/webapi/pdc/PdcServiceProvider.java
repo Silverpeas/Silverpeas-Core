@@ -284,7 +284,7 @@ public class PdcServiceProvider {
     List<UsedAxis> usedAxis = new ArrayList<>();
 
     ComponentSearchCriteria searchCriteria = new ComponentSearchCriteria().
-        onComponentInstance(criteria.getComponentInstanceId()).
+        onComponentInstances(criteria.getComponentInstanceIds()).
         onWorkspace(criteria.getWorkspaceId()).
         onUser(criteria.getUser());
     SearchContext searchContext = setUpSearchContextFromCriteria(criteria);

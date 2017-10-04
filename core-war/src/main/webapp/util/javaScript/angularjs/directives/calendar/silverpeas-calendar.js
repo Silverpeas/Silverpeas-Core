@@ -109,6 +109,7 @@
           restrict : 'E',
           scope : {
             api : '=?',
+            filterOnPdc : '=?',
             participationUserIds : '=',
             onEventOccurrenceView : '&?',
             onEventOccurrenceModify : '&?',
@@ -186,6 +187,13 @@
             };
 
             /**
+             * Handles the filtering of an event occurrence.
+             */
+            var _eventOccurrenceFilter = function(occurrence) {
+              return this.api.isOccurrenceVisible(occurrence);
+            }.bind(this);
+
+            /**
              * Handles the rendering of an event occurrence.
              */
             var _eventOccurrenceRender = function(occurrence, $element, view) {
@@ -195,7 +203,7 @@
                 var __eventDotElement = $eventDotElement[0];
                 __eventDotElement.style.borderColor = __eventDotElement.style.backgroundColor;
               }
-            };
+            }.bind(this);
             var _eventOccurrenceClick = function(occurrence) {
               if (!occurrence.canBeAccessed) {
                 return false;
@@ -691,8 +699,24 @@
                   calendarIdsToExclude : toExclude
                 }
                 CalendarService.getNextOccurrences(parameters).then(function(occurrences) {
-                  this.nextOccurrences = occurrences;
+                  this.nextOccurrences = occurrences.filter(_eventOccurrenceFilter);
                 }.bind(this));
+              }.bind(this),
+              /**
+               * Applies a filtering on given event ids.
+               */
+              filterOnEventIds : function(eventIds) {
+                this.filterOnEventIds = eventIds;
+                this.api.redrawCalendars();
+                this.api.refetchNextOccurrences();
+              }.bind(this),
+              /**
+               * Indicates if an event is visible or not (from UI point of view).
+               */
+              isOccurrenceVisible : function(occurrence) {
+                var noEventIdFilter = !this.filterOnEventIds || !this.filterOnEventIds.length;
+                return noEventIdFilter ||
+                    this.filterOnEventIds.indexOfElement(occurrence.eventId) >= 0;
               }.bind(this),
 
               //
@@ -775,6 +799,7 @@
                 timezone : twvc.zoneId,
                 firstDayOfWeek : twvc.firstDayOfWeek,
                 currentDate : __getCurrentDateMomentFromTimeWindowViewContext(twvc),
+                eventfilter : _eventOccurrenceFilter,
                 eventrender : _eventOccurrenceRender,
                 onevent : _eventOccurrenceClick,
                 ondayclick : _dayClick,
@@ -964,6 +989,45 @@
                   __viewNavigation(this.$viewButtons);
                 }.bind(this));
               }.bind(this), 0);
+            }.bind(this);
+          }]
+        };
+      }]);
+
+  angular.module('silverpeas.directives').directive('silverpeasCalendarPdcFilter',
+      ['$timeout', 'visibleFilter', 'defaultFilter', function($timeout, visibleFilter, defaultFilter) {
+        return {
+          template : '<silverpeas-pdc-filter ng-if="$ctrl.calendars.length" ' +
+                                            'api="$ctrl.api" instance-ids="$ctrl.instanceIds" ' +
+                                            'on-filter="$ctrl.onFilter({eventIds:eventIds})" ' +
+                                            'filter-on-change="true" ' +
+                                            'show-counters="false"></silverpeas-pdc-filter>',
+          restrict : 'E',
+          transclude : true,
+          scope : {
+            api : '=?',
+            calendars : '=',
+            onFilter : '&'
+          },
+          controllerAs : '$ctrl',
+          bindToController : true,
+          controller : ['$scope', function($scope) {
+
+            $scope.$watchCollection('$ctrl.calendars', function() {
+              var visibleCalendars = [];
+              if (this.calendars) {
+                visibleCalendars = visibleFilter(this.calendars, true);
+                if (visibleCalendars && !visibleCalendars.length) {
+                  visibleCalendars = defaultFilter(this.calendars, true);
+                }
+              }
+              this.instanceIds = visibleCalendars.extractElementAttribute('uri', function(value) {
+                return SilverpeasCalendarTools.extractComponentInstanceIdFromUri(value);
+              });
+            }.bind(this));
+
+            this.$onInit = function() {
+              this.instanceIds = [];
             }.bind(this);
           }]
         };

@@ -38,7 +38,7 @@ import java.util.Set;
  */
 public class PdcFilterCriteria {
 
-  private String componentInstanceId;
+  private List<String> componentInstanceIds;
   private String workspaceId;
   private Set<AxisValueCriterion> axisValues = new HashSet<>();
   private boolean secondaryAxisInclusion = false;
@@ -49,8 +49,8 @@ public class PdcFilterCriteria {
     return this;
   }
 
-  public PdcFilterCriteria onComponentInstance(String instanceId) {
-    this.componentInstanceId = instanceId;
+  public PdcFilterCriteria onComponentInstances(List<String> instanceIds) {
+    this.componentInstanceIds = instanceIds;
     return this;
   }
 
@@ -75,7 +75,7 @@ public class PdcFilterCriteria {
   }
 
   public boolean hasCriterionOnComponentInstance() {
-    return this.componentInstanceId != null;
+    return this.componentInstanceIds != null;
   }
 
   public boolean hasCriterionOnWorkspace() {
@@ -90,8 +90,8 @@ public class PdcFilterCriteria {
     return this.user != null;
   }
 
-  public String getComponentInstanceId() {
-    return componentInstanceId;
+  public List<String> getComponentInstanceIds() {
+    return componentInstanceIds;
   }
 
   public String getWorkspaceId() {

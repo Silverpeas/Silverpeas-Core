@@ -159,6 +159,7 @@
    * @type {SilverpeasCalendarTools}
    */
   $window.SilverpeasCalendarTools = new function() {
+    var __self = this;
 
     /**
      * Init a new occurrence entity instance.
@@ -257,11 +258,18 @@
               }
               calendarUri = this.calendar.uri;
             }
-            var instanceRegExp = new RegExp(webContext + '/services/[^/]+/([^/]+)/.+', "g");
-            return instanceRegExp.exec(calendarUri)[1];
+            return __self.extractComponentInstanceIdFromUri(calendarUri);
           };
         }
       }
+    };
+
+    this.extractComponentInstanceIdFromUri = function(uri) {
+      if (!uri) {
+        return undefined;
+      }
+      var instanceRegExp = new RegExp(webContext + '/services/[^/]+/([^/]+)/.+', "g");
+      return instanceRegExp.exec(uri)[1];
     };
 
     /**
@@ -459,12 +467,19 @@
      */
     function __createEvents(events) {
       return function(start, end, timezone, callback) {
+        var __provide = function(events) {
+          if (typeof calendarOptions.eventfilter === 'function') {
+            callback(events.filter(calendarOptions.eventfilter));
+          } else {
+            callback(events);
+          }
+        };
         if (sp.promise.isOne(events)) {
           events.then(function(events) {
-            callback(events);
+            __provide(events);
           })
         } else {
-          callback(events);
+          __provide(events);
         }
       };
     }

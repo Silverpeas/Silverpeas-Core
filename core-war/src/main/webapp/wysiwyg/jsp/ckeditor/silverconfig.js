@@ -92,7 +92,7 @@ config.toolbar_quickInfo = [
   { name: 'colors',      items : [ 'TextColor','BGColor' ] }
 ];
 
-config.toolbar_calendar = config.toolbar_Light;
+config.toolbar_calendar = config.toolbar_Default;
 config.toolbar_forum = config.toolbar_Light;
 config.toolbar_questionReply = config.toolbar_Light;
 config.toolbar_suggestionBox = config.toolbar_Light;

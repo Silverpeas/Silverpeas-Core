@@ -187,4 +187,114 @@
           }]
         };
       }]);
+
+  angular.module('silverpeas.directives').directive('silverpeasPdcFilter', [function() {
+    return {
+      templateUrl : webContext + '/util/javaScript/angularjs/directives/util/silverpeas-pdc-filter.jsp',
+      restrict : 'E',
+      scope : {
+        api : '=?',
+        instanceIds : '=',
+        filterOnChange : '=',
+        showCounters : '=',
+        onFilter : '&'
+      },
+      controllerAs : '$ctrl',
+      bindToController : true,
+      controller : ['$element', '$timeout', function($element, $timeout) {
+
+        this.api = {
+          filter : function() {
+            if (this.activated) {
+              var values = __getJQueryPdcElement().pdc('selectedValues');
+              sp.search.on({appId : this.instanceIds, taxonomyPosition : values.flatten()}).then(
+                  function(result) {
+                    var eventIdsToFilterOn = result.extractElementAttribute('id');
+                    this.onFilter({eventIds : eventIdsToFilterOn});
+                  }.bind(this));
+            }
+          }.bind(this),
+          refresh : function() {
+            if (this.activated) {
+              var values = __getJQueryPdcElement().pdc('selectedValues');
+              __initJQueryPlugin(values);
+            }
+          }.bind(this),
+          raz : function() {
+            if (this.activated) {
+              this.onFilter({eventIds : []});
+            }
+            __initJQueryPlugin([]);
+          }.bind(this)
+        };
+
+        this.$onInit = function() {
+          this.showFilters = false;
+          this.activated = false;
+        }.bind(this);
+
+        this.$postLink = function() {
+          this.api.raz([]);
+        }.bind(this);
+
+        function __getJQueryPdcElement() {
+          return $('.filters', $element);
+        }
+
+        var __initJQueryPlugin = function(selectedValues) {
+          var settings = {
+            classifiedContentCount : this.showCounters,
+            labelInsideSelect : true,
+            values : selectedValues,
+            workspace : 'current',
+            component : this.instanceIds,
+            withSecondaryAxis : false,
+            onLoaded : function(loadedPdC) {
+              __handleSearchAccess();
+              if (loadedPdC && loadedPdC.axis.length) {
+                $timeout(function() {
+                  this.showFilters = true;
+                }.bind(this), 0);
+              } else {
+                $timeout(function() {
+                  this.showFilters = false;
+                }.bind(this), 0);
+              }
+            }.bind(this),
+            onAxisChanged : function() {
+              __handleSearchAccess()
+            }
+          };
+          __getJQueryPdcElement().pdc('used', settings);
+        }.bind(this);
+
+        __handleSearchAccess = function () {
+          $timeout(function() {
+            $('select', $element).each(function(index, axis) {
+              if (axis.value === '-1') {
+                axis.classList.add('no-value');
+              } else {
+                axis.classList.remove('no-value');
+              }
+            });
+          }, 0);
+          var $button = $('.filter-button .sp_button', $element);
+          var values = __getJQueryPdcElement().pdc('selectedValues');
+          if (values.length > 0) {
+            this.activated = true;
+            $button.removeClass('disabled');
+            if (this.filterOnChange) {
+              this.api.filter();
+            }
+          } else {
+            if (this.activated) {
+              this.onFilter({eventIds : []});
+            }
+            this.activated = false;
+            $button.addClass('disabled');
+          }
+        }.bind(this);
+      }]
+    };
+  }]);
 })(window, jQuery);

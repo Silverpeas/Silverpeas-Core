@@ -186,16 +186,14 @@
   }
 
   function __loadInvitation(options) {
-    return new Promise(function(resolve, reject) {
-      if (!options.invitation.receiverId) {
-        var ajaxConfig = sp.ajaxConfig(webContext+"/services/invitations/"+options.invitation.id);
-        silverpeasAjax(ajaxConfig).then(function (request) {
-          resolve(JSON.parse(request.responseText));
-        });
-      } else {
-        resolve(options.invitation);
-      }
-    });
+    if (!options.invitation.receiverId) {
+      var ajaxConfig = sp.ajaxConfig(webContext+"/services/invitations/"+options.invitation.id);
+      return silverpeasAjax(ajaxConfig).then(function (request) {
+        return request.responseAsJson();
+      });
+    } else {
+      return sp.promise.resolveDirectlyWith(options.invitation);
+    }
   }
 
   function closeInvitationPopup() {
