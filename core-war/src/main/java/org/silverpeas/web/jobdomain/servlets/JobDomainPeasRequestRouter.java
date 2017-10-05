@@ -460,14 +460,7 @@ public class JobDomainPeasRequestRouter extends
           if (function.startsWith("domainContent")) {
             jobDomainSC.returnIntoGroup(null);
           } else if (function.startsWith("domainCreate")) {
-            String newDomainId = jobDomainSC.createDomain(WebEncodeHelper.htmlStringToJavaString
-                    (request.getParameter("domainName")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainAuthentication")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
+            String newDomainId = jobDomainSC.createDomain(request2Domain(request));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLCreate")) {
@@ -478,14 +471,8 @@ public class JobDomainPeasRequestRouter extends
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainModify")) {
-            String modifiedDomainId = jobDomainSC.modifyDomain(WebEncodeHelper.htmlStringToJavaString(request.
-                    getParameter("domainName")), WebEncodeHelper.htmlStringToJavaString(request
-                    .getParameter("domainDescription")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainAuthentication")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
-                WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp")));
+            String modifiedDomainId = jobDomainSC.modifyDomain(request2Domain(request),
+                    request.getParameter("userDomainQuotaMaxCount"));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + modifiedDomainId);
             destination = "goBack.jsp";
           } else if (function.startsWith("domainSQLModify")) {
@@ -848,6 +835,27 @@ public class JobDomainPeasRequestRouter extends
       }
     }
     return properties;
+  }
+
+  private Domain request2Domain(HttpRequest request) {
+    String name = WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainName"));
+    String desc = WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription"));
+    String driver = WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDriver"));
+    String properties = WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainProperties"));
+    String authent = WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainAuthentication"));
+    String url = WebEncodeHelper.htmlStringToJavaString(request.getParameter("silverpeasServerURL"));
+    String timeStamp = WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainTimeStamp"));
+
+    Domain domain = new Domain();
+    domain.setName(name);
+    domain.setDescription(desc);
+    domain.setDriverClassName(driver);
+    domain.setPropFileName(properties);
+    domain.setAuthenticationServer(authent);
+    domain.setSilverpeasServerURL(url);
+    domain.setTheTimeStamp(timeStamp);
+
+    return domain;
   }
 
 }

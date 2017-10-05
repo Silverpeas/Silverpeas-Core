@@ -32,14 +32,21 @@ import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 public class Domain implements Serializable {
 
   private static final long serialVersionUID = 7451639218436788229L;
+  private static final SimpleDateFormat TIMESTAMP_FORMATTER =
+      new SimpleDateFormat("yyyyMMddHHmmss");
+  private static final int TIMESTAMP_PATTERN_LENGTH = 14;
+
   public static final String MIXED_DOMAIN_ID = "-1";
   private String id;
   private String name;
@@ -49,13 +56,11 @@ public class Domain implements Serializable {
   private String authenticationServer;
   private String theTimeStamp = "0";
   private String silverpeasServerURL = "";
+
   /**
    * This data is not used in equals and hashcode process as it is an extra information.
    */
   private Quota userDomainQuota;
-
-  public Domain() {
-  }
 
   /**
    * @return String
@@ -228,6 +233,18 @@ public class Domain implements Serializable {
 
   public boolean getProperty(String name, boolean defaultValue) {
     return getSettings().getBoolean(name, defaultValue);
+  }
+
+  public Date getLastSyncDate() {
+    if (StringUtil.isDefined(theTimeStamp)) {
+      try {
+        String normalizedTimeStamp = theTimeStamp.substring(0, TIMESTAMP_PATTERN_LENGTH);
+        return TIMESTAMP_FORMATTER.parse(normalizedTimeStamp);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).warn(e);
+      }
+    }
+    return null;
   }
 
   @Override
