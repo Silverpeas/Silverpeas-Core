@@ -38,6 +38,6 @@ public interface UserSubscriptionNotificationBehavior extends RemoveSenderRecipi
    * HTTP parameter that permits to indicate to the server that the subscription notification
    * sending must be skipped.
    */
-  String SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM =
-      "SKIP_SUBSCRIPTION_NOTIFICATION_SENDING";
+  String SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM =
+      "SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION";
 }

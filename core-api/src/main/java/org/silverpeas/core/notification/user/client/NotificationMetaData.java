@@ -49,12 +49,15 @@ import static org.silverpeas.core.notification.user.client.NotificationTemplateK
     .notification_receiver_groups;
 import static org.silverpeas.core.notification.user.client.NotificationTemplateKey
     .notification_receiver_users;
+import static org.silverpeas.core.ui.DisplayI18NHelper.verifyLanguage;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 public class NotificationMetaData implements java.io.Serializable {
   private static final long serialVersionUID = 6004274748540324759L;
 
-  public final static String BEFORE_MESSAGE_FOOTER_TAG = "<!--BEFORE_MESSAGE_FOOTER-->";
-  public final static String AFTER_MESSAGE_FOOTER_TAG = "<!--AFTER_MESSAGE_FOOTER-->";
+  public static final String BEFORE_MESSAGE_FOOTER_TAG = "<!--BEFORE_MESSAGE_FOOTER-->";
+  public static final String AFTER_MESSAGE_FOOTER_TAG = "<!--AFTER_MESSAGE_FOOTER-->";
+  private static final String SENDER_MESSAGE_ATTRIBUTE = "senderMessage";
 
   private int messageType;
   private Date date;
@@ -249,18 +252,13 @@ public class NotificationMetaData implements java.io.Serializable {
       if (template != null) {
         result.append(template.applyFileTemplate(fileName + '_' + language));
       }
+      appendExtraMessageHtmlFragment(result, language);
     } else {
       String content = contents.get(language);
       if(content != null) {
         result.append(content);
       }
-
-      if(StringUtil.isDefined(getOriginalExtraMessage())) {
-        result.append("<div style=\"padding=10px 0 10px 0;\">")
-            .append("<div style=\"background-color:#FFF9D7; border:1px solid #E2C822; padding:5px; width:390px;\">")
-            .append(getOriginalExtraMessage())
-            .append("</div></div>");
-      }
+      appendExtraMessageHtmlFragment(result, language);
     }
 
     // This below TAG permits to next treatments to decorate the message just before this footer
@@ -299,6 +297,24 @@ public class NotificationMetaData implements java.io.Serializable {
 
 
     return WebEncodeHelper.convertWhiteSpacesForHTMLDisplay(result.toString());
+  }
+
+  /**
+   * Appends to current message content the HTML fragment of an extra message if it does not yet
+   * exists.
+   * @param messageContent the message content.
+   * @param language the current content language.
+   */
+  private void appendExtraMessageHtmlFragment(final StringBuilder messageContent,
+      final String language) {
+    final String extraMessage = getOriginalExtraMessage();
+    if (isDefined(extraMessage) && messageContent.indexOf(extraMessage) < 0) {
+      SilverpeasTemplate templateRepository =
+          SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
+      templateRepository.setAttribute(SENDER_MESSAGE_ATTRIBUTE, extraMessage);
+      messageContent.append(
+          templateRepository.applyFileTemplate("extraMessage" + '_' + verifyLanguage(language)));
+    }
   }
 
   /**
@@ -584,7 +600,7 @@ public class NotificationMetaData implements java.io.Serializable {
   public void addExtraMessage(String message, String language) {
     setOriginalExtraMessage(message);
     if (templates != null && !templates.isEmpty()) {
-      templates.get(language).setAttribute("senderMessage", message);
+      templates.get(language).setAttribute(SENDER_MESSAGE_ATTRIBUTE, message);
     }
   }
 

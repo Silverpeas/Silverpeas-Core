@@ -322,8 +322,8 @@
             }.bind(this);
 
             this.$postLink = function() {
-              sp.editor.wysiwyg.configFor(this.data.eventId, this.data.componentInstanceId(),
-                  {configName : "calendar"}).then(function(wysiwygEditorConfig) {
+              sp.editor.wysiwyg.configFor(this.data.componentInstanceId(), this.data.eventType,
+                  this.data.eventId, {configName : "calendar"}).then(function(wysiwygEditorConfig) {
                 $timeout(function() {
                   this.wysiwygEditorConfig = wysiwygEditorConfig;
                 }.bind(this), 0);

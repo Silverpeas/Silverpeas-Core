@@ -23,13 +23,20 @@
  */
 package org.silverpeas.core.notification.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.JSONCodec;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
 
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getThreadCacheService;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  * This class handles the feature that permits to skip the user subscription notification sending.
@@ -44,21 +51,26 @@ public class UserSubscriptionNotificationSendingHandler {
       UserSubscriptionNotificationSendingHandler.class.getName() + "#SENDING_ENABLED_JMS_WAY";
 
   /**
+   * Hidden constructor.
+   */
+  private UserSubscriptionNotificationSendingHandler() {
+  }
+
+  /**
    * Verifies from a request if it is indicated that subscription notification sending must be
    * skipped for the current request (from request parameters or request headers).
    * @param request the current HTTP request.
    */
   public static void verifyRequest(HttpServletRequest request) {
     if (NotificationManagerSettings.isSubscriptionNotificationConfirmationEnabled()) {
-      boolean fromParameters = StringUtil
-          .getBooleanValue(request.getParameter(
-              UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM));
-      boolean fromHeaders = StringUtil
-          .getBooleanValue(request.getHeader(
-              UserSubscriptionNotificationBehavior.SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM));
-      if (fromParameters || fromHeaders) {
-        getRequestCacheService().getCache().put(SENDING_NOT_ENABLED_KEY, true);
-      }
+      final String parameter = request.getParameter(
+          UserSubscriptionNotificationBehavior
+              .SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM);
+      final String header = request.getHeader(
+          UserSubscriptionNotificationBehavior
+              .SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM);
+      final Confirmation confirmation = getMergedConfirmations(parameter, header);
+      getRequestCacheService().getCache().put(SENDING_NOT_ENABLED_KEY, confirmation);
     }
   }
 
@@ -66,13 +78,57 @@ public class UserSubscriptionNotificationSendingHandler {
    * Indicates if the user subscription notification sending is enabled for the current request.
    * @return true if enabled, false otherwise.
    */
-  public static boolean isEnabledForCurrentRequest() {
-    Boolean notEnabled =
-        getRequestCacheService().getCache().get(SENDING_NOT_ENABLED_KEY, Boolean.class);
-    if (notEnabled == null) {
-      notEnabled =
-          getThreadCacheService().getCache().get(SENDING_NOT_ENABLED_JMS_WAY_KEY, Boolean.class);
+  public static boolean isSubscriptionNotificationEnabledForCurrentRequest() {
+    final Confirmation confirmation = getConfirmation();
+    return confirmation.isNotificationSendEnabled();
+  }
+
+  /**
+   * Gets a user note to paste into subscription notification message from the current request.
+   * @return true if enabled, false otherwise.
+   */
+  public static String getSubscriptionNotificationUserNoteFromCurrentRequest() {
+    final Confirmation confirmation = getConfirmation();
+    if (confirmation.isNotificationSendEnabled()) {
+      return confirmation.note;
     }
-    return notEnabled == null || !notEnabled;
+    return null;
+  }
+
+  private static Confirmation getMergedConfirmations(final String parameter, final String header) {
+    Confirmation fromParameters =
+        JSONCodec.decode(defaultStringIfNotDefined(parameter, "{}"), Confirmation.class);
+    Confirmation fromHeaders =
+        JSONCodec.decode(defaultStringIfNotDefined(header, "{}"), Confirmation.class);
+    final Confirmation mergedConfirmation = new Confirmation();
+    mergedConfirmation.skip = fromParameters.skip || fromHeaders.skip;
+    mergedConfirmation.note = defaultStringIfNotDefined(fromParameters.note, fromHeaders.note);
+    return mergedConfirmation;
+  }
+
+  private static Confirmation getConfirmation() {
+    Confirmation confirmation =
+        getRequestCacheService().getCache().get(SENDING_NOT_ENABLED_KEY, Confirmation.class);
+    if (confirmation == null) {
+      confirmation = getThreadCacheService().getCache()
+          .get(SENDING_NOT_ENABLED_JMS_WAY_KEY, Confirmation.class);
+    }
+    return confirmation == null ? new Confirmation() : confirmation;
+  }
+
+  @XmlRootElement
+  @XmlAccessorType(XmlAccessType.PROPERTY)
+  @JsonIgnoreProperties(ignoreUnknown = true)
+  private static class Confirmation implements Serializable {
+
+    @XmlElement
+    private boolean skip = false;
+
+    @XmlElement
+    private String note = null;
+
+    boolean isNotificationSendEnabled() {
+      return !skip;
+    }
   }
 }

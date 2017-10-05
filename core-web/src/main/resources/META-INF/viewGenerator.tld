@@ -836,6 +836,35 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>
+        The identifier of the contribution saved. Used for example for adding comments automatically
+      </description>
+      <name>contributionLocalId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The identifier of the contribution saved. Used for example for adding comments automatically.
+        Usually this value is that of the getContributionType method from SilverpeasContent
+        interface implemented by the resource.
+      </description>
+      <name>contributionType</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        Is the saved contribution indexable?
+      </description>
+      <name>contributionIndexable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>This TAG must be called into body of Button TAG. It permits to handle a user
@@ -867,6 +896,35 @@
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The identifier of the contribution saved. Used for example for adding comments automatically
+      </description>
+      <name>contributionLocalId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        The identifier of the contribution saved. Used for example for adding comments automatically.
+        Usually this value is that of the getContributionType method from SilverpeasContent
+        interface implemented by the resource.
+      </description>
+      <name>contributionType</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        Is the saved contribution indexable?
+      </description>
+      <name>contributionIndexable</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
     </attribute>
   </tag>
   <tag>
@@ -1930,6 +1988,13 @@
     <attribute>
       <description>Identifier of the current resource to which the WYSIWYG content is attached</description>
       <name>objectId</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Type of the current resource to which the WYSIWYG content is attached</description>
+      <name>objectType</name>
       <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>

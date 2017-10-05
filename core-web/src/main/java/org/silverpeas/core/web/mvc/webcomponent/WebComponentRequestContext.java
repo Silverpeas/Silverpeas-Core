@@ -50,8 +50,6 @@ import java.util.StringTokenizer;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWYG;
-
 /**
  * @param <CONTROLLER>
  * @author Yohann Chastagnier
@@ -318,33 +316,36 @@ public class WebComponentRequestContext<CONTROLLER extends WebComponentControlle
   /**
    * Handled the navigation to the html editor.
    * @param objectId
+   * @param objectType
    * @param returnPath
    * @param indexIt
    * @return
    */
-  public Navigation redirectToHtmlEditor(String objectId, String returnPath, boolean indexIt) {
-    return redirectToHtmlEditor(null, objectId, returnPath, indexIt);
+  public Navigation redirectToHtmlEditor(String objectId, final String objectType,
+      String returnPath, boolean indexIt) {
+    return redirectToHtmlEditor(null, objectId, objectType, returnPath, indexIt);
   }
 
   /**
    * Handled the navigation to the html editor.
    * @param subscriptionManagementContext
    * @param objectId
+   * @param objectType
    * @param returnPath
    * @param indexIt
    * @return
    */
   public Navigation redirectToHtmlEditor(
       SubscriptionManagementContext subscriptionManagementContext, String objectId,
-      String returnPath, boolean indexIt) {
+      final String objectType, String returnPath, boolean indexIt) {
     try {
       getRequest().setAttribute("subscriptionManagementContext", subscriptionManagementContext);
 
       WysiwygRouting routing = new WysiwygRouting();
       WysiwygRouting.WysiwygRoutingContext context =
           new WysiwygRouting.WysiwygRoutingContext().withSpaceLabel(getSpaceLabel())
-              .withComponentLabel(getComponentInstanceLabel())
-              .withContributionId(ContributionIdentifier.from(getComponentInstanceId(), objectId, WYSIWYG))
+              .withComponentLabel(getComponentInstanceLabel()).withContributionId(
+              ContributionIdentifier.from(getComponentInstanceId(), objectId, objectType))
               .withLanguage(controller.getLanguage())
               .withComeBackUrl(URLUtil.getApplicationURL() +
                   URLUtil.getURL(getComponentName(), "useless", getComponentInstanceId()) +

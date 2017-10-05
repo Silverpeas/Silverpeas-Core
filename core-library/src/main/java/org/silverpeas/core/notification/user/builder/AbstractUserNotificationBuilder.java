@@ -37,12 +37,21 @@ import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.client.constant.NotifMessageType;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.Collection;
+
+import static org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler
+    .getSubscriptionNotificationUserNoteFromCurrentRequest;
+import static org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler
+    .isSubscriptionNotificationEnabledForCurrentRequest;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Abstract implementation of the {@link UserNotificationBuilder} in which common code to build
@@ -94,12 +103,6 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   protected abstract UserNotification createNotification();
 
   /**
-   * Is the specified
-   * @return
-   */
-  protected abstract boolean isUserSubscriptionNotificationEnabled();
-
-  /**
    * Gets the type of action on a resource
    * @return
    */
@@ -146,18 +149,30 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
    */
   @Override
   public final UserNotification build() {
+    final Mutable<String> userNote = Mutable.empty();
     try {
-      if (isUserSubscriptionNotification() &&
-          !isUserSubscriptionNotificationEnabled() &&
-          NotifAction.UPDATE == getAction()) {
-        // In that case, the user requested to not send subscription notification
-        stop();
+      if (isUserSubscriptionNotification() && NotifAction.UPDATE == getAction()) {
+        if (!isSubscriptionNotificationEnabledForCurrentRequest()) {
+          // In that case, the user requested to not send subscription notification
+          stop();
+        } else {
+          // Maybe a note has been written?
+          userNote.set(getSubscriptionNotificationUserNoteFromCurrentRequest());
+        }
       }
       initialize();
       performUsersToBeNotified();
       performBuild();
     } catch (final Stop e) {
+      SilverLogger.getLogger(this).silent(e);
       userNotification = new NullUserNotification();
+    }
+
+    // Handling the user note
+    if (isDefined(userNote.orElse(null))) {
+      // pushing it into user notification
+      DisplayI18NHelper.getLanguages().forEach(
+          l -> userNotification.getNotificationMetaData().addExtraMessage(userNote.get(), l));
     }
     return userNotification;
   }

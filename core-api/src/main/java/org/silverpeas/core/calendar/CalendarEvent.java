@@ -240,7 +240,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized, Contribution, Securable,
     WithAttachment {
 
-  public static final String TYPE = CalendarEvent.class.getSimpleName();
+  public static final String TYPE = "CalendarEvent";
 
   private static final long serialVersionUID = 1L;
   public static final String THE_EVENT = "The event ";

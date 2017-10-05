@@ -51,6 +51,8 @@
           // the type CalendarEventOccurrence
           var CalendarEventOccurrence = function() {
             this.type = 'CalendarEventOccurrence';
+            this.eventType = 'CalendarEvent';
+            this.occurrenceType = 'CalendarEventOccurrence';
             SilverpeasCalendarTools.applyEventOccurrenceEntityAttributeWrappers(this);
           };
 

@@ -4371,6 +4371,13 @@ input.search:focus {
   margin:8px 8px 0 0;
 }
 
+/* subscription confirmation */
+.subscription-confirmation .save-into-comment-block label {
+  font-weight: normal;
+  position: relative;
+  top: -2px;
+}
+
 /* userzoom-tooltip-profilPhoto */
 .userzoom-tooltip {
   border:1px solid #aeaeae;

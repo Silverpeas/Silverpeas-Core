@@ -54,6 +54,7 @@
   String spaceLabel = "";
   String componentLabel = "";
   String objectId = "";
+  String objectType = "";
   String language = "";
   String contentLanguage = "";
   String codeWysiwyg = "";
@@ -83,6 +84,7 @@
     componentId = (String) session.getAttribute("WYSIWYG_ComponentId");
     componentLabel = (String) session.getAttribute("WYSIWYG_ComponentLabel");
     objectId = (String) session.getAttribute("WYSIWYG_ObjectId");
+    objectType = (String) session.getAttribute("WYSIWYG_ObjectType");
     browseInformation = (String) session.getAttribute("WYSIWYG_BrowseInfo");
     language = (String) session.getAttribute("WYSIWYG_Language");
     contentLanguage = (String) session.getAttribute("WYSIWYG_ContentLanguage");
@@ -153,6 +155,11 @@
     objectId = request.getParameter("ObjectId");
     if (objectId == null) {
       objectId = (String) request.getAttribute("ObjectId");
+    }
+
+    objectType = request.getParameter("ObjectType");
+    if (objectType == null) {
+      objectType = (String) request.getAttribute("ObjectType");
     }
 
     returnUrl = request.getParameter("ReturnUrl");
@@ -236,6 +243,10 @@
 <fmt:setLocale value="<%=language%>"/>
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang"/>
 
+<view:componentParam var="commentActivated" componentId="<%=componentId%>" parameter="tabComments"/>
+<c:if test="${not silfn:booleanValue(commentActivated)}">
+  <view:componentParam var="commentActivated" componentId="<%=componentId%>" parameter="comments"/>
+</c:if>
 <c:set var="actionWysiwyg" value="<%=actionWysiwyg%>"/>
 
 <c:set var="handledSubscriptionType" value="${param.handledSubscriptionType}"/>
@@ -283,7 +294,7 @@
   window.onload = function() {
     <view:wysiwyg replace="editor1" language="<%=language %>"
       spaceLabel="<%=spaceLabel%>" componentId="<%=componentId%>" componentLabel="<%=componentLabel%>"
-      browseInfo="<%=browseInformation%>" objectId="<%=objectId%>" />
+      browseInfo="<%=browseInformation%>" objectId="<%=objectId%>" objectType="<%=objectType%>" />
 
     if ($.trim($(".wysiwyg-fileStorage").text()).length == 0) {
       $(".wysiwyg-fileStorage").css("display", "none");
@@ -400,6 +411,12 @@
         <c:choose>
           <c:when test="${silfn:isDefined(wysiwygTextValue) and isHandledSubscriptionConfirmation}">
           jQuery.subscription.confirmNotificationSendingOnUpdate({
+            comment : {
+              saveNote : ${silfn:booleanValue(commentActivated)},
+              contributionLocalId : '<%=objectId%>',
+              contributionType : '<%=objectType%>',
+              contributionIndexable : <%=indexIt%>
+            },
             subscription : {
               componentInstanceId : '<%=componentId%>',
               type : '${handledSubscriptionType}',

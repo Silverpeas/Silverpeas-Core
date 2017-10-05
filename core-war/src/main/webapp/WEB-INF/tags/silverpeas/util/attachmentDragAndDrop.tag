@@ -42,6 +42,9 @@
 <%@ attribute name="resourceId" required="true"
               type="java.lang.String"
               description="The identifier of the resource the uploaded document must be attached to" %>
+<%@ attribute name="resourceType" required="true"
+              type="java.lang.String"
+              description="The type of the resource the uploaded document must be attached to" %>
 <%@ attribute name="contentLanguage" required="true"
               type="java.lang.String"
               description="The content language in which the attachment is uploaded" %>
@@ -87,6 +90,11 @@
   <view:componentParam var="isComponentVersioned" componentId="${componentInstanceId}" parameter="versionControl"/>
   <c:set var="isPublicationAlwaysVisible" value="${silfn:booleanValue(publicationAlwaysVisiblePramValue)}"/>
   <c:set var="isVersionActive" value="${not isPublicationAlwaysVisible and silfn:booleanValue(isComponentVersioned)}"/>
+
+  <view:componentParam var="commentActivated" componentId="${componentInstanceId}" parameter="tabComments"/>
+  <c:if test="${not silfn:booleanValue(commentActivated)}">
+    <view:componentParam var="commentActivated" componentId="${componentInstanceId}" parameter="comments"/>
+  </c:if>
 
   <view:includePlugin name="dragAndDropUpload"/>
 
@@ -153,6 +161,12 @@
         <c:when test="${isHandledSubscriptionConfirmation}">
         var rejectOnClose = true;
         $.subscription.confirmNotificationSendingOnUpdate({
+          comment : {
+            saveNote : ${silfn:booleanValue(commentActivated)},
+            contributionLocalId : '${resourceId}',
+            contributionType : '${resourceType}',
+            contributionIndexable : ${hasToBeIndexed}
+          },
           subscription : {
             componentInstanceId : '${componentInstanceId}',
             type : '${handledSubscriptionType}',

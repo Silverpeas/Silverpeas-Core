@@ -78,25 +78,27 @@ public class WysiwygEditorConfigResource extends RESTWebService {
    * @see WebProcess#execute()
    */
   @GET
-  @Path("{resourceId}")
+  @Path("{resourceType}/{resourceId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response getWysiwygEditorConfig(@PathParam("resourceId") String resourceId) {
+  public Response getWysiwygEditorConfig(@PathParam("resourceType") String resourceType,
+      @PathParam("resourceId") String resourceId) {
     // read request parameters
     final WysiwygEditorConfigParameters params =
         RequestParameterDecoder.decode(getHttpRequest(), WysiwygEditorConfigParameters.class);
     return process(() -> {
       WysiwygEditorConfig config = WysiwygEditorConfigRegistry.get().get(getConfigName());
-      setWysiwygEditorSessionContext(resourceId, config);
+      setWysiwygEditorSessionContext(resourceType, resourceId, config);
       return Response.ok(params.applyOn(config).toJSON()).build();
     }).lowestAccessRole(SilverpeasRole.writer).execute();
   }
 
   /**
    * Initializing the context.
+   * @param resourceType the type of the resource.
    * @param resourceId the identifier of the resource which the wysiwyg is attached to.
    * @param wysiwygEditorConfig the configuration of the wysiwyg editor.
    */
-  private void setWysiwygEditorSessionContext(final String resourceId,
+  private void setWysiwygEditorSessionContext(final String resourceType, final String resourceId,
       final WysiwygEditorConfig wysiwygEditorConfig) {
     HttpSession session = getHttpRequest().getSession();
     GraphicElementFactory gef =
@@ -105,6 +107,7 @@ public class WysiwygEditorConfigResource extends RESTWebService {
     session.setAttribute("WYSIWYG_ComponentLabel", null);
     session.setAttribute("WYSIWYG_BrowseInfo", null);
     session.setAttribute("WYSIWYG_ObjectId", resourceId);
+    session.setAttribute("WYSIWYG_ObjectType", resourceType);
     session.setAttribute("WYSIWYG_Language", wysiwygEditorConfig.getLanguage());
 
     final SettingBundle settings = gef.getFavoriteLookSettings();

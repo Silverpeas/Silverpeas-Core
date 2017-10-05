@@ -91,7 +91,7 @@ public class CalendarEventOccurrence
     extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
     implements IdentifiableEntity, Occurrence, Contribution {
 
-  public static final String TYPE = CalendarEventOccurrence.class.getSimpleName();
+  public static final String TYPE = "CalendarEventOccurrence";
 
   public static final Comparator<CalendarEventOccurrence> COMPARATOR_BY_ORIGINAL_DATE_ASC =
       Comparator.comparing(o -> o.getOriginalStartDate().toString());

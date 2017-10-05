@@ -28,68 +28,113 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Demo popups</title>
-<view:looknfeel/>
-<view:includePlugin name="popup"/>
-<script type="text/javascript">
-function showBasic() {
-	$('#message').popup('basic', {
-		title : "Title of the popup"
-	});
-}
+  <title>Demo popups</title>
+  <view:looknfeel/>
+  <view:includePlugin name="popup"/>
+  <script type="text/javascript">
 
-function showInformation() {
-	$('#message').popup('information', {
-	    callback : function() {
-	      alert("Button has been clicked !");
-	      return true;
-	    }
-	});
-}
+    function simulateAjaxRequest() {
+      return new Promise(function(resolve) {
+        $('#ajaxRequest').popup('validation', {
+          callback : function() {
+            alert("AJAX request is OK, dialog will be closed !");
+            resolve();
+          }
+        });
+      });
+    }
 
-function showHelp() {
-	$('#message').popup('help');
-}
+    function showBasic() {
+      $('#message').popup('basic', {
+        title : "Title of the popup"
+      });
+    }
 
-function showValidation() {
-	$('#message').popup('validation', {
-	    title : "Title of the popup",
-		callback : function() {
-	      alert("Message validated by the user !");
-	      return true;
-	    }
-	});
-}
+    function showInformation() {
+      $('#message').popup('information', {
+        callback : function() {
+          alert("Button has been clicked, but callback must not be called !");
+          return true;
+        }
+      });
+    }
 
-function showConfirmation() {
-	$('#message').popup('confirmation', {
-		title : "Title of the popup",
-	    callback : function() {
-	      alert("Message confirmed by the user !");
-	      return true;
-	    }
-	});
-}
+    function showHelp() {
+      $('#message').popup('help');
+    }
 
-function showError() {
-  $('#message').popup('error');
-}
+    function showValidationWithoutCallback() {
+      $('#message').popup('validation', {
+        title : "Title of the popup (validation without callback)"
+      });
+    }
 
-</script>
+    function showValidation() {
+      $('#message').popup('validation', {
+        title : "Title of the popup",
+        callback : function() {
+          alert("Message validated by the user !");
+          return true;
+        }
+      });
+    }
+
+    function showValidationError() {
+      $('#message').popup('validation', {
+        title : "Title of the popup",
+        callback : function() {
+          alert("Message validated by the user, but error : dialog stays open");
+          return false;
+        }
+      });
+    }
+
+    function showValidationPromise() {
+      $('#message').popup('validation', {
+        title : "Title of the popup",
+        callback : function() {
+          alert("Message validated by the user, the dialog must be closed after a successful AJAX request (which returns a promise) !");
+          return simulateAjaxRequest();
+        }
+      });
+    }
+
+    function showConfirmation() {
+      $('#message').popup('confirmation', {
+        title : "Title of the popup", callback : function() {
+          alert("Message confirmed by the user !");
+          return true;
+        }
+      });
+    }
+
+    function showError() {
+      $('#message').popup('error');
+    }
+
+  </script>
 </head>
 <body>
 <h1>Usage examples of Silverpeas plugin 'popup'</h1>
 <ul>
-<li><a href="javascript:onclick=showBasic()">Display basic message (No buttons)</a></li>
-<li><a href="javascript:onclick=showInformation()">Display information message (One button)</a></li>
-<li><a href="javascript:onclick=showHelp()">Display help message (One button + specific class)</a></li>
-<li><a href="javascript:onclick=showValidation()">Display validation message (Two buttons)</a></li>
-<li><a href="javascript:onclick=showConfirmation()">Afficher message de confirmation (Two buttons + one icon)</a></li>
-<li><a href="javascript:onclick=showError()">Afficher message d'erreur</a></li>
+  <li><a href="javascript:onclick=showBasic()">Display basic message (No buttons)</a></li>
+  <li><a href="javascript:onclick=showInformation()">Display information message (One button)</a></li>
+  <li><a href="javascript:onclick=showHelp()">Display help message (One button + specific class)</a></li>
+  <li><a href="javascript:onclick=showValidationWithoutCallback()">Display validation message (Two buttons), but no callback</a></li>
+  <li><a href="javascript:onclick=showValidation()">Display validation message (Two buttons)</a></li>
+  <li><a href="javascript:onclick=showValidationError()">Display validation message (Two buttons), but case of error just after validation</a></li>
+  <li><a href="javascript:onclick=showValidationPromise()">Display validation message (Two buttons), closed after successful AJAX request</a></li>
+  <li><a href="javascript:onclick=showConfirmation()">Afficher message de confirmation (Two buttons+ one icon)</a></li>
+  <li><a href="javascript:onclick=showError()">Afficher message d'erreur</a></li>
 </ul>
 
 <div id="message" style="display: none">
-Content of the message to be displayed...
+  Content of the message to be displayed...
+</div>
+<div id="ajaxRequest" style="display: none">
+  This dialog simulates an AJAX request !<br/>
+  If you validate, AJAX request is OK.
+  Otherwise the AJAX request is in error.
 </div>
 </body>
 </html>

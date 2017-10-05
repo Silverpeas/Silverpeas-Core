@@ -47,6 +47,7 @@ public class WysiwygTag extends TagSupport {
   private String componentLabel;
   private String browseInfo;
   private String objectId;
+  private String objectType;
   private boolean displayFileBrowser = true;
 
   public String getHeight() {
@@ -129,6 +130,14 @@ public class WysiwygTag extends TagSupport {
     this.objectId = objectId;
   }
 
+  public String getObjectType() {
+    return objectType;
+  }
+
+  public void setObjectType(final String objectType) {
+    this.objectType = objectType;
+  }
+
   public boolean getDisplayFileBrowser() {
     return displayFileBrowser;
   }
@@ -164,6 +173,7 @@ public class WysiwygTag extends TagSupport {
     session.setAttribute("WYSIWYG_BrowseInfo",
         getBrowseInfo() != null ? URLDecoder.decode(getBrowseInfo()) : null);
     session.setAttribute("WYSIWYG_ObjectId", getObjectId());
+    session.setAttribute("WYSIWYG_ObjectType", getObjectType());
     session.setAttribute("WYSIWYG_Language", wysiwygEditor.getLanguage());
 
     SettingBundle settings = gef.getFavoriteLookSettings();

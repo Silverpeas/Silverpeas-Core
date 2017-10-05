@@ -180,6 +180,8 @@
       return {
         id : occurrence.id,
         uri : occurrence.uri,
+        eventType : 'CalendarEvent',
+        occurrenceType : 'CalendarEventOccurrence',
         occurrenceId : occurrence.occurrenceId,
         occurrenceUri : occurrence.occurrenceUri,
         calendarUri : occurrence.calendarUri,

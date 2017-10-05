@@ -93,6 +93,11 @@
   <c:set var="isHandledSubscriptionConfirmation"
          value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
 
+  <view:componentParam var="commentActivated" componentId="${param.ComponentId}" parameter="tabComments"/>
+  <c:if test="${not silfn:booleanValue(commentActivated)}">
+    <view:componentParam var="commentActivated" componentId="${param.ComponentId}" parameter="comments"/>
+  </c:if>
+
   <c:set var="userProfile" value="${fn:toLowerCase(param.Profile)}" scope="page"/>
   <c:set var="highestUserRole" value='<%=SilverpeasRole.from(request.getParameter("Profile"))%>' scope="page"/>
   <c:set var="contextualMenuEnabled" value="${'admin' eq userProfile || 'publisher' eq userProfile || 'writer' eq userProfile}" scope="page" />
@@ -694,6 +699,12 @@
       var checkInWebDav = typeof params.checkInWebDav === 'undefined' || params.checkInWebDav;
       if (verifyVersionType(params.versionTypeDomRadioSelector) === 'public' && checkInWebDav) {
         $.subscription.confirmNotificationSendingOnUpdate({
+          comment : {
+            saveNote : ${silfn:booleanValue(commentActivated)},
+            contributionLocalId : '${param.Id}',
+            contributionType : '${param.Type}',
+            contributionIndexable : ${indexIt}
+          },
           subscription : {
             componentInstanceId : '${componentId}',
             type : '${handledSubscriptionType}',
@@ -1405,6 +1416,7 @@
                                   highestUserRole="${highestUserRole}"
                                   componentInstanceId="${componentId}"
                                   resourceId="${param.Id}"
+                                  resourceType="${param.Type}"
                                   contentLanguage="${contentLanguage}"
                                   hasToBeIndexed="${indexIt}"
                                   documentType="${param.Context}"

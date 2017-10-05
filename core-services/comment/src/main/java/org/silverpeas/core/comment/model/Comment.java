@@ -25,7 +25,6 @@ package org.silverpeas.core.comment.model;
 
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 
 import java.util.Date;
@@ -39,15 +38,6 @@ public class Comment implements SilverpeasContent {
 
   private static final long serialVersionUID = 3738544756345055840L;
   public static final String CONTRIBUTION_TYPE = "Comment";
-  public static final String PUBLICATION_RESOURCETYPE = "Publication";
-  public static final String NEWS_RESOURCETYPE = "News";
-  public static final String CLASSIFIED_RESOURCETYPE = "Classified";
-  public static final String SCHEDULEEVENT_RESOURCETYPE = "ScheduleEvent";
-  public static final String SUGGESTION_RESOURCETYPE = "Suggestion";
-  public static final String PHOTO_RESOURCETYPE = "Photo";
-  public static final String VIDEO_RESOURCETYPE = "Video";
-  public static final String SOUND_RESOURCETYPE = "Sound";
-  public static final String STREAMING_RESOURCETYPE = "Streaming";
   private CommentPK pk;
   private String resourceType;
   private WAPrimaryKey foreign_key;
@@ -55,7 +45,7 @@ public class Comment implements SilverpeasContent {
   private String message;
   private Date creation_date;
   private Date modification_date;
-  private UserDetail ownerDetail;
+  private User ownerDetail;
 
   private void init(CommentPK pk, String resourceType, WAPrimaryKey foreign_key, int owner_id,
       String message, Date creation_date, Date modification_date) {
@@ -157,7 +147,7 @@ public class Comment implements SilverpeasContent {
     return getCreator();
   }
 
-  public void setOwnerDetail(UserDetail ownerDetail) {
+  public void setOwnerDetail(User ownerDetail) {
     this.ownerDetail = ownerDetail;
   }
 
@@ -183,7 +173,7 @@ public class Comment implements SilverpeasContent {
   @Override
   public User getCreator() {
     if (ownerDetail == null || !ownerDetail.isFullyDefined()) {
-      ownerDetail = UserDetail.getById(String.valueOf(owner_id));
+      ownerDetail = User.getById(String.valueOf(owner_id));
     }
     return ownerDetail;
   }

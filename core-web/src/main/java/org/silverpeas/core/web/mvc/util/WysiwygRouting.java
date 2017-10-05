@@ -63,6 +63,7 @@ public class WysiwygRouting {
       request.setAttribute("ComponentLabel",
           URLEncoder.encode(context.componentLabel, CharEncoding.UTF_8));
       request.setAttribute("ObjectId", context.contributionId.getLocalId());
+      request.setAttribute("ObjectType", context.contributionId.getType());
       request.setAttribute("Language", context.language);
       request.setAttribute("BrowseInfo", context.browseInfo);
       request.setAttribute("ReturnUrl", context.comeBackUrl);
@@ -103,6 +104,8 @@ public class WysiwygRouting {
           .append(URLEncoder.encode(context.componentLabel, "UTF-8"))
           .append("&ObjectId=")
           .append(context.contributionId.getLocalId())
+          .append("&ObjectType=")
+          .append(context.contributionId.getType())
           .append("&Language=")
           .append(context.language)
           .append("&ReturnUrl=")

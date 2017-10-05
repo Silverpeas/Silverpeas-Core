@@ -706,10 +706,23 @@ if (!window.SilverpeasAjaxConfig) {
     getHeaders : function() {
       return this.headers;
     },
+    byPostMethod : function(content) {
+      this.method = 'POST';
+      if (typeof content === 'object') {
+        this.withHeader('Accept', 'application/json, text/plain, */*');
+        this.withHeader('Content-Type', 'application/json; charset=UTF-8');
+        this.withParams(JSON.stringify(content));
+      } else if (content) {
+        this.withHeader('Accept', 'application/json, text/plain, */*');
+        this.withHeader('Content-Type', 'application/json; charset=UTF-8');
+        this.withParams("" + content);
+      }
+      return this;
+    },
     execute : function() {
       return silverpeasAjax(this);
     },
-    getJsonResponse : function() {
+    promiseJsonResponse : function() {
       return silverpeasAjax(this).then(function(request) {
         return request.responseAsJson();
       });
@@ -1391,7 +1404,7 @@ if (typeof window.sp === 'undefined') {
     },
     editor : {
       wysiwyg : {
-        configFor : function(resourceId, componentInstanceId, options) {
+        configFor : function(componentInstanceId, resourceType, resourceId, options) {
           var params = extendsObject({
             configName : undefined,
             height : undefined,
@@ -1402,8 +1415,8 @@ if (typeof window.sp === 'undefined') {
             fileBrowserDisplayed : undefined,
             stylesheet : undefined
           }, options);
-          var url = webContext + '/services/wysiwyg/editor/' + componentInstanceId + '/' + resourceId;
-          return sp.ajaxConfig(url).withParams(params).getJsonResponse();
+          var url = webContext + '/services/wysiwyg/editor/' + componentInstanceId + '/' + resourceType + '/' + resourceId;
+          return sp.ajaxConfig(url).withParams(params).promiseJsonResponse();
         }
       }
     },
@@ -1422,7 +1435,7 @@ if (typeof window.sp === 'undefined') {
           form : undefined
         }, queryDescription);
         var url = webContext + '/services/search';
-        return sp.ajaxConfig(url).withParams(params).getJsonResponse();
+        return sp.ajaxConfig(url).withParams(params).promiseJsonResponse();
       }
     }
   };

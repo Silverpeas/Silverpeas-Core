@@ -37,6 +37,9 @@
 <%@ attribute name="resourceId" required="true"
               type="java.lang.String"
               description="The identifier of the resource which attachments are linked to" %>
+<%@ attribute name="resourceType" required="true"
+              type="java.lang.String"
+              description="The type of the resource which attachments are linked to" %>
 <%@ attribute name="highestUserRole" required="true"
               type="org.silverpeas.core.admin.user.model.SilverpeasRole"
               description="The highest role the user has" %>
@@ -105,6 +108,7 @@
 <c:import url="/attachment/jsp/displayAttachedFiles.jsp">
   <c:param name="ComponentId" value="${componentInstanceId}"/>
   <c:param name="Id" value="${resourceId}"/>
+  <c:param name="Type" value="${resourceType}"/>
   <c:param name="Context" value="attachment"/>
   <c:param name="Profile" value="${highestUserRole.name}"/>
   <c:param name="IndexIt" value="${_paramHasToBeIndexed}"/>

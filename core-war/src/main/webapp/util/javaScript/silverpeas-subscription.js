@@ -67,6 +67,12 @@
       componentInstanceId : '',
       type : $.subscription.subscriptionType.COMPONENT,
       resourceId : ''
+    },
+    comment : {
+      saveNote : false,
+      contributionLocalId : '',
+      contributionType : '',
+      contributionIndexable : true
     }
   };
 
@@ -184,43 +190,81 @@
       return;
     }
 
-    var setSubscriptionNotificationSendingParameter = function(mustSend) {
+    var setSubscriptionNotificationSendingParameter = function(userResponse) {
       var targetContainer = $(document);
       var forms = $('form', targetContainer);
-      $('input[name="SKIP_SUBSCRIPTION_NOTIFICATION_SENDING"]', forms).remove();
-      if (!mustSend) {
-        forms.append($('<input>',
-            {'name' : 'SKIP_SUBSCRIPTION_NOTIFICATION_SENDING', 'type' : 'hidden'}).val('true'));
-      }
+      $('input[name="SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION"]', forms).remove();
+      forms.append($('<input>',
+          {'name' : 'SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION', 'type' : 'hidden'}).val(
+          userResponse.getJsonEntityAsString()));
     };
 
-    var userResponse = {
-      sendNotification : true,
-      applyOnAjaxOptions : function(ajaxOptions) {
-        var notEmptyAjaxOptions = typeof ajaxOptions === 'object' ? ajaxOptions : {};
-        if (!userResponse.sendNotification) {
+    var initUserResponse = function() {
+      return new function() {
+        this.sendNotification = true;
+        this.note = undefined;
+        this.applyOnAjaxOptions = function(ajaxOptions) {
+          var notEmptyAjaxOptions = typeof ajaxOptions === 'object' ? ajaxOptions : {};
           extendsObject(notEmptyAjaxOptions, {
             headers : {
-              'SKIP_SUBSCRIPTION_NOTIFICATION_SENDING' : true
+              'SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION' : this.getJsonEntityAsString()
             }
           });
-        }
-        return notEmptyAjaxOptions;
-      }
+          return notEmptyAjaxOptions;
+        };
+        this.getJsonEntityAsString = function() {
+          return JSON.stringify({
+            skip : !this.sendNotification,
+            note : this.note
+          });
+        };
+      };
     };
 
     var confirmSubscriptionNotificationSending = function() {
+      var userConfirmationResponse = initUserResponse();
+      var commentActivated = $settings.comment.saveNote &&
+          StringUtil.isDefined($settings.comment.contributionLocalId) &&
+          StringUtil.isDefined($settings.comment.contributionType);
       var urlOfDialogMessage = $settings.subscription.context +
           '/subscription/jsp/messages/confirmSubscriptionNotificationSending.jsp';
-      displaySingleConfirmationPopupFrom(urlOfDialogMessage, {
+      var ajaxConfig = sp.ajaxConfig(urlOfDialogMessage);
+      ajaxConfig.withParam('saveNoteIntoComment', commentActivated);
+      displaySingleConfirmationPopupFrom(ajaxConfig.getUrl(), {
         callback : function() {
-          setSubscriptionNotificationSendingParameter.call(this, true);
-          $settings.callback.call(this, userResponse);
-          return true;
+          var saveNoteIntoComment = $('input.saveNoteIntoComment:checked', this).length;
+          var userNoteValue = $('textarea', this).val();
+          userConfirmationResponse.note = userNoteValue;
+          setSubscriptionNotificationSendingParameter.call(this, userConfirmationResponse);
+          if (saveNoteIntoComment && StringUtil.isDefined(userNoteValue)) {
+            var commentServiceUrl = webContext + '/services/comments/' +
+                $settings.subscription.componentInstanceId + '/' +
+                $settings.comment.contributionType + '/' + $settings.comment.contributionLocalId;
+            return sp.ajaxConfig(commentServiceUrl)
+              .byPostMethod({
+                author : {
+                  id : currentUserId
+                },
+                componentId : $settings.subscription.componentInstanceId,
+                resourceType : $settings.comment.contributionType,
+                resourceId : $settings.comment.contributionLocalId,
+                text : userNoteValue,
+                textForHtml : userNoteValue,
+                indexed : $settings.comment.contributionIndexable
+              })
+              .execute()
+              .then(function() {
+                $settings.callback.call(this, userConfirmationResponse);
+              }.bind(this));
+          } else {
+            $settings.callback.call(this, userConfirmationResponse);
+            return true;
+          }
         },
         alternativeCallback : function() {
-          setSubscriptionNotificationSendingParameter.call(this, false);
-          $settings.callback.call(this, extendsObject(userResponse, {sendNotification : false}));
+          userConfirmationResponse.sendNotification = false;
+          setSubscriptionNotificationSendingParameter.call(this, userConfirmationResponse);
+          $settings.callback.call(this, userConfirmationResponse);
         },
         callbackOnClose : function() {
           if (typeof $settings.callbackOnClose === 'function') {

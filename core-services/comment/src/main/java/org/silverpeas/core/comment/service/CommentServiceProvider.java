@@ -23,23 +23,13 @@
  */
 package org.silverpeas.core.comment.service;
 
-import org.silverpeas.core.util.ServiceProvider;
-
 /**
  * A factory of CommentService objects. Its aim is to manage the life-cycle of such objects and so
  * to encapsulates from the CommentService client the adopted policy about that life-cycle.
  */
 public class CommentServiceProvider {
 
-  private static final CommentServiceProvider instance = new CommentServiceProvider();
-
-  /**
-   * Gets an instance of this CommentServiceProvider class.
-   *
-   * @return a CommentServiceProvider instance.
-   */
-  public static CommentServiceProvider getFactory() {
-    return instance;
+  private CommentServiceProvider() {
   }
 
   /**
@@ -48,9 +38,6 @@ public class CommentServiceProvider {
    * @return a CommentService instance.
    */
   public static CommentService getCommentService() {
-    return ServiceProvider.getService(CommentService.class);
-  }
-
-  private CommentServiceProvider() {
+    return CommentService.get();
   }
 }

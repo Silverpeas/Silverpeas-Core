@@ -77,11 +77,6 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
     return new DefaultUserNotification(getTitle(), getContent());
   }
 
-  @Override
-  protected boolean isUserSubscriptionNotificationEnabled() {
-    return UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest();
-  }
-
   protected abstract void performBuild(T resource);
 
   protected void performNotificationResource(final T resource) {
