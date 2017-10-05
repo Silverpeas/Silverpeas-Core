@@ -1597,24 +1597,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return NavigationStock.filterGroupsToGroupManager(getUserManageableGroupIds(), groups);
   }
 
-  public String createDomain(String domainName, String domainDescription, String domainDriver,
-      String domainProperties, String domainAuthentication, String silverpeasServerURL,
-      String domainTimeStamp) throws JobDomainPeasException, JobDomainPeasTrappedException {
-
-
-
+  public String createDomain(Domain theNewDomain)
+      throws JobDomainPeasException, JobDomainPeasTrappedException {
     String newDomainId = null;
-
     try {
-      Domain theNewDomain = new Domain();
       theNewDomain.setId(Domain.MIXED_DOMAIN_ID);
-      theNewDomain.setName(domainName);
-      theNewDomain.setDescription(domainDescription);
-      theNewDomain.setDriverClassName(domainDriver);
-      theNewDomain.setPropFileName(domainProperties);
-      theNewDomain.setAuthenticationServer(domainAuthentication);
-      theNewDomain.setSilverpeasServerURL(silverpeasServerURL);
-      theNewDomain.setTheTimeStamp(domainTimeStamp);
 
       DomainServiceProvider.getDomainService(DomainType.EXTERNAL).createDomain(theNewDomain);
       refresh();
@@ -1680,42 +1667,25 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return domainId;
   }
 
-  public String modifyDomain(String domainName, String domainDescription,
-      String domainDriver, String domainProperties,
-      String domainAuthentication, String silverpeasServerURL,
-      String domainTimeStamp) throws JobDomainPeasException,
+  public String modifyDomain(Domain domain, String usersInDomainQuotaMaxCount) throws JobDomainPeasException,
       JobDomainPeasTrappedException {
     Domain theNewDomain = getTargetDomain();
 
-    // Vérif domainName unique dans la table ST_Domain
-    JobDomainPeasTrappedException trappedException = new JobDomainPeasTrappedException(
-        "JobDomainPeasSessionController", SilverpeasException.WARNING,
-        "jobDomainPeas.WARN_DOMAIN_SQL_NAME");
-    trappedException.setGoBackPage("domainContent");
-    Domain[] tabDomain = adminCtrl.getAllDomains();
-    Domain domain;
-    for (Domain aTabDomain : tabDomain) {
-      domain = aTabDomain;
-      if (!domain.getId().equals(theNewDomain.getId())
-          && domain.getName().equalsIgnoreCase(domainName)) {
-        throw trappedException;
-      }
-    }
+    checkDomainUnicityOnUpdate(theNewDomain.getId(), domain.getName());
 
     if (!StringUtil.isDefined(targetDomainId) || targetDomainId.equals(Domain.MIXED_DOMAIN_ID)) {
-      throw new JobDomainPeasException(unknown("domain", domainName));
+      throw new JobDomainPeasException(unknown("domain", domain.getName()));
     }
-    theNewDomain.setName(domainName);
-    theNewDomain.setDescription(domainDescription);
-    theNewDomain.setDriverClassName(domainDriver);
-    theNewDomain.setPropFileName(domainProperties);
-    theNewDomain.setAuthenticationServer(domainAuthentication);
-    theNewDomain.setSilverpeasServerURL(silverpeasServerURL);
-    theNewDomain.setTheTimeStamp(domainTimeStamp);
-    String idRet = adminCtrl.updateDomain(theNewDomain);
-    if (StringUtil.isNotDefined(idRet)) {
-      throw new JobDomainPeasException(failureOnUpdate("domain", domainName));
-    }
+    theNewDomain.setName(domain.getName());
+    theNewDomain.setDescription(domain.getDescription());
+    theNewDomain.setDriverClassName(domain.getDriverClassName());
+    theNewDomain.setPropFileName(domain.getPropFileName());
+    theNewDomain.setAuthenticationServer(domain.getAuthenticationServer());
+    theNewDomain.setSilverpeasServerURL(domain.getSilverpeasServerURL());
+    theNewDomain.setTheTimeStamp(domain.getTheTimeStamp());
+
+    String idRet = reallyUpdateDomain(theNewDomain, usersInDomainQuotaMaxCount);
+
     refresh();
     return idRet;
   }
@@ -1725,21 +1695,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       JobDomainPeasTrappedException {
     Domain theNewDomain = getTargetDomain();
 
-    // Vérif domainName unique dans la table ST_Domain
-    JobDomainPeasTrappedException trappedException = new JobDomainPeasTrappedException(
-        "JobDomainPeasSessionController", SilverpeasException.WARNING,
-        "jobDomainPeas.WARN_DOMAIN_SQL_NAME");
-    trappedException.setGoBackPage("domainContent");
-    Domain[] tabDomain = adminCtrl.getAllDomains();
-    for (Domain aTabDomain : tabDomain) {
-      Domain domain = aTabDomain;
-      if (!domain.getId().equals(theNewDomain.getId())
-          && domain.getName().equalsIgnoreCase(domainName)) {
-        throw trappedException;
-      }
-    }
-
-    String idRet;
+    checkDomainUnicityOnUpdate(theNewDomain.getId(), domainName);
 
     if (StringUtil.isNotDefined(targetDomainId) || targetDomainId.equals(Domain.MIXED_DOMAIN_ID)
         || "0".equals(targetDomainId)) {
@@ -1749,35 +1705,58 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     theNewDomain.setDescription(domainDescription);
     theNewDomain.setSilverpeasServerURL(silverpeasServerURL);
 
+    String idRet = reallyUpdateDomain(theNewDomain, usersInDomainQuotaMaxCount);
+
+    refresh();
+    return idRet;
+  }
+
+  private void checkDomainUnicityOnUpdate(String domainId, String domainName)
+      throws JobDomainPeasTrappedException {
+    // Vérif domainName unique dans la table ST_Domain
+    JobDomainPeasTrappedException trappedException = new JobDomainPeasTrappedException(
+        "JobDomainPeasSessionController", SilverpeasException.WARNING,
+        "jobDomainPeas.WARN_DOMAIN_SQL_NAME");
+    trappedException.setGoBackPage("domainContent");
+    Domain[] allDomains = adminCtrl.getAllDomains();
+    for (Domain domain : allDomains) {
+      if (!domain.getId().equals(domainId) && domain.getName().equalsIgnoreCase(domainName)) {
+        throw trappedException;
+      }
+    }
+  }
+
+  private String reallyUpdateDomain(Domain domain, String usersInDomainQuotaMaxCount)
+      throws JobDomainPeasException, JobDomainPeasTrappedException {
     try {
 
-      if (JobDomainSettings.usersInDomainQuotaActivated) {
+      boolean quotaDefined = StringUtil.isDefined(usersInDomainQuotaMaxCount);
+      if (JobDomainSettings.usersInDomainQuotaActivated && quotaDefined) {
         // Getting quota filled
-        theNewDomain.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
+        domain.setUserDomainQuotaMaxCount(usersInDomainQuotaMaxCount);
       }
 
-      idRet = adminCtrl.updateDomain(theNewDomain);
+      String idRet = adminCtrl.updateDomain(domain);
       if (StringUtil.isNotDefined(idRet)) {
-        throw new JobDomainPeasException(failureOnUpdate("domain", domainName));
+        throw new JobDomainPeasException(failureOnUpdate("domain", domain.getName()));
       }
 
-      if (JobDomainSettings.usersInDomainQuotaActivated) {
+      if (JobDomainSettings.usersInDomainQuotaActivated && quotaDefined) {
         // Registering "users in domain" quota
         DomainServiceProvider.getUserDomainQuotaService().initialize(
-            UserDomainQuotaKey.from(theNewDomain), theNewDomain.getUserDomainQuota().getMaxCount());
+            UserDomainQuotaKey.from(domain), domain.getUserDomainQuota().getMaxCount());
       }
 
+      return idRet;
+
     } catch (QuotaException qe) {
-      trappedException = new JobDomainPeasTrappedException(
-          "JobDomainPeasSessionController.modifySQLDomain()",
+      JobDomainPeasTrappedException trappedException = new JobDomainPeasTrappedException(
+          "JobDomainPeasSessionController.reallyUpdateDomain()",
           SilverpeasException.ERROR, "admin.EX_ERR_UPDATE_DOMAIN",
           getString("JDP.userDomainQuotaMaxCountError"), qe);
       trappedException.setGoBackPage("displayDomainSQLCreate");
       throw trappedException;
     }
-
-    refresh();
-    return idRet;
   }
 
   public void deleteDomain() throws JobDomainPeasException {

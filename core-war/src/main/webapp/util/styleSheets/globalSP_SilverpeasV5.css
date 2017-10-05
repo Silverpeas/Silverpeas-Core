@@ -3855,9 +3855,34 @@ li.application  .applicationName {
 /********************************/
 /** BackEnd domain content **/
 /*******************************/
-#domainContent #principal-content-domainContent {
+#domainContent .principalContent {
   position:relative;
   width:100%;
+  min-height:auto;
+}
+
+#domainContent #domain-search {
+  width: 98%;
+  padding: 0.25em 1%;
+  margin-top: 1em;
+}
+
+#domainContent #domain-search .field {
+  max-width: 900px;
+  width: 100%;
+}
+
+#domainContent #domain-search .select-user-group-container a.user-panel-button {
+  margin-right: 0px;
+}
+
+#domainContent #domain-search .remove-button {
+  display: none;
+}
+
+#domainContent #domain-search label {
+  vertical-align: middle;
+  width: 260px;
 }
 
 #domainContent #link-domain-content {
@@ -3869,13 +3894,12 @@ li.application  .applicationName {
   padding-left:20px;
 }
 
-#domainContent #principal-content-domainContent .tag-presentation {
-  position:absolute;
-  top:0;
-  right:0;
+#domainContent .tag-presentation {
+  float: none;
+  margin-bottom: 10px;
 }
 
-#domainContent #principal-content-domainContent .tag-presentation.limited-number-user span{
+#domainContent .tag-presentation.limited-number-user span{
   background:transparent url(../icons/limited-user.png) right 3px no-repeat;
   padding-right:30px;
   display:block;

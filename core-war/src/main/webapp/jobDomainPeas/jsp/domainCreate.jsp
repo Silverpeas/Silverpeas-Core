@@ -112,9 +112,6 @@ function SubmitWithVerif(verifParams)
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());
-%>
-<center>
-<%
 out.println(board.printBefore());
 %>
 <form name="domainForm" action="<%=action%>" method="POST">
@@ -152,7 +149,14 @@ out.println(board.printBefore());
             <td class="txtlibform"><%=resource.getString("JDP.serverTimeStamp")%> :</td>
             <td><input type="text" name="domainTimeStamp" size="70" maxlength="99" VALUE="<%=WebEncodeHelper.javaStringToHtmlString(domObject.getTheTimeStamp())%>"></td>
         </tr>
-		<% } %>
+		<% } else if (JobDomainSettings.usersInDomainQuotaActivated) {%>
+        <tr>
+          <td class="txtlibform"><%=resource.getString("JDP.userDomainQuotaMaxCount")%> :</td>
+          <td>
+            <input type="text" name="userDomainQuotaMaxCount" size="40" maxlength="399" value="<%=domObject.getUserDomainQuota().getMaxCount()%>"/>&nbsp;<img src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/> <%=resource.getString("JDP.userDomainQuotaMaxCountHelp")%>
+          </td>
+        </tr>
+        <% } %>
         <tr>
             <td colspan="2">(<img border="0" src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"> : <%=resource.getString("GML.requiredField")%>)</td>
         </tr>
@@ -165,11 +169,10 @@ out.println(board.printAfter());
 <br/>
 		<%
 		  ButtonPane bouton = gef.getButtonPane();
-		  bouton.addButton((Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif(true)", false));
-          bouton.addButton((Button) gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
+		  bouton.addButton(gef.getFormButton(resource.getString("GML.validate"), "javascript:SubmitWithVerif(true)", false));
+      bouton.addButton(gef.getFormButton(resource.getString("GML.cancel"), "domainContent", false));
 		  out.println(bouton.print());
 		%>
-</center>
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
