@@ -39,6 +39,7 @@ import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.GroupDetail;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import java.util.ArrayList;
@@ -229,6 +230,10 @@ public class GroupSynchronizationRuleTest {
           return users.stream().filter(user -> specificIds.contains(user.getSpecificId())).collect(
               Collectors.toList());
         });
+
+    PublicationTemplateManager templateManager =
+        commonAPI4Test.injectIntoMockedBeanContainer(mock(PublicationTemplateManager.class));
+    when(templateManager.getDirectoryTemplate()).thenReturn(null);
   }
 
   @Test

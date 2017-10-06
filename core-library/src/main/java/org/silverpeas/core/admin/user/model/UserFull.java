@@ -25,11 +25,15 @@ package org.silverpeas.core.admin.user.model;
 
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.model.DomainProperty;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
+import java.util.Set;
+
+import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
 
 public class UserFull extends UserDetail {
 
@@ -104,7 +108,7 @@ public class UserFull extends UserDetail {
 
   }
 
-  public HashMap<String, String> getSpecificDetails() {
+  public Map<String, String> getSpecificDetails() {
     return m_hInfos;
   }
 
@@ -228,6 +232,28 @@ public class UserFull extends UserDetail {
     m_hInfos.put(propertyName, String.valueOf(bValue));
   }
 
+  public Map<String, String> getDefinedDomainValues() {
+    Map<String, String> values = new HashMap<>();
+    Set<String> keys = getSpecificDetails().keySet();
+    for (String key : keys) {
+      String value = getValue(key);
+      if (StringUtil.isDefined(value)) {
+        values.put(key, javaStringToHtmlString(value));
+      }
+    }
+    return values;
+  }
+
+  public Map<String, String> getDefinedExtraFormValues(String language) {
+    return PublicationTemplateManager.getInstance().getDirectoryFormValues(this.getId(), language);
+  }
+
+  public Map<String, String> getAllDefinedValues(String language) {
+    Map<String, String> allValues = getDefinedDomainValues();
+    allValues.putAll(getDefinedExtraFormValues(language));
+    return allValues;
+  }
+
   @Override
   public boolean equals(Object other) {
     if (other instanceof UserFull) {
@@ -253,11 +279,4 @@ public class UserFull extends UserDetail {
     return hash;
   }
 
-  @Override
-  public void traceUser() {
-    super.traceUser();
-    for (Entry<String, String> entry : m_hInfos.entrySet()) {
-
-    }
-  }
 }

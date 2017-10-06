@@ -483,6 +483,54 @@ public class GenericRecordSetManager {
     encryptOrDecryptData(templateName, false);
   }
 
+  public List<DataRecord> getRecords(IdentifiedRecordTemplate template, String fieldName,
+      String fieldValue) throws FormException {
+    Connection con = null;
+    try {
+      con = getConnection();
+      return selectRecords(con, template, fieldName, fieldValue);
+    } catch (SQLException e) {
+      throw new FormException("GenericRecordSetManager.getRecords", "form.EXP_SELECT_FAILED", e);
+    } finally {
+      closeConnection(con);
+    }
+  }
+
+  private List<DataRecord> selectRecords(Connection con, IdentifiedRecordTemplate template,
+      String fieldName, String fieldValue) throws SQLException, FormException {
+    List<DataRecord> records = new ArrayList<>();
+    PreparedStatement select = null;
+    ResultSet rs = null;
+
+    try {
+      select = con.prepareStatement(SELECT_TEMPLATE_RECORDS_BY_FIELDVALUE);
+
+      select.setInt(1, template.getInternalId());
+      select.setString(2, fieldName);
+      select.setString(3, fieldValue);
+      select.setString(4, "%##"+fieldValue);
+      select.setString(5, "%##"+fieldValue+"##%");
+      select.setString(6, fieldValue+"##%");
+
+      rs = select.executeQuery();
+
+      while (rs.next()) {
+        int internalId = rs.getInt(1);
+        String objectId = rs.getString(3);
+
+        GenericDataRecord record = new GenericDataRecord(template);
+        record.setInternalId(internalId);
+        record.setId(objectId);
+
+        records.add(record);
+      }
+
+    } finally {
+      DBUtil.close(rs, select);
+    }
+    return records;
+  }
+
   private void encryptOrDecryptData(String templateName, boolean encrypt) throws CryptoException {
     ContentEncryptionService encryptionService = getEncryptionService();
     EncryptionContentIterator contentIterator = new FormEncryptionContentIterator(templateName);
@@ -1228,4 +1276,14 @@ public class GenericRecordSetManager {
           " rec, " +
           TEMPLATE_TABLE +
           " tpl WHERE tpl.templatename = ? AND rec.templateId = tpl.templateId AND tf.recordId = rec.recordId";
+
+  private static final String SELECT_TEMPLATE_RECORDS_BY_FIELDVALUE =
+      "SELECT rec.recordId,rec.templateId,rec.externalId,rec.lang FROM " +
+          FIELDS_TABLE +
+          " tf, " +
+          RECORD_TABLE +
+          " rec, " +
+          TEMPLATE_TABLE +
+          " tpl WHERE tpl.templateid = ? AND rec.templateId = tpl.templateId AND tf.recordId = rec.recordId" +
+          " AND tf.fieldName = ? AND (tf.fieldvalue = ? OR tf.fieldvalue like ? OR tf.fieldvalue like ? OR tf.fieldvalue like ?)";
 }
