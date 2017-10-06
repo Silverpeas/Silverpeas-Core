@@ -17,7 +17,7 @@ CREATE TABLE SB_Cal_Recurrence (
   id                   VARCHAR(40)  NOT NULL,
   recur_periodInterval INTEGER      NOT NULL,
   recur_periodUnit     VARCHAR(5)   NOT NULL,
-  recur_count          INTEGER,
+  recur_count          INTEGER      DEFAULT 0,
   recur_endDate        DATETIME,
   CONSTRAINT PK_RECURRENCE PRIMARY KEY (id)
 );
