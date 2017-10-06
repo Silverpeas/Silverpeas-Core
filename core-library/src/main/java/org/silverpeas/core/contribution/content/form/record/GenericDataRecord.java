@@ -40,6 +40,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.StringUtil;
 
 /**
  * A GenericDataRecord use a Field[] and a GenericRecordTemplate.
@@ -197,7 +198,10 @@ public class GenericDataRecord implements DataRecord, Serializable {
         PrintWriter out = new PrintWriter(sw);
         //noinspection unchecked
         fieldDisplayer.display(out, field, fieldTemplate, pageContext);
-        formValues.put(fieldName, sw.toString());
+        String value = sw.toString();
+        if (StringUtil.isDefined(value)) {
+          formValues.put(fieldName, value);
+        }
       } catch (Exception e) {
         SilverTrace.warn("form", "GenericDataRecord.getValues", "CANT_GET_FIELD_VALUE",
             "objectId = " + externalId + "fieldName = " + fieldName, e);
