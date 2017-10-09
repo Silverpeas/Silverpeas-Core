@@ -73,7 +73,7 @@ function SubmitWithVerif() {
 }
 </script>
 </head>
-<body>
+<body class="page_content_admin">
 
 <%
 out.println(window.printBefore());

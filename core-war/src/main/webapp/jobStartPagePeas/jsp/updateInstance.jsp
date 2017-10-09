@@ -257,7 +257,7 @@ function removeTranslation() {
 }
 </style>
 </head>
-<body id="admin-component" onload="javascript:toDoOnLoad()">
+<body id="admin-component" onload="javascript:toDoOnLoad()" class="page_content_admin">
 <form name="infoInstance" action="EffectiveUpdateInstance" method="post">
 <%
 out.println(window.printBefore());

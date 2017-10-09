@@ -40,7 +40,7 @@ function sendData() {
 }
 </script>
 </head>
-<body>
+<body class="page_content_admin">
 <%
 String          strColumnList,
                 strCurrentTab   = "ViewPresentation";

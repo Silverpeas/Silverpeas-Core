@@ -79,7 +79,7 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
 	}
 </script>
 </head>
-<body>
+<body class="page_content_admin">
 <view:window>
   <c:if test="${fn:startsWith(userProfile.name, 'ADMINISTRATOR')}">
 <view:tabs>
@@ -92,7 +92,6 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
   <view:frame>
     <view:board>
 
-<center>
   <form name="pdcAccessForm" action="ValidateViewCrossPDCAccess" method="post">
     <input type="hidden" name="selectAxisError" id="hiddenSelectAxisError" value="<fmt:message key='silverStatisticsPeas.pdc.error.select' />" />
     <input type="hidden" name="sameAxisError" id="hiddenSameAxisError" value="<fmt:message key='silverStatisticsPeas.pdc.error.same' />" />
@@ -207,14 +206,12 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
   </form>
       </view:board>
   <div id="stats_viewConnectionButton">
-	  <center>
 		<view:buttonPane>
 			<fmt:message key="GML.validate" var="labelValidate" />
 			<fmt:message key="GML.reset" var="labelReset" />
 		    <view:button label="${labelValidate}" action="javascript:validerForm()" ></view:button>
 		    <view:button label="${labelReset}" action="javascript:document.resetAccessForm.submit()"></view:button>
 		</view:buttonPane>
-	  </center>
   </div>
 
   <br/>
@@ -250,7 +247,7 @@ browseBar.setPath(resources.getString("silverStatisticsPeas.pdc.axis"));
         out.println("");
     }
     %>
-</center>
+
   </view:frame>
 </view:window>
 <form name="resetAccessForm" action="ViewCrossPDCAccess" method="post">

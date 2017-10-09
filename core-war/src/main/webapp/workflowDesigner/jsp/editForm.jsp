@@ -127,7 +127,7 @@
     }
 </script>
 </HEAD>
-<BODY onLoad="switchType()">
+<BODY onLoad="switchType()" class="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.forms"));

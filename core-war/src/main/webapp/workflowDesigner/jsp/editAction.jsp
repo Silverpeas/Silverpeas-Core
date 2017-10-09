@@ -48,8 +48,8 @@
     boolean         fExistingAction = ( (Boolean)request.getAttribute( "IsExisitingAction" ) ).booleanValue();
     StringBuffer    sb = new StringBuffer();
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <view:looknfeel withCheckFormScript="true"/>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 <script type="text/javascript">
@@ -93,8 +93,8 @@
         }
     }
 </script>
-</HEAD>
-<BODY>
+</head>
+<body class="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.actions"), strCancelAction);
@@ -314,7 +314,7 @@
 
     out.println(board.printBefore());
 %>
-<FORM NAME="actionForm" METHOD="POST" ACTION="UpdateAction">
+<form name="actionForm" method="POST" action="UpdateAction">
 	<input type="hidden" name="name_original" value="<%=WebEncodeHelper.javaStringToHtmlString(action.getName())%>">
 <%
     out.println( actionPane.print() );
@@ -332,7 +332,7 @@
     // Labels
     //
 %>
-</FORM>
+</form>
 <br>
 <designer:contextualDesignationList
     designations="<%=action.getLabels()%>"
@@ -360,5 +360,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

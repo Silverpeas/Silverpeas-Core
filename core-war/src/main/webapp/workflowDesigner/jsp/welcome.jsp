@@ -67,7 +67,7 @@ String    strProcessFileName,
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/workflowDesigner/jsp/JavaScript/forms.js"></script>
 </head>
-<body>
+<body class="page_content_admin">
 <%
 browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
 browseBar.setComponentName(resource.getString("workflowDesigner.list.workflow"));
