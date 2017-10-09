@@ -109,6 +109,10 @@ public class GenericRecordSet implements RecordSet, Serializable {
     return getGenericRecordSetManager().getRecord(recordTemplate, objectId, language);
   }
 
+  public List<DataRecord> getRecords(String fieldName, String fieldValue) throws FormException {
+    return getGenericRecordSetManager().getRecords(recordTemplate, fieldName, fieldValue);
+  }
+
   /**
    * Inserts the given DataRecord and set its id.
    * @throws FormException when the record doesn't have the required template or when the record

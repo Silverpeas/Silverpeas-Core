@@ -34,7 +34,11 @@ import org.silverpeas.core.admin.user.GroupManager;
 import org.silverpeas.core.admin.user.UserManager;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.model.Group;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.exception.WithNested;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ServiceProvider;
@@ -267,7 +271,10 @@ class GroupSynchronizationRule {
     if (matcher.find()) {
       String propertyName = matcher.group(1);
       String propertyValue = matcher.group(2);
-      return getUserIdsBySpecificProperty(propertyName, propertyValue);
+      Set<String> userIds = new HashSet<>();
+      userIds.addAll(getUserIdsBySpecificProperty(propertyName, propertyValue));
+      userIds.addAll(getUserIdsByExtraFormFieldValue(propertyName, propertyValue));
+      return new ArrayList<>(userIds);
     }
 
     SilverLogger.getLogger(this)
@@ -361,6 +368,31 @@ class GroupSynchronizationRule {
       }
     } else {
       userIds = getUserIdsBySpecificProperty(group.getDomainId(), propertyName, propertyValue);
+    }
+    return userIds;
+  }
+
+  private List<String> getUserIdsByExtraFormFieldValue(String fieldName, String fieldValue) {
+    List<String> userIds = new ArrayList<>();
+    PublicationTemplate directoryTemplate =
+        PublicationTemplateManager.getInstance().getDirectoryTemplate();
+    if (directoryTemplate != null) {
+      try {
+        List<DataRecord> records = directoryTemplate.getRecordSet().getRecords(fieldName, fieldValue);
+        for (DataRecord record : records) {
+          String userId = record.getId();
+          if (isSharedDomain) {
+            userIds.add(userId);
+          } else {
+            User user = User.getById(userId);
+            if (user != null && user.getDomainId().equals(group.getDomainId())) {
+              userIds.add(userId);
+            }
+          }
+        }
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
     }
     return userIds;
   }

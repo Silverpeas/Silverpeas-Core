@@ -21,13 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
-
-/*
- * NavigationStock.java
- */
-
 package org.silverpeas.web.jobdomain;
 
 import org.silverpeas.core.admin.service.AdminController;
@@ -99,75 +92,12 @@ public class NavigationStock {
     }
   }
 
-  // SubUsers functions
-
-  public void nextUserPage() {
-    if ((JobDomainSettings.m_UsersByPage != -1)
-        && (m_SubUsers.length > (m_FirstDisplayedUser + JobDomainSettings.m_UsersByPage))) {
-      m_FirstDisplayedUser += JobDomainSettings.m_UsersByPage;
-    }
-  }
-
-  public void previousUserPage() {
-    if ((JobDomainSettings.m_UsersByPage != -1) && (m_FirstDisplayedUser > 0)) {
-      if (m_FirstDisplayedUser >= JobDomainSettings.m_UsersByPage) {
-        m_FirstDisplayedUser -= JobDomainSettings.m_UsersByPage;
-      } else {
-        m_FirstDisplayedUser = 0;
-      }
-    }
-  }
-
-  public boolean isFirstUserPage() {
-    if (JobDomainSettings.m_UsersByPage == -1) {
-      return true;
-    }
-    return (m_FirstDisplayedUser == 0);
-  }
-
-  public boolean isLastUserPage() {
-    if (JobDomainSettings.m_UsersByPage == -1) {
-      return true;
-    }
-    return (m_SubUsers.length <= (m_FirstDisplayedUser + JobDomainSettings.m_UsersByPage));
-  }
-
   public UserDetail[] getAllUserPage() {
     return m_SubUsers;
   }
 
   public UserDetail[] getUserPage() {
     return m_SubUsers;
-  }
-
-  // SubGroups functions
-
-  public void nextGroupPage() {
-    if ((JobDomainSettings.m_GroupsByPage != -1)
-        && (m_SubGroups.length > (m_FirstDisplayedGroup + JobDomainSettings.m_GroupsByPage))) {
-      m_FirstDisplayedGroup += JobDomainSettings.m_GroupsByPage;
-    }
-  }
-
-  public void previousGroupPage() {
-    if ((JobDomainSettings.m_GroupsByPage != -1) && (m_FirstDisplayedGroup > 0)) {
-      if (m_FirstDisplayedGroup >= JobDomainSettings.m_GroupsByPage) {
-        m_FirstDisplayedGroup -= JobDomainSettings.m_GroupsByPage;
-      } else {
-        m_FirstDisplayedGroup = 0;
-      }
-    }
-  }
-
-  public boolean isFirstGroupPage() {
-    return (m_FirstDisplayedGroup == 0);
-  }
-
-  public boolean isLastGroupPage() {
-    if (JobDomainSettings.m_GroupsByPage == -1) {
-      return true;
-    }
-    return (m_SubGroups.length <= (m_FirstDisplayedGroup + JobDomainSettings.m_GroupsByPage));
   }
 
   public Group[] getAllGroupPage() {
@@ -177,4 +107,5 @@ public class NavigationStock {
   public Group[] getGroupPage() {
     return m_SubGroups;
   }
+
 }

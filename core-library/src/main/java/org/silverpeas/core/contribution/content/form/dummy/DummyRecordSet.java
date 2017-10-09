@@ -30,6 +30,8 @@ import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.ForeignPK;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -76,9 +78,12 @@ public class DummyRecordSet implements RecordSet {
   }
 
   @Override
-  public DataRecord getRecord(String recordId, String language)
-      throws FormException {
+  public DataRecord getRecord(String recordId, String language) throws FormException {
     return recordTemplate.getEmptyRecord();
+  }
+
+  public List<DataRecord> getRecords(String fieldName, String fieldValue) throws FormException {
+    return Collections.emptyList();
   }
 
   /**

@@ -23,12 +23,39 @@
  */
 package org.silverpeas.core.contribution.template.publication;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.GlobalContext;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.contribution.content.form.DataRecord;
+import org.silverpeas.core.contribution.content.form.Form;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.record.FormEncryptionContentIterator;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
+import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
+import org.silverpeas.core.contribution.content.form.record.IdentifiedRecordTemplate;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.security.encryption.ContentEncryptionServiceProvider;
+import org.silverpeas.core.security.encryption.EncryptionContentIterator;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -37,41 +64,12 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
-
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.SilverpeasException;
-import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.component.model.GlobalContext;
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.Form;
-import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.security.encryption.cipher.CryptoException;
-
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.content.form.RecordTemplate;
-import org.silverpeas.core.contribution.content.form.record.FormEncryptionContentIterator;
-import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
-import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
-import org.silverpeas.core.contribution.content.form.record.IdentifiedRecordTemplate;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.lang.SystemWrapper;
-import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.security.encryption.ContentEncryptionServiceProvider;
-import org.silverpeas.core.security.encryption.EncryptionContentIterator;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.admin.service.OrganizationController;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * The PublicationTemplateManager manages all the PublicationTemplate for all the Job'Peas. It is a
@@ -629,7 +627,11 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
   public PublicationTemplate getDirectoryTemplate() {
     List<PublicationTemplate> directoryTemplates = getDirectoryTemplates();
     if (CollectionUtil.isNotEmpty(directoryTemplates)) {
-      return directoryTemplates.get(0);
+      PublicationTemplate template = directoryTemplates.get(0);
+      String shortName = getShortName(template.getFileName());
+      String externalId = "directory" + ":" + shortName;
+      template.setExternalId(externalId);
+      return template;
     }
     return null;
   }
@@ -648,9 +650,6 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
 
   public void deleteDirectoryData(String userId) {
     PublicationTemplate template = getDirectoryTemplate();
-    String shortName = getShortName(template.getFileName());
-    String externalId = "directory" + ":" + shortName;
-    template.setExternalId(externalId);
     try {
       template.getRecordSet().delete(userId);
     } catch (Exception e) {
@@ -664,6 +663,20 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
       shortName = name.substring(name.indexOf("/") + 1, name.indexOf("."));
     }
     return shortName;
+  }
+
+  public Map<String, String> getDirectoryFormValues(String userId, String language) {
+    Map<String, String> formValues = new HashMap<String, String>();
+    PublicationTemplate template = getDirectoryTemplate();
+    if (template != null) {
+      try {
+        DataRecord data = template.getRecordSet().getRecord(userId);
+        return data.getValues(language);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
+    return formValues;
   }
 
 }
