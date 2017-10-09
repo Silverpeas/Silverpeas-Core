@@ -4817,9 +4817,9 @@ class Admin implements Administration {
     SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
     GroupSearchCriteriaForDAO criteria = factory.getGroupSearchCriteriaDAO();
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
-      List<String> listOfRoleNames = Collections.emptyList();
+      final List<String> listOfRoleNames = new ArrayList<>();
       if (searchCriteria.isCriterionOnRoleNamesSet()) {
-        listOfRoleNames = Arrays.asList(searchCriteria.getCriterionOnRoleNames());
+        listOfRoleNames.addAll(Arrays.asList(searchCriteria.getCriterionOnRoleNames()));
       }
       SilverpeasComponentInstance instance =
           getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
@@ -4833,11 +4833,9 @@ class Admin implements Administration {
           } else {
             profiles = getComponentInst(instance.getId()).getAllProfilesInst();
           }
-          for (ProfileInst aProfile : profiles) {
-            if (listOfRoleNames.isEmpty() || listOfRoleNames.contains(aProfile.getName())) {
-              roleIds.add(aProfile.getId());
-            }
-          }
+          profiles.stream()
+              .filter(p -> listOfRoleNames.isEmpty() || listOfRoleNames.contains(p.getName()))
+              .forEach(p -> roleIds.add(p.getId()));
         }
         criteria.onRoleNames(roleIds.toArray(new String[roleIds.size()]));
       }

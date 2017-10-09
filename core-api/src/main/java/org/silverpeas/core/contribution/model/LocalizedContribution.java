@@ -23,11 +23,8 @@
  */
 package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.i18n.I18n;
 import org.silverpeas.core.i18n.Translation;
-
-import java.util.Date;
 
 /**
  * A contribution produced in a given l10n (Localisation). Such contributions are authored in a
@@ -61,62 +58,7 @@ public interface LocalizedContribution extends Contribution, Translation {
    * @return a contribution localized in the specified language.
    */
   static LocalizedContribution from(final Contribution contribution, final String language) {
-    return new LocalizedContribution() {
-      @Override
-      public ContributionIdentifier getContributionId() {
-        return contribution.getContributionId();
-      }
-
-      @Override
-      public String getTitle() {
-        return contribution.getTitle();
-      }
-
-      @Override
-      public String getDescription() {
-        return contribution.getDescription();
-      }
-
-      @Override
-      public String getContributionType() {
-        return contribution.getContributionType();
-      }
-
-      @Override
-      public boolean isIndexable() {
-        return contribution.isIndexable();
-      }
-
-      @Override
-      public User getCreator() {
-        return contribution.getCreator();
-      }
-
-      @Override
-      public Date getCreationDate() {
-        return contribution.getCreationDate();
-      }
-
-      @Override
-      public User getLastModifier() {
-        return contribution.getLastModifier();
-      }
-
-      @Override
-      public Date getLastModificationDate() {
-        return contribution.getLastModificationDate();
-      }
-
-      @Override
-      public boolean canBeAccessedBy(final User user) {
-        return contribution.canBeAccessedBy(user);
-      }
-
-      @Override
-      public String getLanguage() {
-        return language;
-      }
-    };
+    return new LocalizedContributionWrapper(contribution, language);
   }
 
   /**
@@ -128,4 +70,5 @@ public interface LocalizedContribution extends Contribution, Translation {
   default String getLanguage() {
     return I18n.get().getDefaultLanguage();
   }
+
 }

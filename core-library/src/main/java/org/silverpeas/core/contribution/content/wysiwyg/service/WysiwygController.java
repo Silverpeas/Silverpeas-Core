@@ -46,9 +46,25 @@ import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWY
  */
 public class WysiwygController {
 
-  public final static String WYSIWYG_CONTEXT = WysiwygManager.WYSIWYG_CONTEXT;
-  public final static String WYSIWYG_IMAGES = WysiwygManager.WYSIWYG_IMAGES;
-  public final static String WYSIWYG_WEBSITES = WysiwygManager.WYSIWYG_WEBSITES;
+  public static final String WYSIWYG_CONTEXT = WysiwygManager.WYSIWYG_CONTEXT;
+  public static final String WYSIWYG_IMAGES = WysiwygManager.WYSIWYG_IMAGES;
+  public static final String WYSIWYG_WEBSITES = WysiwygManager.WYSIWYG_WEBSITES;
+
+  /**
+   * Hidden constructor
+   */
+  private WysiwygController() {
+  }
+
+  private static LocalizedContribution contributionFrom(final String componentId,
+      final String objectId, final String language) {
+    return contributionFrom(componentId, objectId, language, true);
+  }
+
+  private static LocalizedContribution contributionFrom(final String componentId,
+      final String objectId, final String language, boolean indexable) {
+    return new WysiwygLocalizedContribution(componentId, objectId, language, indexable);
+  }
 
   /**
    * Gets the manager.
@@ -379,54 +395,59 @@ public class WysiwygController {
     return getManager().createPath(componentId, context);
   }
 
-  private static LocalizedContribution contributionFrom(final String componentId,
-      final String objectId, final String language) {
-    return contributionFrom(componentId, objectId, language, true);
-  }
+  private static class WysiwygLocalizedContribution implements LocalizedContribution {
 
-  private static LocalizedContribution contributionFrom(final String componentId,
-      final String objectId, final String language, boolean indexable) {
-    return new LocalizedContribution() {
+    private final String componentId;
+    private final String objectId;
+    private final String language;
+    private final boolean indexable;
 
-      @Override
-      public ContributionIdentifier getContributionId() {
-        return ContributionIdentifier.from(componentId, objectId, WYSIWYG);
-      }
+    public WysiwygLocalizedContribution(final String componentId, final String objectId,
+        final String language, final boolean indexable) {
+      this.componentId = componentId;
+      this.objectId = objectId;
+      this.language = language;
+      this.indexable = indexable;
+    }
 
-      @Override
-      public User getCreator() {
-        return null;
-      }
+    @Override
+    public ContributionIdentifier getContributionId() {
+      return ContributionIdentifier.from(componentId, objectId, WYSIWYG);
+    }
 
-      @Override
-      public Date getCreationDate() {
-        return null;
-      }
+    @Override
+    public User getCreator() {
+      return null;
+    }
 
-      @Override
-      public User getLastModifier() {
-        return null;
-      }
+    @Override
+    public Date getCreationDate() {
+      return null;
+    }
 
-      @Override
-      public Date getLastModificationDate() {
-        return null;
-      }
+    @Override
+    public User getLastModifier() {
+      return null;
+    }
 
-      @Override
-      public boolean canBeAccessedBy(final User user) {
-        return true;
-      }
+    @Override
+    public Date getLastModificationDate() {
+      return null;
+    }
 
-      @Override
-      public String getLanguage() {
-        return language;
-      }
+    @Override
+    public boolean canBeAccessedBy(final User user) {
+      return true;
+    }
 
-      @Override
-      public boolean isIndexable() {
-        return indexable;
-      }
-    };
+    @Override
+    public String getLanguage() {
+      return language;
+    }
+
+    @Override
+    public boolean isIndexable() {
+      return indexable;
+    }
   }
 }

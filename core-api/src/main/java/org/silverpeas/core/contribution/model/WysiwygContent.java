@@ -44,6 +44,24 @@ public class WysiwygContent implements ContributionContent<String> {
   private boolean modified;
 
   /**
+   * Constructs a new WYSIWYG content for the specified contribution with the given rich text.
+   * @param contribution the contribution related by the content.
+   * @param richText the data of the content. If null then an empty text is set.
+   */
+  public WysiwygContent(final LocalizedContribution contribution, final String richText) {
+    this.contribution = contribution;
+    this.text = richText == null ? "" : richText;
+  }
+
+  /**
+   * Constructs an empty WYSIWYG content for the specified contribution.
+   * @param contribution the contribution related by the content.
+   */
+  public WysiwygContent(final LocalizedContribution contribution) {
+    this(contribution, "");
+  }
+
+  /**
    * Gets the WYSIWYG content of the specified contribution.
    * @param contribution a localized contribution.
    * @return the WYSIWYG content of the contribution or null if no such content exists.
@@ -66,24 +84,6 @@ public class WysiwygContent implements ContributionContent<String> {
     WysiwygContentRepository repository =
         ServiceProvider.getService(WysiwygContentRepository.class);
     repository.deleteByContribution(contribution);
-  }
-
-  /**
-   * Constructs a new WYSIWYG content for the specified contribution with the given rich text.
-   * @param contribution the contribution related by the content.
-   * @param richText the data of the content. If null then an empty text is set.
-   */
-  public WysiwygContent(final LocalizedContribution contribution, final String richText) {
-    this.contribution = contribution;
-    this.text = richText == null ? "" : richText;
-  }
-
-  /**
-   * Constructs an empty WYSIWYG content for the specified contribution.
-   * @param contribution the contribution related by the content.
-   */
-  public WysiwygContent(final LocalizedContribution contribution) {
-    this(contribution, "");
   }
 
   /**
@@ -110,19 +110,6 @@ public class WysiwygContent implements ContributionContent<String> {
     return this.text;
   }
 
-  @Override
-  public boolean isEmpty() {
-    return this.text.isEmpty();
-  }
-
-  /**
-   * Is this content was modified since its getting.
-   * @return true if this content is modified, false otherwise.
-   */
-  public boolean isModified() {
-    return this.modified;
-  }
-
   /**
    * Modifies the text of this content. The content is effectively modified only if the specified
    * text is different to the actual one; in such a case, the content is marked as modified and
@@ -135,6 +122,19 @@ public class WysiwygContent implements ContributionContent<String> {
       this.text = newText;
       this.modified = true;
     }
+  }
+
+  @Override
+  public boolean isEmpty() {
+    return this.text.isEmpty();
+  }
+
+  /**
+   * Is this content was modified since its getting.
+   * @return true if this content is modified, false otherwise.
+   */
+  public boolean isModified() {
+    return this.modified;
   }
 
   /**

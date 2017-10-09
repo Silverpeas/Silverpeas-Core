@@ -58,7 +58,7 @@ public abstract class AbstractContentInterface implements ContentInterface {
       final String currentUserId) {
     List<String> resourceIds =
         getContentManager().getResourcesMatchingContents(silverpeasContentIds);
-    List<? extends Contribution> contributions =
+    List<Contribution> contributions =
         getAccessibleContributions(resourceIds, instanceId, currentUserId);
     return contributions.stream().map(instance -> convert(instance, instanceId))
         .collect(Collectors.toList());
@@ -115,7 +115,7 @@ public abstract class AbstractContentInterface implements ContentInterface {
    * @param currentUserId the identifier of the user accessing the content.
    * @return an optional {@link Contribution} instance.
    */
-  protected abstract List<? extends Contribution> getAccessibleContributions(
+  protected abstract List<Contribution> getAccessibleContributions(
       final List<String> resourceIds, final String componentInstanceId, final String currentUserId);
 
   /**
@@ -225,6 +225,9 @@ public abstract class AbstractContentInterface implements ContentInterface {
    */
   protected <T extends Contribution> SilverContentVisibility computeSilverContentVisibility(
       final T contribution) {
+    if (contribution == null) {
+      throw new IllegalArgumentException("contribution parameter must not be null");
+    }
     return new SilverContentVisibility();
   }
 

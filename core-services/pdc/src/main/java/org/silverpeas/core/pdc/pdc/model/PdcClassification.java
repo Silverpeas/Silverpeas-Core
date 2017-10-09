@@ -25,7 +25,6 @@ package org.silverpeas.core.pdc.pdc.model;
 
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.pdc.model.constraints.UniquePositions;
 import org.silverpeas.core.pdc.pdc.service.PdcClassificationService;

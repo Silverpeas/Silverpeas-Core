@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.i18n;
 
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.io.Serializable;
 
 public class BeanTranslation implements Translation, Serializable, Cloneable {
@@ -104,6 +106,8 @@ public class BeanTranslation implements Translation, Serializable, Cloneable {
     try {
       return (BeanTranslation) super.clone();
     } catch (CloneNotSupportedException e) {
+      // When cloning is in error, returning null is expected
+      SilverLogger.getLogger(this).silent(e);
       return null;
     }
   }
