@@ -36,7 +36,6 @@ import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.CalendarEventOccurrenceGenerator;
-import org.silverpeas.core.calendar.ComponentInstanceCalendars;
 import org.silverpeas.core.calendar.ICalendarEventImportProcessor;
 import org.silverpeas.core.calendar.ICalendarImportResult;
 import org.silverpeas.core.calendar.Plannable;
@@ -238,7 +237,7 @@ public class CalendarWebServiceProvider {
    * @return the list of calendars.
    */
   public List<Calendar> getCalendarsOf(final String componentInstanceId) {
-    return ComponentInstanceCalendars.getByComponentInstanceId(componentInstanceId);
+    return Calendar.getByComponentInstanceId(componentInstanceId);
   }
 
   /**

@@ -2,6 +2,7 @@ package org.silverpeas.core.workflow.engine;
 
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.TaskManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -232,8 +233,7 @@ class WorkflowTools {
         Trigger trigger = triggers.next();
         if (trigger != null) {
           try {
-            ExternalAction externalAction = (ExternalAction) Class.forName(trigger.getClassName()).
-                newInstance();
+            ExternalAction externalAction = ServiceProvider.getService(trigger.getName());
             externalAction.setProcessInstance(instance);
             externalAction.setEvent(event);
             externalAction.setTrigger(trigger);

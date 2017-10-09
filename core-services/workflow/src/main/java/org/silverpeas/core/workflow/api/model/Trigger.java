@@ -31,35 +31,23 @@ public interface Trigger {
    * Get the name of the Trigger
    * @return parameter's name
    */
-  public String getName();
+  String getName();
 
   /**
    * Set the name of the Trigger
    * @param name parameter's name
    */
-  public void setName(String name);
-
-  /**
-   * Get the className of the Trigger
-   * @return className
-   */
-  public String getClassName();
-
-  /**
-   * Set the className of the Trigger
-   * @param className
-   */
-  public void setClassName(String className);
+  void setName(String name);
 
   /**
    * Get the parameter specified by name
    * @param strName the parameter name
    * @return the parameters
    */
-  public Parameter getParameter(String strName);
+  Parameter getParameter(String strName);
 
   /**
    * Add a Parameter to the collection
    */
-  public void addParameter(Parameter parameter);
+  void addParameter(Parameter parameter);
 }

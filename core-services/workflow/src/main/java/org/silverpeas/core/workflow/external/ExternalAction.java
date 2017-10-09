@@ -29,12 +29,12 @@ import org.silverpeas.core.workflow.api.model.Trigger;
 
 public interface ExternalAction {
 
-  public void setProcessInstance(ProcessInstance process);
+  void setProcessInstance(ProcessInstance process);
 
-  public void setEvent(GenericEvent event);
+  void setEvent(GenericEvent event);
 
-  public void setTrigger(Trigger trigger);
+  void setTrigger(Trigger trigger);
 
-  public void execute();
+  void execute();
 
 }

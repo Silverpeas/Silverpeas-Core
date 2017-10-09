@@ -23,9 +23,8 @@
  */
 package org.silverpeas.web.usercalendar;
 
+import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.web.calendar.AbstractCalendarWebRequestContext;
-
-import static org.silverpeas.core.calendar.ComponentInstanceCalendars.getByComponentInstanceId;
 
 /**
  * @author Yohann Chastagnier
@@ -38,7 +37,7 @@ public class UserCalendarWebRequestContext
     super.beforeRequestProcessing();
     if (getComponentInstanceCalendars().isEmpty()) {
       UserCalendarInitialization.initialize(getComponentInstanceId());
-      setComponentInstanceCalendars(getByComponentInstanceId(getComponentInstanceId()));
+      setComponentInstanceCalendars(Calendar.getByComponentInstanceId(getComponentInstanceId()));
     }
   }
 }

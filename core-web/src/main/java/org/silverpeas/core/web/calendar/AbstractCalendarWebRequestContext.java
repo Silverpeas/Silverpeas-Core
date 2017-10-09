@@ -51,8 +51,7 @@ public abstract class AbstractCalendarWebRequestContext<T extends AbstractCalend
 
   @Override
   public void beforeRequestProcessing() {
-    setComponentInstanceCalendars(
-        ComponentInstanceCalendars.getByComponentInstanceId(getComponentInstanceId()));
+    setComponentInstanceCalendars(Calendar.getByComponentInstanceId(getComponentInstanceId()));
   }
 
   /**

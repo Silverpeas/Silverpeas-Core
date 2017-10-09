@@ -24,10 +24,12 @@
 
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.calendar.repository.CalendarRepository;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -42,9 +44,10 @@ public class ComponentInstanceCalendars extends ArrayList<Calendar> {
 
   /**
    * Hidden constructor.
+   * @param calendars calendars of a component instance.
    */
-  private ComponentInstanceCalendars() {
-    super();
+  private ComponentInstanceCalendars(final List<Calendar> calendars) {
+    super(calendars);
   }
 
   /**
@@ -55,9 +58,10 @@ public class ComponentInstanceCalendars extends ArrayList<Calendar> {
    * @return a list containing the calendar instances which matched if any, empty list otherwise.
    * @see Calendar#getByComponentInstanceId(String)
    */
-  public static ComponentInstanceCalendars getByComponentInstanceId(String instanceId) {
-    final ComponentInstanceCalendars list = new ComponentInstanceCalendars();
-    list.addAll(Calendar.getByComponentInstanceId(instanceId));
+  static ComponentInstanceCalendars getByComponentInstanceId(String instanceId) {
+    CalendarRepository calendarRepository = CalendarRepository.get();
+    final ComponentInstanceCalendars list =
+        new ComponentInstanceCalendars(calendarRepository.getByComponentInstanceId(instanceId));
     list.sort(CALENDAR_COMPARATOR_BY_CREATION_DATE_ASC);
     return list;
   }
