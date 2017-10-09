@@ -771,6 +771,15 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
   }
 
   /**
+   * Add apache file upload libraries in web archive (war)
+   * @return the instance of the war builder with apache file upload
+   */
+  public WarBuilder4LibCore addApacheFileUploadFeatures() {
+    addMavenDependencies("commons-fileupload:commons-fileupload");
+    return this;
+  }
+
+  /**
    * Add stubbed organization controller which is dealing behind with a mocked instance.
    * @return the instance of the war builder with the stub.
    */
