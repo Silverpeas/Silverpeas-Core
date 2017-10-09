@@ -42,7 +42,7 @@ function submitForm()
 }
 </script>
 </head>
-<body bgcolor="#ffffff" leftmargin="5" topmargin="5" marginwidth="5" marginheight="5">
+<body class="page_content_admin">
 <%
 browseBar.setComponentName(resource.getString("importExportPeas.Importation"));
 

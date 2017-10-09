@@ -100,11 +100,11 @@
 <c:set var="periodChart" value="${requestScope.Chart}"/>
 
 <html>
-<HEAD>
-<TITLE><%=resources.getString("GML.popupTitle")%></TITLE>
+<head>
+<title><%=resources.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-</HEAD>
-<BODY class="admin stats">
+</head>
+<body class="admin stats page_content_admin">
 <%
 
 	Iterator iter1 = cMonthBegin.iterator();
@@ -156,7 +156,7 @@
     out.println(frame.printBefore());
 %>
 
-<BR>
+<br>
 
 <div class="flex-container">
   <viewTags:displayChart chart="${periodChart}"/>
@@ -191,5 +191,5 @@
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

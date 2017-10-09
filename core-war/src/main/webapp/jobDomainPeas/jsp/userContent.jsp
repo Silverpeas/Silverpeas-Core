@@ -292,7 +292,7 @@
     });
   </script>
 </head>
-<body class="admin-user">
+<body class="admin-users  page_content_admin">
 <%
 out.println(window.printBefore());
 %>

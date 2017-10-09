@@ -119,7 +119,7 @@
     }
 </script>
 </HEAD>
-<BODY onLoad="activateTimeout()">
+<BODY onLoad="activateTimeout()"  class="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName(resource.getString("workflowDesigner.states"), strCancelAction);

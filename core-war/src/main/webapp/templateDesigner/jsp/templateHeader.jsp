@@ -165,7 +165,7 @@ $(function () {
 });
 </script>
 </head>
-<body id="template-header">
+<body id="template-header" class="page_content_admin">
 <%
 browseBar.setDomainName(resource.getString("templateDesigner.toolName"));
 browseBar.setComponentName(resource.getString("templateDesigner.templateList"), "Main");

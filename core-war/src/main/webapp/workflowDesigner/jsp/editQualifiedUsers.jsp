@@ -113,7 +113,7 @@
     }
 </script>
 </head>
-<body>
+<body class="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName( resource.getString(strEditorName) );

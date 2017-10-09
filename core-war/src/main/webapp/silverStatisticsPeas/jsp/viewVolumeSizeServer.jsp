@@ -122,7 +122,7 @@
   }
 </script>
 </head>
-<body class="admin stats volume attachments">
+<body class="admin stats volume attachments page_content_admin">
  <form name="volumeServerFormulaire" action="ViewVolumeSizeServer" method="post">
 <%
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics") + " > "+resources.getString("silverStatisticsPeas.Volumes") + " > "+resources.getString("GML.attachments"));

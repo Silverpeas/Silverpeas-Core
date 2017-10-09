@@ -74,7 +74,7 @@
     }
   </script>
 </head>
-<body class="admin stats">
+<body class="admin stats page_content_admin">
 <%
           out.println(window.printBefore());
           if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {

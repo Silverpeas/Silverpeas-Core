@@ -125,7 +125,7 @@ function openUser(userId) {
 }
 </script>
 </head>
-<body onload="document.SearchResultForm.SearchField.focus()">
+<body onload="document.SearchResultForm.SearchField.focus()" id="jobSearchPeas" class="page_content_admin">
 
 <%
 browseBar.setDomainName(resource.getString("JSP.administrationTab"));

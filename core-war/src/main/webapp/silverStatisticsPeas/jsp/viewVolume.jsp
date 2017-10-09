@@ -197,7 +197,7 @@
   }
 </script>
 </head>
-<body class="admin stats volume contributions">
+<body class="admin stats volume contributions page_content_admin">
 <%
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics") + " > "+resources.getString("silverStatisticsPeas.Volumes"));
     browseBar.setComponentName(resources.getString("silverStatisticsPeas.volumes.tab.contributions"), "ValidateViewVolume?MonthBegin="+monthBegin+"&YearBegin="+yearBegin+"&FilterLibGroup="+filterLibGroup+"&FilterIdGroup="+filterIdGroup+"&FilterLibUser="+filterLibUser+"&FilterIdUser="+filterIdUser+"&SpaceId=");

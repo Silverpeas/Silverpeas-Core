@@ -37,8 +37,8 @@
                              strEditorName = (String)request.getAttribute( "EditorName" ),
                              strContext = (String)request.getAttribute( "context" ); // context
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <view:looknfeel withCheckFormScript="true"/>
 <script language="javaScript">
     function sendData()
@@ -67,8 +67,8 @@
         }
     }
 </script>
-</HEAD>
-<BODY>
+</head>
+<body class="page_content_admin">
 <%
     browseBar.setDomainName(resource.getString("workflowDesigner.toolName"));
     browseBar.setComponentName( resource.getString(strEditorName) );
@@ -123,7 +123,7 @@
 
     out.println(board.printBefore());
 %>
-<FORM NAME="designationForm" METHOD="POST" ACTION="UpdateContextualDesignation">
+<form name="designationForm" method="POST" action="UpdateContextualDesignation">
     <input type="hidden" name="lang_original" value="<%=designation.getLanguage()%>"/>
     <input type="hidden" name="role_original" value="<%=designation.getRole()%>"/>
     <input type="hidden" name="context" value="<%=strContext%>" />
@@ -131,7 +131,7 @@
 <%
     out.println( designationPane.print() );
 %>
-</FORM>
+</form>
 <%
     out.println(board.printAfter());
 %>
@@ -140,5 +140,5 @@
     out.println(frame.printAfter());
     out.println(window.printAfter());
 %>
-</BODY>
-</HTML>
+</body>
+</html>

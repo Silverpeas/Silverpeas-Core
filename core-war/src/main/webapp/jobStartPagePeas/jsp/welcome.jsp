@@ -62,7 +62,7 @@ function recoverRights() {
 -->
 </script>
 </head>
-<body>
+<body class="startPageContentWelcome page_content_admin">
 <c:if test="${isUserAdmin}">
 <view:operationPane>
 	<fmt:message var="spaceAdd" key="JSPP.SpacePanelCreateTitle" />
