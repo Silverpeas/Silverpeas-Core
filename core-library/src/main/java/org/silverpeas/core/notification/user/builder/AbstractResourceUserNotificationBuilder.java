@@ -24,14 +24,16 @@
 package org.silverpeas.core.notification.user.builder;
 
 import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
 import org.silverpeas.core.notification.user.UserNotification;
-import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
+import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
 /**
  * @author Yohann Chastagnier
@@ -74,11 +76,6 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
     return new DefaultUserNotification(getTitle(), getContent());
   }
 
-  @Override
-  protected boolean isUserSubscriptionNotificationEnabled() {
-    return UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest();
-  }
-
   protected abstract void performBuild(T resource);
 
   protected void performNotificationResource(final T resource) {
@@ -93,6 +90,8 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
     notificationResourceData.setResourceUrl(getNotificationMetaData().getLink());
     if (resource instanceof SilverpeasContent) {
       fill(notificationResourceData, (SilverpeasContent) resource);
+    } else if (resource instanceof Contribution) {
+      fill(notificationResourceData, (Contribution) resource);
     }
     return notificationResourceData;
   }
@@ -104,18 +103,22 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
     String resourceUrl = null;
     if (resource instanceof SilverpeasContent) {
       resourceUrl = URLUtil.getSearchResultURL((SilverpeasContent) resource);
+    } else if (resource instanceof Contribution) {
+      Contribution contribution = (Contribution) resource;
+      final ComponentInstanceRoutingMapProvider routingMapProvider =
+          ComponentInstanceRoutingMapProviderByInstance.get()
+              .getByInstanceId(contribution.getContributionId().getComponentInstanceId());
+      resourceUrl =
+          routingMapProvider.absolute().getPermalink(contribution.getContributionId()).toString();
     }
     if (StringUtils.isBlank(resourceUrl)) {
       resourceUrl = "";
-      SilverTrace.warn("NotificationBuider",
-          "AbstractResourceNotificationBuilder.getResourceURL(T resource)",
-          "notificationBuider.RESOURCE_URL_IS_EMPTY");
     }
     return resourceUrl;
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return getResource() instanceof SilverpeasToolContent;
   }
 
@@ -135,5 +138,15 @@ public abstract class AbstractResourceUserNotificationBuilder<T>
       final SilverpeasContent silverpeasContent) {
     notificationResourceData.setResourceId(silverpeasContent.getId());
     notificationResourceData.setResourceType(silverpeasContent.getContributionType());
+  }
+
+  private void fill(final NotificationResourceData notificationResourceData,
+      final Contribution contribution) {
+    final ContributionIdentifier contributionId = contribution.getContributionId();
+    notificationResourceData.setComponentInstanceId(contributionId.getComponentInstanceId());
+    notificationResourceData.setResourceId(contributionId.getLocalId());
+    notificationResourceData.setResourceType(contributionId.getType());
+    notificationResourceData.setResourceName(contribution.getTitle());
+    notificationResourceData.setResourceDescription(contribution.getDescription());
   }
 }

@@ -25,10 +25,26 @@
 --%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+
 <c:set var="language" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${language}"/>
 <view:setBundle basename="org.silverpeas.subscription.multilang.subscriptionBundle"/>
-<div>
-  <fmt:message key="subscription.message.confirm.sending"/>
+
+<c:set var="saveNoteIntoComment" value="${silfn:booleanValue(param.saveNoteIntoComment)}"/>
+
+<c:set var="id" value="${param.hashCode() < 0 ? -param.hashCode() : param.hashCode()}"/>
+<fmt:message var="confirmLabel" key="subscription.message.confirm.sending"/>
+<fmt:message var="noteLabel" key="subscription.message.note"/>
+<fmt:message var="noteCommentSaveLabel" key="subscription.message.note.saveIntoComments"/>
+
+<div class="subscription-confirmation">
+  <p>${confirmLabel}</p>
+  <textarea rows="4" cols="80" placeholder="${noteLabel}" maxlength="2000"></textarea>
+  <c:if test="${saveNoteIntoComment}">
+    <p class="save-into-comment-block">
+      <input id="${id}" class="saveNoteIntoComment" type="checkbox"><label for="${id}">${noteCommentSaveLabel}</label>
+    </p>
+  </c:if>
 </div>

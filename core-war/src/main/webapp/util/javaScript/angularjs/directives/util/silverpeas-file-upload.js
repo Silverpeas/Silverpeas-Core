@@ -24,7 +24,7 @@
 
 (function() {
   angular.module('silverpeas.directives').directive('silverpeasFileUpload',
-      ['$timeout', function($timeout) {
+      [function() {
         return {
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/util/silverpeas-file-upload.jsp',
@@ -69,7 +69,7 @@
               serializeArray : function() {
                 return _fileUploadApi.serializeArray();
               }.bind(this)
-            }
+            };
 
             /**
              * Just after template compilation

@@ -23,20 +23,16 @@
  */
 package org.silverpeas.core.calendar.notification;
 
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
-import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.ExternalAttendee;
 import org.silverpeas.core.calendar.InternalAttendee;
+import org.silverpeas.core.calendar.notification.user.AbstractCalendarEventUserNotificationBuilder;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.notification.user.RemoveSenderRecipientBehavior;
-import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.template.SilverpeasStringTemplateUtil;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.util.Pair;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -56,8 +52,7 @@ import java.util.stream.Collectors;
  * default one.
  * @author mmoquillon
  */
-class AttendeeNotificationBuilder
-    extends AbstractTemplateUserNotificationBuilder<CalendarComponent>
+class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationBuilder
     implements RemoveSenderRecipientBehavior {
 
   private NotifAction notifCause;
@@ -65,16 +60,16 @@ class AttendeeNotificationBuilder
   private User sender;
   private List<Attendee> recipients;
   private List<Attendee> attendees;
-  private Pair<Boolean, String> rootTemplatePath;
 
   /**
    * Constructs a new builder of user notification against the attendee(s) of a calendar component.
    * @param calendarComponent the calendar component concerned by the notification.
    * @param action the action that was performed onto the event.
    */
-  AttendeeNotificationBuilder(final CalendarComponent calendarComponent,
+  @SuppressWarnings("unchecked")
+  AttendeeNotificationBuilder(final Contribution calendarComponent,
       final NotifAction action) {
-    super(calendarComponent);
+    super(calendarComponent, null);
     this.notifCause = action;
   }
 
@@ -149,11 +144,6 @@ class AttendeeNotificationBuilder
   }
 
   @Override
-  protected String getMultilangPropertyFile() {
-    return "org.silverpeas.calendar.multilang.usernotification";
-  }
-
-  @Override
   protected String getBundleSubjectKey() {
     switch (this.updateCause) {
       case NONE:
@@ -166,83 +156,39 @@ class AttendeeNotificationBuilder
   }
 
   @Override
-  protected void performTemplateData(final String language, final CalendarComponent resource,
+  protected void performTemplateData(final Contribution contribution,
       final SilverpeasTemplate template) {
-    template.setAttribute("sender", this.sender.getDisplayedName());
-    template.setAttribute("event", resource);
+    String language = ((LocalizedContribution) contribution).getLanguage();
+    template.setAttribute("event", contribution);
     template.setAttribute("attendees",
         this.attendees.stream().map(Attendee::getFullName).collect(Collectors.toList()));
+    if (UpdateCause.ATTENDEE_PARTICIPATION.equals(this.updateCause)) {
+      Optional<Attendee> attendee =
+          this.attendees.stream().filter(a -> a.getId().equals(sender.getId())).findFirst();
+      attendee.ifPresent(a -> {
+        final String bundleKey =
+            "event.attendee.participation." + a.getParticipationStatus().name().toLowerCase();
+        template.setAttribute("participation", getBundle(language).getString(bundleKey));
+      });
+    }
   }
 
   @Override
-  protected void performNotificationResource(final String language,
-      final CalendarComponent resource,
-      final NotificationResourceData notificationResourceData) {
-    notificationResourceData.setResourceId(resource.getId());
-    notificationResourceData.setComponentInstanceId(
-        resource.getCalendar().getComponentInstanceId());
-    notificationResourceData.setResourceName(resource.getTitle());
-    notificationResourceData.setResourceDescription(resource.getDescription());
-  }
-
-  @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     if (this.getAction() == NotifAction.UPDATE) {
       return this.updateCause.getTemplateName();
     }
     return null;
   }
 
-  /**
-   * @return a {@link Pair} instance which indicates first the StringTemplate repository as a
-   * boolean, true if it is the components one, false if it is the core one. It indicates secondly
-   * the template path into the root as a String.
-   */
-  private Pair<Boolean, String> getRootTemplatePath() {
-    if (rootTemplatePath == null) {
-      boolean componentRoot = false;
-      Optional<SilverpeasComponentInstance> componentInst =
-          SilverpeasComponentInstance.getById(getComponentInstanceId());
-      String templatePath = "calendar";
-      if (componentInst.isPresent() && SilverpeasStringTemplateUtil
-          .isComponentTemplateExist(componentInst.get().getName(), getFileName())) {
-        componentRoot = true;
-        templatePath = componentInst.get().getName();
-      }
-      rootTemplatePath = Pair.of(componentRoot, templatePath);
-    }
-    return rootTemplatePath;
-  }
-
   @Override
-  protected String getTemplatePath() {
-    return getRootTemplatePath().getSecond();
-  }
-
-  @Override
-  protected SilverpeasTemplate createTemplate() {
-    final SilverpeasTemplate template;
-    if (getRootTemplatePath().getFirst()) {
-      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(getTemplatePath());
-    } else {
-      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(getTemplatePath());
-    }
-    return template;
+  protected String getSender() {
+    return sender.getId();
   }
 
   @Override
   protected NotifAction getAction() {
     return this.notifCause;
-  }
-
-  @Override
-  protected String getComponentInstanceId() {
-    return getResource().getCalendar().getComponentInstanceId();
-  }
-
-  @Override
-  protected String getSender() {
-    return this.sender.getId();
   }
 
   @Override
@@ -260,5 +206,4 @@ class AttendeeNotificationBuilder
         .map(Attendee::getId)
         .collect(Collectors.toSet());
   }
-
 }

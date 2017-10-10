@@ -4371,6 +4371,13 @@ input.search:focus {
   margin:8px 8px 0 0;
 }
 
+/* subscription confirmation */
+.subscription-confirmation .save-into-comment-block label {
+  font-weight: normal;
+  position: relative;
+  top: -2px;
+}
+
 /* userzoom-tooltip-profilPhoto */
 .userzoom-tooltip {
   border:1px solid #aeaeae;
@@ -6271,6 +6278,86 @@ ul.sm-map {
   display: block;
 }
 
+.admin-users .profile {
+  line-height:2em
+}
+
+.admin-users .profile .avatar {
+  position: absolute;
+  display: inline-block;
+  float: right;
+  padding: 4px;
+  border: 1px solid #CCC;
+  background-color: #FFF;
+  top: -0.3em;
+  right: -1em;
+}
+
+.admin-users .profile .avatar .operation {
+  position:absolute;
+  bottom:-1.5em;
+  right:-0.5em;
+  background-color:#FFF;
+  border-radius:4px;
+  opacity:0.8;
+  padding:2px;
+}
+
+.admin-users .profile .personna{
+  font-size:2em;
+}
+
+.admin-users .profile .lastConnection ,
+.admin-users .profile .access,
+.admin-users .profile .email{
+  margin-bottom:1em;
+}
+.admin-users .profile .lastConnection {
+  font-style:italic;
+  color:#666;
+  line-height: 1em;
+}
+
+.admin-users .profile .img-label {
+  margin-right:1em;
+}
+
+.admin-users .profile .user-zone-id,
+.admin-users .profile .language {
+  float:left;
+  width:65%;
+}
+
+.admin-users .profile .user-zone-id {
+  float:left;
+  width:35%;
+}
+
+.admin-users .profile #profiles-link {
+  text-align:left;
+  margin-top: 2em;
+}
+
+.admin-users .profile #profiles-link > span {
+  background-image: url("../../util/icons/characteristic.png");
+  background-repeat:no-repeat;
+  background-position:7px 7px;
+  text-align:left;
+  padding-left:34px;
+  display:block
+}
+.admin-users .profile #profiles-link > span > span{
+  display:block
+}
+
+.admin-users .profile .user-zone-id .img-label{
+  width:14px;
+}
+
+.admin-users .profile #identity-extra legend {
+  background:transparent url("/silverpeas/util/icons/addFiche.png") 9px 0 no-repeat;
+}
+
 /*
 THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
  */
@@ -6292,6 +6379,10 @@ silverpeas-permalink {
   white-space:nowrap;
 }
 
+silverpeas-crud silverpeas-permalink {
+  white-space:normal;
+}
+
 silverpeas-permalink input {
   width: 90%;
   border: 1px solid #cacaca;
@@ -6303,6 +6394,11 @@ silverpeas-permalink .simple input {
   width:80%;
 }
 
+.sp_button.copy-to-clipboard {
+  position: absolute;
+}
+
+.sp_button.copy-to-clipboard,
 silverpeas-permalink .copy-to-clipboard .sp_button  {
   background:transparent url();
   border-radius: 5px;
@@ -6310,6 +6406,7 @@ silverpeas-permalink .copy-to-clipboard .sp_button  {
   padding:0;
 }
 
+.sp_button.copy-to-clipboard span,
 silverpeas-permalink .copy-to-clipboard .sp_button span {
   display:inline-block;
   text-indent:-30em;
@@ -6319,6 +6416,14 @@ silverpeas-permalink .copy-to-clipboard .sp_button span {
   height: 16px;
   padding-left:0.5em;
   vertical-align: middle;
+}
+
+/**
+ * AngularJS silverpeas-button component.
+ */
+
+silverpeas-button {
+  white-space:nowrap;
 }
 
 /**
@@ -6430,86 +6535,91 @@ silverpeas-attendee .not-answered {
   opacity: 0.4;
 }
 
-#pdcFrame .pdcFrameGroup #razButton img {
-  vertical-align: middle;
-}
+/**
+ * AngularJS silverpeas-pdc component.
+ */
 
-.admin-users .profile {
-  line-height:2em
-}
-
-.admin-users .profile .avatar {
-  position: absolute;
+silverpeas-pdc-filter {
+  margin: 0 auto;
   display: inline-block;
-  float: right;
-  padding: 4px;
-  border: 1px solid #CCC;
+  padding-top: 3px;
+}
+
+silverpeas-pdc-filter .filters {
+  display: inline-block;
+}
+
+silverpeas-pdc-filter .filters .field {
+  clear: none;
+  display: inline-block;
+  text-align: center;
+}
+
+silverpeas-pdc-filter .filters .field .champs select {
+  width: 150px;
+  border-color: #B9B9B9;
+}
+
+silverpeas-pdc-filter .filters .field .champs {
+  padding: 0 3px 0 0;
+}
+
+silverpeas-pdc-filter .filters .field .champs.pdcAxis img {
+  display: none;
+}
+
+silverpeas-pdc-filter .sp_button.disabled:hover {
+  color: #B9B9B9;
+  background-color: #EAEAEA;
+  cursor: default;
+}
+
+silverpeas-pdc-filter .sp_button:focus,
+silverpeas-pdc-filter .sp_button:active {
+  color: #AFAFAF;
   background-color: #FFF;
-  top: -0.3em;
-  right: -1em;
 }
 
-.admin-users .profile .avatar .operation {
-  position:absolute;
-  bottom:-1.5em;
-  right:-0.5em;
-  background-color:#FFF;
-  border-radius:4px;
-  opacity:0.8;
-  padding:2px;
+silverpeas-pdc-filter .sp_button:focus:hover {
+  color: #FFF;
+  background-color: #BFBFBF;
 }
 
-.admin-users .profile .personna{
-  font-size:2em;
+silverpeas-pdc-filter .sp_button.disabled,
+silverpeas-pdc-filter .sp_button.disabled:hover,
+silverpeas-pdc-filter .sp_button.disabled:active {
+  color: #B9B9B9;
+  background-color: #EAEAEA;
+  cursor: default;
 }
 
-.admin-users .profile .lastConnection ,
-.admin-users .profile .access,
-.admin-users .profile .email{
-  margin-bottom:1em;
-}
-.admin-users .profile .lastConnection {
-  font-style:italic;
-  color:#666;
-  line-height: 1em;
+silverpeas-pdc-filter .sp_button,
+silverpeas-pdc-filter .sp_button span {
+  line-height: inherit;
 }
 
-.admin-users .profile .img-label {
-  margin-right:1em;
+silverpeas-pdc-filter .raz-button .sp_button {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background-color: transparent;
 }
 
-.admin-users .profile .user-zone-id,
-.admin-users .profile .language {
-  float:left;
-  width:65%;
+silverpeas-pdc-filter .raz-button .sp_button img {
+  position: relative;
+  vertical-align: middle;
+  top: -1px;
 }
 
-.admin-users .profile .user-zone-id {
-  float:left;
-  width:35%;
+silverpeas-pdc-filter select.no-value {
+  color: #888888;
 }
 
-.admin-users .profile #profiles-link {
-  text-align:left;
-  margin-top: 2em;
+silverpeas-pdc-filter select.no-value option {
+  color: #000000;
 }
 
-.admin-users .profile #profiles-link > span {
-  background-image: url("../../util/icons/characteristic.png");
-  background-repeat:no-repeat;
-  background-position:7px 7px;
-  text-align:left;
-  padding-left:34px;
-  display:block
-}
-.admin-users .profile #profiles-link > span > span{
-  display:block
-}
-
-.admin-users .profile .user-zone-id .img-label{
-  width:14px;
-}
-
-.admin-users .profile #identity-extra legend {
-  background:transparent url("/silverpeas/util/icons/addFiche.png") 9px 0 no-repeat;
+silverpeas-pdc-filter select.no-value option.no-value,
+silverpeas-pdc-filter option.no-value {
+  color: #888888;
 }

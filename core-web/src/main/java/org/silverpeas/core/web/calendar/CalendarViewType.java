@@ -35,25 +35,51 @@ public enum CalendarViewType {
   /**
    * The calendar view is yearly.
    */
-  YEARLY(PeriodType.year, "year"),
+  YEARLY(PeriodType.year, "listYear", ""),
   /**
    * The calendar view is monthly.
    */
-  MONTHLY(PeriodType.month, "month"),
+  MONTHLY(PeriodType.month, "month", "listMonth"),
   /**
    * The calendar view is weekly.
    */
-  WEEKLY(PeriodType.week, "agendaWeek"),
+  WEEKLY(PeriodType.week, "agendaWeek", "listWeek"),
   /**
    * The calendar view is daily.
    */
-  DAILY(PeriodType.day, "agendaDay"),
+  DAILY(PeriodType.day, "agendaDay", "listDay"),
   /**
    * The calendar view is on the next events.
    */
-  NEXT_EVENTS(PeriodType.unknown, "nextevents");
+  NEXT_EVENTS(PeriodType.unknown, "nextevents", "");
 
   private PeriodType periodeType;
+  private String calendarView;
+  private String listView;
+
+  /**
+   * Constructs a view type with the specified view mode.
+   * @param periodeType the type of the period represented by the view
+   * @param viewMode the view mode as defined in the underlying calendar renderer.
+   * @param listView the name of the list view.
+   */
+  private CalendarViewType(PeriodType periodeType, final String viewMode, final String listView) {
+    this.periodeType = periodeType;
+    this.calendarView = viewMode;
+    this.listView = listView;
+  }
+
+  @JsonCreator
+  public static CalendarViewType from(String name) {
+    if (name != null) {
+      for (CalendarViewType viewType : CalendarViewType.values()) {
+        if (name.equalsIgnoreCase(viewType.name()) || name.equalsIgnoreCase(viewType.toString())) {
+          return viewType;
+        }
+      }
+    }
+    return null;
+  }
 
   /**
    * Converts this view type in a string representation.
@@ -98,7 +124,6 @@ public enum CalendarViewType {
     return this == DAILY;
   }
 
-
   /**
    * Is this view type is a on the next events.
    * @return true if this view type is on the next events one, false otherwise.
@@ -119,28 +144,5 @@ public enum CalendarViewType {
 
   public PeriodType getPeriodeType() {
     return periodeType;
-  }
-
-  /**
-   * Constructs a view type with the specified view mode.
-   * @param periodeType the type of the period represented by the view
-   * @param viewMode the view mode as defined in the underlying calendar renderer.
-   */
-  private CalendarViewType(PeriodType periodeType, final String viewMode) {
-    this.periodeType = periodeType;
-    this.calendarView = viewMode;
-  }
-  private String calendarView;
-
-  @JsonCreator
-  public static CalendarViewType from(String name) {
-    if (name != null) {
-      for (CalendarViewType viewType : CalendarViewType.values()) {
-        if (name.equalsIgnoreCase(viewType.name()) || name.equalsIgnoreCase(viewType.toString())) {
-          return viewType;
-        }
-      }
-    }
-    return null;
   }
 }

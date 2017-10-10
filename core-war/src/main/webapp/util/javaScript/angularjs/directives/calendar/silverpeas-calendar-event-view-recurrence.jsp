@@ -45,8 +45,10 @@
 <fmt:message var="monthRuleLabel" key="calendar.label.event.recurrence.month.rule"/>
 <fmt:message var="monthRuleDayOfMonthLabel" key="calendar.label.event.recurrence.month.rule.dayofmonth"><fmt:param value="{{$ctrl.getDefaultMonthDayNumber()}}"/></fmt:message>
 
-<fieldset class="skinFieldset">
-  <legend>${recurrenceLabel}</legend>
+<div class="bgDegradeGris">
+  <div class="bgDegradeGris header">
+    <h4 class="clean">${recurrenceLabel}</h4>
+  </div>
   <div class="fields">
     <div class="field">
       <span class="txtlibform label">${periodicityLabel}</span>
@@ -93,4 +95,4 @@
       </div>
     </div>
   </div>
-</fieldset>
+</div>

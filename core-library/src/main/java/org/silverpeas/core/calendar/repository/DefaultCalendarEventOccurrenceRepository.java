@@ -75,7 +75,7 @@ public class DefaultCalendarEventOccurrenceRepository
     occurrences.forEach(o -> {
       getEntityManager().remove(o);
       if (notify) {
-        notifyAttendees(o.getAttendees(), null);
+        notifyAttendees(o, o.getAttendees(), null);
       }
     });
     return occurrences.size();
@@ -87,7 +87,7 @@ public class DefaultCalendarEventOccurrenceRepository
     occurrences.forEach(o -> {
       getEntityManager().remove(o);
       if (notify) {
-        notifyAttendees(o.getAttendees(), null);
+        notifyAttendees(o, o.getAttendees(), null);
       }
     });
     return occurrences.size();

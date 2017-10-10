@@ -23,25 +23,25 @@
  */
 package org.silverpeas.core.admin.space.quota.process.check;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.quota.constant.QuotaLoad;
+import org.silverpeas.core.admin.quota.exception.QuotaException;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.process.check.exception.DataStorageQuotaException;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.notification.message.MessageManager;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.management.AbstractFileProcessCheck;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
-import org.silverpeas.core.admin.quota.constant.QuotaLoad;
-import org.silverpeas.core.admin.quota.exception.QuotaException;
-import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.util.ArrayList;
@@ -54,7 +54,7 @@ import java.util.Set;
  * @author Yohann Chastagnier
  */
 public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
-  protected static boolean dataStorageInSpaceQuotaActivated;
+  private static boolean dataStorageInSpaceQuotaActivated;
 
   static {
     final SettingBundle settings = ResourceLocator.getSettingBundle(
@@ -85,18 +85,20 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
     if (IOAccess.READ_WRITE.equals(fileHandler.getIoAccess())) {
 
       // Checking data storage quota on each space detected
-      for (final SpaceInst space : indentifyHandledSpaces(processExecutionContext, fileHandler)) {
+      for (final SpaceInst space : identifyHandledSpaces(processExecutionContext, fileHandler)) {
         try {
           SpaceServiceProvider.getDataStorageSpaceQuotaService()
               .verify(DataStorageSpaceQuotaKey.from(space),
                   SpaceDataStorageQuotaCountingOffset.from(space, fileHandler));
         } catch (final QuotaException quotaException) {
+          SilverLogger.getLogger(this).silent(quotaException);
 
           // Loading the component from which a user action has generated a quota exception
-          ComponentInstLight fromComponent = null;
+          SilverpeasComponentInstance fromComponent = null;
           final String fromComponentInstanceId = processExecutionContext.getComponentInstanceId();
           if (StringUtil.isDefined(fromComponentInstanceId)) {
-            fromComponent = organizationController.getComponentInstLight(fromComponentInstanceId);
+            fromComponent =
+                organizationController.getComponentInstance(fromComponentInstanceId).orElse(null);
           }
 
           // Throwing the data storage exception
@@ -116,7 +118,7 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
    * @param fileHandler
    * @return
    */
-  private Collection<SpaceInst> indentifyHandledSpaces(
+  private Collection<SpaceInst> identifyHandledSpaces(
       final ProcessExecutionContext processExecutionProcess, final FileHandler fileHandler) {
     final Set<String> spaceIds = new HashSet<String>();
     final Set<String> componentInstanceIds = new HashSet<String>();
@@ -130,16 +132,13 @@ public class DataStorageQuotaProcessCheck extends AbstractFileProcessCheck {
     componentInstanceIds.addAll(fileHandler.getSessionHandledRootPathNames(true));
 
     // Space ids
-    ComponentInst component;
     for (final String componentInstanceId : componentInstanceIds) {
-      component = organizationController.getComponentInst(componentInstanceId);
-      if (component != null) {
-        spaceIds.add(component.getDomainFatherId());
-      }
+      organizationController.getComponentInstance(componentInstanceId)
+          .ifPresent(i -> spaceIds.add(i.getSpaceId()));
     }
 
     // Loading all SpaceInst detected
-    final List<SpaceInst> handledSpaces = new ArrayList<SpaceInst>();
+    final List<SpaceInst> handledSpaces = new ArrayList<>();
     for (final String spaceId : spaceIds) {
       SpaceInst handledSpace = organizationController.getSpaceInstById(spaceId);
       if (!QuotaLoad.UNLIMITED.equals(handledSpace.getDataStorageQuota().getLoad())) {

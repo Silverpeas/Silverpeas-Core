@@ -30,11 +30,13 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.notification.system.GenericTestResource;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.notification.system.TestResource;
 import org.silverpeas.core.notification.system.TestResourceEvent;
 import org.silverpeas.core.notification.system.TestResourceEventBucket;
 import org.silverpeas.core.test.WarBuilder4LibCore;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
 import java.time.Instant;
@@ -60,7 +62,8 @@ public class SynchronousNotificationIntegrationTest {
   public static Archive<?> createTestArchive() {
     return WarBuilder4LibCore.onWarForTestClass(SynchronousNotificationIntegrationTest.class)
         .addSynchAndAsynchResourceEventFeatures()
-        .addClasses(TestResource.class, TestResourceEvent.class, TestResourceEventBucket.class)
+        .addClasses(GenericTestResource.class, TestResource.class, TestResourceEvent.class,
+            TestResourceEventBucket.class)
         .build();
   }
 
@@ -134,6 +137,11 @@ public class SynchronousNotificationIntegrationTest {
     assertThat(bucket.getContent().get(0).getType(), is(ResourceEvent.Type.DELETION));
     assertThat(bucket.getContent().get(0).getTransition().getBefore(), notNullValue());
     assertThat(bucket.getContent().get(0).getTransition().getAfter(), nullValue());
+
+    GenericTestResource resource =
+        ServiceProvider.getService(SynchronousGenericResourceEventListener.class).getResource();
+    assertThat(resource, notNullValue());
+    assertThat(resource instanceof TestResource, is(true));
   }
 
   @Test(expected = java.lang.ArrayIndexOutOfBoundsException.class)

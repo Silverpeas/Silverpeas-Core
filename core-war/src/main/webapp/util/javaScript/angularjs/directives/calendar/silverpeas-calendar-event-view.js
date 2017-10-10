@@ -37,11 +37,14 @@
           scope : {
             ceo : '=calendarEventOccurrence'
           },
-          transclude : true,
+          transclude: {
+            main: 'paneMain',
+            extra: 'paneExtra'
+          },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function() {
-          }
+          controller : [function() {
+          }]
         };
       }]);
 
@@ -57,7 +60,13 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function() {
+          controller : [function() {
+
+            this.onSameDay = function() {
+              var startDate = this.startDate().split('T')[0];
+              var endDate = this.endDate().split('T')[0];
+              return startDate === endDate;
+            };
 
             this.startDate = function() {
               return this.ceo.startDate;
@@ -75,7 +84,7 @@
               this.visibility = SilverpeasCalendarConst.visibilities.getElement(this.ceo, 'name=visibility');
               this.priority = SilverpeasCalendarConst.priorities.getElement(this.ceo, 'name=priority');
             }
-          }
+          }]
         };
       }]);
 
@@ -91,7 +100,7 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function() {
+          controller : [function() {
             this.isRecurrence = function() {
               return this.recurrenceType  !== 'NONE';
             }.bind(this);
@@ -145,7 +154,7 @@
                 }
               }
             }
-          }
+          }]
         };
       }]);
 
@@ -162,8 +171,64 @@
           },
           controllerAs : '$ctrl',
           bindToController : true,
-          controller : function() {
-          }
+          controller : [function() {
+          }]
+        };
+      }]);
+
+  angular.module('silverpeas.directives').directive('silverpeasCalendarEventViewAttachment',
+      [function() {
+          return {
+            templateUrl : webContext +
+            '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-view-attachment.jsp',
+            restrict : 'E',
+            scope : {
+              ceo : '=calendarEventOccurrence'
+            },
+            controllerAs : '$ctrl',
+            bindToController : true,
+            controller : [function() {
+            }]
+          };
+        }]);
+
+  angular.module('silverpeas.directives').directive('silverpeasCalendarEventViewCrud',
+      ['context',
+        function(context) {
+          return {
+            templateUrl : webContext +
+            '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-view-crud.jsp',
+            restrict : 'E',
+            scope : {
+              ceo : '=calendarEventOccurrence'
+            },
+            controllerAs : '$ctrl',
+            bindToController : true,
+            controller : [function() {
+              this.getTemplate = function() {
+                if (this.ceo.recurrence && !this.ceo.firstEventOccurrence) {
+                  return '###silverpeas.calendar.event.view.crud.several';
+                }
+                return '###silverpeas.calendar.event.view.crud.single';
+              };
+            }]
+          };
+        }]);
+
+  angular.module('silverpeas.directives').directive('silverpeasCalendarEventViewPdcClassification',
+      [function() {
+        return {
+          template : '<silverpeas-pdc-classification-view instance-id="{{$ctrl.ceo.componentInstanceId()}}"' +
+                                                         'resource-id="{{$ctrl.ceo.eventId}}"' +
+                                                         'preview="true"></silverpeas-pdc-classification-view>',
+          restrict : 'E',
+          scope : {
+            ceo : '=calendarEventOccurrence'
+          },
+          controllerAs : '$ctrl',
+          bindToController : true,
+          controller : [function() {
+          }]
         };
       }]);
 })();

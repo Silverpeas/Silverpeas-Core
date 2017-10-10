@@ -31,6 +31,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
@@ -66,12 +67,12 @@ public class UploadedFile {
    * @param uploader
    * @return
    */
-  public static UploadedFile from(Map<String, String> parameters, String uploadSessionId,
+  public static UploadedFile from(Map<String, String[]> parameters, String uploadSessionId,
       User uploader) {
     UploadSession uploadSession = UploadSession.from(uploadSessionId);
     return new UploadedFile(uploadSession, getUploadedFile(uploadSession),
-        parameters.get(uploadSessionId + "-title"),
-        parameters.get(uploadSessionId + "-description"), uploader.getId());
+        parameters.get(uploadSessionId + "-title")[0],
+        parameters.get(uploadSessionId + "-description")[0], uploader.getId());
   }
 
   /**
@@ -137,42 +138,13 @@ public class UploadedFile {
    * is exclusively used for contribution creations, the treatment doesn't search for existing
    * attachments. In the future and if updates will be handled, the treatment must evolve to search
    * for existing attachments ...
-   * @param resourcePk
-   * @param contributionLanguage
+   * @param contributionId the identifier of a contribution.
+   * @param contributionLanguage the language in which the contribution is authored.
    */
-  public void registerAttachment(WAPrimaryKey resourcePk, String contributionLanguage) {
-    registerAttachment(resourcePk, contributionLanguage, true);
-  }
-
-  /**
-   * Register an attachment in relation to the given contribution identifiers. Please notice that
-   * the original content is deleted from its original location. For now, as this method is
-   * exclusively used for contribution creations, the treatment doesn't search for existing
-   * attachments. In the future and if updates will be handled, the treatment must evolve to search
-   * for existing attachments ...
-   * @param resourcePk
-   * @param contributionLanguage
-   * @param indexIt
-   */
-  public void registerAttachment(WAPrimaryKey resourcePk, String contributionLanguage, boolean indexIt) {
-    registerAttachment(resourcePk.getId(), resourcePk.getInstanceId(), contributionLanguage,
-        indexIt);
-  }
-
-  /**
-   * Register an attachment attached in relation to the given contribution identifiers. Please
-   * notice that the original content is deleted from its original location. For now, as this
-   * method
-   * is exclusively used for contribution creations, the treatment doesn't search for existing
-   * attachments. In the future and if updates will be handled, the treatment must evolve to search
-   * for existing attachments ...
-   * @param resourceId
-   * @param componentInstanceId
-   * @param contributionLanguage
-   */
-  public void registerAttachment(String resourceId, String componentInstanceId,
-      String contributionLanguage) {
-    registerAttachment(resourceId, componentInstanceId, contributionLanguage, true);
+  public void registerAttachment(ContributionIdentifier contributionId, String contributionLanguage,
+      boolean indexIt) {
+    registerAttachment(contributionId.getLocalId(), contributionId.getComponentInstanceId(),
+        contributionLanguage, indexIt);
   }
 
   /**
@@ -186,7 +158,7 @@ public class UploadedFile {
    * @param contributionLanguage
    * @param indexIt
    */
-  public void registerAttachment(String resourceId, String componentInstanceId,
+  private void registerAttachment(String resourceId, String componentInstanceId,
       String contributionLanguage, boolean indexIt) {
 
     // Retrieve the simple document

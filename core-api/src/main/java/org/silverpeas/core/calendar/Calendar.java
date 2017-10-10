@@ -174,9 +174,8 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
    * component.
    * @return a list containing the calendar instances which matched if any, empty list otherwise.
    */
-  public static List<Calendar> getByComponentInstanceId(String instanceId) {
-    CalendarRepository calendarRepository = CalendarRepository.get();
-    return calendarRepository.getByComponentInstanceId(instanceId);
+  public static ComponentInstanceCalendars getByComponentInstanceId(String instanceId) {
+    return ComponentInstanceCalendars.getByComponentInstanceId(instanceId);
   }
 
   /**

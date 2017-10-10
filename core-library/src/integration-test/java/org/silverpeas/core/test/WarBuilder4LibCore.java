@@ -66,6 +66,7 @@ import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
 import org.silverpeas.core.admin.user.model.*;
+import org.silverpeas.core.cache.VolatileResourceCleaner;
 import org.silverpeas.core.calendar.ical4j.ICal4JCalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JExporter;
@@ -83,6 +84,7 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerE
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentPeas;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.contentcontainer.content.SilverContentPostUpdate;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionContent;
@@ -276,8 +278,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   private WarBuilder4LibCore addBundleBaseFeatures() {
     if (!contains(MimeTypes.class)) {
+      addMavenDependencies("commons-fileupload:commons-fileupload");
       addClasses(FileUtil.class, Mail.class, MimeTypes.class, MetaData.class, Definition.class,
-          RelativeFileAccessException.class, MetadataExtractor.class);
+          RelativeFileAccessException.class, MetadataExtractor.class, MultiSilverpeasBundle.class);
       addAsResource("org/silverpeas/general.properties");
       addAsResource("org/silverpeas/multilang/generalMultilang.properties");
       addAsResource("org/silverpeas/lookAndFeel/generalLook.properties");
@@ -326,7 +329,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(WAPrimaryKey.class, ForeignPK.class, SimpleDocumentPK.class, PasteDetail.class,
           PasteDetailFromToPK.class);
     }
-    addClasses(ContentManager.class);
+    addClasses(ContentManager.class, SilverContentPostUpdate.class);
     addClasses(JoinStatement.class);
     addClasses(ContentManagerProvider.class);
     addClasses(ContentPeas.class);
@@ -423,6 +426,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
           FileServerUtils.class);
       addPackages(true, "org.silverpeas.core.persistence.jcr");
       addPackages(true, "org.silverpeas.core.contribution.attachment");
+      addClasses(VolatileResourceCleaner.class);
       addAsResource("org/silverpeas/util/attachment/Attachment.properties");
       addAsResource("silverpeas-jcr.cnd");
       addAsResource(JcrContext.REPOSITORY_IN_MEMORY_XML.substring(1));

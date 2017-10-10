@@ -37,6 +37,11 @@ import org.silverpeas.core.util.ServiceProvider;
  */
 public abstract class JcrIntegrationTest {
 
+  public static final String DATABASE_CREATION_SCRIPT =
+      "org/silverpeas/core/admin/create_space_components_database.sql";
+  public static final String DATASET_SCRIPT =
+      "org/silverpeas/core/admin/test-spaces_and_components-dataset.sql";
+
   public MavenTargetDirectoryRule mavenTargetDirectory = new MavenTargetDirectoryRule(this);
   private ExpectedException expectedException = ExpectedException.none();
   private JcrContext jcrContext = new JcrContext();
@@ -57,7 +62,8 @@ public abstract class JcrIntegrationTest {
   }
 
   @Rule
-  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("create_table_favorit_space.sql");
+  public DbSetupRule dbSetupRule = DbSetupRule.createTablesFrom("/" + DATABASE_CREATION_SCRIPT)
+      .loadInitialDataSetFrom("/" + DATASET_SCRIPT);
 
   @Before
   public void setup() throws Exception {

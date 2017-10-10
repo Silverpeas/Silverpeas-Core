@@ -23,6 +23,13 @@
  */
 package org.silverpeas.core.contribution.contentcontainer.content;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.util.DateUtil;
+
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Iterator;
 
 /**
@@ -30,28 +37,63 @@ import java.util.Iterator;
  * @deprecated use instead {@link org.silverpeas.core.contribution.model.Contribution} and
  * {@link org.silverpeas.core.contribution.model.ContributionContent} interfaces.
  */
-public interface SilverContentInterface {
-  public String getName();
+@Deprecated
+public interface SilverContentInterface extends SilverpeasContent {
+  String getName();
 
-  public String getName(String language);
+  String getName(String language);
 
-  public String getDescription();
+  String getDescription(String language);
 
-  public String getDescription(String language);
+  String getURL();
 
-  public String getURL();
+  String getInstanceId();
 
-  public String getId();
+  String getDate();
 
-  public String getInstanceId();
+  // added by ney. 16/05/2004.
+  String getSilverCreationDate();
 
-  public String getDate();
+  String getIconUrl();
 
-  public String getSilverCreationDate(); // added by ney. 16/05/2004.
+  String getCreatorId();
 
-  public String getIconUrl();
+  Iterator<String> getLanguages();
 
-  public String getCreatorId();
+  /**
+   * {@link SilverpeasContent} default implementations.
+   */
 
-  public Iterator<String> getLanguages();
+  @Override
+  default String getComponentInstanceId() {
+    return getInstanceId();
+  }
+
+  @Override
+  default User getCreator() {
+    return getCreatorId() != null ? User.getById(getCreatorId()) : null;
+  }
+
+  @Override
+  default User getLastModifier() {
+    return getCreator();
+  }
+
+  @Override
+  default Date getCreationDate() {
+    try {
+      return getSilverCreationDate() != null ? DateUtil.parseDate(getSilverCreationDate()) : null;
+    } catch (ParseException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
+
+  @Override
+  default Date getLastModificationDate() {
+    try {
+      return getDate() != null ? DateUtil.parseDate(getDate()) : null;
+    } catch (ParseException e) {
+      throw new SilverpeasRuntimeException(e);
+    }
+  }
 }

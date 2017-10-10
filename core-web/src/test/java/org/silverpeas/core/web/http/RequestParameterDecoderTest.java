@@ -23,17 +23,16 @@
  */
 package org.silverpeas.core.web.http;
 
-import org.junit.Rule;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.DateUtil;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.ws.rs.core.MediaType;
 import java.io.File;
@@ -43,7 +42,6 @@ import java.util.Date;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -60,84 +58,71 @@ public class RequestParameterDecoderTest {
   public void setup() throws ParseException {
     httpRequestMock = mock(HttpRequest.class);
 
-    when(httpRequestMock.getParameter(anyString())).then(new Answer<Object>() {
-      @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
-        String parameterName = (String) invocation.getArguments()[0];
-        if (StringUtil.isDefined(parameterName)) {
-          switch (parameterName) {
-            case "aString":
-              return "&lt;a&gt;aStringValue&lt;/a&gt;";
-            case "aStringToUnescape":
-              return "&lt;a&gt;aStringValueToUnescape&lt;/a&gt;";
-            case "anUri":
-              return "/an/uri/";
-            case "anOffsetDateTime":
-              return "2009-01-02T23:54:26Z";
-            case "anInteger":
-              return "1";
-            case "anIntegerFromAnnotation":
-              return "2";
-            case "aLongFromAnnotation":
-              return "20";
-            case "aLong":
-              return "10";
-            case "aBoolean":
-              return "true";
-            case "aBooleanFromAnnotation":
-              return "false";
-            case "anEnum":
-              return EnumWithoutCreationAnnotation.VALUE_A.name();
-          }
+    when(httpRequestMock.getParameter(anyString())).then(invocation -> {
+      String parameterName = (String) invocation.getArguments()[0];
+      if (StringUtil.isDefined(parameterName)) {
+        switch (parameterName) {
+          case "aString":
+            return "&lt;a&gt;aStringValue&lt;/a&gt;";
+          case "aStringToUnescape":
+            return "&lt;a&gt;aStringValueToUnescape&lt;/a&gt;";
+          case "anUri":
+            return "/an/uri/";
+          case "anOffsetDateTime":
+            return "2009-01-02T23:54:26Z";
+          case "anInteger":
+            return "1";
+          case "anIntegerFromAnnotation":
+            return "2";
+          case "aLongFromAnnotation":
+            return "20";
+          case "aLong":
+            return "10";
+          case "aBoolean":
+            return "true";
+          case "aBooleanFromAnnotation":
+            return "false";
+          case "anEnum":
+            return EnumWithoutCreationAnnotation.VALUE_A.name();
         }
-        return null;
       }
+      return null;
     });
-    when(httpRequestMock.getParameterAsRequestFile(anyString())).then(new Answer<Object>() {
-      @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
-        String parameterName = (String) invocation.getArguments()[0];
-        if (StringUtil.isDefined(parameterName)) {
-          if (parameterName.equals("aRequestFile")) {
-            FileItem fileItem = mock(FileItem.class);
-            when(fileItem.getName()).thenReturn("fileName");
-            when(fileItem.getSize()).thenReturn(26L);
-            when(fileItem.getContentType()).thenReturn(MediaType.TEXT_PLAIN);
-            when(fileItem.getInputStream())
-                .thenReturn(FileUtils.openInputStream(getImageResource()));
-            return new RequestFile(fileItem);
-          }
+    when(httpRequestMock.getParameterAsRequestFile(anyString())).then(invocation -> {
+      String parameterName = (String) invocation.getArguments()[0];
+      if (StringUtil.isDefined(parameterName)) {
+        if (parameterName.equals("aRequestFile")) {
+          FileItem fileItem = mock(FileItem.class);
+          when(fileItem.getName()).thenReturn("fileName");
+          when(fileItem.getSize()).thenReturn(26L);
+          when(fileItem.getContentType()).thenReturn(MediaType.TEXT_PLAIN);
+          when(fileItem.getInputStream())
+              .thenReturn(FileUtils.openInputStream(getImageResource()));
+          return new RequestFile(fileItem);
         }
-        return null;
       }
+      return null;
     });
-    when(httpRequestMock.getParameterAsDate(anyString())).then(new Answer<Object>() {
-      @Override
-      public Object answer(final InvocationOnMock invocation) throws Throwable {
-        String parameterName = (String) invocation.getArguments()[0];
-        if (StringUtil.isDefined(parameterName)) {
-          if (parameterName.equals("aDate")) {
-            return TODAY;
-          }
+    when(httpRequestMock.getParameterAsDate(anyString())).then(invocation -> {
+      String parameterName = (String) invocation.getArguments()[0];
+      if (StringUtil.isDefined(parameterName)) {
+        if (parameterName.equals("aDate")) {
+          return TODAY;
         }
-        return null;
       }
+      return null;
     });
-    when(httpRequestMock.getParameterValues(anyString())).then(
-        new Answer<String[]>() {
-          @Override
-          public String[] answer(final InvocationOnMock invocation) throws Throwable {
-            String parameterName = (String) invocation.getArguments()[0];
-            if (StringUtil.isDefined(parameterName)) {
-              if (parameterName.equals("strings")) {
-                return new String[]{"string_1", "string_2", "string_2"};
-              } else if (parameterName.equals("integers")) {
-                return new String[]{"1", "2", "2"};
-              }
-            }
-            return null;
-          }
-        });
+    when(httpRequestMock.getParameterValues(anyString())).then((Answer<String[]>) invocation -> {
+      String parameterName = (String) invocation.getArguments()[0];
+      if (StringUtil.isDefined(parameterName)) {
+        if (parameterName.equals("strings")) {
+          return new String[]{"string_1", "string_2", "string_2"};
+        } else if (parameterName.equals("integers")) {
+          return new String[]{"1", "2", "2"};
+        }
+      }
+      return null;
+    });
   }
 
   private File getImageResource() throws Exception {
@@ -166,7 +151,7 @@ public class RequestParameterDecoderTest {
     assertThat(result.getaLongNotInParameter(), nullValue());
     assertThat(result.getaLong(), is(10L));
     assertThat(result.getaPrimitiveLong(), is(20L));
-    assertThat(result.getaBooleanNotInParameter(), is(false));
+    assertThat(result.getaBooleanNotInParameter(), nullValue());
     assertThat(result.getaBoolean(), is(true));
     assertThat(result.isaPrimitiveBoolean(), is(false));
     assertThat(result.getaDateNotInParameter(), nullValue());

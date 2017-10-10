@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
+import org.silverpeas.core.contribution.contentcontainer.content.ContentInterface;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
@@ -46,6 +47,7 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import static org.silverpeas.core.webapi.pdc.UserThesaurusHolder.forUser;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.NONE_CLASSIFICATION;
@@ -106,8 +108,8 @@ public class PdcServiceProvider {
    */
   public void addPosition(final ClassifyPosition position, String contentId, String componentId)
       throws ContentManagerException, PdcException {
-    int silverObjectId = getSilverObjectId(contentId, componentId);
-    int positionId = getPdcManager().addPosition(silverObjectId, position, componentId);
+    int silverContentId = getSilverContentId(contentId, componentId);
+    int positionId = getPdcManager().addPosition(silverContentId, position, componentId);
     position.setPositionId(positionId);
   }
 
@@ -125,8 +127,8 @@ public class PdcServiceProvider {
    */
   public void updatePosition(final ClassifyPosition position, String contentId, String componentId)
       throws ContentManagerException, PdcException {
-    int silverObjectId = getSilverObjectId(contentId, componentId);
-    getPdcManager().updatePosition(position, componentId, silverObjectId);
+    int silverContentId = getSilverContentId(contentId, componentId);
+    getPdcManager().updatePosition(position, componentId, silverContentId);
   }
 
   /**
@@ -167,8 +169,8 @@ public class PdcServiceProvider {
    */
   public List<ClassifyPosition> getAllPositions(String contentId, String componentId) throws
       ContentManagerException, PdcException {
-    int silverObjectId = getSilverObjectId(contentId, componentId);
-    return getPdcManager().getPositions(silverObjectId, componentId);
+    int silverContentId = getOrCreateSilverContentId(contentId, componentId);
+    return getPdcManager().getPositions(silverContentId, componentId);
   }
 
   /**
@@ -240,8 +242,8 @@ public class PdcServiceProvider {
    */
   public List<UsedAxis> getAxisUsedInPdcToClassify(String contentId, String inComponentId)
       throws ContentManagerException, PdcException {
-    int silverObjectId = getSilverObjectId(contentId, inComponentId);
-    return getPdcManager().getUsedAxisToClassify(inComponentId, silverObjectId);
+    int silverContentId = getOrCreateSilverContentId(contentId, inComponentId);
+    return getPdcManager().getUsedAxisToClassify(inComponentId, silverContentId);
   }
 
   /**
@@ -282,7 +284,7 @@ public class PdcServiceProvider {
     List<UsedAxis> usedAxis = new ArrayList<>();
 
     ComponentSearchCriteria searchCriteria = new ComponentSearchCriteria().
-        onComponentInstance(criteria.getComponentInstanceId()).
+        onComponentInstances(criteria.getComponentInstanceIds()).
         onWorkspace(criteria.getWorkspaceId()).
         onUser(criteria.getUser());
     SearchContext searchContext = setUpSearchContextFromCriteria(criteria);
@@ -334,9 +336,22 @@ public class PdcServiceProvider {
     return organisationController;
   }
 
-  private int getSilverObjectId(String ofTheContent, String inTheComponent) throws
+  private int getSilverContentId(String ofTheContent, String inTheComponent) throws
       ContentManagerException {
     return getContentManager().getSilverContentId(ofTheContent, inTheComponent);
+  }
+
+  private int getOrCreateSilverContentId(String ofTheContent, String inTheComponent)
+      throws ContentManagerException {
+    int silverpeasContentId = getSilverContentId(ofTheContent, inTheComponent);
+    if (silverpeasContentId == -1) {
+      Optional<ContentInterface> contentInterface =
+          ContentInterface.getByInstanceId(inTheComponent);
+      if (contentInterface.isPresent()) {
+        return contentInterface.get().getOrCreateSilverContentId(ofTheContent, inTheComponent);
+      }
+    }
+    return silverpeasContentId;
   }
 
   private SearchContext setUpSearchContextFromCriteria(final PdcFilterCriteria criteria) {

@@ -44,13 +44,13 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class ComponentFileFilterParameter {
   /* Global settings (authorized or forbidden files) */
-  protected static String defaultAuthorizedFiles =
+  static String defaultAuthorizedFiles =
       ComponentInstanceParameterName.authorizedFileExtension.getDefaultValue();
-  protected static String defaultForbiddenFiles =
+  static String defaultForbiddenFiles =
       ComponentInstanceParameterName.forbiddenFileExtension.getDefaultValue();
 
   /* Source component */
-  private ComponentInst component;
+  private SilverpeasComponentInstance component;
   /* By default, the authorizations are given priority over forbiddens */
   private boolean isAuthorization = true;
   /* Defined file filters */
@@ -62,9 +62,9 @@ public class ComponentFileFilterParameter {
 
   /**
    * Default hidden constructor.
-   * @param component
+   * @param component the component instance
    */
-  private ComponentFileFilterParameter(final ComponentInst component) {
+  private ComponentFileFilterParameter(final SilverpeasComponentInstance component) {
     this.component = component;
   }
 
@@ -73,7 +73,7 @@ public class ComponentFileFilterParameter {
    * @param component
    * @return
    */
-  public static ComponentFileFilterParameter from(final ComponentInst component) {
+  public static ComponentFileFilterParameter from(final SilverpeasComponentInstance component) {
     return new ComponentFileFilterParameter(component).initialize();
   }
 
@@ -96,8 +96,8 @@ public class ComponentFileFilterParameter {
       /* Excluding or including files ? */
 
       // Authorized file parameter of component has the priority
-      fileFilters =
-          component.getParameterValue(ComponentInstanceParameterName.authorizedFileExtension);
+      fileFilters = component
+          .getParameterValue(ComponentInstanceParameterName.authorizedFileExtension.name());
       if (isDefined(fileFilters)) {
         // Authorization and parameterized on component instance
         parseFileFilters(fileFilters);
@@ -107,7 +107,7 @@ public class ComponentFileFilterParameter {
       // If no filters previously defined, forbidden file parameter of component becomes the
       // priority
       fileFilters =
-          component.getParameterValue(ComponentInstanceParameterName.forbiddenFileExtension);
+          component.getParameterValue(ComponentInstanceParameterName.forbiddenFileExtension.name());
       if (isDefined(fileFilters)) {
         // forbidden and parameterized on component instance
         isAuthorization = false;
@@ -159,7 +159,7 @@ public class ComponentFileFilterParameter {
    * Gets the component instance.
    * @return
    */
-  public ComponentInst getComponent() {
+  public SilverpeasComponentInstance getComponent() {
     return component;
   }
 
@@ -203,7 +203,7 @@ public class ComponentFileFilterParameter {
   public void verifyFileAuthorized(final File file) {
     if (!isFileAuthorized(file)) {
       ComponentFileFilterException exception =
-          new ComponentFileFilterException(this, (file != null ? file.getName() : ""));
+          new ComponentFileFilterException(this, file != null ? file.getName() : "");
       MessageNotifier.addSevere(SilverpeasTransverseErrorUtil
           .performExceptionMessage(exception, MessageManager.getLanguage()));
       throw exception;
@@ -231,8 +231,7 @@ public class ComponentFileFilterParameter {
 
       // On authorized check, fileMimeType has to be contained in authorized files defined.
       // On forbidden check, fileMimeType has not to be contained in forbidden files defined.
-      return isAuthorization() ? getMimeTypes().contains(mimeType) :
-          !getMimeTypes().contains(mimeType);
+      return isAuthorization() == getMimeTypes().contains(mimeType);
     }
     return true;
   }

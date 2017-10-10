@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.buttons;
 
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -46,6 +47,10 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
   private String subscriptionResourceId = null;
   private String jsValidationCallbackMethodName;
 
+  private String contributionLocalId;
+  private String contributionType;
+  private Boolean contributionIndexable = true;
+
   public SubscriptionResourceType getSubscriptionResourceType() {
     return subscriptionResourceType;
   }
@@ -68,6 +73,30 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
 
   public void setJsValidationCallbackMethodName(final String jsValidationCallbackMethodName) {
     this.jsValidationCallbackMethodName = jsValidationCallbackMethodName;
+  }
+
+  public String getContributionLocalId() {
+    return contributionLocalId;
+  }
+
+  public void setContributionLocalId(final String contributionLocalId) {
+    this.contributionLocalId = contributionLocalId;
+  }
+
+  public String getContributionType() {
+    return contributionType;
+  }
+
+  public void setContributionType(final String contributionType) {
+    this.contributionType = contributionType;
+  }
+
+  public Boolean getContributionIndexable() {
+    return contributionIndexable;
+  }
+
+  public void setContributionIndexable(final Boolean contributionIndexable) {
+    this.contributionIndexable = contributionIndexable;
   }
 
   @Override
@@ -102,10 +131,16 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
   protected String renderJs() {
     GraphicElementFactory gef = (GraphicElementFactory) pageContext.getSession()
         .getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+
+    final String componentId = gef.getComponentIdOfCurrentRequest();
+    boolean tabComments = StringUtil.getBooleanValue(
+        OrganizationController.get().getComponentParameterValue(componentId, "tabComments"));
+    boolean comments = StringUtil.getBooleanValue(
+        OrganizationController.get().getComponentParameterValue(componentId, "comments"));
+
     StringBuilder sb = new StringBuilder();
     sb.append("jQuery.subscription.confirmNotificationSendingOnUpdate({subscription:{");
-    sb.append("  componentInstanceId:'").append(gef.getComponentIdOfCurrentRequest())
-        .append("'");
+    sb.append("  componentInstanceId:'").append(componentId).append("'");
     if (SubscriptionResourceType.COMPONENT != getSubscriptionResourceType()) {
       sb.append("  ,type:").append("$.subscription.subscriptionType.")
           .append(getSubscriptionResourceType());
@@ -116,6 +151,14 @@ public class ConfirmResourceSubscriptionSendingTag extends TagSupport {
     sb.append("  }");
     if (StringUtil.isDefined(getJsValidationCallbackMethodName())) {
       sb.append("  ,validationCallback:").append(getJsValidationCallbackMethodName());
+    }
+    if (tabComments || comments) {
+      sb.append("  ,comment:{");
+      sb.append("saveNote : true,");
+      sb.append("contributionLocalId : '").append(contributionLocalId).append("',");
+      sb.append("contributionType : '").append(contributionType).append("',");
+      sb.append("contributionIndexable : ").append(contributionIndexable);
+      sb.append("}");
     }
     sb.append("});");
     return sb.toString();

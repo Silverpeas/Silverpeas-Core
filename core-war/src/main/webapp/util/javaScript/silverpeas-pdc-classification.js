@@ -459,12 +459,16 @@
               });
             }
           }, function(classification, error) {
-            $this.data('classification', classification);
-            notyError(error.message);
+            if (error.status === 404) {
+              $this.hide();
+            } else {
+              $this.data('classification', classification);
+              notyError(error.message);
+            }
           });
         }, function(pdc, error) {
-		$this.hide();
-		window.console && window.console.log('Silverpeas \'Taxonomy\' Plugin ERROR : ' + error.message);
+          $this.hide();
+          window.console && window.console.log('Silverpeas \'Taxonomy\' Plugin ERROR : ' + error.message);
         });
       });
     },

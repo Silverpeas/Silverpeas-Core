@@ -99,7 +99,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
    * @param userId the user identifier
    * @return UserFull
    */
-  public UserFull getUserFul(String userId) {
+  public UserFull getUserFull(String userId) {
     return this.getOrganisationController().getUserFull(userId);
   }
 
@@ -225,7 +225,7 @@ public class MyProfilSessionController extends AbstractComponentSessionControlle
   }
 
   public boolean updatablePropertyExists() {
-    UserFull userFull = getUserFul(getUserId());
+    UserFull userFull = getUserFull(getUserId());
     return ((userFull.isAtLeastOnePropertyUpdatableByUser()) ||
         (isAdmin() && userFull.isAtLeastOnePropertyUpdatableByAdmin()));
   }

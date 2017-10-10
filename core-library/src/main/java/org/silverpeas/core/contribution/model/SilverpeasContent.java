@@ -23,12 +23,6 @@
  */
 package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.security.Securable;
-
-import java.io.Serializable;
-import java.util.Date;
-
 /**
  * A content managed in the Silverpeas collaborative portal. A content in Silverpeas is resource
  * with a content (that can be empty); for example, a publication in Silverpeas is a content. This
@@ -37,7 +31,7 @@ import java.util.Date;
  * @deprecated please use instead {@code org.silverpeas.core.contribution.model.Contribution} interface.
  */
 @Deprecated
-public interface SilverpeasContent extends Serializable, Securable {
+public interface SilverpeasContent extends Contribution {
 
   /**
    * Gets the identifier of this content in the Silverpeas component providing it. This identifier
@@ -67,39 +61,18 @@ public interface SilverpeasContent extends Serializable, Securable {
    * contents that are no yet taken into account in the whole system isn't defined, so an empty
    * string is then returned.
    * @return the unique identifier of this content in the whole Silverpeas collaborative portal. Can
-   * be empty if no such identifier is defined for the type of this content.
+   * be empty if no such identifier is defined for the type of this content (default).
    */
-  String getSilverpeasContentId();
+  default String getSilverpeasContentId() {
+    return "";
+  }
 
   /**
-   * Gets the author that has created this content.
-   * @return the detail about the user that created this content.
+   * {@link Contribution} default implementations.
    */
-  User getCreator();
 
-  /**
-   * Gets the date at which this content was created.
-   * @return the date at which this content was created.
-   */
-  Date getCreationDate();
-
-  /**
-   * Gets the title of this content if any.
-   * @return the resource title. Can be empty if no title was set or no title is defined for a such
-   * content.
-   */
-  String getTitle();
-
-  /**
-   * Gets the description of this content if any.
-   * @return the resource description. Can be empty if no description was set or no description is defined for a such
-   * content.
-   */
-  String getDescription();
-
-  /**
-   * Gets the type of this content.
-   * @return the resource type. This can be Post, Message, Publication, Survey...
-   */
-  String getContributionType();
+  @Override
+  default ContributionIdentifier getContributionId() {
+    return ContributionIdentifier.from(getComponentInstanceId(), getId(), getContributionType());
+  }
 }

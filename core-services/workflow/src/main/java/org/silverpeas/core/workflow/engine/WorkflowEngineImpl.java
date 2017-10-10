@@ -191,7 +191,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     // Get the process instance
     ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
     String id = instance.getInstanceId();
-    Mutable<UpdatableHistoryStep> step = Mutable.of(null);
+    Mutable<UpdatableHistoryStep> step = Mutable.empty();
 
     // first create the history step
     Transaction.performInOne(()-> {

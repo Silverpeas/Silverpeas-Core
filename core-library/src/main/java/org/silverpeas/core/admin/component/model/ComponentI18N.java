@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import org.silverpeas.core.i18n.Translation;
+import org.silverpeas.core.i18n.BeanTranslation;
 import org.silverpeas.core.admin.persistence.ComponentInstanceI18NRow;
 
-public class ComponentI18N extends Translation {
+public class ComponentI18N extends BeanTranslation {
 
   private static final long serialVersionUID = 6602701543647924879L;
 

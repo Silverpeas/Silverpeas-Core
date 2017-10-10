@@ -43,8 +43,8 @@ import static org.mockito.Mockito.when;
 
 public class UserSubscriptionNotificationSendingHandlerTest {
 
-  private static final String SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM =
-      "SKIP_SUBSCRIPTION_NOTIFICATION_SENDING";
+  private static final String SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM =
+      "SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION";
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
@@ -63,55 +63,68 @@ public class UserSubscriptionNotificationSendingHandlerTest {
 
   @Test
   public void enabledIfSkipHttpParameterIsNotEqualToTrueOrFalse() {
-    when(request.getParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))
-        .thenReturn("toto");
+    when(request.getParameter(SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM))
+        .thenReturn("{}");
     UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
+    assertThat(UserSubscriptionNotificationSendingHandler
+        .isSubscriptionNotificationEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void enabledIfSkipHttpParameterIsNotEqualToFalse() {
-    when(request.getParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))
-        .thenReturn("false");
+    when(request.getParameter(SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM))
+        .thenReturn("{\"skip\":false}");
     UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
+    assertThat(UserSubscriptionNotificationSendingHandler
+        .isSubscriptionNotificationEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void notEnabledIfSkipHttpParameterIsNotEqualToFalse() {
-    when(request.getParameter(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM))
-        .thenReturn("true");
+    when(request.getParameter(SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM))
+        .thenReturn("{\"skip\":true}");
     UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
+    assertThat(UserSubscriptionNotificationSendingHandler
+        .isSubscriptionNotificationEnabledForCurrentRequest(), is(false));
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
+    assertThat(UserSubscriptionNotificationSendingHandler
+        .isSubscriptionNotificationEnabledForCurrentRequest(), is(false));
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
+    assertThat(UserSubscriptionNotificationSendingHandler
+        .isSubscriptionNotificationEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void enabledIfSkipHttpHeaderIsNotEqualToTrueOrFalse() {
-    when(request.getHeader(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM)).thenReturn("toto");
+    when(request.getHeader(SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM))
+        .thenReturn("{}");
     UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
+    assertThat(UserSubscriptionNotificationSendingHandler
+        .isSubscriptionNotificationEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void enabledIfSkipHttpHeaderIsNotEqualToFalse() {
-    when(request.getHeader(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM)).thenReturn("false");
+    when(request.getHeader(SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM))
+        .thenReturn("{\"skip\":false}");
     UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
+    assertThat(UserSubscriptionNotificationSendingHandler
+        .isSubscriptionNotificationEnabledForCurrentRequest(), is(true));
   }
 
   @Test
   public void notEnabledIfSkipHttpHeaderIsNotEqualToFalse() {
-    when(request.getHeader(SKIP_SUBSCRIPTION_NOTIFICATION_SENDING_HTTP_PARAM)).thenReturn("true");
+    when(request.getHeader(SUBSCRIPTION_NOTIFICATION_SENDING_CONFIRMATION_HTTP_PARAM))
+        .thenReturn("{\"skip\":true}");
     UserSubscriptionNotificationSendingHandler.verifyRequest(request);
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
+    assertThat(UserSubscriptionNotificationSendingHandler
+        .isSubscriptionNotificationEnabledForCurrentRequest(), is(false));
     CacheServiceProvider.getThreadCacheService().clearAllCaches();
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(false));
+    assertThat(UserSubscriptionNotificationSendingHandler
+        .isSubscriptionNotificationEnabledForCurrentRequest(), is(false));
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
-    assertThat(UserSubscriptionNotificationSendingHandler.isEnabledForCurrentRequest(), is(true));
+    assertThat(UserSubscriptionNotificationSendingHandler
+        .isSubscriptionNotificationEnabledForCurrentRequest(), is(true));
   }
 
 }

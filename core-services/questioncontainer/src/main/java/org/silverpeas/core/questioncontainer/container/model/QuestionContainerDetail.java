@@ -29,9 +29,6 @@ import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.questioncontainer.container.service.QuestionContainerContentManager;
 import org.silverpeas.core.questioncontainer.question.model.Question;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
-import org.silverpeas.core.security.authorization.AccessController;
-import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.security.authorization.ComponentAccessControl;
 
 import java.util.Collection;
 import java.util.Date;
@@ -158,29 +155,24 @@ public class QuestionContainerDetail implements java.io.Serializable, Silverpeas
     return null;
   }
 
-  /**
-   * Is the specified user can access this container of questions?
-   * <p>
-   * A user can access a container if it has enough rights to access the application instance in
-   * which is managed this container.
-   * @param user a user in Silverpeas.
-   * @return true if the user can access this container of questions, false otherwise.
-   */
   @Override
-  public boolean canBeAccessedBy(final User user) {
-    AccessController<String> accessController = AccessControllerProvider
-        .getAccessController(ComponentAccessControl.class);
-    return accessController.isUserAuthorized(user.getId(), getComponentInstanceId());
+  public Date getCreationDate() {
+    return getHeader().getCreationDate();
   }
 
   @Override
-  public Date getCreationDate() {
-    return null;
+  public Date getLastModificationDate() {
+    return getHeader().getLastModificationDate();
   }
 
   @Override
   public User getCreator() {
-    return User.getById(getHeader().getCreatorId());
+    return getHeader().getCreator();
+  }
+
+  @Override
+  public User getLastModifier() {
+    return getHeader().getLastModifier();
   }
 
   @Override

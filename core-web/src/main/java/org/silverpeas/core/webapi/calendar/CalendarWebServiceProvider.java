@@ -25,6 +25,9 @@
 package org.silverpeas.core.webapi.calendar;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.component.model.PersonalComponent;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
@@ -32,16 +35,17 @@ import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.calendar.ComponentInstanceCalendars;
+import org.silverpeas.core.calendar.CalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.ICalendarEventImportProcessor;
 import org.silverpeas.core.calendar.ICalendarImportResult;
 import org.silverpeas.core.calendar.Plannable;
 import org.silverpeas.core.calendar.icalendar.ICalendarExporter;
 import org.silverpeas.core.calendar.view.CalendarEventInternalParticipationView;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.date.Period;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportException;
-import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -56,14 +60,21 @@ import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static java.util.Collections.singletonList;
 import static org.silverpeas.core.calendar.CalendarEventUtil.getDateWithOffset;
+import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider
+    .getAttachmentService;
+import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController
+    .wysiwygPlaceHaveChanged;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.ALL;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.UNIQUE;
@@ -76,8 +87,13 @@ public class CalendarWebServiceProvider {
 
   private final SilverLogger silverLogger = SilverLogger.getLogger(Plannable.class);
 
+  private static final int END_YEAR_OFFSET = 3;
+
   @Inject
   private ICalendarExporter iCalendarExporter;
+
+  @Inject
+  private CalendarEventOccurrenceGenerator generator;
 
   @Inject
   private ICalendarEventImportProcessor iCalendarEventImportProcessor;
@@ -180,12 +196,27 @@ public class CalendarWebServiceProvider {
    * saved (from a controller, a WEB service...)
    * @param calendar the calendar on which the event is added.
    * @param event the event to create.
+   * @param volatileEventId the volatile identifier used to attach the images on WYSIWYG editor.
    * @return the calendar event.
    */
-  public CalendarEvent createEvent(Calendar calendar, CalendarEvent event) {
-    User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, calendar);
+  public CalendarEvent createEvent(Calendar calendar, CalendarEvent event, String volatileEventId) {
+    if (!calendar.canBeAccessedBy(User.getCurrentRequester())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
     event.planOn(calendar);
+
+    // Attaching all documents linked to volatile identifier to the persisted one
+    final String finalEventId = event.getId();
+    final String instanceId = calendar.getComponentInstanceId();
+    final ForeignPK volatileAttachmentSourcePK = new ForeignPK(volatileEventId, instanceId);
+    final ForeignPK finalAttachmentSourcePK = new ForeignPK(finalEventId, instanceId);
+    final List<SimpleDocumentPK> movedDocumentPks = getAttachmentService()
+        .moveAllDocuments(volatileAttachmentSourcePK, finalAttachmentSourcePK);
+    if (!movedDocumentPks.isEmpty()) {
+      // Change images path in wysiwyg
+      wysiwygPlaceHaveChanged(instanceId, volatileEventId, instanceId, finalEventId);
+    }
+
     successMessage("calendar.message.event.created", event.getTitle());
     return event;
   }
@@ -205,8 +236,8 @@ public class CalendarWebServiceProvider {
    * @param componentInstanceId the identifier of the component instance.
    * @return the list of calendars.
    */
-  List<Calendar> getCalendarsOf(final String componentInstanceId) {
-    return ComponentInstanceCalendars.getByComponentInstanceId(componentInstanceId);
+  public List<Calendar> getCalendarsOf(final String componentInstanceId) {
+    return Calendar.getByComponentInstanceId(componentInstanceId);
   }
 
   /**
@@ -220,12 +251,8 @@ public class CalendarWebServiceProvider {
     User owner = User.getCurrentRequester();
     String successfulMessageKey = calendar.isPersisted() ? "calendar.message.calendar.updated" :
         "calendar.message.calendar.created";
-    if (calendar.isPersisted()) {
-      checkUserIsCreator(owner, calendar);
-      Calendar oldCalendar = Calendar.getById(calendar.getId());
-      if (oldCalendar.isMain()) {
-        throw new WebApplicationException("", Response.Status.FORBIDDEN);
-      }
+    if (calendar.isPersisted() && !calendar.canBeModifiedBy(User.getCurrentRequester())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
     calendar.save();
     String userLanguage = owner.getUserPreferences().getLanguage();
@@ -243,9 +270,8 @@ public class CalendarWebServiceProvider {
    */
   void deleteCalendar(Calendar calendar) {
     User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, calendar);
-    if (calendar.isMain()) {
-      throw new WebApplicationException("", Response.Status.FORBIDDEN);
+    if (!calendar.canBeDeletedBy(User.getCurrentRequester())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
     calendar.delete();
     String userLanguage = owner.getUserPreferences().getLanguage();
@@ -325,8 +351,9 @@ public class CalendarWebServiceProvider {
    */
   List<CalendarEvent> saveOccurrence(final CalendarEventOccurrence occurrence,
       OccurrenceEventActionMethodType updateMethodType, final ZoneId zoneId) {
-    User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, occurrence.getCalendarEvent().asCalendarComponent());
+    if (!occurrence.getCalendarEvent().canBeModifiedBy(User.getCurrentRequester())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
     OccurrenceEventActionMethodType methodType = updateMethodType == null ? ALL : updateMethodType;
 
     final String originalTitle = occurrence.getCalendarEvent().getTitle();
@@ -390,8 +417,9 @@ public class CalendarWebServiceProvider {
    */
   CalendarEvent deleteOccurrence(CalendarEventOccurrence occurrence,
       OccurrenceEventActionMethodType deleteMethodType, final ZoneId zoneId) {
-    User owner = User.getCurrentRequester();
-    checkUserIsCreator(owner, occurrence.getCalendarEvent().asCalendarComponent());
+    if (!occurrence.getCalendarEvent().canBeDeletedBy(User.getCurrentRequester())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
     OccurrenceEventActionMethodType methodType = deleteMethodType == null ? ALL : deleteMethodType;
 
     final EventOperationResult result;
@@ -529,6 +557,25 @@ public class CalendarWebServiceProvider {
   }
 
   /**
+   * Gets the first occurrence of an event from the identifier of an event.
+   * @param eventId an event identifier.
+   * @return the first {@link CalendarEventOccurrence} instance of an event.
+   */
+  public CalendarEventOccurrence getFirstCalendarEventOccurrenceFromEventId(final String eventId) {
+    CalendarEvent event = CalendarEvent.getById(eventId);
+    final Temporal startTemporal = event.getStartDate();
+    final Temporal endTemporal;
+    if (!event.isRecurrent()) {
+      endTemporal = event.getEndDate();
+    } else {
+      endTemporal = event.getEndDate().plus(END_YEAR_OFFSET, ChronoUnit.YEARS);
+    }
+    return generator
+        .generateOccurrencesOf(singletonList(event), Period.between(startTemporal, endTemporal))
+        .get(0);
+  }
+
+  /**
    * Gets the event occurrences associated to a calendar and contained a the time window specified
    * by the start and end datetimes.<br/>
    * The occurrences are sorted from the lowest to the highest date.
@@ -544,7 +591,7 @@ public class CalendarWebServiceProvider {
 
   /**
    * Gets all event occurrences associated to users and contained a the time window specified
-   * by the start and end datetimes.<br/>
+   * by the start and end date times.<br/>
    * Attendees which have answered negatively about their presence are not taken into account.
    * The occurrences are sorted from the lowest to the highest date and mapped by user identifiers.
    * @param currentUserAndComponentInstanceId the current user and current the component instance
@@ -557,14 +604,20 @@ public class CalendarWebServiceProvider {
   Map<String, List<CalendarEventOccurrence>> getAllEventOccurrencesByUserIds(
       final Pair<String, User> currentUserAndComponentInstanceId, LocalDate startDate,
       LocalDate endDate, Collection<User> users) {
-    // Retrieving the occurrences
-    List<CalendarEventOccurrence> entities =
-        Calendar.getTimeWindowBetween(startDate, endDate)
-            .filter(f -> f.onParticipants(users))
-            .getEventOccurrences();
+    // Retrieving the occurrences from personal calendars
+    final List<Calendar> personalCalendars = new ArrayList<>();
+    users.forEach(u -> personalCalendars.addAll(getCalendarsOf(
+        PersonalComponentInstance.from(u, PersonalComponent.getByName("userCalendar").get())
+            .getId())));
+    final List<CalendarEventOccurrence> entities = new ArrayList<>();
+    personalCalendars.forEach(p -> entities.addAll(getEventOccurrencesOf(p, startDate, endDate)));
+    entities.addAll(
+        Calendar.getTimeWindowBetween(startDate, endDate).filter(f -> f.onParticipants(users))
+            .getEventOccurrences());
     // Getting the occurrences by users
     Map<String, List<CalendarEventOccurrence>> result =
-        new CalendarEventInternalParticipationView(users).apply(entities);
+        new CalendarEventInternalParticipationView(users)
+            .apply(entities.stream().distinct().collect(Collectors.toList()));
     final String currentUserId = currentUserAndComponentInstanceId.getRight().getId();
     if (result.containsKey(currentUserId)) {
       List<CalendarEventOccurrence> currentUserOccurrences = result.get(currentUserId);
@@ -577,18 +630,6 @@ public class CalendarWebServiceProvider {
       });
     }
     return result;
-  }
-
-  /**
-   * Centralization of checking if the specified user is the creator of the specified entity.
-   * @param user the user to verify.
-   * @param entity the calendar to check.
-   */
-  private void checkUserIsCreator(User user, Entity entity) {
-    assertEntityIsDefined(entity);
-    if (!user.equals(entity.getCreator())) {
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
-    }
   }
 
   /**
@@ -606,5 +647,4 @@ public class CalendarWebServiceProvider {
   private WebMessager getMessager() {
     return WebMessager.getInstance();
   }
-
 }

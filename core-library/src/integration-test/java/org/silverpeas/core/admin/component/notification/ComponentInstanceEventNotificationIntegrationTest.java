@@ -36,6 +36,8 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.JavaArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.i18n.BeanTranslation;
+import org.silverpeas.core.i18n.Translation;
 import org.silverpeas.core.notification.system.ResourceEventNotifier;
 import org.silverpeas.core.util.BeanContainer;
 import org.silverpeas.core.util.CDIContainer;
@@ -43,7 +45,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.notification.system.StateTransition;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NBean;
-import org.silverpeas.core.i18n.Translation;
 
 import javax.inject.Inject;
 
@@ -69,7 +70,8 @@ public class ComponentInstanceEventNotificationIntegrationTest {
   public static Archive<?> createTestArchive() {
     return ShrinkWrap.create(JavaArchive.class, "test.jar")
         .addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class,
-            Translation.class, ComponentInstanceI18NRow.class, StateTransition.class,
+            Translation.class,
+            BeanTranslation.class, ComponentInstanceI18NRow.class, StateTransition.class,
             ComponentI18N.class, AbstractI18NBean.class, I18NBean.class,
             SilverpeasComponentInstance.class, SilverpeasSharedComponentInstance.class,
             ComponentInst.class, ComponentInstanceEvent.class, ComponentInstanceEventNotifier.class,

@@ -23,11 +23,14 @@
  */
 package org.silverpeas.core.workflow.external.impl;
 
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.inject.Named;
+
+@Named("AddSilverTrace")
 public class AddSilverTrace extends ExternalActionImpl {
 
-  public AddSilverTrace() {
-  }
-
+  @Override
   public void execute() {
     String message = "instanceId = " + getProcessInstance().getInstanceId();
     if (getEvent() != null) {
@@ -36,6 +39,6 @@ public class AddSilverTrace extends ExternalActionImpl {
         message += " by " + getEvent().getUser().getFullName();
       }
     }
-
+    SilverLogger.getLogger(this).info(message);
   }
 }

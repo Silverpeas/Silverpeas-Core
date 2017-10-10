@@ -141,7 +141,7 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
    * @see com.silverpeas.notification.builder.AbstractTemplateUserNotificationBuilder#getFileName()
    */
   @Override
-  protected String getFileName() {
+  protected String getTemplateFileName() {
     final String fileName;
     switch (action) {
       case UPDATE:
@@ -302,7 +302,7 @@ public class AgendaUserNotification extends AbstractTemplateUserNotificationBuil
    * com.silverpeas.notification.builder.AbstractResourceUserNotificationBuilder#isSendImmediatly()
    */
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return true;
   }
 

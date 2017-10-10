@@ -32,81 +32,51 @@
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle"/>
 
+<view:setConstant var="highPriority" constant="org.silverpeas.core.calendar.Priority.HIGH"/>
+<view:setConstant var="privatePriority" constant="org.silverpeas.core.calendar.VisibilityLevel.PRIVATE"/>
+
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
 
-<fmt:message var="mainInfoLabel" key="GML.bloc.information.principals"/>
-<fmt:message var="calendarLabel" key="calendar.label.event.calendar"/>
-<fmt:message var="titleLabel" key="GML.title"/>
-<fmt:message var="descriptionLabel" key="GML.description"/>
-<fmt:message var="locationLabel" key="calendar.label.event.location"/>
-<fmt:message var="onAllDayLabel" key="calendar.label.event.onallday"/>
-<fmt:message var="timezoneLabel" key="calendar.label.timezone"/>
-<fmt:message var="startDateLabel" key="GML.dateBegin"/>
-<fmt:message var="endDateLabel" key="GML.dateEnd"/>
-<fmt:message var="atTimeLabel" key="GML.at"/>
-<fmt:message var="visibilityLabel" key="calendar.label.event.visibility"/>
-<fmt:message var="priorityLabel" key="calendar.label.event.priority"/>
+<fmt:message var="fromDateLabel" key='GML.date.from'/>
+<fmt:message var="atLabel" key='GML.at'/>
+<fmt:message var="toLabel" key='GML.to'/>
 
-<fieldset class="skinFieldset">
-  <legend>${mainInfoLabel}</legend>
-  <div class="fields">
-    <div class="field">
-      <span class="label txtlibform">${calendarLabel}</span>
-      <div class="champs">
-        <span class="txtnav">{{$ctrl.ceo.calendar.title}}</span>
-      </div>
+<h2 class="occurrence-name">
+  <span>{{$ctrl.ceo.title}}</span>
+  <span class="important" ng-if="$ctrl.priority.name == '${highPriority}'"></span>
+  <span class="private" ng-if="$ctrl.visibility.name == '${privatePriority}'"></span>
+</h2>
+<div>
+  <span class="txtnav">{{$ctrl.ceo.calendar.title}}</span>
+  <span class="calendar-timezone">{{$ctrl.zoneId}}</span>
+</div>
+<div class="occurrence-extra">
+  <div class="occurrence-location" ng-if="$ctrl.ceo.location">
+    <div class="bloc"><span>{{$ctrl.ceo.location}}</span></div>
+  </div>
+  <div class="occurrence-date">
+    <div class="bloc" ng-if="$ctrl.ceo.onAllDay">
+      <span ng-if="$ctrl.onSameDay()">{{$ctrl.startDate() | displayAsDate}}</span>
+      <span ng-if="!$ctrl.onSameDay()">${fromDateLabel} {{$ctrl.startDate() | displayAsDate}}</span>
+      <span ng-if="!$ctrl.onSameDay()">${toLabel} {{$ctrl.endDate() | displayAsDate}}</span>
     </div>
-    <div class="field">
-      <span class="label txtlibform">${titleLabel}</span>
-      <div class="champs">
-        <span>{{$ctrl.ceo.title}}</span>
-      </div>
+    <div class="bloc" ng-if="!$ctrl.ceo.onAllDay && $ctrl.onSameDay()">
+      <span>{{$ctrl.startDate() | displayAsDate}} - {{$ctrl.startDate() | displayAsTime}} ${atLabel} {{$ctrl.endDate() | displayAsTime}}</span>
     </div>
-    <div class="field">
-      <span class="label txtlibform">${timezoneLabel}</span>
-      <div class="champs">
-        <span>{{$ctrl.zoneId}}</span>
-      </div>
-    </div>
-    <div class="field">
-      <span class="label txtlibform">${startDateLabel}</span>
-      <span class="champs">
-        <span>{{$ctrl.startDate() | displayAsDate}}</span>
-        <span ng-if="!$ctrl.ceo.onAllDay" class="txtlibform">${atTimeLabel}</span>
-        <span ng-if="!$ctrl.ceo.onAllDay">{{$ctrl.startDate() | displayAsTime}}</span>
-      </span>
-    </div>
-    <div class="field">
-      <span class="label txtlibform">${endDateLabel}</span>
-      <span class="champs">
-        <span>{{$ctrl.endDate() | displayAsDate}}</span>
-        <span ng-if="!$ctrl.ceo.onAllDay" class="txtlibform">${atTimeLabel}</span>
-        <span ng-if="!$ctrl.ceo.onAllDay">{{$ctrl.endDate() | displayAsTime}}</span>
-      </span>
-    </div>
-    <div class="field" ng-if="$ctrl.ceo.location">
-      <span class="label txtlibform">${locationLabel}</span>
-      <div class="champs">
-        <span>{{$ctrl.ceo.location}}</span>
-      </div>
-    </div>
-    <div class="field" ng-if="$ctrl.ceo.description">
-      <span class="label txtlibform">${descriptionLabel}</span>
-      <div class="champs">
-        <span ng-bind-html="$ctrl.ceo.description | noHTML | newlines"></span>
-      </div>
-    </div>
-    <div class="field" ng-if="$ctrl.ceo.visibility">
-      <span class="label txtlibform">${visibilityLabel}</span>
-      <div class="champs">
-        <span>{{$ctrl.visibility.label}}</span>
-      </div>
-    </div>
-    <div class="field" ng-if="$ctrl.ceo.priority">
-      <span class="label txtlibform">${priorityLabel}</span>
-      <div class="champs">
-        <span>{{$ctrl.priority.label}}</span>
-      </div>
+    <div class="bloc" ng-if="!$ctrl.ceo.onAllDay && !$ctrl.onSameDay()">
+      <span>${fromDateLabel} {{$ctrl.startDate() | displayAsDate}} ${atLabel} {{$ctrl.startDate() | displayAsTime}}</span>
+      <span>${toLabel} {{$ctrl.endDate() | displayAsDate}} ${atLabel} {{$ctrl.endDate() | displayAsTime}}</span>
     </div>
   </div>
-</fieldset>
+  <div class="occurrence-external-link" ng-if="$ctrl.ceo.externalUrl()">
+    <div class="bloc">
+      <a target="_blank" href="{{$ctrl.ceo.externalUrl()}}">{{$ctrl.ceo.externalUrl()}}</a>
+    </div>
+  </div>
+</div>
+<div class="occurrence-description" ng-if="$ctrl.ceo.description">
+  <p ng-bind-html="$ctrl.ceo.description | noHTML | newlines"></p>
+</div>
+<div class="occurrence-content" ng-if="$ctrl.ceo.content">
+  <p ng-bind-html="$ctrl.ceo.content"></p>
+</div>

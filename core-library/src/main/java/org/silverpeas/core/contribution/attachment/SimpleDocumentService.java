@@ -23,17 +23,15 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
-import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
+import org.silverpeas.core.ActionType;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.cache.VolatileResourceCleaner;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -44,27 +42,30 @@ import org.silverpeas.core.contribution.attachment.process.AttachmentSimulationE
 import org.silverpeas.core.contribution.attachment.repository.DocumentRepository;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.contribution.attachment.webdav.WebdavRepository;
-import org.silverpeas.core.persistence.jcr.JcrSession;
-import org.silverpeas.core.notification.system.ResourceEvent;
-import org.silverpeas.core.process.annotation.SimulationActionProcess;
+import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.ActionType;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.persistence.jcr.JcrSession;
+import org.silverpeas.core.process.annotation.SimulationActionProcess;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.util.annotation.Action;
 import org.silverpeas.core.util.annotation.SourceObject;
 import org.silverpeas.core.util.annotation.SourcePK;
 import org.silverpeas.core.util.annotation.TargetPK;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -92,7 +93,8 @@ import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSys
  * @author ehugonnet
  */
 @Singleton
-public class SimpleDocumentService implements AttachmentService, ComponentInstanceDeletion {
+public class SimpleDocumentService
+    implements AttachmentService, ComponentInstanceDeletion, VolatileResourceCleaner {
 
   private static final int STEP = 5;
   @Inject
@@ -125,6 +127,12 @@ public class SimpleDocumentService implements AttachmentService, ComponentInstan
     } catch (RepositoryException ex) {
       throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
     }
+  }
+
+  @Override
+  public void cleanVolatileResources(final String volatileResourceId,
+      final String componentInstanceIdentifier) {
+    deleteAllAttachments(volatileResourceId, componentInstanceIdentifier);
   }
 
   @Override

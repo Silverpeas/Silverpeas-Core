@@ -242,7 +242,7 @@ public class SimpleUserNotification implements UserNotification {
     }
 
     @Override
-    protected String getFileName() {
+    protected String getTemplateFileName() {
       return "simple";
     }
 
@@ -287,7 +287,7 @@ public class SimpleUserNotification implements UserNotification {
     }
 
     @Override
-    protected boolean isSendImmediatly() {
+    protected boolean isSendImmediately() {
       return true;
     }
   }

@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.pdc.pdc.model;
 
-import org.silverpeas.core.i18n.Translation;
+import org.silverpeas.core.i18n.BeanTranslation;
 
 /**
  * This class contains headers of axis. And uses the persistence class for the DAO. The user can
  * access to the axis main information.
  */
-public class AxisHeaderI18N extends Translation implements java.io.Serializable {
+public class AxisHeaderI18N extends BeanTranslation implements java.io.Serializable {
 
   // Class version identifier
   private static final long serialVersionUID = -1418233065462620219L;

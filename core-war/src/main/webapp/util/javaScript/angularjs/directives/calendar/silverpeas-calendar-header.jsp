@@ -32,27 +32,46 @@
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle"/>
 
+<view:setConstant var="NEXT_EVENTS_VIEW_TYPE" constant="org.silverpeas.core.web.calendar.CalendarViewType.NEXT_EVENTS"/>
 <view:setConstant var="DAILY_VIEW_TYPE" constant="org.silverpeas.core.web.calendar.CalendarViewType.DAILY"/>
 <view:setConstant var="WEEKLY_VIEW_TYPE" constant="org.silverpeas.core.web.calendar.CalendarViewType.WEEKLY"/>
 <view:setConstant var="MONTHLY_VIEW_TYPE" constant="org.silverpeas.core.web.calendar.CalendarViewType.MONTHLY"/>
+<view:setConstant var="YEARLY_VIEW_TYPE" constant="org.silverpeas.core.web.calendar.CalendarViewType.YEARLY"/>
 
+<fmt:message key="calendar.label.event.nextEvents" var="nextEventLabel"/>
+<fmt:message key="GML.view.mode" var="viewModeLabel"/>
+<fmt:message key="GML.allMP" var="allLabel"/>
 <fmt:message key="GML.day" var="dayLabel"/>
 <fmt:message key="GML.week" var="weekLabel"/>
 <fmt:message key="GML.month" var="monthLabel"/>
+<fmt:message key="GML.year" var="yearLabel"/>
 <fmt:message key="calendar.message.event.occurrence.gotoPrevious" var="gotoPreviousOccurrenceLabel"/>
+<fmt:message key="calendar.label.listViewType" var="listViewLabel"/>
+<fmt:message key="calendar.label.calendarViewType" var="calendarViewLabel"/>
+
+<div style="display: none">
+  <span ng-init="$ctrl.viewTypes.nextEvents = '${NEXT_EVENTS_VIEW_TYPE}'"></span>
+  <span ng-init="$ctrl.viewTypes.day = '${DAILY_VIEW_TYPE}'"></span>
+  <span ng-init="$ctrl.viewTypes.week = '${WEEKLY_VIEW_TYPE}'"></span>
+  <span ng-init="$ctrl.viewTypes.month = '${MONTHLY_VIEW_TYPE}'"></span>
+  <span ng-init="$ctrl.viewTypes.year = '${YEARLY_VIEW_TYPE}'"></span>
+  <span ng-init="$ctrl.labels.nextEvents = '${silfn:escapeJs(nextEventLabel)}'"></span>
+  <span ng-init="$ctrl.labels.day = '${silfn:escapeJs(dayLabel)}'"></span>
+  <span ng-init="$ctrl.labels.week = '${silfn:escapeJs(weekLabel)}'"></span>
+  <span ng-init="$ctrl.labels.month = '${silfn:escapeJs(monthLabel)}'"></span>
+  <span ng-init="$ctrl.labels.year = '${silfn:escapeJs(yearLabel)}'"></span>
+</div>
 
 <div class="silverpeas-calendar-header">
   <div class="sousNavBulle">
-    <div id="navigation">
-      <div id="currentScope">
-        <a class="day-view" href="#" ng-click="$ctrl.view({type:'${DAILY_VIEW_TYPE}'})"
-           ng-class="{'selected': $ctrl.timeWindowViewContext.viewType == '${DAILY_VIEW_TYPE}'}">${dayLabel}</a>
-        <a class="week-view" href="#" ng-click="$ctrl.view({type:'${WEEKLY_VIEW_TYPE}'})"
-           ng-class="{'selected': $ctrl.timeWindowViewContext.viewType == '${WEEKLY_VIEW_TYPE}'}">${weekLabel}</a>
-        <a class="month-view" href="#" ng-click="$ctrl.view({type:'${MONTHLY_VIEW_TYPE}'})"
-           ng-class="{'selected': $ctrl.timeWindowViewContext.viewType == '${MONTHLY_VIEW_TYPE}'}">${monthLabel}</a>
+    <div class="top-part">
+      <a ng-repeat="viewType in $ctrl.timeWindowViewContext.availableViewTypes"
+         class="view-button" href="javascript:void(0)"
+         ng-click="$ctrl.view({type:viewType, listViewMode:$ctrl.timeWindowViewContext.listViewMode})"
+         ng-class="{'selected': $ctrl.isSelectedViewType(viewType)}">{{$ctrl.getViewTypeLabel(viewType)}}</a>
+      <span class="time-cursor" ng-hide="$ctrl.isSelectedViewType($ctrl.viewTypes.nextEvents)">
         <span>-&#160;</span>
-        <span id="today"> <a href="#" ng-click="$ctrl.timeWindow({type:'today'})" onfocus="this.blur()"><fmt:message key="GML.Today"/></a></span>
+        <span> <a class="today-button" href="#" ng-click="$ctrl.timeWindow({type:'today'})" onfocus="this.blur()"><fmt:message key="GML.Today"/></a></span>
         <input type="text" class="reference-day" style="visibility: hidden"
                ng-model="$ctrl.timeWindowViewContext.formattedReferenceDay"
                ng-change="$ctrl.referenceDayChanged()">
@@ -64,7 +83,23 @@
           <span>{{$ctrl.timeWindowViewContext.referencePeriodLabel}}</span>
         </div>
         <a class="btn_navigation next" href="#" ng-click="$ctrl.timeWindow({type:'next'})" onfocus="this.blur()"><img border="0" alt="" src="<c:url value="/util/icons/arrow/arrowRight.gif"/>"></a>
-      </div>
+      </span>
+      <span ng-if="$ctrl.isSelectedViewType($ctrl.viewTypes.nextEvents) && $ctrl.nextEventMonths.length">
+        <span>-&#160;</span>
+        <a ng-repeat="nextEventMonth in $ctrl.nextEventMonths"
+           class="next-event-month-filter" href="javascript:void(0)"
+           ng-click="nextEventMonth.selected = !nextEventMonth.selected"
+           ng-class="{'selected': nextEventMonth.selected}">{{nextEventMonth.monthLabel}}</a>
+      </span>
+      <span ng-if="$ctrl.hasToDisplayViewMode()">
+        <span>${viewModeLabel}</span>
+        <a class="calendar-view-mode" href="javascript:void(0);" title="${calendarViewLabel}"
+           ng-click="$ctrl.view({type:$ctrl.timeWindowViewContext.viewType, listViewMode:false})"
+           ng-class="{'selected': !$ctrl.timeWindowViewContext.listViewMode}">&#160;</a>
+        <a class="list-view-mode" href="javascript:void(0);" title="${listViewLabel}"
+           ng-click="$ctrl.view({type:$ctrl.timeWindowViewContext.viewType, listViewMode:true})"
+           ng-class="{'selected': $ctrl.timeWindowViewContext.listViewMode}">&#160;</a>
+      </span>
     </div>
     <div ng-transclude></div>
     <div id="calendar-timezone">

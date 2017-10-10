@@ -42,7 +42,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * <p>
@@ -61,12 +60,22 @@ import java.util.function.Supplier;
 public class WAComponent implements SilverpeasComponent {
 
   /**
-   * Gets the WAComponent instance with the specified name.
+   * Gets the WAComponent object with the specified name.
    * @param componentName the unique name of the WAComponent to return.
    * @return optionally a WAComponent instance with the given name.
    */
-  public static Optional<WAComponent> get(String componentName) {
+  public static Optional<WAComponent> getByName(String componentName) {
     return WAComponentRegistry.get().getWAComponent(componentName);
+  }
+
+  /**
+   * Gets the WAComponent object representing the component to which the specified instance is
+   * related.
+   * @param componentInstanceId the unique identifier of a component instance.
+   * @return optionally a WAComponent object related to the component instance.
+   */
+  public static Optional<WAComponent> getByInstanceId(String componentInstanceId) {
+    return getByName(ComponentInst.getComponentName(componentInstanceId));
   }
 
   /**
@@ -112,6 +121,7 @@ public class WAComponent implements SilverpeasComponent {
    * Gets the value of the name property.
    * @return possible object is {@link String }
    */
+  @Override
   public String getName() {
     return name;
   }
@@ -152,6 +162,7 @@ public class WAComponent implements SilverpeasComponent {
    * Gets the value of the label property.
    * @return possible object is {@link Multilang }
    */
+  @Override
   public HashMap<String, String> getLabel() {
     if (label == null) {
       label = new HashMap<>();
@@ -171,6 +182,7 @@ public class WAComponent implements SilverpeasComponent {
    * Gets the value of the description property.
    * @return possible object is {@link Multilang }
    */
+  @Override
   public HashMap<String, String> getDescription() {
     if (description == null) {
       description = new HashMap<>();
@@ -215,6 +227,7 @@ public class WAComponent implements SilverpeasComponent {
   /**
    * Gets the value of the visible property.
    */
+  @Override
   public boolean isVisible() {
     return visible;
   }
@@ -304,6 +317,7 @@ public class WAComponent implements SilverpeasComponent {
    * Gets the value of the parameters property.
    * @return list of {@link Parameter}
    */
+  @Override
   public List<Parameter> getParameters() {
     if (parameters == null) {
       parameters = new ArrayList<>();
@@ -346,15 +360,18 @@ public class WAComponent implements SilverpeasComponent {
    * @param parameterName the parameter name to perform.
    * @return true if a parameter is defined behind the specified method parameter, false otherwise.
    */
+  @Override
   public boolean hasParameterDefined(String parameterName) {
     return getIndexedParametersByName().get(parameterName) != null;
   }
 
+  @Override
   public List<Parameter> getSortedParameters() {
     Collections.sort(getParameters(), sorter);
     return this.parameters;
   }
 
+  @Override
   public List<GroupOfParameters> getGroupsOfParameters() {
     if (groupsOfParameters == null) {
       groupsOfParameters = new ArrayList<>();
@@ -367,21 +384,13 @@ public class WAComponent implements SilverpeasComponent {
     return this.groupsOfParameters;
   }
 
-  /**
-   * Is this WAComponent is a workflow?
-   * @return true if this component satisfies the behavior of a workflow, that is to say if it
-   * defines a workflow. False if it is a regular Silverpeas.
-   * application.
-   */
+  @Override
   public boolean isWorkflow() {
     return getBehaviors() != null &&
         getBehaviors().getBehavior().contains(ComponentBehavior.WORKFLOW);
   }
 
-  /**
-   * Is this WAComponent is a topic tracker?
-   * @return true if this component satisfies the behavior of a topic tracker.
-   */
+  @Override
   public boolean isTopicTracker() {
     return getBehaviors() != null &&
         getBehaviors().getBehavior().contains(ComponentBehavior.TOPIC_TRACKER);

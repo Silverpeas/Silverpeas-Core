@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.admin.space.quota.process.check;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.process.io.file.FileHandler;
-import org.silverpeas.core.admin.quota.offset.AbstractQuotaCountingOffset;
 
 /**
  * @author Yohann Chastagnier
@@ -35,7 +35,17 @@ public class SpaceDataStorageQuotaCountingOffset extends AbstractQuotaCountingOf
 
   private final SpaceInst space;
   private final FileHandler fileHandler;
-  long currentCountOffset = -1;
+  private long currentCountOffset = -1;
+
+  /**
+   * Default hidden constructor
+   * @param space
+   * @param fileHandler
+   */
+  private SpaceDataStorageQuotaCountingOffset(final SpaceInst space, final FileHandler fileHandler) {
+    this.space = space;
+    this.fileHandler = fileHandler;
+  }
 
   /**
    * Gets an instance from a SpaceInst and a FileHandler
@@ -46,16 +56,6 @@ public class SpaceDataStorageQuotaCountingOffset extends AbstractQuotaCountingOf
   public static SpaceDataStorageQuotaCountingOffset from(final SpaceInst space,
       final FileHandler fileHandler) {
     return new SpaceDataStorageQuotaCountingOffset(space, fileHandler);
-  }
-
-  /**
-   * Default hidden constructor
-   * @param space
-   * @param fileHandler
-   */
-  private SpaceDataStorageQuotaCountingOffset(final SpaceInst space, final FileHandler fileHandler) {
-    this.space = space;
-    this.fileHandler = fileHandler;
   }
 
   /*
@@ -73,7 +73,7 @@ public class SpaceDataStorageQuotaCountingOffset extends AbstractQuotaCountingOf
 
       // space could be null if user space is performed
       if (space != null) {
-        for (final ComponentInst component : space.getAllComponentsInst()) {
+        for (final SilverpeasComponentInstance component : space.getAllComponentInstances()) {
           currentCountOffset += fileHandler.sizeOfSessionWorkingPath(component.getId());
         }
       }

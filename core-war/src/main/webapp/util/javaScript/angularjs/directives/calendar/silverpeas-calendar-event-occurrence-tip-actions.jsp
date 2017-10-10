@@ -34,14 +34,14 @@
 
 <c:url var="mandatoryIcons" value="/util/icons/mandatoryField.gif"/>
 
-<fmt:message var="viewLabel" key="GML.view"/>
+<fmt:message var="seeMoreLabel" key="GML.seeMore"/>
 <fmt:message var="modifyLabel" key="GML.modify"/>
 <fmt:message var="deleteLabel" key="GML.delete"/>
 <fmt:message var="goTofirstOccurrenceLabel" key="calendar.message.event.occurrence.gotoFirst"/>
 
 <p>
   <silverpeas-button-pane>
-    <silverpeas-button ng-if="$ctrl.occurrence.canBeAccessed" ng-click="$ctrl.onView({occurrence:$ctrl.occurrence})">${viewLabel}</silverpeas-button>
+    <silverpeas-button ng-if="$ctrl.occurrence.canBeAccessed" ng-click="$ctrl.onView({occurrence:$ctrl.occurrence})">${seeMoreLabel}</silverpeas-button>
     <silverpeas-button ng-if="$ctrl.occurrence.canBeModified" ng-click="$ctrl.onModify({occurrence:$ctrl.occurrence})">${modifyLabel}</silverpeas-button>
     <silverpeas-button ng-if="$ctrl.occurrence.canBeDeleted" ng-click="$ctrl.onDelete({occurrence:$ctrl.occurrence})">${deleteLabel}</silverpeas-button>
   </silverpeas-button-pane>

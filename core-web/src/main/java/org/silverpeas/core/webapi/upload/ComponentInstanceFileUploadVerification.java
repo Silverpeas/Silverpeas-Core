@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.webapi.upload;
 
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.util.Optional;
@@ -34,7 +33,7 @@ import java.util.Optional;
  * It is a process implied within the manufacturing of a new file upload.
  * </p>
  * When a file upload is performed, it is first verified according to its name (the file is not
- * yet on the server), then is is verified a second time after than the upload is completed
+ * yet on the server), then it is verified a second time after than the upload is completed
  * successfully. In some circumstances, according to the application, some verifications have to be
  * performed in the behalf of the new file upload. The file upload process is unaware of these
  * circumstances and it cannot know what verification to perform; It is the responsibility of the
@@ -68,11 +67,10 @@ public interface ComponentInstanceFileUploadVerification {
    */
   static Optional<ComponentInstanceFileUploadVerification> get(String componentInstanceId) {
     try {
-      final ComponentInstLight componentInstLight =
-          OrganizationController.get().getComponentInstLight(componentInstanceId);
-      final String name = componentInstLight.getName() + NAME_SUFFIX;
-      return Optional.of(ServiceProvider.getService(name));
-    } catch (IllegalStateException ex) {
+      return Optional.of(ServiceProvider
+          .getServiceByComponentInstanceAndNameSuffix(componentInstanceId, NAME_SUFFIX));
+    } catch (IllegalStateException e) {
+      SilverLogger.getLogger(ComponentInstanceFileUploadVerification.class).warn(e);
       return Optional.empty();
     }
   }

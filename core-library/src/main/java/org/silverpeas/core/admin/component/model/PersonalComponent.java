@@ -85,8 +85,18 @@ public class PersonalComponent implements SilverpeasComponent {
    * @param componentName the unique name of the PersonalComponent to return.
    * @return optionally a PersonalComponent instance with the given name.
    */
-  public static Optional<PersonalComponent> get(String componentName) {
+  public static Optional<PersonalComponent> getByName(String componentName) {
     return PersonalComponentRegistry.get().getPersonalComponent(componentName);
+  }
+
+  /**
+   * Gets the PersonalComponent object representing the component to which the specified instance is
+   * related.
+   * @param componentInstanceId the unique identifier of a personal component instance.
+   * @return optionally a PersonalComponent object related to the personal component instance.
+   */
+  public static Optional<PersonalComponent> getByInstanceId(String componentInstanceId) {
+    return getByName(PersonalComponentInstance.getComponentName(componentInstanceId));
   }
 
   /**
@@ -145,6 +155,11 @@ public class PersonalComponent implements SilverpeasComponent {
   @Override
   public boolean isVisible() {
     return visible;
+  }
+
+  @Override
+  public boolean isPersonal() {
+    return true;
   }
 
   /**

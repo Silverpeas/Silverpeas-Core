@@ -40,8 +40,8 @@ public interface ComponentStatisticsProvider {
   /**
    * The suffix of the name for each statistics provider.
    */
-  public static final String QUALIFIER_SUFFIX = "Statistics";
+  String QUALIFIER_SUFFIX = "Statistics";
 
-  public Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws
+  Collection<UserIdCountVolumeCouple> getVolume(String spaceId, String componentId) throws
       Exception;
 }

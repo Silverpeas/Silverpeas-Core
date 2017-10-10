@@ -159,6 +159,16 @@
    * @type {SilverpeasCalendarTools}
    */
   $window.SilverpeasCalendarTools = new function() {
+    var __self = this;
+
+    /**
+     * Init a new occurrence entity instance.
+     */
+    this.newEventOccurrenceEntity = function() {
+      var occurrence = this.extractEventOccurrenceEntityData();
+      this.applyEventOccurrenceEntityAttributeWrappers(occurrence);
+      return occurrence;
+    };
 
     /**
      * Extracts from an UI JavaScript bean the necessary data about the representation of an
@@ -166,13 +176,18 @@
      * @param occurrence
      */
     this.extractEventOccurrenceEntityData = function(occurrence) {
-      occurrence = occurrence ? occurrence : {};
+      occurrence = occurrence ? occurrence : {attendees:[],attributes:[]};
       return {
         id : occurrence.id,
         uri : occurrence.uri,
+        eventType : 'CalendarEvent',
+        occurrenceType : 'CalendarEventOccurrence',
         occurrenceId : occurrence.occurrenceId,
         occurrenceUri : occurrence.occurrenceUri,
         calendarUri : occurrence.calendarUri,
+        occurrenceViewUrl : occurrence.occurrenceViewUrl,
+        occurrenceEditionUrl : occurrence.occurrenceEditionUrl,
+        eventPermalinkUrl : occurrence.eventPermalinkUrl,
         calendarZoneId : occurrence.calendarZoneId,
         originalStartDate : occurrence.originalStartDate,
         firstEventOccurrence : occurrence.firstEventOccurrence,
@@ -184,19 +199,79 @@
         calendar : occurrence.calendar,
         title : occurrence.title,
         description : occurrence.description,
+        content : occurrence.content,
         location : occurrence.location,
         onAllDay : occurrence.onAllDay,
         visibility : occurrence.visibility,
         priority : occurrence.priority,
         recurrence : occurrence.recurrence,
         attendees : occurrence.attendees,
+        attributes : occurrence.attributes,
         ownerName : occurrence.ownerName,
         createDate : occurrence.createDate,
+        createdById : occurrence.createdById,
         lastUpdateDate : occurrence.lastUpdateDate,
+        lastUpdatedById: occurrence.lastUpdatedById,
         canBeAccessed : occurrence.canBeAccessed,
         canBeModified : occurrence.canBeModified,
         canBeDeleted : occurrence.canBeDeleted
       }
+    };
+
+    /**
+     * Applies to the given occurrence entity the getters and setters which are wrapping the
+     * attributes map.
+     * @param occurrence
+     */
+    this.applyEventOccurrenceEntityAttributeWrappers = function(occurrence) {
+      if (occurrence) {
+        /**
+         * Wrapper over attributes which permits to register easily an external url.
+         * @param externalUrl
+         */
+        if (!occurrence.externalUrl) {
+          occurrence.externalUrl = function(externalUrl) {
+            var externalUrlAttribute;
+            if (arguments.length) {
+              externalUrlAttribute = {name : 'externalUrl', value : externalUrl};
+              if (!this.attributes.updateElement(externalUrlAttribute, 'name')) {
+                this.attributes.addElement(externalUrlAttribute);
+              }
+              return externalUrl;
+            } else {
+              externalUrlAttribute = this.attributes.getElement({name : 'externalUrl'}, 'name');
+              if (externalUrlAttribute) {
+                return externalUrlAttribute.value;
+              }
+              return undefined;
+            }
+          };
+        }
+        /**
+         * Gets the component instance url.
+         * @param externalUrl
+         */
+        if (!occurrence.componentInstanceId) {
+          occurrence.componentInstanceId = function() {
+            var calendarUri = this.calendarUri;
+            if (!calendarUri) {
+              if (!this.calendar || !this.calendar.uri) {
+                throw 'calendar uri can not be read from calendarUri or calendar.uri';
+              }
+              calendarUri = this.calendar.uri;
+            }
+            return __self.extractComponentInstanceIdFromUri(calendarUri);
+          };
+        }
+      }
+    };
+
+    this.extractComponentInstanceIdFromUri = function(uri) {
+      if (!uri) {
+        return undefined;
+      }
+      var instanceRegExp = new RegExp(webContext + '/services/[^/]+/([^/]+)/.+', "g");
+      return instanceRegExp.exec(uri)[1];
     };
 
     /**
@@ -262,6 +337,13 @@
     __logDebug("initializing the plugin");
 
     /**
+     * Clears all resources related to the silverpeas calendar instance.
+     */
+    this.clear = function() {
+      this.$fc.fullCalendar('destroy');
+    }.bind(this);
+
+    /**
      * Navigates to the given date.
      * @param date the date to navigate to, can be a Moment object, or anything the Moment
      *     constructor accepts.
@@ -274,8 +356,8 @@
      * Changes the view of the calendar by applying the given one.
      * @param viewName the name of the requested view.
      */
-    this.changeView = function(viewName) {
-      this.$fc.fullCalendar('changeView', __getFullCalendarView(viewName));
+    this.changeView = function(viewName, displayAsList) {
+      this.$fc.fullCalendar('changeView', __getFullCalendarView(viewName, displayAsList));
     }.bind(this);
 
     var __eventSourceCache = {};
@@ -387,12 +469,19 @@
      */
     function __createEvents(events) {
       return function(start, end, timezone, callback) {
+        var __provide = function(events) {
+          if (typeof calendarOptions.eventfilter === 'function') {
+            callback(events.filter(calendarOptions.eventfilter));
+          } else {
+            callback(events);
+          }
+        };
         if (sp.promise.isOne(events)) {
           events.then(function(events) {
-            callback(events);
+            __provide(events);
           })
         } else {
-          callback(events);
+          __provide(events);
         }
       };
     }
@@ -467,6 +556,7 @@
     var calendarOptions = extendsObject({}, options);
     calendarOptions.currentDate = moment(calendarOptions.currentDate);
     var fullCalendarOptions = {
+      locale: userLanguage,
       header: false,
       contentHeight:640,
       monthNames: monthNames,
@@ -496,13 +586,15 @@
       slotLabelFormat: 'HH:mm',
       weekNumbers : true,
       weekNumberTitle : $window.CalendarBundle.get("c.w").substring(0, 1),
+      listDayFormat : 'LL',
+      noEventsMessage : $window.CalendarBundle.get("c.e.n"),
       views: {
         agendaWeek: {
           columnFormat: 'ddd DD'
         }
       },
       firstDay: calendarOptions.firstDayOfWeek - 1,
-      defaultView: __getFullCalendarView(calendarOptions.view),
+      defaultView: __getFullCalendarView(calendarOptions.view, calendarOptions.listMode),
       dayClick: function(momentDate, jsEvent, view) {
         if (calendarOptions.onday) {
           var dayDate = momentDate.format("YYYY-MM-DD[T]HH:mm");
@@ -555,21 +647,21 @@
    * Gets the default fullCalendar view from the Silverpeas's one.
    * @private
    */
-  function __getFullCalendarView(view) {
+  function __getFullCalendarView(view, displayAsList) {
     if (typeof view === 'string') {
       view = view.toLowerCase();
     }
     if (view === 'monthly') {
-      return 'month';
+      return displayAsList ? 'listMonth' : 'month';
     }
     else if (view === 'yearly') {
-      return 'year';
+      return 'listYear';
     }
     else if (view === 'weekly') {
-      return 'agendaWeek';
+      return displayAsList ? 'listWeek' : 'agendaWeek';
     }
     else if (view === 'daily') {
-      return 'agendaDay';
+      return displayAsList ? 'listDay' : 'agendaDay';
     }
     return view;
   }

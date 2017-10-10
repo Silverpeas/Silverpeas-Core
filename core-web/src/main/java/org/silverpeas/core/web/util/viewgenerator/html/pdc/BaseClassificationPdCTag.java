@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.pdc;
 
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.MultiPartElement;
 import org.apache.ecs.xhtml.div;
 import org.apache.ecs.xhtml.fieldset;
 import org.apache.ecs.xhtml.script;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspTagException;
@@ -220,7 +220,7 @@ public abstract class BaseClassificationPdCTag extends SimpleTagSupport {
     String positionAddingLabel = (operation.equals(PREDEFINE_CLASSIFICATION)
         || operation.equals(CREATE_CLASSIFICATION) ? resources.getString(
         "pdcPeas.saveThePosition") : resources.getString("GML.PDCNewPosition"));
-    String script = "$('#" + pdcWidgetId + "').pdcClassification('" + function
+    String script = "jQuery('#" + pdcWidgetId + "').pdcClassification('" + function
         + "', {resource: {context: '"
         + context
         + "', " + "component: '" + getComponentId() + "', content: '" + getContentId()

@@ -74,13 +74,13 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -813,16 +813,15 @@ class Admin implements Administration {
   @Override
   public String getComponentParameterValue(String componentId, String parameterName) {
     try {
-      ComponentInst component = getComponentInst(componentId);
-      if (component == null) {
-        SilverLogger.getLogger(this).error("Component " + componentId + " not found!");
-        return StringUtil.EMPTY;
+      SilverpeasComponentInstance componentInstance = getComponentInstance(componentId);
+      if (componentInstance != null) {
+        return componentInstance.getParameterValue(parameterName);
       }
-      return component.getParameterValue(parameterName);
+      SilverLogger.getLogger(this).error(failureOnGetting("component instance", componentId));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
-      return "";
     }
+    return StringUtil.EMPTY;
   }
 
   @Override
@@ -3706,10 +3705,10 @@ class Admin implements Administration {
 
     // Get the compo of this space
     SpaceInst spaceInst = getSpaceInstById(sSpaceId);
-    List<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
+    List<SilverpeasComponentInstance> alCompoInst = spaceInst.getAllComponentInstances();
 
     if (alCompoInst != null) {
-      for (ComponentInst anAlCompoInst : alCompoInst) {
+      for (SilverpeasComponentInstance anAlCompoInst : alCompoInst) {
         alCompoIds.add(anAlCompoInst.getId());
       }
     }
@@ -3726,6 +3725,13 @@ class Admin implements Administration {
     for (ComponentInstLight component : components) {
       componentIds.add(component.getId());
     }
+
+    final SpaceInst space = getSpaceInstById(sSpaceId);
+    if (space.isPersonalSpace()) {
+      PersonalComponent.getAll().forEach(
+          p -> componentIds.add(PersonalComponentInstance.from(space.getCreator(), p).getId()));
+    }
+
     return componentIds.toArray(new String[componentIds.size()]);
   }
 
@@ -4700,32 +4706,44 @@ class Admin implements Administration {
       AdminException {
     List<String> userIds = null;
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
-      List<String> listOfRoleNames = null;
+      List<String> listOfRoleNames = Collections.emptyList();
       if (searchCriteria.isCriterionOnRoleNamesSet()) {
         listOfRoleNames = Arrays.asList(searchCriteria.getCriterionOnRoleNames());
       }
-      ComponentInst instance = getComponentInst(searchCriteria.getCriterionOnComponentInstanceId());
-      if (((listOfRoleNames != null && !listOfRoleNames.isEmpty())) || !instance.isPublic()) {
-        List<ProfileInst> profiles;
-        if (searchCriteria.isCriterionOnResourceIdSet()) {
-          profiles = getProfileInstsFor(searchCriteria.getCriterionOnResourceId(), instance.getId());
-        } else {
-          profiles = instance.getAllProfilesInst();
-        }
+      SilverpeasComponentInstance instance =
+          getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
+      if (!listOfRoleNames.isEmpty() || !instance.isPublic()) {
         userIds = new ArrayList<>();
-        for (ProfileInst aProfile : profiles) {
-          if (listOfRoleNames == null || listOfRoleNames.isEmpty() || listOfRoleNames.
-              contains(aProfile.getName())) {
-            userIds.addAll(aProfile.getAllUsers());
+        if (!instance.isPersonal()) {
+          List<ProfileInst> profiles;
+          if (searchCriteria.isCriterionOnResourceIdSet()) {
+            profiles =
+                getProfileInstsFor(searchCriteria.getCriterionOnResourceId(), instance.getId());
+          } else {
+            profiles = getComponentInst(instance.getId()).getAllProfilesInst();
+          }
+          for (ProfileInst aProfile : profiles) {
+            if (listOfRoleNames.isEmpty() || listOfRoleNames.
+                contains(aProfile.getName())) {
+              userIds.addAll(aProfile.getAllUsers());
 
-            // users of the groups (and recursively of their subgroups) playing the role
-            List<String> groupIds = aProfile.getAllGroups();
-            List<String> allGroupIds = new ArrayList<>();
-            for (String aGroupId : groupIds) {
-              allGroupIds.add(aGroupId);
-              allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
+              // users of the groups (and recursively of their subgroups) playing the role
+              List<String> groupIds = aProfile.getAllGroups();
+              List<String> allGroupIds = new ArrayList<>();
+              for (String aGroupId : groupIds) {
+                allGroupIds.add(aGroupId);
+                allGroupIds.addAll(groupManager.getAllSubGroupIdsRecursively(aGroupId));
+              }
+              userIds.addAll(userManager.getAllUserIdsInGroups(allGroupIds));
             }
-            userIds.addAll(userManager.getAllUserIdsInGroups(allGroupIds));
+          }
+        } else {
+          final User user = ((SilverpeasPersonalComponentInstance) instance).getUser();
+          final Collection<String> userRoles =
+              instance.getSilverpeasRolesFor(user).stream().map(Enum::name)
+                  .collect(Collectors.toList());
+          if (!CollectionUtil.intersection(userRoles, listOfRoleNames).isEmpty()) {
+            userIds.add(user.getId());
           }
         }
         if (userIds.isEmpty()) {
@@ -4799,23 +4817,25 @@ class Admin implements Administration {
     SearchCriteriaDAOFactory factory = SearchCriteriaDAOFactory.getFactory();
     GroupSearchCriteriaForDAO criteria = factory.getGroupSearchCriteriaDAO();
     if (searchCriteria.isCriterionOnComponentInstanceIdSet()) {
-      List<String> listOfRoleNames = new ArrayList<>();
+      final List<String> listOfRoleNames = new ArrayList<>();
       if (searchCriteria.isCriterionOnRoleNamesSet()) {
-        listOfRoleNames = Arrays.asList(searchCriteria.getCriterionOnRoleNames());
+        listOfRoleNames.addAll(Arrays.asList(searchCriteria.getCriterionOnRoleNames()));
       }
-      ComponentInst instance = getComponentInst(searchCriteria.getCriterionOnComponentInstanceId());
+      SilverpeasComponentInstance instance =
+          getComponentInstance(searchCriteria.getCriterionOnComponentInstanceId());
       if (!listOfRoleNames.isEmpty() || !instance.isPublic()) {
-        List<ProfileInst> profiles;
-        if (searchCriteria.isCriterionOnResourceIdSet()) {
-          profiles = getProfileInstsFor(searchCriteria.getCriterionOnResourceId(), instance.getId());
-        } else {
-          profiles = instance.getAllProfilesInst();
-        }
         List<String> roleIds = new ArrayList<>();
-        for (ProfileInst aProfile : profiles) {
-          if (listOfRoleNames.isEmpty() || listOfRoleNames.contains(aProfile.getName())) {
-            roleIds.add(aProfile.getId());
+        if (!instance.isPersonal()) {
+          List<ProfileInst> profiles;
+          if (searchCriteria.isCriterionOnResourceIdSet()) {
+            profiles =
+                getProfileInstsFor(searchCriteria.getCriterionOnResourceId(), instance.getId());
+          } else {
+            profiles = getComponentInst(instance.getId()).getAllProfilesInst();
           }
+          profiles.stream()
+              .filter(p -> listOfRoleNames.isEmpty() || listOfRoleNames.contains(p.getName()))
+              .forEach(p -> roleIds.add(p.getId()));
         }
         criteria.onRoleNames(roleIds.toArray(new String[roleIds.size()]));
       }
@@ -4927,12 +4947,12 @@ class Admin implements Administration {
     // Execute specific paste by the component
     try {
       pasteDetail.setToComponentId(sComponentId);
-      String componentRootName = URLUtil.getComponentNameFromComponentId(pasteDetail.
-          getFromComponentId());
-      String className = componentRootName + ApplicationResourcePasting.NAME_SUFFIX;
-      ApplicationResourcePasting componentPaste = ServiceProvider.getService(className);
+      ApplicationResourcePasting componentPaste = ServiceProvider
+          .getServiceByComponentInstanceAndNameSuffix(pasteDetail.getFromComponentId(),
+              ApplicationResourcePasting.NAME_SUFFIX);
       componentPaste.paste(pasteDetail);
     } catch (IllegalStateException e) {
+      SilverLogger.getLogger(this).silent(e);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }

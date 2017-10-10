@@ -26,10 +26,10 @@
 
 package org.silverpeas.core.pdc.tree.model;
 
-import org.silverpeas.core.i18n.Translation;
+import org.silverpeas.core.i18n.BeanTranslation;
 import org.silverpeas.core.pdc.pdc.model.AxisHeaderI18N;
 
-public class TreeNodeI18N extends Translation implements java.io.Serializable {
+public class TreeNodeI18N extends BeanTranslation implements java.io.Serializable {
 
   private static final long serialVersionUID = 7977604222849839444L;
 

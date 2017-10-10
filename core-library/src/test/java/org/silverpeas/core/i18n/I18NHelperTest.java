@@ -169,15 +169,15 @@ public class I18NHelperTest {
   @Test
   public void testGetHTMLLinksForI18NBeanAndCurrentLanguage() {
     I18NBean bean = mock(I18NBean.class);
-    Translation tradFR = new Translation();
+    BeanTranslation tradFR = new BeanTranslation();
     tradFR.setId(1);
     tradFR.setLanguage("fr");
     tradFR.setObjectId("18");
-    Translation tradEN = new Translation();
+    BeanTranslation tradEN = new BeanTranslation();
     tradEN.setId(2);
     tradEN.setLanguage("en");
     tradEN.setObjectId("28");
-    Map<String, Translation> translations = new Hashtable<String, Translation>(2);
+    Map<String, BeanTranslation> translations = new Hashtable<String, BeanTranslation>(2);
     translations.put("fr", tradFR);
     translations.put("en", tradEN);
     when(bean.getTranslation("fr")).thenReturn(tradFR);
@@ -230,11 +230,11 @@ public class I18NHelperTest {
 //  public void testGetHTMLSelectObject() {
 //    String userLanguage = "fr";
 //    I18NBean bean = mock(I18NBean.class);
-//    Translation tradFR = new Translation();
+//    BeanTranslation tradFR = new BeanTranslation();
 //    tradFR.setId(1);
 //    tradFR.setLanguage("fr");
 //    tradFR.setObjectId("18");
-//    Translation tradEN = new Translation();
+//    BeanTranslation tradEN = new BeanTranslation();
 //    tradEN.setId(2);
 //    tradEN.setLanguage("en");
 //    tradEN.setObjectId("28");

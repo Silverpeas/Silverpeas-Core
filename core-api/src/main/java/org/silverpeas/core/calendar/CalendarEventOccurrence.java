@@ -24,8 +24,12 @@
 package org.silverpeas.core.calendar;
 
 import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
@@ -85,7 +89,9 @@ import static org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNo
         "= :event")})
 public class CalendarEventOccurrence
     extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
-    implements IdentifiableEntity, Occurrence {
+    implements IdentifiableEntity, Occurrence, Contribution {
+
+  public static final String TYPE = "CalendarEventOccurrence";
 
   public static final Comparator<CalendarEventOccurrence> COMPARATOR_BY_ORIGINAL_DATE_ASC =
       Comparator.comparing(o -> o.getOriginalStartDate().toString());
@@ -213,6 +219,43 @@ public class CalendarEventOccurrence
       }
     });
     return occurrences;
+  }
+
+  @Override
+  public ContributionIdentifier getContributionId() {
+    return ContributionIdentifier
+        .from(getCalendarEvent().getCalendar().getComponentInstanceId(), getId(),
+            getContributionType());
+  }
+
+  @Override
+  public User getCreator() {
+    return component.getCreator();
+  }
+
+  @Override
+  public Date getCreationDate() {
+    return component.getCreateDate();
+  }
+
+  @Override
+  public User getLastModifier() {
+    return component.getLastUpdater();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return component.getLastUpdateDate();
+  }
+
+  @Override
+  public boolean canBeAccessedBy(final User user) {
+    return getCalendarEvent().canBeAccessedBy(user);
+  }
+
+  @Override
+  public String getContributionType() {
+    return TYPE;
   }
 
   /**
@@ -401,6 +444,15 @@ public class CalendarEventOccurrence
   }
 
   /**
+   * Gets the content of this event occurrence. The content is the one of the event and it cannot
+   * be modified per occurrence but for the whole event occurrence(s).
+   * @return optionally the content of the event.
+   */
+  public Optional<WysiwygContent> getContent() {
+    return getCalendarEvent().getContent();
+  }
+
+  /**
    * Is this occurrence actually occurs before the specified occurrence?
    * @param occurrence another occurrence with which the start date is compared.
    * @return true if this occurrence starts before the specified another one. False otherwise.
@@ -583,7 +635,7 @@ public class CalendarEventOccurrence
       this.component.incrementSequence();
       return repository.save(this);
     });
-    notifyAttendees(previous != null ? previous.getAttendees() : null, saved.getAttendees());
+    notifyAttendees(this, previous != null ? previous.getAttendees() : null, saved.getAttendees());
     return saved;
   }
 
@@ -598,7 +650,7 @@ public class CalendarEventOccurrence
       repository.delete(this);
       return null;
     });
-    notifyAttendees(this.getAttendees(), null);
+    notifyAttendees(this, this.getAttendees(), null);
   }
 
   /**

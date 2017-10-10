@@ -1055,8 +1055,8 @@ public class DefaultOrganizationController implements OrganizationController {
     List<String> componentIds = new ArrayList<String>();
 
     if (criteria.hasCriterionOnWorkspace()) {
-      if (criteria.hasCriterionOnComponentInstance()) {
-        componentIds.add(criteria.getComponentInstanceId());
+      if (criteria.hasCriterionOnComponentInstances()) {
+        componentIds.addAll(criteria.getComponentInstanceIds());
       } else {
         String[] availableComponentIds = getAvailCompoIds(criteria.getWorkspaceId(),
             criteria.getUser().getId());

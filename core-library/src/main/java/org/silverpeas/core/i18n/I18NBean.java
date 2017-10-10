@@ -27,16 +27,16 @@ import java.util.Map;
 
 public interface I18NBean<T extends Translation> {
 
-  public Map<String, T> getTranslations();
+  Map<String, T> getTranslations();
 
-  public T getTranslation(String language);
+  T getTranslation(String language);
 
-  public T getNextTranslation();
+  T getNextTranslation();
 
-  public void setLanguage(String language);
+  void setLanguage(String language);
 
-  public void setTranslationId(String translationId);
+  void setTranslationId(String translationId);
 
-  public void setRemoveTranslation(boolean remove);
+  void setRemoveTranslation(boolean remove);
 
 }

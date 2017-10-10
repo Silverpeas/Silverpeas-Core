@@ -27,7 +27,6 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentVisibility;
-import org.silverpeas.core.pdc.classification.ClassifyEngine;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerHeader;
 import org.silverpeas.core.questioncontainer.container.model.QuestionContainerPK;
 import org.silverpeas.core.util.StringUtil;
@@ -78,7 +77,6 @@ public class QuestionContainerContentManager {
       setDateAttributes(scv, qC.getBeginDate(), qC.getEndDate());
       getContentManager()
           .updateSilverContentVisibilityAttributes(scv, silverContentId);
-      ClassifyEngine.clearCache();
     } else {
       createSilverContent(null, qC, qC.getCreatorId(), isVisible);
     }

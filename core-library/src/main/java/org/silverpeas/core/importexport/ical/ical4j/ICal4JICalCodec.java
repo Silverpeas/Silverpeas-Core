@@ -131,7 +131,7 @@ public class ICal4JICalCodec implements ICalCodec {
       iCalEvent.getProperties().add(new Priority(event.getPriority().ordinal()));
 
       // Add location if any
-      Optional<String> location = event.getAttributes().get("location");
+      Optional<String> location = Optional.ofNullable(event.getLocation());
       location.ifPresent(s -> iCalEvent.getProperties().add(new Location(s)));
 
       // Add event URL if any

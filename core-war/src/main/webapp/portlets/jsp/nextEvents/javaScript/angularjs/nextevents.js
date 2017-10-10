@@ -27,18 +27,9 @@ var nextEvents = angular.module('silverpeas.nextevents',
     ['silverpeas.services', 'silverpeas.components', 'silverpeas.controllers']);
 
 /* the main controller of the application */
-nextEvents.controller('mainController', ['$controller', 'context', 'CalendarService', '$scope',
-  function($controller, context, CalendarService, $scope) {
+nextEvents.controller('mainController', ['$controller', 'CalendarService', '$scope',
+  function($controller, CalendarService, $scope) {
     $controller('silverpeasCalendarController', {$scope : $scope});
-
-    $scope.viewEventOccurrence = function(occurrence) {
-      var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id;
-      if (occurrence.occurrenceViewUrl.indexOf('/userCalendar') < 0) {
-        // Case of events coming from shared component instances
-        uri = occurrence.occurrenceViewUrl;
-      }
-      $scope.goToPage(uri);
-    };
 
     CalendarService.getNextOccurrences().then(function(occurrences) {
       $scope.occurrences = occurrences;

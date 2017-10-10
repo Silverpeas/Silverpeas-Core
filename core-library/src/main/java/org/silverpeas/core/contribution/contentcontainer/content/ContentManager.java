@@ -26,6 +26,7 @@ package org.silverpeas.core.contribution.contentcontainer.content;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.JoinStatement;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
@@ -642,33 +643,27 @@ public class ContentManager implements Serializable {
     }
   }
 
-  public void updateSilverContentVisibilityAttributes(SilverContentVisibility scv,
-      int silverObjectId) throws ContentManagerException {
-    Connection con = null;
-    PreparedStatement prepStmt = null;
-    try {
-      if (scv != null) {
-        // Open connection
-        con = DBUtil.openConnection();
+  public void updateSilverContentVisibilityAttributes(final SilverContentVisibility scv,
+      final int silverObjectId) throws ContentManagerException {
+    if (scv != null) {
 
-        // update the silverContent
-        String sSQLStatement =
-            "UPDATE " + SILVER_CONTENT_TABLE + " SET beginDate = ? , endDate = ? , isVisible = ? " +
-                " WHERE silverContentId = " + silverObjectId;
+      // update the silverContent
+      String sSQLStatement =
+          "UPDATE " + SILVER_CONTENT_TABLE + " SET beginDate = ? , endDate = ? , isVisible = ? " +
+              " WHERE silverContentId = " + silverObjectId;
 
-        // Execute the update
-        prepStmt = con.prepareStatement(sSQLStatement);
-
+      try (Connection con = DBUtil.openConnection();
+           PreparedStatement prepStmt = con.prepareStatement(sSQLStatement)) {
         prepStmt.setString(1, scv.getBeginDate());
         prepStmt.setString(2, scv.getEndDate());
         prepStmt.setInt(3, scv.isVisible());
         prepStmt.executeUpdate();
+      } catch (Exception e) {
+        throw new ContentManagerException(failureOnUpdate("silverpeas content", silverObjectId), e);
       }
-    } catch (Exception e) {
-      throw new ContentManagerException(failureOnUpdate("silverpeas content", silverObjectId), e);
-    } finally {
-      DBUtil.close(prepStmt);
-      closeConnection(con);
+
+      ServiceProvider.getAllServices(SilverContentPostUpdate.class)
+          .forEach(c -> c.postSilverpeasContentUpdate(silverObjectId));
     }
   }
 

@@ -28,6 +28,7 @@ import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.annotation.ClassAnnotationUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.util.AccessForbiddenException;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.*;
@@ -53,6 +54,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.web.mvc.webcomponent.NavigationContext.NavigationStep
+    .PREVIOUS_PAGE_FULL_URI_ID;
 import static org.silverpeas.core.web.mvc.webcomponent.PathExecutionResponse.hasProduced;
 import static org.silverpeas.core.web.mvc.webcomponent.PathExecutionResponse.navigateTo;
 
@@ -350,13 +354,13 @@ public class WebComponentManager {
     try {
       return webComponentManager
           .executePath(webComponentController, path, webComponentRequestContext);
-    } catch (Exception e) {
-      if (e instanceof WebApplicationException || (e instanceof InvocationTargetException &&
-          ((InvocationTargetException) e)
-              .getTargetException() instanceof WebApplicationException)) {
+    } catch (WebApplicationException e) {
+      webComponentRequestContext.getResponse().sendError(e.getResponse().getStatus());
+      throw e;
+    } catch (InvocationTargetException e) {
+      if (e.getTargetException() instanceof WebApplicationException) {
         webComponentRequestContext.getResponse().sendError(
-            ((WebApplicationException) ((InvocationTargetException) e).getTargetException())
-                .getResponse().getStatus());
+            ((WebApplicationException) e.getTargetException()).getResponse().getStatus());
       }
       throw e;
     }
@@ -393,8 +397,16 @@ public class WebComponentManager {
 
     // If no path is found, then the default one is selected.
     if (pathToPerform == null) {
+      SilverLogger.getLogger(this)
+          .error(
+              "[{0}] The path ''{1}'' in the URL ''{2}'' for the HTTP method {3} isn''t taken in charge by" +
+                  " the controller",
+              webComponentController.getComponentName(), path,
+              webComponentContext.getRequest().getRequestURI(),
+              webComponentContext.getRequest().getMethod());
       webComponentContext.getMessager()
-          .addError(webComponentContext.getMultilang().getString("GML.action.user.forbidden"));
+          .addError(webComponentContext.getMultilang()
+              .getStringWithParams("GML.url.path.notFound", path));
       pathToPerform = defaultPath;
     }
 
@@ -466,6 +478,17 @@ public class WebComponentManager {
         navigationStep.withContextIdentifier(navigationStepIdentifier.contextIdentifier());
       } else {
         navigationContext.noNavigationStep();
+      }
+
+      // previous uri can be inserted into navigation
+      final String previousPageFullUri =
+          webComponentContext.getRequest().getParameter(PREVIOUS_PAGE_FULL_URI_ID);
+      if (isDefined(previousPageFullUri)) {
+        if (!PREVIOUS_PAGE_FULL_URI_ID
+            .equals(navigationContext.getPreviousNavigationStep().getIdentifier())) {
+          navigationContext.insertNewPreviousNavigationStep(PREVIOUS_PAGE_FULL_URI_ID);
+        }
+        navigationContext.getPreviousNavigationStep().withFullUri(previousPageFullUri);
       }
     }
 

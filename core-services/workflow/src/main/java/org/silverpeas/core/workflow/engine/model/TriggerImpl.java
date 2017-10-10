@@ -46,8 +46,6 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
   private static final long serialVersionUID = -5923330362725539310L;
   @XmlAttribute
   private String name;
-  @XmlAttribute
-  private String className;
   @XmlElement(name = "param", type = ParameterImpl.class)
   private List<Parameter> parameters;
 
@@ -64,7 +62,6 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
    */
   private void reset() {
     name = "";
-    className = "";
     parameters = new Vector<>();
   }
 
@@ -82,22 +79,6 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
    */
   public void setName(String name) {
     this.name = name;
-  }
-
-  /**
-   * Get the value of the Parameter
-   * @return parameter's value
-   */
-  public String getClassName() {
-    return this.className;
-  }
-
-  /**
-   * Set the value of the Parameter
-   * @param className parameter's value
-   */
-  public void setClassName(String className) {
-    this.className = className;
   }
 
   /*

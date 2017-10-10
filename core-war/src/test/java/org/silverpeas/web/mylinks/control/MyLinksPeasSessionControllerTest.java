@@ -23,21 +23,20 @@
  */
 package org.silverpeas.web.mylinks.control;
 
-import org.silverpeas.core.mylinks.MyLinksRuntimeException;
-import org.silverpeas.core.mylinks.service.MyLinksService;
-import org.silverpeas.core.mylinks.model.LinkDetail;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
-import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.mylinks.MyLinksRuntimeException;
+import org.silverpeas.core.mylinks.model.LinkDetail;
+import org.silverpeas.core.mylinks.service.MyLinksService;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.core.admin.component.ComponentHelper;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.webapi.mylinks.MyLinkEntity;
 
 import static org.apache.commons.lang.reflect.FieldUtils.writeDeclaredField;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -61,11 +60,11 @@ public class MyLinksPeasSessionControllerTest {
   @Before
   public void setup() throws Exception {
     reflectionRule.setField(I18NHelper.class, false, "isI18nContentActivated");
-    commonAPI4Test.injectIntoMockedBeanContainer(mock(ComponentHelper.class));
-
     MainSessionController mainSessionController = mock(MainSessionController.class);
+    ComponentContext context = mock(ComponentContext.class);
+    when(context.getCurrentComponentName()).thenReturn("myLinks");
     ctrl =
-        spy(new MyLinksPeasSessionController(mainSessionController, mock(ComponentContext.class)));
+        spy(new MyLinksPeasSessionController(mainSessionController, context));
     doReturn(new UserDetail()).when(mainSessionController).getCurrentUserDetail();
     reflectionRule.setField(ctrl, mainSessionController, "controller");
     doReturn("Bundle value").when(ctrl).getString(anyString());

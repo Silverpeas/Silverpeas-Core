@@ -32,8 +32,12 @@ import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.VisibilityLevel;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.webapi.attachment.AttachmentParameterEntity;
 import org.silverpeas.core.webapi.base.WebEntity;
+import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -47,7 +51,11 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
+import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
+    .getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatDateWithOffset;
 import static org.silverpeas.core.calendar.CalendarEventUtil.formatTitle;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -64,12 +72,14 @@ public class CalendarEventEntity implements WebEntity {
 
   private URI eventUri;
   private URI calendarUri;
+  private URI eventPermalinkUrl;
 
   private String eventId;
   private String calendarId;
   private String calendarZoneId;
   private String title;
   private String description;
+  private String content;
   private String location;
   private boolean onAllDay;
   private String startDate;
@@ -78,12 +88,17 @@ public class CalendarEventEntity implements WebEntity {
   private Priority priority;
   private CalendarEventRecurrenceEntity recurrence;
   private List<CalendarEventAttendeeEntity> attendees = new ArrayList<>();
+  private List<CalendarEventAttributeEntity> attributes = new ArrayList<>();
   private String ownerName;
   private Date createDate;
+  private String createdById;
   private Date lastUpdateDate;
+  private String lastUpdatedById;
   private boolean canBeAccessed;
   private boolean canBeModified;
   private boolean canBeDeleted;
+  private List<AttachmentParameterEntity> attachmentParameters = new ArrayList<>();
+  private PdcClassificationEntity pdcClassification;
 
   protected CalendarEventEntity() {
   }
@@ -116,13 +131,34 @@ public class CalendarEventEntity implements WebEntity {
   }
 
   /**
-   * Sets attendees to linked calendar entity.
-   * @param attendees the linked calendar event attendees web entity URI.
+   * Sets a URI to this entity. With this URI, it can then be accessed through the Web.
+   * @param permalinkUrl the web entity URI.
+   * @return itself.
+   */
+  @SuppressWarnings("unchecked")
+  public CalendarEventEntity withEventPermalinkURL(final URI permalinkUrl) {
+    this.eventPermalinkUrl = permalinkUrl;
+    return this;
+  }
+
+  /**
+   * Sets attendees to linked calendar event entity.
+   * @param attendees the linked calendar event attendees web entity.
    * @return itself.
    */
   public CalendarEventEntity withAttendees(
       final List<CalendarEventAttendeeEntity> attendees) {
     this.attendees = attendees;
+    return this;
+  }
+
+  /**
+   * Sets attributes to linked calendar event entity.
+   * @param attributes the linked calendar event attributes web entity.
+   * @return itself.
+   */
+  public CalendarEventEntity withAttributes(final List<CalendarEventAttributeEntity> attributes) {
+    this.attributes = attributes;
     return this;
   }
 
@@ -149,6 +185,14 @@ public class CalendarEventEntity implements WebEntity {
 
   protected void setCalendarUri(final URI calendarUri) {
     this.calendarUri = calendarUri;
+  }
+
+  public URI getEventPermalinkUrl() {
+    return eventPermalinkUrl;
+  }
+
+  public void setEventPermalinkUrl(final URI eventPermalinkUrl) {
+    this.eventPermalinkUrl = eventPermalinkUrl;
   }
 
   public String getId() {
@@ -197,6 +241,14 @@ public class CalendarEventEntity implements WebEntity {
 
   protected void setDescription(String description) {
     this.description = description;
+  }
+
+  public String getContent() {
+    return content;
+  }
+
+  protected void setContent(final String content) {
+    this.content = content;
   }
 
   public String getLocation() {
@@ -263,6 +315,14 @@ public class CalendarEventEntity implements WebEntity {
     withAttendees(attendees);
   }
 
+  public List<CalendarEventAttributeEntity> getAttributes() {
+    return attributes;
+  }
+
+  public void setAttributes(final List<CalendarEventAttributeEntity> attributes) {
+    withAttributes(attributes);
+  }
+
   @XmlElement
   public String getOwnerName() {
     return ownerName;
@@ -273,12 +333,25 @@ public class CalendarEventEntity implements WebEntity {
     return createDate;
   }
 
+  @XmlElement
+  public String getCreatedById() {
+    return createdById;
+  }
+
   public Date getLastUpdateDate() {
     return lastUpdateDate;
   }
 
   protected void setLastUpdateDate(final Date lastUpdateDate) {
     this.lastUpdateDate = lastUpdateDate;
+  }
+
+  public String getLastUpdatedById() {
+    return lastUpdatedById;
+  }
+
+  public void setLastUpdatedById(final String lastUpdatedById) {
+    this.lastUpdatedById = lastUpdatedById;
   }
 
   @XmlElement
@@ -294,6 +367,40 @@ public class CalendarEventEntity implements WebEntity {
   @XmlElement
   public boolean canBeDeleted() {
     return canBeDeleted;
+  }
+
+  /**
+   * Gets the parameters of the attachments of this event.
+   * <p>
+   * At creation time, files can be attached to the event but attachment can only be done to
+   * existing contributions and not to contributions not yet effectively created. So, to do such an
+   * attachment the files are first transparently uploaded in the background and for each uploaded
+   * file a set of parameters is returned to the UI in order to retrieve them later in Silverpeas.
+   * Once the creation of the event is validated by the user and the event is eventually created,
+   * the attachment parameters sent with this Web representation are used to get the previously
+   * uploaded files to be attached to the created event.
+   * </p>
+   * @return all the parameters about any previously uploaded files to attach to this event.
+   */
+  @XmlElement
+  public Map<String, String[]> getAttachmentParameters() {
+    return attachmentParameters.stream()
+        .collect(Collectors.toMap(p -> p.getName(), p -> new String[]{p.getValue()}));
+  }
+
+  /**
+   * Gets the pdc classification of this event.
+   * <p>
+   * PDC classification can be set on the save of an event.<br/>
+   * Once the creation of the event is validated by the user and the event is eventually created,
+   * the PDC classification sent with this Web representation is used with PDC services.
+   * </p>
+   * @return all the parameters about any previously uploaded files to attach to this event.
+   */
+  @XmlElement
+  public PdcClassificationEntity getPdcClassification() {
+    return pdcClassification != null ? pdcClassification :
+        PdcClassificationEntity.undefinedClassification();
   }
 
   /**
@@ -314,12 +421,14 @@ public class CalendarEventEntity implements WebEntity {
   /**
    * Get the persistent data representation of an event merged with the entity data.
    * The data of the entity are applied to the returned instance.
+   * @param componentInstanceId identifier of the component instance host.
    * @return a {@link CalendarEvent} instance.
    */
   @XmlTransient
-  CalendarEvent getMergedEvent() {
+  CalendarEvent getMergedEvent(final String componentInstanceId) {
     final CalendarEvent event;
-    if (isDefined(getEventId())) {
+    if (isDefined(getEventId()) &&
+        !getSessionVolatileResourceCacheService().contains(getEventId(), componentInstanceId)) {
       event = CalendarEvent.getById(getEventId());
     } else {
       event = CalendarEvent.on(getPeriod());
@@ -336,6 +445,14 @@ public class CalendarEventEntity implements WebEntity {
    */
   @XmlTransient
   void applyOn(final CalendarEvent event) {
+    String currentText = getContent() == null ? "" : getContent();
+    if (event.getContent().isPresent()) {
+      event.getContent().get().setData(currentText);
+    } else if (!currentText.isEmpty()) {
+      WysiwygContent content = new WysiwygContent(LocalizedContribution.from(event));
+      content.setData(currentText);
+      event.setContent(content);
+    }
     event.withVisibilityLevel(getVisibility());
     if (getRecurrence() != null) {
       getRecurrence().applyOn(event, getPeriod());
@@ -361,6 +478,15 @@ public class CalendarEventEntity implements WebEntity {
       newAttendeeIds.add(attendeeEntity.getId());
     }
     component.getAttendees().removeIf(attendee -> !newAttendeeIds.contains(attendee.getId()));
+    List<String> newAttributeNames = new ArrayList<>(getAttributes().size());
+    for (CalendarEventAttributeEntity attributeEntity : getAttributes()) {
+      if (isDefined(attributeEntity.getValue())) {
+        component.getAttributes().set(attributeEntity.getName(), attributeEntity.getValue());
+        newAttributeNames.add(attributeEntity.getName());
+      }
+    }
+    component.getAttributes()
+        .removeIf(attribute -> !newAttributeNames.contains(attribute.getKey()));
   }
 
   protected CalendarEventEntity decorate(final CalendarEvent calendarEvent,
@@ -374,13 +500,17 @@ public class CalendarEventEntity implements WebEntity {
     onAllDay = calendarEvent.isOnAllDay();
     startDate = formatDateWithOffset(component, calendarEvent.getStartDate(), zoneId);
     endDate = formatDateWithOffset(component, calendarEvent.getEndDate(), zoneId);
-    createDate = calendarEvent.getCreationDate();
-    lastUpdateDate = calendarEvent.getLastUpdateDate();
+    createDate = component.getCreateDate();
+    createdById = component.getCreatedBy();
+    lastUpdateDate = component.getLastUpdateDate();
+    lastUpdatedById = component.getLastUpdatedBy();
     ownerName = calendarEvent.getCreator().getDisplayedName();
     canBeAccessed = calendarEvent.canBeAccessedBy(currentUser);
     title = formatTitle(component, componentInstanceId, canBeAccessed);
     if (canBeAccessed) {
       description = calendarEvent.getDescription();
+      content =
+          calendarEvent.getContent().isPresent() ? calendarEvent.getContent().get().getData() : "";
       location = calendarEvent.getLocation();
       visibility = calendarEvent.getVisibilityLevel();
       priority = calendarEvent.getPriority();
@@ -415,7 +545,9 @@ public class CalendarEventEntity implements WebEntity {
     builder.append("recurrence", getRecurrence());
     builder.append("ownerName", getOwnerName());
     builder.append("createDate", getCreateDate());
+    builder.append("createdById", getCreatedById());
     builder.append("lastUpdateDate", getLastUpdateDate());
+    builder.append("lastUpdatedById", getLastUpdatedById());
     return builder;
   }
 }

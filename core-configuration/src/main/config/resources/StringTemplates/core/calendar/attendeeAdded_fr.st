@@ -1,1 +1,1 @@
-$sender$ vous invite à l'événement <b>$event.title$</b>
+$senderName$ vous invite à l'événement <b>$event.title$</b>

@@ -27,12 +27,16 @@ import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.notification.user.DefaultUserNotification;
+import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.template.SilverpeasStringTemplateUtil;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.Link;
+import org.silverpeas.core.util.Mutable;
+import org.silverpeas.core.util.Pair;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -45,38 +49,15 @@ import java.util.Optional;
 public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     AbstractResourceUserNotificationBuilder<T> {
 
-  /**
-   * The silverpeas templates indexed by languages
-   */
-  private final Map<String, SilverpeasTemplate> templates
-      = new HashMap<>();
+  private final Map<String, SilverpeasTemplate> templates = new HashMap<>();
+  private Pair<Boolean, String> rootTemplatePath;
 
   /**
    * Default constructor
-   * @param resource
+   * @param resource the resource which is the object of the notification.
    */
   public AbstractTemplateUserNotificationBuilder(final T resource) {
-    super(resource, null, null);
-  }
-
-  /**
-   * Default constructor
-   * @param resource
-   * @param fileName
-   */
-  public AbstractTemplateUserNotificationBuilder(final T resource, final String fileName) {
-    super(resource, null, fileName);
-  }
-
-  /**
-   * Default constructor
-   * @param resource
-   * @param title
-   * @param fileName
-   */
-  public AbstractTemplateUserNotificationBuilder(final T resource, final String title,
-      final String fileName) {
-    super(resource, title, fileName);
+    super(resource);
   }
 
   protected abstract String getBundleSubjectKey();
@@ -93,14 +74,11 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    * Gets the fileName of StringTemplate
    * @return the StringTemplate filename
    */
-  protected String getFileName() {
-    // getContent() returns the fileName
-    return getContent();
-  }
+  protected abstract String getTemplateFileName();
 
   @Override
   protected UserNotification createNotification() {
-    return new DefaultUserNotification(getTitle(), templates, getFileName());
+    return new DefaultUserNotification(getTitle(), templates, getTemplateFileName());
   }
 
   @Override
@@ -142,17 +120,41 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     // Nothing to do
   }
 
-  protected SilverpeasTemplate createTemplate() {
-    SilverpeasTemplate template;
-    Optional<SilverpeasComponentInstance> instance =
-        SilverpeasComponentInstance.getById(getComponentInstanceId());
-    if (instance.isPresent() || OrganizationControllerProvider.
-        getOrganisationController().isToolAvailable(getComponentInstanceId())) {
-      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(getTemplatePath());
-    } else {
-      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(getTemplatePath());
+  /**
+   * @return a {@link Pair} instance which indicates first the StringTemplate repository as a
+   * boolean, true if it is the components one, false if it is the core one. It indicates secondly
+   * the template path into the root as a String.
+   */
+  private Pair<Boolean, String> getRootTemplatePath() {
+    if (rootTemplatePath == null) {
+      final Mutable<Boolean> componentRoot = Mutable.of(false);
+      final Mutable<String> templatePath = Mutable.of(getTemplatePath());
+      Optional<SilverpeasComponentInstance> instance =
+          SilverpeasComponentInstance.getById(getComponentInstanceId());
+      if (this instanceof FallbackToCoreTemplatePathBehavior) {
+        instance.map(i -> i.getName() + "/" + templatePath.get()).filter(
+            p -> SilverpeasStringTemplateUtil.isComponentTemplateExist(p, getTemplateFileName()))
+            .ifPresent(p -> {
+              componentRoot.set(true);
+              templatePath.set(p);
+            });
+      } else {
+        componentRoot.set(instance.isPresent() || OrganizationControllerProvider.
+            getOrganisationController().isToolAvailable(getComponentInstanceId()));
+      }
+      rootTemplatePath = Pair.of(componentRoot.get(), templatePath.get());
     }
-    return template;
+    return rootTemplatePath;
+  }
+
+  protected SilverpeasTemplate createTemplate() {
+    final Boolean fromComponent = getRootTemplatePath().getFirst();
+    final String templatePath = getRootTemplatePath().getSecond();
+    if (fromComponent) {
+      return SilverpeasTemplateFactory.createSilverpeasTemplateOnComponents(templatePath);
+    } else {
+      return SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(templatePath);
+    }
   }
 
   protected void perform(final T resource) {
@@ -164,11 +166,9 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
 
   /**
    * Builds the notification resource data container from a given language. Don't forget to fill
-   * resourceId,
-   * resourceType, resourceName, resourceDescription (optional), resourceLocation (optional). If
-   * ResourceLocation is
-   * empty , it will be filled by the NotificationManager with the given componentInstanceId of
-   * NotificationMetaData
+   * resourceId, resourceType, resourceName, resourceDescription (optional), resourceLocation
+   * (optional). If ResourceLocation is empty , it will be filled by the NotificationManager with
+   * the given componentInstanceId of NotificationMetaData
    * @param language the language in ISO-639-2
    * @param resource the resource concerned by the notification
    * @param notificationResourceData data about the notification

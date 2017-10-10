@@ -34,50 +34,50 @@ public interface SocialInformation extends Comparable<SocialInformation> {
    * return the Title of this SocialInformation
    * @return String
    */
-  public String getTitle();
+  String getTitle();
 
   /**
    * return the Description of this SocialInformation
    * @return String
    */
-  public String getDescription();
+  String getDescription();
 
   /**
    * return the Author of this SocialInfo
    * @return String
    */
-  public String getAuthor();
+  String getAuthor();
 
   /**
    * return the Url of this SocialInfo
    * @return String
    */
-  public String getUrl();
+  String getUrl();
 
   /**
    * return the Date of this SocialInfo
    * @return Date
    */
-  public Date getDate();
+  Date getDate();
 
   /**
    * return the Type of this SocialInfo
    * @return String
    */
-  public String getType();
+  String getType();
 
   /**
    * return icon name of this SocialInfo
    * @return String
    */
-  public String getIcon();
+  String getIcon();
 
   /**
    * return if this socialInfo was updated or not
    * @return boolean
    */
-  public boolean isUpdated();
+  boolean isUpdated();
 
-  public void setUpdated(boolean updated);
+  void setUpdated(boolean updated);
 
 }

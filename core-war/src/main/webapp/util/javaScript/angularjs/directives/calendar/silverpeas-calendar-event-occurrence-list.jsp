@@ -41,23 +41,49 @@
 </div>
 
 <span ng-if="!$ctrl.occurrences.length">{{$ctrl.noOccurrenceLabel}}</span>
-<ul ng-if="$ctrl.occurrences.length">
+<ul ng-if="$ctrl.occurrencesGroupedByMonth">
+  <li ng-repeat="monthOccurrences in $ctrl.occurrencesGroupedByMonth"
+      class="month-events" id="{{monthOccurrences.monthId}}"
+      ng-if="monthOccurrences.selected">
+    <h3>{{monthOccurrences.monthLabel}}</h3>
+    <ul>
+      <li ng-repeat="monthOccurrence in monthOccurrences track by monthOccurrence.id"
+          ng-class="{'high-priority':(monthOccurrence.priority === 'HIGH')}"
+          class="day-events"
+          ng-click="$ctrl.onEventOccurrenceClick({occurrence:monthOccurrence})">
+        <div class="section-day-date">
+          <span class="day-in-week">{{$ctrl.getDayInWeek(monthOccurrence.startDate)}}</span>
+          <span class="day-number">{{$ctrl.getDayNumberInMonth(monthOccurrence.startDate)}}</span>
+          <span class="month-name">{{$ctrl.getMonthName(monthOccurrence.startDate)}}</span>
+          <span class="year">{{$ctrl.getYear(monthOccurrence.startDate)}}</span>
+        </div>
+        <silverpeas-calendar-event-occurrence-list-item
+            group-by-month="$ctrl.groupByMonth"
+            occurrence="monthOccurrence"
+            class="{{$ctrl.getOccurrenceClasses(monthOccurrence)}}">
+        </silverpeas-calendar-event-occurrence-list-item>
+      </li>
+    </ul>
+  </li>
+</ul>
+<ul class="display-grouped-by-day" ng-if="$ctrl.occurrencesGroupedByDay">
   <li ng-repeat="dayOccurrences in $ctrl.occurrencesGroupedByDay"
       ng-class="{'high-priority':dayOccurrences.containsAtLeastOneImportant}"
       class="day-events">
-    <div class="short-date">
-      <span class="day-in-month">{{$ctrl.getStartDayNumberInMonth(dayOccurrences.dayDate)}}</span>
-      <span class="short-date-separator">/</span>
+    <div class="section-day-date">
+      <span class="day-in-month">{{$ctrl.getDayNumberInMonth(dayOccurrences.dayDate)}}</span>
+      <span class="section-day-date-separator">/</span>
       <span class="month-number">{{$ctrl.getMonthNumber(dayOccurrences.dayDate)}}</span>
     </div>
-    <div class="long-date">
+    <div class="full-date">
       <span class="full-date">{{$ctrl.getDayDate(dayOccurrences.dayDate)}}</span>
     </div>
     <silverpeas-calendar-event-occurrence-list-item
-        ng-repeat="occurrence in dayOccurrences"
+        ng-repeat="occurrence in dayOccurrences track by occurrence.id"
+        group-by-month="$ctrl.groupByMonth"
         occurrence="occurrence"
         class="{{$ctrl.getOccurrenceClasses(occurrence)}}"
-        on-click="$ctrl.onEventOccurrenceClick({occurrence:occurrence})">
+        ng-click="$ctrl.onEventOccurrenceClick({occurrence:occurrence})">
     </silverpeas-calendar-event-occurrence-list-item>
   </li>
 </ul>

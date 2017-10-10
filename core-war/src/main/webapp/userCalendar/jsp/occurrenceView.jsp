@@ -49,6 +49,7 @@
 <c:set var="occurrenceUri" value="${requestScope.occurrence.occurrenceUri}"/>
 
 <fmt:message var="back" key="GML.back"/>
+<fmt:message key="GML.notify" var="notifyLabel"/>
 <fmt:message var="modifyLabel" key="GML.modify"/>
 <fmt:message key="GML.delete" var="deleteLabel"/>
 
@@ -70,7 +71,11 @@
                                         on-occurrence-deleted="goToPage('${backUri}')"
                                         on-event-attendee-participation-updated="reloadOccurrenceFromContext()">
   </silverpeas-calendar-event-management>
+  <view:operation
+      action="angularjs:notifyEventOccurrence(ceo)"
+      altText="${notifyLabel}"/>
   <c:if test="${occurrence.canBeModified()}">
+    <view:operationSeparator/>
     <view:operation
         action="angularjs:editEventOccurrence(ceo)"
         altText="${modifyLabel}"/>
@@ -83,18 +88,27 @@
   <view:frame>
     <silverpeas-calendar-event-view ng-if="ceo"
                                     calendar-event-occurrence="ceo">
-      <silverpeas-calendar-event-view-main
-          calendar-event-occurrence="ceo">
-      </silverpeas-calendar-event-view-main>
-      <silverpeas-calendar-event-view-recurrence
-          calendar-event-occurrence="ceo"
-          ng-if="ceo.recurrence">
-      </silverpeas-calendar-event-view-recurrence>
-      <silverpeas-calendar-event-view-attendees
-          calendar-event-occurrence="ceo"
-          ng-if="ceo.attendees && ceo.attendees.length"
-          on-participation-answer="eventMng.eventAttendeeParticipationAnswer(ceo, attendee)">
-      </silverpeas-calendar-event-view-attendees>
+      <pane-main>
+        <silverpeas-calendar-event-view-main
+            calendar-event-occurrence="ceo">
+        </silverpeas-calendar-event-view-main>
+        <silverpeas-calendar-event-view-attendees
+            calendar-event-occurrence="ceo"
+            ng-if="ceo.attendees && ceo.attendees.length"
+            on-participation-answer="eventMng.eventAttendeeParticipationAnswer(ceo, attendee)">
+        </silverpeas-calendar-event-view-attendees>
+      </pane-main>
+      <pane-extra>
+        <silverpeas-calendar-event-view-recurrence
+            calendar-event-occurrence="ceo"
+            ng-if="ceo.recurrence">
+        </silverpeas-calendar-event-view-recurrence>
+        <silverpeas-calendar-event-view-attachment
+            calendar-event-occurrence="ceo">
+        </silverpeas-calendar-event-view-attachment>
+        <silverpeas-calendar-event-view-crud
+            calendar-event-occurrence="ceo"></silverpeas-calendar-event-view-crud>
+      </pane-extra>
     </silverpeas-calendar-event-view>
     <view:buttonPane>
       <view:button label="${back}" action="${backUri}"/>

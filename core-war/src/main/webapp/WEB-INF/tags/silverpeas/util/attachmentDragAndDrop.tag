@@ -29,7 +29,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<c:set var="userLanguage" value="${requestScope.resources.language}"/>
+<c:set var="userLanguage" value="${sessionScope['SilverSessionController'].favoriteLanguage}"/>
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment"/>
 
@@ -42,6 +42,9 @@
 <%@ attribute name="resourceId" required="true"
               type="java.lang.String"
               description="The identifier of the resource the uploaded document must be attached to" %>
+<%@ attribute name="resourceType" required="true"
+              type="java.lang.String"
+              description="The type of the resource the uploaded document must be attached to" %>
 <%@ attribute name="contentLanguage" required="true"
               type="java.lang.String"
               description="The content language in which the attachment is uploaded" %>
@@ -79,7 +82,7 @@
 <jsp:useBean id="publisherRole" type="org.silverpeas.core.admin.user.model.SilverpeasRole"/>
 <c:if test="${highestUserRole.isGreaterThanOrEquals(writerRole)}">
 
-  <c:set var="domIdSuffix" value="${fn:replace(resourceId, '-', '_')}"/>
+  <c:set var="domIdSuffix" value="${fn:replace(fn:replace(resourceId, '=', '_'), '-', '_')}"/>
 
   <c:set var="_ddIsI18n" value="${silfn:isI18n() && silfn:isDefined(contentLanguage)}"/>
 
@@ -87,6 +90,11 @@
   <view:componentParam var="isComponentVersioned" componentId="${componentInstanceId}" parameter="versionControl"/>
   <c:set var="isPublicationAlwaysVisible" value="${silfn:booleanValue(publicationAlwaysVisiblePramValue)}"/>
   <c:set var="isVersionActive" value="${not isPublicationAlwaysVisible and silfn:booleanValue(isComponentVersioned)}"/>
+
+  <view:componentParam var="commentActivated" componentId="${componentInstanceId}" parameter="tabComments"/>
+  <c:if test="${not silfn:booleanValue(commentActivated)}">
+    <view:componentParam var="commentActivated" componentId="${componentInstanceId}" parameter="comments"/>
+  </c:if>
 
   <view:includePlugin name="dragAndDropUpload"/>
 
@@ -153,6 +161,12 @@
         <c:when test="${isHandledSubscriptionConfirmation}">
         var rejectOnClose = true;
         $.subscription.confirmNotificationSendingOnUpdate({
+          comment : {
+            saveNote : ${silfn:booleanValue(commentActivated)},
+            contributionLocalId : '${resourceId}',
+            contributionType : '${resourceType}',
+            contributionIndexable : ${hasToBeIndexed}
+          },
           subscription : {
             componentInstanceId : '${componentInstanceId}',
             type : '${handledSubscriptionType}',

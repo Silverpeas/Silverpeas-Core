@@ -32,9 +32,12 @@
 <fmt:setLocale value="${userLanguage}"/>
 <view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle"/>
 
+<view:setConstant var="NEXT_EVENTS_VIEW_TYPE" constant="org.silverpeas.core.web.calendar.CalendarViewType.NEXT_EVENTS"/>
+
 <fmt:message var="closeLabel" key="GML.close"/>
 
 <div style="display: none">
+  <span ng-init="$ctrl.viewTypes.nextEvents = '${NEXT_EVENTS_VIEW_TYPE}'"></span>
   <span ng-init="$ctrl.labels.close = '${silfn:escapeJs(closeLabel)}'"></span>
 </div>
 
@@ -42,22 +45,32 @@
   <silverpeas-calendar-event-management api="$ctrl.eventMng"
                                         on-created="$ctrl.api.refetchCalendars()"
                                         on-occurrence-updated="$ctrl.api.refetchCalendars()"
-                                        on-occurrence-deleted="$ctrl.api.refetchCalendars()"
+                                        on-occurrence-deleted="$ctrl.api.refetchCalendars();$ctrl.pdcFilterApi.refresh()"
                                         on-event-attendee-participation-updated="$ctrl.api.refetchCalendarEvent(updatedEvent)">
   </silverpeas-calendar-event-management>
   <silverpeas-calendar-header time-window-view-context="$ctrl.timeWindowViewContext"
-                              view="$ctrl.api.changeView(type)"
-                              time-window="$ctrl.api.changeTimeWindow(type, day)">
+                              view="$ctrl.api.changeView(type,listViewMode)"
+                              time-window="$ctrl.api.changeTimeWindow(type, day)"
+                              next-event-months="$ctrl.nextEventMonths">
+    <silverpeas-calendar-pdc-filter ng-if="$ctrl.filterOnPdc"
+                                    api="$ctrl.pdcFilterApi"
+                                    calendars="$ctrl.api.getCalendars()"
+                                    on-filter="$ctrl.api.filterOnEventIds(eventIds)"></silverpeas-calendar-pdc-filter>
   </silverpeas-calendar-header>
   <silverpeas-calendar-list on-calendar-color-select="$ctrl.api.setCalendarColor(calendar,color)"
                             on-calendar-visibility-toggle="$ctrl.api.toggleCalendarVisibility(calendar)"
                             on-calendar-updated="$ctrl.api.updateCalendar(calendar)"
                             on-calendar-deleted="$ctrl.api.deleteCalendar(calendar)"
                             on-calendar-removed="$ctrl.api.removeCalendar(calendar)"
-                            on-calendar-synchronized="$ctrl.api.refetchCalendars()"
+                            on-calendar-synchronized="$ctrl.api.refetchCalendars();$ctrl.api.refetchNextOccurrences()"
                             calendar-potential-colors="$ctrl.api.getCalendarPotentialColors()"
                             calendars="$ctrl.calendars"
                             participation-calendars="$ctrl.participationCalendars">
   </silverpeas-calendar-list>
-  <div class="silverpeas-calendar-container"></div>
+  <div class="silverpeas-calendar-container" ng-show="$ctrl.api.isCalendarView()"></div>
+  <silverpeas-calendar-event-occurrence-list ng-if="$ctrl.nextOccurrences" occurrences="$ctrl.nextOccurrences"
+                                             group-by-month="true"
+                                             occurrences-grouped-by-month="$ctrl.nextEventMonths"
+                                             on-event-occurrence-click="$ctrl.onEventOccurrenceView({occurrence:occurrence})">
+  </silverpeas-calendar-event-occurrence-list>
 </div>

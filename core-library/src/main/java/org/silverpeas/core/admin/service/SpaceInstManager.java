@@ -200,7 +200,7 @@ public class SpaceInstManager {
         for (String componentId : asCompoIds) {
           ComponentInst componentInst =
               componentInstManager.getComponentInst(idAsInt(componentId), spaceInstLocalId);
-          WAComponent.get(componentInst.getName())
+          WAComponent.getByName(componentInst.getName())
               .ifPresent(waComponent -> spaceInst.addComponentInst(componentInst));
         }
       }
@@ -256,7 +256,7 @@ public class SpaceInstManager {
           ComponentInst componentInst =
               componentInstManager.getComponentInst(idAsInt(asCompoIds[nI]),
                   spaceInst.getLocalId());
-          WAComponent.get(componentInst.getName())
+          WAComponent.getByName(componentInst.getName())
               .ifPresent(waComponent -> spaceInst.addComponentInst(componentInst));
         }
 

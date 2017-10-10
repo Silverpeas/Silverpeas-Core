@@ -41,6 +41,7 @@
 <%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
 <%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
 <%@ page import="org.silverpeas.core.admin.user.model.SilverpeasRole" %>
+<%@ page import="org.silverpeas.core.util.logging.SilverLogger" %>
 
 <%@ include file="checkAttachment.jsp"%>
 
@@ -91,6 +92,11 @@
   <c:set var="handledSubscriptionResourceId" value="${param.HandledSubscriptionResourceId}"/>
   <c:set var="isHandledSubscriptionConfirmation"
          value="${not empty handledSubscriptionType and not empty handledSubscriptionResourceId}"/>
+
+  <view:componentParam var="commentActivated" componentId="${param.ComponentId}" parameter="tabComments"/>
+  <c:if test="${not silfn:booleanValue(commentActivated)}">
+    <view:componentParam var="commentActivated" componentId="${param.ComponentId}" parameter="comments"/>
+  </c:if>
 
   <c:set var="userProfile" value="${fn:toLowerCase(param.Profile)}" scope="page"/>
   <c:set var="highestUserRole" value='<%=SilverpeasRole.from(request.getParameter("Profile"))%>' scope="page"/>
@@ -199,7 +205,7 @@
 %>
 
 <c:if test="${!empty pageScope.attachments  || (silfn:isDefined(userProfile) && ('user' != userProfile))}">
-<div class="attachments bgDegradeGris attachmentDragAndDrop${param.Id}">
+<div class="attachments bgDegradeGris attachmentDragAndDrop${fn:replace(param.Id,'=','_')}">
   <div class="bgDegradeGris header"><h4 class="clean"><fmt:message key="GML.attachments" /></h4></div>
   <c:if test="${contextualMenuEnabled}">
   <div id="attachment-creation-actions"><a class="menubar-creation-actions-item" href="javascript:addAttachment('<c:out value="${sessionScope.Silverpeas_Attachment_ObjectId}" />');"><span><img alt="" src="<c:url value="/util/icons/create-action/add-file.png" />"/><fmt:message key="attachment.add"/></span></a></div>
@@ -693,6 +699,12 @@
       var checkInWebDav = typeof params.checkInWebDav === 'undefined' || params.checkInWebDav;
       if (verifyVersionType(params.versionTypeDomRadioSelector) === 'public' && checkInWebDav) {
         $.subscription.confirmNotificationSendingOnUpdate({
+          comment : {
+            saveNote : ${silfn:booleanValue(commentActivated)},
+            contributionLocalId : '${param.Id}',
+            contributionType : '${param.Type}',
+            contributionIndexable : ${indexIt}
+          },
           subscription : {
             componentInstanceId : '${componentId}',
             type : '${handledSubscriptionType}',
@@ -1400,10 +1412,11 @@
 
 <view:progressMessage/>
 <c:if test="${contextualMenuEnabled && dragAndDropEnable}">
-  <viewTags:attachmentDragAndDrop domSelector=".attachmentDragAndDrop${param.Id}"
+  <viewTags:attachmentDragAndDrop domSelector=".attachmentDragAndDrop${fn:replace(param.Id,'=','_')}"
                                   highestUserRole="${highestUserRole}"
                                   componentInstanceId="${componentId}"
                                   resourceId="${param.Id}"
+                                  resourceType="${param.Type}"
                                   contentLanguage="${contentLanguage}"
                                   hasToBeIndexed="${indexIt}"
                                   documentType="${param.Context}"

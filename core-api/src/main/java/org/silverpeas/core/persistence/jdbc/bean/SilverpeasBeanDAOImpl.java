@@ -23,11 +23,13 @@
  */
 package org.silverpeas.core.persistence.jdbc.bean;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
@@ -42,14 +44,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Deprecated
 public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements SilverpeasBeanDAO<T> {
 
-  private final PropertyDescriptor[] properties;
+  private final List<PropertyDescriptor> validProperties;
   private Class<T> silverpeasBeanClass;
   // how to make connection with the database
   private int connectionType = CONNECTION_TYPE_DATASOURCE_SILVERPEAS;
@@ -70,16 +74,25 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
             "classe= " + beanClassName, null);
       }
       BeanInfo infos = Introspector.getBeanInfo(silverpeasBeanClass);
-      properties = infos.getPropertyDescriptors();
-
-      for (PropertyDescriptor property : properties) {
-        String type = property.getPropertyType().getName();
+      validProperties = Arrays.stream(infos.getPropertyDescriptors()).filter(p -> {
+        final String type = p.getPropertyType().getName();
         if (!isTypeValid(type)) {
-          SilverTrace.warn("persistence",
-              "SilverpeasBeanDAOImpl.SilverpeasBeanDAOImpl( String beanClassName )",
-              "persistence.MSG_WARN_PROPERTIE_NOT_MANAGED", "");
+          SilverLogger.getLogger(this)
+              .warn("as {0} is not a valid type, {1} is not taken into account for {2}", type,
+                  p.getName(), silverpeasBeanClass.getSimpleName());
+          return false;
         }
-      }
+        if (object instanceof Contribution && p.getWriteMethod() == null) {
+          // Since some SilverpeasBean implements Contribution, some properties mus be skipped...
+          SilverLogger.getLogger(this).warn(
+              "as {0} is a method from an interface without SQL table name behind, property is " +
+                  "not taken into account for {1}", p.getName(),
+              silverpeasBeanClass.getSimpleName());
+          return false;
+        }
+        return true;
+      }).collect(Collectors.toList());
+
       connectionType = object._getConnectionType();
       switch (connectionType) {
         case CONNECTION_TYPE_DATASOURCE: {
@@ -194,14 +207,11 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
 
     try {
       String statement = null;
-      for (PropertyDescriptor property : properties) {
-        String type = property.getPropertyType().getName();
-        if (isTypeValid(type) == true) {
-          if (statement == null) {
-            statement = property.getName() + " = ? ";
-          } else {
-            statement += ", " + property.getName() + " = ? ";
-          }
+      for (PropertyDescriptor property : validProperties) {
+        if (statement == null) {
+          statement = property.getName() + " = ? ";
+        } else {
+          statement += ", " + property.getName() + " = ? ";
         }
       }
 
@@ -244,16 +254,13 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
     try {
       String columns = null;
       String statement = null;
-      for (PropertyDescriptor property : properties) {
-        String type = property.getPropertyType().getName();
-        if (isTypeValid(type)) {
-          if (columns == null) {
-            columns = property.getName();
-            statement = " ? ";
-          } else {
-            columns += ", " + property.getName();
-            statement += ", ? ";
-          }
+      for (PropertyDescriptor property : validProperties) {
+        if (columns == null) {
+          columns = property.getName();
+          statement = " ? ";
+        } else {
+          columns += ", " + property.getName();
+          statement += ", ? ";
         }
       }
       columns += ", id";
@@ -407,14 +414,11 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
 
     String statement = null;
 
-    for (PropertyDescriptor property : properties) {
-      String type = property.getPropertyType().getName();
-      if (isTypeValid(type) == true) {
-        if (statement == null) {
-          statement = property.getName();
-        } else {
-          statement += ", " + property.getName();
-        }
+    for (PropertyDescriptor property : validProperties) {
+      if (statement == null) {
+        statement = property.getName();
+      } else {
+        statement += ", " + property.getName();
       }
     }
     statement += ", id";
@@ -429,7 +433,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
     T bean = silverpeasBeanClass.newInstance();
     int count = 1;
 
-    for (PropertyDescriptor property : properties) {
+    for (PropertyDescriptor property : validProperties) {
       String type = property.getPropertyType().getName();
       if (isInteger(type)) {
         int value = rs.getInt(count);
@@ -483,7 +487,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
           property.getWriteMethod().invoke(bean, parameters);
         }
         count++;
-      } else if ((type.equals("double")) || (type.equals("java.lang.Double"))) {
+      } else if (isDouble(type)) {
         double value = rs.getDouble(count);
         if (!rs.wasNull()) {
           Object[] parameters = new Double[]{value};
@@ -565,7 +569,7 @@ public class SilverpeasBeanDAOImpl<T extends SilverpeasBeanIntf> implements Silv
       throws IllegalAccessException, SQLException, InvocationTargetException {
     int count = 1;
 
-    for (PropertyDescriptor property : properties) {
+    for (PropertyDescriptor property : validProperties) {
       String type = property.getPropertyType().getName();
       if (isInteger(type)) {
         Integer integer = (Integer) property.getReadMethod().invoke(bean);

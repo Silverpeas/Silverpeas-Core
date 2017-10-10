@@ -48,6 +48,7 @@
 <view:setBundle basename="org.silverpeas.util.attachment.multilang.attachment" />
 <fmt:setLocale value="${sessionScope.SilverSessionController.favoriteLanguage}" />
 <c:set var="id" value="${param.Id}" />
+<c:set var="type" value="${param.Type}" />
 <c:set var="Silverpeas_Attachment_ObjectId" scope="session" value="${id}" />
 <c:set var="componentId" value="${param.ComponentId}" />
 <c:set var="Silverpeas_Attachment_ComponentId" scope="session" value="${componentId}" />
@@ -550,6 +551,7 @@
   <viewTags:attachmentDragAndDrop domSelector=".attachmentDragAndDrop${id}"
                                   componentInstanceId="${componentId}"
                                   resourceId="${id}"
+                                  resourceType="${type}"
                                   contentLanguage="${contentLanguage}"
                                   hasToBeIndexed="${indexIt}"
                                   documentType="${context}"

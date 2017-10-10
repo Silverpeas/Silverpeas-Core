@@ -26,35 +26,48 @@ package org.silverpeas.core.web.calendar;
 
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.calendar.notification.user.CalendarEventOccurrenceNotifyUserNotificationBuilder;
+import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
+import org.silverpeas.core.web.mvc.util.AlertUser;
+import org.silverpeas.core.web.mvc.webcomponent.Navigation;
+import org.silverpeas.core.web.mvc.webcomponent.WebComponentController;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.LowestRoleAccess;
 import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectTo;
+import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
+import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
 import org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.sql.Date;
 import java.time.LocalDate;
+import java.time.temporal.Temporal;
 import java.util.List;
+
+import static org.silverpeas.core.util.StringUtil.*;
 
 /**
  * Common behaviors about WEB component controllers which handle the rendering of a calendar.
- * @param <WEB_COMPONENT_REQUEST_CONTEXT>
+ * @param <C>
  */
-public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEXT extends
-    WebComponentRequestContext>
-    extends
-    org.silverpeas.core.web.mvc.webcomponent.WebComponentController<WEB_COMPONENT_REQUEST_CONTEXT> {
+public abstract class AbstractCalendarWebController<C extends AbstractCalendarWebRequestContext>
+    extends WebComponentController<C> {
+
+  private static final int STRING_MAX_LENGTH = 50;
 
   private Selection userPanelSelection = null;
 
@@ -63,10 +76,6 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
       final String settingsFileName) {
     super(controller, context, multilangFileName, iconFileName, settingsFileName);
     userPanelSelection = getSelection();
-  }
-
-  protected CalendarWebServiceProvider getWebServiceProvider() {
-    return CalendarWebServiceProvider.get();
   }
 
   protected abstract <T extends CalendarTimeWindowViewContext> T getCalendarTimeWindowContext();
@@ -78,11 +87,15 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
   @POST
   @Path("calendars/context")
   @Produces(MediaType.APPLICATION_JSON)
-  public <T extends CalendarTimeWindowViewContext> T view(WEB_COMPONENT_REQUEST_CONTEXT context) {
+  public <T extends CalendarTimeWindowViewContext> T view(C context) {
     CalendarViewType calendarViewType =
         CalendarViewType.from(context.getRequest().getParameter("view"));
     if (calendarViewType != null) {
       getCalendarTimeWindowContext().setViewType(calendarViewType);
+    }
+    String listViewMode = context.getRequest().getParameter("listViewMode");
+    if (isDefined(listViewMode)) {
+      getCalendarTimeWindowContext().setListViewMode(getBooleanValue(listViewMode));
     }
     String timeWindow = context.getRequest().getParameter("timeWindow");
     if (StringUtil.isDefined(timeWindow)) {
@@ -101,11 +114,35 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
     return getCalendarTimeWindowContext();
   }
 
+  @GET
+  @Path("calendars/occurrences/{occurrenceId}/notify")
+  public Navigation notifyManuallyUsersGroups(C context) {
+    CalendarEventOccurrence occurrence = context.getCalendarEventOccurrenceById();
+
+    AlertUser sel = context.getUserManualNotificationForParameterization();
+    sel.resetAll();
+
+    // Browse bar settings
+    sel.setHostSpaceName(context.getSpaceLabel());
+    sel.setHostComponentId(context.getComponentInstanceId());
+    Pair<String, String> hostComponentName = new Pair<>(context.getComponentInstanceLabel(), null);
+    sel.setHostComponentName(hostComponentName);
+
+    // The notification
+    sel.setNotificationMetaData(UserNotificationHelper.build(
+        new CalendarEventOccurrenceNotifyUserNotificationBuilder(occurrence, context.getUser())));
+
+    SelectionUsersGroups sug = new SelectionUsersGroups();
+    sug.setComponentId(context.getComponentInstanceId());
+    sel.setSelectionUsersGroups(sug);
+    return context.redirectToNotifyManuallyUsers();
+  }
+
   @POST
   @Path("calendars/events/users/participation")
   @RedirectTo("{userPanelUri}")
   @LowestRoleAccess(SilverpeasRole.admin)
-  public void viewParticipationOfUsers(WEB_COMPONENT_REQUEST_CONTEXT context) {
+  public void viewParticipationOfUsers(C context) {
     List<String> userIds = (List<String>) StringUtil
         .splitString(context.getRequest().getParameter("UserPanelCurrentUserIds"), ',');
     List<String> groupIds = (List<String>) StringUtil
@@ -133,7 +170,7 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
   @Path("calendars/events/attendees/select")
   @RedirectTo("{userPanelUri}")
   @LowestRoleAccess(SilverpeasRole.admin)
-  public void modifyAttendees(WEB_COMPONENT_REQUEST_CONTEXT context) {
+  public void modifyAttendees(C context) {
     List<String> userIds = (List<String>) StringUtil
         .splitString(context.getRequest().getParameter("UserPanelCurrentUserIds"), ',');
     List<String> groupIds = (List<String>) StringUtil
@@ -156,6 +193,32 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
     return attendeeSelectionParams;
   }
 
+  protected void processNewEvent(final AbstractCalendarWebRequestContext context) {
+    final Temporal startDate = context.getOccurrenceStartDate();
+    if (startDate != null) {
+      context.getRequest().setAttribute("occurrenceStartDate", startDate.toString());
+    }
+  }
+
+  protected void processViewOccurrence(final AbstractCalendarWebRequestContext context,
+      final String navigationStepId) {
+    CalendarEventOccurrence occurrence = context.getCalendarEventOccurrenceById();
+    if (occurrence != null) {
+      CalendarEventOccurrenceEntity entity =
+          CalendarEventOccurrenceEntity.fromOccurrence(occurrence, context.getComponentInstanceId(),
+              getCalendarTimeWindowContext().getZoneId()).withOccurrenceURI(
+              context.uri().ofOccurrence(occurrence));
+      context.getRequest().setAttribute("occurrence", entity);
+
+      context.getNavigationContext()
+          .navigationStepFrom(navigationStepId)
+          .withLabel(StringUtil.truncate(entity.getTitle(), STRING_MAX_LENGTH))
+          .setUriMustBeUsedByBrowseBar(false);
+    } else {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+  }
+
   private String initSelection(SelectionUsersGroups sug, String goFunction, List<String> userIds,
       List<String> groupIds) {
     String url = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL") +
@@ -166,7 +229,7 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
     userPanelSelection.setGoBackURL(goUrl);
     userPanelSelection.setElementSelectable(true);
     userPanelSelection.setSelectedElements(userIds);
-    // TODO for now groups are not handled, but it will be the case in the future
+    // for now groups are not handled, but it will be the case in the future
     userPanelSelection.setSetSelectable(false);
     userPanelSelection.setSelectedSets(groupIds);
     userPanelSelection.setHostPath(null);
@@ -180,5 +243,19 @@ public abstract class AbstractCalendarWebController<WEB_COMPONENT_REQUEST_CONTEX
     // Add extra params
     userPanelSelection.setExtraParams(sug);
     return Selection.getSelectionURL();
+  }
+
+  /**
+   * Handles the incoming from a search result URL.
+   * @param context the context of the incoming request.
+   */
+  @GET
+  @Path("searchResult")
+  @RedirectToInternal("calendars/occurrences/{occurrenceId}")
+  public void searchResult(AbstractCalendarWebRequestContext context) {
+    context.getNavigationContext().clear();
+    final CalendarEventOccurrence occurrence = CalendarWebServiceProvider.get()
+        .getFirstCalendarEventOccurrenceFromEventId(context.getRequest().getParameter("Id"));
+    context.addRedirectVariable("occurrenceId", asBase64(occurrence.getId().getBytes()));
   }
 }

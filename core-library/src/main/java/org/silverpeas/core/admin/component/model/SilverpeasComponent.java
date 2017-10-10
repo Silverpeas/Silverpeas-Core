@@ -25,18 +25,56 @@
 package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.StringUtil;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 /**
+ * A component in Silverpeas. It is either a multi-user application or a personal application.
+ *
  * @author Yohann Chastagnier
  */
 public interface SilverpeasComponent {
 
   /**
-   * Gets the value of the name property.
-   * @return possible object is {@link String }
+   * Gets a silverpeas component from the specified name.
+   * @param componentName a component name.
+   * @return an optional silverpeas component of {@link SilverpeasComponent}.
+   */
+  static Optional<SilverpeasComponent> getByName(String componentName) {
+    if (!StringUtil.isDefined(componentName)) {
+      return Optional.empty();
+    }
+    Optional<? extends SilverpeasComponent> component = WAComponent.getByName(componentName);
+    if (!component.isPresent()) {
+      component = PersonalComponent.getByName(componentName);
+    }
+    return Optional.ofNullable(component.orElse(null));
+  }
+
+
+  /**
+   * Gets a silverpeas component from the specified component instance identifier.
+   * @param componentInstanceId a component instance identifier as string.
+   * @return an optional silverpeas component of {@link SilverpeasComponent}.
+   */
+  static Optional<SilverpeasComponent> getByInstanceId(String componentInstanceId) {
+    if (!StringUtil.isDefined(componentInstanceId)) {
+      return Optional.empty();
+    }
+    Optional<? extends SilverpeasComponent> component =
+        WAComponent.getByInstanceId(componentInstanceId);
+    if (!component.isPresent()) {
+      component = PersonalComponent.getByInstanceId(componentInstanceId);
+    }
+    return Optional.ofNullable(component.orElse(null));
+  }
+
+  /**
+   * Gets the type of the component.
+   * @return the application name.
    */
   String getName();
 
@@ -74,6 +112,15 @@ public interface SilverpeasComponent {
       return getDescription().get(lang);
     }
     return getDescription().get(DisplayI18NHelper.getDefaultLanguage());
+  }
+
+  /**
+   * Indicates if the component instance is a personal one.<br/>
+   * A personal component instance is linked to a user.
+   * @return true if it is a personal one, false otherwise.
+   */
+  default boolean isPersonal() {
+    return false;
   }
 
   /**
@@ -119,4 +166,22 @@ public interface SilverpeasComponent {
    * @return the list of groups of parameters.
    */
   List<GroupOfParameters> getGroupsOfParameters();
+
+  /**
+   * Is this component is a workflow?
+   * @return true if this component satisfies the behavior of a workflow, that is to say if it
+   * defines a workflow. False if it is a regular Silverpeas.
+   * application.
+   */
+  default boolean isWorkflow() {
+    return false;
+  }
+
+  /**
+   * Is this component is a topic tracker?
+   * @return true if this component satisfies the behavior of a topic tracker.
+   */
+  default boolean isTopicTracker() {
+    return false;
+  }
 }

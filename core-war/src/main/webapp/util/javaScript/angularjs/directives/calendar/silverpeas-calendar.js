@@ -61,11 +61,11 @@
       items.forEach(function(item) {
         var isVisible = true;
         if (typeof item['notVisible'] === 'boolean') {
-          isVisible = item['notVisible'] !== visible;
+          isVisible = item['notVisible'] === false;
         } else if (typeof item['visible'] === 'boolean') {
-          isVisible = item['visible'] === visible;
+          isVisible = item['visible'] === true;
         }
-        if (isVisible) {
+        if (isVisible === visible) {
           filteredItems.push(item);
         }
       });
@@ -101,14 +101,15 @@
   });
 
   angular.module('silverpeas.directives').directive('silverpeasCalendar',
-      ['$compile', '$timeout', 'context', 'CalendarService',
-        function($compile, $timeout, context, CalendarService) {
+      ['$compile', '$timeout', 'context', 'CalendarService', 'visibleFilter',
+        function($compile, $timeout, context, CalendarService, visibleFilter) {
         return {
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar.jsp',
           restrict : 'E',
           scope : {
             api : '=?',
+            filterOnPdc : '=?',
             participationUserIds : '=',
             onEventOccurrenceView : '&?',
             onEventOccurrenceModify : '&?',
@@ -121,9 +122,6 @@
           controllerAs : '$ctrl',
           bindToController : true,
           controller : ['$scope', '$element', function($scope, $element) {
-            applyReadyBehaviorOn(this);
-            var calendarInitialized = false;
-
 
             /**
              * Sets from a calendar and a list of occurrences the attributes attempted by
@@ -189,11 +187,23 @@
             };
 
             /**
+             * Handles the filtering of an event occurrence.
+             */
+            var _eventOccurrenceFilter = function(occurrence) {
+              return this.api.isOccurrenceVisible(occurrence);
+            }.bind(this);
+
+            /**
              * Handles the rendering of an event occurrence.
              */
             var _eventOccurrenceRender = function(occurrence, $element, view) {
               occurrence.$element = $element;
-            };
+              var $eventDotElement = angular.element('.fc-event-dot', $element);
+              if ($eventDotElement.length) {
+                var __eventDotElement = $eventDotElement[0];
+                __eventDotElement.style.borderColor = __eventDotElement.style.backgroundColor;
+              }
+            }.bind(this);
             var _eventOccurrenceClick = function(occurrence) {
               if (!occurrence.canBeAccessed) {
                 return false;
@@ -275,15 +285,52 @@
                       at : (contentLimit < bodyLimit ? "top left" : "top right")
                     }
                   };
+                  var $markerOfListView = angular.element('.fc-event-dot', $occContainer);
+                  if ($markerOfListView.length) {
+                    qTipOptions.position.target = $markerOfListView;
+                    qTipOptions.position.adjust = {x : 4};
+                    qTipOptions.events = {
+                      hidden : function(event, api) {
+                        if ($markerOfListView.$tip$ && $markerOfListView.$tip$shown) {
+                          $scrollContainer.unbind("scroll", $markerOfListView.$tip$listener);
+                          $markerOfListView.$tip$.destroy();
+                          $markerOfListView.$tip$ = undefined;
+                          $markerOfListView.$tip$listener = undefined;
+                          $markerOfListView.$tip$shown = undefined;
+                        }
+                      }
+                    };
+                  }
                   if (!occurrence.onAllDay) {
                     qTipOptions.position = extendsObject(qTipOptions.position, {
                       viewport : $occurrenceContainer,
                       container : $occurrenceContainer
                     });
                   }
-                  TipManager.simpleDetails($occContainer, function() {
+                  var $tipApi = TipManager.simpleDetails($occContainer, function() {
                     return $content
                   }, qTipOptions);
+                  if ($markerOfListView.length) {
+                    $markerOfListView.$tip$shown = true;
+                    var $scrollContainer = angular.element('.fc-scroller', $element);
+                    var __listener = function() {
+                      if (sp.element.isInView($markerOfListView, true, $scrollContainer)) {
+                        if (!$markerOfListView.$tip$shown) {
+                          $tipApi.show();
+                          $markerOfListView.$tip$shown = true;
+                        }
+                        $tipApi.reposition();
+                      } else {
+                        if ($markerOfListView.$tip$shown) {
+                          $tipApi.hide();
+                          $markerOfListView.$tip$shown = false;
+                        }
+                      }
+                    };
+                    $markerOfListView.$tip$ = $tipApi;
+                    $markerOfListView.$tip$listener = __listener;
+                    $scrollContainer.bind("scroll", __listener);
+                  }
                   resolve();
                 }.bind(this));
               }.bind(this));
@@ -386,8 +433,9 @@
              */
             var __getAjaxCurrentTimeWindowPeriod = function() {
               var ref = __getCurrentDateMomentFromTimeWindowViewContext(this.timeWindowViewContext);
-              var $dateMin = sp.moment.make(ref).startOf('month').add(-1, 'weeks');
-              var $dateMax = sp.moment.make(ref).endOf('month').add(2, 'weeks');
+              var timeUnit = this.timeWindowViewContext.viewType === 'YEARLY' ? 'year' : 'month';
+              var $dateMin = sp.moment.make(ref).startOf(timeUnit).add(-1, 'weeks');
+              var $dateMax = sp.moment.make(ref).endOf(timeUnit).add(2, 'weeks');
               return {startDateTime : $dateMin, endDateTime : $dateMax};
             }.bind(this);
 
@@ -417,8 +465,8 @@
               /**
                * Changes the current view by the one specified.
                */
-              changeView : function(type) {
-                return saveContext({"view" : type});
+              changeView : function(type, listViewMode) {
+                return saveContext({"view" : type, "listViewMode" : listViewMode});
               }.bind(this),
               /**
                * Changes the current time window by the one specified.
@@ -427,6 +475,25 @@
                 return saveContext({
                   "timeWindow" : type, "timeWindowDate" : day, "backDay" : backDay
                 });
+              }.bind(this),
+              /**
+               * Indicates if the view is one with a calendar.
+               */
+              isCalendarView : function() {
+                return typeof this.spCalendar !== 'undefined';
+              }.bind(this),
+              /**
+               * Indicates if the view is next event one.
+               */
+              isNextEventView : function() {
+                return !this.api.isCalendarView();
+              }.bind(this),
+              /**
+               * Indicates if the view is one with a calendar.
+               */
+              isListDisplayMode : function() {
+                return typeof this.api.isCalendarView &&
+                    (this.timeWindowViewContext.viewType === 'YEARLY' || this.timeWindowViewContext.listViewMode);
               }.bind(this),
 
               //
@@ -446,9 +513,12 @@
                 } else {
                   this.api.getCalendars().removeElement(calendar, 'id');
                 }
-                this.spCalendar.removeEventSource(calendar);
+                if (this.spCalendar) {
+                  this.spCalendar.removeEventSource(calendar);
+                }
                 _decorate();
                 this.api.redrawCalendars();
+                this.api.refetchNextOccurrences();
               }.bind(this),
               /**
                * Sets to the given calendar the specified color.
@@ -458,6 +528,7 @@
                 SilverpeasCalendarTools.setCalendarColor(calendar, color);
                 _decorate();
                 this.api.redrawCalendars();
+                this.api.refetchNextOccurrences();
               }.bind(this),
               /**
                * Gets the potential colors which are available for calendars of any types.
@@ -472,19 +543,22 @@
               toggleCalendarVisibility : function(calendar) {
                 SilverpeasCalendarTools.toggleCalendarVisibility(calendar);
                 this.api.redrawCalendars();
+                this.api.refetchNextOccurrences();
               }.bind(this),
               /**
                * Redraws (or draw) the UI by taking into account all kinds of calendar handled by
                * the component.
                */
               redrawCalendars : function() {
-                __getAllCalendars().forEach(function(calendar) {
-                  if (!calendar.notVisible) {
-                    this.spCalendar.showEventSource(calendar);
-                  } else {
-                    this.spCalendar.hideEventSource(calendar);
-                  }
-                }.bind(this));
+                if (this.spCalendar) {
+                  __getAllCalendars().forEach(function(calendar) {
+                    if (!calendar.notVisible) {
+                      this.spCalendar.showEventSource(calendar);
+                    } else {
+                      this.spCalendar.hideEventSource(calendar);
+                    }
+                  }.bind(this));
+                }
               }.bind(this),
 
               //
@@ -519,9 +593,11 @@
                 if (calendar.isSynchronized) {
                   this.api.refetchCalendar(calendar).then(function() {
                     this.api.redrawCalendars();
+                    this.api.refetchNextOccurrences();
                   }.bind(this));
                 } else {
                   this.api.redrawCalendars();
+                  this.api.refetchNextOccurrences();
                 }
               }.bind(this),
               /**
@@ -561,10 +637,12 @@
                */
               refetchCalendar : function(calendar) {
                 var promise = this.api.loadCalendarEventOccurrences(calendar);
-                if (!calendar.notVisible) {
-                  this.spCalendar.setEventSource(calendar, promise);
-                } else {
-                  this.spCalendar.registerEventSource(calendar, promise);
+                if (this.spCalendar) {
+                  if (!calendar.notVisible) {
+                    this.spCalendar.setEventSource(calendar, promise);
+                  } else {
+                    this.spCalendar.registerEventSource(calendar, promise);
+                  }
                 }
                 return promise;
               }.bind(this),
@@ -574,6 +652,9 @@
                * (Data reload by Ajax Requests)
                */
               refetchCalendarEvent : function(event) {
+                if (!this.api.isCalendarView()) {
+                  return;
+                }
                 var _eventId = event.id;
                 var _eventUri = event.uri;
 
@@ -597,6 +678,45 @@
                         }
                       });
                     }.bind(this));
+              }.bind(this),
+              /**
+               * Refetches the next occurrence view.
+               */
+              refetchNextOccurrences : function() {
+                if (!this.api.isNextEventView()) {
+                  return;
+                }
+                var toExclude = [];
+                visibleFilter(this.api.getCalendars(), false).forEach(function(calendar) {
+                  toExclude.push(calendar.id)
+                });
+                var userIds = [];
+                visibleFilter(this.api.getParticipationCalendars(), true).forEach(function(participant) {
+                  userIds.push(participant.userId);
+                });
+                var parameters = {
+                  userIds : userIds,
+                  calendarIdsToExclude : toExclude
+                }
+                CalendarService.getNextOccurrences(parameters).then(function(occurrences) {
+                  this.nextOccurrences = occurrences.filter(_eventOccurrenceFilter);
+                }.bind(this));
+              }.bind(this),
+              /**
+               * Applies a filtering on given event ids.
+               */
+              filterOnEventIds : function(eventIds) {
+                this.filterOnEventIds = eventIds;
+                this.api.redrawCalendars();
+                this.api.refetchNextOccurrences();
+              }.bind(this),
+              /**
+               * Indicates if an event is visible or not (from UI point of view).
+               */
+              isOccurrenceVisible : function(occurrence) {
+                var noEventIdFilter = !this.filterOnEventIds || !this.filterOnEventIds.length;
+                return noEventIdFilter ||
+                    this.filterOnEventIds.indexOfElement(occurrence.eventId) >= 0;
               }.bind(this),
 
               //
@@ -641,28 +761,28 @@
                * (Data reload by Ajax Requests)
                */
               refetchParticipationCalendars : function() {
-                this.ready(function() {
-                  _destroyEventDetails();
-                  this.api.loadParticipationCalendars(this.participationUserIds).then(
-                      function(partipationCalendars) {
-                        this.participationCalendars.forEach(function(participationCalendar) {
-                          if (partipationCalendars.indexOfElement(participationCalendar, 'uri') < 0) {
-                            this.api.removeCalendar(participationCalendar);
-                          }
-                        }.bind(this));
-                        this.participationCalendars = partipationCalendars;
-                        _decorate();
-                        partipationCalendars.forEach(function(participationCalendar) {
-                          if (!participationCalendar.notVisible) {
-                            this.spCalendar.setEventSource(participationCalendar,
-                                participationCalendar.occurrences);
-                          } else {
-                            this.spCalendar.registerEventSource(participationCalendar,
-                                participationCalendar.occurrences);
-                          }
-                        }.bind(this));
+                _destroyEventDetails();
+                return this.api.loadParticipationCalendars(this.participationUserIds).then(
+                  function(partipationCalendars) {
+                    this.participationCalendars.forEach(function(participationCalendar) {
+                      if (partipationCalendars.indexOfElement(participationCalendar, 'uri') < 0) {
+                        this.api.removeCalendar(participationCalendar);
+                      }
+                    }.bind(this));
+                    this.participationCalendars = partipationCalendars;
+                    _decorate();
+                    if (this.spCalendar) {
+                      partipationCalendars.forEach(function(participationCalendar) {
+                        if (!participationCalendar.notVisible) {
+                          this.spCalendar.setEventSource(participationCalendar,
+                              participationCalendar.occurrences);
+                        } else {
+                          this.spCalendar.registerEventSource(participationCalendar,
+                              participationCalendar.occurrences);
+                        }
                       }.bind(this));
-                }.bind(this));
+                    }
+                  }.bind(this));
               }.bind(this)
             };
 
@@ -674,10 +794,12 @@
               var calendarOptions = {
                 allDaySlot : true,
                 view : twvc.viewType,
+                listMode : twvc.listViewMode,
                 weekends : twvc.withWeekend,
                 timezone : twvc.zoneId,
                 firstDayOfWeek : twvc.firstDayOfWeek,
                 currentDate : __getCurrentDateMomentFromTimeWindowViewContext(twvc),
+                eventfilter : _eventOccurrenceFilter,
                 eventrender : _eventOccurrenceRender,
                 onevent : _eventOccurrenceClick,
                 ondayclick : _dayClick,
@@ -692,16 +814,34 @@
             /**
              * A listener on changes about time window view context.
              */
+
+            var __deferredCalendarLoad = sp.promise.deferred();
             $scope.$watch('$ctrl.timeWindowViewContext', function(twvc, oldTwvc) {
-              if (twvc.viewType) {
-                if (!calendarInitialized) {
-                  calendarInitialized = true;
+              if (!this.calendars && twvc.viewType) {
+                CalendarService.list().then(function(calendars) {
+                  this.calendars = calendars;
+                  _decorate();
+                  __deferredCalendarLoad.resolve();
+                }.bind(this));
+              }
+              if (twvc.viewType === this.viewTypes.nextEvents) {
+                if (this.spCalendar) {
+                  this.spCalendar.clear();
+                  this.spCalendar = undefined;
+                }
+                __deferredCalendarLoad.promise.then(function() {
+                  $timeout(function() {
+                    _destroyEventDetails();
+                    this.api.refetchNextOccurrences();
+                  }.bind(this), 0);
+                }.bind(this));
+              } else if (twvc.viewType) {
+                this.nextOccurrences = undefined;
+                if (!this.spCalendar) {
                   this.spCalendar = initializeCalendar(twvc)
-                  CalendarService.list().then(function(calendars) {
-                    this.calendars = calendars;
-                    _decorate();
+                  __deferredCalendarLoad.promise.then(function() {
                     this.api.refetchCalendars();
-                    this.notifyReady()
+                    this.api.refetchParticipationCalendars();
                   }.bind(this));
                   // This call is just for initializing the cache of templates about the event occurrence tip
                   // directive
@@ -709,8 +849,9 @@
                 } else {
                   _destroyEventDetails();
                   this.spCalendar.gotoDate(__getCurrentDateMomentFromTimeWindowViewContext(twvc));
-                  this.spCalendar.changeView(twvc.viewType);
-                  if (oldTwvc && oldTwvc.viewType === twvc.viewType) {
+                  this.spCalendar.changeView(twvc.viewType, twvc.listViewMode);
+                  if (oldTwvc &&
+                      (oldTwvc.viewType === twvc.viewType || twvc.viewType === 'YEARLY' || oldTwvc.viewType === 'YEARLY')) {
                     this.api.refetchCalendars();
                     this.api.refetchParticipationCalendars();
                   }
@@ -723,7 +864,15 @@
              */
             $scope.$watchCollection('$ctrl.participationUserIds', function() {
               if (!_partipationCalendarsChangedInternally) {
-                this.api.refetchParticipationCalendars();
+                __deferredCalendarLoad.promise.then(function() {
+                  var promise = this.api.refetchParticipationCalendars();
+                  if (this.api.isNextEventView()) {
+                    promise.then(function() {
+                      this.api.refetchNextOccurrences();
+                    }.bind(this));
+                  }
+                  return promise;
+                }.bind(this));
               }
               _partipationCalendarsChangedInternally = false;
             }.bind(this));
@@ -756,7 +905,10 @@
           restrict : 'E',
           transclude : true,
           scope : {
-            view : '&', timeWindow : '&', timeWindowViewContext : '='
+            view : '&',
+            timeWindow : '&',
+            timeWindowViewContext : '=',
+            nextEventMonths : '='
           },
           controllerAs : '$ctrl',
           bindToController : true,
@@ -768,12 +920,32 @@
             this.chooseReferenceDay = function() {
               this.$referenceDayInput.datepicker("show");
             };
+            this.isSelectedViewType = function(viewType) {
+              return viewType === this.timeWindowViewContext.viewType;
+            };
+            this.hasToDisplayViewMode = function() {
+              return this.viewTypes.day === this.timeWindowViewContext.viewType ||
+                  this.viewTypes.week === this.timeWindowViewContext.viewType ||
+                  this.viewTypes.month === this.timeWindowViewContext.viewType;
+            };
+            this.getViewTypeLabel = function(viewType) {
+              switch (viewType) {
+                case this.viewTypes.nextEvents :
+                  return this.labels.nextEvents;
+                case this.viewTypes.day :
+                  return this.labels.day;
+                case this.viewTypes.week :
+                  return this.labels.week;
+                case this.viewTypes.month :
+                  return this.labels.month;
+                case this.viewTypes.year :
+                  return this.labels.year;
+              }
+            };
             this.$postLink = function() {
               $timeout(function() {
-                this.$dayView = jQuery(angular.element(".day-view", $element));
-                this.$weekView = jQuery(angular.element(".week-view", $element));
-                this.$monthView = jQuery(angular.element(".month-view", $element));
-                this.$today = jQuery(angular.element("#today a", $element));
+                this.$viewButtons = jQuery(angular.element(".view-button", $element));
+                this.$todayButton = jQuery(angular.element(".today-button", $element));
                 this.$previousButton = jQuery(angular.element(".previous", $element));
                 this.$nextButton = jQuery(angular.element(".next", $element));
                 this.$referenceDayInput = jQuery(angular.element(".reference-day", $element));
@@ -793,12 +965,12 @@
                   }
                 }.bind(this));
                 Mousetrap.bind(['escape escape', 'shift+up', 'shift+down'], function() {
-                  this.$today.click();
+                  this.$todayButton.click();
                 }.bind(this));
                 function __viewNavigation(buttons) {
                   var selected;
                   for (var i = 0; i < buttons.length; i++) {
-                    var button = buttons[i];
+                    var button = angular.element(buttons[i]);
                     if (!selected) {
                       selected = button.hasClass('selected');
                     } else {
@@ -808,14 +980,54 @@
                   }
                 }
                 Mousetrap.bind('shift+left', function() {
-                  var buttons = [this.$monthView, this.$weekView, this.$dayView];
+                  var buttons = [];
+                  Array.prototype.push.apply(buttons, this.$viewButtons);
+                  buttons.reverse()
                   __viewNavigation(buttons);
                 }.bind(this));
                 Mousetrap.bind('shift+right', function() {
-                  var buttons = [this.$dayView, this.$weekView, this.$monthView];
-                  __viewNavigation(buttons);
+                  __viewNavigation(this.$viewButtons);
                 }.bind(this));
               }.bind(this), 0);
+            }.bind(this);
+          }]
+        };
+      }]);
+
+  angular.module('silverpeas.directives').directive('silverpeasCalendarPdcFilter',
+      ['$timeout', 'visibleFilter', 'defaultFilter', function($timeout, visibleFilter, defaultFilter) {
+        return {
+          template : '<silverpeas-pdc-filter ng-if="$ctrl.calendars.length" ' +
+                                            'api="$ctrl.api" instance-ids="$ctrl.instanceIds" ' +
+                                            'on-filter="$ctrl.onFilter({eventIds:eventIds})" ' +
+                                            'filter-on-change="true" ' +
+                                            'show-counters="false"></silverpeas-pdc-filter>',
+          restrict : 'E',
+          transclude : true,
+          scope : {
+            api : '=?',
+            calendars : '=',
+            onFilter : '&'
+          },
+          controllerAs : '$ctrl',
+          bindToController : true,
+          controller : ['$scope', function($scope) {
+
+            $scope.$watchCollection('$ctrl.calendars', function() {
+              var visibleCalendars = [];
+              if (this.calendars) {
+                visibleCalendars = visibleFilter(this.calendars, true);
+                if (visibleCalendars && !visibleCalendars.length) {
+                  visibleCalendars = defaultFilter(this.calendars, true);
+                }
+              }
+              this.instanceIds = visibleCalendars.extractElementAttribute('uri', function(value) {
+                return SilverpeasCalendarTools.extractComponentInstanceIdFromUri(value);
+              });
+            }.bind(this));
+
+            this.$onInit = function() {
+              this.instanceIds = [];
             }.bind(this);
           }]
         };

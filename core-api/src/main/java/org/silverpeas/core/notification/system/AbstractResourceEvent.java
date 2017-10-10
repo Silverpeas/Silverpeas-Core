@@ -52,7 +52,7 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
   @XmlElement
   private StateTransition<T> transition;
   @XmlElement
-  private Map<String, String> parameters = new HashMap<String, String>();
+  private Map<String, String> parameters = new HashMap<>();
 
   protected AbstractResourceEvent() {
 

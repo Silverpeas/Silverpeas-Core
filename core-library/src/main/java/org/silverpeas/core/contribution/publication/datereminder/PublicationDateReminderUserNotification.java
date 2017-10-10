@@ -50,7 +50,7 @@ public class PublicationDateReminderUserNotification
   public PublicationDateReminderUserNotification(
       final PersistentResourceDateReminder resourceDateReminder,
       final LocalizationBundle componentMessages) {
-    super(resourceDateReminder, "dateReminder");
+    super(resourceDateReminder);
     PublicationNoteReference pubNoteReference = resourceDateReminder.getResource(PublicationNoteReference.class);
     this.pubDetail = pubNoteReference.getEntity();
     this.componentMessages = componentMessages;
@@ -111,6 +111,11 @@ public class PublicationDateReminderUserNotification
   }
 
   @Override
+  protected String getTemplateFileName() {
+    return "dateReminder";
+  }
+
+  @Override
   protected NotifAction getAction() {
     return null;
   }
@@ -128,7 +133,7 @@ public class PublicationDateReminderUserNotification
   }
 
   @Override
-  protected boolean isSendImmediatly() {
+  protected boolean isSendImmediately() {
     return true;
   }
 

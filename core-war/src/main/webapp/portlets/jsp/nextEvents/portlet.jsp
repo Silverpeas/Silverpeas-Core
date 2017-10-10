@@ -35,7 +35,7 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <view:setConstant var="adminRole" constant="org.silverpeas.core.admin.user.model.SilverpeasRole.admin"/>
-<c:set var="componentInstance" value="<%=PersonalComponentInstance.from(User.getCurrentRequester(), PersonalComponent.get(UserCalendarSettings.COMPONENT_NAME).get())%>"/>
+<c:set var="componentInstance" value="<%=PersonalComponentInstance.from(User.getCurrentRequester(), PersonalComponent.getByName(UserCalendarSettings.COMPONENT_NAME).get())%>"/>
 <jsp:useBean id="componentInstance" type="org.silverpeas.core.admin.component.model.PersonalComponentInstance"/>
 <c:url var="componentUriBase" value="<%=URLUtil.getComponentInstanceURL(componentInstance.getId())%>"/>
 <c:set var="userZoneId" value="${componentInstance.user.userPreferences.zoneId}"/>
@@ -51,7 +51,8 @@
 <view:script src="/portlets/jsp/nextEvents/javaScript/angularjs/nextevents.js"/>
 
 <div class="portlet" id="ng-app" ng-app="silverpeas.nextevents" ng-controller="mainController">
-  <silverpeas-calendar-event-occurrence-list ng-if="occurrences"
+  <silverpeas-calendar-event-occurrence-list
+      ng-if="occurrences"
       no-occurrence-label="${noEventLabel}"
       occurrences="occurrences"
       on-event-occurrence-click="viewEventOccurrence(occurrence)">

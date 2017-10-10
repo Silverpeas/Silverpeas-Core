@@ -25,6 +25,8 @@ package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
 
+import java.util.List;
+
 /**
  * Criteria used to search some component instances in Silverpeas. The component instances must be
  * searchable.
@@ -33,7 +35,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
  */
 public class ComponentSearchCriteria {
 
-  private String componentInstanceId;
+  private List<String> componentInstanceIds;
   private String workspaceId;
   private UserDetail user;
 
@@ -42,8 +44,8 @@ public class ComponentSearchCriteria {
     return this;
   }
 
-  public ComponentSearchCriteria onComponentInstance(String instanceId) {
-    this.componentInstanceId = instanceId;
+  public ComponentSearchCriteria onComponentInstances(List<String> instanceIds) {
+    this.componentInstanceIds = instanceIds;
     return this;
   }
 
@@ -52,8 +54,8 @@ public class ComponentSearchCriteria {
     return this;
   }
 
-  public boolean hasCriterionOnComponentInstance() {
-    return this.componentInstanceId != null;
+  public boolean hasCriterionOnComponentInstances() {
+    return this.componentInstanceIds != null && !this.componentInstanceIds.isEmpty();
   }
 
   public boolean hasCriterionOnWorkspace() {
@@ -64,8 +66,8 @@ public class ComponentSearchCriteria {
     return this.user != null;
   }
 
-  public String getComponentInstanceId() {
-    return componentInstanceId;
+  public List<String> getComponentInstanceIds() {
+    return componentInstanceIds;
   }
 
   public String getWorkspaceId() {

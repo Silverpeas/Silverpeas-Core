@@ -43,11 +43,17 @@
               new ParticipationCache(context.componentUriBase + "_participation");
 
           $scope.goToPage = function(uri, context) {
-            var formConfig = sp.formConfig(uri);
+            var ajaxConfig = sp.ajaxConfig(uri);
             if (context && context.startMoment) {
-              formConfig.withParam("occurrenceStartDate", context.startMoment.format())
+              ajaxConfig.withParam("occurrenceStartDate", encodeURIComponent(context.startMoment.format()))
             }
-            silverpeasFormSubmit(formConfig);
+            spLayout.getBody().getContent().load(ajaxConfig.getUrl());
+          };
+
+          $scope.openPage = function(uri) {
+            var windowName = "userPanelWindow";
+            var windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised,scrollbars,resizable";
+            SP_openUserPanel(uri, windowName, windowParams);
           };
 
           $scope.defaultVisibility = SilverpeasCalendarConst.visibilities[0].name;
@@ -57,16 +63,31 @@
           NAVIGATION MANAGEMENT
            */
 
+          function __getOccurrenceViewUrl(occurrence, edition) {
+            var uri = edition ? occurrence.occurrenceEditionUrl : occurrence.occurrenceViewUrl;
+            var fromSharedComponent = uri.indexOf('/userCalendar') < 0;
+            var params = {};
+            if (fromSharedComponent && uri.indexOf('/' + context.component + '/') < 0) {
+              params.previousPageFullUri = location.href;
+            }
+            return sp.formatUrl(uri, params);
+          }
+
           $scope.newEvent = function(startMoment) {
             var uri = context.componentUriBase + 'calendars/events/new';
             $scope.goToPage(uri, {startMoment : startMoment});
           };
+
+          $scope.notifyEventOccurrence = function(occurrence) {
+            var uri = occurrence.occurrenceViewUrl + "/notify";
+            $scope.openPage(uri);
+          };
           $scope.viewEventOccurrence = function(occurrence) {
-            var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id;
+            var uri = __getOccurrenceViewUrl(occurrence);
             $scope.goToPage(uri);
           };
           $scope.editEventOccurrence = function(occurrence) {
-            var uri = context.componentUriBase + 'calendars/occurrences/' + occurrence.id + '/edit';
+            var uri = __getOccurrenceViewUrl(occurrence, true);
             $scope.goToPage(uri);
           };
           $scope.getVisibleCalendars = function(calendars) {
@@ -88,10 +109,10 @@
             });
           };
 
-          $scope.loadOccurrenceFromContext = function() {
+          $scope.loadOccurrenceFromContext = function(creationMode) {
             $scope.loadCalendarsFromContext().then(function(calendars) {
               $scope.calendars = $scope.getVisibleCalendars(calendars);
-              return $scope.reloadEventOccurrence(context.occurrenceUri).then(
+              return $scope.reloadEventOccurrence(context.occurrenceUri, creationMode).then(
                   function(reloadedOccurrence) {
                     if (!reloadedOccurrence.uri && context.occurrenceStartDate) {
                       reloadedOccurrence.startDate = context.occurrenceStartDate;
@@ -116,7 +137,7 @@
             });
           };
 
-          $scope.reloadEventOccurrence = function(occurrenceUri) {
+          $scope.reloadEventOccurrence = function(occurrenceUri, creationMode) {
             if (occurrenceUri) {
               return CalendarService.getEventOccurrenceByUri(occurrenceUri)
                   .then(function(reloadedOccurrence) {
@@ -127,8 +148,14 @@
                         })
                   });
             } else {
-              return sp.promise.resolveDirectlyWith(
-                  SilverpeasCalendarTools.extractEventOccurrenceEntityData());
+              if (creationMode) {
+                return sp.volatileIdentifier.newOn(context.component).then(function(volatileId) {
+                  var newOccurrence = SilverpeasCalendarTools.newEventOccurrenceEntity();
+                  newOccurrence.eventId = volatileId;
+                  return newOccurrence;
+                });
+              }
+              return sp.promise.resolveDirectlyWith(SilverpeasCalendarTools.newEventOccurrenceEntity());
             }
           };
         }]);

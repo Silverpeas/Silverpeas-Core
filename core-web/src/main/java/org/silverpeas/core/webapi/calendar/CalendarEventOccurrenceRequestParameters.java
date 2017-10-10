@@ -51,6 +51,12 @@ public class CalendarEventOccurrenceRequestParameters {
   @XmlElement
   private Set<String> userIds;
 
+  @XmlElement
+  private Set<String> calendarIdsToInclude;
+
+  @XmlElement
+  private Set<String> calendarIdsToExclude;
+
   public OffsetDateTime getStartDateOfWindowTime() {
     return startDateOfWindowTime;
   }
@@ -63,5 +69,13 @@ public class CalendarEventOccurrenceRequestParameters {
     return userIds != null ?
         userIds.stream().map(User::getById).collect(Collectors.toSet()) :
         Collections.emptySet();
+  }
+
+  public Set<String> getCalendarIdsToInclude() {
+    return calendarIdsToInclude != null ? calendarIdsToInclude : Collections.emptySet();
+  }
+
+  public Set<String> getCalendarIdsToExclude() {
+    return calendarIdsToExclude != null ? calendarIdsToExclude : Collections.emptySet();
   }
 }

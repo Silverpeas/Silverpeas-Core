@@ -23,17 +23,20 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.text.MessageFormat;
 
-import static org.silverpeas.core.web.mvc.controller.MainSessionController.MAIN_SESSION_CONTROLLER_ATT;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController
+    .MAIN_SESSION_CONTROLLER_ATT;
 
 /**
  * A tag to render the pane of management of the attachments.
@@ -78,18 +81,15 @@ public class AttachmentPaneTag extends TagSupport {
   }
 
   private String getUserRole() {
-    String role = SilverpeasRole.user.getName();
+    final Mutable<SilverpeasRole> role = Mutable.of(SilverpeasRole.user);
     if (!isReadOnly()) {
       String userId = getCurrentUserIdInSession();
       if (StringUtil.isDefined(userId)) {
-        String[] roles = OrganizationControllerProvider.getOrganisationController()
-            .getUserProfiles(userId, getComponentId());
-        if (roles.length > 0) {
-          role = SilverpeasRole.getHighestFrom(SilverpeasRole.from(roles)).getName();
-        }
+        SilverpeasComponentInstance.getById(getComponentId())
+            .ifPresent(i -> role.set(i.getHighestSilverpeasRolesFor(User.getById(userId))));
       }
     }
-    return role;
+    return role.get().getName();
   }
 
   private String getCurrentUserIdInSession() {

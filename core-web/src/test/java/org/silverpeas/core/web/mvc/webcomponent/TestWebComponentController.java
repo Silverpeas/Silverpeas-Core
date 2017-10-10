@@ -201,7 +201,7 @@ public class TestWebComponentController extends ParentTestWebComponentController
   @GET
   @Path("/wysiwyg/modify")
   public Navigation modifyWysiwyg(TestWebComponentRequestContext context) {
-    return context.redirectToHtmlEditor("objectId", "resturnPath", false);
+    return context.redirectToHtmlEditor("objectId", "objectType", "resturnPath", false);
   }
 
   @GET

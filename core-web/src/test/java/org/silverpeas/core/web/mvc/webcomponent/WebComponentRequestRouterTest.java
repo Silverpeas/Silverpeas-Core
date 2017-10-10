@@ -27,8 +27,8 @@ import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.mockito.internal.stubbing.answers.Returns;
-import org.silverpeas.core.admin.component.ComponentHelper;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -57,7 +57,6 @@ import javax.servlet.http.HttpSession;
 import javax.ws.rs.HttpMethod;
 import javax.ws.rs.core.UriBuilder;
 import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
@@ -89,17 +88,17 @@ public class WebComponentRequestRouterTest {
   @Inject
   private Instance<WebComponentRequestRouter<?, ?>> webComponentRequestRouterProducer;
 
-  @Inject
-  private ComponentHelper componentHelper;
-
   @Before
   public void setUp() throws Exception {
+    SilverpeasComponentInstanceProvider provider = mock(SilverpeasComponentInstanceProvider.class);
+    when(provider.getComponentName(anyString())).thenReturn("componentName");
     commonAPI4Test.injectIntoMockedBeanContainer(mock(Administration.class));
     commonAPI4Test.injectIntoMockedBeanContainer(mock(SessionManagement.class));
     commonAPI4Test.injectIntoMockedBeanContainer(mock(SilverStatisticsManager.class));
     commonAPI4Test.injectIntoMockedBeanContainer(mockedOrganizationController);
     commonAPI4Test.injectIntoMockedBeanContainer(silverpeasWebUtil);
-    commonAPI4Test.injectIntoMockedBeanContainer(componentHelper);
+    commonAPI4Test.injectIntoMockedBeanContainer(provider);
+
     WebComponentManager.managedWebComponentRouters.clear();
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
   }
@@ -159,6 +158,7 @@ public class WebComponentRequestRouterTest {
     when(componentContext.getCurrentComponentName()).thenReturn("componentName");
     when(componentContext.getCurrentSpaceName()).thenReturn("spaceName");
     when(componentContext.getCurrentComponentLabel()).thenReturn("componentLabel");
+    when(componentContext.getCurrentComponentId()).thenReturn("componentName26");
     when(mainSessionController.createComponentContext(anyString(), anyString()))
         .then(new Returns(componentContext));
     when(session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT))

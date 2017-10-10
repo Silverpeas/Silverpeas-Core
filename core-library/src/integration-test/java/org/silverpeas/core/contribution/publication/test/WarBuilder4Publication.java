@@ -25,12 +25,11 @@ package org.silverpeas.core.contribution.publication.test;
 
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
+import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.silverpeas.core.socialnetwork.model.AbstractSocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.socialnetwork.model.SocialInformationType;
-import org.silverpeas.core.contribution.publication.social.SocialInformationPublication;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.admin.component.ComponentHelper;
 
 /**
  * This builder extends the {@link WarBuilder4LibCore} in order to centralize the definition of
@@ -56,7 +55,7 @@ public class WarBuilder4Publication extends WarBuilder4LibCore {
     addSilverpeasUrlFeatures();
     addClasses(FieldTemplate.class, SocialInformationPublication.class,
         AbstractSocialInformation.class, SocialInformation.class, SocialInformationType.class,
-        ComponentHelper.class, FormException.class);
+        FormException.class);
     addPackages(true, "org.silverpeas.core.contribution.rating",
         "org.silverpeas.core.node",
         "org.silverpeas.core.contribution.publication.model",

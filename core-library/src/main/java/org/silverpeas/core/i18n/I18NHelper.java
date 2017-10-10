@@ -24,7 +24,6 @@
 package org.silverpeas.core.i18n;
 
 import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.admin.i18n.I18n;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
@@ -52,8 +51,7 @@ public class I18NHelper implements I18n {
 
   // "fr" - List of I18NLanguage : all available languages in french
   // "en" - List of I18NLanguage : all available languages in english
-  private final static Map<String, List<I18NLanguage>> allContentLanguages =
-      new LinkedHashMap<String, List<I18NLanguage>>();
+  private final static Map<String, List<I18NLanguage>> allContentLanguages = new LinkedHashMap<>();
 
   // The languages set for content writing are not necessarily the same set for user languages.
   // This fallback container permits to store the content language labels translated into a
@@ -61,13 +59,13 @@ public class I18NHelper implements I18n {
   // By this way, even if the user language does not correspond to a managed content language,
   // the labels are displayed according to the user language.
   private final static Map<String, List<I18NLanguage>> fallbackContentLanguages =
-      new LinkedHashMap<String, List<I18NLanguage>>();
+      new LinkedHashMap<>();
 
   private static int nbContentLanguages = 0;
   public static boolean isI18nContentActivated = false;
   public static String defaultLanguage = null;
   public static Locale defaultLocale = Locale.getDefault();
-  private final static List<String> allContentLanguageCodes = new ArrayList<String>();
+  private final static List<String> allContentLanguageCodes = new ArrayList<>();
 
   public static final String HTMLSelectObjectName = "I18NLanguage";
   public static final String HTMLHiddenRemovedTranslationMode = "TranslationRemoveIt";
@@ -261,7 +259,7 @@ public class I18NHelper implements I18n {
         lang = translation.getLanguage();
       }
     }
-    List<String> languages = new ArrayList<String>(bean.getTranslations().keySet());
+    List<String> languages = new ArrayList<>(bean.getTranslations().keySet());
     return getHTMLLinks(languages, lang);
   }
 
@@ -292,7 +290,7 @@ public class I18NHelper implements I18n {
     for (I18NLanguage lang : languages) {
       I18NLanguage newLang = new I18NLanguage(lang.getCode(), lang.getLabel());
       if (bean != null) {
-        Translation translation = bean.getTranslation(newLang.getCode());
+        BeanTranslation translation = (BeanTranslation) bean.getTranslation(newLang.getCode());
         if (translation != null) {
           newLang.setTranslationId(translation.getId());
         }

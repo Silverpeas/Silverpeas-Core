@@ -219,7 +219,7 @@ public class FileUploadResource extends RESTWebService {
         uploadSessionFile.write(inputStream);
       } catch (IOException ioe) {
         // The file is written currently by an other process
-        throw new WebApplicationException(Response.Status.CONFLICT);
+        throw new WebApplicationException(ioe, Response.Status.CONFLICT);
       }
 
       try {
@@ -275,7 +275,7 @@ public class FileUploadResource extends RESTWebService {
 
       // Component file filter that contains authorized and forbidden rules
       final ComponentFileFilterParameter componentFileFilter = ComponentFileFilterParameter
-          .from(getOrganisationController().getComponentInst(componentInstanceId));
+          .from(getOrganisationController().getComponentInstance(componentInstanceId).orElse(null));
 
       try {
         componentFileFilter.verifyFileAuthorized(new File(fileName));
@@ -317,7 +317,7 @@ public class FileUploadResource extends RESTWebService {
    */
   private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> asJSON(
       UploadSessionFile uploadSessionFile) {
-    return (o ->
+    return o ->
        o.put("uploadSessionId", uploadSessionFile.getUploadSession().getId())
         .put("fullPath", uploadSessionFile.getFullPath())
         .put("name", uploadSessionFile.getServerFile().getName())
@@ -325,7 +325,7 @@ public class FileUploadResource extends RESTWebService {
         .put("formattedSize", UnitUtil.formatMemSize(
             new BigDecimal(String.valueOf(uploadSessionFile.getServerFile().length()))))
         .put("iconUrl", FileRepositoryManager
-            .getFileIcon(FilenameUtils.getExtension(uploadSessionFile.getServerFile().getName()))));
+            .getFileIcon(FilenameUtils.getExtension(uploadSessionFile.getServerFile().getName())));
   }
 
   @DELETE

@@ -62,7 +62,6 @@ public class RelationShipService {
       RelationShip rel2to1 = relationShipDao.getRelationShip(connection, idUser2, idUser1);
       relationShipDao.deleteRelationShip(connection, idUser1, idUser2);
       relationShipDao.deleteRelationShip(connection, idUser2, idUser1);
-      connection.commit();
       endAction = true;
       for (RelationShip ship : Arrays.asList(rel1to2, rel2to1)) {
         if (ship != null) {

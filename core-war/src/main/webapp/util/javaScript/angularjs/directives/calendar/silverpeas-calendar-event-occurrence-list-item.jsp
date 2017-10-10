@@ -33,16 +33,45 @@
 <view:setBundle basename="org.silverpeas.calendar.multilang.calendarBundle"/>
 
 <fmt:message var="gotoLabel" key='calendar.label.event.view'/>
+<fmt:message var="fromLabel" key='GML.From'/>
 <fmt:message var="atLabel" key='GML.at'/>
+<fmt:message var="toLabel" key='GML.to'/>
 
-<div class="occurrence-name">
-  <a href="#"
-     ng-click="$ctrl.onClick({occurrence:$ctrl.occurrence})"
-     title="${gotoLabel}">{{$ctrl.occurrence.title}}</a>
-  <span ng-if="$ctrl.hasTime()" class="start-hour">${atLabel} {{$ctrl.occurrence.startDate | displayAsTime}}</span>
-</div>
-<div class="occurrence-extra" ng-if="$ctrl.occurrence.location">
-  <div class="location">
-    <div class="bloc"><span>{{$ctrl.occurrence.location}}</span></div>
+<script type="text/ng-template" id="###silverpeas.calendar.event.occurrence-list-item.display-grouped-by-day">
+  <div class="occurrence-name">
+    <a href="javascript:void(0)" title="${gotoLabel}">{{$ctrl.occurrence.title}}</a>
+    <span ng-if="$ctrl.hasTime()" class="start-hour">${atLabel} {{$ctrl.occurrence.startDate | displayAsTime}}</span>
   </div>
-</div>
+  <div class="occurrence-extra" ng-if="$ctrl.occurrence.location">
+    <div class="occurrence-location">
+      <div class="bloc"><span>{{$ctrl.occurrence.location}}</span></div>
+    </div>
+  </div>
+</script>
+
+<script type="text/ng-template" id="###silverpeas.calendar.event.occurrence-list-item.display-grouped-by-month">
+  <h2 class="occurrence-name">{{$ctrl.occurrence.title}}</h2>
+  <div class="occurrence-extra" ng-if="$ctrl.occurrence.location || !$ctrl.occurrence.onAllDay || $ctrl.occurrence.externalUrl()">
+    <div class="occurrence-location" ng-if="$ctrl.occurrence.location">
+      <div class="bloc"><span>{{$ctrl.occurrence.location}}</span></div>
+    </div>
+    <div class="occurrence-date" ng-if="!$ctrl.occurrence.onAllDay">
+      <div class="bloc">
+        <span>${fromLabel} {{$ctrl.occurrence.startDate | displayAsTime}}</span>
+        <span>${toLabel} {{$ctrl.occurrence.endDate | displayAsDate}} ${atLabel} {{$ctrl.occurrence.endDate | displayAsTime}}</span>
+      </div>
+    </div>
+    <div class="occurrence-external-link" ng-if="$ctrl.occurrence.externalUrl()">
+      <div class="bloc" ng-click="$ctrl.performExternalLink();$event.stopPropagation()">
+        <a target="_blank" href="javascript:void(0)"
+           ng-click="$ctrl.performExternalLink();$event.stopPropagation()">{{$ctrl.occurrence.externalUrl()}}</a>
+      </div>
+    </div>
+  </div>
+  <div class="occurrence-description">
+    <div ng-bind-html="$ctrl.occurrence.description | noHTML | newlines"></div>
+    <br class="clearAll">
+  </div>
+</script>
+
+<div class="fields" ng-include="$ctrl.groupByMonth ? '###silverpeas.calendar.event.occurrence-list-item.display-grouped-by-month': '###silverpeas.calendar.event.occurrence-list-item.display-grouped-by-day'"></div>

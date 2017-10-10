@@ -135,7 +135,8 @@
      * It accepts one parameter that is an object with following attributes:
      * - title : the document title of the dialog box,
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
-     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * returns a boolean indicating that all is ok and the dialog box can be closed or a promise
+     * which resolve action close the dialog box,
      * - callbackOnClose : the callback on dialog box closing,
      * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
      * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
@@ -170,7 +171,8 @@
      * It accepts one parameter that is an object with following attributes:
      * - title : the title of the dialog box (if it is empty a default title is used),
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
-     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * returns a boolean indicating that all is ok and the dialog box can be closed or a promise
+     * which resolve action close the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
     information: function(options) {
@@ -195,7 +197,8 @@
      * It accepts one parameter that is an object with following attributes:
      * - title : the title of the dialog box (if it is empty a default title is used),
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
-     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * returns a boolean indicating that all is ok and the dialog box can be closed or a promise
+     * which resolve action close the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
     error: function(options) {
@@ -220,7 +223,8 @@
      * It accepts one parameter that is an object with following attributes:
      * - title : the title of the dialog box (if it is empty a default title is used),
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
-     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * returns a boolean indicating that all is ok and the dialog box can be closed or a promise
+     * which resolve action close the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
     help: function(options) {
@@ -246,7 +250,8 @@
      * It accepts one parameter that is an object with following attributes:
      * - title : the title of the dialog box,
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
-     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * returns a boolean indicating that all is ok and the dialog box can be closed or a promise
+     * which resolve action close the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
     validation: function(options) {
@@ -270,7 +275,8 @@
      * It accepts one parameter that is an object with following attributes:
      * - title : the title of the dialog box (if it is empty a default title is used),
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
-     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * returns a boolean indicating that all is ok and the dialog box can be closed or a promise
+     * which resolve action close the dialog box,
      * - callbackOnClose : the callback on dialog box closing.
      */
     confirmation: function(options) {
@@ -307,7 +313,8 @@
      * It accepts one parameter that is an object with following attributes:
      * - title : the document title of the dialog box,
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
-     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * returns a boolean indicating that all is ok and the dialog box can be closed or a promise
+     * which resolve action close the dialog box,
      * - callbackOnClose : the callback on dialog box closing,
      * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
      * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
@@ -346,7 +353,8 @@
      * It accepts one parameter that is an object with following attributes:
      * - title : the document title of the dialog box,
      * - callback : the callback to invoke when the user clicks on the yes button. The callback must
-     * returns a boolean indicating that all is ok and the dialog box can be closed,
+     * returns a boolean indicating that all is ok and the dialog box can be closed or a promise
+     * which resolve action close the dialog box,
      * - callbackOnClose : the callback on dialog box closing,
      * - width : width of content. Mandatory for IE7 browser and ignored in other cases,
      * - height : height of content. Mandatory for IE7 browser and ignored in other cases.
@@ -507,13 +515,28 @@
           buttons.push({
             text: options.buttonTextYes,
             click: function() {
-              var isok = true;
+              var whenIsOk;
               if (options.callback) {
-                isok = options.callback.call($_this);
+                // A callback must be processed before closing the dialog
+                var result = options.callback.call($_this);
+                if (sp.promise.isOne(result)) {
+                  // The result of the callback is a promise, the dialog is closed after resolve
+                  whenIsOk = result;
+                } else if (typeof result === 'undefined' || result) {
+                  // No result or true result, the dialog can be closed
+                  whenIsOk = sp.promise.resolveDirectlyWith();
+                } else {
+                  // Explicit false result, the dialog stays open
+                  whenIsOk = sp.promise.rejectDirectlyWith();
+                }
+              } else {
+                // No callback, closing in any case
+                whenIsOk = sp.promise.resolveDirectlyWith();
               }
-              if (isok || isok === undefined) {
+              // Closing the dialog if ok
+              whenIsOk.then(function() {
                 $_this.dialog("close");
-              }
+              });
             }
           });
         }

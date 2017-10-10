@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.webapi.search;
 
-import org.apache.commons.collections.EnumerationUtils;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
@@ -47,8 +46,11 @@ import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * @author Nicolas Eysseric
@@ -67,7 +69,7 @@ public class SearchResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public List<ResultEntity> search(@QueryParam("query") String query,
       @QueryParam("taxonomyPosition") String position,
-      @QueryParam("spaceId") String spaceId, @QueryParam("appId") String appId,
+      @QueryParam("spaceId") String spaceId, @QueryParam("appId") List<String> appIds,
       @QueryParam("startDate") String startDate, @QueryParam("endDate") String endDate,
       @QueryParam("form") String form) {
     QueryDescription queryDescription = new QueryDescription(query);
@@ -76,11 +78,11 @@ public class SearchResource extends RESTWebService {
     setCreationDateInterval(queryDescription, startDate, endDate);
 
     // determine where to search
-    setComponents(queryDescription, spaceId, appId);
+    setComponents(queryDescription, spaceId, appIds);
 
     // add query parameters about form
     if (StringUtil.isDefined(form)) {
-      List<String> paramNames = EnumerationUtils.toList(getHttpRequest().getParameterNames());
+      List<String> paramNames = Collections.list(getHttpRequest().getParameterNames());
       setQueryFormFields(queryDescription, form, paramNames);
     }
 
@@ -99,22 +101,19 @@ public class SearchResource extends RESTWebService {
     return entities;
   }
 
-  private void setComponents(QueryDescription queryDescription, String spaceId, String appId) {
+  private void setComponents(QueryDescription queryDescription, String spaceId, List<String> appIds) {
     String userId = getUser().getId();
-    if (!StringUtil.isDefined(spaceId) && !StringUtil.isDefined(appId)) {
-      String[] appIds = getOrganisationController().getAvailCompoIds(userId);
-      for (String id : appIds) {
-        queryDescription.addComponent(id);
-      }
-    } else if (StringUtil.isDefined(appId)) {
-      if (getOrganisationController().isComponentAvailable(appId, userId)) {
-        queryDescription.addComponent(appId);
-      }
+    final Consumer<String> addComponent = queryDescription::addComponent;
+    if (!StringUtil.isDefined(spaceId) && appIds.isEmpty()) {
+      Arrays.stream(getOrganisationController().getAvailCompoIds(userId))
+          .forEach(addComponent);
+    } else if (!appIds.isEmpty()) {
+      appIds.stream()
+          .filter(i -> getOrganisationController().isComponentAvailable(i, userId))
+          .forEach(addComponent);
     } else {
-      String[] appIds = getOrganisationController().getAvailCompoIds(spaceId, userId);
-      for (String id : appIds) {
-        queryDescription.addComponent(id);
-      }
+      Arrays.stream(getOrganisationController().getAvailCompoIds(spaceId, userId))
+          .forEach(addComponent);
     }
   }
 

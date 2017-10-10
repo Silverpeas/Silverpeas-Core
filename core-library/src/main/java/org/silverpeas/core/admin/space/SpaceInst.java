@@ -25,31 +25,38 @@ package org.silverpeas.core.admin.space;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
-import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.component.model.PersonalComponent;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
 import org.silverpeas.core.admin.quota.constant.QuotaType;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
 import org.silverpeas.core.admin.quota.model.Quota;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
+import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.i18n.AbstractI18NBean;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.memory.MemoryUnit;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * The class SpaceInst is the representation in memory of a space
@@ -199,6 +206,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
    */
   public void setCreatorUserId(String sCreatorUserId) {
     creatorUserId = sCreatorUserId;
+    creator = null;
   }
 
   /**
@@ -307,12 +315,30 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   /**
-   * Get all the components in that space
+   * Get all the components in that space.
+   * <p>This method handles only {@link SilverpeasSharedComponentInstance} instances.</p>
+   * <p>To get also {@link SilverpeasPersonalComponentInstance}, please use
+   * {@link #getAllComponentInstances()}</p>
    *
    * @return The components in that space
    */
   public ArrayList<ComponentInst> getAllComponentsInst() {
     return components;
+  }
+
+  /**
+   * Get all {@link SilverpeasComponentInstance} of the given space.
+   * @return a list of {@link SilverpeasComponentInstance} which could be empty but never null.
+   */
+  @SuppressWarnings("unchecked")
+  public List<SilverpeasComponentInstance> getAllComponentInstances() {
+    if (!isPersonalSpace()) {
+      return (List) components;
+    }
+    final List<SilverpeasComponentInstance> componentInstances = new ArrayList<>(components);
+    PersonalComponent.getAll()
+        .forEach(p -> componentInstances.add(PersonalComponentInstance.from(getCreator(), p)));
+    return componentInstances;
   }
 
   /**
@@ -512,6 +538,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
 
   public void setRemoverUserId(String removerUserId) {
     this.removerUserId = removerUserId;
+    remover = null;
   }
 
   public String getUpdaterUserId() {
@@ -520,6 +547,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
 
   public void setUpdaterUserId(String updaterUserId) {
     this.updaterUserId = updaterUserId;
+    updater = null;
   }
 
   public boolean isInheritanceBlocked() {
@@ -539,27 +567,24 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   }
 
   public UserDetail getCreator() {
+    if (creator == null && isDefined(creatorUserId)) {
+      creator = UserDetail.getById(creatorUserId);
+    }
     return creator;
   }
 
-  public void setCreator(UserDetail creator) {
-    this.creator = creator;
-  }
-
   public UserDetail getUpdater() {
+    if (updater == null && isDefined(updaterUserId)) {
+      updater = UserDetail.getById(updaterUserId);
+    }
     return updater;
   }
 
-  public void setUpdater(UserDetail updater) {
-    this.updater = updater;
-  }
-
   public UserDetail getRemover() {
+    if (remover == null && isDefined(removerUserId)) {
+      remover = UserDetail.getById(removerUserId);
+    }
     return remover;
-  }
-
-  public void setRemover(UserDetail remover) {
-    this.remover = remover;
   }
 
   public boolean isDisplaySpaceFirst() {

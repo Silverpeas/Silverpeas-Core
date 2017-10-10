@@ -81,13 +81,13 @@
         <silverpeas-permalink link="$ctrl.calendar.externalUrl"></silverpeas-permalink>
       </div>
     </div>
-    <div class="field">
+    <div class="field" ng-if="$ctrl.calendar.icalPublicUri">
       <label class="txtlibform">{{$ctrl.labels.icalPublicUri}}</label>
       <div class="champs">
         <silverpeas-permalink link="$ctrl.calendar.icalPublicUri"></silverpeas-permalink>
       </div>
     </div>
-    <div class="field">
+    <div class="field" ng-if="$ctrl.calendar.icalPrivateUri">
       <label class="txtlibform">{{$ctrl.labels.icalPrivateUri}}</label>
       <div class="champs">
         <silverpeas-permalink link="$ctrl.calendar.icalPrivateUri"></silverpeas-permalink>

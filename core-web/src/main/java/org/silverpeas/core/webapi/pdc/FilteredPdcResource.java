@@ -84,7 +84,7 @@ public class FilteredPdcResource extends RESTWebService {
    *
    * @param workspaceId optionally the unique identifier of the workspace in which the classified
    * contents are published.
-   * @param componentId optionally the unique identifier of the component to which the classified
+   * @param componentIds optionally the unique identifier of the component to which the classified
    * contents belong.
    * @param withSecondaryAxis optionally a boolean flag indicating whether the secondary PdC axis
    * should be taken into account.
@@ -99,12 +99,12 @@ public class FilteredPdcResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   @Path("used")
   public PdcEntity getPdcFilteredByClassifiedContents(@QueryParam("workspaceId") String workspaceId,
-      @QueryParam("componentId") String componentId,
+      @QueryParam("componentId") List<String> componentIds,
       @QueryParam("withSecondaryAxis") boolean withSecondaryAxis,
       @QueryParam("values") String axisValues) {
     PdcFilterCriteria criteria = new PdcFilterCriteria().
         onWorkspace(workspaceId).
-        onComponentInstance(componentId).
+        onComponentInstances(componentIds).
         onSecondaryAxisInclusion(withSecondaryAxis).
         onUser(UserDetail.from(getUser()));
     setAxisValues(criteria, axisValues);

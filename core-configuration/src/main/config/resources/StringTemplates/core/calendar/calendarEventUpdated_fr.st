@@ -1,1 +1,1 @@
-$sender$ a modifié l'événement <b>$event.title$</b>
+$senderName$ a modifié l'événement <b>$event.title$</b>

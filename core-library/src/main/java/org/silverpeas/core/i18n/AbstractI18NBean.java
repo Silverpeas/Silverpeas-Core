@@ -36,7 +36,8 @@ import java.util.List;
 import java.util.Map;
 
 @XmlAccessorType(XmlAccessType.NONE)
-public abstract class AbstractI18NBean<T extends Translation> implements Serializable, I18NBean<T> {
+public abstract class AbstractI18NBean<T extends BeanTranslation>
+    implements Serializable, I18NBean<T> {
   private static final long serialVersionUID = 756146888448232764L;
 
   /* Name of the bean */

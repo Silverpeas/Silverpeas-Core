@@ -34,8 +34,13 @@ import javax.persistence.JoinColumn;
 import javax.persistence.MapKeyColumn;
 import javax.persistence.MapsId;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * A set of attributes of a {@link Plannable} object. An attribute is an additional information
@@ -45,7 +50,7 @@ import java.util.Optional;
  * @author mmoquillon
  */
 @Embeddable
-public class AttributeSet implements Cloneable {
+public class AttributeSet implements Cloneable, Iterable<Map.Entry<String, String>> {
 
   @ElementCollection(fetch = FetchType.EAGER)
   @MapsId
@@ -59,6 +64,29 @@ public class AttributeSet implements Cloneable {
    */
   public AttributeSet() {
     // empty for JPA.
+  }
+
+  @Override
+  public Iterator<Map.Entry<String, String>> iterator() {
+    return attributes.entrySet().iterator();
+  }
+
+  @Override
+  public void forEach(final Consumer<? super Map.Entry<String, String>> action) {
+    attributes.entrySet().forEach(action);
+  }
+
+  @Override
+  public Spliterator<Map.Entry<String, String>> spliterator() {
+    return attributes.entrySet().spliterator();
+  }
+
+  /**
+   * Streams the attendees in this calendar component.
+   * @return a {@link Stream} with the attendees in this calendar component.
+   */
+  public Stream<Map.Entry<String, String>> stream() {
+    return attributes.entrySet().stream();
   }
 
   /**
@@ -76,6 +104,16 @@ public class AttributeSet implements Cloneable {
    */
   public void remove(String name) {
     attributes.remove(name);
+  }
+
+  /**
+   * Removes all of the attributes that match the specified filter.
+   * @param filter the predicate against which each attribute is filtered.
+   * @return the updated attributes in this calendar component.
+   */
+  public AttributeSet removeIf(final Predicate<Map.Entry<String, String>> filter) {
+    attributes.entrySet().removeIf(filter);
+    return this;
   }
 
   /**

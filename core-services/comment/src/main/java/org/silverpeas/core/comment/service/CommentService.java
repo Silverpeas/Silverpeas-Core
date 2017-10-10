@@ -23,14 +23,15 @@
  */
 package org.silverpeas.core.comment.service;
 
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.List;
 
@@ -38,6 +39,10 @@ import java.util.List;
  * User: ehugonnet Date: 21/03/11 Time: 09:54
  */
 public interface CommentService {
+
+  static CommentService get() {
+    return ServiceProvider.getService(CommentService.class);
+  }
 
   void createComment(Comment cmt);
 

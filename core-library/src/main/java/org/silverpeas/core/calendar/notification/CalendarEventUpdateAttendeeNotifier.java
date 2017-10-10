@@ -44,7 +44,7 @@ public class CalendarEventUpdateAttendeeNotifier
     if (before.getAttendees().equals(after.getAttendees())) {
       // the update is about the event itself and not about the attendees
       UserNotification notification =
-          new AttendeeNotificationBuilder(after.asCalendarComponent(), NotifAction.UPDATE).from(
+          new AttendeeNotificationBuilder(after, NotifAction.UPDATE).from(
               User.getCurrentRequester())
               .to(concernedAttendeesIn(after.asCalendarComponent()))
               .about(UpdateCause.EVENT_UPDATE)

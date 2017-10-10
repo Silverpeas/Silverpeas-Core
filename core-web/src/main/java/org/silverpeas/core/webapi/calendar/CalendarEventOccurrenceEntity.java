@@ -25,6 +25,8 @@
 package org.silverpeas.core.webapi.calendar;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
@@ -57,6 +59,8 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
 
   private URI occurrenceUri;
   private URI occurrenceViewUrl;
+  private URI occurrenceEditionUrl;
+  private URI occurrencePermalinkUrl;
 
   private String occurrenceId;
   private String originalStartDate;
@@ -81,8 +85,30 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
    * @return itself.
    */
   @SuppressWarnings("unchecked")
-  public CalendarEventOccurrenceEntity withOccurrenceViewURI(final URI occurrenceViewUrl) {
-    this.occurrenceViewUrl = occurrenceViewUrl;
+  public CalendarEventOccurrenceEntity withOccurrenceViewURL(final URI occurrenceViewUrl) {
+    setOccurrenceViewUrl(occurrenceViewUrl);
+    return this;
+  }
+
+  /**
+   * Sets a URI of the edition page of the occurrence.
+   * @param occurrenceEditionUrl the occurrence web entity URI.
+   * @return itself.
+   */
+  @SuppressWarnings("unchecked")
+  public CalendarEventOccurrenceEntity withOccurrenceEditionURL(final URI occurrenceEditionUrl) {
+    setOccurrenceEditionUrl(occurrenceEditionUrl);
+    return this;
+  }
+
+  /**
+   * Sets a permalink URI to this entity. With this URI, it can then be accessed through the Web.
+   * @param permalinkUrl the web entity URI.
+   * @return itself.
+   */
+  @SuppressWarnings("unchecked")
+  public CalendarEventOccurrenceEntity withOccurrencePermalinkURL(final URI permalinkUrl) {
+    this.occurrencePermalinkUrl = permalinkUrl;
     return this;
   }
 
@@ -109,6 +135,12 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
     return this;
   }
 
+  @Override
+  public CalendarEventOccurrenceEntity withEventPermalinkURL(final URI permalinkUrl) {
+    super.withEventPermalinkURL(permalinkUrl);
+    return this;
+  }
+
   /**
    * Sets attendees to the occurrence entity.
    * @param attendees the attendees entity to set.
@@ -118,6 +150,18 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
   public CalendarEventOccurrenceEntity withAttendees(
       final List<CalendarEventAttendeeEntity> attendees) {
     super.withAttendees(attendees);
+    return this;
+  }
+
+  /**
+   * Sets attributes to the occurrence entity.
+   * @param attributes the attributes entity to set.
+   * @return itself.
+   */
+  @Override
+  public CalendarEventOccurrenceEntity withAttributes(
+      final List<CalendarEventAttributeEntity> attributes) {
+    super.withAttributes(attributes);
     return this;
   }
 
@@ -141,6 +185,22 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
 
   public void setOccurrenceViewUrl(final URI occurrenceViewUrl) {
     this.occurrenceViewUrl = occurrenceViewUrl;
+  }
+
+  public URI getOccurrenceEditionUrl() {
+    return occurrenceEditionUrl;
+  }
+
+  public void setOccurrenceEditionUrl(final URI occurrenceEditionUrl) {
+    this.occurrenceEditionUrl = occurrenceEditionUrl;
+  }
+
+  public URI getOccurrencePermalinkUrl() {
+    return occurrencePermalinkUrl;
+  }
+
+  public void setOccurrencePermalinkUrl(final URI occurrencePermalinkUrl) {
+    this.occurrencePermalinkUrl = occurrencePermalinkUrl;
   }
 
   public String getId() {
@@ -205,7 +265,10 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
     setOnAllDay(calendarEventOccurrence.isOnAllDay());
     setStartDate(formatDateWithOffset(component, calendarEventOccurrence.getStartDate(), zoneId));
     setEndDate(formatDateWithOffset(component, calendarEventOccurrence.getEndDate(), zoneId));
-    setLastUpdateDate(component.getLastUpdateDate());
+    if (component.getLastUpdateDate() != null) {
+      setLastUpdateDate(component.getLastUpdateDate());
+      setLastUpdatedById(component.getLastUpdatedBy());
+    }
     setTitle(formatTitle(component, componentInstanceId, canBeAccessed()));
     if (canBeAccessed()) {
       setDescription(component.getDescription());
@@ -223,5 +286,25 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
     builder.append("originalStartDate", getOriginalStartDate());
     builder.append("firstEventOccurrence", isFirstEventOccurrence());
     return builder;
+  }
+
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+
+    final CalendarEventOccurrenceEntity that = (CalendarEventOccurrenceEntity) o;
+
+    return new EqualsBuilder().append(occurrenceId, that.occurrenceId).isEquals();
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder(17, 37).append(occurrenceId).toHashCode();
   }
 }

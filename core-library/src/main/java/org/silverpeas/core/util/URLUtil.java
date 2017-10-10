@@ -23,7 +23,8 @@
  */
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.admin.component.ComponentHelper;
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
@@ -158,7 +159,7 @@ public class URLUtil {
       return "";
     }
     if (!isDefined(sureCompName)) {
-      sureCompName = getComponentNameFromComponentId(sComponentId);
+      sureCompName = SilverpeasComponentInstance.getComponentName(sComponentId);
     }
     String specialString = settings.getString(sureCompName, "");
     if (isDefined(specialString)) {
@@ -189,7 +190,7 @@ public class URLUtil {
    * @return la nouvelle URL
    */
   public static String getNewComponentURL(String spaceId, String componentId) {
-    String sureCompName = getComponentNameFromComponentId(componentId);
+    String sureCompName = ComponentInst.getComponentName(componentId);
     return buildStandardURL(sureCompName, componentId);
   }
 
@@ -205,16 +206,6 @@ public class URLUtil {
   }
 
   /**
-   * Returns kmelia for parameter kmelia23
-   *
-   * @param sClientComponentId
-   * @return
-   */
-  public static String getComponentNameFromComponentId(String sClientComponentId) {
-    return ComponentHelper.get().getWAComponentName(sClientComponentId);
-  }
-
-  /**
    * Returns The Application web context.
    *
    * @return The Application web context.
@@ -225,6 +216,15 @@ public class URLUtil {
 
   public static String getFullApplicationURL(HttpServletRequest request) {
     return getServerURL(request) + getApplicationURL();
+  }
+
+  /**
+   * Gets the absolute application URL when the treatment is executed into the context of a HTTP
+   * request.
+   * @return the absolute application URL as string.
+   */
+  public static String getAbsoluteApplicationURL() {
+    return getCurrentServerURL() + getApplicationURL();
   }
 
   public static void setCurrentServerUrl(HttpServletRequest request) {

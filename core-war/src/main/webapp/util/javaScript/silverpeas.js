@@ -103,6 +103,25 @@ if (!Array.prototype.addElement) {
       return false;
     }
   });
+  Object.defineProperty(Array.prototype, 'extractElementAttribute', {
+    enumerable : false, value : function(attributeName, mapper) {
+      var isMapper = typeof mapper === 'function';
+      var attributeValues = [];
+      for (var i = 0; i < this.length; i++) {
+        var element = this[i];
+        if (element) {
+          var attributeValue = element[attributeName];
+          if (typeof attributeValue !== 'undefined') {
+            if (isMapper) {
+              attributeValue = mapper.call(this, attributeValue);
+            }
+            attributeValues.push(attributeValue);
+          }
+        }
+      }
+      return attributeValues;
+    }
+  });
 }
 
 if (!String.prototype.startsWith) {
@@ -666,6 +685,9 @@ if (!window.SilverpeasAjaxConfig) {
     },
     getTarget : function() {
       return this.target;
+    },
+    submit : function() {
+      return silverpeasFormSubmit(this);
     }
   });
   SilverpeasAjaxConfig = SilverpeasRequestConfig.extend({
@@ -683,6 +705,27 @@ if (!window.SilverpeasAjaxConfig) {
     },
     getHeaders : function() {
       return this.headers;
+    },
+    byPostMethod : function(content) {
+      this.method = 'POST';
+      if (typeof content === 'object') {
+        this.withHeader('Accept', 'application/json, text/plain, */*');
+        this.withHeader('Content-Type', 'application/json; charset=UTF-8');
+        this.withParams(JSON.stringify(content));
+      } else if (content) {
+        this.withHeader('Accept', 'application/json, text/plain, */*');
+        this.withHeader('Content-Type', 'application/json; charset=UTF-8');
+        this.withParams("" + content);
+      }
+      return this;
+    },
+    execute : function() {
+      return silverpeasAjax(this);
+    },
+    promiseJsonResponse : function() {
+      return silverpeasAjax(this).then(function(request) {
+        return request.responseAsJson();
+      });
     }
   });
 }
@@ -767,9 +810,10 @@ if (typeof window.silverpeasAjax === 'undefined') {
             resolve({
               readyState : jqXHR.readyState,
               responseText : jqXHR.responseText,
-              status : jqXHR.status, statusText : jqXHR.statusText, responseAsJson : function() {
-                return typeof jqXHR.responseText === 'string' ? JSON.parse(jqXHR.responseText) :
-                    jqXHR.responseText;
+              status : jqXHR.status,
+              statusText : jqXHR.statusText,
+              responseAsJson : function() {
+                return typeof jqXHR.responseText === 'string' ? JSON.parse(jqXHR.responseText) : jqXHR.responseText;
               }
             });
           },
@@ -796,7 +840,9 @@ if (typeof window.silverpeasAjax === 'undefined') {
           "silverpeasFormSubmit function need an instance of SilverpeasFormConfig as first parameter.");
       return;
     }
-    window.top.jQuery.progressMessage();
+    if (!silverpeasFormConfig.getTarget()) {
+      window.top.jQuery.progressMessage();
+    }
     var selector = "form[target=silverpeasFormSubmit]";
     var form = document.querySelector(selector);
     if (!form) {
@@ -1147,10 +1193,11 @@ if (typeof window.sp === 'undefined') {
       if (params) {
         for (var key in params) {
           var paramList = params[key];
-          if (!paramList) {
+          var typeOfParamList = typeof paramList;
+          if (!paramList && typeOfParamList !== 'boolean') {
             continue;
           }
-          if (typeof paramList !== 'object') {
+          if (typeOfParamList !== 'object') {
             paramList = [paramList];
           }
           if (paramPart.length > 1) {
@@ -1193,6 +1240,20 @@ if (typeof window.sp === 'undefined') {
         Mousetrap.bind('right', function() {
           onPreviousOrNext(false);
         });
+      }
+    },
+    element : {
+      isInView: function (element, fullyInView, view) {
+        var viewTop = !view ? jQuery(window).scrollTop() : jQuery(view).offset().top;
+        var viewBottom = viewTop + jQuery(view).height();
+        var elementTop = jQuery(element).offset().top;
+        var elementBottom = elementTop + jQuery(element).height();
+
+        if (fullyInView === true) {
+          return ((viewTop < elementTop) && (viewBottom > elementBottom));
+        } else {
+          return ((elementTop <= viewBottom) && (elementBottom >= viewTop));
+        }
       }
     },
     selection : {
@@ -1331,6 +1392,50 @@ if (typeof window.sp === 'undefined') {
         jQuery('.pageJumper input', $container).each(function(index, jumperInput) {
           jumperInput.ajax = __ajaxRequest;
         });
+      }
+    },
+    volatileIdentifier : {
+      newOn : function(componentInstanceId) {
+        var url = webContext + '/services/volatile/' + componentInstanceId + '/new';
+        return sp.ajaxConfig(url).execute().then(function(request) {
+          return request.responseText;
+        });
+      }
+    },
+    editor : {
+      wysiwyg : {
+        configFor : function(componentInstanceId, resourceType, resourceId, options) {
+          var params = extendsObject({
+            configName : undefined,
+            height : undefined,
+            width : undefined,
+            language : undefined,
+            toolbar : undefined,
+            toolbarStartExpanded : undefined,
+            fileBrowserDisplayed : undefined,
+            stylesheet : undefined
+          }, options);
+          var url = webContext + '/services/wysiwyg/editor/' + componentInstanceId + '/' + resourceType + '/' + resourceId;
+          return sp.ajaxConfig(url).withParams(params).promiseJsonResponse();
+        }
+      }
+    },
+    search : {
+      on : function(queryDescription) {
+        if (typeof queryDescription === 'string') {
+          queryDescription = {query : queryDescription};
+        }
+        var params = extendsObject({
+          query : undefined,
+          taxonomyPosition : undefined,
+          spaceId : undefined,
+          appId : undefined,
+          startDate : undefined,
+          endDate : undefined,
+          form : undefined
+        }, queryDescription);
+        var url = webContext + '/services/search';
+        return sp.ajaxConfig(url).withParams(params).promiseJsonResponse();
       }
     }
   };

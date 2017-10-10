@@ -32,12 +32,14 @@ import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 
+import javax.persistence.Transient;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * The class ComponentInstLight is the representation in memory of a component instance
@@ -70,6 +72,10 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
   private boolean isInheritanceBlocked = false;
   private boolean hidden = false;
   private boolean publicApp = false;
+
+  /** Used only in the aim to improve performances */
+  @Transient
+  private ComponentInst cachedComponentInst;
 
   /**
    * Constructor
@@ -303,11 +309,12 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
 
   @Override
   public boolean isWorkflow() {
-    return WAComponent.get(getName()).get().isWorkflow();
+    return WAComponent.getByName(getName()).get().isWorkflow();
   }
 
+  @Override
   public boolean isTopicTracker() {
-    return WAComponent.get(getName()).get().isTopicTracker();
+    return WAComponent.getByName(getName()).get().isTopicTracker();
   }
 
   public String getIcon(boolean bigOne) {
@@ -325,6 +332,11 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
         SilverpeasRole.from(OrganizationController.get().getUserProfiles(user.getId(), getId()));
     silverpeasRoles.remove(Manager);
     return silverpeasRoles;
+  }
+
+  @Override
+  public String getParameterValue(final String parameterName) {
+    return getCachedComponentInst().getParameterValue(parameterName);
   }
 
   @Override
@@ -347,5 +359,16 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
       return false;
     }
     return true;
+  }
+
+  /**
+   * Gets the linked {@link ComponentInst}.
+   * @return the linked {@link ComponentInst}.
+   */
+  private ComponentInst getCachedComponentInst() {
+    if (cachedComponentInst == null && isDefined(getId())) {
+      cachedComponentInst = OrganizationController.get().getComponentInst(getId());
+    }
+    return cachedComponentInst;
   }
 }

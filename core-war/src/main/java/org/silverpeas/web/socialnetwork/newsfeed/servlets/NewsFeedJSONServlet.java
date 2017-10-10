@@ -118,13 +118,13 @@ public class NewsFeedJSONServlet extends HttpServlet {
       org.silverpeas.core.date.Date begin = period[0];
       org.silverpeas.core.date.Date end = period[1];
 
-      map = getInformations(view, userId, type, anotherUserId, begin, end);
+      map = getInformation(view, userId, type, anotherUserId, begin, end);
 
       int nbTries = 0;
       while (getNumberOfInformations(map) < minNbDataBeforeNewTry && nbTries < maxNbTries) {
         period = getPeriod(session, settings);
 
-        map.putAll(getInformations(view, userId, type, anotherUserId, period[0], period[1]));
+        map.putAll(getInformation(view, userId, type, anotherUserId, period[0], period[1]));
         nbTries++;
       }
 
@@ -160,7 +160,7 @@ public class NewsFeedJSONServlet extends HttpServlet {
     return dates;
   }
 
-  private Map<Date, List<SocialInformation>> getInformations(String view, String userId,
+  private Map<Date, List<SocialInformation>> getInformation(String view, String userId,
       SocialInformationType type, String anotherUserId, Date begin, Date end) {
     Map<Date, List<SocialInformation>> map = new LinkedHashMap<>();
 

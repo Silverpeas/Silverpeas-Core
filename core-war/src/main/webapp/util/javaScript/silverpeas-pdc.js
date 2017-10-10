@@ -168,7 +168,7 @@
       labelCancel: window.i18n.prop("GML.cancel"),
       multiValuation: false,
       dialogBox: false,
-      classifiedContentCount: true,
+      classifiedContentCount: typeof settings.classifiedContentCount === 'undefined' ? true : settings.classifiedContentCount,
       axisTypeDisplay: settings.axisTypeDisplay,
       rootValueDisplay: true,
       primaryAxisIcon: webContext + '/pdcPeas/jsp/icons/primary.gif',

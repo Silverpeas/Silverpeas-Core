@@ -29,19 +29,20 @@ package org.silverpeas.core.admin.component;
  * deleted. To perform some treatments related specifically to the component instance that is being
  * deleted, the implementation of the
  * {@code org.silverpeas.core.admin.component.ComponentInstancePreDestruction} instance is preferred.
- * </p>
+ * <p>
  * Each implementation of this interface is invoked by the generic instance deletion
  * process to perform their specific task. Usually, this interface should be implemented by each
  * transverse services in Silverpeas Core.
  * </p>
+ * <p>
  * In each component instance, whatever it is, different kind of transverses resources can be
- * created and managed. When a such instance is then deleted in Silverpeas, it is necessary to clean
- * up also these resources. Nevertheless, both the generic instance deletion process and the
+ * created and managed. When such an instance is then deleted in Silverpeas, it is necessary to
+ * clean up also those resources. Nevertheless, both the generic instance deletion process and the
  * component instance itself aren't usually aware of them. It is then the responsibility of the
  * services behind the different kinds of resources to take in charge the freed of the resources
  * related to the component instance being deleted. For doing, they have to implement this
  * interface.
- *
+ * </p>
  * @author mmoquillon
  */
 public interface ComponentInstanceDeletion {

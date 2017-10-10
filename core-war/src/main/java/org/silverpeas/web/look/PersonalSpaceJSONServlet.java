@@ -24,6 +24,9 @@
 package org.silverpeas.web.look;
 
 import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.PersonalComponent;
+import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -40,6 +43,7 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.external.webconnections.model.WebConnectionsInterface;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
@@ -54,6 +58,7 @@ import java.io.Writer;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.MissingResourceException;
 import java.util.function.Function;
 
 public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet {
@@ -96,7 +101,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
     } else if ("GetComponents".equals(action)) {
       SpaceInst space = personalSpaceManager.getPersonalSpace(userId);
       if (space != null) {
-        writer.write(getComponentsAsJSONArray(space.getAllComponentsInst(), helper));
+        writer.write(getComponentsAsJSONArray(space.getAllComponentInstances(), helper));
       }
     } else if ("AddComponent".equals(action)) {
       String componentName = req.getParameter("ComponentName");
@@ -153,9 +158,10 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
     });
   }
 
-  private String getComponentsAsJSONArray(Collection<ComponentInst> components, LookHelper helper) {
+  private String getComponentsAsJSONArray(Collection<SilverpeasComponentInstance> components,
+      LookHelper helper) {
     return JSONCodec.encodeArray(jsonArray -> {
-      for (ComponentInst component : components) {
+      for (SilverpeasComponentInstance component : components) {
         jsonArray.addJSONObject(getComponentAsJSONObject(component, helper));
       }
       return jsonArray;
@@ -170,7 +176,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
   }
 
   private Function<JSONCodec.JSONObject, JSONCodec.JSONObject> getComponentAsJSONObject(
-      ComponentInst component, LookHelper helper) {
+      SilverpeasComponentInstance component, LookHelper helper) {
     return (jsonObject -> jsonObject.put("name", component.getName())
         .put("description", component.getDescription())
         .put("label", getComponentLabel(component.getName(), helper))
@@ -197,7 +203,15 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
   }
 
   private String getComponentLabel(String componentName, LookHelper helper) {
-    String label = helper.getString("lookSilverpeasV5.personalSpace." + componentName);
+    String label;
+    try {
+      label = helper.getString("lookSilverpeasV5.personalSpace." + componentName);
+    } catch (MissingResourceException e) {
+      SilverLogger.getLogger(this).silent(e);
+      label = PersonalComponentInstance
+          .from(User.getCurrentRequester(), PersonalComponent.getByName(componentName).get())
+          .getLabel(helper.getLanguage());
+    }
     if (!StringUtil.isDefined(label)) {
       label = componentName;
     }

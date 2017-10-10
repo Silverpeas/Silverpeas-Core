@@ -37,6 +37,7 @@ public class SilverContent extends AbstractI18NBean<SilverContentI18N>
     setURL(url);
   }
 
+  @Override
   public String getURL() {
     return silverContentURL;
   }
@@ -45,30 +46,37 @@ public class SilverContent extends AbstractI18NBean<SilverContentI18N>
     silverContentURL = url;
   }
 
+  @Override
   public String getId() {
     return "unknown";
   }
 
+  @Override
   public String getInstanceId() {
     return "unknown";
   }
 
+  @Override
   public String getTitle() {
     return getName();
   }
 
+  @Override
   public String getDate() {
     return "unknown";
   }
 
+  @Override
   public String getSilverCreationDate() {
     return "unknown";
   }
 
+  @Override
   public String getIconUrl() {
     return "unknown";
   }
 
+  @Override
   public String getCreatorId() {
     return "unknown";
   }

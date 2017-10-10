@@ -92,7 +92,9 @@
                 var __timeout;
                 this.dom.titleContainer.on('mouseenter', function() {
                   __timeout = setTimeout(function() {
-                    this.qtipApi.show();
+                    if (this.qtipApi) {
+                      this.qtipApi.show();
+                    }
                   }.bind(this), 1000);
                 }.bind(this));
                 this.dom.titleContainer.on('mouseout', function() {

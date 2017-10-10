@@ -26,7 +26,9 @@ package org.silverpeas.core.web.calendar;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.ComponentInstanceCalendars;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
+import org.silverpeas.core.webapi.calendar.CalendarResourceURIs;
 
 import javax.ws.rs.WebApplicationException;
 import java.time.LocalDate;
@@ -45,11 +47,11 @@ public abstract class AbstractCalendarWebRequestContext<T extends AbstractCalend
     extends WebComponentRequestContext<T> {
 
   private ComponentInstanceCalendars componentInstanceCalendars;
+  private CalendarResourceURIs uri;
 
   @Override
   public void beforeRequestProcessing() {
-    setComponentInstanceCalendars(
-        ComponentInstanceCalendars.getByComponentInstanceId(getComponentInstanceId()));
+    setComponentInstanceCalendars(Calendar.getByComponentInstanceId(getComponentInstanceId()));
   }
 
   /**
@@ -63,6 +65,17 @@ public abstract class AbstractCalendarWebRequestContext<T extends AbstractCalend
   protected void setComponentInstanceCalendars(
       final ComponentInstanceCalendars componentInstanceCalendars) {
     this.componentInstanceCalendars = componentInstanceCalendars;
+  }
+
+  /**
+   * Gets the calendar URI producer.
+   * @return the calendar URI producer.
+   */
+  public CalendarResourceURIs uri() {
+    if (uri == null) {
+      uri = ServiceProvider.getService(CalendarResourceURIs.class);
+    }
+    return uri;
   }
 
   /**

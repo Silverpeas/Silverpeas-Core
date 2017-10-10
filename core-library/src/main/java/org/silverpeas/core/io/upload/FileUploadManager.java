@@ -29,8 +29,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -51,14 +49,9 @@ public class FileUploadManager {
   @SuppressWarnings("unchecked")
   public static Collection<UploadedFile> getUploadedFiles(HttpServletRequest request,
       final User uploader) {
-    Map<String, String> parameters = new HashMap<>();
+    Map<String, String[]> parameters = null;
     if (request != null) {
-      Enumeration<String> attributeNames = request.getParameterNames();
-      String attributeName;
-      while (attributeNames.hasMoreElements()) {
-        attributeName = attributeNames.nextElement();
-        parameters.put(attributeName, request.getParameter(attributeName));
-      }
+      parameters = request.getParameterMap();
     }
     return getUploadedFiles(parameters, uploader);
   }
@@ -67,7 +60,7 @@ public class FileUploadManager {
    * Retrieves from {@link HttpServletRequest} a collection of {@link UploadedFile}
    */
   @SuppressWarnings("unchecked")
-  public static Collection<UploadedFile> getUploadedFiles(Map<String, String> parameters,
+  public static Collection<UploadedFile> getUploadedFiles(Map<String, String[]> parameters,
       final User uploader) {
     Collection<UploadedFile> uploadedFiles = new ArrayList<>();
     if (parameters != null) {
@@ -75,7 +68,7 @@ public class FileUploadManager {
         if (name.startsWith(UPLOADED_FILE_PREFIX_ID)) {
           // If an attribute name starts with {@link UPLOADED_FILE_PREFIX_ID} an {@link
           // UploadedFile} is performed.
-          uploadedFiles.add(UploadedFile.from(parameters, value, uploader));
+          uploadedFiles.add(UploadedFile.from(parameters, value[0], uploader));
         }
       });
 

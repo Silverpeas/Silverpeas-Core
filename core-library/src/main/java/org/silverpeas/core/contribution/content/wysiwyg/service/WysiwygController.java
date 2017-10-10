@@ -23,27 +23,48 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygContent;
 import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.WAPrimaryKey;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWYG;
 
 /**
  * Central service to manage Wysiwyg.
  */
 public class WysiwygController {
 
-  public final static String WYSIWYG_CONTEXT = WysiwygManager.WYSIWYG_CONTEXT;
-  public final static String WYSIWYG_IMAGES = WysiwygManager.WYSIWYG_IMAGES;
-  public final static String WYSIWYG_WEBSITES = WysiwygManager.WYSIWYG_WEBSITES;
+  public static final String WYSIWYG_CONTEXT = WysiwygManager.WYSIWYG_CONTEXT;
+  public static final String WYSIWYG_IMAGES = WysiwygManager.WYSIWYG_IMAGES;
+  public static final String WYSIWYG_WEBSITES = WysiwygManager.WYSIWYG_WEBSITES;
+
+  /**
+   * Hidden constructor
+   */
+  private WysiwygController() {
+  }
+
+  private static LocalizedContribution contributionFrom(final String componentId,
+      final String objectId, final String language) {
+    return contributionFrom(componentId, objectId, language, true);
+  }
+
+  private static LocalizedContribution contributionFrom(final String componentId,
+      final String objectId, final String language, boolean indexable) {
+    return new WysiwygLocalizedContribution(componentId, objectId, language, indexable);
+  }
 
   /**
    * Gets the manager.
@@ -133,9 +154,9 @@ public class WysiwygController {
    */
   public static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
       String context, String userId, String contentLanguage) {
-    WysiwygContent content =
-        new WysiwygContent(ContributionIdentifier.from(foreignKey), textHtml).writtenBy(userId)
-            .inLanguage(contentLanguage);
+    WysiwygContent content = new WysiwygContent(
+        contributionFrom(foreignKey.getInstanceId(), foreignKey.getId(), contentLanguage), textHtml)
+        .authoredBy(User.getById(userId));
     getManager().createFileAndAttachment(content, context);
   }
 
@@ -148,9 +169,9 @@ public class WysiwygController {
    */
   public static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
       String userId, String contentLanguage) {
-    WysiwygContent content =
-        new WysiwygContent(ContributionIdentifier.from(foreignKey), textHtml).writtenBy(userId)
-            .inLanguage(contentLanguage);
+    WysiwygContent content = new WysiwygContent(
+        contributionFrom(foreignKey.getInstanceId(), foreignKey.getId(), contentLanguage), textHtml)
+        .authoredBy(User.getById(userId));
     getManager().createFileAndAttachment(content);
   }
 
@@ -163,9 +184,9 @@ public class WysiwygController {
    */
   public static void createUnindexedFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
       String userId, String contentLanguage) {
-    WysiwygContent content =
-        new WysiwygContent(ContributionIdentifier.from(foreignKey), textHtml).writtenBy(userId)
-            .inLanguage(contentLanguage);
+    WysiwygContent content = new WysiwygContent(
+        contributionFrom(foreignKey.getInstanceId(), foreignKey.getId(), contentLanguage), textHtml)
+        .authoredBy(User.getById(userId));
     getManager().createUnindexedFileAndAttachment(content);
   }
 
@@ -189,26 +210,26 @@ public class WysiwygController {
    */
   public static void updateFileAndAttachment(String textHtml, String componentId, String objectId,
       String userId, String language) {
-    ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
     WysiwygContent content =
-        new WysiwygContent(id, textHtml).writtenBy(userId).inLanguage(language);
+        new WysiwygContent(contributionFrom(componentId, objectId, language), textHtml)
+            .authoredBy(User.getById(userId));
     getManager().updateFileAndAttachment(content);
   }
 
   public static void updateFileAndAttachment(String textHtml, String componentId, String objectId,
       String userId, String language, boolean indexIt) {
-    ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
     WysiwygContent content =
-        new WysiwygContent(id, textHtml).writtenBy(userId).inLanguage(language);
-    getManager().updateFileAndAttachment(content, indexIt);
+        new WysiwygContent(contributionFrom(componentId, objectId, language, indexIt), textHtml)
+            .authoredBy(User.getById(userId));
+    getManager().updateFileAndAttachment(content);
   }
 
   public static void save(String textHtml, String componentId, String objectId, String userId,
       String language, boolean indexIt) {
-    ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
     WysiwygContent content =
-        new WysiwygContent(id, textHtml).writtenBy(userId).inLanguage(language);
-    getManager().save(content, indexIt);
+        new WysiwygContent(contributionFrom(componentId, objectId, language, indexIt), textHtml)
+            .authoredBy(User.getById(userId));
+    getManager().save(content);
   }
 
   /**
@@ -234,14 +255,22 @@ public class WysiwygController {
 
   /**
    * Loads wysiwyg content.
+   * @param contribution the localized contribution for which the WYSIWYG content has to be loaded.
+   * @return text the contents of the file attached.
+   */
+  public static String load(final LocalizedContribution contribution) {
+    return getManager().getByContribution(contribution).getData();
+  }
+
+  /**
+   * Loads wysiwyg content.
    * @param componentId String : the id of component.
    * @param objectId String : for example the id of the publication.
    * @param language the language of the content.
    * @return text : the contents of the file attached.
    */
   public static String load(String componentId, String objectId, String language) {
-    ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
-    return getManager().load(id, language).getData();
+    return load(contributionFrom(componentId, objectId, language));
   }
 
   /**
@@ -281,13 +310,11 @@ public class WysiwygController {
 
   public static boolean haveGotWysiwygToDisplay(String componentId, String objectId,
       String language) {
-    ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
-    return getManager().haveGotWysiwygToDisplay(id, language);
+    return getManager().haveGotWysiwygToDisplay(contributionFrom(componentId, objectId, language));
   }
 
   public static boolean haveGotWysiwyg(String componentId, String objectId, String language) {
-    ContributionIdentifier id = ContributionIdentifier.from(componentId, objectId);
-    return getManager().haveGotWysiwyg(id, language);
+    return getManager().haveGotWysiwyg(contributionFrom(componentId, objectId, language));
   }
 
   /**
@@ -366,5 +393,61 @@ public class WysiwygController {
    */
   public static String createPath(String componentId, String context) {
     return getManager().createPath(componentId, context);
+  }
+
+  private static class WysiwygLocalizedContribution implements LocalizedContribution {
+
+    private final String componentId;
+    private final String objectId;
+    private final String language;
+    private final boolean indexable;
+
+    public WysiwygLocalizedContribution(final String componentId, final String objectId,
+        final String language, final boolean indexable) {
+      this.componentId = componentId;
+      this.objectId = objectId;
+      this.language = language;
+      this.indexable = indexable;
+    }
+
+    @Override
+    public ContributionIdentifier getContributionId() {
+      return ContributionIdentifier.from(componentId, objectId, WYSIWYG);
+    }
+
+    @Override
+    public User getCreator() {
+      return null;
+    }
+
+    @Override
+    public Date getCreationDate() {
+      return null;
+    }
+
+    @Override
+    public User getLastModifier() {
+      return null;
+    }
+
+    @Override
+    public Date getLastModificationDate() {
+      return null;
+    }
+
+    @Override
+    public boolean canBeAccessedBy(final User user) {
+      return true;
+    }
+
+    @Override
+    public String getLanguage() {
+      return language;
+    }
+
+    @Override
+    public boolean isIndexable() {
+      return indexable;
+    }
   }
 }

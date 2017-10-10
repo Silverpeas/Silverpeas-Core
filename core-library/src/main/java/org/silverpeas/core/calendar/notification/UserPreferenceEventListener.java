@@ -44,7 +44,7 @@ public class UserPreferenceEventListener extends CDIResourceEventListener<UserPr
     if (!previous.getZoneId().equals(current.getZoneId())) {
       Transaction.performInOne(() -> {
         Calendar.getByComponentInstanceId(PersonalComponentInstance
-            .from(current.getUser(), PersonalComponent.get("userCalendar").orElse(null)).getId())
+            .from(current.getUser(), PersonalComponent.getByName("userCalendar").orElse(null)).getId())
             .forEach(calendar -> {
               calendar.setZoneId(current.getZoneId());
               calendar.save();

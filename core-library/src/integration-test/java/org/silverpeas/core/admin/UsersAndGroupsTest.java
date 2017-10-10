@@ -31,7 +31,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.component.ComponentHelper;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.space.SpaceServiceProvider;
@@ -93,7 +92,7 @@ public class UsersAndGroupsTest {
         .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.content")
         .addPackages(true, "org.silverpeas.core.notification.user")
         .addClasses(FileRepositoryManager.class, FileFolderManager.class, MemoryUnit.class,
-            MemoryData.class, SpaceServiceProvider.class, ComponentHelper.class,
+            MemoryData.class, SpaceServiceProvider.class,
             ParseException.class,
             SearchEngineException.class, IndexSearcher.class, TokenException.class,
             SearchEnginePropertiesManager.class, TokenRuntimeException.class, AbstractTable.class)

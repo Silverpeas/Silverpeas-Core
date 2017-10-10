@@ -42,11 +42,7 @@
 </div>
 
 <script type="text/ng-template" id="###silverpeas.permalink.full">
-  <a href="{{$ctrl.link}}" title="${permalinkLabel}"><img src="${linkIconUrl}" alt="${permalinkLabel}" /></a>
-  <span>${permalinkLabel}</span>
-  <div>
-    <input onfocus="select();" onmouseup="return false" type="text" value="{{$ctrl.link}}" />
-  </div>
+  <div ng-include src="$ctrl.getFullTemplateUrl()"></div>
 </script>
 
 <script type="text/ng-template" id="###silverpeas.permalink.simple">

@@ -29,6 +29,11 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
+import org.silverpeas.core.contribution.model.WithAttachment;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
@@ -108,13 +113,13 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
-            "LEFT OUTER JOIN cmp.attendees.attendees a " +
-            "WHERE (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds) " +
+            "JOIN cmp.attendees.attendees a " +
+            "WHERE a.attendeeId IN :participantIds " +
             "OR e.id IN (SELECT occ_e.id " +
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +
             "            JOIN occ_o.component occ_cmp " +
-            "            LEFT OUTER JOIN occ_cmp.attendees.attendees occ_a " +
+            "            JOIN occ_cmp.attendees.attendees occ_a " +
             "            WHERE occ_a.attendeeId IN :participantIds" +
             "           )" +
             "ORDER BY ob_1, ob_2, ob_3"),
@@ -123,15 +128,14 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
-            "LEFT OUTER JOIN cmp.attendees.attendees a " +
-            "WHERE (c IN :calendars " +
-            "       AND (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds)) " +
+            "JOIN cmp.attendees.attendees a " +
+            "WHERE (c IN :calendars AND a.attendeeId IN :participantIds) " +
             "OR e.id IN (SELECT occ_e.id " +
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +
             "            JOIN occ_o.component occ_cmp " +
             "            JOIN occ_cmp.calendar occ_c " +
-            "            LEFT OUTER JOIN occ_cmp.attendees.attendees occ_a " +
+            "            JOIN occ_cmp.attendees.attendees occ_a " +
             "            WHERE occ_c IN :calendars " +
             "            AND occ_a.attendeeId IN :participantIds" +
             "           )" +
@@ -161,7 +165,7 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "LEFT OUTER JOIN FETCH e.recurrence r " +
             "WHERE (c IN :calendars " +
             "       AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
-            "           OR (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
+            "           OR (cmp.period.endDateTime <= :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
             "OR e.id IN (SELECT occ_e.id " +
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +
@@ -179,7 +183,7 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "JOIN cmp.calendar c " +
             "LEFT OUTER JOIN FETCH e.recurrence r " +
             "WHERE ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
-            "       OR (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))) " +
+            "       OR (cmp.period.endDateTime <= :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL))) " +
             "OR e.id IN (SELECT occ_e.id " +
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +
@@ -193,17 +197,17 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
-            "LEFT OUTER JOIN cmp.attendees.attendees a " +
+            "JOIN cmp.attendees.attendees a " +
             "LEFT OUTER JOIN FETCH e.recurrence r " +
-            "WHERE ((cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds) " +
+            "WHERE (a.attendeeId IN :participantIds " +
             "       AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
             "            OR" +
-            "            (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
+            "            (cmp.period.endDateTime <= :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
             "OR e.id IN (SELECT occ_e.id " +
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +
             "            JOIN occ_o.component occ_cmp " +
-            "            LEFT OUTER JOIN occ_cmp.attendees.attendees occ_a " +
+            "            JOIN occ_cmp.attendees.attendees occ_a " +
             "            LEFT OUTER JOIN occ_e.recurrence occ_r " +
             "            WHERE occ_a.attendeeId IN :participantIds " +
             "            AND (occ_cmp.period.startDateTime < :endDateTime AND occ_cmp.period.endDateTime > :startDateTime)" +
@@ -214,18 +218,18 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "FROM CalendarEvent e " +
             "JOIN e.component cmp " +
             "JOIN cmp.calendar c " +
-            "LEFT OUTER JOIN cmp.attendees.attendees a " +
+            "JOIN cmp.attendees.attendees a " +
             "LEFT OUTER JOIN FETCH e.recurrence r " +
             "WHERE (c IN :calendars " +
-            "       AND (cmp.createdBy IN :participantIds OR a.attendeeId IN :participantIds) " +
+            "       AND a.attendeeId IN :participantIds " +
             "       AND ((cmp.period.startDateTime < :endDateTime AND cmp.period.endDateTime > :startDateTime) " +
-            "            OR (cmp.period.endDateTime < :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
+            "            OR (cmp.period.endDateTime <= :startDateTime AND e.recurrence IS NOT NULL AND (e.recurrence.endDateTime >= :startDateTime OR e.recurrence.endDateTime IS NULL)))) " +
             "OR e.id IN (SELECT occ_e.id " +
             "            FROM CalendarEventOccurrence occ_o " +
             "            JOIN occ_o.event occ_e " +
             "            JOIN occ_o.component occ_cmp " +
             "            JOIN occ_cmp.calendar occ_c " +
-            "            LEFT OUTER JOIN occ_cmp.attendees.attendees occ_a " +
+            "            JOIN occ_cmp.attendees.attendees occ_a " +
             "            LEFT OUTER JOIN occ_e.recurrence occ_r " +
             "            WHERE occ_c IN :calendars " +
             "            AND occ_a.attendeeId IN :participantIds " +
@@ -233,7 +237,10 @@ import static org.silverpeas.core.persistence.datasource.repository.OperationCon
             "           ) " +
             "ORDER BY ob_1, ob_2, ob_3")})
 public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
-    implements Plannable, Recurrent, Categorized, Prioritized, Securable {
+    implements Plannable, Recurrent, Categorized, Prioritized, Contribution, Securable,
+    WithAttachment {
+
+  public static final String TYPE = "CalendarEvent";
 
   private static final long serialVersionUID = 1L;
   public static final String THE_EVENT = "The event ";
@@ -259,6 +266,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
   @Column(name = "synchroDate")
   private OffsetDateTime synchronizationDate;
+
+  @Transient
+  private WysiwygContent content;
 
   /**
    * Constructs a new calendar event that spawns to the specified period of time.
@@ -288,6 +298,16 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   public static CalendarEvent getById(final String id) {
     CalendarEventRepository calendarEventRepository = CalendarEventRepository.get();
     return calendarEventRepository.getById(id);
+  }
+
+  /**
+   * Gets list of calendar event by their identifier.
+   * @param ids the identifiers of the aimed calendar events.
+   * @return the instance of the aimed calendar event or null if it does not exist.
+   */
+  public static List<CalendarEvent> getByIds(final List<String> ids) {
+    CalendarEventRepository calendarEventRepository = CalendarEventRepository.get();
+    return calendarEventRepository.getById(ids);
   }
 
   /**
@@ -354,6 +374,31 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     SecurableRequestCache.clear(getId());
   }
 
+  @Override
+  public ContributionIdentifier getContributionId() {
+    return ContributionIdentifier
+        .from(getCalendar().getComponentInstanceId(), getId(), getContributionType());
+  }
+
+  /**
+   * Gets optionally the rich content of this event.
+   * @return the rich content of this event as an {@link Optional} value.
+   */
+  public Optional<WysiwygContent> getContent() {
+    if (content == null && isPlanned()) {
+      content = WysiwygContent.getContent(LocalizedContribution.from(this));
+    }
+    return Optional.ofNullable(content);
+  }
+
+  /**
+   * Sets the rich content of this event.
+   * @param content the content to set.
+   */
+  public void setContent(final WysiwygContent content) {
+    this.content = content;
+  }
+
   /**
    * This event is created by the specified user.
    * @param user the user to set as the creator of this event.
@@ -378,6 +423,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * Gets the user who created and planned this event.
    * @return the user that has authored this event.
    */
+  @Override
   public User getCreator() {
     return this.component.getCreator();
   }
@@ -390,8 +436,19 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     return this.component.getLastUpdater();
   }
 
+  @Override
   public Date getCreationDate() {
     return this.component.getCreateDate();
+  }
+
+  @Override
+  public User getLastModifier() {
+    return this.component.getLastUpdater();
+  }
+
+  @Override
+  public Date getLastModificationDate() {
+    return this.component.getLastUpdateDate();
   }
 
   public Date getLastUpdateDate() {
@@ -554,6 +611,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * @return a description about this event or an empty string if no description is attached to this
    * event.
    */
+  @Override
   public String getDescription() {
     return component.getDescription();
   }
@@ -697,6 +755,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
    * Is this event occurring on all the day(s)?
    * @return true if this event is occurring on all its day(s).
    */
+  @Override
   public boolean isOnAllDay() {
     return getPeriod().isInDays();
   }
@@ -745,12 +804,14 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       if (!isPersisted()) {
         CalendarEventRepository repository = CalendarEventRepository.get();
         setCalendar(calendar);
-        return repository.save(this);
+        CalendarEvent savedEvent = repository.save(this);
+        savedEvent.getContent().ifPresent(WysiwygContent::save);
+        return savedEvent;
       }
       return this;
     });
     notify(ResourceEvent.Type.CREATION, event);
-    notifyAttendees(null, event.getAttendees());
+    notifyAttendees(this, null, event.getAttendees());
     return event;
   }
 
@@ -1032,6 +1093,11 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   @Override
+  public String getContributionType() {
+    return TYPE;
+  }
+
+  @Override
   public boolean canBeModifiedBy(final User user) {
     return SecurableRequestCache.canBeModifiedBy(user, getId(), u -> {
       boolean isCalendarSynchronized = getCalendar().getExternalCalendarUrl() != null;
@@ -1066,17 +1132,18 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     }
   }
 
-  private void deleteFromPersistence(final boolean notify) {
+  private void deleteFromPersistence(final boolean notifyAttendee) {
     if (isPersisted()) {
       Transaction.getTransaction().perform(() -> {
         CalendarEventRepository repository = CalendarEventRepository.get();
         repository.delete(this);
+        WysiwygContent.deleteAllContents(this);
         return null;
       });
     }
-    if (notify) {
-      notify(ResourceEvent.Type.DELETION, this);
-      notifyAttendees(this.getAttendees(), null);
+    notify(ResourceEvent.Type.DELETION, this);
+    if (notifyAttendee) {
+      notifyAttendees(this, this.getAttendees(), null);
     }
   }
 
@@ -1086,10 +1153,11 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
       if (before.isPresent()) {
         CalendarEvent event = Transaction.getTransaction().perform(() -> {
           CalendarEventRepository repository = CalendarEventRepository.get();
+          getContent().filter(WysiwygContent::isModified).ifPresent(WysiwygContent::save);
           return repository.save(this);
         });
         notify(ResourceEvent.Type.UPDATE, before.get(), event);
-        notifyAttendees(before.get().getAttendees(), this.getAttendees());
+        notifyAttendees(this, before.get().getAttendees(), this.getAttendees());
         return event;
       }
     }
@@ -1138,6 +1206,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private void notify(ResourceEvent.Type type, CalendarEvent... events) {
     CalendarEventLifeCycleEventNotifier notifier = CalendarEventLifeCycleEventNotifier.get();
     notifier.notifyEventOn(type, events);
+
   }
 
   private CalendarEvent createNewEventSince(final CalendarEventOccurrence occurrence) {

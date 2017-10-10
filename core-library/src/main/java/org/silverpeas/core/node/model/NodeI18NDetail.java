@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.node.model;
 
-import org.silverpeas.core.i18n.Translation;
+import org.silverpeas.core.i18n.BeanTranslation;
 
-public class NodeI18NDetail extends Translation implements java.io.Serializable {
+public class NodeI18NDetail extends BeanTranslation implements java.io.Serializable {
 
   private static final long serialVersionUID = 1L;
 

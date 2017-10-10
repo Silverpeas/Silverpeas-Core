@@ -23,19 +23,19 @@
  */
 package org.silverpeas.core.admin.component.process.check;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.core.admin.component.exception.ComponentFileFilterException;
 import org.silverpeas.core.admin.component.model.ComponentFileFilterParameter;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.notification.message.MessageManager;
+import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.process.io.IOAccess;
 import org.silverpeas.core.process.io.file.DummyHandledFile;
 import org.silverpeas.core.process.io.file.FileHandler;
 import org.silverpeas.core.process.management.AbstractFileProcessCheck;
 import org.silverpeas.core.process.management.ProcessExecutionContext;
-import org.silverpeas.core.notification.message.MessageNotifier;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 
@@ -58,6 +58,7 @@ public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
    * AbstractFileProcessCheck#checkFiles(org.silverpeas.process
    * .management.ProcessExecutionContext, FileHandler)
    */
+  @SuppressWarnings("ConstantConditions")
   @Override
   public void checkFiles(final ProcessExecutionContext processExecutionContext,
       final FileHandler fileHandler) throws Exception {
@@ -72,8 +73,8 @@ public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
       // Checking authorized and forbidden files on each component detected
       for (final String componentInstanceId : componentInstanceIds) {
 
-        final ComponentInst component =
-            organizationController.getComponentInst(componentInstanceId);
+        final SilverpeasComponentInstance component =
+            organizationController.getComponentInstance(componentInstanceId).orElse(null);
 
         // Component file filter that contains authorized and forbidden rules
         final ComponentFileFilterParameter componentFileFilter =
