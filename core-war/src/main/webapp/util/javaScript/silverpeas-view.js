@@ -159,15 +159,23 @@
     })
   }
 
+  /** Technical attribute to avoid having several same functions triggered on keydown */
+  var __previousOrNextPage;
+
   /**
    * Private function that centralizes the dialog view construction.
    */
   function __openDialogView($this, view) {
+    sp.navigation.mute();
+    if (__previousOrNextPage) {
+      $(document).unbind('keydown', __previousOrNextPage);
+    }
+
     __adjustViewSize(view);
 
     // Initializing the resulting html container
     var $baseContainer = $("#documentView");
-    if ($baseContainer.length == 0) {
+    if ($baseContainer.length === 0) {
       $baseContainer = $("<div>")
                         .attr('id', 'documentView')
                         .css('display', 'block')
@@ -181,14 +189,19 @@
 
     // Settings
     var settings = {
-        title : view.originalFileName,
-        width : view.width,
-        height : view.height
+      title : view.originalFileName,
+      width : view.width,
+      height : view.height,
+      callbackOnClose: function() {
+        $(document).unbind('keydown', __previousOrNextPage);
+        sp.navigation.unmute();
+      }
     };
 
     // Popup
     __setView($baseContainer, view);
     __configureFlexPaper(view);
+
     $baseContainer.popup('view', settings);
   }
 
@@ -261,7 +274,9 @@
         jsonUrl = viewUrl + "_{page}.js";
       }
     }
-    $('#documentViewer').FlexPaperViewer({
+    var __docViewApi = false;
+    var $documentViewer = $('#documentViewer');
+    $documentViewer.FlexPaperViewer({
       config : {
         flashDirectory : view.displayViewerPath,
         jsDirectory : (webContext + '/util/javaScript/flexpaper'),
@@ -297,6 +312,30 @@
       }
     });
     loadFlexPaperHandlers();
+
+    $documentViewer.bind('onDocumentLoaded', function(e,totalPages){
+      if (!__docViewApi) {
+        __docViewApi = getDocViewer('documentViewer');
+      }
+    });
+
+    // Function to navigate between images
+    __previousOrNextPage = function(e) {
+      var keyCode = eval(e.keyCode);
+      if (__docViewApi && 37 <= keyCode && keyCode <= 40) {
+        e.preventDefault();
+        if (39 === keyCode) {
+          // Right
+          __docViewApi.nextPage();
+        } else if (37 === keyCode) {
+          // Left
+          __docViewApi.prevPage();
+        }
+        return false;
+      }
+      return true;
+    };
+    $(document).bind('keydown', __previousOrNextPage);
   }
 
   /**

@@ -199,17 +199,21 @@
       SP_openWindow(chemin, "pdcWindow", largeur, hauteur, "resizable=yes,scrollbars=yes");
     }
 
-    var groupWindow = window;
     function openGroup(groupId) {
-      url = webContext+'/RjobDomainPeas/jsp/groupOpen?groupId=' + groupId;
-      windowName = "groupWindow";
+      sp.formConfig(webContext + '/RjobDomainPeas/jsp/groupOpen').withParam('groupId', groupId).submit();
+    }
+
+    var componentWindow = window;
+    function openComponent(componentId) {
+      url = webContext + '/RjobStartPagePeas/jsp/OpenComponent?ComponentId=' + componentId;
+      windowName = "componentWindow";
       larg = "800";
       haut = "800";
       windowParams = "directories=0,menubar=0,toolbar=0,alwaysRaised";
-      if (!groupWindow.closed && groupWindow.name == "groupWindow") {
-        groupWindow.close();
+      if (!componentWindow.closed && componentWindow.name == "componentWindow") {
+        componentWindow.close();
       }
-      groupWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
+      componentWindow = SP_openWindow(url, windowName, larg, haut, windowParams, false);
     }
 
     function assignSameRights() {
@@ -406,7 +410,7 @@ out.println(window.printBefore());
 
         <c:forEach var="userGroup" items="${userGroups}">
           <view:arrayLine>
-            <c:set var="groupLink"><a href="#" onclick="openGroup('${userGroup.id}');return false;" rel="/JobDomainPeasItemPathServlet?GroupId=${userGroup.id}">${userGroup.name}</a></c:set>
+            <c:set var="groupLink"><a href="javascript:openGroup('${userGroup.id}')" rel="/JobDomainPeasItemPathServlet?GroupId=${userGroup.id}">${userGroup.name}</a></c:set>
             <view:arrayCellText text="${groupLink}"/>
             <view:arrayCellText text="${userGroup.nbUsers}"/>
             <view:arrayCellText text="${userGroup.description}"/>
@@ -426,7 +430,7 @@ out.println(window.printBefore());
 
         <c:forEach var="userGroup" items="${userManageableGroups}">
           <view:arrayLine>
-            <c:set var="groupLink"><a href="#" onclick="openGroup('${userGroup.id}');return false;" rel="/JobDomainPeasItemPathServlet?GroupId=${userGroup.id}">${userGroup.name}</a></c:set>
+            <c:set var="groupLink"><a href="javascript:openGroup('${userGroup.id}')" rel="/JobDomainPeasItemPathServlet?GroupId=${userGroup.id}">${userGroup.name}</a></c:set>
             <view:arrayCellText text="${groupLink}"/>
             <view:arrayCellText text="${userGroup.nbUsers}"/>
             <view:arrayCellText text="${userGroup.description}"/>
@@ -447,7 +451,7 @@ out.println(window.printBefore());
 
         <c:forEach var="manageableSpace" items="${userManageableSpaces}">
           <view:arrayLine>
-            <c:set var="spaceLink"><a href="#" rel="/JobDomainPeasItemPathServlet?SpaceId=${manageableSpace.id}">${manageableSpace.name}</a></c:set>
+            <c:set var="spaceLink"><a rel="/JobDomainPeasItemPathServlet?SpaceId=${manageableSpace.id}">${manageableSpace.name}</a></c:set>
             <view:arrayCellText text="${spaceLink}"/>
             <view:arrayCellText text="${manageableSpace.description}"/>
           </view:arrayLine>
@@ -471,8 +475,8 @@ out.println(window.printBefore());
 
         <c:forEach var="userInstanceProfiles" items="${userProfiles}">
           <view:arrayLine>
-            <c:set var="spaceLink"><a href="#" rel="/JobDomainPeasItemPathServlet?SpaceId=${userInstanceProfiles.space.id}">${userInstanceProfiles.localizedSpaceLabel}</a></c:set>
-            <c:set var="appLink"><a href="#" rel="/JobDomainPeasItemPathServlet?ComponentId=${userInstanceProfiles.component.id}">${userInstanceProfiles.localizedInstanceLabel}</a></c:set>
+            <c:set var="spaceLink"><a rel="/JobDomainPeasItemPathServlet?SpaceId=${userInstanceProfiles.space.id}">${userInstanceProfiles.localizedSpaceLabel}</a></c:set>
+            <c:set var="appLink"><a href="javascript:openComponent('${userInstanceProfiles.component.id}')" rel="/JobDomainPeasItemPathServlet?ComponentId=${userInstanceProfiles.component.id}">${userInstanceProfiles.localizedInstanceLabel}</a></c:set>
             <view:arrayCellText text="${spaceLink}"/>
             <view:arrayCellText text="${appLink}"/>
             <view:arrayCellText text="${userInstanceProfiles.localizedComponentLabel}"/>

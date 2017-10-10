@@ -236,7 +236,7 @@ public class Domain implements Serializable {
   }
 
   public Date getLastSyncDate() {
-    if (StringUtil.isDefined(theTimeStamp)) {
+    if (StringUtil.isDefined(theTimeStamp) && !"0".equals(theTimeStamp)) {
       try {
         String normalizedTimeStamp = theTimeStamp.substring(0, TIMESTAMP_PATTERN_LENGTH);
         return TIMESTAMP_FORMATTER.parse(normalizedTimeStamp);

@@ -28,6 +28,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
 <%@ page import="org.silverpeas.core.util.logging.Level" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.admin.quota.constant.QuotaLoad" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -149,16 +150,16 @@ function ConfirmAndSend(textToDisplay, targetURL) {
 
 function DomainSQLSynchro(){
 	SP_openWindow('<%=m_context %>/RjobDomainPeas/jsp/displayDynamicSynchroReport?IdTraceLevel=<%=Level.DEBUG%>', 'SynchroDomainReport', '750', '550', 'menubar=yes,scrollbars=yes,statusbar=yes,resizable=yes');
-	window.location.href = "domainSQLSynchro";
+  sp.formConfig("domainSQLSynchro").submit();
 }
 
 function jumpToUser() {
   var userIds = selectionUserAPI.getSelectedUserIds();
   var groupIds = selectionUserAPI.getSelectedGroupIds();
   if (userIds.length) {
-    location.href = "userContent?Iduser="+userIds[0];
+    sp.formConfig("userContent").withParam("Iduser", userIds[0]).submit();
   } else if (groupIds.length) {
-    location.href = "groupContent?Idgroup="+groupIds[0];
+    sp.formConfig("groupContent").withParam("Idgroup", groupIds[0]).submit();
   }
 }
 </script>
@@ -176,7 +177,7 @@ out.println(window.printBefore());
 
 <% if (!mixedDomain) { %>
 <div class="rightContent" id="right-content-domainContent">
-  <% if (JobDomainSettings.usersInDomainQuotaActivated && domObject.getUserDomainQuota().exists()) { %>
+  <% if (JobDomainSettings.usersInDomainQuotaActivated && !QuotaLoad.UNLIMITED.equals(domObject.getUserDomainQuota().getLoad())) { %>
   <div class="tag-presentation limited-number-user">
     <div class="tag-presentation-content"><span><%=resource.getStringWithParams("JDP.quota", String.valueOf(domObject.getUserDomainQuota().getMaxCount())) %></span></div>
   </div>

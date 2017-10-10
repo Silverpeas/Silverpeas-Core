@@ -3855,6 +3855,11 @@ li.application  .applicationName {
 /********************************/
 /** BackEnd domain content **/
 /*******************************/
+
+#domainContent #menubar-creation-actions {
+  clear: both
+}
+
 #domainContent .principalContent {
   position:relative;
   width:100%;

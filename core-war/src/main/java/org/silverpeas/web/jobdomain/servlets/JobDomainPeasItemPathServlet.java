@@ -121,7 +121,10 @@ public class JobDomainPeasItemPathServlet extends HttpServlet {
     // Espace > Sous-espaces
     List<SpaceInst> spaceList = oc.getSpacePath(spaceId);
     for (SpaceInst space : spaceList) {
-      path.append(space.getName(sc.getLanguage())).append(SEPARATOR);
+      if (path.length() > 0) {
+        path.append(SEPARATOR);
+      }
+      path.append(space.getName(sc.getLanguage()));
     }
 
     return path.toString();
