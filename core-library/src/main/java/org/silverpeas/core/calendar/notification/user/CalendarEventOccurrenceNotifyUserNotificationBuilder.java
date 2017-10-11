@@ -43,18 +43,10 @@ public class CalendarEventOccurrenceNotifyUserNotificationBuilder
   }
 
   @Override
-  protected String getBundleSubjectKey() {
-    return "event.subject.alert";
-  }
-
-  @Override
-  protected String getTemplateFileName() {
-    return "notification";
-  }
-
-  @Override
-  protected boolean stopWhenNoUserToNotify() {
-    return false;
+  @SuppressWarnings("unchecked")
+  protected Collection<String> getUserIdsToNotify() {
+    // Users to notify are not handled here.
+    return Collections.emptyList();
   }
 
   @Override
@@ -63,10 +55,19 @@ public class CalendarEventOccurrenceNotifyUserNotificationBuilder
   }
 
   @Override
-  @SuppressWarnings("unchecked")
-  protected Collection<String> getUserIdsToNotify() {
-    // Users to notify are not handled here.
-    return Collections.emptyList();
+  protected String getBundleSubjectKey() {
+    return "event.subject.alert";
+  }
+
+
+  @Override
+  protected boolean stopWhenNoUserToNotify() {
+    return false;
+  }
+
+  @Override
+  protected String getTemplateFileName() {
+    return "notification";
   }
 
 }

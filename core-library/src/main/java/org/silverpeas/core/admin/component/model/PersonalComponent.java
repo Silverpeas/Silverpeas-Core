@@ -112,20 +112,20 @@ public class PersonalComponent implements SilverpeasComponent {
     return name;
   }
 
-  /**
-   * Sets the value of the name property.
-   * @param value allowed object is {@link String }
-   */
-  public void setName(String value) {
-    this.name = value;
-  }
-
   @Override
   public HashMap<String, String> getLabel() {
     if (label == null) {
       label = new HashMap<>();
     }
     return label;
+  }
+
+  /**
+   * Sets the value of the name property.
+   * @param value allowed object is {@link String }
+   */
+  public void setName(String value) {
+    this.name = value;
   }
 
   /**
@@ -137,11 +137,13 @@ public class PersonalComponent implements SilverpeasComponent {
   }
 
   @Override
-  public HashMap<String, String> getDescription() {
-    if (description == null) {
-      description = new HashMap<>();
-    }
-    return description;
+  public boolean isVisible() {
+    return visible;
+  }
+
+  @Override
+  public boolean isPersonal() {
+    return true;
   }
 
   /**
@@ -153,14 +155,13 @@ public class PersonalComponent implements SilverpeasComponent {
   }
 
   @Override
-  public boolean isVisible() {
-    return visible;
+  public HashMap<String, String> getDescription() {
+    if (description == null) {
+      description = new HashMap<>();
+    }
+    return description;
   }
 
-  @Override
-  public boolean isPersonal() {
-    return true;
-  }
 
   /**
    * Sets the value of the visible property.

@@ -449,9 +449,9 @@ public class CalendarEventEntity implements WebEntity {
     if (event.getContent().isPresent()) {
       event.getContent().get().setData(currentText);
     } else if (!currentText.isEmpty()) {
-      WysiwygContent content = new WysiwygContent(LocalizedContribution.from(event));
-      content.setData(currentText);
-      event.setContent(content);
+      WysiwygContent wysiwygContent = new WysiwygContent(LocalizedContribution.from(event));
+      wysiwygContent.setData(currentText);
+      event.setContent(wysiwygContent);
     }
     event.withVisibilityLevel(getVisibility());
     if (getRecurrence() != null) {
