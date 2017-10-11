@@ -428,7 +428,7 @@ public class CalendarEventEntity implements WebEntity {
   CalendarEvent getMergedEvent(final String componentInstanceId) {
     final CalendarEvent event;
     if (isDefined(getEventId()) &&
-        !getSessionVolatileResourceCacheService().contains(getEventId(), componentInstanceId)) {
+        !getSessionVolatileResourceCacheService().couldBeVolatileId(getEventId())) {
       event = CalendarEvent.getById(getEventId());
     } else {
       event = CalendarEvent.on(getPeriod());

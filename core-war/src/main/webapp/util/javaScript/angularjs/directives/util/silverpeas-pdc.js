@@ -53,14 +53,19 @@
      * @param pdcElementId the HTML element on which the jQuery plugin is initialized.
      */
     getPositions : function(pdcElementId) {
-      return $('#' + pdcElementId).pdcClassification('positions') ;
+      var $pdcElement = $('#' + pdcElementId);
+      if ($pdcElement.pdcClassification && $pdcElement.pdcClassification('isClassification')) {
+        return $pdcElement.pdcClassification('positions');
+      }
     },
     /**
      * Validate the classifications.
      * @param pdcElementId the HTML element on which the jQuery plugin is initialized.
      */
     validateClassification : function(pdcElementId) {
-      if(!$('#' + pdcElementId).pdcClassification('isClassificationValid')) {
+      var $pdcElement = $('#' + pdcElementId);
+      if ($pdcElement.pdcClassification && $pdcElement.pdcClassification('isClassification') &&
+          !$pdcElement.pdcClassification('isClassificationValid')) {
         SilverpeasError.add(MANDATORY_AXIS_ERROR);
         return false;
       }

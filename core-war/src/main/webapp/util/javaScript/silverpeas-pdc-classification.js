@@ -501,6 +501,14 @@
      * Is the classification of the resource valid? The classification is valid if there is at least
      * one position onto the PdC having mandatory axis.
      */
+    isClassification: function( ) {
+      var $this = $(this), classification = $this.data('classification');
+      return typeof classification !== 'undefined';
+    },
+    /**
+     * Is the classification of the resource valid? The classification is valid if there is at least
+     * one position onto the PdC having mandatory axis.
+     */
     isClassificationValid: function( ) {
       var $this = $(this), positions = $this.data('classification').positions, axis = $this.data('pdc').axis;
       if (positions.length === 0) {

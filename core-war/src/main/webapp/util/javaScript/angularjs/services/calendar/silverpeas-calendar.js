@@ -406,7 +406,7 @@
          * @param event the event to create which contains all necessary data.
          */
         this.createEvent = function(event) {
-          return this.get(event.calendar.id).then(function(calendar) {
+          return this.getByUri(event.calendar.uri).then(function(calendar) {
             return calendar.events.create(event);
           });
         };
