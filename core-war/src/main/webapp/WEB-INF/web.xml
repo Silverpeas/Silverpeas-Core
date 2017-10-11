@@ -297,20 +297,12 @@
     <servlet-class>org.silverpeas.web.jobdomain.servlets.JobDomainPeasAjaxServlet</servlet-class>
   </servlet>
   <servlet>
-    <servlet-name>JobDomainPeasGroupPathServlet</servlet-name>
-    <servlet-class>org.silverpeas.web.jobdomain.servlets.JobDomainPeasGroupPathServlet</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>JobDomainPeasComponentPathServlet</servlet-name>
-    <servlet-class>org.silverpeas.web.jobdomain.servlets.JobDomainPeasComponentPathServlet</servlet-class>
+    <servlet-name>JobDomainPeasItemPathServlet</servlet-name>
+    <servlet-class>org.silverpeas.web.jobdomain.servlets.JobDomainPeasItemPathServlet</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>JobManagerPeasRequestRouter</servlet-name>
     <servlet-class>org.silverpeas.web.jobmanager.servlets.JobManagerPeasRequestRouter</servlet-class>
-  </servlet>
-  <servlet>
-    <servlet-name>JobOrganizationPeasRequestRouter</servlet-name>
-    <servlet-class>org.silverpeas.web.joborganization.servlets.JobOrganizationPeasRequestRouter</servlet-class>
   </servlet>
   <servlet>
     <servlet-name>JobStartPagePeasRequestRouter</servlet-name>
@@ -757,20 +749,12 @@
     <url-pattern>/JobDomainPeasAJAXServlet/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
-    <servlet-name>JobDomainPeasGroupPathServlet</servlet-name>
-    <url-pattern>/JobDomainPeasGroupPathServlet/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>JobDomainPeasComponentPathServlet</servlet-name>
-    <url-pattern>/JobDomainPeasComponentPathServlet/*</url-pattern>
+    <servlet-name>JobDomainPeasItemPathServlet</servlet-name>
+    <url-pattern>/JobDomainPeasItemPathServlet/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>JobManagerPeasRequestRouter</servlet-name>
     <url-pattern>/RjobManagerPeas/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>JobOrganizationPeasRequestRouter</servlet-name>
-    <url-pattern>/RjobOrganizationPeas/*</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>JobStartPagePeasRequestRouter</servlet-name>

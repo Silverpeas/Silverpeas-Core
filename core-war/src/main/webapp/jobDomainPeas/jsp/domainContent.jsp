@@ -25,22 +25,21 @@
 --%>
 <%@page import="org.apache.commons.lang3.tuple.Pair"%>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserState" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
 <%@ page import="org.silverpeas.core.util.logging.Level" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
+<%@ page import="org.silverpeas.core.admin.quota.constant.QuotaLoad" %>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%@ include file="check.jsp" %>
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <%
-	Board board = gef.getBoard();
-
   Domain  domObject 			= (Domain)request.getAttribute("domainObject");
   UserDetail theUser 			= (UserDetail)request.getAttribute("theUser");
   boolean isDomainRW 			= (Boolean)request.getAttribute("isDomainRW");
@@ -53,6 +52,7 @@
 
   boolean isDomainSql = "org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
   boolean mixedDomain = domObject.isMixedOne();
+  Date lastSyncDate = domObject.getLastSyncDate();
 
   browseBar.setComponentName(getDomainLabel(domObject, resource), "domainContent?Iddomain="+domObject.getId());
 
@@ -138,18 +138,29 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<view:looknfeel/>
+<view:looknfeel withFieldsetStyle="true"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript">
-  function ConfirmAndSend(textToDisplay, targetURL) {
-    jQuery.popup.confirm(textToDisplay, function() {
-      jQuery('#deletionForm').attr('action', targetURL).submit();
-    });
-  }
+var selectionUserAPI;
+function ConfirmAndSend(textToDisplay, targetURL) {
+  jQuery.popup.confirm(textToDisplay, function() {
+    jQuery('#deletionForm').attr('action', targetURL).submit();
+  });
+}
 
 function DomainSQLSynchro(){
 	SP_openWindow('<%=m_context %>/RjobDomainPeas/jsp/displayDynamicSynchroReport?IdTraceLevel=<%=Level.DEBUG%>', 'SynchroDomainReport', '750', '550', 'menubar=yes,scrollbars=yes,statusbar=yes,resizable=yes');
-	window.location.href = "domainSQLSynchro";
+  sp.formConfig("domainSQLSynchro").submit();
+}
+
+function jumpToUser() {
+  var userIds = selectionUserAPI.getSelectedUserIds();
+  var groupIds = selectionUserAPI.getSelectedGroupIds();
+  if (userIds.length) {
+    sp.formConfig("userContent").withParam("Iduser", userIds[0]).submit();
+  } else if (groupIds.length) {
+    sp.formConfig("groupContent").withParam("Idgroup", groupIds[0]).submit();
+  }
 }
 </script>
 </head>
@@ -159,43 +170,61 @@ out.println(window.printBefore());
 %>
 <view:frame>
 
+  <% if (isUserDomainQuotaFull) { %>
+  <div class="inlineMessage-nok"><fmt:message key="JDP.userDomainQuotaFull" /></div>
+  <br clear="all" />
+  <% } %>
+
 <% if (!mixedDomain) { %>
 <div class="rightContent" id="right-content-domainContent">
-	<div class="bgDegradeGris" id="link-domain-content">
+  <% if (JobDomainSettings.usersInDomainQuotaActivated && !QuotaLoad.UNLIMITED.equals(domObject.getUserDomainQuota().getLoad())) { %>
+  <div class="tag-presentation limited-number-user">
+    <div class="tag-presentation-content"><span><%=resource.getStringWithParams("JDP.quota", String.valueOf(domObject.getUserDomainQuota().getMaxCount())) %></span></div>
+  </div>
+  <% } %>
+  <div class="bgDegradeGris" id="link-domain-content">
 		<p>
 			<img alt="" src="/silverpeas/util/icons/link.gif"/> <%=resource.getString("JDP.silverpeasServerURL") %> <br/>
 			<input type="text" size="40" value="<%=domObject.getSilverpeasServerURL() %>" onmouseup="return false" onfocus="select();"/>
 		</p>
+    <% if (lastSyncDate != null) { %>
+      <p id="lastSyncDate">
+        <fmt:message key="JDP.domain.lastSyncDate" />
+        <view:formatDateTime value="<%=lastSyncDate%>"/>
+      </p>
+    <% } %>
 	</div>
 </div>
 <% } %>
 
 <div class="principalContent">
-	<div id="principal-content-domainContent">
-		<h2 class="principal-content-title sql-domain"> <%=getDomainLabel(domObject, resource)%> </h2>
-		<% if (JobDomainSettings.usersInDomainQuotaActivated && domObject.getUserDomainQuota().exists()) { %>
-			<div class="tag-presentation limited-number-user">
-				<div class="tag-presentation-content"><span><%=resource.getStringWithParams("JDP.quota", String.valueOf(domObject.getUserDomainQuota().getMaxCount())) %></span></div>
-			</div>
-		<% } %>
-		<div id="number-user-group-domainContent">
-			<% if (!mixedDomain) { %>
-				<span id="number-user-domainContent"><%=subUsers.size() %> <%=resource.getString("GML.user_s") %></span> -
-			<% } %>
-			<span id="number-group-domainContent"><%=subGroups.length %> <%=resource.getString("GML.group_s") %></span>
-		</div>
-		<% if (StringUtil.isDefined(domObject.getDescription()) && !mixedDomain) { %>
-			<p id="description-domainContent"><%=WebEncodeHelper.javaStringToHtmlString(domObject.getDescription())%></p>
-		<% } %>
-	</div>
+  <h2 class="principal-content-title sql-domain"> <%=getDomainLabel(domObject, resource)%> </h2>
+  <div id="number-user-group-domainContent">
+    <% if (!mixedDomain) { %>
+      <span id="number-user-domainContent"><%=subUsers.size() %> <%=resource.getString("GML.user_s") %></span> -
+    <% } %>
+    <span id="number-group-domainContent"><%=subGroups.length %> <%=resource.getString("GML.group_s") %></span>
+  </div>
+  <% if (StringUtil.isDefined(domObject.getDescription()) && !mixedDomain) { %>
+    <p id="description-domainContent"><%=WebEncodeHelper.javaStringToHtmlString(domObject.getDescription())%></p>
+  <% } %>
 </div>
-<% if (isUserDomainQuotaFull) { %>
-	<div class="inlineMessage-nok"><fmt:message key="JDP.userDomainQuotaFull" /></div>
-  <br clear="all" />
-<% } %>
+
 <br/>
-<view:areaOfOperationOfCreation/>
-<%
+
+  <view:areaOfOperationOfCreation/>
+
+  <div class="tableBoard" id="domain-search">
+    <div class="field">
+      <label class="txtlibform"><fmt:message key="JDP.userPanelAccess"/></label>
+      <div class="champs">
+        <viewTags:selectUsersAndGroups domainIdFilter="<%=domObject.getId()%>" selectionType="USER_GROUP"
+                                       onChangeJsCallback="jumpToUser" jsApiVar="selectionUserAPI"/>
+      </div>
+    </div>
+  </div>
+
+  <%
   ArrayPane arrayPane = gef.getArrayPane("_dc_groupe", "domainContent.jsp", request, session);
   arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
   arrayPane.setTitle(resource.getString("JDP.groups") + " (" +  subGroups.length + ")");
@@ -236,6 +265,7 @@ out.println(window.printBefore());
 
 	  arrayPaneUser.setVisibleLineNumber(JobDomainSettings.m_UsersByPage);
 	  arrayPaneUser.setTitle(resource.getString("GML.users") + " (" +  subUsers.size() + ")");
+    arrayPaneUser.setExportData(true);
 
 	  arrayPaneUser.addArrayColumn(resource.getString("JDP.userState"));
 	  arrayPaneUser.addArrayColumn(resource.getString("GML.lastName"));
@@ -273,7 +303,7 @@ out.println(window.printBefore());
   }
 %>
 </view:frame>
-<form id="deletionForm" action="" method="POST">
+<form id="deletionForm" action="" method="post">
 </form>
 <%
 	out.println(window.printAfter());

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.jobmanager.control;
 
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.web.jobmanager.JobManagerService;
 import org.silverpeas.web.jobmanager.JobManagerSettings;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
@@ -69,7 +70,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     setComponentRootName(CMP_JOBMANAGERPEAS);
 
     String[] ids = mainSessionCtrl.getUserManageableSpaceIds();
-    if (ids != null && ids.length > 0) {
+    if (ArrayUtil.isNotEmpty(ids)) {
       isManager = true;
     }
     if (services == null) {
@@ -93,8 +94,6 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         + getURL(CMP_JOBDOMAINPEAS, null, null) + "Main", null, false);
     JobManagerService jspp = new JobManagerService("12", "JSPP", LEVEL_OPERATION, webContext
         + getURL(CMP_JOBSTARTPAGEPEAS, null, null) + "Main", null, false);
-    JobManagerService jrp = new JobManagerService("13", "JRP", LEVEL_OPERATION, webContext
-        + getURL(CMP_JOBORGANIZATIONPEAS, null, null) + "Main", null, false);
     JobManagerService jsp = new JobManagerService("14", "JSP", LEVEL_OPERATION, webContext
         + getURL(CMP_JOBSEARCHPEAS, null, null) + "Main", null, false);
     // tools
@@ -140,13 +139,13 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
 
     if (getUserDetail().isAccessAdmin()) {
       // l'administrateur à accès au tout
-      String[] jDesignerFunctions = { jdp.getId(), jrp.getId(), jspp.getId(), jsp.getId() };
+      String[] jDesignerFunctions = { jdp.getId(), jspp.getId(), jsp.getId() };
       jDesigner = new JobManagerService("1", "JD", LEVEL_SERVICE, null, jDesignerFunctions, false);
 
       String[] jSTATFunctions = { jSTAT1.getId(), jSTAT2.getId(), jSTAT3.getId(), jSTAT4.getId() };
       jSTAT = new JobManagerService("3", "JSTAT", LEVEL_SERVICE, null, jSTATFunctions, false);
 
-      if (JobManagerSettings.m_IsKMVisible) {
+      if (JobManagerSettings.IsKMVisible) {
         String[] jKMFunctions = { jKM1.getId(), jKM2.getId() };
         jKM = new JobManagerService("2", "JKM", LEVEL_SERVICE, null, jKMFunctions, false);
         services.put(jKM.getId(), jKM);
@@ -155,47 +154,44 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         kmServiceAllowed = true;
       }
 
-      if (JobManagerSettings.m_IsToolsVisible) {
-        if (JobManagerSettings.m_IsToolSpecificAuthentVisible
-            || JobManagerSettings.m_IsToolWorkflowDesignerVisible) {
+      if (JobManagerSettings.IsToolSpecificAuthentVisible
+          || JobManagerSettings.IsToolWorkflowDesignerVisible) {
 
-          List<String> ids = new ArrayList<String>(10);
-          ids.add(jImportExport.getId());
-          services.put(jImportExport.getId(), jImportExport);
-          if (JobManagerSettings.m_IsToolSpecificAuthentVisible) {
-            ids.add(jSpecificAuthent.getId());
-            services.put(jSpecificAuthent.getId(), jSpecificAuthent);
-          }
-          if (JobManagerSettings.m_IsTemplateDesignerVisible) {
-            ids.add(jtd.getId());
-            services.put(jtd.getId(), jtd);
-          }
-          if (JobManagerSettings.m_IsToolWorkflowDesignerVisible) {
-            ids.add(jWorkflowDesigner.getId());
-            services.put(jWorkflowDesigner.getId(), jWorkflowDesigner);
-          }
-          if (JobManagerSettings.m_IsPortletDeployerVisible) {
-            ids.add(portletDeployer.getId());
-            services.put(portletDeployer.getId(), portletDeployer);
-          }
-          ids.add(jst.getId());
-          services.put(jst.getId(), jst);
-          ids.add(jindex.getId());
-          services.put(jindex.getId(), jindex);
-          ids.add(jcipher.getId());
-          services.put(jcipher.getId(), jcipher);
-          ids.add(jabout.getId());
-          services.put(jabout.getId(), jabout);
-
-          jTools = new JobManagerService("4", "JTOOLS", LEVEL_SERVICE, null,
-              ids.toArray(new String[ids.size()]), false);
-          services.put(jTools.getId(), jTools);
+        List<String> ids = new ArrayList<String>(10);
+        if (JobManagerSettings.IsToolSpecificAuthentVisible) {
+          ids.add(jSpecificAuthent.getId());
+          services.put(jSpecificAuthent.getId(), jSpecificAuthent);
         }
+        if (JobManagerSettings.IsTemplateDesignerVisible) {
+          ids.add(jtd.getId());
+          services.put(jtd.getId(), jtd);
+        }
+        if (JobManagerSettings.IsToolWorkflowDesignerVisible) {
+          ids.add(jWorkflowDesigner.getId());
+          services.put(jWorkflowDesigner.getId(), jWorkflowDesigner);
+        }
+        ids.add(jImportExport.getId());
+        services.put(jImportExport.getId(), jImportExport);
+        if (JobManagerSettings.IsPortletDeployerVisible) {
+          ids.add(portletDeployer.getId());
+          services.put(portletDeployer.getId(), portletDeployer);
+        }
+        ids.add(jst.getId());
+        services.put(jst.getId(), jst);
+        ids.add(jindex.getId());
+        services.put(jindex.getId(), jindex);
+        ids.add(jcipher.getId());
+        services.put(jcipher.getId(), jcipher);
+        ids.add(jabout.getId());
+        services.put(jabout.getId(), jabout);
+
+        jTools = new JobManagerService("4", "JTOOLS", LEVEL_SERVICE, null,
+            ids.toArray(new String[ids.size()]), false);
+        services.put(jTools.getId(), jTools);
       }
 
       services.put(jDesigner.getId(), jDesigner);
       services.put(jdp.getId(), jdp);
-      services.put(jrp.getId(), jrp);
       services.put(jspp.getId(), jspp);
       services.put(jsp.getId(), jsp);
 
@@ -205,39 +201,34 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       services.put(jSTAT3.getId(), jSTAT3);
       services.put(jSTAT4.getId(), jSTAT4);
 
-      // services.put(jRepositoryImport.getId(), jRepositoryImport);
-      // services.put(jImportExport.getId(), jImportExport);
     } else if (isManager) {
       if (getUserDetail().isAccessDomainManager()) {
         // l'administrateur du composant à accès seulement à certaines fonctions
-        String[] functionIds = { jdp.getId(), jrp.getId(), jspp.getId() };
+        String[] functionIds = { jdp.getId(), jspp.getId() };
         jDesigner = new JobManagerService("1", "JD", LEVEL_SERVICE, null, functionIds, false);
 
         services.put(jDesigner.getId(), jDesigner);
         nbServices++;
 
         services.put(jdp.getId(), jdp);
-        services.put(jrp.getId(), jrp);
         services.put(jspp.getId(), jspp);
       } else {
         // l'administrateur d'espace à accès seulement à certaines fonctions
-        if (getUserManageableGroupIds().size() > 0) {
+        if (!getUserManageableGroupIds().isEmpty()) {
           // Il est également gestionnaire de groupe, il a acces au référentiel (jobDomain)
-          String[] functionIds = { jdp.getId(), jrp.getId(), jspp.getId() };
+          String[] functionIds = { jdp.getId(), jspp.getId() };
           jDesigner = new JobManagerService("1", "JD", LEVEL_SERVICE, null, functionIds, false);
           services.put(jDesigner.getId(), jDesigner);
           nbServices++;
 
           services.put(jdp.getId(), jdp);
-          services.put(jrp.getId(), jrp);
           services.put(jspp.getId(), jspp);
         } else {
           // Il n'est pas gestionnaire de groupe
-          String[] functionIds = { jrp.getId(), jspp.getId() };
+          String[] functionIds = { jspp.getId() };
           jDesigner = new JobManagerService("1", "JD", LEVEL_SERVICE, null, functionIds, false);
           services.put(jDesigner.getId(), jDesigner);
           nbServices++;
-          services.put(jrp.getId(), jrp);
           services.put(jspp.getId(), jspp);
         }
       }
@@ -246,7 +237,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       jSTAT = new JobManagerService("3", "JSTAT", LEVEL_SERVICE, null, id2, false);
 
       if (getUserDetail().isAccessPdcManager()
-          && JobManagerSettings.m_IsKMVisible) {
+          && JobManagerSettings.IsKMVisible) {
         String[] id1 = { jKM1.getId(), jKM2.getId() };
         jKM = new JobManagerService("2", "JKM", LEVEL_SERVICE, null, id1, false);
 
@@ -261,7 +252,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       services.put(jSTAT2.getId(), jSTAT2);
       services.put(jSTAT3.getId(), jSTAT3);
     } else if (getUserDetail().isAccessPdcManager()
-        && JobManagerSettings.m_IsKMVisible) {
+        && JobManagerSettings.IsKMVisible) {
       String[] id1 = { jKM1.getId(), jKM2.getId() };
       jKM = new JobManagerService("1", "JKM", LEVEL_SERVICE, null, id1, false);
 

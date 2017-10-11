@@ -841,7 +841,11 @@ if (typeof window.silverpeasAjax === 'undefined') {
       return;
     }
     if (!silverpeasFormConfig.getTarget()) {
-      window.top.jQuery.progressMessage();
+      if (window.top.jQuery && window.top.jQuery.progressMessage) {
+        window.top.jQuery.progressMessage();
+      } else if (window.jQuery && window.jQuery.progressMessage) {
+        window.jQuery.progressMessage();
+      }
     }
     var selector = "form[target=silverpeasFormSubmit]";
     var form = document.querySelector(selector);
@@ -1232,8 +1236,14 @@ if (typeof window.sp === 'undefined') {
       return sp.promise.resolveDirectlyWith(html);
     },
     navigation : {
+      mute : function() {
+        Mousetrap.pause();
+      },
+      unmute: function() {
+        document.body.focus();
+        Mousetrap.unpause();
+      },
       previousNextOn : function(target, onPreviousOrNext) {
-        var $document = jQuery(document);
         Mousetrap.bind('left', function() {
           onPreviousOrNext(true);
         });

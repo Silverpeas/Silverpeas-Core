@@ -176,6 +176,7 @@ class WebCommonLookAndFeel {
         getJavaScriptTag(contextPath + "/util/javaScript/polyfill/silverpeas-polyfills.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap-global-bind.min.js"));
+    code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap-pause.min.js"));
 
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/" +
         GraphicElementFactory.MOMENT_JS));

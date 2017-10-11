@@ -92,6 +92,7 @@
     <c:if test="${not passwordField}">
       <c:set var="domainProperty" value="${user.getProperty(propertyName)}"/>
       <c:set var="propertyValue" value="${user.getValue(propertyName)}"/>
+      <c:if test="${(readOnly && not empty propertyValue) || not readOnly}">
       <div class="field" id="${propertyName}">
         <label class="txtlibform">
           ${user.getSpecificLabel(_language, propertyName)}
@@ -151,6 +152,7 @@
           </c:choose>
         </div>
       </div>
+      </c:if>
     </c:if>
   </c:forEach>
 </div>

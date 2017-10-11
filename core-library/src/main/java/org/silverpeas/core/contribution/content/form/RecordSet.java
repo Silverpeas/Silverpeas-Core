@@ -26,6 +26,7 @@ package org.silverpeas.core.contribution.content.form;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.ForeignPK;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -52,8 +53,9 @@ public interface RecordSet {
    */
   DataRecord getRecord(String id) throws FormException;
 
-  DataRecord getRecord(String recordId, String language)
-      throws FormException;
+  DataRecord getRecord(String recordId, String language) throws FormException;
+
+  List<DataRecord> getRecords(String fieldName, String fieldValue) throws FormException;
 
   /**
    * Save the given DataRecord. If the record id is null then the record is inserted in this

@@ -618,17 +618,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
 
     UserFull userFull = getUserFul(user.getOriginalId());
-    HashMap<String, String> extra = new HashMap<String, String>();
+    Map<String, String> extra = new HashMap<String, String>();
     if (userFull != null) {
-      Set<String> keys = userFull.getSpecificDetails().keySet();
-      // put only defined values
-      for (String key : keys) {
-        String value = userFull.getValue(key);
-        if (StringUtil.isDefined(value)) {
-          extra.put(key, javaStringToHtmlString(value));
-        }
-      }
+      extra = userFull.getAllDefinedValues(getLanguage());
     }
+
     template.setAttribute("extra", extra);
 
     return new UserFragmentVO(user.getOriginalId(), template.applyFileTemplate("user_" +
