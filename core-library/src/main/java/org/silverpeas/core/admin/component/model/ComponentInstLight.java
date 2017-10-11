@@ -36,6 +36,7 @@ import javax.persistence.Transient;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.silverpeas.core.admin.user.model.SilverpeasRole.Manager;
@@ -309,12 +310,14 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
 
   @Override
   public boolean isWorkflow() {
-    return WAComponent.getByName(getName()).get().isWorkflow();
+    final Optional<WAComponent> component = WAComponent.getByName(getName());
+    return component.isPresent() && component.get().isWorkflow();
   }
 
   @Override
   public boolean isTopicTracker() {
-    return WAComponent.getByName(getName()).get().isTopicTracker();
+    final Optional<WAComponent> component = WAComponent.getByName(getName());
+    return component.isPresent() && component.get().isTopicTracker();
   }
 
   public String getIcon(boolean bigOne) {
