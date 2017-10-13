@@ -35,6 +35,5 @@ public interface SimpleGraphicElement {
    * Print an html representation for this object.
    * @return The html representation for this object.
    */
-  public String print();
-
+  String print();
 }

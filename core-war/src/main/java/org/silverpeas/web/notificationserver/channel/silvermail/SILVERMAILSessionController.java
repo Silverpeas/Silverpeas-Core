@@ -51,10 +51,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
     .QUERY_ORDER_BY.*;
 
@@ -71,6 +73,12 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   private static final int SUBJECT_INDEX = 4;
   private static final int FROM_INDEX = 5;
   private static final int SOURCE_INDEX = 6;
+  private static final String PREFIX_CACHE_KEY =
+      SILVERMAILSessionController.class.getName() + "###";
+  private static final String PREFIX_SPACE_CACHE_KEY =
+      SILVERMAILSessionController.class.getName() + "###space###";
+  private static final String UNKNOWN_SOURCE_BUNDLE_KEY = "UnknownSource";
+  private static final int DEFAULT_PAGINATION_SIZE = 25;
   private String currentFunction;
   private long currentMessageId = -1;
   private Set<String> selectedUserNotificationIds = new HashSet<>();
@@ -91,11 +99,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
         "org.silverpeas.notificationserver.channel.silvermail.multilang.silvermail",
         "org.silverpeas.notificationserver.channel.silvermail.settings.silvermailIcons");
     setComponentRootName(URLUtil.CMP_SILVERMAIL);
-    pagination = new PaginationPage(1, 25);
-  }
-
-  protected String getComponentInstName() {
-    return URLUtil.CMP_SILVERMAIL;
+    pagination = new PaginationPage(1, DEFAULT_PAGINATION_SIZE);
   }
 
   public PaginationPage getPagination() {
@@ -151,11 +155,9 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     } catch (SILVERMAILException e) {
       throw new org.silverpeas.core.SilverpeasRuntimeException(e);
     }
-    return messages.stream().map(n -> {
-      UserNotificationItem item = new UserNotificationItem(n);
-      item.setSelected(selectedUserNotificationIds.contains(item.getId()));
-      return item;
-    }).collect(SilverpeasList.collector(messages));
+    final Function<SILVERMAILMessage, UserNotificationItem> converter =
+        n -> new UserNotificationItem(n, getSelectedUserNotificationIds());
+    return UserNotificationItem.convert(messages, converter);
   }
 
   /**
@@ -202,17 +204,32 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
   private String getSource(String componentId) {
     final Mutable<String> source = Mutable.empty();
     if (StringUtil.isDefined(componentId)) {
-      SilverpeasComponentInstance.getById(componentId).filter(i -> !i.isPersonal()).ifPresent(i -> {
-        SpaceInstLight space = OrganizationController.get().getSpaceInstLightById(i.getSpaceId());
-        if (space != null) {
-          source.set(space.getName() + " - " + i.getLabel());
-        }
-      });
+      final String componentCacheKey = PREFIX_CACHE_KEY + componentId;
+      final String cachedValue = getRequestCacheService().getCache()
+          .computeIfAbsent(componentCacheKey, String.class, () -> {
+            final Optional<SilverpeasComponentInstance> optionalComponentInstance =
+                SilverpeasComponentInstance.getById(componentId).filter(i -> !i.isPersonal());
+            if (!optionalComponentInstance.isPresent()) {
+              return StringUtil.EMPTY;
+            }
+            final SilverpeasComponentInstance componentInstance = optionalComponentInstance.get();
+            final String spaceCacheKey = PREFIX_SPACE_CACHE_KEY + componentInstance.getSpaceId();
+            return getRequestCacheService().getCache()
+                .computeIfAbsent(spaceCacheKey, String.class, () -> {
+                  final SpaceInstLight space = OrganizationController.get()
+                      .getSpaceInstLightById(componentInstance.getSpaceId());
+                  if (space != null) {
+                    return space.getName() + " - " + componentInstance.getLabel();
+                  }
+                  return componentInstance.getLabel();
+                });
+          });
+      source.set(cachedValue);
     } else {
       source.set(getString("UserNotification"));
     }
     if (!source.isPresent()) {
-      source.set(getString("UnknownSource"));
+      source.set(getString(UNKNOWN_SOURCE_BUNDLE_KEY));
     }
     return source.get();
   }

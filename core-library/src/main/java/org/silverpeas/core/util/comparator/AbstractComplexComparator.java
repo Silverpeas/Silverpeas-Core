@@ -39,8 +39,6 @@ public abstract class AbstractComplexComparator<C> extends
 
   /**
    * Value list to compare
-   * @param object
-   * @return
    */
   protected abstract ValueBuffer getValuesToCompare(final C object);
 
@@ -71,14 +69,14 @@ public abstract class AbstractComplexComparator<C> extends
       // Instance
       result = compareInstance(curO1, curO2);
       if (result != 0) {
-        return result * sens.intValue();
+        return result * sens;
       }
 
       // Value
       if (areInstancesComparable(curO1, curO2)) {
         result = compare((Comparable) curO1, curO2);
         if (result != 0) {
-          return result * sens.intValue();
+          return result * sens;
         }
       }
     }
@@ -94,10 +92,10 @@ public abstract class AbstractComplexComparator<C> extends
   public class ValueBuffer {
 
     /** Sens */
-    private final List<Integer> sens = new ArrayList<Integer>();
+    private final List<Integer> sens = new ArrayList<>();
 
     /** Valeur */
-    private final List<Object> values = new ArrayList<Object>();
+    private final List<Object> values = new ArrayList<>();
 
     /**
      * Default constructor
@@ -108,9 +106,6 @@ public abstract class AbstractComplexComparator<C> extends
 
     /**
      * Adding a value
-     * @param object
-     * @param isAscending
-     * @return
      */
     public ValueBuffer append(final Object object, final boolean isAscending) {
       values.add(object);
@@ -124,8 +119,6 @@ public abstract class AbstractComplexComparator<C> extends
 
     /**
      * Adding a value
-     * @param object
-     * @return
      */
     public ValueBuffer append(final Object object) {
       return append(object, true);
@@ -134,7 +127,7 @@ public abstract class AbstractComplexComparator<C> extends
     /**
      * @return the sens
      */
-    public List<Integer> getSens() {
+    List<Integer> getSens() {
       return sens;
     }
 
@@ -160,6 +153,7 @@ public abstract class AbstractComplexComparator<C> extends
       this.emptyAtEnd = emptyAtEnd;
     }
 
+    @SuppressWarnings("NullableProblems")
     @Override
     public int compareTo(final StringWrapper o) {
 
@@ -182,12 +176,13 @@ public abstract class AbstractComplexComparator<C> extends
       return 0;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(final Object o) {
       if (this == o) {
         return true;
       }
-      if (!(o.getClass() != StringWrapper.class)) {
+      if (o.getClass() == StringWrapper.class) {
         return false;
       }
 

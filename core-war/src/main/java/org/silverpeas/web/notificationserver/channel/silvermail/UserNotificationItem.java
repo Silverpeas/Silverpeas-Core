@@ -24,32 +24,22 @@
 package org.silverpeas.web.notificationserver.channel.silvermail;
 
 import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
+import org.silverpeas.core.web.util.DataItemWrapper;
+
+import java.util.Set;
 
 /**
+ * UI item if a {@link SILVERMAILMessage} instance.
  * @author Yohann Chastagnier
  */
-public class UserNotificationItem {
+public class UserNotificationItem extends DataItemWrapper<SILVERMAILMessage> {
 
-  private final SILVERMAILMessage data;
-  private boolean selected = false;
-
-  public UserNotificationItem(final SILVERMAILMessage data) {
-    this.data = data;
+  UserNotificationItem(final SILVERMAILMessage data, final Set<String> selectedIds) {
+    super(data, selectedIds);
   }
 
+  @Override
   public String getId() {
     return String.valueOf(getData().getId());
-  }
-
-  public SILVERMAILMessage getData() {
-    return data;
-  }
-
-  public boolean isSelected() {
-    return selected;
-  }
-
-  public void setSelected(final boolean selected) {
-    this.selected = selected;
   }
 }

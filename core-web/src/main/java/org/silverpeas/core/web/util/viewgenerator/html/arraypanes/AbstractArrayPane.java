@@ -192,22 +192,6 @@ public class AbstractArrayPane implements ArrayPane {
     return result;
   }
 
-  /**
-   * Gets the start index and the last index.
-   * @param pagination the pagination.
-   * @return the indexes.
-   */
-  static Pair<Integer, Integer> getStartLastIndexesFrom(Pagination pagination) {
-    final int firstIndex = pagination.getIndexForCurrentPage();
-    final int lastIndex;
-    if (pagination.isLastPage()) {
-      lastIndex = pagination.getLastItemIndex();
-    } else {
-      lastIndex = pagination.getIndexForNextPage();
-    }
-    return Pair.of(firstIndex, lastIndex);
-  }
-
   @Override
   public void init(String name, PageContext pageContext) {
     init(name, pageContext.getRequest(), pageContext.getSession());
@@ -574,11 +558,7 @@ public class AbstractArrayPane implements ArrayPane {
    * @param paginationList the pagination list.
    */
   void setPaginationList(final SilverpeasList paginationList) {
-    if (paginationList.isSlice()) {
-      this.maxCountOfPaginationList = (int) paginationList.originalListSize();
-    } else {
-      this.maxCountOfPaginationList = -1;
-    }
+    this.maxCountOfPaginationList = (int) paginationList.originalListSize();
   }
 
   /**

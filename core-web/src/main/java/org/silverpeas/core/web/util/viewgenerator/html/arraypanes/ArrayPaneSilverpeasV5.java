@@ -23,11 +23,12 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import java.util.Collections;
-
 import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
+
+import javax.servlet.jsp.PageContext;
+import java.util.Collections;
 
 /**
  * The default implementation of ArrayPane interface.
@@ -39,7 +40,7 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
   /**
    * Default constructor as this class may be instanciated by method newInstance(), constructor
    * contains no parameter. init methods must be used to initialize properly the instance.
-   * @see init
+   * @see #init(String, PageContext)
    */
   public ArrayPaneSilverpeasV5() {
     // initialisation is made in init methods
@@ -138,7 +139,7 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
         if (isPaginationOptimized()) {
           getLines().forEach(l -> printArrayPaneLine(result, l));
         } else {
-          final Pair<Integer, Integer> indexes = getStartLastIndexesFrom(pagination);
+          final Pair<Integer, Integer> indexes = pagination.getStartLastIndexes();
           final int firstIndex = indexes.getLeft();
           final int lastIndex = indexes.getRight();
           for (int i = firstIndex; i < lastIndex; i++) {

@@ -23,16 +23,24 @@
  */
 package org.silverpeas.core.admin;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
+import org.silverpeas.core.util.PaginationList;
+import org.silverpeas.core.util.SilverpeasList;
+
+import java.util.List;
+
 /**
  * A page in a pagination of resources.
- * This bean is dedicated to be used with search criteria.
+ * This bean is dedicated to be used with search criteria and permits also to handle pagination
+ * context into UI pages.
  */
 public class PaginationPage {
 
-  public static final int DEFAULT_NB_ITEMS_PER_PAGE = 10;
+  private static final int DEFAULT_NB_ITEMS_PER_PAGE = 10;
   public static final PaginationPage DEFAULT = new PaginationPage(1, DEFAULT_NB_ITEMS_PER_PAGE);
 
-  private final int page;
+  private int page;
   private final int count;
 
   /**
@@ -59,5 +67,53 @@ public class PaginationPage {
    */
   public int getPageSize() {
     return count;
+  }
+
+  /**
+   * Converts the pagination page into a {@link PaginationCriterion} instance which represents the
+   * criterion of pagination into the context of persistence.
+   * @return the corresponding {@link PaginationCriterion} instance.
+   */
+  public PaginationCriterion asCriterion() {
+    return new PaginationCriterion(getPageNumber(), getPageSize());
+  }
+
+  /**
+   * Gets a paginated list from the given one by applying the pagination page context.<br/>
+   * If the list size is lower than the pagination page index, then pagination context is adjusted.
+   * @param list the list to paginate.
+   * @return the paginated list.
+   */
+  @SuppressWarnings("unchecked")
+  public <T> SilverpeasList<T> getPaginatedListFrom(List<T> list) {
+    final Pair<Integer, Integer> indexes = getStartLastIndexesFor(list);
+    if (list instanceof SilverpeasList && ((SilverpeasList) list).isSlice()) {
+      return (SilverpeasList) list;
+    }
+    final List lightList = list.subList(indexes.getLeft(), indexes.getRight());
+    return PaginationList.from(lightList, list.size());
+  }
+
+  /**
+   * Gets the start index and the last index.<br/>
+   * If the list size is lower than the pagination page index, then pagination context is adjusted.
+   * @return the indexes.
+   */
+  private <T> Pair<Integer, Integer> getStartLastIndexesFor(List<T> list) {
+    final SilverpeasList<T> silverpeasList = SilverpeasList.wrap(list);
+    final int maxSize = (int) silverpeasList.originalListSize();
+    int firstIndex = (getPageNumber() - 1) * getPageSize();
+    if (firstIndex >= maxSize) {
+      firstIndex = 0;
+      page = 1;
+    }
+    final int lastIndex;
+    final boolean isLastPage = firstIndex + getPageSize() >= maxSize;
+    if (isLastPage) {
+      lastIndex = maxSize;
+    } else {
+      lastIndex = firstIndex + getPageSize();
+    }
+    return Pair.of(firstIndex, lastIndex);
   }
 }

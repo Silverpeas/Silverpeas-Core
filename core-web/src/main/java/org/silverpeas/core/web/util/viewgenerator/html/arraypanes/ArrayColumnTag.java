@@ -52,17 +52,10 @@ public class ArrayColumnTag extends BodyTagSupport {
     super.setParent(tag);
   }
 
-  @SuppressWarnings("unchecked")
   @Override
   public int doStartTag() throws JspException {
     ArrayColumn column = arrayPane.addArrayColumn(title);
-    if (compareOn != null) {
-      compareOn.setELContext(pageContext.getELContext());
-      Function function = o -> compareOn.invoke(o);
-      column.setCompareOn(function);
-    } else if (sortable != null) {
-      column.setSortable(sortable);
-    }
+    new CompareOnConfigurator(this, column, compareOn).configure();
     if (StringUtil.isDefined(width)) {
       if (StringUtil.isInteger(width)) {
         column.setWidth(width + "px");
@@ -87,5 +80,36 @@ public class ArrayColumnTag extends BodyTagSupport {
 
   public void setWidth(final String width) {
     this.width = width;
+  }
+
+  /**
+   * This class has been created in order to get a right context for the {@link Function} delivered
+   * by the execution of {@link LambdaExpression} of {@link #compareOn} attribute.<br/>
+   * Without this class which creates a sub context for Lambda, compareOn of each arrayColumn tag
+   * has the same comparator, the last one.
+   */
+  private static class CompareOnConfigurator {
+
+    private final ArrayColumnTag tag;
+    private final ArrayColumn column;
+    private final LambdaExpression compareOn;
+
+    CompareOnConfigurator(final ArrayColumnTag tag, final ArrayColumn column,
+        final LambdaExpression compareOn) {
+      this.tag = tag;
+      this.column = column;
+      this.compareOn = compareOn;
+    }
+
+    @SuppressWarnings("unchecked")
+    void configure() {
+      if (compareOn != null) {
+        compareOn.setELContext(tag.pageContext.getELContext());
+        final Function function = compareOn::invoke;
+        column.setCompareOn(function);
+      } else if (tag.sortable != null) {
+        column.setSortable(tag.sortable);
+      }
+    }
   }
 }
