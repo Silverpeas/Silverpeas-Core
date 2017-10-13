@@ -222,7 +222,7 @@
     };
 
     var confirmSubscriptionNotificationSending = function() {
-      var userConfirmationResponse = initUserResponse();
+      var userConfirmation = initUserResponse();
       var commentActivated = $settings.comment.saveNote &&
           StringUtil.isDefined($settings.comment.contributionLocalId) &&
           StringUtil.isDefined($settings.comment.contributionType);
@@ -234,8 +234,8 @@
         callback : function() {
           var saveNoteIntoComment = $('input.saveNoteIntoComment:checked', this).length;
           var userNoteValue = $('textarea', this).val();
-          userConfirmationResponse.note = userNoteValue;
-          setSubscriptionNotificationSendingParameter.call(this, userConfirmationResponse);
+          userConfirmation.note = userNoteValue;
+          setSubscriptionNotificationSendingParameter.call(this, userConfirmation);
           if (saveNoteIntoComment && StringUtil.isDefined(userNoteValue)) {
             var commentServiceUrl = webContext + '/services/comments/' +
                 $settings.subscription.componentInstanceId + '/' +
@@ -254,17 +254,17 @@
               })
               .execute()
               .then(function() {
-                $settings.callback.call(this, userConfirmationResponse);
+                $settings.callback.call(this, userConfirmation);
               }.bind(this));
           } else {
-            $settings.callback.call(this, userConfirmationResponse);
+            $settings.callback.call(this, userConfirmation);
             return true;
           }
         },
         alternativeCallback : function() {
-          userConfirmationResponse.sendNotification = false;
-          setSubscriptionNotificationSendingParameter.call(this, userConfirmationResponse);
-          $settings.callback.call(this, userConfirmationResponse);
+          userConfirmation.sendNotification = false;
+          setSubscriptionNotificationSendingParameter.call(this, userConfirmation);
+          $settings.callback.call(this, userConfirmation);
         },
         callbackOnClose : function() {
           if (typeof $settings.callbackOnClose === 'function') {
@@ -280,7 +280,7 @@
         confirmSubscriptionNotificationSending();
       } else {
         // In this case, no subscribers exists, so the callback is performed immediately.
-        $settings.callback.call(this, userResponse);
+        $settings.callback.call(this, initUserResponse());
       }
     });
   }
