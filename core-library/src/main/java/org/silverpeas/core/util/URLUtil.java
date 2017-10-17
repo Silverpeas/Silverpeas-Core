@@ -84,65 +84,23 @@ public class URLUtil {
   public final static int URL_MEDIA = 10;
   private static final String APPLICATION_URL =
       ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL", "/silverpeas");
+  private static final Pattern MINIFY_FILTER = Pattern.compile(".*(/util/yui/|/ckeditor).*");
+  private static final int DEFAULT_HTTP_PORT = 80;
+  private static final int DEFAULT_HTTPS_PORT = 443;
   static SettingBundle settings = null;
   static String httpMode = null;
   static boolean universalLinksUsed = false;
-
   private static String SILVERPEAS_VERSION = null; // ie 5.14.1-SNAPSHOT
   private static String SILVERPEAS_VERSION_MIN = null;  // ie 5141SNAPSHOT
 
-  private static Pattern MINIFY_FILTER = Pattern.compile(".*(/util/yui/|/ckeditor).*");
-
-  public enum Permalink {
-    Publication(URL_PUBLI, "/Publication/"), Space(URL_SPACE, "/Space/"),
-    Component(URL_COMPONENT, "/Component/"), Folder(URL_TOPIC, "/Topic/"),
-    File(URL_FILE, "/File/"), Document(URL_DOCUMENT, "/Document/"),
-    Version(URL_VERSION, "/Version/"), Survey(URL_SURVEY, "/Survey/"),
-    Question(URL_QUESTION, "/Question/"), ForumMessage(URL_MESSAGE, "/ForumsMessage/"),
-    Media(URL_MEDIA, "/Media/");
-    private int type;
-    private String urlPrefix;
-
-    private Permalink(int type, String urlPrefix) {
-      this.type = type;
-      this.urlPrefix = urlPrefix;
-    }
-
-    public int getType() {
-      return type;
-    }
-
-    public String getURLPrefix() {
-      return urlPrefix;
-    }
-
-    public static Permalink fromType(int type) {
-      Permalink permalink = null;
-      for (Permalink aPermalink : values()) {
-        if (aPermalink.getType() == type) {
-          permalink = aPermalink;
-          break;
-        }
-      }
-      return permalink;
-    }
-
-    public static boolean isCompliant(String url) {
-      boolean compliant = false;
-      for (Permalink aPermalink : values()) {
-        if (url != null && url.contains(aPermalink.getURLPrefix())) {
-          compliant = true;
-          break;
-        }
-      }
-      return compliant;
-    }
-  }
-
-  static {
-    settings = ResourceLocator.getSettingBundle("org.silverpeas.util.url");
-    httpMode = settings.getString("httpMode");
-    universalLinksUsed = settings.getBoolean("displayUniversalLinks", false);
+  /**
+   * Construit l'URL standard afin d'acceder à un composant
+   * @param componentName - le nom du jobPeas
+   * @param sComponentId - l'id de l'instance de composant (trucsAstuces1042)
+   */
+  private static String buildStandardURL(String componentName, String sComponentId) {
+    return '/' + AdministrationServiceProvider.getAdminService().getRequestRouter(componentName) +
+        '/' + sComponentId + '/';
   }
 
   /**
@@ -194,17 +152,6 @@ public class URLUtil {
   }
 
   /**
-   * Construit l'URL standard afin d'acceder à un composant
-   *
-   * @param componentName - le nom du jobPeas
-   * @param sComponentId - l'id de l'instance de composant (trucsAstuces1042)
-   */
-  private static String buildStandardURL(String componentName, String sComponentId) {
-    return '/' + AdministrationServiceProvider.getAdminService().getRequestRouter(componentName) + '/'
-        + sComponentId + '/';
-  }
-
-  /**
    * Returns The Application web context.
    *
    * @return The Application web context.
@@ -226,21 +173,45 @@ public class URLUtil {
     return getCurrentServerURL() + getApplicationURL();
   }
 
+  /**
+   * Gets the absolute local application URL when the treatment is executed into the context of a
+   * HTTP request.
+   * @return the absolute local application URL as string.
+   */
+  public static String getAbsoluteLocalApplicationURL() {
+    return getCurrentLocalServerURL() + getApplicationURL();
+  }
+
   public static void setCurrentServerUrl(HttpServletRequest request) {
     CacheServiceProvider.getRequestCacheService().getCache()
-        .put(URLUtil.class.getName() + ".currentServerURL", getServerURL(request));
+        .put(URLUtil.class.getSimpleName() + ".currentServerURL", getServerURL(request));
+    CacheServiceProvider.getRequestCacheService().getCache()
+        .put(URLUtil.class.getSimpleName() + ".currentLocalServerURL", getLocalServerURL(request));
   }
 
   public static String getCurrentServerURL() {
     return CacheServiceProvider.getRequestCacheService().getCache()
-        .get(URLUtil.class.getName() + ".currentServerURL", String.class);
+        .get(URLUtil.class.getSimpleName() + ".currentServerURL", String.class);
+  }
+
+  public static String getCurrentLocalServerURL() {
+    return CacheServiceProvider.getRequestCacheService().getCache()
+        .get(URLUtil.class.getSimpleName() + ".currentLocalServerURL", String.class);
+  }
+
+  public static String getLocalServerURL(HttpServletRequest request) {
+    if (request != null) {
+      return "http://localhost" + ":" + request.getLocalPort();
+    }
+    return getCurrentServerURL();
   }
 
   public static String getServerURL(HttpServletRequest request) {
     String absoluteUrl = "";
     if (request != null) {
       absoluteUrl = request.getScheme() + "://" + request.getServerName();
-      if (request.getServerPort() != 80 && request.getServerPort() != 443) {
+      if (request.getServerPort() != DEFAULT_HTTP_PORT &&
+          request.getServerPort() != DEFAULT_HTTPS_PORT) {
         absoluteUrl += ":" + request.getServerPort();
       }
     }
@@ -262,8 +233,8 @@ public class URLUtil {
     return getSimpleURL(type, id, componentId, true);
   }
 
-  public static String getSimpleURL(int type, String id, String componentId,
-      boolean appendContext, String forumId) {
+  public static String getSimpleURL(int type, String id, String componentId, boolean appendContext,
+      String forumId) {
     // pour faire le permalien sur les messages des forums
     String url = "";
     if (appendContext) {
@@ -365,13 +336,13 @@ public class URLUtil {
     return Permalink.isCompliant(url);
   }
 
+  public static String getSilverpeasVersion() {
+    return SILVERPEAS_VERSION;
+  }
+
   public static void setSilverpeasVersion(String version) {
     SILVERPEAS_VERSION = version;
     SILVERPEAS_VERSION_MIN = StringUtil.remove(StringUtil.remove(version, '.'), '-');
-  }
-
-  public static String getSilverpeasVersion() {
-    return SILVERPEAS_VERSION;
   }
 
   public static String getSilverpeasVersionMinify(){
@@ -401,5 +372,56 @@ public class URLUtil {
       }
     }
     return minifiedUrl;
+  }
+
+  public enum Permalink {
+    Publication(URL_PUBLI, "/Publication/"), Space(URL_SPACE, "/Space/"),
+    Component(URL_COMPONENT, "/Component/"), Folder(URL_TOPIC, "/Topic/"), File(URL_FILE, "/File/"),
+    Document(URL_DOCUMENT, "/Document/"), Version(URL_VERSION, "/Version/"),
+    Survey(URL_SURVEY, "/Survey/"), Question(URL_QUESTION, "/Question/"),
+    ForumMessage(URL_MESSAGE, "/ForumsMessage/"), Media(URL_MEDIA, "/Media/");
+    private int type;
+    private String urlPrefix;
+
+    private Permalink(int type, String urlPrefix) {
+      this.type = type;
+      this.urlPrefix = urlPrefix;
+    }
+
+    public static Permalink fromType(int type) {
+      Permalink permalink = null;
+      for (Permalink aPermalink : values()) {
+        if (aPermalink.getType() == type) {
+          permalink = aPermalink;
+          break;
+        }
+      }
+      return permalink;
+    }
+
+    public static boolean isCompliant(String url) {
+      boolean compliant = false;
+      for (Permalink aPermalink : values()) {
+        if (url != null && url.contains(aPermalink.getURLPrefix())) {
+          compliant = true;
+          break;
+        }
+      }
+      return compliant;
+    }
+
+    public int getType() {
+      return type;
+    }
+
+    public String getURLPrefix() {
+      return urlPrefix;
+    }
+  }
+
+  static {
+    settings = ResourceLocator.getSettingBundle("org.silverpeas.util.url");
+    httpMode = settings.getString("httpMode");
+    universalLinksUsed = settings.getBoolean("displayUniversalLinks", false);
   }
 }
