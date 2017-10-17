@@ -233,7 +233,7 @@ class WorkflowTools {
         Trigger trigger = triggers.next();
         if (trigger != null) {
           try {
-            ExternalAction externalAction = ServiceProvider.getService(trigger.getName());
+            ExternalAction externalAction = ServiceProvider.getService(trigger.getHandler());
             externalAction.setProcessInstance(instance);
             externalAction.setEvent(event);
             externalAction.setTrigger(trigger);

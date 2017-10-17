@@ -23,10 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Vector;
-
 import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.api.model.Trigger;
 import org.silverpeas.core.workflow.engine.AbstractReferrableObject;
@@ -36,6 +32,9 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Class implementing the representation of the &lt;trigger&gt; element of a Process Model.
@@ -46,6 +45,8 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
   private static final long serialVersionUID = -5923330362725539310L;
   @XmlAttribute
   private String name;
+  @XmlAttribute
+  private String handler;
   @XmlElement(name = "param", type = ParameterImpl.class)
   private List<Parameter> parameters;
 
@@ -69,6 +70,7 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
    * Get the name of the Parameter
    * @return parameter's name
    */
+  @Override
   public String getName() {
     return this.name;
   }
@@ -77,14 +79,22 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
    * Set the name of the Parameter
    * @param name parameter's name
    */
+  @Override
   public void setName(String name) {
     this.name = name;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see AbstractReferrableObject#getKey()
-   */
+  @Override
+  public String getHandler() {
+    return this.handler;
+  }
+
+  @Override
+  public void setHandler(final String handlerName) {
+    this.handler = handlerName;
+  }
+
+  @Override
   public String getKey() {
     if (name == null) {
       return "";
@@ -92,6 +102,7 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
     return name;
   }
 
+  @Override
   public Parameter getParameter(String strName) {
     Parameter reference = new ParameterImpl();
     reference.setName(strName);
@@ -108,6 +119,7 @@ public class TriggerImpl extends AbstractReferrableObject implements Trigger, Se
    * @see Item#addParameter(com.silverpeas.workflow
    * .api.model.Parameter)
    */
+  @Override
   public void addParameter(Parameter parameter) {
     parameters.add(parameter);
   }

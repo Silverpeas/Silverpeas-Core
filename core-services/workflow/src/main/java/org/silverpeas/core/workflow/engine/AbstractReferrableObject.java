@@ -21,39 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/**
- * @author ludovic Bertin
- * @version 1.0
- */
-
-/**
- * The abstract class for all workflow objects refferable
- */
 
 package org.silverpeas.core.workflow.engine;
 
+
+/**
+ * The abstract class for all workflow objects referable
+ */
 public abstract class AbstractReferrableObject implements ReferrableObjectIntf {
 
   /**
-   * This method has to be implemented by the referrable object it has to compute the unique key
+   * This method has to be implemented by the referable object it has to compute the unique key
    * @return The unique key.
-   * @see equals
-   * @see hashCode
+   * @see #equals
+   * @see #hashCode
    */
   @Override
   public abstract String getKey();
 
   /**
-   * Tests equality with another referrable object
-   * @param theOther
+   * Tests equality with another referable object
+   * @param theOther the other instance to verify
    * @return true if both object's keys are equals
    */
   @Override
   public boolean equals(Object theOther) {
     if (theOther instanceof String) {
-      return (getKey().equals(theOther));
+      return getKey().equals(theOther);
     } else {
-      return (getKey().equals(((ReferrableObjectIntf) theOther).getKey()));
+      return getKey().equals(((ReferrableObjectIntf) theOther).getKey());
     }
   }
 
@@ -63,6 +59,6 @@ public abstract class AbstractReferrableObject implements ReferrableObjectIntf {
    */
   @Override
   public int hashCode() {
-    return (getKey().hashCode());
+    return getKey().hashCode();
   }
 }

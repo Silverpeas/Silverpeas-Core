@@ -27,7 +27,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
 
-@Named("AddSilverTrace")
+@Named("AddSilverTraceHandler")
 public class AddSilverTrace extends ExternalActionImpl {
 
   @Override

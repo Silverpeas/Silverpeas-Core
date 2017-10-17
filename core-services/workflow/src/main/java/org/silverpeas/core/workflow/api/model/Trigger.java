@@ -23,6 +23,10 @@
  */
 package org.silverpeas.core.workflow.api.model;
 
+import org.silverpeas.core.workflow.external.impl.ExternalActionImpl;
+
+import javax.inject.Named;
+
 /**
  * Interface describing a representation of the &lt;trigger&gt; element of a Process Model.
  */
@@ -38,6 +42,19 @@ public interface Trigger {
    * @param name parameter's name
    */
   void setName(String name);
+
+  /**
+   * Get the handler name of the Trigger.
+   * @return the handler name filled into {@link Named} annotations of {@link ExternalActionImpl}
+   * implementations.
+   */
+  String getHandler();
+
+  /**
+   * Set the handler name of the Trigger.
+   * @param handlerName the handler name.
+   */
+  void setHandler(String handlerName);
 
   /**
    * Get the parameter specified by name
