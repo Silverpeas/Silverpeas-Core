@@ -70,17 +70,15 @@ function notifyPopup(context,compoId,users,groups) {
 }
 </script>
 </head>
-<body onload="javascript:routPage()" id="topBarManager">
-<div id="header_topBarManager">
-	<a class="sp_back_front" href="<%=frontOfficeURL%>" target="_top"><%=resource.getString("JMP.backSilverpeas") %></a> | 	<a class="sp_logout" href="javascript:exit()"><span><%=resource.getString("JMP.exit") %></span> <img border="0" src="<%=resource.getIcon("JMP.login")%>" alt="<%=resource.getString("JMP.exit") %>" title="<%=resource.getString("JMP.exit") %>"/></a>
-</div>             
+<body onload="javascript:routPage()" id="topBarManager">          
 <div id="outilsAdmin">
 	<!-- Ajouter dans le a propos ? <a href="javascript:notifyPopup('<%=m_context%>','','Administrators','')"><img border="0" src="<%=resource.getIcon("JMP.mailAdmin")%>" alt="<%=resource.getString("JMP.feedback") %>" title="<%=resource.getString("JMP.feedback") %>"/><span><%=resource.getString("JMP.feedback") %></span></a> -->
+	<a class="sp_back_front" href="<%=frontOfficeURL%>" target="_top"><%=resource.getString("JMP.backSilverpeas") %></a>
 	<a href="<%=m_context + URLUtil.getURL(URLUtil.CMP_CLIPBOARD) + "Idle.jsp?message=SHOWCLIPBOARD"%>" target="IdleFrame"><img src="<%=resource.getIcon("JMP.clipboardIcon")%>" border="0" alt="<%=resource.getString("JMP.clipboard")%>" onfocus="self.blur()" title="<%=resource.getString("JMP.clipboard")%>"/><span><%=resource.getString("JMP.clipboard")%></span></a>
 	<a href="<%=helper.getSettings("helpURL", "/help_fr/Silverpeas.htm")%>" target="_blank"><img border="0" src="<%=resource.getIcon("JMP.help")%>" alt="<%=resource.getString("JMP.help") %>" title="<%=resource.getString("JMP.help") %>"/><span><%=resource.getString("JMP.help") %></span></a>
+	<a class="sp_logout" href="javascript:exit()"><img border="0" src="<%=resource.getIcon("JMP.login")%>" alt="<%=resource.getString("JMP.exit") %>" title="<%=resource.getString("JMP.exit") %>"/><span><%=resource.getString("JMP.exit") %></span></a>
 	<!-- Date ? Util ? <%=resource.getString("GML.date")%><%=helper.getDate()%> -->
 </div>
-
 <ul class="sp_menuAdmin">
 <%// *********************   Gestion des onglets  ********************* %>
                 <%
