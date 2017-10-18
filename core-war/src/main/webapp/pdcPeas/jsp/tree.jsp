@@ -50,8 +50,8 @@
 		String endFont = "&nbsp;&nbsp;&nbsp;</font>";
 %>
 <html>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
 <script type="text/javascript" src="<%=m_context%>/util/javaScript/i18n.js"></script>
 <script language="JavaScript">
@@ -89,8 +89,8 @@
 }
 -->
 </style>
-</HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+</head>
+<body class="page_content_admin">
 
 <%
 	browseBar.setDomainName(resource.getString("pdcPeas.pdc"));
@@ -105,11 +105,12 @@
 	if (userRights != null && userRights.size() < 1 && !kmAdmin)
 		out.println("<br/><center><b><font color='red'>"+ resource.getString("pdcPeas.noRights")+ "</font></b></center><br/><br/>");
 
-	out.println(board.printBefore());
+	
 %>
-	<CENTER>
-  <table border="0" cellpadding="0" cellspacing="0">
+
+  <table border="0" cellpadding="0" cellspacing="0" width="100%">
     <tr>
+	  <td background="<%=resource.getIcon("pdcPeas.trame")%>">&nbsp;</td>
       <td background="<%=resource.getIcon("pdcPeas.trame")%>">
         <%
         int levelRights = 1000;
@@ -140,11 +141,12 @@
 		}
 	  %>
       </td>
+	  <td background="<%=resource.getIcon("pdcPeas.trame")%>">&nbsp;</td>
     </tr>
   </table>
-	</CENTER>
+
 <%
-	out.println(board.printAfter());
+
 	out.println(frame.printAfter());
 	out.println(window.printAfter());
 %>
@@ -152,5 +154,5 @@
 <input type="hidden" name="Id" value="<%=axisId%>">
 <input type="hidden" name="ValueId" >
 </form>
-</BODY>
-</HTML>
+</body>
+</html>

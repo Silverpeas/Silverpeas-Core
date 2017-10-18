@@ -168,7 +168,7 @@
     }
   </script>
 </head>
-<body>
+<body class="page_content_admin">
 <view:window>
   <view:frame>
     <form id="logger-level-setting">

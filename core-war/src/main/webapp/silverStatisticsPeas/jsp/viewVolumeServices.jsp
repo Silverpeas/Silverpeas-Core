@@ -65,7 +65,7 @@
       }
     </script>
   </head>
-  <body class="admin stats volume applications">
+  <body class="admin stats volume applications page_content_admin">
     <%
       browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));
       browseBar.setComponentName(resources.getString("silverStatisticsPeas.Volumes"));

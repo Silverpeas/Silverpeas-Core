@@ -55,7 +55,7 @@
 <head>
 <view:looknfeel withFieldsetStyle="true"/>
 </head>
-<body>
+<body class="page_content_admin">
 <%
 out.println(window.printBefore());
 

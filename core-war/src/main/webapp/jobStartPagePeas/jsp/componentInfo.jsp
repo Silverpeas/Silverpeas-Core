@@ -196,7 +196,7 @@ function clipboardCut() {
 }
 </script>
 </head>
-<body id="admin-component">
+<body id="admin-component" class="page_content_admin">
 
 <%
 out.println(window.printBefore());

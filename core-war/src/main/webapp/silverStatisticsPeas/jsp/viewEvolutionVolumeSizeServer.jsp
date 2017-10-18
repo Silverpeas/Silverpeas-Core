@@ -108,7 +108,7 @@
   }
 </script>
 </head>
-<body class="admin stats">
+<body class="admin stats page_content_admin">
 <form name="volumeServerFormulaire" action="ViewEvolutionVolumeSizeServer" method="post">
 <%
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics") + " > "+resources.getString("silverStatisticsPeas.Volumes"));

@@ -229,7 +229,7 @@ $(document).ready(function() {
 });
 </script>
 </head>
-<body class="admin-group">
+<body class="page_content_admin admin-group">
 <%
 out.println(window.printBefore());
 if (showTabs) {

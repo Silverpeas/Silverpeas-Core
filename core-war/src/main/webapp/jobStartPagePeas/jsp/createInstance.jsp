@@ -226,7 +226,7 @@ function toDoOnLoad() {
 }
 </script>
 </head>
-<body id="admin-component" onload="javascript:toDoOnLoad()">
+<body id="admin-component" onload="javascript:toDoOnLoad()" class="page_content_admin">
 <form name="infoInstance" action="EffectiveCreateInstance" method="post">
 	<input type="hidden" name="ComponentName" value="<%=component.getName()%>"/>
 <%

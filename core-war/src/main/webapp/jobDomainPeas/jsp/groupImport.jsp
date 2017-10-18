@@ -62,7 +62,7 @@ function SubmitWithVerif(verifParams)
 }
 </script>
 </head>
-<body>
+<body class="page_content_admin">
 
 <%
 out.println(window.printBefore());

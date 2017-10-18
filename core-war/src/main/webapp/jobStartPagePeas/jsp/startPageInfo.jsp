@@ -265,7 +265,7 @@ function showPasteOptions() {
 //-->
 </script>
 </head>
-<body>
+<body class="startPageInfo page_content_admin">
 <%
 out.println(window.printBefore());
 out.println(tabbedPane.print());

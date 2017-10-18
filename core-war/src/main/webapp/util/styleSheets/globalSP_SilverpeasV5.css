@@ -477,38 +477,115 @@ Definition des class de style Silverpeas
 }
 
 #outilsAdmin {
-  position: absolute;
-  left: 200px;
-  height: 15px;
-  width: 100%;
-  top: 6px;
-  color: #999;
-  background-color:#FFF;
-  border:1px solid #333;
-  width:auto;
-  padding: 2px 15px 7px
+	position:absolute;
+	right:1em;
+	top:0;
 }
 
-#outilsAdmin a {
-  color: #999;
+#outilsAdmin a{
+	padding-right:2em;
+	line-height: 30px;
 }
 
-#outilsAdmin img {
-  vertical-align: middle;
+#outilsAdmin a img {
+	margin-right:0.5em;
+}
+#outilsAdmin a span{
+	display:none;
 }
 
-.ongletAdminOff {
-  background-color: #333
+#topBarManager {
+	background-repeat:none;
+	background-position:top right;
 }
 
-.ongletAdminOn {
-  background-color: #CCC
+.sp_menuAdmin{
+	list-style-type:none;
+	padding:0;
+	margin:0;
+	background-color:#f7f7f7;
+	border-bottom:1px solid #dcdcdc;
+	height:46px;
+	line-height:46px;
 }
 
-.ongletAdminOn span.textePetitBold, .ongletAdminOff span.txtPetitBlanc {
-  font-size:1em;
+.sp_menuAdmin li{
+	display:inline-block;
+	padding:0 1em;
+	position:relative;
 }
 
+.sp_menuAdmin li.select span {
+	font-size:1.2em;
+}
+
+.sp_menuAdmin li.select:after {
+	background:transparent url(/silverpeas/jobManagerPeas/jsp/icons/sp_menuAdmin_select.png) bottom center no-repeat;
+	display:block;
+	content:" ";
+	position:absolute;
+	top: 39px;
+	width: 100%;
+	height: 8px;
+	left: 0;
+}
+
+.sp_menuAdmin li.select .textePetitBold {
+	color:#dd4b39;
+	font-size:1.2em;
+}
+
+.sp_sousMenuAdmin .select,
+.sp_sousMenuAdmin a{
+	line-height:30px;
+	height:30px;
+	margin:0 1em;
+}
+
+
+.sp_sousMenuAdmin .select {
+	border-bottom:3px solid #dd4b39;
+	display:inline-block;
+}
+
+#topBarManager .sp_back_front{
+	background:#f7f7f7 url(../../util/icons/back.png) 1em  1.25em no-repeat;
+    line-height: 16px;
+    padding: 1.25em 1em 1.25em 3.5em;
+    font-weight: bold;
+    display:inline-block;
+	text-align: center;
+	border-bottom: 1px solid #dcdcdc;
+	border-right: 1px solid #ccc;
+	margin-right: 2em;
+	border-left: 1px solid #ccc;
+}
+
+.domainNavigation,
+#admin-treeview {
+	padding:1em 0 1em 0.5em;
+}
+
+.domainNavigation .domains-label,
+#admin-treeview .treeview-label {
+	padding:1em 0.25em;
+	display:inline-block;
+}
+.domainNavigation .domainsNamesForm{
+	padding:1em 0.25em;
+}
+
+.treeview_selectSpace{
+	padding:1em 0.25em 0.25em;
+}
+.treeview_contentSpace{
+	padding:0.25em 0.25em 1em;
+	white-space: nowrap;
+}
+
+#admin-component, .page_content_admin , .admin-users{
+	padding-left:1em;
+}
 .intfdcolor1 {
   background-color: #666
 }

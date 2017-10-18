@@ -48,7 +48,7 @@ ArrayPane  rolesPane = gef.getArrayPane("rolesList", strCurrentTab, request, ses
     }
 </script>
 </head>
-<body>
+<body class="page_content_admin">
 <%
 browseBar.setDomainName(resource.getString("workflowDesigner.toolName") );
 browseBar.setComponentName(resource.getString("workflowDesigner.roles") );

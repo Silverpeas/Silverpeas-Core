@@ -85,7 +85,7 @@ height:100%;
 </style>
 
 </head>
-<body>
+<body class="page_content_admin">
 	<% out.print(window.printBefore()); %>
 		<ul class="applicationsTypeList">
 				<c:set var="currentSuite" value="null" scope="page"/>

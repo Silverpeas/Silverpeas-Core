@@ -32,12 +32,12 @@
 	String nomVoca = Encode.javaStringToHtmlString(voca.getName());
 	Iterator it = jargons.iterator();
 %>
-<HTML>
-<HEAD>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<html>
+<head>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-</HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF">
+</head>
+<body class="page_content_admin">
 <%
 	browseBar.setComponentName(componentLabel, "Main");
 	browseBar.setPath("<a href=\"Back\">"+resource.getString("thesaurus.thesaurus")+ "</a> > " + resource.getString("thesaurus.BBlistAffectations") + nomVoca);
@@ -93,5 +93,5 @@ out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 
-</BODY>
-</HTML>
+</body>
+</html>

@@ -89,7 +89,7 @@
 <title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel withFieldsetStyle="true"/>
 </head>
-<body id="admin-role">
+<body id="admin-role" class="page_content_admin">
 <%
 out.println(window.printBefore());
 out.println(tabbedPane.print());

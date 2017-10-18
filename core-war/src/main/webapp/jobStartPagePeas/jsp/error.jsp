@@ -58,7 +58,7 @@ if (when.equals("ComponentUpdate")) {
 <TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
 <view:looknfeel/>
 </HEAD>
-<BODY marginheight="5" marginwidth="5" leftmargin="5" topmargin="5">
+<BODY class="page_content_admin">
 <%
 out.println(window.printBefore());
 out.println(frame.printBefore());

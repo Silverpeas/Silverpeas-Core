@@ -71,7 +71,7 @@
     }
   </script>
 </head>
-<body>
+<body class="domainPeasWelcome page_content_admin">
 <%
   if (displayOperations) {
     operationPane.addOperationOfCreation(resource.getIcon("JDP.domainAdd"), resource.getString("JDP.domainAdd"), "displayDomainCreate");
