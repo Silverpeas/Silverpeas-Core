@@ -67,6 +67,7 @@ import javax.xml.bind.Unmarshaller;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -666,17 +667,18 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
   }
 
   public Map<String, String> getDirectoryFormValues(String userId, String language) {
-    Map<String, String> formValues = new HashMap<String, String>();
     PublicationTemplate template = getDirectoryTemplate();
     if (template != null) {
       try {
         DataRecord data = template.getRecordSet().getRecord(userId);
-        return data.getValues(language);
+        if (data != null) {
+          return data.getValues(language);
+        }
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       }
     }
-    return formValues;
+    return Collections.emptyMap();
   }
 
 }

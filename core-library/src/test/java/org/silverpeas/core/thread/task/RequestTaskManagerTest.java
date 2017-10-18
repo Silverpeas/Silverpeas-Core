@@ -320,14 +320,17 @@ public class RequestTaskManagerTest {
     assertThat(counter, is(nbSleepRequests));
   }
 
+  @SuppressWarnings("unchecked")
   private RequestTaskMonitor waitForTaskEndingAfterFirstInit(final Class testClass)
       throws InterruptedException, ExecutionException {
     Thread.sleep(200);
     RequestTaskMonitor monitor = RequestTaskManager.tasks.get(testClass);
     // Waiting the end of the current task
-    if (monitor.task != null) {
-      monitor.task.get();
-      monitor.taskWatcher.get();
+    Future<Void> currentTask = monitor.task;
+    Future<Void> taskWatcher = monitor.taskWatcher;
+    if (currentTask!= null) {
+      currentTask.get();
+      taskWatcher.get();
     }
     // Checking status
     assertThatThreadsAreStoppedAndMonitorsAreCleanedAndQueuesAreConsummed(monitor);
