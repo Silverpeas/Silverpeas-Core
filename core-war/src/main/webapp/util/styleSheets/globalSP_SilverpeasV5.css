@@ -479,7 +479,7 @@ Definition des class de style Silverpeas
 #outilsAdmin {
 	position:absolute;
 	right:1em;
-	top:4em;
+	top:0;
 }
 
 #outilsAdmin a{
@@ -489,6 +489,9 @@ Definition des class de style Silverpeas
 
 #outilsAdmin a img {
 	margin-right:0.5em;
+}
+#outilsAdmin a span{
+	display:none;
 }
 
 #topBarManager {
@@ -502,8 +505,8 @@ Definition des class de style Silverpeas
 	margin:0;
 	background-color:#f7f7f7;
 	border-bottom:1px solid #dcdcdc;
-	height:33px;
-	line-height:33px;
+	height:46px;
+	line-height:46px;
 }
 
 .sp_menuAdmin li{
@@ -521,7 +524,7 @@ Definition des class de style Silverpeas
 	display:block;
 	content:" ";
 	position:absolute;
-	top: 26px;
+	top: 39px;
 	width: 100%;
 	height: 8px;
 	left: 0;
@@ -545,30 +548,22 @@ Definition des class de style Silverpeas
 	display:inline-block;
 }
 
-#header_topBarManager {
-	background:#f1f1f1 url(/silverpeas/jobManagerPeas/jsp/icons/fondmanager.png) top right no-repeat;
-	border-bottom:1px solid #dcdcdc;
-	height:46px;
-}
-
-#header_topBarManager .sp_back_front{
-	background: transparent url(../../util/icons/back.png) 1em  1.25em no-repeat;
+#topBarManager .sp_back_front{
+	background:#f7f7f7 url(../../util/icons/back.png) 1em  1.25em no-repeat;
     line-height: 16px;
     padding: 1.25em 1em 1.25em 3.5em;
     font-weight: bold;
     display:inline-block;
-    text-align: center;
+	text-align: center;
+	border-bottom: 1px solid #dcdcdc;
+	border-right: 1px solid #ccc;
+	margin-right: 2em;
+	border-left: 1px solid #ccc;
 }
 
-#header_topBarManager .sp_logout span{
-    line-height: 16px;
-    padding: 1.25em 1em 1.25em 1.5em;
-    display:inline-block;
-    text-align: center;
-}
-
-.domainNavigation {
-	padding-top:1em;
+.domainNavigation,
+#admin-treeview {
+	padding:1em 0 1em 0.5em;
 }
 
 .domainNavigation .domains-label,

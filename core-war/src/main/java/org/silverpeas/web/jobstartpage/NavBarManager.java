@@ -502,7 +502,7 @@ public class NavBarManager {
       case SPACE_COLLAPSE:
         result.append("<a href=\"").append(link).append("\"").append(target).append("><img src=\"")
             .append(m_sContext)
-            .append("/util/icons/plusTree.gif\" border=\"0\" align=\"absmiddle\"></a>");
+            .append("/util/icons/treeview/plus.gif\" border=\"0\" align=\"absmiddle\"></a>");
         imageLinked = "<img name=\"" + safeElementLabel + "\" src=\"" + m_sContext +
             "/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\" border=\"0\" " +
             "align=\"absmiddle\">";
@@ -510,7 +510,7 @@ public class NavBarManager {
       case SPACE_EXPANDED:
         result.append("<a href=\"").append(link).append("\"").append(target).append("><img src=\"")
             .append(m_sContext)
-            .append("/util/icons/minusTree.gif\" border=\"0\" align=\"absmiddle\"></a>");
+            .append("/util/icons/treeview/moins.gif\" border=\"0\" align=\"absmiddle\"></a>");
         imageLinked = "<img name=\"" + safeElementLabel + "\" src=\"" + m_sContext +
             "/util/icons/colorPix/1px.gif\" width=\"1\" height=\"1\" border=\"0\" " +
             "align=\"absmiddle\">";
@@ -519,11 +519,11 @@ public class NavBarManager {
         break;
       case SUBSPACE_COMPONENT:
         result.append("<img src=\"").append(m_sContext)
-            .append("/util/icons/minusTreeT.gif\" border=\"0\" align=\"absmiddle\">");
+            .append("/util/icons/minusTreeL.gif\" border=\"0\" align=\"absmiddle\">");
         break;
       case SUBSPACE_LAST_COMPONENT:
         result.append("<img src=\"").append(m_sContext)
-            .append("/util/icons/minusTreeL.gif\" border=\"0\" align=\"absmiddle\">");
+            .append("/util/icons/minusTreeT.gif\" border=\"0\" align=\"absmiddle\">");
         break;
     }
     String safeLabelLinked = Encode.forHtml(labelLinked);
