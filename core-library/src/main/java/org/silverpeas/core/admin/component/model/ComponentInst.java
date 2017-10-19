@@ -54,7 +54,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   private static final long serialVersionUID = 1L;
   private static final Pattern COMPONENT_INSTANCE_IDENTIFIER =
-      Pattern.compile("^([a-zA-Z]+)[0-9]+$");
+      Pattern.compile("^([a-zA-Z-]+)[0-9]+$");
 
   public static final String STATUS_REMOVED = "R";
   @XmlAttribute
