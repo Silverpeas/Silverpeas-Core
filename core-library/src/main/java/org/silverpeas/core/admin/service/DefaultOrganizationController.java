@@ -35,6 +35,9 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
+import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -269,11 +272,12 @@ public class DefaultOrganizationController implements OrganizationController {
 
   @Override
   public List<SpaceInst> getSpacePathToComponent(String componentId) {
-    ComponentInstLight componentInstLight = getComponentInstLight(componentId);
-    if (componentInstLight != null) {
-      return getSpacePath(componentInstLight.getDomainFatherId());
+    Optional<SilverpeasSharedComponentInstance> instance =
+        SilverpeasSharedComponentInstance.getById(componentId);
+    if (instance.isPresent()) {
+      return getSpacePath(instance.get().getSpaceId());
     }
-    return new ArrayList<SpaceInst>();
+    return new ArrayList<>();
   }
 
   private List<SpaceInst> getSpacePath(List<SpaceInst> path, String spaceId) {
