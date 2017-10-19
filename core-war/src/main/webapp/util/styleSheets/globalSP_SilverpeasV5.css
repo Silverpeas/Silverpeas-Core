@@ -568,7 +568,7 @@ Definition des class de style Silverpeas
 
 .domainNavigation .domains-label,
 #admin-treeview .treeview-label {
-	padding:1em 0.25em;
+	padding:0em 0.25em 1em 0.25em;
 	display:inline-block;
 }
 .domainNavigation .domainsNamesForm{

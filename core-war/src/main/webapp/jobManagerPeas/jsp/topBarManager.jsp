@@ -86,7 +86,6 @@ function notifyPopup(context,compoId,users,groups) {
                   JobManagerService[] operation = (JobManagerService[])request.getAttribute("Operation");
 
                   int nbOnglet = services.length;//4; // 1 onglet = 1 service du job manager
-                  boolean actif = true;
                   for (int i=0; i<nbOnglet; i++)
                   {
                     if (!services[i].isActif())
@@ -108,7 +107,6 @@ function notifyPopup(context,compoId,users,groups) {
                   <li class="select">
                       <span class="textePetitBold"><%=resource.getString(services[i].getLabel())%></span>
 				  </li>
-                  <% actif = false; %>
                   <%//------------ fin onglets on------------------ %>
                   <%
                   }
