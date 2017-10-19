@@ -32,10 +32,9 @@ public class TabTag extends TagSupport {
   private static final long serialVersionUID = -6366793070888310723L;
 
   private String label;
-
   private String action;
-
   private boolean selected;
+  private String name;
 
   public void setLabel(String label) {
     this.label = label;
@@ -49,12 +48,15 @@ public class TabTag extends TagSupport {
     this.selected = Boolean.valueOf(selected);
   }
 
+  public void setName(String name) { this.name = name; }
+
   public int doEndTag() throws JspException {
     Tag parent = findAncestorWithClass(this, TabbedPaneTag.class);
     if (parent != null) {
       TabbedPane tabs = (TabbedPane) pageContext
           .getAttribute(TabbedPaneTag.TABBEDPANE_PAGE_ATT);
-      tabs.addTab(label, action, selected);
+      Tab tab = tabs.addTab(label, action, selected);
+      tab.setName(name);
     }
     return EVAL_PAGE;
   }

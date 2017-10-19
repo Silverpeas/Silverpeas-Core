@@ -23,10 +23,8 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.tabs;
 
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.TagUtil;
-
-import java.util.Collection;
-import java.util.Vector;
 
 /**
  * @author squere
@@ -49,59 +47,33 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
    */
   public String print() {
     StringBuilder result = new StringBuilder();
-    String iconsPath = getIconsPath();
-    Vector<Collection<Tab>> tabLines = getTabLines();
-    Collection<Tab> tabs = null;
-
-    int nbLines = tabLines.size();
-    int incr = nbLines - 1;
 
     result.append("<div id=\"gef-tabs\">");
-    for (int j = 0; j < nbLines; j++) {
-      tabs = tabLines.get(j);
-      result.append("<div class =\"tabbedPane\" id=\"tabbedPane");
-      if (nbLines > 1) {
-        result.append(j);
-      }
-      result.append("\" >");
-      result.append(printTabLine(tabs));
-      result.append("</div>");
-      incr--;
-    }
-    result
-        .append("<div id=\"sousTabbedPane\"><div class=\"sousOnglets\"></div></div></div>");
+    result.append("<div class=\"tabbedPane\" id=\"tabbedPane\">");
+    result.append(printTabLine());
+    result.append("</div>");
+    result.append("<div id=\"sousTabbedPane\"><div class=\"sousOnglets\"></div></div></div>");
     return result.toString();
   }
 
   /**
    * Method declaration
-   * @param tabs
    * @return
    * @see
    */
-  private String printTabLine(Collection<Tab> tabs) {
-
+  private String printTabLine() {
     StringBuilder result = new StringBuilder();
-    String iconsPath = getIconsPath();
-    int indentation = getIndentation();
-
- 
-    int i = 0;
-    for (Tab tab : tabs) {
-      String style = null;
-      String styleGauche = null;
-      String styleDroite = null;
-
+    for (Tab tab : getTabs()) {
+      String style = "sp_tabOff";
       if (tab.getSelected()) {
         style = "sp_tabOn";
-      } else {
-        style = "sp_tabOff";
       }
 
-      
-      result.append("<div id=\"tab").append(i)
-          .append("\" class=\"")
-          .append(style).append("\">");
+      result.append("<div");
+      if (StringUtil.isDefined(tab.getName())) {
+        result.append(" id=\"tab_").append(tab.getName()).append("\"");
+      }
+      result.append(" class=\"").append(style).append("\">");
       if (tab.getEnabled()) {
         String href = TagUtil.formatHrefFromAction(tab.getAction());
         result.append("<a ").append(href).append(" >");
@@ -113,7 +85,6 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
         result.append("</span>");
       }
       result.append("</div>\n");
-      i++;
     }
 
     return result.toString();

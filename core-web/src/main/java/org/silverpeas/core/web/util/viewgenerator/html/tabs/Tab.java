@@ -21,8 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-/*--- formatted by Jindent 2.1, (www.c-lab.de/~jindent)
- ---*/
 
 /*
  * SimpleGraphicElement.java
@@ -41,6 +39,7 @@ public class Tab {
   private String action;
   private boolean selected;
   private boolean enabled;
+  private String name;
 
   /**
    * Constructor declaration
@@ -107,4 +106,11 @@ public class Tab {
     return this.enabled;
   }
 
+  public String getName() {
+    return name;
+  }
+
+  public void setName(final String name) {
+    this.name = name;
+  }
 }
