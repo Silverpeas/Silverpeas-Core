@@ -294,7 +294,8 @@
   window.onload = function() {
     <view:wysiwyg replace="editor1" language="<%=language %>"
       spaceLabel="<%=spaceLabel%>" componentId="<%=componentId%>" componentLabel="<%=componentLabel%>"
-      browseInfo="<%=browseInformation%>" objectId="<%=objectId%>" objectType="<%=objectType%>" />
+      browseInfo="<%=browseInformation%>" objectId="<%=objectId%>" objectType="<%=objectType%>"
+      activateWysiwygBackupManager="true" />
 
     if ($.trim($(".wysiwyg-fileStorage").text()).length == 0) {
       $(".wysiwyg-fileStorage").css("display", "none");
@@ -378,7 +379,7 @@
   </c:if>
   <c:set var="saveLabel"><%=message.getString("SaveAndExit")%></c:set>
   <c:set var="cancelLabel"><%=message.getString("GML.back")%></c:set>
-  <c:set var="cancelAction"><%="javascript:location.href='" + returnUrl + "';"%></c:set>
+  <c:set var="cancelAction"><%="javascript:sp.editor.wysiwyg.lastBackupManager.clear();location.href='" + returnUrl + "';"%></c:set>
   <br/>
   <view:buttonPane>
     <view:button label="${saveLabel}" action="javascript:onclick=saveAndExit();"/>
@@ -390,6 +391,7 @@
       $.progressMessage();
       $.post('<c:url value="/wysiwyg/jsp/htmlEditor.jsp"/>', $(document.recupHtml).serialize(),
           function() {
+            sp.editor.wysiwyg.lastBackupManager.clear();
             $deferred.resolve(mustReload);
           })
           .fail(function(request) {

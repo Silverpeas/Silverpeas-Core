@@ -166,7 +166,10 @@
     <div class="field" ng-if="$ctrl.wysiwygEditorConfig">
       <label class="txtlibform" for="sp_cal_event_form_main_content">{{$ctrl.labels.content}}</label>
       <div class="champs">
-        <ng-ckeditor id="sp_cal_event_form_main_content" ng-model="$ctrl.data.content" ng-config="$ctrl.wysiwygEditorConfig"></ng-ckeditor>
+        <ng-ckeditor id="sp_cal_event_form_main_content"
+                     ng-model="$ctrl.data.content"
+                     ng-config="$ctrl.wysiwygEditorConfig"
+                     backup-manager-options="{componentInstanceId:$ctrl.data.componentInstanceId(),resourceType:$ctrl.data.occurrenceType,resourceId:($ctrl.data.occurrenceId?$ctrl.data.eventId:null)}"></ng-ckeditor>
       </div>
     </div>
     <div class="field" ng-if="$ctrl.data.visibility">

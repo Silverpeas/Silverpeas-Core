@@ -6491,6 +6491,22 @@ THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
 }
 
 /**
+ * JSP fragments : confirmation of wysiwyg backup manager
+ */
+
+.unvalidated-wysiwyg-content-confirmation div {
+  max-height: 300px;
+  background-color: #FFFFFF;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+.unvalidated-wysiwyg-content-confirmation span {
+  font-weight: bold;
+}
+
+/**
  * AngularJS silverpeas-permalink component.
  */
 

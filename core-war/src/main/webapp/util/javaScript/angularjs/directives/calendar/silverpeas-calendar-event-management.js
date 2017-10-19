@@ -80,6 +80,7 @@
                 this.occurrence = undefined;
                 this.previousOccurrence = undefined;
                 CalendarService.createEvent(eventToAdd).then(function(createdEvent) {
+                  sp.editor.wysiwyg.lastBackupManager.clear();
                   this.onCreated({event : createdEvent});
                 }.bind(this));
               }.bind(this),
@@ -108,6 +109,7 @@
                   var updateMethodType = this.isRecurrence() ? this.updateMethodType : undefined;
                   CalendarService.updateEventOccurrence(this.occurrence, updateMethodType).then(
                       function(modifiedEvents) {
+                        sp.editor.wysiwyg.lastBackupManager.clear();
                         this.onOccurrenceUpdated({events : modifiedEvents});
                       }.bind(this),
                       function() {
@@ -153,6 +155,7 @@
                   var deleteMethodType = this.isRecurrence() ? this.deleteMethodType : undefined;
                   CalendarService.removeEventOccurrence(this.occurrence, deleteMethodType).then(
                       function(modifiedEvent) {
+                        sp.editor.wysiwyg.lastBackupManager.clear();
                         this.onOccurrenceDeleted({event : modifiedEvent});
                       }.bind(this));
                 }.bind(this);

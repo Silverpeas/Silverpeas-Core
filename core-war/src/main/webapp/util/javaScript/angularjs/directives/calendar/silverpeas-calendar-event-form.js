@@ -72,7 +72,8 @@
           handleFormValidation : function(formValidationApi) {
             this.formValidationRegistry.push(formValidationApi);
             this.formValidationRegistry.sort(__sortFormsByPriority);
-          }.bind(this), validate : function() {
+          }.bind(this),
+          validate : function() {
             notyReset();
             if (_validate()) {
               _updateData();
@@ -81,11 +82,14 @@
                 this.onAddValidated({event : this.calendarEventOccurrence});
               } else {
                 this.onModifyOccurrenceValidated({
-                  occurrence : this.calendarEventOccurrence, previousOccurrence : this.previousData
+                  occurrence : this.calendarEventOccurrence,
+                  previousOccurrence : this.previousData
                 });
               }
             }
-          }.bind(this), cancel : function() {
+          }.bind(this),
+          cancel : function() {
+            sp.editor.wysiwyg.lastBackupManager.clear();
             notyReset();
             this.onCancel();
           }.bind(this)

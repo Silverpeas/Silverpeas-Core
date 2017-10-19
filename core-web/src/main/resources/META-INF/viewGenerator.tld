@@ -2135,6 +2135,16 @@
       <rtexprvalue>true</rtexprvalue>
       <type>boolean</type>
     </attribute>
+    <attribute>
+      <description>
+        True to activate content backup.
+        Please call "sp.editor.wysiwyg.lastBackupManager.clear()" on save and cancel operations.
+      </description>
+      <name>activateWysiwygBackupManager</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag that displays the available languages.</description>

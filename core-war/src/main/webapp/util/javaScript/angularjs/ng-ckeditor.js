@@ -33,7 +33,8 @@
             ngModel : '=ngModel',
             ngChange : '=ngChange',
             ngDisabled : '=ngDisabled',
-            ngConfig : '=ngConfig'
+            ngConfig : '=ngConfig',
+            backupManagerOptions : '='
           },
           link : function postLink(scope, elem, attrs) {
             $timeout(function() {
@@ -115,6 +116,9 @@
 
               });
 
+              if (scope.backupManagerOptions) {
+                sp.editor.wysiwyg.backupManager(scope.backupManagerOptions);
+              }
             });
           }
         }

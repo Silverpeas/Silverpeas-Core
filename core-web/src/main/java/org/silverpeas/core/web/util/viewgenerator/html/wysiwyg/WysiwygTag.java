@@ -49,6 +49,7 @@ public class WysiwygTag extends TagSupport {
   private String objectId;
   private String objectType;
   private boolean displayFileBrowser = true;
+  private boolean activateWysiwygBackupManager = false;
 
   public String getHeight() {
     return height;
@@ -146,9 +147,18 @@ public class WysiwygTag extends TagSupport {
     this.displayFileBrowser = displayFileBrowser;
   }
 
+  public boolean isActivateWysiwygBackupManager() {
+    return activateWysiwygBackupManager;
+  }
+
+  public void setActivateWysiwygBackupManager(final boolean activateWysiwygBackupManager) {
+    this.activateWysiwygBackupManager = activateWysiwygBackupManager;
+  }
+
   @Override
   public int doEndTag() throws JspException {
-    WysiwygEditor wysiwygEditor = new WysiwygEditor(getComponentId());
+    WysiwygEditor wysiwygEditor = new WysiwygEditor(
+        getComponentId(), getObjectType(), getObjectId(), isActivateWysiwygBackupManager());
     wysiwygEditor.setReplace(getReplace());
     if (StringUtil.isDefined(getWidth())) {
       wysiwygEditor.setWidth(getWidth());
@@ -164,7 +174,8 @@ public class WysiwygTag extends TagSupport {
     }
 
     HttpSession session = pageContext.getSession();
-    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
+    GraphicElementFactory gef =
+        (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
     session.setAttribute("WYSIWYG_SpaceLabel",
         getSpaceLabel() != null ? URLDecoder.decode(getSpaceLabel()) : null);
     session.setAttribute("WYSIWYG_ComponentId", getComponentId());

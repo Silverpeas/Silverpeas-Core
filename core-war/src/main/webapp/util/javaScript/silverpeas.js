@@ -1430,6 +1430,100 @@ if (typeof window.sp === 'undefined') {
           }, options);
           var url = webContext + '/services/wysiwyg/editor/' + componentInstanceId + '/' + resourceType + '/' + resourceId;
           return sp.ajaxConfig(url).withParams(params).promiseJsonResponse();
+        },
+        backupManager : function(options) {
+          var instance = new function() {
+            var params = extendsObject({
+              componentInstanceId : undefined,
+              resourceType : undefined,
+              resourceId : undefined,
+              unvalidatedContentCallback : undefined
+            }, options);
+            var editor;
+            var clearManuallyBehavior = true;
+            var timer = 0;
+            var dataOnLastClear;
+            var cacheKey = 'sp.editor.wysiwyg.writingCacheHandler_' +
+                currentUserId + '#' + params.componentInstanceId + '#' + params.resourceType +
+                '#' + params.resourceId;
+            cacheKey = cacheKey.replace(/[#](null|undefined)/g, '#');
+            var cache = new SilverpeasCache(cacheKey);
+
+            var __stash = function() {
+              if (typeof dataOnLastClear === 'string' && dataOnLastClear === editor.getData()) {
+                dataOnLastClear = undefined;
+                return;
+              }
+              cache.put("data", editor.getData());
+            }.bind(this);
+            var __unStash = function() {
+              if (this.existsUnvalidatedContent()) {
+                if (typeof params.unvalidatedContentCallback === 'function') {
+                  params.unvalidatedContentCallback();
+                } else {
+                  editor.setData(this.getUnvalidatedContent());
+                }
+                this.clear(true);
+              }
+            }.bind(this);
+
+            this.setClearManuallyBehavior = function() {
+              clearManuallyBehavior = false;
+            };
+            this.getUnvalidatedContent = function() {
+              return cache.get("data");
+            };
+            this.existsUnvalidatedContent = function() {
+              return typeof this.getUnvalidatedContent() === 'string';
+            };
+            this.clear = function(notRegisterLastData) {
+              if (!notRegisterLastData) {
+                dataOnLastClear = this.getUnvalidatedContent();
+              } else {
+                dataOnLastClear = undefined;
+              }
+              cache.clear();
+            };
+
+            whenSilverpeasReady(function() {
+              CKEDITOR.on('instanceReady', function() {
+                for(var editorName in CKEDITOR.instances) {
+                  if (!editor) {
+                    editor = CKEDITOR.instances[editorName];
+                  }
+                }
+                if (this.existsUnvalidatedContent()) {
+                  var confirmationUrl = webContext +
+                      '/wysiwyg/jsp/confirmUnvalidatedContentExistence.jsp';
+                  var ajaxConfig = sp.ajaxConfig(confirmationUrl);
+                  displaySingleConfirmationPopupFrom(ajaxConfig.getUrl(), {
+                    callback : __unStash,
+                    alternativeCallback : function() {this.clear()}.bind(this)
+                  }).then(function() {
+                    document.querySelector('#unvalidated-wysiwyg-content-container').innerHTML =
+                        this.getUnvalidatedContent();
+                  }.bind(this));
+                }
+
+                editor.on('change', function() {
+                  if (timer) {
+                    clearTimeout(timer);
+                  }
+                  timer = setTimeout(__stash, 1000);
+                });
+              }.bind(this));
+            }.bind(this));
+          };
+          sp.editor.wysiwyg.lastBackupManager.instance = instance;
+          return instance;
+        },
+        lastBackupManager : {
+          instance : undefined,
+          clear : function() {
+            if (sp.editor.wysiwyg.lastBackupManager.instance) {
+              sp.editor.wysiwyg.lastBackupManager.instance.clear();
+            }
+          }
         }
       }
     },

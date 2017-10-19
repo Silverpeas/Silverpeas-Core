@@ -25,15 +25,30 @@ package org.silverpeas.core.web.util.viewgenerator.html.wysiwyg;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.WysiwygEditorConfig;
+
+import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
+    .getSessionVolatileResourceCacheService;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 public class WysiwygEditor {
 
   private String replace;
   private WysiwygEditorConfig config;
+  private boolean activateWysiwygBackupManager;
+  private String componentInstanceId;
+  private String resourceType;
+  private String resourceId;
 
-  public WysiwygEditor(final String componentInstanceId) {
+  public WysiwygEditor(final String componentInstanceId, final String resourceType,
+      final String resourceId, final boolean activateWysiwygBackupManager) {
+    this.componentInstanceId = componentInstanceId;
+    this.resourceType = resourceType;
+    this.resourceId = resourceId;
+    this.activateWysiwygBackupManager = activateWysiwygBackupManager;
     String componentName = "";
     if (StringUtil.isDefined(componentInstanceId)) {
       ComponentInstLight componentInst =
@@ -50,13 +65,18 @@ public class WysiwygEditor {
    * @return the String representation of the Javascript instruction.
    */
   public String print() {
-    StringBuilder builder = new StringBuilder(100);
-    builder.append("CKEDITOR.replace('")
-        .append(getReplace())
-        .append("', ")
-        .append(this.config.toJSON())
-        .append(");\n");
-    return builder.toString();
+    String js = "CKEDITOR.replace('" + getReplace() + "', " + this.config.toJSON() + ");\n";
+    if (activateWysiwygBackupManager) {
+      final boolean notVolatileId =
+          !getSessionVolatileResourceCacheService().contains(resourceId, componentInstanceId);
+      js += "sp.editor.wysiwyg.backupManager(" + JSONCodec.encodeObject(o -> {
+        o.put("componentInstanceId", defaultStringIfNotDefined(componentInstanceId));
+        o.put("resourceType", defaultStringIfNotDefined(resourceType));
+        o.put("resourceId", defaultStringIfNotDefined(notVolatileId ? resourceId : EMPTY));
+        return o;
+      }) + ");\n";
+    }
+    return js;
   }
 
   public String getLanguage() {
