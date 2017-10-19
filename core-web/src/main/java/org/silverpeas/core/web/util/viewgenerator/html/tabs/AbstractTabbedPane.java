@@ -33,10 +33,7 @@
 package org.silverpeas.core.web.util.viewgenerator.html.tabs;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Vector;
-
-import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import java.util.List;
 
 /**
  * @author squere
@@ -44,15 +41,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
  */
 public abstract class AbstractTabbedPane implements TabbedPane {
 
-  public static final int RIGHT = 0;
-  public static final int LEFT = 1;
-
-  private Vector<Collection<Tab>> tabLines = null; // A collection tabs vector
-  private int nbLines = 1;
-  // private Collection tabs = null;
-  private int indentation = RIGHT;
-
-  // private String iconsPath = null;
+  List<Tab> tabs = new ArrayList<>();
 
   /**
    * Constructor declaration
@@ -61,20 +50,6 @@ public abstract class AbstractTabbedPane implements TabbedPane {
   public AbstractTabbedPane() {
   }
 
-  /**
-   * Method declaration
-   * @param nbLines
-   * @see
-   */
-  public void init(int nbLines) {
-    Vector<Collection<Tab>> tabLines = new Vector<Collection<Tab>>(2, 1);
-
-    for (int i = 1; i <= nbLines; i++) {
-      tabLines.add(new ArrayList<Tab>());
-    }
-    this.nbLines = nbLines;
-    this.tabLines = tabLines;
-  }
 
   /**
    * Method declaration
@@ -83,11 +58,10 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @param disabled
    * @see
    */
-  public void addTab(String label, String action, boolean disabled) {
-    Vector<Collection<Tab>> tabLines = getTabLines();
-    Collection<Tab> tabs = tabLines.get(0);
-
-    tabs.add(new Tab(label, action, disabled));
+  public Tab addTab(String label, String action, boolean disabled) {
+    Tab tab = new Tab(label, action, disabled);
+    tabs.add(tab);
+    return tab;
   }
 
   /**
@@ -98,54 +72,10 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @param enabled
    * @see
    */
-  public void addTab(String label, String action, boolean disabled,
-      boolean enabled) {
-    Vector<Collection<Tab>> tabLines = getTabLines();
-    Collection<Tab> tabs = tabLines.get(0);
-
-    tabs.add(new Tab(label, action, disabled, enabled));
-  }
-
-  /**
-   * Method declaration
-   * @param label
-   * @param action
-   * @param disabled
-   * @param nbLines
-   * @see
-   */
-  public void addTab(String label, String action, boolean disabled, int nbLines) {
-    Vector<Collection<Tab>> tabLines = getTabLines();
-    Collection<Tab> tabs = null;
-
-    if (nbLines <= 0) {
-      tabs = tabLines.get(0);
-    } else {
-      tabs = tabLines.get(nbLines - 1);
-    }
-    tabs.add(new Tab(label, action, disabled));
-  }
-
-  /**
-   * Method declaration
-   * @param label
-   * @param action
-   * @param disabled
-   * @param enabled
-   * @param nbLines
-   * @see
-   */
-  public void addTab(String label, String action, boolean disabled,
-      boolean enabled, int nbLines) {
-    Vector<Collection<Tab>> tabLines = getTabLines();
-    Collection<Tab> tabs = null;
-
-    if (nbLines <= 0) {
-      tabs = tabLines.get(0);
-    } else {
-      tabs = tabLines.get(nbLines - 1);
-    }
-    tabs.add(new Tab(label, action, disabled, enabled));
+  public Tab addTab(String label, String action, boolean disabled, boolean enabled) {
+    Tab tab = new Tab(label, action, disabled, enabled);
+    tabs.add(tab);
+    return tab;
   }
 
   /**
@@ -153,26 +83,8 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @return
    * @see
    */
-  public String getIconsPath() {
-    return GraphicElementFactory.getIconsPath();
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public Vector<Collection<Tab>> getTabLines() {
-    return this.tabLines;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public int getNbLines() {
-    return this.nbLines;
+  public List<Tab> getTabs() {
+    return tabs;
   }
 
   /**
@@ -181,36 +93,5 @@ public abstract class AbstractTabbedPane implements TabbedPane {
    * @see
    */
   public abstract String print();
-
-  /* onglet cale a gauche */
-
-  /**
-   * Method declaration
-   * @see
-   */
-  public void setIndentationLeft() {
-    indentation = LEFT;
-  }
-
-  /**
-   * Method declaration
-   * @return
-   * @see
-   */
-  public int getIndentation() {
-    return this.indentation;
-  }
-
-  /* cas ou les pages JSP ne soient pas toutes au meme niveau */
-  /* DEPRECATED */
-
-  /**
-   * Method declaration
-   * @param level
-   * @see
-   */
-  public void setLevelRootImage(int level) {
-    // this.levelPath = level;
-  }
 
 }

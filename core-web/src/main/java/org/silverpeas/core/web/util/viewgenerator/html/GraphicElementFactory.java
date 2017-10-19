@@ -422,37 +422,11 @@ public class GraphicElementFactory {
   public TabbedPane getTabbedPane() {
     String tabbedPaneClassName = getFavoriteLookSettings().getString("TabbedPane");
     TabbedPane tabbedPane = null;
-
     try {
       tabbedPane = (TabbedPane) Class.forName(tabbedPaneClassName).newInstance();
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       tabbedPane = new TabbedPaneSilverpeasV5();
-    } finally {
-      if (tabbedPane != null) {
-        tabbedPane.init(1);
-      }
-    }
-    return tabbedPane;
-  }
-
-  /**
-   * Build a new TabbedPane.
-   * @return An object implementing the TabbedPane interface.
-   */
-  public TabbedPane getTabbedPane(int nbLines) {
-    String tabbedPaneClassName = getFavoriteLookSettings().getString("TabbedPane");
-    TabbedPane tabbedPane = null;
-
-    try {
-      tabbedPane = (TabbedPane) Class.forName(tabbedPaneClassName).newInstance();
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-      tabbedPane = new TabbedPaneSilverpeasV5();
-    } finally {
-      if (tabbedPane != null) {
-        tabbedPane.init(nbLines);
-      }
     }
     return tabbedPane;
   }
