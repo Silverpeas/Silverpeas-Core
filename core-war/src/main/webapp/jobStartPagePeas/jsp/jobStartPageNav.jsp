@@ -63,97 +63,62 @@ function changeSpace(spaceId){
     if ((haveToRefreshMainPage != null) && (haveToRefreshMainPage.booleanValue()))
     {
 %>
-<BODY onload="javascript:viewSpace()" id="admin-treeview">
+<body onload="javascript:viewSpace()" id="admin-treeview">
 <%
     }
     else
     {
 %>
-<BODY id="admin-treeview">
+<body id="admin-treeview">
 <%
     }
 %>
 <form name="privateDomainsForm" action="jobStartPageNav">
 <table width="100%" cellspacing="0" cellpadding="0" border="0">
-<tr>
-		<td width="100%" class="intfdcolor13"><img src="<%=resource.getIcon("JSPP.px")%>" width="1" height="1"></td>
-		<td rowspan="3" colspan="2" class="intfdcolor"><img src="<%=resource.getIcon("JSPP.anglehtdt")%>"></td>
-</tr>
-<tr>
-		<td width="100%" class="intfdcolor4"><img src="<%=resource.getIcon("JSPP.px")%>" width="1" height="1"></td>
-</tr>
 <tr class="intfdcolor">
-		<td width="100%"><img src="<%=resource.getIcon("JSPP.px")%>" width="1" height="6"></td>
-</tr>
-<tr class="intfdcolor">
-		<td width="100%"><img src="<%=resource.getIcon("JSPP.px")%>" width="1" height="1"></td>
-		<td><img src="<%=resource.getIcon("JSPP.px")%>" width="7" height="1"></td>
-		<td class="intfdcolor"><img src="<%=resource.getIcon("JSPP.px")%>" width="1" height="1"></td>
-</tr>
-<tr class="intfdcolor">
-		<td width="100%">
-				<table width="100%" border="0" cellspacing="2" cellpadding="0">
-					<tr>
-						<td width="100%"><span class="treeview-label"><%=resource.getString("GML.domains")%> : </span></td>
-					</tr>
-				</table>
+		<td>
+			<span class="treeview-label"><%=resource.getString("GML.domains")%> : </span>
 		</td>
-		<td><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-		<td class="intfdcolor"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
 </tr>
-<tr class="intfdcolor4">
-		<td width="100%"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-		<td><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-		<td class="intfdcolor"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
+<tr class="intfdcolor51" >
+    <td>
+		<div class="treeview_selectSpace">
+		<input name="privateSubDomain" type="hidden" />
+			<img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="0" align="middle" />
+			<span class="selectNS"><select name="privateDomain" size=1 onchange="javascript:changeSpace(document.privateDomainsForm.privateDomain.value)">
+			  <option value=""><%=resource.getString("JSPP.Choose")%></option>
+			  <option value="">--------------------</option>
+			  <%
+					for(int nI = 0; nI < m_Spaces.length; nI++)
+					{
+						out.println(m_Spaces[nI].htmlLine);
+					}
+			%>
+			</select></span>
+	<%
+		if (currentSpaceId != null)
+		{
+	%>
+			<a href="javascript:changeSpace(<%=currentSpaceId%>)"><img id="space-icon" src="<%=resource.getIcon("JSPP.homeSpaceIcon")%>" align="middle" alt="<%=resource.getString("JSPP.BackToMainSpacePage")%>" title="<%=resource.getString("JSPP.BackToMainSpacePage")%>"/></a>
+	<%
+		}
+		else
+		{
+	%>
+			<a href="javascript:changeSpace('')"><img id="space-icon" src="<%=resource.getIcon("JSPP.homeSpaceIcon")%>" align="middle" alt="<%=resource.getString("JSPP.BackToMainSpacePage")%>" title="<%=resource.getString("JSPP.BackToMainSpacePage")%>"/></a>
+	<%
+		}
+	%>
+		</div>
+	</td>
 </tr>
-<tr class="intfdcolor13">
-		<td width="100%"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-		<td><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-		<td class="intfdcolor4"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-</tr>
+<%
+    if (currentSpaceId != null)
+    {
+%>
 <tr class="intfdcolor51">
-		<td width="100%"><img src="<%=resource.getIcon("JSPP.px")%>" width="1" height="3"></td>
-		<td><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-		<td class="intfdcolor"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-</tr>
-<tr class="intfdcolor51" valign="top">
-    <td width="100%" nowrap="nowrap">
-	<input name="privateSubDomain" type="hidden">
-		<img src="<%=resource.getIcon("JSPP.px")%>" height="20" width="0" align="middle">
-        <span class="selectNS"><select name="privateDomain" size=1 onchange="javascript:changeSpace(document.privateDomainsForm.privateDomain.value)">
-          <option value=""><%=resource.getString("JSPP.Choose")%></option>
-		  <option value="">--------------------</option>
-          <%
-                for(int nI = 0; nI < m_Spaces.length; nI++)
-                {
-                    out.println(m_Spaces[nI].htmlLine);
-                }
-        %>
-        </select></span>
-<%
-    if (currentSpaceId != null)
-    {
-%>
-        <a href="javascript:changeSpace(<%=currentSpaceId%>)"><img src="<%=resource.getIcon("JSPP.px")%>" width="2" height="1" border="0"><img id="space-icon" src="<%=resource.getIcon("JSPP.homeSpaceIcon")%>" align="middle" alt="<%=resource.getString("JSPP.BackToMainSpacePage")%>" title="<%=resource.getString("JSPP.BackToMainSpacePage")%>"/></a>
-<%
-    }
-    else
-    {
-%>
-        <a href="javascript:changeSpace('')"><img src="<%=resource.getIcon("JSPP.px")%>" width="2" height="1" border="0"><img id="space-icon" src="<%=resource.getIcon("JSPP.homeSpaceIcon")%>" align="middle" alt="<%=resource.getString("JSPP.BackToMainSpacePage")%>" title="<%=resource.getString("JSPP.BackToMainSpacePage")%>"/></a>
-<%
-    }
-%>
-		</td>
-    <td><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-    <td class="intfdcolor"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-</tr>
-<%
-    if (currentSpaceId != null)
-    {
-%>
-<tr class="intfdcolor51" valign="top">
-    <td width="100%" nowrap valign="top">
+    <td>
+		<div class="treeview_contentSpace">
           <%
                 for(int nI = 0; nI < m_SubSpaces.length; nI++)
                 {
@@ -174,22 +139,10 @@ function changeSpace(spaceId){
                 }
         %>
 	</td>
-	<td><img src="<%=resource.getIcon("JSPP.px")%>"></td>
-    <td class="intfdcolor"><img src="<%=resource.getIcon("JSPP.px")%>"></td>
 </tr>
 <%
     }
 %>
-<tr>
-		<td width="100%" class="intfdcolor51"><img src="<%=resource.getIcon("JSPP.px")%>" width="1" height="6"></td>
-		<td rowspan="3" colspan="2" class="intfdcolor51"><img src="<%=resource.getIcon("JSPP.anglebasdt")%>"></td>
-</tr>
-<tr>
-		<td width="100%" class="intfdcolor4"><img src="<%=resource.getIcon("JSPP.px")%>" width="1" height="1"></td>
-</tr>
-<tr class="intfdcolor13">
-		<td width="100%"><img src="<%=resource.getIcon("JSPP.px")%>" width="1" height="1"></td>
-</tr>
 </table>
 </form>
 

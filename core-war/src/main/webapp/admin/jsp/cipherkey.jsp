@@ -113,7 +113,7 @@
     });
   </script>
 </head>
-<body>
+<body class="page_content_admin">
 <view:browseBar ignoreComponentLink="true" path="${title}"/>
 <view:window>
   <view:frame>

@@ -101,7 +101,7 @@ List vStatsData = (List)request.getAttribute("StatsData");
 	}
 </script>
 </head>
-<body>
+<body class="page_content_admin">
 <view:window>
   <c:if test="${fn:startsWith(userProfile.name, 'ADMINISTRATOR')}">
 <view:tabs>
@@ -114,7 +114,7 @@ List vStatsData = (List)request.getAttribute("StatsData");
   <view:frame>
     <view:board>
 
-<center>
+
   <form name="pdcAccessForm" action="ValidateViewPDCAccess" method="post">
     <input type="hidden" name="SpaceId" value="<%=(spaceId==null) ? "" : spaceId%>" />
     <input type="hidden" name="AxisId" id="hiddenAxisId" value="<%=(axisId==null) ? "" : axisId%>" />
@@ -238,7 +238,7 @@ List vStatsData = (List)request.getAttribute("StatsData");
         out.println("");
     }
     %>
-</center>
+
   </view:frame>
 </view:window>
 <form name="resetlAccessForm" action="ViewPDCAccess" method="post">

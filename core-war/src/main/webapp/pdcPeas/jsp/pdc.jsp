@@ -120,7 +120,7 @@ ArrayLine arrayLine = null;
 	}
 </script>
 </head>
-<body>
+<body class="page_content_admin">
 	<form name="viewAxis" action="Main" method="post">
 	<input type="hidden" name="Ids"/>
 <%
@@ -146,7 +146,7 @@ ArrayLine arrayLine = null;
 	out.println(tabbedPane.print());
 %>
 <view:frame>
-<center>
+
     <%
     ArrayPane arrayPane = gef.getArrayPane("PdcPeas", "Main", request, session);
 
@@ -203,7 +203,6 @@ ArrayLine arrayLine = null;
     out.println(arrayPane.print());
     %>
 
-</center>
 </view:frame>
 <%
 out.println(window.printAfter());

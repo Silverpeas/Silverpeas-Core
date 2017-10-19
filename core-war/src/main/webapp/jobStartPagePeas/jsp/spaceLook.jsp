@@ -67,7 +67,7 @@ function B_VALIDER_ONCLICK() {
 }
 </script>
 </head>
-<body>
+<body class="page_content_admin">
 <%
 out.println(window.printBefore());
 

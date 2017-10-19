@@ -50,9 +50,6 @@ if (helper.getURLOfLastVisitedCollaborativeSpace() != null) {
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <view:looknfeel />
-<style type="text/css">
-body {  background-image: url(<%=gef.getFavoriteLookSettings().getString("FondManager")%>); background-repeat: repeat-x}
-</style>
 <title><%=resource.getString("GML.popupTitle")%></title>
 <script type="text/javascript">
 function routPage() {
@@ -73,75 +70,33 @@ function notifyPopup(context,compoId,users,groups) {
 }
 </script>
 </head>
-<body onload="javascript:routPage()" id="topBarManager">
-
+<body onload="javascript:routPage()" id="topBarManager">          
 <div id="outilsAdmin">
-                &nbsp;&nbsp;<span class="textePetitBold"><%=resource.getString("JMP.tools")%>&nbsp;:</span>&nbsp;&nbsp;<img src="<%=resource.getIcon("JMP.arrow") %>" border="0"/>&nbsp;&nbsp;
-                <a href="javascript:notifyPopup('<%=m_context%>','','Administrators','')"><img border="0" src="<%=resource.getIcon("JMP.mailAdmin")%>" alt="<%=resource.getString("JMP.feedback") %>" title="<%=resource.getString("JMP.feedback") %>"/></a>&nbsp;
-                <a href="javascript:exit()"><img border="0" src="<%=resource.getIcon("JMP.login")%>" alt="<%=resource.getString("JMP.exit") %>" title="<%=resource.getString("JMP.exit") %>"/></a>&nbsp;
-                <a href="<%=helper.getSettings("helpURL", "/help_fr/Silverpeas.htm")%>" target="_blank"><img border="0" src="<%=resource.getIcon("JMP.help")%>" alt="<%=resource.getString("JMP.help") %>" title="<%=resource.getString("JMP.help") %>"/></a>&nbsp;
-                <a href="<%=m_context + URLUtil.getURL(URLUtil.CMP_CLIPBOARD) + "Idle.jsp?message=SHOWCLIPBOARD"%>" target="IdleFrame"><img src="<%=resource.getIcon("JMP.clipboardIcon")%>" border="0" alt="<%=resource.getString("JMP.clipboard")%>" onfocus="self.blur()" title="<%=resource.getString("JMP.clipboard")%>"/></a>&nbsp;
-                <a href="<%=frontOfficeURL%>" target="_top"><img border="0" src="<%=resource.getIcon("JMP.peas")%>" alt="<%=resource.getString("JMP.backSilverpeas") %>" title="<%=resource.getString("JMP.backSilverpeas") %>"/></a>&nbsp;
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                <span class="textePetitBold"><%=resource.getString("GML.date")%> :
-                &nbsp;&nbsp;<img src="<%=resource.getIcon("JMP.arrow") %>" border="0"/>&nbsp;&nbsp;
-                <%=helper.getDate()%></span>
+	<!-- Ajouter dans le a propos ? <a href="javascript:notifyPopup('<%=m_context%>','','Administrators','')"><img border="0" src="<%=resource.getIcon("JMP.mailAdmin")%>" alt="<%=resource.getString("JMP.feedback") %>" title="<%=resource.getString("JMP.feedback") %>"/><span><%=resource.getString("JMP.feedback") %></span></a> -->
+	<a class="sp_back_front" href="<%=frontOfficeURL%>" target="_top"><%=resource.getString("JMP.backSilverpeas") %></a>
+	<a href="<%=m_context + URLUtil.getURL(URLUtil.CMP_CLIPBOARD) + "Idle.jsp?message=SHOWCLIPBOARD"%>" target="IdleFrame"><img src="<%=resource.getIcon("JMP.clipboardIcon")%>" border="0" alt="<%=resource.getString("JMP.clipboard")%>" onfocus="self.blur()" title="<%=resource.getString("JMP.clipboard")%>"/><span><%=resource.getString("JMP.clipboard")%></span></a>
+	<a href="<%=helper.getSettings("helpURL", "/help_fr/Silverpeas.htm")%>" target="_blank"><img border="0" src="<%=resource.getIcon("JMP.help")%>" alt="<%=resource.getString("JMP.help") %>" title="<%=resource.getString("JMP.help") %>"/><span><%=resource.getString("JMP.help") %></span></a>
+	<a class="sp_logout" href="javascript:exit()"><img border="0" src="<%=resource.getIcon("JMP.login")%>" alt="<%=resource.getString("JMP.exit") %>" title="<%=resource.getString("JMP.exit") %>"/><span><%=resource.getString("JMP.exit") %></span></a>
+	<!-- Date ? Util ? <%=resource.getString("GML.date")%><%=helper.getDate()%> -->
 </div>
-
-<table width="100%" cellspacing="0" cellpadding="0" border="0">
-<tr>
-    <td width="120" align="left">
-    <a href="<%=frontOfficeURL%>" target="_top">
-    <img src="<%=resource.getIcon("JMP.px")%>" width="120" height="88" border="0" alt="<%=resource.getString("JMP.backSilverpeas") %>" title="<%=resource.getString("JMP.backSilverpeas") %>"/>
-    </a>
-    </td>
-    <td rowspan="2" width="100%" valign="bottom">
-      <table width="100%" cellspacing="0" cellpadding="0" border="0">
-      <tr>
-          <td align="left" valign="bottom" colspan="2">
-            <table width="100%" cellspacing="0" cellpadding="0" border="0">
-            <tr>
-                <td><img src="<%=resource.getIcon("JMP.px")%>" width="82" height="25"/></td>
-
+<ul class="sp_menuAdmin">
 <%// *********************   Gestion des onglets  ********************* %>
                 <%
                   JobManagerService[] services = (JobManagerService[])request.getAttribute("Services");
                   JobManagerService[] operation = (JobManagerService[])request.getAttribute("Operation");
 
                   int nbOnglet = services.length;//4; // 1 onglet = 1 service du job manager
-                  boolean actif = true;
                   for (int i=0; i<nbOnglet; i++)
                   {
-                %>
-                <td>
-                  <%
                     if (!services[i].isActif())
                     {
                   %>
                   <%//------------ debut onglets off------------------ %>
-                  <table width="150" cellspacing="0" cellpadding="0" border="0">
-                  <tr>
-                      <td rowspan="3" width="1"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="24"/></td>
-                      <td valign="top"><img src="<%=resource.getIcon("JMP.ongletGchOff")%>"/></td>
-                      <td rowspan="2" colspan="2" width="100%" nowrap class="ongletAdminOff" align="center">
+                  <li>
                         <a href="ChangeService?Id=<%=services[i].getId()%>">
-                        <span class="txtPetitBlanc"><%=resource.getString(services[i].getLabel())%></span>
+                        <span><%=resource.getString(services[i].getLabel())%></span>
                         </a>
-                      </td>
-                      <td align="right" valign="top"><img src="<%=resource.getIcon("JMP.ongletDtOff")%>"/></td>
-                  </tr>
-                  <tr>
-                      <td class="ongletAdminOff"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="12"/></td>
-                      <td class="ongletAdminOff"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="12"/></td>
-                  </tr>
-                  <tr>
-                      <td colspan="4" class="line"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="1"/></td>
-                  </tr>
-                  <tr>
-                      <td><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="1"/></td>
-                      <td colspan="4" class="intfdcolor4"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="1"/></td>
-                  </tr>
-                  </table>
+				  </li>
                   <%//------------ fin onglets off------------------ %>
                   <%
                   }
@@ -149,89 +104,45 @@ function notifyPopup(context,compoId,users,groups) {
                   {
                   %>
                   <%//------------ debut onglets on------------------ %>
-                  <table width="150" cellspacing="0" cellpadding="0" border="0">
-                  <tr>
-                      <td rowspan="3" width="1"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="24"/></td>
-                      <td valign="top"><img src="<%=resource.getIcon("JMP.ongletGchOn")%>"/></td>
-                      <td rowspan="2" colspan="2" width="100%" nowrap class="ongletAdminOn" align="center">
+                  <li class="select">
                       <span class="textePetitBold"><%=resource.getString(services[i].getLabel())%></span>
-                      </td>
-                      <td align="right" valign="top"><img src="<%=resource.getIcon("JMP.ongletDtOn")%>"/></td>
-                  </tr>
-                  <tr>
-                      <td class="ongletAdminOn"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="12"/></td>
-                      <td class="ongletAdminOn"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="12"/></td>
-                  </tr>
-                  <tr>
-                      <td colspan="4" class="ongletAdminOn"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="1"/></td>
-                  </tr>
-                  <tr>
-                      <td><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="1"/></td>
-                      <td colspan="4" class="ongletAdminOn"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="1"/></td>
-                  </tr>
-                  </table>
-                  <%actif = false; // juste pour faire beau, histoire d'avoir des onglets on et off :o) %>
+				  </li>
                   <%//------------ fin onglets on------------------ %>
                   <%
                   }
-                  %>
-                </td>
-                <%
+                  
                 }
-                %>
+				%>
+                
+</ul>
 <%// *********************   Fin gestion des onglets  ********************* %>
-              <td width="100%">&nbsp;</td>
-            </tr>
-            </table>
-          </td>
-          <td width="100%">&nbsp;</td>
-      </tr>
-      </table>
-    </td>
-    <td width="1"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="75"/></td>
-</tr>
-<tr class="intfdcolor4">
-    <td width="120"><img src="<%=resource.getIcon("JMP.px")%>" width="120" height="1"/></td>
-    <td width="1"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="1"/></td>
-</tr>
-<tr class="ongletAdminOn">
-    <td colspan="2">
-    <img src="<%=resource.getIcon("JMP.px")%>" width="80" height="1"/>
+  
 
 <%// *********************   Gestion des des composants de chaque onglet  ********************* %>
 <%
   int nbOption = operation.length;
+   if (nbOption != 0){
+%>
+ <div class="sp_sousMenuAdmin">
+<%
+  }
   for (int i=0; i < nbOption; i++) {
     if(!operation[i].isActif()){
     %>
-      |<img src="<%=resource.getIcon("JMP.px")%>" width="10" height="1"/>
-      <strong><a href="ChangeOperation?Id=<%=operation[i].getId()%>"><%=resource.getString(operation[i].getLabel())%></a></strong>
-      <img src="<%=resource.getIcon("JMP.px")%>" width="10" height="1"/>
+
+      <a href="ChangeOperation?Id=<%=operation[i].getId()%>"><%=resource.getString(operation[i].getLabel())%></a>
     <%}
     else{
       %>
-      |<img src="<%=resource.getIcon("JMP.px")%>" width="10" height="1"/>
-      <span class="txtPetitBlanc"><%=resource.getString(operation[i].getLabel())%></span>
-      <img src="<%=resource.getIcon("JMP.px")%>" width="10" height="1"/>
+      <span class="select"><%=resource.getString(operation[i].getLabel())%></span>
       <%
       }
       %>
   <%}
-  if (nbOption != 0){
+   if (nbOption != 0){
 %>
-  |
-<%
-  }
-%>
+  </div>  
+<%} %>
 <%// *********************   Fin gestion des des composants de chaque onglet  ********************* %>
-
-    </td>
-    <td width="1"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="18"/></td>
-</tr>
-<tr class="line">
-    <td colspan="2"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="1"/></td>
-    <td width="1"><img src="<%=resource.getIcon("JMP.px")%>" width="1" height="1"/></td>
-</tr>
-</table>
 </body>
 </html>

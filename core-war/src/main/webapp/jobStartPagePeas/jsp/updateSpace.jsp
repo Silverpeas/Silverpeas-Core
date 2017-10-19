@@ -139,7 +139,7 @@ function removeTranslation() {
 }
 </script>
 </head>
-<body onload="document.infoSpace.NameObject.focus();">
+<body class="page_content_admin" onload="document.infoSpace.NameObject.focus();">
 <form name="infoSpace" action="EffectiveUpdateSpace" method="post">
 <%
 	out.println(window.printBefore());

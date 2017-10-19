@@ -164,7 +164,7 @@ function jumpToUser() {
 }
 </script>
 </head>
-<body id="domainContent">
+<body id="domainContent" class="page_content_admin">
 <%
 out.println(window.printBefore());
 %>

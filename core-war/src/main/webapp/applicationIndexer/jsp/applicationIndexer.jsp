@@ -229,14 +229,14 @@ function index(action, compo, space) {
 }
 </script>
 </head>
-<body>
+<body class="page_content_admin">
 <%
 	out.println(window.printBefore());
 
     Frame frame=gef.getFrame();
     out.println(frame.printBefore());
 %>
-<center>
+
 	<div class="inlineMessage"><%=message.getString("admin.reindex.help")%></div>
 	<br/>
 	<% if (indexMessage.length() > 0) { %>
@@ -257,7 +257,7 @@ function index(action, compo, space) {
 			</td>
 		</tr>
 		</table>
-</center>
+
 <%
 	out.println(frame.printAfter());
 	out.println(window.printAfter());

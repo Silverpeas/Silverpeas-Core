@@ -75,7 +75,7 @@ function DoIdle()
 </script>
 
 </head>
-<body>
+<body class="page_content_admin">
 
 <%
 	browseBar.setDomainName(resources.getString("silverStatisticsPeas.statistics"));

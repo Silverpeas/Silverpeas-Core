@@ -58,7 +58,7 @@
   <title> Synchro Dynamic Report - Mode <%=SynchroDomainReport.getReportLevel()%>
   </title>
 </head>
-<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body class="page_content_admin">
 <NOBR>
   <%
     String toDisp = SynchroDomainReport.getMessages();

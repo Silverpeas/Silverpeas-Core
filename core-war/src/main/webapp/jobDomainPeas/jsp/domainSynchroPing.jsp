@@ -46,7 +46,7 @@ function DoIdle()
 }
 </script>
 </head>
-<body marginheight=5 marginwidth=5 leftmargin=5 topmargin=5 bgcolor="#FFFFFF">
+<body class="page_content_admin">
 
 <%
 out.println(window.printBefore());

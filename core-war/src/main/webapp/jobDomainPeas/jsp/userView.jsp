@@ -110,7 +110,7 @@ function resizeMe() {
 }
 </script>
 </head>
-<body marginheight="5" marginwidth="5" leftmargin="5" topmargin="5" bgcolor="#FFFFFF" onLoad="resizeMe();" id="profil">
+<body class="page_content_admin" onLoad="resizeMe();" id="profil">
 <%
 out.println(window.printBefore());
 %>

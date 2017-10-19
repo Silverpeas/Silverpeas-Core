@@ -113,7 +113,7 @@
 	}
 </script>
 </head>
-<body class="admin stats">
+<body class="admin stats page_content_admin">
 <view:window>
 <%
           if (UserAccessLevel.ADMINISTRATOR.equals(userProfile)) {
@@ -131,7 +131,6 @@
 
   <view:frame>
     <view:board>
-<center>
 <form name="connexionFormulaire" action="ValidateViewConnection" method="post">
   <table width="100%" border="0" cellspacing="0" cellpadding="4">
       <tr>
@@ -350,7 +349,6 @@
 <%
 		}
 %>
-</center>
   </view:frame>
 </view:window>
 <form name="resetConnectionForm" action="ViewConnections" method="post">

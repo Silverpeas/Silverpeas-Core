@@ -113,7 +113,7 @@
 
 </script>
 </head>
-<body class="admin stats">
+<body class="admin stats page_content_admin">
 <c:forEach items="${requestScope['MonthBegin']}" var="mBegin" varStatus="status">
 	<c:set var="curValue" value="${mBegin[0]}" />
 	<c:if test="${fn:contains(curValue, 'selected')}">

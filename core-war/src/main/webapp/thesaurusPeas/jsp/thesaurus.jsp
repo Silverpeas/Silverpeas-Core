@@ -43,8 +43,8 @@
     boolean selected;
 
 %>
-<HTML>
-<HEAD>
+<html>
+<head>
 <style type="text/css">
 
 .axe:hover {
@@ -75,9 +75,9 @@
     color:red
 }
 </style>
-<TITLE><%=resource.getString("GML.popupTitle")%></TITLE>
+<title><%=resource.getString("GML.popupTitle")%></title>
 <view:looknfeel/>
-<SCRIPT LANGUAGE="JavaScript">
+<script language="JavaScript">
 
 function Deletes()
 {
@@ -177,9 +177,9 @@ function validateSynonyms(termId)
     document.forms[0].submit();
 }
 
-</SCRIPT>
-</HEAD>
-<BODY>
+</script>
+</head>
+<body class="page_content_admin">
 <%
 	browseBar.setComponentName(componentLabel, "Main");
 	browseBar.setPath(resource.getString("thesaurus.thesaurus"));
@@ -203,8 +203,8 @@ function validateSynonyms(termId)
 %>
 
 <% // Ici debute le code de la page %>
-<center><br><br>
-<FORM METHOD=POST ACTION="">
+
+<form method="post" action="">
 <input type="hidden" name="termId">
 <table width="100%" border="0" cellspacing="10" cellpadding="0">
 <tr>
@@ -415,13 +415,13 @@ function validateSynonyms(termId)
       </td>
      </tr>
     </table>
-</FORM>
-<br><br></center>
+</form>
+
 
 <%
 out.println(frame.printAfter());
 out.println(window.printAfter());
 %>
 <form id="genericForm" action="" method="POST"></form>
-</BODY>
-</HTML>
+</body>
+</html>

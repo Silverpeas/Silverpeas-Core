@@ -103,7 +103,7 @@ $(document).ready(function(){
 });
 </script>
 </head>
-<body>
+<body class="page_content_admin">
 <%
   out.println(window.printBefore());
 %>

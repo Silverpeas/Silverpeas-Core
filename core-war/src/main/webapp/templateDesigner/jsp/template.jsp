@@ -105,7 +105,7 @@ $(document).ready(function(){
 });
 </script>
 </head>
-<body class="yui-skin-sam">
+<body class="yui-skin-sam page_content_admin">
 <%
 browseBar.setDomainName(resource.getString("templateDesigner.toolName"));
 browseBar.setComponentName(resource.getString("templateDesigner.templateList"), "Main");

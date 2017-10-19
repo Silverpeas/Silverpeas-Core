@@ -33,7 +33,7 @@
 <head>
 <view:looknfeel/>
 </head>
-<body>
+<body class="page_content_admin">
 <%
 List<PublicationTemplate> templates = (List<PublicationTemplate>) request.getAttribute("Templates");
 
