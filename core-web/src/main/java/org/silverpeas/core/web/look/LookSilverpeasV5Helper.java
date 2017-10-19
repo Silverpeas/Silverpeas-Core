@@ -203,7 +203,9 @@ public class LookSilverpeasV5Helper extends LookHelper {
   protected LookSilverpeasV5Helper(HttpSession session) {
     this.session = session;
     GraphicElementFactory gef = getGraphicElementFactory();
-    init(gef.getFavoriteLookSettings());
+    if (gef != null) {
+      init(gef.getFavoriteLookSettings());
+    }
   }
 
   /*

@@ -55,7 +55,9 @@ public abstract class AbstractRequest implements AbstractRequestTask.Request {
   protected UpdatableHistoryStep createHistoryNewStep(final HistoryStepDescriptor descriptor) {
     ProcessInstanceManager instanceManager = WorkflowHub.getProcessInstanceManager();
     final UpdatableHistoryStep newStep = (UpdatableHistoryStep) instanceManager.createHistoryStep();
-    newStep.setUserId(event.getUser().getUserId());
+    if (event.getUser() != null) {
+      newStep.setUserId(event.getUser().getUserId());
+    }
     newStep.setAction(descriptor.getActionName());
     newStep.setActionDate(descriptor.getActionDate());
     newStep.setUserRoleName(descriptor.getUserRoleName());
