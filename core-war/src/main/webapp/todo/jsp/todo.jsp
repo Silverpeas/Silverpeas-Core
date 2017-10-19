@@ -33,9 +33,8 @@
 
 <%
   String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
-  SettingBundle settings = todo.getSettings();
 
-  String action = (String) request.getParameter("Action");
+  String action = request.getParameter("Action");
   if (action == null) {
     action = "View";
   }
@@ -69,9 +68,6 @@
   }
 %>
 
-<%
-GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute("SessionGraphicElementFactory");
-%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -224,6 +220,7 @@ function deleteSelectedToDo() {
 	out.println(frame.printBefore());
 
     ArrayPane arrayPane = graphicFactory.getArrayPane("todoList", pageContext);
+    arrayPane.setVisibleLineNumber(25);
     arrayPane.addArrayColumn(todo.getString("nomToDo"));
     arrayPane.addArrayColumn(todo.getString("priorite"));
     if (todo.getViewType() == ToDoSessionController.ORGANIZER_TODO_VIEW)
@@ -387,10 +384,6 @@ function deleteSelectedToDo() {
   <input type="hidden" name="ToDoId"/>
   <input type="hidden" name="Percent"/>
   <input type="hidden" name="Action"/>
-</form>
-
-<form name="searchForm" action="agenda.jsp" method="post">
-  <input type="hidden" name="query"/>
 </form>
 
 </body>
