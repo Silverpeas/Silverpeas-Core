@@ -1117,7 +1117,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       groupsPath.clear();
     } else {
       int i = groupsPath.size() - 1;
-      while (i >= 0 && groupsPath.get(i).isThisGroup(groupId)) {
+      while (i >= 0 && !groupsPath.get(i).isThisGroup(groupId)) {
         groupsPath.remove(i);
         i--;
       }
