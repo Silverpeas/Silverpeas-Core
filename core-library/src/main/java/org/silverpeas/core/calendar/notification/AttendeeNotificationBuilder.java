@@ -25,15 +25,22 @@ package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.ExternalAttendee;
 import org.silverpeas.core.calendar.InternalAttendee;
+import org.silverpeas.core.calendar.Occurrence;
+import org.silverpeas.core.calendar.Plannable;
 import org.silverpeas.core.calendar.notification.user.AbstractCalendarEventUserNotificationBuilder;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
+import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.notification.user.RemoveSenderRecipientBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -56,10 +63,11 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
     implements RemoveSenderRecipientBehavior {
 
   private NotifAction notifCause;
-  private UpdateCause updateCause = UpdateCause.NONE;
+  private CalendarOperation operation = CalendarOperation.NONE;
   private User sender;
   private List<Attendee> recipients;
   private List<Attendee> attendees;
+  private boolean immediately = false;
 
   /**
    * Constructs a new builder of user notification against the attendee(s) of a calendar component.
@@ -74,43 +82,45 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
   }
 
   /**
-   * Sets the cause of an update that implies the specified list of attendees. In such a case,
-   * the cause is one of the following:
+   * Sets the operation on a calendar component. If the operation implies on the attendance in
+   * the calendar component, then attendees concerned by it have to be specified.
+   * In such a case, the operation is one of the following:
    * <ul>
-   * <li>{@link UpdateCause#ATTENDEE_ADDING}</li>
-   * <li>{@link UpdateCause#ATTENDEE_REMOVING}</li>
-   * <li>{@link UpdateCause#ATTENDEE_PARTICIPATION}</li>
-   * <li>{@link UpdateCause#ATTENDEE_PRESENCE}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_ADDING}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_REMOVING}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_PARTICIPATION}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_PRESENCE}</li>
    * </ul>
-   * If the list of attendees is empty, then the cause should be {@link UpdateCause#EVENT_UPDATE}.
-   * @param cause the cause of an update action.
-   * @param attendees the attendees concerned by the update.
+   * Otherwise the operation should be another value from the {@link CalendarOperation} enumeration.
+   * @param operation the operation that was performed on the attendance of a calendar component.
+   * @param attendees the attendees concerned by the operation.
    * @return itself.
    */
-  public AttendeeNotificationBuilder about(UpdateCause cause,
+  public AttendeeNotificationBuilder about(CalendarOperation operation,
       List<Attendee> attendees) {
-    this.updateCause = cause;
+    this.operation = operation;
     this.attendees = attendees;
     return this;
   }
 
   /**
-   * Sets the cause of an update that implies the specified list of attendees. In such a case,
-   * the cause is one of the following:
+   * Sets the operation on a calendar component. If the operation implies on the attendance in
+   * the calendar component, then attendees concerned by it have to be specified.
+   * In such a case, the operation is one of the following:
    * <ul>
-   * <li>{@link UpdateCause#ATTENDEE_ADDING}</li>
-   * <li>{@link UpdateCause#ATTENDEE_REMOVING}</li>
-   * <li>{@link UpdateCause#ATTENDEE_PARTICIPATION}</li>
-   * <li>{@link UpdateCause#ATTENDEE_PRESENCE}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_ADDING}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_REMOVING}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_PARTICIPATION}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_PRESENCE}</li>
    * </ul>
-   * If there is no attendees, then the cause should be {@link UpdateCause#EVENT_UPDATE}.
-   * @param cause the cause of an update action.
-   * @param attendees the attendees concerned by the update.
+   * Otherwise the operation should be another value from the {@link CalendarOperation} enumeration.
+   * @param operation the operation that was performed on the attendance of a calendar component.
+   * @param attendees the attendees concerned by the operation.
    * @return itself.
    */
-  public AttendeeNotificationBuilder about(UpdateCause cause,
+  public AttendeeNotificationBuilder about(CalendarOperation operation,
       final Attendee... attendees) {
-    return about(cause, Arrays.asList(attendees));
+    return about(operation, Arrays.asList(attendees));
   }
 
   /**
@@ -143,9 +153,23 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
     return this;
   }
 
+  /**
+   * The notification must be sent immediately whatever the wish of the user about it.
+   * @return itself.
+   */
+  public AttendeeNotificationBuilder immediately() {
+    this.immediately = true;
+    return this;
+  }
+
+  @Override
+  protected boolean isSendImmediately() {
+    return this.immediately;
+  }
+
   @Override
   protected String getBundleSubjectKey() {
-    switch (this.updateCause) {
+    switch (this.operation) {
       case NONE:
         return "subject.default";
       case EVENT_UPDATE:
@@ -159,10 +183,12 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
   protected void performTemplateData(final Contribution contribution,
       final SilverpeasTemplate template) {
     String language = ((LocalizedContribution) contribution).getLanguage();
-    template.setAttribute("event", contribution);
+    template.setAttribute("contributionDate", dateOf(getResource()));
+    template.setAttribute("several", this.operation.isSeveralImplied());
     template.setAttribute("attendees",
         this.attendees.stream().map(Attendee::getFullName).collect(Collectors.toList()));
-    if (UpdateCause.ATTENDEE_PARTICIPATION.equals(this.updateCause)) {
+    if (CalendarOperation.ATTENDEE_PARTICIPATION == this.operation ||
+        CalendarOperation.SINCE_ATTENDEE_PARTICIPATION == this.operation) {
       Optional<Attendee> attendee =
           this.attendees.stream().filter(a -> a.getId().equals(sender.getId())).findFirst();
       attendee.ifPresent(a -> {
@@ -175,10 +201,7 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
 
   @Override
   protected String getTemplateFileName() {
-    if (this.getAction() == NotifAction.UPDATE) {
-      return this.updateCause.getTemplateName();
-    }
-    return null;
+    return this.operation.getTemplateName();
   }
 
   @Override
@@ -205,5 +228,29 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
         .filter(a -> a instanceof ExternalAttendee)
         .map(Attendee::getId)
         .collect(Collectors.toSet());
+  }
+
+  private String dateOf(final Object contribution) {
+    Temporal startDate = null;
+    ZoneId zoneId = null;
+    if (contribution instanceof Plannable) {
+      Plannable plannable = (Plannable) contribution;
+      startDate = plannable.getStartDate();
+    } else if (contribution instanceof Occurrence) {
+      Occurrence occurence = (Occurrence) contribution;
+      startDate = occurence.getStartDate();
+    } else if (contribution instanceof CalendarComponent) {
+      CalendarComponent component = (CalendarComponent) contribution;
+      startDate = component.getPeriod().getStartDate();
+    }
+
+    String date = "";
+    if (startDate != null) {
+      date = TemporalConverter.applyByType(startDate,
+          d -> d.format(DateTimeFormatter.ofPattern("yyyy-MM-dd")),
+          dt -> dt.atZoneSameInstant(zoneId)
+              .format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")));
+    }
+    return date;
   }
 }

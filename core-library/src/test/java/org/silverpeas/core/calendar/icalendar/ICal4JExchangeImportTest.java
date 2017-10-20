@@ -579,7 +579,7 @@ public class ICal4JExchangeImportTest {
     assertThat(reason + "getAttributes", actual.getAttributes(), is(expected.getAttributes()));
     assertThat(reason + "getPriority", actual.getPriority(), is(expected.getPriority()));
     assertThat(reason + "getVisibilityLevel", actual.getVisibilityLevel(), is(expected.getVisibilityLevel()));
-    assertThat(reason + "getCreateDate", actual.getCreationDate(), is(expected.getCreationDate()));
+    assertThat(reason + "getCreationDate", actual.getCreationDate(), is(expected.getCreationDate()));
     assertThat(reason + "getLastUpdateDate", actual.getLastUpdateDate(), is(expected.getLastUpdateDate()));
     verifyComponent(reason, actual.asCalendarComponent(), expected.asCalendarComponent());
   }
@@ -598,7 +598,7 @@ public class ICal4JExchangeImportTest {
     assertThat(reason + "getAttendees", actual.getAttendees().stream().collect(Collectors.toSet()), is(expected.getAttendees().stream().collect(Collectors.toSet())));
     assertThat(reason + "getAttributes", actual.getAttributes(), is(expected.getAttributes()));
     assertThat(reason + "getPriority", actual.getPriority(), is(expected.getPriority()));
-    assertThat(reason + "getCreateDate", actual.getCreateDate(), is(expected.getCreateDate()));
+    assertThat(reason + "getCreationDate", actual.getCreationDate(), is(expected.getCreationDate()));
     assertThat(reason + "getLastUpdateDate", actual.getLastUpdateDate(), is(expected.getLastUpdateDate()));
   }
 

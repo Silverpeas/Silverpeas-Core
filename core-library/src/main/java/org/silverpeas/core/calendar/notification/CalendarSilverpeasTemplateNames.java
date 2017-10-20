@@ -64,6 +64,51 @@ public class CalendarSilverpeasTemplateNames {
    */
   public static final String TEMPLATE_EVENT_UPDATED = "calendarEventUpdated";
 
+  /**
+   * Template of the message that will be sent to notify about the deletion of an event in a
+   * calendar.
+   */
+  public static final String TEMPLATE_EVENT_DELETED = "calendarEventDeleted";
+
+  /**
+   * Template of the message that will be sent to notify about the update of several occurrences of
+   * an event in a calendar since a given occurrence (can be the first one).
+   */
+  public static final String TEMPLATE_SINCE_EVENT_UPDATED = "calendarEventUpdated";
+
+  /**
+   * Template of the message that will be sent to notify about the deletion of several occurrences
+   * of an event in a calendar since a given occurrence (can be the first one).
+   */
+  public static final String TEMPLATE_SINCE_EVENT_DELETED = "calendarEventDeleted";
+
+  /**
+   * Template of the message that will be sent to notify about the removing of one or more attendees
+   * from several occurrences of an event in a calendar since a given occurrence (can be the first
+   * one).
+   */
+  public static final String TEMPLATE_SINCE_ATTENDEE_REMOVING = "attendeeRemoved";
+
+  /**
+   * Template of the message that will be sent to notify about the adding of one or more attendees
+   * in several occurrences of an event in a calendar since a given occurrence (can be the first
+   * one).
+   */
+  public static final String TEMPLATE_SINCE_ATTENDEE_ADDING = "attendeeAdded";
+
+  /**
+   * Template of the message that will be sent to notify about the update of the presence status in
+   * several occurrences of an event in a calendar since a given occurrence (can be the first one).
+   */
+  public static final String TEMPLATE_SINCE_ATTENDEE_PRESENCE = "attendeePresenceUpdated";
+
+  /**
+   * Template of the message that will be sent to notify about the update of the participation
+   * status in several occurrences of an event in a calendar since a given occurrence (can be the
+   * first one).
+   */
+  public static final String TEMPLATE_SINCE_ATTENDEE_PARTICIPATION = "attendeeParticipationUpdated";
+
   private CalendarSilverpeasTemplateNames() {
 
   }

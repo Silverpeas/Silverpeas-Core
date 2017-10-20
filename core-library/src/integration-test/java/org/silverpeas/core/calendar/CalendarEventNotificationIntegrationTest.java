@@ -32,8 +32,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEvent;
+import org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier;
 import org.silverpeas.core.calendar.notification.AttendeeNotifier;
 import org.silverpeas.core.calendar.notification.CalendarEventLifeCycleEvent;
+import org.silverpeas.core.calendar.notification.CalendarEventOccurrenceLifeCycleEvent;
+import org.silverpeas.core.calendar.notification.LifeCycleEventSubType;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.test.CalendarWarBuilder;
@@ -82,7 +85,10 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
   private CalendarEventNotificationListener eventListener;
 
   @Inject
-  private AttendeeNotificationListener attendeeListener;
+  private AttendanceNotificationListener attendanceListener;
+
+  @Inject
+  private CalendarEventOccurrenceNotificationListener occurrenceListener;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -96,15 +102,20 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
   @Before
   public void listenersAreSet() {
     assertThat(eventListener, notNullValue());
-    assertThat(attendeeListener, notNullValue());
+    assertThat(occurrenceListener, notNullValue());
+    assertThat(attendanceListener, notNullValue());
   }
 
   @After
   public void resetListeners() {
-    attendeeListener.reset();
+    attendanceListener.reset();
+    occurrenceListener.reset();
     eventListener.reset();
   }
 
+  /**
+   * Planning an event notifies the attendees about their participation in this event.
+   */
   @Test
   public void planninACalendarEventSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
@@ -115,14 +126,20 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
         .withAttendee("jack@london.uk")
         .planOn(calendar);
 
+    // event planning notification
     assertThat(eventListener.hasBeenNotified(), is(true));
     assertThat(eventListener.getRecievedNotifAction(), is(NotifAction.CREATE));
 
-    assertThat(attendeeListener.hasBeenNotified(), is(true));
-    assertThat(attendeeListener.getRecievedNotifAction().size(), is(1));
-    assertThat(attendeeListener.getRecievedNotifAction().contains(NotifAction.CREATE), is(true));
+    // occurrence change notification
+    assertThat(occurrenceListener.hasBeenNotified(), is(false));
+
+    // attendance change notification
+    assertThat(attendanceListener.hasBeenNotified(), is(false));
   }
 
+  /**
+   * Deleting an event notifies the attendees about its deletion.
+   */
   @Test
   public void deletingACalendarEventSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
@@ -133,12 +150,14 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
     assertThat(eventListener.hasBeenNotified(), is(true));
     assertThat(eventListener.getRecievedNotifAction(), is(NotifAction.DELETE));
 
-    assertThat(attendeeListener.hasBeenNotified(), is(true));
-    assertThat(attendeeListener.getRecievedNotifAction().size(), is(2));
-    assertThat(attendeeListener.getRecievedNotifAction().get(0), is(NotifAction.DELETE));
-    assertThat(attendeeListener.getRecievedNotifAction().get(1), is(NotifAction.DELETE));
+    assertThat(occurrenceListener.hasBeenNotified(), is(false));
+
+    assertThat(attendanceListener.hasBeenNotified(), is(false));
   }
 
+  /**
+   * Updating the properties of an event notifies the attendees about the change(s).
+   */
   @Test
   public void updatingCalendarEventSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
@@ -149,12 +168,17 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
     assertThat(eventListener.hasBeenNotified(), is(true));
     assertThat(eventListener.getRecievedNotifAction(), is(NotifAction.UPDATE));
 
+    assertThat(occurrenceListener.hasBeenNotified(), is(false));
+
     // Modifying recurrence reset the participation of attendees
-    assertThat(attendeeListener.hasBeenNotified(), is(true));
-    assertThat(attendeeListener.getRecievedNotifAction(),
+    assertThat(attendanceListener.hasBeenNotified(), is(true));
+    assertThat(attendanceListener.getRecievedNotifAction(),
         contains(NotifAction.UPDATE, NotifAction.UPDATE));
   }
 
+  /**
+   * Adding a new attendee notifies him about its participation.
+   */
   @Test
   public void addingAnAttendeeSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
@@ -162,14 +186,18 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
     event.withAttendee(User.getById("2"));
     event.update();
 
-    assertThat(eventListener.hasBeenNotified(), is(true));
-    assertThat(eventListener.getRecievedNotifAction(), is(NotifAction.UPDATE));
+    assertThat(eventListener.hasBeenNotified(), is(false));
 
-    assertThat(attendeeListener.hasBeenNotified(), is(true));
-    assertThat(attendeeListener.getRecievedNotifAction().size(), is(1));
-    assertThat(attendeeListener.getRecievedNotifAction().contains(NotifAction.CREATE), is(true));
+    assertThat(occurrenceListener.hasBeenNotified(), is(false));
+
+    assertThat(attendanceListener.hasBeenNotified(), is(true));
+    assertThat(attendanceListener.getRecievedNotifAction().size(), is(1));
+    assertThat(attendanceListener.getRecievedNotifAction().contains(NotifAction.CREATE), is(true));
   }
 
+  /**
+   * Removing an attendee from an event notifies him about the removal of its participation.
+   */
   @Test
   public void removingAnAttendeeSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
@@ -178,14 +206,18 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
     event.getAttendees().remove(attendee);
     event.update();
 
-    assertThat(eventListener.hasBeenNotified(), is(true));
-    assertThat(eventListener.getRecievedNotifAction(), is(NotifAction.UPDATE));
+    assertThat(eventListener.hasBeenNotified(), is(false));
 
-    assertThat(attendeeListener.hasBeenNotified(), is(true));
-    assertThat(attendeeListener.getRecievedNotifAction().size(), is(1));
-    assertThat(attendeeListener.getRecievedNotifAction().contains(NotifAction.DELETE), is(true));
+    assertThat(occurrenceListener.hasBeenNotified(), is(false));
+
+    assertThat(attendanceListener.hasBeenNotified(), is(true));
+    assertThat(attendanceListener.getRecievedNotifAction().size(), is(1));
+    assertThat(attendanceListener.getRecievedNotifAction().contains(NotifAction.DELETE), is(true));
   }
 
+  /**
+   * Updating the participation status of an attendee notifies other attendees about that.
+   */
   @Test
   public void updateAttendeeParticipationSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
@@ -194,14 +226,18 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
     attendee.decline();
     event.update();
 
-    assertThat(eventListener.hasBeenNotified(), is(true));
-    assertThat(eventListener.getRecievedNotifAction(), is(NotifAction.UPDATE));
+    assertThat(eventListener.hasBeenNotified(), is(false));
 
-    assertThat(attendeeListener.hasBeenNotified(), is(true));
-    assertThat(attendeeListener.getRecievedNotifAction().size(), is(1));
-    assertThat(attendeeListener.getRecievedNotifAction().contains(NotifAction.UPDATE), is(true));
+    assertThat(occurrenceListener.hasBeenNotified(), is(false));
+
+    assertThat(attendanceListener.hasBeenNotified(), is(true));
+    assertThat(attendanceListener.getRecievedNotifAction().size(), is(1));
+    assertThat(attendanceListener.getRecievedNotifAction().contains(NotifAction.UPDATE), is(true));
   }
 
+  /**
+   * Delegating the participation to another person notifies the delegate about that.
+   */
   @Test
   public void delegateParticipationSendTwoNotifications() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
@@ -210,15 +246,19 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
     attendee.delegateTo(User.getById("2"));
     event.update();
 
-    assertThat(eventListener.hasBeenNotified(), is(true));
-    assertThat(eventListener.getRecievedNotifAction(), is(NotifAction.UPDATE));
+    assertThat(eventListener.hasBeenNotified(), is(false));
 
-    assertThat(attendeeListener.hasBeenNotified(), is(true));
-    assertThat(attendeeListener.getRecievedNotifAction().size(), is(2));
-    assertThat(attendeeListener.getRecievedNotifAction().contains(NotifAction.UPDATE), is(true));
-    assertThat(attendeeListener.getRecievedNotifAction().contains(NotifAction.CREATE), is(true));
+    assertThat(occurrenceListener.hasBeenNotified(), is(false));
+
+    assertThat(attendanceListener.hasBeenNotified(), is(true));
+    assertThat(attendanceListener.getRecievedNotifAction().size(), is(2));
+    assertThat(attendanceListener.getRecievedNotifAction().contains(NotifAction.UPDATE), is(true));
+    assertThat(attendanceListener.getRecievedNotifAction().contains(NotifAction.CREATE), is(true));
   }
 
+  /**
+   * Updates the presence status of an attendee notifies him about that.
+   */
   @Test
   public void updateAttendeePresenceSendANotification() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
@@ -227,17 +267,21 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
     attendee.setPresenceStatus(Attendee.PresenceStatus.INFORMATIVE);
     event.update();
 
-    assertThat(eventListener.hasBeenNotified(), is(true));
-    assertThat(eventListener.getRecievedNotifAction(), is(NotifAction.UPDATE));
+    assertThat(eventListener.hasBeenNotified(), is(false));
 
-    assertThat(attendeeListener.hasBeenNotified(), is(true));
-    assertThat(attendeeListener.getRecievedNotifAction().size(), is(1));
-    assertThat(attendeeListener.getRecievedNotifAction().contains(NotifAction.UPDATE), is(true));
+    assertThat(occurrenceListener.hasBeenNotified(), is(false));
+
+    assertThat(attendanceListener.hasBeenNotified(), is(true));
+    assertThat(attendanceListener.getRecievedNotifAction().size(), is(1));
+    assertThat(attendanceListener.getRecievedNotifAction().contains(NotifAction.UPDATE), is(true));
   }
 
+  /**
+   * Listens for change in the attendance in an event (or in a given event's occurrence).
+   */
   @Singleton
-  public static class AttendeeNotificationListener
-      extends AttendeeNotifier<AttendeeLifeCycleEvent> {
+  public static class AttendanceNotificationListener extends AttendeeNotifier<AttendeeLifeCycleEvent> {
+
 
     private List<NotifAction> notifAction = new ArrayList<>(2);
 
@@ -271,9 +315,14 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
     }
   }
 
+  /**
+   * In the case of an update, we first check the event's properties are modified to set the
+   * accordingly the notification action. Then we check the attendees are modified. In this case,
+   * we send a notification about a change in the attendance in the event. This behaviour is
+   * implemented by the attendee notification mechanism. We just simulate here this behaviour.
+   */
   @Singleton
-  public static class CalendarEventNotificationListener
-      extends AttendeeNotifier<CalendarEventLifeCycleEvent> {
+  public static class CalendarEventNotificationListener extends AttendeeNotifier<CalendarEventLifeCycleEvent> {
 
     private NotifAction notifAction = null;
 
@@ -296,13 +345,75 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
 
     @Override
     public void onUpdate(final CalendarEventLifeCycleEvent event) throws Exception {
-      notifAction = NotifAction.UPDATE;
+      CalendarEvent before = event.getTransition().getBefore();
+      CalendarEvent after = event.getTransition().getAfter();
       assertThat(event.getTransition().getBefore(), notNullValue());
       assertThat(event.getTransition().getAfter(), notNullValue());
+
+      if (after.isModifiedSince(before)) {
+        notifAction = NotifAction.UPDATE;
+      }
+
+      if (!after.getAttendees().isSameAs(before.getAttendees())) {
+        AttendeeLifeCycleEventNotifier.notifyAttendees(LifeCycleEventSubType.SINGLE, after,
+            before.getAttendees(), after.getAttendees());
+      }
     }
 
     @Override
     public void onCreation(final CalendarEventLifeCycleEvent event) throws Exception {
+      notifAction = NotifAction.CREATE;
+    }
+  }
+
+  /**
+   * In the case of an update, we first check the properties of the event's occurrence are modified
+   * to set the accordingly the notification action. Then we check the attendees are modified. In
+   * this case, we send a notification about a change in the attendance in the event. This behaviour
+   * is implemented by the attendee notification mechanism. We just simulate here this behaviour.
+   */
+  @Singleton
+  public static class CalendarEventOccurrenceNotificationListener
+      extends AttendeeNotifier<CalendarEventOccurrenceLifeCycleEvent> {
+
+    private NotifAction notifAction = null;
+
+    protected void reset() {
+      notifAction = null;
+    }
+
+    public NotifAction getRecievedNotifAction() {
+      return this.notifAction;
+    }
+
+    public boolean hasBeenNotified() {
+      return this.notifAction != null;
+    }
+
+    @Override
+    public void onDeletion(final CalendarEventOccurrenceLifeCycleEvent event) throws Exception {
+      notifAction = NotifAction.DELETE;
+    }
+
+    @Override
+    public void onUpdate(final CalendarEventOccurrenceLifeCycleEvent event) throws Exception {
+      CalendarEventOccurrence before = event.getTransition().getBefore();
+      CalendarEventOccurrence after = event.getTransition().getAfter();
+      assertThat(event.getTransition().getBefore(), notNullValue());
+      assertThat(event.getTransition().getAfter(), notNullValue());
+
+      if (after.isModifiedSince(before)) {
+        notifAction = NotifAction.UPDATE;
+      }
+
+      if (!after.getAttendees().isSameAs(before.getAttendees())) {
+        AttendeeLifeCycleEventNotifier.notifyAttendees(LifeCycleEventSubType.SINGLE, after,
+            before.getAttendees(), after.getAttendees());
+      }
+    }
+
+    @Override
+    public void onCreation(final CalendarEventOccurrenceLifeCycleEvent event) throws Exception {
       notifAction = NotifAction.CREATE;
     }
   }

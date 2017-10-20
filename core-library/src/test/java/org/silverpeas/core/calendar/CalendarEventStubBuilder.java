@@ -209,7 +209,7 @@ public class CalendarEventStubBuilder {
     }
 
     @Override
-    public Date getCreateDate() {
+    public Date getCreationDate() {
       return createDate;
     }
 
@@ -219,7 +219,7 @@ public class CalendarEventStubBuilder {
     }
 
     @Override
-    public String getCreatedBy() {
+    public String getCreatorId() {
       return createdBy;
     }
   }

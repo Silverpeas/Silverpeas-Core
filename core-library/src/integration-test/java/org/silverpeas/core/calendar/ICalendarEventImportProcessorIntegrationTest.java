@@ -29,6 +29,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
@@ -86,6 +87,7 @@ public class ICalendarEventImportProcessorIntegrationTest extends BaseCalendarTe
     List<TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.isEmpty(), is(true));
 
+    OperationContext.fromUser("0");
     calendar = Calendar.getById(CALENDAR_ID);
   }
 

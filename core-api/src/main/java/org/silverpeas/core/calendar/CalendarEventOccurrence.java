@@ -47,10 +47,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier
-    .notifyAttendees;
-
-
 /**
  * The occurrence of an event in a Silverpeas calendar. It is an instance of an event in the
  * timeline of a calendar; it represents an event starting and ending at a given date or datetime
@@ -128,6 +124,8 @@ public class CalendarEventOccurrence
     setId(generateId(event, startDate));
     this.event = event;
     this.component = event.asCalendarComponent().clone();
+    this.component.createdBy(event.getCreator(), event.getCreationDate());
+    this.component.updatedBy(event.getLastUpdater(), event.getLastUpdateDate());
     this.component.setPeriod(Period.between(startDate, endDate));
   }
 
@@ -235,7 +233,7 @@ public class CalendarEventOccurrence
 
   @Override
   public Date getCreationDate() {
-    return component.getCreateDate();
+    return component.getCreationDate();
   }
 
   @Override
@@ -573,6 +571,27 @@ public class CalendarEventOccurrence
   }
 
   /**
+   * Is the properties of this event occurrence was modified since its last specified state?
+   * The attendees in this event occurrence aren't taken into account as they aren't considered as
+   * a property of an event occurrence.
+   * @param previous a previous state of this event occurrence.
+   * @return true if the state of this event occurrence is different with the specified one.
+   */
+  public boolean isModifiedSince(final CalendarEventOccurrence previous) {
+    if (!this.getId().equals(previous.getId())) {
+      throw new IllegalArgumentException(
+          "The event occurrence of id " + previous.getId() + " isn't the expected one " +
+              this.getId());
+    }
+    if (this.getVisibilityLevel() != previous.getVisibilityLevel() ||
+        !this.getCategories().equals(previous.getCategories())) {
+      return true;
+    }
+
+    return this.asCalendarComponent().isModifiedSince(previous.asCalendarComponent());
+  }
+
+  /**
    * Converts this occurrence of a calendar event into an unplanned non-recurrent
    * {@link CalendarEvent} instance. This method is dedicated to the {@link CalendarEvent} class.
    * @return a new {@link CalendarEvent} instance from this occurrence.
@@ -629,14 +648,19 @@ public class CalendarEventOccurrence
    * @return the persisted event occurrence.
    */
   CalendarEventOccurrence saveIntoPersistence() {
-    final CalendarEventOccurrence previous = getPreviousState();
-    CalendarEventOccurrence saved = Transaction.performInOne(() -> {
+    return Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      this.component.incrementSequence();
+      CalendarEventOccurrence previous = getPreviousState();
+      if (previous != null && !isModifiedSince(previous) &&
+          !getAttendees().isSameAs(previous.getAttendees())) {
+        // we don't want the update properties to be modified for change(s) only in the attendees
+        this.component.updatedBy(previous.component.getLastUpdater(),
+            previous.component.getLastUpdateDate());
+      } else {
+        this.component.incrementSequence();
+      }
       return repository.save(this);
     });
-    notifyAttendees(this, previous != null ? previous.getAttendees() : null, saved.getAttendees());
-    return saved;
   }
 
   /**
@@ -650,7 +674,6 @@ public class CalendarEventOccurrence
       repository.delete(this);
       return null;
     });
-    notifyAttendees(this, this.getAttendees(), null);
   }
 
   /**
@@ -661,7 +684,9 @@ public class CalendarEventOccurrence
   long deleteAllSinceMeFromThePersistence() {
     return Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      return repository.deleteSince(this, true);
+      List<CalendarEventOccurrence> occurrences = repository.getAllSince(this);
+      repository.delete(occurrences);
+      return occurrences.size();
     });
   }
 

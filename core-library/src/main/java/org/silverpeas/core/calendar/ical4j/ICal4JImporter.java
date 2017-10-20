@@ -47,7 +47,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
-import org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection;
+import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -270,10 +270,11 @@ public class ICal4JImporter implements ICalendarImporter {
 
     // Technical data
     if (vEvent.getCreated() != null) {
-      JpaEntityReflection.setCreateDate(component, vEvent.getCreated().getDate());
+      component.createdBy(OperationContext.getFromCache().getUser(), vEvent.getCreated().getDate());
     }
     if (vEvent.getLastModified() != null) {
-      JpaEntityReflection.setLastUpdateDate(component, vEvent.getLastModified().getDate());
+      component.updatedBy(OperationContext.getFromCache().getUser(),
+          vEvent.getLastModified().getDate());
     }
   }
 

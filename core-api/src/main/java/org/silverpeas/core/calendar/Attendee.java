@@ -232,39 +232,6 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   }
 
   /**
-   * Compares this attendee with the another one. The two attendees are equal if they are the same
-   * user and they attend the same event.
-   * @param o another object, must be an attendee otherwise false is returned.
-   * @return true if the two attendees are equal in term of user and of attended event.
-   */
-  @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof Attendee)) {
-      return false;
-    }
-    if (super.equals(o)) {
-      return true;
-    }
-
-    final Attendee attendee = (Attendee) o;
-
-    return attendeeId.equals(attendee.attendeeId) && component.equals(attendee.component);
-  }
-
-  /**
-   * Computes the hash code of this attendee. It is computed from the attendee identifier and from
-   * the event in which he attends.
-   * @return the hash code of this attendee.
-   */
-  @Override
-  public int hashCode() {
-    return new HashCodeBuilder().append(attendeeId).append(component).toHashCode();
-  }
-
-  /**
    * Clones this attendee for the specified calendar component. The cloned attendee is added in
    * the given calendar component before returning it.
    * @param calendarComponent a calendar component for which this attendee is cloned.

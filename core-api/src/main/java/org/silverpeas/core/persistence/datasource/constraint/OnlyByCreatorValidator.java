@@ -49,8 +49,8 @@ public class OnlyByCreatorValidator implements ConstraintValidator<OnlyByCreator
     User requester = User.getCurrentRequester();
     if (requester != null) {
       Entity concerned = getConcernedEntity(entity);
-      if (StringUtil.isDefined(concerned.getCreatedBy())) {
-        return requester.isAccessAdmin() || requester.getId().equals(concerned.getCreatedBy());
+      if (StringUtil.isDefined(concerned.getCreatorId())) {
+        return requester.isAccessAdmin() || requester.getId().equals(concerned.getCreatorId());
       }
     }
     return true;

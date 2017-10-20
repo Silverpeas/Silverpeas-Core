@@ -346,4 +346,34 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     super.performBeforeUpdate();
   }
 
+  /**
+   * Is the properties of this calendar component was modified since its last specified state?
+   * The attendees in this component aren't taken into account as they aren't considered as a
+   * property of a calendar component.
+   * @param previous a previous state of this calendar component.
+   * @return true if the state of this calendar component is different with the specified one.
+   */
+  protected boolean isModifiedSince(final CalendarComponent previous) {
+    if (!this.getTitle().equals(previous.getTitle())) {
+      return true;
+    }
+
+    if (!this.getDescription().equals(previous.getDescription())) {
+      return true;
+    }
+
+    if (!this.getLocation().equals(previous.getLocation())) {
+      return true;
+    }
+
+    if (!this.getPeriod().equals(previous.getPeriod())) {
+      return true;
+    }
+
+    if (this.getPriority() != previous.getPriority()) {
+      return true;
+    }
+
+    return !this.getAttributes().equals(previous.getAttributes());
+  }
 }

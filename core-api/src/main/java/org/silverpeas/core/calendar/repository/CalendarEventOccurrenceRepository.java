@@ -66,21 +66,12 @@ public interface CalendarEventOccurrenceRepository
   List<CalendarEventOccurrence> getAll(final Collection<CalendarEvent> events, final Period period);
 
   /**
-   * Deletes since and including the specified occurrence all the occurrences of the event to which
-   * the given occurrence comes from.
-   * @param occurrence the occurrence since which all the others occurrences, including the given
-   * one, have to be deleted.
-   * @param notify true if notification must be performed, false otherwise
-   * @return the number of actually deleted occurrences.
+   * Gets all the persisted occurrences of a given event since and including the specified one.
+   * @param occurrence the occurrence since which all the others occurrences, including iself, have
+   * to be get.
+   * @return a list of persisted occurrences since and including the specified one. All of them are
+   * from the same event.
    */
-  long deleteSince(final CalendarEventOccurrence occurrence, final boolean notify);
-
-  /**
-   * Deletes all the occurrences of the specified calendar event.
-   * @param event the calendar event for which all the persisted occurrences have to be deleted.
-   * @param notify true if notification must be performed, false otherwise
-   * @return the number of actually deleted occurrences.
-   */
-  long deleteAllByEvent(final CalendarEvent event, final boolean notify);
+  List<CalendarEventOccurrence> getAllSince(final CalendarEventOccurrence occurrence);
 }
   

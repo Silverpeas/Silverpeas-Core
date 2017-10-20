@@ -39,7 +39,6 @@ import java.util.Optional;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.Matchers.greaterThan;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
@@ -108,7 +107,7 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
   @Test
   public void addNewAttendees() {
     Calendar calendar = Calendar.getById(CALENDAR_ID);
-    CalendarEvent event = calendar.event(EVENT_WITHOUT_ATTENDEE).get();
+    CalendarEvent event = calendar.event(EVENT_WITHOUT_ATTENDEE).orElse(null);
     Date lastUpdateDate = event.getLastUpdateDate();
     assertThat(event.getAttendees().isEmpty(), is(true));
 
@@ -121,8 +120,8 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
     event.getAttendees().add(externalUser);
     event.update();
 
-    event = calendar.event(EVENT_WITHOUT_ATTENDEE).get();
-    assertThat(event.getLastUpdateDate(), greaterThan(lastUpdateDate));
+    event = calendar.event(EVENT_WITHOUT_ATTENDEE).orElse(null);
+    assertThat(event.getLastUpdateDate(), is(lastUpdateDate));
     assertThat(event.getAttendees().size(), is(2));
 
     Attendee actualAttendee = in(event.getAttendees()).find(silverpeasUser);
@@ -149,7 +148,7 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
     eventWithAttendees.update();
 
     eventWithAttendees = calendar.event(EVENT_WITH_ATTENDEE).get();
-    assertThat(eventWithAttendees.getLastUpdateDate(), greaterThan(lastUpdateDate));
+    assertThat(eventWithAttendees.getLastUpdateDate(), is(lastUpdateDate));
     attendee = in(eventWithAttendees.getAttendees()).find("john.doe@silverpeas.org");
     assertThat(attendee.getParticipationStatus(), is(Attendee.ParticipationStatus.ACCEPTED));
     assertThat(attendee.getPresenceStatus(), is(Attendee.PresenceStatus.OPTIONAL));
@@ -167,7 +166,7 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
     eventWithAttendees.update();
 
     eventWithAttendees = calendar.event(EVENT_WITH_ATTENDEE).get();
-    assertThat(eventWithAttendees.getLastUpdateDate(), greaterThan(lastUpdateDate));
+    assertThat(eventWithAttendees.getLastUpdateDate(), is(lastUpdateDate));
     assertThat(eventWithAttendees.getAttendees().size(), is(1));
     Optional<Attendee> actualAttendee = eventWithAttendees.getAttendees()
         .stream()
@@ -188,7 +187,7 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
     eventWithAttendees.update();
 
     eventWithAttendees = calendar.event(EVENT_WITH_ATTENDEE).get();
-    assertThat(eventWithAttendees.getLastUpdateDate(), greaterThan(lastUpdateDate));
+    assertThat(eventWithAttendees.getLastUpdateDate(), is(lastUpdateDate));
     assertThat(eventWithAttendees.getAttendees().size(), is(3));
 
     Attendee delegate = in(eventWithAttendees.getAttendees()).find(getMockedUser().getId());

@@ -44,7 +44,7 @@ import org.silverpeas.core.web.mvc.webcomponent.annotation.RedirectToInternal;
 import org.silverpeas.core.web.selection.Selection;
 import org.silverpeas.core.web.selection.SelectionUsersGroups;
 import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
-import org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider;
+import org.silverpeas.core.webapi.calendar.CalendarWebManager;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -141,7 +141,7 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
   @POST
   @Path("calendars/events/users/participation")
   @RedirectTo("{userPanelUri}")
-  @LowestRoleAccess(SilverpeasRole.admin)
+  @LowestRoleAccess(SilverpeasRole.writer)
   public void viewParticipationOfUsers(C context) {
     List<String> userIds = (List<String>) StringUtil
         .splitString(context.getRequest().getParameter("UserPanelCurrentUserIds"), ',');
@@ -169,7 +169,7 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
   @POST
   @Path("calendars/events/attendees/select")
   @RedirectTo("{userPanelUri}")
-  @LowestRoleAccess(SilverpeasRole.admin)
+  @LowestRoleAccess(SilverpeasRole.writer)
   public void modifyAttendees(C context) {
     List<String> userIds = (List<String>) StringUtil
         .splitString(context.getRequest().getParameter("UserPanelCurrentUserIds"), ',');
@@ -254,7 +254,7 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
   @RedirectToInternal("calendars/occurrences/{occurrenceId}")
   public void searchResult(AbstractCalendarWebRequestContext context) {
     context.getNavigationContext().clear();
-    final CalendarEventOccurrence occurrence = CalendarWebServiceProvider.get()
+    final CalendarEventOccurrence occurrence = CalendarWebManager.get()
         .getFirstCalendarEventOccurrenceFromEventId(context.getRequest().getParameter("Id"));
     context.addRedirectVariable("occurrenceId", asBase64(occurrence.getId().getBytes()));
   }

@@ -47,7 +47,7 @@ import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.CALENDAR;
 import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.HIDE_PRIVATE_DATA;
 import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.CALENDAR_BASE_URI;
-import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertEntityIsDefined;
+import static org.silverpeas.core.webapi.calendar.CalendarWebManager.assertEntityIsDefined;
 
 /**
  * A REST Web resource giving calendar data.
@@ -132,7 +132,7 @@ public class ICalendarResource extends RESTWebService {
     return null;
   }
 
-  private CalendarWebServiceProvider getCalendarWebServiceProvider() {
-    return CalendarWebServiceProvider.get();
+  private CalendarWebManager getCalendarWebServiceProvider() {
+    return CalendarWebManager.get();
   }
 }

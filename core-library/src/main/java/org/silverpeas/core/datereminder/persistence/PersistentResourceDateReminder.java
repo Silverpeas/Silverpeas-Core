@@ -172,7 +172,7 @@ public class PersistentResourceDateReminder
    */
   public DateReminderDetail getDateReminder() {
     return new DateReminderDetail(this.dateReminder, this.message, this.processStatus,
-        this.getCreatedBy(), this.getLastUpdatedBy());
+        this.getCreatorId(), this.getLastUpdaterId());
   }
 
   /**
@@ -188,7 +188,7 @@ public class PersistentResourceDateReminder
    * @param userId
    */
   private void setUpdaterId(String userId) {
-    super.setLastUpdatedBy(userId);
+    super.lastUpdatedBy(userId);
   }
 
   /**

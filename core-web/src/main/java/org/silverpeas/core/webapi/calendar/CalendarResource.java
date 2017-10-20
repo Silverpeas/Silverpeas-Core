@@ -86,8 +86,8 @@ import static org.silverpeas.core.calendar.icalendar.ICalendarExporter.CALENDAR;
 import static org.silverpeas.core.pdc.pdc.model.PdcClassification.aPdcClassificationOfContent;
 import static org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity.decodeId;
 import static org.silverpeas.core.webapi.calendar.CalendarResourceURIs.CALENDAR_BASE_URI;
-import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertDataConsistency;
-import static org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider.assertEntityIsDefined;
+import static org.silverpeas.core.webapi.calendar.CalendarWebManager.assertDataConsistency;
+import static org.silverpeas.core.webapi.calendar.CalendarWebManager.assertEntityIsDefined;
 
 /**
  * A REST Web resource giving calendar data.
@@ -783,8 +783,8 @@ public class CalendarResource extends AbstractCalendarResource {
     return "org.silverpeas.calendar.multilang.calendarBundle";
   }
 
-  protected CalendarWebServiceProvider getCalendarWebServiceProvider() {
-    return CalendarWebServiceProvider.get();
+  protected CalendarWebManager getCalendarWebServiceProvider() {
+    return CalendarWebManager.get();
   }
 
   private WebMessager getMessager() {

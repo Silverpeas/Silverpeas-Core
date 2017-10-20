@@ -46,13 +46,37 @@ public class AttendeeLifeCycleEventNotifier
     return ServiceProvider.getService(AttendeeLifeCycleEventNotifier.class);
   }
 
+  /**
+   * Creates an event about the specified operation on the specified attendees in a single event.
+   * @param type the type of operation on the attendees.
+   * @param attendees the attendees concerned by the event.
+   * @return the event relating a change in the lifecycle of the attendees.
+   */
   @Override
   protected AttendeeLifeCycleEvent createResourceEventFrom(final ResourceEvent.Type type,
       final Attendee... attendees) {
-    return new AttendeeLifeCycleEvent(eventOrOccurrence, type, attendees);
+    return new AttendeeLifeCycleEvent(eventOrOccurrence, type, LifeCycleEventSubType.SINGLE,
+        attendees);
   }
 
-  public static void notifyAttendees(final Contribution eventOrOccurrence, AttendeeSet before,
+  /**
+   * Creates an event about the specified operation on the specified attendees in a single or
+   * in several events (indicated by the operation subtype).
+   * @param type the type of operation on the attendees.
+   * @param subType the subtype of the lifecycle change indicating if it is for a single or more
+   * events.
+   * @param attendees the attendees concerned by the event.
+   * @return the event relating a change in the lifecycle of the attendees.
+   */
+  protected final void notifyEventOn(final ResourceEvent.Type type, LifeCycleEventSubType subType,
+      Attendee... attendees) {
+    notify(new AttendeeLifeCycleEvent(eventOrOccurrence, type, subType, attendees));
+  }
+
+
+
+  public static void notifyAttendees(LifeCycleEventSubType subtype,
+      final Contribution eventOrOccurrence, AttendeeSet before,
       AttendeeSet after) {
     AttendeeLifeCycleEventNotifier notifier = AttendeeLifeCycleEventNotifier.get();
     notifier.eventOrOccurrence = eventOrOccurrence;
@@ -68,12 +92,13 @@ public class AttendeeLifeCycleEventNotifier
       Attendee attendeeOnRight = after != null ? after.get(i).orElse(null) : null;
       if (attendeeOnLeft != null && attendeeOnRight != null) {
         if (areDifferent(attendeeOnLeft, attendeeOnRight)) {
-          notifier.notifyEventOn(ResourceEvent.Type.UPDATE, attendeeOnLeft, attendeeOnRight);
+          notifier.notifyEventOn(ResourceEvent.Type.UPDATE, subtype, attendeeOnLeft,
+              attendeeOnRight);
         }
       } else if (attendeeOnRight != null) {
-        notifier.notifyEventOn(ResourceEvent.Type.CREATION, attendeeOnRight);
+        notifier.notifyEventOn(ResourceEvent.Type.CREATION, subtype, attendeeOnRight);
       } else {
-        notifier.notifyEventOn(ResourceEvent.Type.DELETION, attendeeOnLeft);
+        notifier.notifyEventOn(ResourceEvent.Type.DELETION, subtype, attendeeOnLeft);
       }
     });
   }

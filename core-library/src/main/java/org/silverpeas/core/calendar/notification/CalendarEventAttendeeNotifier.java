@@ -24,31 +24,76 @@
 package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
+import java.util.List;
+
 /**
- * Notifier of an update of a {@link CalendarEvent} instance. It listens for such changes in the
- * lifecycle of the {@link CalendarEvent} instances and then it notifies the attendees about them.
+ * Notifier to the attendees of a calendar event about a change in the lifecycle of this event.
  * @author mmoquillon
  */
-public class CalendarEventUpdateAttendeeNotifier
+public class CalendarEventAttendeeNotifier
     extends AttendeeNotifier<CalendarEventLifeCycleEvent> {
 
   @Override
+  public void onCreation(final CalendarEventLifeCycleEvent event) throws Exception {
+    // notify the attendees about their participation to this new event
+    CalendarEvent created = event.getTransition().getAfter();
+    CalendarOperation operation = created.isRecurrent() ? CalendarOperation.SINCE_ATTENDEE_ADDING :
+        CalendarOperation.ATTENDEE_ADDING;
+    List<Attendee> attendees = attendeesIn(created.asCalendarComponent());
+    UserNotification notification =
+        new AttendeeNotificationBuilder(created, NotifAction.CREATE).immediately()
+            .from(User.getCurrentRequester())
+            .to(attendees)
+            .about(operation, attendees)
+            .build();
+    notification.send();
+  }
+
+  @Override
   public void onUpdate(final CalendarEventLifeCycleEvent event) throws Exception {
+    // notify the attendees and the previous updater about the modification of properties of the
+    // event
     CalendarEvent before = event.getTransition().getBefore();
     CalendarEvent after = event.getTransition().getAfter();
-    if (before.getAttendees().equals(after.getAttendees())) {
-      // the update is about the event itself and not about the attendees
+    if (after.isModifiedSince(before)) {
+      // the update is about the event itself
+      CalendarOperation operation = after.isRecurrent() ? CalendarOperation.SINCE_EVENT_UPDATE :
+          CalendarOperation.EVENT_UPDATE;
       UserNotification notification =
-          new AttendeeNotificationBuilder(after, NotifAction.UPDATE).from(
-              User.getCurrentRequester())
-              .to(concernedAttendeesIn(after.asCalendarComponent()))
-              .about(UpdateCause.EVENT_UPDATE)
+          new AttendeeNotificationBuilder(after, NotifAction.UPDATE).immediately()
+              .from(User.getCurrentRequester())
+              .to(concernedAttendeesIn(before.asCalendarComponent()))
+              .about(operation)
               .build();
       notification.send();
     }
+
+    if (!after.getAttendees().isSameAs(before.getAttendees())) {
+      // the update is about the attendees themselves
+      LifeCycleEventSubType subType =
+          after.isRecurrent() ? LifeCycleEventSubType.SINCE : LifeCycleEventSubType.SINGLE;
+      AttendeeLifeCycleEventNotifier.notifyAttendees(subType, after, before.getAttendees(),
+          after.getAttendees());
+    }
+  }
+
+  @Override
+  public void onDeletion(final CalendarEventLifeCycleEvent event) throws Exception {
+    // notify the attendees and the previous updater of the event deletion
+    CalendarEvent deleted = event.getTransition().getBefore();
+    CalendarOperation operation = deleted.isRecurrent() ? CalendarOperation.SINCE_EVENT_DELETION :
+        CalendarOperation.EVENT_DELETION;
+    UserNotification notification =
+        new AttendeeNotificationBuilder(deleted, NotifAction.DELETE).immediately()
+            .from(User.getCurrentRequester())
+            .to(concernedAttendeesIn(deleted.asCalendarComponent()))
+            .about(operation)
+            .build();
+    notification.send();
   }
 }

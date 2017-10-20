@@ -24,75 +24,95 @@
 package org.silverpeas.core.calendar.notification;
 
 /**
- * Cause of an update of a calendar event. It will serve as a selector of a template from which
- * a message to send will be build.
+ * An enumeration of operations that can be performed in a calendar. It will serve as a selector of
+ * a template from which a message to send will be built.
  * @author mmoquillon
  */
-public enum UpdateCause {
+public enum CalendarOperation {
 
   /**
-   * No update cause (there is in fact no update). It is the default value.
+   * No operation. It is the default value.
    */
-  NONE(null),
+  NONE(null, false),
 
   /**
    * The properties of the event have been updated (excepted the attendees).
    */
-  EVENT_UPDATE(CalendarSilverpeasTemplateNames.TEMPLATE_EVENT_UPDATED),
+  EVENT_UPDATE(CalendarSilverpeasTemplateNames.TEMPLATE_EVENT_UPDATED, false),
 
   /**
    * The event has been deleted.
    */
-  EVENT_DELETION(CalendarSilverpeasTemplateNames.TEMPLATE_EVENT_DELETED),
+  EVENT_DELETION(CalendarSilverpeasTemplateNames.TEMPLATE_EVENT_DELETED, false),
 
   /**
-   * A single occurrence of a recurrent event has been updated.
+   * A recurrent event has been modified since a given occurrence (it can be the first one).
    */
-  SINGLE_OCCURRENCE_UPDATE(CalendarSilverpeasTemplateNames.TEMPLATE_SINCE_OCCURRENCE_UPDATED),
+  SINCE_EVENT_UPDATE(CalendarSilverpeasTemplateNames.TEMPLATE_SINCE_EVENT_UPDATED, true),
 
   /**
-   * A recurrent event has been modified since a given occurrence.
+   * A recurrent event has been deleted since a given occurrence (it can be the first one).
    */
-  SINCE_OCCURRENCE_UPDATE(CalendarSilverpeasTemplateNames.TEMPLATE_SINGLE_OCCURRENCE_UPDATED),
-
-  /**
-   * A single occurrence of a recurrent event has been deleted.
-   */
-  SINCE_OCCURRENCE_DELETION(CalendarSilverpeasTemplateNames.TEMPLATE_SINCE_OCCURRENCE_DELETED),
-
-  /**
-   * A recurrent event has been deleted since a given occurrence.
-   */
-  SINGLE_OCCURRENCE_DELETION(CalendarSilverpeasTemplateNames.TEMPLATE_SINGLE_OCCURRENCE_DELETED),
+  SINCE_EVENT_DELETION(CalendarSilverpeasTemplateNames.TEMPLATE_SINCE_EVENT_DELETED, true),
 
   /**
    * One or more attendees have been removed.
    */
-  ATTENDEE_REMOVING(CalendarSilverpeasTemplateNames.TEMPLATE_ATTENDEE_REMOVING),
+  ATTENDEE_REMOVING(CalendarSilverpeasTemplateNames.TEMPLATE_ATTENDEE_REMOVING, false),
+
+  /**
+   * One or more attendees have been removed from a recurrent event since a given occurrence
+   * (can be the first one).
+   */
+  SINCE_ATTENDEE_REMOVING(CalendarSilverpeasTemplateNames.TEMPLATE_SINCE_ATTENDEE_REMOVING, true),
 
   /**
    * One or more attendees have been adding.
    */
-  ATTENDEE_ADDING(CalendarSilverpeasTemplateNames.TEMPLATE_ATTENDEE_ADDING),
+  ATTENDEE_ADDING(CalendarSilverpeasTemplateNames.TEMPLATE_ATTENDEE_ADDING, false),
+
+  /**
+   * One or more attendees have been added in a recurrent event since a given occurrence
+   * (can be the first one).
+   */
+  SINCE_ATTENDEE_ADDING(CalendarSilverpeasTemplateNames.TEMPLATE_SINCE_ATTENDEE_ADDING, true),
 
   /**
    * The presence status of an attendee has been updated.
    */
-  ATTENDEE_PRESENCE(CalendarSilverpeasTemplateNames.TEMPLATE_ATTENDEE_PRESENCE),
+  ATTENDEE_PRESENCE(CalendarSilverpeasTemplateNames.TEMPLATE_ATTENDEE_PRESENCE, false),
+
+  /**
+   * The presence status of an attendee has been updated in a recurrent event since a given
+   * occurrence (can be the first one).
+   */
+  SINCE_ATTENDEE_PRESENCE(CalendarSilverpeasTemplateNames.TEMPLATE_SINCE_ATTENDEE_PRESENCE, true),
 
   /**
    * The participation status of an attendee has been updated.
    */
-  ATTENDEE_PARTICIPATION(CalendarSilverpeasTemplateNames.TEMPLATE_ATTENDEE_PARTICIPATION);
+  ATTENDEE_PARTICIPATION(CalendarSilverpeasTemplateNames.TEMPLATE_ATTENDEE_PARTICIPATION, false),
+
+  /**
+   * The participation status of an attendee has been updated in a recurrent event since a given
+   * occurrence (can be the first one).
+   */
+  SINCE_ATTENDEE_PARTICIPATION(CalendarSilverpeasTemplateNames.TEMPLATE_SINCE_ATTENDEE_PARTICIPATION, true);
 
   private final String template;
+  private final boolean several;
 
-  UpdateCause(String templateName) {
+  CalendarOperation(String templateName, boolean severalImplied) {
     this.template = templateName;
+    this.several = severalImplied;
   }
 
   public String getTemplateName() {
     return this.template;
+  }
+
+  public boolean isSeveralImplied() {
+    return this.several;
   }
 
 }
