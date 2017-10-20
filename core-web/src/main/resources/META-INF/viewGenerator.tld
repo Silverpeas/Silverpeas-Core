@@ -2020,6 +2020,13 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.Boolean</type>
     </attribute>
+    <attribute>
+      <description>Forces the hiding of hidden components</description>
+      <name>forceHidingComponents</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Boolean</type>
+    </attribute>
   </tag>
   <tag>
     <description>Tag that checks the validity of the current session and forwards to the error page.</description>

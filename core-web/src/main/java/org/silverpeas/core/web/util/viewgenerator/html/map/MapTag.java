@@ -46,6 +46,7 @@ public class MapTag extends TagSupport {
   private String callbackJSForApps;
   private String callbackJSForSubspaces;
   private boolean megaMenu = false;
+  private Boolean forceHidingComponents;
 
   public String getSpaceId() {
     return spaceId;
@@ -103,11 +104,18 @@ public class MapTag extends TagSupport {
     this.megaMenu = megaMenu;
   }
 
+  public void setForceHidingComponents(final Boolean forceHidingComponents) {
+    this.forceHidingComponents = forceHidingComponents;
+  }
+
   @Override
   public int doStartTag() throws JspException {
     try {
       LookHelper helper = LookHelper.getLookHelper(pageContext.getSession());
       boolean showHiddenComponents = helper.getSettings("display.all.components", false);
+      if (forceHidingComponents != null) {
+        showHiddenComponents = !forceHidingComponents;
+      }
       pageContext.getOut().print(printSpaceAndSubSpaces(spaceId, showHiddenComponents));
     } catch (IOException e) {
       throw new JspException("Can't display the site map", e);
