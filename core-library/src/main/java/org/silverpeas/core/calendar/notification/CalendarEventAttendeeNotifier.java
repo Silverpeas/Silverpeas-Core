@@ -30,8 +30,7 @@ import org.silverpeas.core.notification.user.client.constant.NotifAction;
 
 /**
  * Notifier of an update of a {@link CalendarEvent} instance. It listens for such changes in the
- * lifecycle of the {@link CalendarEvent} instances and then it notifies the attendees and the
- * creator about them.
+ * lifecycle of the {@link CalendarEvent} instances and then it notifies the attendees about them.
  * @author mmoquillon
  */
 public class CalendarEventUpdateAttendeeNotifier

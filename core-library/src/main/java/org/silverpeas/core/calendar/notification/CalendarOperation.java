@@ -41,6 +41,31 @@ public enum UpdateCause {
   EVENT_UPDATE(CalendarSilverpeasTemplateNames.TEMPLATE_EVENT_UPDATED),
 
   /**
+   * The event has been deleted.
+   */
+  EVENT_DELETION(CalendarSilverpeasTemplateNames.TEMPLATE_EVENT_DELETED),
+
+  /**
+   * A single occurrence of a recurrent event has been updated.
+   */
+  SINGLE_OCCURRENCE_UPDATE(CalendarSilverpeasTemplateNames.TEMPLATE_SINCE_OCCURRENCE_UPDATED),
+
+  /**
+   * A recurrent event has been modified since a given occurrence.
+   */
+  SINCE_OCCURRENCE_UPDATE(CalendarSilverpeasTemplateNames.TEMPLATE_SINGLE_OCCURRENCE_UPDATED),
+
+  /**
+   * A single occurrence of a recurrent event has been deleted.
+   */
+  SINCE_OCCURRENCE_DELETION(CalendarSilverpeasTemplateNames.TEMPLATE_SINCE_OCCURRENCE_DELETED),
+
+  /**
+   * A recurrent event has been deleted since a given occurrence.
+   */
+  SINGLE_OCCURRENCE_DELETION(CalendarSilverpeasTemplateNames.TEMPLATE_SINGLE_OCCURRENCE_DELETED),
+
+  /**
    * One or more attendees have been removed.
    */
   ATTENDEE_REMOVING(CalendarSilverpeasTemplateNames.TEMPLATE_ATTENDEE_REMOVING),

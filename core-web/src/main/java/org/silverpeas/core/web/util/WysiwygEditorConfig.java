@@ -153,7 +153,7 @@ public class WysiwygEditorConfig implements Cloneable {
    */
   private String getConfigFile() {
     String configFile = wysiwygSettings.getString("configFile");
-    if (!configFile.toLowerCase().startsWith("http")) {
+    if (!configFile.startsWith("/") && !configFile.toLowerCase().startsWith("http")) {
       configFile = URLUtil.getApplicationURL() + "/" + configFile;
     }
     return configFile;
