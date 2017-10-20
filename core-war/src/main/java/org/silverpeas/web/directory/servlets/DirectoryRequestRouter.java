@@ -23,26 +23,30 @@
  */
 package org.silverpeas.web.directory.servlets;
 
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.index.search.model.QueryDescription;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
-import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import org.silverpeas.web.directory.DirectoryException;
 import org.silverpeas.web.directory.control.DirectorySessionController;
+import org.silverpeas.web.directory.model.DirectoryItem;
 import org.silverpeas.web.directory.model.DirectoryItemList;
+import org.silverpeas.web.directory.model.UserFragmentVO;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
+    .getPaginationPageFrom;
 
 /**
  * @author azzedine
@@ -131,6 +135,9 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
       } else if (function.equalsIgnoreCase(DirectorySessionController.VIEW_ALL)) {
 
         users = directorySC.getLastListOfAllUsers();
+        if (users == null) {
+          users = directorySC.getAllUsers();
+        }
         destination = doPagination(request, users, directorySC);
 
       } else if (function.equalsIgnoreCase(DirectorySessionController.VIEW_CONNECTED)) {
@@ -187,29 +194,18 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
    */
   String doPagination(HttpRequest request, DirectoryItemList users,
       DirectorySessionController directorySC) {
-    int index = 0;
-    if (StringUtil.isInteger(request.getParameter("Index"))) {
-      index = Integer.parseInt(request.getParameter("Index"));
-    }
-    String nbElementsPerPage = request.getParameter("NumberElementsPerPage");
-    if (StringUtil.isInteger(nbElementsPerPage)) {
-      directorySC.setElementsByPage(Integer.parseInt(nbElementsPerPage));
-    }
     boolean doNotUseExtraForm = request.getParameterAsBoolean("DoNotUseExtraForm");
-
-    HttpSession session = request.getSession();
-    GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
-        "SessionGraphicElementFactory");
-    Pagination pagination = gef.getPagination(users.size(), directorySC.getElementsByPage(), index);
-    DirectoryItemList membersToDisplay =
-        users.subList(pagination.getFirstItemIndex(), pagination.getLastItemIndex());
+    final PaginationPage currentPagination = directorySC.getMemberPage();
+    final PaginationPage newPagination = getPaginationPageFrom(request, currentPagination);
+    directorySC.setMemberPage(newPagination);
 
     // setting one fragment per user displayed
-    request.setAttribute("UserFragments", directorySC.getFragments(membersToDisplay));
+    final SilverpeasList<DirectoryItem> membersToDisplay = newPagination.getPaginatedListFrom(users);
+    final SilverpeasList<UserFragmentVO> fragments = directorySC.getFragments(membersToDisplay);
+    request.setAttribute("UserFragments", fragments);
 
-    request.setAttribute("userTotalNumber", users.size());
-    request.setAttribute("pagination", pagination);
-    request.setAttribute("paginationCounter", pagination.printCounter());
+    request.setAttribute("userTotalNumber", membersToDisplay.originalListSize());
+    request.setAttribute("memberPage", directorySC.getMemberPage());
     request.setAttribute("View", directorySC.getCurrentView());
     request.setAttribute("Scope", directorySC.getCurrentDirectory());
     request.setAttribute("Query", directorySC.getCurrentQuery());

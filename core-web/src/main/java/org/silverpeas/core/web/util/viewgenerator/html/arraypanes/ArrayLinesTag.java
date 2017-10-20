@@ -23,22 +23,16 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.taglibs.standard.tag.rt.core.ForEachTag;
-import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
 import javax.servlet.jsp.JspTagException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-
-import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.AbstractArrayPane
-    .getStartLastIndexesFrom;
 
 /**
  * Iterate over lines.
@@ -72,23 +66,11 @@ public class ArrayLinesTag extends ForEachTag {
       // Getting (and initializing) the pagination
       final Pagination pagination = spArrayPane.getPagination(list.size());
       // Computing the paginated list
-      final SilverpeasList paginatedList = getPaginatedList(silverpeasList, pagination);
+      final SilverpeasList paginatedList = pagination.getPaginatedListFrom(silverpeasList);
       // Set the new paginated list as items provider
       spArrayPane.setPaginationList(paginatedList);
       super.setItems(paginatedList);
     }
-  }
-
-  @SuppressWarnings("unchecked")
-  private SilverpeasList getPaginatedList(final List list, final Pagination pagination) {
-    final List lightList = new ArrayList();
-    final Pair<Integer, Integer> indexes = getStartLastIndexesFrom(pagination);
-    final int firstIndex = indexes.getLeft();
-    final int lastIndex = indexes.getRight();
-    for (int i = firstIndex; i < lastIndex; i++) {
-      lightList.add(list.get(i));
-    }
-    return PaginationList.from(lightList, list.size());
   }
 
   @SuppressWarnings("unchecked")

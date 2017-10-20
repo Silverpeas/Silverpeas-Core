@@ -2442,7 +2442,7 @@ caption {
   padding-left:10px;
 }
 
-#directory #users #pagination {
+#directory #users .pagination-pane-nav {
   clear:both;
   text-align:center;
 }

@@ -1355,21 +1355,20 @@ if (typeof window.sp === 'undefined') {
     },
     arrayPane : {
       ajaxControls : function(containerCssSelector, options) {
+        var __refreshFromRequestResponse = function(request) {
+          return sp.updateTargetWithHtmlContent(containerCssSelector, request.responseText, true)
+              .then(function() {
+                window.top.spProgressMessage.hide();
+              });
+        };
         var params = {
           before : false,
-          success : false
+          success : __refreshFromRequestResponse
         };
         if (typeof options === 'function') {
           params.success = options;
         } else if (typeof options === 'object') {
           params = extendsObject(params, options);
-        } else {
-          params.success = function(request) {
-            return sp.updateTargetWithHtmlContent(containerCssSelector, request.responseText, true)
-                     .then(function() {
-                       window.top.spProgressMessage.hide();
-                     });
-          };
         }
         var $container = jQuery(containerCssSelector);
         var __ajaxRequest = function(url) {
@@ -1399,9 +1398,13 @@ if (typeof window.sp === 'undefined') {
         };
         jQuery('thead a', $container).each(__clickHandler);
         jQuery('tfoot a', $container).each(__clickHandler);
+        jQuery('.pagination-pane-nav a', $container).each(__clickHandler);
         jQuery('.pageJumper input', $container).each(function(index, jumperInput) {
           jumperInput.ajax = __ajaxRequest;
         });
+        return {
+          refreshFromRequestResponse : __refreshFromRequestResponse
+        }
       }
     },
     volatileIdentifier : {
@@ -1449,4 +1452,5 @@ if (typeof window.sp === 'undefined') {
       }
     }
   };
+  sp.paginationPane = sp.arrayPane;
 }

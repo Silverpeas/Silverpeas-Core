@@ -23,8 +23,16 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.PaginationList;
+import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
+
+import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Pagination is an interface to be implemented by a graphic element to print a pages index or a
@@ -33,50 +41,101 @@ import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
  */
 public interface Pagination extends SimpleGraphicElement {
   String ITEMS_PER_PAGE_PARAM = "ItemsPerPage";
+  String INDEX_PARAMETER_NAME = "PaginationPaneIndex";
 
-  public void init(int nbItems, int nbItemsPerPage, int firstItemIndex);
+  /**
+   * Gets a new pagination page instance from given request and current pagination.
+   * <p>If current pagination is null, a default one is taken into account</p>
+   * @param request the request.
+   * @param currentPagination the current pagination.
+   * @return the new pagination page.
+   */
+  static PaginationPage getPaginationPageFrom(HttpServletRequest request,
+      PaginationPage currentPagination) {
+    final String pageSizeAsString = request.getParameter(ITEMS_PER_PAGE_PARAM);
+    final String itemIndexAsString = request.getParameter(INDEX_PARAMETER_NAME);
 
-  public void setAltPreviousPage(String text);
+    PaginationPage pagination =
+        currentPagination != null ? currentPagination : PaginationPage.DEFAULT;
+    int pageNumber = pagination.getPageNumber();
+    int pageSize = pagination.getPageSize();
+    if (StringUtil.isInteger(pageSizeAsString)) {
+      pageSize = Integer.valueOf(pageSizeAsString);
+    }
+    if (StringUtil.isInteger(itemIndexAsString)) {
+      pageNumber = (Integer.valueOf(itemIndexAsString) / pageSize) + 1;
+    }
+    return new PaginationPage(pageNumber, pageSize);
+  }
 
-  public void setAltNextPage(String text);
+  /**
+   * Gets the start index and the last index.
+   * @return the indexes.
+   */
+  default Pair<Integer, Integer> getStartLastIndexes() {
+    final int firstIndex = getIndexForCurrentPage();
+    final int lastIndex;
+    if (isLastPage()) {
+      lastIndex = getLastItemIndex();
+    } else {
+      lastIndex = getIndexForNextPage();
+    }
+    return Pair.of(firstIndex, lastIndex);
+  }
 
-  public void setActionSuffix(String actionSuffix);
+  @SuppressWarnings("unchecked")
+  default SilverpeasList getPaginatedListFrom(List list) {
+    if (list instanceof SilverpeasList && ((SilverpeasList) list).isSlice()) {
+      return (SilverpeasList) list;
+    }
+    final Pair<Integer, Integer> indexes = getStartLastIndexes();
+    final List lightList = list.subList(indexes.getLeft(), indexes.getRight());
+    return PaginationList.from(lightList, list.size());
+  }
 
-  public int getIndexForPreviousPage();
+  void init(int nbItems, int nbItemsPerPage, int firstItemIndex);
 
-  public int getIndexForDirectPage(int page);
+  void setAltPreviousPage(String text);
 
-  public int getIndexForCurrentPage();
+  void setAltNextPage(String text);
 
-  public int getIndexForNextPage();
+  void setActionSuffix(String actionSuffix);
 
-  public boolean isLastPage();
+  int getIndexForPreviousPage();
+
+  int getIndexForDirectPage(int page);
+
+  int getIndexForCurrentPage();
+
+  int getIndexForNextPage();
+
+  boolean isLastPage();
 
   /**
    * Method declaration
    * @return
    * @see
    */
-  public String printIndex();
+  String printIndex();
 
-  public String printIndex(String text);
+  String printIndex(String text);
 
-  public String printIndex(String text, boolean nbItemsPerPage);
+  String printIndex(String text, boolean nbItemsPerPage);
 
   int getNbItems();
 
-  public int getFirstItemIndex();
+  int getFirstItemIndex();
 
-  public int getLastItemIndex();
+  int getLastItemIndex();
 
   /**
    * Method declaration
    * @return
    * @see
    */
-  public String printCounter();
+  String printCounter();
 
-  public void setBaseURL(String baseUrl);
+  void setBaseURL(String baseUrl);
 
-  public void setMultilang(LocalizationBundle multilang);
+  void setMultilang(LocalizationBundle multilang);
 }

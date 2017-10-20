@@ -23,7 +23,9 @@
  */
 package org.silverpeas.core.cache.model;
 
+import java.util.Objects;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * User: Yohann Chastagnier
@@ -39,6 +41,18 @@ public abstract class AbstractSimpleCache implements SimpleCache {
       return null;
     }
     return (T) value;
+  }
+
+  @Override
+  public <T> T computeIfAbsent(final Object key, final Class<T> classType,
+      final Supplier<T> valueSupplier) {
+    Objects.requireNonNull(valueSupplier);
+    T value = get(key, classType);
+    if (value == null) {
+      value = valueSupplier.get();
+      put(key, value);
+    }
+    return value;
   }
 
   @Override

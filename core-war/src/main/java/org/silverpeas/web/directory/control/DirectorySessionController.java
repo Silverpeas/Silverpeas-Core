@@ -24,6 +24,7 @@
 package org.silverpeas.web.directory.control;
 
 import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.model.DomainProperties;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -62,6 +63,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileUploadUtil;
@@ -81,6 +83,7 @@ import org.silverpeas.web.directory.model.UserItem;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.util.*;
+import java.util.function.Function;
 
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlParagraphe;
 import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
@@ -90,8 +93,6 @@ import static org.silverpeas.core.util.WebEncodeHelper.javaStringToHtmlString;
  */
 public class DirectorySessionController extends AbstractComponentSessionController {
 
-  private static final int DEFAULT_ELEMENTS_PER_PAGE = 10;
-  private static final String CONTEXT_ATTR = "context";
   public static final String VIEW_QUERY = "query";
   public static final String VIEW_ALL = "tous";
   public static final String VIEW_CONNECTED = "connected";
@@ -126,12 +127,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * Display all the users that can access a given space.
    */
   public static final int DIRECTORY_SPACE = 6;
+  private static final int DEFAULT_ELEMENTS_PER_PAGE = 10;
+  private static final String CONTEXT_ATTR = "context";
   private int currentDirectory = DIRECTORY_DEFAULT;
   private String currentView = VIEW_ALL;
   private DirectoryItemList lastAllListUsersCalled;
   // cache for pagination
   private DirectoryItemList lastListUsersCalled;
-  private int elementsByPage = DEFAULT_ELEMENTS_PER_PAGE;
   private UserDetail commonUserDetail;
   private UserDetail otherUserDetail;
   private List<Group> currentGroups;
@@ -139,15 +141,33 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private SpaceInstLight currentSpace;
   private RelationShipService relationShipService;
   private String currentQuery;
-
   private String initSort = SORT_ALPHA;
   private String currentSort = SORT_ALPHA;
   private String previousSort = SORT_ALPHA;
-
   // Extra form session objects
   private PublicationTemplate xmlTemplate = null;
   private DataRecord xmlData = null;
   private boolean xmlTemplateLoaded = false;
+  private SilverpeasTemplate template;
+  private PaginationPage memberPage;
+
+  private final Function<DirectoryItem, UserFragmentVO> asFragment = item -> {
+    SilverpeasTemplate fragmentTemplate = getFragmentTemplate();
+    fragmentTemplate.setAttribute("mail",
+        StringUtil.isDefined(item.getMail()) ? javaStringToHtmlString(item.getMail()) : null);
+    fragmentTemplate.setAttribute("phone", javaStringToHtmlString(item.getPhone()));
+    fragmentTemplate.setAttribute("fax", javaStringToHtmlString(item.getFax()));
+    fragmentTemplate.setAttribute("avatar", getAvatarFragment(item));
+    fragmentTemplate.setAttribute(CONTEXT_ATTR, URLUtil.getApplicationURL());
+    if (item instanceof UserItem) {
+      UserItem user = (UserItem) item;
+      return getUserFragment(user, fragmentTemplate);
+    } else if (item instanceof ContactItem) {
+      ContactItem contact = (ContactItem) item;
+      return getContactFragment(contact, fragmentTemplate);
+    }
+    return null;
+  };
 
   /**
    * Standard Session Controller Constructeur
@@ -161,17 +181,18 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         "org.silverpeas.directory.settings.DirectoryIcons",
         "org.silverpeas.directory.settings.DirectorySettings");
 
-    elementsByPage = getSettings().getInteger("ELEMENTS_PER_PAGE", DEFAULT_ELEMENTS_PER_PAGE);
+    memberPage = new PaginationPage(1,
+        getSettings().getInteger("ELEMENTS_PER_PAGE", DEFAULT_ELEMENTS_PER_PAGE));
 
     relationShipService = RelationShipService.get();
   }
 
-  public int getElementsByPage() {
-    return elementsByPage;
+  public PaginationPage getMemberPage() {
+    return memberPage;
   }
 
-  public void setElementsByPage(int nb) {
-    elementsByPage = nb;
+  public void setMemberPage(final PaginationPage memberPage) {
+    this.memberPage = memberPage;
   }
 
   /**
@@ -244,14 +265,6 @@ public class DirectorySessionController extends AbstractComponentSessionControll
       ids.add(domain.getId());
     }
     return ids;
-  }
-
-  public void setCurrentDomains(List<String> domainIds) {
-    currentDomains = new ArrayList<Domain>();
-    for (String domainId : domainIds) {
-      currentDomains.add(getOrganisationController().getDomain(domainId));
-    }
-    setCurrentDirectory(DIRECTORY_DOMAIN);
   }
 
   private DirectoryItemList getUsersOfCurrentUserDomain() {
@@ -527,12 +540,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     notifSender.notifyUser(notifTypeId, notifMetaData);
   }
 
-  public void setCurrentView(String currentView) {
-    this.currentView = currentView;
-  }
-
   public String getCurrentView() {
     return currentView;
+  }
+
+  public void setCurrentView(String currentView) {
+    this.currentView = currentView;
   }
 
   public DirectoryItemList getConnectedUsers() {
@@ -567,27 +580,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return lastListUsersCalled;
   }
 
-  public List<UserFragmentVO> getFragments(DirectoryItemList itemsToDisplay) {
-    // using StringTemplate to personalize display of members
-    List<UserFragmentVO> fragments = new ArrayList<UserFragmentVO>();
-    SilverpeasTemplate template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(
-        "directory");
-    for (DirectoryItem item : itemsToDisplay) {
-      template.setAttribute("mail",
-          StringUtil.isDefined(item.getMail()) ? javaStringToHtmlString(item.getMail()) : null);
-      template.setAttribute("phone", javaStringToHtmlString(item.getPhone()));
-      template.setAttribute("fax", javaStringToHtmlString(item.getFax()));
-      template.setAttribute("avatar", getAvatarFragment(item));
-      template.setAttribute(CONTEXT_ATTR, URLUtil.getApplicationURL());
-      if (item instanceof UserItem) {
-        UserItem user = (UserItem) item;
-        fragments.add(getUserFragment(user, template));
-      } else if (item instanceof ContactItem) {
-        ContactItem contact = (ContactItem) item;
-        fragments.add(getContactFragment(contact, template));
-      }
-    }
-    return fragments;
+  public SilverpeasList<UserFragmentVO> getFragments(SilverpeasList<DirectoryItem> items) {
+    return items.stream().map(asFragment).filter(Objects::nonNull)
+        .collect(SilverpeasList.collector(items));
   }
 
   private UserFragmentVO getUserFragment(UserItem user, SilverpeasTemplate template) {
@@ -662,12 +657,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return imageTag.generateHtml();
   }
 
-  private void setCurrentDirectory(int currentDirectory) {
-    this.currentDirectory = currentDirectory;
-  }
-
   public int getCurrentDirectory() {
     return currentDirectory;
+  }
+
+  private void setCurrentDirectory(int currentDirectory) {
+    this.currentDirectory = currentDirectory;
   }
 
   public UserDetail getCommonUserDetail() {
@@ -686,16 +681,24 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return currentDomains;
   }
 
+  public void setCurrentDomains(List<String> domainIds) {
+    currentDomains = new ArrayList<Domain>();
+    for (String domainId : domainIds) {
+      currentDomains.add(getOrganisationController().getDomain(domainId));
+    }
+    setCurrentDirectory(DIRECTORY_DOMAIN);
+  }
+
   public SpaceInstLight getCurrentSpace() {
     return currentSpace;
   }
 
-  public void setCurrentQuery(String currentQuery) {
-    this.currentQuery = currentQuery;
-  }
-
   public String getCurrentQuery() {
     return currentQuery;
+  }
+
+  public void setCurrentQuery(String currentQuery) {
+    this.currentQuery = currentQuery;
   }
 
   public String getCurrentSort() {
@@ -729,34 +732,13 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   private void sort(DirectoryItemList list) {
-    if (getCurrentSort().equals(SORT_ALPHA)) {
-      Collections.sort(list);
-    } else if (getCurrentSort().equals(SORT_NEWEST)) {
-      Collections.sort(list, new CreationDateComparator());
-    }
-  }
-
-  /**
-   * Used to sort user id from highest to lowest
-   */
-  private class CreationDateComparator implements Comparator<DirectoryItem> {
-
-    @Override
-    public int compare(DirectoryItem o1, DirectoryItem o2) {
-      return getSureCreationDate(o2).compareTo(getSureCreationDate(o1));
-    }
-
-    private Date getSureCreationDate(DirectoryItem item) {
-      if (item.getCreationDate() != null) {
-        return item.getCreationDate();
-      }
-      try {
-        return DateUtil.parse("1970/01/01");
-      } catch (ParseException e) {
-        return new Date();
+    if (list != null) {
+      if (getCurrentSort().equals(SORT_ALPHA)) {
+        Collections.sort(list);
+      } else if (getCurrentSort().equals(SORT_NEWEST)) {
+        Collections.sort(list, new CreationDateComparator());
       }
     }
-
   }
 
   private ContactService getContactBm() {
@@ -805,16 +787,21 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public Form getExtraForm() {
-    PublicationTemplate template = getExtraTemplate();
-    if (template != null) {
+    PublicationTemplate extraTemplate = getExtraTemplate();
+    if (extraTemplate != null) {
       try {
-        Form searchForm = template.getSearchForm();
-        if (xmlData != null) {
-          searchForm.setData(xmlData);
-        } else {
-          searchForm.setData(template.getRecordSet().getEmptyRecord());
+        Form searchForm = extraTemplate.getSearchForm();
+        if (searchForm != null) {
+          if (xmlData != null) {
+            searchForm.setData(xmlData);
+          } else {
+            searchForm.setData(extraTemplate.getRecordSet().getEmptyRecord());
+          }
+          return searchForm;
         }
-        return searchForm;
+        SilverLogger.getLogger(this)
+            .warn("searchForm should exists, please verify form configuration of {0}",
+                extraTemplate.getName());
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       }
@@ -832,16 +819,16 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   private void saveExtraRequest(List<FileItem> items) {
-    PublicationTemplateImpl template = (PublicationTemplateImpl) getExtraTemplate();
-    if (template != null) {
+    PublicationTemplateImpl extraTemplate = (PublicationTemplateImpl) getExtraTemplate();
+    if (extraTemplate != null) {
       // build a dataRecord object storing user's entries
       try {
-        RecordTemplate searchTemplate = template.getSearchTemplate();
+        RecordTemplate searchTemplate = extraTemplate.getSearchTemplate();
         DataRecord data = searchTemplate.getEmptyRecord();
 
         PagesContext context = new PagesContext("useless", "useless", getLanguage(), getUserId());
 
-        XmlSearchForm searchForm = (XmlSearchForm) template.getSearchForm();
+        XmlSearchForm searchForm = (XmlSearchForm) extraTemplate.getSearchForm();
         searchForm.update(items, data, context);
 
         // xmlQuery is in the data object, store it into session
@@ -868,12 +855,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   private void buildExtraQuery(QueryDescription query) {
-    PublicationTemplateImpl template = (PublicationTemplateImpl) getExtraTemplate();
-    if (template == null) {
+    PublicationTemplateImpl extraTemplate = (PublicationTemplateImpl) getExtraTemplate();
+    if (extraTemplate == null) {
       return;
     }
     // build the xmlSubQuery according to the dataRecord object
-    String templateFileName = template.getFileName();
+    String templateFileName = extraTemplate.getFileName();
     String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
     if (xmlData != null) {
       for (String fieldName : xmlData.getFieldNames()) {
@@ -893,6 +880,36 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   public void clear() {
     xmlData = null;
+  }
+
+  private SilverpeasTemplate getFragmentTemplate() {
+    if (template == null) {
+      template = SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("directory");
+    }
+    return template;
+  }
+
+  /**
+   * Used to sort user id from highest to lowest
+   */
+  private class CreationDateComparator implements Comparator<DirectoryItem> {
+
+    @Override
+    public int compare(DirectoryItem o1, DirectoryItem o2) {
+      return getSureCreationDate(o2).compareTo(getSureCreationDate(o1));
+    }
+
+    private Date getSureCreationDate(DirectoryItem item) {
+      if (item.getCreationDate() != null) {
+        return item.getCreationDate();
+      }
+      try {
+        return DateUtil.parse("1970/01/01");
+      } catch (ParseException e) {
+        return new Date();
+      }
+    }
+
   }
 
 }

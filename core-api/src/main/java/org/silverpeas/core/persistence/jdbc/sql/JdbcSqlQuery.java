@@ -24,6 +24,7 @@
 package org.silverpeas.core.persistence.jdbc.sql;
 
 import org.apache.commons.lang3.ArrayUtils;
+import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ListSlice;
 import org.silverpeas.core.util.StringUtil;
@@ -329,6 +330,20 @@ public class JdbcSqlQuery {
    */
   public JdbcSqlQuery offset(int offset) {
     this.configuration.withOffset(offset);
+    return this;
+  }
+
+  /**
+   * Configures the query execution in order to retrieve only items of pagination.<br/>
+   * Be careful to execute a SQL query containing an {@code ORDER BY} clause!!!
+   * @param pagination the pagination criterion to apply.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery withPagination(PaginationCriterion pagination) {
+    if (pagination != null && pagination.isDefined()) {
+      offset((pagination.getPageNumber() - 1) * pagination.getItemCount());
+      limit(pagination.getItemCount());
+    }
     return this;
   }
 

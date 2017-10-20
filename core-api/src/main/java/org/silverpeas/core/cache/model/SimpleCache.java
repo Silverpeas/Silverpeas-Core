@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.cache.model;
 
+import java.util.function.Supplier;
+
 /**
  * User: Yohann Chastagnier
  * Date: 11/09/13
@@ -53,6 +55,19 @@ public interface SimpleCache {
    * specified key.
    */
   <T> T get(Object key, Class<T> classType);
+
+  /**
+   * Gets a typed element from the cache and computes it if it does not yet exist.
+   * If an element exists for the given key but the object type doesn't correspond, a new
+   * computation is performed.
+   * @param <T> the concrete type of the object to get.
+   * @param key the key with which the object to get is mapped in the cache.
+   * @param classType the class of the instance to get.
+   * @param valueSupplier the function that will computes the data to put into the cache.
+   * @return the object mapped with the key or null if no there is no object mapped with the
+   * specified key.
+   */
+  <T> T computeIfAbsent(Object key, Class<T> classType, Supplier<T> valueSupplier);
 
   /**
    * Removes an element from the cache and return it.

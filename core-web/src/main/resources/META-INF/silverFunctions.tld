@@ -274,7 +274,17 @@
     </function-class>
     <function-signature>java.lang.String formatFromFirstIndexOfItem(int,int,int)</function-signature>
     <example>
-      &lt;c:out value="${silfn:formatPagination(15,50,30)}">
+      &lt;c:out value="${silfn:formatPaginationFromFirstIndexOfItem(15,50,30)}">
+    </example>
+  </function>
+  <function>
+    <description>Function to format a pagination counter.</description>
+    <name>formatPaginationCounter</name>
+    <function-class>org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationUtil
+    </function-class>
+    <function-signature>java.lang.String formatFromFirstIndexOfItem(org.silverpeas.core.admin.PaginationPage,int)</function-signature>
+    <example>
+      &lt;c:out value="${silfn:formatPaginationCounter(paginationPage,30)}">
     </example>
   </function>
   <function>

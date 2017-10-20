@@ -23,10 +23,18 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
+import org.silverpeas.core.admin.PaginationPage;
+
 /**
- * @author: Yohann Chastagnier
+ * @author Yohann Chastagnier
  */
 public class PaginationUtil {
+
+  /**
+   * Hidden constructor.
+   */
+  private PaginationUtil() {
+  }
 
   /**
    * Centralizes the formatting of a pagniation context label.
@@ -34,7 +42,7 @@ public class PaginationUtil {
    * @param totalNumberOfItems the total number of items that can be displayed.
    * @param firstItemIndexOfCurrentPage the index in the list of items of the first item to display
    * in the current page.
-   * @return
+   * @return the counter as string.
    */
   public static String formatFromFirstIndexOfItem(int nbItemsPerPage, int totalNumberOfItems,
       int firstItemIndexOfCurrentPage) {
@@ -52,4 +60,16 @@ public class PaginationUtil {
     return result.toString();
   }
 
+  /**
+   * Centralizes the formatting of a pagniation context label.
+   * @param paginationPage the pagination page.
+   * @param totalNumberOfItems the total number of items that can be displayed.
+   * in the current page.
+   * @return the counter as string.
+   */
+  public static String formatFromFirstIndexOfItem(PaginationPage paginationPage,
+      int totalNumberOfItems) {
+    final int firstIndex = (paginationPage.getPageNumber() - 1) * paginationPage.getPageSize();
+    return formatFromFirstIndexOfItem(paginationPage.getPageSize(), totalNumberOfItems, firstIndex);
+  }
 }

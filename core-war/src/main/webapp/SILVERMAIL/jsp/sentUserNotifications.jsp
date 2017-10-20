@@ -72,16 +72,12 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
   <title></title>
   <view:looknfeel/>
   <script type="text/javascript">
+
+  var arrayPaneAjaxControl;
+
   function readMessage(id){
     SP_openWindow("ReadSentNotification.jsp?NotifId=" + id,"ReadSentNotification","600","380","scrollable=yes,scrollbars=yes");
   }
-
-  var _updateFromRequest = function(request) {
-    return sp.updateTargetWithHtmlContent('#silvermail-sent-list', request.responseText, true).then(
-        function() {
-          spProgressMessage.hide();
-        });
-  };
 
   function deleteMessage(id, skipConfirmation) {
     if(skipConfirmation){
@@ -97,14 +93,14 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
     var ajaxConfig = sp.ajaxConfig("DeleteSentNotification.jsp").byPostMethod();
     ajaxConfig.withParam("NotifId", id);
     spProgressMessage.show();
-    silverpeasAjax(ajaxConfig).then(_updateFromRequest);
+    silverpeasAjax(ajaxConfig).then(arrayPaneAjaxControl.refreshFromRequestResponse);
   }
 
   function deleteAllMessages() {
     jQuery.popup.confirm("${deleteAllConfirm}", function() {
       var ajaxConfig = sp.ajaxConfig("DeleteAllSentNotifications.jsp").byPostMethod();
       spProgressMessage.show();
-      silverpeasAjax(ajaxConfig).then(_updateFromRequest);
+      silverpeasAjax(ajaxConfig).then(arrayPaneAjaxControl.refreshFromRequestResponse);
     });
   }
   </script>
@@ -127,8 +123,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
     <div id="silvermail-sent-list">
       <view:arrayPane var="userNotificationOutbox" routingAddress="SentUserNotifications.jsp" numberLinesPerPage="25">
         <view:arrayColumn width="80" title="${dateLabel}" compareOn="${n -> n.id}"/>
-        <view:arrayColumn title="${subjectLabel}" compareOn="${n -> silfn:escapeHtml(n.data.title)}"/>
-        <view:arrayColumn title="${sourceLabel}" compareOn="${n -> silfn:escapeHtml(n.data.source)}"/>
+        <view:arrayColumn title="${subjectLabel}" compareOn="${n -> fn:toLowerCase(silfn:escapeHtml(n.data.title))}"/>
+        <view:arrayColumn title="${sourceLabel}" compareOn="${n -> fn:toLowerCase(silfn:escapeHtml(n.data.source))}"/>
         <view:arrayColumn width="10" title="${operationLabel}" sortable="false"/>
         <view:arrayLines var="sentUserNotification" items="${sentUserNotifications}">
           <view:arrayLine>
@@ -153,7 +149,7 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
       </view:arrayPane>
       <script type="text/javascript">
         whenSilverpeasReady(function() {
-          sp.arrayPane.ajaxControls('#silvermail-sent-list', _updateFromRequest);
+          arrayPaneAjaxControl = sp.arrayPane.ajaxControls('#silvermail-sent-list');
         });
       </script>
     </div>

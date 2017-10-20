@@ -1438,7 +1438,129 @@
     </attribute>
   </tag>
   <tag>
-    <description>Simple tag to define a pagination navigation bar.</description>
+    <description>Tag to create a pagination pane to display a list of data.</description>
+    <name>paginationPane</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationPaneTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>Name of the PaginationPane in the SessionScope</description>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>URL to be used to navigate between pages.</description>
+      <name>routingAddress</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Defines default number of lines displayed per page (used one time per user session and var)</description>
+      <name>numberLinesPerPage</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Integer</type>
+    </attribute>
+    <attribute>
+      <description>Defines the current page context which has been used to create the handled list</description>
+      <name>page</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>org.silverpeas.core.admin.PaginationPage</type>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
+      This TAG must be enclosed into a paginationPane one.
+      MANDATORY in case of optimized pagination rendering.
+      The basic iteration tag, accepting many different
+      collection types and supporting subsetting and other
+      functionality.
+    </description>
+    <name>paginationItems</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationItemsTag</tag-class>
+    <body-content>JSP</body-content>
+    <attribute>
+      <description>
+        Collection of items to iterate over.
+      </description>
+      <name>items</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.Object</type>
+      <deferred-value>
+        <type>java.lang.Object</type>
+      </deferred-value>
+    </attribute>
+    <attribute>
+      <description>
+        If items specified:
+        Iteration begins at the item located at the
+        specified index. First item of the collection has
+        index 0.
+        If items not specified:
+        Iteration begins with index set at the value
+        specified.
+      </description>
+      <name>begin</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>int</type>
+    </attribute>
+    <attribute>
+      <description>
+        If items specified:
+        Iteration ends at the item located at the
+        specified index (inclusive).
+        If items not specified:
+        Iteration ends when index reaches the value
+        specified.
+      </description>
+      <name>end</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>int</type>
+    </attribute>
+    <attribute>
+      <description>
+        Iteration will only process every step items of
+        the collection, starting with the first one.
+      </description>
+      <name>step</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>int</type>
+    </attribute>
+    <attribute>
+      <description>
+        Name of the exported scoped variable for the
+        current item of the iteration. This scoped
+        variable has nested visibility. Its type depends
+        on the object of the underlying collection.
+      </description>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+    <attribute>
+      <description>
+        Name of the exported scoped variable for the
+        status of the iteration. Object exported is of type
+        javax.servlet.jsp.jstl.core.LoopTagStatus. This scoped variable has nested
+        visibility.
+      </description>
+      <name>varStatus</name>
+      <required>false</required>
+      <rtexprvalue>false</rtexprvalue>
+    </attribute>
+  </tag>
+  <tag>
+    <description>
+      DEPRECATED, use instead paginationPane and paginationItems.
+      Simple tag to define a pagination navigation bar.
+    </description>
     <name>pagination</name>
     <tag-class>
       org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationTag

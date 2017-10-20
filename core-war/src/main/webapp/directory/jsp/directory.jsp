@@ -47,9 +47,9 @@
 <view:setConstant var="VIEW_CONNECTED" constant="org.silverpeas.web.directory.control.DirectorySessionController.VIEW_CONNECTED"/>
 
 <c:set var="breadcrumb" value="${requestScope.BreadCrumb}"/>
-<c:set var="pagination" value="${requestScope.pagination}"/>
-<c:set var="paginationCounter" value="${requestScope.paginationCounter}"/>
 <c:set var="fragments" value="${requestScope.UserFragments}"/>
+<c:set var="memberPage" value="${requestScope.memberPage}"/>
+<jsp:useBean id="memberPage" type="org.silverpeas.core.admin.PaginationPage"/>
 <c:set var="userTotalNumber" value="${requestScope.userTotalNumber}"/>
 <c:set var="query" value="${silfn:escapeHtml(requestScope.Query)}"/>
 <c:set var="sort" value="${requestScope.Sort}"/>
@@ -81,11 +81,6 @@
     function viewIndex(index) {
       $.progressMessage();
       location.href = index;
-    }
-
-    function doPagination(page, nbItemsPerPage) {
-      $.progressMessage();
-      location.href = "Pagination?Index=" + page + "&NumberElementsPerPage=" + nbItemsPerPage;
     }
 
     function isTermOK(term) {
@@ -280,20 +275,32 @@
             <fmt:message key="directory.result.some" var="paginationCounterSuffix">
               <fmt:param value="${fn:length(fragments)}"/>
             </fmt:message>
-              ${paginationCounter} ${paginationCounterSuffix}
+              ${silfn:formatPaginationCounter(memberPage, userTotalNumber)} ${paginationCounterSuffix}
           </div>
           <div id="users">
+            <view:paginationPane var="directoryMembers"
+                                 routingAddress="Pagination"
+                                 page="${memberPage}">
             <ol class="message_list aff_colonnes">
-              <c:forEach items="${fragments}" var="fragment">
+              <view:paginationItems items="${fragments}" var="fragment">
                 <li class="intfdcolor ${fragment.type} showActionsOnMouseOver" id="user-${fragment.userId}">
                     ${fragment.fragment}
                   <br clear="all"/>
                 </li>
-              </c:forEach>
+              </view:paginationItems>
             </ol>
-            <div id="pagination">
-                ${pagination.printIndex('doPagination', true)}
-            </div>
+            </view:paginationPane>
+            <script type="text/javascript">
+              whenSilverpeasReady(function() {
+                activateUserZoom();
+                sp.paginationPane.ajaxControls('#myContacts', {
+                  before : function(ajaxConfig) {
+                    $.progressMessage();
+                    window.history.replaceState(null, "", ajaxConfig.getUrl());
+                  }
+                });
+              });
+            </script>
           </div>
         </c:otherwise>
       </c:choose>

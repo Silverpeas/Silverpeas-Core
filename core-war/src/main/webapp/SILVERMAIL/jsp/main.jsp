@@ -79,6 +79,7 @@
   <view:includePlugin name="userNotification"/>
   <script type="text/javascript">
 
+    var arrayPaneAjaxControl;
     var checkboxMonitor = sp.selection.newCheckboxMonitor('#silvermail-list input[name=selection]');
 
     function newMessage() {
@@ -99,18 +100,11 @@
       });
     };
 
-    var _updateFromRequest = function(request) {
-      return sp.updateTargetWithHtmlContent('#silvermail-list', request.responseText, true).then(
-          function() {
-            spProgressMessage.hide();
-          });
-    };
-
     function markAllMessagesAsRead() {
       jQuery.popup.confirm("${silfn:escapeJs(markAllReadConfirm)}", function() {
         var ajaxConfig = sp.ajaxConfig("MarkAllMessagesAsRead").byPostMethod();
         spProgressMessage.show();
-        silverpeasAjax(ajaxConfig).then(_updateFromRequest);
+        silverpeasAjax(ajaxConfig).then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
 
@@ -119,7 +113,7 @@
         var ajaxConfig = sp.ajaxConfig("MarkSelectedMessagesAsRead").byPostMethod();
         checkboxMonitor.applyToAjaxConfig(ajaxConfig);
         spProgressMessage.show();
-        silverpeasAjax(ajaxConfig).then(_updateFromRequest);
+        silverpeasAjax(ajaxConfig).then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
 
@@ -128,7 +122,7 @@
         var ajaxConfig = sp.ajaxConfig("DeleteAllMessages").byPostMethod();
         ajaxConfig.withParam("folder", "INBOX");
         spProgressMessage.show();
-        silverpeasAjax(ajaxConfig).then(_updateFromRequest);
+        silverpeasAjax(ajaxConfig).then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
 
@@ -138,7 +132,7 @@
         ajaxConfig.withParam("folder", "INBOX");
         checkboxMonitor.applyToAjaxConfig(ajaxConfig);
         spProgressMessage.show();
-        silverpeasAjax(ajaxConfig).then(_updateFromRequest);
+        silverpeasAjax(ajaxConfig).then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
 
@@ -214,9 +208,8 @@
       <script type="text/javascript">
         whenSilverpeasReady(function() {
           checkboxMonitor.pageChanged();
-          sp.arrayPane.ajaxControls('#silvermail-list', {
-            before : checkboxMonitor.applyToAjaxConfig,
-            success : _updateFromRequest
+          arrayPaneAjaxControl = sp.arrayPane.ajaxControls('#silvermail-list', {
+            before : checkboxMonitor.applyToAjaxConfig
           });
         });
       </script>
