@@ -29,7 +29,7 @@ import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 
@@ -44,7 +44,7 @@ import java.util.Optional;
 
 import static org.silverpeas.core.calendar.CalendarComponent.DESCRIPTION_MAX_LENGTH;
 import static org.silverpeas.core.calendar.CalendarComponent.TITLE_MAX_LENGTH;
-import static org.silverpeas.core.persistence.datasource.repository.OperationContext.State.IMPORT;
+import static org.silverpeas.core.persistence.datasource.OperationContext.State.IMPORT;
 
 /**
  * A processor of importation of events from an iCalendar source into the Silverpeas Calendar

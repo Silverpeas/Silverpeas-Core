@@ -32,11 +32,12 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
-import static org.silverpeas.core.persistence.datasource.repository.OperationContext.State.EXPORT;
-import static org.silverpeas.core.persistence.datasource.repository.OperationContext.State.IMPORT;
+import static org.silverpeas.core.persistence.datasource.OperationContext.State.EXPORT;
+import static org.silverpeas.core.persistence.datasource.OperationContext.State.IMPORT;
 
 /**
  * @author Yohann Chastagnier

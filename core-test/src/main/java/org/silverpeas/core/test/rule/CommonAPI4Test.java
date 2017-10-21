@@ -45,6 +45,7 @@ import org.silverpeas.core.util.logging.SilverLoggerProvider;
 
 import javax.enterprise.concurrent.ManagedThreadFactory;
 import java.io.File;
+import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
@@ -139,7 +140,7 @@ public class CommonAPI4Test implements TestRule {
   }
 
   @SuppressWarnings("unchecked")
-  public <T> T injectIntoMockedBeanContainer(T bean) {
+  public <T> T injectIntoMockedBeanContainer(T bean, Annotation ... qualifiers) {
     final MockUtil mockUtil = new MockUtil();
     final Class<T> clazz;
     if (mockUtil.isMock(bean) || mockUtil.isSpy(bean)) {
@@ -147,12 +148,12 @@ public class CommonAPI4Test implements TestRule {
     } else {
       clazz = (Class<T>) bean.getClass();
     }
-    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(clazz)).thenReturn(bean);
+    when(TestBeanContainer.getMockedBeanContainer().getBeanByType(clazz, qualifiers)).thenReturn(bean);
     if (!clazz.isInterface()) {
       Class[] interfaces = clazz.getInterfaces();
       if (interfaces != null) {
         for(Class anInterface : interfaces) {
-          when(TestBeanContainer.getMockedBeanContainer().getBeanByType(anInterface))
+          when(TestBeanContainer.getMockedBeanContainer().getBeanByType(anInterface, qualifiers))
               .thenReturn(bean);
         }
       }

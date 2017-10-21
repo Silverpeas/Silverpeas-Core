@@ -29,7 +29,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 

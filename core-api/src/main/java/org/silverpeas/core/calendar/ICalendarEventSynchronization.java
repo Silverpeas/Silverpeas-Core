@@ -27,7 +27,7 @@ import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;

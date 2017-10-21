@@ -39,6 +39,7 @@ import org.silverpeas.core.calendar.notification.CalendarEventOccurrenceLifeCycl
 import org.silverpeas.core.calendar.notification.LifeCycleEventSubType;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
 
 import javax.inject.Inject;
@@ -104,6 +105,7 @@ public class CalendarEventNotificationIntegrationTest extends BaseCalendarTest {
     assertThat(eventListener, notNullValue());
     assertThat(occurrenceListener, notNullValue());
     assertThat(attendanceListener, notNullValue());
+    OperationContext.fromUser(USER_ID);
   }
 
   @After

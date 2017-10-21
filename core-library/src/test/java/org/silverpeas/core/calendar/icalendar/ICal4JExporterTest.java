@@ -46,9 +46,15 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.ExportException;
+import org.silverpeas.core.persistence.datasource.OperationContext;
+import org.silverpeas.core.persistence.datasource.PersistOperation;
+import org.silverpeas.core.persistence.datasource.UpdateOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.ByteArrayOutputStream;
@@ -109,11 +115,20 @@ public class ICal4JExporterTest {
     assertThat(iCalendarExporter, instanceOf(ICal4JExporter.class));
     commonAPI4Test.injectIntoMockedBeanContainer(iCalendarExporterProvider);
 
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(),
+        new AnnotationLiteral<PersistOperation>() {
+        });
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(),
+        new AnnotationLiteral<UpdateOperation>() {
+        });
+
     creator = mock(User.class);
     when(creator.getId()).thenReturn("creatorId");
     when(creator.getDisplayedName()).thenReturn("Creator Test");
     when(creator.geteMail()).thenReturn("creator.test@silverpeas.org");
     when(UserProvider.get().getUser(creator.getId())).thenReturn(creator);
+
+    OperationContext.fromUser("0");
   }
 
   @Test(expected = ExportException.class)

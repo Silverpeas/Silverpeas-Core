@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2017 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,30 +23,17 @@
  */
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
-import org.silverpeas.core.admin.user.model.User;
+import javax.inject.Qualifier;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
 
-import java.util.Date;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * This class permits to manipulate hidden attributes of a Silverpeas JPA entity.<br/>
- * It is useful in particular case of technical treatments.
- * @author Yohann Chastagnier
+ * @author mmoquillon
  */
-public class JpaEntityReflection {
-
-  /**
-   * Hidden constructor.
-   */
-  private JpaEntityReflection() {
-  }
-
-  public static SilverpeasJpaEntity setUpdateData(final SilverpeasJpaEntity entity, User updater,
-      Date updateDate) {
-    return entity.setLastUpdater(updater).setLastUpdateDate(updateDate);
-  }
-
-  public static SilverpeasJpaEntity setCreationData(final SilverpeasJpaEntity entity, User creator,
-      Date creationDate) {
-    return entity.setCreator(creator).setCreationDate(creationDate);
-  }
+@Qualifier
+@Documented
+@Retention(RUNTIME)
+public @interface JPA {
 }

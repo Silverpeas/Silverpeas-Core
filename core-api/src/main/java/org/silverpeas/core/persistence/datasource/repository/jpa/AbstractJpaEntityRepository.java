@@ -28,7 +28,7 @@ import org.silverpeas.core.persistence.datasource.model.EntityIdentifierConverte
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.datasource.repository.QueryCriteria;
 import org.silverpeas.core.util.CollectionUtil;

@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
@@ -77,6 +78,8 @@ public class CalendarEventOccurrencePersistenceIntegrationTest extends BaseCalen
 
   @Before
   public void persistSomeCalendarEventOccurrences() {
+    OperationContext.fromUser("0");
+
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     List<CalendarEventOccurrence> occurrences =
         calendar.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 28))

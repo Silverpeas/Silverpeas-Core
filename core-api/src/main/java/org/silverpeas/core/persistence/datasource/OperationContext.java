@@ -21,23 +21,18 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.persistence.datasource.repository;
+package org.silverpeas.core.persistence.datasource;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.persistence.datasource.model.Entity;
-import org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection;
-import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
-import org.silverpeas.core.util.ArgumentAssertion;
-import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.ServiceProvider;
 
-import java.sql.Timestamp;
+import javax.enterprise.util.AnnotationLiteral;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * This class permits to give details about operation actions (save action for now), especially the
@@ -59,7 +54,7 @@ public class OperationContext {
 
   // The user
   private User user = null;
-  private List<SilverpeasJpaEntity> entities = new ArrayList<>();
+  private List<PersistenceOperation> persistenceOperations = new ArrayList<>();
 
   /**
    * Creates an empty instance.
@@ -202,107 +197,42 @@ public class OperationContext {
   }
 
   /**
-   * Applying information of the context to the given entity on a persist operation.
-   * @param entity an entity.
+   * Gets the current active persistence operation from this context.
+   * @param operationType the type of the expected persistence operation.
+   * @param <T> the concrete type of the implementation of {@link PersistenceOperation} class.
+   * @return a persistence operation matching the expected type. Null if no such type exists.
    */
-  public void applyToPersistOperation(Entity entity) {
-    String errorMessage = "the user identifier must exist when performing persist operation";
-    ArgumentAssertion.assertNotNull(user, errorMessage);
-    ArgumentAssertion.assertDefined(user.getId(), errorMessage);
-    Optional<SilverpeasJpaEntity> optional = findCreationDataManuallySetFor(entity);
-    if (optional.isPresent()) {
-      JpaEntityReflection.setCreationData((SilverpeasJpaEntity) entity, optional.get().getCreator(),
-          optional.get().getCreationDate());
-      JpaEntityReflection.setUpdateData((SilverpeasJpaEntity) entity, optional.get().getCreator(),
-          optional.get().getCreationDate());
-    } else if (entity instanceof SilverpeasJpaEntity) {
-      Timestamp now = new Timestamp(new Date().getTime());
-      JpaEntityReflection.setCreationData((SilverpeasJpaEntity) entity, user, now);
-      JpaEntityReflection.setUpdateData((SilverpeasJpaEntity) entity, user, now);
+  @SuppressWarnings("unchecked")
+  public <T extends PersistenceOperation> T getPersistenceOperation(
+      final Class<T> operationType) {
+    final AnnotationLiteral<?> qualifier;
+    Annotation annotation = operationType.getAnnotation(UpdateOperation.class);
+    if (annotation != null) {
+      qualifier = new AnnotationLiteral<UpdateOperation>() {
+      };
     } else {
-      Timestamp now = new Timestamp(new Date().getTime());
-      entity.createdBy(user, now);
-      entity.updatedBy(user, now);
+      annotation = operationType.getAnnotation(PersistOperation.class);
+      if (annotation != null) {
+        qualifier = new AnnotationLiteral<PersistOperation>() {
+        };
+      } else {
+        return null;
+      }
     }
+
+    final Annotation operation = annotation;
+    return (T) persistenceOperations.stream()
+        .filter(c -> c.getClass().getAnnotation(operation.annotationType()) != null &&
+            c.getClass().equals(operationType))
+        .findFirst()
+        .orElseGet(() -> {
+          PersistenceOperation c = ServiceProvider.getService(operationType, qualifier);
+          c.setUser(user);
+          persistenceOperations.add(c);
+          return c;
+        });
   }
 
-  /**
-   * Applying information of the context to the given entity on a update operation.
-   * @param entity an entity.
-   */
-  public void applyToUpdateOperation(Entity entity) {
-    String errorMessage = "the user identifier must exist when performing update operation";
-    ArgumentAssertion.assertNotNull(user, errorMessage);
-    ArgumentAssertion.assertDefined(user.getId(), errorMessage);
-    Optional<SilverpeasJpaEntity> optional = findUpdateDataManuallySetFor(entity);
-    if (optional.isPresent()) {
-      JpaEntityReflection.setUpdateData((SilverpeasJpaEntity) entity,
-          optional.get().getLastUpdater(), optional.get().getLastUpdateDate());
-    } else if (entity instanceof SilverpeasJpaEntity) {
-      JpaEntityReflection.setUpdateData((SilverpeasJpaEntity) entity, user,
-          new Timestamp(new Date().getTime()));
-    } else {
-      entity.updatedBy(user, new Timestamp(new Date().getTime()));
-    }
-  }
-
-  /**
-   * Indicates the update properties of the specified entity was set explicitly. Useful when this
-   * information is lost when the entity is merged with its counterpart in the persistence context.
-   * @param entity the entity for which the update properties were set.
-   */
-  public void setUpdateDataManuallyFor(final Entity entity, final User updater,
-      final Date updateDate) {
-    if (entity instanceof SilverpeasJpaEntity) {
-      SilverpeasJpaEntity jpaEntity = (SilverpeasJpaEntity) entity;
-      JpaEntityReflection.setUpdateData(jpaEntity, updater, updateDate);
-      this.entities.add(jpaEntity);
-    }
-  }
-
-  /**
-   * Indicates the creation properties of the specified entity was set explicitly. Useful when this
-   * information is lost when the entity is persisted with its counterpart in the persistence
-   * context.
-   * @param entity the entity for which the update properties were set.
-   */
-  public void setCreationDataManuallyFor(final Entity entity, final User updater,
-      final Date updateDate) {
-    if (entity instanceof SilverpeasJpaEntity) {
-      SilverpeasJpaEntity jpaEntity = (SilverpeasJpaEntity) entity;
-      JpaEntityReflection.setCreationData(jpaEntity, updater, updateDate);
-      this.entities.add(jpaEntity);
-    }
-  }
-
-  public Optional<SilverpeasJpaEntity> findUpdateDataManuallySetFor(final Entity entity) {
-    return this.entities.stream()
-        .filter(e -> e.getClass().equals(entity.getClass()) && StringUtil.isDefined(e.getId()) &&
-            e.getId().equals(entity.getId()))
-        .findFirst();
-  }
-
-  public Optional<SilverpeasJpaEntity> findCreationDataManuallySetFor(final Entity entity) {
-    if (StringUtil.isDefined(entity.getId())) {
-      return Optional.empty();
-    }
-    return this.entities.stream()
-        .filter(e -> e.getClass().equals(entity.getClass()) && !StringUtil.isDefined(e.getId()))
-        .findFirst();
-  }
-
-  public void clearCreationDataManuallySetFor(final Entity entity) {
-    if (!StringUtil.isDefined(entity.getId())) {
-      entities.removeIf(
-          e -> e.getClass().equals(entity.getClass()) && StringUtil.isDefined(e.getId()));
-    }
-  }
-
-  public void clearUpdateDataManuallySetFor(final Entity entity) {
-    entities.removeIf(
-        e -> e.getClass().equals(entity.getClass()) && StringUtil.isDefined(e.getId()) &&
-            e.getId().equals(entity.getId()));
-  }
 
   public enum State {
     EXPORT, IMPORT

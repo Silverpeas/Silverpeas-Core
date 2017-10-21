@@ -26,7 +26,7 @@ package org.silverpeas.core.calendar;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.Column;
@@ -40,7 +40,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import static org.silverpeas.core.persistence.datasource.repository.OperationContext.State.IMPORT;
+import static org.silverpeas.core.persistence.datasource.OperationContext.State.IMPORT;
 
 /**
  * A calendar component is a set of properties that express a common semantic for all objects

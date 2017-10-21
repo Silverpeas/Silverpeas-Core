@@ -35,7 +35,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.jpa.JpaEntityServiceTest;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Person;
 import org.silverpeas.core.test.WarBuilder4LibCore;

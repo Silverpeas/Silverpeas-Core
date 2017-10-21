@@ -27,13 +27,21 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.ical4j.ICal4JCalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.persistence.datasource.OperationContext;
+import org.silverpeas.core.persistence.datasource.PersistOperation;
+import org.silverpeas.core.persistence.datasource.UpdateOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.OffsetDateTime;
@@ -53,8 +61,7 @@ import static java.time.DayOfWeek.*;
 import static java.time.Month.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyCollection;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.core.date.TimeUnit.MONTH;
@@ -80,8 +87,23 @@ public class CalendarEventOccurrenceGenerationTest {
   @Before
   public void mockCalendarOccurrenceRepository() {
     CalendarEventOccurrenceRepository repository = mock(CalendarEventOccurrenceRepository.class);
+    OrganizationController organizationController = mock(OrganizationController.class);
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(), new AnnotationLiteral<PersistOperation>() {
+    });
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(), new AnnotationLiteral<UpdateOperation>() {
+    });
     commonAPI4Test.injectIntoMockedBeanContainer(repository);
+    commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
+    when(organizationController.getUserDetail(anyString())).thenAnswer(a -> {
+      String id = a.getArgumentAt(0, String.class);
+      UserDetail user = new UserDetail();
+      user.setId(id);
+      return user;
+    });
     when(repository.getAll(anyCollection(), any(Period.class))).thenReturn(Collections.emptyList());
+
+    OperationContext.fromUser("0");
+
   }
 
   @Test
@@ -219,13 +241,15 @@ public class CalendarEventOccurrenceGenerationTest {
     events.add(CalendarEvent.on(date(2016, 8, 11))
         .withTitle(EVENT_TITLE + " 1")
         .withDescription(EVENT_DESCRIPTION + " 1")
-        .withAttribute(ATTR_TEST_ID, "1"));
+        .withAttribute(ATTR_TEST_ID, "1")
+        .createdBy("0"));
     /* event 2 at Friday 2016-05-20 15h00 - 15h35 */
     events.add(CalendarEvent.on(
         Period.between(dateTime(2016, 5, 20, 15, 0), dateTime(2016, 5, 20, 15, 35)))
         .withTitle(EVENT_TITLE + " 2")
         .withDescription(EVENT_DESCRIPTION + " 2")
-        .withAttribute(ATTR_TEST_ID, "2"));
+        .withAttribute(ATTR_TEST_ID, "2")
+        .createdBy("0"));
     /* event 3 at 09h00 - 09h15 every Fridays from 2016-03-04 excluding
        Friday 2016-07-15 and Friday 2016-07-22 */
     events.add(
@@ -233,6 +257,7 @@ public class CalendarEventOccurrenceGenerationTest {
             .withTitle(EVENT_TITLE + " 3")
             .withDescription(EVENT_DESCRIPTION + " 3")
             .withAttribute(ATTR_TEST_ID, "3")
+            .createdBy("0")
             .recur(Recurrence.every(WEEK)
                 .on(FRIDAY)
                 .excludeEventOccurrencesStartingAt(date(2016, 7, 15), date(2016, 7, 22))));
@@ -240,7 +265,8 @@ public class CalendarEventOccurrenceGenerationTest {
     events.add(CalendarEvent.on(Period.between(date(2016, 7, 11), date(2016, 7, 22)))
         .withTitle(EVENT_TITLE + " 4")
         .withDescription(EVENT_DESCRIPTION + " 4")
-        .withAttribute(ATTR_TEST_ID, "4"));
+        .withAttribute(ATTR_TEST_ID, "4")
+        .createdBy("0"));
     /* event 5 at 10h00 - 11h00 every Monday, Tuesday and Wednesday from Thursday 2016-09-01 to
        Tuesday 2016-12-20 excluding Wednesday 2016-11-30 and Monday 2016-12-12 */
     events.add(
@@ -248,6 +274,7 @@ public class CalendarEventOccurrenceGenerationTest {
             .withTitle(EVENT_TITLE + " 5")
             .withDescription(EVENT_DESCRIPTION + " 5")
             .withAttribute(ATTR_TEST_ID, "5")
+            .createdBy("0")
             .recur(Recurrence.every(WEEK)
                 .on(MONDAY, TUESDAY, WEDNESDAY)
                 .until(dateTime(2016, 12, 20, 10, 0))
@@ -259,6 +286,7 @@ public class CalendarEventOccurrenceGenerationTest {
             .withTitle(EVENT_TITLE + " 6")
             .withDescription(EVENT_DESCRIPTION + " 6")
             .withAttribute(ATTR_TEST_ID, "6")
+            .createdBy("0")
             .recur(Recurrence.every(MONTH)
                 .on(DayOfWeekOccurrence.all(THURSDAY), DayOfWeekOccurrence.nth(3, FRIDAY))
                 .until(date(2016, 6, 30))));

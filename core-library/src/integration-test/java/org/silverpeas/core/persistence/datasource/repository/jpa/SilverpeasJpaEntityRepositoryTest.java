@@ -37,6 +37,7 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Animal;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.AnimalType;
 import org.silverpeas.core.persistence.datasource.repository.jpa.model.Equipment;
@@ -123,9 +124,16 @@ public class SilverpeasJpaEntityRepositoryTest {
     when(StubbedOrganizationController.getMock().getUserDetail(anyString()))
         .thenAnswer(invocation -> {
           UserDetail user = new UserDetail();
-          user.setId((String) invocation.getArguments()[0]);
-          return user;
+          String id = (String) invocation.getArguments()[0];
+          try {
+            Integer.parseInt(id);
+            user.setId(id);
+            return user;
+          } catch (Exception e) {
+            return null;
+          }
         });
+    OperationContext.fromUser("0");
   }
 
   @Deployment
@@ -300,6 +308,7 @@ public class SilverpeasJpaEntityRepositoryTest {
    */
   @Test(expected = Exception.class)
   public void savePersonBadlyInsert2() {
+    OperationContext.fromUser((User)null);
     Person newPerson = new Person().setFirstName("Aurore").setLastName("Allibe");
     jpaEntityServiceTest.save(newPerson);
   }
@@ -374,9 +383,11 @@ public class SilverpeasJpaEntityRepositoryTest {
     assertThat(personClonedReloaded.getFirstName(), is(personCloned.getFirstName()));
     assertThat(personClonedReloaded.getLastName(), is(personCloned.getLastName()));
     assertThat(personClonedReloaded.getCreatorId(), is(personCloned.getCreatorId()));
-    assertThat(personClonedReloaded.getCreationDate(), is(personCloned.getCreationDate()));
+    assertThat(personClonedReloaded.getCreationDate().getTime(),
+        is(personCloned.getCreationDate().getTime()));
     assertThat(personClonedReloaded.getLastUpdaterId(), is(personCloned.getLastUpdaterId()));
-    assertThat(personClonedReloaded.getLastUpdateDate(), is(personCloned.getLastUpdateDate()));
+    assertThat(personClonedReloaded.getLastUpdateDate().getTime(),
+        is(personCloned.getLastUpdateDate().getTime()));
     assertThat(personClonedReloaded.getVersion(), is(0L));
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(6));
   }
@@ -395,18 +406,20 @@ public class SilverpeasJpaEntityRepositoryTest {
     assertThat(personCreated, not(sameInstance(newPerson)));
     assertThat(personCreated, is(personCreated));
     assertThat(personCreated.getCreatorId(), is("200"));
-    assertThat(personCreated.getCreationDate(), is(newPerson.getCreationDate()));
-    assertThat(personCreated.getLastUpdaterId(), is(personCreated.getCreatorId()));
-    assertThat(personCreated.getLastUpdateDate(), is(personCreated.getCreationDate()));
+    assertThat(personCreated.getCreationDate().getTime(),
+        is(newPerson.getCreationDate().getTime()));
+    assertThat(personCreated.getLastUpdaterId(), is("400"));
+    assertThat(personCreated.getLastUpdateDate().getTime(),
+        is(personCreated.getCreationDate().getTime()));
     assertThat(personCreated.getVersion(), is(0L));
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(6));
 
     for (int i = 0; i < 50; i++) {
       jpaEntityServiceTest.save(
           new Person().setFirstName("FirstName_" + i).setLastName("LastName_" + i)
-              .createdBy("26").lastUpdatedBy("not_registred_I_hope"),
+              .createdBy("26"),
           new Person().setFirstName("FirstName#" + i).setLastName("LastName#" + i)
-              .createdBy("26").lastUpdatedBy("not_registred_I_hope"));
+              .createdBy("26"));
     }
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(106));
   }
@@ -416,7 +429,7 @@ public class SilverpeasJpaEntityRepositoryTest {
     final String manualId = "id_that_will_be_changed";
     Person newPerson =
         new Person().setId(manualId).setFirstName("Aurore").setLastName("Allibe")
-            .createdBy("400").lastUpdatedBy("not_registred_I_hope");
+            .createdBy("400");
     assertThat(newPerson.getVersion(), is(0L));
     assertThat(newPerson.getId(), is(manualId));
     Person personSaveResult = jpaEntityServiceTest.save(newPerson);
@@ -430,18 +443,20 @@ public class SilverpeasJpaEntityRepositoryTest {
     assertThat(personCreated, not(sameInstance(newPerson)));
     assertThat(personCreated, is(personCreated));
     assertThat(personCreated.getCreatorId(), is("400"));
-    assertThat(personCreated.getCreationDate(), is(personSaveResult.getCreationDate()));
+    assertThat(personCreated.getCreationDate().getTime(),
+        is(personSaveResult.getCreationDate().getTime()));
     assertThat(personCreated.getLastUpdaterId(), is(personCreated.getCreatorId()));
-    assertThat(personCreated.getLastUpdateDate(), is(personCreated.getCreationDate()));
+    assertThat(personCreated.getLastUpdateDate().getTime(),
+        is(personCreated.getCreationDate().getTime()));
     assertThat(personCreated.getVersion(), is(0L));
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(6));
 
     for (int i = 0; i < 50; i++) {
       jpaEntityServiceTest.save(
           new Person().setFirstName("FirstName_" + i).setLastName("LastName_" + i)
-              .createdBy("26").lastUpdatedBy("not_registred_I_hope"),
+              .createdBy("26"),
           new Person().setFirstName("FirstName#" + i).setLastName("LastName#" + i)
-              .createdBy("26").lastUpdatedBy("not_registred_I_hope")
+              .createdBy("26")
       );
     }
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(106));
@@ -462,6 +477,7 @@ public class SilverpeasJpaEntityRepositoryTest {
     when(user.getId()).thenReturn("400");
     ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
         .newSessionCache(user);
+    OperationContext.fromUser(user);
 
     // No changes
     Person personSaveResult = jpaEntityServiceTest.save(person1);
@@ -490,7 +506,7 @@ public class SilverpeasJpaEntityRepositoryTest {
 
     Animal newAnimal =
         new Animal().setType(AnimalType.cat).setName("Pilou").createdBy("400").setPerson(person)
-            .lastUpdatedBy("not_registred_I_hope");
+            .lastUpdatedBy("500");
     assertThat(newAnimal.getId(), nullValue());
     Animal animalSaveResult = jpaEntityServiceTest.save(newAnimal);
     assertThat(animalSaveResult, sameInstance(newAnimal));
@@ -502,20 +518,20 @@ public class SilverpeasJpaEntityRepositoryTest {
     assertThat(animalCreated, is(animalCreated));
     assertThat(animalCreated.getId(), is("10"));
     assertThat(animalCreated.getCreatorId(), is("400"));
-    assertThat(animalCreated.getCreationDate(), is(newAnimal.getCreationDate()));
-    assertThat(animalCreated.getLastUpdaterId(), is(animalCreated.getCreatorId()));
-    assertThat(animalCreated.getLastUpdateDate(), is(animalCreated.getCreationDate()));
+    assertThat(animalCreated.getCreationDate().getTime(),
+        is(newAnimal.getCreationDate().getTime()));
+    assertThat(animalCreated.getLastUpdaterId(), is("500"));
     assertThat(animalCreated.getVersion(), is(0L));
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllAnimals(), hasSize(6));
 
     for (long i = 0; i < 50; i++) {
       Animal animal1 = new Animal().setType(AnimalType.bird).setName("Name_" + i).createdBy("26")
-          .setPerson(person).lastUpdatedBy("not_registred_I_hope");
+          .setPerson(person).lastUpdatedBy("500");
       Animal animal2 = new Animal().setType(AnimalType.cat).setName("Name#" + i).createdBy("26")
-          .setPerson(person).lastUpdatedBy("not_registred_I_hope");
+          .setPerson(person).lastUpdatedBy("500");
       Animal animal3 =
           new Animal().setType(AnimalType.dog).setName("Name-" + i).createdBy("26")
-              .setPerson(person).lastUpdatedBy("not_registred_I_hope");
+              .setPerson(person).lastUpdatedBy("500");
       jpaEntityServiceTest.save(animal1, animal2, animal3);
       assertThat(animal1.getId(), is(String.valueOf(11 + (i * 3))));
       assertThat(animal2.getId(), is(String.valueOf(12 + (i * 3))));

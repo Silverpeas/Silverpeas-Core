@@ -23,14 +23,27 @@
  */
 package org.silverpeas.core.datereminder.persistence;
 
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.datereminder.exception.DateReminderException;
+import org.silverpeas.core.persistence.datasource.OperationContext;
+import org.silverpeas.core.persistence.datasource.PersistOperation;
+import org.silverpeas.core.persistence.datasource.UpdateOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.exception.SilverpeasException;
 
+import javax.enterprise.util.AnnotationLiteral;
+
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * @author Cécile Bonin
@@ -39,6 +52,25 @@ public class PersistentResourceDateReminderTest {
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Before
+  public void prepareInjection() {
+    OrganizationController organizationController = mock(OrganizationController.class);
+    commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(),
+        new AnnotationLiteral<PersistOperation>() {
+        });
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(),
+        new AnnotationLiteral<UpdateOperation>() {
+        });
+    when(organizationController.getUserDetail(anyString())).thenAnswer(a -> {
+      String id = a.getArgumentAt(0, String.class);
+      UserDetail user = new UserDetail();
+      user.setId(id);
+      return user;
+    });
+    OperationContext.fromUser("0");
+  }
 
   @Test
   public void testValidate() {

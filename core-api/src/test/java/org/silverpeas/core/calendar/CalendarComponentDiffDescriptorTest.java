@@ -24,8 +24,17 @@
 
 package org.silverpeas.core.calendar;
 
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.persistence.datasource.PersistOperation;
+import org.silverpeas.core.persistence.datasource.UpdateOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+
+import javax.enterprise.util.AnnotationLiteral;
 
 import static java.time.LocalDate.parse;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -42,6 +51,19 @@ import static org.silverpeas.core.calendar.CalendarComponentDiffDescriptor.diffB
 public class CalendarComponentDiffDescriptorTest {
 
   private static final String TITLE_BEFORE = "TITLE BEFORE";
+
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
+
+  @Before
+  public void prepareInjection() {
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(),
+        new AnnotationLiteral<PersistOperation>() {
+        });
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(),
+        new AnnotationLiteral<UpdateOperation>() {
+        });
+  }
 
   @Test
   public void nullOrEmptyValuesShouldNotThrowError() {

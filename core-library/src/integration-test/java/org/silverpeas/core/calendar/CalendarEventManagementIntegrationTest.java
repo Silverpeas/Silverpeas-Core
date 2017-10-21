@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
@@ -86,6 +87,7 @@ public class CalendarEventManagementIntegrationTest extends BaseCalendarTest {
   public void verifyInitialData() throws Exception {
     // JPA and Basic SQL query must show that it exists no data
     assertThat(getCalendarEventTableLines(), hasSize(6));
+    OperationContext.fromUser(USER_ID);
   }
 
   @Test

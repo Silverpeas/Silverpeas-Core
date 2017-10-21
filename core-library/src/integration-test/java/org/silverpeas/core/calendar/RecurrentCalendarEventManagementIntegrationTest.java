@@ -31,6 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule;
@@ -88,6 +89,7 @@ public class RecurrentCalendarEventManagementIntegrationTest extends BaseCalenda
   public void verifyInitialData() throws Exception {
     // JPA and Basic SQL query must show that it exists no data
     assertThat(getCalendarEventTableLines(), hasSize(6));
+    OperationContext.fromUser("0");
   }
 
   @Test

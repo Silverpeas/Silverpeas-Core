@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;

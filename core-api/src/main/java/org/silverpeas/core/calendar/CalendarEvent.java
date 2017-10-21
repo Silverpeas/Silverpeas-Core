@@ -41,7 +41,7 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.SecurableRequestCache;
 import org.silverpeas.core.util.StringUtil;
@@ -62,7 +62,7 @@ import java.util.stream.Collectors;
 import static java.util.Collections.emptyList;
 import static org.silverpeas.core.calendar.CalendarComponentDiffDescriptor.diffBetween;
 import static org.silverpeas.core.calendar.VisibilityLevel.PUBLIC;
-import static org.silverpeas.core.persistence.datasource.repository.OperationContext.State.IMPORT;
+import static org.silverpeas.core.persistence.datasource.OperationContext.State.IMPORT;
 
 /**
  * An event planned in a calendar.
@@ -1013,6 +1013,11 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     this.categories = event.categories;
     this.synchronizationDate = event.synchronizationDate;
     this.component.setSequence(event.component.getSequence());
+    if (this.component.getLastUpdateDate().getTime() <
+        event.component.getLastUpdateDate().getTime()) {
+      this.component.updatedBy(event.component.getLastUpdater(),
+          event.component.getLastUpdateDate());
+    }
     return this.update();
   }
 

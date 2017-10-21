@@ -69,6 +69,17 @@ public final class ArgumentAssertion {
   }
 
   /**
+   * Asserts the specified argument is true.
+   * @param arg the argument to assert.
+   * @param msg the message to pass if the argument is false.
+   */
+  public static void assertTrue(final boolean arg, final String msg) {
+    if (!arg) {
+      throwIllegalArgumentException(msg);
+    }
+  }
+
+  /**
    * Throws an IllegalArgumentException with the specified message.
    * @param msg the message to pass.
    */

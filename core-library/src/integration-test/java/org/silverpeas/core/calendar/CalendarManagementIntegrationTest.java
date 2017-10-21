@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
@@ -74,6 +75,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
     // JPA and Basic SQL query must show that it exists no data
     assertThat(getCalendarTableLines(), hasSize(5));
     assertThat(Calendar.getByComponentInstanceId(INSTANCE_ID), empty());
+    OperationContext.fromUser(getMockedUser());
   }
 
   @Test

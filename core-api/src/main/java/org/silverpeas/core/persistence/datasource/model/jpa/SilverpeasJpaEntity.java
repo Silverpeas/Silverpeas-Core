@@ -28,7 +28,7 @@ import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.ArgumentAssertion;
 import org.silverpeas.core.util.StringUtil;
 
@@ -68,8 +68,6 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
 
   @Column(name = "createdBy", nullable = false, insertable = true, updatable = false, length = 40)
   private String creatorId;
-  @Transient
-  private boolean creatorSetManually = false;
 
   @Column(name = "createDate", nullable = false, insertable = true, updatable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
@@ -77,8 +75,6 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
 
   @Column(name = "lastUpdatedBy", nullable = false, length = 40)
   private String lastUpdaterId;
-  @Transient
-  private boolean lastUpdaterSetManually = false;
 
   @Column(name = "lastUpdateDate", nullable = false)
   @Temporal(value = TemporalType.TIMESTAMP)
@@ -112,18 +108,23 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
 
   @Override
   public E createdBy(final User creator, final Date creationDate) {
-    this.creator = creator;
-    return createdBy((this.creator != null) ? this.creator.getId() : null, creationDate);
+    if (!isPersisted()) {
+      OperationContext.getFromCache()
+          .getPersistenceOperation(JpaPersistOperation.class)
+          .setManuallyTechnicalDataFor(this, creator, creationDate);
+    } else {
+      setCreationDate(creationDate);
+      this.creator = creator;
+      this.creatorId = creator != null ? creator.getId() : null;
+    }
+    return (E) this;
   }
 
   @Override
   public final User getLastUpdater() {
-    if (StringUtil.isDefined(getLastUpdaterId())) {
-      if (lastUpdater == null || !getLastUpdaterId().equals(lastUpdater.getId())) {
-        lastUpdater = User.getById(getLastUpdaterId());
-      }
-    } else {
-      lastUpdater = getCreator();
+    if (lastUpdater == null ||
+        (getLastUpdaterId() != null && !getLastUpdaterId().equals(lastUpdater.getId()))) {
+      lastUpdater = User.getById(getLastUpdaterId());
     }
     return lastUpdater;
   }
@@ -135,8 +136,16 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
 
   @Override
   public E updatedBy(final User updater, Date updateDate) {
-    lastUpdater = updater;
-    return lastUpdatedBy((lastUpdater != null) ? lastUpdater.getId() : null, updateDate);
+    if (isPersisted()) {
+      OperationContext.getFromCache()
+          .getPersistenceOperation(JpaUpdateOperation.class)
+          .setManuallyTechnicalDataFor(this, updater, updateDate);
+    } else {
+      setLastUpdateDate(updateDate);
+      this.lastUpdater = updater;
+      this.lastUpdaterId = updater != null ? updater.getId() : null;
+    }
+    return (E) this;
   }
 
   @Override
@@ -146,20 +155,7 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
 
   @SuppressWarnings("unchecked")
   public final E createdBy(final String creatorId) {
-    return createdBy(creatorId, new Date());
-  }
-
-  protected final E createdBy(final String creatorId, final Date creationDate) {
-    this.creatorSetManually = this.creatorSetManually || !isPersisted() || this.creatorId == null;
-    if (this.creatorSetManually) {
-      lastUpdatedBy(creatorId, creationDate);
-      OperationContext.getFromCache()
-          .setCreationDataManuallyFor(this, User.getById(creatorId), creationDate);
-    } else {
-      setCreationDate(creationDate);
-      this.creatorId = creatorId;
-    }
-    return (E) this;
+    return createdBy(User.getById(creatorId), new Date());
   }
 
   @Override
@@ -198,28 +194,12 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
 
   @Override
   public String getLastUpdaterId() {
-    if (!StringUtil.isDefined(this.lastUpdaterId)) {
-      this.lastUpdaterId = this.creatorId;
-    }
     return this.lastUpdaterId;
   }
 
   @SuppressWarnings("unchecked")
   public final E lastUpdatedBy(final String lastUpdaterId) {
-    return lastUpdatedBy(lastUpdaterId, new Date());
-  }
-
-  protected final E lastUpdatedBy(final String lastUpdaterId, final Date lastUpdateDate) {
-    this.lastUpdaterSetManually =
-        isPersisted() && this.creatorId != null && !this.creatorSetManually;
-    if (this.lastUpdaterSetManually) {
-      OperationContext.getFromCache()
-          .setUpdateDataManuallyFor(this, User.getById(lastUpdaterId), lastUpdateDate);
-    } else {
-      setLastUpdateDate(lastUpdateDate);
-      this.lastUpdaterId = lastUpdaterId;
-    }
-    return (E) this;
+    return updatedBy(User.getById(lastUpdaterId), new Date());
   }
 
   @Override
@@ -289,7 +269,9 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
 
   @Override
   protected void performBeforePersist() {
-    OperationContext.getFromCache().applyToPersistOperation(this);
+    OperationContext.getFromCache()
+        .getPersistenceOperation(JpaPersistOperation.class)
+        .applyTechnicalDataTo(this);
     ArgumentAssertion.assertDefined(getCreatorId(),
         "createdBy attribute of entity " + getClass().getName() + " must exists on insert");
     ArgumentAssertion.assertDefined(getLastUpdaterId(),
@@ -299,7 +281,9 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
 
   @Override
   protected void performBeforeUpdate() {
-    OperationContext.getFromCache().applyToUpdateOperation(this);
+    OperationContext.getFromCache()
+        .getPersistenceOperation(JpaUpdateOperation.class)
+        .applyTechnicalDataTo(this);
     ArgumentAssertion.assertDefined(getLastUpdaterId(),
         "lastUpdatedBy attribute of entity " + getClass().getName() + " must exists on update");
     clearSystemData();
@@ -310,9 +294,11 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
   }
 
   private void clearSystemData() {
-    creatorSetManually = false;
-    lastUpdaterSetManually = false;
-    OperationContext.getFromCache().clearCreationDataManuallySetFor(this);
-    OperationContext.getFromCache().clearUpdateDataManuallySetFor(this);
+    OperationContext.getFromCache()
+        .getPersistenceOperation(JpaPersistOperation.class)
+        .clear(this);
+    OperationContext.getFromCache()
+        .getPersistenceOperation(JpaUpdateOperation.class)
+        .clear(this);
   }
 }
