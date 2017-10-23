@@ -35,9 +35,6 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.admin.component.model.SilverpeasSharedComponentInstance;
-import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.component.service.SilverpeasComponentInstanceProvider;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -266,36 +263,6 @@ public class DefaultOrganizationController implements OrganizationController {
   }
 
   @Override
-  public List<SpaceInst> getSpacePath(String spaceId) {
-    return getSpacePath(new ArrayList<SpaceInst>(), spaceId);
-  }
-
-  @Override
-  public List<SpaceInst> getSpacePathToComponent(String componentId) {
-    Optional<SilverpeasSharedComponentInstance> instance =
-        SilverpeasSharedComponentInstance.getById(componentId);
-    if (instance.isPresent()) {
-      return getSpacePath(instance.get().getSpaceId());
-    }
-    return new ArrayList<>();
-  }
-
-  private List<SpaceInst> getSpacePath(List<SpaceInst> path, String spaceId) {
-    try {
-      SpaceInst spaceInst = getAdminService().getSpaceInstById(spaceId);
-      if (spaceInst != null) {
-        path.add(0, spaceInst);
-        if (!spaceInst.isRoot()) {
-          path = getSpacePath(path, spaceInst.getDomainFatherId());
-        }
-      }
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e.getMessage(), e);
-    }
-    return path;
-  }
-
-  @Override
   public ComponentInstLight getComponentInstLight(String sComponentId) {
     try {
       return getAdminService().getComponentInstLight(sComponentId);
@@ -308,16 +275,6 @@ public class DefaultOrganizationController implements OrganizationController {
   // -------------------------------------------------------------------
   // USERS QUERIES
   // -------------------------------------------------------------------
-  @Override
-  public int getUserDBId(String sUserId) {
-    return idAsInt(sUserId);
-  }
-
-  @Override
-  public String getUserDetailByDBId(int id) {
-    return idAsString(id);
-  }
-
   @Override
   public UserFull getUserFull(String sUserId) {
     try {
@@ -657,28 +614,6 @@ public class DefaultOrganizationController implements OrganizationController {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return new ArrayList<>();
     }
-  }
-
-  /**
-   * Convert String Id to int Id
-   */
-  private int idAsInt(String id) {
-    if (id == null || id.length() == 0) {
-      return -1; // the null id.
-
-    }
-    try {
-      return Integer.parseInt(id);
-    } catch (NumberFormatException e) {
-      return -1; // the null id.
-    }
-  }
-
-  /**
-   * Convert int Id to String Id
-   */
-  static private String idAsString(int id) {
-    return Integer.toString(id);
   }
 
   // -------------------------------------------------------------------
@@ -1160,5 +1095,41 @@ public class DefaultOrganizationController implements OrganizationController {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
     }
+  }
+
+  public SpaceWithSubSpacesAndComponents getFullTreeview(String userId) throws AdminException {
+    return getAdminService().getAllowedFullTreeview(userId);
+  }
+
+  public SpaceWithSubSpacesAndComponents getFullTreeview(String userId, String spaceId)
+      throws AdminException {
+    return getAdminService().getAllowedFullTreeview(userId, spaceId);
+  }
+
+  public List<SpaceInstLight> getPathToSpace(String spaceId) {
+    return getPathToSpace(new ArrayList<SpaceInstLight>(), spaceId);
+  }
+
+  private List<SpaceInstLight> getPathToSpace(List<SpaceInstLight> path, String spaceId) {
+    try {
+      SpaceInstLight spaceInst = getAdminService().getSpaceInstLightById(spaceId);
+      if (spaceInst != null) {
+        path.add(0, spaceInst);
+        if (!spaceInst.isRoot()) {
+          path = getPathToSpace(path, spaceInst.getFatherId());
+        }
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+    return path;
+  }
+
+  public List<SpaceInstLight> getPathToComponent(String componentId) {
+    ComponentInstLight componentInstLight = getComponentInstLight(componentId);
+    if (componentInstLight != null) {
+      return getPathToSpace(componentInstLight.getDomainFatherId());
+    }
+    return new ArrayList<SpaceInstLight>();
   }
 }

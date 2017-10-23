@@ -30,7 +30,7 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.GlobalContext;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -445,8 +445,8 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
   private boolean isTemplateVisibleAccordingToSpace(PublicationTemplate template,
       GlobalContext context, OrganizationController oc) {
     List<String> restrictedSpaceIds = template.getSpaces();
-    List<SpaceInst> spacePath = oc.getSpacePath(context.getSpaceId());
-    for (SpaceInst space : spacePath) {
+    List<SpaceInstLight> spacePath = oc.getPathToSpace(context.getSpaceId());
+    for (SpaceInstLight space : spacePath) {
       String spaceId = space.getId();
       if (restrictedSpaceIds.contains(spaceId)) {
         return true;

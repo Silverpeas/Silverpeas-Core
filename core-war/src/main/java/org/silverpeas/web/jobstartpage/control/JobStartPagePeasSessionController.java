@@ -675,8 +675,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         return false;
       } else {
         // Check if user manages this space or one of its parent
-        List<SpaceInst> spaces = getOrganisationController().getSpacePath(spaceId);
-        for (SpaceInst spaceInPath : spaces) {
+        List<SpaceInstLight> spaces = getOrganisationController().getPathToSpace(spaceId);
+        for (SpaceInstLight spaceInPath : spaces) {
           if (spaceIds.contains(getShortSpaceId(spaceInPath.getId()))) {
             return true;
           }
@@ -1482,8 +1482,8 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       return JobStartPagePeasSessionController.MAINTENANCE_THISSPACE;
     }
     // check if a parent is is maintenance
-    List<SpaceInst> spaces = getOrganisationController().getSpacePath(getManagedSpaceId());
-    for (SpaceInst space : spaces) {
+    List<SpaceInstLight> spaces = getOrganisationController().getPathToSpace(getManagedSpaceId());
+    for (SpaceInstLight space : spaces) {
       if (isSpaceInMaintenance(space.getId())) {
         return JobStartPagePeasSessionController.MAINTENANCE_ONEPARENT;
       }

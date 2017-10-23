@@ -1981,7 +1981,7 @@
     <attribute>
       <description>Space Identifier</description>
       <name>spaceId</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>

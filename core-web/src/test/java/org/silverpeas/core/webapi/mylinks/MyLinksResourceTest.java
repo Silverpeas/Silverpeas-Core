@@ -257,12 +257,12 @@ public class MyLinksResourceTest {
         return space;
       }
     });
-    when(orgaCtrl.getSpacePath("750")).thenAnswer(new Answer<List<SpaceInst>>() {
+    when(orgaCtrl.getPathToSpace("750")).thenAnswer(new Answer<List<SpaceInstLight>>() {
       @Override
-      public List<SpaceInst> answer(final InvocationOnMock invocation) throws Throwable {
-        List<SpaceInst> spacePath = new ArrayList<SpaceInst>();
+      public List<SpaceInstLight> answer(final InvocationOnMock invocation) throws Throwable {
+        List<SpaceInstLight> spacePath = new ArrayList<SpaceInstLight>();
         for (int spaceId : new int[]{260, 380, 750}) {
-          SpaceInst spaceInst = new SpaceInst();
+          SpaceInstLight spaceInst = new SpaceInstLight();
           spaceInst.setLocalId(spaceId);
           spaceInst.setName(spaceId + "_name");
           spacePath.add(spaceInst);
@@ -302,12 +302,12 @@ public class MyLinksResourceTest {
         return component;
       }
     });
-    when(orgaCtrl.getSpacePathToComponent("1050")).thenAnswer(new Answer<List<SpaceInst>>() {
+    when(orgaCtrl.getPathToComponent("1050")).thenAnswer(new Answer<List<SpaceInstLight>>() {
       @Override
-      public List<SpaceInst> answer(final InvocationOnMock invocation) throws Throwable {
-        List<SpaceInst> spacePath = new ArrayList<SpaceInst>();
+      public List<SpaceInstLight> answer(final InvocationOnMock invocation) throws Throwable {
+        List<SpaceInstLight> spacePath = new ArrayList<SpaceInstLight>();
         for (int spaceId : new int[]{260, 380, 750}) {
-          SpaceInst spaceInst = new SpaceInst();
+          SpaceInstLight spaceInst = new SpaceInstLight();
           spaceInst.setLocalId(spaceId);
           spaceInst.setName(spaceId + "_name");
           spacePath.add(spaceInst);

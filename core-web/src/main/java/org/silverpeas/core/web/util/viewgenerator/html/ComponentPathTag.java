@@ -28,7 +28,7 @@ import org.apache.ecs.xhtml.span;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
@@ -104,9 +104,9 @@ public class ComponentPathTag extends SimpleTagSupport {
     span spacePath = new span();
     spacePath.setClass("sp-path-spaces");
     path.addElement(spacePath);
-    Iterator<SpaceInst> spaces = oc.getSpacePathToComponent(componentId).iterator();
+    Iterator<SpaceInstLight> spaces = oc.getPathToComponent(componentId).iterator();
     while (spaces.hasNext()) {
-      SpaceInst space = spaces.next();
+      SpaceInstLight space = spaces.next();
       span span = new span(space.getName(language));
       span.setClass("sp-path-space");
       spacePath.addElement(span);

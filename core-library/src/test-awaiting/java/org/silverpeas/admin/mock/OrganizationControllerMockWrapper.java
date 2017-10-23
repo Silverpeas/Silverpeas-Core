@@ -183,18 +183,8 @@ public class OrganizationControllerMockWrapper extends DefaultOrganizationContro
   }
 
   @Override
-  public String getUserDetailByDBId(int id) {
-    return mock.getUserDetailByDBId(id);
-  }
-
-  @Override
   public UserDetail getUserDetail(String sUserId) {
     return mock.getUserDetail(sUserId);
-  }
-
-  @Override
-  public int getUserDBId(String sUserId) {
-    return mock.getUserDBId(sUserId);
   }
 
   @Override
@@ -469,5 +459,20 @@ public class OrganizationControllerMockWrapper extends DefaultOrganizationContro
   public SpaceProfile getSpaceProfile(final String spaceId, final SilverpeasRole role)
       throws AdminException {
     return mock.getSpaceProfile(spaceId, role);
+  }
+
+  @Override
+  public SpaceWithSubSpacesAndComponents getFullTreeview(String userId) throws AdminException {
+    return mock.getFullTreeview(userId);
+  }
+
+  @Override
+  public List<SpaceInstLight> getPathToSpace(String spaceId) {
+    return mock.getPathToSpace(spaceId);
+  }
+
+  @Override
+  public List<SpaceInstLight> getPathToComponent(String componentId) {
+    return mock.getPathToComponent(componentId);
   }
 }

@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.content.form.field;
 
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.content.form.AbstractField;
 import org.silverpeas.core.contribution.content.form.Field;
@@ -270,9 +270,9 @@ public class ExplorerField extends AbstractField {
 
     // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
-      List<SpaceInst> listSpaces = OrganizationControllerProvider.getOrganisationController()
-          .getSpacePathToComponent(componentId);
-      for (SpaceInst space : listSpaces) {
+      List<SpaceInstLight> listSpaces = OrganizationControllerProvider.getOrganisationController()
+          .getPathToComponent(componentId);
+      for (SpaceInstLight space : listSpaces) {
         path.append(space.getName(language)).append(" > ");
       }
 

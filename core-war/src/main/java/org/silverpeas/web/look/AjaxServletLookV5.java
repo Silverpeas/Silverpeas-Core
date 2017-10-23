@@ -235,22 +235,18 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
   private List<String> getSpaceIdsPath(String spaceId, String componentId,
       OrganizationController orgaController) {
-    List<SpaceInst> spacePath = new ArrayList<>();
+    List<SpaceInstLight> spacePath = new ArrayList<>();
     if (StringUtil.isDefined(spaceId)) {
-      spacePath = orgaController.getSpacePath(spaceId);
+      spacePath = orgaController.getPathToSpace(spaceId);
     } else if (StringUtil.isDefined(componentId)) {
-      spacePath = orgaController.getSpacePathToComponent(componentId);
+      spacePath = orgaController.getPathToComponent(componentId);
     }
     List<String> spaceIdsPath = new ArrayList<>();
-    for (SpaceInst space : spacePath) {
+    for (SpaceInstLight space : spacePath) {
       if (spaceIdsPath == null) {
         spaceIdsPath = new ArrayList<>();
       }
-      if (!space.getId().startsWith(SpaceInst.SPACE_KEY_PREFIX)) {
-        spaceIdsPath.add(SpaceInst.SPACE_KEY_PREFIX + space.getId());
-      } else {
-        spaceIdsPath.add(space.getId());
-      }
+      spaceIdsPath.add(space.getId());
     }
     return spaceIdsPath;
   }

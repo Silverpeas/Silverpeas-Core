@@ -37,25 +37,19 @@
 
 <%@ page import="org.silverpeas.core.web.mvc.controller.MainSessionController" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
-<%@ page import="org.silverpeas.core.admin.space.SpaceInstLight" %>
-<%@ page import="org.silverpeas.core.admin.service.OrganizationControllerProvider" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
-<%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
 <view:timeout />
 <%
   MainSessionController mainSessionCtrl = (MainSessionController) session
       .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
 
-  OrganizationController organizationController =
-      OrganizationControllerProvider.getOrganisationController();
   String language = mainSessionCtrl.getFavoriteLanguage();
   LocalizationBundle message =
       ResourceLocator.getLocalizationBundle("org.silverpeas.homePage.multilang.homePageBundle", language);
 
   String m_sContext = request.getContextPath();
 
-  String[] m_asPrivateDomainsIds = mainSessionCtrl.getUserAvailRootSpaceIds();
   String title = message.getString("MyMap");
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -177,20 +171,7 @@
         <tr>
           <td>
             <ul class="sm-map">
-            <%
-              if (m_asPrivateDomainsIds != null) {
-                for (int nK = 0; nK < m_asPrivateDomainsIds.length; nK++) {
-                  SpaceInstLight spaceInst =
-                      organizationController.getSpaceInstLightById(m_asPrivateDomainsIds[nK]);
-                  if (spaceInst.isRoot()) {
-                    pageContext.setAttribute("currentSpaceId", m_asPrivateDomainsIds[nK]);
-            %>
-            <view:map spaceId="${pageScope.currentSpaceId}" displayAppIcon="true" displayAppsFirst="true"/>
-            <%
-                  }
-                }
-              }
-            %>
+              <view:map displayAppIcon="true" displayAppsFirst="true"/>
             </ul>
           </td>
         </tr>
