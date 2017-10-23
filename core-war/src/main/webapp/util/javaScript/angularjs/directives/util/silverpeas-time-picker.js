@@ -75,6 +75,7 @@
               } else {
                 this.formattedTime = '';
               }
+              this.status = this.status ? this.status : {};
             }.bind(this)) ;
 
             /**

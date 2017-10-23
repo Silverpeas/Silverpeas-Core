@@ -6506,6 +6506,10 @@ THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
   font-weight: bold;
 }
 
+.unvalidated-wysiwyg-content-confirmation .help {
+  display: none;
+}
+
 /**
  * AngularJS silverpeas-permalink component.
  */

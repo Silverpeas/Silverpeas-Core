@@ -40,13 +40,15 @@ public class JpaEntityReflection {
   private JpaEntityReflection() {
   }
 
-  public static SilverpeasJpaEntity setUpdateData(final SilverpeasJpaEntity entity, User updater,
+  @SuppressWarnings("unchecked")
+  public static <T extends SilverpeasJpaEntity> T setUpdateData(final T entity, User updater,
       Date updateDate) {
-    return entity.setLastUpdater(updater).setLastUpdateDate(updateDate);
+    return (T) entity.setLastUpdater(updater).setLastUpdateDate(updateDate);
   }
 
-  public static SilverpeasJpaEntity setCreationData(final SilverpeasJpaEntity entity, User creator,
+  @SuppressWarnings("unchecked")
+  public static <T extends SilverpeasJpaEntity> T setCreationData(final T entity, User creator,
       Date creationDate) {
-    return entity.setCreator(creator).setCreationDate(creationDate);
+    return (T) entity.setCreator(creator).setCreationDate(creationDate);
   }
 }

@@ -145,7 +145,7 @@ public final class CalendarResourceURIs {
    * @param occurrence the aimed occurrence.
    * @return the URI of specified occurrence.
    */
-  URI ofOccurrenceView(CalendarEventOccurrence occurrence) {
+  public URI ofOccurrenceView(CalendarEventOccurrence occurrence) {
     if (occurrence == null) {
       return null;
     }

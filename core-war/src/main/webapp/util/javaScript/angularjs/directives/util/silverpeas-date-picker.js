@@ -93,6 +93,7 @@
               } else {
                 this.formattedDate = '';
               }
+              this.status = this.status ? this.status : {};
             }.bind(this)) ;
 
             $scope.$watch('$ctrl.isDisabled', function(isDisabled) {

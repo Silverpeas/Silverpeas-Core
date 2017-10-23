@@ -34,7 +34,7 @@
 <fmt:message var="helpLabel" key="unvalidated.content.confirm.help"/>
 
 <div class="unvalidated-wysiwyg-content-confirmation">
-  <p>${confirmLabel}</p>
+  <p class="inlineMessage">${confirmLabel}</p>
   <div id="unvalidated-wysiwyg-content-container"></div>
-  <p>${helpLabel}</p>
+  <p class="help">${helpLabel}</p>
 </div>

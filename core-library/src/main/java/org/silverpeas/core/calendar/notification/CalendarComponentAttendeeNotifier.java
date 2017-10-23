@@ -25,8 +25,13 @@ package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+
+import java.util.Collections;
 
 /**
  * A notifier of attendees about their participation in a calendar component. It listens for change
@@ -88,15 +93,33 @@ public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<Attendee
               .build();
       notification.send();
     } else if (before.getParticipationStatus() != after.getParticipationStatus()) {
-      CalendarOperation operation = event.getSubType() == LifeCycleEventSubType.SINGLE ?
-          CalendarOperation.ATTENDEE_PARTICIPATION : CalendarOperation.SINCE_ATTENDEE_PARTICIPATION;
-      UserNotification notification = new AttendeeNotificationBuilder(event.getEventOrOccurrence(),
-          NotifAction.UPDATE).immediately()
-          .from(User.getCurrentRequester())
-          .to(concernedAttendeesIn(after.getCalendarComponent()))
-          .about(operation, after)
-              .build();
-      notification.send();
+      if (after.getParticipationStatus() == Attendee.ParticipationStatus.AWAITING) {
+        // notify the attendees about their participation to this new event
+        Contribution modified = event.getEventOrOccurrence();
+        boolean isRecurrent =
+            modified instanceof CalendarEventOccurrence || ((CalendarEvent) modified).isRecurrent();
+        CalendarOperation operation = isRecurrent ? CalendarOperation.SINCE_ATTENDEE_ADDING :
+            CalendarOperation.ATTENDEE_ADDING;
+        UserNotification notification =
+            new AttendeeNotificationBuilder(modified, NotifAction.CREATE)
+                .immediately()
+                .from(User.getCurrentRequester())
+                .to(Collections.singletonList(after))
+                .about(operation, after)
+                .build();
+        notification.send();
+      } else {
+        CalendarOperation operation = event.getSubType() == LifeCycleEventSubType.SINGLE ?
+            CalendarOperation.ATTENDEE_PARTICIPATION : CalendarOperation.SINCE_ATTENDEE_PARTICIPATION;
+        UserNotification notification =
+            new AttendeeNotificationBuilder(event.getEventOrOccurrence(), NotifAction.UPDATE)
+                .immediately()
+                .from(User.getCurrentRequester())
+                .to(concernedAttendeesIn(after.getCalendarComponent()))
+                .about(operation, after)
+                .build();
+        notification.send();
+      }
     }
   }
 

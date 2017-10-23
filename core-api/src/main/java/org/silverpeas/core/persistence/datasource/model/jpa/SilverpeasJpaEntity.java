@@ -26,9 +26,9 @@ package org.silverpeas.core.persistence.datasource.model.jpa;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
-import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.ArgumentAssertion;
 import org.silverpeas.core.util.StringUtil;
 
@@ -106,9 +106,12 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
     return createdBy(creator, new Date());
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public E createdBy(final User creator, final Date creationDate) {
-    if (!isPersisted()) {
+    ArgumentAssertion.assertNotNull(creator, "creator must exist");
+    ArgumentAssertion.assertNotNull(creationDate, "create date must exist");
+    if (!isPersisted() && creator != null && creationDate != null) {
       OperationContext.getFromCache()
           .getPersistenceOperation(JpaPersistOperation.class)
           .setManuallyTechnicalDataFor(this, creator, creationDate);
@@ -134,8 +137,11 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
     return updatedBy(updater, new Date());
   }
 
+  @SuppressWarnings("unchecked")
   @Override
   public E updatedBy(final User updater, Date updateDate) {
+    ArgumentAssertion.assertNotNull(updater, "updater must exist");
+    ArgumentAssertion.assertNotNull(updateDate, "update date must exist");
     if (isPersisted()) {
       OperationContext.getFromCache()
           .getPersistenceOperation(JpaUpdateOperation.class)
@@ -143,7 +149,7 @@ public abstract class SilverpeasJpaEntity<E extends Entity<E, I>, I extends Enti
     } else {
       setLastUpdateDate(updateDate);
       this.lastUpdater = updater;
-      this.lastUpdaterId = updater != null ? updater.getId() : null;
+      this.lastUpdaterId = updater.getId();
     }
     return (E) this;
   }

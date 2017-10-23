@@ -21,25 +21,34 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.web.notificationserver.channel.silvermail;
 
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
-import org.silverpeas.core.web.util.DataItemWrapper;
+package org.silverpeas.core.date;
 
-import java.util.Set;
+import org.junit.Rule;
+import org.junit.Test;
+import org.silverpeas.core.test.rule.CommonAPI4Test;
+
+import java.time.ZoneId;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 
 /**
- * UI item if a {@link SILVERMAILMessage} instance.
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-public class UserNotificationItem extends DataItemWrapper<SILVERMAILMessage> {
+public class TimeZoneUtilTest {
 
-  UserNotificationItem(final SILVERMAILMessage data, final Set<String> selectedIds) {
-    super(data, selectedIds);
-  }
+  @Rule
+  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
-  @Override
-  public String getId() {
-    return String.valueOf(getData().getId());
+  @Test
+  public void toZoneId() {
+    assertThat(TimeZoneUtil.toZoneId("Pacific Standard Time (Mexico)"), is(ZoneId.of("America/Tijuana")));
+    assertThat(TimeZoneUtil.toZoneId("Pacific Standard Time"), is(ZoneId.of("America/Los_Angeles")));
+    assertThat(TimeZoneUtil.toZoneId("Romance Standard Time"), is(ZoneId.of("Europe/Paris")));
+    assertThat(TimeZoneUtil.toZoneId("GMT_-11"), is(ZoneId.of("Etc/GMT+11")));
+    assertThat(TimeZoneUtil.toZoneId("GMT_Standard_Time"), is(ZoneId.of("Europe/London")));
+    assertThat(TimeZoneUtil.toZoneId("UTC"), is(ZoneId.of("UTC")));
+    assertThat(TimeZoneUtil.toZoneId("Asia/Muscat"), is(ZoneId.of("Asia/Muscat")));
   }
 }

@@ -89,53 +89,58 @@
                * The system asks to the user some stuffs if necessary and calls the persistence
                * service methods at the end when all is validated by the user.
                */
-              modifyOccurrence : function(occurrenceToUpdate, previousOccurrence) {
+              modifyOccurrence : function(occurrenceToUpdate) {
                 var __confirmed;
                 notyReset();
                 this.occurrence = occurrenceToUpdate;
-                this.previousOccurrence = previousOccurrence;
-                this.updateMethodType = 'UNIQUE';
+                CalendarService.getEventOccurrenceByUri(occurrenceToUpdate.occurrenceUri).then(function(previousOccurrence) {
+                  this.previousOccurrence = previousOccurrence;
+                  this.updateMethodAtEventLevel = this.isRecurrence() && occurrenceToUpdate.hasBeenModifiedAtEventLevel(previousOccurrence);
+                  this.updateMethodType = this.updateMethodAtEventLevel
+                      ? this.isFirstEventOccurrence() ? 'ALL' : 'FROM'
+                      : 'UNIQUE';
 
-                var _previousDataOnNoUpdate = function() {
-                  if (typeof this.occurrence.revertToPreviousState === 'function') {
-                    this.occurrence.revertToPreviousState();
-                  }
-                }.bind(this);
+                  var _previousDataOnNoUpdate = function() {
+                    if (typeof this.occurrence.revertToPreviousState === 'function') {
+                      this.occurrence.revertToPreviousState();
+                    }
+                  }.bind(this);
 
-                // Handles the call of the update method.
-                // This method must be called only after that there is no more confirmation to ask
-                // to the user.
-                var _updateProcess = function() {
-                  var updateMethodType = this.isRecurrence() ? this.updateMethodType : undefined;
-                  CalendarService.updateEventOccurrence(this.occurrence, updateMethodType).then(
-                      function(modifiedEvents) {
-                        sp.editor.wysiwyg.lastBackupManager.clear();
-                        this.onOccurrenceUpdated({events : modifiedEvents});
-                      }.bind(this),
-                      function() {
-                        _previousDataOnNoUpdate();
-                      }.bind(this));
-                }.bind(this);
-
-                if (this.isRecurrence()) {
-                  __confirmed = false;
-                  $timeout(function() {
-                    this.dom.updatePopin.show();
-                    jQuery.popup.confirm(this.dom.updatePopin, {
-                      callback : function() {
-                        __confirmed = true;
-                        _updateProcess();
-                      },
-                      callbackOnClose : function() {
-                        if (!__confirmed) {
+                  // Handles the call of the update method.
+                  // This method must be called only after that there is no more confirmation to ask
+                  // to the user.
+                  var _updateProcess = function() {
+                    var updateMethodType = this.isRecurrence() ? this.updateMethodType : undefined;
+                    CalendarService.updateEventOccurrence(this.occurrence, updateMethodType).then(
+                        function(modifiedEvents) {
+                          sp.editor.wysiwyg.lastBackupManager.clear();
+                          this.onOccurrenceUpdated({events : modifiedEvents});
+                        }.bind(this),
+                        function() {
                           _previousDataOnNoUpdate();
+                        }.bind(this));
+                  }.bind(this);
+
+                  if (this.isRecurrence()) {
+                    __confirmed = false;
+                    $timeout(function() {
+                      this.dom.updatePopin.show();
+                      jQuery.popup.confirm(this.dom.updatePopin, {
+                        callback : function() {
+                          __confirmed = true;
+                          _updateProcess();
+                        },
+                        callbackOnClose : function() {
+                          if (!__confirmed) {
+                            _previousDataOnNoUpdate();
+                          }
                         }
-                      }
-                    });
-                  }.bind(this), 0);
-                } else {
-                  _updateProcess();
-                }
+                      });
+                    }.bind(this), 0);
+                  } else {
+                    _updateProcess();
+                  }
+                }.bind(this));
               }.bind(this),
               /**
                * Removes an event occurrence.
@@ -144,9 +149,9 @@
                */
               removeOccurrence : function(occurrenceToDelete) {
                 notyReset();
-                this.deleteMethodType = 'UNIQUE';
                 this.occurrence = occurrenceToDelete;
                 this.previousOccurrence = undefined;
+                this.deleteMethodType = this.isRecurrence() && this.isFirstEventOccurrence() ? 'ALL' : 'UNIQUE';
 
                 // Handles the call of the delete method.
                 // This method must be called only after that there is no more confirmation to ask

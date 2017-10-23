@@ -336,6 +336,20 @@
         };
 
         /**
+         * Gets the occurrence by its uri.
+         * @param occurrenceUri uri of occurrence to get.
+         * @returns {promise|a.fn.promise|*} a promise with the asked occurrence as callback
+         *     parameter.
+         */
+        this.getFirstEventOccurrenceFrom = function(occurrence) {
+          return this.getEventByUri(occurrence.eventUri).then(function(event) {
+            var firstOccurrenceId = sp.base64.encode(event.id + '@' + sp.moment.toISOJavaString(event.startDate));
+            var firstOccurrenceUri = occurrence.occurrenceUri.replace(occurrence.occurrenceId, firstOccurrenceId);
+            return CalendarEventOccurrence.getEventOccurrenceByUri(firstOccurrenceUri);
+          });
+        };
+
+        /**
          * Gets all calendars matching the specified component instance.
          * @returns {promise|a.fn.promise|*} a promise with the asked calendars as callbck
          *     parameter.

@@ -240,8 +240,9 @@
             var commentServiceUrl = webContext + '/services/comments/' +
                 $settings.subscription.componentInstanceId + '/' +
                 $settings.comment.contributionType + '/' + $settings.comment.contributionLocalId;
-            return sp.ajaxConfig(commentServiceUrl)
-              .byPostMethod({
+            return sp.ajaxRequest(commentServiceUrl)
+              .byPostMethod()
+              .send({
                 author : {
                   id : currentUserId
                 },
@@ -252,7 +253,6 @@
                 textForHtml : userNoteValue,
                 indexed : $settings.comment.contributionIndexable
               })
-              .execute()
               .then(function() {
                 $settings.callback.call(this, userConfirmation);
               }.bind(this));

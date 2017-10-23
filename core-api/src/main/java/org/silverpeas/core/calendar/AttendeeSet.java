@@ -24,12 +24,14 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.util.CollectionUtil;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
@@ -236,6 +238,28 @@ public class AttendeeSet implements Iterable<Attendee> {
       }
     }
     return true;
+  }
+
+  /**
+   * Is this set of attendees containing a change from an action of participation status answer or
+   * from an action of presence change?
+   * Yes, but only if is does not exist an add or a deletion of attendee.
+   * <p>
+   * Indeed, a participation answer or a presence status change must not imply modification of last
+   * update date of entities.
+   * </p>
+   * @param attendees the attendees to compare with.
+   * @return true attendee set contains at least one attendee which indicates an answer action.
+   */
+  boolean onlyAttendeePropertyChange(final AttendeeSet attendees) {
+    final long nbParticipationAnswersOrPresenceStatusChanges =
+        stream().filter(Attendee::propertyChange).count();
+    if (nbParticipationAnswersOrPresenceStatusChanges > 0 && size() == attendees.size()) {
+      final Collection<Attendee> sameAttendeesBetweenInternalAndGiven =
+          CollectionUtil.intersection(this.attendees, attendees.attendees);
+      return size() == sameAttendeesBetweenInternalAndGiven.size();
+    }
+    return false;
   }
 
   /**

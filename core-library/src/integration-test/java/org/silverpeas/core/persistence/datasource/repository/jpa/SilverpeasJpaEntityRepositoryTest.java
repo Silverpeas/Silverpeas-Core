@@ -406,11 +406,9 @@ public class SilverpeasJpaEntityRepositoryTest {
     assertThat(personCreated, not(sameInstance(newPerson)));
     assertThat(personCreated, is(personCreated));
     assertThat(personCreated.getCreatorId(), is("200"));
-    assertThat(personCreated.getCreationDate().getTime(),
-        is(newPerson.getCreationDate().getTime()));
+    assertThat(personCreated.getCreationDate().getTime(), is(newPerson.getCreationDate().getTime()));
     assertThat(personCreated.getLastUpdaterId(), is("400"));
-    assertThat(personCreated.getLastUpdateDate().getTime(),
-        is(personCreated.getCreationDate().getTime()));
+    assertThat(personCreated.getLastUpdateDate().getTime(), is(personCreated.getCreationDate().getTime()));
     assertThat(personCreated.getVersion(), is(0L));
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(6));
 

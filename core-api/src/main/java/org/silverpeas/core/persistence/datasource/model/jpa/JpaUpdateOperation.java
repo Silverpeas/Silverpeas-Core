@@ -25,9 +25,10 @@ package org.silverpeas.core.persistence.datasource.model.jpa;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.model.Entity;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.PersistenceOperation;
 import org.silverpeas.core.persistence.datasource.UpdateOperation;
+import org.silverpeas.core.persistence.datasource.model.Entity;
 import org.silverpeas.core.util.ArgumentAssertion;
 import org.silverpeas.core.util.StringUtil;
 
@@ -45,12 +46,6 @@ import java.util.Optional;
 public class JpaUpdateOperation extends PersistenceOperation {
 
   private List<SilverpeasJpaEntity> entities = new ArrayList<>();
-  private User user;
-
-  @Override
-  protected void setUser(final User user) {
-    this.user = user;
-  }
 
   /**
    * Applying information of the context to the given entity on a update operation.
@@ -58,6 +53,7 @@ public class JpaUpdateOperation extends PersistenceOperation {
    */
   protected void applyTechnicalDataTo(Entity entity) {
     String errorMessage = "the user identifier must exist when performing update operation";
+    User user = OperationContext.getFromCache().getUser();
     ArgumentAssertion.assertTrue(Transaction.isTransactionActive(),
         "A transaction must be active when performing update operation");
     ArgumentAssertion.assertNotNull(user, errorMessage);

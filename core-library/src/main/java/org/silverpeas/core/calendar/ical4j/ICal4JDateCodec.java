@@ -33,6 +33,7 @@ import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.TemporalConverter;
+import org.silverpeas.core.date.TimeZoneUtil;
 
 import javax.inject.Singleton;
 import java.text.ParseException;
@@ -247,7 +248,7 @@ public class ICal4JDateCodec {
             .parse(dateTime.toString());
     ZoneId zoneId;
     if (dateTime.getTimeZone() != null) {
-      zoneId = ZoneId.of(dateTime.getTimeZone().getID());
+      zoneId = TimeZoneUtil.toZoneId(dateTime.getTimeZone().getID());
     } else {
       zoneId = isUtc ? ZoneOffset.UTC : defaultZoneId;
     }

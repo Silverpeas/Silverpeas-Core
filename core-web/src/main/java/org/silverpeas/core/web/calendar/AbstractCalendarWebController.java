@@ -58,7 +58,9 @@ import java.time.LocalDate;
 import java.time.temporal.Temporal;
 import java.util.List;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.core.util.StringUtil.*;
+import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 
 /**
  * Common behaviors about WEB component controllers which handle the rendering of a calendar.
@@ -213,7 +215,8 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
       context.getNavigationContext()
           .navigationStepFrom(navigationStepId)
           .withLabel(StringUtil.truncate(entity.getTitle(), STRING_MAX_LENGTH))
-          .setUriMustBeUsedByBrowseBar(false);
+          .withFullUri(context.uri().ofOccurrenceView(occurrence).getPath().replaceFirst(
+              getApplicationURL(), EMPTY));
     } else {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }

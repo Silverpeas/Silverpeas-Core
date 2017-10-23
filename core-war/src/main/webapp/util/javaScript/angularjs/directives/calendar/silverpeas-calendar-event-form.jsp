@@ -41,6 +41,9 @@
 <c:set var="correctDateMessage"><b>@name@</b> <fmt:message key='GML.MustContainsCorrectDate'/></c:set>
 <c:set var="correctHourMessage"><b>@name@</b> <fmt:message key='GML.MustContainsCorrectHour'/></c:set>
 <c:set var="correctPeriodMessage"><b>@end@</b> <fmt:message key='GML.MustContainsPostDateTo'/> <b>@start@</b></c:set>
+<c:set var="updateLevelEventInfo"><fmt:message key='calendar.message.event.update.level.info'/></c:set>
+<fmt:message var="goTofirstOccurrenceLabel" key="calendar.message.event.occurrence.gotoFirst"/>
+<fmt:message var="gotoPreviousOccurrenceLabel" key="calendar.message.event.occurrence.gotoPrevious"/>
 
 <div style="display: none">
   <span ng-init="$ctrl.api.messages.mandatory = '${silfn:escapeJs(mandatoryMessage)}'"></span>
@@ -50,6 +53,19 @@
   <span ng-init="$ctrl.api.messages.time.correct = '${silfn:escapeJs(correctHourMessage)}'"></span>
   <span ng-init="$ctrl.api.messages.period.correct = '${silfn:escapeJs(correctPeriodMessage)}'"></span>
 </div>
+
+<p ng-if="!$ctrl.isFirstEventOccurrence()" class="inlineMessage">${updateLevelEventInfo}<br/>
+  <span>
+    <a href="#" class="first-occurrence-label"
+       ng-click="$ctrl.goToFirstOccurrence()">${goTofirstOccurrenceLabel}</a>
+  </span>
+</p>
+<p class="inlineMessage" ng-if="$ctrl.previousOccurrence">
+  <span>
+    <a href="#" ng-click="$ctrl.goToPreviousOccurrence()">${gotoPreviousOccurrenceLabel}</a>
+  </span>
+</p>
+
 <div ng-if="$ctrl.data" ng-transclude></div>
 
 <div class="legend">

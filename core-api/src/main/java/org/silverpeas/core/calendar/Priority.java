@@ -26,6 +26,14 @@ package org.silverpeas.core.calendar;
 /**
  * Priority of a {@link Plannable}. A priority is a set value from NORMAL (meaning no further
  * priority) to different level of prioritisation.
+ * <p>
+ * ICAL specifications : A CUA with a three-level priority scheme of "HIGH", "MEDIUM" and
+ * "LOW" is mapped into this property such that a property value in the range of one (US-ASCII
+ * decimal 49) to four (US-ASCII decimal 52) specifies "HIGH" priority. A value of five (US-ASCII
+ * decimal 53) is the normal or "MEDIUM" priority. A value in the range of six (US- ASCII decimal
+ * 54) to nine (US-ASCII decimal 58) is "LOW" priority.<br/>
+ * As Silverpeas Handles for now only HIGH or NORMAL, Silverpeas considers LOW as NORMAL.
+ * </p>
  * @author mmoquillon
  */
 public enum Priority {
@@ -42,6 +50,9 @@ public enum Priority {
    */
   HIGH;
 
+  private static final int HIGH_ICAL_LEVEL = 1;
+  private static final int HIGH_ICAL_LEVEL_THRESHOLD = 4;
+
   /**
    * Computes the correct Priority instance from specified the priority level indicated as a number.
    * If the specified ordinal isn't valid, an {@link IllegalArgumentException} is thrown.
@@ -56,5 +67,23 @@ public enum Priority {
     } else {
       throw new IllegalArgumentException("The specified ordinal, " + ordinal + ", isn't supported");
     }
+  }
+
+  /**
+   * Gets the Silverpeas priority definition from given ICal priority level.
+   * @param iCalLevel the ICal priority level.
+   * @return the corresponding {@link Priority}.
+   */
+  public static Priority fromICalLevel(int iCalLevel) {
+    return 0 < iCalLevel && iCalLevel <= HIGH_ICAL_LEVEL_THRESHOLD ? Priority.HIGH :
+        Priority.NORMAL;
+  }
+
+  /**
+   * Gets the ICal level according to the specifications and the Silverpeas rule.
+   * @return ICal priority level.
+   */
+  public int getICalLevel() {
+    return this == HIGH ? HIGH_ICAL_LEVEL : 0;
   }
 }

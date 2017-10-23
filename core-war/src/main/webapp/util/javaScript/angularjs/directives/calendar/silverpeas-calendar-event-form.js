@@ -28,7 +28,8 @@
     return formA.getFormValidationPriority() - formB.getFormValidationPriority();
   }
 
-  angular.module('silverpeas.directives').directive('silverpeasCalendarEventForm', [function() {
+  angular.module('silverpeas.directives').directive('silverpeasCalendarEventForm',
+      ['CalendarService', function(CalendarService) {
     return {
       templateUrl : webContext +
       '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form.jsp',
@@ -39,12 +40,15 @@
         api : '=?',
         onAddValidated : '&',
         onModifyOccurrenceValidated : '&',
-        onCancel : '&'
+        onCancel : '&',
+        onGoToFirstOccurrence : '&?'
       },
       transclude : true,
       controllerAs : '$ctrl',
       bindToController : true,
       controller : function() {
+
+        var __sessionCache = new SilverpeasSessionCache('silverpeas-calendar-event-form');
 
         this.formValidationRegistry = [];
 
@@ -81,10 +85,7 @@
               if (!originalCalendarUri) {
                 this.onAddValidated({event : this.calendarEventOccurrence});
               } else {
-                this.onModifyOccurrenceValidated({
-                  occurrence : this.calendarEventOccurrence,
-                  previousOccurrence : this.previousData
-                });
+                this.onModifyOccurrenceValidated({occurrence : this.calendarEventOccurrence});
               }
             }
           }.bind(this),
@@ -95,7 +96,30 @@
           }.bind(this)
         };
 
+        this.isFirstEventOccurrence = function() {
+          return this.data.firstEventOccurrence || !this.data.occurrenceUri;
+        }.bind(this);
+        this.goToFirstOccurrence = function() {
+          if (this.onGoToFirstOccurrence) {
+            this.onGoToFirstOccurrence({occurrence : this.calendarEventOccurrence});
+          } else {
+            CalendarService.getFirstEventOccurrenceFrom(this.calendarEventOccurrence).then(
+                function(firstOccurrence) {
+                  __sessionCache.put("previousOccurrence", this.calendarEventOccurrence);
+                  sp.formConfig(firstOccurrence.occurrenceEditionUrl).submit();
+                }.bind(this));
+          }
+        }.bind(this);
+        this.goToPreviousOccurrence = function() {
+          sp.formConfig(this.previousOccurrence.occurrenceEditionUrl).submit();
+        }.bind(this);
+
         this.$onInit = function() {
+          var previousOccurrence = __sessionCache.get("previousOccurrence");
+          __sessionCache.clear();
+          if (previousOccurrence && previousOccurrence.eventId === this.calendarEventOccurrence.eventId) {
+            this.previousOccurrence = previousOccurrence;
+          }
           this.data = angular.copy(this.calendarEventOccurrence);
           this.previousData = angular.copy(this.calendarEventOccurrence);
         }.bind(this);
@@ -104,8 +128,8 @@
   }]);
 
   angular.module('silverpeas.directives').directive('silverpeasCalendarEventFormMain',
-      ['$timeout', 'context', 'synchronizedFilter', 'defaultFilter',
-        function($timeout, context, synchronizedFilter, defaultFilter) {
+      ['$timeout', 'context', 'componentInstanceFilter', 'synchronizedFilter', 'defaultFilter',
+        function($timeout, context, componentInstanceFilter, synchronizedFilter, defaultFilter) {
           return {
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-form-main.jsp',
@@ -126,12 +150,17 @@
               return this.calendarEventApi.messages;
             }.bind(this);
             this.isFirstEventOccurrence = function() {
-              return this.data.firstEventOccurrence || !this.data.uri;
+              return this.data.firstEventOccurrence || !this.data.occurrenceUri;
             }.bind(this);
 
             $scope.$watchCollection('$ctrl.calendars', function() {
               if (this.calendars) {
                 var potentialCalendars = synchronizedFilter(this.calendars, false);
+                if (this.data.occurrenceId) {
+                  // In case of modification edition, calendars from other instances is not yet handled
+                  potentialCalendars =
+                      componentInstanceFilter(potentialCalendars, this.data.componentInstanceId());
+                }
                 if (potentialCalendars && !potentialCalendars.length) {
                   potentialCalendars = defaultFilter(this.calendars, true);
                 }
@@ -364,6 +393,9 @@
             }.bind(this);
             this.isRecurrence = function() {
               return this.recurrenceType  !== 'NONE';
+            }.bind(this);
+            this.isFirstEventOccurrence = function() {
+              return this.data.firstEventOccurrence || !this.data.occurrenceUri;
             }.bind(this);
             this.isWeekRecurrence = function() {
               return this.recurrenceType  === 'WEEK';
