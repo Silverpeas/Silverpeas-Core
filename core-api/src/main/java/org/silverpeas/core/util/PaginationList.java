@@ -25,7 +25,6 @@ package org.silverpeas.core.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 
@@ -35,20 +34,18 @@ import java.util.ListIterator;
  * @author mmoquillon
  * @param <T> the type of the items in the list.
  */
-public class PaginationList<T> implements SilverpeasList<T> {
+public class PaginationList<T> extends SilverpeasListWrapper<T> {
 
   private static final IllegalArgumentException MORE_THAN_MAXSIZE_EXCEPTION =
       new IllegalArgumentException("No more than maxsize items can be added to this pagination");
-  private final List<T> wrappedList;
   private final long maxsize;
 
   private PaginationList(final List<T> aList) {
-    this.wrappedList = aList;
-    this.maxsize = this.wrappedList.size();
+    this(aList, aList.size());
   }
 
   private PaginationList(final List<T> aList, long maxItems) {
-    this.wrappedList = aList;
+    super(aList);
     this.maxsize = maxItems;
   }
 
@@ -89,144 +86,46 @@ public class PaginationList<T> implements SilverpeasList<T> {
   }
 
   @Override
-  public int size() {
-    return wrappedList.size();
-  }
-
-  @Override
-  public boolean isEmpty() {
-    return wrappedList.isEmpty();
-  }
-
-  @Override
-  public boolean contains(Object o) {
-    return wrappedList.contains(o);
-  }
-
-  @Override
-  public Iterator<T> iterator() {
-    return wrappedList.iterator();
-  }
-
-  @Override
-  public Object[] toArray() {
-    return wrappedList.toArray();
-  }
-
-  @Override
-  public <T> T[] toArray(T[] a) {
-    return wrappedList.toArray(a);
-  }
-
-  @Override
   public boolean add(T e) {
-    if (wrappedList.size() + 1 > originalListSize()) {
+    if (this.size() + 1 > originalListSize()) {
       throw MORE_THAN_MAXSIZE_EXCEPTION;
     }
-    return wrappedList.add(e);
-  }
-
-  @Override
-  public boolean remove(Object o) {
-    return wrappedList.remove(o);
-  }
-
-  @Override
-  public boolean containsAll(
-      Collection<?> c) {
-    return wrappedList.containsAll(c);
+    return super.add(e);
   }
 
   @Override
   public boolean addAll(Collection<? extends T> c) {
-    if (wrappedList.size() + c.size() > originalListSize()) {
+    if (this.size() + c.size() > originalListSize()) {
       throw MORE_THAN_MAXSIZE_EXCEPTION;
     }
-    return wrappedList.addAll(c);
+    return super.addAll(c);
   }
 
   @Override
   public boolean addAll(int index,
       Collection<? extends T> c) {
-    if (wrappedList.size() + c.size() > originalListSize()) {
+    if (this.size() + c.size() > originalListSize()) {
       throw MORE_THAN_MAXSIZE_EXCEPTION;
     }
-    return wrappedList.addAll(index, c);
-  }
-
-  @Override
-  public boolean removeAll(
-      Collection<?> c) {
-    return wrappedList.removeAll(c);
-  }
-
-  @Override
-  public boolean retainAll(
-      Collection<?> c) {
-    return wrappedList.retainAll(c);
-  }
-
-  @Override
-  public void clear() {
-    wrappedList.clear();
-  }
-
-  @Override
-  public boolean equals(Object o) {
-    return wrappedList.equals(o);
-  }
-
-  @Override
-  public int hashCode() {
-    return wrappedList.hashCode();
-  }
-
-  @Override
-  public T get(int index) {
-    return wrappedList.get(index);
-  }
-
-  @Override
-  public T set(int index, T element) {
-    return wrappedList.set(index, element);
+    return super.addAll(index, c);
   }
 
   @Override
   public void add(int index, T element) {
-    if (wrappedList.size() + 1 > originalListSize()) {
+    if (this.size() + 1 > originalListSize()) {
       throw MORE_THAN_MAXSIZE_EXCEPTION;
     }
-    wrappedList.add(index, element);
-  }
-
-  @Override
-  public T remove(int index) {
-    return wrappedList.remove(index);
-  }
-
-  @Override
-  public int indexOf(Object o) {
-    return wrappedList.indexOf(o);
-  }
-
-  @Override
-  public int lastIndexOf(Object o) {
-    return wrappedList.lastIndexOf(o);
+    super.add(index, element);
   }
 
   @Override
   public ListIterator<T> listIterator() {
-    return new PaginationListIterator<>(this, wrappedList.listIterator());
+    return new PaginationListIterator<>(this, super.listIterator());
   }
 
   @Override
   public ListIterator<T> listIterator(int index) {
-    return new PaginationListIterator<>(this, wrappedList.listIterator(index));
-  }
-
-  @Override
-  public List<T> subList(int fromIndex, int toIndex) {
-    return wrappedList.subList(fromIndex, toIndex);
+    return new PaginationListIterator<>(this, super.listIterator(index));
   }
 
   private static class PaginationListIterator<T> implements ListIterator<T> {
