@@ -39,9 +39,9 @@ import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.SecurableRequestCache;
 import org.silverpeas.core.util.StringUtil;
@@ -1330,10 +1330,11 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     if (this.isModifiedSince(previousState)) {
       // force the update in the case of change(s) only in the event's component
       this.component.markAsModified();
-    } else if (!getAttendees().isSameAs(previousState.getAttendees())) {
-      // we don't want update properties to be modified for any change in the attendees
-      this.component.updatedBy(previousState.component.getLastUpdater(),
-          previousState.getLastUpdateDate());
+    } else if (getAttendees().onlyAttendeePropertyChange(previousState.getAttendees())) {
+      // we don't want update properties to be modified on participation answer or presence
+      // status change in the attendees
+      this.component
+          .updatedBy(previousState.component.getLastUpdater(), previousState.getLastUpdateDate());
     }
   }
 

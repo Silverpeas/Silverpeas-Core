@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.initialization.Initialization;
@@ -213,7 +214,8 @@ public class ICalendarEventSynchronization implements Initialization {
       try {
         // we set the creator of the calendar as the requester for the synchronization in this
         // thread
-        OperationContext.fromUser(c.getCreator());
+        User currentUser = User.getCurrentRequester();
+        OperationContext.fromUser(currentUser != null ? currentUser : c.getCreator());
         ICalendarImportResult result = c.synchronize();
         String report = generateReport(c, result);
         SilverLogger.getLogger(REPORT_NAMESPACE).info(report);

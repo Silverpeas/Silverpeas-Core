@@ -104,7 +104,7 @@
                                     calendar-event-occurrence="ceo"
                                     data="data"
                                     on-add-validated="eventMng.add(event)"
-                                    on-modify-occurrence-validated="eventMng.modifyOccurrence(occurrence, previousOccurrence)"
+                                    on-modify-occurrence-validated="eventMng.modifyOccurrence(occurrence)"
                                     on-cancel="goToPage('${backUri}')">
       <silverpeas-calendar-event-form-main
           form-validation-priority="0"

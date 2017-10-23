@@ -706,24 +706,38 @@ if (!window.SilverpeasAjaxConfig) {
     getHeaders : function() {
       return this.headers;
     },
-    byPostMethod : function(content) {
+    byPostMethod : function() {
       this.method = 'POST';
-      if (typeof content === 'object') {
-        this.withHeader('Accept', 'application/json, text/plain, */*');
-        this.withHeader('Content-Type', 'application/json; charset=UTF-8');
-        this.withParams(JSON.stringify(content));
-      } else if (content) {
-        this.withHeader('Accept', 'application/json, text/plain, */*');
-        this.withHeader('Content-Type', 'application/json; charset=UTF-8');
-        this.withParams("" + content);
-      }
       return this;
     },
-    execute : function() {
+    byPutMethod : function() {
+      this.method = 'PUT';
+      return this;
+    },
+    byDeleteMethod : function() {
+      this.method = 'DELETE';
+      return this;
+    },
+    send : function(content) {
+      if (this.method.startsWith('P')) {
+        if (typeof content === 'object') {
+          this.withHeader('Accept', 'application/json, text/plain, */*');
+          this.withHeader('Content-Type', 'application/json; charset=UTF-8');
+          this.withParams(JSON.stringify(content));
+        } else if (content) {
+          this.withHeader('Accept', 'application/json, text/plain, */*');
+          this.withHeader('Content-Type', 'application/json; charset=UTF-8');
+          this.withParams("" + content);
+        }
+      } else if (typeof content === 'object') {
+        this.withParams(content)
+      } else {
+        sp.log.warning('SilverpeasAjaxConfig - content has to be send, but AJAX REQUEST is not well configured to perform this');
+      }
       return silverpeasAjax(this);
     },
-    promiseJsonResponse : function() {
-      return silverpeasAjax(this).then(function(request) {
+    sendAndPromiseJsonResponse : function(content) {
+      return this.send(content).then(function(request) {
         return request.responseAsJson();
       });
     }
@@ -1044,6 +1058,14 @@ if (typeof window.sp === 'undefined') {
         }
       }
     },
+    base64 : {
+      encode : function(str) {
+        return window.btoa(str);
+      },
+      decode : function(str) {
+        return window.atob(str);
+      }
+    },
     promise : {
       deferred : function() {
         var deferred = {};
@@ -1077,6 +1099,16 @@ if (typeof window.sp === 'undefined') {
           return date.length === 10 ? moment(date, 'YYYY-MM-DD') : moment.parseZone(date);
         }
         return moment.apply(undefined, arguments);
+      },
+      /**
+       * Formats the given date as ISO Java string.
+       * @param date the date as ISO string
+       */
+      toISOJavaString : function(date) {
+        if (typeof date === 'string' && date.length === 10) {
+          return date;
+        }
+        return sp.moment.make(date).toISOString().replace(':00.000Z', 'Z');
       },
       /**
        * Gets the offset ('-01:00' for example) of the given zone id.
@@ -1186,10 +1218,10 @@ if (typeof window.sp === 'undefined') {
         return formattedText;
       }
     },
-    formConfig : function(url) {
+    formRequest : function(url) {
       return new SilverpeasFormConfig(url);
     },
-    ajaxConfig : function(url) {
+    ajaxRequest : function(url) {
       return new SilverpeasAjaxConfig(url);
     },
     formatUrl : function(url, params) {
@@ -1333,17 +1365,17 @@ if (typeof window.sp === 'undefined') {
           this.pageChanged = function() {
             __init();
           };
-          this.applyToAjaxConfig = function(ajaxConfig, options) {
+          this.prepareAjaxRequest = function(ajaxRequest, options) {
             var params = extendsObject({
               clear : true,
               paramSelectedIds : 'selectedIds',
               paramUnselectedIds : 'unselectedIds'
             }, options);
             __selected.forEach(function(value) {
-              ajaxConfig.addParam(params.paramSelectedIds, value);
+              ajaxRequest.addParam(params.paramSelectedIds, value);
             });
             __unselected.forEach(function(value) {
-              ajaxConfig.addParam(params.paramUnselectedIds, value);
+              ajaxRequest.addParam(params.paramUnselectedIds, value);
             });
             if (params.clear) {
               __init();
@@ -1410,7 +1442,7 @@ if (typeof window.sp === 'undefined') {
     volatileIdentifier : {
       newOn : function(componentInstanceId) {
         var url = webContext + '/services/volatile/' + componentInstanceId + '/new';
-        return sp.ajaxConfig(url).execute().then(function(request) {
+        return sp.ajaxRequest(url).send().then(function(request) {
           return request.responseText;
         });
       }
@@ -1429,7 +1461,7 @@ if (typeof window.sp === 'undefined') {
             stylesheet : undefined
           }, options);
           var url = webContext + '/services/wysiwyg/editor/' + componentInstanceId + '/' + resourceType + '/' + resourceId;
-          return sp.ajaxConfig(url).withParams(params).promiseJsonResponse();
+          return sp.ajaxRequest(url).withParams(params).sendAndPromiseJsonResponse();
         },
         backupManager : function(options) {
           var instance = new function() {
@@ -1440,7 +1472,6 @@ if (typeof window.sp === 'undefined') {
               unvalidatedContentCallback : undefined
             }, options);
             var editor;
-            var clearManuallyBehavior = true;
             var timer = 0;
             var dataOnLastClear;
             var cacheKey = 'sp.editor.wysiwyg.writingCacheHandler_' +
@@ -1467,9 +1498,6 @@ if (typeof window.sp === 'undefined') {
               }
             }.bind(this);
 
-            this.setClearManuallyBehavior = function() {
-              clearManuallyBehavior = false;
-            };
             this.getUnvalidatedContent = function() {
               return cache.get("data");
             };
@@ -1542,9 +1570,18 @@ if (typeof window.sp === 'undefined') {
           form : undefined
         }, queryDescription);
         var url = webContext + '/services/search';
-        return sp.ajaxConfig(url).withParams(params).promiseJsonResponse();
+        return sp.ajaxRequest(url).withParams(params).sendAndPromiseJsonResponse();
       }
     }
   };
   sp.paginationPane = sp.arrayPane;
+
+  /**
+   * @deprecated use instead sp.formRequest
+   */
+  sp.formConfig = sp.formRequest;
+  /**
+   * @deprecated use instead sp.ajaxRequest
+   */
+  sp.ajaxConfig = sp.ajaxRequest;
 }

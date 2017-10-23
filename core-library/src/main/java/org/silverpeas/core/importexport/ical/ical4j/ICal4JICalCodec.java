@@ -128,7 +128,7 @@ public class ICal4JICalCodec implements ICalCodec {
       // Add Classification
       iCalEvent.getProperties().add(new Clazz(event.getVisibilityLevel().name()));
       // Add Priority
-      iCalEvent.getProperties().add(new Priority(event.getPriority().ordinal()));
+      iCalEvent.getProperties().add(new Priority(event.getPriority().getICalLevel()));
 
       // Add location if any
       Optional<String> location = Optional.ofNullable(event.getLocation());

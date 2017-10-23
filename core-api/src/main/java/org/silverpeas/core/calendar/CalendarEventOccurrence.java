@@ -47,6 +47,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection
+    .setCreationData;
+import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection
+    .setUpdateData;
+
 /**
  * The occurrence of an event in a Silverpeas calendar. It is an instance of an event in the
  * timeline of a calendar; it represents an event starting and ending at a given date or datetime
@@ -124,8 +129,8 @@ public class CalendarEventOccurrence
     setId(generateId(event, startDate));
     this.event = event;
     this.component = event.asCalendarComponent().clone();
-    this.component.createdBy(event.getCreator(), event.getCreationDate());
-    this.component.updatedBy(event.getLastUpdater(), event.getLastUpdateDate());
+    setCreationData(this.component, event.getCreator(), event.getCreationDate());
+    setUpdateData(this.component, event.getLastUpdater(), event.getLastUpdateDate());
     this.component.setPeriod(Period.between(startDate, endDate));
   }
 
@@ -650,12 +655,26 @@ public class CalendarEventOccurrence
   CalendarEventOccurrence saveIntoPersistence() {
     return Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      CalendarEventOccurrence previous = getPreviousState();
-      if (previous != null && !isModifiedSince(previous) &&
-          !getAttendees().isSameAs(previous.getAttendees())) {
-        // we don't want the update properties to be modified for change(s) only in the attendees
-        this.component.updatedBy(previous.component.getLastUpdater(),
-            previous.component.getLastUpdateDate());
+      final CalendarEventOccurrence previous = getPreviousState();
+      final CalendarComponent pcc;
+      final boolean modifiedSince;
+      if (previous != null) {
+        pcc = previous.asCalendarComponent();
+        modifiedSince = isModifiedSince(previous);
+      } else {
+        pcc = event.asCalendarComponent();
+        // Making a clone of event component and setting to it the component period in order to
+        // not detect a modification about the period when performing method #isModifiedSince().
+        // The clone permits to not imply a modification of event component into persistence. As
+        // the below treatment is performed into the case of creation, the original start date is
+        // compared to the current start date in order to try to detect a real period modification.
+        final CalendarComponent pccClone = pcc.clone(); pccClone.setPeriod(component.getPeriod());
+        modifiedSince = component.isModifiedSince(pccClone) || !getOriginalStartDate().toString().equals(getStartDate().toString());
+      }
+      if (!modifiedSince && getAttendees().onlyAttendeePropertyChange(pcc.getAttendees())) {
+        // we don't want update properties to be modified on participation answer or presence
+        // status change in the attendees
+        this.component.createdBy(pcc.getCreator(), pcc.getCreationDate()).updatedBy(pcc.getLastUpdater(), pcc.getLastUpdateDate());
       } else {
         this.component.incrementSequence();
       }

@@ -241,15 +241,13 @@ public class CalendarEventOccurrenceGenerationTest {
     events.add(CalendarEvent.on(date(2016, 8, 11))
         .withTitle(EVENT_TITLE + " 1")
         .withDescription(EVENT_DESCRIPTION + " 1")
-        .withAttribute(ATTR_TEST_ID, "1")
-        .createdBy("0"));
+        .withAttribute(ATTR_TEST_ID, "1"));
     /* event 2 at Friday 2016-05-20 15h00 - 15h35 */
     events.add(CalendarEvent.on(
         Period.between(dateTime(2016, 5, 20, 15, 0), dateTime(2016, 5, 20, 15, 35)))
         .withTitle(EVENT_TITLE + " 2")
         .withDescription(EVENT_DESCRIPTION + " 2")
-        .withAttribute(ATTR_TEST_ID, "2")
-        .createdBy("0"));
+        .withAttribute(ATTR_TEST_ID, "2"));
     /* event 3 at 09h00 - 09h15 every Fridays from 2016-03-04 excluding
        Friday 2016-07-15 and Friday 2016-07-22 */
     events.add(
@@ -257,7 +255,6 @@ public class CalendarEventOccurrenceGenerationTest {
             .withTitle(EVENT_TITLE + " 3")
             .withDescription(EVENT_DESCRIPTION + " 3")
             .withAttribute(ATTR_TEST_ID, "3")
-            .createdBy("0")
             .recur(Recurrence.every(WEEK)
                 .on(FRIDAY)
                 .excludeEventOccurrencesStartingAt(date(2016, 7, 15), date(2016, 7, 22))));
@@ -265,8 +262,7 @@ public class CalendarEventOccurrenceGenerationTest {
     events.add(CalendarEvent.on(Period.between(date(2016, 7, 11), date(2016, 7, 22)))
         .withTitle(EVENT_TITLE + " 4")
         .withDescription(EVENT_DESCRIPTION + " 4")
-        .withAttribute(ATTR_TEST_ID, "4")
-        .createdBy("0"));
+        .withAttribute(ATTR_TEST_ID, "4"));
     /* event 5 at 10h00 - 11h00 every Monday, Tuesday and Wednesday from Thursday 2016-09-01 to
        Tuesday 2016-12-20 excluding Wednesday 2016-11-30 and Monday 2016-12-12 */
     events.add(
@@ -274,7 +270,6 @@ public class CalendarEventOccurrenceGenerationTest {
             .withTitle(EVENT_TITLE + " 5")
             .withDescription(EVENT_DESCRIPTION + " 5")
             .withAttribute(ATTR_TEST_ID, "5")
-            .createdBy("0")
             .recur(Recurrence.every(WEEK)
                 .on(MONDAY, TUESDAY, WEDNESDAY)
                 .until(dateTime(2016, 12, 20, 10, 0))
@@ -286,7 +281,6 @@ public class CalendarEventOccurrenceGenerationTest {
             .withTitle(EVENT_TITLE + " 6")
             .withDescription(EVENT_DESCRIPTION + " 6")
             .withAttribute(ATTR_TEST_ID, "6")
-            .createdBy("0")
             .recur(Recurrence.every(MONTH)
                 .on(DayOfWeekOccurrence.all(THURSDAY), DayOfWeekOccurrence.nth(3, FRIDAY))
                 .until(date(2016, 6, 30))));

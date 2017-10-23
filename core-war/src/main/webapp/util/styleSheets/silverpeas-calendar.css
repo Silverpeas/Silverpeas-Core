@@ -446,6 +446,15 @@ silverpeas-calendar-event-form-main legend {
   background: transparent url(../../util/icons/mini_publi.gif) 11px 0 no-repeat;
 }
 
+silverpeas-calendar-event-form-main .occurrence-content {
+  max-height: 200px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  background-color: #FFFFFF;
+  width: 89%;
+  padding: 0 5px 0 5px;
+}
+
 silverpeas-calendar-event-view-recurrence h4 {
   background: transparent url(../../util/icons/periodicity.gif) top right no-repeat;
 }

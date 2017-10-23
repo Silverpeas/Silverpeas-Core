@@ -35,12 +35,6 @@ import java.util.Date;
 public abstract class PersistenceOperation {
 
   /**
-   * Sets the current user behind the operation.
-   * @param user the user behind the persistence operation.
-   */
-  protected abstract void setUser(final User user);
-
-  /**
    * Applies to the specified entity a computation consisting to set its technical
    * data before being serialized to a datasource.
    * @param entity an entity.

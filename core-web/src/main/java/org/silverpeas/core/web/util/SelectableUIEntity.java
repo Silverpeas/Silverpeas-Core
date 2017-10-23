@@ -32,10 +32,10 @@ import java.util.function.Function;
 
 /**
  * Abstraction which permits to get a standardization about managing service data into UI context.
- * @param <D> the type of the wrapped data.
+ * @param <D> the type of the handled data.
  * @author silveryocha
  */
-public abstract class DataItemWrapper<D> {
+public abstract class SelectableUIEntity<D> {
 
   private final D data;
   private final Set<String> selectedIds;
@@ -44,9 +44,9 @@ public abstract class DataItemWrapper<D> {
   /**
    * Initializes the item with the given data.<br/>
    * By default, item is marked as not selected.
-   * @param data the data to wrap.
+   * @param data the data to handle.
    */
-  public DataItemWrapper(final D data) {
+  public SelectableUIEntity(final D data) {
     this(data, null);
   }
 
@@ -54,25 +54,25 @@ public abstract class DataItemWrapper<D> {
    * Initializes the item with the given data and a set of item identifiers which will provide
    * the selected indicator lazily.<br/>
    * If no selected id set is given, then the item is marked as not selected by default.
-   * @param data the data to wrap.
+   * @param data the data to handle.
    * @param selectedIds the set of selected identifiers (identifiers provided by {@link #getId()}
    * method).
    */
-  public DataItemWrapper(final D data, final Set<String> selectedIds) {
+  public SelectableUIEntity(final D data, final Set<String> selectedIds) {
     this.data = data;
     this.selectedIds = selectedIds;
     this.selected = selectedIds != null ? null : false;
   }
 
   /**
-   * Converts the given data list into a {@link SilverpeasList} of item wrapping the data.
+   * Converts the given data list into a {@link SilverpeasList} of item handling the data.
    * @param dataList the list of data.
-   * @param converter the function which converts the data into a {@link DataItemWrapper} one.
-   * @param <W> the type of the item data wrapper.
+   * @param converter the function which converts the data into a {@link SelectableUIEntity} one.
+   * @param <W> the type of the item data handler.
    * @param <I> the type of the data.
-   * @return the {@link SilverpeasList} of wrapped data item.
+   * @return the {@link SilverpeasList} of handled data item.
    */
-  public static <W extends DataItemWrapper, I> SilverpeasList<W> convert(final List<I> dataList,
+  public static <W extends SelectableUIEntity, I> SilverpeasList<W> convert(final List<I> dataList,
       final Function<I, W> converter) {
     SilverpeasList<I> list = SilverpeasList.wrap(dataList);
     return dataList.stream().map(converter).collect(SilverpeasList.collector(list));
@@ -85,7 +85,7 @@ public abstract class DataItemWrapper<D> {
   public abstract String getId();
 
   /**
-   * Gets the data wrapped by the item.
+   * Gets the data handled by the item.
    * @return the data.
    */
   public D getData() {

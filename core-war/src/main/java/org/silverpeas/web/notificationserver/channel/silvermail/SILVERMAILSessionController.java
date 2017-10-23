@@ -60,12 +60,6 @@ import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestC
 import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
     .QUERY_ORDER_BY.*;
 
-/**
- * Class declaration
- *
- * @author
- * @version %I%, %G%
- */
 public class SILVERMAILSessionController extends AbstractComponentSessionController {
 
   public static final Map<Integer, Pair<QUERY_ORDER_BY,QUERY_ORDER_BY>> INBOX_ORDER_BIES;
@@ -147,7 +141,7 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
    * @return
    * @see
    */
-  public SilverpeasList<UserNotificationItem> getFolderMessageList(String folderName) {
+  public SilverpeasList<UserNotificationUIEntity> getFolderMessageList(String folderName) {
     final SilverpeasList<SILVERMAILMessage> messages;
     try {
       messages =
@@ -155,9 +149,9 @@ public class SILVERMAILSessionController extends AbstractComponentSessionControl
     } catch (SILVERMAILException e) {
       throw new org.silverpeas.core.SilverpeasRuntimeException(e);
     }
-    final Function<SILVERMAILMessage, UserNotificationItem> converter =
-        n -> new UserNotificationItem(n, getSelectedUserNotificationIds());
-    return UserNotificationItem.convert(messages, converter);
+    final Function<SILVERMAILMessage, UserNotificationUIEntity> converter =
+        n -> new UserNotificationUIEntity(n, getSelectedUserNotificationIds());
+    return UserNotificationUIEntity.convert(messages, converter);
   }
 
   /**

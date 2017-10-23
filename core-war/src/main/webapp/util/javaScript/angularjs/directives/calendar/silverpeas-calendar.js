@@ -49,6 +49,33 @@
 
   /**
    * Custom AngularJS filter in charge of filtering the given array of items on an attribute of
+   * componentInstanceId.
+   * The handled attributes are :
+   * - componentInstanceId (explicit component instance identifier)
+   * If no attribute is found for an item, it is not taken into account for filtering result.
+   */
+  angular.module('silverpeas.directives').filter('componentInstance', function() {
+    return function(items, componentInstanceId) {
+      var filteredItems = [];
+      items.forEach(function(item) {
+        var itemValue = item['componentInstanceId'];
+        var typeOfItemValue = typeof itemValue;
+        if (typeOfItemValue === 'undefined') {
+          itemValue = SilverpeasCalendarTools.extractComponentInstanceIdFromUri(item['uri']);
+          typeOfItemValue = typeof itemValue;
+        }
+        if (typeOfItemValue === 'string' && itemValue === componentInstanceId) {
+          filteredItems.push(item);
+        } else if (typeOfItemValue === 'function' && itemValue() === componentInstanceId) {
+          filteredItems.push(item);
+        }
+      });
+      return filteredItems;
+    };
+  });
+
+  /**
+   * Custom AngularJS filter in charge of filtering the given array of items on an attribute of
    * visibility.
    * The handled attributes are :
    * - notVisible (explicit boolean type)
@@ -85,6 +112,7 @@
     return function(items, defaultOrNot) {
       var filteredItems = [];
       items.forEach(function(item) {
+        var isDefault = undefined;
         if (typeof item['default'] === 'boolean') {
           isDefault = item['default'] === defaultOrNot;
         } else if (typeof item['isDefault'] === 'boolean') {
@@ -384,7 +412,7 @@
                   occurrence.recurrence = previousOccurrence.recurrence;
                   revertFunc();
                 }
-                this.eventMng.modifyOccurrence(occurrence, previousOccurrence);
+                this.eventMng.modifyOccurrence(occurrence);
               }
             }.bind(this);
 

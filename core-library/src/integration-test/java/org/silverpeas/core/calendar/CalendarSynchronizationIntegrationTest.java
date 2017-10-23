@@ -112,6 +112,7 @@ public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .addAsResource("org/silverpeas/util/logging")
         .addAsResource("org/silverpeas/calendar/settings")
+        .addAsResource("org/silverpeas/util/timezone.properties")
         .build();
   }
 

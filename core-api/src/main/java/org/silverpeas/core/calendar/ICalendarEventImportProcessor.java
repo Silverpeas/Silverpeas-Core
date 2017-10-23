@@ -30,6 +30,7 @@ import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 
@@ -37,6 +38,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.InputStream;
 import java.io.Reader;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -147,6 +149,7 @@ public class ICalendarEventImportProcessor {
           "The calendar " + calendar.getTitle() + " (id = " + calendar.getId() +
               ") doesn't exist in Silverpeas");
     }
+    OperationContext.fromCurrentRequester();
     final ICalendarImportResult importResult = new ICalendarImportResult();
     iCalendarImporter.imports(descriptor, events -> Transaction.performInOne(() -> {
       events.forEach(e -> {
@@ -180,7 +183,6 @@ public class ICalendarEventImportProcessor {
    */
   private EventOperationResult importEvent(final Calendar calendar, final CalendarEvent event,
       final List<CalendarEventOccurrence> occurrences) {
-    OperationContext.fromCurrentRequester();
     OperationContext.addStates(IMPORT);
     try {
       return Transaction.performInOne(() -> {
@@ -236,7 +238,12 @@ public class ICalendarEventImportProcessor {
       final CalendarEvent existingEvent = persistedEvent.get();
       result = new EventImportResult().withExisting(existingEvent);
       if (wasUpdated(event, existingEvent)) {
-        result = existingEvent.updateFrom(event);
+        final Date lastUpdateDateBeforeUpdate = existingEvent.getLastUpdateDate();
+        final EventOperationResult updateResult = existingEvent.updateFrom(event);
+        if (updateResult.updated().isPresent() && !updateResult.updated().get().getLastUpdateDate()
+            .equals(lastUpdateDateBeforeUpdate)) {
+          result = updateResult;
+        }
       } else if (event.isSynchronized()) {
         existingEvent.setLastSynchronizationDate(event.getLastSynchronizationDate());
         eventRepository.save(existingEvent);
@@ -294,6 +301,12 @@ public class ICalendarEventImportProcessor {
   }
 
   private boolean wasUpdated(final CalendarEvent imported, final CalendarEvent existing) {
+    if (imported.getLastUpdateDate() == null) {
+      // Setting the last modification date to the one of event and indicate it as updated
+      JpaEntityReflection.setUpdateData(imported.asCalendarComponent(), existing.getLastUpdater(),
+          existing.getLastUpdateDate());
+      return true;
+    }
     return imported.getLastUpdateDate().after(existing.getLastUpdateDate()) ||
         (imported.getRecurrence() != null &&
             !imported.getRecurrence().equals(existing.getRecurrence()));
@@ -301,6 +314,12 @@ public class ICalendarEventImportProcessor {
 
   private boolean wasUpdated(final CalendarEventOccurrence imported,
       final CalendarEventOccurrence existing) {
+    if (imported.getLastUpdateDate() == null) {
+      // Setting the last modification date to the one of occurrence and indicate it as updated
+      JpaEntityReflection.setUpdateData(imported.asCalendarComponent(), existing.getLastModifier(),
+          existing.getLastUpdateDate());
+      return true;
+    }
     return imported.getLastUpdateDate().after(existing.getLastUpdateDate());
   }
 

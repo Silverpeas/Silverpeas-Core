@@ -39,6 +39,7 @@ import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.RecurrencePeriod;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.date.TimeZoneUtil;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -209,7 +210,7 @@ public class ICal4JRecurrenceCodec {
             dateToExclude = iCal4JDateCodec.decode((DateTime) exDate, ZoneOffset.UTC).toLocalDate();
           } else {
             ZoneId zoneId = startDateTime.getTimeZone() != null ?
-                ZoneId.of(startDateTime.getTimeZone().getID()) : defaultZoneId;
+                TimeZoneUtil.toZoneId(startDateTime.getTimeZone().getID()) : defaultZoneId;
             dateToExclude = iCal4JDateCodec.decode((DateTime) exDate, zoneId).toLocalDate();
           }
         }

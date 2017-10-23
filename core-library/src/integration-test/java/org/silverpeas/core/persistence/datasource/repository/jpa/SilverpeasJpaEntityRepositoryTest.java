@@ -48,6 +48,7 @@ import org.silverpeas.core.test.stub.StubbedOrganizationController;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -394,8 +395,10 @@ public class SilverpeasJpaEntityRepositoryTest {
 
   @Test
   public void savePerson() {
-    Person newPerson = new Person().setFirstName("Aurore").setLastName("Allibe").createdBy("200")
-        .lastUpdatedBy("400");
+    Date createdAndLastUpdateDate = new Date();
+    Person newPerson = new Person().setFirstName("Aurore").setLastName("Allibe")
+        .createdBy(User.getById("200"), createdAndLastUpdateDate)
+        .updatedBy(User.getById("400"), createdAndLastUpdateDate);
     assertThat(newPerson.getVersion(), is(0L));
     assertThat(newPerson.getId(), nullValue());
     Person personSaveResult = jpaEntityServiceTest.save(newPerson);
@@ -406,11 +409,9 @@ public class SilverpeasJpaEntityRepositoryTest {
     assertThat(personCreated, not(sameInstance(newPerson)));
     assertThat(personCreated, is(personCreated));
     assertThat(personCreated.getCreatorId(), is("200"));
-    assertThat(personCreated.getCreationDate().getTime(),
-        is(newPerson.getCreationDate().getTime()));
+    assertThat(personCreated.getCreationDate().getTime(), is(newPerson.getCreationDate().getTime()));
     assertThat(personCreated.getLastUpdaterId(), is("400"));
-    assertThat(personCreated.getLastUpdateDate().getTime(),
-        is(personCreated.getCreationDate().getTime()));
+    assertThat(personCreated.getLastUpdateDate().getTime(), is(personCreated.getCreationDate().getTime()));
     assertThat(personCreated.getVersion(), is(0L));
     MatcherAssert.assertThat(jpaEntityServiceTest.getAllPersons(), hasSize(6));
 

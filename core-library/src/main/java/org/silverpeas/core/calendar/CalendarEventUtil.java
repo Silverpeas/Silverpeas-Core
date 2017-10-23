@@ -64,6 +64,18 @@ public class CalendarEventUtil {
   /**
    * Gets the given temporal according to the calendar component data.<br/>
    * If the component is on all days, no offset is applied.
+   * @param component the component data.
+   * @param temporal the temporal to format.
+   * @return the date, with offset if the component is not on all days.
+   */
+  public static Temporal getDateWithOffset(final CalendarComponent component,
+      final Temporal temporal) {
+    return getDateWithOffset(component, temporal, null);
+  }
+
+  /**
+   * Gets the given temporal according to the calendar component data.<br/>
+   * If the component is on all days, no offset is applied.
    * If a specific zoneId is given, then the date is set to the offset of the given zoneId
    * instead of the one linked to the calendar.
    * @param component the component data.
@@ -71,8 +83,8 @@ public class CalendarEventUtil {
    * @param zoneId the zoneId requested (optional).
    * @return the date, with offset if the component is not on all days.
    */
-  public static Temporal getDateWithOffset(final CalendarComponent component, final Temporal temporal,
-      final ZoneId zoneId) {
+  public static Temporal getDateWithOffset(final CalendarComponent component,
+      final Temporal temporal, final ZoneId zoneId) {
     final ZoneId toZoneId = zoneId != null ? zoneId : component.getCalendar().getZoneId();
     return component.getPeriod().isInDays() ? temporal :
         ((OffsetDateTime) temporal).atZoneSameInstant(toZoneId).toOffsetDateTime();

@@ -21,28 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.calendar.notification;
+package org.silverpeas.web.notificationserver.channel.silvermail;
 
-import org.silverpeas.core.calendar.Attendee;
-import org.silverpeas.core.calendar.CalendarComponent;
-import org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener;
-import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
+import org.silverpeas.core.web.util.SelectableUIEntity;
 
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 /**
- * A notifier of attendees about some lifecycle events triggered by the Calendar engine.
- * @author mmoquillon
+ * UI item if a {@link SILVERMAILMessage} instance.
+ * @author Yohann Chastagnier
  */
-public abstract class AttendeeNotifier<T extends ResourceEvent>
-    extends CDIAfterSuccessfulTransactionResourceEventListener<T> {
+public class UserNotificationUIEntity extends SelectableUIEntity<SILVERMAILMessage> {
 
-  protected List<Attendee> concernedAttendeesIn(final CalendarComponent calendarComponent) {
-    return calendarComponent.getAttendees().stream().collect(Collectors.toList());
+  UserNotificationUIEntity(final SILVERMAILMessage data, final Set<String> selectedIds) {
+    super(data, selectedIds);
   }
 
-  protected List<Attendee> attendeesIn(final CalendarComponent calendarComponent) {
-    return calendarComponent.getAttendees().stream().collect(Collectors.toList());
+  @Override
+  public String getId() {
+    return String.valueOf(getData().getId());
   }
 }

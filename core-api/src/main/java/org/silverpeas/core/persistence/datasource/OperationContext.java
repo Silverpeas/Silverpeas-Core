@@ -227,7 +227,6 @@ public class OperationContext {
         .findFirst()
         .orElseGet(() -> {
           PersistenceOperation c = ServiceProvider.getService(operationType, qualifier);
-          c.setUser(user);
           persistenceOperations.add(c);
           return c;
         });
