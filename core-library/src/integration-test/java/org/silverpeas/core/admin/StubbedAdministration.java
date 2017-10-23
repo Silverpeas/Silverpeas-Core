@@ -37,6 +37,7 @@ import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.RightAssignationContext;
 import org.silverpeas.core.admin.service.SpaceProfile;
+import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
 import org.silverpeas.core.admin.space.SpaceAndChildren;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
@@ -1137,5 +1138,17 @@ public class StubbedAdministration implements Administration {
   @Override
   public boolean isDomainManagerUser(final String userId, final String domainId) {
     return false;
+  }
+
+  @Override
+  public SpaceWithSubSpacesAndComponents getAllowedFullTreeview(final String userId)
+      throws AdminException {
+    return null;
+  }
+
+  @Override
+  public SpaceWithSubSpacesAndComponents getAllowedFullTreeview(final String userId,
+      final String spaceId) throws AdminException {
+    return null;
   }
 }

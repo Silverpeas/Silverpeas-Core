@@ -1245,4 +1245,9 @@ public interface Administration {
    * @return true if user identified by given userId is the manager of given domain identifier.
    */
   boolean isDomainManagerUser(String userId, String domainId);
+
+  SpaceWithSubSpacesAndComponents getAllowedFullTreeview(String userId) throws AdminException;
+
+  SpaceWithSubSpacesAndComponents getAllowedFullTreeview(String userId, String spaceId)
+      throws AdminException;
 }

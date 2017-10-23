@@ -25,7 +25,7 @@ package org.silverpeas.web.jobdomain.servlets;
 
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.Group;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController;
@@ -104,8 +104,8 @@ public class JobDomainPeasItemPathServlet extends HttpServlet {
 
     OrganizationController oc = OrganizationController.get();
 
-    List<SpaceInst> spaceList = oc.getSpacePathToComponent(componentId);
-    for (SpaceInst space : spaceList) {
+    List<SpaceInstLight> spaceList = oc.getPathToComponent(componentId);
+    for (SpaceInstLight space : spaceList) {
       componentPath.append(space.getName(sc.getLanguage())).append(SEPARATOR);
     }
 
@@ -119,8 +119,8 @@ public class JobDomainPeasItemPathServlet extends HttpServlet {
     OrganizationController oc = OrganizationController.get();
 
     // Espace > Sous-espaces
-    List<SpaceInst> spaceList = oc.getSpacePath(spaceId);
-    for (SpaceInst space : spaceList) {
+    List<SpaceInstLight> spaceList = oc.getPathToSpace(spaceId);
+    for (SpaceInstLight space : spaceList) {
       if (path.length() > 0) {
         path.append(SEPARATOR);
       }

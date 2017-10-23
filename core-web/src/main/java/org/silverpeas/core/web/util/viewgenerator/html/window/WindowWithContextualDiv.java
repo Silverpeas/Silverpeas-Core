@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.window;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.List;
@@ -51,11 +51,10 @@ public class WindowWithContextualDiv extends AbstractWindow {
     String componentId = getGEF().getComponentIdOfCurrentRequest();
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
     if (StringUtil.isDefined(componentId)) {
-      List<SpaceInst> spaces = oc.getSpacePathToComponent(componentId);
+      List<SpaceInstLight> spaces = oc.getPathToComponent(componentId);
 
-      for (SpaceInst spaceInst : spaces) {
-        String spaceId = spaceInst.getId();
-        spaceIds.append(spaceId).append(" ");
+      for (SpaceInstLight spaceInst : spaces) {
+        spaceIds.append(spaceInst.getId()).append(" ");
       }
     }
 

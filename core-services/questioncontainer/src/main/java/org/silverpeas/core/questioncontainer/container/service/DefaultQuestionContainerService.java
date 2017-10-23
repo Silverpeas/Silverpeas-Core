@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
@@ -1059,8 +1059,8 @@ public class DefaultQuestionContainerService
 
   private String getSpacesPath(String componentId) {
     StringBuilder spacesPath = new StringBuilder();
-    List<SpaceInst> spaces = getOrganisationController().getSpacePathToComponent(componentId);
-    for (SpaceInst spaceInst : spaces) {
+    List<SpaceInstLight> spaces = getOrganisationController().getPathToComponent(componentId);
+    for (SpaceInstLight spaceInst : spaces) {
       spacesPath.append(spaceInst.getName());
       spacesPath.append(" > ");
     }

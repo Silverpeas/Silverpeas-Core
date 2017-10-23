@@ -31,8 +31,10 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.ComponentSearchCriteria;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.SpaceProfile;
+import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
 import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.constant.UserState;
@@ -148,27 +150,7 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
-  public List<SpaceInst> getSpacePath(final String spaceId) {
-    return null;
-  }
-
-  @Override
-  public List<SpaceInst> getSpacePathToComponent(final String componentId) {
-    return null;
-  }
-
-  @Override
   public ComponentInstLight getComponentInstLight(final String sComponentId) {
-    return null;
-  }
-
-  @Override
-  public int getUserDBId(final String sUserId) {
-    return 0;
-  }
-
-  @Override
-  public String getUserDetailByDBId(final int id) {
     return null;
   }
 
@@ -500,5 +482,27 @@ public class OrganizationControllerMock implements OrganizationController {
 
   public OrganizationController getMock() {
     return mock;
+  }
+
+  @Override
+  public SpaceWithSubSpacesAndComponents getFullTreeview(final String userId)
+      throws AdminException {
+    return null;
+  }
+
+  @Override
+  public SpaceWithSubSpacesAndComponents getFullTreeview(final String userId, final String spaceId)
+      throws AdminException {
+    return null;
+  }
+
+  @Override
+  public List<SpaceInstLight> getPathToSpace(final String spaceId) {
+    return null;
+  }
+
+  @Override
+  public List<SpaceInstLight> getPathToComponent(final String componentId) {
+    return null;
   }
 }

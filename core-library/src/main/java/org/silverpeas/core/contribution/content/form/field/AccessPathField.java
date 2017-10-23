@@ -24,7 +24,7 @@
 package org.silverpeas.core.contribution.content.form.field;
 
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.node.model.NodeDetail;
@@ -94,9 +94,9 @@ public class AccessPathField extends TextField {
 
     // Space > SubSpace
     if (componentId != null && !"useless".equals(componentId)) {
-      List<SpaceInst> listSpaces =  OrganizationControllerProvider
-          .getOrganisationController().getSpacePathToComponent(componentId);
-      for (SpaceInst space : listSpaces) {
+      List<SpaceInstLight> listSpaces =  OrganizationControllerProvider
+          .getOrganisationController().getPathToComponent(componentId);
+      for (SpaceInstLight space : listSpaces) {
         currentAccessPath.append(space.getName()).append(" > ");
       }
 
