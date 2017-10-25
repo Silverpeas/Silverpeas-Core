@@ -33,8 +33,8 @@ import java.util.UUID;
 public abstract class AbstractCache extends AbstractSimpleCache
     implements Cache {
 
-  // In seconds, 12 hours (60seconds x 60minutes x 12hours)
-  private final static int DEFAULT_TIME_TO_IDLE = 60 * 60 * 12;
+  // In seconds, 12 hours (60 seconds x 60 minutes x 12 hours)
+  private static final int DEFAULT_TIME_TO_IDLE = 60 * 60 * 12;
 
   @Override
   public String add(final Object value, final int timeToLive) {

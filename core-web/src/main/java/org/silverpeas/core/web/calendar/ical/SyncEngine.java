@@ -26,9 +26,11 @@
 //
 package org.silverpeas.core.web.calendar.ical;
 
-import com.sun.syndication.feed.synd.SyndFeed;
+import com.rometools.rome.feed.synd.SyndFeed;
 import net.fortuna.ical4j.data.CalendarOutputter;
 import net.fortuna.ical4j.model.Calendar;
+import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,14 +39,10 @@ import java.net.URL;
 
 public final class SyncEngine {
 
-  public final static String REMOTE_CONNECT_SUCCEEDED = "0";
-  public final static String AUTHENT_LOGIN_FAILED = "1";
-  public final static String AUTHENT_PWD_FAILED = "2";
-  public final static String REMOTE_CONNECT_FAILED = "3";
-
-  public SyncEngine() {
-
-  }
+  public static final String REMOTE_CONNECT_SUCCEEDED = "0";
+  public static final String AUTHENT_LOGIN_FAILED = "1";
+  public static final String AUTHENT_PWD_FAILED = "2";
+  public static final String REMOTE_CONNECT_FAILED = "3";
 
   /**
    * Import a remote calendar
@@ -58,8 +56,8 @@ public final class SyncEngine {
    * feed converter mode
    * @throws Exception any exception (eg. i/o, invalid param, invalid calendar syntax, etc)
    */
-  public final String synchronize(File localCalendar, URL remoteCalendar,
-      String username, String password) throws Exception {
+  public final String synchronize(File localCalendar, URL remoteCalendar, String username,
+      String password) throws SilverpeasException {
 
 
     if (username == null || username.length() == 0) {
@@ -72,49 +70,43 @@ public final class SyncEngine {
     byte[] feedBytes = FeedUtilities.loadFeed(remoteCalendar.toString(),
         username, password);
 
-    // Save content into the calendar file
-    FileOutputStream fileOutputStream = new FileOutputStream(localCalendar);
-    OutputStreamWriter fileOutput = new OutputStreamWriter(fileOutputStream,
-        ImportIcalManager.charset);
-
-    // Write File
-    try {
+    // Save content into the calendar file and write File
+    try (FileOutputStream fileOutputStream = new FileOutputStream(localCalendar);
+         OutputStreamWriter fileOutput = new OutputStreamWriter(fileOutputStream,
+             ImportIcalManager.charset)) {
       // test if rss feed of file feed
       if (feedBytes != null) {
-        if (isRssFeed(feedBytes, remoteCalendar)) {
+        if (isRssFeed(feedBytes)) {
 
           // convert rss feed in SilverpeasCalendar File
+          final long eventLength = 100000000L;
           CalendarOutputter outputter = new CalendarOutputter();
           SyndFeed feed = FeedUtilities.parseFeed(feedBytes);
-          Calendar feedCalendar = FeedUtilities.convertFeedToCalendar(feed, 100000000L);
+          Calendar feedCalendar = FeedUtilities.convertFeedToCalendar(feed, eventLength);
           outputter.output(feedCalendar, fileOutput);
-        } else // File feed
-        {
-
+        } else {
+          // file feed
           fileOutput.write(StringUtils.decodeToString(feedBytes,
               ImportIcalManager.charset));
           fileOutput.flush();
         }
         returnCode = REMOTE_CONNECT_SUCCEEDED;
-      } else
+      } else {
         returnCode = REMOTE_CONNECT_FAILED;
-    } catch (Exception e) {
-      returnCode = REMOTE_CONNECT_FAILED;
-    } finally {
-      if (fileOutput != null) {
-        fileOutput.close();
       }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
+      returnCode = REMOTE_CONNECT_FAILED;
     }
 
     return returnCode;
   }
 
-  private boolean isRssFeed(byte[] bytes, URL feedUrl) throws Exception {
+  private boolean isRssFeed(byte[] bytes) {
     boolean isRssFeed = false;
     SyndFeed syndFeed = FeedUtilities.parseFeed(bytes);
-    if (syndFeed != null) {
-      if (syndFeed.getFeedType() != null)
-        isRssFeed = true;
+    if (syndFeed != null && syndFeed.getFeedType() != null) {
+      isRssFeed = true;
     }
     return isRssFeed;
   }

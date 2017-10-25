@@ -46,13 +46,13 @@ public interface SimpleCache {
 
   /**
    * Gets a typed element from the cache.
-   * Null is returned if an element exists for the given key but the object type doesn't
-   * correspond.
+   * Null is returned if an element exists for the given key but the object doesn't satisfy the
+   * expected type.
    * @param <T> the concrete type of the object to get.
    * @param key the key with which the object to get is mapped in the cache.
-   * @param classType the class of the instance to get.
-   * @return the object mapped with the key or null if no there is no object mapped with the
-   * specified key.
+   * @param classType the class type the instance to get as to satisfy.
+   * @return the object mapped with the key or null if either there is no object mapped with the
+   * specified key or the object doesn't satisfy the expected class type.
    */
   <T> T get(Object key, Class<T> classType);
 

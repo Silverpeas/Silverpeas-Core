@@ -77,6 +77,7 @@ public class MsgMailExtractorIntegrationTest {
         .addAsResource("org/silverpeas/converter")
         .testFocusedOn(warBuilder -> {
           warBuilder
+              .addMavenDependencies("org.apache.poi:poi-scratchpad")
               .addMavenDependencies("com.icegreen:greenmail")
               .addPackages(true, "org.silverpeas.core.mail")
               .addAsResource("org/silverpeas/core/mail/mailWithAttachments.msg");
@@ -108,7 +109,7 @@ public class MsgMailExtractorIntegrationTest {
     if (attachments != null && attachments.length > 0) {
       System.out.print("\n");
       for (AttachmentChunks attachmentChunks : attachments) {
-        System.out.println(attachmentChunks.attachFileName.getValue());
+        System.out.println(attachmentChunks.getAttachFileName().getValue());
       }
     } else {
       System.out.println("None.");
@@ -178,8 +179,8 @@ public class MsgMailExtractorIntegrationTest {
    * @throws Exception
    */
   protected static Date extractDateOfReception(MAPIMessage msg) throws Exception {
-    if (msg.getMainChunks().messageHeaders != null) {
-      String chunkContent = msg.getMainChunks().messageHeaders.getValue();
+    if (msg.getMainChunks().getMessageHeaders() != null) {
+      String chunkContent = msg.getMainChunks().getMessageHeaders().getValue();
       int dateIdx = chunkContent.indexOf("Date: ");
       if (dateIdx >= 0) {
         chunkContent = chunkContent.substring(dateIdx + 6, chunkContent.indexOf("\n", dateIdx))

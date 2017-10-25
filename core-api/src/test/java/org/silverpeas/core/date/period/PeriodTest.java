@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.date.period;
 
-import org.silverpeas.core.date.DateTime;
-import org.silverpeas.core.util.DateUtil;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.notification.message.MessageManager;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.time.TimeUnit;
 
 import java.sql.Timestamp;
@@ -46,12 +46,13 @@ public class PeriodTest {
 
   Date periodReferenceBeginDate = Timestamp.valueOf("2013-11-28 12:00:00.000");
   Date periodReferenceEndDate = Timestamp.valueOf("2013-12-25 18:30:40.006");
-  Period periodReferenceTest = Period.from(periodReferenceBeginDate, periodReferenceEndDate);
+  Period periodReferenceTest;
 
   @Before
   public void setup() {
     MessageManager.initialize();
     MessageManager.setLanguage("fr");
+    periodReferenceTest = Period.from(periodReferenceBeginDate, periodReferenceEndDate);
     periodReferenceTest.inTimeZone(TimeZone.getTimeZone("Europe/Paris"));
   }
 

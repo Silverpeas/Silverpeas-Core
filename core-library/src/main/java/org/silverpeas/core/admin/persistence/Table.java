@@ -215,7 +215,7 @@ public abstract class Table<T> extends AbstractTable<T> {
   }
 
   /**
-   * Returns the nb of rows in the given table agregated on the given column
+   * Returns the nb of rows in the given table aggregated on the given column
    * @param tableName
    * @param whereClause
    * @param param
@@ -238,7 +238,7 @@ public abstract class Table<T> extends AbstractTable<T> {
   }
 
   /**
-   * Returns the nb of rows in the given table agregated on the given column
+   * Returns the nb of rows in the given table aggregated on the given column
    * @param tableName
    * @param whereClause
    * @param id

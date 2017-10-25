@@ -188,8 +188,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>com.rometools</groupId>
       <artifactId>rome</artifactId>
-      <groupId>rome</groupId>
     </dependency>
   </dependencies>
 

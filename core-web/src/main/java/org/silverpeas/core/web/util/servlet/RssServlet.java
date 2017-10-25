@@ -23,21 +23,24 @@
  */
 package org.silverpeas.core.web.util.servlet;
 
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.service.AdminController;
+import com.rometools.rome.feed.synd.SyndContent;
+import com.rometools.rome.feed.synd.SyndContentImpl;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndEntryImpl;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.feed.synd.SyndFeedImpl;
+import com.rometools.rome.io.SyndFeedOutput;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.domain.model.Domain;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
-import de.nava.informa.core.ChannelIF;
-import de.nava.informa.core.ItemIF;
-import de.nava.informa.exporters.RSS_2_0_Exporter;
-import de.nava.informa.impl.basic.Channel;
-import de.nava.informa.impl.basic.Item;
-import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.inject.Inject;
 import javax.servlet.ServletException;
@@ -47,14 +50,16 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.Writer;
-import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 public abstract class RssServlet<T> extends HttpServlet {
 
   private static final long serialVersionUID = 1756308502037077021L;
+  private static final int DEFAULT_MAX_TEMS_COUNT = 15;
 
   @Inject
   private AdminController adminController;
@@ -75,66 +80,73 @@ public abstract class RssServlet<T> extends HttpServlet {
     String userId = getUserId(req);
     String login = getLogin(req);
     String password = getPassword(req);
-    // rechercher si le composant a bien le flux RSS autorisé
+    // check the component instance have the authorized RSS feed?
     if (isComponentRss(instanceId)) {
       try {
 
 
-        // Vérification que le user a droit d'accès au composant
+        // check the user right to access the component instance
         UserFull user = adminController.getUserFull(userId);
         if (user != null && login.equals(user.getLogin()) && password.equals(user.getPassword()) &&
             isComponentAvailable(instanceId, userId)) {
 
           String serverURL = getServerURL(adminController, user.getDomainId());
-          ChannelIF channel = new Channel();
+          SyndFeed feed = new SyndFeedImpl();
+          feed.setFeedType("rss_2.0");
+          feed.setTitle(getChannelTitle(instanceId));
+          feed.setDescription(getChannelTitle(instanceId));
+          feed.setLink(
+              serverURL + URLUtil.getApplicationURL() + URLUtil.getURL("useless", instanceId));
 
-          // récupération de la liste des N éléments à remonter dans le flux
+          // fetch N items to syndicate within the feed
           int nbReturnedElements = getNbReturnedElements();
           Collection<T> listElements = getListElements(instanceId, nbReturnedElements);
 
-          // création d'une liste de ItemIF en fonction de la liste des éléments
-
+          // write each of them as a feed entry into the syndication feed
+          List<SyndEntry> entries = new ArrayList<>(listElements.size());
           for (T element : listElements) {
             String title = getElementTitle(element, userId);
-            URL link = new URL(serverURL + getElementLink(element, userId));
+            String link = serverURL + getElementLink(element, userId);
             String description = getElementDescription(element, userId);
             Date dateElement = getElementDate(element);
             String creatorId = getElementCreatorId(element);
-            ItemIF item = new Item();
-            item.setTitle(title);
-            item.setLink(link);
-            item.setDescription(description);
-            item.setDate(dateElement);
-
-            if (StringUtil.isDefined(creatorId)) {
-              UserDetail creator = adminController.getUserDetail(creatorId);
-              if (creator != null) {
-                item.setCreator(creator.getDisplayedName());
-              }
-            } else if (StringUtil.isDefined(getExternalCreatorId(element))) {
-              item.setCreator(getExternalCreatorId(element));
-            }
-            channel.addItem(item);
+            SyndEntry entry = new SyndEntryImpl();
+            SyndContent descriptionContent = new SyndContentImpl();
+            descriptionContent.setType("text/plain");
+            descriptionContent.setValue(description);
+            entry.setTitle(title);
+            entry.setLink(link);
+            entry.setDescription(descriptionContent);
+            entry.setPublishedDate(dateElement);
+            setCreator(element, creatorId, entry);
+            entries.add(entry);
           }
 
-          // construction de l'objet Channel
-          channel.setTitle(getChannelTitle(instanceId));
-          URL componentUrl = new URL(serverURL + URLUtil.getApplicationURL()
-              + URLUtil.getURL("useless", instanceId));
-          channel.setLocation(componentUrl);
+          feed.setEntries(entries);
 
           // exportation du channel
           res.setContentType(MimeTypes.RSS_MIME_TYPE);
-          res.setHeader("Content-Disposition", "inline; filename=feeds.rss");
           Writer writer = res.getWriter();
-          RSS_2_0_Exporter rssExporter = new RSS_2_0_Exporter(writer, "UTF-8");
-          rssExporter.write(channel);
+          SyndFeedOutput feedOutput = new SyndFeedOutput();
+          feedOutput.output(feed, writer);
         } else {
           objectNotFound(req, res);
         }
       } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
         objectNotFound(req, res);
       }
+    }
+  }
+
+  protected void setCreator(final T element, final String creatorId, final SyndEntry entry) {
+    if (StringUtil.isDefined(creatorId)) {
+      UserDetail creator = adminController.getUserDetail(creatorId);
+      if (creator != null) {
+        entry.setAuthor(creator.getDisplayedName());
+      }
+    } else if (StringUtil.isDefined(getExternalCreatorId(element))) {
+      entry.setAuthor(getExternalCreatorId(element));
     }
   }
 
@@ -162,7 +174,7 @@ public abstract class RssServlet<T> extends HttpServlet {
   }
 
   public int getNbReturnedElements() {
-    return 15;
+    return DEFAULT_MAX_TEMS_COUNT;
   }
 
   public abstract Collection<T> getListElements(String instanceId, int nbReturned)
@@ -179,6 +191,7 @@ public abstract class RssServlet<T> extends HttpServlet {
   public abstract String getElementCreatorId(T element);
 
   public String getExternalCreatorId(T element) {
+    // designed to be extended but return nothing in standard case
     return "";
   }
 
@@ -204,13 +217,12 @@ public abstract class RssServlet<T> extends HttpServlet {
 
   protected MainSessionController getMainSessionController(HttpServletRequest req) {
     HttpSession session = req.getSession(true);
-    MainSessionController mainSessionCtrl = (MainSessionController) session.getAttribute(
+    return  (MainSessionController) session.getAttribute(
         MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    return mainSessionCtrl;
   }
 
   protected boolean isUserLogin(HttpServletRequest req) {
-    return (getMainSessionController(req) != null);
+    return getMainSessionController(req) != null;
   }
 
   protected void objectNotFound(HttpServletRequest req, HttpServletResponse res)

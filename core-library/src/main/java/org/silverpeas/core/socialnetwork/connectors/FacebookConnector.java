@@ -25,20 +25,14 @@ package org.silverpeas.core.socialnetwork.connectors;
 
 import org.silverpeas.core.socialnetwork.qualifiers.Facebook;
 import org.silverpeas.core.socialnetwork.service.AccessToken;
-import org.silverpeas.core.socialnetwork.service.SocialNetworkAuthorizationException;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import javax.annotation.PostConstruct;
-import javax.inject.Singleton;
-import javax.servlet.http.HttpServletRequest;
-
-import org.springframework.social.connect.UserProfile;
 import org.springframework.social.facebook.api.impl.FacebookTemplate;
 import org.springframework.social.facebook.connect.FacebookConnectionFactory;
 import org.springframework.social.oauth2.AccessGrant;
-import org.springframework.social.oauth2.GrantType;
-import org.springframework.social.oauth2.OAuth2Operations;
-import org.springframework.social.oauth2.OAuth2Parameters;
+
+import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
 
 @Facebook
 @Singleton
@@ -47,9 +41,6 @@ public class FacebookConnector extends AbstractSocialNetworkConnector {
   private FacebookConnectionFactory connectionFactory = null;
   private String consumerKey = null;
   private String secretKey = null;
-
-  public FacebookConnector() {
-  }
 
   @PostConstruct
   @Override
@@ -61,57 +52,15 @@ public class FacebookConnector extends AbstractSocialNetworkConnector {
   }
 
   @Override
-  public String buildAuthenticateUrl(String callBackURL) {
-    OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-    OAuth2Parameters params = new OAuth2Parameters();
-    params.setRedirectUri(callBackURL);
-    params.setScope("email,publish_stream,offline_access");
-
-    return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, params);
-  }
-
-  @Override
-  public AccessToken exchangeForAccessToken(HttpServletRequest request, String callBackURL)
-      throws SocialNetworkAuthorizationException {
-    String error_reason = request.getParameter("error_reason");
-    if (error_reason != null) {
-      throw new SocialNetworkAuthorizationException("FacebookConnector.exchangeForAccessToken",
-          SilverpeasException.WARNING, error_reason);
-    } else {
-      String authorizationCode = request.getParameter("code");
-
-      OAuth2Operations oauthOperations = connectionFactory.getOAuthOperations();
-      AccessGrant accessGrant =
-          oauthOperations.exchangeForAccess(authorizationCode, callBackURL, null);
-      return new AccessToken(accessGrant);
-    }
-
-  }
-
-  @Override
-  public UserProfile getUserProfile(AccessToken authorizationToken) {
-    AccessGrant accessGrant = authorizationToken.getAccessGrant();
-    UserProfile profile = connectionFactory.createConnection(accessGrant).fetchUserProfile();
-
-    return profile;
-  }
-
-  @Override
   public String getUserProfileId(AccessToken authorizationToken) {
     AccessGrant accessGrant = authorizationToken.getAccessGrant();
-    String profileId =
-        connectionFactory.createConnection(accessGrant).getApi().userOperations().getUserProfile()
+    return getConnectionFactory().createConnection(accessGrant)
+        .getApi()
+        .userOperations()
+        .getUserProfile()
         .getId();
-
-    return profileId;
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * SocialNetworkConnector#updateStatus(com.silverpeas.
-   * socialnetwork.service.AccessToken, java.lang.String)
-   */
   @Override
   public void updateStatus(AccessToken authorizationToken, String status) {
     FacebookTemplate facebook =
@@ -122,6 +71,11 @@ public class FacebookConnector extends AbstractSocialNetworkConnector {
   @Override
   public void setJavascriptAttributes(HttpServletRequest request) {
     request.setAttribute("FB_loadSDK", getSDKLoadingScript(request));
+  }
+
+  @Override
+  protected FacebookConnectionFactory getConnectionFactory() {
+    return connectionFactory;
   }
 
   private String getSDKLoadingScript(HttpServletRequest request) {

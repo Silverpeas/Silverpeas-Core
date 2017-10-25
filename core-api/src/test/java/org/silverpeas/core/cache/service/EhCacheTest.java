@@ -23,11 +23,12 @@
  */
 package org.silverpeas.core.cache.service;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.store.MemoryStoreEvictionPolicy;
-import org.junit.Before;
+import org.ehcache.config.ResourcePools;
+import org.ehcache.config.ResourceType;
+import org.ehcache.config.SizedResourcePool;
+import org.ehcache.config.units.EntryUnit;
 import org.junit.Test;
-import org.silverpeas.core.cache.service.EhCache;
+import org.silverpeas.core.util.Mutable;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
@@ -40,146 +41,150 @@ public class EhCacheTest {
   private static final String Object1 = "";
   private static final Object Object2 = new Object();
 
-  @Before
-  public void setup() {
-    Cache cache = new EhCache(10).getCache();
-    for (Object key : cache.getKeys()) {
-      cache.remove(key);
-    }
-    assertThat(cache.getKeysWithExpiryCheck().size(), is(0));
-    assertThat(cache.getCacheConfiguration().getName(), is("SILVERPEAS_COMMON_EH_CACHE"));
-    assertThat(cache.getCacheConfiguration().isEternal(), is(false));
-    assertThat(cache.getCacheConfiguration().getMaxEntriesLocalHeap(), is(10L));
-    assertThat(cache.getCacheConfiguration().getMaxBytesLocalDisk(), is(0L));
-    assertThat(cache.getCacheConfiguration().getPersistenceConfiguration(), nullValue());
-    assertThat(cache.getCacheConfiguration().getTimeToIdleSeconds(), is(0L));
-    assertThat(cache.getCacheConfiguration().getTimeToLiveSeconds(), is(0L));
-    assertThat(cache.getCacheConfiguration().isMaxBytesLocalDiskPercentageSet(), is(false));
-    assertThat(cache.getCacheConfiguration().isMaxBytesLocalOffHeapPercentageSet(), is(false));
-    assertThat(cache.getCacheConfiguration().getMemoryStoreEvictionPolicy(),
-        is(MemoryStoreEvictionPolicy.LRU));
+  @Test
+  public void testCacheInception() {
+    EhCache cache = new EhCache(2L);
+
+    ResourcePools resourcePools = cache.getCache().getRuntimeConfiguration().getResourcePools();
+    assertThat(resourcePools.getResourceTypeSet().size(), is(1));
+
+    SizedResourcePool pool = resourcePools.getPoolForResource(ResourceType.Core.HEAP);
+    assertThat(pool, notNullValue());
+    assertThat(pool.isPersistent(), is(false));
+    assertThat(pool.getUnit(), is(EntryUnit.ENTRIES));
+    assertThat(pool.getSize(), is(2L));
+    assertThat(elementCountIn(cache), is(0));
   }
 
   @Test
   public void testClear() {
-    EhCache service = new EhCache(0);
-    service.add(Object1);
-    service.add(Object2);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(2));
-    service.clear();
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
+    EhCache cache = new EhCache(0);
+    String key1 = cache.add(Object1);
+    String key2 = cache.add(Object2);
+    assertThat(elementCountIn(cache), is(2));
+    assertThat(cache.getCache().get(key1).getObjectValue(), is(Object1));
+    assertThat(cache.getCache().get(key2).getObjectValue(), is(Object2));
+
+    cache.clear();
+    assertThat(elementCountIn(cache), is(0));
+    assertThat(cache.getCache().get(key1), nullValue());
+    assertThat(cache.getCache().get(key1), nullValue());
   }
 
   @Test
   public void testGet() {
-    EhCache service = new EhCache(0);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
-    String uniqueKey1 = service.add(Object1);
-    assertThat(service.get("dummy"), nullValue());
-    assertThat(service.get(uniqueKey1), is((Object) Object1));
-    assertThat(service.get(uniqueKey1, Object.class), is((Object) Object1));
-    assertThat(service.get(uniqueKey1, String.class), is(Object1));
-    assertThat(service.get(uniqueKey1, Number.class), nullValue());
+    EhCache cache = new EhCache(0);
+    String uniqueKey1 = cache.add(Object1);
+    assertThat(cache.get("dummy"), nullValue());
+    assertThat(cache.get(uniqueKey1), is(Object1));
+    assertThat(cache.get(uniqueKey1, Object.class), is(Object1));
+    assertThat(cache.get(uniqueKey1, String.class), is(Object1));
+    assertThat(cache.get(uniqueKey1, Number.class), nullValue());
   }
 
   @Test
   public void testAdd() {
-    EhCache service = new EhCache(0);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
-    String uniqueKey1 = service.add(Object1);
-    String uniqueKey2 = service.add(Object2);
+    EhCache cache = new EhCache(0);
+    String uniqueKey1 = cache.add(Object1);
+    String uniqueKey2 = cache.add(Object2);
     assertThat(uniqueKey1, notNullValue());
     assertThat(uniqueKey2, notNullValue());
     assertThat(uniqueKey2, not(is(uniqueKey1)));
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(2));
   }
 
   @Test
-  public void testAddWithExplicitLiveExpirency() throws InterruptedException {
-    final EhCache service = new EhCache(0);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
-    service.add(Object1, 1);
-    service.add(Object2, 10);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(2));
+  public void testAddWithExplicitLiveExpiry() throws InterruptedException {
+    final EhCache cache = new EhCache(0);
+    String key1 = cache.add(Object1, 1);
+    String key2 = cache.add(Object2, 5);
+
     Thread.sleep(1100L);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(1));
+    assertThat(cache.get(key1), nullValue());
+    assertThat(cache.get(key2), is(Object2));
+
+    cache.clear();
+    assertThat(elementCountIn(cache), is(0));
+    key2 = cache.add(Object2, 5);
     Thread.sleep(5000L);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(1));
-    Thread.sleep(5000L);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
+    assertThat(cache.get(key2), nullValue());
+    assertThat(elementCountIn(cache), is(0));
   }
 
   @Test
-  public void testAddWithSameKeyAndWithExplicitIdleExpirency() throws InterruptedException {
-    final EhCache service = new EhCache(0);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
-    service.add(Object1, 10, 1);
-    assertWithExplicitIdleExpirency(service);
+  public void testAddWithSameKeyAndWithExplicitIdleExpiry() throws InterruptedException {
+    final EhCache cache = new EhCache(0);
+    String key = cache.add(Object1, 5, 1);
+    assertWithExplicitIdleExpirency(key, cache);
   }
 
   @Test
   public void testPut() {
-    EhCache service = new EhCache(0);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
-    service.put("A", Object1);
-    service.put("B", Object2);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(2));
+    EhCache cache = new EhCache(0);
+    cache.put("A", Object1);
+    cache.put("B", Object2);
+    assertThat(cache.get("A"), is(Object1));
+    assertThat(cache.get("B"), is(Object2));
   }
 
   @Test
   public void testPutWithSameKey() {
-    EhCache service = new EhCache(0);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
-    service.put("A", Object1);
-    service.put("A", Object2);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(1));
+    EhCache cache = new EhCache(0);
+    cache.put("A", Object1);
+    cache.put("A", Object2);
+    assertThat(cache.get("A"), is(Object2));
   }
 
   @Test
   public void testPutWithSameKeyAndWithExplicitLiveExpirency() throws InterruptedException {
-    final EhCache service = new EhCache(0);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
-    service.put("A", Object1, 10);
-    service.put("A", Object2, 1);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(1));
+    final EhCache cache = new EhCache(0);
+    cache.put("A", Object1, 10);
+    cache.put("A", Object2, 1);
     Thread.sleep(1100L);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
+    assertThat(elementCountIn(cache), is(0));
   }
 
   @Test
   public void testPutWithSameKeyAndWithExplicitIdleExpirency() throws InterruptedException {
-    final EhCache service = new EhCache(0);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
-    service.put("A", Object1, 10, 1);
-    assertWithExplicitIdleExpirency(service);
+    final EhCache cache = new EhCache(0);
+    assertThat(elementCountIn(cache), is(0));
+    cache.put("A", Object1, 5, 1);
+    assertWithExplicitIdleExpirency("A", cache);
   }
 
-  public void assertWithExplicitIdleExpirency(EhCache service) throws InterruptedException {
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(1));
-    String key = (String) service.getCache().getKeys().get(0);
+  public void assertWithExplicitIdleExpirency(String key, EhCache cache)
+      throws InterruptedException {
     for (int i = 0; i < 4; i++) {
-      service.get(key);
+      assertThat(elementCountIn(cache), is(1));
+      cache.get(key);
       Thread.sleep(550L);
-      assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(1));
     }
-    Thread.sleep(1100L);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
+    Thread.sleep(5000L - (4 * 550L));
+    assertThat(elementCountIn(cache), is(0));
   }
 
   @Test
   public void testRemove() {
-    EhCache service = new EhCache(0);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
-    String uniqueKey1 = service.add(Object1);
-    String uniqueKey2 = service.add(Object2);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(2));
-    service.remove("lkjlkj");
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(2));
-    service.remove(uniqueKey1, Number.class);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(2));
-    service.remove(uniqueKey1, Object.class);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(1));
-    service.remove(uniqueKey2);
-    assertThat(service.getCache().getKeysWithExpiryCheck().size(), is(0));
+    EhCache cache = new EhCache(0);
+    String uniqueKey1 = cache.add(Object1);
+    String uniqueKey2 = cache.add(Object2);
+    assertThat(elementCountIn(cache), is(2));
+    cache.remove("lkjlkj");
+    assertThat(elementCountIn(cache), is(2));
+    cache.remove(uniqueKey1, Number.class);
+    assertThat(elementCountIn(cache), is(2));
+    cache.remove(uniqueKey1, Object.class);
+    assertThat(elementCountIn(cache), is(1));
+    cache.remove(uniqueKey2);
+    assertThat(elementCountIn(cache), is(0));
+  }
+
+  /**
+   * Be cautious: the count of elements in the cache triggers an access to it => this will impact
+   * the lifetime of the accessed elements with TTL/TTI set.
+   */
+  private int elementCountIn(final EhCache cache) {
+    Mutable<Integer> count = Mutable.of(0);
+    cache.getCache().forEach(e -> count.set(count.get() + 1));
+    return count.get();
   }
 }

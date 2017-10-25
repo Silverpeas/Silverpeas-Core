@@ -46,6 +46,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>javax.cache</groupId>
+      <artifactId>cache-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>com.fasterxml.jackson.module</groupId>
       <artifactId>jackson-module-jaxb-annotations</artifactId>
     </dependency>
@@ -67,11 +71,6 @@
       <version>${project.version}</version>
       <scope>test</scope>
       <type>jar</type>
-    </dependency>
-    <dependency>
-      <groupId>informa</groupId>
-      <artifactId>informa</artifactId>
-      <classifier>silverpeas</classifier>
     </dependency>
     <dependency>
       <groupId>org.bouncycastle</groupId>
@@ -136,10 +135,6 @@
     <dependency>
       <groupId>org.apache.lucene</groupId>
       <artifactId>lucene-spellchecker</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.jdom</groupId>
-      <artifactId>jdom</artifactId>
     </dependency>
     <dependency>
       <groupId>net.htmlparser.jericho</groupId>
