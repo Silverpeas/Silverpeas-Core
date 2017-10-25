@@ -24,7 +24,9 @@
 package org.silverpeas.core.util;
 
 import org.apache.commons.lang3.StringUtils;
+import org.junit.Before;
 import org.junit.Test;
+import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.memory.MemoryData;
 import org.silverpeas.core.util.memory.MemoryUnit;
 
@@ -40,6 +42,12 @@ import static org.hamcrest.Matchers.is;
  * Date: 14/11/13
  */
 public class TestMemoryData extends AbstractUnitTest {
+
+  @Before
+  public void setUpMessageManager() {
+    MessageManager.initialize();
+    MessageManager.setLanguage("fr");
+  }
 
   @Test
   public void getSize() {

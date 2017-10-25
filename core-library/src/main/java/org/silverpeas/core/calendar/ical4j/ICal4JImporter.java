@@ -24,11 +24,15 @@
 package org.silverpeas.core.calendar.ical4j;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.CalendarParserFactory;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.ParameterFactoryRegistry;
 import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.PropertyFactoryRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.Categories;
@@ -101,7 +105,12 @@ public class ICal4JImporter implements ICalendarImporter {
       final Consumer<Stream<Pair<CalendarEvent, List<CalendarEventOccurrence>>>> consumer)
       throws ImportException {
     try {
-      CalendarBuilder builder = new CalendarBuilder();
+      PropertyFactoryRegistry propertyFactoryRegistry = new PropertyFactoryRegistry();
+      propertyFactoryRegistry.register(HtmlProperty.PROPERTY_NAME, HtmlProperty.FACTORY);
+      CalendarBuilder builder =
+          new CalendarBuilder(CalendarParserFactory.getInstance().createParser(),
+              propertyFactoryRegistry, new ParameterFactoryRegistry(),
+              TimeZoneRegistryFactory.getInstance().createRegistry());
       Calendar calendar = builder.build(getCalendarInputStream(descriptor));
       if (calendar.getComponents().isEmpty()) {
         consumer.accept(Stream.empty());

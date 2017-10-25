@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.chart.period;
 
+import org.junit.Before;
+import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.JSONCodec;
 
 import java.util.function.Function;
@@ -31,6 +33,12 @@ import java.util.function.Function;
  * @author Yohann Chastagnier
  */
 public class AbstractPeriodChartTest {
+
+  @Before
+  public void setUpMessageManager() {
+    MessageManager.initialize();
+    MessageManager.setLanguage("fr");
+  }
 
   @SuppressWarnings("unchecked")
   protected String expJsChart(String title, String defaultPeriodType, String xLabel, String yLabel,

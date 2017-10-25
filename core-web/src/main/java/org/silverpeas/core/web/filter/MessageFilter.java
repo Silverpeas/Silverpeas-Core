@@ -76,7 +76,7 @@ public class MessageFilter implements Filter {
 
       } finally {
 
-        // Remove message container if no message registred
+        // Remove message container if no message registered
         if (MessageManager.getMessageContainer(registredKey).getMessages().isEmpty()) {
           MessageManager.clear(registredKey);
           httpResponse.setHeader(HTTP_MESSAGEKEY, null);

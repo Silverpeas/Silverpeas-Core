@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.calendar.ical;
 
-import com.sun.syndication.io.XmlReader;
+import com.rometools.rome.io.XmlReader;
 import net.fortuna.ical4j.data.CalendarBuilder;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Component;

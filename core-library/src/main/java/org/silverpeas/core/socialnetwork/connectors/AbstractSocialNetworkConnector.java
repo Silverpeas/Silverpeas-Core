@@ -23,14 +23,18 @@
  */
 package org.silverpeas.core.socialnetwork.connectors;
 
-import javax.servlet.http.HttpServletRequest;
-
 import org.silverpeas.core.socialnetwork.service.AccessToken;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkAuthorizationException;
+import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.springframework.social.connect.UserProfile;
+import org.springframework.social.connect.support.OAuth2ConnectionFactory;
+import org.springframework.social.oauth2.AccessGrant;
+import org.springframework.social.oauth2.GrantType;
+import org.springframework.social.oauth2.OAuth2Operations;
+import org.springframework.social.oauth2.OAuth2Parameters;
 
-import org.silverpeas.core.util.ResourceLocator;
+import javax.servlet.http.HttpServletRequest;
 
 public abstract class AbstractSocialNetworkConnector implements SocialNetworkConnector {
 
@@ -42,19 +46,45 @@ public abstract class AbstractSocialNetworkConnector implements SocialNetworkCon
   }
 
   @Override
-  abstract public String buildAuthenticateUrl(String callBackURL);
+  public String buildAuthenticateUrl(String callBackURL) {
+    OAuth2Operations oauthOperations = getConnectionFactory().getOAuthOperations();
+    OAuth2Parameters params = new OAuth2Parameters();
+    params.setRedirectUri(callBackURL);
+    params.setScope("email,publish_stream,offline_access");
+
+    return oauthOperations.buildAuthorizeUrl(GrantType.AUTHORIZATION_CODE, params);
+  }
 
   @Override
-  abstract public AccessToken exchangeForAccessToken(HttpServletRequest request, String callBackURL)
-      throws SocialNetworkAuthorizationException;
+  public AccessToken exchangeForAccessToken(HttpServletRequest request, String callBackURL)
+      throws SocialNetworkAuthorizationException {
+    String errorReason = request.getParameter("error_reason");
+    if (errorReason != null) {
+      throw new SocialNetworkAuthorizationException(
+          "Social Network Authorization Asking failed: " + errorReason);
+    } else {
+      String authorizationCode = request.getParameter("code");
+
+      OAuth2Operations oauthOperations = getConnectionFactory().getOAuthOperations();
+      AccessGrant accessGrant =
+          oauthOperations.exchangeForAccess(authorizationCode, callBackURL, null);
+      return new AccessToken(accessGrant);
+    }
+
+  }
 
   @Override
-  abstract public UserProfile getUserProfile(AccessToken authorizationToken);
+  public UserProfile getUserProfile(AccessToken authorizationToken) {
+    AccessGrant accessGrant = authorizationToken.getAccessGrant();
+    return getConnectionFactory().createConnection(accessGrant).fetchUserProfile();
+  }
 
   @Override
-  abstract public String getUserProfileId(AccessToken authorizationToken);
+  public abstract String getUserProfileId(AccessToken authorizationToken);
 
   protected SettingBundle getSettings() {
     return settings;
   }
+
+  protected abstract <T> OAuth2ConnectionFactory<T> getConnectionFactory();
 }
