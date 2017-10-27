@@ -29,6 +29,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
@@ -78,6 +79,7 @@ public class ICalendarEventImportProcessorIntegrationTest extends BaseCalendarTe
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .addAsResource("org/silverpeas/util/logging")
         .addAsResource("org/silverpeas/calendar/settings")
+        .addAsResource("org/silverpeas/util/timezone.properties")
         .build();
   }
 
@@ -86,6 +88,7 @@ public class ICalendarEventImportProcessorIntegrationTest extends BaseCalendarTe
     List<TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.isEmpty(), is(true));
 
+    OperationContext.fromUser("0");
     calendar = Calendar.getById(CALENDAR_ID);
   }
 

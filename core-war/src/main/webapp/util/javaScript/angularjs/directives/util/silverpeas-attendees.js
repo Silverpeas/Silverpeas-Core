@@ -138,6 +138,10 @@
               } ,200);
             }.bind(this);
 
+            $scope.$watch('$ctrl.attendees', function() {
+              _attendeeProcessor();
+            }.bind(this));
+
             $scope.$watchCollection('$ctrl.attendees', function() {
               if (!this.isWriteMode) {
                 _attendeeProcessor();

@@ -49,9 +49,15 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
+import org.silverpeas.core.persistence.datasource.OperationContext;
+import org.silverpeas.core.persistence.datasource.PersistOperation;
+import org.silverpeas.core.persistence.datasource.UpdateOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.StringUtil;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
 import javax.inject.Provider;
 import java.io.ByteArrayInputStream;
@@ -115,11 +121,20 @@ public class ICal4JExchangeImportTest {
     assertThat(iCalendarImporter, instanceOf(ICal4JImporter.class));
     commonAPI4Test.injectIntoMockedBeanContainer(iCalendarImporter);
 
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(),
+        new AnnotationLiteral<PersistOperation>() {
+        });
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(),
+        new AnnotationLiteral<UpdateOperation>() {
+        });
+
     creator = mock(User.class);
     when(creator.getId()).thenReturn("creatorId");
     when(creator.getDisplayedName()).thenReturn("Creator Test");
     when(creator.geteMail()).thenReturn("creator.test@silverpeas.org");
     when(UserProvider.get().getUser(creator.getId())).thenReturn(creator);
+
+    OperationContext.fromUser("0");
   }
 
   @Test(expected = IllegalArgumentException.class)
@@ -579,7 +594,7 @@ public class ICal4JExchangeImportTest {
     assertThat(reason + "getAttributes", actual.getAttributes(), is(expected.getAttributes()));
     assertThat(reason + "getPriority", actual.getPriority(), is(expected.getPriority()));
     assertThat(reason + "getVisibilityLevel", actual.getVisibilityLevel(), is(expected.getVisibilityLevel()));
-    assertThat(reason + "getCreateDate", actual.getCreationDate(), is(expected.getCreationDate()));
+    assertThat(reason + "getCreationDate", actual.getCreationDate(), is(expected.getCreationDate()));
     assertThat(reason + "getLastUpdateDate", actual.getLastUpdateDate(), is(expected.getLastUpdateDate()));
     verifyComponent(reason, actual.asCalendarComponent(), expected.asCalendarComponent());
   }
@@ -598,7 +613,7 @@ public class ICal4JExchangeImportTest {
     assertThat(reason + "getAttendees", actual.getAttendees().stream().collect(Collectors.toSet()), is(expected.getAttendees().stream().collect(Collectors.toSet())));
     assertThat(reason + "getAttributes", actual.getAttributes(), is(expected.getAttributes()));
     assertThat(reason + "getPriority", actual.getPriority(), is(expected.getPriority()));
-    assertThat(reason + "getCreateDate", actual.getCreateDate(), is(expected.getCreateDate()));
+    assertThat(reason + "getCreationDate", actual.getCreationDate(), is(expected.getCreationDate()));
     assertThat(reason + "getLastUpdateDate", actual.getLastUpdateDate(), is(expected.getLastUpdateDate()));
   }
 

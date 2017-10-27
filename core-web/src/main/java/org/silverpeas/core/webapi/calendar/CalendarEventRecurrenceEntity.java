@@ -45,6 +45,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -154,7 +155,10 @@ public class CalendarEventRecurrenceEntity implements Serializable {
     optionalDateTime.ifPresent(t ->
         endDate = TemporalConverter.applyByType(t, LocalDate::toString,
             dateTime -> formatDateWithOffset(event.asCalendarComponent(), dateTime, zoneId)));
-    daysOfWeek = recurrence.getDaysOfWeek().stream().map(DayOfWeekOccurrenceEntity::from)
+    daysOfWeek = recurrence.getDaysOfWeek()
+        .stream()
+        .sorted(Comparator.comparing(DayOfWeekOccurrence::dayOfWeek))
+        .map(DayOfWeekOccurrenceEntity::from)
         .collect(Collectors.toList());
     return this;
   }

@@ -267,7 +267,7 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
     setEndDate(formatDateWithOffset(component, calendarEventOccurrence.getEndDate(), zoneId));
     if (component.getLastUpdateDate() != null) {
       setLastUpdateDate(component.getLastUpdateDate());
-      setLastUpdatedById(component.getLastUpdatedBy());
+      setLastUpdatedById(component.getLastUpdaterId());
     }
     setTitle(formatTitle(component, componentInstanceId, canBeAccessed()));
     if (canBeAccessed()) {

@@ -37,6 +37,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule;
 
@@ -77,6 +78,8 @@ public class CalendarEventOccurrencePersistenceIntegrationTest extends BaseCalen
 
   @Before
   public void persistSomeCalendarEventOccurrences() {
+    OperationContext.fromUser("0");
+
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     List<CalendarEventOccurrence> occurrences =
         calendar.between(LocalDate.of(2016, 1, 23), LocalDate.of(2016, 2, 28))
@@ -119,7 +122,9 @@ public class CalendarEventOccurrencePersistenceIntegrationTest extends BaseCalen
   public void deleteAllPersistedOccurrencesOfAGivenEvent() throws SQLException {
     long count = Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      return repository.deleteAllByEvent(event, true);
+      List<CalendarEventOccurrence> occurrences = repository.getAllByEvent(event);
+      repository.delete(occurrences);
+      return occurrences.size();
     });
 
     assertThat(count, is((long) expectedOccurrences.size()));
@@ -143,7 +148,9 @@ public class CalendarEventOccurrencePersistenceIntegrationTest extends BaseCalen
   public void deleteAllPersistedOccurrencesSinceAGivenEventOccurrence() throws SQLException {
     long count = Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      return repository.deleteSince(expectedOccurrences.get(1), true);
+      List<CalendarEventOccurrence> occurrences = repository.getAllSince(expectedOccurrences.get(1));
+      repository.delete(occurrences);
+      return occurrences.size();
     });
 
     assertThat(count, is((long) 2));

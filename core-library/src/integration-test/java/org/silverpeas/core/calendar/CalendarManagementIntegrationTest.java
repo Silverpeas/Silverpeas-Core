@@ -31,6 +31,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
 
@@ -74,6 +75,7 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
     // JPA and Basic SQL query must show that it exists no data
     assertThat(getCalendarTableLines(), hasSize(5));
     assertThat(Calendar.getByComponentInstanceId(INSTANCE_ID), empty());
+    OperationContext.fromUser(getMockedUser());
   }
 
   @Test
@@ -84,9 +86,9 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
     assertThat(calendar.getId(), is("ID_2"));
     assertThat(calendar.getComponentInstanceId(), is("instance_B"));
     assertThat(calendar.getTitle(), is("title 2"));
-    assertThat(calendar.getCreatedBy(), is("0"));
-    assertThat(calendar.getCreateDate().toInstant(), is(Instant.parse("2016-07-28T16:50:00Z")));
-    assertThat(calendar.getLastUpdatedBy(), is("0"));
+    assertThat(calendar.getCreatorId(), is("0"));
+    assertThat(calendar.getCreationDate().toInstant(), is(Instant.parse("2016-07-28T16:50:00Z")));
+    assertThat(calendar.getLastUpdaterId(), is("0"));
     assertThat(calendar.getLastUpdateDate().toInstant(), is(Instant.parse("2016-07-28T16:50:00Z")));
     assertThat(calendar.getVersion(), is(0L));
 
@@ -96,18 +98,18 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
     assertThat(calendar.getId(), is("ID_1"));
     assertThat(calendar.getComponentInstanceId(), is("instance_A"));
     assertThat(calendar.getTitle(), is("title 1"));
-    assertThat(calendar.getCreatedBy(), is("0"));
-    assertThat(calendar.getCreateDate().toInstant(), is(Instant.parse("2016-07-28T16:50:00Z")));
-    assertThat(calendar.getLastUpdatedBy(), is("1"));
+    assertThat(calendar.getCreatorId(), is("0"));
+    assertThat(calendar.getCreationDate().toInstant(), is(Instant.parse("2016-07-28T16:50:00Z")));
+    assertThat(calendar.getLastUpdaterId(), is("1"));
     assertThat(calendar.getLastUpdateDate().toInstant(), is(Instant.parse("2016-07-28T16:55:00Z")));
     assertThat(calendar.getVersion(), is(1L));
     calendar = calendars.get(1);
     assertThat(calendar.getId(), is("ID_3"));
     assertThat(calendar.getComponentInstanceId(), is("instance_A"));
     assertThat(calendar.getTitle(), is("title 3"));
-    assertThat(calendar.getCreatedBy(), is("0"));
-    assertThat(calendar.getCreateDate().toInstant(), is(Instant.parse("2016-07-28T16:50:00Z")));
-    assertThat(calendar.getLastUpdatedBy(), is("0"));
+    assertThat(calendar.getCreatorId(), is("0"));
+    assertThat(calendar.getCreationDate().toInstant(), is(Instant.parse("2016-07-28T16:50:00Z")));
+    assertThat(calendar.getLastUpdaterId(), is("0"));
     assertThat(calendar.getLastUpdateDate().toInstant(), is(Instant.parse("2016-07-28T16:50:00Z")));
     assertThat(calendar.getVersion(), is(0L));
   }
@@ -123,9 +125,9 @@ public class CalendarManagementIntegrationTest extends BaseCalendarTest {
     assertThat(newCalendar.getComponentInstanceId(), is(INSTANCE_ID));
     assertThat(newCalendar.getTitle(), is("a title"));
     assertThat(newCalendar.getCreator(), nullValue());
-    assertThat(newCalendar.getCreateDate(), nullValue());
+    assertThat(newCalendar.getCreationDate(), nullValue());
     assertThat(newCalendar.getLastUpdateDate(), nullValue());
-    assertThat(newCalendar.getLastUpdatedBy(), nullValue());
+    assertThat(newCalendar.getLastUpdaterId(), nullValue());
     assertThat(newCalendar.getVersion(), is(0L));
 
     newCalendar.save();

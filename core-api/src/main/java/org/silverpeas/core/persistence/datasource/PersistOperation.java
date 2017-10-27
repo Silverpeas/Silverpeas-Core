@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2017 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,25 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.web.notificationserver.channel.silvermail;
+package org.silverpeas.core.persistence.datasource;
 
-import org.silverpeas.core.notification.user.server.channel.silvermail.SILVERMAILMessage;
-import org.silverpeas.core.web.util.DataItemWrapper;
+import javax.inject.Qualifier;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
 
-import java.util.Set;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * UI item if a {@link SILVERMAILMessage} instance.
- * @author Yohann Chastagnier
+ * Annotation to qualify an implementation of {@link PersistenceOperation} as being a persist
+ * operation.
+ * @author mmoquillon
  */
-public class UserNotificationItem extends DataItemWrapper<SILVERMAILMessage> {
-
-  UserNotificationItem(final SILVERMAILMessage data, final Set<String> selectedIds) {
-    super(data, selectedIds);
-  }
-
-  @Override
-  public String getId() {
-    return String.valueOf(getData().getId());
-  }
+@Qualifier
+@Documented
+@Retention(RUNTIME)
+public @interface PersistOperation {
 }

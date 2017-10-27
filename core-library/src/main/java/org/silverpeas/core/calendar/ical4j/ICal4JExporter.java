@@ -166,7 +166,7 @@ public class ICal4JExporter implements ICalendarExporter {
   }
 
   private void setICalPriority(final CalendarComponent component, final VEvent iCalEvent) {
-    iCalEvent.getProperties().add(new Priority(component.getPriority().ordinal()));
+    iCalEvent.getProperties().add(new Priority(component.getPriority().getICalLevel()));
   }
 
   private void setICalVisibility(final CalendarEvent event, final VEvent iCalEvent) {
@@ -230,7 +230,7 @@ public class ICal4JExporter implements ICalendarExporter {
         iCal4JDateCodec.encode(event.isRecurrent(), component, component.getPeriod().getEndDate());
 
     DateTime createdDate =
-        iCal4JDateCodec.encode(component.getCreateDate().toInstant().atOffset(ZoneOffset.UTC));
+        iCal4JDateCodec.encode(component.getCreationDate().toInstant().atOffset(ZoneOffset.UTC));
     DateTime lastUpdateDate =
         iCal4JDateCodec.encode(component.getLastUpdateDate().toInstant().atOffset(ZoneOffset.UTC));
 

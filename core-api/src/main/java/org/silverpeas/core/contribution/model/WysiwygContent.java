@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.model;
 
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.service.WysiwygContentRepository;
 import org.silverpeas.core.util.ServiceProvider;
@@ -164,5 +165,32 @@ public class WysiwygContent implements ContributionContent<String> {
     repository.delete(this);
   }
 
+  @Override
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof WysiwygContent)) {
+      return false;
+    }
+
+    final WysiwygContent content = (WysiwygContent) o;
+
+    if (!contribution.getContributionId().equals(content.contribution.getContributionId())) {
+      return false;
+    }
+    if (text != null ? !text.equals(content.text) : content.text != null) {
+      return false;
+    }
+
+    return true;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(contribution.getContributionId())
+        .append(text)
+        .toHashCode();
+  }
 }
   

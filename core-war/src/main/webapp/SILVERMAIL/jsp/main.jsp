@@ -91,48 +91,48 @@
     };
 
     var _reloadList = function(checkSelected) {
-      var ajaxConfig = sp.ajaxConfig("Main");
+      var ajaxRequest = sp.ajaxRequest("Main");
       if (typeof checkSelected === 'boolean') {
-        checkboxMonitor.applyToAjaxConfig(ajaxConfig);
+        checkboxMonitor.prepareAjaxRequest(ajaxRequest);
       }
-      return sp.load('#silvermail-list', ajaxConfig, true).then(function() {
+      return sp.load('#silvermail-list', ajaxRequest, true).then(function() {
         spProgressMessage.hide();
       });
     };
 
     function markAllMessagesAsRead() {
       jQuery.popup.confirm("${silfn:escapeJs(markAllReadConfirm)}", function() {
-        var ajaxConfig = sp.ajaxConfig("MarkAllMessagesAsRead").byPostMethod();
+        var ajaxRequest = sp.ajaxRequest("MarkAllMessagesAsRead").byPostMethod();
         spProgressMessage.show();
-        silverpeasAjax(ajaxConfig).then(arrayPaneAjaxControl.refreshFromRequestResponse);
+        ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
 
     function markSelectedMessagesAsRead() {
       jQuery.popup.confirm("${silfn:escapeJs(markSelectedReadConfirm)}", function() {
-        var ajaxConfig = sp.ajaxConfig("MarkSelectedMessagesAsRead").byPostMethod();
-        checkboxMonitor.applyToAjaxConfig(ajaxConfig);
+        var ajaxRequest = sp.ajaxRequest("MarkSelectedMessagesAsRead").byPostMethod();
+        checkboxMonitor.prepareAjaxRequest(ajaxRequest);
         spProgressMessage.show();
-        silverpeasAjax(ajaxConfig).then(arrayPaneAjaxControl.refreshFromRequestResponse);
+        ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
 
     function deleteAllMessages() {
       jQuery.popup.confirm("${silfn:escapeJs(deleteAllConfirm)}", function() {
-        var ajaxConfig = sp.ajaxConfig("DeleteAllMessages").byPostMethod();
-        ajaxConfig.withParam("folder", "INBOX");
+        var ajaxRequest = sp.ajaxRequest("DeleteAllMessages").byPostMethod();
+        ajaxRequest.withParam("folder", "INBOX");
         spProgressMessage.show();
-        silverpeasAjax(ajaxConfig).then(arrayPaneAjaxControl.refreshFromRequestResponse);
+        ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
 
     function deleteSelectedMessages() {
       jQuery.popup.confirm("${silfn:escapeJs(deleteSelectedConfirm)}", function() {
-        var ajaxConfig = sp.ajaxConfig("DeleteSelectedMessages").byPostMethod();
-        ajaxConfig.withParam("folder", "INBOX");
-        checkboxMonitor.applyToAjaxConfig(ajaxConfig);
+        var ajaxRequest = sp.ajaxRequest("DeleteSelectedMessages").byPostMethod();
+        ajaxRequest.withParam("folder", "INBOX");
+        checkboxMonitor.prepareAjaxRequest(ajaxRequest);
         spProgressMessage.show();
-        silverpeasAjax(ajaxConfig).then(arrayPaneAjaxControl.refreshFromRequestResponse);
+        ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
       });
     }
 
@@ -209,7 +209,7 @@
         whenSilverpeasReady(function() {
           checkboxMonitor.pageChanged();
           arrayPaneAjaxControl = sp.arrayPane.ajaxControls('#silvermail-list', {
-            before : checkboxMonitor.applyToAjaxConfig
+            before : checkboxMonitor.prepareAjaxRequest
           });
         });
       </script>

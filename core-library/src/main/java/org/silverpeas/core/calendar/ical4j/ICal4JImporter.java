@@ -40,6 +40,7 @@ import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.CalendarEventOccurrenceBuilder;
+import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.calendar.icalendar.ICalendarImporter;
@@ -47,6 +48,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ResourceLocator;
@@ -72,6 +74,7 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 import static org.apache.commons.io.IOUtils.toInputStream;
+import static org.silverpeas.core.date.TimeZoneUtil.toZoneId;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -124,7 +127,7 @@ public class ICal4JImporter implements ICalendarImporter {
           }
         } else if (component instanceof VTimeZone) {
           VTimeZone vTimeZone = (VTimeZone) component;
-          zoneId.set(ZoneId.of(vTimeZone.getTimeZoneId().getValue()));
+          zoneId.set(toZoneId(vTimeZone.getTimeZoneId().getValue()));
         } else {
           SilverLogger.getLogger(this)
               .debug("iCalendar component ''{0}'' is not handled", component.getName());
@@ -265,15 +268,20 @@ public class ICal4JImporter implements ICalendarImporter {
     // Priority
     if (vEvent.getPriority() != null) {
       component.setPriority(
-          org.silverpeas.core.calendar.Priority.valueOf(vEvent.getPriority().getLevel()));
+          org.silverpeas.core.calendar.Priority.fromICalLevel(vEvent.getPriority().getLevel()));
     }
 
-    // Technical data
+    // Technical data which are used for detection of modifications.
+    // THESE DATES MUST NOT HAVE TO BE REGISTERED INTO THE PERSISTENCE.
+    // Indeed it is used by ICalendarEventImportProcessor#wasUpdated() in order to detect the
+    // events modified into external calendar repository.
     if (vEvent.getCreated() != null) {
-      JpaEntityReflection.setCreateDate(component, vEvent.getCreated().getDate());
+      JpaEntityReflection.setCreationData(component, OperationContext.getFromCache().getUser(),
+          vEvent.getCreated().getDate());
     }
     if (vEvent.getLastModified() != null) {
-      JpaEntityReflection.setLastUpdateDate(component, vEvent.getLastModified().getDate());
+      JpaEntityReflection.setUpdateData(component, OperationContext.getFromCache().getUser(),
+          vEvent.getLastModified().getDate());
     }
   }
 

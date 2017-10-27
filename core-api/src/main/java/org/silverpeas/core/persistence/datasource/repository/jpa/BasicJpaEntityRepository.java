@@ -24,13 +24,9 @@
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
-import org.silverpeas.core.util.SilverpeasArrayList;
-import org.silverpeas.core.util.SilverpeasList;
 
 import javax.persistence.Query;
-import java.util.List;
 
 /**
  * It represents the repositories taken in charge the persistence of the business entities in
@@ -58,21 +54,6 @@ public class BasicJpaEntityRepository<E extends BasicJpaEntity>
     E curEntity = save(entity);
     flush();
     return curEntity;
-  }
-
-  @Override
-  public SilverpeasList<E> save(final List<E> entities) {
-    OperationContext.fromCurrentRequester();
-    SilverpeasList<E> savedEntities = new SilverpeasArrayList<>(entities.size());
-    for (E entity : entities) {
-      if (entity.isPersisted()) {
-        savedEntities.add(getEntityManager().merge(entity));
-      } else {
-        getEntityManager().persist(entity);
-        savedEntities.add(entity);
-      }
-    }
-    return savedEntities;
   }
 
   @Override

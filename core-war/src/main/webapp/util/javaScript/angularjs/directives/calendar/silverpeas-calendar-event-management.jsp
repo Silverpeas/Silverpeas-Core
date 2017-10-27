@@ -34,6 +34,7 @@
 
 <c:set var="deleteMessage"><fmt:message key='GML.confirmation.delete'><fmt:param value="{{$ctrl.occurrence.title}}"/></fmt:message></c:set>
 <c:set var="deleteChoiceMessage"><fmt:message key='calendar.message.event.delete'><fmt:param value="{{$ctrl.occurrence.title}}"/></fmt:message></c:set>
+<c:set var="updateLevelEventInfo"><fmt:message key='calendar.message.event.update.level.info'/></c:set>
 <c:set var="updateChoiceMessage"><fmt:message key='calendar.message.event.update'><fmt:param value="{{$ctrl.occurrence.title}}"/></fmt:message></c:set>
 <c:set var="calendarUpdateMessage"><fmt:message key='calendar.message.event.update.calendar.changed'><fmt:param value="{{$ctrl.occurrence.title}}"/></fmt:message></c:set>
 <c:set var="attendeeAnswerChoiceMessage"><fmt:message key='calendar.message.event.attendee.participation.update'><fmt:param value="{{$ctrl.occurrence.title}}"/></fmt:message></c:set>
@@ -41,17 +42,19 @@
 <c:set var="allOccurrencePartMessage"><fmt:message key='calendar.message.event.recurrence.occurrence.attendee.participation.all'/></c:set>
 <c:set var="fromOccurrenceMessage"><fmt:message key='calendar.message.event.recurrence.occurrence.from'><fmt:param value="{{$ctrl.displayOriginalStartDate()}}"/></fmt:message></c:set>
 <c:set var="uniqueOccurrenceMessage"><fmt:message key='calendar.message.event.recurrence.occurrence.unique'><fmt:param value="{{$ctrl.displayOriginalStartDate()}}"/></fmt:message></c:set>
+<c:set var="deleteLevelEventInfo"><fmt:message key='calendar.message.event.delete.level.info'/></c:set>
 
 <div class="silverpeas-calendar-event-management-update-popin" style="display: none">
+  <p ng-if="$ctrl.updateMethodAtEventLevel && $ctrl.updateMethodType == 'ALL'" class="inlineMessage">${updateLevelEventInfo}</p>
   <span>${updateChoiceMessage}</span>
   <ul class="champs">
-    <li>
+    <li ng-if="!$ctrl.updateMethodAtEventLevel || $ctrl.updateMethodType == 'UNIQUE'">
       <label>
         <input type="radio" name="updateMethodType" ng-model="$ctrl.updateMethodType" ng-value="'UNIQUE'">
         ${uniqueOccurrenceMessage}
       </label>
     </li>
-    <li>
+    <li ng-if="!$ctrl.updateMethodAtEventLevel || $ctrl.updateMethodType == 'FROM'">
       <label>
         <input type="radio" name="updateMethodType" ng-model="$ctrl.updateMethodType" ng-value="'FROM'">
         ${fromOccurrenceMessage}
@@ -85,16 +88,17 @@
 </div>
 
 <div class="silverpeas-calendar-event-management-delete-popin" style="display: none">
+  <p ng-if="$ctrl.isRecurrence() && $ctrl.isFirstEventOccurrence()" class="inlineMessage">${deleteLevelEventInfo}</p>
   <span ng-if="!$ctrl.isRecurrence()">${deleteMessage}</span>
   <span ng-if="$ctrl.isRecurrence()">${deleteChoiceMessage}</span>
   <ul class="champs" ng-if="$ctrl.isRecurrence()">
-    <li>
+    <li ng-if="!$ctrl.isRecurrence() || !$ctrl.isFirstEventOccurrence()">
       <label>
         <input type="radio" name="deleteMethodType" ng-model="$ctrl.deleteMethodType" ng-value="'UNIQUE'">
         ${uniqueOccurrenceMessage}
       </label>
     </li>
-    <li>
+    <li ng-if="!$ctrl.isRecurrence() || !$ctrl.isFirstEventOccurrence()">
       <label>
         <input type="radio" name="deleteMethodType" ng-model="$ctrl.deleteMethodType" ng-value="'FROM'">
         ${fromOccurrenceMessage}

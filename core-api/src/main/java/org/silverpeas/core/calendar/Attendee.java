@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.calendar;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
@@ -62,6 +61,10 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   @Column(name = "presence", nullable = false)
   @Enumerated(EnumType.STRING)
   private PresenceStatus presenceStatus = PresenceStatus.REQUIRED;
+  @Transient
+  private boolean presenceStatusChanged = false;
+  @Transient
+  private boolean participationStatusAnswered = false;
 
   /**
    * Constructs an empty attendee. This constructor is dedicated to the persistence engine.
@@ -151,6 +154,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    * @param user a user in Silverpeas.
    */
   public void delegateTo(final User user) {
+    participationStatusAnswered = this.participationStatus != ParticipationStatus.DELEGATED;
     this.participationStatus = ParticipationStatus.DELEGATED;
     this.delegate = InternalAttendee.fromUser(user).to(this.component)
         .withPresenceStatus(this.presenceStatus);
@@ -165,6 +169,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    * to Silverpeas.
    */
   public void delegateTo(final String email) {
+    participationStatusAnswered = this.participationStatus != ParticipationStatus.DELEGATED;
     this.participationStatus = ParticipationStatus.DELEGATED;
     this.delegate = ExternalAttendee.withEmail(email).to(this.component)
         .withPresenceStatus(this.presenceStatus);
@@ -173,6 +178,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   }
 
   void setParticipationStatus(final ParticipationStatus participationStatus) {
+    participationStatusAnswered = this.participationStatus != participationStatus;
     this.participationStatus = participationStatus;
   }
 
@@ -180,28 +186,49 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    * Resets the attendance.
    */
   void resetParticipation() {
+    participationStatusAnswered = false;
     this.participationStatus = ParticipationStatus.AWAITING;
   }
 
   /**
-   * Accepts the attendance.
+   * Accepts the attendance.<br/>
+   * Calling this method represents an answer action.<br/>
+   * Call {@link #setParticipationStatus(ParticipationStatus)} method to modify the status
+   * without specifying that is in case of an answer.
    */
   public void accept() {
+    participationStatusAnswered = this.participationStatus != ParticipationStatus.ACCEPTED;
     this.participationStatus = ParticipationStatus.ACCEPTED;
   }
 
   /**
-   * Declines the attendance.
+   * Declines the attendance.<br/>
+   * Calling this method represents an answer action.<br/>
+   * Call {@link #setParticipationStatus(ParticipationStatus)} method to modify the status
+   * without specifying that is in case of an answer.
    */
   public void decline() {
+    participationStatusAnswered = this.participationStatus != ParticipationStatus.DECLINED;
     this.participationStatus = ParticipationStatus.DECLINED;
   }
 
   /**
-   * Tentatively accepts the attendance.
+   * Tentatively accepts the attendance.<br/>
+   * Calling this method represents an answer action.<br/>
+   * Call {@link #setParticipationStatus(ParticipationStatus)} method to modify the status
+   * without specifying that is in case of an answer.
    */
   public void tentativelyAccept() {
+    participationStatusAnswered = this.participationStatus != ParticipationStatus.TENTATIVE;
     this.participationStatus = ParticipationStatus.TENTATIVE;
+  }
+
+  /**
+   * Indicates if it exists a change about the participation status from an answer action.
+   * @return true if participation status has changed by an answer action.
+   */
+  boolean propertyChange() {
+    return presenceStatusChanged || participationStatusAnswered;
   }
 
   /**
@@ -218,6 +245,7 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
    * @param presenceStatus the status of presence in his participation.
    */
   public void setPresenceStatus(final PresenceStatus presenceStatus) {
+    this.presenceStatusChanged = this.presenceStatus != presenceStatus;
     this.presenceStatus = presenceStatus;
   }
 
@@ -229,39 +257,6 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   public Attendee withPresenceStatus(final PresenceStatus presenceStatus) {
     setPresenceStatus(presenceStatus);
     return this;
-  }
-
-  /**
-   * Compares this attendee with the another one. The two attendees are equal if they are the same
-   * user and they attend the same event.
-   * @param o another object, must be an attendee otherwise false is returned.
-   * @return true if the two attendees are equal in term of user and of attended event.
-   */
-  @Override
-  public boolean equals(final Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof Attendee)) {
-      return false;
-    }
-    if (super.equals(o)) {
-      return true;
-    }
-
-    final Attendee attendee = (Attendee) o;
-
-    return attendeeId.equals(attendee.attendeeId) && component.equals(attendee.component);
-  }
-
-  /**
-   * Computes the hash code of this attendee. It is computed from the attendee identifier and from
-   * the event in which he attends.
-   * @return the hash code of this attendee.
-   */
-  @Override
-  public int hashCode() {
-    return new HashCodeBuilder().append(attendeeId).append(component).toHashCode();
   }
 
   /**

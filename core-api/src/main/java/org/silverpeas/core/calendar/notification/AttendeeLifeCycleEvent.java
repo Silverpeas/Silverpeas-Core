@@ -39,6 +39,7 @@ import javax.validation.constraints.NotNull;
  */
 public class AttendeeLifeCycleEvent extends AbstractResourceEvent<Attendee> {
 
+  private final LifeCycleEventSubType subType;
   private Contribution eventOrOccurrence;
 
   /**
@@ -47,12 +48,19 @@ public class AttendeeLifeCycleEvent extends AbstractResourceEvent<Attendee> {
    * an attendee.
    * @param eventOrOccurrence the contribution in relation with the action.
    * @param type the type of the event in the lifecycle of an attendee.
+   * @param subType the subtype of the lifecycle transition.
    * @param attendees the different states of an attendee concerned by the event in its lifecycle.
    */
   public AttendeeLifeCycleEvent(final Contribution eventOrOccurrence, final Type type,
+      final LifeCycleEventSubType subType,
       @NotNull final Attendee... attendees) {
     super(type, attendees);
+    this.subType = subType;
     this.eventOrOccurrence = eventOrOccurrence;
+  }
+
+  public LifeCycleEventSubType getSubType() {
+    return subType;
   }
 
   /**

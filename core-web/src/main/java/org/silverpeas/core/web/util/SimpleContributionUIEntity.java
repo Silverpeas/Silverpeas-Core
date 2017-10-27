@@ -32,17 +32,17 @@ import java.util.Set;
 import java.util.function.Function;
 
 /**
- * Extension of {@link DataItemWrapper} which handles simple cases of {@link Contribution} UI
+ * Extension of {@link SelectableUIEntity} which handles simple cases of {@link Contribution} UI
  * selection.<br/>
  * Of course, if some stuffs are missing into this implementation, it is highly recommended to
  * extend this class.
  * @param <C> the type of the {@link Contribution}.
  * @author silveryocha
  */
-public class SimpleContributionItemWrapper<C extends Contribution> extends DataItemWrapper<C> {
+public class SimpleContributionUIEntity<C extends Contribution> extends SelectableUIEntity<C> {
 
   @SuppressWarnings("WeakerAccess")
-  protected SimpleContributionItemWrapper(final C data, final Set<String> selectedIds) {
+  protected SimpleContributionUIEntity(final C data, final Set<String> selectedIds) {
     super(data, selectedIds);
   }
 
@@ -55,9 +55,9 @@ public class SimpleContributionItemWrapper<C extends Contribution> extends DataI
    * @return the initialized item data wrapper.
    */
   @SuppressWarnings("unchecked")
-  public static <D extends Contribution, W extends SimpleContributionItemWrapper<D>> W convert(
+  public static <D extends Contribution, W extends SimpleContributionUIEntity<D>> W convert(
       final D contribution, final Set<String> selectedIds) {
-    return (W) new SimpleContributionItemWrapper<>(contribution, selectedIds);
+    return (W) new SimpleContributionUIEntity<>(contribution, selectedIds);
   }
 
   /**
@@ -68,7 +68,7 @@ public class SimpleContributionItemWrapper<C extends Contribution> extends DataI
    * @param <W> the type of the item {@link Contribution} wrapper.
    * @return the {@link SilverpeasList} of wrapped data item.
    */
-  public static <D extends Contribution, W extends SimpleContributionItemWrapper<D>>
+  public static <D extends Contribution, W extends SimpleContributionUIEntity<D>>
   SilverpeasList<W> convertList(
       final List<D> contributionList, final Set<String> selectedIds) {
     SilverpeasList<D> list = SilverpeasList.wrap(contributionList);

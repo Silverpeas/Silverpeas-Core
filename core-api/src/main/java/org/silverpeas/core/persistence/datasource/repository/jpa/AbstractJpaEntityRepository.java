@@ -28,6 +28,7 @@ import org.silverpeas.core.persistence.datasource.model.EntityIdentifierConverte
 import org.silverpeas.core.persistence.datasource.model.jpa.AbstractJpaEntity;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.datasource.repository.QueryCriteria;
 import org.silverpeas.core.util.CollectionUtil;
@@ -71,6 +72,21 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity>
   private int maximumItemsInClause = DEFAULT_MAXIMUM_ITEMS_IN_CLAUSE;
   private EntityIdentifierConverter identifierConverter =
       new EntityIdentifierConverter(getEntityIdentifierClass());
+
+  @Override
+  public SilverpeasList<T> save(final List<T> entities) {
+    OperationContext.fromCurrentRequester();
+    SilverpeasList<T> savedEntities = new SilverpeasArrayList<>(entities.size());
+    for (T entity : entities) {
+      if (entity.isPersisted()) {
+        savedEntities.add(getEntityManager().merge(entity));
+      } else {
+        getEntityManager().persist(entity);
+        savedEntities.add(entity);
+      }
+    }
+    return savedEntities;
+  }
 
   @Override
   public void flush() {

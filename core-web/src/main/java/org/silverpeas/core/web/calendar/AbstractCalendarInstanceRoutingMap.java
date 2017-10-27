@@ -27,7 +27,7 @@ package org.silverpeas.core.web.calendar;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.web.mvc.route.AbstractComponentInstanceRoutingMap;
-import org.silverpeas.core.webapi.calendar.CalendarWebServiceProvider;
+import org.silverpeas.core.webapi.calendar.CalendarWebManager;
 
 import java.net.URI;
 
@@ -49,7 +49,7 @@ public abstract class AbstractCalendarInstanceRoutingMap
   }
 
   private URI getEventViewPage(final ContributionIdentifier contributionIdentifier) {
-    final CalendarEventOccurrence occurrence = CalendarWebServiceProvider.get()
+    final CalendarEventOccurrence occurrence = CalendarWebManager.get()
         .getFirstCalendarEventOccurrenceFromEventId(contributionIdentifier.getLocalId());
     return newUriBuilder(getBaseForPages(), "calendars/occurrences",
         asBase64(occurrence.getId().getBytes())).build();

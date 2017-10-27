@@ -26,6 +26,7 @@ package org.silverpeas.core.datereminder.persistence.service;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -35,6 +36,7 @@ import org.silverpeas.core.datereminder.persistence.MyEntityReference;
 import org.silverpeas.core.datereminder.persistence.MyUnknownEntityReference;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
 import org.silverpeas.core.persistence.EntityReference;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
@@ -79,6 +81,11 @@ public class PersistentDateReminderServiceTest {
 
   @Inject
   private PersistentDateReminderService dateReminderService;
+
+  @Before
+  public void setUpTestContext() {
+    OperationContext.fromUser("0");
+  }
 
   @Test(expected = NullPointerException.class)
   public void testGetNullDateReminder() {

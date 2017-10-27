@@ -31,10 +31,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.CalendarWarBuilder;
 import org.silverpeas.core.test.rule.DbSetupRule;
@@ -113,6 +112,7 @@ public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .addAsResource("org/silverpeas/util/logging")
         .addAsResource("org/silverpeas/calendar/settings")
+        .addAsResource("org/silverpeas/util/timezone.properties")
         .build();
   }
 
@@ -123,6 +123,8 @@ public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
 
     emptyExternalUrl = getFilePath(EMPTY_EXTERNAL_URL);
     externalUrl = getFilePath(EXTERNAL_URL);
+
+    OperationContext.fromUser("0");
   }
 
   @Test
@@ -261,7 +263,6 @@ public class CalendarSynchronizationIntegrationTest extends BaseCalendarTest {
 
   @Test
   public void synchronizeAllCalendars() throws Exception {
-    OperationContext.fromUser(User.getById("1"));
     Calendar calendar = Calendar.getById("ID_1");
     String externalCalendarUrl =
         getFilePath(PATTERN_EXTERNAL_URL, "ICAL-EXPORT-SP-GOO-2017-05-03_00.ics");

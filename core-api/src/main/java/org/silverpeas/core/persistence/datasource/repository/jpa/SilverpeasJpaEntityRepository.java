@@ -24,18 +24,8 @@
 package org.silverpeas.core.persistence.datasource.repository.jpa;
 
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
-import org.silverpeas.core.util.SilverpeasArrayList;
-import org.silverpeas.core.util.SilverpeasList;
 
 import javax.persistence.Query;
-import java.util.List;
-
-import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection
-    .isCreatedBySetManually;
-import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection
-    .isLastUpdatedBySetManually;
-import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A repository of Silverpeas {@link org.silverpeas.core.persistence.datasource.model.Entity}
@@ -55,27 +45,6 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class SilverpeasJpaEntityRepository<E extends SilverpeasJpaEntity<E, ?>>
     extends AbstractJpaEntityRepository<E> {
-
-  @SuppressWarnings("unchecked")
-  @Override
-  public SilverpeasList<E> save(final List<E> entities) {
-    OperationContext context = OperationContext.fromCurrentRequester();
-    SilverpeasList<E> savedEntities = new SilverpeasArrayList<>(entities.size());
-    for (E entity : entities) {
-      if (isCreatedBySetManually(entity)) {
-        context.withUser(isDefined(entity.getCreatedBy()) ? entity.getCreator() : null);
-      } else if (isLastUpdatedBySetManually(entity)) {
-        context.withUser(isDefined(entity.getLastUpdatedBy()) ? entity.getLastUpdater() : null);
-      }
-      if (entity.isPersisted()) {
-        savedEntities.add(getEntityManager().merge(entity));
-      } else {
-        getEntityManager().persist(entity);
-        savedEntities.add(entity);
-      }
-    }
-    return savedEntities;
-  }
 
   /**
    * Deletes all entities belonging to the specified component instance.

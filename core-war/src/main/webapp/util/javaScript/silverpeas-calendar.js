@@ -263,6 +263,34 @@
             return __self.extractComponentInstanceIdFromUri(calendarUri);
           };
         }
+        /**
+         * Indicates if it has been modified at event level. In other words on data which can not
+         * be modified at occurrence level.
+         * @param other an other occurrence instance.
+         */
+        if (!occurrence.hasBeenModifiedAtEventLevel) {
+          occurrence.hasBeenModifiedAtEventLevel = function(other) {
+            var dataToCompare = [{a : occurrence.visibility, b : other.visibility},
+              {a : occurrence.content, b : other.content},
+              {a : occurrence.recurrence, b : other.recurrence}];
+            for (var i = 0; i < dataToCompare.length; i++) {
+              var comparison = dataToCompare[i];
+              var typeOfA = typeof comparison.a;
+              var typeOfB = typeof comparison.b;
+              if ((typeOfA !== typeOfB)
+                  || __normalizeValue(comparison.a) !== __normalizeValue(comparison.b)) {
+                return true;
+              }
+            }
+            return false;
+          };
+        }
+      }
+
+      var __normalizeValue = function(value) {
+        return JSON.stringify(value)
+            .replaceAll(/[:](0|null),/g, ':"",')
+            .replaceAll(/[:](0|null)[}]/g, ':""}');
       }
     };
 

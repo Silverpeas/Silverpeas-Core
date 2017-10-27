@@ -208,7 +208,7 @@ public class CalendarEntity implements WebEntity {
     this.userMainPersonal = calendar.isMainPersonalOf(currentUser);
     this.userPersonal = calendar.isPersonalOf(currentUser);
     this.ownerName = calendar.getCreator().getDisplayedName();
-    this.createDate = calendar.getCreateDate();
+    this.createDate = calendar.getCreationDate();
     this.lastUpdateDate = calendar.getLastUpdateDate();
     this.canBeModified = calendar.canBeModifiedBy(currentUser);
     this.canBeDeleted= calendar.canBeDeletedBy(currentUser);

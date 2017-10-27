@@ -21,14 +21,15 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.persistence.datasource.repository;
+package org.silverpeas.core.persistence.datasource;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.persistence.datasource.model.Entity;
-import org.silverpeas.core.util.ArgumentAssertion;
+import org.silverpeas.core.util.ServiceProvider;
 
+import javax.enterprise.util.AnnotationLiteral;
+import java.lang.annotation.Annotation;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -53,6 +54,7 @@ public class OperationContext {
 
   // The user
   private User user = null;
+  private List<PersistenceOperation> persistenceOperations = new ArrayList<>();
 
   /**
    * Creates an empty instance.
@@ -195,27 +197,41 @@ public class OperationContext {
   }
 
   /**
-   * Applying information of the context to the given entity on a persist operation.
-   * @param entity an entity.
+   * Gets the current active persistence operation from this context.
+   * @param operationType the type of the expected persistence operation.
+   * @param <T> the concrete type of the implementation of {@link PersistenceOperation} class.
+   * @return a persistence operation matching the expected type. Null if no such type exists.
    */
-  public void applyToPersistOperation(Entity entity) {
-    String errorMessage = "the user identifier must exist when performing persist operation";
-    ArgumentAssertion.assertNotNull(user, errorMessage);
-    ArgumentAssertion.assertDefined(user.getId(), errorMessage);
-    entity.setCreator(user);
-    entity.setLastUpdater(user);
+  @SuppressWarnings("unchecked")
+  public <T extends PersistenceOperation> T getPersistenceOperation(
+      final Class<T> operationType) {
+    final AnnotationLiteral<?> qualifier;
+    Annotation annotation = operationType.getAnnotation(UpdateOperation.class);
+    if (annotation != null) {
+      qualifier = new AnnotationLiteral<UpdateOperation>() {
+      };
+    } else {
+      annotation = operationType.getAnnotation(PersistOperation.class);
+      if (annotation != null) {
+        qualifier = new AnnotationLiteral<PersistOperation>() {
+        };
+      } else {
+        return null;
+      }
+    }
+
+    final Annotation operation = annotation;
+    return (T) persistenceOperations.stream()
+        .filter(c -> c.getClass().getAnnotation(operation.annotationType()) != null &&
+            c.getClass().equals(operationType))
+        .findFirst()
+        .orElseGet(() -> {
+          PersistenceOperation c = ServiceProvider.getService(operationType, qualifier);
+          persistenceOperations.add(c);
+          return c;
+        });
   }
 
-  /**
-   * Applying information of the context to the given entity on a update operation.
-   * @param entity an entity.
-   */
-  public void applyToUpdateOperation(Entity entity) {
-    String errorMessage = "the user identifier must exist when performing update operation";
-    ArgumentAssertion.assertNotNull(user, errorMessage);
-    ArgumentAssertion.assertDefined(user.getId(), errorMessage);
-    entity.setLastUpdater(user);
-  }
 
   public enum State {
     EXPORT, IMPORT

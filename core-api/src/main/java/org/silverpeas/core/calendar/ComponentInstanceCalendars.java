@@ -40,7 +40,7 @@ import java.util.Optional;
 public class ComponentInstanceCalendars extends ArrayList<Calendar> {
 
   private static final Comparator<Calendar> CALENDAR_COMPARATOR_BY_CREATION_DATE_ASC =
-      Comparator.comparing(SilverpeasJpaEntity::getCreateDate);
+      Comparator.comparing(SilverpeasJpaEntity::getCreationDate);
 
   /**
    * Hidden constructor.

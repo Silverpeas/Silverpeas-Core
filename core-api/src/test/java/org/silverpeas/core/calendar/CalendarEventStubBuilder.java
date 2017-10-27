@@ -155,7 +155,7 @@ public class CalendarEventStubBuilder {
   public CalendarEventStubBuilder withCreator(final User creator) {
     component.withCreatedBy(creator.getId());
     try {
-      FieldUtils.writeField(component, "createdByUser", creator, true);
+      FieldUtils.writeField(component, "creator", creator, true);
     } catch (IllegalAccessException e) {
       throw new RuntimeException(e);
     }
@@ -185,7 +185,7 @@ public class CalendarEventStubBuilder {
     }
 
     @Override
-    public Date getCreateDate() {
+    public Date getCreationDate() {
       return createDate;
     }
 
@@ -195,7 +195,7 @@ public class CalendarEventStubBuilder {
     }
 
     @Override
-    public String getCreatedBy() {
+    public String getCreatorId() {
       return createdBy;
     }
   }

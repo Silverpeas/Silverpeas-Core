@@ -7,9 +7,14 @@ import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.TestCalendarEventOccurrenceBuilder;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.persistence.datasource.PersistOperation;
+import org.silverpeas.core.persistence.datasource.UpdateOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
 import org.silverpeas.core.test.TestUserProvider;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +37,12 @@ public class CalendarEventInternalParticipationViewTest {
   public void setUpUsers() {
     UserProvider userProvider = TestUserProvider.withoutCurrentRequester();
     commonAPI4Test.injectIntoMockedBeanContainer(userProvider);
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(),
+        new AnnotationLiteral<PersistOperation>() {
+        });
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(),
+        new AnnotationLiteral<UpdateOperation>() {
+        });
   }
 
   @Test

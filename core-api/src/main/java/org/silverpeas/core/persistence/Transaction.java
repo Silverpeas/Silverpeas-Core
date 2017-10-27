@@ -24,7 +24,10 @@
 package org.silverpeas.core.persistence;
 
 
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import javax.transaction.Transactional;
+import javax.transaction.TransactionalException;
 
 /**
  * A transaction. All processes it performs will be in charge by the JPA transaction manager.
@@ -43,21 +46,34 @@ public class Transaction {
   /**
    * Performs in a single transaction the specified process.
    * @param process the process to execute in a transaction.
-   * @param <RETURN_VALUE> the type of the return value.
+   * @param <V> the type of the return value.
    * @return the result of the process.
    */
-  public static <RETURN_VALUE> RETURN_VALUE performInOne(final Process<RETURN_VALUE> process) {
+  public static <V> V performInOne(final Process<V> process) {
     return getTransaction().perform(process);
   }
 
   /**
    * Performs in a new transaction the specified process.
    * @param process the process to execute in a transaction.
-   * @param <RETURN_VALUE> the type of the return value.
+   * @param <V> the type of the return value.
    * @return the result of the process.
    */
-  public static <RETURN_VALUE> RETURN_VALUE performInNew(final Process<RETURN_VALUE> process) {
+  public static <V> V performInNew(final Process<V> process) {
     return getTransaction().performNew(process);
+  }
+
+  /**
+   * Is there a transaction currently active in the current thread?
+   * @return true if there is a transaction active in the current thread, false otherwise.
+   */
+  public static boolean isTransactionActive() {
+    try {
+      return getTransaction().checkExistingTransaction();
+    } catch (TransactionalException e) {
+      SilverLogger.getLogger(Transaction.class).silent(e);
+      return false;
+    }
   }
 
   /**
@@ -65,11 +81,11 @@ public class Transaction {
    * create a new one if none exists.
    * Analogous to EJB transaction attribute of the same name.
    * @param process the process to execute in a transaction.
-   * @param <RETURN_VALUE> the type of the return value.
+   * @param <V> the type of the return value.
    * @return the result of the process.
    */
   @Transactional
-  public <RETURN_VALUE> RETURN_VALUE perform(final Process<RETURN_VALUE> process) {
+  public <V> V perform(final Process<V> process) {
     try {
       return process.execute();
     } catch (Exception e) {
@@ -81,11 +97,11 @@ public class Transaction {
    * The given process is executed in a new transaction, even it is called from an existent one.
    * Analogous to EJB transaction attribute of the same name.
    * @param process the process to execute in a transaction.
-   * @param <RETURN_VALUE> the type of the return value.
+   * @param <V> the type of the return value.
    * @return the result of the process.
    */
   @Transactional(Transactional.TxType.REQUIRES_NEW)
-  public <RETURN_VALUE> RETURN_VALUE performNew(final Process<RETURN_VALUE> process) {
+  public <V> V performNew(final Process<V> process) {
     try {
       return process.execute();
     } catch (Exception e) {
@@ -93,12 +109,17 @@ public class Transaction {
     }
   }
 
+  @Transactional(Transactional.TxType.MANDATORY)
+  protected boolean checkExistingTransaction() {
+    return true;
+  }
+
   /**
    * Defines a process to execute.
-   * @param <RETURN_VALUE> the type of the returned value.
+   * @param <V> the type of the returned value.
    */
   @FunctionalInterface
-  public interface Process<RETURN_VALUE> {
-    RETURN_VALUE execute() throws Exception;
+  public interface Process<V> {
+    V execute() throws Exception;
   }
 }

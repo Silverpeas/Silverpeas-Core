@@ -26,13 +26,10 @@ package org.silverpeas.core.calendar.notification;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener;
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.system.ResourceEvent;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
-import static org.silverpeas.core.calendar.CalendarEventUtil.asAttendee;
 
 /**
  * A notifier of attendees about some lifecycle events triggered by the Calendar engine.
@@ -42,9 +39,10 @@ public abstract class AttendeeNotifier<T extends ResourceEvent>
     extends CDIAfterSuccessfulTransactionResourceEventListener<T> {
 
   protected List<Attendee> concernedAttendeesIn(final CalendarComponent calendarComponent) {
-    List<Attendee> attendees = calendarComponent.getAttendees().stream().
-        collect(Collectors.toList());
-    attendees.add(asAttendee(calendarComponent.getLastUpdater(), calendarComponent));
-    return attendees;
+    return calendarComponent.getAttendees().stream().collect(Collectors.toList());
+  }
+
+  protected List<Attendee> attendeesIn(final CalendarComponent calendarComponent) {
+    return calendarComponent.getAttendees().stream().collect(Collectors.toList());
   }
 }

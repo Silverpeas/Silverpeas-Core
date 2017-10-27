@@ -26,9 +26,11 @@ package org.silverpeas.core.calendar;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
 
 import java.time.LocalDate;
@@ -70,6 +72,11 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
         .addAsResource(BaseCalendarTest.TABLE_CREATION_SCRIPT.substring(1))
         .addAsResource(INITIALIZATION_SCRIPT.substring(1))
         .build();
+  }
+
+  @Before
+  public void prepareOperationContext() {
+    OperationContext.fromUser("0");
   }
 
   @Test
@@ -149,7 +156,7 @@ public class CalendarEventAttendeeManagementIntegrationTest extends BaseCalendar
     eventWithAttendees.update();
 
     eventWithAttendees = calendar.event(EVENT_WITH_ATTENDEE).get();
-    assertThat(eventWithAttendees.getLastUpdateDate(), greaterThan(lastUpdateDate));
+    assertThat(eventWithAttendees.getLastUpdateDate(), is(lastUpdateDate));
     attendee = in(eventWithAttendees.getAttendees()).find("john.doe@silverpeas.org");
     assertThat(attendee.getParticipationStatus(), is(Attendee.ParticipationStatus.ACCEPTED));
     assertThat(attendee.getPresenceStatus(), is(Attendee.PresenceStatus.OPTIONAL));

@@ -55,13 +55,13 @@ public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
    * Gets the date of the entity creation (in the persistence environment).
    * @return the date at which this entity was created.
    */
-  Date getCreateDate();
+  Date getCreationDate();
 
   /**
-   * Gets the free "created by" data.
+   * Gets unique identifier of the user that has created this entity.
    * @return the unique identifier of the creator.
    */
-  String getCreatedBy();
+  String getCreatorId();
 
   /**
    * Gets the user which has created the entity (in the persistence environment).
@@ -71,40 +71,82 @@ public interface Entity<ENTITY extends Entity<ENTITY, IDENTIFIER_TYPE>,
   User getCreator();
 
   /**
-   * Sets the user which has created the entity (in the persistence environment).
+   * Sets explicitly the user who has created the entity (in the persistence context).
+   * The creation date will be set at now.
+   * <p>
+   * The Silverpeas persistence system sets automatically the creator from the operation context
+   * in the current thread and it sets automatically the creation date at the date the entity is
+   * persisted. By using this method, you overrides this behaviour.
+   * </p>
    * @param creator the creator of this entity.
    * @return itself.
    */
-  ENTITY setCreator(User creator);
+  ENTITY createdBy(User creator);
 
   /**
-   * Gets the last date and time of the entity update (in the persistence environment).
+   * sets the user who has created the entity (in the persistence environment) with the date of the
+   * creation.
+   *  <p>
+   * The Silverpeas persistence system sets automatically the creator from the operation context
+   * in the current thread and it sets automatically the creation date at the date the entity is
+   * persisted. By using this method, you overrides this behaviour.
+   * </p>
+   * @param creator the creator of this entity.
+   * @param creationDate the date at which the entity is created.
+   * @return itself.
+   */
+  ENTITY createdBy(User creator, Date creationDate);
+
+  /**
+   * Gets the last date and time of the entity update (in the persistence context). If the entity
+   * wasn't yet updated since its inception, then the creation date is returned.
    * @return the last date at which this entity was updated.
    */
   Date getLastUpdateDate();
 
   /**
-   * Gets the free "last updated by" data.
+   * Gets the unique identifier of the last updater of this entity.
    * @return the unique identifier of the last updater.
    */
-  String getLastUpdatedBy();
+  String getLastUpdaterId();
 
   /**
-   * Gets the last user which has updated the entity (in the persistence environment).
-   * (if "last updated by" is a known user id)
+   * Gets the last user which has updated the entity (in the persistence context).
+   * If the entity hasn't yet been updated since its inception, then the creator is considered the
+   * last user that touched the entity and hence it is returned.
    * @return the last updater.
    */
   User getLastUpdater();
 
   /**
-   * Sets the last user which has updated the entity (in the persistence environment).
+   * Sets explicitly the last user who has updated the entity (in the persistence context). The
+   * last update date will be set at now.
+   *  <p>
+   * The Silverpeas persistence system sets automatically the updater from the operation context
+   * in the current thread and it sets automatically the update date at the date the entity is
+   * updated in the persistence context. By using this method, you overrides this behaviour.
+   * </p>
    * @param updater the last updater to set.
    * @return itself.
    */
-  ENTITY setLastUpdater(User updater);
+  ENTITY updatedBy(User updater);
 
   /**
-   * Gets the version of the entity (in the persistence environment).
+   * sets the user who has updated the entity (in the persistence context) with the date of the
+   * update.
+   *  <p>
+   * The Silverpeas persistence system sets automatically the updater from the operation context
+   * in the current thread and it sets automatically the update date at the date the entity is
+   * updated in the persistence cotnext. By using this method, you overrides this behaviour.
+   * </p>
+   * @param updater the user who updates this entity.
+   * @param updateDate the date at which the entity is updated.
+   * @return itself.
+   */
+  ENTITY updatedBy(User updater, Date updateDate);
+
+  /**
+   * Gets the version of the entity (in the persistence context).
    * @return the version of this entity.
    */
   Long getVersion();

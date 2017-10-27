@@ -26,7 +26,7 @@ package org.silverpeas.core.calendar;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
-import org.silverpeas.core.persistence.datasource.repository.OperationContext;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.Column;
@@ -40,7 +40,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import static org.silverpeas.core.persistence.datasource.repository.OperationContext.State.IMPORT;
+import static org.silverpeas.core.persistence.datasource.OperationContext.State.IMPORT;
 
 /**
  * A calendar component is a set of properties that express a common semantic for all objects
@@ -346,4 +346,34 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     super.performBeforeUpdate();
   }
 
+  /**
+   * Is the properties of this calendar component was modified since its last specified state?
+   * The attendees in this component aren't taken into account as they aren't considered as a
+   * property of a calendar component.
+   * @param previous a previous state of this calendar component.
+   * @return true if the state of this calendar component is different with the specified one.
+   */
+  protected boolean isModifiedSince(final CalendarComponent previous) {
+    if (!this.getTitle().equals(previous.getTitle())) {
+      return true;
+    }
+
+    if (!this.getDescription().equals(previous.getDescription())) {
+      return true;
+    }
+
+    if (!this.getLocation().equals(previous.getLocation())) {
+      return true;
+    }
+
+    if (!this.getPeriod().equals(previous.getPeriod())) {
+      return true;
+    }
+
+    if (this.getPriority() != previous.getPriority()) {
+      return true;
+    }
+
+    return !this.getAttributes().equals(previous.getAttributes());
+  }
 }

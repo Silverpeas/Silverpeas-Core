@@ -1,0 +1,99 @@
+/*
+ * Copyright (C) 2000 - 2017 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "https://www.silverpeas.org/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.silverpeas.core.calendar.notification;
+
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.notification.user.UserNotification;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+
+import java.util.List;
+
+/**
+ * Notifier to the attendees of a calendar event about a change in the lifecycle of this event.
+ * @author mmoquillon
+ */
+public class CalendarEventAttendeeNotifier
+    extends AttendeeNotifier<CalendarEventLifeCycleEvent> {
+
+  @Override
+  public void onCreation(final CalendarEventLifeCycleEvent event) throws Exception {
+    // notify the attendees about their participation to this new event
+    CalendarEvent created = event.getTransition().getAfter();
+    CalendarOperation operation = created.isRecurrent() ? CalendarOperation.SINCE_ATTENDEE_ADDING :
+        CalendarOperation.ATTENDEE_ADDING;
+    List<Attendee> attendees = attendeesIn(created.asCalendarComponent());
+    UserNotification notification =
+        new AttendeeNotificationBuilder(created, NotifAction.CREATE).immediately()
+            .from(User.getCurrentRequester())
+            .to(attendees)
+            .about(operation, attendees)
+            .build();
+    notification.send();
+  }
+
+  @Override
+  public void onUpdate(final CalendarEventLifeCycleEvent event) throws Exception {
+    // notify the attendees and the previous updater about the modification of properties of the
+    // event
+    CalendarEvent before = event.getTransition().getBefore();
+    CalendarEvent after = event.getTransition().getAfter();
+    if (after.isModifiedSince(before)) {
+      // the update is about the event itself
+      CalendarOperation operation = after.isRecurrent() ? CalendarOperation.SINCE_EVENT_UPDATE :
+          CalendarOperation.EVENT_UPDATE;
+      UserNotification notification =
+          new AttendeeNotificationBuilder(after, NotifAction.UPDATE).immediately()
+              .from(User.getCurrentRequester())
+              .to(concernedAttendeesIn(before.asCalendarComponent()))
+              .about(operation)
+              .build();
+      notification.send();
+    }
+
+    if (!after.getAttendees().isSameAs(before.getAttendees())) {
+      // the update is about the attendees themselves
+      LifeCycleEventSubType subType =
+          after.isRecurrent() ? LifeCycleEventSubType.SINCE : LifeCycleEventSubType.SINGLE;
+      AttendeeLifeCycleEventNotifier.notifyAttendees(subType, after, before.getAttendees(),
+          after.getAttendees());
+    }
+  }
+
+  @Override
+  public void onDeletion(final CalendarEventLifeCycleEvent event) throws Exception {
+    // notify the attendees and the previous updater of the event deletion
+    CalendarEvent deleted = event.getTransition().getBefore();
+    CalendarOperation operation = deleted.isRecurrent() ? CalendarOperation.SINCE_EVENT_DELETION :
+        CalendarOperation.EVENT_DELETION;
+    UserNotification notification =
+        new AttendeeNotificationBuilder(deleted, NotifAction.DELETE).immediately()
+            .from(User.getCurrentRequester())
+            .to(concernedAttendeesIn(deleted.asCalendarComponent()))
+            .about(operation)
+            .build();
+    notification.send();
+  }
+}

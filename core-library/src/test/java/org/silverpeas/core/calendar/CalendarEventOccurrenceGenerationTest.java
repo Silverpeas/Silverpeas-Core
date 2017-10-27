@@ -27,13 +27,21 @@ import org.apache.commons.lang3.reflect.FieldUtils;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.calendar.ical4j.ICal4JCalendarEventOccurrenceGenerator;
 import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.persistence.datasource.OperationContext;
+import org.silverpeas.core.persistence.datasource.PersistOperation;
+import org.silverpeas.core.persistence.datasource.UpdateOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
+import org.silverpeas.core.persistence.datasource.model.jpa.JpaUpdateOperation;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 
+import javax.enterprise.util.AnnotationLiteral;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.OffsetDateTime;
@@ -53,8 +61,7 @@ import static java.time.DayOfWeek.*;
 import static java.time.Month.*;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyCollection;
+import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.core.date.TimeUnit.MONTH;
@@ -80,8 +87,23 @@ public class CalendarEventOccurrenceGenerationTest {
   @Before
   public void mockCalendarOccurrenceRepository() {
     CalendarEventOccurrenceRepository repository = mock(CalendarEventOccurrenceRepository.class);
+    OrganizationController organizationController = mock(OrganizationController.class);
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaPersistOperation(), new AnnotationLiteral<PersistOperation>() {
+    });
+    commonAPI4Test.injectIntoMockedBeanContainer(new JpaUpdateOperation(), new AnnotationLiteral<UpdateOperation>() {
+    });
     commonAPI4Test.injectIntoMockedBeanContainer(repository);
+    commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
+    when(organizationController.getUserDetail(anyString())).thenAnswer(a -> {
+      String id = a.getArgumentAt(0, String.class);
+      UserDetail user = new UserDetail();
+      user.setId(id);
+      return user;
+    });
     when(repository.getAll(anyCollection(), any(Period.class))).thenReturn(Collections.emptyList());
+
+    OperationContext.fromUser("0");
+
   }
 
   @Test

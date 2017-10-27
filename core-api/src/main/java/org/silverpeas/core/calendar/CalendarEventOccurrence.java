@@ -47,9 +47,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
-import static org.silverpeas.core.calendar.notification.AttendeeLifeCycleEventNotifier
-    .notifyAttendees;
-
+import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection
+    .setCreationData;
+import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityReflection
+    .setUpdateData;
 
 /**
  * The occurrence of an event in a Silverpeas calendar. It is an instance of an event in the
@@ -128,6 +129,8 @@ public class CalendarEventOccurrence
     setId(generateId(event, startDate));
     this.event = event;
     this.component = event.asCalendarComponent().clone();
+    setCreationData(this.component, event.getCreator(), event.getCreationDate());
+    setUpdateData(this.component, event.getLastUpdater(), event.getLastUpdateDate());
     this.component.setPeriod(Period.between(startDate, endDate));
   }
 
@@ -235,7 +238,7 @@ public class CalendarEventOccurrence
 
   @Override
   public Date getCreationDate() {
-    return component.getCreateDate();
+    return component.getCreationDate();
   }
 
   @Override
@@ -573,6 +576,27 @@ public class CalendarEventOccurrence
   }
 
   /**
+   * Is the properties of this event occurrence was modified since its last specified state?
+   * The attendees in this event occurrence aren't taken into account as they aren't considered as
+   * a property of an event occurrence.
+   * @param previous a previous state of this event occurrence.
+   * @return true if the state of this event occurrence is different with the specified one.
+   */
+  public boolean isModifiedSince(final CalendarEventOccurrence previous) {
+    if (!this.getId().equals(previous.getId())) {
+      throw new IllegalArgumentException(
+          "The event occurrence of id " + previous.getId() + " isn't the expected one " +
+              this.getId());
+    }
+    if (this.getVisibilityLevel() != previous.getVisibilityLevel() ||
+        !this.getCategories().equals(previous.getCategories())) {
+      return true;
+    }
+
+    return this.asCalendarComponent().isModifiedSince(previous.asCalendarComponent());
+  }
+
+  /**
    * Converts this occurrence of a calendar event into an unplanned non-recurrent
    * {@link CalendarEvent} instance. This method is dedicated to the {@link CalendarEvent} class.
    * @return a new {@link CalendarEvent} instance from this occurrence.
@@ -629,14 +653,33 @@ public class CalendarEventOccurrence
    * @return the persisted event occurrence.
    */
   CalendarEventOccurrence saveIntoPersistence() {
-    final CalendarEventOccurrence previous = getPreviousState();
-    CalendarEventOccurrence saved = Transaction.performInOne(() -> {
+    return Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      this.component.incrementSequence();
+      final CalendarEventOccurrence previous = getPreviousState();
+      final CalendarComponent pcc;
+      final boolean modifiedSince;
+      if (previous != null) {
+        pcc = previous.asCalendarComponent();
+        modifiedSince = isModifiedSince(previous);
+      } else {
+        pcc = event.asCalendarComponent();
+        // Making a clone of event component and setting to it the component period in order to
+        // not detect a modification about the period when performing method #isModifiedSince().
+        // The clone permits to not imply a modification of event component into persistence. As
+        // the below treatment is performed into the case of creation, the original start date is
+        // compared to the current start date in order to try to detect a real period modification.
+        final CalendarComponent pccClone = pcc.clone(); pccClone.setPeriod(component.getPeriod());
+        modifiedSince = component.isModifiedSince(pccClone) || !getOriginalStartDate().toString().equals(getStartDate().toString());
+      }
+      if (!modifiedSince && getAttendees().onlyAttendeePropertyChange(pcc.getAttendees())) {
+        // we don't want update properties to be modified on participation answer or presence
+        // status change in the attendees
+        this.component.createdBy(pcc.getCreator(), pcc.getCreationDate()).updatedBy(pcc.getLastUpdater(), pcc.getLastUpdateDate());
+      } else {
+        this.component.incrementSequence();
+      }
       return repository.save(this);
     });
-    notifyAttendees(this, previous != null ? previous.getAttendees() : null, saved.getAttendees());
-    return saved;
   }
 
   /**
@@ -650,7 +693,6 @@ public class CalendarEventOccurrence
       repository.delete(this);
       return null;
     });
-    notifyAttendees(this, this.getAttendees(), null);
   }
 
   /**
@@ -661,7 +703,9 @@ public class CalendarEventOccurrence
   long deleteAllSinceMeFromThePersistence() {
     return Transaction.performInOne(() -> {
       CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-      return repository.deleteSince(this, true);
+      List<CalendarEventOccurrence> occurrences = repository.getAllSince(this);
+      repository.delete(occurrences);
+      return occurrences.size();
     });
   }
 

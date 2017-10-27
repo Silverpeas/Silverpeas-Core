@@ -500,10 +500,10 @@ public class CalendarEventEntity implements WebEntity {
     onAllDay = calendarEvent.isOnAllDay();
     startDate = formatDateWithOffset(component, calendarEvent.getStartDate(), zoneId);
     endDate = formatDateWithOffset(component, calendarEvent.getEndDate(), zoneId);
-    createDate = component.getCreateDate();
-    createdById = component.getCreatedBy();
+    createDate = component.getCreationDate();
+    createdById = component.getCreatorId();
     lastUpdateDate = component.getLastUpdateDate();
-    lastUpdatedById = component.getLastUpdatedBy();
+    lastUpdatedById = component.getLastUpdaterId();
     ownerName = calendarEvent.getCreator().getDisplayedName();
     canBeAccessed = calendarEvent.canBeAccessedBy(currentUser);
     title = formatTitle(component, componentInstanceId, canBeAccessed);

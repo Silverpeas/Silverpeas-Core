@@ -83,7 +83,7 @@ import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodTyp
  * @author Yohann Chastagnier
  */
 @Singleton
-public class CalendarWebServiceProvider {
+public class CalendarWebManager {
 
   private final SilverLogger silverLogger = SilverLogger.getLogger(Plannable.class);
 
@@ -98,14 +98,14 @@ public class CalendarWebServiceProvider {
   @Inject
   private ICalendarEventImportProcessor iCalendarEventImportProcessor;
 
-  private CalendarWebServiceProvider() {
+  private CalendarWebManager() {
   }
 
   /**
    * Gets the singleton instance of the provider.
    */
-  public static CalendarWebServiceProvider get() {
-    return ServiceProvider.getService(CalendarWebServiceProvider.class);
+  public static CalendarWebManager get() {
+    return ServiceProvider.getService(CalendarWebManager.class);
   }
 
   /**

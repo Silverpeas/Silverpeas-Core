@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.calendar.CalendarEvent.EventOperationResult;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
 
 import java.sql.SQLException;
@@ -85,6 +86,8 @@ public class CalendarEventOccurrenceIntegrationTest extends BaseCalendarTest {
 
   @Before
   public void prepareARecurrentEventForTests() {
+    OperationContext.fromUser("0");
+
     Calendar calendar = Calendar.getById(CALENDAR_ID);
     recurrentEvent = CalendarEvent.on(TODAY)
         .createdBy("2")

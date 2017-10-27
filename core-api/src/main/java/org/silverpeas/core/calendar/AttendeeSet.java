@@ -24,12 +24,14 @@
 package org.silverpeas.core.calendar;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.util.CollectionUtil;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Embeddable;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
@@ -195,8 +197,69 @@ public class AttendeeSet implements Iterable<Attendee> {
 
   @Override
   public boolean equals(final Object obj) {
-    return obj == this ||
-        obj != null && obj instanceof AttendeeSet && attendees.equals(((AttendeeSet) obj).attendees);
+    return obj == this || obj != null && obj instanceof AttendeeSet &&
+        attendees.equals(((AttendeeSet) obj).attendees);
+  }
+
+  /**
+   * Is this set of attendees is same as the specified one? Two set of attendees are the same if
+   * they have the same attendees without any change in their properties (presence, participation,
+   * ...).
+   * <p>
+   * This method differs from equality as they don't compare the same thing: the {@code equals}
+   * method in Java is a comparator by identity, meaning two objects are compared by their unique
+   * identifier (either by their OID for non-persistent object or by their persistence identifier
+   * for persistent object). The {@code isSameAs} method is a comparator by value, meaning two
+   * objects are compared by their state; so two equal objects (that is referring to a same
+   * object) can be different by their state: one representing a given state of the referred object
+   * whereas the other represents another state of the referred object.
+   * </p>
+   * @param attendees the attendees to compare with.
+   * @return true if the two set of attendees are equal and have the same state.
+   */
+  public boolean isSameAs(final AttendeeSet attendees) {
+    if (!this.equals(attendees)) {
+      return false;
+    }
+    for (Attendee attendee : this.attendees) {
+      Optional<Attendee> other = attendees.get(attendee.getId());
+      if (!other.isPresent()) {
+        return false;
+      }
+      Attendee otherAttendee = other.get();
+      if (attendee.getParticipationStatus() != otherAttendee.getParticipationStatus() ||
+          attendee.getPresenceStatus() != otherAttendee.getPresenceStatus()) {
+        return false;
+      }
+      if (!attendee.getFullName().equals(otherAttendee.getFullName()) ||
+          !attendee.getDelegate().equals(otherAttendee.getDelegate()) ||
+          !attendee.getCalendarComponent().equals(otherAttendee.getCalendarComponent())) {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /**
+   * Is this set of attendees containing a change from an action of participation status answer or
+   * from an action of presence change?
+   * Yes, but only if is does not exist an add or a deletion of attendee.
+   * <p>
+   * Indeed, a participation answer or a presence status change must not imply modification of last
+   * update date of entities.
+   * </p>
+   * @param attendees the attendees to compare with.
+   * @return true attendee set contains at least one attendee which indicates an answer action.
+   */
+  boolean onlyAttendeePropertyChange(final AttendeeSet attendees) {
+    final long nbParticipationAnswersOrPresenceStatusChanges =
+        stream().filter(Attendee::propertyChange).count();
+    if (nbParticipationAnswersOrPresenceStatusChanges > 0 && size() == attendees.size()) {
+      final Collection<Attendee> sameAttendeesBetweenInternalAndGiven =
+          CollectionUtil.intersection(this.attendees, attendees.attendees);
+      return size() == sameAttendeesBetweenInternalAndGiven.size();
+    }
+    return false;
   }
 
   /**

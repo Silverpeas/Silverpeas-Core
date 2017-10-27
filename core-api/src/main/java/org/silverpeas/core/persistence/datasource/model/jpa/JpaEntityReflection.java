@@ -23,11 +23,8 @@
  */
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.admin.user.model.User;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Date;
 
 /**
@@ -37,69 +34,21 @@ import java.util.Date;
  */
 public class JpaEntityReflection {
 
-  private static Method createDateMethod = null;
-  private static Method lastUpdateDateMethod = null;
-  private static Field createdBySetManuallyField = null;
-  private static Field lastUpdatedBySetManuallyField = null;
-
   /**
    * Hidden constructor.
    */
   private JpaEntityReflection() {
   }
 
-  public static void setCreateDate(final SilverpeasJpaEntity entity, final Date timestamp) {
-    try {
-      if (createDateMethod == null) {
-        createDateMethod = SilverpeasJpaEntity.class.getDeclaredMethod("setCreateDate", Date.class);
-        createDateMethod.setAccessible(true);
-      }
-      createDateMethod.invoke(entity, timestamp);
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      SilverLogger.getLogger(JpaEntityReflection.class).error(e.getMessage(), e);
-      throw new IllegalArgumentException(e);
-    }
+  @SuppressWarnings("unchecked")
+  public static <T extends SilverpeasJpaEntity> T setUpdateData(final T entity, User updater,
+      Date updateDate) {
+    return (T) entity.setLastUpdater(updater).setLastUpdateDate(updateDate);
   }
 
-  public static void setLastUpdateDate(final SilverpeasJpaEntity entity, final Date timestamp) {
-    try {
-      if (lastUpdateDateMethod == null) {
-        lastUpdateDateMethod =
-            SilverpeasJpaEntity.class.getDeclaredMethod("setLastUpdateDate", Date.class);
-        lastUpdateDateMethod.setAccessible(true);
-      }
-      lastUpdateDateMethod.invoke(entity, timestamp);
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      SilverLogger.getLogger(JpaEntityReflection.class).error(e.getMessage(), e);
-      throw new IllegalArgumentException(e);
-    }
-  }
-
-  public static boolean isCreatedBySetManually(final SilverpeasJpaEntity entity) {
-    try {
-      if (createdBySetManuallyField == null) {
-        createdBySetManuallyField =
-            SilverpeasJpaEntity.class.getDeclaredField("createdBySetManually");
-        createdBySetManuallyField.setAccessible(true);
-      }
-      return (boolean) createdBySetManuallyField.get(entity);
-    } catch (NoSuchFieldException | IllegalAccessException e) {
-      SilverLogger.getLogger(JpaEntityReflection.class).error(e.getMessage(), e);
-      throw new IllegalArgumentException(e);
-    }
-  }
-
-  public static boolean isLastUpdatedBySetManually(final SilverpeasJpaEntity entity) {
-    try {
-      if (lastUpdatedBySetManuallyField == null) {
-        lastUpdatedBySetManuallyField =
-            SilverpeasJpaEntity.class.getDeclaredField("lastUpdatedBySetManually");
-        lastUpdatedBySetManuallyField.setAccessible(true);
-      }
-      return (boolean) lastUpdatedBySetManuallyField.get(entity);
-    } catch (NoSuchFieldException | IllegalAccessException e) {
-      SilverLogger.getLogger(JpaEntityReflection.class).error(e.getMessage(), e);
-      throw new IllegalArgumentException(e);
-    }
+  @SuppressWarnings("unchecked")
+  public static <T extends SilverpeasJpaEntity> T setCreationData(final T entity, User creator,
+      Date creationDate) {
+    return (T) entity.setCreator(creator).setCreationDate(creationDate);
   }
 }

@@ -25,6 +25,9 @@ package org.silverpeas.core.calendar.notification;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
+import org.silverpeas.core.calendar.CalendarComponent;
+import org.silverpeas.core.calendar.CalendarEvent;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.ExternalAttendee;
 import org.silverpeas.core.calendar.InternalAttendee;
 import org.silverpeas.core.calendar.notification.user.AbstractCalendarEventUserNotificationBuilder;
@@ -34,12 +37,20 @@ import org.silverpeas.core.notification.user.RemoveSenderRecipientBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.Temporal;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.silverpeas.core.calendar.CalendarEventUtil.getDateWithOffset;
+import static org.silverpeas.core.util.DateUtil.getDateOutputFormat;
+import static org.silverpeas.core.util.DateUtil.getHourOutputFormat;
 
 /**
  * A builder of notifications to attendees in a calendar component to inform them about some
@@ -56,10 +67,11 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
     implements RemoveSenderRecipientBehavior {
 
   private NotifAction notifCause;
-  private UpdateCause updateCause = UpdateCause.NONE;
+  private CalendarOperation operation = CalendarOperation.NONE;
   private User sender;
   private List<Attendee> recipients;
   private List<Attendee> attendees;
+  private boolean immediately = false;
 
   /**
    * Constructs a new builder of user notification against the attendee(s) of a calendar component.
@@ -67,50 +79,50 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
    * @param action the action that was performed onto the event.
    */
   @SuppressWarnings("unchecked")
-  AttendeeNotificationBuilder(final Contribution calendarComponent,
-      final NotifAction action) {
+  AttendeeNotificationBuilder(final Contribution calendarComponent, final NotifAction action) {
     super(calendarComponent, null);
     this.notifCause = action;
   }
 
   /**
-   * Sets the cause of an update that implies the specified list of attendees. In such a case,
-   * the cause is one of the following:
+   * Sets the operation on a calendar component. If the operation implies on the attendance in
+   * the calendar component, then attendees concerned by it have to be specified.
+   * In such a case, the operation is one of the following:
    * <ul>
-   * <li>{@link UpdateCause#ATTENDEE_ADDING}</li>
-   * <li>{@link UpdateCause#ATTENDEE_REMOVING}</li>
-   * <li>{@link UpdateCause#ATTENDEE_PARTICIPATION}</li>
-   * <li>{@link UpdateCause#ATTENDEE_PRESENCE}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_ADDING}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_REMOVING}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_PARTICIPATION}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_PRESENCE}</li>
    * </ul>
-   * If the list of attendees is empty, then the cause should be {@link UpdateCause#EVENT_UPDATE}.
-   * @param cause the cause of an update action.
-   * @param attendees the attendees concerned by the update.
+   * Otherwise the operation should be another value from the {@link CalendarOperation} enumeration.
+   * @param operation the operation that was performed on the attendance of a calendar component.
+   * @param attendees the attendees concerned by the operation.
    * @return itself.
    */
-  public AttendeeNotificationBuilder about(UpdateCause cause,
-      List<Attendee> attendees) {
-    this.updateCause = cause;
+  public AttendeeNotificationBuilder about(CalendarOperation operation, List<Attendee> attendees) {
+    this.operation = operation;
     this.attendees = attendees;
     return this;
   }
 
   /**
-   * Sets the cause of an update that implies the specified list of attendees. In such a case,
-   * the cause is one of the following:
+   * Sets the operation on a calendar component. If the operation implies on the attendance in
+   * the calendar component, then attendees concerned by it have to be specified.
+   * In such a case, the operation is one of the following:
    * <ul>
-   * <li>{@link UpdateCause#ATTENDEE_ADDING}</li>
-   * <li>{@link UpdateCause#ATTENDEE_REMOVING}</li>
-   * <li>{@link UpdateCause#ATTENDEE_PARTICIPATION}</li>
-   * <li>{@link UpdateCause#ATTENDEE_PRESENCE}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_ADDING}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_REMOVING}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_PARTICIPATION}</li>
+   * <li>{@link CalendarOperation#ATTENDEE_PRESENCE}</li>
    * </ul>
-   * If there is no attendees, then the cause should be {@link UpdateCause#EVENT_UPDATE}.
-   * @param cause the cause of an update action.
-   * @param attendees the attendees concerned by the update.
+   * Otherwise the operation should be another value from the {@link CalendarOperation} enumeration.
+   * @param operation the operation that was performed on the attendance of a calendar component.
+   * @param attendees the attendees concerned by the operation.
    * @return itself.
    */
-  public AttendeeNotificationBuilder about(UpdateCause cause,
+  public AttendeeNotificationBuilder about(CalendarOperation operation,
       final Attendee... attendees) {
-    return about(cause, Arrays.asList(attendees));
+    return about(operation, Arrays.asList(attendees));
   }
 
   /**
@@ -143,15 +155,29 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
     return this;
   }
 
+  /**
+   * The notification must be sent immediately whatever the wish of the user about it.
+   * @return itself.
+   */
+  public AttendeeNotificationBuilder immediately() {
+    this.immediately = true;
+    return this;
+  }
+
+  @Override
+  protected boolean isSendImmediately() {
+    return this.immediately;
+  }
+
   @Override
   protected String getBundleSubjectKey() {
-    switch (this.updateCause) {
-      case NONE:
-        return "subject.default";
-      case EVENT_UPDATE:
-        return "subject.eventUpdate";
-      default:
-        return "subject.attendance";
+    if (this.operation == CalendarOperation.NONE) {
+      return "subject.default";
+    } else if (this.operation == CalendarOperation.EVENT_UPDATE ||
+               this.operation == CalendarOperation.SINCE_EVENT_UPDATE) {
+      return "subject.eventUpdate";
+    } else {
+      return "subject.attendance";
     }
   }
 
@@ -159,10 +185,12 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
   protected void performTemplateData(final Contribution contribution,
       final SilverpeasTemplate template) {
     String language = ((LocalizedContribution) contribution).getLanguage();
-    template.setAttribute("event", contribution);
+    template.setAttribute("contributionDate", dateOf(getResource(), language));
+    template.setAttribute("several", this.operation.isSeveralImplied());
     template.setAttribute("attendees",
         this.attendees.stream().map(Attendee::getFullName).collect(Collectors.toList()));
-    if (UpdateCause.ATTENDEE_PARTICIPATION.equals(this.updateCause)) {
+    if (CalendarOperation.ATTENDEE_PARTICIPATION == this.operation ||
+        CalendarOperation.SINCE_ATTENDEE_PARTICIPATION == this.operation) {
       Optional<Attendee> attendee =
           this.attendees.stream().filter(a -> a.getId().equals(sender.getId())).findFirst();
       attendee.ifPresent(a -> {
@@ -175,10 +203,7 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
 
   @Override
   protected String getTemplateFileName() {
-    if (this.getAction() == NotifAction.UPDATE) {
-      return this.updateCause.getTemplateName();
-    }
-    return null;
+    return this.operation.getTemplateName();
   }
 
   @Override
@@ -205,5 +230,30 @@ class AttendeeNotificationBuilder extends AbstractCalendarEventUserNotificationB
         .filter(a -> a instanceof ExternalAttendee)
         .map(Attendee::getId)
         .collect(Collectors.toSet());
+  }
+
+  private String dateOf(final Object contribution, final String language) {
+    final CalendarComponent calendarComponent;
+    if (contribution instanceof CalendarEvent) {
+      calendarComponent = ((CalendarEvent) contribution).asCalendarComponent();
+    } else if (contribution instanceof CalendarEventOccurrence) {
+      calendarComponent = ((CalendarEventOccurrence) contribution).asCalendarComponent();
+    } else if (contribution instanceof CalendarComponent) {
+      calendarComponent = (CalendarComponent) contribution;
+    } else {
+      return null;
+    }
+
+    final Temporal startDate =
+        getDateWithOffset(calendarComponent, calendarComponent.getPeriod().getStartDate());
+    if (startDate instanceof LocalDate) {
+      return ((LocalDate) startDate)
+          .format(DateTimeFormatter.ofPattern(getDateOutputFormat(language).getPattern()));
+    } else {
+      return ((OffsetDateTime) startDate).format(DateTimeFormatter.ofPattern(
+          getDateOutputFormat(language).getPattern() + " " +
+              getHourOutputFormat(language).getPattern())) + " (" +
+          calendarComponent.getCalendar().getZoneId() + ")";
+    }
   }
 }
