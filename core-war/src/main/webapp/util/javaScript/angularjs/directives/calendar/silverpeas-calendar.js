@@ -300,7 +300,7 @@
                       }
                     },
                     style : {
-                      classes : 'tip-occurrence'
+                      classes : 'tip-occurrence qtip-free-width'
                     },
                     show : {
                       solo: false,

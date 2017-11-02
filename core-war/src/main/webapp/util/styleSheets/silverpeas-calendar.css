@@ -334,6 +334,10 @@ silverpeas-calendar-list ul li .synchronized {
   background-color: #eee;
 }
 
+silverpeas-calendar-event-occurrence-tip-actions {
+  text-align: center;
+}
+
 silverpeas-calendar-event-occurrence-tip-actions .sp_buttonPane {
   display: inline-flex;
 }
@@ -342,6 +346,10 @@ silverpeas-calendar-event-occurrence-tip-actions .goto-first-occurrence {
   padding: 0;
   margin: -10px 0 0 0;
   height: 5px;
+}
+
+.tip-occurrence {
+  max-width: 400px;
 }
 
 .goto-previous-occurrence {

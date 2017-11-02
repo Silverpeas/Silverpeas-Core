@@ -1430,7 +1430,7 @@ if (typeof window.sp === 'undefined') {
         };
         jQuery('thead a', $container).each(__clickHandler);
         jQuery('tfoot a', $container).each(__clickHandler);
-        jQuery('.pagination-pane-nav a', $container).each(__clickHandler);
+        jQuery('.list-pane-nav a', $container).each(__clickHandler);
         jQuery('.pageJumper input', $container).each(function(index, jumperInput) {
           jumperInput.ajax = __ajaxRequest;
         });
@@ -1574,7 +1574,7 @@ if (typeof window.sp === 'undefined') {
       }
     }
   };
-  sp.paginationPane = sp.arrayPane;
+  sp.listPane = sp.arrayPane;
 
   /**
    * @deprecated use instead sp.formRequest

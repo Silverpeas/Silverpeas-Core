@@ -278,22 +278,22 @@
               ${silfn:formatPaginationCounter(memberPage, userTotalNumber)} ${paginationCounterSuffix}
           </div>
           <div id="users">
-            <view:paginationPane var="directoryMembers"
+            <view:listPane var="directoryMembers"
                                  routingAddress="Pagination"
                                  page="${memberPage}">
             <ol class="message_list aff_colonnes">
-              <view:paginationItems items="${fragments}" var="fragment">
+              <view:listItems items="${fragments}" var="fragment">
                 <li class="intfdcolor ${fragment.type} showActionsOnMouseOver" id="user-${fragment.userId}">
                     ${fragment.fragment}
                   <br clear="all"/>
                 </li>
-              </view:paginationItems>
+              </view:listItems>
             </ol>
-            </view:paginationPane>
+            </view:listPane>
             <script type="text/javascript">
               whenSilverpeasReady(function() {
                 activateUserZoom();
-                sp.paginationPane.ajaxControls('#myContacts', {
+                sp.listPane.ajaxControls('#myContacts', {
                   before : function(ajaxConfig) {
                     $.progressMessage();
                     window.history.replaceState(null, "", ajaxConfig.getUrl());

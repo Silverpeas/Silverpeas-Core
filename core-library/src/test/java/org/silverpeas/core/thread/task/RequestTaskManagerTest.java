@@ -32,6 +32,7 @@ import org.junit.Test;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.thread.task.RequestTaskManager.RequestTaskMonitor;
 import org.silverpeas.core.util.logging.Level;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -321,16 +322,20 @@ public class RequestTaskManagerTest {
   }
 
   @SuppressWarnings("unchecked")
-  private RequestTaskMonitor waitForTaskEndingAfterFirstInit(final Class testClass)
+  private synchronized RequestTaskMonitor waitForTaskEndingAfterFirstInit(final Class testClass)
       throws InterruptedException, ExecutionException {
     Thread.sleep(200);
-    RequestTaskMonitor monitor = RequestTaskManager.tasks.get(testClass);
+    final RequestTaskMonitor monitor = RequestTaskManager.tasks.get(testClass);
     // Waiting the end of the current task
-    Future<Void> currentTask = monitor.task;
-    Future<Void> taskWatcher = monitor.taskWatcher;
-    if (currentTask!= null) {
-      currentTask.get();
-      taskWatcher.get();
+    final Future<Void> taskWatcher = monitor.taskWatcher;
+    final Future<Void> currentTask = monitor.task;
+    if (currentTask != null) {
+      try {
+        currentTask.get();
+        taskWatcher.get();
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).warn(e);
+      }
     }
     // Checking status
     assertThatThreadsAreStoppedAndMonitorsAreCleanedAndQueuesAreConsummed(monitor);
@@ -349,7 +354,7 @@ public class RequestTaskManagerTest {
     assertThat(monitor.requestList.size(), is(0));
   }
 
-  private RequestTaskMonitor waitForTaskEndingAtEndOfTest(final Class testClass)
+  private synchronized RequestTaskMonitor waitForTaskEndingAtEndOfTest(final Class testClass)
       throws InterruptedException {
     Thread.sleep(200);
     RequestTaskMonitor monitor = RequestTaskManager.tasks.get(testClass);
