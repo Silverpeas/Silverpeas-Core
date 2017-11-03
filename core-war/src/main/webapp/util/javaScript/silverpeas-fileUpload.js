@@ -983,7 +983,7 @@
    * @private
    */
   function __buildOptions(options) {
-    var agregatedOptions = {
+    var aggregatedOptions = {
       multiple: true,
       dragAndDropDisplay: true,
       dragAndDropDisplayIcon: true,
@@ -1008,7 +1008,7 @@
         deleteFile: ''
       }
     };
-    var _options = $.extend(agregatedOptions, options);
+    var _options = $.extend(aggregatedOptions, options);
     if (!isFileAPI) {
       _options.multiple = false;
       _options.dragAndDropDisplay = false;

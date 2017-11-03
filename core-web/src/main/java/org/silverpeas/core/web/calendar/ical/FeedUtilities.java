@@ -23,23 +23,30 @@
  */
 package org.silverpeas.core.web.calendar.ical;
 
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.XmlReader;
+import com.rometools.rome.feed.synd.SyndContent;
+import com.rometools.rome.feed.synd.SyndEntry;
+import com.rometools.rome.feed.synd.SyndFeed;
+import com.rometools.rome.io.SyndFeedInput;
+import com.rometools.rome.io.XmlReader;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.ComponentList;
 import net.fortuna.ical4j.model.DateTime;
 import net.fortuna.ical4j.model.PropertyList;
 import net.fortuna.ical4j.model.component.VEvent;
-import net.fortuna.ical4j.model.property.*;
+import net.fortuna.ical4j.model.property.CalScale;
+import net.fortuna.ical4j.model.property.Description;
+import net.fortuna.ical4j.model.property.Location;
+import net.fortuna.ical4j.model.property.ProdId;
+import net.fortuna.ical4j.model.property.Uid;
+import net.fortuna.ical4j.model.property.Url;
+import net.fortuna.ical4j.model.property.Version;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
 import org.apache.commons.httpclient.methods.GetMethod;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.ByteArrayInputStream;
 import java.net.URI;
@@ -60,6 +67,7 @@ public final class FeedUtilities {
 
   private static final long REMOTE_CALENDAR_RETURNCODE_OK = 200;
   private static final long FEED_RETRY_MILLIS = 1000L;
+  private static final int MAX_ATTEMPTS = 5;
 
   // --- HTTP CONNECTION HANDLER ---
   private static final MultiThreadedHttpConnectionManager connectionManager =
@@ -69,45 +77,50 @@ public final class FeedUtilities {
   private FeedUtilities() {
   }
 
-  public static final byte[] loadFeed(String feedURL) throws Exception {
+  public static final byte[] loadFeed(String feedURL) throws SilverpeasException {
     return loadFeed(feedURL, null, null);
   }
 
   public static final byte[] loadFeed(String feedURL, String username, String password)
-      throws Exception {
-    // Load feed
-    GetMethod get = new GetMethod(feedURL);
-    get.addRequestHeader("User-Agent", USER_AGENT);
-    get.setFollowRedirects(true);
+      throws SilverpeasException {
+    try {
+      // Load feed
+      GetMethod get = new GetMethod(feedURL);
+      get.addRequestHeader("User-Agent", USER_AGENT);
+      get.setFollowRedirects(true);
 
-    if (StringUtil.isDefined(username)) {
-      // Set username/password
-      byte[] auth = StringUtils
-          .encodeString(username + ':' + StringUtils.decodePassword(password), Charsets.UTF_8);
-      get.addRequestHeader("Authorization", "Basic " + StringUtils.encodeBASE64(auth));
+      if (StringUtil.isDefined(username)) {
+        // Set username/password
+        byte[] auth =
+            StringUtils.encodeString(username + ':' + StringUtils.decodePassword(password), Charsets.UTF_8);
+        get.addRequestHeader("Authorization", "Basic " + StringUtils.encodeBASE64(auth));
 
+      }
+      return loadFeedBody(get);
+    } catch (Exception e) {
+      throw new SilverpeasException(e);
     }
+  }
+
+  private static byte[] loadFeedBody(final GetMethod get) throws InterruptedException {
     byte[] bytes = null;
-    for (int tries = 0; tries < 5; tries++) {
+    for (int tries = 0; tries < MAX_ATTEMPTS; tries++) {
       try {
         int status = httpClient.executeMethod(get);
-        SilverTrace
-            .warn("agenda", "FeedUtilities.loadFeed()", "Http connection status : " + status);
         if (status == REMOTE_CALENDAR_RETURNCODE_OK) {
           bytes = get.getResponseBody();
-
         } else {
-          SilverTrace.warn("agenda", "FeedUtilities.loadFeed()", "agenda.FEED_LOADING_FAILED",
-              "Status Http Client=" + status + " Content=" + Arrays.toString(bytes));
+          SilverLogger.getLogger(FeedUtilities.class)
+              .warn("Feed loading failed with Http status code {0}. Actual content fetched: {1}",
+                  status, Arrays.toString(bytes));
           bytes = null;
         }
       } catch (Exception loadError) {
-        SilverTrace.warn("agenda", "FeedUtilities.loadFeed()", "Attempt #" + tries + " Status=",
-            loadError.getMessage());
-        if (tries == 5) {
+        SilverLogger.getLogger(FeedUtilities.class)
+            .warn("Feed loading failure after {0} attempts. {1}", tries, loadError.getMessage());
+        if (tries == MAX_ATTEMPTS) {
           bytes = null;
-          SilverTrace.warn("agenda", "FeedUtilities.loadFeed()", "agenda.CONNECTIONS_REFUSED",
-              loadError.getMessage());
+          SilverLogger.getLogger(FeedUtilities.class).error(loadError);
         }
         Thread.sleep(FEED_RETRY_MILLIS);
       } finally {
@@ -117,7 +130,7 @@ public final class FeedUtilities {
     return bytes;
   }
 
-  public static Calendar convertFeedToCalendar(SyndFeed feed, long eventLength) throws Exception {
+  public static Calendar convertFeedToCalendar(SyndFeed feed, long eventLength) {
 
     // Create new calendar
     Calendar calendar = new Calendar();
@@ -161,7 +174,7 @@ public final class FeedUtilities {
 
       // Set event URL
       PropertyList args = event.getProperties();
-      URI uri = new URI(url);
+      URI uri = URI.create(url);
       args.add(new Url(uri));
 
       // Generate location by URL
@@ -191,21 +204,21 @@ public final class FeedUtilities {
     return calendar;
   }
 
-  private static final SyndEntry[] getFeedEntries(SyndFeed feed) throws Exception {
+  private static final SyndEntry[] getFeedEntries(SyndFeed feed) {
     List list = feed.getEntries();
     SyndEntry[] entries = new SyndEntry[list.size()];
     list.toArray(entries);
     return entries;
   }
 
-  public static final SyndFeed parseFeed(byte[] feedBytes) throws Exception {
+  public static final SyndFeed parseFeed(byte[] feedBytes) {
     SyndFeed synFeed = null;
     try {
       SyndFeedInput input = new SyndFeedInput();
       XmlReader xmlReader = new XmlReader(new ByteArrayInputStream(feedBytes));
       synFeed = input.build(xmlReader);
     } catch (Exception e) {
-      SilverTrace.warn("agenda", "FeedUtilities.parseFeed()", "agenda.EX_CANT_PARSE_FEED", e);
+      SilverLogger.getLogger(FeedUtilities.class).error(e);
     }
     return synFeed;
   }

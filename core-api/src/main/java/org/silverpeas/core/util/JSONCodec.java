@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.databind.AnnotationIntrospector;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -46,7 +47,7 @@ import java.util.function.Function;
  * corresponding Java bean.
  * <p>
  * In order to perform the marshalling and the unmarchalling, the fields of the bean must be
- * annotated with the JAXB annotations.
+ * annotated with the JAXB annotations. All null fields are by default ignored.
  * @author mmoquillon
  */
 public class JSONCodec {
@@ -160,6 +161,7 @@ public class JSONCodec {
     AnnotationIntrospector introspector = new JaxbAnnotationIntrospector(
         TypeFactory.defaultInstance());
     mapper.setAnnotationIntrospector(introspector);
+    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     return mapper;
   }

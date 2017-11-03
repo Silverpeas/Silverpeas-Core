@@ -23,11 +23,16 @@
  */
 package org.silverpeas.core.cache.service;
 
-import net.sf.ehcache.Cache;
-import net.sf.ehcache.CacheManager;
-import net.sf.ehcache.Element;
-import net.sf.ehcache.config.CacheConfiguration;
+import org.ehcache.Cache;
+import org.ehcache.UserManagedCache;
+import org.ehcache.ValueSupplier;
+import org.ehcache.config.builders.ResourcePoolsBuilder;
+import org.ehcache.config.builders.UserManagedCacheBuilder;
+import org.ehcache.expiry.Duration;
+import org.ehcache.expiry.Expiry;
 import org.silverpeas.core.cache.model.AbstractCache;
+
+import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Implementation of the Cache that uses EhCache API.
@@ -35,23 +40,21 @@ import org.silverpeas.core.cache.model.AbstractCache;
  */
 final class EhCache extends AbstractCache {
 
-  private final static String CACHE_NAME = "SILVERPEAS_COMMON_EH_CACHE";
-
-  private final CacheManager cacheManager;
+  private final UserManagedCache<Object, Element> managedCache;
 
   /**
    * Initialization of the service using EhCache API.
    *
    * @param nbMaxElements maximum capacity of the cache.
    */
-  EhCache(int nbMaxElements) {
-    cacheManager = CacheManager.getInstance();
-    if (!cacheManager.cacheExists(CACHE_NAME)) {
-      cacheManager.addCache(new Cache(new CacheConfiguration(CACHE_NAME, nbMaxElements)));
-    } else {
-      // Resizing dynamically the cache that already exists
-      getCache().getCacheConfiguration().setMaxEntriesLocalHeap(nbMaxElements);
+  EhCache(long nbMaxElements) {
+    UserManagedCacheBuilder cacheBuilder =
+        UserManagedCacheBuilder.newUserManagedCacheBuilder(Object.class, Element.class)
+            .withExpiry(new PerElementExpiration());
+    if (nbMaxElements > 0) {
+      cacheBuilder = cacheBuilder.withResourcePools(ResourcePoolsBuilder.heap(nbMaxElements));
     }
+    managedCache = cacheBuilder.build(true);
   }
 
   /**
@@ -59,16 +62,13 @@ final class EhCache extends AbstractCache {
    *
    * @return the underlying cache used for its implementation.
    */
-  Cache getCache() {
-    return cacheManager.getCache(CACHE_NAME);
+  Cache<Object, Element> getCache() {
+    return managedCache;
   }
 
   @Override
   public void clear() {
-    Cache cache = getCache();
-    for (Object key : cache.getKeys()) {
-      cache.remove(key);
-    }
+    getCache().clear();
   }
 
   @Override
@@ -91,9 +91,13 @@ final class EhCache extends AbstractCache {
 
   @Override
   public <T> T remove(final Object key, final Class<T> classType) {
-    T value = get(key, classType);
-    if (value != null) {
-      getCache().remove(key);
+    T value = null;
+    Element element = getCache().get(key);
+    if (element != null) {
+      value = element.getValue(classType);
+      if (value != null) {
+        getCache().remove(key);
+      }
     }
     return value;
   }
@@ -101,9 +105,92 @@ final class EhCache extends AbstractCache {
   @Override
   public void put(final Object key, final Object value, final int timeToLive,
       final int timeToIdle) {
-    Element element = new Element(key, value);
-    element.setTimeToLive(timeToLive);
-    element.setTimeToIdle(timeToIdle);
-    getCache().put(element);
+    Element element = new Element(value)
+        .withTimeToLive(timeToLive)
+        .withTimeToIdle(timeToIdle);
+    getCache().put(key, element);
+  }
+
+  /**
+   * An element in the cache. It decorated any value to put into the cache with TTL and TTI
+   * information.
+   */
+  static class Element {
+    private Object value;
+    private int ttl;
+    private int tti;
+
+    public Element(final Object value) {
+      this.value = value;
+    }
+
+    public Element withTimeToLive(int ttl) {
+      this.ttl = ttl;
+      return this;
+    }
+
+    public Element withTimeToIdle(int tti) {
+      this.tti = tti;
+      return this;
+    }
+
+    public Object getObjectValue() {
+      return value;
+    }
+
+    public <T> T getValue(Class<T> clazz) {
+      if (value == null || !clazz.isAssignableFrom(value.getClass())) {
+        return null;
+      }
+      return (T) value;
+    }
+
+    public int getTimeToLive() {
+      return ttl;
+    }
+
+    public int getTimeToIdle() {
+      return tti;
+    }
+  }
+
+  /**
+   * A custom expiration rule based upon both TTL and TTI for each element in the cache.
+   */
+  private class PerElementExpiration implements Expiry<Object, Element> {
+
+    @Override
+    public Duration getExpiryForCreation(final Object key, final Element value) {
+      Duration expiration = Duration.INFINITE;
+      if (value.getTimeToLive() <= 0 && value.getTimeToIdle() > 0) {
+        expiration = Duration.of(value.getTimeToIdle(), SECONDS);
+      } else if (value.getTimeToLive() > 0) {
+        expiration = Duration.of(value.getTimeToLive(), SECONDS);
+      }
+      return expiration;
+    }
+
+    @Override
+    public Duration getExpiryForAccess(final Object key,
+        final ValueSupplier<? extends Element> value) {
+      Duration expiration = null;
+      Element element = value.value();
+      if (element.getTimeToIdle() > 0) {
+        expiration = Duration.of(element.getTimeToIdle(), SECONDS);
+      }
+      return expiration;
+    }
+
+    @Override
+    public Duration getExpiryForUpdate(final Object key,
+        final ValueSupplier<? extends Element> oldValue, final Element newValue) {
+      Duration expiration = Duration.INFINITE;
+      if (newValue.getTimeToLive() <= 0 && newValue.getTimeToIdle() > 0) {
+        expiration = Duration.of(newValue.getTimeToIdle(), SECONDS);
+      } else if (newValue.getTimeToLive() > 0) {
+        expiration = Duration.of(newValue.getTimeToLive(), SECONDS);
+      }
+      return expiration;
+    }
   }
 }

@@ -26,29 +26,33 @@ package org.silverpeas.core.calendar.ical4j;
 import net.fortuna.ical4j.model.Escapable;
 import net.fortuna.ical4j.model.ParameterList;
 import net.fortuna.ical4j.model.Property;
-import net.fortuna.ical4j.model.PropertyFactoryImpl;
+import net.fortuna.ical4j.model.PropertyFactory;
+
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.text.ParseException;
 
 public class HtmlProperty extends Property implements Escapable {
 
   public static final String X_ALT_DESC = "X-ALT-DESC";
+  public static final String PROPERTY_NAME = X_ALT_DESC + ";FMTTYPE=text/html";
+  public static final HtmlPropertyFactory FACTORY = new HtmlPropertyFactory();
 
   private static final long serialVersionUID = 7287564228220558361L;
-  private static final String HTML = X_ALT_DESC + ";FMTTYPE=text/html";
-
   private String value;
 
   /**
    * Default constructor.
    */
   public HtmlProperty() {
-    super(HTML, PropertyFactoryImpl.getInstance());
+    super(PROPERTY_NAME, FACTORY);
   }
 
   /**
    * @param aValue a value string for this component
    */
   public HtmlProperty(final String aValue) {
-    super(HTML, PropertyFactoryImpl.getInstance());
+    super(PROPERTY_NAME, FACTORY);
     setValue(aValue);
   }
 
@@ -57,7 +61,7 @@ public class HtmlProperty extends Property implements Escapable {
    * @param aValue a value string for this component
    */
   public HtmlProperty(final ParameterList aList, final String aValue) {
-    super(HTML, aList, PropertyFactoryImpl.getInstance());
+    super(PROPERTY_NAME, aList, FACTORY);
     setValue(aValue);
   }
 
@@ -83,5 +87,28 @@ public class HtmlProperty extends Property implements Escapable {
   @Override
   public final void setValue(final String aValue) {
     this.value = aValue;
+  }
+
+  public static class HtmlPropertyFactory implements PropertyFactory<Property> {
+
+    public HtmlPropertyFactory() {
+      super();
+    }
+
+    @Override
+    public Property createProperty() {
+      return new HtmlProperty();
+    }
+
+    @Override
+    public Property createProperty(final ParameterList parameters, final String value)
+        throws IOException, URISyntaxException, ParseException {
+      return new HtmlProperty(parameters, value);
+    }
+
+    @Override
+    public boolean supports(final String name) {
+      return PROPERTY_NAME.equals(name);
+    }
   }
 }
