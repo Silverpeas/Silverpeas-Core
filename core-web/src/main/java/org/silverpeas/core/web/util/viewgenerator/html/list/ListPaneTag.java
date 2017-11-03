@@ -21,12 +21,13 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util.viewgenerator.html.pagination;
+package org.silverpeas.core.web.util.viewgenerator.html.list;
 
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.div;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpSession;
@@ -40,10 +41,10 @@ import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Paginat
     .ITEMS_PER_PAGE_PARAM;
 
 /**
- * Create a new PaginationPane.
+ * Create a new ListPane.
  * @author silveryocha
  */
-public class PaginationPaneTag extends BodyTagSupport {
+public class ListPaneTag extends BodyTagSupport {
   private static final long serialVersionUID = 1370094709020971998L;
   private static final int DEFAULT_NB_ITEM_PER_PAGE = 10;
   private String var;
@@ -80,18 +81,18 @@ public class PaginationPaneTag extends BodyTagSupport {
     url.append(INDEX_PARAMETER_NAME).append("=");
     currentPagination.setBaseURL(url.toString());
 
-    div paginationPane = new div();
+    div listPane = new div();
     if (isDefined(getId())) {
-      paginationPane.setID(getId());
+      listPane.setID(getId());
     }
-    paginationPane.setClass("pagination-pane");
+    listPane.setClass("list-pane");
     div paginationNav = new div();
-    paginationNav.setClass("pagination-pane-nav");
+    paginationNav.setClass("list-pane-nav");
     paginationNav.addElement(currentPagination.print());
-    paginationPane.addElement(getBodyContent().getString());
-    paginationPane.addElement(paginationNav);
+    listPane.addElement(getBodyContent().getString());
+    listPane.addElement(paginationNav);
 
-    new ElementContainer().addElement(paginationPane).output(pageContext.getOut());
+    new ElementContainer().addElement(listPane).output(pageContext.getOut());
     return EVAL_PAGE;
   }
 

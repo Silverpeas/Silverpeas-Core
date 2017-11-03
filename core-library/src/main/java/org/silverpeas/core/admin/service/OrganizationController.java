@@ -153,28 +153,9 @@ public interface OrganizationController extends java.io.Serializable {
   ComponentInst getComponentInst(String sComponentId);
 
   /**
-   * @param spaceId - id of the space or subSpace
-   * @return a List of SpaceInst ordered from root to subSpace
-   * @throws Exception
-   */
-  List<SpaceInst> getSpacePath(String spaceId);
-
-  List<SpaceInst> getSpacePathToComponent(String componentId);
-
-  /**
    * Return the component Instance Light corresponding to the given component id
    */
   ComponentInstLight getComponentInstLight(String sComponentId);
-
-  /**
-   * Return the database id of the user with the given ldap Id
-   */
-  int getUserDBId(String sUserId);
-
-  /**
-   * Return the ldapId of the user with the given db Id
-   */
-  String getUserDetailByDBId(int id);
 
   /**
    * Return the full detail of the user with the given ldap Id
@@ -493,4 +474,13 @@ public interface OrganizationController extends java.io.Serializable {
    * @throws AdminException on a technical error.
    */
   SpaceProfile getSpaceProfile(String spaceId, SilverpeasRole role);
+
+  SpaceWithSubSpacesAndComponents getFullTreeview(String userId) throws AdminException;
+
+  SpaceWithSubSpacesAndComponents getFullTreeview(String userId, String spaceId)
+      throws AdminException;
+
+  List<SpaceInstLight> getPathToSpace(String spaceId);
+
+  List<SpaceInstLight> getPathToComponent(String componentId);
 }

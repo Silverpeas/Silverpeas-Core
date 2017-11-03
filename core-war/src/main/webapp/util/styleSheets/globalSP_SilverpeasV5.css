@@ -2442,7 +2442,7 @@ caption {
   padding-left:10px;
 }
 
-#directory #users .pagination-pane-nav {
+#directory #users .list-pane-nav {
   clear:both;
   text-align:center;
 }
@@ -6563,6 +6563,11 @@ silverpeas-permalink .copy-to-clipboard .sp_button span {
 
 silverpeas-button {
   white-space:nowrap;
+}
+
+.sp_buttonPane silverpeas-button:last-child .sp_button,
+.sp_buttonPane silverpeas-button:last-child button.button{
+  margin-right:0;
 }
 
 /**

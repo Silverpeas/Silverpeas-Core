@@ -24,17 +24,17 @@
 package org.silverpeas.core.web.util.viewgenerator.html.map;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.service.SpaceWithSubSpacesAndComponents;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-import java.io.IOException;
 
 public class MapTag extends TagSupport {
 
@@ -116,18 +116,30 @@ public class MapTag extends TagSupport {
       if (forceHidingComponents != null) {
         showHiddenComponents = !forceHidingComponents;
       }
-      pageContext.getOut().print(printSpaceAndSubSpaces(spaceId, showHiddenComponents));
-    } catch (IOException e) {
+      if (StringUtil.isNotDefined(spaceId)) {
+        SpaceWithSubSpacesAndComponents root =
+            OrganizationControllerProvider.getOrganisationController()
+                .getFullTreeview(helper.getUserId());
+        for (SpaceWithSubSpacesAndComponents space : root.getSubSpaces()) {
+          pageContext.getOut().print(printSpaceAndSubSpaces(space, showHiddenComponents));
+        }
+      } else {
+        SpaceWithSubSpacesAndComponents space =
+            OrganizationControllerProvider.getOrganisationController()
+                .getFullTreeview(helper.getUserId(), spaceId);
+        pageContext.getOut().print(printSpaceAndSubSpaces(space, showHiddenComponents));
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
       throw new JspException("Can't display the site map", e);
     }
     return SKIP_BODY;
   }
 
-  private String printSpaceAndSubSpaces(String spaceId, boolean showHiddenComponents) {
+  private String printSpaceAndSubSpaces(SpaceWithSubSpacesAndComponents space,
+      boolean showHiddenComponents) {
     MainSessionController sessionController = getMainSessionController();
-    OrganizationController organisationController =
-        OrganizationControllerProvider.getOrganisationController();
-    SpaceInst spaceInst = organisationController.getSpaceInstById(spaceId);
+    SpaceInstLight spaceInst = space.getSpace();
     StringBuilder result = new StringBuilder(500);
     if (spaceInst != null) {
       String language = sessionController.getFavoriteLanguage();
@@ -153,16 +165,16 @@ public class MapTag extends TagSupport {
 
       if (displayAppsFirst) {
         // Get apps
-        result.append(printApps(spaceId, showHiddenComponents));
+        result.append(printApps(space, showHiddenComponents));
         result.append("<li class=\"clear\"></li>");
       }
 
       // Get sub spaces
-      result.append(printSubspaces(spaceId, showHiddenComponents));
+      result.append(printSubspaces(space, showHiddenComponents));
 
       if (!displayAppsFirst) {
         // Get apps
-        result.append(printApps(spaceId, showHiddenComponents));
+        result.append(printApps(space, showHiddenComponents));
       }
 
       result.append("</ul>\n");
@@ -170,7 +182,7 @@ public class MapTag extends TagSupport {
     return result.toString();
   }
 
-  private String getSpaceHREF(SpaceInst spaceInst) {
+  private String getSpaceHREF(SpaceInstLight spaceInst) {
     String spaceHref =
         "<a href=\"" + URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceInst.getId()) +
             "\" target=\"_top\">";
@@ -186,30 +198,20 @@ public class MapTag extends TagSupport {
     return spaceHref;
   }
 
-  private String printSubspaces(String spaceId, boolean showHiddenComponents) {
+  private String printSubspaces(SpaceWithSubSpacesAndComponents space, boolean showHiddenComponents) {
     StringBuilder result = new StringBuilder(500);
-    OrganizationController organisationController =
-        OrganizationControllerProvider.getOrganisationController();
-    MainSessionController sessionController = getMainSessionController();
-    String userId = sessionController.getUserId();
-    String[] subSpaceIds = organisationController.getAllowedSubSpaceIds(userId, spaceId);
-    for (String subSpaceId : subSpaceIds) {
-      result.append(printSpaceAndSubSpaces(subSpaceId, showHiddenComponents));
+    for (SpaceWithSubSpacesAndComponents subSpace : space.getSubSpaces()) {
+      result.append(printSpaceAndSubSpaces(subSpace, showHiddenComponents));
     }
     return result.toString();
   }
 
-  private String printApps(String spaceId, boolean showHiddenComponents) {
+  private String printApps(SpaceWithSubSpacesAndComponents space, boolean showHiddenComponents) {
     StringBuilder result = new StringBuilder(500);
     MainSessionController sessionController = getMainSessionController();
-    String userId = sessionController.getUserId();
     String language = sessionController.getFavoriteLanguage();
-    OrganizationController organisationController =
-        OrganizationControllerProvider.getOrganisationController();
-    String[] appIds = organisationController.getAvailCompoIdsAtRoot(spaceId, userId);
     int nbApp = 0;
-    for (String appId : appIds) {
-      ComponentInstLight componentInst = organisationController.getComponentInstLight(appId);
+    for (ComponentInstLight componentInst : space.getComponents()) {
       nbApp++;
       if (!componentInst.isHidden() || showHiddenComponents) {
         String label = componentInst.getLabel(language);

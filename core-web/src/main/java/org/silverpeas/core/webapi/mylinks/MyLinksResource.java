@@ -24,7 +24,6 @@
 package org.silverpeas.core.webapi.mylinks;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.RequestScoped;
@@ -218,9 +217,9 @@ public class MyLinksResource extends RESTWebService {
   }
 
   private StringBuilder buildSpacePathName(String spaceId, String userLanguage) {
-    List<SpaceInst> spaces = getOrganisationController().getSpacePath(spaceId);
+    List<SpaceInstLight> spaces = getOrganisationController().getPathToSpace(spaceId);
     StringBuilder nameBuilder = new StringBuilder();
-    for (SpaceInst spaceInst : spaces) {
+    for (SpaceInstLight spaceInst : spaces) {
       if (nameBuilder.length() > 0) {
         nameBuilder.append(PATH_SEPARATOR);
       }
@@ -275,9 +274,9 @@ public class MyLinksResource extends RESTWebService {
   }
 
   private StringBuilder buildAppPathName(String applicationId, String userLanguage) {
-    List<SpaceInst> spaces = getOrganisationController().getSpacePathToComponent(applicationId);
+    List<SpaceInstLight> spaces = getOrganisationController().getPathToComponent(applicationId);
     StringBuilder nameBuilder = new StringBuilder();
-    for (SpaceInst spaceInst : spaces) {
+    for (SpaceInstLight spaceInst : spaces) {
       if (nameBuilder.length() > 0) {
         nameBuilder.append(PATH_SEPARATOR);
       }

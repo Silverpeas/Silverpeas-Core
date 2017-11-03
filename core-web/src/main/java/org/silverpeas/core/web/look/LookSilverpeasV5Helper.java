@@ -161,10 +161,10 @@ public class LookSilverpeasV5Helper extends LookHelper {
   @Override
   public void setSpaceIdAndSubSpaceId(String spaceId) {
     if (StringUtil.isDefined(spaceId)) {
-      List<SpaceInst> spacePath = organizationController.getSpacePath(spaceId);
+      List<SpaceInstLight> spacePath = organizationController.getPathToSpace(spaceId);
       if (!spacePath.isEmpty()) {
-        SpaceInst space = spacePath.get(0);
-        SpaceInst subSpace = spacePath.get(spacePath.size() - 1);
+        SpaceInstLight space = spacePath.get(0);
+        SpaceInstLight subSpace = spacePath.get(spacePath.size() - 1);
         setSpaceId(space.getId());
         setSubSpaceId(subSpace.getId());
       }
@@ -183,10 +183,10 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
     if (!StringUtil.isDefined(spaceId) &&
         !PersonalComponentInstance.from(componentId).isPresent()) {
-      List<SpaceInst> spacePath = organizationController.getSpacePathToComponent(componentId);
+      List<SpaceInstLight> spacePath = organizationController.getPathToComponent(componentId);
       if (!spacePath.isEmpty()) {
-        SpaceInst space = spacePath.get(0);
-        SpaceInst subSpace = spacePath.get(spacePath.size() - 1);
+        SpaceInstLight space = spacePath.get(0);
+        SpaceInstLight subSpace = spacePath.get(spacePath.size() - 1);
         setSpaceId(space.getId());
         setSubSpaceId(subSpace.getId());
       }
@@ -203,7 +203,9 @@ public class LookSilverpeasV5Helper extends LookHelper {
   protected LookSilverpeasV5Helper(HttpSession session) {
     this.session = session;
     GraphicElementFactory gef = getGraphicElementFactory();
-    init(gef.getFavoriteLookSettings());
+    if (gef != null) {
+      init(gef.getFavoriteLookSettings());
+    }
   }
 
   /*

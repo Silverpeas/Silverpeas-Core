@@ -21,20 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.web.util.viewgenerator.html.pagination;
+package org.silverpeas.core.web.util.viewgenerator.html.list;
 
 import org.apache.taglibs.standard.tag.rt.core.ForEachTag;
 import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
 import javax.servlet.jsp.JspTagException;
 import java.util.List;
 
 /**
- * Iterate over lines.
+ * Iterate over items.
  * <p>If an instance of {@link SilverpeasList} is given, optimizations are offered</p>
  * @author Yohann Chastagnier
  */
-public class PaginationItemsTag extends ForEachTag {
+public class ListItemsTag extends ForEachTag {
 
   @Override
   public void setItems(final Object items) throws JspTagException {
@@ -47,7 +48,7 @@ public class PaginationItemsTag extends ForEachTag {
 
   @SuppressWarnings("unchecked")
   private void optimize(final List list) throws JspTagException {
-    final PaginationPaneTag pane = getPaginationPane();
+    final ListPaneTag pane = getListPane();
     final SilverpeasList silverpeasList = SilverpeasList.wrap(list);
     if (silverpeasList.isSlice()) {
       // The list is already paginated
@@ -64,7 +65,7 @@ public class PaginationItemsTag extends ForEachTag {
     }
   }
 
-  private PaginationPaneTag getPaginationPane() {
-    return (PaginationPaneTag) findAncestorWithClass(this, PaginationPaneTag.class);
+  private ListPaneTag getListPane() {
+    return (ListPaneTag) findAncestorWithClass(this, ListPaneTag.class);
   }
 }

@@ -25,8 +25,9 @@ package org.silverpeas.web.webdav;
 
 import org.apache.jackrabbit.api.security.authentication.token.TokenCredentials;
 import org.apache.jackrabbit.server.CredentialsProvider;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.web.webdav.SilverpeasJcrWebdavContext;
 
 import javax.jcr.Credentials;
 import javax.jcr.LoginException;
@@ -44,20 +45,24 @@ public class WebDavCredentialsProvider implements CredentialsProvider {
 
   private static final String USERID_TEMPLATE = "{0}@domain{1}";
   private static final String USERID_TOKEN_ATTRIBUTE = "UserID";
+  private static final String AUTHORIZED_DOCUMENT_PATH_ATTRIBUTE = "AuthorizedDocumentPath";
 
   @Override
   public Credentials getCredentials(final HttpServletRequest request)
       throws LoginException, ServletException {
     Credentials credentials;
-    String authToken = getWebdavContext(request.getPathInfo()).getToken();
+    final SilverpeasJcrWebdavContext webdavContext = getWebdavContext(request.getPathInfo());
+    final String authToken = webdavContext.getToken();
     if (!authToken.isEmpty()) {
-      UserDetail user = CacheServiceProvider.getApplicationCacheService()
+      User user = CacheServiceProvider.getApplicationCacheService()
           .getCache()
-          .get(authToken, UserDetail.class);
+          .get(authToken, User.class);
       if (user != null) {
         String userID = MessageFormat.format(USERID_TEMPLATE, user.getLogin(), user.getDomainId());
         credentials = new TokenCredentials(authToken);
         ((TokenCredentials) credentials).setAttribute(USERID_TOKEN_ATTRIBUTE, userID);
+        final String jcrDocumentUrlLocation = webdavContext.getJcrDocumentUrlLocation().replaceFirst("^/[^/]+", "");
+        ((TokenCredentials) credentials).setAttribute(AUTHORIZED_DOCUMENT_PATH_ATTRIBUTE, jcrDocumentUrlLocation);
       } else {
         throw new LoginException("No user matching the credentials!");
       }

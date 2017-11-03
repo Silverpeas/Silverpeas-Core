@@ -749,6 +749,13 @@
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>
+    <attribute>
+      <description>Name of the tab. Used by the HTML 'class' attribute.</description>
+      <name>name</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
   </tag>
   <tag>
     <description>Simple tag to display a button pane.</description>
@@ -1438,12 +1445,12 @@
     </attribute>
   </tag>
   <tag>
-    <description>Tag to create a pagination pane to display a list of data.</description>
-    <name>paginationPane</name>
-    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationPaneTag</tag-class>
+    <description>Tag to create a list pane to display a list of data.</description>
+    <name>listPane</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.list.ListPaneTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
-      <description>Name of the PaginationPane in the SessionScope</description>
+      <description>Name of the ListPane in the SessionScope</description>
       <name>var</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
@@ -1473,14 +1480,14 @@
   </tag>
   <tag>
     <description>
-      This TAG must be enclosed into a paginationPane one.
+      This TAG must be enclosed into a listPane one.
       MANDATORY in case of optimized pagination rendering.
       The basic iteration tag, accepting many different
       collection types and supporting subsetting and other
       functionality.
     </description>
-    <name>paginationItems</name>
-    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.pagination.PaginationItemsTag</tag-class>
+    <name>listItems</name>
+    <tag-class>org.silverpeas.core.web.util.viewgenerator.html.list.ListItemsTag</tag-class>
     <body-content>JSP</body-content>
     <attribute>
       <description>
@@ -1558,7 +1565,7 @@
   </tag>
   <tag>
     <description>
-      DEPRECATED, use instead paginationPane and paginationItems.
+      DEPRECATED, use instead listPane and listItems.
       Simple tag to define a pagination navigation bar.
     </description>
     <name>pagination</name>
@@ -1974,7 +1981,7 @@
     <attribute>
       <description>Space Identifier</description>
       <name>spaceId</name>
-      <required>true</required>
+      <required>false</required>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>

@@ -27,7 +27,7 @@ import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
@@ -102,19 +102,16 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     String language = (getMainSessionController() == null) ? "" : getMainSessionController()
         .getFavoriteLanguage();
     if (componentInst != null || StringUtil.isDefined(getSpaceId())) {
-      List<SpaceInst> spaces = Collections.emptyList();
+      List<SpaceInstLight> spaces = Collections.emptyList();
 
       if (componentInst != null && !componentInst.isPersonal()) {
-        spaces = organizationController.getSpacePathToComponent(getComponentId());
+        spaces = organizationController.getPathToComponent(getComponentId());
       } else if (componentInst == null) {
-        spaces = organizationController.getSpacePath(getSpaceId());
+        spaces = organizationController.getPathToSpace(getSpaceId());
       }
       boolean firstSpace = true;
-      for (SpaceInst spaceInst : spaces) {
+      for (SpaceInstLight spaceInst : spaces) {
         String spaceId = spaceInst.getId();
-        if (!spaceId.startsWith("WA")) {
-          spaceId = "WA" + spaceId;
-        }
         String href = "javascript:" + getSpaceJavascriptCallback() + "('" + spaceId + "')";
         if (!isClickable()) {
           href = "#";
