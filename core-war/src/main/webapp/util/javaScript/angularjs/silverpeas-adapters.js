@@ -59,10 +59,15 @@
     }
 
     function _error(data, status, headers) {
-      if (!performMessage(headers) && status)
-        notyError("Error: " + status + "[ " + data + " ]");
-      else if (typeof window.console !== 'undefined')
+      if (!performMessage(headers) && status) {
+        if (status > 0) {
+          console.error("Error: " + status + "[ " + data + " ]");
+        } else {
+          // Maybe a request closed before the end, from the user navigation
+        }
+      } else if (typeof window.console !== 'undefined') {
         console.warn("An unknown and unexpected error occurred");
+      }
     }
 
     function _http(config, data, convert) {

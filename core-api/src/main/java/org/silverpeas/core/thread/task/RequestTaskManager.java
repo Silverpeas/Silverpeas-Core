@@ -68,9 +68,10 @@ public class RequestTaskManager {
           (AbstractRequestTask) ServiceProvider.getService(monitor.taskClass);
       try {
         debug(monitor.taskClass, "starting a thread in charge of request processing");
-        monitor.task = ManagedThreadPool.getPool().invoke(task);
         task.monitor = monitor;
-        monitor.taskWatcher = ManagedThreadPool.getPool().invoke(new TaskWatcher(monitor));
+        final TaskWatcher taskWatcher = new TaskWatcher(monitor);
+        monitor.task = ManagedThreadPool.getPool().invoke(task);
+        monitor.taskWatcher = ManagedThreadPool.getPool().invoke(taskWatcher);
         return true;
       } catch (InterruptedException e) {
         error(monitor.taskClass, "the task {0} can not be invoked",

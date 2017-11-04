@@ -288,6 +288,7 @@ public class RequestTaskManagerTest {
     monitor.requestList.add(new TestRequestTaskWithLimit.ThreadKillTestRequest());
     monitor.requestList.add(new TestRequestTaskWithLimit.ThreadKillTestRequest());
     monitor.requestList.add(new TestRequestTaskWithLimit.ThreadKillTestRequest());
+    monitor.requestList.add(new TestRequestTaskWithLimit.ThreadKillTestRequest());
 
     // Starting the thread by adding a new request
     TestRequestTaskWithLimit.newThreadKillRequest();
@@ -322,7 +323,7 @@ public class RequestTaskManagerTest {
   }
 
   @SuppressWarnings("unchecked")
-  private synchronized RequestTaskMonitor waitForTaskEndingAfterFirstInit(final Class testClass)
+  private RequestTaskMonitor waitForTaskEndingAfterFirstInit(final Class testClass)
       throws InterruptedException, ExecutionException {
     Thread.sleep(200);
     final RequestTaskMonitor monitor = RequestTaskManager.tasks.get(testClass);
@@ -354,7 +355,7 @@ public class RequestTaskManagerTest {
     assertThat(monitor.requestList.size(), is(0));
   }
 
-  private synchronized RequestTaskMonitor waitForTaskEndingAtEndOfTest(final Class testClass)
+  private RequestTaskMonitor waitForTaskEndingAtEndOfTest(final Class testClass)
       throws InterruptedException {
     Thread.sleep(200);
     RequestTaskMonitor monitor = RequestTaskManager.tasks.get(testClass);

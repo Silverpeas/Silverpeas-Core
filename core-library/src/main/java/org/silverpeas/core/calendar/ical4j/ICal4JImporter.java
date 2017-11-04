@@ -44,7 +44,6 @@ import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.CalendarEventOccurrenceBuilder;
-import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.calendar.icalendar.ICalendarImporter;
@@ -253,7 +252,7 @@ public class ICal4JImporter implements ICalendarImporter {
   private void copyICalEventToComponent(final VEvent vEvent, final CalendarComponent component) {
     // Title
     if (vEvent.getSummary() != null) {
-      component.setTitle(vEvent.getSummary().getValue());
+      component.setTitle(vEvent.getSummary().getValue().trim());
     }
 
     // Description
@@ -262,16 +261,16 @@ public class ICal4JImporter implements ICalendarImporter {
       description =
           vEvent.getDescription() != null ? vEvent.getDescription() : new Description("");
     }
-    component.setDescription(description.getValue());
+    component.setDescription(description.getValue().trim());
 
     // Location
     if (vEvent.getLocation() != null) {
-      component.setLocation(vEvent.getLocation().getValue());
+      component.setLocation(vEvent.getLocation().getValue().trim());
     }
 
     // URL
     if (vEvent.getUrl() != null) {
-      component.getAttributes().set("url", vEvent.getUrl().getValue());
+      component.getAttributes().set("url", vEvent.getUrl().getValue().trim());
     }
 
     // Priority

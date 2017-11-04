@@ -168,7 +168,7 @@ public class MessageManager {
     } catch (NullPointerException e) {
       SilverLogger.getLogger(MessageManager.class)
           .silent(e)
-          .error("No Message Container registered!");
+          .debug("No Message Container registered with key ''{0}''!", registredKey);
       return null;
     }
   }

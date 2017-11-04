@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.index.components;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 
 /**
  * Indexation of the data managed by a given component instance. Each Application in Silverpeas
@@ -41,5 +41,5 @@ public interface ComponentIndexation {
    * @param componentInst the instance of the component managing the data to index or to reindex.
    * @throws Exception if an error occurs during the indexation.
    */
-  void index(ComponentInst componentInst) throws Exception;
+  void index(SilverpeasComponentInstance componentInst) throws Exception;
 }
