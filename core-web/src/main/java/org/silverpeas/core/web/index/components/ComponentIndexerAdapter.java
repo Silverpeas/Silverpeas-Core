@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.web.index.components;
 
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 
 import javax.inject.Singleton;
+
+import static org.silverpeas.core.util.logging.SilverLogger.getLogger;
 
 /**
  * @author ehugonnet
@@ -34,12 +35,8 @@ import javax.inject.Singleton;
 @Singleton
 public class ComponentIndexerAdapter implements ComponentIndexation {
 
-  public ComponentIndexerAdapter() {
-  }
-
   @Override
-  public void index(ComponentInst componentInst) throws
-      Exception {
-    SilverLogger.getLogger(this).debug("Fake indexer when we have problems loading a real one.");
+  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+    getLogger(this).debug("No indexer for component instance {0}", componentInst.getId());
   }
 }

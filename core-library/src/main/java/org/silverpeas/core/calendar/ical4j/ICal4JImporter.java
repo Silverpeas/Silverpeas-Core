@@ -24,11 +24,15 @@
 package org.silverpeas.core.calendar.ical4j;
 
 import net.fortuna.ical4j.data.CalendarBuilder;
+import net.fortuna.ical4j.data.CalendarParserFactory;
 import net.fortuna.ical4j.data.ParserException;
 import net.fortuna.ical4j.model.Calendar;
 import net.fortuna.ical4j.model.Date;
 import net.fortuna.ical4j.model.DateTime;
+import net.fortuna.ical4j.model.ParameterFactoryRegistry;
 import net.fortuna.ical4j.model.Property;
+import net.fortuna.ical4j.model.PropertyFactoryRegistry;
+import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import net.fortuna.ical4j.model.component.VEvent;
 import net.fortuna.ical4j.model.component.VTimeZone;
 import net.fortuna.ical4j.model.property.Categories;
@@ -40,7 +44,6 @@ import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.CalendarEventOccurrenceBuilder;
-import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.Recurrence;
 import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.calendar.icalendar.ICalendarImporter;
@@ -104,7 +107,12 @@ public class ICal4JImporter implements ICalendarImporter {
       final Consumer<Stream<Pair<CalendarEvent, List<CalendarEventOccurrence>>>> consumer)
       throws ImportException {
     try {
-      CalendarBuilder builder = new CalendarBuilder();
+      PropertyFactoryRegistry propertyFactoryRegistry = new PropertyFactoryRegistry();
+      propertyFactoryRegistry.register(HtmlProperty.PROPERTY_NAME, HtmlProperty.FACTORY);
+      CalendarBuilder builder =
+          new CalendarBuilder(CalendarParserFactory.getInstance().createParser(),
+              propertyFactoryRegistry, new ParameterFactoryRegistry(),
+              TimeZoneRegistryFactory.getInstance().createRegistry());
       Calendar calendar = builder.build(getCalendarInputStream(descriptor));
       if (calendar.getComponents().isEmpty()) {
         consumer.accept(Stream.empty());
@@ -244,7 +252,7 @@ public class ICal4JImporter implements ICalendarImporter {
   private void copyICalEventToComponent(final VEvent vEvent, final CalendarComponent component) {
     // Title
     if (vEvent.getSummary() != null) {
-      component.setTitle(vEvent.getSummary().getValue());
+      component.setTitle(vEvent.getSummary().getValue().trim());
     }
 
     // Description
@@ -253,16 +261,16 @@ public class ICal4JImporter implements ICalendarImporter {
       description =
           vEvent.getDescription() != null ? vEvent.getDescription() : new Description("");
     }
-    component.setDescription(description.getValue());
+    component.setDescription(description.getValue().trim());
 
     // Location
     if (vEvent.getLocation() != null) {
-      component.setLocation(vEvent.getLocation().getValue());
+      component.setLocation(vEvent.getLocation().getValue().trim());
     }
 
     // URL
     if (vEvent.getUrl() != null) {
-      component.getAttributes().set("url", vEvent.getUrl().getValue());
+      component.getAttributes().set("url", vEvent.getUrl().getValue().trim());
     }
 
     // Priority

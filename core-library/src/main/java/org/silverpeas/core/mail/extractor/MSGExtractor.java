@@ -23,11 +23,23 @@
  */
 package org.silverpeas.core.mail.extractor;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.CharEncoding;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hsmf.MAPIMessage;
+import org.apache.poi.hsmf.datatypes.AttachmentChunks;
+import org.apache.poi.hsmf.datatypes.Chunks;
+import org.apache.poi.hsmf.datatypes.RecipientChunks;
+import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
 import org.silverpeas.core.contribution.converter.DocumentFormatConverterProvider;
-import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.mail.Address;
+import javax.mail.internet.InternetAddress;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -41,17 +53,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import javax.mail.Address;
-import javax.mail.internet.InternetAddress;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.CharEncoding;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hsmf.MAPIMessage;
-import org.apache.poi.hsmf.datatypes.AttachmentChunks;
-import org.apache.poi.hsmf.datatypes.Chunks;
-import org.apache.poi.hsmf.datatypes.RecipientChunks;
-import org.apache.poi.hsmf.exceptions.ChunkNotFoundException;
-import org.silverpeas.core.util.Charsets;
 
 import static org.silverpeas.core.contribution.converter.DocumentFormat.*;
 
@@ -91,17 +92,17 @@ public class MSGExtractor implements MailExtractor {
         mail.setDate(extractDateOfReception());
       }
     } catch (ChunkNotFoundException e) {
-      SilverTrace.warn("util", "MSGExtractor.getMail()", "", e);
+      SilverLogger.getLogger(this).warn(e);
     }
     try {
       mail.setSubject(message.getSubject());
     } catch (ChunkNotFoundException e) {
-      SilverTrace.warn("util", "MSGExtractor.getMail()", "", e);
+      SilverLogger.getLogger(this).warn(e);
     }
 
     Chunks mainChunks = message.getMainChunks();
-    InternetAddress from = new InternetAddress(mainChunks.emailFromChunk.getValue(),
-        mainChunks.displayFromChunk.getValue());
+    InternetAddress from = new InternetAddress(mainChunks.getEmailFromChunk().getValue(),
+        mainChunks.getDisplayFromChunk().getValue());
     mail.setFrom(from);
 
     String[] toNames = StringUtils.split(message.getDisplayTo(), ';');
@@ -123,7 +124,7 @@ public class MSGExtractor implements MailExtractor {
       }
       mail.setBody(body);
     } catch (ChunkNotFoundException e) {
-      SilverTrace.warn("util", "MSGExtractor.getMail()", "", e);
+      SilverLogger.getLogger(this).warn(e);
     }
     return mail;
   }
@@ -143,20 +144,21 @@ public class MSGExtractor implements MailExtractor {
     RecipientChunks[] recipientChunks = message.getRecipientDetailsChunks();
     for (RecipientChunks recipient : recipientChunks) {
       if (name.equals(recipient.getRecipientName())) {
-        InternetAddress address =
+        return
             new InternetAddress(recipient.getRecipientEmailAddress(), recipient.getRecipientName());
-        return address;
       }
     }
     return null;
   }
 
   private Date extractDateOfReception() throws ParseException {
-    if (message.getMainChunks().messageHeaders != null) {
-      String chunkContent = message.getMainChunks().messageHeaders.getValue();
+    if (message.getMainChunks().getMessageHeaders() != null) {
+      String chunkContent = message.getMainChunks().getMessageHeaders().getValue();
       int dateIdx = chunkContent.indexOf("Date: ");
       if (dateIdx >= 0) {
-        chunkContent = chunkContent.substring(dateIdx + 6, chunkContent.indexOf('\n', dateIdx))
+        final int dateValueIdx = 6;
+        chunkContent =
+            chunkContent.substring(dateIdx + dateValueIdx, chunkContent.indexOf('\n', dateIdx))
             .replaceAll("[\r\n]", "");
         return new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss Z", Locale.ENGLISH).parse(
             chunkContent);
@@ -180,7 +182,7 @@ public class MSGExtractor implements MailExtractor {
           inFormat(html));
       return htmlText.toString(CharEncoding.UTF_8);
     } catch (Exception e) {
-      SilverTrace.warn("util", "MSGExtractor.getRtfText()", "CANT_CONVERT_RTF_TO_HMTL_BODY", e);
+      SilverLogger.getLogger(this).error("Cannot convert RTF to HTML", e);
     }
     return null;
   }
@@ -190,8 +192,8 @@ public class MSGExtractor implements MailExtractor {
     AttachmentChunks[] attachmentChunks = message.getAttachmentFiles();
     List<MailAttachment> mailAttachments = new ArrayList<MailAttachment>(attachmentChunks.length);
     for (AttachmentChunks attachment : attachmentChunks) {
-      byte[] data = attachment.attachData.getValue();
-      String fileName = attachment.attachLongFileName.getValue();
+      byte[] data = attachment.getAttachData().getValue();
+      String fileName = attachment.getAttachLongFileName().getValue();
       MailAttachment mailAttachment = new MailAttachment(fileName);
       String dir = FileRepositoryManager.getTemporaryPath() + "mail" + Calendar.getInstance().
           getTimeInMillis();

@@ -847,8 +847,10 @@ class Admin implements Administration {
   @Override
   public void createComponentIndex(String componentId) {
     try {
-      ComponentInstLight component = getComponentInstLight(componentId);
-      createComponentIndex(component);
+      final SilverpeasComponentInstance componentInstance = getComponentInstance(componentId);
+      if (!componentInstance.isPersonal()) {
+        createComponentIndex((ComponentInstLight) componentInstance);
+      }
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e);
     }
@@ -2407,15 +2409,15 @@ class Admin implements Administration {
 
     // Remove the component name to get the table client id
     char[] cBuf = sClientComponentId.toCharArray();
-    for (int nI = 0; nI < cBuf.length && sTableClientId.length() == 0; nI++) {
-      if (cBuf[nI] == '0' || cBuf[nI] == '1' || cBuf[nI] == '2' || cBuf[nI] == '3' || cBuf[nI]
-          == '4' || cBuf[nI] == '5' || cBuf[nI] == '6' || cBuf[nI] == '7' || cBuf[nI] == '8'
-          || cBuf[nI] == '9') {
-        sTableClientId = sClientComponentId.substring(nI);
+    if (Character.isDigit(cBuf[cBuf.length - 1])) {
+      for (int nI = 0; nI < cBuf.length && sTableClientId.length() == 0; nI++) {
+        if (Character.isDigit(cBuf[nI])) {
+          sTableClientId = sClientComponentId.substring(nI);
+        }
       }
-    }
-    if (StringUtil.isDefined(sTableClientId)) {
-      return Integer.parseInt(sTableClientId);
+      if (StringUtil.isDefined(sTableClientId)) {
+        return Integer.parseInt(sTableClientId);
+      }
     }
     return -1;
   }

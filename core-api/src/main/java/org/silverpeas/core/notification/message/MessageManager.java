@@ -116,7 +116,12 @@ public class MessageManager {
   }
 
   public static void clear(String registredKey) {
-    applicationCache.remove(registredKey);
+    try {
+      applicationCache.remove(registredKey);
+    } catch (NullPointerException e) {
+      // the MessageManager was already cleared!
+      SilverLogger.getLogger(MessageManager.class).silent(e);
+    }
   }
 
   public static String getRegistredKey() {
@@ -158,7 +163,14 @@ public class MessageManager {
 
 
   public static MessageContainer getMessageContainer(String registredKey) {
-    return applicationCache.get(registredKey, MessageContainer.class);
+    try {
+      return applicationCache.get(registredKey, MessageContainer.class);
+    } catch (NullPointerException e) {
+      SilverLogger.getLogger(MessageManager.class)
+          .silent(e)
+          .debug("No Message Container registered with key ''{0}''!", registredKey);
+      return null;
+    }
   }
 
   /**

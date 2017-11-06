@@ -23,7 +23,9 @@
  */
 package org.silverpeas.core.util;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.memory.MemoryUnit;
 
 import java.math.BigDecimal;
@@ -33,6 +35,12 @@ import static org.hamcrest.Matchers.is;
 import static org.silverpeas.core.util.UnitUtil.*;
 
 public class TestUnitUtil extends AbstractUnitTest {
+
+  @Before
+  public void setUpMessageManager() {
+    MessageManager.initialize();
+    MessageManager.setLanguage("fr");
+  }
 
   @Test
   public void testConvertToFromBigDecimal() {

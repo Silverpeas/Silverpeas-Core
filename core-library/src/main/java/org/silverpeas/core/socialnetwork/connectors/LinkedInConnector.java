@@ -23,33 +23,22 @@
  */
 package org.silverpeas.core.socialnetwork.connectors;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.silverpeas.core.socialnetwork.qualifiers.LinkedIn;
+import org.silverpeas.core.socialnetwork.service.AccessToken;
+import org.springframework.social.linkedin.api.impl.LinkedInTemplate;
+import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
+import org.springframework.social.oauth2.AccessGrant;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 
-import org.silverpeas.core.socialnetwork.qualifiers.LinkedIn;
-import org.springframework.social.connect.UserProfile;
-import org.springframework.social.linkedin.connect.LinkedInConnectionFactory;
-import org.springframework.social.oauth1.AuthorizedRequestToken;
-import org.springframework.social.oauth1.OAuth1Operations;
-import org.springframework.social.oauth1.OAuth1Parameters;
-import org.springframework.social.oauth1.OAuthToken;
-
-import org.silverpeas.core.socialnetwork.service.AccessToken;
-
 @LinkedIn
 @Singleton
 public class LinkedInConnector extends AbstractSocialNetworkConnector {
-  private Map<String, OAuthToken> requestTokens = new HashMap<>();
   private LinkedInConnectionFactory connectionFactory = null;
   private String consumerKey = null;
   private String secretKey = null;
-
-  public LinkedInConnector() {
-  }
 
   @PostConstruct
   void init() {
@@ -60,65 +49,34 @@ public class LinkedInConnector extends AbstractSocialNetworkConnector {
   }
 
   @Override
-  public String buildAuthenticateUrl(String callBackURL) {
-    OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
-    OAuth1Parameters params = new OAuth1Parameters();
-
-    // Build Request token and store it for future use
-    OAuthToken requestToken = oauthOperations.fetchRequestToken(callBackURL, null);
-    requestTokens.put(requestToken.getValue(), requestToken);
-
-    return oauthOperations.buildAuthenticateUrl(requestToken.getValue(), params);
-  }
-
-  @Override
-  public AccessToken exchangeForAccessToken(HttpServletRequest request, String callBackURL) {
-    String authVerifier = request.getParameter("oauth_verifier");
-    String oauthToken = request.getParameter("oauth_token");
-
-    OAuth1Operations oauthOperations = connectionFactory.getOAuthOperations();
-    OAuthToken savedToken = requestTokens.get(oauthToken);
-
-    if (savedToken != null) {
-      AuthorizedRequestToken authorizedRequestToken =
-          new AuthorizedRequestToken(savedToken, authVerifier);
-      OAuthToken accessToken = oauthOperations.exchangeForAccessToken(authorizedRequestToken, null);
-      return new AccessToken(accessToken);
-    }
-
-    return null;
-  }
-
-  @Override
-  public UserProfile getUserProfile(AccessToken authorizationToken) {
-    return connectionFactory.createConnection(authorizationToken.getoAuthToken())
-        .fetchUserProfile();
-  }
-
-  @Override
   public String getUserProfileId(AccessToken authorizationToken) {
-    return connectionFactory.createConnection(authorizationToken.getoAuthToken()).getApi()
-        .profileOperations().getProfileId();
+    AccessGrant accessGrant = authorizationToken.getAccessGrant();
+    return getConnectionFactory().createConnection(accessGrant)
+        .getApi()
+        .profileOperations()
+        .getUserProfile()
+        .getId();
   }
 
-  /*
-   * (non-Javadoc)
-   * @see
-   * SocialNetworkConnector#updateStatus(com.silverpeas.
-   * socialnetwork.service.AccessToken, java.lang.String)
-   */
   @Override
   public void updateStatus(AccessToken authorizationToken, String status) {
-    connectionFactory.createConnection(authorizationToken.getoAuthToken()).updateStatus(status);
+    LinkedInTemplate linkedIn =
+        new LinkedInTemplate(authorizationToken.getAccessGrant().getAccessToken());
+    linkedIn.networkUpdateOperations().createNetworkUpdate(status);
   }
 
   @Override
   public void setJavascriptAttributes(HttpServletRequest request) {
-    request.setAttribute("LI_loadSDK", getSDKLoadingScript(request));
+    request.setAttribute("LI_loadSDK", getSDKLoadingScript());
   }
 
-  private String getSDKLoadingScript(HttpServletRequest request) {
-    StringBuffer code = new StringBuffer();
+  @Override
+  protected LinkedInConnectionFactory getConnectionFactory() {
+    return connectionFactory;
+  }
+
+  private String getSDKLoadingScript() {
+    StringBuilder code = new StringBuilder();
 
     code.append("<script type=\"text/javascript\">\n");
     code.append("function onLoadLinkedIn() {\n");
