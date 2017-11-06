@@ -24,7 +24,7 @@
 
 --%>
 <%@page import="org.silverpeas.core.util.URLUtil"%>
-<%@page import="org.apache.lucene.queryParser.QueryParser"%>
+<%@ page import="org.apache.lucene.queryparser.classic.QueryParser"%>
 <%@page import="org.silverpeas.core.index.search.model.IndexSearcher"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 

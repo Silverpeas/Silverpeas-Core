@@ -88,6 +88,11 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     String resourcePath = classOfTest.getPackage().getName().replaceAll("\\.", "/");
     logInfo("Adding resources from path: " + resourcePath);
     war.addAsResource(resourcePath);
+    addMavenDependencies("org.apache.tika:tika-core");
+    addMavenDependencies("org.apache.tika:tika-parsers");
+    addMavenDependencies("org.apache.lucene:lucene-core");
+    addMavenDependencies("org.apache.lucene:lucene-queryparser");
+    addMavenDependencies("org.apache.lucene:lucene-suggest");
   }
 
   /**

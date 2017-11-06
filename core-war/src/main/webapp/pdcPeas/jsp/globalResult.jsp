@@ -29,7 +29,7 @@
 <%@ page import="org.silverpeas.web.pdc.vo.Facet"%>
 <%@ page import="org.silverpeas.web.pdc.vo.FacetEntryVO"%>
 <%@ page import="org.silverpeas.web.pdc.vo.ResultGroupFilter"%>
-<%@ page import="org.apache.lucene.queryParser.QueryParser"%>
+<%@ page import="org.apache.lucene.queryparser.classic.QueryParser"%>
 <%@ page import="org.silverpeas.core.index.search.model.IndexSearcher"%>
 <%@ page import="org.silverpeas.core.util.StringUtil"%>
 <%@ page import="java.net.URLDecoder"%>

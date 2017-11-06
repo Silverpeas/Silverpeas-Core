@@ -32,6 +32,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -66,6 +67,8 @@ public final class QueryDescription implements Serializable {
   private String requestedCreatedAfter = null;
   private String requestedUpdatedBefore = null;
   private String requestedUpdatedAfter = null;
+  private Map<String, String> xmlQuery = null;
+  private String xmlTitle = null;
   private List<FieldDescription> multiFieldQuery = null;
   private boolean searchBySpace = false;
   private boolean searchByComponentType = false;
@@ -100,6 +103,14 @@ public final class QueryDescription implements Serializable {
    */
   public void setQuery(String query) {
     this.query = (query == null) ? "" : query.toLowerCase();
+    // string already in lower case, means "and" "And" "AND" will works.
+    this.query = findAndReplace(this.query, " and ", " AND ");
+    this.query = findAndReplace(this.query, " or ", " OR ");
+    this.query = findAndReplace(this.query, " not ", " NOT ");
+    if (this.query.indexOf("not ") == 0) {
+      this.query = "NOT " + this.query.substring(4, this.query.length());
+    }
+
   }
 
   /**
@@ -203,6 +214,22 @@ public final class QueryDescription implements Serializable {
     return requestedCreatedAfter;
   }
 
+  public void setXmlQuery(Map<String, String> xmlQuery) {
+    this.xmlQuery = xmlQuery;
+  }
+
+  public Map<String, String> getXmlQuery() {
+    return xmlQuery;
+  }
+
+  public String getXmlTitle() {
+    return xmlTitle;
+  }
+
+  public void setXmlTitle(String xmlTitle) {
+    this.xmlTitle = xmlTitle;
+  }
+
   public List<FieldDescription> getMultiFieldQuery() {
     return multiFieldQuery;
   }
@@ -240,10 +267,27 @@ public final class QueryDescription implements Serializable {
 
   public boolean isEmpty() {
     boolean queryDefined = StringUtil.isDefined(query) || getMultiFieldQuery() != null;
+    boolean xmlQueryDefined = getXmlQuery() != null;
     boolean filtersDefined = isSearchBySpace() || isSearchByComponentType() ||
         StringUtil.isDefined(getRequestedAuthor());
     filtersDefined = filtersDefined || isPeriodDefined();
-    return !queryDefined && !filtersDefined;
+    return !queryDefined && !xmlQueryDefined && !filtersDefined;
+  }
+
+  /**
+   * Find and replace used for the AND OR NOT lucene's keyword in the search engine query.
+   * 26/01/2004
+   */
+  private String findAndReplace(String source, String find, String replace) {
+    int index = source.indexOf(find);
+
+    while (index > -1) {
+      source = source.substring(0, index) + replace +
+          source.substring(index + find.length(), source.length());
+      index = source.indexOf(find);
+    }
+
+    return source;
   }
 
   public boolean isPeriodDefined() {
