@@ -1,26 +1,3 @@
-/**
- * Copyright (C) 2000 - 2017 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 @charset "UTF-8";
 /* Magnific Popup CSS */
 .mfp-bg {
@@ -2366,10 +2343,6 @@ fieldset[disabled]
   background-size: contain;
   border: 0;
   vertical-align: bottom; }
-  .jsxc_emoticon.jsxc_large {
-    width: 40px;
-    height: 40px;
-    margin-bottom: 7px; }
 
 #jsxc_roster .jsxc_emoticon.jsxc_large {
   width: 19px;
@@ -2892,14 +2865,14 @@ fieldset[disabled]
         z-index: 1;
         left: 7px;
         top: 100%; }
-    .jsxc_window .jsxc_emoticons li div {
+    .jsxc_window .jsxc_emoticons li span {
       float: left;
       cursor: pointer;
       border-radius: 3px;
       background-size: 30px 30px;
       width: 30px;
       height: 30px; }
-      .jsxc_window .jsxc_emoticons li div:hover {
+      .jsxc_window .jsxc_emoticons li span:hover {
         background-color: rgba(255, 255, 255, 0.8); }
     .jsxc_window .jsxc_emoticons:hover:after {
       opacity: 0.5; }
@@ -2970,14 +2943,14 @@ fieldset[disabled]
       line-height: 42px;
       opacity: 0;
       -webkit-transition: opacity 0.5s, top 0.5s;
-              transition: opacity 0.5s, top 0.5s; }
+              transition: opacity 0.5s, top 0.5s;
+      background-image: -webkit-linear-gradient(#c1c1c1, transparent);
+      background-image: linear-gradient(#c1c1c1, transparent); }
       .jsxc_window .jsxc_fade .jsxc_mam-load-more.jsxc_show {
         top: 0;
         opacity: 0.7; }
         .jsxc_window .jsxc_fade .jsxc_mam-load-more.jsxc_show:hover {
           opacity: 1; }
-    .jsxc_window .jsxc_fade.jsxc_mam-enable .jsxc_textarea {
-      padding-top: 42px; }
     .jsxc_window .jsxc_fade.jsxc_mam-enable .jsxc_mam-load-more {
       display: block; }
   .jsxc_window .jsxc_avatar {
@@ -3134,6 +3107,10 @@ fieldset[disabled]
       opacity: 1; }
     .jsxc_chatmessage .jsxc_attachment.jsxc_text {
       background-image: url('../img/filetypes/text.svg'); }
+  .jsxc_chatmessage .jsxc_emoticon.jsxc_large {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 7px; }
 
 .jsxc_timestamp {
   font-size: 8px;
