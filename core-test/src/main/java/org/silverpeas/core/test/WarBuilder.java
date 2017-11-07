@@ -93,6 +93,8 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
     addMavenDependencies("org.apache.lucene:lucene-core");
     addMavenDependencies("org.apache.lucene:lucene-queryparser");
     addMavenDependencies("org.apache.lucene:lucene-suggest");
+    addMavenDependencies("org.apache.lucene:lucene-queries");
+    addMavenDependencies("org.apache.lucene:lucene-analyzers-common");
   }
 
   /**
