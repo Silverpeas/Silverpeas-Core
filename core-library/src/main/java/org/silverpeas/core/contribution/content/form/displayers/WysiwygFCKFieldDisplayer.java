@@ -303,9 +303,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           + "\" rows=\"10\" cols=\"10\">" + code + "</textarea>");
       out.println("<script type=\"text/javascript\">");
 
+
       StringBuilder stringBuilder = new StringBuilder();
-      String configFile = settings.getString("configFile", URLUtil.getApplicationURL()
-          + "/wysiwyg/jsp/ckeditor/silverconfig.js");
+      String configFile = getWysiwygConfigFile();
 
       stringBuilder.append("CKEDITOR.replace('").append(fieldName).append("', {\n");
       stringBuilder.append("width : '").append(editorWidth).append("',\n");
@@ -758,5 +758,13 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   private static String getPath(String componentId) {
     String[] dirs = { dir };
     return FileRepositoryManager.getAbsolutePath(componentId, dirs);
+  }
+
+  private String getWysiwygConfigFile() {
+    String configFile = settings.getString("configFile");
+    if (!configFile.startsWith("/") && !configFile.toLowerCase().startsWith("http")) {
+      configFile = URLUtil.getApplicationURL() + "/" + configFile;
+    }
+    return configFile;
   }
 }
