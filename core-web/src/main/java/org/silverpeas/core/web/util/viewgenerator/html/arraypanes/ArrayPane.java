@@ -53,7 +53,6 @@ public interface ArrayPane extends SimpleGraphicElement {
   String ACTION_PARAMETER_NAME = "ArrayPaneAction";
   String TARGET_PARAMETER_NAME = "ArrayPaneTarget";
   String COLUMN_PARAMETER_NAME = "ArrayPaneColumn";
-  String INDEX_PARAMETER_NAME = "ArrayPaneIndex";
 
   /**
    * Generic class to display a typical WA array table pane. A unique name identifier is to be used
@@ -209,7 +208,7 @@ public interface ArrayPane extends SimpleGraphicElement {
   boolean getExportData();
 
   /**
-   * @param enable/disable export data from array pane
+   * @param export enable/disable export data from array pane
    */
   void setExportData(boolean export);
 

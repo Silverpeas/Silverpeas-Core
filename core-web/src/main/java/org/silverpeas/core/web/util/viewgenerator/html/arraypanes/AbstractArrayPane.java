@@ -24,7 +24,6 @@
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
@@ -43,7 +42,7 @@ import java.util.Map;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.web.portlets.PortletUtil.getHttpServletRequest;
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
-    .ITEMS_PER_PAGE_PARAM;
+    .INDEX_PARAMETER_NAME;
 
 public class AbstractArrayPane implements ArrayPane {
 
@@ -83,49 +82,6 @@ public class AbstractArrayPane implements ArrayPane {
   private boolean exportData = false;
   private String exportDataURL = null;
   private boolean sortableLines = false;
-
-  /**
-   * Gets a new pagination page instance from given request and current pagination.
-   * <p>If current pagination is null, a default one is taken into account</p>
-   * @param request the request.
-   * @param currentPagination the current pagination.
-   * @return the new pagination page.
-   */
-  public static PaginationPage getPaginationPageFrom(HttpServletRequest request,
-      PaginationPage currentPagination) {
-    final String pageSizeAsString = request.getParameter(ITEMS_PER_PAGE_PARAM);
-    final String itemIndexAsString = request.getParameter(INDEX_PARAMETER_NAME);
-    return getPaginationPageFrom(pageSizeAsString, itemIndexAsString, currentPagination);
-  }
-
-  /**
-   * Gets a new pagination page instance from given request and current pagination.
-   * <p>If current pagination is null, a default one is taken into account</p>
-   * @param request the request.
-   * @param currentPagination the current pagination.
-   * @return the new pagination page.
-   */
-  public static PaginationPage getPaginationPageFrom(RenderRequest request,
-      PaginationPage currentPagination) {
-    final String pageSizeAsString = request.getParameter(ITEMS_PER_PAGE_PARAM);
-    final String itemIndexAsString = request.getParameter(INDEX_PARAMETER_NAME);
-    return getPaginationPageFrom(pageSizeAsString, itemIndexAsString, currentPagination);
-  }
-
-  private static PaginationPage getPaginationPageFrom(final String pageSizeAsString,
-      final String itemIndexAsString, final PaginationPage currentPagination) {
-    PaginationPage pagination =
-        currentPagination != null ? currentPagination : PaginationPage.DEFAULT;
-    int pageNumber = pagination.getPageNumber();
-    int pageSize = pagination.getPageSize();
-    if (StringUtil.isInteger(pageSizeAsString)) {
-      pageSize = Integer.valueOf(pageSizeAsString);
-    }
-    if (StringUtil.isInteger(itemIndexAsString)) {
-      pageNumber = (Integer.valueOf(itemIndexAsString) / pageSize) + 1;
-    }
-    return new PaginationPage(pageNumber, pageSize);
-  }
 
   /**
    * Gets order by from given request and possible orderBies.

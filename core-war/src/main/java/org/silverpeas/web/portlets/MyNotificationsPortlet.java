@@ -51,7 +51,10 @@ import java.util.Map;
 
 import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
     .QUERY_ORDER_BY.*;
-import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.AbstractArrayPane.*;
+import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.AbstractArrayPane
+    .getOrderByFrom;
+import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.*;
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.*;
 
 public class MyNotificationsPortlet extends GenericPortlet implements FormNames {
 
@@ -90,6 +93,7 @@ public class MyNotificationsPortlet extends GenericPortlet implements FormNames 
   public void processAction(ActionRequest request, ActionResponse response) throws PortletException {
     response.setRenderParameter(ACTION_PARAMETER_NAME, request.getParameter(ACTION_PARAMETER_NAME));
     response.setRenderParameter(COLUMN_PARAMETER_NAME, request.getParameter(COLUMN_PARAMETER_NAME));
+    response.setRenderParameter(ITEMS_PER_PAGE_PARAM, request.getParameter(ITEMS_PER_PAGE_PARAM));
     response.setRenderParameter(INDEX_PARAMETER_NAME, request.getParameter(INDEX_PARAMETER_NAME));
     response.setRenderParameter(TARGET_PARAMETER_NAME, request.getParameter(TARGET_PARAMETER_NAME));
     response.setPortletMode(PortletMode.VIEW);

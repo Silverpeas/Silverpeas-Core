@@ -33,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.AbstractArrayPane
     .getOrderByFrom;
-import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.AbstractArrayPane
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
     .getPaginationPageFrom;
 import static org.silverpeas.web.notificationserver.channel.silvermail
     .SILVERMAILSessionController.INBOX_ORDER_BIES;

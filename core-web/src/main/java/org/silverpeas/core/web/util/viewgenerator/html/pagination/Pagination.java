@@ -31,6 +31,7 @@ import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
+import javax.portlet.RenderRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
@@ -50,11 +51,33 @@ public interface Pagination extends SimpleGraphicElement {
    * @param currentPagination the current pagination.
    * @return the new pagination page.
    */
-  static PaginationPage getPaginationPageFrom(HttpServletRequest request,
+  static PaginationPage getPaginationPageFrom(HttpServletRequest request, PaginationPage currentPagination) {
+    final String pageSizeAsString = request.getParameter(ITEMS_PER_PAGE_PARAM);
+    final String itemIndexAsString = request.getParameter(INDEX_PARAMETER_NAME);
+    PaginationPage pagination =
+        currentPagination != null ? currentPagination : PaginationPage.DEFAULT;
+    int pageNumber = pagination.getPageNumber();
+    int pageSize = pagination.getPageSize();
+    if (StringUtil.isInteger(pageSizeAsString)) {
+      pageSize = Integer.valueOf(pageSizeAsString);
+    }
+    if (StringUtil.isInteger(itemIndexAsString)) {
+      pageNumber = (Integer.valueOf(itemIndexAsString) / pageSize) + 1;
+    }
+    return new PaginationPage(pageNumber, pageSize);
+  }
+
+  /**
+   * Gets a new pagination page instance from given request and current pagination.
+   * <p>If current pagination is null, a default one is taken into account</p>
+   * @param request the request.
+   * @param currentPagination the current pagination.
+   * @return the new pagination page.
+   */
+  static PaginationPage getPaginationPageFrom(RenderRequest request,
       PaginationPage currentPagination) {
     final String pageSizeAsString = request.getParameter(ITEMS_PER_PAGE_PARAM);
     final String itemIndexAsString = request.getParameter(INDEX_PARAMETER_NAME);
-
     PaginationPage pagination =
         currentPagination != null ? currentPagination : PaginationPage.DEFAULT;
     int pageNumber = pagination.getPageNumber();

@@ -30,6 +30,9 @@ import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import javax.servlet.jsp.PageContext;
 import java.util.Collections;
 
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
+    .INDEX_PARAMETER_NAME;
+
 /**
  * The default implementation of ArrayPane interface.
  * @author squere
