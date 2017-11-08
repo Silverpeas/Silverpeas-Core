@@ -27,6 +27,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -49,6 +50,8 @@ import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSys
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 @RunWith(Arquillian.class)
+@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
+// TODO rework the integration tests execution by using an external remote wildfly
 public class SimpleAttachmentConverterIntegrationTest extends JcrIntegrationTest {
 
   private static final String instanceId = "kmelia73";
