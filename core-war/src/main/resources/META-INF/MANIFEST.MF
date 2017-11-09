@@ -7,5 +7,5 @@ Dependencies: org.jboss.as.naming,
   org.apache.commons.codec,
   org.apache.commons.io,
   org.antlr,
-  org.apache.lucene,
+  org.apache.lucene-7,
   ${jackrabbit}

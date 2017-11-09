@@ -56,10 +56,6 @@ public class SysLoggerTest {
     SystemWrapper.get()
         .getenv()
         .put("SILVERPEAS_HOME", mavenTargetDirectory.getResourceTestDirFile().getPath());
-    // to clean up all the weaker references to the yet loaded loaders (to force to load them from
-    // their configuration)
-    Thread.sleep(1000);
-    System.gc();
   }
 
   @Test
@@ -77,7 +73,7 @@ public class SysLoggerTest {
     final String namespace = LOGGER_NAMESPACE + ".change";
     SilverLogger logger = new SysLogger(namespace);
     assertThat(logger.getNamespace(), is(namespace));
-    assertThat(logger.getNamespace(), not(Level.DEBUG));
+    assertThat(logger.getLevel(), not(Level.DEBUG));
     logger.setLevel(Level.DEBUG);
     assertThat(logger.getLevel(), is(Level.DEBUG));
   }
