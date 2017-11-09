@@ -99,4 +99,8 @@ public class Space {
     }
   }
 
+  public void updateComponent(ComponentInstLight component) {
+    components.replace(component.getId(), component);
+  }
+
 }
