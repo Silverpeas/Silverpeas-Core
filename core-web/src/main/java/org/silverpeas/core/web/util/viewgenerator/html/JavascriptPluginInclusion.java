@@ -861,6 +861,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(link(STYLESHEET_PATH + "selectize.css"));
     xhtml.addElement(link(STYLESHEET_PATH + "silverpeas-selectize.css"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "selectize.min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-selectize.js"));
     return xhtml;
   }
 

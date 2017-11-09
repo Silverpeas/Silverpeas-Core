@@ -23,7 +23,9 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.pagination;
 
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
@@ -49,6 +51,21 @@ public abstract class AbstractPagination implements Pagination {
   private LocalizationBundle multilang;
 
   public AbstractPagination() {
+  }
+
+  static PaginationPage getPaginationPageFrom(final String pageSizeAsString,
+      final String itemIndexAsString, final PaginationPage currentPagination) {
+    PaginationPage pagination =
+        currentPagination != null ? currentPagination : PaginationPage.DEFAULT;
+    int pageNumber = pagination.getPageNumber();
+    int pageSize = pagination.getPageSize();
+    if (StringUtil.isInteger(pageSizeAsString)) {
+      pageSize = Integer.valueOf(pageSizeAsString);
+    }
+    if (StringUtil.isInteger(itemIndexAsString)) {
+      pageNumber = (Integer.valueOf(itemIndexAsString) / pageSize) + 1;
+    }
+    return new PaginationPage(pageNumber, pageSize);
   }
 
   @Override
@@ -148,18 +165,13 @@ public abstract class AbstractPagination implements Pagination {
     return (getNbPage() * getNbItemsPerPage()) - getNbItemsPerPage();
   }
 
-  @Override
-  public void setActionSuffix(String actionSuffix) {
-    this.actionSuffix = actionSuffix;
-  }
-
   public String getActionSuffix() {
     return actionSuffix;
   }
 
   @Override
-  public void setBaseURL(String url) {
-    this.baseURL = url;
+  public void setActionSuffix(String actionSuffix) {
+    this.actionSuffix = actionSuffix;
   }
 
   public String getBaseURL() {
@@ -167,21 +179,26 @@ public abstract class AbstractPagination implements Pagination {
   }
 
   @Override
-  public void setAltPreviousPage(String text) {
-    this.altPreviousPage = text;
-  }
-
-  @Override
-  public void setAltNextPage(String text) {
-    this.altNextPage = text;
+  public void setBaseURL(String url) {
+    this.baseURL = url;
   }
 
   public String getAltPreviousPage() {
     return this.altPreviousPage;
   }
 
+  @Override
+  public void setAltPreviousPage(String text) {
+    this.altPreviousPage = text;
+  }
+
   public String getAltNextPage() {
     return this.altNextPage;
+  }
+
+  @Override
+  public void setAltNextPage(String text) {
+    this.altNextPage = text;
   }
 
   protected int getNumberOfPagesAround() {
@@ -236,13 +253,13 @@ public abstract class AbstractPagination implements Pagination {
     return value;
   }
 
+  public LocalizationBundle getMultilang() {
+    return multilang;
+  }
+
   @Override
   public void setMultilang(LocalizationBundle multilang) {
     this.multilang = multilang;
-  }
-
-  public LocalizationBundle getMultilang() {
-    return multilang;
   }
 
   protected String getString(String key) {

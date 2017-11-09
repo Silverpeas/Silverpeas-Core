@@ -141,7 +141,6 @@
 <view:looknfeel withFieldsetStyle="true"/>
 <view:includePlugin name="popup"/>
 <script type="text/javascript">
-var selectionUserAPI;
 function ConfirmAndSend(textToDisplay, targetURL) {
   jQuery.popup.confirm(textToDisplay, function() {
     jQuery('#deletionForm').attr('action', targetURL).submit();
@@ -153,13 +152,13 @@ function DomainSQLSynchro(){
   sp.formConfig("domainSQLSynchro").submit();
 }
 
-function jumpToUser() {
+function jumpToUser(selectionUserAPI) {
   var userIds = selectionUserAPI.getSelectedUserIds();
   var groupIds = selectionUserAPI.getSelectedGroupIds();
   if (userIds.length) {
-    sp.formConfig("userContent").withParam("Iduser", userIds[0]).submit();
+    sp.formRequest("userContent").withParam("Iduser", userIds[0]).submit();
   } else if (groupIds.length) {
-    sp.formConfig("groupContent").withParam("Idgroup", groupIds[0]).submit();
+    sp.formRequest("groupContent").withParam("Idgroup", groupIds[0]).submit();
   }
 }
 </script>
@@ -218,8 +217,10 @@ out.println(window.printBefore());
     <div class="field">
       <label class="txtlibform"><fmt:message key="JDP.userPanelAccess"/></label>
       <div class="champs">
-        <viewTags:selectUsersAndGroups domainIdFilter="<%=domObject.getId()%>" selectionType="USER_GROUP"
-                                       onChangeJsCallback="jumpToUser" jsApiVar="selectionUserAPI"/>
+        <viewTags:selectUsersAndGroups selectionType="USER_GROUP"
+                                       domainIdFilter="<%=domObject.getId()%>"
+                                       navigationalBehavior="true"
+                                       onChangeJsCallback="jumpToUser"/>
       </div>
     </div>
   </div>

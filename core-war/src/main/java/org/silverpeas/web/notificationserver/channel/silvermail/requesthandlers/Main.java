@@ -31,8 +31,7 @@ import org.silverpeas.web.notificationserver.channel.silvermail.SILVERMAILSessio
 
 import javax.servlet.http.HttpServletRequest;
 
-import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.AbstractArrayPane
-    .getOrderByFrom;
+import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.getOrderByFrom;
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
     .getPaginationPageFrom;
 import static org.silverpeas.web.notificationserver.channel.silvermail

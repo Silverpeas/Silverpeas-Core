@@ -41,6 +41,21 @@
 <%@ attribute name="groupIds" required="false" type="java.util.Collection"
               description="The list of groupIds to display" %>
 
+<%@ attribute name="initialQuery" required="false" type="java.lang.String"
+              description="The initial query to set into input and to perform by default" %>
+
+<%@ attribute name="navigationalBehavior" required="false" type="java.lang.Boolean"
+              description="Must observe a navigational behavior?" %>
+
+<%@ attribute name="doNotSelectAutomaticallyOnDropDownOpen" required="false" type="java.lang.Boolean"
+              description="Do not select the first option of the drop down on open?" %>
+
+<%@ attribute name="noUserPanel" required="false" type="java.lang.Boolean"
+              description="Has the user panel access to be hidden?" %>
+
+<%@ attribute name="noSelectionClear" required="false" type="java.lang.Boolean"
+              description="Has the selection clear to be hidden? If navigationalBehavior is true, forced at true." %>
+
 <%@ attribute name="roleFilter" required="false" type="java.util.Collection"
               description="The list of roles to filter on" %>
 
@@ -67,6 +82,9 @@
 
 <%@ attribute name="selectionType" required="false" type="java.lang.String"
               description="USER or GROUP or USER_GROUP (USER by default or if attribute cannot be parsed)" %>
+
+<%@ attribute name="queryInputName" required="false" type="java.lang.String"
+              description="Sets the name of the query HTML input, otherwise no name is set to the HTML input" %>
 
 <%@ attribute name="userInputName" required="false" type="java.lang.String"
               description="Sets the name of the user input, otherwise default one is created" %>
@@ -100,6 +118,22 @@
 
 <c:if test="${hideDeactivatedState == null}">
   <c:set var="hideDeactivatedState" value="${true}"/>
+</c:if>
+
+<c:if test="${navigationalBehavior == null}">
+  <c:set var="navigationalBehavior" value="${false}"/>
+</c:if>
+
+<c:if test="${doNotSelectAutomaticallyOnDropDownOpen == null}">
+  <c:set var="doNotSelectAutomaticallyOnDropDownOpen" value="${false}"/>
+</c:if>
+
+<c:if test="${noUserPanel == null}">
+  <c:set var="noUserPanel" value="${false}"/>
+</c:if>
+
+<c:if test="${noSelectionClear == null}">
+  <c:set var="noSelectionClear" value="${false}"/>
 </c:if>
 
 <c:if test="${displayUserZoom == null}">
@@ -154,6 +188,12 @@
       domainIdFilter : '${domainIdFilter}',
       componentIdFilter : '${componentIdFilter}',
       roleFilter : roleFilter,
+      initialQuery : '${initialQuery}',
+      navigationalBehavior : ${navigationalBehavior},
+      doNotSelectAutomaticallyOnDropDownOpen : ${doNotSelectAutomaticallyOnDropDownOpen},
+      noUserPanel : ${noUserPanel},
+      noSelectionClear : ${noSelectionClear},
+      queryInputName : '${queryInputName}',
       userInputName : '${userInputName}',
       groupInputName : '${groupInputName}',
       currentUserId : ${currentUserId},
@@ -178,7 +218,7 @@
     });
     <c:if test="${not empty onReadyJsCallback}">
     instance.ready(function() {
-      ${onReadyJsCallback}.call(instance);
+      ${onReadyJsCallback}(instance);
     });
     </c:if>
     <c:if test="${not empty jsApiVar}">

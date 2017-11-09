@@ -51,8 +51,6 @@ import java.util.Map;
 
 import static org.silverpeas.core.notification.user.server.channel.silvermail.SilvermailCriteria
     .QUERY_ORDER_BY.*;
-import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.AbstractArrayPane
-    .getOrderByFrom;
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.*;
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination.*;
 

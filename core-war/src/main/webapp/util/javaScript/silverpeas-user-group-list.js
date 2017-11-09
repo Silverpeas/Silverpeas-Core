@@ -128,8 +128,8 @@
      * Refreshes the items according the current id selection (kind of reset).
      * @returns {*}
      */
-    this.refresh = function() {
-      __selectize.clear(true);
+    this.refresh = function(silent) {
+      this.clear();
       var __userDeferred = sp.promise.deferred();
       var __groupDeferred = sp.promise.deferred();
       var __initializeByAjaxDone = [__userDeferred.promise, __groupDeferred.promise];
@@ -164,9 +164,11 @@
         __userDeferred.resolve();
       }
       return sp.promise.whenAllResolved(__initializeByAjaxDone).then(function() {
-        userGroupSelectInstance.ready(function() {
-          __onChange();
-        });
+        if (!silent) {
+          userGroupSelectInstance.ready(function() {
+            __onChange();
+          });
+        }
       });
     };
 
@@ -202,6 +204,13 @@
      */
     this.focus = function() {
       __selectize.focus();
+    };
+
+    /**
+     * Focuses the item selection.
+     */
+    this.clear = function() {
+      __selectize.clear(true);
     };
 
     /*
@@ -243,7 +252,66 @@
       }
       userGroupSelectInstance.refreshCommons();
     }.bind(this);
+
+    var __ifPreparedItemsWith = function(query) {
+      var __itemDeferred = sp.promise.deferred();
+      __sequential.then(function() {
+        __selectize.loadedSearches = {};
+        userGroupSelectInstance.context.searchInput.processQuery(query, function(ajaxPerformed) {
+          for (var itemId in __selectize.options) {
+            __selectize.options[itemId].score = 0;
+            if (__selectize.items.indexOf(itemId) < 0) {
+              __selectize.removeOption(itemId);
+            }
+          }
+          __selectize.refreshOptions(true);
+
+          if (ajaxPerformed) {
+            var all = [];
+            var currentTotalOfSelectedUsers;
+            if (userGroupSelectInstance.options.userManualNotificationUserReceiverLimit) {
+              currentTotalOfSelectedUsers = this.getTotalOfSelectedUsers();
+            }
+
+            function __addItemOption(idPrefix, item) {
+              __applyItemSelectizeData(item, idPrefix, 1);
+              if (typeof currentTotalOfSelectedUsers === 'undefined' ||
+                  (currentTotalOfSelectedUsers + item.getUserCount()) <=
+                  USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_VALUE) {
+                all.push(item);
+              } else {
+                userGroupSelectInstance.showUserManuelNotificationUserReceiverLimitMessage();
+              }
+            }
+
+            userGroupSelectInstance.context.groupItems.forEach(function(item) {
+              __addItemOption('group-', item);
+            });
+            userGroupSelectInstance.context.userItems.forEach(function(item) {
+              __addItemOption('user-', item);
+            });
+            __itemDeferred.resolve(all);
+          }
+        }.bind(this));
+      }.bind(this));
+      return __itemDeferred.promise;
+    }.bind(this);
+
+    var selectizePlugins = [];
+    if (userGroupSelectInstance.options.queryInputName) {
+      selectizePlugins.push({
+        name : 'QueryInputUsedInForm',
+        options : {inputName : userGroupSelectInstance.options.queryInputName}
+      });
+    }
+    if (userGroupSelectInstance.options.doNotSelectAutomaticallyOnDropDownOpen) {
+      selectizePlugins.push('DoNotSelectAutomaticallyOnDropDownOpen');
+    }
+    if (userGroupSelectInstance.options.navigationalBehavior) {
+      selectizePlugins.push('NavigationalBehavior');
+    }
     var __selectize = jQuery(userGroupSelectInstance.context.searchInput).selectize({
+      plugins: selectizePlugins,
       valueField: 'id',
       placeholder: "          ",
       options: [],
@@ -271,54 +339,33 @@
         };
       },
       load: function(query, callback) {
-        __sequential.then(function() {
-          __selectize.loadedSearches = {};
-          userGroupSelectInstance.context.searchInput.processQuery(query, function(ajaxPerformed) {
-            for(var itemId in __selectize.options) {
-              __selectize.options[itemId].score = 0;
-              if (__selectize.items.indexOf(itemId) < 0) {
-                __selectize.removeOption(itemId);
-              }
-            }
-            __selectize.refreshOptions(true);
-
-            if (ajaxPerformed) {
-              var all = [];
-              var currentTotalOfSelectedUsers;
-              if (userGroupSelectInstance.options.userManualNotificationUserReceiverLimit) {
-                currentTotalOfSelectedUsers = this.getTotalOfSelectedUsers();
-              }
-              function __addItemOption(idPrefix, item) {
-                __applyItemSelectizeData(item, idPrefix, 1);
-                if (typeof currentTotalOfSelectedUsers === 'undefined' ||
-                    (currentTotalOfSelectedUsers + item.getUserCount()) <=
-                    USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_VALUE) {
-                  all.push(item);
-                } else {
-                  userGroupSelectInstance.showUserManuelNotificationUserReceiverLimitMessage();
-                }
-              }
-              userGroupSelectInstance.context.groupItems.forEach(function(item) {
-                __addItemOption('group-', item);
-              });
-              userGroupSelectInstance.context.userItems.forEach(function(item) {
-                __addItemOption('user-', item);
-              });
-              callback(all);
-            }
-          }.bind(this));
-        }.bind(this));
-      }.bind(this)
+        __ifPreparedItemsWith(query).then(function(items) {
+          callback(items);
+        })
+      }
     })[0].selectize;
     function __onChange() {
       if (typeof userGroupSelectInstance.options.onChange === 'function') {
         setTimeout(function() {
-          userGroupSelectInstance.options.onChange();
+          try {
+            userGroupSelectInstance.options.onChange(userGroupSelectInstance);
+          } finally {
+            if (userGroupSelectInstance.options.navigationalBehavior) {
+              userGroupSelectInstance.removeAll();
+            }
+          }
         }, 0);
+      } else {
+        if (userGroupSelectInstance.options.navigationalBehavior) {
+          userGroupSelectInstance.removeAll();
+        }
       }
     }
     setTimeout(function() {
-      this.refresh().then(function() {
+      if (userGroupSelectInstance.options.initialQuery) {
+        __selectize.setTextboxValue(userGroupSelectInstance.options.initialQuery);
+      }
+      this.refresh(true).then(function() {
         __selectize.on('item_remove', function(id) {
           __updateIdContainers(id, false);
         });
@@ -327,6 +374,15 @@
         });
         setTimeout(function() {
           this.notifyReady();
+          setTimeout(function() {
+            if (userGroupSelectInstance.options.initialQuery) {
+              __ifPreparedItemsWith(userGroupSelectInstance.options.initialQuery).then(function(items) {
+                items.forEach(function(item) {
+                  __selectize.addOption(item);
+                });
+              });
+            }
+          }, 0);
         }.bind(this), 0);
       }.bind(this));
     }.bind(this), 0);
@@ -341,6 +397,11 @@
       domainIdFilter : '',
       componentIdFilter : '',
       roleFilter : [],
+      navigationalBehavior : false,
+      doNotSelectAutomaticallyOnDropDownOpen : false,
+      noUserPanel : false,
+      noSelectionClear : false,
+      initialQuery : false,
       readOnly : false,
       hidden : false,
       mandatory : false,
@@ -349,6 +410,7 @@
       initUserPanelGroupIdParamName : '',
       userInputName : '',
       groupInputName : '',
+      queryInputName : '',
       currentUserId : '',
       rootContainerId : "select-user-group-container",
       initialUserIds : [],
@@ -377,6 +439,10 @@
       this.options.userPanelId = "user-group-select-" + __idCounter;
     }
 
+    if (this.options.navigationalBehavior) {
+      this.options.noSelectionClear = true;
+    }
+
     var initialUserIds = __convertToString(this.options.initialUserIds);
     var initialGroupIds = __convertToString(this.options.initialGroupIds);
 
@@ -390,6 +456,16 @@
       groupItems : []
     };
 
+    this.removeAll = function() {
+      this.context.currentUserIds = [];
+      this.context.currentGroupIds = [];
+      this.refreshCommons();
+      if(!this.options.navigationalBehavior) {
+        this.context.dropPanel.refresh();
+      } else {
+        this.context.dropPanel.clear();
+      }
+    };
 
     this.refreshCommons = function() {
       this.context.userSelectionInput.value = this.context.currentUserIds;
@@ -425,7 +501,7 @@
       var groupDeferred = sp.promise.deferred();
       var searchDone = [userDeferred.promise, groupDeferred.promise];
       // Query
-      var query = encodeURIComponent("%" + search.split('').join('%') + "%");
+      var query = encodeURIComponent("%" + search + "%");
       // Users
       if (this.options.selectionType !== SELECTION_TYPE.GROUP) {
         __requester.getUsers({name : query, limit : SELECT_NB_ITEM_PER_TYPE}).then(function(users) {
@@ -521,44 +597,49 @@
         __searchContainer.appendChild(this.context.searchInput);
         this.context.dropPanel = new UserGroupSelectize(this);
 
-        var __userPanelSelect = document.createElement('a');
-        __userPanelSelect.href = 'javascript:void(0)';
-        __userPanelSelect.classList.add('user-panel-button');
-        var __userPanelSelectIcon = document.createElement('img');
-        __userPanelSelectIcon.setAttribute("title", this.options.userPanelButtonLabel);
-        __userPanelSelectIcon.setAttribute("alt", this.options.userPanelButtonLabel);
-        switch (this.options.selectionType) {
-          case SELECTION_TYPE.USER_GROUP :
-            __userPanelSelectIcon.src = ICON_USER_GROUP_PANEL;
-            break;
-          case SELECTION_TYPE.GROUP :
-            __userPanelSelectIcon.src = ICON_GROUP_PANEL;
-            break;
-          default:
-            __userPanelSelectIcon.src = ICON_USER_PANEL;
-            break;
+        if (!this.options.noUserPanel) {
+          var __userPanelSelect = document.createElement('a');
+          __userPanelSelect.href = 'javascript:void(0)';
+          __userPanelSelect.classList.add('user-panel-button');
+          if (this.options.noSelectionClear) {
+            __userPanelSelect.classList.add('alone');
+          }
+          var __userPanelSelectIcon = document.createElement('img');
+          __userPanelSelectIcon.setAttribute("title", this.options.userPanelButtonLabel);
+          __userPanelSelectIcon.setAttribute("alt", this.options.userPanelButtonLabel);
+          switch (this.options.selectionType) {
+            case SELECTION_TYPE.USER_GROUP :
+              __userPanelSelectIcon.src = ICON_USER_GROUP_PANEL;
+              break;
+            case SELECTION_TYPE.GROUP :
+              __userPanelSelectIcon.src = ICON_GROUP_PANEL;
+              break;
+            default:
+              __userPanelSelectIcon.src = ICON_USER_PANEL;
+              break;
+          }
+          __userPanelSelect.appendChild(__userPanelSelectIcon);
+          __searchContainer.appendChild(__userPanelSelect);
+          __userPanelSelect.addEventListener('click', function() {
+            __openUserPanel(this);
+          }.bind(this));
         }
-        __userPanelSelect.appendChild(__userPanelSelectIcon);
-        __searchContainer.appendChild(__userPanelSelect);
-        __userPanelSelect.addEventListener('click', function() {
-          __openUserPanel(this);
-        }.bind(this));
-        var __clear = document.createElement('a');
-        __clear.href = 'javascript:void(0)';
-        __clear.classList.add('remove-button');
-        var __clearIcon = document.createElement("img");
-        __clearIcon.setAttribute("border", "0");
-        __clearIcon.setAttribute("title", this.options.removeButtonLabel);
-        __clearIcon.setAttribute("alt", this.options.removeButtonLabel);
-        __clearIcon.setAttribute("src", "../../util/icons/delete.gif");
-        __clear.appendChild(__clearIcon);
-        __searchContainer.appendChild(__clear);
-        __clear.addEventListener('click', function() {
-          this.context.currentUserIds = [];
-          this.context.currentGroupIds = [];
-          this.refreshCommons();
-          this.context.dropPanel.refresh();
-        }.bind(this));
+
+        if (!this.options.noSelectionClear) {
+          var __clear = document.createElement('a');
+          __clear.href = 'javascript:void(0)';
+          __clear.classList.add('remove-button');
+          var __clearIcon = document.createElement("img");
+          __clearIcon.setAttribute("border", "0");
+          __clearIcon.setAttribute("title", this.options.removeButtonLabel);
+          __clearIcon.setAttribute("alt", this.options.removeButtonLabel);
+          __clearIcon.setAttribute("src", "../../util/icons/delete.gif");
+          __clear.appendChild(__clearIcon);
+          __searchContainer.appendChild(__clear);
+          __clear.addEventListener('click', function() {
+            this.removeAll();
+          }.bind(this));
+        }
 
         if (this.options.mandatory) {
           var __mandatoryIcon = document.createElement("img");
@@ -594,7 +675,7 @@
           var groupPanelValue = this.context.groupSelectionInput.value;
           this.context.currentUserIds = userPanelValue ? userPanelValue.split(',') : [];
           this.context.currentGroupIds = groupPanelValue ? groupPanelValue.split(',') : [];
-          this.context.dropPanel.refresh();
+          this.context.dropPanel.refresh(!this.options.multiple);
         }.bind(this));
         this.refreshCommons();
         this.context.dropPanel.ready(function() {

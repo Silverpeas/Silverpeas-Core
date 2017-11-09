@@ -23,11 +23,17 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
+import javax.portlet.RenderRequest;
 import javax.servlet.ServletRequest;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.PageContext;
+import java.util.Map;
+
+import static org.silverpeas.core.web.portlets.PortletUtil.getHttpServletRequest;
 
 /**
  * The ArrayPane interface gives us the skeleton for all funtionnalities we need to display typical
@@ -53,6 +59,51 @@ public interface ArrayPane extends SimpleGraphicElement {
   String ACTION_PARAMETER_NAME = "ArrayPaneAction";
   String TARGET_PARAMETER_NAME = "ArrayPaneTarget";
   String COLUMN_PARAMETER_NAME = "ArrayPaneColumn";
+
+  /**
+   * Gets order by from given request and possible orderBies.
+   * @param request the request.
+   * @param orderBiesByColumnIndex the possible order by indexed by the column index which starts
+   * at 1.
+   * @return the order by.
+   */
+  static <O> O getOrderByFrom(RenderRequest request,
+      Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
+    final String name = request.getParameter(TARGET_PARAMETER_NAME);
+    final String action = request.getParameter(ACTION_PARAMETER_NAME);
+    final String column = request.getParameter(COLUMN_PARAMETER_NAME);
+    if (name == null || !"Sort".equals(action)) {
+      return null;
+    }
+    ArrayPaneStatusBean state =
+        (ArrayPaneStatusBean) getHttpServletRequest(request).getSession(false).getAttribute(name);
+    if (state == null) {
+      return null;
+    }
+    return AbstractArrayPane.getOrderByFrom(state, column, orderBiesByColumnIndex);
+  }
+
+  /**
+   * Gets order by from given request and possible orderBies.
+   * @param request the request.
+   * @param orderBiesByColumnIndex the possible order by indexed by the column index which starts
+   * at 1.
+   * @return the order by.
+   */
+  static <O> O getOrderByFrom(HttpServletRequest request,
+      Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
+    final String name = request.getParameter(TARGET_PARAMETER_NAME);
+    final String action = request.getParameter(ACTION_PARAMETER_NAME);
+    final String column = request.getParameter(COLUMN_PARAMETER_NAME);
+    if (name == null || !"Sort".equals(action)) {
+      return null;
+    }
+    ArrayPaneStatusBean state = (ArrayPaneStatusBean) request.getSession(false).getAttribute(name);
+    if (state == null) {
+      return null;
+    }
+    return AbstractArrayPane.getOrderByFrom(state, column, orderBiesByColumnIndex);
+  }
 
   /**
    * Generic class to display a typical WA array table pane. A unique name identifier is to be used
