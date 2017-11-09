@@ -39,7 +39,11 @@ public class TreeCache {
 
   private static final ConcurrentMap<Integer, Space> map = new ConcurrentHashMap<>();
 
-  public synchronized static void clearCache() {
+  private TreeCache() {
+    throw new IllegalAccessError("Utility class");
+  }
+
+  public static synchronized void clearCache() {
     map.clear();
   }
 
@@ -55,7 +59,7 @@ public class TreeCache {
     map.putIfAbsent(spaceId, space);
   }
 
-  public synchronized static void removeSpace(int spaceId) {
+  public static synchronized void removeSpace(int spaceId) {
     Space space = map.get(spaceId);
     if (space != null) {
       for (SpaceInstLight subspace : space.getSubspaces()) {
@@ -117,7 +121,7 @@ public class TreeCache {
     return contains;
   }
 
-  public static void addComponent(int componentId, ComponentInstLight component, int spaceId) {
+  public static void addComponent(ComponentInstLight component, int spaceId) {
     // add component in spaces list
     Space space = getSpace(spaceId);
     if (space != null) {
@@ -171,7 +175,7 @@ public class TreeCache {
     return path;
   }
 
-  public synchronized static ComponentInstLight getComponent(String componentId) {
+  public static synchronized ComponentInstLight getComponent(String componentId) {
     ComponentInstLight component = null;
     for (Space space : map.values()) {
       component = space.getComponent(componentId);
@@ -182,7 +186,7 @@ public class TreeCache {
     return component;
   }
 
-  public synchronized static SpaceInstLight getSpaceContainingComponent(String componentId) {
+  public static synchronized SpaceInstLight getSpaceContainingComponent(String componentId) {
     for (Space space : map.values()) {
       if (space.containsComponent(componentId)) {
         return space.getSpace();
@@ -194,13 +198,12 @@ public class TreeCache {
   public static List<SpaceInstLight> getComponentPath(String componentId) {
     ComponentInstLight component = getComponent(componentId);
     if (component != null && component.hasDomainFather()) {
-      return getSpacePath(Integer.parseInt(
-          component.getDomainFatherId().replaceFirst("^" + SpaceInst.SPACE_KEY_PREFIX, "")));
+      return getSpacePath(getSpaceId(component));
     }
     return new ArrayList<>();
   }
 
-  public synchronized static void updateSpace(SpaceInstLight spaceLight) {
+  public static synchronized void updateSpace(SpaceInstLight spaceLight) {
     if (spaceLight != null && StringUtil.isDefined(spaceLight.getId())) {
       Space space = getSpace(spaceLight.getLocalId());
       if (space != null) {
@@ -235,5 +238,15 @@ public class TreeCache {
       }
       space.getSubspaces().add(subSpace);
     }
+  }
+
+  public static void updateComponent(ComponentInstLight component) {
+    Space space = getSpace(getSpaceId(component));
+    space.updateComponent(component);
+  }
+
+  private static int getSpaceId(ComponentInstLight component) {
+    return Integer
+        .parseInt(component.getSpaceId().replaceFirst("^" + SpaceInst.SPACE_KEY_PREFIX, ""));
   }
 }
