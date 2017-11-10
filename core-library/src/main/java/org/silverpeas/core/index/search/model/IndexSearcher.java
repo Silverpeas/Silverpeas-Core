@@ -48,6 +48,7 @@ import org.silverpeas.core.index.indexing.model.IndexReadersCache;
 import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -74,13 +75,17 @@ import java.util.StringTokenizer;
 @Singleton
 public class IndexSearcher {
 
-  public static QueryParser.Operator defaultOperand = QueryParser.AND_OPERATOR;
+  private static final String INDEX_SEARCH_ERROR = "Index search failure";
+  private static final int DEFAULT_MAX_RESULT = 100;
+  private static final int DEFAULT_PRIMARY_FACTOR = 3;
+
+  private QueryParser.Operator defaultOperator;
 
   /**
    * The primary factor used with the secondary one to give a better score to entries whose title or
    * abstract match the query.
    */
-  private int primaryFactor = 3;
+  private int primaryFactor = DEFAULT_PRIMARY_FACTOR;
   /**
    * The secondary factor used with the first one to give a better score to entries whose title or
    * abstract match the query.
@@ -93,26 +98,7 @@ public class IndexSearcher {
   /**
    * indicates the number maximum of results returned by the search
    */
-  public static int maxNumberResult = 0;
-
-  @PostConstruct
-  private void init() {
-    try {
-      SettingBundle settings =
-          ResourceLocator.getSettingBundle("org.silverpeas.index.search.searchEngineSettings");
-      int paramOperand = settings.getInteger("defaultOperand", 0);
-      if (paramOperand == 0) {
-        defaultOperand = QueryParser.OR_OPERATOR;
-      } else {
-        defaultOperand = QueryParser.AND_OPERATOR;
-      }
-
-      maxNumberResult = settings.getInteger("maxResults", 100);
-    } catch (MissingResourceException e) {
-      SilverLogger.getLogger(this)
-          .error("Error while loading the settings from searchEngineSettings.properties", e);
-    }
-  }
+  private int maxNumberResult;
 
   /**
    * The no parameters constructor retrieves all the needed data from the IndexEngine.properties
@@ -122,6 +108,33 @@ public class IndexSearcher {
     indexManager = IndexManager.get();
     primaryFactor = getFactorFromProperties("PrimaryFactor", primaryFactor);
     secondaryFactor = getFactorFromProperties("SecondaryFactor", secondaryFactor);
+  }
+
+  public static IndexSearcher get() {
+    return ServiceProvider.getService(IndexSearcher.class);
+  }
+
+  public QueryParser.Operator getDefaultOperator() {
+    return defaultOperator;
+  }
+
+  @PostConstruct
+  private void init() {
+    try {
+      SettingBundle settings =
+          ResourceLocator.getSettingBundle("org.silverpeas.index.search.searchEngineSettings");
+      int paramOperand = settings.getInteger("defaultOperand", 0);
+      if (paramOperand == 0) {
+        defaultOperator = QueryParser.OR_OPERATOR;
+      } else {
+        defaultOperator = QueryParser.AND_OPERATOR;
+      }
+
+      maxNumberResult = settings.getInteger("maxResults", DEFAULT_MAX_RESULT);
+    } catch (MissingResourceException e) {
+      SilverLogger.getLogger(this)
+          .error("Error while loading the settings from searchEngineSettings.properties", e);
+    }
   }
 
 
@@ -164,9 +177,7 @@ public class IndexSearcher {
       matchingIndexEntry = createMatchingIndexEntry(scoreDoc, "*", searcher);
     } catch (IOException ioe) {
       SilverLogger.getLogger(this).error("Index file corrupted", ioe);
-    } /*finally {
-      IOUtils.closeQuietly(searcher);
-    }*/
+    }
     return matchingIndexEntry;
   }
 
@@ -193,40 +204,7 @@ public class IndexSearcher {
       if (query.getXmlQuery() != null) {
         booleanQueryBuilder.add(getXMLQuery(query), BooleanClause.Occur.MUST);
       } else {
-        if (query.getMultiFieldQuery() != null) {
-          booleanQueryBuilder.add(getMultiFieldQuery(query), BooleanClause.Occur.MUST);
-        } else {
-          TermRangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
-          if (!StringUtil.isDefined(query.getQuery()) && (query.isSearchBySpace() || query.
-              isSearchByComponentType()) && !query.isPeriodDefined()) {
-            rangeQuery = TermRangeQuery.newStringRange(IndexManager.CREATIONDATE, "1900/01/01", "2200/01/01",
-                true, true);
-          }
-          if (rangeQuery != null) {
-            rangeClausesBuilder.add(rangeQuery, BooleanClause.Occur.MUST);
-          }
-          TermRangeQuery rangeQueryOnLastUpdateDate = getRangeQueryOnLastUpdateDate(query);
-          if (rangeQueryOnLastUpdateDate != null) {
-            rangeClausesBuilder.add(rangeQueryOnLastUpdateDate, BooleanClause.Occur.MUST);
-          }
-          TermQuery termQueryOnAuthor = getTermQueryOnAuthor(query);
-          if (termQueryOnAuthor != null) {
-            booleanQueryBuilder.add(termQueryOnAuthor, BooleanClause.Occur.MUST);
-          }
-          PrefixQuery termQueryOnFolder = getTermQueryOnFolder(query);
-          if (termQueryOnFolder != null) {
-            booleanQueryBuilder.add(termQueryOnFolder, BooleanClause.Occur.MUST);
-          }
-
-          try {
-            Query plainTextQuery = getPlainTextQuery(query, IndexManager.CONTENT);
-            if (plainTextQuery != null) {
-              booleanQueryBuilder.add(plainTextQuery, BooleanClause.Occur.MUST);
-            }
-          } catch (ParseException e) {
-            throw new org.silverpeas.core.index.search.model.ParseException("IndexSearcher", e);
-          }
-        }
+        parseQuery(query, booleanQueryBuilder, rangeClausesBuilder);
       }
 
 
@@ -249,6 +227,51 @@ public class IndexSearcher {
       results = new ArrayList<>();
     }
     return results.toArray(new MatchingIndexEntry[results.size()]);
+  }
+
+  private void parseQuery(final QueryDescription query,
+      final BooleanQuery.Builder booleanQueryBuilder,
+      final BooleanQuery.Builder rangeClausesBuilder) throws ParseException {
+    if (query.getMultiFieldQuery() != null) {
+      booleanQueryBuilder.add(getMultiFieldQuery(query), BooleanClause.Occur.MUST);
+    } else {
+      parseRangeQuery(query, booleanQueryBuilder, rangeClausesBuilder);
+    }
+  }
+
+  private void parseRangeQuery(final QueryDescription query,
+      final BooleanQuery.Builder booleanQueryBuilder,
+      final BooleanQuery.Builder rangeClausesBuilder) throws ParseException {
+    TermRangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
+    if (!StringUtil.isDefined(query.getQuery()) && (query.isSearchBySpace() || query.
+        isSearchByComponentType()) && !query.isPeriodDefined()) {
+      rangeQuery = TermRangeQuery.newStringRange(IndexManager.CREATIONDATE, "1900/01/01", "2200/01/01",
+          true, true);
+    }
+    if (rangeQuery != null) {
+      rangeClausesBuilder.add(rangeQuery, BooleanClause.Occur.MUST);
+    }
+    TermRangeQuery rangeQueryOnLastUpdateDate = getRangeQueryOnLastUpdateDate(query);
+    if (rangeQueryOnLastUpdateDate != null) {
+      rangeClausesBuilder.add(rangeQueryOnLastUpdateDate, BooleanClause.Occur.MUST);
+    }
+    TermQuery termQueryOnAuthor = getTermQueryOnAuthor(query);
+    if (termQueryOnAuthor != null) {
+      booleanQueryBuilder.add(termQueryOnAuthor, BooleanClause.Occur.MUST);
+    }
+    PrefixQuery termQueryOnFolder = getTermQueryOnFolder(query);
+    if (termQueryOnFolder != null) {
+      booleanQueryBuilder.add(termQueryOnFolder, BooleanClause.Occur.MUST);
+    }
+
+    try {
+      Query plainTextQuery = getPlainTextQuery(query, IndexManager.CONTENT);
+      if (plainTextQuery != null) {
+        booleanQueryBuilder.add(plainTextQuery, BooleanClause.Occur.MUST);
+      }
+    } catch (ParseException e) {
+      throw new ParseException(INDEX_SEARCH_ERROR, e);
+    }
   }
 
   private TermRangeQuery getVisibilityStartQuery() {
@@ -283,21 +306,22 @@ public class IndexSearcher {
         }
 
         MultiFieldQueryParser mfqp = new MultiFieldQueryParser(fields, analyzer);
-        mfqp.setDefaultOperator(defaultOperand);
+        mfqp.setDefaultOperator(defaultOperator);
         parsedQuery = mfqp.parse(query.getQuery());
       } else {
         // search only specified language
+        String fieldName = searchField;
         if (I18NHelper.isI18nContentActivated && !"*".equals(language) &&
             !I18NHelper.isDefaultLanguage(language)) {
-          searchField = getFieldName(searchField, language);
+          fieldName = getFieldName(searchField, language);
         }
 
-        QueryParser queryParser = new QueryParser(searchField, analyzer);
-        queryParser.setDefaultOperator(defaultOperand);
+        QueryParser queryParser = new QueryParser(fieldName, analyzer);
+        queryParser.setDefaultOperator(defaultOperator);
         parsedQuery = queryParser.parse(query.getQuery());
       }
     } catch (org.apache.lucene.queryparser.classic.ParseException e) {
-      throw new org.silverpeas.core.index.search.model.ParseException("IndexSearcher", e);
+      throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
     }
 
     return parsedQuery;
@@ -357,7 +381,7 @@ public class IndexSearcher {
 
       return booleanQuery.build();
     } catch (ParseException e) {
-      throw new org.silverpeas.core.index.search.model.ParseException("IndexSearcher", e);
+      throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
     }
   }
 
@@ -378,7 +402,7 @@ public class IndexSearcher {
       query = MultiFieldQueryParser.parse(queryStr, fieldNames.keySet().toArray(new String[fieldNames.size()]),
           fieldNames.values().toArray(new BooleanClause.Occur[fieldNames.size()]), analyzer);
     } catch (org.apache.lucene.queryparser.classic.ParseException e) {
-      throw new org.silverpeas.core.index.search.model.ParseException("IndexSearcher", e);
+      throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
     }
     return query;
   }
@@ -423,7 +447,8 @@ public class IndexSearcher {
     indexEntry.setEmbeddedFileIds(doc.getValues(IndexManager.EMBEDDED_FILE_IDS));
     indexEntry.setFilename(doc.get(IndexManager.FILENAME));
     indexEntry.setAlias(StringUtil.getBooleanValue(doc.get(IndexManager.ALIAS)));
-    indexEntry.setScore(scoreDoc.score); // TODO check the score.
+    // TODO check the score.
+    indexEntry.setScore(scoreDoc.score);
     // Checks the content to see if it contains sortable field
     // and puts them in MatchingIndexEntry object
     if ("Publication".equals(indexEntry.getObjectType())) {
@@ -523,7 +548,7 @@ public class IndexSearcher {
       return new org.apache.lucene.search.IndexSearcher(
           new MultiReader(readers.toArray(new IndexReader[readers.size()])));
     } catch (IOException ioe) {
-      throw new org.silverpeas.core.index.search.model.ParseException("IndexSearcher", ioe);
+      throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, ioe);
     }
   }
 

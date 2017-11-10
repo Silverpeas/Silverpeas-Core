@@ -52,7 +52,7 @@ BrowseBar 	browseBar 	= window.getBrowseBar();
 Frame 		frame 		= gef.getFrame();
 Board		board		= gef.getBoard();
 
-QueryParser.Operator defaultOperand = IndexSearcher.defaultOperand;
+QueryParser.Operator defaultOperand = IndexSearcher.get().getDefaultOperator();
 
 %>
 

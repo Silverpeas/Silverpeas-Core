@@ -82,11 +82,12 @@ public final class QueryDescription implements Serializable {
 
   /**
    * The no parameters constructor builds an empty query. The setQuery and addComponent()
-   * methods should be called to initialize the query. Other criterium (language, creation date
+   * methods should be called to initialize the query. Other criterion (language, creation date
    * ...)
    * can be set before the request is sent to the searchEngine.
    */
   public QueryDescription() {
+    // nothing to do
   }
 
   /**
@@ -108,7 +109,8 @@ public final class QueryDescription implements Serializable {
     this.query = findAndReplace(this.query, " or ", " OR ");
     this.query = findAndReplace(this.query, " not ", " NOT ");
     if (this.query.indexOf("not ") == 0) {
-      this.query = "NOT " + this.query.substring(4, this.query.length());
+      final int notLength = 4;
+      this.query = "NOT " + this.query.substring(notLength, this.query.length());
     }
 
   }
@@ -280,14 +282,14 @@ public final class QueryDescription implements Serializable {
    */
   private String findAndReplace(String source, String find, String replace) {
     int index = source.indexOf(find);
-
+    String replacedSource = source;
     while (index > -1) {
-      source = source.substring(0, index) + replace +
-          source.substring(index + find.length(), source.length());
-      index = source.indexOf(find);
+      replacedSource = replacedSource.substring(0, index) + replace +
+          replacedSource.substring(index + find.length(), replacedSource.length());
+      index = replacedSource.indexOf(find);
     }
 
-    return source;
+    return replacedSource;
   }
 
   public boolean isPeriodDefined() {

@@ -30,10 +30,16 @@ public class ParseException extends SearchEngineException {
 
   private static final long serialVersionUID = 8010106221494935623L;
 
-  /**
-   * Set the caller and the nested exception.
-   */
-  public ParseException(String caller, Exception nestedException) {
-    super(caller, "searchEngine.EXP_PARSE_EXCEPTION", nestedException);
+
+  public ParseException(final String message, final String... parameters) {
+    super(message, parameters);
+  }
+
+  public ParseException(final String message, final Throwable cause) {
+    super(message, cause);
+  }
+
+  public ParseException(final Throwable cause) {
+    super(cause);
   }
 }

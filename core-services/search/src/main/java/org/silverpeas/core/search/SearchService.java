@@ -128,7 +128,7 @@ public class SearchService {
       }
       return results;
     } catch (Exception e) {
-      throw new SearchEngineException("SearchService.searchOnIndexes", "", e);
+      throw new SearchEngineException(e);
     }
   }
 

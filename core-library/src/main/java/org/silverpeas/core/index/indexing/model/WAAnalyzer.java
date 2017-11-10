@@ -34,26 +34,42 @@ import org.apache.lucene.analysis.snowball.SnowballFilter;
 import org.apache.lucene.analysis.standard.StandardFilter;
 import org.apache.lucene.analysis.standard.StandardTokenizer;
 import org.apache.lucene.analysis.util.ElisionFilter;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Extends lucene Analyzer : prunes from a tokens stream all the meaningless words and prunes all
  * the special characters.
  */
 public final class WAAnalyzer extends Analyzer {
+
+  private static final int LANGUAGE_CODE_LENGTH = 2;
+  private static final Map<String, Analyzer> languageMap = new HashMap<String, Analyzer>();
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.index.indexing.IndexEngine");
+  /**
+   * The words which are usually not useful for searching.
+   */
+  private String stemmer = null;
+  private boolean snowballUsed = false;
+  private String language = null;
+
+  /**
+   * The constructor is private
+   */
+  private WAAnalyzer(String lang) {
+    if (!StringUtil.isDefined(lang) || lang.length() != LANGUAGE_CODE_LENGTH) {
+      language = settings.getString("analyzer.language.default", "fr");
+    } else {
+      language = lang;
+    }
+    stemmer = getStemmer();
+    snowballUsed = settings.getBoolean("snowball.active", false);
+  }
 
   /**
    * Returns the analyzer to be used with texts of the given language. The analyzers are cached.
@@ -79,11 +95,13 @@ public final class WAAnalyzer extends Analyzer {
   @Override
   protected TokenStreamComponents createComponents(final String s) {
     final Tokenizer source = new StandardTokenizer();
-    TokenStream result = new StandardFilter(source); // remove 's and . from token
+    // remove 's and . from token
+    TokenStream result = new StandardFilter(source);
     result = new LowerCaseFilter(result);
-    result = new StopFilter(result, FrenchAnalyzer.getDefaultStopSet()); // remove some unexplicit terms
-    // according to the language
-    result = new ElisionFilter(result, FrenchAnalyzer.DEFAULT_ARTICLES); // remove [cdjlmnst-qu]' from token
+    // remove some unexplicit terms
+    result = new StopFilter(result, FrenchAnalyzer.getDefaultStopSet());
+    // remove [cdjlmnst-qu]' from token
+    result = new ElisionFilter(result, FrenchAnalyzer.DEFAULT_ARTICLES);
     if (snowballUsed) {
       // Important! Strings given to Snowball filter must contains accents
       // so accents must be removed after stemmer have done the job
@@ -95,39 +113,6 @@ public final class WAAnalyzer extends Analyzer {
     return new TokenStreamComponents(source, result);
   }
 
-  /**
-   * The constructor is private
-   */
-  private WAAnalyzer(String lang) {
-    if (!StringUtil.isDefined(lang) || lang.length() != 2) {
-      language = settings.getString("analyzer.language.default", "fr");
-    } else {
-      language = lang;
-    }
-    getStopWords(language);
-    stemmer = getStemmer();
-    snowballUsed = settings.getBoolean("snowball.active", false);
-  }
-
-  /**
-   * Returns an array of words which are not usually usefull for searching.
-   */
-  private void getStopWords(String language) {
-    stopWords = Collections.emptySet();
-    String currentLanguage = language;
-    try {
-      if (!StringUtil.isDefined(currentLanguage)) {
-        currentLanguage = I18NHelper.defaultLanguage;
-      }
-      LocalizationBundle resource = ResourceLocator
-          .getLocalizationBundle("org.silverpeas.index.indexing.StopWords", currentLanguage);
-      stopWords = resource.keySet().stream().filter(s -> !s.startsWith("GML."))
-          .collect(Collectors.toCollection(LinkedHashSet::new));
-    } catch (MissingResourceException e) {
-      SilverTrace.warn("indexing", "WAAnalyzer", "indexing.MSG_MISSING_STOPWORDS_DEFINITION");
-    }
-  }
-
   private String getStemmer() {
     return settings.getString("snowball.stemmer." + language, "French");
   }
@@ -135,14 +120,5 @@ public final class WAAnalyzer extends Analyzer {
   public String getLanguage() {
     return language;
   }
-  static private final Map<String, Analyzer> languageMap = new HashMap<String, Analyzer>();
-  static private final SettingBundle settings =
-      ResourceLocator.getSettingBundle("org.silverpeas.index.indexing.IndexEngine");
-  /**
-   * The words which are usually not useful for searching.
-   */
-  private String stemmer = null;
-  private boolean snowballUsed = false;
-  private String language = null;
-  private Set<String> stopWords = null;
+
 }

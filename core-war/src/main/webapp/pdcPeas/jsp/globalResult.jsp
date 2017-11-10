@@ -152,7 +152,7 @@ Button searchButton = gef.getFormButton(resource.getString("pdcPeas.search"), "j
 int autocompletionMinChars = resource.getSetting("autocompletion.minChars", 3);
 boolean markResult 		= resource.getSetting("enableMarkAsRead", true);
 boolean autoCompletion 	= resource.getSetting("enableAutocompletion", false);
-QueryParser.Operator defaultOperand = IndexSearcher.defaultOperand;
+QueryParser.Operator defaultOperand = IndexSearcher.get().getDefaultOperator();
 
 int resultsDisplayMode = ((Integer) request.getAttribute("ResultsDisplay")).intValue();
 String pageId = (String) request.getAttribute("ResultPageId");
