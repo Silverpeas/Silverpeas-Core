@@ -27,6 +27,8 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.contribution.attachment.util.SharingContext;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The page context where a form is displayed.
@@ -34,6 +36,9 @@ import javax.servlet.http.HttpServletRequest;
 public class PagesContext {
   public static final int ON_UPDATE_REPLACE_EMPTY_VALUES = 0;
   public static final int ON_UPDATE_IGNORE_EMPTY_VALUES = 1;
+
+  public static final String OPERATOR_AND = "AND";
+  public static final String OPERATOR_OR = "OR";
 
   RenderingContext context = RenderingContext.WEB;
   String formName = "";
@@ -61,6 +66,7 @@ public class PagesContext {
   String serverURL;
   boolean designMode;
   SharingContext sharingContext;
+  Map<String, String> searchOperators = new HashMap();
 
   public PagesContext() {
   }
@@ -86,6 +92,7 @@ public class PagesContext {
     setUpdatePolicy(pc.getUpdatePolicy());
     setCreation(pc.isCreation());
     setSharingContext(pc.getSharingContext());
+    searchOperators = pc.searchOperators;
   }
 
   public PagesContext(String formIndex, String language) {
@@ -346,6 +353,14 @@ public class PagesContext {
     context.setUserId(contributorId);
     context.setLanguage(userLanguage);
     return context;
+  }
+
+  public void setSearchOperator(String fieldName, String operator) {
+    searchOperators.put(fieldName, operator);
+  }
+
+  public String getSearchOperator(String fieldName, String defaultOperator) {
+    return searchOperators.getOrDefault(fieldName, defaultOperator);
   }
 
 }

@@ -61,6 +61,7 @@
 
 <%
   Form extraForm = (Form) request.getAttribute("ExtraForm");
+  PagesContext extraFormContext = (PagesContext) request.getAttribute("ExtraFormContext");
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN"
@@ -74,7 +75,7 @@
   <link type="text/css" rel="stylesheet" href='<c:url value="/directory/jsp/css/print.css" />' media="print"/>
   <script type="text/javascript" src="<c:url value="/util/javaScript/jquery/jquery.cookie.js"/>"></script>
   <% if (extraForm != null) {
-    extraForm.displayScripts(out, new PagesContext());
+    extraForm.displayScripts(out, extraFormContext);
   }
   %>
   <script type="text/javascript">
@@ -247,7 +248,7 @@
       <% if (extraForm != null) { %>
       <div id="extraForm">
         <%
-          extraForm.display(out, new PagesContext());
+          extraForm.display(out, extraFormContext);
         %>
       </div>
       <% } %>

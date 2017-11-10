@@ -30,6 +30,7 @@ import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
+import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -133,9 +134,17 @@ public class XmlSearchForm extends AbstractForm {
         FieldDisplayer fieldDisplayer = getFieldDisplayer(fieldTemplate);
 
         if (fieldDisplayer != null) {
+
+          boolean checkbox = "checkbox".equalsIgnoreCase(fieldTemplate.getDisplayerName());
+
           out.println("<li class=\"field field_" + fieldName + "\" id=\"form-row-" + fieldName
               + "\">");
+          out.println("<div>");
           out.println("<label for=\"" + fieldName + "\">" + fieldLabel + "</label>");
+          if(checkbox) {
+            out.println(getOperatorsSnippet(fieldName, pc));
+          }
+          out.println("</div>");
           out.println("<div class=\"fieldInput\">");
 
           try {
@@ -154,5 +163,36 @@ public class XmlSearchForm extends AbstractForm {
 
       out.flush();
     }
+  }
+
+  private String getOperatorsSnippet(String fieldName, PagesContext pc) {
+    StringBuilder sb = new StringBuilder();
+    String classAND = "";
+    String classOR = "";
+    String currentOperator = "";
+    String searchOperator = pc.getSearchOperator(fieldName, Util.getDefaultOperator());
+    if (searchOperator.equals(PagesContext.OPERATOR_AND)) {
+      classAND = "active";
+      currentOperator = PagesContext.OPERATOR_AND;
+    } else if (searchOperator.equals(PagesContext.OPERATOR_OR)) {
+      classOR = "active";
+      currentOperator = PagesContext.OPERATOR_OR;
+    }
+    sb.append("<div class=\"operators\">");
+    if (Util.isOperatorsChoiceEnabled()) {
+      sb.append("<a href=\"#\" id=\"").append(fieldName).append("OperatorAND\" onclick=\"javascript:$('#").append(fieldName)
+          .append("Operator').val('").append(PagesContext.OPERATOR_AND).append("');$(this).attr('class','active');$('#").append(fieldName)
+          .append("OperatorOR').attr('class','');\" class=\"").append(classAND)
+          .append("\"/>").append(Util.getString("Operator.AND", pc.getLanguage())).append("</a>");
+      sb.append(" / ");
+      sb.append("<a href=\"#\" id=\"").append(fieldName).append("OperatorOR\" onclick=\"javascript:$('#").append(fieldName)
+          .append("Operator').val('").append(PagesContext.OPERATOR_OR).append("');$(this).attr('class','active');$('#").append(fieldName)
+          .append("OperatorAND').attr('class','');\" class=\"").append(classOR)
+          .append("\"/>").append(Util.getString("Operator.OR", pc.getLanguage())).append("</a>");
+    }
+    sb.append("<input type=\"hidden\" name=\"").append(fieldName).append("Operator\" id=\"")
+        .append(fieldName).append("Operator\" value=\"").append(currentOperator).append("\"/>");
+    sb.append("</div>");
+    return sb.toString();
   }
 }

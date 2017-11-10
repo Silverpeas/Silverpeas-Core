@@ -213,6 +213,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     request.setAttribute("ShowHelp", false);
     if (!doNotUseExtraForm) {
       request.setAttribute("ExtraForm", directorySC.getExtraForm());
+      request.setAttribute("ExtraFormContext", directorySC.getExtraFormContext());
     }
     processBreadCrumb(request, directorySC);
     return "/directory/jsp/directory.jsp";

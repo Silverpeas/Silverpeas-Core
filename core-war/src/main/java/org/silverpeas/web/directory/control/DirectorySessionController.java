@@ -148,6 +148,9 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private PublicationTemplate xmlTemplate = null;
   private DataRecord xmlData = null;
   private boolean xmlTemplateLoaded = false;
+  PagesContext extraFormContext =
+      new PagesContext("useless", "useless", getLanguage(), getUserId());
+
   private SilverpeasTemplate template;
   private PaginationPage memberPage;
 
@@ -809,6 +812,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     return null;
   }
 
+  public PagesContext getExtraFormContext() {
+    return extraFormContext;
+  }
+
   private PublicationTemplate getExtraTemplate() {
     if (xmlTemplate == null && !xmlTemplateLoaded) {
       PublicationTemplateManager templateManager = PublicationTemplateManager.getInstance();
@@ -826,10 +833,8 @@ public class DirectorySessionController extends AbstractComponentSessionControll
         RecordTemplate searchTemplate = extraTemplate.getSearchTemplate();
         DataRecord data = searchTemplate.getEmptyRecord();
 
-        PagesContext context = new PagesContext("useless", "useless", getLanguage(), getUserId());
-
         XmlSearchForm searchForm = (XmlSearchForm) extraTemplate.getSearchForm();
-        searchForm.update(items, data, context);
+        searchForm.update(items, data, extraFormContext);
 
         // xmlQuery is in the data object, store it into session
         xmlData = data;
@@ -850,11 +855,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentQuery(query);
     saveExtraRequest(items);
 
-    buildExtraQuery(queryDescription);
+    buildExtraQuery(queryDescription, items);
     return queryDescription;
   }
 
-  private void buildExtraQuery(QueryDescription query) {
+  private void buildExtraQuery(QueryDescription query, List<FileItem> items) {
     PublicationTemplateImpl extraTemplate = (PublicationTemplateImpl) getExtraTemplate();
     if (extraTemplate == null) {
       return;
@@ -864,18 +869,30 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     String templateName = templateFileName.substring(0, templateFileName.lastIndexOf("."));
     if (xmlData != null) {
       for (String fieldName : xmlData.getFieldNames()) {
-        try {
-          Field field = xmlData.getField(fieldName);
-          String fieldValue = field.getStringValue();
-          if (fieldValue != null && fieldValue.trim().length() > 0) {
-            String fieldQuery = fieldValue.trim().replaceAll("##", " AND ");
-            query.addFieldQuery(new FieldDescription(templateName + "$$" + fieldName, fieldQuery, getLanguage()));
-          }
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e);
-        }
+        FieldDescription fieldQuery = buildFieldDescription(fieldName, templateName, items);
+        query.addFieldQuery(fieldQuery);
       }
     }
+  }
+
+  private FieldDescription buildFieldDescription(String fieldName, String templateName,
+      List<FileItem> items) {
+    try {
+      Field field = xmlData.getField(fieldName);
+      String fieldValue = field.getStringValue();
+      if (fieldValue != null && fieldValue.trim().length() > 0) {
+        String fieldQuery = fieldValue.trim();
+        if (fieldValue.contains("##")) {
+          String operator = FileUploadUtil.getParameter(items,fieldName+"Operator");
+          getExtraFormContext().setSearchOperator(fieldName, operator);
+          fieldQuery = fieldQuery.replaceAll("##", " "+operator+" ");
+        }
+        return new FieldDescription(templateName + "$$" + fieldName, fieldQuery, getLanguage());
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+    return null;
   }
 
   public void clear() {

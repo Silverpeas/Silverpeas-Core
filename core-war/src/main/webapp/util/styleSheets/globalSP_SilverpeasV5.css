@@ -5574,7 +5574,7 @@ blockquote {
     cursor: move;
 }
 
-.forms .fields label {
+.forms .fields label, .forms .operators {
 	display: block;
 	padding: 0px 15px 7px 15px;
 	white-space: normal;
@@ -5677,6 +5677,13 @@ form .forms .fields > li:nth-child(even) {
 .forms .field-occurrence-hidden {
   display: none;
 }
+
+.forms .operators a.active {
+  background-color:#B5B5B5;
+  color:#FFF;
+  padding: 2px 3px;
+}
+
 /*******************************/
 /* Profil */
 /*******************************/

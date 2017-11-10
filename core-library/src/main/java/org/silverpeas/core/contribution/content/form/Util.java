@@ -181,4 +181,12 @@ public class Util {
   public static boolean isEmptyFieldsDisplayed() {
     return StringUtil.getBooleanValue(getSetting("form.view.emptyFields.displayed"));
   }
+
+  public static boolean isOperatorsChoiceEnabled() {
+    return StringUtil.getBooleanValue(getSetting("form.field.checkbox.operators.choice"));
+  }
+
+  public static String getDefaultOperator() {
+    return getSetting("form.field.checkbox.operator.default");
+  }
 }
