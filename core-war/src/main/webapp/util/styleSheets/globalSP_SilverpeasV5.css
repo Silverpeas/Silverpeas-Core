@@ -3954,14 +3954,6 @@ li.application  .applicationName {
   width: 100%;
 }
 
-#domainContent #domain-search .select-user-group-container a.user-panel-button {
-  margin-right: 0px;
-}
-
-#domainContent #domain-search .remove-button {
-  display: none;
-}
-
 #domainContent #domain-search label {
   vertical-align: middle;
   width: 260px;
@@ -4274,6 +4266,10 @@ input.search:focus {
 .select-user-group-container a.user-panel-button {
   right: 11%;
   margin-right: 24px;
+}
+
+.select-user-group-container a.user-panel-button.alone {
+  margin-right: 0;
 }
 
 .userPanel .listing_users, .userPanel .listing_groups  {

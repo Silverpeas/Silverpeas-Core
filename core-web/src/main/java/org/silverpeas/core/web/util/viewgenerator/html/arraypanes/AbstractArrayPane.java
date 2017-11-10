@@ -30,7 +30,6 @@ import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
-import javax.portlet.RenderRequest;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -40,7 +39,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
-import static org.silverpeas.core.web.portlets.PortletUtil.getHttpServletRequest;
 import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
     .INDEX_PARAMETER_NAME;
 
@@ -83,52 +81,7 @@ public class AbstractArrayPane implements ArrayPane {
   private String exportDataURL = null;
   private boolean sortableLines = false;
 
-  /**
-   * Gets order by from given request and possible orderBies.
-   * @param request the request.
-   * @param orderBiesByColumnIndex the possible order by indexed by the column index which starts
-   * at 1.
-   * @return the order by.
-   */
-  public static <O> O getOrderByFrom(RenderRequest request,
-      Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
-    final String name = request.getParameter(TARGET_PARAMETER_NAME);
-    final String action = request.getParameter(ACTION_PARAMETER_NAME);
-    final String column = request.getParameter(COLUMN_PARAMETER_NAME);
-    if (name == null || !"Sort".equals(action)) {
-      return null;
-    }
-    ArrayPaneStatusBean state =
-        (ArrayPaneStatusBean) getHttpServletRequest(request).getSession(false).getAttribute(name);
-    if (state == null) {
-      return null;
-    }
-    return getOrderByFrom(state, column, orderBiesByColumnIndex);
-  }
-
-  /**
-   * Gets order by from given request and possible orderBies.
-   * @param request the request.
-   * @param orderBiesByColumnIndex the possible order by indexed by the column index which starts
-   * at 1.
-   * @return the order by.
-   */
-  public static <O> O getOrderByFrom(HttpServletRequest request,
-      Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
-    final String name = request.getParameter(TARGET_PARAMETER_NAME);
-    final String action = request.getParameter(ACTION_PARAMETER_NAME);
-    final String column = request.getParameter(COLUMN_PARAMETER_NAME);
-    if (name == null || !"Sort".equals(action)) {
-      return null;
-    }
-    ArrayPaneStatusBean state = (ArrayPaneStatusBean) request.getSession(false).getAttribute(name);
-    if (state == null) {
-      return null;
-    }
-    return getOrderByFrom(state, column, orderBiesByColumnIndex);
-  }
-
-  private static <O> O getOrderByFrom(final ArrayPaneStatusBean state, final String column,
+  static <O> O getOrderByFrom(final ArrayPaneStatusBean state, final String column,
       final Map<Integer, Pair<O, O>> orderBiesByColumnIndex) {
     O result = null;
     int columnIndex = StringUtil.isInteger(column) ? Integer.parseInt(column) : 0;

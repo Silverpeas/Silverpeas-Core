@@ -28,7 +28,6 @@ import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.PaginationList;
 import org.silverpeas.core.util.SilverpeasList;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 import javax.portlet.RenderRequest;
@@ -54,17 +53,8 @@ public interface Pagination extends SimpleGraphicElement {
   static PaginationPage getPaginationPageFrom(HttpServletRequest request, PaginationPage currentPagination) {
     final String pageSizeAsString = request.getParameter(ITEMS_PER_PAGE_PARAM);
     final String itemIndexAsString = request.getParameter(INDEX_PARAMETER_NAME);
-    PaginationPage pagination =
-        currentPagination != null ? currentPagination : PaginationPage.DEFAULT;
-    int pageNumber = pagination.getPageNumber();
-    int pageSize = pagination.getPageSize();
-    if (StringUtil.isInteger(pageSizeAsString)) {
-      pageSize = Integer.valueOf(pageSizeAsString);
-    }
-    if (StringUtil.isInteger(itemIndexAsString)) {
-      pageNumber = (Integer.valueOf(itemIndexAsString) / pageSize) + 1;
-    }
-    return new PaginationPage(pageNumber, pageSize);
+    return AbstractPagination
+        .getPaginationPageFrom(pageSizeAsString, itemIndexAsString, currentPagination);
   }
 
   /**
@@ -78,17 +68,8 @@ public interface Pagination extends SimpleGraphicElement {
       PaginationPage currentPagination) {
     final String pageSizeAsString = request.getParameter(ITEMS_PER_PAGE_PARAM);
     final String itemIndexAsString = request.getParameter(INDEX_PARAMETER_NAME);
-    PaginationPage pagination =
-        currentPagination != null ? currentPagination : PaginationPage.DEFAULT;
-    int pageNumber = pagination.getPageNumber();
-    int pageSize = pagination.getPageSize();
-    if (StringUtil.isInteger(pageSizeAsString)) {
-      pageSize = Integer.valueOf(pageSizeAsString);
-    }
-    if (StringUtil.isInteger(itemIndexAsString)) {
-      pageNumber = (Integer.valueOf(itemIndexAsString) / pageSize) + 1;
-    }
-    return new PaginationPage(pageNumber, pageSize);
+    return AbstractPagination
+        .getPaginationPageFrom(pageSizeAsString, itemIndexAsString, currentPagination);
   }
 
   /**
