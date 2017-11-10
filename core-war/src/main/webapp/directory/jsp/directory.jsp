@@ -85,8 +85,10 @@
 
     function isTermOK(term) {
       var firstCharacter = term.substring(0, 1);
+      var lastChar = term.substring(term.length-1, term.length);
       // Lucene cannot parse a query starting with '*' or '?'. This characters are not allowed as first character in WildcardQuery.
-      return (firstCharacter != "*" && firstCharacter != "?");
+      // Lucene cannot parse a query ending with '!'. This characters are not allowed as last character in WildcardQuery.
+      return firstCharacter != "*" && firstCharacter != "?" && lastChar != "!";
     }
 
     function search() {
