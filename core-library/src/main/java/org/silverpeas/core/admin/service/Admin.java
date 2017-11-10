@@ -836,8 +836,7 @@ class Admin implements Administration {
       }
       cache.opUpdateComponent(componentInst);
       ComponentInstLight component = getComponentInstLight(componentId);
-      TreeCache.addComponent(getDriverComponentId(componentId), component,
-          getDriverSpaceId(component.getDomainFatherId()));
+      TreeCache.addComponent(component, getDriverSpaceId(component.getDomainFatherId()));
       createComponentIndex(component);
     } catch (Exception e) {
       throw new AdminException(failureOnRestoring("component", componentId));
@@ -925,8 +924,7 @@ class Admin implements Administration {
       cache.opAddComponent(componentInst);
 
       ComponentInstLight component = getComponentInstLight(componentId);
-      TreeCache.addComponent(component.getLocalId(), component,
-          getDriverSpaceId(spaceInstFather.getId()));
+      TreeCache.addComponent(component, getDriverSpaceId(spaceInstFather.getId()));
 
       // indexation du composant
       createComponentIndex(component);
@@ -1051,8 +1049,7 @@ class Admin implements Administration {
     try {
       ComponentInst oldComponent = getComponentInst(component.getId());
       String componentClientId = getClientComponentId(oldComponent);
-      // Convert the client space Id in driver space Id
-      int sDriverComponentId = getDriverComponentId(component.getId());
+
       // Update the components in tables
       componentManager.updateComponentInst(oldComponent, component);
 
@@ -1061,9 +1058,10 @@ class Admin implements Administration {
           isInheritanceBlocked())) {
         updateComponentInheritance(oldComponent, component.isInheritanceBlocked());
       }
+
       cache.opUpdateComponent(component);
-      TreeCache.getComponent(componentClientId).setInheritanceBlocked(component.
-          isInheritanceBlocked());
+      TreeCache.updateComponent(getComponentInstLight(component.getId()));
+
       // indexation du composant
       createComponentIndex(componentClientId);
 
@@ -2764,8 +2762,7 @@ class Admin implements Administration {
     }
   }
 
-  private String[] getUserSubSpaceIds(List<String> componentIds, String spaceId)
-      throws AdminException {
+  private String[] getUserSubSpaceIds(List<String> componentIds, String spaceId) {
     List<String> result = new ArrayList<String>();
     // getting all subspaces
     List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
@@ -2783,7 +2780,7 @@ class Admin implements Administration {
     return isSpaceAvailable(componentIds, spaceId);
   }
 
-  private boolean isSpaceAvailable(List<String> componentIds, String spaceId) throws AdminException {
+  private boolean isSpaceAvailable(List<String> componentIds, String spaceId) {
     return isSpaceContainsOneComponent(componentIds, getDriverSpaceId(spaceId), true);
   }
 

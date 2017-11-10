@@ -35,6 +35,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.silverpeas.core.admin.persistence.ComponentInstanceRow;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -77,20 +78,29 @@ public class ComponentDAO {
   /**
    * Fetch the current instance row from a resultSet.
    */
-  private static ComponentInstLight fetchComponentInstance(ResultSet rs)
-      throws SQLException {
+  private static ComponentInstLight fetchComponentInstance(ResultSet rs) throws SQLException {
 
-    ComponentInstLight i = new ComponentInstLight();
+    ComponentInstanceRow row = new ComponentInstanceRow();
 
-    String name = rs.getString(4);
+    row.id = rs.getInt("id");
+    row.spaceId = rs.getInt("spaceId");
+    row.name = rs.getString("name");
+    row.componentName = rs.getString("componentName");
+    row.description = rs.getString("description");
+    row.inheritanceBlocked = rs.getInt("isInheritanceBlocked");
+    row.hidden = rs.getInt("isHidden");
+    row.createdBy = rs.getInt("createdBy");
+    row.orderNum = rs.getInt("orderNum");
+    row.createTime = rs.getString("createTime");
+    row.updateTime = rs.getString("updateTime");
+    row.removeTime = rs.getString("removeTime");
+    row.status = rs.getString("componentStatus");
+    row.updatedBy = rs.getInt("updatedBy");
+    row.removedBy = rs.getInt("removedBy");
+    row.publicAccess = rs.getInt("isPublic");
+    row.lang = rs.getString("lang");
 
-    i.setLocalId(rs.getInt(1));
-    i.setDomainFatherId(Integer.toString(rs.getInt(2)));
-    i.setLabel(rs.getString(3));
-    i.setName(name);
-    i.setInheritanceBlocked(rs.getInt("isInheritanceBlocked") == 1);
-
-    return i;
+    return new ComponentInstLight(row);
   }
 
   static final private String queryAllSpaceInstances = "select " + INSTANCE_COLUMNS
