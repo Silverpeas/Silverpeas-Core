@@ -59,9 +59,6 @@ public class ServerMessageBean
   @Column(length = 1)
   private Character type;
 
-  public ServerMessageBean() {
-  }
-
   public long getUserId() {
     return userId;
   }
@@ -111,11 +108,7 @@ public class ServerMessageBean
     if (body != null ? !body.equals(bean.body) : bean.body != null) {
       return false;
     }
-    if (sessionId != null ? !sessionId.equals(bean.sessionId) : bean.sessionId != null) {
-      return false;
-    }
-
-    return true;
+    return sessionId != null ? sessionId.equals(bean.sessionId) : bean.sessionId == null;
   }
 
   @Override

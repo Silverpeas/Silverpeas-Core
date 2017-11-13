@@ -69,13 +69,14 @@ import static org.silverpeas.core.i18n.I18NHelper.defaultLanguage;
 public class SimpleDocument implements Serializable {
 
   private static final long serialVersionUID = 8778738762037114180L;
-  private final static SettingBundle settings =
+  private static final SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
   public static final String WEBDAV_FOLDER = "webdav";
-  public final static String ATTACHMENT_PREFIX = "attach_";
-  public final static String VERSION_PREFIX = "version_";
-  public final static String FILE_PREFIX = "file_";
-  public final static String DOCUMENT_PREFIX = "simpledoc_";
+  public static final String ATTACHMENT_PREFIX = "attach_";
+  public static final String VERSION_PREFIX = "version_";
+  public static final String FILE_PREFIX = "file_";
+  public static final String DOCUMENT_PREFIX = "simpledoc_";
+  private static final int CAPACITY = 500;
   private String repositoryPath;
   private SimpleDocument versionMaster = this;
   private int versionIndex = 0;
@@ -98,32 +99,6 @@ public class SimpleDocument implements Serializable {
   private String comment;
   private DocumentType documentType = DocumentType.attachment;
   private Set<SilverpeasRole> forbiddenDownloadForRoles = null;
-
-  public void setDocumentType(DocumentType documentType) {
-    this.documentType = documentType;
-  }
-
-  public DocumentType getDocumentType() {
-    return documentType;
-  }
-
-  /**
-   * Get the value of cloneId
-   *
-   * @return the value of cloneId
-   */
-  public String getCloneId() {
-    return cloneId;
-  }
-
-  /**
-   * Set the value of cloneId
-   *
-   * @param cloneId new value of cloneId
-   */
-  public void setCloneId(String cloneId) {
-    this.cloneId = cloneId;
-  }
   private SimpleAttachment attachment;
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
@@ -203,6 +178,32 @@ public class SimpleDocument implements Serializable {
     this.documentType = simpleDocument.getDocumentType();
     this.forbiddenDownloadForRoles = simpleDocument.forbiddenDownloadForRoles;
     this.attachment = simpleDocument.getAttachment();
+  }
+
+  public void setDocumentType(DocumentType documentType) {
+    this.documentType = documentType;
+  }
+
+  public DocumentType getDocumentType() {
+    return documentType;
+  }
+
+  /**
+   * Get the value of cloneId
+   *
+   * @return the value of cloneId
+   */
+  public String getCloneId() {
+    return cloneId;
+  }
+
+  /**
+   * Set the value of cloneId
+   *
+   * @param cloneId new value of cloneId
+   */
+  public void setCloneId(String cloneId) {
+    this.cloneId = cloneId;
   }
 
   public String getFilename() {
@@ -438,11 +439,12 @@ public class SimpleDocument implements Serializable {
       Calendar calendar = Calendar.getInstance();
       DateUtil.addDaysExceptWeekEnds(calendar, nbDay);
       setExpiry(calendar.getTime());
-
+      final int maxDelay = 100;
+      final int minResult = 2;
       int delayReservedFile = settings.getInteger("DelayReservedFile", -1);
-      if ((delayReservedFile >= 0) && (delayReservedFile <= 100)) {
-        int result = (nbDay * delayReservedFile) / 100;
-        if (result > 2) {
+      if ((delayReservedFile >= 0) && (delayReservedFile <= maxDelay)) {
+        int result = (nbDay * delayReservedFile) / maxDelay;
+        if (result > minResult) {
           calendar = Calendar.getInstance();
           DateUtil.addDaysExceptWeekEnds(calendar, result);
           setAlert(calendar.getTime());
@@ -678,10 +680,7 @@ public class SimpleDocument implements Serializable {
     if (getMajorVersion() != other.getMajorVersion()) {
       return false;
     }
-    if (getVersionIndex() != other.getVersionIndex()) {
-      return false;
-    }
-    return true;
+    return getVersionIndex() == other.getVersionIndex();
   }
 
   /**
@@ -728,7 +727,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public String getWebdavUrl() {
-    StringBuilder url = new StringBuilder(500);
+    StringBuilder url = new StringBuilder(CAPACITY);
     String webAppContext = URLUtil.getApplicationURL();
     url.append(webAppContext);
     if (!webAppContext.endsWith("/")) {
@@ -744,7 +743,7 @@ public class SimpleDocument implements Serializable {
   }
 
   public String getWebdavJcrPath() {
-    StringBuilder jcrPath = new StringBuilder(500);
+    StringBuilder jcrPath = new StringBuilder(CAPACITY);
     jcrPath.append(WEBDAV_FOLDER).append('/').append(DocumentType.attachment.getFolderName()).append(
         '/').
         append(getVersionMaster().getInstanceId()).append('/');
@@ -756,18 +755,6 @@ public class SimpleDocument implements Serializable {
     }
     jcrPath.append(JcrDataConverter.escapeIllegalJcrChars(getVersionMaster().getFilename()));
     return jcrPath.toString();
-  }
-
-  /**
-   * Returns the attachment URL.
-   *
-   * @return the attachment URL.
-   * @deprecated use getAttachmentURL instead.
-   */
-  @Deprecated
-  public String getWebURL() {
-    return FileServerUtils
-        .getAttachmentURL(getPk().getInstanceId(), getFilename(), getPk().getId(), getLanguage());
   }
 
   /**

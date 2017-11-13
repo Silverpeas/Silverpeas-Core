@@ -136,11 +136,7 @@ public abstract class AbstractResourceEvent<T extends Serializable> implements R
     if (!transition.equals(that.transition)) {
       return false;
     }
-    if (type != that.type) {
-      return false;
-    }
-
-    return true;
+    return type == that.type;
   }
 
   @Override

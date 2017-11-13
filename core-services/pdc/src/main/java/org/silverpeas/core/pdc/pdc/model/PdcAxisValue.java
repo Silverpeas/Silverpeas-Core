@@ -62,6 +62,9 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
   @Transient
   private List<? extends TreeNode> treeNodeParents = null;
 
+  protected PdcAxisValue() {
+  }
+
   /**
    * Creates a value of a PdC's axis from the specified tree node. Currently, an axis of the PdC is
    * persited as an hierarchical tree in which each node is a value of the axis.
@@ -146,12 +149,12 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
     TreeNode node = getTreeNode();
     if (node.hasFather()) {
       int lastNodeIndex = treeNodeParents.size() - 1;
-      TreeNode treeNode = treeNodeParents.get(lastNodeIndex);
-      String valueId = treeNode.getPK().getId();
+      TreeNode aTreeNode = treeNodeParents.get(lastNodeIndex);
+      String valueId = aTreeNode.getPK().getId();
       String axisId = getAxisId();
       PdcAxisValue pdcAxisValue = new PdcAxisValue().setId(valueId + PdcAxisValuePk.COMPOSITE_SEPARATOR + axisId);
       parent =
-          pdcAxisValue.fromTreeNode(treeNode).inAxisId(getAxisId())
+          pdcAxisValue.fromTreeNode(aTreeNode).inAxisId(getAxisId())
               .withAsTreeNodeParents(treeNodeParents.subList(0, lastNodeIndex));
     }
     return parent;
@@ -223,9 +226,6 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
     return getTreeNode().getPath() + getValueId();
   }
 
-  protected PdcAxisValue() {
-  }
-
   /**
    * Gets the axis to which this value belongs to and that is used to classify contents on the PdC.
    * @return a PdC axis configured to be used in the classification of contents.
@@ -295,12 +295,9 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
             !this.getNativeId().getValueId().equals(other.getNativeId().getValueId()))) {
       return false;
     }
-    if (this.getNativeId().getAxisId() != other.getNativeId().getAxisId() &&
-        (this.getNativeId().getAxisId() == null ||
-            !this.getNativeId().getAxisId().equals(other.getNativeId().getAxisId()))) {
-      return false;
-    }
-    return true;
+    return this.getNativeId().getAxisId() == other.getNativeId().getAxisId() ||
+        (this.getNativeId().getAxisId() != null &&
+            !this.getNativeId().getAxisId().equals(other.getNativeId().getAxisId()));
   }
 
   @Override
@@ -325,7 +322,7 @@ public class PdcAxisValue extends BasicJpaEntity<PdcAxisValue, PdcAxisValuePk> {
    * @throws PdcException if an error occurs while transforming this value into a ClassifyValue
    * instance.
    */
-  public ClassifyValue toClassifyValue() throws PdcException {
+  public ClassifyValue toClassifyValue() {
     ClassifyValue value = new ClassifyValue(Integer.valueOf(getAxisId()), getValuePath() + "/");
     List<Value> fullPath = new ArrayList<>();
     for (TreeNode aTreeNode : getTreeNodeParents()) {

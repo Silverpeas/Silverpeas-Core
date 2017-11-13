@@ -129,9 +129,6 @@ public class UnlockContext {
     if ((this.comment == null) ? (other.comment != null) : !this.comment.equals(other.comment)) {
       return false;
     }
-    if ((this.lang == null) ? (other.lang != null) : !this.lang.equals(other.lang)) {
-      return false;
-    }
-    return true;
+    return this.lang == null ? other.lang == null : this.lang.equals(other.lang);
   }
 }

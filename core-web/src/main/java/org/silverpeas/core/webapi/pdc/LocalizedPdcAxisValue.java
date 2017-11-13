@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.webapi.pdc;
 
-import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
 import org.silverpeas.core.pdc.pdc.model.ClassifyValue;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.PdcAxisValue;
+
 import java.util.Set;
 
 /**
@@ -38,6 +38,11 @@ public class LocalizedPdcAxisValue extends PdcAxisValue implements LocalizedValu
   private static final long serialVersionUID = 3041692821847135712L;
   private final String language;
   private final PdcAxisValue decoratedValue;
+
+  private LocalizedPdcAxisValue(PdcAxisValue value, String forLanguage) {
+    this.decoratedValue = value;
+    this.language = forLanguage;
+  }
 
   public static LocalizedPdcAxisValue decorate(final PdcAxisValue value, String forLanguage) {
     return new LocalizedPdcAxisValue(value, forLanguage);
@@ -67,7 +72,7 @@ public class LocalizedPdcAxisValue extends PdcAxisValue implements LocalizedValu
   }
 
   @Override
-  public ClassifyValue toClassifyValue() throws PdcException {
+  public ClassifyValue toClassifyValue() {
     return decoratedValue.toClassifyValue();
   }
 
@@ -121,11 +126,6 @@ public class LocalizedPdcAxisValue extends PdcAxisValue implements LocalizedValu
     return decoratedValue.getAxisId();
   }
 
-  private LocalizedPdcAxisValue(PdcAxisValue value, String forLanguage) {
-    this.decoratedValue = value;
-    this.language = forLanguage;
-  }
-
   private String buildTruncatedPath(String[] splitedPath) {
     int nodeCount = splitedPath.length;
     return buildPathBetween(splitedPath, 0, NUMBER_OF_RENDERED_PATH_NODE_IN_TRUNCATION)
@@ -143,6 +143,7 @@ public class LocalizedPdcAxisValue extends PdcAxisValue implements LocalizedValu
     for (int i = startIndex; i < endIndex; i++) {
       path.append(splitedPath[i]).append(SEPARATOR_PATH);
     }
-    return path.substring(0, path.length() - 2);
+    final int separatorSize = 2;
+    return path.substring(0, path.length() - separatorSize);
   }
 }

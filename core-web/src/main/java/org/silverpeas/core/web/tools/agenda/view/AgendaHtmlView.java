@@ -34,7 +34,6 @@ import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
@@ -435,8 +434,8 @@ public class AgendaHtmlView {
     List<Schedulable> goOn;
 
     while (i < ENDHOUR) {
-      String hour = Schedulable.quaterCountToHourString(i * 4);
-      String nextHour = Schedulable.quaterCountToHourString(i * 4 + 4);
+      String hour = Schedulable.quarterCountToHourString(i * 4);
+      String nextHour = Schedulable.quarterCountToHourString(i * 4 + 4);
       Schedulable thisHour = new JournalHeader("", "");
 
       thisHour.setStartDate(day.getTime());
@@ -468,8 +467,8 @@ public class AgendaHtmlView {
         tmpThisHour.setStartDate(day.getTime());
         int countColumns;
         do {
-          String tmpHour = Schedulable.quaterCountToHourString((i + maxTime) * 4);
-          String tmpNextHour = Schedulable.quaterCountToHourString((i + maxTime + 1) * 4);
+          String tmpHour = Schedulable.quarterCountToHourString((i + maxTime) * 4);
+          String tmpNextHour = Schedulable.quarterCountToHourString((i + maxTime + 1) * 4);
           try {
             tmpThisHour.setStartHour(tmpHour);
             tmpThisHour.setEndHour(tmpNextHour);
@@ -539,8 +538,8 @@ public class AgendaHtmlView {
             tmpThisHour.setStartDate(day.getTime());
             do {
               length++;
-              String tmpHour = Schedulable.quaterCountToHourString((i + length) * 4);
-              String tmpNextHour = Schedulable.quaterCountToHourString((i
+              String tmpHour = Schedulable.quarterCountToHourString((i + length) * 4);
+              String tmpNextHour = Schedulable.quarterCountToHourString((i
                   + length + 1) * 4);
 
               try {
@@ -818,8 +817,8 @@ public class AgendaHtmlView {
       result.append(String.valueOf(i)).append("H");
       result.append("</span></td>");
       // }
-      String hour = Schedulable.quaterCountToHourString(i * 4);
-      String nextHour = Schedulable.quaterCountToHourString(i * 4 + 4);
+      String hour = Schedulable.quarterCountToHourString(i * 4);
+      String nextHour = Schedulable.quarterCountToHourString(i * 4 + 4);
 
       for (int j = 0; j < WEEKDAYNUMBER; j++) {
         Vector starting = new Vector();
@@ -904,8 +903,8 @@ public class AgendaHtmlView {
             }
           }
           maxRowSpan = ((maxRowSpan + 3) >> 2);
-          String nexts = Schedulable.quaterCountToHourString((i + maxRowSpan - 1) * 4);
-          String nexte = Schedulable.quaterCountToHourString((i + maxRowSpan) * 4);
+          String nexts = Schedulable.quarterCountToHourString((i + maxRowSpan - 1) * 4);
+          String nexte = Schedulable.quarterCountToHourString((i + maxRowSpan) * 4);
           Vector nextStarting = dayList[j].getStartingSchedules(nexts, nexte);
 
           if ((nextStarting.size() > 0) && (maxRowSpan > 1)) {

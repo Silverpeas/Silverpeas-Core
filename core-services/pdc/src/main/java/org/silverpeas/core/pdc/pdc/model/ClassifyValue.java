@@ -82,11 +82,8 @@ public class ClassifyValue extends org.silverpeas.core.pdc.classification.Value 
             getValue())) {
       return getAxisId() == other.getAxisId() && getValue().equals(other.getValue());
     }
-    if (this.fullPath != other.fullPath && (this.fullPath == null || !this.fullPath.equals(
-            other.fullPath))) {
-      return false;
-    }
-    return true;
+    return this.fullPath == other.fullPath ||
+        (this.fullPath != null && this.fullPath.equals(other.fullPath));
   }
 
   @Override

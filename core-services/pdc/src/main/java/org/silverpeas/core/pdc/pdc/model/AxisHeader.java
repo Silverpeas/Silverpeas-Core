@@ -225,10 +225,7 @@ public class AxisHeader extends AbstractI18NBean<AxisHeaderI18N> implements java
       return false;
     }
     final AxisHeader other = (AxisHeader) obj;
-    if (this.pk != other.pk && (this.pk == null || !this.pk.equals(other.pk))) {
-      return false;
-    }
-    return true;
+    return this.pk == other.pk || (this.pk != null && this.pk.equals(other.pk));
   }
 
   @Override

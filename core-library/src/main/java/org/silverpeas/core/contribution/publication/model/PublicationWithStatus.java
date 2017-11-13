@@ -81,10 +81,7 @@ public class PublicationWithStatus {
     } else if (!pub.equals(other.pub)) {
       return false;
     }
-    if (update != other.update) {
-      return false;
-    }
-    return true;
+    return update == other.update;
   }
 
 }

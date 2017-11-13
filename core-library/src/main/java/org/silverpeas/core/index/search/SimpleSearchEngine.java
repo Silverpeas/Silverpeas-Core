@@ -70,6 +70,12 @@ public class SimpleSearchEngine implements SearchEngine {
   private final String localServerName = pdcSettings.getString("server.name");
 
   /**
+   * Hide constructor.
+   */
+  private SimpleSearchEngine() {
+  }
+
+  /**
    * Search the index for the required documents.
    * @param query the search query.
    * @return the results.
@@ -80,7 +86,7 @@ public class SimpleSearchEngine implements SearchEngine {
       List<MatchingIndexEntry> results = Arrays.asList(indexSearcher.search(query));
       // filter results to checkout specific rights
       results = filterMatchingIndexEntries(results, query.getSearchingUser());
-      @SuppressWarnings("unchecked") Set<String> spellingWords = Collections.EMPTY_SET;
+      @SuppressWarnings("unchecked") Set<String> spellingWords = Collections.emptySet();
       if (enableWordSpelling && isSpellingNeeded(results)) {
         String[] suggestions = didYouMeanSearcher.suggest(query);
         if (suggestions != null && suggestions.length > 0) {
@@ -92,12 +98,6 @@ public class SimpleSearchEngine implements SearchEngine {
     } catch (IOException ioex) {
       throw new ParseException("SimpleSearchEngine.search", ioex);
     }
-  }
-
-  /**
-   * Hide constructor.
-   */
-  private SimpleSearchEngine() {
   }
 
   /**
@@ -232,10 +232,7 @@ public class SimpleSearchEngine implements SearchEngine {
   }
 
   private boolean isExternalComponent(String serverName) {
-    if (StringUtil.isDefined(localServerName) && !localServerName.equalsIgnoreCase(serverName)) {
-      return true;
-    }
-    return false;
+    return StringUtil.isDefined(localServerName) && !localServerName.equalsIgnoreCase(serverName);
   }
 
   private ComponentAuthorization getSecurityIntf()

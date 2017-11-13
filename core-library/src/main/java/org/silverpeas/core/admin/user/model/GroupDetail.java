@@ -246,10 +246,8 @@ public class GroupDetail implements Group {
     if ((this.rule == null) ? (other.rule != null) : !this.rule.equals(other.rule)) {
       return false;
     }
-    if (this.getNbUsers() != other.getNbUsers()) {
-      return false;
-    }
-    return true;
+
+    return this.getNbUsers() == other.getNbUsers();
   }
 
   @Override

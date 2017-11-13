@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
+import org.silverpeas.core.i18n.I18NHelper;
+
 import java.io.Serializable;
 import java.util.Date;
-
-import org.silverpeas.core.i18n.I18NHelper;
 
 /**
  *
@@ -231,11 +231,8 @@ public class SimpleAttachment implements Serializable {
         equals(other.updated))) {
       return false;
     }
-    if ((this.xmlFormId == null) ? (other.xmlFormId != null)
-        : !this.xmlFormId.equals(other.xmlFormId)) {
-      return false;
-    }
-    return true;
+    return this.xmlFormId == null ? other.xmlFormId == null :
+        this.xmlFormId.equals(other.xmlFormId);
   }
 
   @Override

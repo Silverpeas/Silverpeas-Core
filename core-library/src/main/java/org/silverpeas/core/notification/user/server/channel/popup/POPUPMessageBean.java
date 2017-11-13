@@ -64,8 +64,6 @@ public class POPUPMessageBean
   private String msgDate = null;
   @Column(length = 5)
   private String msgTime = null;
-  public POPUPMessageBean() {
-  }
 
   public long getUserId() {
     return userId;
@@ -195,11 +193,7 @@ public class POPUPMessageBean
     if (senderId != null ? !senderId.equals(that.senderId) : that.senderId != null) {
       return false;
     }
-    if (senderName != null ? !senderName.equals(that.senderName) : that.senderName != null) {
-      return false;
-    }
-
-    return true;
+    return senderName != null ? senderName.equals(that.senderName) : that.senderName == null;
   }
 
   @Override

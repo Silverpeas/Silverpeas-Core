@@ -309,11 +309,8 @@ public class Domain implements Serializable {
         .equals(other.theTimeStamp)) {
       return false;
     }
-    if ((this.silverpeasServerURL == null) ? (other.silverpeasServerURL != null)
-        : !this.silverpeasServerURL.equals(other.silverpeasServerURL)) {
-      return false;
-    }
-    return true;
+    return this.silverpeasServerURL == null ? other.silverpeasServerURL == null
+        : this.silverpeasServerURL.equals(other.silverpeasServerURL);
   }
 
   @Override

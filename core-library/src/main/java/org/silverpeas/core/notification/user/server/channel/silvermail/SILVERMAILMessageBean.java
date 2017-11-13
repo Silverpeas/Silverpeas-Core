@@ -194,11 +194,7 @@ public class SILVERMAILMessageBean
     if (subject != null ? !subject.equals(that.subject) : that.subject != null) {
       return false;
     }
-    if (url != null ? !url.equals(that.url) : that.url != null) {
-      return false;
-    }
-
-    return true;
+    return url != null ? url.equals(that.url) : that.url == null;
   }
 
   @Override

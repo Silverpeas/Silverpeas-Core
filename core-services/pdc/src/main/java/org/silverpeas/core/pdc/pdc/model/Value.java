@@ -77,8 +77,9 @@ public class Value extends TreeNode implements java.io.Serializable {
   }
 
   public String getFullPath() {
-    if (fullPath == null)
+    if (fullPath == null) {
       fullPath = getPath() + getValuePK().getId() + "/";
+    }
     return fullPath;
   }
 
@@ -106,19 +107,6 @@ public class Value extends TreeNode implements java.io.Serializable {
     return this.axisId;
   }
 
-  public String getStringFullPath(String delimitor) {
-    StringBuilder fullPath = new StringBuilder();
-    Value value;
-    for (int i = 0; i < pathValues.size(); i++) {
-      value = pathValues.get(i);
-      if (i != 0) {
-        fullPath.append(delimitor);
-      }
-      fullPath.append(value.getName());
-    }
-    return fullPath.toString();
-  }
-
   @Override
   public String toString() {
     return "(pk = " + getValuePK().toString() + ")";
@@ -136,10 +124,8 @@ public class Value extends TreeNode implements java.io.Serializable {
     if ((this.axisId == null) ? (other.axisId != null) : !this.axisId.equals(other.axisId)) {
       return false;
     }
-    if ((getFullPath() == null) ? (other.getFullPath() != null) : !getFullPath().equals(other.getFullPath())) {
-      return false;
-    }
-    return true;
+    return getFullPath() == null ? other.getFullPath() == null :
+        getFullPath().equals(other.getFullPath());
   }
 
   @Override

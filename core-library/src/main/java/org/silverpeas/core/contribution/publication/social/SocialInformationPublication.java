@@ -93,12 +93,8 @@ public class SocialInformationPublication extends AbstractSocialInformation {
         getTitle())) {
       return false;
     }
-    if ((this.getDescription() == null) ? (other.getDescription() != null) : !this.getDescription()
-        .
-        equals(other.getDescription())) {
-      return false;
-    }
-    return true;
+    return this.getDescription() == null ? other.getDescription() == null :
+        this.getDescription().equals(other.getDescription());
   }
 
   @Override

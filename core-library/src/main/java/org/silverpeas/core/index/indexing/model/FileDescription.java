@@ -38,6 +38,14 @@ public class FileDescription implements Serializable {
   private static final long serialVersionUID = 6095740867318623417L;
 
   /**
+   * All the attributes are private and final.
+   */
+  private final String path;
+  private final String encoding;
+  private final String format;
+  private final String lang;
+
+  /**
    * Set the new FileDescription with the given path, encoding, format and language. The path must
    * not be null.
    *
@@ -84,13 +92,6 @@ public class FileDescription implements Serializable {
   public String getLang() {
     return lang;
   }
-  /**
-   * All the attributes are private and final.
-   */
-  private final String path;
-  private final String encoding;
-  private final String format;
-  private final String lang;
 
   @Override
   public boolean equals(final Object o) {
@@ -109,11 +110,7 @@ public class FileDescription implements Serializable {
     if (lang != null ? !lang.equals(that.lang) : that.lang != null) {
       return false;
     }
-    if (!path.equals(that.path)) {
-      return false;
-    }
-
-    return true;
+    return path.equals(that.path);
   }
 
   @Override

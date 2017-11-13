@@ -23,23 +23,22 @@
  */
 package org.silverpeas.core.webapi.sharing;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.sharing.model.DownloadDetail;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.model.TicketFactory;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.webapi.base.WebEntity;
+
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlElement;
 import java.net.URI;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlElement;
-
-import org.silverpeas.core.sharing.model.DownloadDetail;
-import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.sharing.model.TicketFactory;
-import org.silverpeas.core.webapi.base.WebEntity;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.DateUtil;
 
 public class TicketEntity implements WebEntity {
 
@@ -100,11 +99,6 @@ public class TicketEntity implements WebEntity {
   @XmlElement(defaultValue="")
   protected String additionalMessage;
 
-
-  public static TicketEntity fromTicket(final Ticket ticket, URI uri) {
-    return new TicketEntity(ticket, uri);
-  }
-
   /**
    * Default constructor
    */
@@ -131,21 +125,26 @@ public class TicketEntity implements WebEntity {
     this.updaterId = ticket.getLastModifier();
   }
 
+
+  public static TicketEntity fromTicket(final Ticket ticket, URI uri) {
+    return new TicketEntity(ticket, uri);
+  }
+
   public Ticket toTicket(UserDetail user) throws ParseException {
     Ticket ticket;
-    Long sharedObjectId = this.sharedObjectId;
+    Long theSharedObjectId = this.sharedObjectId;
     if ("1".equals(this.validity)) {
-      Date endDate =
+      Date theEndDate =
           DateUtil.getEndOfDay(DateUtil.stringToDate(this.endDateStr, this.endDateFormat));
       int maxAccessNb = this.nbAccessMax;
 
       ticket =
-          TicketFactory.aTicket(sharedObjectId.intValue(), this.componentId, user.getId(),
-              new Date(), endDate, maxAccessNb, this.sharedObjectType);
+          TicketFactory.aTicket(theSharedObjectId.intValue(), this.componentId, user.getId(),
+              new Date(), theEndDate, maxAccessNb, this.sharedObjectType);
 
     } else {
       ticket =
-          TicketFactory.continuousTicket(sharedObjectId.intValue(), componentId, user.getId(),
+          TicketFactory.continuousTicket(theSharedObjectId.intValue(), componentId, user.getId(),
               new Date(), this.sharedObjectType);
 
     }
@@ -470,10 +469,7 @@ public class TicketEntity implements WebEntity {
       return false;
     }
     final TicketEntity other = (TicketEntity) obj;
-    if (this.token != other.token && (this.token == null || !this.token.equals(other.token))) {
-      return false;
-    }
-    return true;
+    return this.token == other.token || (this.token != null && this.token.equals(other.token));
   }
 
   @Override

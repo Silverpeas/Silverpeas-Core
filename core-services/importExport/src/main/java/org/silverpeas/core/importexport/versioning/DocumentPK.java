@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.importexport.versioning;
 
-import java.io.Serializable;
-
 import org.silverpeas.core.WAPrimaryKey;
+
+import java.io.Serializable;
 
 /**
  * This object contains the info about PrimaryKey of document
@@ -88,7 +88,8 @@ public class DocumentPK extends WAPrimaryKey implements Serializable {
 
   @Override
   public String toString() {
-    StringBuilder builder = new StringBuilder(200);
+    final int capacity = 200;
+    StringBuilder builder = new StringBuilder(capacity);
     builder.append("(id = ").append(getId()).append(", space = ").append(getSpace());
     builder.append(", componentName = ").append(getComponentName()).append(")");
     return builder.toString();
@@ -110,10 +111,7 @@ public class DocumentPK extends WAPrimaryKey implements Serializable {
     if (id != null ? !id.equals(that.id) : that.id != null) {
       return false;
     }
-    if (space != null ? !space.equals(that.space) : that.space != null) {
-      return false;
-    }
-    return true;
+    return space != null ? space.equals(that.space) : that.space == null;
   }
 
   @Override

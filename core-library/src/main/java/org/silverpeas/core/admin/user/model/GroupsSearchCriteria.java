@@ -247,7 +247,8 @@ public class GroupsSearchCriteria implements SearchCriteria {
   public String getCriterionOnDomainId() {
      String[] domainIds = (String[]) criteria.get(DOMAIN_IDS);
      if (domainIds != null) {
-       if (domainIds.length == 2) {
+       final int domainCount = 2;
+       if (domainIds.length == domainCount) {
          return domainIds[1];
        } else if (!domainIds[0].equals(Domain.MIXED_DOMAIN_ID)) {
          return domainIds[0];
@@ -298,11 +299,8 @@ public class GroupsSearchCriteria implements SearchCriteria {
       return false;
     }
     final GroupsSearchCriteria other = (GroupsSearchCriteria) obj;
-    if (this.criteria != other.criteria
-            && (this.criteria == null || !this.criteria.equals(other.criteria))) {
-      return false;
-    }
-    return true;
+    return this.criteria == other.criteria ||
+        (this.criteria != null && this.criteria.equals(other.criteria));
   }
 
   @Override

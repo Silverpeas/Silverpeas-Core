@@ -151,11 +151,7 @@ public class PdcImportExport {
     if (axis.getMandatory() == 1) {
       // l'utilisation de cet axe est obligatoire
       // Est ce qu'il y a une valeur sur cet axe
-      String valueId = position.getValueOnAxis(axis.getAxisId());
-      if (valueId == null) {
-        return false;
-      }
-      return true;
+      return position.getValueOnAxis(axis.getAxisId()) != null;
     }
     // le classement sur cet axe est facultatif
     return true;
@@ -179,6 +175,7 @@ public class PdcImportExport {
         }
       }
     } catch (Exception e) {
+      SilverLogger.getLogger(this).silent(e);
       return false;
     }
     return true;
@@ -186,8 +183,7 @@ public class PdcImportExport {
 
   private String extractLeaf(String path) {
     path = path.substring(0, path.length() - 1);
-    String leaf = path.substring(path.lastIndexOf("/") + 1);
-    return leaf;
+    return path.substring(path.lastIndexOf("/") + 1);
   }
 
   /**
@@ -257,7 +253,8 @@ public class PdcImportExport {
     // Récupération des ids des valeurs filles directes du value père
     List<String> listValueId =
         getPdcManager().getDaughterValues(Integer.toString(axisId), fatherValueId);
-    if (listValueId != null) {// L'exception oject non trouvé n'est pas gérée
+    if (listValueId != null) {
+      // L'exception oject non trouvé n'est pas gérée
       // dans la méthode DAO!!!
       for (String valueId : listValueId) {
         // Récupération de l'objet value et remplissage de l'objet de mapping

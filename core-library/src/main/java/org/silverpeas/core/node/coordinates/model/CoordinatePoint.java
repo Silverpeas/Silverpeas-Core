@@ -266,10 +266,7 @@ public class CoordinatePoint implements Serializable {
     if (this.displayOrder != other.displayOrder) {
       return false;
     }
-    if ((this.path == null) ? (other.path != null) : !this.path.equals(other.path)) {
-      return false;
-    }
-    return true;
+    return this.path == null ? other.path == null : this.path.equals(other.path);
   }
 
 }

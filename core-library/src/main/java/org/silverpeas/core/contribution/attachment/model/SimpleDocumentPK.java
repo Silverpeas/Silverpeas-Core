@@ -36,15 +36,6 @@ public class SimpleDocumentPK extends WAPrimaryKey {
   private static final long serialVersionUID = 5609285040251527744L;
   private long oldSilverpeasId = -1L;
 
-  public long getOldSilverpeasId() {
-    return oldSilverpeasId;
-  }
-
-  public SimpleDocumentPK setOldSilverpeasId(long oldSilverpeasId) {
-    this.oldSilverpeasId = oldSilverpeasId;
-    return this;
-  }
-
   public SimpleDocumentPK(String id) {
     super(id);
     componentName = "";
@@ -67,6 +58,15 @@ public class SimpleDocumentPK extends WAPrimaryKey {
     }
   }
 
+  public long getOldSilverpeasId() {
+    return oldSilverpeasId;
+  }
+
+  public SimpleDocumentPK setOldSilverpeasId(long oldSilverpeasId) {
+    this.oldSilverpeasId = oldSilverpeasId;
+    return this;
+  }
+
   @Override
   public boolean equals(Object obj) {
     if (obj == null) {
@@ -79,11 +79,8 @@ public class SimpleDocumentPK extends WAPrimaryKey {
     if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
       return false;
     }
-    if ((this.componentName == null) ? (other.componentName != null)
-        : !this.componentName.equals(other.componentName)) {
-      return false;
-    }
-    return true;
+    return this.componentName == null ? other.componentName == null :
+        this.componentName.equals(other.componentName);
   }
 
   @Override
@@ -97,7 +94,8 @@ public class SimpleDocumentPK extends WAPrimaryKey {
 
   @Override
   public String toString() {
-    StringBuilder buffer = new StringBuilder(100);
+    final int capacity = 100;
+    StringBuilder buffer = new StringBuilder(capacity);
     buffer.append("SimpleDocumentPK{id = ").append(getId()).append(", componentName = ").
         append(getComponentName()).append(", oldSilverpeasId=").append(oldSilverpeasId).append('}');
     return buffer.toString();

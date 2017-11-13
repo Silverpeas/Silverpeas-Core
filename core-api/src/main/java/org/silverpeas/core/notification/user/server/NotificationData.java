@@ -58,12 +58,6 @@ public class NotificationData implements Serializable {
   private String mReportToLogStatus;
 
   /**
-   * Constructor declaration
-   */
-  public NotificationData() {
-  }
-
-  /**
    * @return mNotificationId
    */
   public long getNotificationId() {
@@ -327,11 +321,7 @@ public class NotificationData implements Serializable {
     if (!Objects.equals(mTargetParam, that.mTargetParam)) {
       return false;
     }
-    if (!Objects.equals(mTargetReceipt, that.mTargetReceipt)) {
-      return false;
-    }
-
-    return true;
+    return Objects.equals(mTargetReceipt, that.mTargetReceipt);
   }
 
   @Override

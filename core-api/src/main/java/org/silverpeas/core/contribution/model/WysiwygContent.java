@@ -179,11 +179,7 @@ public class WysiwygContent implements ContributionContent<String> {
     if (!contribution.getContributionId().equals(content.contribution.getContributionId())) {
       return false;
     }
-    if (text != null ? !text.equals(content.text) : content.text != null) {
-      return false;
-    }
-
-    return true;
+    return text != null ? text.equals(content.text) : content.text == null;
   }
 
   @Override

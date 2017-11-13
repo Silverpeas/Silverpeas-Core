@@ -1360,10 +1360,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
         !previousState.getRecurrence().sameAs(this.getRecurrence())) {
       return true;
     }
-    if (this.isRecurrent() && !this.getRecurrence().sameAs(previousState.getRecurrence())) {
-      return true;
-    }
-    return false;
+    return this.isRecurrent() && !this.getRecurrence().sameAs(previousState.getRecurrence());
   }
 
   private void applyToPersistedOccurrences(final CalendarEvent updatedEvent,
