@@ -32,6 +32,7 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.permalinks.model.VersionPermalink;
@@ -46,6 +47,8 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
+@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
+// TODO rework the integration tests execution by using an external remote wildfly
 public class VersionPermalinkRepositoryTest {
 
   private VersionPermalinkRepository manager;

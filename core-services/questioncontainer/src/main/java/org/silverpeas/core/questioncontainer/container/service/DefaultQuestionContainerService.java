@@ -54,6 +54,7 @@ import org.silverpeas.core.questioncontainer.score.dao.ScoreDAO;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 import org.silverpeas.core.questioncontainer.score.model.ScorePK;
 import org.silverpeas.core.questioncontainer.score.service.ScoreService;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -62,6 +63,7 @@ import javax.transaction.Transactional;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Connection;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -70,6 +72,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
@@ -855,15 +858,19 @@ public class DefaultQuestionContainerService
       indexEntry.setPreView(header.getDescription());
       indexEntry.setCreationDate(header.getCreationDate());
       indexEntry.setCreationUser(header.getCreatorId());
-      if (isNotDefined(header.getBeginDate())) {
-        indexEntry.setStartDate(NULL_BEGIN_DATE);
-      } else {
-        indexEntry.setStartDate(header.getBeginDate());
+      if (isDefined(header.getBeginDate())) {
+        try {
+          indexEntry.setStartDate(DateUtil.parse(header.getBeginDate()));
+        } catch (ParseException e) {
+          SilverLogger.getLogger(this).warn(e);
+        }
       }
-      if (isNotDefined(header.getEndDate())) {
-        indexEntry.setEndDate(NULL_END_DATE);
-      } else {
-        indexEntry.setEndDate(header.getEndDate());
+      if (isDefined(header.getEndDate())) {
+        try {
+          indexEntry.setEndDate(DateUtil.parse(header.getEndDate()));
+        } catch (ParseException e) {
+          SilverLogger.getLogger(this).warn(e);
+        }
       }
     }
     IndexEngineProxy.addIndexEntry(indexEntry);

@@ -443,8 +443,10 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(FullIndexEntry.class)) {
       addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers");
       addMavenDependencies("org.apache.lucene:lucene-core");
-      addMavenDependencies("org.apache.lucene:lucene-analyzers");
-      addMavenDependencies("org.apache.lucene:lucene-spellchecker");
+      addMavenDependencies("org.apache.lucene:lucene-queryparser");
+      addMavenDependencies("org.apache.lucene:lucene-suggest");
+      addMavenDependencies("org.apache.lucene:lucene-queries");
+      addMavenDependencies("org.apache.lucene:lucene-analyzers-common");
       addPackages(true, "org.silverpeas.core.index.indexing");
       addAsResource("org/silverpeas/index/indexing");
     }

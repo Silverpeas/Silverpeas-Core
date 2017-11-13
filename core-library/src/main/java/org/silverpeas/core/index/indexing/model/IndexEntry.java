@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -45,6 +46,14 @@ import java.util.Set;
 public class IndexEntry implements Serializable, Cloneable {
 
   private static final long serialVersionUID = -4817004188601716658L;
+
+  // The start date defaults to 00000000 so the document is visible as soon as published.
+  public static final String STARTDATE_DEFAULT = "00000000";
+
+  // The end date defaults to 99999999 so the document will be visible for ever.
+  public static final String ENDDATE_DEFAULT = "99999999";
+
+
   private IndexEntryKey pk;
   /**
    * The IndexEntry attributes are null by default. The title should been set in order to display
@@ -69,34 +78,6 @@ public class IndexEntry implements Serializable, Cloneable {
   private String filename = null;
   private List<String> paths = null;
   private boolean alias = false;
-
-  /**
-   * This constructor set the key part of the IndexEntry but leave empty the object type. This
-   * constructor can be used by any component which indexes only one kind of entities and then
-   * doesn't need to tag them with a type.
-   */
-  public IndexEntry(WAPrimaryKey key) {
-    this(new IndexEntryKey(key.componentName, "", key.id));
-  }
-
-  /**
-   * This constructor set the key part of the IndexEntry from WAPrimaryKey completed with a type
-   * given as a String. When the indexed document will be retrieved, this type will be used to
-   * distinguish the real type of the document between all the indexed document kind.
-   */
-  public IndexEntry(WAPrimaryKey key, String type) {
-    this(new IndexEntryKey(key.componentName, type, key.id));
-  }
-
-  /**
-   * The constructor only set the key part of the IndexEntry.
-   *
-   * @deprecated - parameter space is no more used
-   */
-  public IndexEntry(String space, String component, String objectType,
-          String objectId) {
-    this(new IndexEntryKey(space, component, objectType, objectId));
-  }
 
   public IndexEntry(String component, String objectType, String objectId) {
     this(new IndexEntryKey(component, objectType, objectId));
@@ -281,15 +262,8 @@ public class IndexEntry implements Serializable, Cloneable {
   /**
    * Set the creation time of the indexed document.
    */
-  public void setCreationDate(String creationDate) {
-    this.creationDate = creationDate;
-  }
-
-  /**
-   * Set the creation time of the indexed document.
-   */
   public void setCreationDate(Date creationDate) {
-    this.creationDate = DateUtil.date2SQLDate(creationDate);
+    this.creationDate = getDate(creationDate);
   }
 
   /**
@@ -297,7 +271,7 @@ public class IndexEntry implements Serializable, Cloneable {
    */
   public void setCreationDate(LocalDate creationDate) {
     Date date = Date.from(creationDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-    this.creationDate = DateUtil.date2SQLDate(date);
+    this.creationDate = getDate(date);
   }
 
   /**
@@ -307,7 +281,7 @@ public class IndexEntry implements Serializable, Cloneable {
     if (creationDate != null) {
       return creationDate;
     }
-    return DateUtil.date2SQLDate(new Date());
+    return getDate(new Date());
   }
 
   /**
@@ -332,13 +306,9 @@ public class IndexEntry implements Serializable, Cloneable {
   /**
    * Set the start date from which the document will be displayed.
    */
-  public void setStartDate(String startDate) {
-    this.startDate = startDate;
+  public void setStartDate(Date date) {
+    this.startDate = getDate(date);
   }
-  /**
-   * The start date defaults to 0000/00/00 so the document is visible as soon as published.
-   */
-  static public final String STARTDATE_DEFAULT = "0000/00/00";
 
   /**
    * Get the start date from which the document will be displayed. Returns 0000/00/00 if the start
@@ -351,16 +321,12 @@ public class IndexEntry implements Serializable, Cloneable {
       return STARTDATE_DEFAULT;
     }
   }
-  /**
-   * The end date defaults to 9999/99/99 so the document will be visible for ever.
-   */
-  static public final String ENDDATE_DEFAULT = "9999/99/99";
 
   /**
    * Set the end date until which the document will be displayed.
    */
-  public void setEndDate(String endDate) {
-    this.endDate = endDate;
+  public void setEndDate(Date date) {
+    this.endDate = getDate(date);
   }
 
   /**
@@ -462,12 +428,8 @@ public class IndexEntry implements Serializable, Cloneable {
     return lastModificationDate;
   }
 
-  public void setLastModificationDate(String lastModificationDate) {
-    this.lastModificationDate = lastModificationDate;
-  }
-
   public void setLastModificationDate(Date lastModificationDate) {
-    this.lastModificationDate = DateUtil.date2SQLDate(lastModificationDate);
+    this.lastModificationDate = getDate(lastModificationDate);
   }
 
   public String getLastModificationUser() {
@@ -529,9 +491,17 @@ public class IndexEntry implements Serializable, Cloneable {
     try {
       clone = (IndexEntry) super.clone();
     } catch (final CloneNotSupportedException e) {
+      SilverLogger.getLogger(this).error(e);
       clone = null;
     }
     return clone;
+  }
+
+  private String getDate(Date date) {
+    if (date == null) {
+      return null;
+    }
+    return DateUtil.formatAsLuceneDate(date);
   }
 
 }

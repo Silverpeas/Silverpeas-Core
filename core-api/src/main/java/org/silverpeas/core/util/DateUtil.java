@@ -70,6 +70,7 @@ public class DateUtil {
   public static final FastDateFormat ISO8601_FORMATTER;
   private static final DateTimeFormatter CUSTOM_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy/MM/dd");
+  public static final FastDateFormat LUCENE_FORMATTER;
 
   /**
    * Format and parse dates.
@@ -94,6 +95,7 @@ public class DateUtil {
         FastDateFormat.getInstance("yyyyMMdd'T'HHmmss'Z'", TimeZone.getTimeZone("UTC"));
     ISO8601_FORMATTER =
         FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("UTC"));
+    LUCENE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd");
   }
 
   /**
@@ -998,9 +1000,20 @@ public class DateUtil {
    */
   public static Calendar convert(Date curDate, String language) {
     Locale locale = getLocale(language);
-    Calendar cal = (locale != null ? getInstance(locale) : getInstance());
+    Calendar cal = locale != null ? getInstance(locale) : getInstance();
     cal.setTime(curDate);
     return cal;
+  }
+
+  public static String formatAsLuceneDate(Date date) {
+    return LUCENE_FORMATTER.format(date);
+  }
+
+  public static Date parseFromLucene(String date) throws ParseException {
+    if (date == null) {
+      return null;
+    }
+    return LUCENE_FORMATTER.parse(date);
   }
 
   private DateUtil() {

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.index.search.model;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 /**
  * Thrown by the searchEngine
@@ -32,25 +32,16 @@ public class SearchEngineException extends SilverpeasException {
 
   private static final long serialVersionUID = 5535107407790086662L;
 
-  /**
-   * Returns the module name (as known by SilverTrace).
-   */
-  public String getModule() {
-    return "searchEngine";
+
+  public SearchEngineException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  /**
-   * Set the caller and the error message
-   */
-  public SearchEngineException(String caller, String message) {
-    super(caller, SilverpeasException.ERROR, message);
+  public SearchEngineException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Set the caller, the error message and the nested exception.
-   */
-  public SearchEngineException(String caller, String message,
-      Exception nestedException) {
-    super(caller, SilverpeasException.ERROR, message, nestedException);
+  public SearchEngineException(final Throwable cause) {
+    super(cause);
   }
 }

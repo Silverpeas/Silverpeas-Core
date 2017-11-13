@@ -158,10 +158,10 @@ public class SimpleDocumentService
       indexEntry.setCreationDate(document.getCreated());
       indexEntry.setCreationUser(document.getCreatedBy());
       if (startOfVisibility != null) {
-        indexEntry.setStartDate(DateUtil.date2SQLDate(startOfVisibility));
+        indexEntry.setStartDate(startOfVisibility);
       }
       if (endOfVisibility != null) {
-        indexEntry.setEndDate(DateUtil.date2SQLDate(endOfVisibility));
+        indexEntry.setEndDate(endOfVisibility);
       }
 
       indexEntry.setTitle(document.getTitle(), language);

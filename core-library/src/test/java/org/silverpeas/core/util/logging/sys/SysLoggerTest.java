@@ -30,13 +30,11 @@ import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.Level;
-import org.silverpeas.core.util.logging.LoggerConfigurationManager;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import java.lang.reflect.Method;
+import java.util.logging.Logger;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -58,13 +56,11 @@ public class SysLoggerTest {
     SystemWrapper.get()
         .getenv()
         .put("SILVERPEAS_HOME", mavenTargetDirectory.getResourceTestDirFile().getPath());
-    // to clean up all the weaker references to the yet loaded loaders (to force to load them from
-    // their configuration)
-    System.gc();
   }
 
   @Test
   public void getALogger() {
+    Logger.getLogger(getClass().getSimpleName()).info("get a logger");
     SilverLogger logger = new SysLogger(LOGGER_NAMESPACE);
     assertThat(logger.getNamespace(), is(LOGGER_NAMESPACE));
     assertThat(logger.getLevel(), notNullValue());
@@ -73,8 +69,11 @@ public class SysLoggerTest {
 
   @Test
   public void changeLoggerLevel() {
-    SilverLogger logger = new SysLogger(LOGGER_NAMESPACE);
-    assertThat(logger.getNamespace(), is(LOGGER_NAMESPACE));
+    Logger.getLogger(getClass().getSimpleName()).info("change logger level");
+    final String namespace = LOGGER_NAMESPACE + ".change";
+    SilverLogger logger = new SysLogger(namespace);
+    assertThat(logger.getNamespace(), is(namespace));
+    assertThat(logger.getLevel(), not(Level.DEBUG));
     logger.setLevel(Level.DEBUG);
     assertThat(logger.getLevel(), is(Level.DEBUG));
   }

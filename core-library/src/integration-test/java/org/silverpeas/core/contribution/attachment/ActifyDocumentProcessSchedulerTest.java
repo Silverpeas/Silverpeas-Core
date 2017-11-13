@@ -23,6 +23,23 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
+import org.apache.commons.io.FileUtils;
+import org.jboss.arquillian.container.test.api.Deployment;
+import org.jboss.arquillian.junit.Arquillian;
+import org.jboss.shrinkwrap.api.Archive;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.contribution.attachment.mock.AttachmentServiceMockWrapper;
+import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.contribution.attachment.model.UnlockContext;
+import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.date.Date;
 import org.silverpeas.core.date.DateTime;
 import org.silverpeas.core.scheduler.Job;
@@ -30,24 +47,7 @@ import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.SchedulerProvider;
-import org.apache.commons.io.FileUtils;
-import org.jboss.arquillian.container.test.api.Deployment;
-import org.jboss.arquillian.junit.Arquillian;
-import org.jboss.shrinkwrap.api.Archive;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.silverpeas.core.contribution.attachment.mock.AttachmentServiceMockWrapper;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.model.UnlockContext;
-import org.silverpeas.core.contribution.attachment.repository.DocumentRepositoryIntegrationTest;
-import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.MimeTypes;
 
 import java.io.File;
@@ -67,6 +67,8 @@ import static org.mockito.Mockito.*;
  * @author mmoquillon
  */
 @RunWith(Arquillian.class)
+@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
+// TODO rework the integration tests execution by using an external remote wildfly
 public class ActifyDocumentProcessSchedulerTest {
 
   private AttachmentService attachmentService;

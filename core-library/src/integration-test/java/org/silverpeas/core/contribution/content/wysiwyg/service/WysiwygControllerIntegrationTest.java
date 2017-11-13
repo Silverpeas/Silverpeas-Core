@@ -28,6 +28,7 @@ import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -56,6 +57,8 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
+@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
+// TODO rework the integration tests execution by using an external remote wildfly
 public class WysiwygControllerIntegrationTest extends JcrIntegrationTest {
   
   private static final String USER_ID = "3";

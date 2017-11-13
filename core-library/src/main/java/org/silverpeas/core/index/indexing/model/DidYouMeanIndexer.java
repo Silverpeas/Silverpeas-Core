@@ -23,22 +23,14 @@
  */
 package org.silverpeas.core.index.indexing.model;
 
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import java.io.File;
-import java.io.IOException;
-
-import org.apache.commons.io.IOUtils;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.index.CorruptIndexException;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.IndexWriterConfig;
-import org.apache.lucene.search.spell.Dictionary;
-import org.apache.lucene.search.spell.LuceneDictionary;
 import org.apache.lucene.search.spell.SpellChecker;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.util.Version;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * This class allows to manage the specific index of "did you mean" functionality. <br>
@@ -50,7 +42,8 @@ public class DidYouMeanIndexer {
   /**
    * Suffix used to differentiate the standard index path's and the spelling index path's
    */
-  public final static String SUFFIX_SPELLING_INDEX_PATH = "Spell";
+  private static final String SUFFIX_SPELLING_INDEX_PATH = "Spell";
+  private static final String DEFAULT_LANGUAGE = "fr";
 
   /**
    * default constructor is private this class contains only static method
@@ -72,36 +65,10 @@ public class DidYouMeanIndexer {
     // stop the process if method parameters is null or empty
     if (!StringUtil.isDefined(field) || !StringUtil.isDefined(originalIndexDirectory) ||
         !StringUtil.isDefined(spellIndexDirectory)) {
-      SilverTrace.error("indexing", DidYouMeanIndexer.class.toString(), "root.EX_INVALID_ARG");
+      SilverLogger.getLogger(DidYouMeanIndexer.class)
+          .error("Invalid argument passed to create a spell index");
       return;
     }
-    // initializes local variable
-    IndexReader indexReader = null;
-
-    try {
-      // create a file object with given path
-      File file = new File(spellIndexDirectory);
-      // open original index
-      FSDirectory directory = FSDirectory.open(file);
-      indexReader = IndexReader.open(FSDirectory.open(new File(originalIndexDirectory)));
-      // create a Lucene dictionary with the original index
-      Dictionary dictionary = new LuceneDictionary(indexReader, field);
-      // index the dictionary into the spelling index
-      SpellChecker spellChecker = new SpellChecker(directory);
-      IndexWriterConfig config = new IndexWriterConfig(Version.LUCENE_36,
-              new StandardAnalyzer(Version.LUCENE_36));
-      spellChecker.indexDictionary(dictionary, config, true);
-      spellChecker.close();
-    } catch (CorruptIndexException e) {
-      SilverTrace.error("indexing", DidYouMeanIndexer.class.toString(),
-          "root.EX_INDEX_FAILED", e);
-    } catch (IOException e) {
-      SilverTrace.error("indexing", DidYouMeanIndexer.class.toString(),
-          "root.EX_LOAD_IO_EXCEPTION", e);
-    } finally {
-      IOUtils.closeQuietly(indexReader);
-    }
-
   }
 
   /**
@@ -132,7 +99,7 @@ public class DidYouMeanIndexer {
       File file = new File(pathSpellChecker);
       if (file != null && file.exists()) {
         // create a spellChecker with the file object
-        SpellChecker spell = new SpellChecker(FSDirectory.open(file));
+        SpellChecker spell = new SpellChecker(FSDirectory.open(file.toPath()));
         // if index exists, clears his content
         if (spell != null) {
           spell.clearIndex();
@@ -140,8 +107,7 @@ public class DidYouMeanIndexer {
         }
       }
     } catch (IOException e) {
-      SilverTrace.error("indexing", DidYouMeanIndexer.class.toString(),
-          "root.EX_LOAD_IO_EXCEPTION", e);
+      SilverLogger.getLogger(DidYouMeanIndexer.class).error(e);
     }
     return isCleared;
   }
@@ -171,11 +137,12 @@ public class DidYouMeanIndexer {
    * @param originalIndexDirectory represents the source index path
    */
   public static void createSpellIndexForAllLanguage(String field, String originalIndexDirectory) {
+    String localizedField = field;
     for (String language : I18NHelper.getAllSupportedLanguages()) {
-      if (!language.equalsIgnoreCase("fr")) {
-        field = field + "_" + language;
+      if (!language.equalsIgnoreCase(DEFAULT_LANGUAGE)) {
+        localizedField = localizedField + "_" + language;
       }
-      DidYouMeanIndexer.createSpellIndex(field, originalIndexDirectory,
+      DidYouMeanIndexer.createSpellIndex(localizedField, originalIndexDirectory,
           originalIndexDirectory + SUFFIX_SPELLING_INDEX_PATH);
     }
 

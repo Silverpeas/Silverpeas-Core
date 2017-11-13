@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
+import org.junit.Ignore;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FileUtils;
@@ -77,6 +78,8 @@ import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSys
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 
 @RunWith(Arquillian.class)
+@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
+// TODO rework the integration tests execution by using an external remote wildfly
 public class HistorisedDocumentRepositoryIntegrationTest extends JcrIntegrationTest {
 
   private static final String instanceId = "kmelia73";

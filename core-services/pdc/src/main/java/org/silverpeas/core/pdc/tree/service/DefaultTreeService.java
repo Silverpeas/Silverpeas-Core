@@ -36,12 +36,15 @@ import org.silverpeas.core.pdc.tree.model.TreeNodePersistence;
 import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -933,8 +936,11 @@ public class DefaultTreeService implements TreeService {
         indexEntry.setTitle(translation.getName(), language);
         indexEntry.setPreview(translation.getDescription(), language);
       }
-
-      indexEntry.setCreationDate(node.getCreationDate());
+      try {
+        indexEntry.setCreationDate(DateUtil.parse(node.getCreationDate()));
+      } catch (ParseException e) {
+        SilverLogger.getLogger(this).warn(e);
+      }
       indexEntry.setCreationUser(node.getCreatorId());
     }
     IndexEngineProxy.addIndexEntry(indexEntry);

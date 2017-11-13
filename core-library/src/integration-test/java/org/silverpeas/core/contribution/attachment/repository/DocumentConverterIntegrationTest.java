@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
+import org.junit.Ignore;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.commons.lang3.CharEncoding;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -52,6 +53,8 @@ import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSys
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 @RunWith(Arquillian.class)
+@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
+// TODO rework the integration tests execution by using an external remote wildfly
 public class DocumentConverterIntegrationTest extends JcrIntegrationTest {
 
   private static final String instanceId = "kmelia74";

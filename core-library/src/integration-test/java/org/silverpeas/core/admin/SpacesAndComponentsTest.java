@@ -94,8 +94,6 @@ public class SpacesAndComponentsTest {
         .addIndexEngineFeatures()
         .addSilverpeasUrlFeatures()
         .addAsResource("org/silverpeas/jobStartPagePeas/settings")
-        .addMavenDependencies("org.apache.lucene:lucene-core")
-        .addMavenDependencies("org.apache.lucene:lucene-analyzers")
         .addPackages(false, "org.silverpeas.core.admin.space.quota")
         .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.container")
         .addPackages(false, "org.silverpeas.core.contribution.contentcontainer.content")

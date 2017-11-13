@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
+import org.junit.Ignore;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
@@ -80,6 +81,8 @@ import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
  * @author ehugonnet
  */
 @RunWith(Arquillian.class)
+@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
+// TODO rework the integration tests execution by using an external remote wildfly
 public class AttachmentServiceIntegrationTest extends JcrIntegrationTest {
 
   private static final String instanceId = "kmelia974";

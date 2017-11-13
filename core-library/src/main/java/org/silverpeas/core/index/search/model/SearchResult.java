@@ -134,9 +134,9 @@ public class SearchResult extends AbstractI18NBean {
   }
 
   private LocalDate getLocalDate(String date) {
-    if (StringUtil.isDefined(date)) {
+    /*if (StringUtil.isDefined(date)) {
       return LocalDate.parse(date.replaceAll("/", "-"));
-    }
+    }*/
     return null;
   }
 

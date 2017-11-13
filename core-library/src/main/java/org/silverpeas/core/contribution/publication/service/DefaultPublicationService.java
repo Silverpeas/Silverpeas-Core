@@ -1332,7 +1332,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         updateIndexEntryWithWysiwygContent(indexEntry, publi);
         updateIndexEntryWithXMLFormContent(indexEntry, publi);
       }
-      AttachmentServiceProvider.getAttachmentService().updateIndexEntryWithDocuments(indexEntry);
     }
     return indexEntry;
   }
@@ -1386,10 +1385,10 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       indexEntry.setCreationDate(pubDetail.getCreationDate());
       indexEntry.setLastModificationDate(pubDetail.getUpdateDate());
       if (pubDetail.getBeginDate() != null) {
-        indexEntry.setStartDate(formatter.format(pubDetail.getBeginDate()));
+        indexEntry.setStartDate(pubDetail.getBeginDate());
       }
       if (pubDetail.getEndDate() != null) {
-        indexEntry.setEndDate(formatter.format(pubDetail.getEndDate()));
+        indexEntry.setEndDate(pubDetail.getEndDate());
       }
       indexEntry.setCreationUser(pubDetail.getCreatorId());
       indexEntry.setLastModificationUser(pubDetail.getUpdaterId());

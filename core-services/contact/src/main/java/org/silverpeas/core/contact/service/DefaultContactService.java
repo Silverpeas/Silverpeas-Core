@@ -487,7 +487,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
             "Contact", contact.getPK().getId());
         indexEntry.setTitle(contact.getFirstName() + " " + contact.getLastName());
         indexEntry.setLang(I18NHelper.defaultLanguage);
-        indexEntry.setCreationDate(formatter.format(contact.getCreationDate()));
+        indexEntry.setCreationDate(contact.getCreationDate());
         indexEntry.setCreationUser(contact.getCreatorId());
 
         if (contact instanceof CompleteContact) {
