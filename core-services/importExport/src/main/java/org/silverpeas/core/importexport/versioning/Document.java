@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.importexport.versioning;
 
-import java.util.List;
-
 import org.silverpeas.core.WAPrimaryKey;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.NONE)
@@ -51,9 +51,6 @@ public class Document implements java.io.Serializable, Cloneable {
   @XmlElementWrapper(name = "versions")
   @XmlElement(name = "version", namespace = "http://www.silverpeas.org/exchange")
   private List<DocumentVersion> versionsType;
-
-  public Document() {
-  }
 
   public DocumentPK getPk() {
     return pk;
@@ -111,7 +108,9 @@ public class Document implements java.io.Serializable, Cloneable {
     try {
       return super.clone();
     } catch (CloneNotSupportedException e) {
-      return null; // this should never happened
+      // this should never happened
+      SilverLogger.getLogger(this).silent(e);
+      return null;
     }
   }
 
@@ -149,11 +148,8 @@ public class Document implements java.io.Serializable, Cloneable {
     if (this.status != other.status) {
       return false;
     }
-    if ((this.instanceId == null) ? (other.instanceId != null) : !this.instanceId
-        .equals(other.instanceId)) {
-      return false;
-    }
-    return true;
+    return this.instanceId == null ? other.instanceId == null :
+        this.instanceId.equals(other.instanceId);
   }
 
   @Override

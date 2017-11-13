@@ -170,12 +170,8 @@ public class RelationShip implements Serializable {
     if (this.typeRelationShipId != other.typeRelationShipId) {
       return false;
     }
-    if (this.acceptanceDate != other.acceptanceDate &&
-        (this.acceptanceDate == null || !this.acceptanceDate.
-        equals(other.acceptanceDate))) {
-      return false;
-    }
-    return true;
+    return this.acceptanceDate == other.acceptanceDate ||
+        (this.acceptanceDate != null && this.acceptanceDate.equals(other.acceptanceDate));
   }
 
   @Override

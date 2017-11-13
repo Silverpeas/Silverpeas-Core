@@ -25,6 +25,7 @@ package org.silverpeas.web.portlets.portal;
 
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -45,15 +46,6 @@ public class PropertiesContext {
   private SettingBundle configProperties;
 
   /**
-   * Gets the properties context of the Silverpeas portal.
-   *
-   * @return a PropertiesContext instance.
-   */
-  public static PropertiesContext get() {
-    return context;
-  }
-
-  /**
    * Constructs a PropertiesContext. It loads all of the properties about the portal context.
    */
   protected PropertiesContext() {
@@ -72,30 +64,36 @@ public class PropertiesContext {
           defaultConfigBundle.close();
         } catch (IOException e) {
           // drop through
+          SilverLogger.getLogger(this).silent(e);
         }
       }
     }
     configProperties = properties;
   }
 
+  /**
+   * Gets the properties context of the Silverpeas portal.
+   *
+   * @return a PropertiesContext instance.
+   */
+  public static PropertiesContext get() {
+    return context;
+  }
+
   public boolean isPortletRenderModeParallel() {
     String value = configProperties.getString(PORTLET_RENDER_MODE_PARALLEL);
-    if ("true".equals(value)) {
-      return true;
-    }
-    return false;
+    return "true".equals(value);
   }
 
   public boolean enableAutodeploy() {
     String value = configProperties.getString(ENABLE_AUTODEPLOY);
-    if ("true".equals(value)) {
-      return true;
-    }
-    return false;
+    return "true".equals(value);
   }
 
   public long getAutodeployDirWatchInterval() {
     String value = configProperties.getString(AUTODEPLOY_DIR_WATCH_INTERVAL);
+    final long defaultWatchInterval = 5;
+    final long millisInSecond = 1000;
     long watchInterval;
     try {
       watchInterval = Long.parseLong(value);
@@ -103,8 +101,8 @@ public class PropertiesContext {
       watchInterval = -1;
     }
     if (watchInterval <= 0) {
-      watchInterval = 5;
+      watchInterval = defaultWatchInterval;
     }
-    return (watchInterval * 1000);
+    return (watchInterval * millisInSecond);
   }
 }

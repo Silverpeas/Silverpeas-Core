@@ -50,10 +50,7 @@ public class UserRecipient {
       return false;
     }
     final UserRecipient other = (UserRecipient) obj;
-    if ((this.userId == null) ? (other.userId != null) : !this.userId.equals(other.userId)) {
-      return false;
-    }
-    return true;
+    return this.userId == null ? other.userId == null : this.userId.equals(other.userId);
   }
 
   @Override

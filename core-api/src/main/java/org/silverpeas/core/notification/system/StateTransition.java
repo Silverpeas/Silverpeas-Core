@@ -44,22 +44,22 @@ public class StateTransition<T extends Serializable> implements Serializable {
    * Constructs a new instance representing a transition between the two specified states.
    * @param beforeTransition the state before the transition is occurred.
    * @param afterTransition the state after the transition is occurred.
-   * @param <T> the serializable type of the state.
-   * @return a new transition between two states of type T.
    */
-  public static <T extends Serializable> StateTransition<T> transitionBetween(T beforeTransition,
-      T afterTransition) {
-    return new StateTransition<>(beforeTransition, afterTransition);
+  public StateTransition(T beforeTransition, T afterTransition) {
+    this.before = beforeTransition;
+    this.after = afterTransition;
   }
 
   /**
    * Constructs a new instance representing a transition between the two specified states.
    * @param beforeTransition the state before the transition is occurred.
    * @param afterTransition the state after the transition is occurred.
+   * @param <T> the serializable type of the state.
+   * @return a new transition between two states of type T.
    */
-  public StateTransition(T beforeTransition, T afterTransition) {
-    this.before = beforeTransition;
-    this.after = afterTransition;
+  public static <T extends Serializable> StateTransition<T> transitionBetween(T beforeTransition,
+      T afterTransition) {
+    return new StateTransition<>(beforeTransition, afterTransition);
   }
 
   /**
@@ -92,11 +92,7 @@ public class StateTransition<T extends Serializable> implements Serializable {
     if (after != null ? !after.equals(that.after) : that.after != null) {
       return false;
     }
-    if (before != null ? !before.equals(that.before) : that.before != null) {
-      return false;
-    }
-
-    return true;
+    return before != null ? before.equals(that.before) : that.before == null;
   }
 
   @Override

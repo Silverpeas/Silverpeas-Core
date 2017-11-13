@@ -38,13 +38,11 @@ import org.silverpeas.core.exception.SilverpeasException;
 public class Jargon extends SilverpeasBean {
 
   private static final long serialVersionUID = 2926231339303196258L;
-  private int type; // 0=User, 1=Group
+  // 0=User, 1=Group
+  private int type;
   private long idVoca;
   private String idUser;
   private ThesaurusService thesaurus = ThesaurusService.getInstance();
-
-  public Jargon() {
-  }
 
   public String readUserName() {
     String userName = null;
@@ -89,10 +87,7 @@ public class Jargon extends SilverpeasBean {
     if (this.type != other.type) {
       return false;
     }
-    if ((this.idUser == null) ? (other.idUser != null) : !this.idUser.equals(other.idUser)) {
-      return false;
-    }
-    return true;
+    return this.idUser == null ? other.idUser == null : this.idUser.equals(other.idUser);
   }
 
   @Override

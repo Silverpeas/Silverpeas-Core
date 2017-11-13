@@ -145,9 +145,6 @@ public class Status {
     if (id != other.id) {
       return false;
     }
-    if (userId != other.userId) {
-      return false;
-    }
-    return true;
+    return userId == other.userId;
   }
 }

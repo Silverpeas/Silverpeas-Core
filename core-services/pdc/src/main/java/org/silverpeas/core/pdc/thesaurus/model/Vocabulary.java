@@ -36,9 +36,6 @@ public class Vocabulary extends SilverpeasBean implements Comparable<Vocabulary>
   private String name;
   private String description;
 
-  public Vocabulary() {
-  }
-
   public String getName() {
     return name;
   }
@@ -64,10 +61,7 @@ public class Vocabulary extends SilverpeasBean implements Comparable<Vocabulary>
       return false;
     }
     final Vocabulary other = (Vocabulary) obj;
-    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
-      return false;
-    }
-    return true;
+    return this.name == null ? other.name == null : this.name.equals(other.name);
   }
 
   @Override

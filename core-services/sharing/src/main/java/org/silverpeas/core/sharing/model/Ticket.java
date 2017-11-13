@@ -266,11 +266,8 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
       return false;
     }
     final Ticket other = (Ticket) obj;
-    if (this.getId() != other.getId() &&
-        (this.getId() == null || !this.getId().equals(other.getId()))) {
-      return false;
-    }
-    return true;
+    return this.getId() == other.getId() ||
+        (this.getId() != null && this.getId().equals(other.getId()));
   }
 
   @Override

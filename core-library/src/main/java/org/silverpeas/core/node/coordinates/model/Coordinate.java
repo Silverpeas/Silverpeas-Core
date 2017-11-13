@@ -124,11 +124,8 @@ public class Coordinate implements Serializable {
     if (this.coordinateId != other.coordinateId) {
       return false;
     }
-    if (this.coordinatePoints != other.coordinatePoints && (this.coordinatePoints == null
-        || !this.coordinatePoints.equals(other.coordinatePoints))) {
-      return false;
-    }
-    return true;
+    return this.coordinatePoints == other.coordinatePoints || (this.coordinatePoints != null
+        && this.coordinatePoints.equals(other.coordinatePoints));
   }
 
 }

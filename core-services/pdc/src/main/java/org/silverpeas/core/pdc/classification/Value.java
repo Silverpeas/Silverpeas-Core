@@ -68,9 +68,10 @@ public class Value implements java.io.Serializable {
 
   public void checkValue() throws ClassifyEngineException {
     // Check the axisId
-    if (this.getAxisId() < 0)
-      throw new ClassifyEngineException("Value.checkValue",
-          SilverpeasException.ERROR, "classifyEngine.EX_INCORRECT_AXISID_VALUE");
+    if (this.getAxisId() < 0) {
+      throw new ClassifyEngineException("Value.checkValue", SilverpeasException.ERROR,
+          "classifyEngine.EX_INCORRECT_AXISID_VALUE");
+    }
   }
 
   public void setPhysicalAxisId(int id) {
@@ -93,10 +94,7 @@ public class Value implements java.io.Serializable {
     if (this.nAxisId != other.nAxisId) {
       return false;
     }
-    if ((this.sValue == null) ? (other.sValue != null) : !this.sValue.equals(other.sValue)) {
-      return false;
-    }
-    return true;
+    return this.sValue == null ? other.sValue == null : this.sValue.equals(other.sValue);
   }
 
   @Override

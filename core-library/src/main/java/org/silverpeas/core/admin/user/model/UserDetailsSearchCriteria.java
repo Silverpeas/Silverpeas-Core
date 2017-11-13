@@ -313,11 +313,8 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
       return false;
     }
     final UserDetailsSearchCriteria other = (UserDetailsSearchCriteria) obj;
-    if (this.criteria != other.criteria
-            && (this.criteria == null || !this.criteria.equals(other.criteria))) {
-      return false;
-    }
-    return true;
+    return this.criteria == other.criteria ||
+        (this.criteria != null && this.criteria.equals(other.criteria));
   }
 
   @Override

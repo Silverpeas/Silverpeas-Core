@@ -64,10 +64,7 @@ public class GroupRecipient {
       return false;
     }
     final GroupRecipient other = (GroupRecipient) obj;
-    if ((this.groupId == null) ? (other.groupId != null) : !this.groupId.equals(other.groupId)) {
-      return false;
-    }
-    return true;
+    return this.groupId == null ? other.groupId == null : this.groupId.equals(other.groupId);
   }
 
   @Override

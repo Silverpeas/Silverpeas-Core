@@ -140,11 +140,7 @@ public abstract class AbstractSocialInformation implements SocialInformation {
     if ((this.url == null) ? (other.url != null) : !this.url.equals(other.url)) {
       return false;
     }
-    if (this.date != other.date && (this.date == null || !this.date.equals(other.date))) {
-      return false;
-    }
-
-    return true;
+    return this.date == other.date || (this.date != null && this.date.equals(other.date));
   }
 
   @Override
@@ -171,27 +167,27 @@ public abstract class AbstractSocialInformation implements SocialInformation {
     // First sorting on date (and not the time)
     int result = otherDate.getBeginOfDay().compareTo(myDate.getBeginOfDay());
     if (result == 0) {
-
-      // Then sorting on URL
-      result = getUrl().compareTo(socialInfo.getUrl());
-
-      if (result == 0) {
-
-        // Then put resource comments before the resource itself
-        boolean myIsComment = getType().contains("COMMENT");
-        boolean otherIsComment = socialInfo.getType().contains("COMMENT");
-        if ((!myIsComment && otherIsComment) || (myIsComment && !otherIsComment)) {
-          result = myIsComment ? -1 : 1;
-        }
-      }
+      result = compareByUrl(socialInfo);
     }
     if (result == 0) {
-
       // Then put update before the creation
       if (isUpdated() && !socialInfo.isUpdated()) {
         result = -1;
       } else if (!isUpdated() && socialInfo.isUpdated()) {
         result = 1;
+      }
+    }
+    return result;
+  }
+
+  protected int compareByUrl(final SocialInformation socialInfo) {
+    int result = getUrl().compareTo(socialInfo.getUrl());
+    if (result == 0) {
+      // Then put resource comments before the resource itself
+      boolean myIsComment = getType().contains("COMMENT");
+      boolean otherIsComment = socialInfo.getType().contains("COMMENT");
+      if ((!myIsComment && otherIsComment) || (myIsComment && !otherIsComment)) {
+        result = myIsComment ? -1 : 1;
       }
     }
     return result;

@@ -82,10 +82,7 @@ public class PdcAxisValuePk implements CompositeEntityIdentifier {
         (this.valueId == null || !this.valueId.equals(other.valueId))) {
       return false;
     }
-    if (this.axisId != other.axisId && (this.axisId == null || !this.axisId.equals(other.axisId))) {
-      return false;
-    }
-    return true;
+    return this.axisId == other.axisId || (this.axisId != null && this.axisId.equals(other.axisId));
   }
 
   @Override

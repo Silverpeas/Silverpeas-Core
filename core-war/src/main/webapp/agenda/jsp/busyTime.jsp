@@ -198,8 +198,8 @@ function gotoPrevious()
             JournalHeader hour = new JournalHeader("","");
             hour.setStartDate(agenda.getCurrentDay());
             while (h < endHour * 4 && !dayOff) {
-              hour.setStartHour(Schedulable.quaterCountToHourString(h));
-              hour.setEndHour(Schedulable.quaterCountToHourString(h+1));
+              hour.setStartHour(Schedulable.quarterCountToHourString(h));
+              hour.setEndHour(Schedulable.quarterCountToHourString(h+1));
               boolean isOver = false;
               Iterator b = busyTime.iterator();
               while (b.hasNext()) {
