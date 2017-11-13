@@ -28,7 +28,7 @@ import org.silverpeas.core.util.StringUtil;
 import javax.el.LambdaExpression;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
-import javax.servlet.jsp.tagext.Tag;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 /**
@@ -39,21 +39,13 @@ public class ArrayColumnTag extends BodyTagSupport {
 
   private static final long serialVersionUID = 1L;
   private String title;
-  private ArrayPane arrayPane;
   private Boolean sortable;
   private LambdaExpression compareOn;
   private String width;
 
   @Override
-  public void setParent(final Tag tag) {
-    if (tag instanceof ArrayPaneTag) {
-      arrayPane = ((ArrayPaneTag) tag).getArrayPane();
-    }
-    super.setParent(tag);
-  }
-
-  @Override
   public int doStartTag() throws JspException {
+    final ArrayPane arrayPane = getArrayPaneTag().getArrayPane();
     ArrayColumn column = arrayPane.addArrayColumn(title);
     new CompareOnConfigurator(this, column, compareOn).configure();
     if (StringUtil.isDefined(width)) {
@@ -82,6 +74,10 @@ public class ArrayColumnTag extends BodyTagSupport {
     this.width = width;
   }
 
+  private ArrayPaneTag getArrayPaneTag() {
+    return (ArrayPaneTag) findAncestorWithClass(this, ArrayPaneTag.class);
+  }
+
   /**
    * This class has been created in order to get a right context for the {@link Function} delivered
    * by the execution of {@link LambdaExpression} of {@link #compareOn} attribute.<br/>
@@ -105,7 +101,7 @@ public class ArrayColumnTag extends BodyTagSupport {
     void configure() {
       if (compareOn != null) {
         compareOn.setELContext(tag.pageContext.getELContext());
-        final Function function = compareOn::invoke;
+        final BiFunction function = compareOn::invoke;
         column.setCompareOn(function);
       } else if (tag.sortable != null) {
         column.setSortable(tag.sortable);

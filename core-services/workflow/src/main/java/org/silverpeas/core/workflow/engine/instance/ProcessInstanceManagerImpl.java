@@ -26,10 +26,10 @@ package org.silverpeas.core.workflow.engine.instance;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.CollectionUtil.RuptureContext;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -43,16 +43,15 @@ import org.silverpeas.core.workflow.engine.WorkflowHub;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+
+import static org.silverpeas.core.util.CollectionUtil.findNextRupture;
 
 /**
  * A ProcessInstanceManager implementation
@@ -60,8 +59,7 @@ import java.util.Set;
 @Singleton
 public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManager {
 
-  private static String COLUMNS =
-      " I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus ";
+  private static final String MODEL_ID_CRITERION = "I.modelId = ?";
 
   @Inject
   private SilverpeasCalendar calendar;
@@ -70,159 +68,142 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
   private ProcessInstanceRepository repository;
 
   @Override
-  public ProcessInstance[] getProcessInstances(String peasId, User user, String role)
+  public List<ProcessInstance> getProcessInstances(String peasId, User user, String role)
       throws WorkflowException {
     return getProcessInstances(peasId, user, role, null, null);
   }
 
+  @SuppressWarnings("unchecked")
   @Override
-  public ProcessInstance[] getProcessInstances(String peasId, User user, String role,
+  public List<ProcessInstance> getProcessInstances(String peasId, User user, String role,
       String[] userRoles, String[] userGroupIds) throws WorkflowException {
-    Connection con = null;
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    StringBuilder selectQuery = new StringBuilder();
-    List<ProcessInstanceImpl> instances = new ArrayList<>();
+
+    final SilverpeasList<ProcessInstanceImpl> instances;
+    final JdbcSqlQuery select;
+
+    if ("supervisor".equals(role)) {
+      select = JdbcSqlQuery
+          .createSelect("I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus")
+          .from("SB_Workflow_ProcessInstance I")
+          .where(MODEL_ID_CRITERION, peasId)
+          .orderBy("I.instanceId DESC");
+    } else {
+      select = JdbcSqlQuery
+          .createSelect("p.instanceId, p.modelId, p.locked, p.errorStatus, p.timeoutStatus")
+          .from("(")
+
+          .addSqlPart("SELECT I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus")
+          .from("SB_Workflow_InterestedUser intUser")
+          .join("SB_Workflow_ProcessInstance I").on("I.instanceId = intUser.instanceId")
+          .where(MODEL_ID_CRITERION, peasId)
+          .and("(intUser.userId = ?", user.getUserId());
+      if (ArrayUtil.isNotEmpty(userRoles)) {
+        select
+          .or("intUser.usersRole").in(userRoles);
+      }
+      if (ArrayUtil.isNotEmpty(userGroupIds)) {
+        select
+          .or("(intUser.groupId is not null")
+          .and("intUser.groupId").in(userGroupIds)
+          .addSqlPart(")");
+      }
+      select
+          .addSqlPart(")")
+          .and("intUser.role = ?", role)
+
+          .union()
+
+          .addSqlPart("SELECT I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus")
+          .from("SB_Workflow_WorkingUser wkUser")
+          .join("SB_Workflow_ProcessInstance I").on("I.instanceId = wkUser.instanceId")
+          .where(MODEL_ID_CRITERION, peasId)
+          .and("(wkUser.userId = ?", user.getUserId());
+      if (ArrayUtil.isNotEmpty(userRoles)) {
+        select
+          .or("wkUser.usersRole").in(userRoles);
+      }
+      if (ArrayUtil.isNotEmpty(userGroupIds)) {
+        select
+          .or("(wkUser.groupId is not null")
+          .and("wkUser.groupId").in(userGroupIds)
+          .addSqlPart(")");
+      }
+      select
+          .addSqlPart(")")
+          .and("(wkUser.role = ?", role)
+          .or("wkUser.role like ?", "%," + role)
+          .or("wkUser.role like ?", role + ",%")
+          .or("wkUser.role like ?)", "%," + role + ",%")
+
+          .addSqlPart(") p")
+          .orderBy("p.instanceId DESC");
+    }
+
     try {
-      con = DBUtil.openConnection();
-
-      if ("supervisor".equals(role)) {
-        selectQuery.append("SELECT * from SB_Workflow_ProcessInstance instance where modelId = ?");
-        prepStmt = con.prepareStatement(selectQuery.toString());
-        prepStmt.setString(1, peasId);
-      } else {
-        selectQuery.append("select ").append(COLUMNS)
-            .append(" from SB_Workflow_ProcessInstance I ");
-        selectQuery.append("where I.modelId = ? ");
-        selectQuery.append("and exists (");
-        selectQuery.
-            append(
-                "select instanceId from SB_Workflow_InterestedUser intUser where I.instanceId = " +
-                    "intUser.instanceId and (");
-        selectQuery.append("intUser.userId = ? ");
-        if (ArrayUtil.isNotEmpty(userRoles)) {
-          selectQuery.append(" or intUser.usersRole in (");
-          selectQuery.append(getSQLClauseIn(userRoles));
-          selectQuery.append(")");
-        }
-        if (ArrayUtil.isNotEmpty(userGroupIds)) {
-          selectQuery.append(" or (intUser.groupId is not null");
-          selectQuery.append(" and intUser.groupId in (");
-          selectQuery.append(getSQLClauseIn(userGroupIds));
-          selectQuery.append("))");
-        }
-        selectQuery.append(") and intUser.role = ? ");
-        selectQuery.append("union ");
-        selectQuery.
-            append("select instanceId from SB_Workflow_WorkingUser wkUser where I.instanceId = " +
-                "wkUser.instanceId and (");
-        selectQuery.append("wkUser.userId = ? ");
-        if (ArrayUtil.isNotEmpty(userRoles)) {
-          selectQuery.append(" or wkUser.usersRole in (");
-          selectQuery.append(getSQLClauseIn(userRoles));
-          selectQuery.append(")");
-        }
-        if (ArrayUtil.isNotEmpty(userGroupIds)) {
-          selectQuery.append(" or (wkUser.groupId is not null");
-          selectQuery.append(" and wkUser.groupId in (");
-          selectQuery.append(getSQLClauseIn(userGroupIds));
-          selectQuery.append("))");
-        }
-        selectQuery.append(") and ");
-
-        // role can be multiple (e.g: "role1,role2,...,roleN")
-        selectQuery.append("( wkUser.role = ? ");
-        selectQuery.append(" or wkUser.role like ? ");
-        selectQuery.append(" or wkUser.role like ? ");
-        selectQuery.append(" or wkUser.role like ? ");
-        selectQuery.append(")");
-
-        selectQuery.append(")");
-        selectQuery.append("order by I.instanceId desc");
-
-        prepStmt = con.prepareStatement(selectQuery.toString());
-        prepStmt.setString(1, peasId);
-        prepStmt.setString(2, user.getUserId());
-        prepStmt.setString(3, role);
-        prepStmt.setString(4, user.getUserId());
-        prepStmt.setString(5, role);
-        prepStmt.setString(6, "%," + role);
-        prepStmt.setString(7, role + ",%");
-        prepStmt.setString(8, "%," + role + ",%");
-      }
-      rs = prepStmt.executeQuery();
-
-      while (rs.next()) {
+      final List<Integer> instanceIds = new LinkedList<>();
+      instances = select.execute(r -> {
         ProcessInstanceImpl instance = new ProcessInstanceImpl();
-        instance.setInstanceId(rs.getString(1));
-        instance.setModelId(rs.getString(2));
-        instance.setLockedByAdmin(rs.getBoolean(3));
-        instance.setErrorStatus(rs.getBoolean(4));
-        instance.setTimeoutStatus(rs.getBoolean(5));
-        instances.add(instance);
+        int i = 1;
+        final int instanceId = r.getInt(i++);
+        instance.setInstanceId(String.valueOf(instanceId));
+        instance.setModelId(r.getString(i++));
+        instance.setLockedByAdmin(r.getBoolean(i++));
+        instance.setErrorStatus(r.getBoolean(i++));
+        instance.setTimeoutStatus(r.getBoolean(i));
+        instanceIds.add(instanceId);
+        return instance;
+      });
+
+      if (!instanceIds.isEmpty()) {
+
+        // getting History
+        final RuptureContext<ProcessInstanceImpl> ruptureContext = RuptureContext.newOne(instances);
+        JdbcSqlQuery.createSelect("*")
+            .from("SB_Workflow_HistoryStep")
+            .where("instanceId")
+            .in(instanceIds)
+            .orderBy("instanceId DESC, id ASC")
+            .execute(r -> {
+              int i = 1;
+              final String instanceId = r.getString(i++);
+              final HistoryStepImpl historyStep = new HistoryStepImpl(r.getInt(i++));
+              historyStep.setUserId(r.getString(i++));
+              historyStep.setUserRoleName(r.getString(i++));
+              historyStep.setAction(r.getString(i++));
+              historyStep.setActionDate(r.getDate(i++));
+              historyStep.setResolvedState(r.getString(i++));
+              historyStep.setResultingState(r.getString(i++));
+              historyStep.setActionStatus(r.getInt(i));
+              findNextRupture(ruptureContext, p -> p.getInstanceId().equals(instanceId))
+                  .ifPresent(p -> p.addHistoryStep(historyStep));
+              return null;
+            });
+
+        // getting Active States
+        ruptureContext.reset();
+        JdbcSqlQuery.createSelect("*")
+            .from("SB_Workflow_ActiveState")
+            .where("instanceId")
+            .in(instanceIds)
+            .orderBy("instanceId DESC, id ASC")
+            .execute(rs -> {
+              int i = 1;
+              final ActiveState state = new ActiveState(rs.getInt(i++));
+              final String instanceId = rs.getString(i++);
+              state.setState(rs.getString(i++));
+              state.setBackStatus(rs.getBoolean(i++));
+              state.setTimeoutStatus(rs.getInt(i));
+              findNextRupture(ruptureContext, p -> p.getInstanceId().equals(instanceId))
+                  .ifPresent(p -> p.addActiveState(state));
+              return null;
+            });
       }
 
-      // getHistory
-      prepStmt = con.prepareStatement(
-          "SELECT * FROM SB_Workflow_HistoryStep WHERE instanceId = ? ORDER BY id ASC");
-
-      for (ProcessInstanceImpl instance : instances) {
-        prepStmt.setInt(1, Integer.parseInt(instance.getInstanceId()));
-        rs = prepStmt.executeQuery();
-        while (rs.next()) {
-          HistoryStepImpl historyStep = new HistoryStepImpl(rs.getInt(2));
-          historyStep.setUserId(rs.getString(3));
-          historyStep.setUserRoleName(rs.getString(4));
-          historyStep.setAction(rs.getString(5));
-          historyStep.setActionDate(rs.getDate(6));
-          historyStep.setResolvedState(rs.getString(7));
-          historyStep.setResultingState(rs.getString(8));
-          historyStep.setActionStatus(rs.getInt(9));
-          historyStep.setProcessInstance(instance);
-
-          instance.addHistoryStep(historyStep);
-        }
-      }
-
-      prepStmt = con.prepareStatement(
-          "SELECT * FROM SB_Workflow_ActiveState WHERE instanceId = ? ORDER BY id ASC");
-
-      for (ProcessInstanceImpl instance : instances) {
-        prepStmt.setInt(1, Integer.parseInt(instance.getInstanceId()));
-        rs = prepStmt.executeQuery();
-        List<ActiveState> states = new ArrayList<>();
-        while (rs.next()) {
-          ActiveState state = new ActiveState(rs.getInt(1));
-          state.setState(rs.getString(3));
-          state.setBackStatus(rs.getBoolean(4));
-          state.setTimeoutStatus(rs.getInt(5));
-          state.setProcessInstance(instance);
-          states.add(state);
-        }
-        instance.setActiveStates(states);
-      }
-
-      return instances.toArray(new ProcessInstance[instances.size()]);
+      return (List) instances;
     } catch (SQLException se) {
       throw new WorkflowException("ProcessInstanceManagerImpl.getProcessInstances",
-          "EX_ERR_GET_INSTANCES", "sql query : " + selectQuery, se);
-    } finally {
-      DBUtil.close(rs, prepStmt);
-      DBUtil.close(con);
+          "EX_ERR_GET_INSTANCES", "sql query : " + select.getSqlQuery(), se);
     }
-  }
-
-  private String getSQLClauseIn(String[] items) {
-    StringBuilder result = new StringBuilder();
-    boolean first = true;
-    for (String item : items) {
-      if (!first) {
-        result.append(", ");
-      }
-      result.append("'").append(item).append("'");
-      first = false;
-    }
-    return result.toString();
   }
 
   /**
@@ -296,7 +277,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
       }
     }
 
-    // delete associated todo
+    // delete associated to do
     calendar.removeToDoFromExternal("useless", componentId, id + "##%");
   }
 
@@ -346,20 +327,17 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
    * @return an array of ProcessInstance objects
    * @throws WorkflowException
    */
+  @SuppressWarnings("unchecked")
   @Override
-  public ProcessInstance[] getTimeOutProcessInstances() throws WorkflowException {
+  public SilverpeasList<ProcessInstance> getTimeOutProcessInstances() throws WorkflowException {
     try {
-      JdbcSqlQuery query = JdbcSqlQuery.createSelect("instanceid from SB_Workflow_ActiveState")
+      JdbcSqlQuery query = JdbcSqlQuery
+          .createSelect("instanceid")
+          .from("SB_Workflow_ActiveState")
           .where("timeoutDate < ? ", new Timestamp((new Date()).getTime()));
       List<String> ids = query.execute(row -> String.valueOf(row.getInt(1)));
-      Set<String> instanceIds = new HashSet<>();
-      for (String id : ids) {
-        instanceIds.add(id);
-      }
-
-      SilverpeasList<ProcessInstanceImpl> instances = repository.getById(instanceIds);
-
-      return instances.toArray(new ProcessInstance[instances.size()]);
+      Set<String> instanceIds = new HashSet<>(ids);
+      return (SilverpeasList) repository.getById(instanceIds);
     } catch (SQLException se) {
       throw new WorkflowException("ProcessInstanceManagerImpl.getTimeOutProcessInstances",
           "EX_ERR_GET_TIMEOUT_INSTANCES", se);

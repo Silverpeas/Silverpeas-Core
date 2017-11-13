@@ -233,6 +233,33 @@ public class JdbcSqlQuery {
 
   /**
    * Centralization in order to populate the prepare statement parameters.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery union() {
+    return addSqlPart("UNION ");
+  }
+
+  /**
+   * Centralization in order to populate the prepare statement parameters.
+   * @param sqlPart the SQL part that contains the parameter.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery join(String sqlPart) {
+    return addSqlPart("JOIN " + sqlPart);
+  }
+
+  /**
+   * Centralization in order to populate the prepare statement parameters.
+   * @param sqlPart the SQL part that contains the parameter.
+   * @param paramValue the value of parameters included into the given sqlPart.
+   * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.
+   */
+  public JdbcSqlQuery on(String sqlPart, Object... paramValue) {
+    return addSqlPart("ON " + sqlPart, Arrays.asList(paramValue));
+  }
+
+  /**
+   * Centralization in order to populate the prepare statement parameters.
    * @param sqlPart the SQL part that contains the parameter.
    * @param paramValue the value of parameters included into the given sqlPart.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.

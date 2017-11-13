@@ -35,5 +35,5 @@ public interface RecordFilter {
   /**
    * Returns true if the given record match this Filter criteria.
    */
-  public boolean match(DataRecord testedRecord) throws FormException;
+  boolean match(DataRecord testedRecord) throws FormException;
 }

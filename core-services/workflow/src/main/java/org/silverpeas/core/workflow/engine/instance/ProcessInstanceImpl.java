@@ -223,7 +223,7 @@ public class ProcessInstanceImpl
    * Add an history step for this instance
    * @param step the history step to add
    */
-  public void addHistoryStep(HistoryStep step) throws WorkflowException {
+  public void addHistoryStep(HistoryStep step) {
     ((HistoryStepImpl) step).setProcessInstance(this);
     historySteps.add((HistoryStepImpl) step);
 
@@ -242,7 +242,7 @@ public class ProcessInstanceImpl
    * Set a state active for this instance
    * @param state State to be activated
    */
-  public void addActiveState(State state) throws WorkflowException {
+  public void addActiveState(State state) {
     Date timeOutDate = computeTimeOutDate(state, 1);
     this.addActiveState(state.getName(), timeOutDate);
   }
@@ -304,7 +304,7 @@ public class ProcessInstanceImpl
    * Set a state active for this instance
    * @param state The name of state to be activated
    */
-  private void addActiveState(String state, Date timeOutDate) throws WorkflowException {
+  private void addActiveState(String state, Date timeOutDate) {
     ActiveState activeState = new ActiveState(state);
     activeState.setProcessInstance(this);
     activeState.setTimeoutDate(timeOutDate);
@@ -1548,7 +1548,7 @@ public class ProcessInstanceImpl
    * @param action action description
    * @param params params concatenated as "param1##param2...paramN"
    */
-  private void addUndoHistoryStep(String action, String params) throws WorkflowException {
+  private void addUndoHistoryStep(String action, String params) {
     UndoHistoryStep undoStep = new UndoHistoryStep();
     undoStep.setStepId(this.currentStep.getId());
     undoStep.setInstance(this);
@@ -1902,11 +1902,12 @@ public class ProcessInstanceImpl
   }
 
   /**
-   * Set states that are due to be resolved for this process instance
-   * @param activeStates states as a Vector
+   * Add active state to the process instance
+   * @param activeState state to add.
    */
-  public void setActiveStates(List<ActiveState> activeStates) {
-    this.activeStates = new HashSet<>(activeStates);
+  public void addActiveState(ActiveState activeState) {
+    activeState.setProcessInstance(this);
+    this.activeStates.add(activeState);
   }
 
   /**

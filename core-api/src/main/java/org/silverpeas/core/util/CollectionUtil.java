@@ -25,7 +25,18 @@ package org.silverpeas.core.util;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * @author Yohann Chastagnier
@@ -33,6 +44,11 @@ import java.util.*;
 public class CollectionUtil {
 
   private static final int SPLIT_BATCH_SIZE = 500;
+
+  private CollectionUtil() {
+    throw new IllegalAccessError("Utility class");
+  }
+
 
   /**
    * Reverse the given list and returns it.
@@ -184,7 +200,7 @@ public class CollectionUtil {
    */
   @SuppressWarnings("unchecked")
   public static <T> List<T> union(List<T> list1, List<T> list2) {
-    return new ArrayList<T>(union((Collection) list1, (Collection) list2));
+    return new ArrayList<T>(union(list1, (Collection) list2));
   }
 
   /**
@@ -192,11 +208,11 @@ public class CollectionUtil {
    * The result contains unique values.
    * @param col1 the first collection.
    * @param col2 the second collection.
-   * @param <T>
+   * @param <T> the type of the items in the list
    * @return the union between the two collections.
    */
   public static <T> Collection<T> union(Collection<T> col1, Collection<T> col2) {
-    Set<T> set = new LinkedHashSet<T>();
+    Set<T> set = new LinkedHashSet<>();
     set.addAll(col1);
     set.addAll(col2);
     return set;
@@ -212,7 +228,7 @@ public class CollectionUtil {
    */
   @SuppressWarnings("unchecked")
   public static <T> List<T> intersection(List<T> list1, List<T> list2) {
-    return (List) intersection((Collection) list1, (Collection) list2);
+    return (List) intersection(list1, (Collection) list2);
   }
 
   /**
@@ -220,74 +236,150 @@ public class CollectionUtil {
    * The result contains unique values.
    * @param col1 the first collection.
    * @param col2 the second collection.
-   * @param <T>
+   * @param <T> the type of the items in the list
    * @return the intersection between the two collections.
    */
   public static <T> Collection<T> intersection(Collection<T> col1, Collection<T> col2) {
-    List<T> list = new ArrayList<T>(new LinkedHashSet<T>(col1));
-    Iterator<T> iterator = list.iterator();
-    while(iterator.hasNext()) {
-      if (!col2.contains(iterator.next())) {
-        iterator.remove();
-      }
+    Collection<T> smaller = col1;
+    Collection<T> larger = col2;
+    if (col1.size() > col2.size()) {
+      smaller = col2;
+      larger = col1;
     }
-    return list;
+    final HashSet<T> matcher = new HashSet<T>(smaller);
+    final Stream<T> intersection = larger.stream().filter(matcher::remove);
+    if (col1 instanceof Set && col2 instanceof Set) {
+      return intersection.collect(Collectors.toSet());
+    }
+    return intersection.collect(Collectors.toList());
   }
 
   /**
-   * Transforming a collection into a map
-   * @param <T> collection type elements
-   * @param <K> map type key
-   * @param <V> map type value
-   * @param collection the collection to map
-   * @param extractor extractor interface
-   * @return a map initialized from a list by an extractor
+   * Finds the first index in the given List which matches the given predicate.
+   * @param list the List to search, may not be null.
+   * @param predicate the predicate to use, may not be null.
+   * @param <T> the type of the items in the list
+   * @return the first index of an Object in the List which matches the predicate.
    */
-  public static <T, K, V> Map<K, V> listToMap(final Collection<T> collection,
-      final ExtractionList<T, K, V> extractor) {
-    final LinkedHashMap<K, V> result;
-    if (collection == null) {
-      result = null;
-    } else if (collection.isEmpty()) {
-      result = new LinkedHashMap<>();
-    } else {
-      result = new LinkedHashMap<>((int) (collection.size() * 0.75f));
-      if (extractor instanceof ExtractionComplexList<?, ?, ?>) {
-        ((ExtractionComplexList<T, K, V>) extractor).setMap(result);
-      }
-      for (final T toPerform : collection) {
-        result.put(extractor.getKey(toPerform), extractor.getValue(toPerform));
-      }
-    }
-    return result;
+  public static <T> int indexOf(List<T> list, Predicate<T> predicate) {
+    return indexOf(list, predicate, 0);
   }
 
-  private interface ExtractionList<I, C, W> {
-
-    C getKey(I in);
-
-    W getValue(I in);
+  /**
+   * Finds the first index in the given List which matches the given predicate.
+   * @param list the List to search, may not be null.
+   * @param predicate the predicate to use, may not be null.
+   * @param firstIndex an integer representing the first index from which the search starts.
+   * @param <T> the type of the items in the list
+   * @return the first index of an Object in the List which matches the predicate.
+   */
+  public static <T> int indexOf(List<T> list, Predicate<T> predicate, int firstIndex) {
+    for (int i = firstIndex; i < list.size(); i++) {
+      final T item = list.get(i);
+      if (predicate.test(item)) {
+        return i;
+      }
+    }
+    return -1;
   }
 
-  private abstract class ExtractionComplexList<I, C, W> implements ExtractionList<I, C, W> {
+  /**
+   * Gets the optional first element in the given List which matches the given predicate.
+   * @param list the List to search, may not be null.
+   * @param predicate the predicate to use, may not be null.
+   * @param <T> the type of the items in the list
+   * @return the optional Object in the List which matches the predicate.
+   */
+  public static <T> Optional<T> findFirst(List<T> list, Predicate<T> predicate) {
+    return findFirst(list, predicate, 0);
+  }
 
-    /**
-     * The result map
-     */
-    private Map<C, W> map;
+  /**
+   * Gets the optional first element in the given List which matches the given predicate and the
+   * position is at or after the first given index.
+   * @param list the List to search, may not be null.
+   * @param predicate the predicate to use, may not be null.
+   * @param firstIndex an integer representing the first index from which the search starts.
+   * @param <T> the type of the items in the list
+   * @return the optional Object in the List which matches the predicate.
+   */
+  public static <T> Optional<T> findFirst(List<T> list, Predicate<T> predicate, int firstIndex) {
+    int index = indexOf(list, predicate, firstIndex);
+    return index >= 0 ? Optional.ofNullable(list.get(index)) : Optional.empty();
+  }
 
-    /**
-     * @return the map
-     */
-    protected final Map<C, W> getMap() {
-      return map;
+  /**
+   * Gets the optional next element in the given ordered List which matches the given {@link
+   * RuptureContext}
+   * which must be intialized by calling {@link RuptureContext#newOne(List)}.
+   * @param context the context of the rupture.
+   * @param predicate the predicate to use, may not be null.
+   * @param <T> the type of the items in the list
+   * @return the first index of an Object in the List which matches the predicate.
+   */
+  public static <T> Optional<T> findNextRupture(RuptureContext<T> context, Predicate<T> predicate) {
+    if (context.isTerminated()) {
+      throw new IllegalStateException(
+          "the context of the rupture indicates that it is terminated");
+    }
+    if (context.lastPosition == -1 || !predicate.test(context.current)) {
+      int position =
+          CollectionUtil.indexOf(context.orderedList, predicate, context.lastPosition + 1);
+      if (position >= 0) {
+        context.lastPosition = position;
+        context.current = context.orderedList.get(position);
+      } else {
+        context.lastPosition = context.orderedList.size();
+        context.terminated = true;
+        context.current = null;
+      }
+    }
+    return Optional.ofNullable(context.current);
+  }
+
+  /**
+   * Handles the context of a rupture treatment.<br/>
+   * It must by initialized by calling {@link RuptureContext#newOne(List)} after using
+   * {@link CollectionUtil#findNextRupture(RuptureContext, Predicate)}.<br/>
+   * Callers can verify if it is no more possible to get an element from the rupture by calling
+   * {@link RuptureContext#isTerminated()}.
+   * @param <T> the type of the items in the list
+   */
+  public static class RuptureContext<T> {
+    private final List<T> orderedList;
+    private T current = null;
+    private int lastPosition = -1;
+    private boolean terminated = false;
+
+    private RuptureContext(final List<T> orderedList) {
+      this.orderedList = orderedList;
     }
 
     /**
-     * @param map the map to set
+     * Initializes a new context with the given ordered list.
+     * @param orderedList an ordered list.
+     * @param <T> the type of the items in the list
+     * @return the initialized context.
      */
-    protected final void setMap(final Map<C, W> map) {
-      this.map = map;
+    public static <T> RuptureContext<T> newOne(final List<T> orderedList) {
+      return new RuptureContext<>(orderedList);
+    }
+
+    /**
+     * Indicates if the rupture is terminated.
+     * @return true if terminated, false otherwise.
+     */
+    public boolean isTerminated() {
+      return terminated;
+    }
+
+    /**
+     * Resets the rupture as the caller was initializing a new one with {@link #newOne(List)}.
+     */
+    public void reset() {
+      current = null;
+      lastPosition = -1;
+      terminated = false;
     }
   }
 }
