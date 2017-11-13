@@ -24,8 +24,6 @@
 package org.silverpeas.core.node.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.node.dao.NodeDAO;
 import org.silverpeas.core.node.dao.NodeI18NDAO;
@@ -37,6 +35,7 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -44,11 +43,13 @@ import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -1050,29 +1051,33 @@ public class DefaultNodeService implements NodeService, ComponentInstanceDeletio
         }
       }
 
-      indexEntry.setCreationDate(nodeDetail.getCreationDate());
+      try {
+        indexEntry.setCreationDate(DateUtil.parse(nodeDetail.getCreationDate()));
+      } catch (ParseException e) {
+        SilverLogger.getLogger(this).warn(e);
+      }
       String userId;
       // cas d'une creation (avec creatorId, creationDate)
       if (nodeDetail.getCreatorId() != null) {
         userId = nodeDetail.getCreatorId();
         indexEntry.setCreationUser(userId);
-      } // cas d'une modification
-      else {
+      } else {
+        // cas d'une modification
         NodeDetail node = getHeader(nodeDetail.getNodePK());
-        indexEntry.setCreationDate(node.getCreationDate());
+        try {
+          indexEntry.setCreationDate(DateUtil.parse(node.getCreationDate()));
+        } catch (ParseException e) {
+          SilverLogger.getLogger(this).warn(e);
+        }
         userId = node.getCreatorId();
         indexEntry.setCreationUser(userId);
       }
 
       // index creator's full name
       if (nodeSettings.getString("indexAuthorName").equals("true")) {
-        try {
-          UserDetail ud = AdministrationServiceProvider.getAdminService().getUserDetail(userId);
-          if (ud != null) {
-            indexEntry.addTextContent(ud.getDisplayedName());
-          }
-        } catch (AdminException e) {
-          // do not index on user name
+        UserDetail ud = UserDetail.getById(userId);
+        if (ud != null) {
+          indexEntry.addTextContent(ud.getDisplayedName());
         }
       }
     }

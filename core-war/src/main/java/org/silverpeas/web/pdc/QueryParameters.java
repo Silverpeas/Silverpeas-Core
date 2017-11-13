@@ -114,7 +114,7 @@ public class QueryParameters implements java.io.Serializable {
   }
 
   public void setCreatorId(String creatorId) {
-    if (!StringUtil.isDefined(spaceId) || "*".equals(creatorId)) {
+    if (!StringUtil.isDefined(creatorId) || "*".equals(creatorId)) {
       this.creatorId = null;
       this.creatorDetail = null;
     } else {
@@ -178,25 +178,25 @@ public class QueryParameters implements java.io.Serializable {
     }
 
     if (getAfterDate() != null) {
-      query.setRequestedCreatedAfter(DateUtil.date2SQLDate(getAfterDate()));
+      query.setRequestedCreatedAfter(DateUtil.formatAsLuceneDate(getAfterDate()));
     } else {
       query.setRequestedCreatedAfter(null);
     }
 
     if (getBeforeDate() != null) {
-      query.setRequestedCreatedBefore(DateUtil.date2SQLDate(getBeforeDate()));
+      query.setRequestedCreatedBefore(DateUtil.formatAsLuceneDate(getBeforeDate()));
     } else {
       query.setRequestedCreatedBefore(null);
     }
 
     if (getAfterUpdateDate() != null) {
-      query.setRequestedUpdatedAfter(DateUtil.date2SQLDate(getAfterUpdateDate()));
+      query.setRequestedUpdatedAfter(DateUtil.formatAsLuceneDate(getAfterUpdateDate()));
     } else {
       query.setRequestedUpdatedAfter(null);
     }
 
     if (getBeforeUpdateDate() != null) {
-      query.setRequestedUpdatedBefore(DateUtil.date2SQLDate(getBeforeUpdateDate()));
+      query.setRequestedUpdatedBefore(DateUtil.formatAsLuceneDate(getBeforeUpdateDate()));
     } else {
       query.setRequestedUpdatedBefore(null);
     }

@@ -58,15 +58,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Set;
-import java.util.StringTokenizer;
+import java.util.*;
 
 /**
  * The IndexSearcher class implements search over all the indexes. A IndexSearcher
@@ -275,12 +267,11 @@ public class IndexSearcher {
   }
 
   private TermRangeQuery getVisibilityStartQuery() {
-    return TermRangeQuery.newStringRange(IndexManager.STARTDATE, IndexEntry.STARTDATE_DEFAULT, DateUtil.
-        today2SQLDate(), true, true);
+    return TermRangeQuery.newStringRange(IndexManager.STARTDATE, IndexEntry.STARTDATE_DEFAULT, formatDate(new Date()), true, true);
   }
 
   private TermRangeQuery getVisibilityEndQuery() {
-    return TermRangeQuery.newStringRange(IndexManager.ENDDATE, DateUtil.today2SQLDate(),
+    return TermRangeQuery.newStringRange(IndexManager.ENDDATE, formatDate(new Date()),
         IndexEntry.ENDDATE_DEFAULT, true, true);
   }
 
@@ -367,8 +358,8 @@ public class IndexSearcher {
       for (FieldDescription fieldQuery : fieldQueries) {
         if (fieldQuery.isBasedOnDate()) {
           TermRangeQuery rangeQuery = getTermRangeQuery(fieldQuery.getFieldName(),
-              DateUtil.date2SQLDate(fieldQuery.getStartDate()),
-              DateUtil.date2SQLDate(fieldQuery.getEndDate()));
+              formatDate(fieldQuery.getStartDate()),
+              formatDate(fieldQuery.getEndDate()));
           if (rangeQuery != null) {
             booleanQuery.add(rangeQuery, BooleanClause.Occur.MUST);
           }
@@ -436,14 +427,14 @@ public class IndexSearcher {
 
     indexEntry.setKeyWords(doc.get(IndexManager.KEYWORDS));
     indexEntry.setCreationUser(doc.get(IndexManager.CREATIONUSER));
-    indexEntry.setCreationDate(doc.get(IndexManager.CREATIONDATE));
+    indexEntry.setCreationDate(parseDate(doc.get(IndexManager.CREATIONDATE)));
     indexEntry.setLastModificationUser(doc.get(IndexManager.LASTUPDATEUSER));
-    indexEntry.setLastModificationDate(doc.get(IndexManager.LASTUPDATEDATE));
+    indexEntry.setLastModificationDate(parseDate(doc.get(IndexManager.LASTUPDATEDATE)));
     indexEntry.setThumbnail(doc.get(IndexManager.THUMBNAIL));
     indexEntry.setThumbnailMimeType(doc.get(IndexManager.THUMBNAIL_MIMETYPE));
     indexEntry.setThumbnailDirectory(doc.get(IndexManager.THUMBNAIL_DIRECTORY));
-    indexEntry.setStartDate(doc.get(IndexManager.STARTDATE));
-    indexEntry.setEndDate(doc.get(IndexManager.ENDDATE));
+    indexEntry.setStartDate(parseDate(doc.get(IndexManager.STARTDATE)));
+    indexEntry.setEndDate(parseDate(doc.get(IndexManager.ENDDATE)));
     indexEntry.setEmbeddedFileIds(doc.getValues(IndexManager.EMBEDDED_FILE_IDS));
     indexEntry.setFilename(doc.get(IndexManager.FILENAME));
     indexEntry.setAlias(StringUtil.getBooleanValue(doc.get(IndexManager.ALIAS)));
@@ -623,5 +614,18 @@ public class IndexSearcher {
       end = IndexEntry.ENDDATE_DEFAULT;
     }
     return TermRangeQuery.newStringRange(fieldName, start, end, true, true);
+  }
+
+  private String formatDate(Date date) {
+    return DateUtil.formatAsLuceneDate(date);
+  }
+
+  private Date parseDate(String date) {
+    try {
+      return DateUtil.parseFromLucene(date);
+    } catch (java.text.ParseException e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
+    return null;
   }
 }

@@ -41,13 +41,14 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
   private static final long serialVersionUID = -4955524385769457730L;
 
   /**
-   * The constructor only set the key part of the IndexEntry.
-   * @deprecated - parameter space is no more used
+   * All the added texts and files are collected in two lists to be later retrieved by the index
+   * engine. textList is a list of String. fileList is a list of FileDescription.
    */
-  public FullIndexEntry(String space, String component, String objectType,
-      String objectId) {
-    super(component, objectType, objectId);
-  }
+  private List<TextDescription> textList = null;
+  private List<FileDescription> fileList = null;
+  private List<FileDescription> linkedFileList = null;
+  private List<FieldDescription> fields = null;
+  private Set<String> linkedFileIdsList = null;
 
   public FullIndexEntry(String component, String objectType, String objectId) {
     super(component, objectType, objectId);
@@ -157,32 +158,37 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
   }
 
   private List<TextDescription> getTextList() {
-    if (textList == null)
+    if (textList == null) {
       textList = new ArrayList<>();
+    }
     return textList;
   }
 
   private List<FileDescription> getFileList() {
-    if (fileList == null)
+    if (fileList == null) {
       fileList = new ArrayList<>();
+    }
     return fileList;
   }
 
   private List<FileDescription> getLinkedFileList() {
-    if (linkedFileList == null)
+    if (linkedFileList == null) {
       linkedFileList = new ArrayList<>();
+    }
     return linkedFileList;
   }
 
   public Set<String> getLinkedFileIdsSet() {
-    if (linkedFileIdsList == null)
+    if (linkedFileIdsList == null) {
       linkedFileIdsList = new HashSet<>();
+    }
     return linkedFileIdsList;
   }
 
   public List<FieldDescription> getFields() {
-    if (fields == null)
+    if (fields == null) {
       fields = new ArrayList<>();
+    }
     return fields;
   }
 
@@ -190,14 +196,4 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
   public FullIndexEntry clone() {
     return (FullIndexEntry) super.clone();
   }
-
-  /**
-   * All the added texts and files are collected in two lists to be later retrieved by the index
-   * engine. textList is a list of String. fileList is a list of FileDescription.
-   */
-  private List<TextDescription> textList = null;
-  private List<FileDescription> fileList = null;
-  private List<FileDescription> linkedFileList = null;
-  private List<FieldDescription> fields = null;
-  private Set<String> linkedFileIdsList = null;
 }

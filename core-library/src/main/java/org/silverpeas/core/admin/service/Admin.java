@@ -294,12 +294,14 @@ class Admin implements Administration {
     indexEntry.setTitle(spaceInst.getName());
     indexEntry.setPreView(spaceInst.getDescription());
     indexEntry.setCreationUser(String.valueOf(spaceInst.getCreatedBy()));
+    indexEntry.setCreationDate(spaceInst.getCreateDate());
+    indexEntry.setLastModificationUser(String.valueOf(spaceInst.getUpdatedBy()));
+    indexEntry.setLastModificationDate(spaceInst.getUpdateDate());
     IndexEngineProxy.addIndexEntry(indexEntry);
   }
 
   @Override
   public void deleteSpaceIndex(SpaceInst spaceInst) {
-
     String spaceId = spaceInst.getId();
     FullIndexEntry indexEntry = new FullIndexEntry("Spaces", "Space", spaceId);
     IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
@@ -864,6 +866,9 @@ class Admin implements Administration {
       indexEntry.setTitle(componentInst.getLabel());
       indexEntry.setPreView(componentInst.getDescription());
       indexEntry.setCreationUser(Integer.toString(componentInst.getCreatedBy()));
+      indexEntry.setCreationDate(componentInst.getCreateDate());
+      indexEntry.setLastModificationUser(String.valueOf(componentInst.getUpdatedBy()));
+      indexEntry.setLastModificationDate(componentInst.getUpdateDate());
       IndexEngineProxy.addIndexEntry(indexEntry);
     }
   }

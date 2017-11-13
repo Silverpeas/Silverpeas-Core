@@ -30,7 +30,7 @@ import org.apache.lucene.analysis.miscellaneous.LimitTokenCountAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.FieldType;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
@@ -315,7 +315,8 @@ public class IndexManager {
    */
   private void index(IndexWriter writer, FullIndexEntry indexEntry) {
     try {
-      writer.addDocument(makeDocument(indexEntry));
+      Term key = new Term(KEY, indexEntry.getPK().toString());
+      writer.updateDocument(key, makeDocument(indexEntry));
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
@@ -327,16 +328,14 @@ public class IndexManager {
   private Document makeDocument(FullIndexEntry indexEntry) {
     Document doc = new Document();
     // fields creation
-    doc.add(new Field(KEY, indexEntry.getPK().toString(), TextField.TYPE_STORED));
+    doc.add(new StringField(KEY, indexEntry.getPK().toString(), Field.Store.YES));
     setTitleField(indexEntry, doc);
     setPreviewAndKeyWordsField(indexEntry, doc);
     setCreationAndUpdateFields(indexEntry, doc);
     setThumbnailField(indexEntry, doc);
     setContentIdField(indexEntry, doc);
-    if (!isWysiwyg(indexEntry)) {
-      setHeaderFields(indexEntry, doc);
-      setContentFields(indexEntry, doc);
-    }
+    setHeaderFields(indexEntry, doc);
+    setContentFields(indexEntry, doc);
     setContentTextField(indexEntry, doc);
 
     if (StringUtil.isDefined(indexEntry.getObjectId())) {
@@ -348,47 +347,17 @@ public class IndexManager {
     setFileRelativeFields(indexEntry, doc);
     setAdditionalFields(indexEntry, doc);
 
-    if (!isWysiwyg(indexEntry)) {
-      // Lucene doesn't index all the words in a field
-      // (the max is given by the maxFieldLength property)
-      // The problem is that we don't know which words are skipped
-      // and which ones are taken. So the trick used here:
-      // the words which MUST been indexed are given twice to lucene
-      // at the beginning of the field CONTENT and at the end of this field.
-      // (In the current implementation of lucene and without this trick
-      // some key words are not indexed!!!)
-      setAnySkippedWordsInFields(indexEntry, doc);
-    }
     // Add server name inside Lucene doc
-    doc.add(new Field(SERVER_NAME, indexEntry.getServerName(), TextField.TYPE_STORED));
+    doc.add(new StringField(SERVER_NAME, indexEntry.getServerName(), Field.Store.YES));
 
     if (indexEntry.getPaths() != null) {
       for (String path : indexEntry.getPaths()) {
-        doc.add(new Field(PATH, path, TextField.TYPE_STORED));
+        doc.add(new StringField(PATH, path, Field.Store.YES));
       }
     }
     doc.add(new Field(ALIAS, Boolean.toString(indexEntry.isAlias()), TextField.TYPE_STORED));
 
     return doc;
-  }
-
-  private void setAnySkippedWordsInFields(final FullIndexEntry indexEntry, final Document doc) {
-    Iterator<String> languages = indexEntry.getLanguages();
-    while (languages.hasNext()) {
-      String language = languages.next();
-      if (indexEntry.getTitle(language) != null) {
-        doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getTitle(language).
-            toLowerCase(new Locale(language)), TextField.TYPE_NOT_STORED));
-      }
-      if (indexEntry.getPreview(language) != null) {
-        doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getPreview(language).
-            toLowerCase(new Locale(language)), TextField.TYPE_NOT_STORED));
-      }
-      if (indexEntry.getKeywords(language) != null) {
-        doc.add(new Field(getFieldName(CONTENT, language), indexEntry.getKeywords(language).
-            toLowerCase(new Locale(language)), TextField.TYPE_NOT_STORED));
-      }
-    }
   }
 
   private void setAdditionalFields(final FullIndexEntry indexEntry, final Document doc) {
@@ -398,21 +367,21 @@ public class IndexManager {
       if (StringUtil.isDefined(field.getContent())) {
         // if a field is used for the sort or to generate a facet, it's stored in the lucene index
         String fieldName = getFieldName(field.getFieldName(), field.getLang());
-        FieldType storeAction;
+        Field.Store storeAction;
         if (field.isStored() || SearchEnginePropertiesManager.getFieldsNameList().contains(field.
             getFieldName())) {
-          storeAction = TextField.TYPE_STORED;
+          storeAction = Field.Store.YES;
           fieldsForFacets.add(fieldName);
         } else {
-          storeAction = TextField.TYPE_NOT_STORED;
+          storeAction = Field.Store.NO;
         }
-        doc.add(new Field(fieldName, field.getContent(), storeAction));
+        doc.add(new TextField(fieldName, field.getContent(), storeAction));
       }
     }
     if (!fieldsForFacets.isEmpty()) {
       String stringForFacets = buildStringForFacets(fieldsForFacets);
       // adds all fields which generate facets
-      doc.add(new Field(FIELDS_FOR_FACETS, stringForFacets, TextField.TYPE_STORED));
+      doc.add(new StringField(FIELDS_FOR_FACETS, stringForFacets, Field.Store.YES));
     }
   }
 
@@ -429,7 +398,7 @@ public class IndexManager {
 
     Set<String> linkedFileIds = indexEntry.getLinkedFileIdsSet();
     for (String linkedFileId : linkedFileIds) {
-      doc.add(new Field(EMBEDDED_FILE_IDS, linkedFileId, TextField.TYPE_STORED));
+      doc.add(new StringField(EMBEDDED_FILE_IDS, linkedFileId, Field.Store.YES));
     }
   }
 
@@ -525,21 +494,21 @@ public class IndexManager {
 
   private void setThumbnailField(final FullIndexEntry indexEntry, final Document doc) {
     if (indexEntry.getThumbnail() != null && indexEntry.getThumbnailMimeType() != null) {
-      doc.add(new Field(THUMBNAIL, indexEntry.getThumbnail(), TextField.TYPE_STORED));
+      doc.add(new StringField(THUMBNAIL, indexEntry.getThumbnail(), Field.Store.YES));
       doc.add(
-          new Field(THUMBNAIL_MIMETYPE, indexEntry.getThumbnailMimeType(), TextField.TYPE_STORED));
-      doc.add(new Field(THUMBNAIL_DIRECTORY, indexEntry.getThumbnailDirectory(),
-          TextField.TYPE_STORED));
+          new StringField(THUMBNAIL_MIMETYPE, indexEntry.getThumbnailMimeType(), Field.Store.YES));
+      doc.add(new StringField(THUMBNAIL_DIRECTORY, indexEntry.getThumbnailDirectory(),
+          Field.Store.YES));
     }
   }
 
   private void setCreationAndUpdateFields(final FullIndexEntry indexEntry, final Document doc) {
-    doc.add(new Field(CREATIONDATE, indexEntry.getCreationDate(), TextField.TYPE_STORED));
-    doc.add(new Field(CREATIONUSER, indexEntry.getCreationUser(), TextField.TYPE_STORED));
-    doc.add(new Field(LASTUPDATEDATE, indexEntry.getLastModificationDate(), TextField.TYPE_STORED));
-    doc.add(new Field(LASTUPDATEUSER, indexEntry.getLastModificationUser(), TextField.TYPE_STORED));
-    doc.add(new Field(STARTDATE, indexEntry.getStartDate(), TextField.TYPE_STORED));
-    doc.add(new Field(ENDDATE, indexEntry.getEndDate(), TextField.TYPE_STORED));
+    doc.add(new StringField(CREATIONDATE, indexEntry.getCreationDate(), Field.Store.YES));
+    doc.add(new StringField(CREATIONUSER, indexEntry.getCreationUser(), Field.Store.YES));
+    doc.add(new StringField(LASTUPDATEDATE, indexEntry.getLastModificationDate(), Field.Store.YES));
+    doc.add(new StringField(LASTUPDATEUSER, indexEntry.getLastModificationUser(), Field.Store.YES));
+    doc.add(new StringField(STARTDATE, indexEntry.getStartDate(), Field.Store.YES));
+    doc.add(new StringField(ENDDATE, indexEntry.getEndDate(), Field.Store.YES));
   }
 
   private void setPreviewAndKeyWordsField(final FullIndexEntry indexEntry, final Document doc) {
@@ -612,24 +581,5 @@ public class IndexManager {
     } catch (RuntimeException e) {
       SilverLogger.getLogger(this).error("Failed to parse file " + fileDescription.getPath(), e);
     }
-  }
-
-  /**
-   *
-   * Added by NEY - 22/01/2004 Module Wysiwyg is reused by several modules like publication , ...
-   * When you add a wysiwyg content to an object(it 's the case in kmelia), we call the wysiwyg's
-   * method index to index the content of the wysiwyg. The name, description and keywords of the
-   * object are used by the index method to display them when the wysiwyg will be found by the
-   * search engine. Here, this data must be unindexed. But it must not be unstored. If it is
-   * unstored, this data will be indexed. So, if we search a word present in one of this data, two
-   * elements will be returned by the search engine : - the object - the wysiwyg
-   *
-   * @param indexEntry
-   * @return
-   */
-  private boolean isWysiwyg(FullIndexEntry indexEntry) {
-    return "Wysiwyg".equals(indexEntry.getObjectType())
-        && (indexEntry.getComponent().startsWith("kmelia")
-        || indexEntry.getComponent().startsWith("kmax"));
   }
 }
