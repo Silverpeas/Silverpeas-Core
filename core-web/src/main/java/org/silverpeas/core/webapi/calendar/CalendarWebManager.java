@@ -28,6 +28,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
@@ -48,6 +49,7 @@ import org.silverpeas.core.importexport.ExportException;
 import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -287,10 +289,14 @@ public class CalendarWebManager {
    */
   void exportCalendarAsICalendarFormat(final Calendar calendar, final ExportDescriptor descriptor)
       throws ExportException {
-    final User currentRequester = User.getCurrentRequester();
-    if (calendar.isMainPersonalOf(currentRequester)) {
+    final Mutable<User> currentUser = Mutable.ofNullable(User.getCurrentRequester());
+    if (!currentUser.isPresent()) {
+      SilverpeasPersonalComponentInstance.getById(calendar.getComponentInstanceId())
+          .ifPresent(i -> currentUser.set(i.getUser()));
+    }
+    if (currentUser.isPresent() && calendar.isMainPersonalOf(currentUser.get())) {
       iCalendarExporter.exports(descriptor,
-          () -> Calendar.getEvents().filter(f -> f.onParticipants(currentRequester)).stream());
+          () -> Calendar.getEvents().filter(f -> f.onParticipants(currentUser.get())).stream());
     } else {
       iCalendarExporter.exports(descriptor,
           () -> Calendar.getEvents().filter(f -> f.onCalendar(calendar)).stream());
