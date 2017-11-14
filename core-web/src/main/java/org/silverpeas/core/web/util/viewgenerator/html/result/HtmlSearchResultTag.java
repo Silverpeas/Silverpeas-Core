@@ -374,7 +374,8 @@ public class HtmlSearchResultTag extends TagSupport {
           .append(WebEncodeHelper.javaStringToHtmlString(sCreatorName)).append(" | </div>");
     }
 
-    if (StringUtil.isDefined(serverName)) {
+    if (getResources().getSetting("external.search.enable", false) &&
+        StringUtil.isDefined(serverName)) {
       result.append("<div class=\"serveurName\"> ").append(serverName).append(" | </div>");
     }
 

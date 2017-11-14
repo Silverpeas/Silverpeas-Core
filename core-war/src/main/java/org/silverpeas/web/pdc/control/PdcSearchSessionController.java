@@ -187,6 +187,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private ResultFilterVO selectedFacetEntries = null;
   private boolean platformUsesPDC = false;
   private boolean includeUsers = false;
+  private boolean includePDC = false;
   private List<GlobalSilverResult> selectedSilverContents = null;
   private ThesaurusManager thesaurus = PdcServiceProvider.getThesaurusManager();
   // Vocabulary used by the user
@@ -226,6 +227,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
 
     includeUsers = getSettings().getBoolean("search.users.included", false);
+    includePDC = getSettings().getBoolean("search.pdc.included", false);
   }
 
   /**
@@ -2095,10 +2097,11 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     if (getQueryParameters().getSpaceId() == null && !isDataTypeDefined()) {
       // it's a global search. Search on personal components, taxonomy, spaces and components
       // description
-      query.addComponent(USER_PREFIX + getUserId() + "_mailService");
       query.addComponent(USER_PREFIX + getUserId() + "_todo");
       query.addComponent(USER_PREFIX + getUserId() + "_agenda");
-      query.addComponent("pdc");
+      if (includePDC) {
+        query.addComponent("pdc");
+      }
       query.addComponent("Spaces");
       query.addComponent("Components");
       if (includeUsers) {
