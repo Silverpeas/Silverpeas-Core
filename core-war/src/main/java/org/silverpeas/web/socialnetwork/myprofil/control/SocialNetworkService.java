@@ -25,6 +25,7 @@ package org.silverpeas.web.socialnetwork.myprofil.control;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -122,8 +123,9 @@ public class SocialNetworkService {
     org.silverpeas.core.date.Date dBegin = new org.silverpeas.core.date.Date(begin);
     org.silverpeas.core.date.Date dEnd = new org.silverpeas.core.date.Date(end);
 
-    List<String> myContactIds = getMyContactsIds(); // my contacts
-    myContactIds.add(myId); // add myself
+    List<String> myContactIds = getMyContactsIds();
+    // add myself
+    myContactIds.add(myId);
 
     List<SocialInformation> socialInformationsFull =
         socialInformationService().getSocialInformationsListOfMyContact(type, myId,
@@ -148,7 +150,7 @@ public class SocialNetworkService {
     org.silverpeas.core.date.Date dBegin = new org.silverpeas.core.date.Date(begin);
     org.silverpeas.core.date.Date dEnd = new org.silverpeas.core.date.Date(end);
 
-    List<String> myContactIds = getTheContactsIds(myContactId); // the contacts
+    List<String> myContactIds = Arrays.asList(myContactId);
 
     List<SocialInformation> socialInformationsFull =
         socialInformationService().getSocialInformationsListOfMyContact(type, myId,
