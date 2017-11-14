@@ -146,6 +146,9 @@ public abstract class LookHelper {
 
   public abstract List<PublicationDetail> getLatestPublications(String spaceId, int nbPublis);
 
+  public abstract List<PublicationDetail> getLatestPublications(String spaceId,
+      List<String> excludedComponents, int nbPublis);
+
   public abstract List<PublicationDetail> getValidPublications(NodePK nodePK);
 
   public abstract UserMenuDisplay getDisplayUserMenu();

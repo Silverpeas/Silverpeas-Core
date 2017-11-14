@@ -646,11 +646,19 @@ public class LookSilverpeasV5Helper extends LookHelper {
   public List<PublicationDetail> getLatestPublications(String spaceId, int nbPublis) {
     try {
       return getPublicationHelper().getPublications(spaceId, nbPublis);
-    } catch (ClassNotFoundException ex) {
+    } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex);
       return new ArrayList<PublicationDetail>();
-    } catch (InstantiationException ex) {
-      return new ArrayList<PublicationDetail>();
-    } catch (IllegalAccessException ex) {
+    }
+  }
+
+  @Override
+  public List<PublicationDetail> getLatestPublications(String spaceId,
+      List<String> excludedComponents, int nbPublis) {
+    try {
+      return getPublicationHelper().getPublications(spaceId, excludedComponents, nbPublis);
+    } catch (Exception ex) {
+      SilverLogger.getLogger(this).error(ex);
       return new ArrayList<PublicationDetail>();
     }
   }

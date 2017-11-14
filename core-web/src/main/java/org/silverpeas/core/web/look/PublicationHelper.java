@@ -39,6 +39,9 @@ public interface PublicationHelper {
 
   public List<PublicationDetail> getPublications(String spaceId, int nbPublis);
 
+  public List<PublicationDetail> getPublications(String spaceId, List<String> excluded,
+      int nbPublis);
+
   /**
    * Get the last publications of a space updated since a specified date.
    * @param spaceId the id of the space.
