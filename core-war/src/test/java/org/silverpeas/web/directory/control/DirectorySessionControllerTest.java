@@ -353,6 +353,9 @@ public class DirectorySessionControllerTest {
     MainSessionController controller = mock(MainSessionController.class);
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
+    UserDetail user = new UserDetail();
+    user.setId("1");
+    when(controller.getCurrentUserDetail()).thenReturn(user);
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
     List<User> ol = new ArrayList<>();
     UserDetail[] nl = new UserDetail[3];
