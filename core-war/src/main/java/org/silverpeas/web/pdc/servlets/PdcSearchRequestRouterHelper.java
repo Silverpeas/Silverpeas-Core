@@ -38,6 +38,7 @@ import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 
 import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -69,13 +70,13 @@ public class PdcSearchRequestRouterHelper {
   }
 
   public static QueryParameters saveFavoriteRequestAndSetPdcInfo(PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) {
     String favoriteRequestId = request.getParameter("iCenterId");
     return saveFavoriteRequestAndSetPdcInfo(pdcSC, request, favoriteRequestId);
   }
 
   public static QueryParameters saveFavoriteRequestAndSetPdcInfo(PdcSearchSessionController pdcSC,
-      HttpServletRequest request, String favoriteRequestId) throws Exception {
+      HttpServletRequest request, String favoriteRequestId)  {
     // this parameter is for Back Button on result page
     String urlToRedirect = request.getParameter("urlToRedirect");
     request.setAttribute("urlToRedirect", urlToRedirect);
@@ -91,7 +92,7 @@ public class PdcSearchRequestRouterHelper {
   }
 
   public static QueryParameters saveFavoriteRequest(PdcSearchSessionController pdcSC,
-      Interests favoriteRequest) throws Exception {
+      Interests favoriteRequest)  {
     String query = favoriteRequest.getQuery();
     String spaceId = favoriteRequest.getWorkSpaceID();
     String componentId = favoriteRequest.getPeasID();
@@ -113,8 +114,8 @@ public class PdcSearchRequestRouterHelper {
     queryParameters.setKeywords(query);
     queryParameters.setSpaceIdAndInstanceId(spaceId, componentId);
     queryParameters.setCreatorId(authorSearch);
-    queryParameters.setAfterDate(afterdate);
-    queryParameters.setBeforeDate(beforedate);
+    queryParameters.setAfterDate(DateUtil.toLocalDate(afterdate));
+    queryParameters.setBeforeDate(DateUtil.toLocalDate(beforedate));
 
     return queryParameters;
   }
@@ -179,13 +180,13 @@ public class PdcSearchRequestRouterHelper {
     return queryParameters;
   }
 
-  private static Date getDateFromRequest(String name, String language, HttpServletRequest request) {
+  private static LocalDate getDateFromRequest(String name, String language, HttpServletRequest request) {
     String str = request.getParameter(name);
     if (!StringUtil.isDefined(str)) {
       return null;
     }
     try {
-      return DateUtil.stringToDate(str, language);
+      return DateUtil.stringToLocalDate(str, language);
     } catch (ParseException e) {
       SilverLogger.getLogger(PdcSearchRequestRouter.class).warn(e.getMessage());
     }
@@ -200,8 +201,7 @@ public class PdcSearchRequestRouterHelper {
    * @param pdcSC
    * @throws Exception
    */
-  public static void setUserChoices(HttpServletRequest request, PdcSearchSessionController pdcSC)
-      throws Exception {
+  public static void setUserChoices(HttpServletRequest request, PdcSearchSessionController pdcSC) {
     QueryParameters queryParameters = pdcSC.getQueryParameters();
     if (queryParameters != null) {
       String authorSearch = queryParameters.getCreatorId();
@@ -249,7 +249,7 @@ public class PdcSearchRequestRouterHelper {
    */
   public static void setAttributesAdvancedSearch(
       PdcSearchSessionController pdcSC, HttpServletRequest request,
-      boolean setSpacesAndComponents) throws Exception {
+      boolean setSpacesAndComponents) {
     String selectedSpace = null;
     String selectedComponent = null;
 
@@ -278,10 +278,9 @@ public class PdcSearchRequestRouterHelper {
    *
    * @param pdcSC
    * @param request
-   * @throws Exception
    */
   public static void setPertinentAxis(PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) {
     String showSecondarySearchAxis = request.getParameter("ShowSndSearchAxis");
 
     // does the user want to see secondary axis ?
@@ -299,10 +298,9 @@ public class PdcSearchRequestRouterHelper {
    *
    * @param pdcSC
    * @param request
-   * @throws Exception
    */
   public static void setContext(PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) {
 
     // on retire du searchcontext tous les criteres qui ne sont pas dans
     // l'espace choisi par l'utilisateur.

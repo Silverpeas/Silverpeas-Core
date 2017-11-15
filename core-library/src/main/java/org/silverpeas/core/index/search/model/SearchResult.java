@@ -25,10 +25,13 @@ package org.silverpeas.core.index.search.model;
 
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.i18n.AbstractI18NBean;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -134,9 +137,13 @@ public class SearchResult extends AbstractI18NBean {
   }
 
   private LocalDate getLocalDate(String date) {
-    /*if (StringUtil.isDefined(date)) {
-      return LocalDate.parse(date.replaceAll("/", "-"));
-    }*/
+    if (StringUtil.isDefined(date)) {
+      try {
+        return DateUtil.parseFromLucene(date);
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
+    }
     return null;
   }
 

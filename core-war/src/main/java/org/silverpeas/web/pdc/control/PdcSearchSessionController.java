@@ -915,20 +915,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
                 underLink.substring(iEnd, underLink.length());
             StringBuilder titleLinkBuilder = new StringBuilder(256);
             titleLinkBuilder.append("javascript:").append(markAsReadJS).append(" window.open('").
-                append(WebEncodeHelper.javaStringToJsString(downloadLink)).append(
-                "');jumpToComponent('").append(componentId).
-                append("');document.location.href='").append(WebEncodeHelper.javaStringToJsString(
-                underLink)).append("&FileOpened=1';");
+                append(WebEncodeHelper.javaStringToJsString(downloadLink)).append("');jumpToComponent('").append(componentId).
+                append("');document.location.href='").append(WebEncodeHelper.javaStringToJsString(underLink)).append("&FileOpened=1';");
             titleLink = titleLinkBuilder.toString();
           } else {
-            ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(
-                componentId);
+            ComponentInstLight componentInst = getOrganisationController().getComponentInstLight(componentId);
             if (componentInst != null) {
               String title = componentInst.getLabel(getLanguage());
               result.setName(title);
               underLink = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId);
-              titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
-                  + "');document.location.href='" + underLink + "';";
+              titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId +
+                  "');document.location.href='" + underLink + "';";
             }
           }
         } else if (resultType.startsWith(VERSIONING_RESOURCE)) {
@@ -945,11 +942,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           titleLink = buildTitleLink(markAsReadJS, downloadLink, componentId, underLink, true);
         } else if ("LinkedFile".equals(resultType)) {
           // open the linked file inside a popup window
-          downloadLink =
-              FileServerUtils.getUrl(result.getName(), result.getId(), componentId);
+          downloadLink = FileServerUtils.getUrl(result.getName(), result.getId(), componentId);
           // window opener is reloaded on the main page of the component
-          underLink = URLUtil.getApplicationURL() + URLUtil.getURL("useless", componentId)
-              + "Main";
+          underLink = URLUtil.getApplicationURL() + URLUtil.getURL("useless", componentId) + "Main";
           titleLink = buildTitleLink(markAsReadJS, downloadLink, componentId, underLink, false);
         } else if ("TreeNode".equals(resultType)) {
           // the PDC uses this type of object.
@@ -957,20 +952,24 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         } else if ("Space".equals(resultType)) {
           // retour sur l'espace
           String spaceId = result.getId();
-          titleLink = "javascript:" + markAsReadJS + " goToSpace('" + spaceId
-              + "');document.location.href='"
-              + URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceId) + "';";
+          titleLink = "javascript:" + markAsReadJS + " goToSpace('" + spaceId +
+              "');document.location.href='" + URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceId) +
+              "';";
         } else if ("Component".equals(resultType)) {
           // retour sur le composant
           underLink = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, result.getId());
-          titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
-              + "');document.location.href='" + underLink + "';";
+          titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId +
+              "');document.location.href='" + underLink + "';";
         } else if (UserIndexation.OBJECT_TYPE.equals(resultType)) {
           User user = User.getById(result.getId());
           if (user != null) {
             result.setThumbnailURL(user.getSmallAvatar());
           }
           titleLink = "javascript:" + markAsReadJS + " viewUserProfile('" + result.getId() + "');";
+        } else if ("todo".equals(resultType)) {
+          titleLink =
+              "javascript:" + markAsReadJS + " document.location.href='" + getResultURL(result) +
+                  "';";
         } else {
           titleLink = "javascript:" + markAsReadJS + " jumpToComponent('" + componentId
               + "');";
@@ -1428,7 +1427,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-  public Interests loadICenter(String icId) throws PdcException {
+  public Interests loadICenter(String icId) {
     try {
       int id = Integer.parseInt(icId);
       Interests ic = InterestsManager.getInstance().getInterestsById(id);
@@ -2098,7 +2097,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       // it's a global search. Search on personal components, taxonomy, spaces and components
       // description
       query.addComponent(USER_PREFIX + getUserId() + "_todo");
-      query.addComponent(USER_PREFIX + getUserId() + "_agenda");
       if (includePDC) {
         query.addComponent("pdc");
       }
@@ -2151,8 +2149,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   }
 
   private String getResultURL(GlobalSilverResult result) {
-    String url =
-        URLUtil.getApplicationURL() + URLUtil.getComponentInstanceURL(result.getInstanceId());
+    String url = "";
+    if ("todo".equals(result.getType())) {
+      url = URLUtil.getApplicationURL() + URLUtil.getURL(result.getType(), null, null);
+    } else {
+      String instanceId = result.getInstanceId();
+      url = URLUtil.getApplicationURL() + URLUtil.getComponentInstanceURL(instanceId);
+    }
     url += "searchResult?Type=" + result.getType() + "&Id=" + result.getId();
     url += "&From=Search";
     return url;

@@ -35,6 +35,7 @@ import org.silverpeas.core.pdc.pdc.model.Value;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.sql.Connection;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.List;
 
@@ -435,7 +436,7 @@ public interface PdcManager {
 
   public List<Integer> findSilverContentIdByPosition(
       SearchContext containerPosition, List<String> alComponentId,
-      String authorId, String afterDate, String beforeDate)
+      String authorId, LocalDate afterDate, LocalDate beforeDate)
       throws PdcException;
 
   /**

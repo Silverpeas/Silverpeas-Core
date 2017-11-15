@@ -28,11 +28,12 @@ import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -63,11 +64,10 @@ public final class QueryDescription implements Serializable {
    */
   private String requestedLang = null;
   private String requestedAuthor = null;
-  private String requestedCreatedBefore = null;
-  private String requestedCreatedAfter = null;
-  private String requestedUpdatedBefore = null;
-  private String requestedUpdatedAfter = null;
-  private Map<String, String> xmlQuery = null;
+  private LocalDate requestedCreatedBefore = null;
+  private LocalDate requestedCreatedAfter = null;
+  private LocalDate requestedUpdatedBefore = null;
+  private LocalDate requestedUpdatedAfter = null;
   private String xmlTitle = null;
   private List<FieldDescription> multiFieldQuery = null;
   private boolean searchBySpace = false;
@@ -191,37 +191,29 @@ public final class QueryDescription implements Serializable {
    * Set the before date
    * @param beforedate
    */
-  public void setRequestedCreatedBefore(String beforedate) {
+  public void setRequestedCreatedBefore(LocalDate beforedate) {
     this.requestedCreatedBefore = beforedate;
   }
 
   /**
    * get the before date
    */
-  public String getRequestedCreatedBefore() {
+  public LocalDate getRequestedCreatedBefore() {
     return requestedCreatedBefore;
   }
 
   /**
    * Set the after date
    */
-  public void setRequestedCreatedAfter(String afterdate) {
+  public void setRequestedCreatedAfter(LocalDate afterdate) {
     this.requestedCreatedAfter = afterdate;
   }
 
   /**
    * get the after date
    */
-  public String getRequestedCreatedAfter() {
+  public LocalDate getRequestedCreatedAfter() {
     return requestedCreatedAfter;
-  }
-
-  public void setXmlQuery(Map<String, String> xmlQuery) {
-    this.xmlQuery = xmlQuery;
-  }
-
-  public Map<String, String> getXmlQuery() {
-    return xmlQuery;
   }
 
   public String getXmlTitle() {
@@ -269,11 +261,10 @@ public final class QueryDescription implements Serializable {
 
   public boolean isEmpty() {
     boolean queryDefined = StringUtil.isDefined(query) || getMultiFieldQuery() != null;
-    boolean xmlQueryDefined = getXmlQuery() != null;
     boolean filtersDefined = isSearchBySpace() || isSearchByComponentType() ||
         StringUtil.isDefined(getRequestedAuthor());
     filtersDefined = filtersDefined || isPeriodDefined();
-    return !queryDefined && !xmlQueryDefined && !filtersDefined;
+    return !queryDefined && !filtersDefined;
   }
 
   /**
@@ -293,10 +284,8 @@ public final class QueryDescription implements Serializable {
   }
 
   public boolean isPeriodDefined() {
-    return StringUtil.isDefined(requestedCreatedAfter) ||
-        StringUtil.isDefined(requestedCreatedBefore) ||
-        StringUtil.isDefined(requestedUpdatedAfter) || StringUtil.
-        isDefined(requestedUpdatedBefore);
+    return !Objects.isNull(requestedCreatedAfter) || !Objects.isNull(requestedCreatedBefore) ||
+        !Objects.isNull(requestedUpdatedAfter) || !Objects.isNull(requestedUpdatedBefore);
   }
 
   /**
@@ -313,19 +302,19 @@ public final class QueryDescription implements Serializable {
     this.searchBySpace = isSearchBySpace;
   }
 
-  public String getRequestedUpdatedBefore() {
+  public LocalDate getRequestedUpdatedBefore() {
     return requestedUpdatedBefore;
   }
 
-  public void setRequestedUpdatedBefore(String requestedUpdatedBefore) {
+  public void setRequestedUpdatedBefore(LocalDate requestedUpdatedBefore) {
     this.requestedUpdatedBefore = requestedUpdatedBefore;
   }
 
-  public String getRequestedUpdatedAfter() {
+  public LocalDate getRequestedUpdatedAfter() {
     return requestedUpdatedAfter;
   }
 
-  public void setRequestedUpdatedAfter(String requestedUpdatedAfter) {
+  public void setRequestedUpdatedAfter(LocalDate requestedUpdatedAfter) {
     this.requestedUpdatedAfter = requestedUpdatedAfter;
   }
 

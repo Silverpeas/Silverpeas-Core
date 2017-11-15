@@ -30,7 +30,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -270,8 +269,7 @@ public class IndexEntry implements Serializable, Cloneable {
    * Set the creation time of the indexed document.
    */
   public void setCreationDate(LocalDate creationDate) {
-    Date date = Date.from(creationDate.atStartOfDay(ZoneId.systemDefault()).toInstant());
-    this.creationDate = getDate(date);
+    this.creationDate = getDate(creationDate);
   }
 
   /**
@@ -310,6 +308,10 @@ public class IndexEntry implements Serializable, Cloneable {
     this.startDate = getDate(date);
   }
 
+  public void setStartDate(LocalDate date) {
+    this.startDate = getDate(date);
+  }
+
   /**
    * Get the start date from which the document will be displayed. Returns 0000/00/00 if the start
    * date is not set.
@@ -326,6 +328,10 @@ public class IndexEntry implements Serializable, Cloneable {
    * Set the end date until which the document will be displayed.
    */
   public void setEndDate(Date date) {
+    this.endDate = getDate(date);
+  }
+
+  public void setEndDate(LocalDate date) {
     this.endDate = getDate(date);
   }
 
@@ -432,6 +438,10 @@ public class IndexEntry implements Serializable, Cloneable {
     this.lastModificationDate = getDate(lastModificationDate);
   }
 
+  public void setLastModificationDate(LocalDate lastModificationDate) {
+    this.lastModificationDate = getDate(lastModificationDate);
+  }
+
   public String getLastModificationUser() {
     if (!StringUtil.isDefined(lastModificationUser)) {
       return getCreationUser();
@@ -498,6 +508,10 @@ public class IndexEntry implements Serializable, Cloneable {
   }
 
   private String getDate(Date date) {
+    return getDate(DateUtil.toLocalDate(date));
+  }
+
+  private String getDate(LocalDate date) {
     if (date == null) {
       return null;
     }

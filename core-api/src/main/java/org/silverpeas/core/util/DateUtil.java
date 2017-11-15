@@ -70,7 +70,7 @@ public class DateUtil {
   public static final FastDateFormat ISO8601_FORMATTER;
   private static final DateTimeFormatter CUSTOM_FORMATTER =
       DateTimeFormatter.ofPattern("yyyy/MM/dd");
-  public static final FastDateFormat LUCENE_FORMATTER;
+  public static final DateTimeFormatter LUCENE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
   /**
    * Format and parse dates.
@@ -95,7 +95,6 @@ public class DateUtil {
         FastDateFormat.getInstance("yyyyMMdd'T'HHmmss'Z'", TimeZone.getTimeZone("UTC"));
     ISO8601_FORMATTER =
         FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("UTC"));
-    LUCENE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd");
   }
 
   /**
@@ -184,6 +183,13 @@ public class DateUtil {
     }
   }
 
+  public static String getInputDate(LocalDate date, String language) {
+    if (date == null) {
+      return "";
+    }
+    return date.format(getLocalDateInputFormat(language));
+  }
+
   private static boolean isNotDefined(Date date) {
     return (date == null) || new org.silverpeas.core.date.Date(date).isNotDefined();
   }
@@ -212,6 +218,15 @@ public class DateUtil {
       throw e;
     } catch (Exception e) {
       throw new ParseException(e.getMessage(), 0);
+    }
+  }
+
+  public static LocalDate stringToLocalDate(String string, String language) throws ParseException {
+    DateTimeFormatter format = getLocalDateInputFormat(language);
+    try {
+      return LocalDate.parse(string, format);
+    } catch (Exception e) {
+      throw e;
     }
   }
 
@@ -299,6 +314,10 @@ public class DateUtil {
    */
   public static SimpleDateFormat getDateInputFormat(String language) {
     return new SimpleDateFormat(getLocalizedProperties(language).getString("dateInputFormat"));
+  }
+
+  public static DateTimeFormatter getLocalDateInputFormat(String language) {
+    return DateTimeFormatter.ofPattern(getLocalizedProperties(language).getString("dateInputFormat"));
   }
 
   /**
@@ -601,6 +620,13 @@ public class DateUtil {
    * @return the formatted String.
    */
   public static String formatDate(Date date) {
+    if (date == null) {
+      return null;
+    }
+    return DATE_FORMATTER.format(date);
+  }
+
+  public static String formatDate(LocalDate date) {
     if (date == null) {
       return null;
     }
@@ -1005,15 +1031,19 @@ public class DateUtil {
     return cal;
   }
 
-  public static String formatAsLuceneDate(Date date) {
+  public static String formatAsLuceneDate(LocalDate date) {
     return LUCENE_FORMATTER.format(date);
   }
 
-  public static Date parseFromLucene(String date) throws ParseException {
+  public static LocalDate parseFromLucene(String date) {
     if (date == null) {
       return null;
     }
-    return LUCENE_FORMATTER.parse(date);
+    return LocalDate.parse(date, LUCENE_FORMATTER);
+  }
+
+  public static LocalDate toLocalDate(Date date) {
+    return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
   }
 
   private DateUtil() {

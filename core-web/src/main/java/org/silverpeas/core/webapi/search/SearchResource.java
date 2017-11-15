@@ -44,7 +44,6 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.text.ParseException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -62,8 +61,6 @@ import java.util.function.Consumer;
 public class SearchResource extends RESTWebService {
 
   static final String PATH = "search";
-
-  private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
@@ -121,8 +118,7 @@ public class SearchResource extends RESTWebService {
       String endDate) {
     if (StringUtil.isDefined(startDate)) {
       try {
-        String date = LocalDate.parse(startDate).format(formatter);
-        queryDescription.setRequestedCreatedAfter(date);
+        queryDescription.setRequestedCreatedAfter(LocalDate.parse(startDate));
       } catch (Exception e) {
         SilverLogger.getLogger(this).error("Can't parse start date as Long : {0}",
             new String[] {startDate}, e);
@@ -131,8 +127,7 @@ public class SearchResource extends RESTWebService {
 
     if (StringUtil.isDefined(endDate)) {
       try {
-        String date = LocalDate.parse(endDate).format(formatter);
-        queryDescription.setRequestedCreatedBefore(date);
+        queryDescription.setRequestedCreatedBefore(LocalDate.parse(endDate));
       } catch (Exception e) {
         SilverLogger.getLogger(this).error("Can't parse end date as Long : {0}",
             new String[] {endDate}, e);

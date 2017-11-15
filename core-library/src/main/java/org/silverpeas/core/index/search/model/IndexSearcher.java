@@ -58,6 +58,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.*;
 
 /**
@@ -193,12 +194,7 @@ public class IndexSearcher {
       rangeClausesBuilder.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
       rangeClausesBuilder.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
 
-      if (query.getXmlQuery() != null) {
-        booleanQueryBuilder.add(getXMLQuery(query), BooleanClause.Occur.MUST);
-      } else {
-        parseQuery(query, booleanQueryBuilder, rangeClausesBuilder);
-      }
-
+      parseQuery(query, booleanQueryBuilder, rangeClausesBuilder);
 
       // date range clauses are passed in the filter to optimize search performances
       // but the query cannot be empty : if so, then pass date range in the query
@@ -267,11 +263,12 @@ public class IndexSearcher {
   }
 
   private TermRangeQuery getVisibilityStartQuery() {
-    return TermRangeQuery.newStringRange(IndexManager.STARTDATE, IndexEntry.STARTDATE_DEFAULT, formatDate(new Date()), true, true);
+    return TermRangeQuery.newStringRange(IndexManager.STARTDATE, IndexEntry.STARTDATE_DEFAULT,
+        formatDate(LocalDate.now()), true, true);
   }
 
   private TermRangeQuery getVisibilityEndQuery() {
-    return TermRangeQuery.newStringRange(IndexManager.ENDDATE, formatDate(new Date()),
+    return TermRangeQuery.newStringRange(IndexManager.ENDDATE, formatDate(LocalDate.now()),
         IndexEntry.ENDDATE_DEFAULT, true, true);
   }
 
@@ -318,29 +315,6 @@ public class IndexSearcher {
     return parsedQuery;
   }
 
-  private Query getXMLQuery(QueryDescription query) throws ParseException {
-
-      Set<String> languages = I18NHelper.getAllSupportedLanguages();
-      Analyzer analyzer = indexManager.getAnalyzer(query.getRequestedLanguage());
-      BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
-
-      String xmlTitle = query.getXmlTitle();
-      if (StringUtil.isDefined(xmlTitle)) {
-        Query headerQuery = getQuery(IndexManager.HEADER, xmlTitle, languages, analyzer);
-        booleanQueryBuilder.add(headerQuery, BooleanClause.Occur.MUST);
-      }
-
-      Map<String, String> xmlQuery = query.getXmlQuery();
-      for (String fieldName : xmlQuery.keySet()) {
-        Query fieldI18NQuery =
-            getQuery(fieldName, xmlQuery.get(fieldName), languages, analyzer);
-        booleanQueryBuilder.add(fieldI18NQuery, BooleanClause.Occur.MUST);
-      }
-
-      return booleanQueryBuilder.build();
-
-  }
-
   private Query getMultiFieldQuery(QueryDescription query)
       throws org.silverpeas.core.index.search.model.ParseException {
     try {
@@ -358,8 +332,7 @@ public class IndexSearcher {
       for (FieldDescription fieldQuery : fieldQueries) {
         if (fieldQuery.isBasedOnDate()) {
           TermRangeQuery rangeQuery = getTermRangeQuery(fieldQuery.getFieldName(),
-              formatDate(fieldQuery.getStartDate()),
-              formatDate(fieldQuery.getEndDate()));
+              fieldQuery.getStartDate(), fieldQuery.getEndDate());
           if (rangeQuery != null) {
             booleanQuery.add(rangeQuery, BooleanClause.Occur.MUST);
           }
@@ -438,7 +411,6 @@ public class IndexSearcher {
     indexEntry.setEmbeddedFileIds(doc.getValues(IndexManager.EMBEDDED_FILE_IDS));
     indexEntry.setFilename(doc.get(IndexManager.FILENAME));
     indexEntry.setAlias(StringUtil.getBooleanValue(doc.get(IndexManager.ALIAS)));
-    // TODO check the score.
     indexEntry.setScore(scoreDoc.score);
     // Checks the content to see if it contains sortable field
     // and puts them in MatchingIndexEntry object
@@ -572,14 +544,14 @@ public class IndexSearcher {
   }
 
   private TermRangeQuery getRangeQueryOnCreationDate(QueryDescription query) {
-    String beginDate = query.getRequestedCreatedAfter();
-    String endDate = query.getRequestedCreatedBefore();
+    LocalDate beginDate = query.getRequestedCreatedAfter();
+    LocalDate endDate = query.getRequestedCreatedBefore();
     return getTermRangeQuery(IndexManager.CREATIONDATE, beginDate, endDate);
   }
 
   private TermRangeQuery getRangeQueryOnLastUpdateDate(QueryDescription query) {
-    String beginDate = query.getRequestedUpdatedAfter();
-    String endDate = query.getRequestedUpdatedBefore();
+    LocalDate beginDate = query.getRequestedUpdatedAfter();
+    LocalDate endDate = query.getRequestedUpdatedBefore();
     return getTermRangeQuery(IndexManager.LASTUPDATEDATE, beginDate, endDate);
   }
 
@@ -599,31 +571,31 @@ public class IndexSearcher {
     return new PrefixQuery(term);
   }
 
-  private TermRangeQuery getTermRangeQuery(String fieldName, String beginDate, String endDate) {
-    if (!StringUtil.isDefined(beginDate) && !StringUtil.isDefined(endDate)) {
+  private TermRangeQuery getTermRangeQuery(String fieldName, LocalDate beginDate, LocalDate endDate) {
+    if (Objects.isNull(beginDate) && Objects.isNull(endDate)) {
       return null;
     }
 
-    String start = beginDate;
-    if (!StringUtil.isDefined(start)) {
-      start = IndexEntry.STARTDATE_DEFAULT;
+    String start = IndexEntry.STARTDATE_DEFAULT;
+    if (Objects.nonNull(beginDate)) {
+      start = DateUtil.formatAsLuceneDate(beginDate);
     }
 
-    String end = endDate;
-    if (!StringUtil.isDefined(end)) {
-      end = IndexEntry.ENDDATE_DEFAULT;
+    String end = IndexEntry.ENDDATE_DEFAULT;
+    if (Objects.nonNull(endDate)) {
+      end = DateUtil.formatAsLuceneDate(endDate);
     }
     return TermRangeQuery.newStringRange(fieldName, start, end, true, true);
   }
 
-  private String formatDate(Date date) {
+  private String formatDate(LocalDate date) {
     return DateUtil.formatAsLuceneDate(date);
   }
 
-  private Date parseDate(String date) {
+  private LocalDate parseDate(String date) {
     try {
       return DateUtil.parseFromLucene(date);
-    } catch (java.text.ParseException e) {
+    } catch (Exception e) {
       SilverLogger.getLogger(this).warn(e);
     }
     return null;

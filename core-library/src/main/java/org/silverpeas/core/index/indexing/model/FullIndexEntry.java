@@ -29,7 +29,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import org.silverpeas.core.index.indexing.DateFormatter;
 
 /**
  * A FullIndexEntry is an IndexEntry completed with data usefull uniquely at the index creation time
@@ -131,9 +130,7 @@ public class FullIndexEntry extends IndexEntry implements Serializable, Cloneabl
   }
 
   public void addField(String fieldName, Date value, String language) {
-    getFields().add(
-        new FieldDescription(fieldName, DateFormatter.date2IndexFormat(value),
-        language, false));
+    getFields().add(new FieldDescription(fieldName, value, language, false));
   }
 
   /**

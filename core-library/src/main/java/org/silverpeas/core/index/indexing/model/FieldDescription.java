@@ -24,8 +24,10 @@
 package org.silverpeas.core.index.indexing.model;
 
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.DateUtil;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.util.Date;
 
 /**
@@ -50,8 +52,8 @@ public class FieldDescription implements Serializable {
   private final String fieldName;
   private final boolean stored;
   private final boolean basedOnDates;
-  private final Date startDate;
-  private final Date endDate;
+  private final LocalDate startDate;
+  private final LocalDate endDate;
 
   public FieldDescription(String fieldName, String content, String lang) {
     this.content = content;
@@ -73,14 +75,24 @@ public class FieldDescription implements Serializable {
     this.endDate = null;
   }
 
+  public FieldDescription(String fieldName, Date date, String lang, boolean stored) {
+    this.content = DateUtil.formatAsLuceneDate(DateUtil.toLocalDate(date));
+    this.lang = I18NHelper.checkLanguage(lang);
+    this.fieldName = fieldName;
+    this.stored = stored;
+    this.basedOnDates = false;
+    this.startDate = null;
+    this.endDate = null;
+  }
+
   public FieldDescription(String fieldName, Date begin, Date end, String lang) {
     this.content = "";
     this.lang = I18NHelper.checkLanguage(lang);
     this.fieldName = fieldName;
     this.stored = false;
     this.basedOnDates = true;
-    this.startDate = begin;
-    this.endDate = end;
+    this.startDate = DateUtil.toLocalDate(begin);
+    this.endDate = DateUtil.toLocalDate(end);
   }
 
   public boolean isBasedOnDate() {
@@ -112,11 +124,11 @@ public class FieldDescription implements Serializable {
     return stored;
   }
 
-  public Date getStartDate() {
+  public LocalDate getStartDate() {
     return startDate;
   }
 
-  public Date getEndDate() {
+  public LocalDate getEndDate() {
     return endDate;
   }
 }

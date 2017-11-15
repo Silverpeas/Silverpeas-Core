@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.index.search.model.QueryDescription;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,10 +42,10 @@ public class QueryParameters implements java.io.Serializable {
   private String spaceId = null;
   private String instanceId = null;
   private String creatorId = null;
-  private Date afterdate = null;
-  private Date beforedate = null;
-  private Date afterupdatedate = null;
-  private Date beforeupdatedate = null;
+  private LocalDate afterdate = null;
+  private LocalDate beforedate = null;
+  private LocalDate afterupdatedate = null;
+  private LocalDate beforeupdatedate = null;
   private Map<String, String> xmlQuery = null;
   private String xmlTitle = null;
   private String folder = null;
@@ -122,35 +122,35 @@ public class QueryParameters implements java.io.Serializable {
     }
   }
 
-  public Date getAfterDate() {
+  public LocalDate getAfterDate() {
     return afterdate;
   }
 
-  public void setAfterDate(Date afterdate) {
+  public void setAfterDate(LocalDate afterdate) {
     this.afterdate = afterdate;
   }
 
-  public Date getBeforeDate() {
+  public LocalDate getBeforeDate() {
     return beforedate;
   }
 
-  public void setBeforeDate(Date beforedate) {
+  public void setBeforeDate(LocalDate beforedate) {
     this.beforedate = beforedate;
   }
 
-  public Date getAfterUpdateDate() {
+  public LocalDate getAfterUpdateDate() {
     return afterupdatedate;
   }
 
-  public void setAfterUpdateDate(Date afterdate) {
+  public void setAfterUpdateDate(LocalDate afterdate) {
     this.afterupdatedate = afterdate;
   }
 
-  public Date getBeforeUpdateDate() {
+  public LocalDate getBeforeUpdateDate() {
     return beforeupdatedate;
   }
 
-  public void setBeforeUpdateDate(Date beforedate) {
+  public void setBeforeUpdateDate(LocalDate beforedate) {
     this.beforeupdatedate = beforedate;
   }
 
@@ -177,29 +177,10 @@ public class QueryParameters implements java.io.Serializable {
       query.setRequestedAuthor(null);
     }
 
-    if (getAfterDate() != null) {
-      query.setRequestedCreatedAfter(DateUtil.formatAsLuceneDate(getAfterDate()));
-    } else {
-      query.setRequestedCreatedAfter(null);
-    }
-
-    if (getBeforeDate() != null) {
-      query.setRequestedCreatedBefore(DateUtil.formatAsLuceneDate(getBeforeDate()));
-    } else {
-      query.setRequestedCreatedBefore(null);
-    }
-
-    if (getAfterUpdateDate() != null) {
-      query.setRequestedUpdatedAfter(DateUtil.formatAsLuceneDate(getAfterUpdateDate()));
-    } else {
-      query.setRequestedUpdatedAfter(null);
-    }
-
-    if (getBeforeUpdateDate() != null) {
-      query.setRequestedUpdatedBefore(DateUtil.formatAsLuceneDate(getBeforeUpdateDate()));
-    } else {
-      query.setRequestedUpdatedBefore(null);
-    }
+    query.setRequestedCreatedAfter(getAfterDate());
+    query.setRequestedCreatedBefore(getBeforeDate());
+    query.setRequestedUpdatedAfter(getAfterUpdateDate());
+    query.setRequestedUpdatedBefore(getBeforeUpdateDate());
 
     if (xmlQuery != null) {
       for (String key : xmlQuery.keySet()) {

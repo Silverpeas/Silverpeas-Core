@@ -45,6 +45,7 @@ import org.silverpeas.core.pdc.tree.model.TreeNodePK;
 import org.silverpeas.core.pdc.tree.service.TreeService;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
@@ -54,6 +55,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -2269,7 +2271,7 @@ public class GlobalPdcManager implements PdcManager {
 
   @Override
   public List<Integer> findSilverContentIdByPosition(SearchContext containerPosition,
-      List<String> alComponentId, String authorId, String afterDate, String beforeDate)
+      List<String> alComponentId, String authorId, LocalDate afterDate, LocalDate beforeDate)
       throws PdcException {
     return findSilverContentIdByPosition(containerPosition, alComponentId, authorId, afterDate,
         beforeDate, true, true);
@@ -2279,13 +2281,13 @@ public class GlobalPdcManager implements PdcManager {
    * Find all the SilverContentId with the given position
    */
   private List<Integer> findSilverContentIdByPosition(SearchContext containerPosition,
-      List<String> alComponentId, String authorId, String afterDate, String beforeDate,
+      List<String> alComponentId, String authorId, LocalDate afterDate, LocalDate beforeDate,
       boolean recursiveSearch, boolean visibilitySensitive) throws PdcException {
     try {
       // Get the objects
       return pdcClassifyManager
-          .findSilverContentIdByPosition(containerPosition, alComponentId, authorId, afterDate,
-              beforeDate, recursiveSearch, visibilitySensitive);
+          .findSilverContentIdByPosition(containerPosition, alComponentId, authorId, DateUtil.formatDate(afterDate),
+              DateUtil.formatDate(beforeDate), recursiveSearch, visibilitySensitive);
     } catch (Exception e) {
       throw new PdcException("GlobalPdcManager.findSilverContentIdByPosition",
           SilverpeasException.ERROR, "containerManager.EX_INTERFACE_FIND_FUNCTIONS", e);

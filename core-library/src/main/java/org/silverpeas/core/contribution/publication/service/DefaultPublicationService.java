@@ -112,8 +112,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   @Inject
   private PublicationEventNotifier notifier;
 
-  private SimpleDateFormat formatter = new java.text.SimpleDateFormat("yyyy/MM/dd");
-
   @Override
   @Transactional
   public void delete(final String componentInstanceId) {
