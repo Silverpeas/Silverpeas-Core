@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.authentication;
 
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.web.http.HttpRequest;
@@ -124,7 +125,7 @@ public class LoginServlet extends SilverpeasHttpServlet {
       loginPage = general.getString("loginPage");
 
       String domainId = getDomainId(request);
-      if (!isDefined(loginPage)) {
+      if (!isDefined(loginPage) || isAnonymousSession(request)) {
         loginPage = request.getContextPath() + "/defaultLogin.jsp";
       } else if (!loginPage.startsWith(request.getContextPath())) {
         loginPage = request.getContextPath() + "/" + loginPage;
