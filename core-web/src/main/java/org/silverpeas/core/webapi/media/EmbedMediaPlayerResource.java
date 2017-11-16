@@ -59,6 +59,10 @@ public class EmbedMediaPlayerResource extends RESTWebService {
     return PATH;
   }
 
+  /**
+   * Gets a view on the content with the embed media player.
+   * @return a descriptor of the renderer to use to display the media content.
+   */
   @GET
   public View getEmbedContent() {
     EmbedMediaPlayerParams params =

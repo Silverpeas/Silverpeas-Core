@@ -58,6 +58,10 @@ public class LanguageResource extends RESTWebService {
     return null;
   }
 
+  /**
+   * Gets all the languages that are available in this running Silverpeas.
+   * @return a list of languages supported by the platform.
+   */
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<LanguageEntity> getAvailableLanguages() {

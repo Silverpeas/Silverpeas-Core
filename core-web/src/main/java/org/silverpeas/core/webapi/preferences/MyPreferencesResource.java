@@ -54,6 +54,11 @@ public class MyPreferencesResource extends RESTWebService {
     return null;
   }
 
+  /**
+   * Updates the preferences of the user behind the current request.
+   * @param preferences the user preferences to set.
+   * @return the updated user preferences.
+   */
   @PUT
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)

@@ -88,7 +88,7 @@ public class ListNodeResource extends RESTWebService {
   }
 
   /**
-   * Updates order of the list of Node from the JSON representation. If the user isn't authentified,
+   * Updates order of the list of Node from the JSON representation. If the user isn't authenticated,
    * a 401 HTTP code is returned. If the user isn't authorized to save the node, a 403 is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
    *

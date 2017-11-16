@@ -77,7 +77,9 @@ public class AuthenticationResource extends RESTWebService {
   }
 
   /**
-   * @return The user entity corresponding to the token specified in the URI.
+   * Authenticates the user identified either by its credentials passed through the Authorization
+   * HTTP header.
+   * @return The profile of the user once authenticated.
    */
   @POST
   @Produces(MediaType.APPLICATION_JSON)
