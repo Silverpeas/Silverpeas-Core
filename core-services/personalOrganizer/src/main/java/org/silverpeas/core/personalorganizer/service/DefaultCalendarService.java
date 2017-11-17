@@ -24,6 +24,13 @@
 package org.silverpeas.core.personalorganizer.service;
 
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
+import org.silverpeas.core.index.indexing.model.IndexEntryKey;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.Category;
 import org.silverpeas.core.personalorganizer.model.HolidayDetail;
@@ -34,14 +41,8 @@ import org.silverpeas.core.personalorganizer.model.SchedulableCount;
 import org.silverpeas.core.personalorganizer.model.ToDoHeader;
 import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.socialnetwork.SocialInformationEvent;
-import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
-import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
@@ -55,6 +56,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Calendar service layer to manager calendars in Silverpeas
@@ -117,87 +119,67 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
    * @return
    */
   @Override
-  public Collection<ToDoHeader> getNotCompletedToDosForUser(String userId) {
-
-    Connection con = getConnection();
+  public SilverpeasList<ToDoHeader> getNotCompletedToDosForUser(String userId) {
     try {
-      return ToDoDAO.getNotCompletedToDoHeadersForUser(con, userId);
+      return ToDoDAO.getNotCompletedToDoHeadersForUser(userId);
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.getNotCompletedToDosForUser(String userId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "userId=" + userId, e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public List<String> getAllToDoForUser(final String userId) {
-
-    Connection con = getConnection();
     try {
-      return ToDoDAO.getAllTodoByUser(con, userId);
+      return ToDoDAO.getAllTodoByUser(userId);
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.getAllToDoForUser(String userId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "userId=" + userId, e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
-  public Collection<ToDoHeader> getOrganizerToDos(String organizerId) {
-    Connection con = getConnection();
+  public SilverpeasList<ToDoHeader> getOrganizerToDos(String organizerId) {
     try {
-      return ToDoDAO.getOrganizerToDoHeaders(con, organizerId);
+      return ToDoDAO.getOrganizerToDoHeaders(organizerId);
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.getOrganizerToDos(String organizerId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "organizerId=" + organizerId,
           e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
-  public Collection<ToDoHeader> getClosedToDos(String organizerId) {
-    Connection con = getConnection();
+  public SilverpeasList<ToDoHeader> getClosedToDos(String organizerId) {
     try {
-      return ToDoDAO.getClosedToDoHeaders(con, organizerId);
+      return ToDoDAO.getClosedToDoHeaders(organizerId);
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.getClosedToDos(String organizerId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS", "organizerId=" + organizerId,
           e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public Collection<ToDoHeader> getExternalTodos(String spaceId, String componentId,
       String externalId) {
-    Connection con = getConnection();
     try {
-      return ToDoDAO.getToDoHeadersByExternalId(con, spaceId, componentId, externalId);
+      return ToDoDAO.getToDoHeadersByExternalId(componentId, externalId);
     } catch (Exception e) {
       throw new CalendarRuntimeException(
           "CalendarEJB.getExternalTodos(String spaceId, String componentId, String externalId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODOS",
           "spaceId=" + spaceId + ", componentId=" + componentId + ", externalId=" + externalId, e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
   @Override
   public ToDoHeader getToDoHeader(String todoId) {
-    Connection con = getConnection();
     try {
-      return ToDoDAO.getToDoHeader(con, todoId);
+      return ToDoDAO.getToDoHeader(todoId);
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.getToDoHeader(String todoId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODO", "todoId=" + todoId, e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -215,15 +197,12 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   }
 
   private Collection<ToDoHeader> getToDoHeadersByInstanceId(String instanceId) {
-    Connection con = getConnection();
     try {
-      return ToDoDAO.getToDoHeadersByInstanceId(con, instanceId);
+      return ToDoDAO.getToDoHeadersByInstanceId(instanceId);
     } catch (Exception e) {
       throw new CalendarRuntimeException(
           "CalendarEJB.getToDoHeadersByInstanceId(String instanceId)", SilverpeasException.ERROR,
           "calendar.MSG_CANT_GET_TODO", "instanceId=" + instanceId, e);
-    } finally {
-      DBUtil.close(con);
     }
   }
 
@@ -311,26 +290,22 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   }
 
   @Override
+  @Transactional
   public void removeToDo(String id) {
-    Connection con = getConnection();
+    // get the detail for desindexation
+    ToDoHeader todo = getToDoHeader(id);
     try {
-      // get the detail for desindexation
-      ToDoHeader todo = getToDoHeader(id);
-
       // remove attendees and associated indexes
       setToDoAttendees(id, ArrayUtil.EMPTY_STRING_ARRAY);
-      ToDoDAO.removeToDo(con, id);
-      try {
-        removeIndex(todo, todo.getDelegatorId());
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e.getMessage(), e);
-      }
-
+      ToDoDAO.removeToDo(id);
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.removeToDo(String id)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_REMOVE_TODO", e);
-    } finally {
-      DBUtil.close(con);
+    }
+    try {
+      removeIndex(todo, todo.getDelegatorId());
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
@@ -684,16 +659,12 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
 
   @Override
   public Collection<Attendee> getJournalAttendees(String journalId) {
-    Connection con = getConnection();
     try {
-      return AttendeeDAO.getJournalAttendees(con, journalId);
+      return AttendeeDAO.getJournalAttendees(journalId);
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.getJournalAttendees(String journalId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_JOURNAL_ATTENDEES", e);
-    } finally {
-      DBUtil.close(con);
     }
-
   }
 
   @Override
@@ -793,17 +764,23 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   }
 
   @Override
-  public Collection<Attendee> getToDoAttendees(String todoId) {
-    Connection con = getConnection();
+  public List<Attendee> getToDoAttendees(String todoId) {
     try {
-      return AttendeeDAO.getToDoAttendees(con, todoId);
+      return AttendeeDAO.getToDoAttendees(todoId);
     } catch (Exception e) {
       throw new CalendarRuntimeException("CalendarEJB.getToDoAttendees(String todoId)",
           SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODO_ATTENDEES", e);
-    } finally {
-      DBUtil.close(con);
     }
+  }
 
+  @Override
+  public Map<String, List<Attendee>> getToDoAttendees(final List<String> todoIds) {
+    try {
+      return AttendeeDAO.getToDoAttendees(todoIds);
+    } catch (Exception e) {
+      throw new CalendarRuntimeException("CalendarEJB.getToDoAttendees(String todoId)",
+          SilverpeasException.ERROR, "calendar.MSG_CANT_GET_TODO_ATTENDEES", e);
+    }
   }
 
   @Override
@@ -1258,23 +1235,20 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
   @Override
   @Transactional
   public void delete(final String componentInstanceId) {
-    Connection con = getConnection();
-    try {
-      Collection<ToDoHeader> todosToRemove = getToDoHeadersByInstanceId(componentInstanceId);
-      for (ToDoHeader todo : todosToRemove) {
-        ToDoDAO.removeToDo(con, todo.getId());
-        AttendeeDAO.removeToDo(con, todo.getId());
-        try {
-          removeIndex(todo, todo.getDelegatorId());
-        } catch (Exception e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-        }
+    Collection<ToDoHeader> todosToRemove = getToDoHeadersByInstanceId(componentInstanceId);
+    for (ToDoHeader todo : todosToRemove) {
+      try {
+        ToDoDAO.removeToDo(todo.getId());
+        AttendeeDAO.removeToDo(todo.getId());
+      } catch (Exception e) {
+        throw new CalendarRuntimeException("CalendarEJB.removeToDoByInstanceId(String instanceId)",
+            SilverpeasException.ERROR, "calendar.MSG_CANT_CREATE_TODO", e);
       }
-    } catch (Exception e) {
-      throw new CalendarRuntimeException("CalendarEJB.removeToDoByInstanceId(String instanceId)",
-          SilverpeasException.ERROR, "calendar.MSG_CANT_CREATE_TODO", e);
-    } finally {
-      DBUtil.close(con);
+      try {
+        removeIndex(todo, todo.getDelegatorId());
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e.getMessage(), e);
+      }
     }
   }
 

@@ -60,6 +60,7 @@ import static org.silverpeas.core.util.CollectionUtil.findNextRupture;
 public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManager {
 
   private static final String MODEL_ID_CRITERION = "I.modelId = ?";
+  private static final String SB_WORKFLOW_PROCESS_INSTANCE_TABLE = "SB_Workflow_ProcessInstance I";
 
   @Inject
   private SilverpeasCalendar calendar;
@@ -84,17 +85,17 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
     if ("supervisor".equals(role)) {
       select = JdbcSqlQuery
           .createSelect("I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus")
-          .from("SB_Workflow_ProcessInstance I")
+          .from(SB_WORKFLOW_PROCESS_INSTANCE_TABLE)
           .where(MODEL_ID_CRITERION, peasId)
           .orderBy("I.instanceId DESC");
     } else {
       select = JdbcSqlQuery
-          .createSelect("p.instanceId, p.modelId, p.locked, p.errorStatus, p.timeoutStatus")
+          .createSelect("*")
           .from("(")
 
           .addSqlPart("SELECT I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus")
           .from("SB_Workflow_InterestedUser intUser")
-          .join("SB_Workflow_ProcessInstance I").on("I.instanceId = intUser.instanceId")
+          .join(SB_WORKFLOW_PROCESS_INSTANCE_TABLE).on("I.instanceId = intUser.instanceId")
           .where(MODEL_ID_CRITERION, peasId)
           .and("(intUser.userId = ?", user.getUserId());
       if (ArrayUtil.isNotEmpty(userRoles)) {
@@ -115,7 +116,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
           .addSqlPart("SELECT I.instanceId, I.modelId, I.locked, I.errorStatus, I.timeoutStatus")
           .from("SB_Workflow_WorkingUser wkUser")
-          .join("SB_Workflow_ProcessInstance I").on("I.instanceId = wkUser.instanceId")
+          .join(SB_WORKFLOW_PROCESS_INSTANCE_TABLE).on("I.instanceId = wkUser.instanceId")
           .where(MODEL_ID_CRITERION, peasId)
           .and("(wkUser.userId = ?", user.getUserId());
       if (ArrayUtil.isNotEmpty(userRoles)) {
@@ -135,8 +136,8 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           .or("wkUser.role like ?", role + ",%")
           .or("wkUser.role like ?)", "%," + role + ",%")
 
-          .addSqlPart(") p")
-          .orderBy("p.instanceId DESC");
+          .addSqlPart(") u")
+          .orderBy("u.instanceId DESC");
     }
 
     try {
@@ -160,8 +161,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         final RuptureContext<ProcessInstanceImpl> ruptureContext = RuptureContext.newOne(instances);
         JdbcSqlQuery.createSelect("*")
             .from("SB_Workflow_HistoryStep")
-            .where("instanceId")
-            .in(instanceIds)
+            .where("instanceId").in(instanceIds)
             .orderBy("instanceId DESC, id ASC")
             .execute(r -> {
               int i = 1;
@@ -183,8 +183,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
         ruptureContext.reset();
         JdbcSqlQuery.createSelect("*")
             .from("SB_Workflow_ActiveState")
-            .where("instanceId")
-            .in(instanceIds)
+            .where("instanceId").in(instanceIds)
             .orderBy("instanceId DESC, id ASC")
             .execute(rs -> {
               int i = 1;

@@ -24,7 +24,9 @@
 
 package org.silverpeas.core.web.util;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.web.admin.migration.UIUserCache;
 
 import java.util.List;
 import java.util.Set;
@@ -110,5 +112,14 @@ public abstract class SelectableUIEntity<D> {
    */
   public void setSelected(final boolean selected) {
     this.selected = selected;
+  }
+
+  /**
+   * Gets from a dedicated UI cache the details about a user by its id.
+   * @param id identifier of a user.
+   * @return a {@link User} instance if any, null otherwise.
+   */
+  protected User getUserByIdFromCache(final String id) {
+    return UIUserCache.getById(id);
   }
 }

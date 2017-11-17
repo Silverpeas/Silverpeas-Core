@@ -31,30 +31,14 @@ response.setHeader("Pragma","no-cache"); //HTTP 1.0
 response.setDateHeader ("Expires",-1); //prevents caching at the proxy server
 %>
 
-<%@ page import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
-<%@ page import="org.silverpeas.core.admin.space.SpaceInstLight"%>
-<%@ page import="org.silverpeas.core.admin.user.model.UserDetail"%>
-<%@ page import="org.silverpeas.core.personalorganizer.model.Attendee"%>
-<%@ page import="org.silverpeas.core.personalorganizer.model.ToDoHeader"%>
-<%@ page import="org.silverpeas.web.todo.control.ToDoSessionController"%>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle"%>
 <%@ page import="org.silverpeas.core.util.MultiSilverpeasBundle"%>
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
-
 <%@ page import="org.silverpeas.core.util.SettingBundle"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCellText"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayColumn"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayLine"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBar"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.frame.Frame"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.operationpanes.OperationPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.tabs.TabbedPane"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.window.Window"%>
-<%@ page import="java.util.Collection"%>
+<%@ page import="org.silverpeas.web.todo.control.ToDoSessionController"%>
 <%@ page import="java.util.Date"%>
-<%@ page import="java.util.Iterator"%>
 
 <%@ page errorPage="../../admin/jsp/errorpageMain.jsp"%>
 

@@ -23,81 +23,90 @@
  */
 package org.silverpeas.core.personalorganizer.service;
 
-import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.personalorganizer.model.Attendee;
+import org.silverpeas.core.util.MapUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 public class AttendeeDAO {
 
-  public static final String JOURNALCOLUMNNAMES = "userId, journalId, participationStatus";
-  public static final String TODOCOLUMNNAMES = "userId, todoId, participationStatus";
-  public static final String JOURNALTABLENAME = "CalendarJournalAttendee";
-  public static final String TODOTABLENAME = "CalendarToDoAttendee";
-  public static final String JOURNALIDNAME = "journalId";
-  public static final String TODOIDNAME = "todoId";
+  private static final String JOURNALCOLUMNNAMES = "userId, journalId, participationStatus";
+  private static final String TODOCOLUMNNAMES = "userId, todoId, participationStatus";
+  private static final String JOURNALTABLENAME = "CalendarJournalAttendee";
+  private static final String TODOTABLENAME = "CalendarToDoAttendee";
+  private static final String JOURNALIDNAME = "journalId";
+  private static final String TODOIDNAME = "todoId";
 
-  public static Attendee getAttendeeFromResultSet(ResultSet rs)
+  private AttendeeDAO() {
+    throw new IllegalAccessError("Utility class");
+  }
+
+  private static Attendee getAttendeeFromResultSet(ResultSet rs)
       throws SQLException {
     String userId = rs.getString(1);
     String participation = rs.getString(3);
-    Attendee result = new Attendee(userId, participation);
-    return result;
+    return new Attendee(userId, participation);
   }
 
-  public static Collection<Attendee> getJournalAttendees(Connection con, String journalId)
+  static Collection<Attendee> getJournalAttendees(String journalId)
       throws SQLException {
-    return getAttendees(con, journalId, AttendeeDAO.JOURNALCOLUMNNAMES,
+    return getJournalAttendees(singletonList(journalId)).getOrDefault(journalId, emptyList());
+  }
+
+  static Map<String, List<Attendee>> getJournalAttendees(List<String> journalIds)
+      throws SQLException {
+    return getAttendees(journalIds, AttendeeDAO.JOURNALCOLUMNNAMES,
         AttendeeDAO.JOURNALTABLENAME, AttendeeDAO.JOURNALIDNAME);
   }
 
-  public static Collection<Attendee> getToDoAttendees(Connection con, String todoId)
+  static List<Attendee> getToDoAttendees(String todoId)
       throws SQLException {
-    return getAttendees(con, todoId, AttendeeDAO.TODOCOLUMNNAMES,
+    return getToDoAttendees(singletonList(todoId)).getOrDefault(todoId, emptyList());
+  }
+
+  static Map<String, List<Attendee>> getToDoAttendees(List<String> todoIds) throws SQLException {
+    return getAttendees(todoIds, AttendeeDAO.TODOCOLUMNNAMES,
         AttendeeDAO.TODOTABLENAME, AttendeeDAO.TODOIDNAME);
   }
 
-  public static Collection<Attendee> getAttendees(Connection con, String id,
-      String columns, String table, String idLabel) throws SQLException {
-    String selectStatement = "select " + columns + " from " + table + " "
-        + "where " + idLabel + " = " + id;
-
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    List<Attendee> list = new ArrayList<Attendee>();
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        Attendee attendee = getAttendeeFromResultSet(rs);
-        list.add(attendee);
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return list;
+  private static Map<String, List<Attendee>> getAttendees(List<String> ids, String columns,
+      String table, String idLabel) throws SQLException {
+    return JdbcSqlQuery.executeBySplittingOn(ids, (idBatch, result)-> JdbcSqlQuery
+        .createSelect(columns)
+        .from(table)
+        .where(idLabel).in(idBatch.stream().map(Integer::parseInt).collect(Collectors.toList()))
+        .execute(r ->  {
+          final String id = r.getString(2);
+          final Attendee attendee = getAttendeeFromResultSet(r);
+          MapUtil.putAddList(result, id, attendee);
+          return null;
+        }));
   }
 
-  public static void addJournalAttendee(Connection con, String journalId,
-      Attendee attendee) throws SQLException {
-    addAttendee(con, journalId, attendee, AttendeeDAO.JOURNALCOLUMNNAMES,
-        AttendeeDAO.JOURNALTABLENAME, AttendeeDAO.JOURNALIDNAME);
+  static void addJournalAttendee(Connection con, String journalId, Attendee attendee)
+      throws SQLException {
+    addAttendee(con, journalId, attendee, JOURNALCOLUMNNAMES, JOURNALTABLENAME);
   }
 
-  public static void addToDoAttendee(Connection con, String todoId,
-      Attendee attendee) throws SQLException {
-    addAttendee(con, todoId, attendee, AttendeeDAO.TODOCOLUMNNAMES,
-        AttendeeDAO.TODOTABLENAME, AttendeeDAO.TODOIDNAME);
+  static void addToDoAttendee(Connection con, String todoId, Attendee attendee)
+      throws SQLException {
+    addAttendee(con, todoId, attendee, TODOCOLUMNNAMES, TODOTABLENAME);
   }
 
-  public static void addAttendee(Connection con, String id, Attendee attendee,
-      String columns, String table, String idLabel) throws SQLException {
+  private static void addAttendee(Connection con, String id, Attendee attendee, String columns,
+      String table) throws SQLException {
     String insertStatement = "insert into " + table + " (" + columns + ") "
         + " values (?, ?, ?)";
 
@@ -113,20 +122,18 @@ public class AttendeeDAO {
     }
   }
 
-  public static void removeJournalAttendee(Connection con, String journalId,
-      Attendee attendee) throws SQLException {
-    removeAttendee(con, journalId, attendee, AttendeeDAO.JOURNALCOLUMNNAMES,
-        AttendeeDAO.JOURNALTABLENAME, AttendeeDAO.JOURNALIDNAME);
+  static void removeJournalAttendee(Connection con, String journalId, Attendee attendee)
+      throws SQLException {
+    removeAttendee(con, journalId, attendee, JOURNALTABLENAME, JOURNALIDNAME);
   }
 
-  public static void removeToDoAttendee(Connection con, String todoId,
-      Attendee attendee) throws SQLException {
-    removeAttendee(con, todoId, attendee, AttendeeDAO.TODOCOLUMNNAMES,
-        AttendeeDAO.TODOTABLENAME, AttendeeDAO.TODOIDNAME);
+  static void removeToDoAttendee(Connection con, String todoId, Attendee attendee)
+      throws SQLException {
+    removeAttendee(con, todoId, attendee, TODOTABLENAME, TODOIDNAME);
   }
 
-  public static void removeAttendee(Connection con, String id,
-      Attendee attendee, String columns, String table, String idLabel)
+  private static void removeAttendee(Connection con, String id, Attendee attendee, String table,
+      String idLabel)
       throws SQLException {
     PreparedStatement prepStmt = null;
 
@@ -142,30 +149,18 @@ public class AttendeeDAO {
     }
   }
 
-  public static void removeJournal(Connection con, String journalId)
+  public static void removeJournal(String journalId)
       throws SQLException {
-    removeAttendees(con, journalId, AttendeeDAO.JOURNALCOLUMNNAMES,
-        AttendeeDAO.JOURNALTABLENAME, AttendeeDAO.JOURNALIDNAME);
+    removeAttendees(journalId, AttendeeDAO.JOURNALTABLENAME, AttendeeDAO.JOURNALIDNAME);
   }
 
-  public static void removeToDo(Connection con, String todoId)
+  static void removeToDo(String todoId)
       throws SQLException {
-    removeAttendees(con, todoId, AttendeeDAO.TODOCOLUMNNAMES,
-        AttendeeDAO.TODOTABLENAME, AttendeeDAO.TODOIDNAME);
+    removeAttendees(todoId, AttendeeDAO.TODOTABLENAME, AttendeeDAO.TODOIDNAME);
   }
 
-  public static void removeAttendees(Connection con, String id, String columns,
-      String table, String idLabel) throws SQLException {
-    String statement = "delete from " + table + " " + "where " + idLabel
-        + " = ?";
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(statement);
-      prepStmt.setInt(1, Integer.parseInt(id));
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
+  private static void removeAttendees(String id, String table, String idLabel)
+      throws SQLException {
+    JdbcSqlQuery.createDeleteFor(table).where(idLabel + " = ?", Integer.parseInt(id)).execute();
   }
-
 }

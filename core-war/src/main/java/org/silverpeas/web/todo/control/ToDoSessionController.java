@@ -23,50 +23,50 @@
  */
 package org.silverpeas.web.todo.control;
 
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.selection.Selection;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.ToDoHeader;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.selection.Selection;
 
+import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Response;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.Response;
+import java.util.Set;
 
 /**
  * Class declaration
- *
- * @author
  */
 public class ToDoSessionController extends AbstractComponentSessionController {
 
-  public final static int PARTICIPANT_TODO_VIEW = 1;
-  public final static int ORGANIZER_TODO_VIEW = 2;
-  public final static int CLOSED_TODO_VIEW = 3;
+  public static final int PARTICIPANT_TODO_VIEW = 1;
+  public static final int ORGANIZER_TODO_VIEW = 2;
+  public static final int CLOSED_TODO_VIEW = 3;
   private int viewType = PARTICIPANT_TODO_VIEW;
   private SilverpeasCalendar calendarBm;
   private ToDoHeader currentToDoHeader = null;
@@ -74,11 +74,10 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   private NotificationSender notifSender = null;
   private Map<String, ComponentInstLight> componentsMap = new HashMap<String, ComponentInstLight>();
   private Map<String, SpaceInstLight> spacesMap = new HashMap<String, SpaceInstLight>();
+  private final Set<String> selectedTodoIds = new HashSet<>();
 
   /**
    * Constructor declaration
-   *
-   * @see
    */
   public ToDoSessionController(MainSessionController mainSessionCtrl, ComponentContext context) {
     super(mainSessionCtrl, context, "org.silverpeas.todo.multilang.todo");
@@ -91,9 +90,9 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * methods for ToDo
+   * methods for To Do
    */
-  public Collection<ToDoHeader> getToDos() throws TodoException {
+  public SilverpeasList<ToDoHeader> getToDos() throws TodoException {
     if (getViewType() == PARTICIPANT_TODO_VIEW) {
       return getNotCompletedToDos();
     }
@@ -108,72 +107,35 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
-   * @return
-   * @throws TodoException
-   * @see
    */
-  public Collection<ToDoHeader> getNotCompletedToDos() throws TodoException {
-
+  public SilverpeasList<ToDoHeader> getNotCompletedToDos() throws TodoException {
     return calendarBm.getNotCompletedToDosForUser(getUserId());
   }
 
   /**
    * Method declaration
-   *
-   * @return
-   * @throws TodoException
-   * @see
    */
-  public Collection<ToDoHeader> getOrganizerToDos() throws TodoException {
-
+  public SilverpeasList<ToDoHeader> getOrganizerToDos() throws TodoException {
     return calendarBm.getOrganizerToDos(getUserId());
-
   }
 
   /**
    * Method declaration
-   *
-   * @return
-   * @throws TodoException
-   * @see
    */
-  public Collection<ToDoHeader> getClosedToDos() throws TodoException {
-
+  public SilverpeasList<ToDoHeader> getClosedToDos() throws TodoException {
     return calendarBm.getClosedToDos(getUserId());
   }
 
   /**
    * Method declaration
-   *
-   * @param todoId
-   * @return
-   * @throws TodoException
-   * @see
    */
   public ToDoHeader getToDoHeader(String todoId) throws TodoException {
-
     verifyCurrentUserIsOwner(todoId);
-    ToDoHeader result = calendarBm.getToDoHeader(todoId);
-
-    return result;
+    return calendarBm.getToDoHeader(todoId);
   }
 
   /**
    * Method declaration
-   *
-   * @param id
-   * @param name
-   * @param description
-   * @param priority
-   * @param classification
-   * @param startDay
-   * @param startHour
-   * @param endDay
-   * @param endHour
-   * @param percent
-   * @throws TodoException
-   * @see
    */
   public void updateToDo(String id, String name, String description,
       String priority, String classification, Date startDay, String startHour,
@@ -185,14 +147,12 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     try {
       todo.getPriority().setValue(Integer.parseInt(priority));
     } catch (Exception e) {
-      SilverTrace.warn("todo", "ToDoSessionController.updateToDo()",
-          "todo.MSG_CANT_SET_TODO_PRIORITY");
+      SilverLogger.getLogger(this).warn(e);
     }
     try {
       todo.setPercentCompleted(Integer.parseInt(percent));
     } catch (Exception e) {
-      SilverTrace.warn("todo", "ToDoSessionController.updateToDo()",
-          "todo.MSG_CANT_SET_TODO_PERCENTCOMPLETED");
+      SilverLogger.getLogger(this).warn(e);
     }
     try {
       todo.getClassification().setString(classification);
@@ -210,32 +170,19 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
-   * @param id
-   * @param percent
-   * @throws TodoException
-   * @see
    */
   public void setToDoPercentCompleted(String id, String percent) throws TodoException {
-
     ToDoHeader todo = getToDoHeader(id);
     try {
       todo.setPercentCompleted(Integer.parseInt(percent));
     } catch (Exception e) {
-      SilverTrace.warn("todo", "ToDoSessionController.setToDoPercentCompleted()",
-          "todo.MSG_CANT_SET_TODO_PERCENTCOMPLETED");
+      SilverLogger.getLogger(this).warn(e);
     }
     calendarBm.updateToDo(todo);
-
   }
 
   /**
    * Method declaration
-   *
-   * @param id
-   * @param title
-   * @param text
-   * @see
    */
   protected void notifyAttendees(String id, String title, String text) {
     try {
@@ -249,80 +196,50 @@ public class ToDoSessionController extends AbstractComponentSessionController {
       }
       getNotificationSender().notifyUser(notifMetaData);
     } catch (Exception e) {
-      SilverTrace.error("todo", "ToDoSessionController.notifyAttendees()",
-          "todo.MSG_CANT_SEND_MAIL");
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
   /**
    * Method declaration
-   *
-   * @param id
-   * @throws TodoException
-   * @see
    */
   public void closeToDo(String id) throws TodoException {
-
     verifyCurrentUserIsOwner(id);
     ToDoHeader todo = getToDoHeader(id);
     todo.setCompletedDate(new java.util.Date());
     calendarBm.updateToDo(todo);
     notifyAttendees(id, getString("closingTodo") +" '" + todo.getName() + "'",
         getString("todoCalled") +" '" + todo.getName() + "' "+getString("todoClosed")+"\n");
-
   }
 
   /**
    * Method declaration
-   *
-   * @param id
-   * @throws TodoException
-   * @see
    */
   public void reopenToDo(String id) throws TodoException {
-
     verifyCurrentUserIsOwner(id);
     ToDoHeader todo = getToDoHeader(id);
     todo.setCompletedDate(null);
     calendarBm.updateToDo(todo);
-
   }
 
   /**
    * Method declaration
-   *
-   * @param name
-   * @param description
-   * @param priority
-   * @param classification
-   * @param startDay
-   * @param startHour
-   * @param endDay
-   * @param endHour
-   * @param percent
-   * @return
-   * @throws TodoException
-   * @see
    */
   public String addToDo(String name, String description, String priority,
       String classification, Date startDay, String startHour, Date endDay,
       String endHour, String percent) throws TodoException {
-
-
     ToDoHeader todo = new ToDoHeader(name, getUserId());
 
     todo.setDescription(description);
     try {
       todo.getPriority().setValue(Integer.parseInt(priority));
     } catch (Exception e) {
-      SilverTrace.warn("todo", "ToDoSessionController.addToDo()", "todo" +
-          ".MSG_CANT_SET_TODO_PRIORITY");
+      SilverLogger.getLogger(this).warn(e);
     }
     try {
       todo.setPercentCompleted(Integer.parseInt(percent));
     } catch (Exception e) {
-      SilverTrace.warn("todo", "ToDoSessionController.addToDo()",
-          "todo.MSG_CANT_SET_TODO_PERCENTCOMPLETED");
+      SilverLogger.getLogger(this).warn(e);
     }
     try {
       todo.getClassification().setString(classification);
@@ -330,9 +247,7 @@ public class ToDoSessionController extends AbstractComponentSessionController {
       todo.setStartHour(startHour);
       todo.setEndDate(endDay);
       todo.setEndHour(endHour);
-      String result = calendarBm.addToDo(todo);
-
-      return result;
+      return calendarBm.addToDo(todo);
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.addToDo()",
           SilverpeasException.ERROR, "todo.MSG_CANT_ADD_TODO", e);
@@ -342,17 +257,11 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
-   * @param id
-   * @throws TodoException
-   * @see
    */
   public void removeToDo(String id) throws TodoException {
     verifyCurrentUserIsOwner(id);
-
     try {
       calendarBm.removeToDo(id);
-
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.removeToDo()",
           SilverpeasException.ERROR, "todo.MSG_CANT_REMOVE_TODO", e);
@@ -362,30 +271,24 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   /**
    * methods for attendees
    */
-  public Collection<Attendee> getToDoAttendees(String todoId) throws TodoException {
+  public List<Attendee> getToDoAttendees(String todoId) {
+    return calendarBm.getToDoAttendees(todoId);
+  }
 
-    try {
-      return calendarBm.getToDoAttendees(todoId);
-    } catch (Exception e) {
-      throw new TodoException("ToDoSessionController.getToDoAttendees()",
-          SilverpeasException.ERROR, "todo.MSG_CANT_GET_TODO_ATTENDEES", e);
-    }
+  /**
+   * methods for attendees
+   */
+  public Map<String, List<Attendee>> getToDoAttendees(List<String> todoIds) {
+    return calendarBm.getToDoAttendees(todoIds);
   }
 
   /**
    * Method declaration
-   *
-   * @param todoId
-   * @param userIds
-   * @throws TodoException
-   * @see
    */
   public void setToDoAttendees(String todoId, String[] userIds)
       throws TodoException {
-
     try {
       calendarBm.setToDoAttendees(todoId, userIds);
-
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.setToDoAttendees()",
           SilverpeasException.ERROR, "todo.MSG_CANT_SET_TODO_ATTENDEES", e);
@@ -394,9 +297,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
-   * @return
-   * @see
    */
   public UserDetail[] getUserList() {
     return getOrganisationController().getAllUsers();
@@ -404,9 +304,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
-   * @return
-   * @see
    */
   public NotificationSender getNotificationSender() {
     if (notifSender == null) {
@@ -417,19 +314,14 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
-   * @return
-   * @see
    */
+  @Override
   public SettingBundle getSettings() {
     return ResourceLocator.getSettingBundle("org.silverpeas.todo.settings.todoSettings");
   }
 
   /**
    * Method declaration
-   *
-   * @param viewType
-   * @see
    */
   public void setViewType(int viewType) {
     this.viewType = viewType;
@@ -437,9 +329,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
-   * @return
-   * @see
    */
   public int getViewType() {
     return viewType;
@@ -447,9 +336,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
-   * @return
-   * @see
    */
   public ToDoHeader getCurrentToDoHeader() {
     return currentToDoHeader;
@@ -457,9 +343,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
-   * @param todo
-   * @see
    */
   public void setCurrentToDoHeader(ToDoHeader todo) {
     currentToDoHeader = todo;
@@ -467,9 +350,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
-   * @return
-   * @see
    */
   public Collection<Attendee> getCurrentAttendees() {
     return currentAttendees;
@@ -477,9 +357,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Method declaration
-   *
-   * @param attendees
-   * @see
    */
   public void setCurrentAttendees(Collection<Attendee> attendees) {
     currentAttendees = attendees;
@@ -487,21 +364,16 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Paramètre le userPannel => tous les users, sélection des users participants
-   *
-   * @param
-   * @return
-   * @throws
-   * @see
    */
   public String initSelectionPeas() {
-    String m_context = URLUtil.getApplicationURL();
-    Pair<String, String> hostComponentName = new Pair<>(getString("todo"), m_context
+    String appContext = URLUtil.getApplicationURL();
+    Pair<String, String> hostComponentName = new Pair<>(getString("todo"), appContext
         + "/Rtodo/jsp/Main");
     Pair<String, String>[] hostPath = new Pair[1];
-    hostPath[0] = new Pair<>(getString("editionListeDiffusion"), m_context
+    hostPath[0] = new Pair<>(getString("editionListeDiffusion"), appContext
         + "/Rtodo/jsp/Main");
-    String hostUrl = m_context + "/Rtodo/jsp/saveMembers";
-    String cancelUrl = m_context + "/Rtodo/jsp/saveMembers";
+    String hostUrl = appContext + "/Rtodo/jsp/saveMembers";
+    String cancelUrl = appContext + "/Rtodo/jsp/saveMembers";
 
     Selection sel = getSelection();
     sel.resetAll();
@@ -534,11 +406,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * Retourne une Collection de UserDetail des utilisateurs selectionnés via le userPanel
-   *
-   * @param
-   * @return
-   * @throws TodoException
-   * @see
    */
   public Collection<Attendee> getUserSelected() throws TodoException {
     Selection sel = getSelection();
@@ -559,15 +426,15 @@ public class ToDoSessionController extends AbstractComponentSessionController {
             if (attendee.getUserId().equals(selectedUserId)) {
               newAttendee = attendee;
             }
-          } // fin while
-        } // fin if
+          }
+        }
 
         if (newAttendee == null) {
           newAttendee = new Attendee(selectedUserId);
         }
         attendees.add(newAttendee);
-      } // fin for
-    } // fin if
+      }
+    }
 
     return attendees;
   }
@@ -580,9 +447,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * ComponentInst cache mechanism
-   *
-   * @param componentId
-   * @return
    */
   public ComponentInstLight getComponentInst(String componentId) {
     ComponentInstLight resultComp = null;
@@ -598,9 +462,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * SpaceInst cache mechanism
-   *
-   * @param spaceId
-   * @return
    */
   public SpaceInstLight getSpaceInst(String spaceId) {
     SpaceInstLight resultSpace = null;
@@ -615,18 +476,13 @@ public class ToDoSessionController extends AbstractComponentSessionController {
   }
 
   /**
-   * Remove all the todo passed in parameter
-   * @param tabTodoId
-   * @throws TodoException
-   * @see
+   * Remove all the to do passed in parameter
    */
   public void removeTabToDo(String[] tabTodoId) throws TodoException {
-
     try {
       for(String todoId : tabTodoId) {
         removeToDo(todoId);
       }
-
     } catch (Exception e) {
       throw new TodoException("ToDoSessionController.removeTabToDo()",
           SilverpeasException.ERROR, "todo.MSG_CANT_REMOVE_TODO", e);
@@ -635,7 +491,6 @@ public class ToDoSessionController extends AbstractComponentSessionController {
 
   /**
    * This method verify that the owner of the task represented by the given id is the current user.
-   * @param taskId
    */
   public void verifyCurrentUserIsOwner(String taskId) {
     List<String> userTodoList = calendarBm.getAllToDoForUser(getUserId());
@@ -643,10 +498,13 @@ public class ToDoSessionController extends AbstractComponentSessionController {
     if (curTask == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     } else if (!userTodoList.contains(taskId)) {
-      SilverTrace.warn("todo", "ToDoSessionController.verifyCurrentUserIsOwner",
-          "Alert seccurity from user " + getUserId() + " trying to access task :" + taskId);
+      SilverLogger.getLogger(this)
+          .warn("Alert seccurity from user " + getUserId() + " trying to access task :" + taskId);
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }
 
+  public Set<String> getSelectedTodoIds() {
+    return selectedTodoIds;
+  }
 }

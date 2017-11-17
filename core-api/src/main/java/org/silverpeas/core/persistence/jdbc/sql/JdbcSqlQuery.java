@@ -35,7 +35,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -48,6 +50,7 @@ import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlExecutorProvider.g
  */
 public class JdbcSqlQuery {
 
+  private static final int SPLIT_BATCH = 10000;
   private static final int SPACE_OFFSET_DETECTION = 2;
   private static final int OPEN_PARENTHESIS_OFFSET_DETECTION = 1;
   private static final String NOT_IN_OPERATOR = " NOT IN ";
@@ -596,6 +599,23 @@ public class JdbcSqlQuery {
     }
     allParameters.add(paramValue);
     return this;
+  }
+
+  /**
+   * Split executor.
+   * @param <I> the type of list of discriminant data.
+   * @param <T> the type of the entity into result.
+   * @param discriminantData a discriminant list of data.
+   * @return a mapping between gicen discriminant identifiers and the corresponding data.
+   * @throws java.sql.SQLException on SQL error.
+   */
+  public static <I, T> Map<I, List<T>> executeBySplittingOn(final Collection<I> discriminantData,
+      final SplitExecuteProcess<I, T> process) throws SQLException {
+    final Map<I, List<T>> result = new HashMap<>(discriminantData.size());
+    for (Collection<I> d : CollectionUtil.split(discriminantData, SPLIT_BATCH)) {
+      process.execute(d, result);
+    }
+    return result;
   }
 
   /**

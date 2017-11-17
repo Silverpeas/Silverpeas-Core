@@ -23,24 +23,21 @@
  */
 package org.silverpeas.core.personalorganizer.service;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.personalorganizer.model.ToDoHeader;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+import org.silverpeas.core.personalorganizer.model.ToDoHeader;
+import org.silverpeas.core.util.SilverpeasList;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
 
 public class ToDoDAO {
 
-  public static final String COLUMNNAMES =
+  static final String COLUMNNAMES =
       "id, name, delegatorId, description, priority, classification, startDay, "
           + "startHour, endDay, endHour, percentCompleted, completedDay, duration, spaceId, componentId, externalId";
   private static final String TODOCOLUMNNAMES =
@@ -49,8 +46,20 @@ public class ToDoDAO {
           + "CalendarToDo.startHour, CalendarToDo.endDay, CalendarToDo.endHour, CalendarToDo.percentCompleted, "
           + "CalendarToDo.completedDay, CalendarToDo.duration, CalendarToDo.spaceId, CalendarToDo.componentId, "
           + "CalendarToDo.externalId";
+  private static final String DISTINCT_CLAUSE = "DISTINCT ";
+  private static final String TO_DO_TABLE = "CalendarToDo";
+  private static final String TO_DO_ATTENDEE_TABLE = "CalendarToDoAttendee";
+  private static final String TO_DO_JOINING_TO_DO_ATTENDEE =
+      "CalendarToDo.id = CalendarToDoAttendee.todoId";
+  private static final String ORDER_BY_COL = ", lower(name) ln";
+  private static final String ORDER_BY_CLAUSE = "ln";
+  private static final String USER_ID_CRITERION = "userId = ?";
 
-  public static String addToDo(Connection con, ToDoHeader toDo) throws SQLException, UtilException {
+  private ToDoDAO() {
+    throw new IllegalAccessError("Utility class");
+  }
+
+  public static String addToDo(Connection con, ToDoHeader toDo) throws SQLException {
     String insertStatement = "insert into CalendarToDo (" + COLUMNNAMES + ") "
         + " values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -59,7 +68,7 @@ public class ToDoDAO {
     int id;
     try {
       prepStmt = con.prepareStatement(insertStatement);
-      id = DBUtil.getNextId("CalendarToDo", "id");
+      id = DBUtil.getNextId(TO_DO_TABLE, "id");
 
       prepStmt.setInt(1, id);
       prepStmt.setString(2, toDo.getName());
@@ -84,7 +93,7 @@ public class ToDoDAO {
     return String.valueOf(id);
   }
 
-  public static void updateToDo(Connection con, ToDoHeader toDo) throws SQLException {
+  static void updateToDo(Connection con, ToDoHeader toDo) throws SQLException {
     String insertStatement = "update CalendarToDo "
         + " set name = ?, delegatorId = ?, description = ?, "
         + "priority = ?, classification = ?, "
@@ -118,233 +127,136 @@ public class ToDoDAO {
 
   }
 
-  public static void removeToDo(Connection con, String id) throws SQLException {
-    String statement = "DELETE FROM CalendarToDo WHERE id = ?";
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(statement);
-      prepStmt.setInt(1, Integer.parseInt(id));
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
+  static void removeToDo(String id) throws SQLException {
+    JdbcSqlQuery.createDeleteFor(TO_DO_TABLE).where("id = ?", Integer.parseInt(id)).execute();
   }
 
-  public static void removeToDoByInstanceId(Connection con, String instanceId)
+  static SilverpeasList<ToDoHeader> getNotCompletedToDoHeadersForUser(String userId)
       throws SQLException {
-    String statement = "DELETE FROM CalendarToDo WHERE componentId = ?";
-    PreparedStatement prepStmt = null;
-    try {
-      prepStmt = con.prepareStatement(statement);
-      prepStmt.setString(1, instanceId);
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
+    return JdbcSqlQuery
+        .createSelect(DISTINCT_CLAUSE + TODOCOLUMNNAMES + ORDER_BY_COL)
+        .from(TO_DO_TABLE)
+        .join(TO_DO_ATTENDEE_TABLE).on(TO_DO_JOINING_TO_DO_ATTENDEE)
+        .where(USER_ID_CRITERION, userId)
+        .and("completedDay IS NULL")
+        .orderBy(ORDER_BY_CLAUSE)
+        .execute(ToDoDAO::getToDoHeaderFromResultSet);
   }
 
-  public static Collection<ToDoHeader> getNotCompletedToDoHeadersForUser(Connection con,
-      String userId) throws SQLException, CalendarException {
-    String selectStatement = "select distinct " + ToDoDAO.TODOCOLUMNNAMES
-        + ", lower(name) " + " from CalendarToDo, CalendarToDoAttendee "
-        + " WHERE (userId = ?) " + " and (completedDay IS NULL)"
-        + " and (CalendarToDo.id = CalendarToDoAttendee.todoId) "
-        + " order by lower(name)";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    List<ToDoHeader> list = null;
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setString(1, userId);
-      rs = prepStmt.executeQuery();
-      list = new ArrayList<ToDoHeader>();
-      while (rs.next()) {
-        ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
-        list.add(toDo);
-      }
-      return list;
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
+  static SilverpeasList<ToDoHeader> getOrganizerToDoHeaders(String organizerId)
+      throws SQLException {
+    return JdbcSqlQuery
+        .createSelect(TODOCOLUMNNAMES + ORDER_BY_COL)
+        .from(TO_DO_TABLE)
+        .where("delegatorId = ?", organizerId)
+        .and("completedDay IS NULL")
+        .orderBy(ORDER_BY_CLAUSE)
+        .execute(ToDoDAO::getToDoHeaderFromResultSet);
   }
 
-  public static Collection<ToDoHeader> getOrganizerToDoHeaders(Connection con,
-      String organizerId) throws SQLException, CalendarException {
-    String selectStatement = "select " + ToDoDAO.TODOCOLUMNNAMES
-        + ", lower(name) " + " from CalendarToDo "
-        + " WHERE (delegatorId = ?) " + " and (completedDay IS NULL)"
-        + " order by lower(name)";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
+  static SilverpeasList<ToDoHeader> getClosedToDoHeaders(String organizerId) throws SQLException {
+    return JdbcSqlQuery
+        .createSelect("*")
+        .from("(")
 
-    List<ToDoHeader> list = null;
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setString(1, organizerId);
-      rs = prepStmt.executeQuery();
-      list = new ArrayList<ToDoHeader>();
-      while (rs.next()) {
-        ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
-        list.add(toDo);
-      }
-      return list;
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
+        .addSqlPart("SELECT " + TODOCOLUMNNAMES + ORDER_BY_COL)
+        .from(TO_DO_TABLE)
+        .join(TO_DO_ATTENDEE_TABLE).on(TO_DO_JOINING_TO_DO_ATTENDEE)
+        .where(USER_ID_CRITERION, organizerId)
+        .and("completedDay IS NOT NULL")
+
+        .union()
+
+        .addSqlPart("SELECT " + TODOCOLUMNNAMES + ORDER_BY_COL)
+        .from(TO_DO_TABLE)
+        .where("delegatorId = ?", organizerId)
+        .and("completedDay IS NOT NULL")
+
+        .addSqlPart(") u")
+        .orderBy(ORDER_BY_CLAUSE)
+        .execute(ToDoDAO::getToDoHeaderFromResultSet);
   }
 
-  public static Collection<ToDoHeader> getClosedToDoHeaders(Connection con,
-      String organizerId) throws SQLException, CalendarException {
-    String selectStatement = "select distinct " + ToDoDAO.TODOCOLUMNNAMES
-        + ", lower(name) " + " from CalendarToDo, CalendarToDoAttendee "
-        + " WHERE CalendarToDo.id = CalendarToDoAttendee.todoId "
-        + " AND (userId = ? ) " + " AND (completedDay IS NOT NULL) " + "UNION "
-        + "select distinct " + ToDoDAO.TODOCOLUMNNAMES + ", lower(name) "
-        + " from CalendarToDo " + " WHERE (delegatorId = ? ) "
-        + " AND (completedDay IS NOT NULL) " + " order by 17";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    List<ToDoHeader> list = null;
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setString(1, organizerId);
-      prepStmt.setString(2, organizerId);
-      rs = prepStmt.executeQuery();
-      list = new ArrayList<ToDoHeader>();
-      while (rs.next()) {
-        ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
-        list.add(toDo);
-      }
-      return list;
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-  }
-
-  public static Collection<ToDoHeader> getToDoHeadersByExternalId(Connection con,
-      String spaceId, String componentId, String externalId)
-      throws SQLException, CalendarException {
-    String selectStatement = "select distinct " + ToDoDAO.TODOCOLUMNNAMES
-        + ", lower(name) " + " from CalendarToDo "
-        + " WHERE (externalId like ?) " + " and (componentId = ?)"
-        + " order by startDay, lower(name)";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setString(1, externalId);
-      prepStmt.setString(2, componentId);
-
-      rs = prepStmt.executeQuery();
-      List<ToDoHeader> list = new ArrayList<ToDoHeader>();
-      while (rs.next()) {
-        ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
-        list.add(toDo);
-      }
-      return list;
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
+  static SilverpeasList<ToDoHeader> getToDoHeadersByExternalId(String componentId,
+      String externalId) throws SQLException {
+    return JdbcSqlQuery
+        .createSelect(DISTINCT_CLAUSE + TODOCOLUMNNAMES + ORDER_BY_COL)
+        .from(TO_DO_TABLE)
+        .where("componentId = ?", componentId)
+        .and("externalId like ?", externalId)
+        .orderBy("startDay, " + ORDER_BY_CLAUSE)
+        .execute(ToDoDAO::getToDoHeaderFromResultSet);
   }
 
   /**
-   * @param con
-   * @param componentId
-   * @return
-   * @throws SQLException
-   * @throws CalendarException
+   * Gets the to do header details about a component instance.
+   * @param componentId an identifier of component instance.
+   * @throws SQLException on SQL error
+   * @return a list of to do header details
    */
-  public static Collection<ToDoHeader> getToDoHeadersByInstanceId(final Connection con,
-      final String componentId) throws SQLException, CalendarException {
-    String selectStatement = "select " + ToDoDAO.TODOCOLUMNNAMES
-        + ", lower(name) " + " from CalendarToDo " + " WHERE componentId = ?";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    List<ToDoHeader> list = new ArrayList<ToDoHeader>();
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setString(1, componentId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        ToDoHeader toDo = getToDoHeaderFromResultSet(rs);
-        list.add(toDo);
-      }
-      return list;
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
+  static SilverpeasList<ToDoHeader> getToDoHeadersByInstanceId(final String componentId)
+      throws SQLException {
+    return JdbcSqlQuery
+        .createSelect(TODOCOLUMNNAMES + ORDER_BY_COL)
+        .from(TO_DO_TABLE)
+        .where("componentId = ?", componentId)
+        .orderBy(ORDER_BY_CLAUSE)
+        .execute(ToDoDAO::getToDoHeaderFromResultSet);
   }
 
-  public static ToDoHeader getToDoHeaderFromResultSet(ResultSet rs) throws SQLException,
-      CalendarException {
+  static ToDoHeader getToDoHeaderFromResultSet(ResultSet rs) throws SQLException {
     try {
-      String id = String.valueOf(rs.getInt(1));
-      String name = rs.getString(2);
-      String delegatorId = rs.getString(3);
+      int i = 1;
+      String id = String.valueOf(rs.getInt(i++));
+      String name = rs.getString(i++);
+      String delegatorId = rs.getString(i++);
       ToDoHeader toDo = new ToDoHeader(id, name, delegatorId);
-      toDo.setDescription(rs.getString(4));
-      toDo.getPriority().setValue(rs.getInt(5));
-      toDo.getClassification().setString(rs.getString(6));
-      toDo.setStartDay(rs.getString(7));
-      toDo.setStartHour(rs.getString(8));
-      toDo.setEndDay(rs.getString(9));
-      toDo.setEndHour(rs.getString(10));
-      toDo.setPercentCompleted(rs.getInt(11));
-      toDo.setCompletedDay(rs.getString(12));
-      toDo.setDuration(rs.getInt(13));
-      toDo.setSpaceId(rs.getString(14));
-      toDo.setComponentId(rs.getString(15));
-      toDo.setExternalId(rs.getString(16));
+      toDo.setDescription(rs.getString(i++));
+      toDo.getPriority().setValue(rs.getInt(i++));
+      toDo.getClassification().setString(rs.getString(i++));
+      toDo.setStartDay(rs.getString(i++));
+      toDo.setStartHour(rs.getString(i++));
+      toDo.setEndDay(rs.getString(i++));
+      toDo.setEndHour(rs.getString(i++));
+      toDo.setPercentCompleted(rs.getInt(i++));
+      toDo.setCompletedDay(rs.getString(i++));
+      toDo.setDuration(rs.getInt(i++));
+      toDo.setSpaceId(rs.getString(i++));
+      toDo.setComponentId(rs.getString(i++));
+      toDo.setExternalId(rs.getString(i));
       return toDo;
     } catch (ParseException e) {
-      SilverTrace.warn("calendar", "ToDoDAO.getToDoHeaderFromResultSet(ResultSet rs)",
-          "calendar_MSG_calendar_MSG_CANT_GET_TODO", "return => ToDO=null");
+      SilverLogger.getLogger(ToDoDAO.class).warn(e);
       return null;
     }
   }
 
-  public static ToDoHeader getToDoHeader(Connection con, String toDoId)
-      throws SQLException, CalendarException {
-    String selectStatement = "SELECT " + ToDoDAO.COLUMNNAMES + " FROM CalendarToDo WHERE id = ?";
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-
-    ToDoHeader toDo;
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setInt(1, Integer.parseInt(toDoId));
-      rs = prepStmt.executeQuery();
-      if (rs.next()) {
-        toDo = getToDoHeaderFromResultSet(rs);
-      } else {
-        throw new CalendarException("ToDoDAO.getToDoHeader.Connection con, String journalId",
-            SilverpeasException.ERROR, " toDoId=" + toDoId);
-      }
-      return toDo;
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
+  /**
+   * Gets to do header details from an identifier.
+   * @param toDoId identifier of to do.
+   * @throws SQLException on SQL error.
+   * @return a to do details.
+   */
+  static ToDoHeader getToDoHeader(String toDoId) throws SQLException {
+    return JdbcSqlQuery
+        .createSelect(COLUMNNAMES)
+        .from(TO_DO_TABLE)
+        .where("id = ?", Integer.parseInt(toDoId))
+        .executeUnique(ToDoDAO::getToDoHeaderFromResultSet);
   }
 
-  public static List<String> getAllTodoByUser(Connection con, String userId) throws SQLException {
-    List<String> taskIds = new ArrayList<String>();
-    PreparedStatement prepStmt = null;
-    ResultSet rs = null;
-    String selectStatement = "SELECT DISTINCT(ctd.id) FROM CalendarToDo ctd, " +
-        "CalendarToDoAttendee  ctda WHERE ctda.userid = ? " +
-        "AND (ctd.id = ctda.todoId)";
-    try {
-      prepStmt = con.prepareStatement(selectStatement);
-      prepStmt.setString(1, userId);
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        taskIds.add(rs.getString(1));
-      }
-    } finally {
-      DBUtil.close(rs, prepStmt);
-    }
-    return taskIds;
+  /**
+   * Gets all identifier of to do linked to a user.
+   * @param userId the identifier of a user.
+   * @throws SQLException on SQL error.
+   * @return a list of to do identifier.
+   */
+  static SilverpeasList<String> getAllTodoByUser(String userId) throws SQLException {
+    return JdbcSqlQuery
+        .createSelect(DISTINCT_CLAUSE + "(" + TO_DO_TABLE + ".id)")
+        .from(TO_DO_TABLE)
+        .join(TO_DO_ATTENDEE_TABLE).on(TO_DO_JOINING_TO_DO_ATTENDEE)
+        .where(USER_ID_CRITERION, userId)
+        .execute(r -> r.getString(1));
   }
 }
