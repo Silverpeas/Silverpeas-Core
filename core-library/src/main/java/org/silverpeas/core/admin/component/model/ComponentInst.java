@@ -31,6 +31,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -111,7 +112,13 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   @Override
   public Object clone() {
-    ComponentInst ci = new ComponentInst();
+    ComponentInst ci;
+    try {
+      ci = (ComponentInst) super.clone();
+    } catch (CloneNotSupportedException e) {
+      SilverLogger.getLogger(this).silent(e);
+      ci = new ComponentInst();
+    }
     ci.setLocalId(getLocalId());
     ci.setName(name);
     ci.setLabel(getLabel());

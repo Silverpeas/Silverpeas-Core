@@ -23,9 +23,8 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,8 +32,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GroupOfParametersType", propOrder = { "label", "description", "help", "order", "parameters" })
@@ -42,15 +43,15 @@ public class GroupOfParameters {
 
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected HashMap<String, String> label;
+  protected Map<String, String> label;
 
   @XmlElement
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected HashMap<String, String> description;
+  protected Map<String, String> description;
 
   @XmlElement
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected HashMap<String, String> help;
+  protected Map<String, String> help;
 
   @XmlElement
   protected int order;
@@ -63,9 +64,9 @@ public class GroupOfParameters {
    * Gets the value of the label property.
    * @return possible object is {@link Multilang }
    */
-  public HashMap<String, String> getLabel() {
+  public Map<String, String> getLabel() {
     if (label == null) {
-      label = new HashMap<String, String>();
+      label = new HashMap<>();
     }
     return label;
   }
@@ -81,7 +82,7 @@ public class GroupOfParameters {
    * Sets the value of the label property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setLabel(HashMap<String, String> value) {
+  public void setLabel(Map<String, String> value) {
     this.label = value;
   }
 
@@ -89,9 +90,9 @@ public class GroupOfParameters {
    * Gets the value of the description property.
    * @return possible object is {@link Multilang }
    */
-  public HashMap<String, String> getDescription() {
+  public Map<String, String> getDescription() {
     if (description == null) {
-      description = new HashMap<String, String>();
+      description = new HashMap<>();
     }
     return description;
   }
@@ -107,7 +108,7 @@ public class GroupOfParameters {
    * Sets the value of the description property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setDescription(HashMap<String, String> value) {
+  public void setDescription(Map<String, String> value) {
     this.description = value;
   }
 
@@ -115,9 +116,9 @@ public class GroupOfParameters {
    * Gets the value of the help property.
    * @return possible object is {@link Multilang }
    */
-  public HashMap<String, String> getHelp() {
+  public Map<String, String> getHelp() {
     if (help == null) {
-      help = new HashMap<String, String>();
+      help = new HashMap<>();
     }
     return help;
   }
@@ -126,7 +127,7 @@ public class GroupOfParameters {
    * Sets the value of the help property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setHelp(HashMap<String, String> value) {
+  public void setHelp(Map<String, String> value) {
     this.help = value;
   }
 
@@ -176,10 +177,16 @@ public class GroupOfParameters {
   }
 
   public GroupOfParameters clone() {
-    GroupOfParameters clone = new GroupOfParameters();
-    clone.setLabel((HashMap<String, String>) getLabel().clone());
-    clone.setDescription((HashMap<String, String>) getDescription().clone());
-    clone.setHelp((HashMap<String, String>) getHelp().clone());
+    GroupOfParameters clone;
+    try {
+      clone = (GroupOfParameters) super.clone();
+    } catch (CloneNotSupportedException e) {
+      SilverLogger.getLogger(this).silent(e);
+      clone = new GroupOfParameters();
+    }
+    clone.setLabel(new HashMap<>(getLabel()));
+    clone.setDescription(new HashMap<>(getDescription()));
+    clone.setHelp(new HashMap<>(getHelp()));
     clone.setOrder(getOrder());
     clone.setParameters(getParameterList().clone());
     return clone;

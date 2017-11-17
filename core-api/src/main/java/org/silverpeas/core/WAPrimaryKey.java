@@ -48,19 +48,19 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
    * @see #getTableName()
    * @since 1.0
    */
-  public String id = null;
+  protected String id = null;
 
   /**
    * The space where is implemented the entity
    * @since 1.0
    */
-  public String space = null;
+  protected String space = null;
 
   /**
    * The component name in the space
    * @since 1.0
    */
-  public String componentName = null;
+  protected String componentName = null;
 
   /**
    * Constructor which set only the id
@@ -239,7 +239,7 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
     try {
       return (WAPrimaryKey) super.clone();
     } catch (CloneNotSupportedException e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 }

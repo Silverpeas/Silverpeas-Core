@@ -26,7 +26,6 @@ package org.silverpeas.core.admin.component.model;
 
 import org.silverpeas.core.admin.component.GroupOfParametersSorter;
 import org.silverpeas.core.admin.component.PersonalComponentRegistry;
-import org.silverpeas.core.util.CollectionUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -57,16 +56,16 @@ import java.util.Optional;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PersonalComponentType", propOrder = {"name", "label", "description", "visible",
     "groupsOfParameters", "parameters"})
-public class PersonalComponent implements SilverpeasComponent {
+public class PersonalComponent extends AbstractSilverpeasComponent {
 
   @XmlElement(required = true)
   protected String name;
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected HashMap<String, String> label;
+  protected Map<String, String> label;
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected HashMap<String, String> description;
+  protected Map<String, String> description;
   @XmlElement(required = true)
   protected boolean visible;
   @XmlElementWrapper(name = "groupsOfParameters")
@@ -75,8 +74,6 @@ public class PersonalComponent implements SilverpeasComponent {
   @XmlElementWrapper(name = "parameters")
   @XmlElement(name = "parameter")
   protected List<Parameter> parameters;
-  @XmlTransient
-  protected Map<String, Parameter> indexedParametersByName = new HashMap<>();
   @XmlTransient
   private ParameterSorter sorter = new ParameterSorter();
 
@@ -113,7 +110,7 @@ public class PersonalComponent implements SilverpeasComponent {
   }
 
   @Override
-  public HashMap<String, String> getLabel() {
+  public Map<String, String> getLabel() {
     if (label == null) {
       label = new HashMap<>();
     }
@@ -132,7 +129,7 @@ public class PersonalComponent implements SilverpeasComponent {
    * Sets the value of the label property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setLabel(HashMap<String, String> value) {
+  public void setLabel(Map<String, String> value) {
     this.label = value;
   }
 
@@ -150,12 +147,12 @@ public class PersonalComponent implements SilverpeasComponent {
    * Sets the value of the description property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setDescription(HashMap<String, String> value) {
+  public void setDescription(Map<String, String> value) {
     this.description = value;
   }
 
   @Override
-  public HashMap<String, String> getDescription() {
+  public Map<String, String> getDescription() {
     if (description == null) {
       description = new HashMap<>();
     }
@@ -185,27 +182,6 @@ public class PersonalComponent implements SilverpeasComponent {
   public void setParameters(List<Parameter> parameters) {
     this.parameters = parameters;
     indexedParametersByName.clear();
-  }
-
-  /**
-   * Gets defined parameters indexed by their names.
-   * @return
-   */
-  private Map<String, Parameter> getIndexedParametersByName() {
-    List<Parameter> definedParameters = getParameters();
-    if (CollectionUtil.isNotEmpty(definedParameters) &&
-        definedParameters.size() != indexedParametersByName.size()) {
-      for (Parameter parameter : definedParameters) {
-        indexedParametersByName.put(parameter.getName(), parameter);
-      }
-    }
-    List<GroupOfParameters> groups = getGroupsOfParameters();
-    for (GroupOfParameters group : groups) {
-      for (Parameter parameter : group.getParameters()) {
-        indexedParametersByName.put(parameter.getName(), parameter);
-      }
-    }
-    return indexedParametersByName;
   }
 
   @Override

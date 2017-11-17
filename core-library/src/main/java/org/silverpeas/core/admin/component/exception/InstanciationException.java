@@ -33,11 +33,6 @@ public class InstanciationException extends SilverpeasException {
     super(ex);
   }
 
-  @Deprecated
-  public InstanciationException(String sMessage) {
-    super("NoClass", SilverpeasException.ERROR, sMessage);
-  }
-
   public InstanciationException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
   }

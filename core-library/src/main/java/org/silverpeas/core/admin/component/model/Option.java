@@ -23,14 +23,16 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import java.util.HashMap;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.silverpeas.core.ui.DisplayI18NHelper;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -57,7 +59,7 @@ public class Option implements Cloneable {
 
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected HashMap<String, String> name;
+  protected Map<String, String> name;
   @XmlElement(required = true)
   protected String value;
 
@@ -65,9 +67,9 @@ public class Option implements Cloneable {
    * Gets the value of the name property.
    * @return possible object is {@link Multilang }
    */
-  public HashMap<String, String> getName() {
+  public Map<String, String> getName() {
     if (name == null) {
-      name = new HashMap<String, String>();
+      name = new HashMap<>();
     }
     return name;
   }
@@ -83,7 +85,7 @@ public class Option implements Cloneable {
    * Sets the value of the name property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setName(HashMap<String, String> value) {
+  public void setName(Map<String, String> value) {
     this.name = value;
   }
 
@@ -106,8 +108,14 @@ public class Option implements Cloneable {
   @Override
   @SuppressWarnings( { "unchecked" })
   public Option clone() {
-    Option option = new Option();
-    option.setName((HashMap<String, String>) getName().clone());
+    Option option;
+    try {
+      option = (Option) super.clone();
+    } catch (CloneNotSupportedException e) {
+      SilverLogger.getLogger(this).silent(e);
+      option =  new Option();
+    }
+    option.setName(new HashMap<>(getName()));
     option.setValue(value);
     return option;
   }

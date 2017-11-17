@@ -23,9 +23,13 @@
  */
 package org.silverpeas.core.admin.component.model;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -33,13 +37,10 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.CollectionUtil;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -106,7 +107,7 @@ public class Parameter implements Cloneable {
   protected String name;
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected HashMap<String, String> label;
+  protected Map<String, String> label;
   protected int order;
   protected boolean mandatory;
   @XmlElement(required = true)
@@ -121,9 +122,9 @@ public class Parameter implements Cloneable {
   protected String updatable;
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected HashMap<String, String> help;
+  protected Map<String, String> help;
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected HashMap<String, String> warning;
+  protected Map<String, String> warning;
   protected String personalSpaceValue;
 
   /**
@@ -146,9 +147,9 @@ public class Parameter implements Cloneable {
    * Gets the value of the label property.
    * @return possible object is {@link Multilang }
    */
-  public HashMap<String, String> getLabel() {
+  public Map<String, String> getLabel() {
     if (label == null) {
-      label = new HashMap<String, String>();
+      label = new HashMap<>();
     }
     return label;
   }
@@ -164,7 +165,7 @@ public class Parameter implements Cloneable {
    * Sets the value of the label property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setLabel(HashMap<String, String> value) {
+  public void setLabel(Map<String, String> value) {
     this.label = value;
   }
 
@@ -225,7 +226,7 @@ public class Parameter implements Cloneable {
    * getOptions().add(newItem);
    * </pre>
    * <p>
-   * Objects of the following type(s) are allowed in the list {@link Parameter.Options }
+   * Objects of the following type(s) are allowed in the list {@link Parameter#getOptions()}
    */
   public List<Option> getOptions() {
     if (isXmlTemplate() && CollectionUtil.isEmpty(options)) {
@@ -299,9 +300,9 @@ public class Parameter implements Cloneable {
    * Gets the value of the help property.
    * @return possible object is {@link Multilang }
    */
-  public HashMap<String, String> getHelp() {
+  public Map<String, String> getHelp() {
     if (help == null) {
-      help = new HashMap<String, String>();
+      help = new HashMap<>();
     }
     return help;
   }
@@ -310,7 +311,7 @@ public class Parameter implements Cloneable {
    * Sets the value of the help property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setHelp(HashMap<String, String> value) {
+  public void setHelp(Map<String, String> value) {
     this.help = value;
   }
 
@@ -318,9 +319,9 @@ public class Parameter implements Cloneable {
    * Gets the value of the warning property.
    * @return possible object is {@link Multilang }
    */
-  public HashMap<String, String> getWarning() {
+  public Map<String, String> getWarning() {
     if (warning == null) {
-      warning = new HashMap<String, String>();
+      warning = new HashMap<>();
     }
     return warning;
   }
@@ -336,7 +337,7 @@ public class Parameter implements Cloneable {
    * Sets the value of the warning property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setWarning(HashMap<String, String> value) {
+  public void setWarning(Map<String, String> value) {
     this.warning = value;
   }
 
@@ -399,16 +400,22 @@ public class Parameter implements Cloneable {
   @Override
   @SuppressWarnings("unchecked")
   public Parameter clone() {
-    Parameter param = new Parameter();
-    param.setHelp((HashMap<String, String>) getHelp().clone());
-    param.setWarning((HashMap<String, String>) getWarning().clone());
-    param.setLabel((HashMap<String, String>) getLabel().clone());
+    Parameter param;
+    try {
+      param = (Parameter) super.clone();
+    } catch (CloneNotSupportedException e) {
+      SilverLogger.getLogger(this).silent(e);
+      param = new Parameter();
+    }
+    param.setHelp(new HashMap<>(getHelp()));
+    param.setWarning(new HashMap<>(getWarning()));
+    param.setLabel(new HashMap<>(getLabel()));
     param.setMandatory(mandatory);
     param.setName(name);
     if (options == null) {
-      param.setOptions(new ArrayList<Option>());
+      param.setOptions(new ArrayList<>());
     } else {
-      List<Option> newOptions = new ArrayList<Option>(options.size());
+      List<Option> newOptions = new ArrayList<>(options.size());
       for (Option option : options) {
         newOptions.add(option.clone());
       }
@@ -424,7 +431,7 @@ public class Parameter implements Cloneable {
   }
 
   private void loadXmlTemplates() {
-    options = new ArrayList<Option>();
+    options = new ArrayList<>();
     try {
       List<PublicationTemplate> templates = PublicationTemplateManager.getInstance().
           getPublicationTemplates(true);

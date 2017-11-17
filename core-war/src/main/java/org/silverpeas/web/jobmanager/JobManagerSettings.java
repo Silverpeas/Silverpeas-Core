@@ -24,33 +24,56 @@
 package org.silverpeas.web.jobmanager;
 
 import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 
+import javax.inject.Singleton;
+
 /**
- * This class manage the informations needed for job manager
+ * This class manage the information needed for job manager
  * @t.leroi
  */
+@Singleton
 public class JobManagerSettings {
 
-  public static boolean IsKMVisible = false;
-  public static boolean IsToolSpecificAuthentVisible = false;
-  public static boolean IsToolWorkflowDesignerVisible = false;
-  public static boolean IsTemplateDesignerVisible = false;
-  public static boolean IsPortletDeployerVisible = false;
+  private boolean isKMVisible = false;
+  private boolean isToolSpecificAuthentVisible = false;
+  private boolean isToolWorkflowDesignerVisible = false;
+  private boolean isTemplateDesignerVisible = false;
+  private boolean isPortletDeployerVisible = false;
 
-  static {
+  protected JobManagerSettings() {
     SettingBundle rs = ResourceLocator.getSettingBundle(
         "org.silverpeas.jobManagerPeas.settings.jobManagerPeasSettings");
 
-    IsKMVisible = rs.getBoolean("IsKMVisible", false);
-    IsToolSpecificAuthentVisible = rs.getBoolean("IsToolSpecificAuthentVisible", false);
-    IsToolWorkflowDesignerVisible = rs.getBoolean("IsToolWorkflowDesignerVisible", false);
-    IsTemplateDesignerVisible = rs.getBoolean("IsTemplateDesignerVisible", false);
-    IsPortletDeployerVisible = rs.getBoolean("IsPortletDeployerVisible", false);
+    isKMVisible = rs.getBoolean("IsKMVisible", false);
+    isToolSpecificAuthentVisible = rs.getBoolean("IsToolSpecificAuthentVisible", false);
+    isToolWorkflowDesignerVisible = rs.getBoolean("IsToolWorkflowDesignerVisible", false);
+    isTemplateDesignerVisible = rs.getBoolean("IsTemplateDesignerVisible", false);
+    isPortletDeployerVisible = rs.getBoolean("IsPortletDeployerVisible", false);
   }
 
-  private JobManagerSettings() {
-
+  public static final JobManagerSettings get() {
+    return ServiceProvider.getService(JobManagerSettings.class);
   }
 
+  public boolean isKMVisible() {
+    return isKMVisible;
+  }
+
+  public boolean isToolSpecificAuthentVisible() {
+    return isToolSpecificAuthentVisible;
+  }
+
+  public boolean isToolWorkflowDesignerVisible() {
+    return isToolWorkflowDesignerVisible;
+  }
+
+  public boolean isTemplateDesignerVisible() {
+    return isTemplateDesignerVisible;
+  }
+
+  public boolean isPortletDeployerVisible() {
+    return isPortletDeployerVisible;
+  }
 }

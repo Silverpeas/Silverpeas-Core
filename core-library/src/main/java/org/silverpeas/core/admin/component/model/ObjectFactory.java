@@ -40,7 +40,7 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-  private final static QName _WAComponent_QNAME =
+  private static final QName _WAComponent_QNAME =
       new QName("http://silverpeas.org/xml/ns/component",
       "WAComponent");
 
@@ -49,6 +49,7 @@ public class ObjectFactory {
    * for package: com.silverpeas.admin.components
    */
   public ObjectFactory() {
+    // nothing to do
   }
 
   /**

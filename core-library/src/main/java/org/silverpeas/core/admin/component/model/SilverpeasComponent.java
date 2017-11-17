@@ -27,8 +27,8 @@ package org.silverpeas.core.admin.component.model;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.StringUtil;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -82,7 +82,7 @@ public interface SilverpeasComponent {
    * Gets the value of the label property.
    * @return possible object is {@link Multilang }
    */
-  HashMap<String, String> getLabel();
+  Map<String, String> getLabel();
 
   /**
    * Gets the value of the label property according to a given language.
@@ -100,7 +100,7 @@ public interface SilverpeasComponent {
    * Gets the value of the description property.
    * @return possible object is {@link Multilang }
    */
-  HashMap<String, String> getDescription();
+  Map<String, String> getDescription();
 
   /**
    * Gets the value of the description property according to a given language.

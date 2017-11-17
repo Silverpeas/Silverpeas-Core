@@ -26,7 +26,6 @@ package org.silverpeas.core.admin.component.model;
 import org.silverpeas.core.admin.component.GroupOfParametersSorter;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.CollectionUtil;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -57,7 +56,36 @@ import java.util.Optional;
 @XmlType(name = "WAComponentType", propOrder = {"name", "behaviors", "label", "description",
     "suite", "visible", "visibleInPersonalSpace", "portlet", "router", "profiles",
     "groupsOfParameters", "parameters"})
-public class WAComponent implements SilverpeasComponent {
+public class WAComponent extends AbstractSilverpeasComponent {
+
+  @XmlTransient
+  private ParameterSorter sorter = new ParameterSorter();
+
+  @XmlElement(required = true)
+  protected String name;
+  protected ComponentBehaviors behaviors;
+  @XmlElement(required = true)
+  @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
+  protected Map<String, String> label;
+  @XmlElement(required = true)
+  @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
+  protected Map<String, String> description;
+  @XmlElement(required = true)
+  @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
+  protected Map<String, String> suite;
+  protected boolean visible;
+  protected boolean visibleInPersonalSpace = false;
+  protected boolean portlet;
+  protected String router;
+  @XmlElementWrapper(name = "profiles")
+  @XmlElement(name = "profile", required = true)
+  protected List<Profile> profiles;
+  @XmlElementWrapper(name = "groupsOfParameters")
+  @XmlElement(name = "groupOfParameters")
+  protected List<GroupOfParameters> groupsOfParameters;
+  @XmlElementWrapper(name = "parameters")
+  @XmlElement(name = "parameter")
+  protected List<Parameter> parameters;
 
   /**
    * Gets the WAComponent object with the specified name.
@@ -85,37 +113,6 @@ public class WAComponent implements SilverpeasComponent {
   public static Collection<WAComponent> getAll() {
     return WAComponentRegistry.get().getAllWAComponents().values();
   }
-
-  @XmlTransient
-  private ParameterSorter sorter = new ParameterSorter();
-
-  @XmlElement(required = true)
-  protected String name;
-  protected ComponentBehaviors behaviors;
-  @XmlElement(required = true)
-  @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected HashMap<String, String> label;
-  @XmlElement(required = true)
-  @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected HashMap<String, String> description;
-  @XmlElement(required = true)
-  @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
-  protected HashMap<String, String> suite;
-  protected boolean visible;
-  protected boolean visibleInPersonalSpace = false;
-  protected boolean portlet;
-  protected String router;
-  @XmlElementWrapper(name = "profiles")
-  @XmlElement(name = "profile", required = true)
-  protected List<Profile> profiles;
-  @XmlElementWrapper(name = "groupsOfParameters")
-  @XmlElement(name = "groupOfParameters")
-  protected List<GroupOfParameters> groupsOfParameters;
-  @XmlElementWrapper(name = "parameters")
-  @XmlElement(name = "parameter")
-  protected List<Parameter> parameters;
-  @XmlTransient
-  protected Map<String, Parameter> indexedParametersByName = new HashMap<>();
 
   /**
    * Gets the value of the name property.
@@ -163,7 +160,7 @@ public class WAComponent implements SilverpeasComponent {
    * @return possible object is {@link Multilang }
    */
   @Override
-  public HashMap<String, String> getLabel() {
+  public Map<String, String> getLabel() {
     if (label == null) {
       label = new HashMap<>();
     }
@@ -174,7 +171,7 @@ public class WAComponent implements SilverpeasComponent {
    * Sets the value of the label property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setLabel(HashMap<String, String> value) {
+  public void setLabel(Map<String, String> value) {
     this.label = value;
   }
 
@@ -183,7 +180,7 @@ public class WAComponent implements SilverpeasComponent {
    * @return possible object is {@link Multilang }
    */
   @Override
-  public HashMap<String, String> getDescription() {
+  public Map<String, String> getDescription() {
     if (description == null) {
       description = new HashMap<>();
     }
@@ -194,7 +191,7 @@ public class WAComponent implements SilverpeasComponent {
    * Sets the value of the description property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setDescription(HashMap<String, String> value) {
+  public void setDescription(Map<String, String> value) {
     this.description = value;
   }
 
@@ -202,7 +199,7 @@ public class WAComponent implements SilverpeasComponent {
    * Gets the value of the suite property.
    * @return possible object is {@link Multilang }
    */
-  public HashMap<String, String> getSuite() {
+  public Map<String, String> getSuite() {
     if (suite == null) {
       suite = new HashMap<>();
     }
@@ -220,7 +217,7 @@ public class WAComponent implements SilverpeasComponent {
    * Sets the value of the suite property.
    * @param value allowed object is {@link Multilang }
    */
-  public void setSuite(HashMap<String, String> value) {
+  public void setSuite(Map<String, String> value) {
     this.suite = value;
   }
 
@@ -323,27 +320,6 @@ public class WAComponent implements SilverpeasComponent {
       parameters = new ArrayList<>();
     }
     return parameters;
-  }
-
-  /**
-   * Gets defined parameters indexed by their names.
-   * @return
-   */
-  private Map<String, Parameter> getIndexedParametersByName() {
-    List<Parameter> definedParameters = getParameters();
-    if (CollectionUtil.isNotEmpty(definedParameters) &&
-        definedParameters.size() != indexedParametersByName.size()) {
-      for (Parameter parameter : definedParameters) {
-        indexedParametersByName.put(parameter.getName(), parameter);
-      }
-    }
-    List<GroupOfParameters> groupsOfParameters = getGroupsOfParameters();
-    for (GroupOfParameters group : groupsOfParameters) {
-      for (Parameter parameter : group.getParameters()) {
-        indexedParametersByName.put(parameter.getName(), parameter);
-      }
-    }
-    return indexedParametersByName;
   }
 
   /**

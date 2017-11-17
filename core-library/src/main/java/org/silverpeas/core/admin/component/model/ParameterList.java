@@ -100,10 +100,10 @@ public class ParameterList extends ArrayList<Parameter> {
   }
 
   public ParameterList clone() {
-    ParameterList clone = new ParameterList();
-    for (Parameter param : this) {
+    ParameterList clone = (ParameterList) super.clone();
+    /*for (Parameter param : this) {
       clone.add(param.clone());
-    }
+    }*/
     return clone;
   }
 

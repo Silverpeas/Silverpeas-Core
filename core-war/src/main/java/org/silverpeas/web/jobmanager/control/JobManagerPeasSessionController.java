@@ -23,23 +23,24 @@
  */
 package org.silverpeas.web.jobmanager.control;
 
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.web.jobmanager.JobManagerService;
-import org.silverpeas.web.jobmanager.JobManagerSettings;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.web.jobmanager.JobManagerService;
+import org.silverpeas.web.jobmanager.JobManagerSettings;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.silverpeas.web.jobmanager.JobManagerService.*;
 import static org.silverpeas.core.util.URLUtil.*;
+import static org.silverpeas.web.jobmanager.JobManagerService.LEVEL_OPERATION;
+import static org.silverpeas.web.jobmanager.JobManagerService.LEVEL_SERVICE;
 
 /**
  * Class declaration
@@ -79,7 +80,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
   }
 
   private void initServices() {
-    services = new HashMap<String, JobManagerService>(100);
+    services = new HashMap<>(100);
     String webContext = getApplicationURL();
 
     // inititialisation de tous les services disponibles
@@ -137,6 +138,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     boolean kmServiceAllowed = false;
     int nbServices = 0;
 
+    JobManagerSettings jobManagerSettings = JobManagerSettings.get();
     if (getUserDetail().isAccessAdmin()) {
       // l'administrateur à accès au tout
       String[] jDesignerFunctions = { jspp.getId(), jdp.getId(), jsp.getId() };
@@ -145,7 +147,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       String[] jSTATFunctions = { jSTAT1.getId(), jSTAT2.getId(), jSTAT3.getId(), jSTAT4.getId() };
       jSTAT = new JobManagerService("3", "JSTAT", LEVEL_SERVICE, null, jSTATFunctions, false);
 
-      if (JobManagerSettings.IsKMVisible) {
+      if (jobManagerSettings.isKMVisible()) {
         String[] jKMFunctions = { jKM1.getId(), jKM2.getId() };
         jKM = new JobManagerService("2", "JKM", LEVEL_SERVICE, null, jKMFunctions, false);
         services.put(jKM.getId(), jKM);
@@ -154,25 +156,25 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         kmServiceAllowed = true;
       }
 
-      if (JobManagerSettings.IsToolSpecificAuthentVisible
-          || JobManagerSettings.IsToolWorkflowDesignerVisible) {
+      if (jobManagerSettings.isToolSpecificAuthentVisible() ||
+          jobManagerSettings.isToolWorkflowDesignerVisible()) {
 
-        List<String> ids = new ArrayList<String>(10);
-        if (JobManagerSettings.IsToolSpecificAuthentVisible) {
+        List<String> ids = new ArrayList<>(10);
+        if (jobManagerSettings.isToolSpecificAuthentVisible()) {
           ids.add(jSpecificAuthent.getId());
           services.put(jSpecificAuthent.getId(), jSpecificAuthent);
         }
-        if (JobManagerSettings.IsTemplateDesignerVisible) {
+        if (jobManagerSettings.isTemplateDesignerVisible()) {
           ids.add(jtd.getId());
           services.put(jtd.getId(), jtd);
         }
-        if (JobManagerSettings.IsToolWorkflowDesignerVisible) {
+        if (jobManagerSettings.isToolWorkflowDesignerVisible()) {
           ids.add(jWorkflowDesigner.getId());
           services.put(jWorkflowDesigner.getId(), jWorkflowDesigner);
         }
         ids.add(jImportExport.getId());
         services.put(jImportExport.getId(), jImportExport);
-        if (JobManagerSettings.IsPortletDeployerVisible) {
+        if (jobManagerSettings.isPortletDeployerVisible()) {
           ids.add(portletDeployer.getId());
           services.put(portletDeployer.getId(), portletDeployer);
         }
@@ -236,8 +238,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       String[] id2 = { jSTAT2.getId(), jSTAT3.getId() };
       jSTAT = new JobManagerService("3", "JSTAT", LEVEL_SERVICE, null, id2, false);
 
-      if (getUserDetail().isAccessPdcManager()
-          && JobManagerSettings.IsKMVisible) {
+      if (getUserDetail().isAccessPdcManager() && jobManagerSettings.isKMVisible()) {
         String[] id1 = { jKM1.getId(), jKM2.getId() };
         jKM = new JobManagerService("2", "JKM", LEVEL_SERVICE, null, id1, false);
 
@@ -251,8 +252,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
       services.put(jSTAT.getId(), jSTAT);
       services.put(jSTAT2.getId(), jSTAT2);
       services.put(jSTAT3.getId(), jSTAT3);
-    } else if (getUserDetail().isAccessPdcManager()
-        && JobManagerSettings.IsKMVisible) {
+    } else if (getUserDetail().isAccessPdcManager() && jobManagerSettings.isKMVisible()) {
       String[] id1 = { jKM1.getId(), jKM2.getId() };
       jKM = new JobManagerService("1", "JKM", LEVEL_SERVICE, null, id1, false);
 
@@ -275,9 +275,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     try {
       isPDCManager = new GlobalPdcManager().isUserManager(getUserId());
     } catch (PdcException e) {
-      SilverTrace.error("jobManagerPeas",
-          "jobManagerPeasSessionController.initServices()",
-          "root.MSG_GEN_PARAM_VALUE", e);
+      SilverLogger.getLogger(this).error(e);
     }
 
     if (!kmServiceAllowed && isPDCManager) {

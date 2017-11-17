@@ -24,45 +24,42 @@
 package org.silverpeas.core.admin.component.model;
 
 public class CompoSpace {
-  private String m_sComponentId = "";
-  private String m_sComponentLabel = "";
-  private String m_sTablePrefixSpaceId = "";
-  private String m_sSpaceLabel = "";
+  private String componentId = "";
+  private String componentLabel = "";
+  private String tablePrefixSpaceId = "";
+  private String spaceLabel = "";
   private int spaceLevel = 1;
 
-  public CompoSpace() {
-  }
-
   public void setComponentId(String sComponentId) {
-    m_sComponentId = sComponentId;
+    componentId = sComponentId;
   }
 
   public String getComponentId() {
-    return m_sComponentId;
+    return componentId;
   }
 
   public void setComponentLabel(String sComponentLabel) {
-    m_sComponentLabel = sComponentLabel;
+    componentLabel = sComponentLabel;
   }
 
   public String getComponentLabel() {
-    return m_sComponentLabel;
+    return componentLabel;
   }
 
   public void setSpaceId(String sTablePrefixSpaceId) {
-    m_sTablePrefixSpaceId = sTablePrefixSpaceId;
+    tablePrefixSpaceId = sTablePrefixSpaceId;
   }
 
   public String getSpaceId() {
-    return m_sTablePrefixSpaceId;
+    return tablePrefixSpaceId;
   }
 
   public void setSpaceLabel(String sSpaceLabel) {
-    m_sSpaceLabel = sSpaceLabel;
+    spaceLabel = sSpaceLabel;
   }
 
   public String getSpaceLabel() {
-    return m_sSpaceLabel;
+    return spaceLabel;
   }
 
   public void setSpaceLevel(int level) {
