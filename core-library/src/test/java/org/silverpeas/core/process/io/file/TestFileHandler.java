@@ -48,7 +48,6 @@ import static org.apache.commons.io.IOUtils.*;
 import static org.apache.commons.io.IOUtils.write;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
-import static org.mockito.Mockito.mock;
 
 /**
  * @author Yohann Chastagnier

@@ -42,7 +42,7 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.concurrent.Callable;
 
-import static com.jayway.awaitility.Awaitility.await;
+import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
@@ -83,7 +83,7 @@ public class SchedulerIT {
     return WarBuilder4LibCore.onWarForTestClass(SchedulerIT.class)
         .addCommonBasicUtilities()
         .addSchedulerFeatures()
-        .addMavenDependencies("com.jayway.awaitility:awaitility", "org.antlr:stringtemplate")
+        .addMavenDependencies("org.awaitility:awaitility", "org.antlr:stringtemplate")
         .testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.core.initialization");
         }).build();

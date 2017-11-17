@@ -83,7 +83,9 @@ public class TestUploadSession {
     organisationControllerMock =
         commonAPI4Test.injectIntoMockedBeanContainer(mock(OrganizationController.class));
 
-    si = new SessionInfo(null, new UserDetail());
+    UserDetail user = new UserDetail();
+    user.setId("32");
+    si = new SessionInfo(null, user);
   }
 
   @SuppressWarnings("unchecked")

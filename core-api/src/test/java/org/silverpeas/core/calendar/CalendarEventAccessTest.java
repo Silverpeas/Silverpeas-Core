@@ -69,6 +69,7 @@ public class CalendarEventAccessTest {
     userTest = aUser();
     when(userTest.getId()).thenReturn(USER_TEST_ID);
     calendar = mock(Calendar.class);
+    when(calendar.getComponentInstanceId()).thenReturn("calendarApp32");
     eventBuilder = CalendarEventStubBuilder
         .from(Period.between(LocalDate.of(2017, 8, 25), LocalDate.of(2017, 8, 26)));
     eventBuilder.plannedOn(calendar);

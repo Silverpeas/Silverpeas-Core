@@ -95,7 +95,7 @@ public class CalendarEventOccurrenceGenerationTest {
     commonAPI4Test.injectIntoMockedBeanContainer(repository);
     commonAPI4Test.injectIntoMockedBeanContainer(organizationController);
     when(organizationController.getUserDetail(anyString())).thenAnswer(a -> {
-      String id = a.getArgumentAt(0, String.class);
+      String id = a.getArgument(0);
       UserDetail user = new UserDetail();
       user.setId(id);
       return user;

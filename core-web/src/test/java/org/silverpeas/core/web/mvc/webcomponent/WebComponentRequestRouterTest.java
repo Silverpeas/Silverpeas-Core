@@ -32,7 +32,6 @@ import org.silverpeas.core.admin.component.service.SilverpeasComponentInstancePr
 import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
@@ -88,16 +87,20 @@ public class WebComponentRequestRouterTest {
   @Inject
   private Instance<WebComponentRequestRouter<?, ?>> webComponentRequestRouterProducer;
 
+  private UserDetail user;
+
   @Before
   public void setUp() throws Exception {
     SilverpeasComponentInstanceProvider provider = mock(SilverpeasComponentInstanceProvider.class);
-    when(provider.getComponentName(anyString())).thenReturn("componentName");
+    when(provider.getComponentName(any())).thenReturn("componentName");
     commonAPI4Test.injectIntoMockedBeanContainer(mock(Administration.class));
     commonAPI4Test.injectIntoMockedBeanContainer(mock(SessionManagement.class));
     commonAPI4Test.injectIntoMockedBeanContainer(mock(SilverStatisticsManager.class));
     commonAPI4Test.injectIntoMockedBeanContainer(mockedOrganizationController);
     commonAPI4Test.injectIntoMockedBeanContainer(silverpeasWebUtil);
     commonAPI4Test.injectIntoMockedBeanContainer(provider);
+    user = new UserDetail();
+    user.setId("400");
 
     WebComponentManager.managedWebComponentRouters.clear();
     CacheServiceProvider.getRequestCacheService().clearAllCaches();
@@ -123,6 +126,7 @@ public class WebComponentRequestRouterTest {
     HttpRequest request = mock(HttpRequest.class);
     HttpSession session = mock(HttpSession.class);
     MainSessionController mainSessionController = mock(MainSessionController.class);
+    when(mainSessionController.getUserId()).thenReturn(user.getId());
     OrganizationController organisationController = getOrganisationController();
 
     String uriPart = path;
@@ -159,7 +163,7 @@ public class WebComponentRequestRouterTest {
     when(componentContext.getCurrentSpaceName()).thenReturn("spaceName");
     when(componentContext.getCurrentComponentLabel()).thenReturn("componentLabel");
     when(componentContext.getCurrentComponentId()).thenReturn("componentName26");
-    when(mainSessionController.createComponentContext(anyString(), anyString()))
+    when(mainSessionController.createComponentContext(any(), anyString()))
         .then(new Returns(componentContext));
     when(session.getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT))
         .thenReturn(mainSessionController);
@@ -260,8 +264,6 @@ public class WebComponentRequestRouterTest {
             .setCurrentSessionCache(sessionCache);
       } else {
         // Putting a current requester for the next actions of this test.
-        User user = mock(User.class);
-        when(user.getId()).thenReturn("400");
         ((SessionCacheService) CacheServiceProvider.getSessionCacheService()).newSessionCache(user);
       }
 

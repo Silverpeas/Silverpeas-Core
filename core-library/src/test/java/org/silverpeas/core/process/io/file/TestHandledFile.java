@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.process.io.file;
 
+import org.apache.commons.io.filefilter.FalseFileFilter;
+import org.apache.commons.io.filefilter.SuffixFileFilter;
+import org.apache.commons.io.filefilter.TrueFileFilter;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -31,13 +36,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.apache.commons.io.filefilter.FalseFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
-import org.junit.Test;
-
 import static org.apache.commons.io.FileUtils.*;
 import static org.apache.commons.io.IOUtils.*;
+import static org.apache.commons.io.IOUtils.write;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;

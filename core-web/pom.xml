@@ -211,6 +211,12 @@
       <artifactId>cdi-unit</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.jboss.weld.se</groupId>
+      <artifactId>weld-se</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <reporting>

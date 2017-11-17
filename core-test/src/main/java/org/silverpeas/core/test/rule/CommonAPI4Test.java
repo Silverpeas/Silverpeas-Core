@@ -63,6 +63,7 @@ import static org.silverpeas.core.util.logging.SilverLoggerProvider.ROOT_NAMESPA
 public class CommonAPI4Test implements TestRule {
 
   private TestContext testContext;
+  private UserProvider userProvider;
 
   @Override
   public Statement apply(final Statement base, final Description description) {
@@ -139,12 +140,15 @@ public class CommonAPI4Test implements TestRule {
     }
   }
 
+  public void setCurrentRequester(final User user) {
+    when(userProvider.getCurrentRequester()).thenReturn(user);
+  }
+
   @SuppressWarnings("unchecked")
   public <T> T injectIntoMockedBeanContainer(T bean, Annotation ... qualifiers) {
-    final MockUtil mockUtil = new MockUtil();
     final Class<T> clazz;
-    if (mockUtil.isMock(bean) || mockUtil.isSpy(bean)) {
-      clazz = mockUtil.getMockHandler(bean).getMockSettings().getTypeToMock();
+    if (MockUtil.isMock(bean) || MockUtil.isSpy(bean)) {
+      clazz = MockUtil.getMockHandler(bean).getMockSettings().getTypeToMock();
     } else {
       clazz = (Class<T>) bean.getClass();
     }
@@ -167,7 +171,7 @@ public class CommonAPI4Test implements TestRule {
   }
 
   private void userProvider() {
-    StubbedUserProvider userProvider = mock(StubbedUserProvider.class);
+    userProvider = mock(StubbedUserProvider.class);
     doCallRealMethod().when(userProvider).getCurrentRequester();
     when(TestBeanContainer.getMockedBeanContainer().getBeanByType(UserProvider.class))
         .thenReturn(userProvider);

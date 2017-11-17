@@ -45,6 +45,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -64,8 +65,8 @@ public class DirectorySessionControllerTest {
 
     SilverpeasComponentInstanceProvider mockProvider =
         mock(SilverpeasComponentInstanceProvider.class);
-    when(mockProvider.getComponentName(anyString())).thenAnswer(i -> {
-      String componentName = i.getArgumentAt(0, String.class);
+    when(mockProvider.getComponentName(any())).thenAnswer(i -> {
+      String componentName = i.getArgument(0);
       return componentName;
     });
     when(TestBeanContainer.getMockedBeanContainer()
@@ -99,10 +100,10 @@ public class DirectorySessionControllerTest {
     DirectoryItemList userExpectedItems = new DirectoryItemList(users);
 
     MainSessionController controller = mock(MainSessionController.class);
+    when(controller.getCurrentUserDetail()).thenReturn(user1);
     when(mockOrganizationController.getAllUsers()).thenReturn(users.toArray(new UserDetail[3]));
     when(mockOrganizationController.getComponentIdsForUser(anyString(), anyString()))
         .thenReturn(new String[0]);
-    when(controller.getCurrentUserDetail()).thenReturn(new UserDetail());
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
@@ -154,11 +155,11 @@ public class DirectorySessionControllerTest {
     DirectoryItemList usersOfGroupExpectedItems = new DirectoryItemList(groupOfUsers);
 
     MainSessionController controller = mock(MainSessionController.class);
+    when(controller.getCurrentUserDetail()).thenReturn(user2);
     when(mockOrganizationController.getAllUsersOfGroup("2"))
         .thenReturn(groupOfUsers.toArray(new UserDetail[2]));
     when(mockOrganizationController.getComponentIdsForUser(anyString(), anyString()))
         .thenReturn(new String[0]);
-    when(controller.getCurrentUserDetail()).thenReturn(new UserDetail());
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
@@ -224,13 +225,13 @@ public class DirectorySessionControllerTest {
     Domain domain = new Domain();
     domain.setId("3");
     MainSessionController controller = mock(MainSessionController.class);
+    when(controller.getCurrentUserDetail()).thenReturn(user1);
     List<String> domainIds = new ArrayList<>();
     domainIds.add("3");
     when(mockOrganizationController.getUsersOfDomains(domainIds)).thenReturn(usersOfDomain);
     when(mockOrganizationController.getDomain("3")).thenReturn(domain);
     when(mockOrganizationController.getComponentIdsForUser(anyString(), anyString()))
         .thenReturn(new String[0]);
-    when(controller.getCurrentUserDetail()).thenReturn(new UserDetail());
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");
     DirectorySessionController directoryDSC = new DirectorySessionController(controller, context);
@@ -295,7 +296,7 @@ public class DirectorySessionControllerTest {
     DirectoryItemList usersOfSpaceExpectedItems = new DirectoryItemList(usersOfSpace);
 
     MainSessionController controller = mock(MainSessionController.class);
-
+    when(controller.getCurrentUserDetail()).thenReturn(user1);
     String[] componentIds = {"kmelia12", "webPages245"};
     when(mockOrganizationController.getAllComponentIdsRecur("0")).thenReturn(componentIds);
 
@@ -309,8 +310,6 @@ public class DirectorySessionControllerTest {
         .thenReturn(components.get("webPages245"));
     when(mockOrganizationController.getComponentIdsForUser(anyString(), anyString()))
         .thenReturn(new String[0]);
-
-    when(controller.getCurrentUserDetail()).thenReturn(new UserDetail());
 
     ComponentContext context = mock(ComponentContext.class);
     when(context.getCurrentComponentId()).thenReturn("directory12");

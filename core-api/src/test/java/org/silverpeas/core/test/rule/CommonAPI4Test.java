@@ -79,10 +79,9 @@ public class CommonAPI4Test implements TestRule {
 
   @SuppressWarnings({"unchecked", "Duplicates"})
   public <T> T injectIntoMockedBeanContainer(T bean, Annotation... qualifiers) {
-    final MockUtil mockUtil = new MockUtil();
     final Class<T> clazz;
-    if (mockUtil.isMock(bean) || mockUtil.isSpy(bean)) {
-      clazz = mockUtil.getMockHandler(bean).getMockSettings().getTypeToMock();
+    if (MockUtil.isMock(bean) || MockUtil.isSpy(bean)) {
+      clazz = MockUtil.getMockHandler(bean).getMockSettings().getTypeToMock();
     } else {
       clazz = (Class<T>) bean.getClass();
     }

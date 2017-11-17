@@ -33,7 +33,7 @@
     <AccessManager class="org.apache.jackrabbit.core.security.simple.SimpleAccessManager" />
     <LoginModule class="org.apache.jackrabbit.core.security.simple.SimpleLoginModule" />
   </Security>
-  <Workspaces rootPath="${rep.home}/workspaces" defaultWorkspace="jackrabbit" />
+  <Workspaces rootPath="${rep.home}/workspaces" defaultWorkspace="silverpeas" />
   <Workspace name="${wsp.name}">
     <FileSystem class="org.apache.jackrabbit.core.fs.mem.MemoryFileSystem" />
     <PersistenceManager class="org.apache.jackrabbit.core.persistence.mem.InMemBundlePersistenceManager">

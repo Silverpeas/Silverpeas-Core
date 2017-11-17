@@ -64,7 +64,7 @@ public class PersistentResourceDateReminderTest {
         new AnnotationLiteral<UpdateOperation>() {
         });
     when(userProvider.getUser(anyString())).thenAnswer(a -> {
-      String id = a.getArgumentAt(0, String.class);
+      String id = a.getArgument(0);
       UserDetail user = new UserDetail();
       user.setId(id);
       return user;

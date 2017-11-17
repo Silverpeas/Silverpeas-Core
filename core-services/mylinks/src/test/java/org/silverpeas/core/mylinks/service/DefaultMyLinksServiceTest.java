@@ -23,17 +23,17 @@
  */
 package org.silverpeas.core.mylinks.service;
 
-import org.silverpeas.core.mylinks.dao.LinkDAO;
-import org.silverpeas.core.mylinks.model.LinkDetail;
 import org.apache.commons.lang3.tuple.Pair;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.mylinks.dao.LinkDAO;
+import org.silverpeas.core.mylinks.model.LinkDetail;
+import org.silverpeas.core.persistence.jdbc.ConnectionPool;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
-import org.silverpeas.core.persistence.jdbc.ConnectionPool;
 
 import java.sql.Connection;
 import java.util.ArrayList;
@@ -60,7 +60,12 @@ public class DefaultMyLinksServiceTest {
   @Before
   public void setup() throws Exception {
     service = spy(new DefaultMyLinksService());
-    commonAPI4Test.injectIntoMockedBeanContainer(mock(ConnectionPool.class));
+    ConnectionPool pool = mock(ConnectionPool.class);
+    commonAPI4Test.injectIntoMockedBeanContainer(pool);
+    when(pool.getDataSourceConnection()).thenReturn(mock(Connection.class));
+    UserDetail user = new UserDetail();
+    user.setId("32");
+    commonAPI4Test.setCurrentRequester(user);
     dao = reflectionRule.mockField(LinkDAO.class, LinkDAO.class, "linkDAO");
   }
 
@@ -68,12 +73,7 @@ public class DefaultMyLinksServiceTest {
   @SuppressWarnings("unchecked")
   public void createLinkAndVerifyIdIsSet() throws Exception {
     when(dao.createLink(any(Connection.class), any(LinkDetail.class)))
-        .thenAnswer(new Answer<Integer>() {
-          @Override
-          public Integer answer(final InvocationOnMock invocation) throws Throwable {
-            return 38;
-          }
-        });
+        .thenAnswer((Answer<Integer>) invocation -> 38);
 
     LinkDetail linkToAdd = new LinkDetail();
 

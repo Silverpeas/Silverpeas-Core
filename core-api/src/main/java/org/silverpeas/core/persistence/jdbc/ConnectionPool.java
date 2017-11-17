@@ -59,7 +59,7 @@ public class ConnectionPool {
    * @return a connection from the Silverpeas data source.
    * @throws java.sql.SQLException if an error occurs while getting an available connection.
    */
-  Connection getDataSourceConnection() throws SQLException {
+  public Connection getDataSourceConnection() throws SQLException {
     return dataSource.getConnection();
   }
 
