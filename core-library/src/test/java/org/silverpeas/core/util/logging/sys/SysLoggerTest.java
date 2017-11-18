@@ -43,7 +43,8 @@ import static org.junit.Assert.assertThat;
  */
 public class SysLoggerTest {
 
-  private static String LOGGER_NAMESPACE = "silverpeas.test";
+  private static String LOGGER_NAMESPACE_1 = "silverpeas.test1";
+  private static String LOGGER_NAMESPACE_2 = "silverpeas.test2";
 
   @Rule
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
@@ -61,8 +62,9 @@ public class SysLoggerTest {
   @Test
   public void getALogger() {
     Logger.getLogger(getClass().getSimpleName()).info("get a logger");
-    SilverLogger logger = new SysLogger(LOGGER_NAMESPACE);
-    assertThat(logger.getNamespace(), is(LOGGER_NAMESPACE));
+    final String namespace = LOGGER_NAMESPACE_1;
+    SilverLogger logger = new SysLogger(namespace);
+    assertThat(logger.getNamespace(), is(namespace));
     assertThat(logger.getLevel(), notNullValue());
     assertThat(logger.getLevel(), is(Level.INFO));
   }
@@ -70,7 +72,7 @@ public class SysLoggerTest {
   @Test
   public void changeLoggerLevel() {
     Logger.getLogger(getClass().getSimpleName()).info("change logger level");
-    final String namespace = LOGGER_NAMESPACE + ".change";
+    final String namespace = LOGGER_NAMESPACE_2;
     SilverLogger logger = new SysLogger(namespace);
     assertThat(logger.getNamespace(), is(namespace));
     assertThat(logger.getLevel(), not(Level.DEBUG));

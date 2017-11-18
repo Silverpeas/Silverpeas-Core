@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.admin.component.model;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -39,7 +39,7 @@ import java.util.Map;
 
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "GroupOfParametersType", propOrder = { "label", "description", "help", "order", "parameters" })
-public class GroupOfParameters {
+public class GroupOfParameters implements Cloneable {
 
   @XmlElement(required = true)
   @XmlJavaTypeAdapter(MultilangHashMapAdapter.class)
@@ -181,8 +181,7 @@ public class GroupOfParameters {
     try {
       clone = (GroupOfParameters) super.clone();
     } catch (CloneNotSupportedException e) {
-      SilverLogger.getLogger(this).silent(e);
-      clone = new GroupOfParameters();
+      throw new SilverpeasRuntimeException(e);
     }
     clone.setLabel(new HashMap<>(getLabel()));
     clone.setDescription(new HashMap<>(getDescription()));

@@ -29,6 +29,7 @@ import org.silverpeas.core.util.JoinStatement;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.annotation.PostConstruct;
 import javax.inject.Named;
 import javax.inject.Singleton;
 import java.io.Serializable;
@@ -61,11 +62,16 @@ public class ContentManager implements Serializable {
 
   private final List<ContentPeas> acContentPeas = new ArrayList<>();
   // Container peas
-  private Map<String, String> mapBetweenComponentIdAndInstanceId = null;
+  private final Map<String, String> mapBetweenComponentIdAndInstanceId = new HashMap<>();
   // Association SilverContentId (the key) internalContentId (the value) (cache)
-  private HashMap<String, String> mapBetweenSilverContentIdAndInternalComponentId = new HashMap<>();
+  private final Map<String, String> mapBetweenSilverContentIdAndInternalComponentId = new HashMap<>();
 
   private ContentManager() {
+
+  }
+
+  @PostConstruct
+  private void loadContentPeas() {
     // -------------------------------------------------
     // We don't have enough time to do the parsing !!!
     // We hard coded for this time !!!!
@@ -89,7 +95,7 @@ public class ContentManager implements Serializable {
     acContentPeas.add(new ContentPeas("blog"));
 
     try {
-      mapBetweenComponentIdAndInstanceId = new HashMap<>(loadMapping(null));
+      mapBetweenComponentIdAndInstanceId.putAll(loadMapping(null));
     } catch (ContentManagerException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }

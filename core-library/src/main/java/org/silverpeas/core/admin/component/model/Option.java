@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.admin.component.model;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -112,11 +112,9 @@ public class Option implements Cloneable {
     try {
       option = (Option) super.clone();
     } catch (CloneNotSupportedException e) {
-      SilverLogger.getLogger(this).silent(e);
-      option =  new Option();
+      throw new SilverpeasRuntimeException(e);
     }
     option.setName(new HashMap<>(getName()));
-    option.setValue(value);
     return option;
   }
 }
