@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.component.notification;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.component.model.ComponentI18N;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
@@ -70,7 +71,7 @@ public class ComponentInstanceEventNotificationIT {
   public static Archive<?> createTestArchive() {
     return ShrinkWrap.create(JavaArchive.class, "test.jar")
         .addClasses(ServiceProvider.class, BeanContainer.class, CDIContainer.class,
-            Translation.class,
+            Translation.class, SilverpeasRuntimeException.class,
             BeanTranslation.class, ComponentInstanceI18NRow.class, StateTransition.class,
             ComponentI18N.class, AbstractI18NBean.class, I18NBean.class,
             SilverpeasComponentInstance.class, SilverpeasSharedComponentInstance.class,

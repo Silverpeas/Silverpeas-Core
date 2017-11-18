@@ -78,7 +78,7 @@ public class LoggerConfigurationManagerTest {
   @Test
   public void allConfigurationFilesAreLoaded() {
     manager = LoggerConfigurationManager.get();
-    assertThat(manager.getLoggerConfigurations().size(), is(6));
+    assertThat(manager.getLoggerConfigurations().size(), is(5));
   }
 
   @Test
