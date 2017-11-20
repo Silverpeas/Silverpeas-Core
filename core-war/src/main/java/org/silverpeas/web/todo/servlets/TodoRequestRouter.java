@@ -26,12 +26,12 @@
 
 package org.silverpeas.web.todo.servlets;
 
+import org.silverpeas.core.personalorganizer.model.Attendee;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.web.todo.control.ToDoSessionController;
-import org.silverpeas.core.web.http.HttpRequest;
 
 import java.util.Collection;
 
@@ -79,8 +79,10 @@ public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionControl
 
     try {
 
+      final String defaultDestination = "/todo/jsp/todo.jsp";
       if (function.startsWith("Main")) {
-        destination = "/todo/jsp/todo.jsp";
+        scc.getSelectedTodoIds().clear();
+        destination = defaultDestination;
       } else if (function.startsWith("searchResult")) {
         destination = "/todo/jsp/todoEdit.jsp?Action=Update&ToDoId="
             + request.getParameter("Id");
@@ -92,17 +94,25 @@ public class TodoRequestRouter extends ComponentRequestRouter<ToDoSessionControl
         Collection<Attendee> attendees = scc.getUserSelected();
         scc.setCurrentAttendees(attendees);
         destination = "/todo/jsp/todoEdit.jsp?Action=DiffusionListOK";
-      } else if (function.equals("DeleteTodo")) {
-        String[] tabTodoId = request.getParameterValues("todoCheck");
-        if (tabTodoId != null && tabTodoId.length>0) {
-          scc.removeTabToDo(tabTodoId);
+      } else if ("DeleteTodo".equals(function)) {
+        request.mergeSelectedItemsInto(scc.getSelectedTodoIds());
+        if (!scc.getSelectedTodoIds().isEmpty()) {
+          scc.removeTabToDo(scc.getSelectedTodoIds().toArray(new String[scc.getSelectedTodoIds().size()]));
         }
-        destination = "/todo/jsp/todo.jsp";
+        scc.getSelectedTodoIds().clear();
+        destination = defaultDestination;
+      } else if ("KeepingSelected".equals(function)) {
+        request.mergeSelectedItemsInto(scc.getSelectedTodoIds());
+        destination = defaultDestination;
+      } else if ("todoPagination".equals(function)) {
+        request.mergeSelectedItemsInto(scc.getSelectedTodoIds());
+        destination = defaultDestination;
       } else {
+        scc.getSelectedTodoIds().clear();
         destination = "/todo/jsp/" + function;
       }
-    } catch (Exception exce_all) {
-      request.setAttribute("javax.servlet.jsp.jspException", exce_all);
+    } catch (Exception e) {
+      request.setAttribute("javax.servlet.jsp.jspException", e);
       return "/admin/jsp/errorpageMain.jsp";
     }
 

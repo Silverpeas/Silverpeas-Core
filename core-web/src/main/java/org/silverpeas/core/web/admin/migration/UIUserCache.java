@@ -21,19 +21,34 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.contribution.content.form.filter;
 
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FormException;
+package org.silverpeas.core.web.admin.migration;
+
+import org.silverpeas.core.admin.user.model.User;
+
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 
 /**
- * RecordFilter
- * @see DataRecord
- * @see FieldFilter
+ * Handles a cache of user dedicated to the UI.<br/>
+ * When a user is not yet into the cache, then it is loaded from the persistence and put into cache.
+ * @author silveryocha
  */
-public interface RecordFilter {
+public class UIUserCache {
+
+  private static final String CACHE_KEY_PREFIX = UIUserCache.class.getSimpleName() + "###";
+
+  private UIUserCache() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   /**
-   * Returns true if the given record match this Filter criteria.
+   * Gets from the dedicated UI cache a user by its identifier.
+   * @param id an indetifier of a user.
+   * @return a user if any, null otherwise.
    */
-  boolean match(DataRecord testedRecord) throws FormException;
+  public static User getById(final String id) {
+    final String cacheKey = CACHE_KEY_PREFIX + id;
+    return getRequestCacheService().getCache()
+        .computeIfAbsent(cacheKey, User.class, () -> id != null ? User.getById(id) : null);
+  }
 }

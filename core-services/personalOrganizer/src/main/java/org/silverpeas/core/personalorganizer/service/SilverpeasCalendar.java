@@ -31,10 +31,12 @@ import org.silverpeas.core.personalorganizer.model.SchedulableCount;
 import org.silverpeas.core.personalorganizer.model.ToDoHeader;
 import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.socialnetwork.SocialInformationEvent;
+import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public interface SilverpeasCalendar {
 
@@ -102,13 +104,13 @@ public interface SilverpeasCalendar {
 
   Collection<JournalHeader> getTentativeSchedulablesForUser(String userId);
 
-  Collection<ToDoHeader> getNotCompletedToDosForUser(String userId);
+  SilverpeasList<ToDoHeader> getNotCompletedToDosForUser(String userId);
 
   List<String> getAllToDoForUser(String userId);
 
-  Collection<ToDoHeader> getOrganizerToDos(String organizerId);
+  SilverpeasList<ToDoHeader> getOrganizerToDos(String organizerId);
 
-  Collection<ToDoHeader> getClosedToDos(String organizerId);
+  SilverpeasList<ToDoHeader> getClosedToDos(String organizerId);
 
   Collection<ToDoHeader> getExternalTodos(String spaceId, String componentId,
       String externalId);
@@ -134,7 +136,7 @@ public interface SilverpeasCalendar {
    * updateToDo() update the todo entry, specified by the id, in the database
    */
   /*
-   *  void updateToDo(ToDoHeader todo) , CreateException;
+   *  void updateToDo(ToDoHeader todo)
    */
   void updateToDo(ToDoHeader todo);
 
@@ -201,7 +203,9 @@ public interface SilverpeasCalendar {
 
   void removeToDoAttendee(String todoId, Attendee attendee);
 
-  Collection<Attendee> getToDoAttendees(String todoId);
+  List<Attendee> getToDoAttendees(String todoId);
+
+  Map<String, List<Attendee>> getToDoAttendees(List<String> todoIds);
 
   void setToDoAttendees(String todoId, String[] userIds);
 

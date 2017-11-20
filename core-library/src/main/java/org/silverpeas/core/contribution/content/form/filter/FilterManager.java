@@ -34,11 +34,8 @@ import org.silverpeas.core.contribution.content.form.form.XmlForm;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -180,34 +177,14 @@ public class FilterManager {
     return getCriteriaTemplate().getEmptyRecord();
   }
 
-  /**
-   * Filters the given list of DataRecord using the specified criteria.
-   */
-  public List<DataRecord> filter(DataRecord criteria, List<DataRecord> filtered)
-      throws FormException {
-    ArrayList<DataRecord> result = new ArrayList<>();
-    RecordFilter filter = buildRecordFilter(criteria);
-    Iterator<DataRecord> records = filtered.iterator();
-    DataRecord record;
-
-    while (records.hasNext()) {
-      record = records.next();
-      if (filter.match(record)) {
-        result.add(record);
-      }
-    }
-
-    return result;
-  }
-
   public void addFieldParameter(String fieldName, FieldTemplate field) {
     fieldsParameter.put(fieldName, field);
   }
 
   /**
-   * Builds a RecordFilter from the criteria record (which must be built with the criteriaRecord)
+   * Gets a RecordFilter from the criteria record (which must be built with the criteriaRecord)
    */
-  private RecordFilter buildRecordFilter(DataRecord criteriaRecord) throws FormException {
+  public RecordFilter getRecordFilter(DataRecord criteriaRecord) throws FormException {
     SimpleRecordFilter filter = new SimpleRecordFilter();
     FieldFilter fieldFilter;
 

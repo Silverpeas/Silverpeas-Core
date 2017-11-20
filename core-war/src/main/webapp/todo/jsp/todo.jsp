@@ -23,368 +23,301 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="org.silverpeas.web.todo.control.ToDoHeaderUIEntity" %>
+<%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ include file="checkTodo.jsp" %>
-<%@ page import="org.silverpeas.core.util.URLUtil"%>
-<%@ page import="org.silverpeas.core.util.ResourceLocator" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.Encode" %>
+
+<view:setConstant var="PARTICIPANT_TODO_VIEW" constant="org.silverpeas.web.todo.control.ToDoSessionController.PARTICIPANT_TODO_VIEW"/>
+<view:setConstant var="ORGANIZER_TODO_VIEW" constant="org.silverpeas.web.todo.control.ToDoSessionController.ORGANIZER_TODO_VIEW"/>
+<view:setConstant var="CLOSED_TODO_VIEW" constant="org.silverpeas.web.todo.control.ToDoSessionController.CLOSED_TODO_VIEW"/>
+
+<c:set var="TODAY" value="<%=new Date()%>"/>
+
+<c:set var="todoCtrl" value="${requestScope.todo}"/>
+<jsp:useBean id="todoCtrl" type="org.silverpeas.web.todo.control.ToDoSessionController"/>
+
+<c:set var="userAction" value="${param.Action != null ? param.Action : ''}"/>
+<jsp:useBean id="userAction" type="java.lang.String"/>
+
+<c:set var="applicationLabel" value="${todoCtrl.getString('todo')}"/>
+<c:set var="addTodoLabel" value="${todoCtrl.getString('ajouterTache')}"/>
+<c:set var="deleteSelectedTodoLabel" value="${todoCtrl.getString('deleteSelectedTodo')}"/>
+<c:set var="myTodoLabel" value="${todoCtrl.getString('mesTaches')}"/>
+<c:set var="assignmentMonitoringLabel" value="${todoCtrl.getString('suiviAffectation')}"/>
+<c:set var="historyLabel" value="${todoCtrl.getString('historique')}"/>
+<c:set var="lockOpenLabel" value="${todoCtrl.getString('cadenas_ouvert')}"/>
+<c:set var="lockClosedLabel" value="${todoCtrl.getString('cadenas_clos')}"/>
+
+<c:set var="nameLabel" value="${todoCtrl.getString('nomToDo')}"/>
+<c:set var="priorityLabel" value="${todoCtrl.getString('priorite')}"/>
+<c:set var="broadcastListLabel" value="${todoCtrl.getString('listeDiffusionCourt')}"/>
+<c:set var="organizerLabel" value="${todoCtrl.getString('organisateurToDo')}"/>
+<c:set var="dueToLabel" value="${todoCtrl.getString('dueDateToDo')}"/>
+<c:set var="percentCompletedLabel" value="${todoCtrl.getString('percentCompletedToDo')}"/>
+<c:set var="actionLabel" value="${todoCtrl.getString('actions')}"/>
+
+<c:set var="deleteSelectedTodoConfirmMessage" value="${todoCtrl.getString('deleteSelectedTodoConfirm')}"/>
 
 <%
-  String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
-
-  String action = request.getParameter("Action");
-  if (action == null) {
-    action = "View";
-  }
-  else if (action.equals("SetPercent")) {
+  if ("SetPercent".equals(userAction)) {
     String todoId = request.getParameter("ToDoId");
     String percent = request.getParameter("Percent");
     todo.setToDoPercentCompleted(todoId, percent);
-    action = "View";
-  }
-  else if (action.equals("CloseToDo")) {
+  } else if ("CloseToDo".equals(userAction)) {
     String todoId = request.getParameter("ToDoId");
     todo.closeToDo(todoId);
-    action = "View";
-  }
-  else if (action.equals("ReopenToDo")) {
+  } else if ("ReopenToDo".equals(userAction)) {
     String todoId = request.getParameter("ToDoId");
     todo.reopenToDo(todoId);
-    action = "View";
-  }
-  else if (action.equals("ViewParticipantTodo")) {
+  } else if ("ViewParticipantTodo".equals(userAction)) {
     todo.setViewType(ToDoSessionController.PARTICIPANT_TODO_VIEW);
-    action = "View";
-  }
-  else if (action.equals("ViewOrganizedTodo")) {
+  } else if ("ViewOrganizedTodo".equals(userAction)) {
     todo.setViewType(ToDoSessionController.ORGANIZER_TODO_VIEW);
-    action = "View";
-  }
-  else if (action.equals("ViewClosedTodo")) {
+  } else if ("ViewClosedTodo".equals(userAction)) {
     todo.setViewType(ToDoSessionController.CLOSED_TODO_VIEW);
-    action = "View";
   }
 %>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<view:looknfeel/>
-<title></title>
-<script type="text/javascript">
-
-function viewToDo(todoId) {
-  document.todoEditForm.ToDoId.value = todoId;
-  document.todoEditForm.Action.value = "Update";
-  document.todoEditForm.submit();
-}
-
-function setPercent(todoId, percent) {
-  document.todoForm.ToDoId.value = todoId;
-  document.todoForm.Percent.value = percent;
-  document.todoForm.Action.value = "SetPercent";
-  document.todoForm.submit();
-}
-
-function closeToDo(todoId) {
-  document.todoForm.ToDoId.value = todoId;
-  document.todoForm.Action.value = "CloseToDo";
-  document.todoForm.submit();
-}
-
-function reopenToDo(todoId) {
-  document.todoForm.ToDoId.value = todoId;
-  document.todoForm.Action.value = "ReopenToDo";
-  document.todoForm.submit();
-}
-
-function addToDo() {
-  document.todoEditForm.Action.value = "Add";
-  document.todoEditForm.ToDoId.value = "";
-  document.todoEditForm.submit();
-}
-
-function viewParticipantTodo() {
-  document.todoForm.Action.value = "ViewParticipantTodo";
-  document.todoForm.submit();
-}
-
-function viewOrganizedTodo() {
-  document.todoForm.Action.value = "ViewOrganizedTodo";
-  document.todoForm.submit();
-}
-
-function viewClosedTodo() {
-  document.todoForm.Action.value = "ViewClosedTodo";
-  document.todoForm.submit();
-}
-
-function percentCompletedSet(name, value)
-{
-  num = -1;
-  for (i=0 ; i < document.images.length ; i++) {
-    if (document.images[i].name == name + '1')
-      num = i;
-  }
-  if (num != -1) {
-    k = 0;
-    num--;
-    if (value != '0') {
-      do {
-        num++;
-        k++;
-        document.images[num].src = "icons/on.gif";
-      } while ((document.images[num].name != name + value) && (k < 10))
+  <view:looknfeel/>
+  <title></title>
+  <style type="text/css">
+    .percent-completed-widget img {
+      height: 5px;
+      width: 5px;
+      border: 0;
     }
-    while (k < 10) {
-      num++;
-      k++;
-      document.images[num].src = "icons/off.gif";
+  </style>
+  <script type="text/javascript">
+
+    var arrayPaneAjaxControl;
+    var checkboxMonitor = sp.selection.newCheckboxMonitor('#dynamic-container input[name=selection]');
+
+    function addToDo() {
+      sp.formRequest('todoEdit.jsp')
+        .withParam('Action', 'Add')
+        .submit();
     }
-  }
-}
 
-function goTo(baseURL, Id, Type, componentId) {
-
-	jumpToComponent(componentId);
-
-	location.href=baseURL+"searchResult.jsp?Type="+Type+"&Id="+Id;
-}
-
-function jumpToComponent(componentId) {
-
-	//Reload menu and header
-  spLayout.loadBodyNavigationAndHeaderParts({
-    "component_id" : componentId
-  });
-
-}
-
-function areYouSure(){
-    return confirm("<%=todo.getString("deleteSelectedTodoConfirm")%>");
-}
-
-function deleteSelectedToDo() {
-	  var boxItems = document.todoCheckForm.todoCheck;
-    var selectItems = "";
-    if (boxItems != null){
-	    // au moins une checkbox existe
-	    var nbBox = boxItems.length;
-	    if ( (nbBox == null) && (boxItems.checked == true) ){
-	            selectItems += boxItems.value;
-	    } else{
-	      for (i=0;i<boxItems.length ;i++ ){
-		  if (boxItems[i].checked == true){
-	         selectItems += boxItems[i].value+",";
-	        }
-	      }
-	      selectItems = selectItems.substring(0,selectItems.length-1);
-	    }
+    function viewToDo(todoId) {
+      sp.formRequest('todoEdit.jsp')
+        .withParam('ToDoId', todoId)
+        .withParam('Action', 'Update')
+        .submit();
     }
-    if ( (selectItems.length > 0) && (areYouSure()) ) {
-	    document.todoCheckForm.action = "DeleteTodo";
-	document.todoCheckForm.submit();
-    }
-}
 
-</script>
+    function deleteSelectedToDo() {
+      jQuery.popup.confirm('${silfn:escapeJs(deleteSelectedTodoConfirmMessage)}', function() {
+        var ajaxRequest = sp.ajaxRequest("DeleteTodo").byPostMethod();
+        checkboxMonitor.prepareAjaxRequest(ajaxRequest);
+        ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
+      });
+    }
+
+    function setPercent(todoId, percent) {
+      performByKeepingSelected({'ToDoId' : todoId, 'Percent' : percent, 'Action' : 'SetPercent'})
+          .then(function() {
+            notySuccess(percent + '%');
+          });
+    }
+
+    function closeToDo(todoId) {
+      performByKeepingSelected({'ToDoId' : todoId, 'Action' : 'CloseToDo'});
+    }
+
+    function reopenToDo(todoId) {
+      performByKeepingSelected({'ToDoId' : todoId, 'Action' : 'ReopenToDo'});
+    }
+
+    function viewParticipantTodo() {
+      sp.formRequest('todo.jsp').withParam('Action', 'ViewParticipantTodo').submit();
+    }
+
+    function viewOrganizedTodo() {
+      sp.formRequest('todo.jsp').withParam('Action', 'ViewOrganizedTodo').submit();
+    }
+
+    function viewClosedTodo() {
+      sp.formRequest('todo.jsp').withParam('Action', 'ViewClosedTodo').submit();
+    }
+
+    function performByKeepingSelected(params) {
+      var ajaxRequest = sp.ajaxRequest("KeepingSelected").withParams(params).byPostMethod();
+      checkboxMonitor.prepareAjaxRequest(ajaxRequest);
+      return ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
+    }
+
+    function goTo(baseURL, Id, Type, componentId) {
+      //Reload menu and header
+      spLayout.loadBodyNavigationAndHeaderParts({
+        "component_id" : componentId
+      }).then(function() {
+        sp.formRequest(baseURL + 'searchResult.jsp')
+            .withParam('Type', Type).withParam('Id', Id).submit();
+      });
+    }
+
+    var percentCompletedWidget = function(target) {
+      var _todo = JSON.parse(target.getAttribute('todo-data'));
+      _todo.htmlParts = [];
+
+      var _getIcon = function(percent, completedPercent) {
+        return percent > completedPercent ? 'icons/off.gif' : 'icons/on.gif';
+      };
+
+      var _timer;
+      var _refresh = function(completedPercent) {
+        clearTimeout(_timer);
+        _timer = setTimeout(function() {
+          _todo.htmlParts.forEach(function(htmlPart) {
+            htmlPart.data.img.src = _getIcon(htmlPart.data.percent, completedPercent);
+          });
+        }, 0);
+      };
+
+      for (var i = 0; i < 10; i++) {
+        var _data = {percent : (i + 1) * 10};
+
+        var currentHtmlImgPart = document.createElement('img');
+        currentHtmlImgPart.src = _getIcon(_data.percent, _todo.completedPercent);
+        currentHtmlImgPart.alt = _data.percent + '%';
+        _data.img = currentHtmlImgPart;
+
+        var currentHtmlLinkPart = document.createElement('a');
+        currentHtmlLinkPart.href = 'javascript:void(0);';
+        currentHtmlLinkPart.title = _data.percent + '%';
+        currentHtmlLinkPart.addEventListener('click', function() {
+          setPercent(_todo.id, this.data.percent);
+        });
+        currentHtmlLinkPart.addEventListener('mouseout', function() {
+          _refresh(_todo.completedPercent);
+        });
+        currentHtmlLinkPart.addEventListener('mouseover', function() {
+          _refresh(this.data.percent);
+        });
+
+        currentHtmlLinkPart.appendChild(currentHtmlImgPart);
+        currentHtmlLinkPart.data = _data;
+        _todo.htmlParts.push(currentHtmlLinkPart);
+        target.appendChild(currentHtmlLinkPart);
+      }
+    };
+  </script>
 </head>
 <body>
-<form name="todoCheckForm" action="todo.jsp" method="post">
-<%
-	Window window = graphicFactory.getWindow();
-
-	BrowseBar browseBar = window.getBrowseBar();
-	browseBar.setComponentName(todo.getString("todo"));
-
-	OperationPane operationPane = window.getOperationPane();
-
-	operationPane.addOperationOfCreation(m_context + "/util/icons/create-action/add-task.png", todo.getString("ajouterTache"), "javascript:onClick=addToDo()");
-	operationPane.addOperation(m_context + "/util/icons/delete.gif", todo.getString("deleteSelectedTodo"), "javascript:onClick=deleteSelectedToDo()");
-
-	out.println(window.printBefore());
-%>
-<view:areaOfOperationOfCreation/>
-<%
-
-	TabbedPane tabbedPane = graphicFactory.getTabbedPane();
-    tabbedPane.addTab(todo.getString("mesTaches"), "javascript:onClick=viewParticipantTodo()", (todo.getViewType() == ToDoSessionController.PARTICIPANT_TODO_VIEW) );
-    tabbedPane.addTab(todo.getString("suiviAffectation"), "javascript:onClick=viewOrganizedTodo()", (todo.getViewType() == ToDoSessionController.ORGANIZER_TODO_VIEW));
-    tabbedPane.addTab(todo.getString("historique"), "javascript:onClick=viewClosedTodo()", (todo.getViewType() == ToDoSessionController.CLOSED_TODO_VIEW));
-    out.println(tabbedPane.print());
-
-	Frame frame = graphicFactory.getFrame();
-
-	out.println(frame.printBefore());
-
-    ArrayPane arrayPane = graphicFactory.getArrayPane("todoList", pageContext);
-    arrayPane.setVisibleLineNumber(25);
-    arrayPane.addArrayColumn(todo.getString("nomToDo"));
-    arrayPane.addArrayColumn(todo.getString("priorite"));
-    if (todo.getViewType() == ToDoSessionController.ORGANIZER_TODO_VIEW)
-		arrayPane.addArrayColumn(todo.getString("listeDiffusionCourt"));
-    else
-        arrayPane.addArrayColumn(todo.getString("organisateurToDo"));
-    arrayPane.addArrayColumn(todo.getString("dueDateToDo"));
-    arrayPane.addArrayColumn(todo.getString("percentCompletedToDo"));
-
-	ArrayColumn column = arrayPane.addArrayColumn(todo.getString("actions"));
-	column.setSortable(false);
-	ArrayColumn columnOp = arrayPane.addArrayColumn(todo.getString("GML.operation"));
-	columnOp.setSortable(false);
-
-	Collection		todos		= todo.getToDos();
-    Iterator		i			= todos.iterator();
-    Date			today		= new Date();
-    int				j			= 0;
-	ToDoHeader		todoHeader	= null;
-	ArrayLine		arrayLine	= null;
-	Date			todoEndDate = null;
-	ComponentInstLight 	componentI 	= null;
-	String 			spaceId 	= null;
-	String 			spaceLabel 	= "";
-	String 			componentLabel = "";
-    while (i.hasNext()) {
-		todoHeader 	= (ToDoHeader) i.next();
-		todoEndDate = todoHeader.getEndDate();
-        arrayLine 	= arrayPane.addArrayLine();
-        if (todoHeader.getPercentCompleted() < 100)
-			if (todoHeader.getCompletedDay() == null) {
-				if (todoEndDate != null) {
-					if (today.after(todoEndDate)) {
-						arrayLine.setStyleSheet("ArrayCellHot");
-					}
-				}
-			}
-
-			if (todoHeader.getExternalId() == null) {
-				arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(todoHeader.getName()), "javascript:onClick=viewToDo('"+todoHeader.getId()+"')");
-			} else {
-				componentI 		= todo.getComponentInst(todoHeader.getComponentId());
-				componentLabel 	= todoHeader.getComponentId();
-				if (componentI != null) {
-					spaceId 		= componentI.getDomainFatherId();
-					SpaceInstLight space = todo.getSpaceInst(spaceId);
-					if (space != null)
-						spaceLabel 		= space.getName();
-					componentLabel 	= componentI.getLabel();
-				}
-				//Trick for workflow
-				String externalId = todoHeader.getExternalId().replace('#', '_');
-				arrayLine.addArrayCellLink(Encode.javaStringToHtmlString(spaceLabel+" > "+componentLabel+" > "+todoHeader.getName()), "javascript:onClick=goTo('" + m_context + URLUtil.getURL(null, spaceId, todoHeader.getComponentId()) + "','"+externalId+"','TodoDetail','"+todoHeader.getComponentId()+"')");
-			}
-
-            ArrayCellText cellText = arrayLine.addArrayCellText(todo.getString("priorite"+todoHeader.getPriority().getValue()));
-            cellText.setCompareOn(todoHeader.getPriority());
-            StringBuffer text = new StringBuffer();
-            Collection attendees = todo.getToDoAttendees(todoHeader.getId());
-            Iterator att;
-            if (todo.getViewType() == ToDoSessionController.ORGANIZER_TODO_VIEW)
-            {
-              att = attendees.iterator();
-              int countAttendees = 0;
-              while (att.hasNext()) {
-                if (countAttendees > 0)
-                  text.append("<br/>");
-                if (countAttendees > 2) {
-                  text.append("...");
-                  break;
-				}
-                Attendee attendee = (Attendee) att.next();
-                UserDetail user = todo.getUserDetail(attendee.getUserId());
-                if (user != null)
-                  text.append(user.getLastName()).append(" ").append(user.getFirstName());
-                else
-                  text.append(todo.getString("utilisateurInconnu"));
-                countAttendees++;
-              }
-            } else {
-              if (todoHeader.getDelegatorId() != null) {
-                UserDetail user = todo.getUserDetail(todoHeader.getDelegatorId());
-                if (user != null)
-                  text.append(user.getLastName()).append(" ").append(user.getFirstName());
-                else
-                  text.append(todo.getString("utilisateurInconnu"));
-              }
-            }
-            arrayLine.addArrayCellText(text.toString());
-            if (todoEndDate != null) {
-              cellText = arrayLine.addArrayCellText(resources.getOutputDate(todoEndDate));
-              cellText.setCompareOn(todoEndDate);
-            } else {
-              arrayLine.addArrayEmptyCell();
-            }
-            if (todoHeader.getPercentCompleted() == ToDoHeader.PERCENT_UNDEFINED) {
-              cellText = arrayLine.addArrayCellText(todo.getString("percentUndefined"));
-              cellText.setCompareOn(new Integer(-1));
-            } else {
-              cellText = arrayLine.addArrayCellText(todoHeader.getPercentCompleted()+ "%");
-              cellText.setCompareOn(new Integer(todoHeader.getPercentCompleted()));
-            }
-
-			if (todoHeader.getExternalId() == null) {
-					text = new StringBuffer();
-					if (todo.getViewType() == ToDoSessionController.PARTICIPANT_TODO_VIEW) {
-						for (int k=1; k<=10;k++) {
-							text.append("<a href=\"javascript:onclick=setPercent('").append(todoHeader.getId()).append("','");
-							text.append(String.valueOf(k*10)).append("')\" onmouseout=\"percentCompletedSet('percentCompleted");
-							text.append(String.valueOf(j)).append("_','").append(todoHeader.getPercentCompleted()/10);
-							text.append("')\" onmouseover=\"percentCompletedSet('percentCompleted").append(String.valueOf(j)).append("_', '");
-							text.append(String.valueOf(k)).append("')\"><img width=\"5\" height=\"5\" name=\"percentCompleted");
-							text.append(String.valueOf(j)).append("_").append(String.valueOf(k)).append("\" border=\"0\" src=\"icons/");
-								if (k*10 > todoHeader.getPercentCompleted())
-									text.append("off.gif");
-								else
-									text.append("on.gif");
-								text.append("\" alt=\""+String.valueOf(k*10)+"%\" title=\""+String.valueOf(k*10)+"%\"/></a>");
-						}
-					} else {
-						if (todo.getViewType() == ToDoSessionController.ORGANIZER_TODO_VIEW) {
-							text.append("<a href=\"javascript:onclick=closeToDo('").append(todoHeader.getId()).append("')\">").append("<img width=\"15\" height=\"15\" border=\"0\" src=\"icons/unlock.gif\" alt=\""+(todo.getString("cadenas_ouvert"))+"\" title=\""+(todo.getString("cadenas_ouvert"))+"\"/>" ).append("</a>");
-						}
-						else if (todoHeader.getDelegatorId().equals(todo.getUserId()))
-						{
-							text.append("<a href=\"javascript:onclick=reopenToDo('").append(todoHeader.getId()).append("')\">").append("<img width=\"15\" height=\"15\" border=\"0\" src=\"icons/lock.gif\" alt=\""+(todo.getString("cadenas_clos"))+"\" title=\""+(todo.getString("cadenas_clos"))+"\"/>" ).append("</a>");
-						}
-						else text.append("&nbsp;");
-					}
-					j++;
-
-					arrayLine.addArrayCellText(text.toString());
-					if (todoHeader.getDelegatorId().equals(todo.getUserId())) {//je peux supprimer les taches manuelles dont je suis l'organisateur (le créateur)
-					  arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"todoCheck\" value=\""+todoHeader.getId()+"\"/>");
-					} else {
-					 arrayLine.addArrayCellText("");
-					}
-			} else {
-			  arrayLine.addArrayCellText("");
-			  att = attendees.iterator();
-			  Attendee firstAttendee = (Attendee) att.next();
-			  if (attendees.size() == 1 && todoHeader.getDelegatorId().equals(firstAttendee.getUserId())) {//je peux supprimer les taches automatiques dont je suis l'initiateur (le créateur) et le responsable
-			     arrayLine.addArrayCellText("<input type=\"checkbox\" name=\"todoCheck\" value=\""+todoHeader.getId()+"\"/>");
-			  } else {
-			    arrayLine.addArrayCellText("");
-			  }
-			}
-        }
-				out.println(arrayPane.print());
-			out.println(frame.printAfter());
-	out.println(window.printAfter());
-%>
-</form>
-
-<form name="todoEditForm" action="todoEdit.jsp" method="post">
-  <input type="hidden" name="ToDoId"/>
-  <input type="hidden" name="Action"/>
-</form>
-
-<form name="todoForm" action="todo.jsp" method="post">
-  <input type="hidden" name="ToDoId"/>
-  <input type="hidden" name="Percent"/>
-  <input type="hidden" name="Action"/>
-</form>
-
+<view:browseBar componentId="${applicationLabel}" clickable="false"/>
+<view:operationPane>
+  <c:url var="opIcon" value="/util/icons/create-action/add-task.png"/>
+  <view:operationOfCreation action="javascript:onClick=addToDo()"
+                            altText="${addTodoLabel}" icon="${opIcon}"/>
+  <c:url var="opIcon" value="/util/icons/delete.gif"/>
+  <view:operation action="javascript:onClick=deleteSelectedToDo()"
+                  altText="${deleteSelectedTodoLabel}" icon="${opIcon}"/>
+</view:operationPane>
+<view:window>
+  <view:areaOfOperationOfCreation/>
+  <view:tabs>
+    <view:tab label="${myTodoLabel}" action="javascript:onClick=viewParticipantTodo()" selected="${todoCtrl.viewType eq PARTICIPANT_TODO_VIEW}"/>
+    <view:tab label="${assignmentMonitoringLabel}" action="javascript:onClick=viewOrganizedTodo()" selected="${todoCtrl.viewType eq ORGANIZER_TODO_VIEW}"/>
+    <view:tab label="${historyLabel}" action="javascript:onClick=viewClosedTodo()" selected="${todoCtrl.viewType eq CLOSED_TODO_VIEW}"/>
+  </view:tabs>
+  <view:frame>
+    <div id="dynamic-container">
+      <c:set var="todoEntities" value="<%=ToDoHeaderUIEntity.convertList(todoCtrl, todoCtrl.getToDos(), todoCtrl.getSelectedTodoIds())%>"/>
+      <view:arrayPane var="todo-list-${todoCtrl.viewType}" routingAddress="todoPagination" numberLinesPerPage="25">
+        <view:arrayColumn title="${nameLabel}" compareOn="${e -> e.path}"/>
+        <view:arrayColumn title="${priorityLabel}" compareOn="${e -> e.data.priority}"/>
+        <view:arrayColumn title="${todoCtrl.viewType eq ORGANIZER_TODO_VIEW ? broadcastListLabel : organizerLabel}" compareOn="${e -> e.attendeeLabel}"/>
+        <view:arrayColumn title="${dueToLabel}" compareOn="${e -> e.data.endDate}"/>
+        <view:arrayColumn title="${percentCompletedLabel}" compareOn="${e -> e.data.percentCompleted}"/>
+        <view:arrayColumn title="${actionLabel}" sortable="false"/>
+        <view:arrayColumn/>
+        <view:arrayLines var="todoEntity" items="${todoEntities}" varStatus="line">
+          <c:set var="todo" value="${todoEntity.data}"/>
+          <c:set var="hotClass" value="${todo.percentCompleted < 100 and todo.completedDay == null
+                                     and todo.endDate != null and TODAY.after(todo.endDate)
+                                     ? 'ArrayCellHot' : ''}"/>
+          <c:set var="path" value="${silfn:escapeHtml(todoEntity.path)}"/>
+          <c:set var="pathJsCall" value="viewToDo('${todo.id}')"/>
+          <c:if test="${not empty todo.externalId}">
+            <%-- Trick for workflow --%>
+            <c:set var="externalId" value="${fn:replace(todo.externalId, '#', '_')}"/>
+            <c:url var="componentInstanceUrl" value="${silfn:componentURL(todo.componentId)}"/>
+            <c:set var="pathJsCall" value="goTo('${componentInstanceUrl}','${externalId}','TodoDetail','${todo.componentId}')"/>
+          </c:if>
+          <view:arrayLine classes="${hotClass}">
+            <view:arrayCellText>
+              <a class="${hotClass}" href="javascript:onClick=${pathJsCall}">${path}</a>
+            </view:arrayCellText>
+            <view:arrayCellText text="${todoEntity.priorityLabel}"/>
+            <view:arrayCellText text="${todoEntity.attendeeLabel}"/>
+            <view:arrayCellText text="${todo.endDate != null ? silfn:formatDate(todo.endDate, todoCtrl.language) : ''}"/>
+            <view:arrayCellText text="${todoEntity.percentCompletedLabel}"/>
+            <view:arrayCellText>
+              <c:if test="${empty todo.externalId}">
+                <c:choose>
+                  <c:when test="${todoCtrl.viewType eq PARTICIPANT_TODO_VIEW}">
+                    <div class="percent-completed-widget" todo-data='{"id":"${todo.id}","completedPercent":${todo.percentCompleted}}'></div>
+                  </c:when>
+                  <c:when test="${todoCtrl.viewType eq ORGANIZER_TODO_VIEW}">
+                    <a href="javascript:onclick=closeToDo('${todo.id}')" title="${lockOpenLabel}">
+                      <img src="icons/unlock.gif" alt="${lockOpenLabel}" width="15" height="15"/>
+                    </a>
+                  </c:when>
+                  <c:when test="${todo.delegatorId eq todoCtrl.userId}">
+                    <a href="javascript:onclick=reopenToDo('${todo.id}')" title="${lockClosedLabel}">
+                      <img src="icons/lock.gif" alt="${lockOpenLabel}" width="15" height="15"/>
+                    </a>
+                  </c:when>
+                </c:choose>
+              </c:if>
+            </view:arrayCellText>
+            <c:choose>
+              <c:when test="${empty todo.externalId}">
+                <c:choose>
+                  <c:when test="${todo.delegatorId eq todoCtrl.userId}">
+                    <view:arrayCellCheckbox name="selection" checked="${todoEntity.selected}" value="${todoEntity.id}"/>
+                  </c:when>
+                  <c:otherwise>
+                    <view:arrayCellText/>
+                  </c:otherwise>
+                </c:choose>
+              </c:when>
+              <c:otherwise>
+                <c:choose>
+                  <c:when test="${fn:length(todoEntity.attendees) eq 1 and todo.delegatorId eq todoEntity.attendees.iterator().next().userId}">
+                    <view:arrayCellCheckbox name="selection" checked="${todoEntity.selected}" value="${todoEntity.id}"/>
+                  </c:when>
+                  <c:otherwise>
+                    <view:arrayCellText/>
+                  </c:otherwise>
+                </c:choose>
+              </c:otherwise>
+            </c:choose>
+          </view:arrayLine>
+        </view:arrayLines>
+      </view:arrayPane>
+      <script type="text/javascript">
+        whenSilverpeasReady(function() {
+          checkboxMonitor.pageChanged();
+          arrayPaneAjaxControl = sp.arrayPane.ajaxControls('#dynamic-container', {
+            before : checkboxMonitor.prepareAjaxRequest
+          });
+          jQuery('.percent-completed-widget').each(function() {
+            new percentCompletedWidget(this);
+          });
+        });
+      </script>
+    </div>
+  </view:frame>
+</view:window>
 </body>
 </html>

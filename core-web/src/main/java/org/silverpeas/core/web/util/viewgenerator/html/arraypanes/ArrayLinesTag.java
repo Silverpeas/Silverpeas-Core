@@ -31,7 +31,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 import javax.servlet.jsp.JspTagException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 /**
@@ -78,10 +78,10 @@ public class ArrayLinesTag extends ForEachTag {
     List<ArrayColumn> columns = spArrayPane.getColumns();
     if ((spArrayPane.getColumnToSort() != 0) && (spArrayPane.getColumnToSort() <= columns.size())) {
       final int columnIndex = Math.abs(spArrayPane.getColumnToSort()) - 1;
-      final Function compareOn = columns.get(columnIndex).getCompareOn();
+      final BiFunction compareOn = columns.get(columnIndex).getCompareOn();
       if (compareOn != null) {
         boolean asc = spArrayPane.getColumnToSort() >= 0;
-        list.sort(new OptimizedLineComparator(asc, compareOn));
+        list.sort(new OptimizedLineComparator(columnIndex, asc, compareOn));
       }
     }
   }
@@ -91,12 +91,14 @@ public class ArrayLinesTag extends ForEachTag {
   }
 
   private static class OptimizedLineComparator extends AbstractComplexComparator<Object> {
-    final List<Function<Object, Comparable>> compareOnList;
+    final int columnIndex;
+    final List<BiFunction<Object, Integer, Comparable>> compareOnList;
     final boolean asc;
 
     @SafeVarargs
-    private OptimizedLineComparator(final boolean asc,
-        final Function<Object, Comparable>... compareOnList) {
+    private OptimizedLineComparator(final int columnIndex, final boolean asc,
+        final BiFunction<Object, Integer, Comparable>... compareOnList) {
+      this.columnIndex = columnIndex;
       this.compareOnList = Arrays.stream(compareOnList).collect(Collectors.toList());
       this.asc = asc;
     }
@@ -104,7 +106,7 @@ public class ArrayLinesTag extends ForEachTag {
     @Override
     protected ValueBuffer getValuesToCompare(final Object value) {
       final ValueBuffer valueBuffer = new ValueBuffer();
-      compareOnList.forEach(c -> valueBuffer.append(c.apply(value), asc));
+      compareOnList.forEach(c -> valueBuffer.append(c.apply(value, columnIndex), asc));
       return valueBuffer;
     }
   }

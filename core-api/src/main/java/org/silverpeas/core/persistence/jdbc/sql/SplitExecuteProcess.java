@@ -21,19 +21,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.contribution.content.form.filter;
+package org.silverpeas.core.persistence.jdbc.sql;
 
-import org.silverpeas.core.contribution.content.form.DataRecord;
-import org.silverpeas.core.contribution.content.form.FormException;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 /**
- * RecordFilter
- * @see DataRecord
- * @see FieldFilter
+ * Split Processor on discriminant data.
+ * @param <D> the type of list of discriminant data.
+ * @param <T> the type of the entity into result.
  */
-public interface RecordFilter {
+@FunctionalInterface
+public interface SplitExecuteProcess<D, T> {
+
   /**
-   * Returns true if the given record match this Filter criteria.
+   * Processes on a slice of entire list of discriminant data.
+   * @param discriminantSlice a slice of discriminant data.
+   * @param result the result which has to be be filled.
+   * @throws SQLException on SQL errors.
    */
-  boolean match(DataRecord testedRecord) throws FormException;
+  void execute(final Collection<D> discriminantSlice, final Map<D, List<T>> result) throws SQLException;
 }

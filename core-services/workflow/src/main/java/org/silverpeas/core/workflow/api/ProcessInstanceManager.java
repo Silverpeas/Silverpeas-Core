@@ -23,11 +23,14 @@
  */
 package org.silverpeas.core.workflow.api;
 
-import org.silverpeas.core.workflow.api.instance.ProcessInstance;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.workflow.api.instance.Actor;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
-import org.silverpeas.core.workflow.api.user.User;
+import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.model.State;
+import org.silverpeas.core.workflow.api.user.User;
+
+import java.util.List;
 
 /**
  * The workflow engine services relate to process instance management.
@@ -41,8 +44,8 @@ public interface ProcessInstanceManager {
    * different roles)
    * @return an array of ProcessInstance objects
    */
-  public ProcessInstance[] getProcessInstances(String peasId, User user,
-      String role) throws WorkflowException;
+  List<ProcessInstance> getProcessInstances(String peasId, User user, String role)
+      throws WorkflowException;
 
   /**
    * Get the list of process instances for a given peas Id, user and role, and user's roles.
@@ -52,32 +55,30 @@ public interface ProcessInstanceManager {
    * @param userRoles all role names that user has for this component instance different roles)
    * @return an array of ProcessInstance objects
    */
-  public ProcessInstance[] getProcessInstances(String peasId, User user,
-      String role, String[] userRoles, String[] groupIds) throws WorkflowException;
+  List<ProcessInstance> getProcessInstances(String peasId, User user, String role,
+      String[] userRoles, String[] groupIds) throws WorkflowException;
 
   /**
    * Get the process instances for a given instance id
    * @param instanceId id of searched instance
    * @return the searched process instance
    */
-  public ProcessInstance getProcessInstance(String instanceId)
-      throws WorkflowException;
+  ProcessInstance getProcessInstance(String instanceId) throws WorkflowException;
 
   /**
    * Build a new HistoryStep Return an object implementing HistoryStep interface
    */
-  public HistoryStep createHistoryStep();
+  HistoryStep createHistoryStep();
 
   /**
    * Builds an actor from a user and a role.
    */
-  public Actor createActor(User user, String roleName, State state);
+  Actor createActor(User user, String roleName, State state);
 
   /**
    * Get the list of process instances for which timeout date is over
    * @return an array of ProcessInstance objects
    * @throws WorkflowException
    */
-  public ProcessInstance[] getTimeOutProcessInstances() throws WorkflowException;
-
+  SilverpeasList<ProcessInstance> getTimeOutProcessInstances() throws WorkflowException;
 }

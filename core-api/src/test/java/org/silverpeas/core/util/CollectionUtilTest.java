@@ -23,16 +23,20 @@
  */
 package org.silverpeas.core.util;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.Test;
+import org.silverpeas.core.util.CollectionUtil.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
+import static org.silverpeas.core.util.CollectionUtil.*;
 
 /**
  * @author Yohann Chastagnier
@@ -71,13 +75,110 @@ public class CollectionUtilTest {
     List<String> A = Arrays.asList("A", "B", "C", "D", "D", "E", "Z");
     List<String> B = Arrays.asList("Y", "E", "E", "D", "A", "A", "A");
     List<String> intersection = CollectionUtil.intersection(A, B);
-    assertThat(intersection, contains("A", "D", "E"));
-    intersection = CollectionUtil.intersection(B, A);
     assertThat(intersection, contains("E", "D", "A"));
+    intersection = CollectionUtil.intersection(B, A);
+    assertThat(intersection, contains("A", "D", "E"));
+  }
+
+  @Test
+  public void indexOfItem() {
+    List<TestElement> ITEMS = createListOfTestElement();
+    assertThat(indexOf(ITEMS, e -> e.equalsProperty1("100")), is(0));
+    assertThat(indexOf(ITEMS, e -> e.equalsProperty1("100"), 0), is(0));
+    assertThat(indexOf(ITEMS, e -> e.equalsProperty1("100"), 1), is(-1));
+    assertThat(indexOf(ITEMS, e -> e.equalsProperty1("110")), is(1));
+    assertThat(indexOf(ITEMS, e -> e.equalsProperty1("110"), 1), is(1));
+    assertThat(indexOf(ITEMS, e -> e.equalsProperty1("110"), 2), is(3));
+    assertThat(indexOf(ITEMS, e -> e.equalsProperty1("110"), 3), is(3));
+    assertThat(indexOf(ITEMS, e -> e.equalsProperty1("110"), 4), is(4));
+    assertThat(indexOf(ITEMS, e -> e.equalsProperty1("110"), 5), is(-1));
+
+    assertThat(indexOf(ITEMS, e -> e.equalsProperty2("110"), 3), is(-1));
+    assertThat(indexOf(ITEMS, e -> e.equalsProperty2("110")), is(-1));
+  }
+
+  @Test
+  public void findFirstItem() {
+    List<TestElement> ITEMS = createListOfTestElement();
+    assertThat(findFirst(ITEMS, e -> e.equalsProperty1("100")).orElse(null), is(ITEMS.get(0)));
+    assertThat(findFirst(ITEMS, e -> e.equalsProperty1("100"), 0).orElse(null), is(ITEMS.get(0)));
+    assertThat(findFirst(ITEMS, e -> e.equalsProperty1("100"), 1).isPresent(), is(false));
+    assertThat(findFirst(ITEMS, e -> e.equalsProperty1("110")).orElse(null), is(ITEMS.get(1)));
+    assertThat(findFirst(ITEMS, e -> e.equalsProperty1("110"), 1).orElse(null), is(ITEMS.get(1)));
+    assertThat(findFirst(ITEMS, e -> e.equalsProperty1("110"), 2).orElse(null), is(ITEMS.get(3)));
+    assertThat(findFirst(ITEMS, e -> e.equalsProperty1("110"), 3).orElse(null), is(ITEMS.get(3)));
+    assertThat(findFirst(ITEMS, e -> e.equalsProperty1("110"), 4).orElse(null), is(ITEMS.get(4)));
+    assertThat(findFirst(ITEMS, e -> e.equalsProperty1("110"), 5).isPresent(), is(false));
+
+    assertThat(findFirst(ITEMS, e -> e.equalsProperty2("110"), 3).isPresent(), is(false));
+    assertThat(findFirst(ITEMS, e -> e.equalsProperty2("110")).isPresent(), is(false));
+  }
+
+  @Test
+  public void indexOfVsFindFirstItem() {
+    List<TestElement> ITEMS = createListOfTestElement();
+    ITEMS.add(null);
+    final int indexOfNull = indexOf(ITEMS, Objects::isNull);
+    final Optional<TestElement> optionalOfNull = findFirst(ITEMS, Objects::isNull);
+    assertThat(indexOfNull, is(6));
+    assertThat(optionalOfNull.isPresent(), is(false));
+  }
+
+  @Test
+  public void findNextRuptureItem() {
+    List<TestElement> ITEMS = createListOfTestElement();
+    RuptureContext<TestElement> context = RuptureContext.newOne(ITEMS);
+
+    final TestElement first = findNextRupture(context, e -> e.equalsProperty1("100")).orElse(null);
+    assertThat(first, is(ITEMS.get(0)));
+    assertThat(context.isTerminated(), is(false));
+
+    TestElement next = findNextRupture(context, e -> e.equalsProperty1("100")).orElse(null);
+    assertThat(next, sameInstance(first));
+    assertThat(context.isTerminated(), is(false));
+
+    next = findNextRupture(context, e -> e.equalsProperty1("110")).orElse(null);
+    assertThat(next, not(sameInstance(first)));
+    assertThat(next, is(ITEMS.get(1)));
+    assertThat(context.isTerminated(), is(false));
+
+    next = findNextRupture(context, e -> e.equalsProperty1("100")).orElse(null);
+    assertThat(next, nullValue());
+    assertThat(context.isTerminated(), is(true));
+  }
+
+  @Test(expected = IllegalStateException.class)
+  public void findNextRuptureItemWhenTerminatedShouldThrowError() {
+    List<TestElement> ITEMS = createListOfTestElement();
+    RuptureContext<TestElement> context = RuptureContext.newOne(ITEMS);
+
+    final TestElement item = findNextRupture(context, e -> e.equalsProperty1("none")).orElse(null);
+    assertThat(item, nullValue());
+    assertThat(context.isTerminated(), is(true));
+
+    findNextRupture(context, e -> e.equalsProperty1("100"));
+  }
+
+  @Test
+  public void findNextRuptureItemWhenResetShouldWork() {
+    List<TestElement> ITEMS = createListOfTestElement();
+    RuptureContext<TestElement> context = RuptureContext.newOne(ITEMS);
+
+    TestElement item = findNextRupture(context, e -> e.equalsProperty1("none")).orElse(null);
+    assertThat(item, nullValue());
+    assertThat(context.isTerminated(), is(true));
+
+    context.reset();
+    assertThat(context.isTerminated(), is(false));
+
+    item = findNextRupture(context, e -> e.equalsProperty1("100")).orElse(null);
+    assertThat(item, is(ITEMS.get(0)));
+    assertThat(context.isTerminated(), is(false));
   }
 
   /**
-   * Creating an list of TestElement.
+   * Creating an list of TestElement.<br/>
+   * [{100,2},{110,2},{null,3},{110,3},{110,null},{120,null}]
    * @throws Exception
    */
   private List<TestElement> createListOfTestElement() {
@@ -101,6 +202,16 @@ public class CollectionUtilTest {
     testElement = new TestElement();
     testElement.setProperty1(null);
     testElement.setProperty2("3");
+    list.add(testElement);
+
+    testElement = new TestElement();
+    testElement.setProperty1("110");
+    testElement.setProperty2("3");
+    list.add(testElement);
+
+    testElement = new TestElement();
+    testElement.setProperty1("110");
+    testElement.setProperty2(null);
     list.add(testElement);
 
     testElement = new TestElement();
@@ -149,6 +260,13 @@ public class CollectionUtilTest {
     }
 
     /**
+     * @return the property1
+     */
+    public boolean equalsProperty1(String other) {
+      return new EqualsBuilder().append(property1, other).build();
+    }
+
+    /**
      * @param property1 the property1 to set
      */
     public void setProperty1(final String property1) {
@@ -160,6 +278,13 @@ public class CollectionUtilTest {
      */
     public String getProperty2() {
       return property2;
+    }
+
+    /**
+     * @return the property1
+     */
+    public boolean equalsProperty2(String other) {
+      return new EqualsBuilder().append(property2, other).build();
     }
 
     /**

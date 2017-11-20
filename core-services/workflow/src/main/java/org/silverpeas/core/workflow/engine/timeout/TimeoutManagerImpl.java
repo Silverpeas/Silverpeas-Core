@@ -31,6 +31,7 @@ import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.ProcessInstanceManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
@@ -90,7 +91,7 @@ public class TimeoutManagerImpl implements Initialization, SchedulerEventListene
   private void doTimeoutManagement() {
     try {
       // parse all "process manager" peas
-      ProcessInstance[] instances = manager.getTimeOutProcessInstances();
+      SilverpeasList<ProcessInstance> instances = manager.getTimeOutProcessInstances();
       Date now = new Date();
 
       for (final ProcessInstance instance : instances) {
@@ -115,6 +116,7 @@ public class TimeoutManagerImpl implements Initialization, SchedulerEventListene
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
+    // Nothing to do here
   }
 
   @Override

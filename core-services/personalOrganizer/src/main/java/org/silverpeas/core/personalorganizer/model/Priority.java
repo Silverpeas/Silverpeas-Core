@@ -24,14 +24,10 @@
 package org.silverpeas.core.personalorganizer.model;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.personalorganizer.service.CalendarException;
 
 import java.io.Serializable;
 
 public class Priority implements Serializable, Comparable<Priority> {
-
-  private static final long serialVersionUID = -5520032042704711631L;
-  private static final int[] PRIORITIES = { 0, 1, 2, 3 };
 
   /**
    * The minimum allowable priority value. Please note that this refers to the case where no
@@ -39,19 +35,16 @@ public class Priority implements Serializable, Comparable<Priority> {
    * value allowable.
    */
   public static final int MINIMUM_PRIORITY = 0;
-
   /**
    * The maximum allowable priority value. Please note that this refers to the highest possible
    * integer value for priority. When interpreting this value it is seen as the lowest priority
    * because the value 1 is the highest priority value.
    */
   public static final int MAXIMUM_PRIORITY = 9;
-
-  private int priority = 2;
-
-  public static int[] getAllPriorities() {
-    return PRIORITIES;
-  }
+  private static final long serialVersionUID = -5520032042704711631L;
+  private static final int[] PRIORITIES = { 0, 1, 2, 3 };
+  private static final int DEFAULT_PRIORITY_LEVEL = 2;
+  private int level = DEFAULT_PRIORITY_LEVEL;
 
   /**
    * This is the default constructor. It is used by Castor. You should probably use the constructor
@@ -66,29 +59,32 @@ public class Priority implements Serializable, Comparable<Priority> {
 
    *
    * @param newval The initial value of the priority property
-   * @throws CalendarException
    */
-  public Priority(int newval) throws CalendarException {
+  public Priority(int newval) {
     setValue(newval);
+  }
+
+  public static int[] getAllPriorities() {
+    return PRIORITIES;
+  }
+
+  public int getValue() {
+    return level;
   }
 
   /**
    * The purpose of this method is to set the value of the priority property.
-   * @param newval The new value for the priority property
+   * @param newVal The new value for the priority property
    */
 
-  public final void setValue(int newval) throws CalendarException {
-    if (newval > MAXIMUM_PRIORITY) {
-      priority = MAXIMUM_PRIORITY;
-    } else if (newval < MINIMUM_PRIORITY) {
-      priority = MINIMUM_PRIORITY;
+  public final void setValue(int newVal) {
+    if (newVal > MAXIMUM_PRIORITY) {
+      level = MAXIMUM_PRIORITY;
+    } else if (newVal < MINIMUM_PRIORITY) {
+      level = MINIMUM_PRIORITY;
     } else {
-      priority = newval;
+      level = newVal;
     }
-  }
-
-  public int getValue() {
-    return priority;
   }
 
   @Override

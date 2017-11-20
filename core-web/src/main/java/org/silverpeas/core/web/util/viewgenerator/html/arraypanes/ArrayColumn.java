@@ -26,7 +26,7 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.function.Function;
+import java.util.function.BiFunction;
 
 import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.*;
 
@@ -49,7 +49,7 @@ public class ArrayColumn implements SimpleGraphicElement {
   protected ArrayPane pane;
   protected int m_Behaviour = COLUMN_BEHAVIOUR_DEFAULT;
   protected String width = null;
-  private Function compareOn;
+  private BiFunction compareOn;
   /**
    * In some cases, it may be preferable to specify the routing address (via
    * {@link #setRoutingAddress(String address)}) If not the {@link #print()} method defaults to an
@@ -119,11 +119,11 @@ public class ArrayColumn implements SimpleGraphicElement {
   }
 
   @SuppressWarnings("unchecked")
-  public <T, V> Function<T, Comparable<V>> getCompareOn() {
+  public <T, V> BiFunction<T, Integer, Comparable<V>> getCompareOn() {
     return compareOn;
   }
 
-  public <T, V> void setCompareOn(final Function<T, Comparable<V>> compareOn) {
+  public <T, V> void setCompareOn(final BiFunction<T, Integer, Comparable<V>> compareOn) {
     setSortable(true);
     this.compareOn = compareOn;
   }
