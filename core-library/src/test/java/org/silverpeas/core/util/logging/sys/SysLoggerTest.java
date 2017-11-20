@@ -56,6 +56,7 @@ public class SysLoggerTest {
         .getenv()
         .put("SILVERPEAS_HOME", mavenTargetDirectory.getResourceTestDirFile().getPath());
     LoggerConfigurationLoader.load();
+    commonAPI4Test.setLoggerLevel(Level.INFO);
   }
 
   @Test
