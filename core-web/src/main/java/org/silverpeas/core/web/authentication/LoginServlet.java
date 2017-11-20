@@ -23,13 +23,14 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
 
 import javax.inject.Inject;
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -107,33 +108,52 @@ public class LoginServlet extends SilverpeasHttpServlet {
     return general.getBoolean("login.sso.enabled", false);
   }
 
+  private boolean isAnonymousAccessActivated() {
+    return UserDetail.isAnonymousUserExist();
+  }
+
   /**
    * Performs the rules of Login dispatch.<br>
    * This method must be called only if it does not exists an authenticated user into the session.
-   * @param request the current request.
+   * @param servletRequest the current request.
    * @param response the current response.
    * @throws IOException in case of redirect error.
    */
-  private void performLoginDispatch(final HttpServletRequest request,
-      final HttpServletResponse response) throws IOException {
+  private void performLoginDispatch(final HttpServletRequest servletRequest,
+      final HttpServletResponse response) throws IOException, ServletException {
+
+    HttpRequest request = HttpRequest.decorate(servletRequest);
 
     String loginPage;
     String errorCode = getErrorCode(request);
     if (isSsoEnabled() && isNotDefined(errorCode)) {
       loginPage = request.getContextPath() + "/sso";
+      response.sendRedirect(response.encodeRedirectURL(loginPage));
+    } else if (isAnonymousAccessActivated() && !request.isWithinAnonymousUserSession() &&
+        !request.isWithinUserSession()) {
+
+      // first access to the platform
+      UserDetail anonymousUser = UserDetail.getAnonymousUser();
+      loginPage = "/AuthenticationServlet?";
+      loginPage += "Login="+anonymousUser.getLogin();
+      loginPage += "&Password="+anonymousUser.getLogin();
+      loginPage += "&DomainId=0";
+
+      RequestDispatcher dispatcher = request.getRequestDispatcher(loginPage);
+      dispatcher.forward(request, response);
     } else {
       loginPage = general.getString("loginPage");
 
       String domainId = getDomainId(request);
-      if (!isDefined(loginPage) || isAnonymousSession(request)) {
+      if (!isDefined(loginPage)) {
         loginPage = request.getContextPath() + "/defaultLogin.jsp";
       } else if (!loginPage.startsWith(request.getContextPath())) {
         loginPage = request.getContextPath() + "/" + loginPage;
       }
       loginPage += "?DomainId=" + domainId + "&ErrorCode=" + errorCode + "&logout=" +
           request.getParameter("logout");
+      response.sendRedirect(response.encodeRedirectURL(loginPage));
     }
-    response.sendRedirect(response.encodeRedirectURL(loginPage));
   }
 
   /**

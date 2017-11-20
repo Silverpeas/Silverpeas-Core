@@ -27,18 +27,13 @@
 
 <%@ page import="org.silverpeas.core.web.look.LookHelper" %>
 <%@ page import="org.silverpeas.core.util.URLUtil"%>
-<%@ page import="org.silverpeas.core.admin.domain.model.Domain"%>
-<%@ page import="org.silverpeas.core.security.authentication.AuthenticationService" %>
-<%@ page import="org.silverpeas.core.security.authentication.AuthenticationServiceProvider" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
-<%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.ResourceLocator" %>
 
 <%@ page import="org.silverpeas.core.util.SettingBundle" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
-<%@ page import="java.util.List" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
@@ -46,6 +41,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <c:url var="icon_px" value="/util/viewGenerator/icons/px.gif"/>
+<c:url var="urlLogin" value="/Login"/>
 
 <%-- Retrieve user menu display mode --%>
 <c:set var="curHelper" value="${sessionScope.Silverpeas_LookHelper}" />
@@ -70,20 +66,14 @@ if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId)) {
 }
 gef.setSpaceIdForCurrentRequest(spaceId);
 
+Button button = gef.getFormButton(helper.getString("lookSilverpeasV5.logout"), "javaScript:onclick=spUserSession.logout();", false);
+if (helper.isAnonymousUser()) {
+  button = gef.getFormButton(helper.getString("lookSilverpeasV5.login"), "javaScript:goToLoginPage();", false);
+}
+
   SettingBundle resourceSearchEngine =
       ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
 int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.minChars", 3);
-
-//Is "forgotten password" feature active ?
-  LocalizationBundle authenticationBundle = ResourceLocator.getLocalizationBundle(
-      "org.silverpeas.authentication.multilang.authentication", request.getLocale().getLanguage());
-SettingBundle general	= ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
-String pwdResetBehavior = general.getString("forgottenPwdActive", "reinit");
-boolean forgottenPwdActive = !pwdResetBehavior.equalsIgnoreCase("false");
-String urlToForgottenPwd = m_sContext+"/CredentialsServlet/ForgotPassword";
-if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
-  urlToForgottenPwd = m_sContext+"/CredentialsServlet/LoginQuestion";
-}
 %>
 <!-- Add JQuery mask plugin css -->
 <view:link href="/util/styleSheets/jquery.loadmask.css"/>
@@ -120,6 +110,10 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
     function openClipboard()
   {
       document.clipboardForm.submit();
+  }
+
+  function goToLoginPage() {
+	  location.href="${urlLogin}";
   }
 
   function searchEngine() {
@@ -214,17 +208,6 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
         labels[1] = "<%=WebEncodeHelper.javaStringToJsString(helper.getString("lookSilverpeasV5.personalSpace.remove.confirm"))%>";
         labels[2] = "<%=WebEncodeHelper.javaStringToJsString(helper.getString("lookSilverpeasV5.personalSpace.add"))%>";
         return labels;
-    }
-
-    function toForgottenPassword() {
-	var form = document.getElementById("authForm");
-        if (form.elements["Login"].value.length === 0) {
-            alert("<%=authenticationBundle.getString("authentication.logon.loginMissing") %>");
-        } else {
-		form.action = "<%=urlToForgottenPwd%>";
-		form.target = "MyMain";
-		form.submit();
-        }
     }
 
   /**
@@ -326,55 +309,12 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
     </div>
 
     <div id="loginBox">
-      <form name="authForm" id="authForm" action="<%=m_sContext%>/AuthenticationServlet" method="post" target="_top">
         <table width="100%">
         <tr>
             <td align="right" valign="top">
-                <% if (helper.isAnonymousAccess()) {
-                    //------------------------------------------------------------------
-                    // domains are used by 'selectDomain.jsp'
-                    // Get a AuthenticationService object
-                    AuthenticationService lpAuth = AuthenticationServiceProvider.getService();
-                    List<Domain> listDomains = lpAuth.getAllDomains();
-                    pageContext.setAttribute("listDomains", listDomains);
-                    pageContext.setAttribute("multipleDomains", listDomains != null && listDomains.size() > 1);
-                    //------------------------------------------------------------------
-                    Button button = gef.getFormButton(helper.getString("lookSilverpeasV5.login"), "javaScript:login();", false);
-                %>
-                    <table border="0" cellpadding="0" cellspacing="2">
-                        <tr><td><%=helper.getString("lookSilverpeasV5.login")%> : </td><td><input type="text" name="Login" size="14" maxlength="50"></td></tr>
-                        <tr><td nowrap="nowrap"><%=helper.getString("lookSilverpeasV5.password")%> : </td><td><input type="password" name="Password" size="14" maxlength="32" onkeydown="checkSubmitToLogin(event)"></td></tr>
-                        <c:choose>
-				<c:when test="${!pageScope.multipleDomains}">
-				<tr><td colspan="2"><input type="hidden" name="DomainId" value="<%=listDomains.get(0).getId()%>"/></td></tr>
-				</c:when>
-				<c:otherwise>
-	                            <tr>
-					<td><fmt:message key="lookSilverpeasV5.domain" /> : </td>
-					<td><select id="DomainId" name="DomainId" size="1">
-							<c:forEach var="domain" items="${pageScope.listDomains}">
-							<option value="<c:out value="${domain.id}" />" <c:if test="${domain.id eq param.DomainId}">selected="selected"</c:if> ><c:out value="${domain.name}"/></option>
-							</c:forEach>
-										</select></td>
-	                            </tr>
-				</c:otherwise>
-                        </c:choose>
-                        <tr>
-                            <td colspan="2" align="right"><%=button.print()%></td>
-                        </tr>
-                    </table>
-			 <% if (forgottenPwdActive) { %>
-						<span class="forgottenPwd">
-						<% if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) { %>
-							<a href="javascript:toForgottenPassword()"><%=authenticationBundle.getString("authentication.logon.passwordForgotten") %></a>
-						<% } else { %>
-							<a href="javascript:toForgottenPassword()"><%=authenticationBundle.getString("authentication.logon.passwordReinit") %></a>
-						<%} %>
-						</span>
-					 <% } %>
-                <% } else {
-                    Button button = gef.getFormButton(helper.getString("lookSilverpeasV5.logout"), "javaScript:logout();", false);
-                %>
+                <% if (helper.isAnonymousUser()) { %>
+                    <%=button.print()%>
+                <% } else { %>
                     <table border="0" cellpadding="0" cellspacing="2" id="userNav">
                         <tr><td colspan="2" align="right"><%=helper.getUserFullName()%></td></tr>
                         <tr><td colspan="2" align="right"><%=button.print()%></td></tr>
@@ -383,7 +323,6 @@ if ("personalQuestion".equalsIgnoreCase(pwdResetBehavior)) {
             </td>
         </tr>
         </table>
-        </form>
     </div>
 </div>
 <form name="clipboardForm" action="<%=m_sContext+URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp" method="post" target="IdleFrame">
