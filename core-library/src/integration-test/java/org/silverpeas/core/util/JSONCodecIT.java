@@ -69,7 +69,7 @@ public class JSONCodecIT {
             EncodingException.class, JSONCodec.class))
         .addClasses(ICal4JImporter.class, ICal4JDateCodec.class, ICal4JRecurrenceCodec.class,
             DefaultCalendarEventRepository.class)
-        .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF").build();
+        .build();
   }
 
   @Test

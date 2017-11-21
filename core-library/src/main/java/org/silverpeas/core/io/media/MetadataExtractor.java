@@ -23,9 +23,7 @@
  */
 package org.silverpeas.core.io.media;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.apache.tika.Tika;
-import org.apache.tika.io.TikaInputStream;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.metadata.XMPDM;
 import org.apache.tika.mime.MediaType;
@@ -33,6 +31,7 @@ import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.mp4.MP4Parser;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.time.TimeData;
 import org.silverpeas.core.util.time.TimeUnit;
 
@@ -40,7 +39,7 @@ import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.io.Reader;
 import java.math.BigDecimal;
 import java.util.Set;
 
@@ -85,12 +84,10 @@ public class MetadataExtractor {
    */
   public MetaData extractMetadata(File file) {
     Metadata metadata = new Metadata();
-    try (InputStream inputStream = TikaInputStream.get(file, metadata)) {
-      getTikaService().parse(inputStream, metadata).close();
+    try (Reader reader = getTikaService().parse(file, metadata)) {
       return adjust(file, metadata);
     } catch (Exception ex) {
-      SilverTrace.warn("MetadataExtractor.getMetadata()", "SilverpeasException.WARNING",
-          "util.EXE_CANT_GET_SUMMARY_INFORMATION" + ex.getMessage(), ex);
+      SilverLogger.getLogger(this).warn(ex);
       return new MetaData(file, new Metadata());
     }
   }
@@ -122,7 +119,8 @@ public class MetadataExtractor {
         TimeData duration =
             UnitUtil.getTimeData(new BigDecimal(metadata.get(XMPDM.DURATION)), TimeUnit.SEC);
         metadata.set(XMPDM.DURATION, String.valueOf(duration.getTimeAsLong()));
-      } catch (Exception ignore) {
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).warn(e);
       }
     }
   }

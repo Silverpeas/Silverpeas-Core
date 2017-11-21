@@ -33,7 +33,7 @@ public interface WebResourceTesting {
    * The HTTP header paremeter in an incoming request that carries the user session key as it is
    * defined in the Silverpeas REST web service API.
    */
-  static final String HTTP_SESSIONKEY = "X-Silverpeas-Session";
+  String HTTP_SESSIONKEY = "X-Silverpeas-Session";
 
   /**
    * Gets the URI of a valid and existing web resource backed by a REST web service.

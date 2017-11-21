@@ -139,7 +139,7 @@ public class MetadataExtractorTest {
   }
 
   @Test
-  public void testExtractMetadataFromTifImage() {
+  public void testExtractMetadataFromTiffImage() {
     File file = tifFile;
     MetaData result = instance.extractMetadata(file);
     assertThat(result, is(notNullValue()));

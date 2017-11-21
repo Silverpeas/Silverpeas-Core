@@ -45,7 +45,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(Arquillian.class)
-public class PreviewServiceWithoutSwfrenderIT extends AbstractViewerTest {
+public class PreviewServiceWithoutSwfrenderIT extends AbstractViewerIT {
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();

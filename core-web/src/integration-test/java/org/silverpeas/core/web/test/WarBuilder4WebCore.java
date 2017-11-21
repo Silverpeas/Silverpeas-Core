@@ -27,7 +27,6 @@ import org.silverpeas.core.test.BasicCoreWarBuilder;
 import org.silverpeas.core.test.WarBuilder;
 import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.web.test.JcrContext;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the
@@ -46,7 +45,7 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
     addMavenDependencies("org.silverpeas.core:silverpeas-core-web-test");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-silverstatistics");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-viewer");
-    addClasses(SilverpeasSessionOpener.class, TestJcrRepositoryProvider.class);
+    addClasses(SilverpeasSessionOpener.class);
     addPackages(true, "org.silverpeas.core.web.http");
     addPackages(true, "org.silverpeas.core.web.panel");
     addPackages(true, "org.silverpeas.core.web.selection");
@@ -55,7 +54,6 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
     addPackages(true, "org.silverpeas.core.web.util.servlet");
     addPackages(true, "org.silverpeas.core.web.session");
     // Bundles & Settings
-    addAsResource(JcrContext.REPOSITORY_IN_MEMORY_XML.substring(1));
     addAsResource("org/silverpeas/publication/publicationSettings.properties");
     addAsResource("org/silverpeas/classifyEngine/ClassifyEngine.properties");
     addAsResource("org/silverpeas/clipboard/settings/clipboardSettings.properties");

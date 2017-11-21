@@ -45,8 +45,6 @@ public class WarBuilder4Publication extends WarBuilder4LibCore {
    */
   protected <CLASS_TEST> WarBuilder4Publication(final Class<CLASS_TEST> classOfTest) {
     super(classOfTest);
-    addMavenDependencies("org.apache.tika:tika-core");
-    addMavenDependencies("org.apache.tika:tika-parsers");
     addSilverpeasExceptionBases();
     addAdministrationFeatures();
     addIndexEngineFeatures();
@@ -64,7 +62,6 @@ public class WarBuilder4Publication extends WarBuilder4LibCore {
         "org.silverpeas.core.contribution.publication.notification");
     addAsResource("org/silverpeas/core/contribution/publication/service");
     addAsResource("org/silverpeas/publication/publicationSettings.properties");
-    addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
   }
 
   /**

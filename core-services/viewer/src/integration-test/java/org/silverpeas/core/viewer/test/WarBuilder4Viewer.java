@@ -41,12 +41,9 @@ public class WarBuilder4Viewer extends BasicWarBuilder {
   protected <T> WarBuilder4Viewer(final Class<T> test) {
     super(test);
     addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-    addMavenDependencies("org.apache.tika:tika-core");
-    addMavenDependencies("org.apache.tika:tika-parsers");
     createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
     addPackages(true, "org.silverpeas.core.viewer");
     addAsResource("org/silverpeas/viewer");
-    addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
     addAsResource("org/silverpeas/converter/openoffice.properties");
     addAsResource("org/silverpeas/util/data/temporaryDataManagementSettings.properties");
   }

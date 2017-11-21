@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.api.JackrabbitRepository;
 import org.apache.jackrabbit.core.RepositoryImpl;
@@ -36,30 +35,21 @@ import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
 import org.silverpeas.core.persistence.jcr.JcrSession;
-import org.silverpeas.core.persistence.jcr.SilverpeasJcrSchemaRegistering;
-import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
-import javax.annotation.Priority;
-import javax.enterprise.inject.Alternative;
-import javax.enterprise.inject.Produces;
-import javax.inject.Singleton;
 import javax.jcr.Binary;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
-import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -69,7 +59,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.*;
 import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSystemSession;
@@ -92,23 +81,17 @@ public class JcrContext implements TestRule {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
-        final Path repositoryPath = Files.createTempDirectory(TEST_REPOSITORY_LOCATION);
+        /*final Path repositoryPath = Files.createTempDirectory(TEST_REPOSITORY_LOCATION);
         try (final InputStream configStream = JcrContext.class
             .getResourceAsStream(REPOSITORY_IN_MEMORY_XML);) {
           context = new JcrTestContext(configStream, repositoryPath);
-          beforeEvaluate(context);
+          beforeEvaluate(context);*/
           base.evaluate();
-        } finally {
-          try {
-            afterEvaluate(context);
-          } finally {
-            FileUtils.deleteQuietly(repositoryPath.toFile());
-          }
-        }
       }
     };
   }
 
+  /*
   protected void beforeEvaluate(JcrTestContext context) throws Exception {
     clearFileSystem();
     StubbedJcrRepositoryProvider jcrRepositoryProvider =
@@ -116,7 +99,9 @@ public class JcrContext implements TestRule {
     jcrRepositoryProvider.setRepository(context.getRepository());
     ServiceProvider.getService(SilverpeasJcrSchemaRegistering.class).init();
   }
+  */
 
+  /*
   protected void afterEvaluate(JcrTestContext context) {
     try {
       if (context != null) {
@@ -133,6 +118,7 @@ public class JcrContext implements TestRule {
     File index = new File(IndexFileManager.getIndexUpLoadPath());
     FileUtils.deleteQuietly(index);
   }
+  */
 
   protected class JcrTestContext {
     private final InputStream configStream;
@@ -165,18 +151,20 @@ public class JcrContext implements TestRule {
     }
   }
 
+  /*
   public JcrTestContext getContext() {
     return context;
   }
+  */
 
   /*
   REPOSITORY PROVIDER
    */
 
-  @Singleton
+  /*@Singleton
   @Alternative
   @Priority(APPLICATION + 10)
-  public static class StubbedJcrRepositoryProvider implements JcrRepositoryProvider{
+  public static class StubbedJcrRepositoryProvider implements JcrRepositoryProvider {
 
     private Repository repository;
 
@@ -189,7 +177,7 @@ public class JcrContext implements TestRule {
     public void setRepository(final Repository repository) {
       this.repository = repository;
     }
-  }
+  }*/
 
   /*
   TOOLS

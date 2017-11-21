@@ -67,7 +67,6 @@ public class WarBuilder4WarCore extends WarBuilder<WarBuilder4WarCore> {
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-viewer");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-sharing");
     warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-chat");
-    warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
     return warBuilder;
   }
 

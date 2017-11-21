@@ -70,7 +70,11 @@ public class MetaData {
    * @return String
    */
   public String getTitle() {
-    return cleanString(metadata.get(TikaCoreProperties.TITLE));
+    String title = metadata.get((Metadata.TITLE));
+    if (StringUtil.isNotDefined(title)) {
+      title = cleanString(metadata.get(TikaCoreProperties.TITLE));
+    }
+    return title;
   }
 
   /**

@@ -65,9 +65,6 @@ public class PdcClassificationServiceIT {
         .testFocusedOn(warBuilder -> {
           warBuilder.addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
           warBuilder.addMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud");
-          warBuilder.addMavenDependencies("org.apache.tika:tika-core");
-          warBuilder.addMavenDependencies("org.apache.tika:tika-parsers");
-          warBuilder.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
           warBuilder.addAsResource("org/silverpeas/classifyEngine/ClassifyEngine.properties");
           warBuilder.addPackages(true, "com.silverpeas.pdc");
           warBuilder.addPackages(true, "com.silverpeas.pdcSubscription");

@@ -65,7 +65,8 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
 
   protected Collection<String> mavenDependencies = new HashSet<>(Arrays
       .asList("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
-          "commons-codec:commons-codec", "commons-io:commons-io", "org.silverpeas.core:silverpeas-core-test"));
+          "commons-codec:commons-codec", "commons-io:commons-io",
+          "org.silverpeas.core:silverpeas-core-test"));
 
   protected Collection<String> jarLibForPersistence = new HashSet<>();
 
@@ -80,21 +81,15 @@ public abstract class WarBuilder<T extends WarBuilder<T>>
    * Constructs a war builder for the specified test class. It will load all the resources in the
    * same packages of the specified test class.
    * @param classOfTest the class of the test for which a war archive will be build.
-   * @param <CLASS_TEST> the type of the test.
+   * @param <U> the type of the test.
    */
-  protected <CLASS_TEST> WarBuilder(Class<CLASS_TEST> classOfTest) {
+  protected <U> WarBuilder(Class<U> classOfTest) {
     this.classOfTest = classOfTest;
     testCoreClassMavenTargetDirectoryRule = new MavenTargetDirectoryRule(WarBuilder.class);
     String resourcePath = classOfTest.getPackage().getName().replaceAll("\\.", "/");
     logInfo("Adding resources from path: " + resourcePath);
     war.addAsResource(resourcePath);
-    addMavenDependencies("org.apache.tika:tika-core");
-    addMavenDependencies("org.apache.tika:tika-parsers");
-    addMavenDependencies("org.apache.lucene:lucene-core");
-    addMavenDependencies("org.apache.lucene:lucene-queryparser");
-    addMavenDependencies("org.apache.lucene:lucene-suggest");
-    addMavenDependencies("org.apache.lucene:lucene-queries");
-    addMavenDependencies("org.apache.lucene:lucene-analyzers-common");
+    war.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
   }
 
   /**

@@ -73,8 +73,7 @@ public class FFmpegThumbnailExtractorIT {
     return WarBuilder4LibCore.onWarForTestClass(FFmpegThumbnailExtractorIT.class)
         .addSilverpeasExceptionBases()
         .addCommonBasicUtilities()
-        .addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers",
-            "org.apache.commons:commons-exec").testFocusedOn((warBuilder) -> {
+        .addMavenDependencies("org.apache.commons:commons-exec").testFocusedOn((warBuilder) -> {
           warBuilder.addPackages(true, "org.silverpeas.core.io.media");
           warBuilder.addClasses(ExternalExecution.class, MetadataExtractor.class, MetaData.class,
               ExternalExecutionException.class, CollectingLogOutputStream.class, UnitUtil.class,

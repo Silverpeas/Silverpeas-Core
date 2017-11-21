@@ -43,13 +43,10 @@ public class WorkflowIT {
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(WorkflowIT.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        .addMavenDependencies("org.apache.tika:tika-core")
-        .addMavenDependencies("org.apache.tika:tika-parsers")
         .createMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-personalorganizer")
-        .testFocusedOn(war -> war.addPackages(true, "org.silverpeas.core.workflow")
-            .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF"))
+        .testFocusedOn(war -> war.addPackages(true, "org.silverpeas.core.workflow"))
         .build();
   }
 

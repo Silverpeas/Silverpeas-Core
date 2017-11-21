@@ -42,13 +42,10 @@ public class WarBuilder4Comment extends BasicWarBuilder {
   public static <T> WarBuilder4Comment onWarForTestClass(Class<T> test) {
     return (WarBuilder4Comment) new WarBuilder4Comment(test)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        .addMavenDependencies("org.apache.tika:tika-core")
-        .addMavenDependencies("org.apache.tika:tika-parsers")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
         .testFocusedOn(war -> {
           war.addPackages(true, "org.silverpeas.core.comment")
-              .addAsResource("org/silverpeas/core/comment")
-              .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
+              .addAsResource("org/silverpeas/core/comment");
         });
   }
 

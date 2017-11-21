@@ -41,9 +41,6 @@ public class WarBuilder4Sharing extends BasicWarBuilder {
   protected <T> WarBuilder4Sharing(final Class<T> test) {
     super(test);
     addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core");
-    addMavenDependencies("org.apache.tika:tika-core");
-    addMavenDependencies("org.apache.tika:tika-parsers");
-    addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
   }
 
   /**

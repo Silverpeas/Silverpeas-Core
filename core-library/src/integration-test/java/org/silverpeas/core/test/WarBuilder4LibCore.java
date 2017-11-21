@@ -147,6 +147,8 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addClasses(EntityReference.class);
     addCalendarFeatures();
     addPackages(true, "org.silverpeas.core.util.logging.sys");
+    addMavenDependencies("org.apache.tika:tika-core");
+    addMavenDependencies("org.apache.tika:tika-parsers");
     addClasses(LogAnnotationProcessor.class, LogsAccessor.class);
     addAsResource("META-INF/services/test-org.silverpeas.core.util.logging.SilverLoggerFactory",
         "META-INF/services/org.silverpeas.core.util.logging.SilverLoggerFactory");
@@ -418,9 +420,9 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addFileRepositoryFeatures();
     addSynchAndAsynchResourceEventFeatures();
     addPublicationTemplateFeatures();
-    addMavenDependencies("javax.jcr:jcr");
+    /*addMavenDependencies("javax.jcr:jcr");
     addMavenDependencies("org.apache.jackrabbit:jackrabbit-core");
-    addMavenDependencies("commons-beanutils:commons-beanutils");
+    addMavenDependencies("commons-beanutils:commons-beanutils");*/
     if (!contains(JcrRepositoryProvider.class)) {
       addClasses(FormException.class, JcrIntegrationTest.class, JcrContext.class,
           FileServerUtils.class);
@@ -432,6 +434,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addAsResource(JcrContext.REPOSITORY_IN_MEMORY_XML.substring(1));
       applyManually(war -> war.deletePackages(true, "org.silverpeas.core.contribution.attachment.mock"));
     }
+
     return this;
   }
 
@@ -441,12 +444,12 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addIndexEngineFeatures() {
     if (!contains(FullIndexEntry.class)) {
-      addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers");
+      /*addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers");
       addMavenDependencies("org.apache.lucene:lucene-core");
       addMavenDependencies("org.apache.lucene:lucene-queryparser");
       addMavenDependencies("org.apache.lucene:lucene-suggest");
       addMavenDependencies("org.apache.lucene:lucene-queries");
-      addMavenDependencies("org.apache.lucene:lucene-analyzers-common");
+      addMavenDependencies("org.apache.lucene:lucene-analyzers-common");*/
       addPackages(true, "org.silverpeas.core.index.indexing");
       addAsResource("org/silverpeas/index/indexing");
     }
@@ -615,7 +618,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addClasses(NotificationManagerSettings.class);
     addAsResource(
         "org/silverpeas/notificationManager/settings/notificationManagerSettings.properties");
-    applyManually(war -> war.addAsManifestResource("META-INF/test-MANIFEST.MF", "MANIFEST.MF"));
     return this;
   }
 
@@ -766,8 +768,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    * @return the instance of the war with image tool feature.
    */
   public WarBuilder4LibCore addImageToolFeatures() {
-    addMavenDependencies("org.im4java:im4java", "org.apache.tika:tika-core",
-        "org.apache.tika:tika-parsers");
+    addMavenDependencies("org.im4java:im4java");
     addPackages(true, "org.silverpeas.core.io.media.image");
     return this;
   }

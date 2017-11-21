@@ -46,7 +46,6 @@ public class BasicCoreWarBuilder extends BasicWarBuilder {
     // Bundles & Settings
     addAsResource("org/silverpeas/util/attachment/mime_types.properties");
     addAsResource("org/silverpeas/general.properties");
-    addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
   }
 
   /**

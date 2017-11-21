@@ -49,8 +49,7 @@ public class AbstractConverterIntegrationTest {
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
         .addFileRepositoryFeatures()
-        .addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers",
-            "org.apache.commons:commons-exec")
+        .addMavenDependencies("org.apache.commons:commons-exec")
         .testFocusedOn(warBuilder ->
             warBuilder.addMavenDependencies("com.artofsolving:jodconverter")
                 .addPackages(true, "org.silverpeas.core.contribution.converter")

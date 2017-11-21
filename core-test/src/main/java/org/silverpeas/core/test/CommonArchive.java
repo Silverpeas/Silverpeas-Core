@@ -109,7 +109,7 @@ public interface CommonArchive<T extends CommonArchive<T>> {
   /**
    * In order to add configuration on WAR test archive.
    */
-  public interface OnShrinkWrapWar {
+  interface OnShrinkWrapWar {
     void applyManually(WebArchive war);
   }
 }

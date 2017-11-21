@@ -45,11 +45,11 @@ import java.util.logging.Logger;
 /**
  * @author Yohann Chastagnier
  */
-public abstract class AbstractViewerTest {
+public abstract class AbstractViewerIT {
 
   @Deployment
   public static Archive<?> createTestArchive() throws IOException {
-    return WarBuilder4Viewer.onWarForTestClass(AbstractViewerTest.class).build();
+    return WarBuilder4Viewer.onWarForTestClass(AbstractViewerIT.class).build();
   }
 
   private static File tempPath;
@@ -58,7 +58,7 @@ public abstract class AbstractViewerTest {
   protected static void init() {
     if (tempPath == null) {
       SilverProperties properties =
-          MavenTargetDirectoryRule.loadPropertiesForTestClass(AbstractViewerTest.class);
+          MavenTargetDirectoryRule.loadPropertiesForTestClass(AbstractViewerIT.class);
       properties.load("org/silverpeas/general.properties");
       tempPath = new File(properties.getProperty("tempPath"));
       resourceTestDir = MavenTargetDirectoryRule.getResourceTestDirFile(properties);

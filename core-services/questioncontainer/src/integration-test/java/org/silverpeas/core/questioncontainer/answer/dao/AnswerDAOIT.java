@@ -88,11 +88,8 @@ public class AnswerDAOIT extends DataSetTest {
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(AnswerDAOIT.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        .addMavenDependencies("org.apache.tika:tika-core")
-        .addMavenDependencies("org.apache.tika:tika-parsers")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
-        .testFocusedOn(war -> war.addPackages(true, "org.silverpeas.core.questioncontainer.answer")
-            .addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF"))
+        .testFocusedOn(war -> war.addPackages(true, "org.silverpeas.core.questioncontainer.answer"))
         .build();
   }
 

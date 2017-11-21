@@ -52,13 +52,10 @@ public class StatisticsConfigIT {
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(StatisticsConfigIT.class)
         .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
-        .addMavenDependencies("org.apache.tika:tika-core")
-        .addMavenDependencies("org.apache.tika:tika-parsers")
         .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
         .testFocusedOn(war -> {
           war.addPackages(true, "org.silverpeas.core.silverstatistics");
           war.addAsResource("org/silverpeas/silverstatistics/SilverStatisticsTest.properties");
-          war.addAsResource("META-INF/test-MANIFEST.MF", "META-INF/MANIFEST.MF");
         }).build();
   }
 

@@ -26,6 +26,7 @@ package org.silverpeas.core.viewer.service;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jboss.arquillian.junit.Arquillian;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -47,7 +48,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(Arquillian.class)
-public class ViewServiceCacheDemonstrationBeforeIT extends AbstractViewerTest {
+public class ViewServiceNoCacheDemonstrationAfter extends AbstractViewerIT {
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
@@ -57,34 +58,53 @@ public class ViewServiceCacheDemonstrationBeforeIT extends AbstractViewerTest {
 
   @Before
   public void setup() throws Exception {
-    FileUtils.deleteQuietly(getTemporaryPath());
-    getTemporaryPath().mkdirs();
     final SettingBundle mockedSettings =
         reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");
     when(mockedSettings.getInteger(eq("preview.width.max"), anyInt())).thenReturn(1000);
     when(mockedSettings.getInteger(eq("preview.height.max"), anyInt())).thenReturn(1000);
-    when(mockedSettings.getBoolean(eq("viewer.cache.enabled"), anyBoolean())).thenReturn(true);
+    when(mockedSettings.getBoolean(eq("viewer.cache.enabled"), anyBoolean())).thenReturn(false);
     when(mockedSettings.getBoolean(eq("viewer.cache.conversion.silent.enabled"), anyBoolean()))
         .thenReturn(false);
     when(mockedSettings.getBoolean(eq("viewer.conversion.strategy.split.enabled"), anyBoolean()))
         .thenReturn(false);
   }
 
+  @After
+  public void tearDown() throws Exception {
+    FileUtils.deleteQuietly(getTemporaryPath());
+  }
+
   @Test
-  public void demonstrateCache() throws Exception {
+  public void demonstrateNoCache() throws Exception {
     if (canPerformViewConversionTest()) {
+      long conversionDurationFromBefore =
+          readAndRemoveFromTemporaryPathAsLong(
+              ViewServiceNoCacheDemonstrationITSuite.CONVERSION_DURATION_FILE_NAME);
+      DocumentView documentViewFromBefore = SerializationUtil
+          .deserializeFromString(readAndRemoveFromTemporaryPath(
+              ViewServiceNoCacheDemonstrationITSuite.DOCUMENT_VIEW_FILE_NAME));
+      Thread.sleep(1001);
       SimpleDocument document = getSimpleDocumentNamed("file.odt");
       long start = System.currentTimeMillis();
-      DocumentView documentView = viewService.getDocumentView(ViewerContext.from(document));
-      assertDocumentView(documentView);
+      final DocumentView view = viewService.getDocumentView(ViewerContext.from(document));
+      assertDocumentView(view);
       long end = System.currentTimeMillis();
-      long conversionDuration = end - start;
-      Logger.getAnonymousLogger().info("Conversion duration + cache in " +
-          DurationFormatUtils.formatDurationHMS(conversionDuration));
-      assertThat(conversionDuration, greaterThan(250l));
-      saveInTemporaryPath(ViewServiceCacheDemonstrationITSuite.CONVERSION_DURATION_FILE_NAME, String.valueOf(conversionDuration));
-      saveInTemporaryPath(ViewServiceCacheDemonstrationITSuite.DOCUMENT_VIEW_FILE_NAME,
-          SerializationUtil.serializeAsString(documentView));
+      long fromCacheDuration = end - start;
+      Logger.getAnonymousLogger().info("(Again) Conversion duration without cache in " +
+          DurationFormatUtils.formatDurationHMS(fromCacheDuration));
+      assertThat(fromCacheDuration, greaterThan(250l));
+      assertThat((fromCacheDuration * 2), greaterThan(conversionDurationFromBefore));
+
+      assertThat(view, not(sameInstance(documentViewFromBefore)));
+
+      assertThat(view.getPhysicalFile().getParentFile().getName(),
+          not(is(documentViewFromBefore.getPhysicalFile().getParentFile().getName())));
+
+      assertThat(view.getPhysicalFile().getParentFile().lastModified(),
+          greaterThan(documentViewFromBefore.getPhysicalFile().getParentFile().lastModified()));
+
+      assertThat(view.getPhysicalFile().lastModified(),
+          greaterThan(documentViewFromBefore.getPhysicalFile().lastModified()));
     }
   }
 

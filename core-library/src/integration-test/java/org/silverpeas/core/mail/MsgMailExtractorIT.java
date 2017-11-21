@@ -71,8 +71,7 @@ public class MsgMailExtractorIT {
     return WarBuilder4LibCore.onWarForTestClass(MsgMailExtractorIT.class)
         .addCommonBasicUtilities()
         .addSilverpeasExceptionBases()
-        .addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers",
-            "org.apache.commons:commons-exec", "com.artofsolving:jodconverter")
+        .addMavenDependencies("org.apache.commons:commons-exec", "com.artofsolving:jodconverter")
         .addPackages(true, "org.silverpeas.core.contribution.converter")
         .addAsResource("org/silverpeas/converter")
         .testFocusedOn(warBuilder -> {

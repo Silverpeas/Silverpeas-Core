@@ -26,7 +26,6 @@ package org.silverpeas.core.viewer.service;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.jboss.arquillian.junit.Arquillian;
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,7 +47,7 @@ import static org.mockito.Matchers.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(Arquillian.class)
-public class ViewServiceCacheDemonstrationAfterIT extends AbstractViewerTest {
+public class ViewServiceCacheDemonstrationBefore extends AbstractViewerIT {
 
   @Rule
   public MockByReflectionRule reflectionRule = new MockByReflectionRule();
@@ -58,6 +57,8 @@ public class ViewServiceCacheDemonstrationAfterIT extends AbstractViewerTest {
 
   @Before
   public void setup() throws Exception {
+    FileUtils.deleteQuietly(getTemporaryPath());
+    getTemporaryPath().mkdirs();
     final SettingBundle mockedSettings =
         reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");
     when(mockedSettings.getInteger(eq("preview.width.max"), anyInt())).thenReturn(1000);
@@ -69,42 +70,21 @@ public class ViewServiceCacheDemonstrationAfterIT extends AbstractViewerTest {
         .thenReturn(false);
   }
 
-  @After
-  public void tearDown() throws Exception {
-    FileUtils.deleteQuietly(getTemporaryPath());
-  }
-
   @Test
   public void demonstrateCache() throws Exception {
     if (canPerformViewConversionTest()) {
-      long conversionDurationFromBefore =
-          readAndRemoveFromTemporaryPathAsLong(
-              ViewServiceCacheDemonstrationITSuite.CONVERSION_DURATION_FILE_NAME);
-      DocumentView documentViewFromBefore = SerializationUtil
-          .deserializeFromString(readAndRemoveFromTemporaryPath(
-              ViewServiceCacheDemonstrationITSuite.DOCUMENT_VIEW_FILE_NAME));
-      Thread.sleep(1001);
       SimpleDocument document = getSimpleDocumentNamed("file.odt");
       long start = System.currentTimeMillis();
-      final DocumentView view = viewService.getDocumentView(ViewerContext.from(document));
-      assertDocumentView(view);
+      DocumentView documentView = viewService.getDocumentView(ViewerContext.from(document));
+      assertDocumentView(documentView);
       long end = System.currentTimeMillis();
-      long fromCacheDuration = end - start;
-      Logger.getAnonymousLogger()
-          .info("From cache in " + DurationFormatUtils.formatDurationHMS(fromCacheDuration));
-      assertThat(fromCacheDuration, lessThan(250l));
-      assertThat((fromCacheDuration * 5), lessThan(conversionDurationFromBefore));
-
-      assertThat(view, not(sameInstance(documentViewFromBefore)));
-
-      assertThat(view.getPhysicalFile().getParentFile().getName(),
-          is(documentViewFromBefore.getPhysicalFile().getParentFile().getName()));
-
-      assertThat(view.getPhysicalFile().getParentFile().lastModified(),
-          is(documentViewFromBefore.getPhysicalFile().getParentFile().lastModified()));
-
-      assertThat(view.getPhysicalFile().lastModified(),
-          is(documentViewFromBefore.getPhysicalFile().lastModified()));
+      long conversionDuration = end - start;
+      Logger.getAnonymousLogger().info("Conversion duration + cache in " +
+          DurationFormatUtils.formatDurationHMS(conversionDuration));
+      assertThat(conversionDuration, greaterThan(250l));
+      saveInTemporaryPath(ViewServiceCacheDemonstrationITSuite.CONVERSION_DURATION_FILE_NAME, String.valueOf(conversionDuration));
+      saveInTemporaryPath(ViewServiceCacheDemonstrationITSuite.DOCUMENT_VIEW_FILE_NAME,
+          SerializationUtil.serializeAsString(documentView));
     }
   }
 
