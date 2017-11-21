@@ -112,12 +112,6 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity>
   }
 
   @Override
-  public SilverpeasList<T> getById(final String... ids) {
-    List<T> entities = getByIdentifiers(getIdentifierConverter().convertToEntityIdentifiers(ids));
-    return SilverpeasList.wrap(entities);
-  }
-
-  @Override
   public SilverpeasList<T> getById(final Collection<String> ids) {
     List<T> entities = getByIdentifiers(getIdentifierConverter().convertToEntityIdentifiers(ids));
     return SilverpeasList.wrap(entities);
