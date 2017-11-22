@@ -135,7 +135,7 @@ public class HistoryStepImpl extends BasicJpaEntity<HistoryStepImpl, UniqueInteg
    * @return the actor
    */
   public User getUser() throws WorkflowException {
-    return WorkflowHub.getUserManager().getUser(this.getUserId());
+    return this.getUserId() != null ? WorkflowHub.getUserManager().getUser(this.getUserId()) : null;
   }
 
   /**

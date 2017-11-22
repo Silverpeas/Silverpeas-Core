@@ -64,14 +64,8 @@ import org.silverpeas.core.workflow.engine.datarecord.LazyProcessInstanceDataRec
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceDataRecord;
 import org.silverpeas.core.workflow.engine.datarecord.ProcessInstanceRowRecord;
 
-import javax.persistence.AttributeOverride;
-import javax.persistence.CascadeType;
+import javax.persistence.*;
 import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -118,20 +112,20 @@ public class ProcessInstanceImpl
   @Column
   private String modelId = null;
   /**
-   * All history steps that trace events occured on this process instance
+   * All history steps that trace events occurred on this process instance
    */
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
       "processInstance")
   private Set<HistoryStepImpl> historySteps = new HashSet<>();
 
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
       "processInstance")
   private Set<UndoHistoryStep> undoSteps = new HashSet<>();
 
   /**
    * Vector of all questions asked on this process instance
    */
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
       "processInstance")
   private Set<QuestionImpl> questions = new HashSet<>();
   /**
@@ -148,25 +142,25 @@ public class ProcessInstanceImpl
   /**
    * All users who can see this process instance
    */
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
       "processInstance")
   private Set<InterestedUser> interestedUsers = new HashSet<>();
   /**
    * All users who can act on this process instance
    */
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
       "processInstance")
   private Set<WorkingUser> workingUsers = new HashSet<>();
   /**
    * All users who can have locked a state of this process instance
    */
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
       "processInstance")
   private Set<LockingUser> lockingUsers = new HashSet<>();
   /**
    * A1l states that are due to be resolved for this process instance
    */
-  @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
+  @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy =
       "processInstance")
   private Set<ActiveState> activeStates = new HashSet<>();
   /**
@@ -1987,5 +1981,31 @@ public class ProcessInstanceImpl
 
   private String getStateName(State state) {
     return (state != null) ? state.getName() : "";
+  }
+
+  /**
+   * If the 7 lists @OneToMany were eagerly, the SQL query could be super huge when getting data,
+   * even for only one process instance.<br>
+   * As an example, if it exists 5 lines into each list, the SQL query loads
+   * 5x5x5x5x5x5x5=78125 lines for one process instance!!! Not amazing...<br/>
+   * Graph entity is not the solution as it should do here the same thing that the EAGER fetch
+   * directive on @ManyToOne.<br/>
+   * So there is yet 2 options:
+   * <ul>
+   *   <li>loading the things by sub SQL queries</li>
+   *   <li>performing manually the data fetching after the process instance load</li>
+   * </ul>
+   * Second option is chosen.
+   * @return itself.
+   */
+  ProcessInstanceImpl fetchAll() {
+    historySteps.size();
+    undoSteps.size();
+    questions.size();
+    interestedUsers.size();
+    workingUsers.size();
+    lockingUsers.size();
+    activeStates.size();
+    return this;
   }
 }
