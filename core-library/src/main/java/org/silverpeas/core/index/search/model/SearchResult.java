@@ -139,7 +139,12 @@ public class SearchResult extends AbstractI18NBean {
   private LocalDate getLocalDate(String date) {
     if (StringUtil.isDefined(date)) {
       try {
-        return DateUtil.parseFromLucene(date);
+        if (date.contains("/")) {
+          // case of taxonomy result (date stored in database)
+          return DateUtil.toLocalDate(date);
+        } else {
+          return DateUtil.parseFromLucene(date);
+        }
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       }

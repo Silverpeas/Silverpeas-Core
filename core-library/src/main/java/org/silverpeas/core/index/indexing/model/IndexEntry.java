@@ -46,11 +46,11 @@ public class IndexEntry implements Serializable, Cloneable {
 
   private static final long serialVersionUID = -4817004188601716658L;
 
-  // The start date defaults to 00000000 so the document is visible as soon as published.
-  public static final String STARTDATE_DEFAULT = "00000000";
+  // The start date defaults to 01/01/1900 so the document is visible as soon as published.
+  public static final String STARTDATE_DEFAULT = "19000101";
 
-  // The end date defaults to 99999999 so the document will be visible for ever.
-  public static final String ENDDATE_DEFAULT = "99999999";
+  // The end date defaults to 31/12/2400 so the document will be visible for ever.
+  public static final String ENDDATE_DEFAULT = "24001231";
 
 
   private IndexEntryKey pk;

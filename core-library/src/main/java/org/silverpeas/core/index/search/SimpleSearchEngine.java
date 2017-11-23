@@ -138,8 +138,16 @@ public class SimpleSearchEngine implements SearchEngine {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
 
+    // This permits to optimize search (instead of requesting admin on each result of type 'Component')
+    List<String> allowedComponentIds = new ArrayList<>();
+    try {
+      allowedComponentIds = Arrays.asList(Administration.get().getAvailCompoIds(userId));
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+
     for (MatchingIndexEntry result : matchingIndexEntries) {
-      if (!isMatchingIndexEntryAvailable(result, userId, authorization)) {
+      if (!isMatchingIndexEntryAvailable(result, userId, authorization, allowedComponentIds)) {
         continue;
       }
       results.add(result);
@@ -151,7 +159,7 @@ public class SimpleSearchEngine implements SearchEngine {
   }
 
   private boolean isMatchingIndexEntryAvailable(MatchingIndexEntry mie, String userId,
-      ComponentAuthorization authorization) {
+      ComponentAuthorization authorization, List<String> allowedComponentIds) {
     // Do not filter and check external components
     if (enableExternalSearch && isExternalComponent(mie.getServerName())) {
       mie.setExternalResult(true);
@@ -169,10 +177,11 @@ public class SimpleSearchEngine implements SearchEngine {
     }
 
     // verify rights onto others items type
-    return isOtherItemAvailable(mie, userId);
+    return isOtherItemAvailable(mie, userId, allowedComponentIds);
   }
 
-  private boolean isOtherItemAvailable(MatchingIndexEntry mie, String userId) {
+  private boolean isOtherItemAvailable(MatchingIndexEntry mie, String userId,
+      List<String> allowedComponentIds) {
     String objectType = mie.getObjectType();
     if ("Space".equals(objectType)) {
       // check if space is allowed to current user
@@ -180,7 +189,7 @@ public class SimpleSearchEngine implements SearchEngine {
     }
     if ("Component".equals(objectType)) {
       // check if component is allowed to current user
-      return isComponentVisible(mie.getObjectId(), userId);
+      return isComponentVisible(mie.getObjectId(), allowedComponentIds);
     }
     if (UserIndexation.OBJECT_TYPE.equals(objectType)) {
       return isUserVisible(mie.getObjectId());
@@ -199,14 +208,8 @@ public class SimpleSearchEngine implements SearchEngine {
     }
   }
 
-  private boolean isComponentVisible(String appId, String userId) {
-    try {
-      return Administration.get().isComponentAvailable(appId, userId);
-    } catch (Exception ignored) {
-      SilverLogger.getLogger(this).warn("Can't test if component {0} is available for user {1}",
-          new String[] {appId, userId}, ignored);
-      return false;
-    }
+  private boolean isComponentVisible(String appId, List<String> allowedComponentIds) {
+    return allowedComponentIds.contains(appId);
   }
 
   /**
