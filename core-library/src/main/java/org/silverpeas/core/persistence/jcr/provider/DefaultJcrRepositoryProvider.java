@@ -43,7 +43,7 @@ import javax.jcr.Repository;
 @Singleton
 public class DefaultJcrRepositoryProvider implements JcrRepositoryProvider {
 
-  @Resource(name = "jcr/repository")
+  @Resource(lookup = "java:/jca/jcr")
   private Repository repository;
 
   @Override

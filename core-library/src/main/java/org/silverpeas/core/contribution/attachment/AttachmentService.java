@@ -405,7 +405,7 @@ public interface AttachmentService extends DocumentIndexing {
    * @return false if the attachment is already checkout - true if the attachment was successfully
    * checked out.
    */
-  public boolean lock(String attachmentId, String userId, String language);
+  boolean lock(String attachmentId, String userId, String language);
 
   /**
    * Release a locked file.
@@ -414,7 +414,7 @@ public interface AttachmentService extends DocumentIndexing {
    * @return false if the file is locked - true if the unlock succeeded.
    * @throws AttachmentException
    */
-  public boolean unlock(UnlockContext context);
+  boolean unlock(UnlockContext context);
 
   /**
    * Change the management of versions of the document. If the document is currently with version
@@ -427,7 +427,7 @@ public interface AttachmentService extends DocumentIndexing {
    * versioned.
    * @return the pk to the document after is state change.
    */
-  public SimpleDocumentPK changeVersionState(SimpleDocumentPK pk, String comment);
+  SimpleDocumentPK changeVersionState(SimpleDocumentPK pk, String comment);
 
   /**
    * Find documents with the same name attached to the specified foreign id.
@@ -438,7 +438,7 @@ public interface AttachmentService extends DocumentIndexing {
    * @param foreign the id of the container of the document.
    * @return a document with the same filename - null if none is found.
    */
-  public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
+  SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
       String lang);
 
   /**
@@ -478,7 +478,7 @@ public interface AttachmentService extends DocumentIndexing {
    * @param toVersionning: if set to true all simple attachments become versioned, if false all
    * versioned attachments become simple attachments.
    */
-  public void switchComponentBehaviour(String componentId, boolean toVersionning);
+  void switchComponentBehaviour(String componentId, boolean toVersionning);
 
   /**
    * Allows or forbids the download for readers.
@@ -487,5 +487,5 @@ public interface AttachmentService extends DocumentIndexing {
    * @param allowing: allowing the download for readers if true
    * versioned attachments become simple attachments.
    */
-  public void switchAllowingDownloadForReaders(SimpleDocumentPK pk, boolean allowing);
+  void switchAllowingDownloadForReaders(SimpleDocumentPK pk, boolean allowing);
 }

@@ -26,7 +26,6 @@ package org.silverpeas.core.contribution.attachment.webdav;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
@@ -35,7 +34,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.webdav.impl.WebdavDocumentRepository;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.jcr.JcrIntegrationTest;
+import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
@@ -49,9 +48,7 @@ import static org.silverpeas.core.persistence.jcr.util.JcrConstants.SLV_OWNABLE_
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.SLV_PROPERTY_OWNER;
 
 @RunWith(Arquillian.class)
-@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
-// TODO rework the integration tests execution by using an external remote wildfly
-public class WebdavServiceIT extends JcrIntegrationTest {
+public class WebdavServiceIT extends JcrIntegrationIT {
 
   @Inject
   private WebdavService webdavService;

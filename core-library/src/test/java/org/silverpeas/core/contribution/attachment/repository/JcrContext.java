@@ -23,10 +23,8 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.apache.jackrabbit.api.JackrabbitRepository;
-import org.apache.jackrabbit.core.RepositoryImpl;
-import org.apache.jackrabbit.core.config.RepositoryConfig;
 import org.apache.tika.mime.MimeTypes;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -35,7 +33,9 @@ import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.persistence.jcr.JcrSession;
+import org.silverpeas.core.persistence.jcr.SilverpeasJcrSchemaRegistering;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -50,7 +50,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.InputStream;
-import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -71,22 +70,29 @@ import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSys
  */
 public class JcrContext implements TestRule {
 
-  private static final String TEST_REPOSITORY_LOCATION = "test-jcr_";
-  public static final String REPOSITORY_IN_MEMORY_XML = "/test-repository-in-memory.xml";
+  private boolean initialized = false;
 
-  private JcrTestContext context = null;
+  //private static final String TEST_REPOSITORY_LOCATION = "test-jcr_";
+  //public static final String REPOSITORY_IN_MEMORY_XML = "/test-repository-in-memory.xml";
+
+  //private JcrTestContext context = null;
 
   @Override
   public Statement apply(final Statement base, final Description description) {
     return new Statement() {
       @Override
       public void evaluate() throws Throwable {
-        /*final Path repositoryPath = Files.createTempDirectory(TEST_REPOSITORY_LOCATION);
-        try (final InputStream configStream = JcrContext.class
-            .getResourceAsStream(REPOSITORY_IN_MEMORY_XML);) {
-          context = new JcrTestContext(configStream, repositoryPath);
-          beforeEvaluate(context);*/
+        if (!initialized) {
+          SilverpeasJcrSchemaRegistering jcrSchemaRegistering = ServiceProvider.getService(SilverpeasJcrSchemaRegistering.class);
+          jcrSchemaRegistering.init();
+          initialized = true;
+        }
+        try {
           base.evaluate();
+        } finally {
+          clearJcrRepository();
+          clearFileSystem();
+        }
       }
     };
   }
@@ -112,14 +118,30 @@ public class JcrContext implements TestRule {
     }
   }
 
+ */
+
+  private void clearJcrRepository() throws RepositoryException {
+    try (JcrSession session = openSystemSession()) {
+      NodeIterator i =  session.getRootNode().getNodes();
+      while(i.hasNext()) {
+        Node node = i.nextNode();
+        if (!"jcr:system".equals(node.getName())) {
+          node.remove();
+        }
+      }
+      session.save();
+    }
+  }
+
   private void clearFileSystem() {
     File file = new File(FileRepositoryManager.getAbsolutePath(""));
     FileUtils.deleteQuietly(file);
     File index = new File(IndexFileManager.getIndexUpLoadPath());
     FileUtils.deleteQuietly(index);
   }
-  */
 
+
+  /*
   protected class JcrTestContext {
     private final InputStream configStream;
     private final Path repositoryLocation;
@@ -149,7 +171,7 @@ public class JcrContext implements TestRule {
     public JackrabbitRepository getRepository() {
       return repository;
     }
-  }
+  }*/
 
   /*
   public JcrTestContext getContext() {

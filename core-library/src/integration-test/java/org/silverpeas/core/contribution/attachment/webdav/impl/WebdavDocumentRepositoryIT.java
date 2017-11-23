@@ -33,7 +33,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.jcr.JcrIntegrationTest;
+import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.jcr.ItemExistsException;
@@ -55,9 +55,7 @@ import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSys
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 @RunWith(Arquillian.class)
-@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
-// TODO rework the integration tests execution by using an external remote wildfly
-public class WebdavDocumentRepositoryIT extends JcrIntegrationTest {
+public class WebdavDocumentRepositoryIT extends JcrIntegrationIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {

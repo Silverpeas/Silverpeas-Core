@@ -31,7 +31,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.ForeignPK;
@@ -46,7 +45,7 @@ import org.silverpeas.core.contribution.attachment.repository.DocumentRepository
 import org.silverpeas.core.contribution.attachment.repository.SimpleDocumentMatcher;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.jcr.JcrIntegrationTest;
+import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
@@ -78,9 +77,7 @@ import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
  * @author ehugonnet
  */
 @RunWith(Arquillian.class)
-@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
-// TODO rework the integration tests execution by using an external remote wildfly
-public class HistorisedAttachmentServiceIT extends JcrIntegrationTest {
+public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
 
   private static final String instanceId = "kmelia974";
   private SimpleDocumentPK existingFrDoc;

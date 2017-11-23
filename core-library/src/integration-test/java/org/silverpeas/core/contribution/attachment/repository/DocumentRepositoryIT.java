@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
-import org.junit.Ignore;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FileUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -33,6 +31,8 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
@@ -40,11 +40,10 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.jcr.JcrIntegrationTest;
+import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.MimeTypes;
 
 import javax.jcr.NodeIterator;
@@ -66,9 +65,7 @@ import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSys
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
 
 @RunWith(Arquillian.class)
-@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
-// TODO rework the integration tests execution by using an external remote wildfly
-public class DocumentRepositoryIT extends JcrIntegrationTest {
+public class DocumentRepositoryIT extends JcrIntegrationIT {
 
   private static final String instanceId = "kmelia73";
   private final DocumentRepository documentRepository = new DocumentRepository();

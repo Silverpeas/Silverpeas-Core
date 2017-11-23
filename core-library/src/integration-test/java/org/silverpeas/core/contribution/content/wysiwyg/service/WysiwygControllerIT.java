@@ -28,23 +28,22 @@ import org.apache.commons.io.IOUtils;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.test.jcr.JcrIntegrationTest;
 import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -57,9 +56,7 @@ import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Arquillian.class)
-@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
-// TODO rework the integration tests execution by using an external remote wildfly
-public class WysiwygControllerIT extends JcrIntegrationTest {
+public class WysiwygControllerIT extends JcrIntegrationIT {
   
   private static final String USER_ID = "3";
 

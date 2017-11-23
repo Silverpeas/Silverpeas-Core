@@ -32,5 +32,5 @@ import javax.jcr.Repository;
  */
 public interface JcrRepositoryProvider {
 
-  public Repository getRepository();
+  Repository getRepository();
 }

@@ -115,7 +115,7 @@ import org.silverpeas.core.persistence.jdbc.AbstractTable;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.test.jcr.JcrIntegrationTest;
+import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.stub.StubbedOrganizationController;
 import org.silverpeas.core.util.*;
 import org.silverpeas.core.util.comparator.AbstractComparator;
@@ -420,18 +420,19 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addFileRepositoryFeatures();
     addSynchAndAsynchResourceEventFeatures();
     addPublicationTemplateFeatures();
+    addMavenDependencies("org.silverpeas.jcr:access-control");
     /*addMavenDependencies("javax.jcr:jcr");
-    addMavenDependencies("org.apache.jackrabbit:jackrabbit-core");
-    addMavenDependencies("commons-beanutils:commons-beanutils");*/
+    addMavenDependencies("org.apache.jackrabbit:jackrabbit-core");*/
+    addMavenDependencies("commons-beanutils:commons-beanutils");
     if (!contains(JcrRepositoryProvider.class)) {
-      addClasses(FormException.class, JcrIntegrationTest.class, JcrContext.class,
+      addClasses(FormException.class, JcrIntegrationIT.class, JcrContext.class,
           FileServerUtils.class);
       addPackages(true, "org.silverpeas.core.persistence.jcr");
       addPackages(true, "org.silverpeas.core.contribution.attachment");
       addClasses(VolatileResourceCleaner.class);
       addAsResource("org/silverpeas/util/attachment/Attachment.properties");
       addAsResource("silverpeas-jcr.cnd");
-      addAsResource(JcrContext.REPOSITORY_IN_MEMORY_XML.substring(1));
+      //addAsResource(JcrContext.REPOSITORY_IN_MEMORY_XML.substring(1));
       applyManually(war -> war.deletePackages(true, "org.silverpeas.core.contribution.attachment.mock"));
     }
 

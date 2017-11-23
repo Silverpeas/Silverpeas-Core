@@ -37,7 +37,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.jcr.JcrIntegrationTest;
+import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.MimeTypes;
 
@@ -53,9 +53,7 @@ import static org.silverpeas.core.persistence.jcr.JcrRepositoryConnector.openSys
 import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 
 @RunWith(Arquillian.class)
-@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
-// TODO rework the integration tests execution by using an external remote wildfly
-public class DocumentConverterIT extends JcrIntegrationTest {
+public class DocumentConverterIT extends JcrIntegrationIT {
 
   private static final String instanceId = "kmelia74";
   private static final DocumentConverter instance = new DocumentConverter();

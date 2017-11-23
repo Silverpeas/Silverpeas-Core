@@ -35,7 +35,7 @@ import org.silverpeas.core.util.ServiceProvider;
 /**
  * @author Yohann Chastagnier
  */
-public abstract class JcrIntegrationTest {
+public abstract class JcrIntegrationIT {
 
   public static final String DATABASE_CREATION_SCRIPT =
       "org/silverpeas/core/admin/create_space_components_database.sql";
@@ -69,4 +69,5 @@ public abstract class JcrIntegrationTest {
   public void setup() throws Exception {
     ServiceProvider.getService(SimpleDocumentDummyHandledFileConverter.class).init();
   }
+
 }

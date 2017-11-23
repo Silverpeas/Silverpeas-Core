@@ -31,7 +31,6 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.ForeignPK;
@@ -45,7 +44,7 @@ import org.silverpeas.core.contribution.attachment.repository.DocumentRepository
 import org.silverpeas.core.contribution.attachment.repository.SimpleDocumentMatcher;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.test.jcr.JcrIntegrationTest;
+import org.silverpeas.core.test.jcr.JcrIntegrationIT;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
@@ -80,9 +79,7 @@ import static org.silverpeas.core.persistence.jcr.util.JcrConstants.NT_FOLDER;
  * @author ehugonnet
  */
 @RunWith(Arquillian.class)
-@Ignore("TODO rework the integration tests execution by using an external remote wildfly")
-// TODO rework the integration tests execution by using an external remote wildfly
-public class AttachmentServiceIT extends JcrIntegrationTest {
+public class AttachmentServiceIT extends JcrIntegrationIT {
 
   private static final String instanceId = "kmelia974";
   private static final String foreignInstanceId = "kmelia38";
@@ -104,35 +101,34 @@ public class AttachmentServiceIT extends JcrIntegrationTest {
   @Before
   public void setUpJcr() throws RepositoryException, ParseException, IOException, SQLException {
     try (JcrSession session = openSystemSession()) {
+      DocumentRepository documentRepository = new DocumentRepository();
       if (!session.getRootNode().hasNode(instanceId)) {
-        DocumentRepository documentRepository = new DocumentRepository();
         session.getRootNode().addNode(instanceId, NT_FOLDER);
-        Date creationDate = RandomGenerator.getRandomCalendar().getTime();
-        SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
-        String foreignId = "node18";
-        SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false,
-            new SimpleAttachment("test.odp", "fr", "Mon document de test",
-            "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
-            MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
-        InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
-        existingFrDoc = new DocumentRepository().createDocument(session, document);
-        document.setPK(existingFrDoc);
-        documentRepository.storeContent(document, content);
-
-        emptyId = new SimpleDocumentPK("-1", instanceId);
-        foreignId = "node19";
-        document = new SimpleDocument(emptyId, foreignId, 0, false,
-            new SimpleAttachment("test.docx", "en", "My test document",
-            "This is a test document", "This is a test".getBytes(Charsets.UTF_8).length,
-            MimeTypes.WORD_2007_MIME_TYPE, "0", creationDate, "18"));
-        content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
-        existingEnDoc = documentRepository.createDocument(session, document);
-        document.setPK(existingEnDoc);
-        documentRepository.storeContent(document, content);
       }
+      Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String foreignId = "node18";
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false,
+          new SimpleAttachment("test.odp", "fr", "Mon document de test",
+              "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+              MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+      existingFrDoc = new DocumentRepository().createDocument(session, document);
+      document.setPK(existingFrDoc);
+      documentRepository.storeContent(document, content);
+
+      emptyId = new SimpleDocumentPK("-1", instanceId);
+      foreignId = "node19";
+      document = new SimpleDocument(emptyId, foreignId, 0, false,
+          new SimpleAttachment("test.docx", "en", "My test document", "This is a test document",
+              "This is a test".getBytes(Charsets.UTF_8).length, MimeTypes.WORD_2007_MIME_TYPE, "0",
+              creationDate, "18"));
+      content = new ByteArrayInputStream("This is a test".getBytes(Charsets.UTF_8));
+      existingEnDoc = documentRepository.createDocument(session, document);
+      document.setPK(existingEnDoc);
+      documentRepository.storeContent(document, content);
       session.save();
     }
-    instance = AttachmentServiceProvider.getAttachmentService();
   }
 
   private NodeResult getComponentJcrNode(String... pathes) {
