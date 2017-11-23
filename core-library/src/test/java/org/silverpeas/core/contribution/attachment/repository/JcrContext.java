@@ -72,11 +72,6 @@ public class JcrContext implements TestRule {
 
   private boolean initialized = false;
 
-  //private static final String TEST_REPOSITORY_LOCATION = "test-jcr_";
-  //public static final String REPOSITORY_IN_MEMORY_XML = "/test-repository-in-memory.xml";
-
-  //private JcrTestContext context = null;
-
   @Override
   public Statement apply(final Statement base, final Description description) {
     return new Statement() {
@@ -97,29 +92,6 @@ public class JcrContext implements TestRule {
     };
   }
 
-  /*
-  protected void beforeEvaluate(JcrTestContext context) throws Exception {
-    clearFileSystem();
-    StubbedJcrRepositoryProvider jcrRepositoryProvider =
-        (StubbedJcrRepositoryProvider) ServiceProvider.getService(JcrRepositoryProvider.class);
-    jcrRepositoryProvider.setRepository(context.getRepository());
-    ServiceProvider.getService(SilverpeasJcrSchemaRegistering.class).init();
-  }
-  */
-
-  /*
-  protected void afterEvaluate(JcrTestContext context) {
-    try {
-      if (context != null) {
-        context.getRepository().shutdown();
-      }
-    } finally {
-      clearFileSystem();
-    }
-  }
-
- */
-
   private void clearJcrRepository() throws RepositoryException {
     try (JcrSession session = openSystemSession()) {
       NodeIterator i =  session.getRootNode().getNodes();
@@ -139,67 +111,6 @@ public class JcrContext implements TestRule {
     File index = new File(IndexFileManager.getIndexUpLoadPath());
     FileUtils.deleteQuietly(index);
   }
-
-
-  /*
-  protected class JcrTestContext {
-    private final InputStream configStream;
-    private final Path repositoryLocation;
-    private final RepositoryConfig config;
-    private final JackrabbitRepository repository;
-
-    public JcrTestContext(final InputStream configStream, final Path repositoryPath)
-        throws Exception {
-      this.configStream = configStream;
-      repositoryLocation = repositoryPath.toAbsolutePath();
-      config = RepositoryConfig.create(configStream, repositoryLocation.toString());
-      repository = RepositoryImpl.create(config);
-    }
-
-    public InputStream getConfigStream() {
-      return configStream;
-    }
-
-    public Path getRepositoryLocation() {
-      return repositoryLocation;
-    }
-
-    public RepositoryConfig getConfig() {
-      return config;
-    }
-
-    public JackrabbitRepository getRepository() {
-      return repository;
-    }
-  }*/
-
-  /*
-  public JcrTestContext getContext() {
-    return context;
-  }
-  */
-
-  /*
-  REPOSITORY PROVIDER
-   */
-
-  /*@Singleton
-  @Alternative
-  @Priority(APPLICATION + 10)
-  public static class StubbedJcrRepositoryProvider implements JcrRepositoryProvider {
-
-    private Repository repository;
-
-    @Produces
-    @Override
-    public Repository getRepository() {
-      return repository;
-    }
-
-    public void setRepository(final Repository repository) {
-      this.repository = repository;
-    }
-  }*/
 
   /*
   TOOLS

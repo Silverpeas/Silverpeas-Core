@@ -421,8 +421,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     addSynchAndAsynchResourceEventFeatures();
     addPublicationTemplateFeatures();
     addMavenDependencies("org.silverpeas.jcr:access-control");
-    /*addMavenDependencies("javax.jcr:jcr");
-    addMavenDependencies("org.apache.jackrabbit:jackrabbit-core");*/
     addMavenDependencies("commons-beanutils:commons-beanutils");
     if (!contains(JcrRepositoryProvider.class)) {
       addClasses(FormException.class, JcrIntegrationIT.class, JcrContext.class,
@@ -432,7 +430,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(VolatileResourceCleaner.class);
       addAsResource("org/silverpeas/util/attachment/Attachment.properties");
       addAsResource("silverpeas-jcr.cnd");
-      //addAsResource(JcrContext.REPOSITORY_IN_MEMORY_XML.substring(1));
       applyManually(war -> war.deletePackages(true, "org.silverpeas.core.contribution.attachment.mock"));
     }
 
@@ -445,12 +442,6 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   public WarBuilder4LibCore addIndexEngineFeatures() {
     if (!contains(FullIndexEntry.class)) {
-      /*addMavenDependencies("org.apache.tika:tika-core", "org.apache.tika:tika-parsers");
-      addMavenDependencies("org.apache.lucene:lucene-core");
-      addMavenDependencies("org.apache.lucene:lucene-queryparser");
-      addMavenDependencies("org.apache.lucene:lucene-suggest");
-      addMavenDependencies("org.apache.lucene:lucene-queries");
-      addMavenDependencies("org.apache.lucene:lucene-analyzers-common");*/
       addPackages(true, "org.silverpeas.core.index.indexing");
       addAsResource("org/silverpeas/index/indexing");
     }
