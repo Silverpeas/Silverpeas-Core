@@ -96,6 +96,8 @@ public class CalendarEventOccurrence
 
   public static final Comparator<CalendarEventOccurrence> COMPARATOR_BY_ORIGINAL_DATE_ASC =
       Comparator.comparing(o -> o.getOriginalStartDate().toString());
+  public static final Comparator<CalendarEventOccurrence> COMPARATOR_BY_DATE_ASC =
+      Comparator.comparing(o -> o.getStartDate().toString());
   public static final Comparator<CalendarEventOccurrence> COMPARATOR_BY_DATE_DESC =
       (o1, o2) -> o2.getStartDate().toString().compareTo(o1.getStartDate().toString());
 
@@ -329,6 +331,7 @@ public class CalendarEventOccurrence
    * the one that was modified for this occurrence.
    * @return the title of the event occurrence.
    */
+  @Override
   public String getTitle() {
     return this.component.getTitle();
   }
@@ -346,6 +349,7 @@ public class CalendarEventOccurrence
    * related event or the one that was modified for this occurrence.
    * @return the description of the event occurrence.
    */
+  @Override
   public String getDescription() {
     return this.component.getDescription();
   }
@@ -623,7 +627,8 @@ public class CalendarEventOccurrence
       Recurrence recurrence = this.getCalendarEvent().getRecurrence().clone();
       recurrence.clearsAllExceptionDates();
       if (!this.getCalendarEvent().getRecurrence().isEndless()) {
-        recurrence.until(this.getCalendarEvent().getRecurrence().getEndDate().get());
+        recurrence.until(this.getCalendarEvent().getRecurrence().getEndDate()
+            .orElseThrow(IllegalArgumentException::new));
       }
       newEvent.recur(recurrence);
     }

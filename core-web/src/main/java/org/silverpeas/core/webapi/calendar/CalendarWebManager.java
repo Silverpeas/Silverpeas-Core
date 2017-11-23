@@ -71,6 +71,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static org.silverpeas.core.calendar.CalendarEventUtil.getDateWithOffset;
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider
@@ -585,14 +586,17 @@ public class CalendarWebManager {
    * Gets the event occurrences associated to a calendar and contained a the time window specified
    * by the start and end datetimes.<br/>
    * The occurrences are sorted from the lowest to the highest date.
-   * @param calendar the calendar the event occurrences belong to.
    * @param startDate the start date of time window.
    * @param endDate the end date of time window.
+   * @param calendars the calendars the event occurrences belong to.
    * @return a list of entities of calendar event occurrences.
    */
-  List<CalendarEventOccurrence> getEventOccurrencesOf(Calendar calendar,
-      LocalDate startDate, LocalDate endDate) {
-    return calendar.between(startDate, endDate).getEventOccurrences();
+  List<CalendarEventOccurrence> getEventOccurrencesOf(LocalDate startDate, LocalDate endDate,
+      List<Calendar> calendars) {
+    return Calendar
+        .getTimeWindowBetween(startDate, endDate)
+        .filter(f -> f.onCalendar(calendars))
+        .getEventOccurrences();
   }
 
   /**
@@ -615,8 +619,8 @@ public class CalendarWebManager {
     users.forEach(u -> personalCalendars.addAll(getCalendarsOf(
         PersonalComponentInstance.from(u, PersonalComponent.getByName("userCalendar").get())
             .getId())));
-    final List<CalendarEventOccurrence> entities = new ArrayList<>();
-    personalCalendars.forEach(p -> entities.addAll(getEventOccurrencesOf(p, startDate, endDate)));
+    final List<CalendarEventOccurrence> entities =
+        getEventOccurrencesOf(startDate, endDate, personalCalendars);
     entities.addAll(
         Calendar.getTimeWindowBetween(startDate, endDate).filter(f -> f.onParticipants(users))
             .getEventOccurrences());
@@ -634,6 +638,8 @@ public class CalendarWebManager {
             .equals(currentUserAndComponentInstanceId.getLeft()) &&
             event.getCreator().getId().equals(currentUserId);
       });
+    } else {
+      result.put(currentUserId, emptyList());
     }
     return result;
   }

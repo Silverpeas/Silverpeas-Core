@@ -63,10 +63,10 @@
   </span>
 </span>
 <span class="participation" ng-if="!$ctrl.isWriteMode && !$ctrl.isUserZoom()">
-  <a href="#"
+  <a href="javascript:void(0)"
      ng-repeat="participationStatus in $ctrl.participationStatuses"
      ng-if="participationStatus.name != 'AWAITING'"
-     ng-click="$ctrl.answer(participationStatus.name)"
+     ng-click="$ctrl.attendee.participationStatus != participationStatus.name ? $ctrl.answer(participationStatus.name) : null"
      ng-class="{'not-answered':$ctrl.attendee.participationStatus != participationStatus.name}"
      title="{{participationStatus.label}}">
     <img ng-src="${iconPrefixUrl}{{participationStatus.icon}}" alt="{{participationStatus.label}}">

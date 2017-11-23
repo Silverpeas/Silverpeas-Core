@@ -28,9 +28,9 @@ import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.calendar.Calendar;
+import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
-import org.silverpeas.core.webapi.calendar.CalendarEventOccurrenceEntity;
 import org.silverpeas.core.webapi.calendar.CalendarResource;
 
 import javax.ws.rs.Path;
@@ -64,23 +64,23 @@ public class UserCalendarResource extends CalendarResource {
   /**
    * In case of personal calendar, and if the calendar reference concerns the personal calendar of
    * the current user, then participation occurrences are added to the result.
-   * @param calendar the calendar which the events belong to.
    * @param startDate the start date of the request.
    * @param endDate the end date of the request.
+   * @param calendars the calendars which the events belong to.
    * @return all the requested occurrences.
    */
   @Override
-  protected List<CalendarEventOccurrenceEntity> getEventOccurrencesOf(final Calendar calendar,
-      final LocalDate startDate, final LocalDate endDate) {
-    List<CalendarEventOccurrenceEntity> result =
-        super.getEventOccurrencesOf(calendar, startDate, endDate);
-    if (calendar.isMainPersonalOf(getUser())) {
+  protected List<CalendarEventOccurrence> getEventOccurrencesOf(final LocalDate startDate,
+      final LocalDate endDate, final List<Calendar> calendars) {
+    List<CalendarEventOccurrence> result =
+        super.getEventOccurrencesOf(startDate, endDate, calendars);
+    calendars.stream().filter(c -> c.isMainPersonalOf(getUser())).forEach(p -> {
       // Add occurrence participation of user
-      List<CalendarEventOccurrenceEntity> participationOccurrences =
+      final List<CalendarEventOccurrence> participationOccurrences =
           getAllEventOccurrencesFrom(startDate, endDate, Collections.singleton(getUser()))
-              .get(0).getOccurrences();
+              .get(getUser().getId());
       result.addAll(participationOccurrences);
-    }
+    });
     return result;
   }
 }

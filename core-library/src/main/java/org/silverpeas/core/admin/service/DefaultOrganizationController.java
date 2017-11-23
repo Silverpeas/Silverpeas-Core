@@ -1125,11 +1125,12 @@ public class DefaultOrganizationController implements OrganizationController {
     return path;
   }
 
+  @Override
   public List<SpaceInstLight> getPathToComponent(String componentId) {
-    ComponentInstLight componentInstLight = getComponentInstLight(componentId);
-    if (componentInstLight != null) {
-      return getPathToSpace(componentInstLight.getDomainFatherId());
+    Optional<SilverpeasComponentInstance> componentInstance = getComponentInstance(componentId);
+    if (componentInstance.isPresent() && !componentInstance.get().isPersonal()) {
+      return getPathToSpace(componentInstance.get().getSpaceId());
     }
-    return new ArrayList<SpaceInstLight>();
+    return new ArrayList<>();
   }
 }
