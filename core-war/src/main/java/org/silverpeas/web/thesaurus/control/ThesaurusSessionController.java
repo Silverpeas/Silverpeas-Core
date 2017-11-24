@@ -134,7 +134,8 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
   public ThesaurusSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle,
       String iconBundle) {
-    super(mainSessionCtrl, componentContext, multilangBundle, iconBundle);
+    super(mainSessionCtrl, componentContext, multilangBundle, iconBundle,
+        "org.silverpeas.thesaurusPeas.settings.thesaurusSettings");
   }
 
   // *** méthodes métier *** //

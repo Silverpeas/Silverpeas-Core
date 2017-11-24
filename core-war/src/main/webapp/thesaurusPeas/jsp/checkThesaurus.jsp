@@ -93,7 +93,7 @@ OperationPane operationPane = window.getOperationPane();
 TabbedPane tabbedPane = gef.getTabbedPane();
 Frame frame = gef.getFrame();
 
-int maxSyn = 5; //nombre max de synonymes
+int maxSyn = scc.getSettings().getInteger("thesaurus.synonym.nbmax", 5); //nombre max de synonymes
 
 String boardStart = "<table cellpadding=5 cellspacing=2 border=0 width=\"98%\" class=intfdcolor><tr><td bgcolor=FFFFFF align=left>";
 String boardEnd   = "</td></tr></table>";
