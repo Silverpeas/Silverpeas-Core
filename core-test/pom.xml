@@ -108,11 +108,6 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
-      <groupId>org.wildfly.arquillian</groupId>
-      <artifactId>wildfly-arquillian-container-managed</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.jboss.arquillian.core</groupId>
       <artifactId>arquillian-core-api</artifactId>
       <scope>compile</scope>
