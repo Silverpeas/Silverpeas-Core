@@ -501,7 +501,7 @@
       var groupDeferred = sp.promise.deferred();
       var searchDone = [userDeferred.promise, groupDeferred.promise];
       // Query
-      var query = encodeURIComponent("%" + search + "%");
+      var query = encodeURIComponent(search + '*');
       // Users
       if (this.options.selectionType !== SELECTION_TYPE.GROUP) {
         __requester.getUsers({name : query, limit : SELECT_NB_ITEM_PER_TYPE}).then(function(users) {

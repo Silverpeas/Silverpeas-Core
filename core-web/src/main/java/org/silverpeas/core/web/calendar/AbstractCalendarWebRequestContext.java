@@ -26,7 +26,6 @@ package org.silverpeas.core.web.calendar;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.ComponentInstanceCalendars;
-import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.webcomponent.WebComponentRequestContext;
 import org.silverpeas.core.webapi.calendar.CalendarResourceURIs;
 
@@ -73,7 +72,7 @@ public abstract class AbstractCalendarWebRequestContext<T extends AbstractCalend
    */
   public CalendarResourceURIs uri() {
     if (uri == null) {
-      uri = ServiceProvider.getService(CalendarResourceURIs.class);
+      uri = CalendarResourceURIs.get();
     }
     return uri;
   }

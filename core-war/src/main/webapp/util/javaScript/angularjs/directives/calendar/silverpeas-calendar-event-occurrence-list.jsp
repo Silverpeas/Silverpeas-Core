@@ -67,7 +67,7 @@
   </li>
 </ul>
 <ul class="display-grouped-by-day" ng-if="$ctrl.occurrencesGroupedByDay">
-  <li ng-repeat="dayOccurrences in $ctrl.occurrencesGroupedByDay"
+  <li ng-repeat="dayOccurrences in $ctrl.occurrencesGroupedByDay track by dayOccurrences.dayDate"
       ng-class="{'high-priority':dayOccurrences.containsAtLeastOneImportant}"
       class="day-events">
     <div class="section-day-date">

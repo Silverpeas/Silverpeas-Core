@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.annotation.Base;
 import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Attendee.ParticipationStatus;
 import org.silverpeas.core.calendar.Calendar;
@@ -52,32 +53,42 @@ import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.inject.Singleton;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.io.InputStream;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.silverpeas.core.calendar.CalendarEventOccurrence.COMPARATOR_BY_DATE_ASC;
 import static org.silverpeas.core.calendar.CalendarEventUtil.getDateWithOffset;
 import static org.silverpeas.core.contribution.attachment.AttachmentServiceProvider
     .getAttachmentService;
 import static org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController
     .wysiwygPlaceHaveChanged;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.ALL;
 import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodType.UNIQUE;
@@ -86,11 +97,23 @@ import static org.silverpeas.core.webapi.calendar.OccurrenceEventActionMethodTyp
  * @author Yohann Chastagnier
  */
 @Singleton
+@Base
+@Named("default" + CalendarWebManager.NAME_SUFFIX)
 public class CalendarWebManager {
 
+  /**
+   * The predefined suffix that must compound the name of each implementation of this interface.
+   * An implementation of this interface by a Silverpeas application named Kmelia must be named
+   * <code>kmelia[NAME_SUFFIX]</code> where NAME_SUFFIX is the predefined suffix as defined below.
+   */
+  public static final String NAME_SUFFIX = "CalendarWebManager";
+
+  private static final SettingBundle settings =
+      ResourceLocator.getSettingBundle("org.silverpeas.calendar.settings.calendar");
   private final SilverLogger silverLogger = SilverLogger.getLogger(Plannable.class);
 
   private static final int END_YEAR_OFFSET = 3;
+  private static final int DEFAULT_NB_MAX_NEXT_OCC = 10;
 
   @Inject
   private ICalendarExporter iCalendarExporter;
@@ -101,14 +124,21 @@ public class CalendarWebManager {
   @Inject
   private ICalendarEventImportProcessor iCalendarEventImportProcessor;
 
-  private CalendarWebManager() {
+  protected CalendarWebManager() {
   }
 
   /**
    * Gets the singleton instance of the provider.
+   * @param componentInstanceIdOrComponentName a component instance identifier of a component name.
+   * @see ServiceProvider#getServiceByComponentInstanceAndNameSuffix(String, String)
    */
-  public static CalendarWebManager get() {
-    return ServiceProvider.getService(CalendarWebManager.class);
+  public static CalendarWebManager get(final String componentInstanceIdOrComponentName) {
+    if (isNotDefined(componentInstanceIdOrComponentName)) {
+      return ServiceProvider.getService(CalendarWebManager.class, new AnnotationLiteral<Base>() {});
+    }
+    return ServiceProvider
+        .getServiceByComponentInstanceAndNameSuffix(componentInstanceIdOrComponentName,
+            NAME_SUFFIX);
   }
 
   /**
@@ -235,11 +265,13 @@ public class CalendarWebManager {
   }
 
   /**
-   * Gets all calendars associated to a component instance.
+   * Gets all calendars handled by a component instance.
+   * <p>This centralization is useful for components which handles other agendas than those linked
+   * to the instance.</p>
    * @param componentInstanceId the identifier of the component instance.
    * @return the list of calendars.
    */
-  public List<Calendar> getCalendarsOf(final String componentInstanceId) {
+  public List<Calendar> getCalendarsHandledBy(final String componentInstanceId) {
     return Calendar.getByComponentInstanceId(componentInstanceId);
   }
 
@@ -591,9 +623,9 @@ public class CalendarWebManager {
    * @param calendars the calendars the event occurrences belong to.
    * @return a list of entities of calendar event occurrences.
    */
-  List<CalendarEventOccurrence> getEventOccurrencesOf(LocalDate startDate, LocalDate endDate,
+  public List<CalendarEventOccurrence> getEventOccurrencesOf(LocalDate startDate, LocalDate endDate,
       List<Calendar> calendars) {
-    return Calendar
+    return calendars.isEmpty() ? emptyList() : Calendar
         .getTimeWindowBetween(startDate, endDate)
         .filter(f -> f.onCalendar(calendars))
         .getEventOccurrences();
@@ -604,25 +636,28 @@ public class CalendarWebManager {
    * by the start and end date times.<br/>
    * Attendees which have answered negatively about their presence are not taken into account.
    * The occurrences are sorted from the lowest to the highest date and mapped by user identifiers.
-   * @param currentUserAndComponentInstanceId the current user and current the component instance
-   * id from which the service is requested.
+   * @param currentUserAndComponentInstanceId the current user and the current component instance
+   * ids from which the service is requested.
    * @param startDate the start date of time window.
    * @param endDate the end date of time window.
    * @param users the users to filter on.
    * @return a list of entities of calendar event occurrences mapped by user identifiers.
    */
-  Map<String, List<CalendarEventOccurrence>> getAllEventOccurrencesByUserIds(
-      final Pair<String, User> currentUserAndComponentInstanceId, LocalDate startDate,
+  protected Map<String, List<CalendarEventOccurrence>> getAllEventOccurrencesByUserIds(
+      final Pair<List<String>, User> currentUserAndComponentInstanceId, LocalDate startDate,
       LocalDate endDate, Collection<User> users) {
     // Retrieving the occurrences from personal calendars
     final List<Calendar> personalCalendars = new ArrayList<>();
-    users.forEach(u -> personalCalendars.addAll(getCalendarsOf(
+    users.forEach(u -> personalCalendars.addAll(getCalendarsHandledBy(
         PersonalComponentInstance.from(u, PersonalComponent.getByName("userCalendar").get())
             .getId())));
-    final List<CalendarEventOccurrence> entities =
-        getEventOccurrencesOf(startDate, endDate, personalCalendars);
+    final List<CalendarEventOccurrence> entities = personalCalendars.isEmpty() ? emptyList() :
+        Calendar.getTimeWindowBetween(startDate, endDate)
+            .filter(f -> f.onCalendar(personalCalendars))
+            .getEventOccurrences();
     entities.addAll(
-        Calendar.getTimeWindowBetween(startDate, endDate).filter(f -> f.onParticipants(users))
+        Calendar.getTimeWindowBetween(startDate, endDate)
+            .filter(f -> f.onParticipants(users))
             .getEventOccurrences());
     // Getting the occurrences by users
     Map<String, List<CalendarEventOccurrence>> result =
@@ -634,14 +669,77 @@ public class CalendarWebManager {
       // Remove occurrence associated to given user when he is the creator
       currentUserOccurrences.removeIf(calendarEventOccurrence -> {
         CalendarEvent event = calendarEventOccurrence.getCalendarEvent();
-        return event.getCalendar().getComponentInstanceId()
-            .equals(currentUserAndComponentInstanceId.getLeft()) &&
+        return currentUserAndComponentInstanceId.getLeft()
+            .contains(event.getCalendar().getComponentInstanceId()) &&
             event.getCreator().getId().equals(currentUserId);
       });
     } else {
       result.put(currentUserId, emptyList());
     }
     return result;
+  }
+
+  /**
+   * Gets the next event occurrences from now.
+   * @param componentIds identifiers of aimed component instance.
+   * @param calendarIdsToExclude identifier of calendars which linked occurrences must be excluded
+   * from the result.
+   * @param usersToInclude identifiers of users which linked occurrences must be included into the
+   * result
+   * @param calendarIdsToInclude identifier of calendars which linked occurrences must be included
+   * into the result.
+   * @param zoneId the identifier of the zone.
+   * @param limit the maximum occurrences the result must have (must be lower than 500)
+   * @return a list of {@link CalendarEventOccurrence}.
+   */
+  public Stream<CalendarEventOccurrence> getNextEventOccurrences(final List<String> componentIds,
+      final Set<String> calendarIdsToExclude, final Set<User> usersToInclude,
+      final Set<String> calendarIdsToInclude, final ZoneId zoneId, final Integer limit) {
+    final User currentRequester = User.getCurrentRequester();
+    // load calendars
+    final List<Calendar> calendars =
+        componentIds.stream().flatMap(i -> getCalendarsHandledBy(i).stream()).distinct()
+            .collect(Collectors.toList());
+    // includes/excludes
+    calendarIdsToInclude.removeAll(calendarIdsToExclude);
+    calendars.removeIf(c -> calendarIdsToExclude.contains(c.getId()));
+    if (!calendarIdsToInclude.isEmpty()) {
+      calendars.forEach(c -> calendarIdsToInclude.remove(c.getId()));
+      calendarIdsToInclude.forEach(i -> {
+        Calendar calendarToInclude = Calendar.getById(i);
+        if (calendarToInclude.canBeAccessedBy(currentRequester)) {
+          calendars.add(calendarToInclude);
+        }
+      });
+    }
+    // loading occurrences
+    final int nbOccLimit =
+        (limit != null && limit > 0 && limit <= 500) ? limit : DEFAULT_NB_MAX_NEXT_OCC;
+    final LocalDate startDate =
+        zoneId != null ? LocalDateTime.now(zoneId).toLocalDate() : LocalDate.now();
+    final Set<CalendarEventOccurrence> occurrences = new HashSet<>();
+    for (int nbMonthsToAdd : getNextEventTimeWindows()) {
+      occurrences.clear();
+      LocalDate endDate = startDate.plusMonths(nbMonthsToAdd);
+      occurrences.addAll(getEventOccurrencesOf(startDate, endDate, calendars));
+      if (!usersToInclude.isEmpty()) {
+        getAllEventOccurrencesByUserIds(Pair.of(componentIds, currentRequester), startDate,
+            endDate, usersToInclude).forEach((u, o) -> occurrences.addAll(o));
+      }
+      if (occurrences.size() >= nbOccLimit) {
+        break;
+      }
+    }
+    return occurrences.stream().sorted(COMPARATOR_BY_DATE_ASC).limit(nbOccLimit);
+  }
+
+  /**
+   * Gets next event time windows from settings.
+   * @return list of integer which represents months.
+   */
+  protected Integer[] getNextEventTimeWindows() {
+    final String[] timeWindows = settings.getString("calendar.nextEvents.time.windows").split(",");
+    return Arrays.stream(timeWindows).map(w -> Integer.parseInt(w.trim())).toArray(Integer[]::new);
   }
 
   /**

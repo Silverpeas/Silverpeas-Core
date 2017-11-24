@@ -67,7 +67,7 @@
      ng-repeat="participationStatus in $ctrl.participationStatuses"
      ng-if="participationStatus.name != 'AWAITING'"
      ng-click="$ctrl.attendee.participationStatus != participationStatus.name ? $ctrl.answer(participationStatus.name) : null"
-     ng-class="{'not-answered':$ctrl.attendee.participationStatus != participationStatus.name}"
+     ng-class="{'not-answered':$ctrl.attendee.participationStatus != participationStatus.name, 'answered':$ctrl.attendee.participationStatus == participationStatus.name}"
      title="{{participationStatus.label}}">
     <img ng-src="${iconPrefixUrl}{{participationStatus.icon}}" alt="{{participationStatus.label}}">
   </a>

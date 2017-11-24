@@ -257,7 +257,7 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
   @RedirectToInternal("calendars/occurrences/{occurrenceId}")
   public void searchResult(AbstractCalendarWebRequestContext context) {
     context.getNavigationContext().clear();
-    final CalendarEventOccurrence occurrence = CalendarWebManager.get()
+    final CalendarEventOccurrence occurrence = CalendarWebManager.get(getComponentName())
         .getFirstCalendarEventOccurrenceFromEventId(context.getRequest().getParameter("Id"));
     context.addRedirectVariable("occurrenceId", asBase64(occurrence.getId().getBytes()));
   }

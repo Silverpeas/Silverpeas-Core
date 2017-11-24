@@ -29,8 +29,9 @@ import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.Calendar;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
-import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProvider;
+import org.silverpeas.core.web.mvc.route.ComponentInstanceRoutingMapProviderByInstance;
 
 import javax.inject.Inject;
 import javax.ws.rs.core.UriBuilder;
@@ -51,6 +52,10 @@ public final class CalendarResourceURIs {
 
   @Inject
   private ComponentInstanceRoutingMapProviderByInstance routingMapProvider;
+
+  public static CalendarResourceURIs get() {
+    return ServiceProvider.getService(CalendarResourceURIs.class);
+  }
 
   /**
    * Centralizes the build of a calendar URI.
@@ -131,7 +136,7 @@ public final class CalendarResourceURIs {
    * @param occurrence te aimed occurrence.
    * @return the permalink URI of specified occurrence.
    */
-  URI ofOccurrencePermalink(final CalendarEventOccurrence occurrence) {
+  public URI ofOccurrencePermalink(final CalendarEventOccurrence occurrence) {
     if (occurrence == null) {
       return null;
     }

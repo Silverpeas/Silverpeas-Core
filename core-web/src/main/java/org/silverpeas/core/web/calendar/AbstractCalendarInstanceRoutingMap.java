@@ -49,7 +49,8 @@ public abstract class AbstractCalendarInstanceRoutingMap
   }
 
   private URI getEventViewPage(final ContributionIdentifier contributionIdentifier) {
-    final CalendarEventOccurrence occurrence = CalendarWebManager.get()
+    final CalendarEventOccurrence occurrence = CalendarWebManager
+        .get(contributionIdentifier.getComponentInstanceId())
         .getFirstCalendarEventOccurrenceFromEventId(contributionIdentifier.getLocalId());
     return newUriBuilder(getBaseForPages(), "calendars/occurrences",
         asBase64(occurrence.getId().getBytes())).build();

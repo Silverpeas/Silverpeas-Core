@@ -116,7 +116,7 @@ public class ICalendarResource extends RESTWebService {
             .withOutputStream(output)
             .withParameter(CALENDAR, calendar)
             .withParameter(HIDE_PRIVATE_DATA, hidePrivateData);
-        getCalendarWebServiceProvider().exportCalendarAsICalendarFormat(calendar, descriptor);
+        getCalendarWebManager().exportCalendarAsICalendarFormat(calendar, descriptor);
       } catch (ExportException e) {
         SilverLogger.getLogger(this).error(e);
         throw new WebApplicationException(INTERNAL_SERVER_ERROR);
@@ -132,7 +132,7 @@ public class ICalendarResource extends RESTWebService {
     return null;
   }
 
-  private CalendarWebManager getCalendarWebServiceProvider() {
-    return CalendarWebManager.get();
+  private CalendarWebManager getCalendarWebManager() {
+    return CalendarWebManager.get(null);
   }
 }

@@ -25,10 +25,9 @@
 package org.silverpeas.web.usercalendar.services;
 
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.calendar.Calendar;
-import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.webapi.calendar.CalendarResource;
@@ -36,9 +35,6 @@ import org.silverpeas.core.webapi.calendar.CalendarResource;
 import javax.ws.rs.Path;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
-import java.time.LocalDate;
-import java.util.Collections;
-import java.util.List;
 
 import static org.silverpeas.web.usercalendar.services.UserCalendarResource.USER_CALENDAR_BASE_URI;
 
@@ -52,35 +48,13 @@ import static org.silverpeas.web.usercalendar.services.UserCalendarResource.USER
 @Authorized
 public class UserCalendarResource extends CalendarResource {
 
-  public static final String USER_CALENDAR_BASE_URI = "usercalendar";
+  static final String USER_CALENDAR_BASE_URI = "usercalendar";
 
   @Override
   public void validateUserAuthorization(final UserPrivilegeValidation validation) {
-    if (!PersonalComponentInstance.from(getComponentId()).isPresent()) {
+    if (!PersonalComponentInstance.from(getComponentId()).isPresent() ||
+        User.getCurrentRequester() == null || User.getCurrentRequester().isAnonymous()) {
       throw new WebApplicationException(Response.Status.UNAUTHORIZED);
     }
-  }
-
-  /**
-   * In case of personal calendar, and if the calendar reference concerns the personal calendar of
-   * the current user, then participation occurrences are added to the result.
-   * @param startDate the start date of the request.
-   * @param endDate the end date of the request.
-   * @param calendars the calendars which the events belong to.
-   * @return all the requested occurrences.
-   */
-  @Override
-  protected List<CalendarEventOccurrence> getEventOccurrencesOf(final LocalDate startDate,
-      final LocalDate endDate, final List<Calendar> calendars) {
-    List<CalendarEventOccurrence> result =
-        super.getEventOccurrencesOf(startDate, endDate, calendars);
-    calendars.stream().filter(c -> c.isMainPersonalOf(getUser())).forEach(p -> {
-      // Add occurrence participation of user
-      final List<CalendarEventOccurrence> participationOccurrences =
-          getAllEventOccurrencesFrom(startDate, endDate, Collections.singleton(getUser()))
-              .get(getUser().getId());
-      result.addAll(participationOccurrences);
-    });
-    return result;
   }
 }
