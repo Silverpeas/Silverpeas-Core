@@ -68,18 +68,24 @@ public class SilverpeasHttpServlet extends HttpServlet {
    * @param request the current request.
    * @return true if it exists an opened user session, false otherwise.
    */
-  protected boolean existOpenedUserSession(final HttpServletRequest request) {
+  protected UserSessionStatus existOpenedUserSession(final HttpServletRequest request) {
     HttpSession session = request.getSession(false);
-    MainSessionController mainSessionCtrl = null;
     if (session != null) {
-      mainSessionCtrl = (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
-      if (mainSessionCtrl != null) {
+      final MainSessionController mainSessionCtrl =
+          (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
+      final boolean isDesktopControllerInSession = mainSessionCtrl != null;
+      final String sessionId = isDesktopControllerInSession
+          ? mainSessionCtrl.getSessionId()
+          : session.getId();
+      if (sessionId != null) {
         SessionManagement sessionManagement = SessionManagementProvider.getSessionManagement();
-        SessionInfo sessionInfo = sessionManagement.getSessionInfo(mainSessionCtrl.getSessionId());
-        return sessionInfo.isDefined() && sessionInfo != SessionInfo.AnonymousSession;
+        SessionInfo sessionInfo = sessionManagement.getSessionInfo(sessionId);
+        final boolean valid =
+            sessionInfo.isDefined() && sessionInfo != SessionInfo.AnonymousSession;
+        return new UserSessionStatus(valid, isDesktopControllerInSession, sessionInfo);
       }
     }
-    return false;
+    return new UserSessionStatus();
   }
 
   /**
@@ -155,6 +161,35 @@ public class SilverpeasHttpServlet extends HttpServlet {
    */
   protected void throwHttpNotFoundError(String message) {
     throw new HttpError(HttpServletResponse.SC_NOT_FOUND, message);
+  }
+
+  protected static class UserSessionStatus {
+    private final boolean valid;
+    private final boolean fromDesktop;
+    private SessionInfo info;
+
+    private UserSessionStatus() {
+      this(false, false, null);
+    }
+
+    private UserSessionStatus(final boolean valid, final boolean fromDesktop,
+        final SessionInfo info) {
+      this.valid = valid;
+      this.fromDesktop = fromDesktop;
+      this.info = info;
+    }
+
+    public boolean isValid() {
+      return valid;
+    }
+
+    public boolean isFromDesktop() {
+      return fromDesktop;
+    }
+
+    public SessionInfo getInfo() {
+      return info;
+    }
   }
 
   /**

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
@@ -36,6 +35,7 @@ import org.silverpeas.core.security.authentication.verifier.UserCanLoginVerifier
 import org.silverpeas.core.security.authentication.verifier.UserCanTryAgainToLoginVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserMustAcceptTermsOfServiceVerifier;
 import org.silverpeas.core.security.authentication.verifier.UserMustChangePasswordVerifier;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -83,7 +83,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
   private CredentialEncryption credentialEncryption;
   @Inject
   private MandatoryQuestionChecker mandatoryQuestionChecker;
-  private SilverLogger logger = SilverLogger.getLogger(this);
+
+  private final SilverLogger logger = SilverLogger.getLogger(this);
 
   /**
    * Ask for an authentication for the user behind the incoming HTTP request from a form.
@@ -98,8 +99,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       throws IOException, ServletException {
     HttpRequest request = HttpRequest.decorate(servletRequest);
 
-    final boolean existOpenedUserSession = existOpenedUserSession(servletRequest);
-    if (existOpenedUserSession) {
+    final UserSessionStatus userSessionStatus = existOpenedUserSession(servletRequest);
+    if (userSessionStatus.isValid()) {
       final HttpSession session = servletRequest.getSession(false);
       silverpeasSessionOpener.closeSession(session);
     }
@@ -108,9 +109,9 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     HttpSession session = request.getSession();
 
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
-      request.setCharacterEncoding(CharEncoding.UTF_8);
+      request.setCharacterEncoding(Charsets.UTF_8.name());
     }
-    if (!existOpenedUserSession && request.isWithinAnonymousUserSession()) {
+    if (!userSessionStatus.isValid() && request.isWithinAnonymousUserSession()) {
       session.invalidate();
     }
 
@@ -402,7 +403,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       boolean secure) {
     String cookieValue;
     try {
-      cookieValue = URLEncoder.encode(value, CharEncoding.UTF_8);
+      cookieValue = URLEncoder.encode(value, Charsets.UTF_8.name());
     } catch (UnsupportedEncodingException ex) {
       logger.error(ex.getMessage(), ex);
       cookieValue = value;

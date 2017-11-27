@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.authentication;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
@@ -32,6 +32,7 @@ import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
 import org.silverpeas.core.security.authentication.Authentication;
+import org.silverpeas.core.security.authentication.AuthenticationService;
 import org.silverpeas.core.security.authentication.UserAuthenticationListener;
 import org.silverpeas.core.security.authentication.UserAuthenticationListenerRegistration;
 import org.silverpeas.core.security.session.SessionInfo;
@@ -49,9 +50,13 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+import org.silverpeas.core.webapi.base.HTTPAuthentication;
 
 import javax.inject.Singleton;
 import javax.servlet.http.HttpSession;
+
+import static org.silverpeas.core.admin.service.OrganizationControllerProvider
+    .getOrganisationController;
 
 /**
  * Service used to open an HTTP session in the Silverpeas platform.
@@ -102,14 +107,12 @@ public class SilverpeasSessionOpener {
       // is updated with, for example, the timestamp of the last access (this one), and then it
       // is returned.
       SessionInfo sessionInfo = sessionManagement.validateSession(session.getId());
-      String allowPasswordChange = (String) session.getAttribute(
-          Authentication.PASSWORD_CHANGE_ALLOWED);
       MainSessionController controller;
       if (!sessionInfo.isDefined() || sessionInfo == SessionInfo.AnonymousSession) {
         // the session is a new one, then open it in Silverpeas
         controller = new MainSessionController(authKey, session);
         // Get and store password change capabilities
-        controller.setAllowPasswordChange(StringUtil.getBooleanValue(allowPasswordChange));
+        controller.setAllowPasswordChange(isPasswordChangedAllowed(session));
         if (!controller.getCurrentUserDetail().isDeletedState() &&
             !controller.getCurrentUserDetail().isDeactivatedState()) {
           if (!UserDetail.isAnonymousUser(controller.getUserId())) {
@@ -127,32 +130,111 @@ public class SilverpeasSessionOpener {
       }
 
       // Notify user about password expiration if needed
-      Boolean alertUserAboutPwdExpiration = (Boolean) session.getAttribute(
-          Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE);
-      String redirectURL = null;
-      if (alertUserAboutPwdExpiration != null && alertUserAboutPwdExpiration) {
-        redirectURL = alertUserAboutPwdExpiration(controller.getUserId(),
-            OrganizationControllerProvider.getOrganisationController()
-                .getAdministratorUserIds(controller.getUserId())[0],
-            controller.getFavoriteLanguage(),
-            StringUtil.getBooleanValue(allowPasswordChange));
-      }
+      String redirectURL = notifyAboutPasswordExpiration(session, controller);
       // Put the main session controller in the session
       return getHomePageUrl(request, redirectURL, true);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Session opening failure!", e);
     }
 
-    return getErrorPageUrl(request, authKey);
+    SilverLogger.getLogger(this).error("No user found with the authentication key {0}", authKey);
+    return getErrorPageUrl(request);
+  }
+
+  /**
+   * Prepares current session in Silverpeas from a {@link SessionInfo} obtained by an other
+   * service in charge of authentication of Users (like {@link HTTPAuthentication} from WEB
+   * services).
+   * <p>
+   * In the case a session was already opened for the user with the same web browser, the current
+   * session is then taken into account and the user access information is updated. In this case, no
+   * new session is opened and the previous one isn't invalidated. If this behavior isn't what you
+   * expect, then you have to close explicitly the current session of the user before calling this
+   * method. In the case the user is already connected but with another web browser, a new session
+   * is opened without invalidating the other one.
+   * @param request the HTTP request asking to prepare a session from a {@link SessionInfo}.
+   * @param sessionInfo an existing session info.
+   * @return the URL of the user home page in Silverpeas or the URL of an error page if a problem
+   * occurred during the session opening (for example, the user wasn't really authenticated).
+   */
+  public String prepareFromExistingSessionInfo(HttpRequest request, SessionInfo sessionInfo) {
+    HttpSession session = request.getSession(false);
+    // a session should exists: it could be either an authentication session opened for the
+    // authentication process or an already opened user specific session.
+    try {
+
+      if (!sessionInfo.isDefined()) {
+        throw new SilverpeasRuntimeException("session " + session.getId() + " is not defined");
+      }
+
+      MainSessionController controller = (MainSessionController) session
+          .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+
+      if (controller != null) {
+        // the session already exists indeed, reuse it
+        controller = (MainSessionController) session
+            .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
+      } else {
+        // the session is a new one, then open it in Silverpeas
+        controller = new MainSessionController(sessionInfo, session);
+        if (sessionInfo != SessionInfo.AnonymousSession) {
+          // Get and store password change capabilities
+          controller.setAllowPasswordChange(isPasswordChangedAllowed(session));
+          // Registering the successful connexion at this time
+          registerSuccessfulConnexion(controller);
+        }
+      }
+
+      // Notify user about password expiration if needed
+      String redirectURL = notifyAboutPasswordExpiration(session, controller);
+      // Put the main session controller in the session
+      return getHomePageUrl(request, redirectURL, true);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error("Session opening failure!", e);
+    }
+
+    SilverLogger.getLogger(this)
+        .error("No user found with the session into {0}", sessionInfo.getSessionId());
+    return getErrorPageUrl(request);
+  }
+
+  /**
+   * Notifies, if necessary, the user behind the session that his password is expiring.
+   * @param session a valid HTTP session
+   * @param controller a valid main controller.
+   * @return the URL of the page that permits to the user to change its password, null if no
+   * password change is needed.
+   */
+  private String notifyAboutPasswordExpiration(final HttpSession session,
+      final MainSessionController controller) {
+    Boolean alertUserAboutPwdExpiration =
+        (Boolean) session.getAttribute(Authentication.PASSWORD_IS_ABOUT_TO_EXPIRE);
+    String redirectURL = null;
+    if (alertUserAboutPwdExpiration != null && alertUserAboutPwdExpiration) {
+      redirectURL = alertUserAboutPwdExpiration(controller.getUserId(),
+          getOrganisationController().getAdministratorUserIds(controller.getUserId())[0],
+          controller.getFavoriteLanguage(), isPasswordChangedAllowed(session));
+    }
+    return redirectURL;
+  }
+
+  /**
+   * Indicates if the change of password is allowed.<br/>
+   * The information is taken from the HTTP session which has been updated by the
+   * {@link AuthenticationService}
+   * @param session the HTTP session.
+   * @return true if password change is allowed, false otherwise.
+   */
+  private boolean isPasswordChangedAllowed(final HttpSession session) {
+    return StringUtil
+        .getBooleanValue((String) session.getAttribute(Authentication.PASSWORD_CHANGE_ALLOWED));
   }
 
   /**
    * Some treatments in case of successful login
-   *
-   * @param controller
+   * @param controller a valid main controller
    */
   private void registerSuccessfulConnexion(MainSessionController controller) {
-
     // Last login date + nb successful login (reloading user data explicitly)
     UserDetail user = UserDetail.getById(controller.getUserId());
     user.setLastLoginDate(DateUtil.getNow());
@@ -163,9 +245,7 @@ public class SilverpeasSessionOpener {
 
   /**
    * Closes the specified session.
-   *
    * All the resources allocated for the maintain the user session in Silverpeas are then freed.
-   *
    * @param session the HTTP session to close.
    */
   public void closeSession(HttpSession session) {
@@ -179,12 +259,9 @@ public class SilverpeasSessionOpener {
    * The user wasn't yet authenticated then computes the error page.
    *
    * @param request the HTTP request asking a session opening.
-   * @param authKey the authentication key computed from a user authentication process and that is
-   * unique to the user.
    * @return the URL of an error page.
    */
-  String getErrorPageUrl(HttpRequest request, String authKey) {
-    SilverLogger.getLogger(this).error("No user found with the authentication key {0}", authKey);
+  String getErrorPageUrl(HttpRequest request) {
     StringBuilder absoluteUrl = new StringBuilder(getAbsoluteUrl(request));
     if (absoluteUrl.charAt(absoluteUrl.length() - 1) != '/') {
       absoluteUrl.append('/');
@@ -199,7 +276,7 @@ public class SilverpeasSessionOpener {
    *
    * @param request the HTTP request asking a session opening.
    * @param redirectURL a redirection URL.
-   * @param isFirstSessionAccess
+   * @param isFirstSessionAccess true if it is the first home page access of the session.
    * @return the URL of the user home page in Silverpeas.
    */
   String getHomePageUrl(HttpRequest request, String redirectURL,

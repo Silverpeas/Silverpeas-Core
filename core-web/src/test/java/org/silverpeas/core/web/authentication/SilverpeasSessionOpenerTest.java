@@ -42,7 +42,6 @@ import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.session.SessionManager;
 
 import javax.annotation.Priority;
@@ -137,8 +136,7 @@ public class SilverpeasSessionOpenerTest {
     SilverpeasSessionOpener instance = new SilverpeasSessionOpener();
     String url = instance.getAbsoluteUrl(httpRequest);
     assertThat(url, is("http://www.silverpeas.org:80/silverpeas/"));
-    String sKey = RandomGenerator.getRandomString();
-    String errorUrl = instance.getErrorPageUrl(httpRequest, sKey);
+    String errorUrl = instance.getErrorPageUrl(httpRequest);
     assertThat(errorUrl, is("http://www.silverpeas.org:80/silverpeas/Login"));
   }
 

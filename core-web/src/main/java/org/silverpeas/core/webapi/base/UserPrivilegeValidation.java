@@ -24,8 +24,8 @@
 package org.silverpeas.core.webapi.base;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.servlet.http.HttpServletRequest;
@@ -47,11 +47,6 @@ public interface UserPrivilegeValidation {
   String HTTP_SESSIONKEY = "X-Silverpeas-Session";
 
   /**
-   * The HTTP request parameter in an incoming request that carries the user session key.
-   */
-  String HTTP_PARAMKEY = "sptkn";
-
-  /**
    * The name of the standard URI query parameter and of the standard form-encoded parameter
    * in an HTTP request to use in a token based authentication mechanism like for example OAuth2.
    */
@@ -65,18 +60,6 @@ public interface UserPrivilegeValidation {
    * it offers better scalability.
    */
   String HTTP_AUTHORIZATION = "Authorization";
-
-  /**
-   * The standard keyword qualifying a basic HTTP authentication used in the value of an
-   * Authorization HTTP header.
-   */
-  String HTTP_BASIC_AUTHORIZATION = "Basic";
-
-  /**
-   * The standard keyword qualifying an HTTP authentication built upon a token based mechanism like
-   * for example OAuth2. The keyword is used in the value of an Authorization HTTP header.
-   */
-  String HTTP_TOKEN_AUTHORIZATION = "Bearer";
 
   static UserPrivilegeValidation get() {
     return ServiceProvider.getService(UserPrivilegeValidation.class);

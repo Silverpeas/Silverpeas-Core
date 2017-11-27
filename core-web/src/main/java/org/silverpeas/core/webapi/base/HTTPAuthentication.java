@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.webapi.base;
 
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.collections.map.HashedMap;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.AdminException;
 import org.silverpeas.core.admin.service.Administration;
@@ -36,7 +34,6 @@ import org.silverpeas.core.security.authentication.AuthenticationServiceProvider
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.verifier.AuthenticationUserVerifierFactory;
 import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.security.token.Token;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
 import org.silverpeas.core.util.Charsets;
@@ -50,15 +47,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.util.EnumMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_ACCESS_TOKEN;
-import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_AUTHORIZATION;
-import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.HTTP_SESSIONKEY;
+import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
+import static org.silverpeas.core.util.StringUtil.fromBase64;
+import static org.silverpeas.core.webapi.base.UserPrivilegeValidation.*;
 
 /**
  * An HTTP authentication mechanism for Silverpeas. It implements the authentication mechanism
@@ -89,9 +88,8 @@ public class HTTPAuthentication {
   private static final Pattern AUTHENTICATION_PATTERN =
       Pattern.compile("(?i)^[\\s]*([^\\s]+)[\\s]*@domain([0-9]+):(.+)$");
 
-  private static final int SUPPORTED_AUTHENTICATION_SCHEME_COUNT = 2;
   private static Map<AuthenticationScheme, Function<AuthenticationContext, SessionInfo>>
-      schemeHandlers = new HashedMap(SUPPORTED_AUTHENTICATION_SCHEME_COUNT);
+      schemeHandlers = new EnumMap<>(AuthenticationScheme.class);
 
   static {
     schemeHandlers.put(AuthenticationScheme.BASIC, HTTPAuthentication::performBasicAuthentication);
@@ -184,7 +182,7 @@ public class HTTPAuthentication {
 
   private static SessionInfo performBasicAuthentication(final AuthenticationContext context) {
     final String decodedCredentials =
-        new String(Base64.decodeBase64(context.getUserCredentials()), Charsets.UTF_8).trim();
+        new String(fromBase64(context.getUserCredentials()), Charsets.UTF_8).trim();
 
     // Getting expected parts of credentials
     Matcher matcher = AUTHENTICATION_PATTERN.matcher(decodedCredentials);
@@ -206,16 +204,20 @@ public class HTTPAuthentication {
           String userId = Administration.get().getUserIdByAuthenticationKey(key);
           UserDetail user = UserDetail.getById(userId);
           verifyUserCanLogin(user);
-          SessionInfo session = SessionManagementProvider.getSessionManagement()
-              .openSession(user, context.getHttpServletRequest());
-          context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
-          context.getHttpServletResponse()
-              .addHeader("Access-Control-Expose-Headers", UserPrivilegeValidation.HTTP_SESSIONKEY);
-          SynchronizerTokenService tokenService = SynchronizerTokenService.getInstance();
-          tokenService.setUpSessionTokens(session);
-          Token token = tokenService.getSessionToken(session);
-          context.getHttpServletResponse()
-              .addHeader(SynchronizerTokenService.SESSION_TOKEN_KEY, token.getValue());
+          final SessionInfo session;
+          if (!UserDetail.isAnonymousUser(userId)) {
+            session = getSessionManagement().openSession(user, context.getHttpServletRequest());
+            context.getHttpServletResponse().setHeader(HTTP_SESSIONKEY, session.getSessionId());
+            context.getHttpServletResponse()
+                .addHeader("Access-Control-Expose-Headers", UserPrivilegeValidation.HTTP_SESSIONKEY);
+            SynchronizerTokenService tokenService = SynchronizerTokenService.getInstance();
+            tokenService.setUpSessionTokens(session);
+            Token token = tokenService.getSessionToken(session);
+            context.getHttpServletResponse()
+                .addHeader(SynchronizerTokenService.SESSION_TOKEN_KEY, token.getValue());
+          } else {
+            session = getSessionManagement().openAnonymousSession(context.getHttpServletRequest());
+          }
           return session;
         } catch (AdminException e) {
           throw new AuthenticationInternalException(e.getMessage(), e);
@@ -232,7 +234,7 @@ public class HTTPAuthentication {
     if (userRef != null) {
       UserDetail user = userRef.getEntity();
       verifyUserCanLogin(user);
-      return new SessionInfo(token, user);
+      return new SessionInfo(UUID.randomUUID().toString(), user);
     }
     return null;
   }

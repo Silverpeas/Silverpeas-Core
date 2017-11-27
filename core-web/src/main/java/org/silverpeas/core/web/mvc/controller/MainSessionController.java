@@ -37,13 +37,13 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.clipboard.service.Clipboard;
 import org.silverpeas.core.clipboard.service.MainClipboard;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcSettings;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -54,6 +54,7 @@ import org.silverpeas.core.web.subscription.SubscriptionContext;
 
 import javax.enterprise.util.AnnotationLiteral;
 import javax.servlet.http.HttpSession;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -68,39 +69,38 @@ import static org.silverpeas.core.admin.service.AdministrationServiceProvider.ge
  It provides functions to get information about the logged user (which is unique).
  It is also used to update the current environnement of the user (current domain, current component).
  */
-public class MainSessionController implements Clipboard, SessionCloseable {
+public class MainSessionController implements Clipboard, SessionCloseable, Serializable {
 
   public static final String MAIN_SESSION_CONTROLLER_ATT = "SilverSessionController";
-  private Clipboard clipboard = ServiceProvider.getService(Clipboard.class,
+  private transient Clipboard clipboard = ServiceProvider.getService(Clipboard.class,
       new AnnotationLiteral<MainClipboard>() {});
   private final UserPreferences userPreferences;
-  private PdcManager pdcManager = null;
-  private HttpSession httpSession = null;
+  private transient PdcManager pdcManager = null;
+  private transient HttpSession httpSession = null;
   private String sessionId = null;
   private String userId = null;
-  private OrganizationController organizationController = null;
+  private transient OrganizationController organizationController = null;
   private String userLanguage = null;
-  private Selection selection = null;
+  private transient Selection selection = null;
   private String userSpace = null;
-  private AlertUser alertUser = null;
+  private transient AlertUser alertUser = null;
   private String serverName = null;
   private String serverPort = null;
-  private SubscriptionContext subscriptionContext = null;
+  private transient SubscriptionContext subscriptionContext = null;
   /**
    * Maintenance Mode *
    */
   private static boolean appInMaintenance = false;
   private static List<String> spacesInMaintenance = new ArrayList<>();
   // Last results from search engine
-  private List<GlobalSilverContent> lastResults = null;
+  private transient List<GlobalSilverContent> lastResults = null;
   private boolean allowPasswordChange;
 
-  public final boolean isAppInMaintenance() {
+  public static boolean isAppInMaintenance() {
     return appInMaintenance;
   }
 
-  public void setAppModeMaintenance(boolean mode) {
-
+  public static void setAppModeMaintenance(boolean mode) {
     appInMaintenance = mode;
   }
 
@@ -146,10 +146,10 @@ public class MainSessionController implements Clipboard, SessionCloseable {
    * connected to Silverpeas.
    * @param authenticationKey the authentication key of the user.
    * @param httpSession the http session.
-   * @throws PeasCoreException if the user session is not open.
+   * @throws org.silverpeas.core.SilverpeasException if the user session is not open.
    */
   public MainSessionController(String authenticationKey, HttpSession httpSession)
-      throws PeasCoreException {
+      throws org.silverpeas.core.SilverpeasException {
     try {
       this.httpSession = httpSession;
       this.sessionId = httpSession.getId();
@@ -162,14 +162,35 @@ public class MainSessionController implements Clipboard, SessionCloseable {
       // Get the user language
       userLanguage = userPreferences.getLanguage();
     } catch (Exception e) {
-      throw new PeasCoreException("MainSessionController.MainSessionController",
-          SilverpeasException.ERROR, "peasCore.EX_CANT_GET_USER_PROFILE",
-          "authenticationKey=" + authenticationKey, e);
+      throw new org.silverpeas.core.SilverpeasException(
+          failureOnGetting("user with authentication key", authenticationKey));
     }
   }
 
-  public String getClipboardName() {
-    return MainClipboard.class.getSimpleName();
+  /**
+   * Creates a new instance of {@link MainSessionController} related to the user already
+   * connected to Silverpeas.
+   * @param sessionInfo an existing session info.
+   * @param httpSession the http session.
+   * @throws org.silverpeas.core.SilverpeasException if the user session is not open.
+   */
+  public MainSessionController(SessionInfo sessionInfo, HttpSession httpSession)
+      throws org.silverpeas.core.SilverpeasException {
+    try {
+      this.httpSession = httpSession;
+      this.sessionId = httpSession.getId();
+      httpSession.setAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT, this);
+      // Identify the user
+      this.userId = sessionInfo.getUserDetail().getId();
+      this.userPreferences =
+          PersonalizationServiceProvider.getPersonalizationService().getUserSettings(userId);
+
+      // Get the user language
+      userLanguage = userPreferences.getLanguage();
+    } catch (Exception e) {
+      throw new org.silverpeas.core.SilverpeasException(
+          "can not initialize main controller from session id {0}", sessionInfo.getSessionId());
+    }
   }
 
   public String getUserId() {
@@ -250,7 +271,7 @@ public class MainSessionController implements Clipboard, SessionCloseable {
     return userSpace;
   }
 
-  public void setFavoriteSpace(String newSpace) {
+  public synchronized void setFavoriteSpace(String newSpace) {
     userSpace = newSpace;
   }
 

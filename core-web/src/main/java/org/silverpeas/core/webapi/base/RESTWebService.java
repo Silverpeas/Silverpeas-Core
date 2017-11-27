@@ -27,6 +27,8 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
@@ -128,6 +130,10 @@ public abstract class RESTWebService implements ProtectedWebResource {
     this.userDetail = session.getUserDetail();
     if (this.userDetail != null) {
       MessageManager.setLanguage(this.userDetail.getUserPreferences().getLanguage());
+      if (User.getCurrentRequester() == null && session != SessionInfo.AnonymousSession) {
+        ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+            .setCurrentSessionCache(session.getCache());
+      }
     }
   }
 

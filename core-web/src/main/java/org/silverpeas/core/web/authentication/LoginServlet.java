@@ -47,7 +47,7 @@ public class LoginServlet extends SilverpeasHttpServlet {
   @Inject
   private SilverpeasSessionOpener silverpeasSessionOpener;
 
-  private SettingBundle general =
+  private static final SettingBundle general =
       ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
 
   @Override
@@ -55,8 +55,9 @@ public class LoginServlet extends SilverpeasHttpServlet {
       throws ServletException, IOException {
 
     // Verify the user is authenticated
-    if (existOpenedUserSession(request)) {
-      performOpenedUserSession(request, response);
+    final UserSessionStatus userSessionStatus = existOpenedUserSession(request);
+    if (userSessionStatus.isValid()) {
+      performOpenedUserSession(request, response, userSessionStatus);
     } else {
       performLoginDispatch(request, response);
     }
@@ -66,18 +67,26 @@ public class LoginServlet extends SilverpeasHttpServlet {
    * Performs the redirection when an opened user session exists.
    * @param request the current request.
    * @param response the current response.
+   * @param userSessionStatus the status of user session.
    * @throws IOException on redirect error.
    */
   private void performOpenedUserSession(final HttpServletRequest request,
-      final HttpServletResponse response) throws ServletException, IOException {
+      final HttpServletResponse response, final UserSessionStatus userSessionStatus)
+      throws ServletException, IOException {
     if (mustCloseSession(request)) {
       final HttpSession session = request.getSession(false);
       silverpeasSessionOpener.closeSession(session);
       performLoginDispatch(request, response);
     } else {
-      HttpRequest httpRequest = HttpRequest.decorate(request);
-      final String destinationUrl =
-          silverpeasSessionOpener.getHomePageUrl(httpRequest, null, false);
+      final HttpRequest httpRequest = HttpRequest.decorate(request);
+      final String destinationUrl;
+      if (userSessionStatus.isFromDesktop()) {
+        destinationUrl =
+            silverpeasSessionOpener.getHomePageUrl(httpRequest, null, false);
+      } else {
+        destinationUrl = silverpeasSessionOpener
+            .prepareFromExistingSessionInfo(httpRequest, userSessionStatus.getInfo());
+      }
       redirectOrForwardService(httpRequest, response, destinationUrl);
     }
   }

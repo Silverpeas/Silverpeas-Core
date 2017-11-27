@@ -97,7 +97,7 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
   @Override
   public SessionInfo validateUserAuthentication(final HttpServletRequest request,
       final HttpServletResponse response) {
-    SessionInfo userSession;
+    SessionInfo userSession = SessionInfo.NoneSession;
     String sessionKey = getUserSessionKey(request);
     if (isDefined(sessionKey)) {
       SessionValidationContext sessionValidationContext =
@@ -106,7 +106,8 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
         sessionValidationContext.skipLastUserAccessTimeRegistering();
       }
       userSession = validateUserSession(sessionValidationContext);
-    } else {
+    }
+    if(!userSession.isDefined()) {
       userSession = authentication.authenticate(
           new HTTPAuthentication.AuthenticationContext(request, response));
     }
@@ -191,7 +192,7 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
   private String getUserSessionKey(final HttpServletRequest request) {
     String sessionKey = request.getHeader(HTTP_SESSIONKEY);
     if (StringUtil.isNotDefined(sessionKey)) {
-      sessionKey = request.getParameter(HTTP_PARAMKEY);
+      sessionKey = request.getParameter(HTTP_SESSIONKEY);
     }
 
     // if no session key is passed among the HTTP headers, check the request is within a session
@@ -226,14 +227,9 @@ public class UserPrivilegeValidator implements UserPrivilegeValidation {
    */
   private SessionInfo validateUserSession(SessionValidationContext context) {
     SessionInfo sessionInfo = sessionManagement.validateSession(context);
-    if (!sessionInfo.isDefined()) {
-      // no existing session for the user behind the incoming HTTP request. So, is this an
-      // anonymous request?
-      if (UserDetail.isAnonymousUserExist()) {
-        sessionInfo = new SessionInfo(null, UserDetail.getAnonymousUser());
-      } else {
-        throw new WebApplicationException(Response.Status.UNAUTHORIZED);
-      }
+    if (!sessionInfo.isDefined() && UserDetail.isAnonymousUserExist()) {
+      // when no existing session whereas anonymous use is set, initializing an anonymous session
+      sessionInfo = new SessionInfo(null, UserDetail.getAnonymousUser());
     }
     return sessionInfo;
   }
