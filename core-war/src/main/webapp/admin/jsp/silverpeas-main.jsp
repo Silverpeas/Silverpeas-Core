@@ -61,7 +61,7 @@
   LookHelper helper = LookHelper.getLookHelper(session);
   if (helper == null) {
     helper = LookHelper.newLookHelper(session);
-    helper.setMainFrame("MainFrameSilverpeasV5.jsp");
+    helper.setMainFrame("silverpeas-main.jsp");
     login = true;
   }
 
@@ -101,8 +101,8 @@
     frameBottomParams.append(",'Login':'1'");
   }
 
-  if (!"MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame()) &&
-      !"/admin/jsp/MainFrameSilverpeasV5.jsp".equalsIgnoreCase(helper.getMainFrame())) {
+  if (!"silverpeas-main.jsp".equalsIgnoreCase(helper.getMainFrame()) &&
+      !"/admin/jsp/silverpeas-main.jsp".equalsIgnoreCase(helper.getMainFrame())) {
     session.setAttribute("RedirectToSpaceId", spaceIdFromRedirect);
     String topLocation = gef.getLookFrame();
     if (!topLocation.startsWith("/")) {

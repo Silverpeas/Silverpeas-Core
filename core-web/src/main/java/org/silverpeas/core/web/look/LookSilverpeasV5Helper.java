@@ -80,7 +80,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
   private boolean displayPDCInHomePage = true;
   private List<TopItem> topItems = null;
   private List<String> topSpaceIds = null; // sublist of topItems
-  private String mainFrame = "MainFrameSilverpeasV5.jsp";
+  private String mainFrame = "silverpeas-main.jsp";
   private String spaceId = null;
   private String subSpaceId = null;
   private String componentId = null;

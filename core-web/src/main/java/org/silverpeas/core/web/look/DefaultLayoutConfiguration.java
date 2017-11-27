@@ -45,19 +45,19 @@ public class DefaultLayoutConfiguration implements LayoutConfiguration {
   @Override
   public String getHeaderURL() {
     return defaultStringIfNotDefined(headerURL,
-        settings.getString("layout.header.url", "/admin/jsp/TopBarSilverpeasV5.jsp"));
+        settings.getString("layout.header.url", "/admin/jsp/silverpeas-header-part.jsp"));
   }
 
   @Override
   public String getBodyURL() {
     return defaultStringIfNotDefined(bodyURL,
-        settings.getString("layout.body.url", "/admin/jsp/bodyPartSilverpeasV5.jsp"));
+        settings.getString("layout.body.url", "/admin/jsp/silverpeas-body-part.jsp"));
   }
 
   @Override
   public String getBodyNavigationURL() {
     return defaultStringIfNotDefined(bodyNavigationURL,
-        settings.getString("layout.body.navigation.url", "/admin/jsp/DomainsBarSilverpeasV5.jsp"));
+        settings.getString("layout.body.navigation.url", "/admin/jsp/silverpeas-navigation-part.jsp"));
   }
 
   public void setHeaderURL(String url) {

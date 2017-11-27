@@ -9,7 +9,7 @@ CKEDITOR.editorConfig = function( config )
   // config.language = 'fr';
   // config.uiColor = '#AADC6E';
 
-  //config.contentsCss = webContext + '/util/styleSheets/globalSP_SilverpeasV5.css';
+  //config.contentsCss = webContext + '/util/styleSheets/silverpeas-main.css';
   config.baseHref = webContext + '/wysiwyg/jsp/';
   config.filebrowserImageBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';

@@ -45,7 +45,7 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
 class WebCommonLookAndFeel {
 
   private static final String SILVERPEAS_JS = "silverpeas.js";
-  private static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";
+  private static final String STANDARD_CSS = "/util/styleSheets/silverpeas-main.css";
   private static final String STR_NEW_LINE = "\n";
 
   private static final WebCommonLookAndFeel instance = new WebCommonLookAndFeel();

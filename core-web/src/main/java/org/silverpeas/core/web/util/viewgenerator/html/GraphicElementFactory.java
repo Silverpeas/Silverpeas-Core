@@ -115,7 +115,7 @@ public class GraphicElementFactory {
   protected static final String JQUERYJSON_JS = "jquery.json-2.3.min.js";
   protected static final String I18N_JS = "i18n.properties.js";
   protected static final String JQUERY_MIGRATION = "jquery-migrate-1.4.1.min.js";
-  public static final String STANDARD_CSS = "/util/styleSheets/globalSP_SilverpeasV5.css";
+  public static final String STANDARD_CSS = "/util/styleSheets/silverpeas-main.css";
 
   static {
     lookSettings =

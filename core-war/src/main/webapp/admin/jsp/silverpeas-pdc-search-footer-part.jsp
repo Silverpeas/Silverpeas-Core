@@ -116,7 +116,7 @@ QueryParameters	 parameters			= (QueryParameters) request.getAttribute("QueryPar
   <input type="hidden" name="FromPDCFrame" value="true"/>
   <input type="hidden" name="ShowResults" value="<%=PdcSearchSessionController.SHOWRESULTS_ONLY_PDC %>"/>
   <input type="hidden" name="ResultPage" value=""/>
-  <input type="hidden" name="SearchPage" value="/admin/jsp/pdcSearchSilverpeasV5.jsp"/>
+  <input type="hidden" name="SearchPage" value="/admin/jsp/silverpeas-pdc-search-footer-part.jsp"/>
   <input type="hidden" name="spaces" value="<%=parameters.getSpaceId()%>"/>
   <input type="hidden" name="componentSearch" value="<%=parameters.getInstanceId()%>"/>
   <input type="hidden" name="AxisValueCouples" />

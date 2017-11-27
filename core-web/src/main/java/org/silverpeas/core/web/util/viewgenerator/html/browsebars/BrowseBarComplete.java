@@ -224,7 +224,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     StringBuilder script = new StringBuilder();
     script.append("<script type=\"text/javascript\">");
     script.append("function goSpace(spaceId) {");
-    String mainFrame = "/admin/jsp/MainFrameSilverpeasV5.jsp";
+    String mainFrame = "/admin/jsp/silverpeas-main.jsp";
     if (look != null && StringUtil.isDefined(look.getMainFrame())) {
       mainFrame = look.getMainFrame();
       if (!mainFrame.startsWith("/")) {

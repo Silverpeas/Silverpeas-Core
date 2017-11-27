@@ -289,7 +289,7 @@
         __logDebug("loading PDC part");
         var parameters = extendsObject({
           "action" : PDC_DEFAULT_ACTION,
-          "SearchPage" : "/admin/jsp/pdcSearchSilverpeasV5.jsp"
+          "SearchPage" : "/admin/jsp/silverpeas-pdc-search-footer-part.jsp"
         }, urlParameters);
         var action = parameters.action;
         delete parameters.action;

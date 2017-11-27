@@ -99,7 +99,7 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWithCSSToApply) {
       mainFrame = '/admin/jsp/' + mainFrame;
     }
   } catch (err) {
-    mainFrame = "/admin/jsp/MainFrameSilverpeasV5.jsp";
+    mainFrame = "/admin/jsp/silverpeas-main.jsp";
   }
 
   if (spaceLook !== currentLook || spaceWithCSSToApply !== currentSpaceWithCSSApplied) {

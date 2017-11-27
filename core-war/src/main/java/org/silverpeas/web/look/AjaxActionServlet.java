@@ -62,7 +62,7 @@ public class AjaxActionServlet extends HttpServlet {
   private static final String ACTION_ADD_SPACE = "addSpace";
   private static final String ACTION_REMOVE_SPACE = "removeSpace";
   private static final String ACTION_GET_FRAME = "getFrame";
-  private static final String DEFAULT_JSP_FRAM = "MainFrameSilverpeasV5.jsp";
+  private static final String DEFAULT_JSP_FRAM = "silverpeas-main.jsp";
 
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)

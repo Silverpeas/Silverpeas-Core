@@ -68,7 +68,7 @@
   <!-- optimize mobile versions -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <view:link href="/util/styleSheets/globalSP_SilverpeasV5.css"/>
+  <view:link href="/util/styleSheets/silverpeas-main.css"/>
   <view:includePlugin name="jquery"/>
   <view:script src="/util/javaScript/silverpeas.js"/>
   <view:includePlugin name="mediaPlayer"/>
