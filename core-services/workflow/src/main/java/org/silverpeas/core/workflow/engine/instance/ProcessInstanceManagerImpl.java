@@ -26,6 +26,7 @@ package org.silverpeas.core.workflow.engine.instance;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.util.ArrayUtil;
@@ -43,6 +44,7 @@ import org.silverpeas.core.workflow.engine.WorkflowHub;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Date;
@@ -140,9 +142,9 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
           .orderBy("u.instanceId DESC");
     }
 
-    try {
+    try (Connection connection = DBUtil.openConnection()) {
       final List<Integer> instanceIds = new LinkedList<>();
-      instances = select.execute(r -> {
+      instances = select.executeWith(connection, r -> {
         ProcessInstanceImpl instance = new ProcessInstanceImpl();
         int i = 1;
         final int instanceId = r.getInt(i++);
@@ -159,11 +161,12 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
 
         // getting History
         final RuptureContext<ProcessInstanceImpl> ruptureContext = RuptureContext.newOne(instances);
-        JdbcSqlQuery.createSelect("*")
+        JdbcSqlQuery.executeBySplittingOn(instanceIds, (idBatch, result)-> JdbcSqlQuery
+            .createSelect("*")
             .from("SB_Workflow_HistoryStep")
-            .where("instanceId").in(instanceIds)
+            .where("instanceId").in(idBatch)
             .orderBy("instanceId DESC, id ASC")
-            .execute(r -> {
+            .executeWith(connection, r -> {
               int i = 1;
               final String instanceId = r.getString(i++);
               final HistoryStepImpl historyStep = new HistoryStepImpl(r.getInt(i++));
@@ -177,15 +180,16 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
               findNextRupture(ruptureContext, p -> p.getInstanceId().equals(instanceId))
                   .ifPresent(p -> p.addHistoryStep(historyStep));
               return null;
-            });
+            }));
 
         // getting Active States
         ruptureContext.reset();
-        JdbcSqlQuery.createSelect("*")
+        JdbcSqlQuery.executeBySplittingOn(instanceIds, (idBatch, result)-> JdbcSqlQuery
+            .createSelect("*")
             .from("SB_Workflow_ActiveState")
-            .where("instanceId").in(instanceIds)
+            .where("instanceId").in(idBatch)
             .orderBy("instanceId DESC, id ASC")
-            .execute(rs -> {
+            .executeWith(connection, rs -> {
               int i = 1;
               final ActiveState state = new ActiveState(rs.getInt(i++));
               final String instanceId = rs.getString(i++);
@@ -195,7 +199,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
               findNextRupture(ruptureContext, p -> p.getInstanceId().equals(instanceId))
                   .ifPresent(p -> p.addActiveState(state));
               return null;
-            });
+            }));
       }
 
       return (List) instances;

@@ -63,9 +63,10 @@ public class WorkflowUtil {
   public static Comparable getFieldComparable(Item[] items, FieldTemplate fieldTemplate,
       Field field, String language) {
     final String formattedValue = formatFieldValueAsString(items, fieldTemplate, field, language);
-    if (isDefined(formattedValue) && DateField.TYPE.equals(field.getTypeName())) {
+    if (DateField.TYPE.equals(field.getTypeName())) {
       try {
-        return DateUtil.getDateInputFormat(language).parse(formattedValue);
+        return isDefined(formattedValue) ?
+            DateUtil.getDateInputFormat(language).parse(formattedValue) : null;
       } catch (ParseException e) {
         SilverLogger.getLogger(WorkflowUtil.class).error(e);
       }

@@ -50,7 +50,8 @@ import static org.silverpeas.core.persistence.jdbc.sql.JdbcSqlExecutorProvider.g
  */
 public class JdbcSqlQuery {
 
-  private static final int SPLIT_BATCH = 10000;
+  // The value of 1500 has been chosen after some production problem with some kind of databases...
+  private static final int SPLIT_BATCH = 1500;
   private static final int SPACE_OFFSET_DETECTION = 2;
   private static final int OPEN_PARENTHESIS_OFFSET_DETECTION = 1;
   private static final String NOT_IN_OPERATOR = " NOT IN ";

@@ -476,7 +476,7 @@ public class SpaceResource extends AbstractAdminResource {
    */
   @Override
   public String getComponentId() {
-    throw new UnsupportedOperationException(
-        "The SpaceResource doesn't belong to any component instance ids");
+    // No linked component identifier for spaces...
+    return null;
   }
 }
