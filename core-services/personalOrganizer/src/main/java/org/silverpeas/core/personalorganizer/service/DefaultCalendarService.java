@@ -1104,7 +1104,7 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
         indexEntry = new FullIndexEntry("user@" + userId + "_agenda", "agenda", detail.getId());
       }
       indexEntry.setTitle(detail.getName());
-      indexEntry.setPreView(detail.getDescription());
+      indexEntry.setPreview(detail.getDescription());
       indexEntry.setCreationUser(detail.getDelegatorId());
       IndexEngineProxy.addIndexEntry(indexEntry);
     } catch (Exception e) {

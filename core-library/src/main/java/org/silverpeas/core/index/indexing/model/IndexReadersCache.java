@@ -24,13 +24,14 @@
 package org.silverpeas.core.index.indexing.model;
 
 import org.apache.lucene.index.DirectoryReader;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.FSDirectory;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.store.FSDirectory;
 
 public class IndexReadersCache {
   private static final IndexReadersCache instance = new IndexReadersCache();
@@ -46,12 +47,11 @@ public class IndexReadersCache {
 
   public static synchronized IndexReader getIndexReader(String path) {
     if (!getInstance().indexReaders.containsKey(path)) {
-      try {
-        DirectoryReader iReader = DirectoryReader.open(FSDirectory.open(new File(path).toPath()));
+      try (DirectoryReader iReader = DirectoryReader.open(
+          FSDirectory.open(new File(path).toPath()))) {
         getInstance().indexReaders.put(path, iReader);
       } catch (Exception e) {
-        SilverTrace.warn("searchEngine", "IndexManager.getIndexReader()",
-            "searchEngine.MSG_CANT_OPEN_INDEX_SEARCHER", e);
+        SilverLogger.getLogger(IndexReadersCache.class).error(e);
       }
     }
     return getInstance().indexReaders.get(path);
@@ -63,8 +63,7 @@ public class IndexReadersCache {
       try {
         indexReader.close();
       } catch (IOException e) {
-        SilverTrace.warn("indexing", "IndexManager.removeIndexReader",
-            "indexing.MSG_CANT_CLOSE_INDEX_SEARCHER", path, e);
+        SilverLogger.getLogger(IndexReadersCache.class).error(e);
       }
       getInstance().indexReaders.remove(path);
     }

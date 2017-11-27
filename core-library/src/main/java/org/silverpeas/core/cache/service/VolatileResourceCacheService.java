@@ -118,6 +118,7 @@ public class VolatileResourceCacheService {
       Thread.sleep(1);
     } catch (InterruptedException e) {
       SilverLogger.getLogger(this).error(e);
+      Thread.currentThread().interrupt();
     }
     String currentTime = String.valueOf(System.currentTimeMillis());
     return "-" + currentTime.substring(currentTime.length() - SECOND_OFFSET);
@@ -142,6 +143,7 @@ public class VolatileResourceCacheService {
       Thread.sleep(1);
     } catch (InterruptedException e) {
       SilverLogger.getLogger(this).error(e);
+      Thread.currentThread().interrupt();
     }
     String currentTime = String.valueOf(System.currentTimeMillis());
     return "-" + currentTime.substring(1);

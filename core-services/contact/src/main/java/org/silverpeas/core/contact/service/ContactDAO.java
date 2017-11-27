@@ -141,13 +141,13 @@ public class ContactDAO {
    */
   public static void removeAllIssue(Connection con, NodePK originPK, ContactPK contactPK)
       throws SQLException {
-    ResultSet rs;
     String path = null;
 
     String selectStatement =
         "select nodePath from " + originPK.getTableName() + " where nodeId = ? and instanceId = ?";
 
     PreparedStatement prepStmt = null;
+    ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(selectStatement);
       prepStmt.setInt(1, Integer.parseInt(originPK.getId()));
@@ -157,6 +157,7 @@ public class ContactDAO {
         path = rs.getString(1);
       }
     } finally {
+      DBUtil.close(rs);
       DBUtil.close(prepStmt);
     }
 
@@ -264,7 +265,7 @@ public class ContactDAO {
       return 0;
     } else {
       String selectStatement =
-          "select count(F.contactId) " + " from " + pubPK.getTableName() + "Father F, " +
+          "select count(F.contactId) from " + pubPK.getTableName() + "Father F, " +
               fatherPK.getTableName() + " N " + " where F.nodeId = N.nodeId " +
               " and N.instanceId = ?" + " and N.nodeId = ?" + " and N.nodePath like '" +
               fatherPath + "%'";

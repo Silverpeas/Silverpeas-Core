@@ -26,7 +26,6 @@ package org.silverpeas.core.contribution.content.form.field;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.naming.InitialContext;
 import javax.sql.DataSource;
@@ -49,15 +48,12 @@ public class JdbcField extends TextField {
   /**
    * The jdbc field type name.
    */
-  static public final String TYPE = "jdbc";
+  public static final String TYPE = "jdbc";
   /**
    * The jdbc field dynamic variable userId for regex.
    */
-  static private final String VARIABLE_REGEX_USER_ID = "\\$\\$userId";
+  private static final String VARIABLE_REGEX_USER_ID = "\\$\\$userId";
   private String value = "";
-
-  public JdbcField() {
-  }
 
   /**
    * Returns the type name.
@@ -125,34 +121,16 @@ public class JdbcField extends TextField {
     // parsing query -> dynamic variable
     query = query.replaceAll(VARIABLE_REGEX_USER_ID, currentUserId);
 
-    PreparedStatement prepStmt;
-    ResultSet rs;
-
     if (connection != null) {
-      try {
-        String sqlQuery = (query.toLowerCase().startsWith("select") ? query: "select " + query);
-        prepStmt = connection.prepareStatement(sqlQuery);
-      } catch (SQLException e) {
-        throw new FormException("JdbcField.selectSql",
-            "form.EX_CANT_PREPARE_STATEMENT_JDBC", e);
-      }
-
-      try {
-        rs = prepStmt.executeQuery();
-      } catch (SQLException e) {
-        throw new FormException("JdbcField.selectSql",
-            "form.EX_CANT_EXECUTE_QUERY_JDBC", e);
-      }
-
-      try {
+      final String sqlQuery = (query.toLowerCase().startsWith("select") ? query: "select " + query);
+      try(PreparedStatement prepStmt = connection.prepareStatement(sqlQuery);
+        ResultSet rs = prepStmt.executeQuery()) {
         while (rs.next()) {
           result.add(rs.getString(1));
         }
       } catch (SQLException e) {
         throw new FormException("JdbcField.selectSql",
-            "form.EX_CANT_BROWSE_RESULT_JDBC", e);
-      } finally {
-        DBUtil.close(rs, prepStmt);
+            "form.EX_CANT_EXECUTE_QUERY_JDBC", e);
       }
     }
     return result;

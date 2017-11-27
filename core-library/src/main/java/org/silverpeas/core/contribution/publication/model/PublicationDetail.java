@@ -151,11 +151,11 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   private int nbAccess = 0;
   private Visibility visibility = null;
   // added for export component
-  public static final String DRAFT = "Draft";
-  public static final String VALID = "Valid";
-  public static final String TO_VALIDATE = "ToValidate";
-  public static final String REFUSED = "Unvalidate";
-  public static final String CLONE = "Clone";
+  public static final String DRAFT_STATUS = "Draft";
+  public static final String VALID_STATUS = "Valid";
+  public static final String TO_VALIDATE_STATUS = "ToValidate";
+  public static final String REFUSED_STATUS = "Unvalidate";
+  public static final String CLONE_STATUS = "Clone";
   public static final String TYPE = "Publication";
   private boolean alias = false;
 
@@ -1056,24 +1056,24 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public boolean isClone() {
-    return CLONE.equalsIgnoreCase(getStatus()) ||
+    return CLONE_STATUS.equalsIgnoreCase(getStatus()) ||
         (isDefined(getCloneId()) && !"-1".equals(getCloneId()) && !isDefined(getCloneStatus()));
   }
 
   public boolean isValid() {
-    return VALID.equalsIgnoreCase(getStatus());
+    return VALID_STATUS.equalsIgnoreCase(getStatus());
   }
 
   public boolean isValidationRequired() {
-    return TO_VALIDATE.equalsIgnoreCase(getStatus());
+    return TO_VALIDATE_STATUS.equalsIgnoreCase(getStatus());
   }
 
   public boolean isRefused() {
-    return REFUSED.equalsIgnoreCase(getStatus());
+    return REFUSED_STATUS.equalsIgnoreCase(getStatus());
   }
 
   public boolean isDraft() {
-    return DRAFT.equalsIgnoreCase(getStatus());
+    return DRAFT_STATUS.equalsIgnoreCase(getStatus());
   }
 
   public PublicationPK getClonePK() {
@@ -1175,7 +1175,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
   }
 
   public boolean isIndexable() {
-    return VALID.equals(this.status);
+    return VALID_STATUS.equals(this.status);
   }
 
   public boolean isPublicationEditor(String userId) {

@@ -23,13 +23,12 @@
  */
 package org.silverpeas.core.contribution.content.form.field;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -117,12 +116,9 @@ public class SequenceField extends TextField {
   private List<Integer> getValues(String fieldName, String templateName, String componentId,
       boolean global) {
     List<Integer> values = new ArrayList<>();
-    Connection connection = null;
     PreparedStatement statement = null;
     ResultSet rs = null;
-    try {
-      connection = DBUtil.openConnection();
-
+    try(Connection connection = DBUtil.openConnection()) {
       // if global, all values of same form is gathered between instances
       if (global) {
         statement = connection.prepareStatement(GLOBAL_VALUES_QUERY);
@@ -145,16 +141,9 @@ public class SequenceField extends TextField {
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("form", "SequenceField.getValues", "root.EX_SQL_QUERY_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     } finally {
       DBUtil.close(rs, statement);
-      try {
-        if (connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (SQLException e) {
-        SilverTrace.error("form", "SequenceField.getValues", "root.EX_CONNECTION_CLOSE_FAILED", e);
-      }
     }
 
     Collections.sort(values);
@@ -186,8 +175,7 @@ public class SequenceField extends TextField {
       try {
         return Integer.parseInt(currentNumber);
       } catch (NumberFormatException e) {
-        SilverTrace.error("form", "SequenceField.numberToInt", "form.EX_CANT_PARSE_NUMBER",
-            "number=" + number, e);
+        SilverLogger.getLogger(SequenceField.class).error(e);
       }
     }
     return NUMBER_ERROR;

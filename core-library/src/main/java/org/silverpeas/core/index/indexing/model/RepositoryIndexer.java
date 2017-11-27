@@ -139,9 +139,9 @@ public class RepositoryIndexer {
       boolean haveGotExtension = (fileName.lastIndexOf('.') != -1);
 
       if (haveGotExtension) {
-        fullIndexEntry.setPreView(fileName.substring(0, fileName.lastIndexOf('.')));
+        fullIndexEntry.setPreview(fileName.substring(0, fileName.lastIndexOf('.')));
       } else {
-        fullIndexEntry.setPreView(fileName);
+        fullIndexEntry.setPreview(fileName);
       }
 
       fullIndexEntry.setCreationDate(creationDate);

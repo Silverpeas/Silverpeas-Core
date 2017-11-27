@@ -168,20 +168,20 @@ public class IndexEntry implements Serializable, Cloneable {
   /**
    * Set key words for the index entry.
    */
-  public void setKeyWords(String keywords) {
+  public void setKeywords(String keywords) {
     setKeywords(keywords, null);
   }
 
   public void setKeywords(String keywords, String lang) {
     if (keywords != null) {
-      getKeywords().put(I18NHelper.checkLanguage(lang), keywords);
+      getAllKeywords().put(I18NHelper.checkLanguage(lang), keywords);
     }
   }
 
   /**
    * Return the key words of the index entry.
    */
-  public String getKeyWords() {
+  public String getKeywords() {
     if (getKeywords(null) != null) {
       return getKeywords(null);
     }
@@ -189,11 +189,11 @@ public class IndexEntry implements Serializable, Cloneable {
   }
 
   public String getKeywords(String lang) {
-    String keywords = getKeywords().get(I18NHelper.checkLanguage(lang));
+    String keywords = getAllKeywords().get(I18NHelper.checkLanguage(lang));
     if (!StringUtil.isDefined(keywords)) {
       Set<String> languages = I18NHelper.getAllSupportedLanguages();
       for (String language : languages) {
-        keywords = getKeywords().get(language);
+        keywords = getAllKeywords().get(language);
         if (StringUtil.isDefined(keywords)) {
           return keywords;
         }
@@ -206,7 +206,7 @@ public class IndexEntry implements Serializable, Cloneable {
    * Set a pre-view text for the index entry as it will be displayed at the user when the document
    * will be retrieved.
    */
-  public void setPreView(String preview) {
+  public void setPreview(String preview) {
     setPreview(preview, null);
   }
 
@@ -220,7 +220,7 @@ public class IndexEntry implements Serializable, Cloneable {
    * Return the pre-view text for the index entry as it will be displayed at the user when the
    * document will be retrieved.
    */
-  public String getPreView() {
+  public String getPreview() {
     if (getPreview(null) != null) {
       return getPreview(null);
     }
@@ -408,9 +408,9 @@ public class IndexEntry implements Serializable, Cloneable {
     return previews;
   }
 
-  private Map<String, String> getKeywords() {
+  private Map<String, String> getAllKeywords() {
     if (keywordsI18N == null) {
-      keywordsI18N = new HashMap<String, String>();
+      keywordsI18N = new HashMap<>();
     }
     return keywordsI18N;
   }

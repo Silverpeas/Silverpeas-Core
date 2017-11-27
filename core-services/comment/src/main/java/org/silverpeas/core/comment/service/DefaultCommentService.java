@@ -369,7 +369,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
       FullIndexEntry indexEntry = new FullIndexEntry(component, "Comment"
           + cmt.getCommentPK().getId(), fk);
       indexEntry.setTitle(commentTitle);
-      indexEntry.setPreView(commentMessage);
+      indexEntry.setPreview(commentMessage);
       indexEntry.setCreationDate(cmt.getCreationDate());
       indexEntry.setCreationUser(String.valueOf(cmt.getOwnerId()));
       indexEntry.addTextContent(commentMessage);

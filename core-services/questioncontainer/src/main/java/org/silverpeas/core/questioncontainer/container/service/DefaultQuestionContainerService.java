@@ -73,7 +73,6 @@ import java.util.List;
 import java.util.Map;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
-import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
  * Stateless service to manage question container.
@@ -855,7 +854,7 @@ public class DefaultQuestionContainerService
       indexEntry = new FullIndexEntry(header.getPK().getComponentName(), "QuestionContainer",
           header.getPK().getId());
       indexEntry.setTitle(header.getTitle());
-      indexEntry.setPreView(header.getDescription());
+      indexEntry.setPreview(header.getDescription());
       indexEntry.setCreationDate(header.getCreationDate());
       indexEntry.setCreationUser(header.getCreatorId());
       if (isDefined(header.getBeginDate())) {

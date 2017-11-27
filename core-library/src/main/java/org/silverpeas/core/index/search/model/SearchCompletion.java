@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.index.search.model;
 
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -32,28 +37,18 @@ import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-
 public class SearchCompletion {
 
   private static int pdcMaxRow = 100;
   private static int thesaurusMaxRow = 100;
   private static int keywordMaxRow = 100;
 
-  private final String pdcQuery = "SELECT DISTINCT name FROM sb_tree_tree where lower(name) like ?";
-  private final String thesaurusQuery =
+  private static final String PDC_QUERY =
+      "SELECT DISTINCT name FROM sb_tree_tree where lower(name) like ?";
+  private static final String THESAURUS_QUERY =
       "SELECT DISTINCT name FROM  sb_thesaurus_synonym where lower(name) like ?";
-  private final String keywordsQuery =
+  private static final String KEYWORDS_QUERY =
       "SELECT DISTINCT label FROM sb_tagcloud_tagcloud  where lower(label) like ?";
-
-  /**
-   *
-   */
-  public SearchCompletion() {
-  }
 
   /**
    * gets a list of keyword which start with the query parameter
@@ -64,7 +59,6 @@ public class SearchCompletion {
     query = query.toLowerCase();
     // local variable instantiation
     TreeSet<String> set = new TreeSet<>();
-    Connection con = null;
     PreparedStatement ps = null;
     ResultSet rs = null;
 
@@ -72,14 +66,13 @@ public class SearchCompletion {
         ResourceLocator.getSettingBundle("org.silverpeas.pdcPeas.settings.pdcPeasSettings");
 
     int autocompletionMaxResults = settings.getInteger("autocompletionMaxResults");
-    try {
-      con = DBUtil.openConnection();
+    try(Connection con = DBUtil.openConnection()) {
       // request pdc
-      List<String> pdcList = executeQuery(con, pdcMaxRow, query, pdcQuery);
+      List<String> pdcList = executeQuery(con, pdcMaxRow, query, PDC_QUERY);
       // request thesaurus
-      List<String> thesauruslist = executeQuery(con, thesaurusMaxRow, query, thesaurusQuery);
+      List<String> thesauruslist = executeQuery(con, thesaurusMaxRow, query, THESAURUS_QUERY);
       // request keywords
-      List<String> keywordsList = executeQuery(con, keywordMaxRow, query, keywordsQuery);
+      List<String> keywordsList = executeQuery(con, keywordMaxRow, query, KEYWORDS_QUERY);
 
       // results consolidation
       int numberOfPdcSuggest = getSize(autocompletionMaxResults, pdcList);
@@ -91,19 +84,9 @@ public class SearchCompletion {
       set.addAll(keywordsList.subList(0, numberOfKeywordsSuggest));
 
     } catch (Exception e) {
-      SilverTrace
-          .error("searchEngine", "SearchCompletion.getSuggestions()", "root.EX_SQL_QUERY_FAILED",
-              e);
+      SilverLogger.getLogger(this).error(e);
     } finally {
       DBUtil.close(rs, ps);
-      try {
-        if (con != null && !con.isClosed()) {
-          con.close();
-        }
-      } catch (SQLException e) {
-        SilverTrace.error("searchEngine", "SearchCompletion.getSuggestions()()",
-            "root.EX_CONNECTION_CLOSE_FAILED", e);
-      }
     }
 
     return set;
@@ -137,27 +120,19 @@ public class SearchCompletion {
   private List<String> executeQuery(Connection con, int maxRow, String query, String sqlQuery)
       throws SQLException {
     List<String> list = new ArrayList<>();
-    PreparedStatement ps = null;
-    ResultSet rs = null;
-    try {
-      ps = con.prepareStatement(sqlQuery);
+    try (PreparedStatement ps = con.prepareStatement(sqlQuery)) {
+
       ps.setString(1, query + "%");
       ps.setMaxRows(maxRow);
 
-      rs = ps.executeQuery();
-
-      while (rs.next()) {
-        // TODO is the result can be null ?
-        list.add(rs.getString(1).toLowerCase());
+      try (ResultSet rs = ps.executeQuery()) {
+        while (rs.next()) {
+          String result = rs.getString(1);
+          if (result != null) {
+            list.add(result.toLowerCase());
+          }
+        }
       }
-    } finally {
-      if (rs != null) {
-        rs.close();
-      }
-      if (ps != null) {
-        ps.close();
-      }
-
     }
     return list;
   }

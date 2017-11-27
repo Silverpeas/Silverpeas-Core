@@ -398,7 +398,7 @@ public class IndexSearcher {
       indexEntry.setPreview(doc.get(getFieldName(IndexManager.PREVIEW, language)), language);
     }
 
-    indexEntry.setKeyWords(doc.get(IndexManager.KEYWORDS));
+    indexEntry.setKeywords(doc.get(IndexManager.KEYWORDS));
     indexEntry.setCreationUser(doc.get(IndexManager.CREATIONUSER));
     indexEntry.setCreationDate(parseDate(doc.get(IndexManager.CREATIONDATE)));
     indexEntry.setLastModificationUser(doc.get(IndexManager.LASTUPDATEUSER));

@@ -598,7 +598,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     FullIndexEntry indexEntry = new FullIndexEntry("groups", "GroupRow", group.getId());
     indexEntry.setLastModificationDate(new Date());
     indexEntry.setTitle(group.getName());
-    indexEntry.setPreView(group.getDescription());
+    indexEntry.setPreview(group.getDescription());
 
     // index some group informations
     indexEntry.addField("DomainId", group.getDomainId());

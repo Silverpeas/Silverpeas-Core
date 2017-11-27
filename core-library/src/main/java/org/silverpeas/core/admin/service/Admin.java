@@ -292,7 +292,7 @@ class Admin implements Administration {
     String spaceId = spaceInst.getId();
     FullIndexEntry indexEntry = new FullIndexEntry("Spaces", "Space", spaceId);
     indexEntry.setTitle(spaceInst.getName());
-    indexEntry.setPreView(spaceInst.getDescription());
+    indexEntry.setPreview(spaceInst.getDescription());
     indexEntry.setCreationUser(String.valueOf(spaceInst.getCreatedBy()));
     indexEntry.setCreationDate(spaceInst.getCreateDate());
     indexEntry.setLastModificationUser(String.valueOf(spaceInst.getUpdatedBy()));
@@ -864,7 +864,7 @@ class Admin implements Administration {
       String componentId = componentInst.getId();
       FullIndexEntry indexEntry = new FullIndexEntry("Components", "Component", componentId);
       indexEntry.setTitle(componentInst.getLabel());
-      indexEntry.setPreView(componentInst.getDescription());
+      indexEntry.setPreview(componentInst.getDescription());
       indexEntry.setCreationUser(Integer.toString(componentInst.getCreatedBy()));
       indexEntry.setCreationDate(componentInst.getCreateDate());
       indexEntry.setLastModificationUser(String.valueOf(componentInst.getUpdatedBy()));

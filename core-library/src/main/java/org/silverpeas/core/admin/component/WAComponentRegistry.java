@@ -50,6 +50,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * A registry of Web Application Components available in Silverpeas.
@@ -86,12 +87,15 @@ public class WAComponentRegistry implements Initialization {
   @Override
   public void init() throws Exception {
     Path descriptorHome = getWAComponentDescriptorHome();
-    Files.find(descriptorHome, 2, (p, a) -> p.toFile().isFile() &&
+    try (Stream<Path> paths = Files.find(descriptorHome, 2, (p, a) ->
+        p.toFile().isFile() &&
         "xml".equalsIgnoreCase(FilenameUtils.getExtension(p.toString())) &&
-        !p.getParent().toString().endsWith("personals")).forEach(p -> {
-      WAComponent component = loadComponent(p.toFile());
-      componentsByName.put(component.getName(), component);
-    });
+        !p.getParent().toString().endsWith("personals"))) {
+      paths.forEach(p -> {
+        WAComponent component = loadComponent(p.toFile());
+        componentsByName.put(component.getName(), component);
+      });
+    }
   }
 
   /**

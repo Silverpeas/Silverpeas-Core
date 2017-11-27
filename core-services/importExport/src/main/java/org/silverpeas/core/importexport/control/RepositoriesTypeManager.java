@@ -213,7 +213,7 @@ public class RepositoriesTypeManager {
         pubDetailToSave.setPk(new PublicationPK("unknown", "useless", componentId));
         if ((settings.isDraftUsed() && pdcIE.isClassifyingMandatory(componentId)) || settings.
             isDraftUsed()) {
-          pubDetailToSave.setStatus(PublicationDetail.DRAFT);
+          pubDetailToSave.setStatus(PublicationDetail.DRAFT_STATUS);
           pubDetailToSave.setStatusMustBeChecked(false);
         }
         // Création de la publication

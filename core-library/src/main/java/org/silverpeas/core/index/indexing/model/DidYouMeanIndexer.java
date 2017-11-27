@@ -94,21 +94,19 @@ public class DidYouMeanIndexer {
    */
   public static boolean clearSpellIndex(String pathSpellChecker) {
     boolean isCleared = false;
-    try {
+
       // create a file object with given path
       File file = new File(pathSpellChecker);
-      if (file != null && file.exists()) {
+      if (file.exists()) {
         // create a spellChecker with the file object
-        SpellChecker spell = new SpellChecker(FSDirectory.open(file.toPath()));
-        // if index exists, clears his content
-        if (spell != null) {
-          spell.clearIndex();
-          isCleared = true;
+        try(SpellChecker spell = new SpellChecker(FSDirectory.open(file.toPath()))) {
+          // if index exists, clears his content
+            spell.clearIndex();
+            isCleared = true;
+        } catch (IOException e) {
+          SilverLogger.getLogger(DidYouMeanIndexer.class).error(e);
         }
       }
-    } catch (IOException e) {
-      SilverLogger.getLogger(DidYouMeanIndexer.class).error(e);
-    }
     return isCleared;
   }
 
@@ -137,12 +135,12 @@ public class DidYouMeanIndexer {
    * @param originalIndexDirectory represents the source index path
    */
   public static void createSpellIndexForAllLanguage(String field, String originalIndexDirectory) {
-    String localizedField = field;
+    StringBuilder localizedField = new StringBuilder(field);
     for (String language : I18NHelper.getAllSupportedLanguages()) {
       if (!language.equalsIgnoreCase(DEFAULT_LANGUAGE)) {
-        localizedField = localizedField + "_" + language;
+        localizedField.append("_").append(language);
       }
-      DidYouMeanIndexer.createSpellIndex(localizedField, originalIndexDirectory,
+      DidYouMeanIndexer.createSpellIndex(localizedField.toString(), originalIndexDirectory,
           originalIndexDirectory + SUFFIX_SPELLING_INDEX_PATH);
     }
 

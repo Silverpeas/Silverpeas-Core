@@ -2084,8 +2084,8 @@ public class PublicationDAO {
     try {
       prepStmt = con.prepareStatement(sb.toString());
       prepStmt.setString(1, userId);
-      prepStmt.setString(2, PublicationDetail.DRAFT);
-      prepStmt.setString(3, PublicationDetail.DRAFT);
+      prepStmt.setString(2, PublicationDetail.DRAFT_STATUS);
+      prepStmt.setString(3, PublicationDetail.DRAFT_STATUS);
       rs = prepStmt.executeQuery();
       while (rs.next()) {
         publications.add(resultSet2PublicationDetail(rs, null));

@@ -24,16 +24,15 @@
 package org.silverpeas.core.contribution.content.form.field;
 
 import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -45,16 +44,13 @@ public class TextFieldImpl extends TextField {
 
   private static final long serialVersionUID = 1L;
   private String value = "";
-  private static final String suggestionsQuery = "select distinct(f.fieldValue)"
+  private static final String SUGGESTIONS_QUERY = "select distinct(f.fieldValue)"
       + " from sb_formtemplate_template t, sb_formtemplate_record r, sb_formtemplate_textfield f"
       + " where t.templateId = r.templateId"
       + " and r.recordId = f.recordId"
       + " and f.fieldName = ?"
       + " and t.externalId = ?"
       + " order by f.fieldValue asc";
-
-  public TextFieldImpl() {
-  }
 
   /**
    * Returns the string value of this field.
@@ -84,13 +80,10 @@ public class TextFieldImpl extends TextField {
       String componentId) {
     List<String> suggestions = new ArrayList<>();
 
-    Connection connection = null;
     PreparedStatement statement = null;
     ResultSet rs = null;
-    try {
-      connection = DBUtil.openConnection();
-
-      statement = connection.prepareStatement(suggestionsQuery);
+    try(Connection connection = DBUtil.openConnection()) {
+      statement = connection.prepareStatement(SUGGESTIONS_QUERY);
       statement.setString(1, fieldName);
       statement.setString(2, componentId + ":" + templateName);
 
@@ -104,18 +97,9 @@ public class TextFieldImpl extends TextField {
         }
       }
     } catch (Exception e) {
-      SilverTrace.error("formTemplate", "TextFieldImpl.getSuggestions",
-          "root.EX_SQL_QUERY_FAILED", e);
+      SilverLogger.getLogger(this).error(e);
     } finally {
       DBUtil.close(rs, statement);
-      try {
-        if (connection != null && !connection.isClosed()) {
-          connection.close();
-        }
-      } catch (SQLException e) {
-        SilverTrace.error("formTemplate", "TextFieldImpl.getSuggestions",
-            "root.EX_CONNECTION_CLOSE_FAILED", e);
-      }
     }
     return suggestions;
   }

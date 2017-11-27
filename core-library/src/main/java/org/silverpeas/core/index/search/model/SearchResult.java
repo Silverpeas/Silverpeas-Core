@@ -31,7 +31,6 @@ import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -65,7 +64,7 @@ public class SearchResult extends AbstractI18NBean {
 
   private SearchResult(MatchingIndexEntry mie) {
     setName(mie.getTitle());
-    setDescription(mie.getPreView());
+    setDescription(mie.getPreview());
     this.keywords = mie.getKeywords(null);
 
     this.creationDate = getLocalDate(mie.getCreationDate());

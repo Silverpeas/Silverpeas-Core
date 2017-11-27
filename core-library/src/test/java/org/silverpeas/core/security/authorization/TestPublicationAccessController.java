@@ -1374,7 +1374,7 @@ public class TestPublicationAccessController {
         }
         PublicationDetail publi = new PublicationDetail();
         publi.setPk((PublicationPK) invocation.getArguments()[0]);
-        publi.setStatus(PublicationDetail.VALID);
+        publi.setStatus(PublicationDetail.VALID_STATUS);
         publi.setCreatorId(testContext.isUserThePublicationAuthor ? userId : "otherUserId");
         return publi;
       });

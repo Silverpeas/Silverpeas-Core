@@ -47,6 +47,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 /**
  * A registry of Web Application Personal Components available in Silverpeas.
@@ -108,11 +109,14 @@ public class PersonalComponentRegistry implements Initialization {
   @Override
   public void init() throws Exception {
     Path descriptorHome = getPersonalComponentDescriptorHome();
-    Files.find(descriptorHome, MAX_DEPTH, (p, a) -> Files.isRegularFile(p) &&
-        "xml".equalsIgnoreCase(FilenameUtils.getExtension(p.toString()))).forEach(p -> {
-      PersonalComponent component = loadComponent(p.toFile());
-      componentsByName.put(component.getName(), component);
-    });
+    try (Stream<Path> paths = Files.find(descriptorHome, MAX_DEPTH,
+        (p, a) -> p.toFile().isFile() &&
+            "xml".equalsIgnoreCase(FilenameUtils.getExtension(p.toString())))) {
+      paths.forEach(p -> {
+        PersonalComponent component = loadComponent(p.toFile());
+        componentsByName.put(component.getName(), component);
+      });
+    }
   }
 
   /**

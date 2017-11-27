@@ -1865,7 +1865,7 @@ public class TestSimpleDocumentAccessController {
       when(publicationService.getDetail(any(PublicationPK.class))).then(invocation -> {
         PublicationDetail publi = new PublicationDetail();
         publi.setPk((PublicationPK) invocation.getArguments()[0]);
-        publi.setStatus(PublicationDetail.VALID);
+        publi.setStatus(PublicationDetail.VALID_STATUS);
         publi.setCreatorId(testContext.isUserThePublicationAuthor ? userId : "otherUserId");
         return publi;
       });

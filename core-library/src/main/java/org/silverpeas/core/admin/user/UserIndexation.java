@@ -63,7 +63,7 @@ public class UserIndexation {
         FullIndexEntry indexEntry = new FullIndexEntry(COMPONENT_ID, OBJECT_TYPE, userId);
         indexEntry.setLastModificationDate(new Date());
         indexEntry.setTitle(user.getDisplayedName());
-        indexEntry.setPreView(user.geteMail());
+        indexEntry.setPreview(user.geteMail());
 
         // index some usefull informations
         indexEntry.addField("FirstName", user.getFirstName());

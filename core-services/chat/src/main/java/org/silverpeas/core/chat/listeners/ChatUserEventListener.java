@@ -28,7 +28,6 @@ import org.silverpeas.core.admin.user.notification.UserEvent;
 import org.silverpeas.core.chat.servers.ChatServer;
 import org.silverpeas.core.chat.servers.DefaultChatServer;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 
@@ -38,8 +37,6 @@ import javax.inject.Inject;
  * @author remipassmoilesel
  */
 public class ChatUserEventListener extends CDIResourceEventListener<UserEvent> {
-
-  private SilverLogger logger = SilverLogger.getLogger(this);
 
   @Inject
   @DefaultChatServer

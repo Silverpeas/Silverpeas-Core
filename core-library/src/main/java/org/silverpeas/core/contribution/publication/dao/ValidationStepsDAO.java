@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.contribution.publication.dao;
 
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.contribution.publication.model.ValidationStep;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -31,14 +36,13 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.silverpeas.core.contribution.publication.model.ValidationStep;
-
 public class ValidationStepsDAO {
 
   private static String publicationValidationTableName = "SB_Publication_Validation";
+
+  private ValidationStepsDAO() {
+
+  }
 
   /**
    * Deletes all validation data of publications linked to the component instance represented by
@@ -59,7 +63,7 @@ public class ValidationStepsDAO {
 
   public static void addStep(Connection con, ValidationStep step)
       throws SQLException {
-    StringBuffer insertStatement = new StringBuffer(128);
+    StringBuilder insertStatement = new StringBuilder(128);
     insertStatement.append("insert into ").append(
         publicationValidationTableName).append(" values (?, ?, ?, ?, ?, ?)");
     PreparedStatement prepStmt = null;
@@ -83,7 +87,7 @@ public class ValidationStepsDAO {
 
   public static void removeSteps(Connection con, PublicationPK pubPK)
       throws SQLException {
-    StringBuffer statement = new StringBuffer(128);
+    StringBuilder statement = new StringBuilder(128);
     statement.append("delete from ").append(publicationValidationTableName)
         .append(" where pubId = ? and instanceId = ?");
     PreparedStatement prepStmt = null;
@@ -102,20 +106,20 @@ public class ValidationStepsDAO {
 
   public static List<ValidationStep> getSteps(Connection con, PublicationPK pubPK)
       throws SQLException {
-    List<ValidationStep> steps = new ArrayList<ValidationStep>();
+    List<ValidationStep> steps = new ArrayList<>();
 
-    StringBuffer statement = new StringBuffer(128);
+    StringBuilder statement = new StringBuilder(128);
     statement.append("select * from ").append(publicationValidationTableName)
         .append(
         " where pubId = ? and instanceId = ? order by decisionDate desc");
     PreparedStatement prepStmt = null;
-
+    ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(statement.toString());
 
       prepStmt.setInt(1, Integer.parseInt(pubPK.getId()));
       prepStmt.setString(2, pubPK.getInstanceId());
-      ResultSet rs = prepStmt.executeQuery();
+      rs = prepStmt.executeQuery();
 
       while (rs.next()) {
         ValidationStep step = new ValidationStep();
@@ -129,6 +133,7 @@ public class ValidationStepsDAO {
         steps.add(step);
       }
     } finally {
+      DBUtil.close(rs);
       DBUtil.close(prepStmt);
     }
 
@@ -137,13 +142,13 @@ public class ValidationStepsDAO {
 
   public static ValidationStep getStepByUser(Connection con,
       PublicationPK pubPK, String userId) throws SQLException {
-    StringBuffer statement = new StringBuffer(128);
+    StringBuilder statement = new StringBuilder(128);
     statement.append("select * from ").append(publicationValidationTableName)
         .append(" where pubId = ? and instanceId = ?");
     statement.append(" and userId = ? order by decisionDate desc");
 
     PreparedStatement prepStmt = null;
-
+    ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(statement.toString());
 
@@ -151,7 +156,7 @@ public class ValidationStepsDAO {
       prepStmt.setString(2, pubPK.getInstanceId());
       prepStmt.setInt(3, Integer.parseInt(userId));
 
-      ResultSet rs = prepStmt.executeQuery();
+      rs = prepStmt.executeQuery();
       if (rs.next()) {
         ValidationStep step = new ValidationStep();
 
@@ -164,6 +169,7 @@ public class ValidationStepsDAO {
         return step;
       }
     } finally {
+      DBUtil.close(rs);
       DBUtil.close(prepStmt);
     }
 
