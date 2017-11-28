@@ -47,8 +47,8 @@ public class IndexReadersCache {
 
   public static synchronized IndexReader getIndexReader(String path) {
     if (!getInstance().indexReaders.containsKey(path)) {
-      try (DirectoryReader iReader = DirectoryReader.open(
-          FSDirectory.open(new File(path).toPath()))) {
+      try {
+        DirectoryReader iReader = DirectoryReader.open(FSDirectory.open(new File(path).toPath()));
         getInstance().indexReaders.put(path, iReader);
       } catch (Exception e) {
         SilverLogger.getLogger(IndexReadersCache.class).error(e);
