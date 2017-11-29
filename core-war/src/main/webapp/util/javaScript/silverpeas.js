@@ -1463,6 +1463,41 @@ if (typeof window.sp === 'undefined') {
           var url = webContext + '/services/wysiwyg/editor/' + componentInstanceId + '/' + resourceType + '/' + resourceId;
           return sp.ajaxRequest(url).withParams(params).sendAndPromiseJsonResponse();
         },
+        promiseFirstEditorInstance : function() {
+          var deferred = sp.promise.deferred();
+          whenSilverpeasReady(function() {
+            CKEDITOR.on('instanceReady', function() {
+              var editor;
+              for(var editorName in CKEDITOR.instances) {
+                editor = CKEDITOR.instances[editorName];
+                break;
+              }
+              deferred.resolve(editor);
+            });
+          });
+          return deferred.promise;
+        },
+        promiseEditorInstanceById : function(id) {
+          var deferred = sp.promise.deferred();
+          whenSilverpeasReady(function() {
+            CKEDITOR.on('instanceReady', function() {
+              deferred.resolve(CKEDITOR.instances[id]);
+            });
+          });
+          return deferred.promise;
+        },
+        fullScreenOnMaximize : function(editorIdOrName) {
+          sp.editor.wysiwyg.promiseEditorInstanceById(editorIdOrName).then(function(editor) {
+            editor.on('maximize', function() {
+              var _fullscreen = spLayout.getBody().getContent().toggleFullscreen();
+              spFscreen.onfullscreenchange(function() {
+                if (_fullscreen && spFscreen.fullscreenElement() === null) {
+                  editor.execCommand('maximize');
+                }
+              });
+            });
+          });
+        },
         backupManager : function(options) {
           var instance = new function() {
             var params = extendsObject({
@@ -1471,7 +1506,7 @@ if (typeof window.sp === 'undefined') {
               resourceId : undefined,
               unvalidatedContentCallback : undefined
             }, options);
-            var editor;
+            var _editor;
             var timer = 0;
             var dataOnLastClear;
             var cacheKey = 'sp.editor.wysiwyg.writingCacheHandler_' +
@@ -1481,18 +1516,18 @@ if (typeof window.sp === 'undefined') {
             var cache = new SilverpeasCache(cacheKey);
 
             var __stash = function() {
-              if (typeof dataOnLastClear === 'string' && dataOnLastClear === editor.getData()) {
+              if (typeof dataOnLastClear === 'string' && dataOnLastClear === _editor.getData()) {
                 dataOnLastClear = undefined;
                 return;
               }
-              cache.put("data", editor.getData());
+              cache.put("data", _editor.getData());
             }.bind(this);
             var __unStash = function() {
               if (this.existsUnvalidatedContent()) {
                 if (typeof params.unvalidatedContentCallback === 'function') {
                   params.unvalidatedContentCallback();
                 } else {
-                  editor.setData(this.getUnvalidatedContent());
+                  _editor.setData(this.getUnvalidatedContent());
                 }
                 this.clear(true);
               }
@@ -1513,33 +1548,27 @@ if (typeof window.sp === 'undefined') {
               cache.clear();
             };
 
-            whenSilverpeasReady(function() {
-              CKEDITOR.on('instanceReady', function() {
-                for(var editorName in CKEDITOR.instances) {
-                  if (!editor) {
-                    editor = CKEDITOR.instances[editorName];
-                  }
-                }
-                if (this.existsUnvalidatedContent()) {
-                  var confirmationUrl = webContext +
-                      '/wysiwyg/jsp/confirmUnvalidatedContentExistence.jsp';
-                  var ajaxConfig = sp.ajaxConfig(confirmationUrl);
-                  displaySingleConfirmationPopupFrom(ajaxConfig.getUrl(), {
-                    callback : __unStash,
-                    alternativeCallback : function() {this.clear()}.bind(this)
-                  }).then(function() {
-                    document.querySelector('#unvalidated-wysiwyg-content-container').innerHTML =
-                        this.getUnvalidatedContent();
-                  }.bind(this));
-                }
+            sp.editor.wysiwyg.promiseFirstEditorInstance().then(function(editor) {
+              _editor = editor;
+              if (this.existsUnvalidatedContent()) {
+                var confirmationUrl = webContext +
+                    '/wysiwyg/jsp/confirmUnvalidatedContentExistence.jsp';
+                var ajaxConfig = sp.ajaxConfig(confirmationUrl);
+                displaySingleConfirmationPopupFrom(ajaxConfig.getUrl(), {
+                  callback : __unStash,
+                  alternativeCallback : function() {this.clear()}.bind(this)
+                }).then(function() {
+                  document.querySelector('#unvalidated-wysiwyg-content-container').innerHTML =
+                      this.getUnvalidatedContent();
+                }.bind(this));
+              }
 
-                editor.on('change', function() {
-                  if (timer) {
-                    clearTimeout(timer);
-                  }
-                  timer = setTimeout(__stash, 1000);
-                });
-              }.bind(this));
+              _editor.on('change', function() {
+                if (timer) {
+                  clearTimeout(timer);
+                }
+                timer = setTimeout(__stash, 1000);
+              });
             }.bind(this));
           };
           sp.editor.wysiwyg.lastBackupManager.instance = instance;

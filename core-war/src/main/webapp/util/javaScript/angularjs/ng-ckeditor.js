@@ -25,6 +25,8 @@
               }];
             });
           }
+
+          sp.editor.wysiwyg.fullScreenOnMaximize(editor.name);
         });
 
         return {

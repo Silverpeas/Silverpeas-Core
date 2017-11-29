@@ -260,6 +260,20 @@
       $window.MyMain.location.href = url;
       return promise;
     },
+    toggleFullscreen : function(fullscreen) {
+      if (spFscreen.fullscreenEnabled()) {
+        var _fullscreen = typeof fullscreen === 'undefined' ? !this._lastFullscreen : fullscreen;
+        if (_fullscreen) {
+          var $iframe = this.getContainer().querySelector('iframe');
+          spFscreen.requestFullscreen($iframe);
+        } else if (!_fullscreen) {
+          spFscreen.exitFullscreen();
+        }
+        this._lastFullscreen = _fullscreen;
+        return _fullscreen;
+      }
+      return false;
+    },
     muteMouseEvents : function() {
       var $iframe = this.getContainer().querySelector('iframe');
       $iframe.classList.add('sp-layout-part-on-top-element-drag');

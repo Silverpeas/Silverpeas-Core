@@ -65,7 +65,10 @@ public class WysiwygEditor {
    * @return the String representation of the Javascript instruction.
    */
   public String print() {
+    // Be careful to not change the first Javascript line as some JSP are initializing editor
+    // variables (for example: var editor = <view:wysiwyg .../>).
     String js = "CKEDITOR.replace('" + getReplace() + "', " + this.config.toJSON() + ");\n";
+    js += "sp.editor.wysiwyg.fullScreenOnMaximize('" + getReplace() + "');\n";
     if (activateWysiwygBackupManager) {
       final boolean notVolatileId =
           !getSessionVolatileResourceCacheService().contains(resourceId, componentInstanceId);
