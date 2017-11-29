@@ -26,7 +26,6 @@ package org.silverpeas.core.admin.user;
 import org.silverpeas.core.admin.persistence.OrganizationSchema;
 import org.silverpeas.core.admin.persistence.UserRoleRow;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.RightAssignationContext;
 import org.silverpeas.core.admin.user.dao.RoleDAO;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -39,9 +38,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.silverpeas.core.SilverpeasExceptionMessages.*;
 
@@ -185,138 +182,12 @@ public class ProfileInstManager {
   }
 
   /**
-   * Update group role in objects of component
-   * @param groupManager
-   * @param profileInst
-   * @param groupId
-   * @param rightAssignationMode the data is used from a copy/replace from operation...
-   * @throws AdminException
-   */
-  private void updateGroupRoleOfComponentObjects(GroupManager groupManager, ProfileInst profileInst,
-      String groupId, final RightAssignationContext.MODE rightAssignationMode)
-      throws AdminException, SQLException {
-
-    //First : update role for the group
-    int componentId = Integer.parseInt(profileInst.getComponentFatherId());
-    boolean groupComponentAccess =
-        hasDirectRightsToComponent(groupManager, groupId, true, componentId,
-            rightAssignationMode);
-
-    if(!groupComponentAccess) {
-      //get all component object rights
-      String[] componentObjectRoleIds =
-          organizationSchema.userRole().getAllObjectUserRoleIdsOfInstance(componentId);
-
-      //delete rights for this group to objects of this component
-      for (String userRoleId : componentObjectRoleIds) {
-        if (organizationSchema.userRole()
-            .isGroupDirectlyInRole(idAsInt(groupId), Integer.parseInt(userRoleId))) {
-          organizationSchema.userRole()
-              .removeGroupFromUserRole(idAsInt(groupId), Integer.parseInt(userRoleId));
-        }
-      }
-    }
-
-    //Second : update role for the users of the group
-    //the set of unique user id
-    Set<String> users = new HashSet<>();
-
-    //users directly in group
-    List<String> listUsersGroup = groupManager.getUsersDirectlyInGroup(groupId);
-    for (String userId : listUsersGroup) {
-      users.add(userId);
-    }
-
-    //users in sub groups
-    List<String> listSubGroupIds = groupManager.getAllSubGroupIdsRecursively(groupId);
-    for (String subGroupId : listSubGroupIds) {
-      List<String> listUsersSubGroup = groupManager.getUsersDirectlyInGroup(subGroupId);
-      for (String userId : listUsersSubGroup) {
-        users.add(userId);
-      }
-    }
-
-    //for any user : updateRoleInNodes
-    for(String userId : users) {
-      updateUserRoleOfComponentObjects(groupManager, profileInst, userId,
-          rightAssignationMode);
-    }
-  }
-
-  /**
-   * Indicates if the user has access to a component without searching into right objects managed
-   * by the component.
-   * @param groupManager
-   * @param resourceId
-   * @param isGroupResource
-   * @param instanceId
-   * @param rightAssignationMode the data is used from a copy/replace from operation...
-   * @return true if the user has access to the given component
-   * @throws AdminException
-   */
-  private boolean hasDirectRightsToComponent(final GroupManager groupManager, String resourceId,
-      boolean isGroupResource, int instanceId,
-      final RightAssignationContext.MODE rightAssignationMode) throws AdminException {
-    final List<String> roleIds;
-    if (isGroupResource) {
-      roleIds = getDirectComponentProfileIds(null, Collections.singletonList(resourceId),
-          instanceId);
-    } else {
-      List<String> allGroupIdsOfUser = null;
-      if (!RightAssignationContext.MODE.REPLACE.equals(rightAssignationMode)) {
-        allGroupIdsOfUser = groupManager.getAllGroupsOfUser(resourceId);
-      }
-      roleIds = getDirectComponentProfileIds(resourceId, allGroupIdsOfUser, instanceId);
-    }
-    return !roleIds.isEmpty();
-  }
-
-  /**
-   * Update user role in objects of component
-   * @param groupManager
-   * @param profileInst
-   * @param userId
-   * @param rightAssignationMode the data is used from a copy/replace from operation...
-   * @throws AdminException
-   * */
-  private void updateUserRoleOfComponentObjects(final GroupManager groupManager,
-      ProfileInst profileInst, String userId,
-      final RightAssignationContext.MODE rightAssignationMode) throws AdminException, SQLException {
-
-    int componentId = Integer.parseInt(profileInst.getComponentFatherId());
-    boolean userComponentAccess =
-        hasDirectRightsToComponent(groupManager, userId, false, componentId,
-            rightAssignationMode);
-
-    if (!userComponentAccess) {
-      //get all object rights of this component
-      String[] componentObjectRoleIds =
-          organizationSchema.userRole().getAllObjectUserRoleIdsOfInstance(componentId);
-
-      //delete rights for this user to Nodes of this component
-      for (String userRoleId : componentObjectRoleIds) {
-        if (organizationSchema.userRole()
-            .isUserDirectlyInRole(idAsInt(userId), Integer.parseInt(userRoleId))) {
-          organizationSchema.userRole()
-              .removeUserFromUserRole(idAsInt(userId), Integer.parseInt(userRoleId));
-        }
-      }
-    }
-  }
-
-  /**
    * Update profile instance.
    * The method take into account the Node Rights of users or groups.
-   * @param groupManager
    * @param profileInstNew
-   * @param rightAssignationMode the data is used from a copy/replace from operation. It is not a
-   * nice way to handle this kind of information, but it is not possible to refactor the right
-   * services.
    * @throws AdminException
    */
-  public String updateProfileInst(GroupManager groupManager, ProfileInst profileInstNew,
-      final RightAssignationContext.MODE rightAssignationMode)
-      throws AdminException {
+  public String updateProfileInst(ProfileInst profileInstNew) throws AdminException {
     ProfileInst profileInst = getProfileInst(profileInstNew.getId());
 
     try {
@@ -341,10 +212,6 @@ public class ProfileInstManager {
           // delete the link between the profile and the group
           organizationSchema.userRole().removeGroupFromUserRole(
               idAsInt(groupId), idAsInt(profileInst.getId()));
-
-          //update group role for objects of component
-          updateGroupRoleOfComponentObjects(groupManager, profileInst, groupId,
-              rightAssignationMode);
         }
       }
 
@@ -369,10 +236,6 @@ public class ProfileInstManager {
           // delete the link between the profile and the user
           organizationSchema.userRole().removeUserFromUserRole(
               idAsInt(userId), idAsInt(profileInst.getId()));
-
-          //update user role in nodes of component
-          updateUserRoleOfComponentObjects(groupManager, profileInst, userId,
-              rightAssignationMode);
         }
       }
 
@@ -412,31 +275,6 @@ public class ProfileInstManager {
       throw new AdminException(failureOnGetting(PROFILES_OF_USER, sUserId), e);
     } finally {
       DBUtil.close(con);
-    }
-  }
-
-  /**
-   * Get all the profiles Id for the given user and componentId
-   * @param sUserId
-   * @param groupIds
-   * @param componentId
-   * @return ids
-   * @throws AdminException
-   */
-  private List<String> getDirectComponentProfileIds(String sUserId, List<String> groupIds,
-      int componentId) throws AdminException {
-    try (Connection con = DBUtil.openConnection()) {
-      List<UserRoleRow> roles = RoleDAO.getRoles(con, groupIds, idAsInt(sUserId), componentId);
-      List<String> roleIds = new ArrayList<>();
-
-      for (UserRoleRow role : roles) {
-        roleIds.add(Integer.toString(role.id));
-      }
-
-      return roleIds;
-
-    } catch (Exception e) {
-      throw new AdminException(failureOnGetting(PROFILES_OF_USER, sUserId), e);
     }
   }
 

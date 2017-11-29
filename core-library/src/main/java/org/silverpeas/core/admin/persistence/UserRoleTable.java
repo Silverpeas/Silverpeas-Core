@@ -298,7 +298,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @return
    * @throws SQLException
    */
-  public boolean isUserDirectlyInRole(int userId, int userRoleId) throws SQLException {
+  private boolean isUserDirectlyInRole(int userId, int userRoleId) throws SQLException {
     int[] ids = new int[] { userId, userRoleId };
     Integer result = getInteger(SELECT_COUNT_USERROLE_USER_REL, ids);
     return result != null && result >= 1;
@@ -340,9 +340,6 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws SQLException
    */
   public void removeUserFromUserRole(int userId, int userRoleId) throws SQLException {
-    if (!isUserDirectlyInRole(userId, userRoleId)) {
-      throw new SQLException("user " + userId + " isn't in role " + userRoleId);
-    }
     int[] params = new int[] { userRoleId, userId };
     SynchroDomainReport.debug("UserRoleTable.removeUserFromUserRole()",
         "Retrait de l'utilisateur d'ID " + userId + " du role d'ID "
@@ -390,8 +387,7 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @return
    * @throws SQLException
    */
-  public boolean isGroupDirectlyInRole(int groupId, int userRoleId)
-      throws SQLException {
+  private boolean isGroupDirectlyInRole(int groupId, int userRoleId) throws SQLException {
     int[] ids = new int[] { groupId, userRoleId };
     Integer result = getInteger(SELECT_COUNT_USERROLE_GROUP_REL, ids);
 
@@ -433,10 +429,6 @@ public class UserRoleTable extends Table<UserRoleRow> {
    * @throws SQLException
    */
   public void removeGroupFromUserRole(int groupId, int userRoleId) throws SQLException {
-    if (!isGroupDirectlyInRole(groupId, userRoleId)) {
-      throw new SQLException("group " + groupId + " isn't in role " + userRoleId);
-    }
-
     int[] params = new int[] { userRoleId, groupId };
     SynchroDomainReport.debug("UserRoleTable.removeGroupFromUserRole()",
         "Retrait du groupe d'ID " + groupId + " du role d'ID " + userRoleId

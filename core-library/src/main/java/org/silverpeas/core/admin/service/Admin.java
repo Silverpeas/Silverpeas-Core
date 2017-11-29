@@ -499,8 +499,7 @@ class Admin implements Administration {
    * @param spaceId client space id
    * @return Space information as SpaceInst object
    */
-  private SpaceInst getSpaceInstById(int spaceId)
-      throws AdminException {
+  private SpaceInst getSpaceInstById(int spaceId) throws AdminException {
     try {
       SpaceInst spaceInst = cache.getSpaceInst(spaceId);
       if (spaceInst == null) {
@@ -1130,7 +1129,11 @@ class Admin implements Administration {
 
     if (persist) {
       for (SpaceProfileInst profile : subSpace.getInheritedProfiles()) {
-        addSpaceProfileInst(profile, null);
+        if (StringUtil.isDefined(profile.getId())) {
+          updateSpaceProfileInst(profile, null);
+        } else {
+          addSpaceProfileInst(profile, null);
+        }
       }
     }
   }
@@ -1233,6 +1236,58 @@ class Admin implements Administration {
           "Fail to set profiles of space " + space.getId() + " to component" + component.getId(),
           e);
     }
+
+    // Now that rights are applied on component, check rights on component objects to delete
+    // groups or users who have no more rights on component
+    checkObjectsProfiles(component.getId());
+  }
+
+  private void checkObjectsProfiles(String componentId) throws AdminException {
+    List<ProfileInst> objectsProfiles = null;
+    int shortComponentId = getDriverComponentId(componentId);
+    try {
+      objectsProfiles = profiledObjectManager.getProfiles(shortComponentId);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this)
+          .warn("Error when getting all component objects profiles " + componentId, e);
+    }
+    for (ProfileInst objectProfile : objectsProfiles) {
+      try {
+        List<String> groupIdsToRemove = new ArrayList<String>();
+        List<String> userIdsToRemove = new ArrayList<String>();
+        List<String> groupIds = objectProfile.getAllGroups();
+        for (String groupId : groupIds) {
+          if (!isComponentAvailableByGroup(componentId, groupId)) {
+            groupIdsToRemove.add(groupId);
+          }
+        }
+        List<String> userIds = objectProfile.getAllUsers();
+        for (String userId : userIds) {
+          if (!isComponentAvailable(componentId, userId)) {
+            userIdsToRemove.add(userId);
+          }
+        }
+        if (!groupIdsToRemove.isEmpty() || !userIdsToRemove.isEmpty()) {
+          for (String groupId : groupIdsToRemove) {
+            objectProfile.removeGroup(groupId);
+          }
+          for (String userId : userIdsToRemove) {
+            objectProfile.removeUser(userId);
+          }
+          profileManager.updateProfileInst(objectProfile);
+        }
+      } catch (Exception e) {
+        SilverLogger.getLogger(this)
+            .warn("Error when checking object profile " + objectProfile.getId(), e);
+      }
+    }
+  }
+
+  private boolean isComponentAvailableByGroup(String componentId, String groupId)
+      throws AdminException {
+      List<String> groupIds = groupManager.getPathToGroup(groupId);
+      groupIds.add(groupId);
+      return componentManager.getAllowedComponentIds(-1, groupIds).contains(componentId);
   }
 
   @Override
@@ -1261,13 +1316,13 @@ class Admin implements Administration {
     if (useProfileInheritance) {
       space = spaceManager.getSpaceInstById(shortSpaceId);
 
-      // inherited rights must be removed but local rights are preserved
-      List<SpaceProfileInst> inheritedProfiles = space.getInheritedProfiles();
-      for (SpaceProfileInst profile : inheritedProfiles) {
-        deleteSpaceProfileInst(profile.getId());
-      }
-
-      if (!moveOnTop) {
+      if (moveOnTop) {
+        // inherited rights must be removed but local rights are preserved
+        List<SpaceProfileInst> inheritedProfiles = space.getInheritedProfiles();
+        for (SpaceProfileInst profile : inheritedProfiles) {
+          deleteSpaceProfileInst(profile.getId());
+        }
+      } else {
         if (!space.isInheritanceBlocked()) {
           // space inherits rights from parent
           space = spaceManager.getSpaceInstById(shortSpaceId);
@@ -1317,6 +1372,11 @@ class Admin implements Administration {
     addSpaceInTreeCache(spaceManager.getSpaceInstLightById(shortSpaceId), false);
     if (!moveOnTop) {
       TreeCache.setSubspaces(shortFatherId, spaceManager.getSubSpaces(shortFatherId));
+    }
+
+    String[] allComponentIds = getAllComponentIdsRecur(spaceId);
+    for (String componentId : allComponentIds) {
+      checkObjectsProfiles(componentId);
     }
   }
 
@@ -1570,7 +1630,7 @@ class Admin implements Administration {
       final RightAssignationContext.MODE rightAssignationMode)
       throws AdminException {
     try {
-      profileManager.updateProfileInst(groupManager, newProfile, rightAssignationMode);
+      profileManager.updateProfileInst(newProfile);
       if (StringUtil.isDefined(
           userId) && (newProfile.getObjectId() == -1 || newProfile.getObjectId() == 0)) {
         int driverFatherId = getDriverComponentId(newProfile.getComponentFatherId());
@@ -3774,7 +3834,7 @@ class Admin implements Administration {
   }
 
   @Override
-  public String[] getAllComponentIdsRecur(String sSpaceId) throws Exception {
+  public String[] getAllComponentIdsRecur(String sSpaceId) throws AdminException {
     List<ComponentInstLight> components = TreeCache.getComponentsInSpaceAndSubspaces(
         getDriverSpaceId(sSpaceId));
 
