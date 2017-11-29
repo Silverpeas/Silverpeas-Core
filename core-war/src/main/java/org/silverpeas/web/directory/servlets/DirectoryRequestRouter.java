@@ -123,7 +123,12 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
         users = directorySC.getCommonContacts(userId);
         destination = doPagination(request, users, directorySC);
       } else if ("searchByKey".equalsIgnoreCase(function)) {
-        QueryDescription query = directorySC.buildQuery(request.getFileItems());
+        QueryDescription query = null;
+        if (request.isContentInMultipart()) {
+          query = directorySC.buildQuery(request.getFileItems());
+        } else {
+          query = directorySC.buildSimpleQuery(request.getParameter("queryDirectory"));
+        }
         boolean globalSearch = request.getParameterAsBoolean("Global");
 
         if (query != null && !query.isEmpty()) {
@@ -211,6 +216,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
     request.setAttribute("Query", directorySC.getCurrentQuery());
     request.setAttribute("Sort", directorySC.getCurrentSort());
     request.setAttribute("ShowHelp", false);
+    request.setAttribute("QuickUserSelectionEnabled", directorySC.isQuickUserSelectionEnabled());
     if (!doNotUseExtraForm) {
       request.setAttribute("ExtraForm", directorySC.getExtraForm());
       request.setAttribute("ExtraFormContext", directorySC.getExtraFormContext());

@@ -2405,6 +2405,56 @@ caption {
   margin-right: 5px;
 }
 
+#directory #indexAndSearch #search #select-user-group-directory .search-input-container {
+  display: inline-block;
+  min-width: auto;
+  width: 100%;
+}
+
+#directory #indexAndSearch #search #select-user-group-directory {
+  display: inline-block;
+  width: 30%;
+  vertical-align: bottom;
+}
+
+#directory #indexAndSearch #extraForm #extraForm-button {
+  text-align: center;
+  margin-top: 0.75em;
+}
+
+#directory #indexAndSearch #search a#clear::before,
+#directory #indexAndSearch #search a#advanced::before ,
+#directory #indexAndSearch #search a#help::before {
+  content: ' ';
+  display: inline-block;
+  background: url(../icons/arrow/refresh.png) 0 0 no-repeat;
+  padding-left: 20px;
+  opacity: 0.7;
+  width: 0;
+  height: 17px;
+  vertical-align: sub;
+}
+
+
+#directory #indexAndSearch #search a#clear:hover::before,
+#directory #indexAndSearch #search a#advanced:hover::before ,
+#directory #indexAndSearch #search a#help:hover::before {
+  opacity: 1;
+}
+
+#directory #indexAndSearch #search a#advanced.advanced::before {
+  background: url(../icons/advancedSearch.png) 0 4px no-repeat;
+}
+
+/* si on veut modifier l'icone pour avancée / simple */
+#directory #indexAndSearch #search a#advanced.simple::before {
+  background: url(../icons/search.png) 0 4px no-repeat;
+}
+
+#directory #indexAndSearch #search a#help::before {
+  background: url(../icons/help2.png) 0 4px no-repeat;
+}
+
 #directory #indexAndSearch #search #help,
 #directory #indexAndSearch #search #clear {
   line-height: 20px;
