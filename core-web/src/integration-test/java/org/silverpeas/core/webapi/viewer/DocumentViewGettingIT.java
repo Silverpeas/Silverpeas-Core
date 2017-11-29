@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 @RunWith(Arquillian.class)
 public class DocumentViewGettingIT extends ResourceGettingTest {
 
-  private String sessionKey;
+  private String apiToken;
   private DocumentView expected;
   private ComponentInst component;
 
@@ -111,7 +111,7 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
   @Before
   public void prepareTestResources() {
     component = getSilverpeasEnvironmentTest().getDummyPublicComponent();
-    sessionKey = getTokenKeyOf(getSilverpeasEnvironmentTest().createDefaultUser());
+    apiToken = getTokenKeyOf(getSilverpeasEnvironmentTest().createDefaultUser());
     expected = DocumentViewBuilder.getDocumentViewBuilder()
         .buildFileName("documentViewId", "originalFileName7");
   }
@@ -143,8 +143,8 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
   }
 
   @Override
-  public String getTokenKey() {
-    return sessionKey;
+  public String getAPITokenValue() {
+    return apiToken;
   }
 
   @Override

@@ -29,6 +29,7 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 
 /**
@@ -51,13 +52,31 @@ public interface UserPrivilegeValidation {
   String HTTP_PARAMKEY = "sptkn";
 
   /**
+   * The name of the standard URI query parameter and of the standard form-encoded parameter
+   * in an HTTP request to use in a token based authentication mechanism like for example OAuth2.
+   */
+  String HTTP_ACCESS_TOKEN = "access_token";
+
+  /**
    * The standard HTTP header parameter in an incoming request that carries user credentials
    * information in order to open an authorized connexion with the web service that backs the
-   * refered resource. This parameter must be used when requests aren't sent through an opened HTTP
-   * session. It should be the prefered way for a REST client to access resources in Silverpeas as
+   * referred resource. This parameter must be used when requests aren't sent through an opened HTTP
+   * session. It should be the preferred way for a REST client to access resources in Silverpeas as
    * it offers better scalability.
    */
   String HTTP_AUTHORIZATION = "Authorization";
+
+  /**
+   * The standard keyword qualifying a basic HTTP authentication used in the value of an
+   * Authorization HTTP header.
+   */
+  String HTTP_BASIC_AUTHORIZATION = "Basic";
+
+  /**
+   * The standard keyword qualifying an HTTP authentication built upon a token based mechanism like
+   * for example OAuth2. The keyword is used in the value of an Authorization HTTP header.
+   */
+  String HTTP_TOKEN_AUTHORIZATION = "Bearer";
 
   static UserPrivilegeValidation get() {
     return ServiceProvider.getService(UserPrivilegeValidation.class);
@@ -69,17 +88,20 @@ public interface UserPrivilegeValidation {
    * The validation checks first the user is already authenticated and then it has a valid opened
    * session in Silverpeas. Otherwise it attempts to open a new session for the user by using its
    * credentials passed through the request (as an HTTP header). Once the authentication succeed,
-   * the identification of the user is done and detail about it can then be got. A runtime exception
+   * the identification of the user is done and detail about it can then be got, and the session
+   * information is set in the header(s) of the HTTP response. A runtime exception
    * is thrown with an HTTP status code UNAUTHORIZED (401) at validation failure. The validation
-   * fails when one of the belowed situation is occuring: <ul> <li>The user session key is
+   * fails when one of the bellowed situation is occurring: <ul> <li>The user session key is
    * invalid;</li> <li>The user isn't authenticated and no credentials are passed with the
    * request;</li> <li>The user authentication failed.</li> </ul>
    *
    * @param request the HTTP request from which the authentication of the caller can be done.
+   * @param response the HTTP response that will be sent with the session information set in the
+   * header(s).
    * @return the opened session of the user at the origin of the specified request.
    * @throws WebApplicationException exception if the validation failed.
    */
-  SessionInfo validateUserAuthentication(HttpServletRequest request) throws WebApplicationException;
+  SessionInfo validateUserAuthentication(HttpServletRequest request, HttpServletResponse response);
 
   /**
    * Sets into the request attributes the {@link
@@ -97,8 +119,7 @@ public interface UserPrivilegeValidation {
    * @param instanceId the unique identifier of the accessed component instance.
    * @throws WebApplicationException exception if the validation failed.
    */
-  void validateUserAuthorizationOnComponentInstance(User user, String instanceId)
-              throws WebApplicationException;
+  void validateUserAuthorizationOnComponentInstance(User user, String instanceId);
 
   /**
    * Validates the authorization of the specified user to access the specified attachment.
@@ -109,5 +130,5 @@ public interface UserPrivilegeValidation {
    * @throws WebApplicationException exception if the validation failed.
    */
   void validateUserAuthorizationOnAttachment(HttpServletRequest request, User user,
-      SimpleDocument doc) throws WebApplicationException;
+      SimpleDocument doc);
 }

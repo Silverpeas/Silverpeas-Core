@@ -87,10 +87,10 @@ public class SilverpeasEnvironmentTest {
   }
 
   /**
-   * Gets the token of a user that must be passed into request header with parameter
-   * "X-Silverpeas-Size".
+   * Gets the token of a user that must be passed into the request header "Authorization" as a
+   * value of a bearer authorization scheme.
    * @param userDetail the user details for which the token is needed.
-   * @return the token of the given user.
+   * @return the API token of the given user.
    */
   public String getTokenOf(UserDetail userDetail) {
     try {

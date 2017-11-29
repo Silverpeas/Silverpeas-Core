@@ -178,7 +178,7 @@ public class PersistentResourceToken
   }
 
   /**
-   * Indicates if the token is well registred
+   * Indicates if the token is well registered
    *
    * @return a boolean indicating if this token exists in the data source.
    */

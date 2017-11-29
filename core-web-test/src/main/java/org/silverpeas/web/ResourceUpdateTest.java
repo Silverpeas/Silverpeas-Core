@@ -81,8 +81,8 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
     return uri;
   }
 
-  private static String withAsSessionKey(String sessionKey) {
-    return sessionKey;
+  private static String withAsApiToken(String apiTokenValue) {
+    return apiTokenValue;
   }
 
   /**
@@ -93,13 +93,13 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
    * @return
    */
   public <C> C putAt(String uri, C newResourceState) {
-    return put(newResourceState, at(uri), withAsSessionKey(getTokenKey()));
+    return put(newResourceState, at(uri), withAsApiToken(getAPITokenValue()));
   }
 
   @Test
   public void updateOfAResourceByANonAuthenticatedUser() {
     try {
-      put(aResource(), at(aResourceURI()), withAsSessionKey(null));
+      put(aResource(), at(aResourceURI()), withAsApiToken(null));
       fail("A non authenticated user shouldn't update the resource");
     } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -111,7 +111,7 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
   @Test
   public void updateOfAResourceWithinADeprecatedSession() {
     try {
-      put(aResource(), at(aResourceURI()), withAsSessionKey(UUID.randomUUID().toString()));
+      put(aResource(), at(aResourceURI()), withAsApiToken(UUID.randomUUID().toString()));
       fail("A user shouldn't update the resource through an expired session");
     } catch (WebApplicationException ex) {
       int receivedStatus = ex.getResponse().getStatus();
@@ -169,7 +169,7 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
   }
 
   @SuppressWarnings("unchecked")
-  private <E> E put(final E entity, String atURI, String withSessionKey) {
+  private <E> E put(final E entity, String atURI, String apiTokenValue) {
     String thePath = atURI;
     String queryParams = "";
     WebTarget resource = resource();
@@ -180,8 +180,9 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
     }
     Invocation.Builder resourcePutter = applyQueryParameters(queryParams, resource.path(thePath))
         .request(MediaType.APPLICATION_JSON);
-    if (isDefined(withSessionKey)) {
-      resourcePutter = resourcePutter.header(HTTP_SESSIONKEY, withSessionKey);
+    if (isDefined(apiTokenValue)) {
+      resourcePutter =
+          resourcePutter.header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(apiTokenValue));
     }
     Class<E> c = (Class<E>) entity.getClass();
     return resourcePutter.put(Entity.entity(entity, MediaType.APPLICATION_JSON), c);
