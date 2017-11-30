@@ -62,7 +62,7 @@ public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<Attendee
         .from(User.getCurrentRequester())
         .to(attendee)
         .about(operation, attendee)
-            .build();
+        .build();
     notification.send();
   }
 
@@ -90,7 +90,7 @@ public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<Attendee
           .from(User.getCurrentRequester())
           .to(after)
           .about(operation, after)
-              .build();
+          .build();
       notification.send();
     } else if (before.getParticipationStatus() != after.getParticipationStatus()) {
       if (after.getParticipationStatus() == Attendee.ParticipationStatus.AWAITING) {
@@ -115,7 +115,7 @@ public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<Attendee
             new AttendeeNotificationBuilder(event.getEventOrOccurrence(), NotifAction.UPDATE)
                 .immediately()
                 .from(User.getCurrentRequester())
-                .to(concernedAttendeesIn(after.getCalendarComponent()))
+                .to(ownerOf(after.getCalendarComponent()))
                 .about(operation, after)
                 .build();
         notification.send();
@@ -140,7 +140,7 @@ public class CalendarComponentAttendeeNotifier extends AttendeeNotifier<Attendee
         .from(User.getCurrentRequester())
         .to(attendee)
         .about(operation, attendee)
-            .build();
+        .build();
     notification.send();
   }
 }
