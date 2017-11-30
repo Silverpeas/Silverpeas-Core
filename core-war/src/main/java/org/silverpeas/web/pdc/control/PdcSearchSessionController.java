@@ -25,6 +25,8 @@ package org.silverpeas.web.pdc.control;
 
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.component.model.SilverpeasComponent;
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.model.User;
@@ -69,6 +71,7 @@ import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeExcepti
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MimeTypes;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.Pair;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
@@ -137,6 +140,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private static final String TOOLBOX_COMPONENT = "toolbox";
   private static final String GALLERY_COMPONENT = "gallery";
   private static final String SILVER_CRAWLER_COMPONENT = "silverCrawler";
+  private static final String DIRECTORY_SERVICE = "users";
   private static String[] KEYWORDS = null;
   // Container and Content Peas
   private SearchContext searchContext = null;
@@ -532,14 +536,25 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private void processFacetComponent(Facet facet, GlobalSilverResult result, List<String> blackList) {
     String instanceId = result.getInstanceId();
-    String location = result.getLocation();
     String type = result.getType();
-    if (!blackList.contains(type) && StringUtil.isDefined(location)) {
-      String appLocation = location.substring(location.lastIndexOf(LOCATION_SEPARATOR) + 1);
-      FacetEntryVO facetEntry = new FacetEntryVO(appLocation, instanceId);
-      if (getSelectedFacetEntries() != null &&
-          instanceId.equals(getSelectedFacetEntries().getComponentId())) {
-        facetEntry.setSelected(true);
+    if (!blackList.contains(type)) {
+      FacetEntryVO facetEntry = facet.getEntryById(instanceId);
+      if (facetEntry == null) {
+        Mutable<String> appLabel = Mutable.empty();
+        SilverpeasComponentInstance.getById(instanceId)
+            .ifPresent(c -> appLabel.set(c.getLabel(getLanguage())));
+        String appLocation = appLabel.orElse("");
+        if (StringUtil.isNotDefined(appLocation) && DIRECTORY_SERVICE.equals(instanceId)) {
+          appLocation = getString("pdcPeas.facet.service.directory");
+        }
+        if (StringUtil.isDefined(appLocation)) {
+          facetEntry = new FacetEntryVO(appLocation, instanceId);
+
+          if (getSelectedFacetEntries() != null &&
+              instanceId.equals(getSelectedFacetEntries().getComponentId())) {
+            facetEntry.setSelected(true);
+          }
+        }
       }
       facet.addEntry(facetEntry);
     }
@@ -1003,7 +1018,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           place = user.getDisplayedName() + " " + LOCATION_SEPARATOR + " " + component;
         } else if ("pdc".equals(componentId)) {
           place = getString("pdcPeas.pdc");
-        } else if ("users".equals(componentId)) {
+        } else if (DIRECTORY_SERVICE.equals(componentId)) {
           place = "";
         } else {
           place = getLocation(componentId);
@@ -2103,7 +2118,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       query.addComponent("Spaces");
       query.addComponent("Components");
       if (includeUsers) {
-        query.addComponent("users");
+        query.addComponent(DIRECTORY_SERVICE);
       }
     } else if (getQueryParameters().getSpaceId() != null) {
       // used for search by space without keywords

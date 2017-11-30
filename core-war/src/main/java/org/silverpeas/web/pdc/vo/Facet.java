@@ -61,7 +61,7 @@ public class Facet {
   }
 
   public void addEntry(FacetEntryVO entry) {
-    if (StringUtil.isDefined(entry.getName())) {
+    if (entry != null && StringUtil.isDefined(entry.getName())) {
       int index = entries.indexOf(entry);
       if (index == -1) {
         entries.add(entry);
@@ -83,6 +83,15 @@ public class Facet {
     }
 
     return true;
+  }
+
+  public FacetEntryVO getEntryById(String id) {
+    for (FacetEntryVO entry : entries) {
+      if (entry.getId().equals(id)) {
+        return entry;
+      }
+    }
+    return null;
   }
 
 

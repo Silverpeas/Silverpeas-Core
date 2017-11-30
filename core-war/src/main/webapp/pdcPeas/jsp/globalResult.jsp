@@ -327,7 +327,7 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 		document.AdvancedSearch.action 		= "AdvancedSearch";
 
 		$.progressMessage();
-	setTimeout("document.AdvancedSearch.submit();", 500);
+	  setTimeout("document.AdvancedSearch.submit();", 500);
 	}
 
 	// This javascript method submit form in order to filter existing results
@@ -415,7 +415,16 @@ function markAsRead(id) {
                 minLength: <%=autocompletionMinChars%>
       });
 	    <%}%>
-	  });
+
+    $("#query").keypress(function(e) {
+      if (e.which == 13) {
+        e.preventDefault();
+        sendQuery();
+        return false;
+      }
+      return true;
+    });
+  });
 
 function showExternalSearchError() {
   $("#externalSearchErrorDivId").dialog();
@@ -478,7 +487,7 @@ function viewFile(target, attachmentId, versioned, componentId) {
           <td id="globalResultQueryLabel"><%=resource.getString("pdcPeas.SearchFind")%></td>
           <td align="left" valign="middle">
 		<table border="0" cellspacing="0" cellpadding="0"><tr valign="middle">
-			<td valign="middle"><input id="query" type="text" name="query" size="60" value="<%=keywords%>"><input type="hidden" name="mode"></td>
+			<td valign="middle"><input id="query" type="text" name="query" size="60" value="<%=keywords%>"/><input type="hidden" name="mode"/></td>
 			<td valign="middle">&nbsp;</td>
 			<td valign="middle" align="left" width="100%"><% out.println(searchButton.print());%></td>
 		</tr></table>
