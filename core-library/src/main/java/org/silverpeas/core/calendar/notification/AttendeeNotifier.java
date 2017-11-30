@@ -31,12 +31,19 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static java.util.Collections.singletonList;
+import static org.silverpeas.core.calendar.CalendarEventUtil.asAttendee;
+
 /**
  * A notifier of attendees about some lifecycle events triggered by the Calendar engine.
  * @author mmoquillon
  */
 public abstract class AttendeeNotifier<T extends ResourceEvent>
     extends CDIAfterSuccessfulTransactionResourceEventListener<T> {
+
+  protected List<Attendee> ownerOf(final CalendarComponent calendarComponent) {
+    return singletonList(asAttendee(calendarComponent.getLastUpdater(), calendarComponent));
+  }
 
   protected List<Attendee> concernedAttendeesIn(final CalendarComponent calendarComponent) {
     return calendarComponent.getAttendees().stream().collect(Collectors.toList());
