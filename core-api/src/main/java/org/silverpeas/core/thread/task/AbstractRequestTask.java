@@ -93,8 +93,14 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
       // Getting the next request if any.
       currentRequest = nextRequest();
       if (currentRequest == null) {
+        // No more request, but waiting 500ms in case of a nearly new one.
+        debug("no more request to process, waiting 500ms about new requests");
+        Thread.sleep(500);
+        currentRequest = nextRequest();
+      }
+      if (currentRequest == null) {
         try {
-          debug("no more request to process, invoking afterNoMoreRequest method");
+          debug("no more request to process after waiting a while, invoking afterNoMoreRequest method");
           afterNoMoreRequest();
         } catch (Exception e) {
           SilverLogger.getLogger(this).error(e);

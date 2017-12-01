@@ -46,27 +46,30 @@ public class IndexReadersCache {
   }
 
   public static synchronized IndexReader getIndexReader(String path) {
-    if (!getInstance().indexReaders.containsKey(path)) {
+    return getInstance().indexReaders.computeIfAbsent(path, p -> {
       try {
-        DirectoryReader iReader = DirectoryReader.open(FSDirectory.open(new File(path).toPath()));
-        getInstance().indexReaders.put(path, iReader);
+        final File directory = new File(p);
+        if (directory.length() > 0) {
+          return DirectoryReader.open(FSDirectory.open(directory.toPath()));
+        } else {
+          SilverLogger.getLogger(IndexReadersCache.class)
+              .warn("index reader for path {0} can not be open as there is no index data", p);
+        }
       } catch (Exception e) {
         SilverLogger.getLogger(IndexReadersCache.class).error(e);
       }
-    }
-    return getInstance().indexReaders.get(path);
+      return null;
+    });
   }
 
   public static synchronized void removeIndexReader(String path) {
-    if (getInstance().indexReaders.containsKey(path)) {
-      IndexReader indexReader = getInstance().indexReaders.get(path);
+    getInstance().indexReaders.computeIfPresent(path, (p, r) -> {
       try {
-        indexReader.close();
+        r.close();
       } catch (IOException e) {
         SilverLogger.getLogger(IndexReadersCache.class).error(e);
       }
-      getInstance().indexReaders.remove(path);
-    }
+      return null;
+    });
   }
-
 }
