@@ -296,12 +296,17 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     if (getCurrentSort().equals(SORT_PERTINENCE)) {
       setCurrentSort(getPreviousSort());
     }
-    lastListUsersCalled = new DirectoryItemList();
+    DirectoryItemList usersByIndex = new DirectoryItemList();
+    if (lastAllListUsersCalled == null) {
+      // forcing to get all users to re-init list of visible users
+      lastAllListUsersCalled = getUsers();
+    }
     for (DirectoryItem varUd : lastAllListUsersCalled) {
       if (varUd.getLastName().toUpperCase().startsWith(index)) {
-        lastListUsersCalled.add(varUd);
+        usersByIndex.add(varUd);
       }
     }
+    lastListUsersCalled = usersByIndex;
     if (!getCurrentSort().equals(getInitialSort())) {
       // force results to be sorted cause original list is used
       sort(getCurrentSort());
@@ -334,7 +339,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
       if (plainSearchResults != null && !plainSearchResults.isEmpty()) {
         DirectoryItemList allUsers = lastAllListUsersCalled;
-        if (globalSearch || currentDirectory == DIRECTORY_DOMAIN) {
+        if (allUsers == null || globalSearch || currentDirectory == DIRECTORY_DOMAIN) {
           // forcing to get all users to re-init list of visible users
           allUsers = getUsers();
         }
@@ -844,17 +849,20 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
   }
 
-  public QueryDescription buildQuery(List<FileItem> items) {
-    String query = FileUploadUtil.getParameter(items, "key");
+  public QueryDescription buildSimpleQuery(String query) {
     QueryDescription queryDescription = new QueryDescription(query);
     queryDescription.addComponent("users");
     for (String appId : getContactComponentIds()) {
       queryDescription.addComponent(appId);
     }
-
     setCurrentQuery(query);
-    saveExtraRequest(items);
+    return queryDescription;
+  }
 
+  public QueryDescription buildQuery(List<FileItem> items) {
+    String query = FileUploadUtil.getParameter(items, "key");
+    QueryDescription queryDescription = buildSimpleQuery(query);
+    saveExtraRequest(items);
     buildExtraQuery(queryDescription, items);
     return queryDescription;
   }
@@ -897,6 +905,11 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   public void clear() {
     xmlData = null;
+  }
+
+  public boolean isQuickUserSelectionEnabled() {
+    return getCurrentDirectory() == DIRECTORY_DEFAULT ||
+        (getCurrentDirectory() == DIRECTORY_DOMAIN && getCurrentDomainIds().size() == 1);
   }
 
   private SilverpeasTemplate getFragmentTemplate() {

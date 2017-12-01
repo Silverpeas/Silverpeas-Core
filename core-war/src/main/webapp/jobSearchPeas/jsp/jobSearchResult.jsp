@@ -201,7 +201,7 @@ if(listResult != null) {
 					ArrayCellText cellCreaDate = arrayLine.addArrayCellText(creaDate);
 					cellCreaDate.setCompareOn(searchResult.getCreaDate());
 				} catch (Exception e) {
-					ArrayCellText cellCreaDate = arrayLine.addArrayCellText("");
+					arrayLine.addArrayCellText("");
 				}
 
 				String creaName = searchResult.getCreaName();

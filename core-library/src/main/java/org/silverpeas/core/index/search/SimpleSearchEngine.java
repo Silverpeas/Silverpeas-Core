@@ -49,6 +49,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import static org.silverpeas.core.util.StringUtil.isDefined;
+
 /**
  * A SimpleSearchEngine search Silverpeas indexes index and give access to the retrieved index
  * entries.
@@ -140,10 +142,12 @@ public class SimpleSearchEngine implements SearchEngine {
 
     // This permits to optimize search (instead of requesting admin on each result of type 'Component')
     List<String> allowedComponentIds = new ArrayList<>();
-    try {
-      allowedComponentIds = Arrays.asList(Administration.get().getAvailCompoIds(userId));
-    } catch (Exception e) {
-      SilverLogger.getLogger(this).error(e);
+    if (isDefined(userId)) {
+      try {
+        allowedComponentIds = Arrays.asList(Administration.get().getAvailCompoIds(userId));
+      } catch (Exception e) {
+        SilverLogger.getLogger(this).error(e);
+      }
     }
 
     for (MatchingIndexEntry result : matchingIndexEntries) {
@@ -200,7 +204,7 @@ public class SimpleSearchEngine implements SearchEngine {
   private boolean isSpaceVisible(String spaceId, String userId) {
     // check if space is allowed to current user
     try {
-      return Administration.get().isSpaceAvailable(spaceId, userId);
+      return Administration.get().isSpaceAvailable(userId, spaceId);
     } catch (Exception ignored) {
       SilverLogger.getLogger(this).warn("Can't test if space {0} is available for user {1}",
           new String[] {spaceId, userId}, ignored);

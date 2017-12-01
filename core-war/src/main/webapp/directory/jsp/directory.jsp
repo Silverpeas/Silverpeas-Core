@@ -30,6 +30,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <%@ page import="org.silverpeas.core.contribution.content.form.Form" %>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
@@ -56,6 +57,7 @@
 <c:set var="scope" value="${requestScope.Scope}"/>
 <c:set var="view" value="${silfn:defaultString(requestScope.View, VIEW_ALL)}"/>
 <c:set var="showHelp" value="${requestScope.ShowHelp}"/>
+<c:set var="quickUserSelectionEnabled" value="${requestScope.QuickUserSelectionEnabled}"/>
 
 <fmt:message key="GML.print" var="labelPrint"/>
 
@@ -93,17 +95,30 @@
     }
 
     function search() {
-      var query = $("#searchField").val();
-      var terms = query.split(" ");
+      var query = $("#select-user-group-directory input").val();
+      if (!query) {
+        // in case of quick user selection is not enabled
+        query = $("#searchField").val();
+      }
       var queryOK = true;
-      for (var i = 0; queryOK && i < terms.length; i++) {
-        queryOK = isTermOK(terms[i]);
+      if (query) {
+        var terms = query.split(" ");
+        for (var i = 0; queryOK && i < terms.length; i++) {
+          queryOK = isTermOK(terms[i]);
+        }
       }
       if (!queryOK) {
         $("#dialog-message").dialog("open");
       } else {
         $.progressMessage();
         $(document.search).submit();
+      }
+    }
+
+    function jumpToUser(selectionUserAPI) {
+      var userIds = selectionUserAPI.getSelectedUserIds();
+      if (userIds.length) {
+        location.href = webContext+"/Rprofil/jsp/Main?userId="+userIds[0];
       }
     }
 
@@ -191,6 +206,7 @@
 
         // hide all extra fields by default
         $("#extraForm .field").hide();
+        $("#extraForm .sp_button").hide();
         // show fields according to Javascript file of specific form
         try {
           callbackShowExtraFields();
@@ -199,10 +215,14 @@
         $("#advanced").click(function() {
           if (flip%2 === 1){
             $("#extraForm li").not(".alwaysShown").hide();
-            $("#advanced a").text("<fmt:message key="GML.search.advanced"/>");
+            $("#extraForm .sp_button").hide();
+            $("a#advanced span").text("<fmt:message key="GML.search.advanced"/>");
+            $("a#advanced").removeClass("simple").addClass("advanced");
           } else {
             $("#extraForm li").not(".alwaysShown").show();
-            $("#advanced a").text("<fmt:message key="GML.search.simple"/>");
+            $("#extraForm .sp_button").show();
+            $("a#advanced span").text("<fmt:message key="GML.search.simple"/>");
+            $("a#advanced").removeClass("advanced").addClass("simple");
           }
           flip++;
         });
@@ -221,14 +241,24 @@
     <div id="indexAndSearch">
       <form name="search" action="searchByKey" method="post" enctype="multipart/form-data">
       <div id="search">
-        <input type="text" name="key" id="searchField" size="40" maxlength="60" value="${query}"/>
+        <c:choose>
+          <c:when test="${not quickUserSelectionEnabled}">
+            <input type="text" name="key" id="searchField" size="40" maxlength="60" value="${query}"/>
+          </c:when>
+          <c:otherwise>
+            <viewTags:selectUsersAndGroups selectionType="USER" noUserPanel="true" noSelectionClear="true"
+                                           doNotSelectAutomaticallyOnDropDownOpen="true"
+                                           queryInputName="key" id="directory" initialQuery="${query}"
+                                           navigationalBehavior="true" onChangeJsCallback="jumpToUser"/>
+          </c:otherwise>
+        </c:choose>
         <fmt:message key="GML.search" var="buttonLabel"/>
         <view:button label="${buttonLabel}" action="javascript:search()"/>
         <% if (extraForm != null) { %>
-          <span id="advanced"><a href="#"><fmt:message key="GML.search.advanced"/></a></span>
-          <span id="clear"><a href="javascript:onclick=clear()"><fmt:message key="GML.search.clear"/></a></span>
+          <a href="#" id="advanced" class="advanced"><span><fmt:message key="GML.search.advanced"/></span></a>
+          <a href="javascript:onclick=clear()" id="clear"><span><fmt:message key="GML.search.clear"/></span></a>
         <% } %>
-        <span id="help"><a href="javascript:onclick=showHelp()"><fmt:message key="GML.help"/></a></span>
+        <a href="javascript:onclick=showHelp()" id="help"><span><fmt:message key="GML.help"/></span></a>
       </div>
 
       <div id="index">
@@ -250,6 +280,7 @@
         <%
           extraForm.display(out, extraFormContext);
         %>
+        <div id="extraForm-button"><view:button label="${buttonLabel}" action="javascript:search()" /></div>
       </div>
       <% } %>
 

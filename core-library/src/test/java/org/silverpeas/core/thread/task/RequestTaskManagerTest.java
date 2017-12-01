@@ -228,7 +228,7 @@ public class RequestTaskManagerTest {
 
     // Firstly initializing the monitor by pushing a request
     TestRequestTaskWithAfterNoMoreRequestLongTreatment.newRandomSleepRequest();
-    Thread.sleep(200);
+    Thread.sleep(800);
 
     RequestTaskMonitor monitor =
         RequestTaskManager.tasks.get(TestRequestTaskWithAfterNoMoreRequestLongTreatment.class);
@@ -277,7 +277,7 @@ public class RequestTaskManagerTest {
       throws ExecutionException, InterruptedException, TimeoutException {
     // Firstly initializing the monitor by pushing a request
     TestRequestTaskWithLimit.newEmptyRequest();
-    Thread.sleep(100);
+    Thread.sleep(600);
     RequestTaskMonitor monitor = RequestTaskManager.tasks.get(TestRequestTaskWithLimit.class);
     assertThat(monitor.isTaskRunning(), is(false));
     assertThat(monitor.requestList.size(), is(0));

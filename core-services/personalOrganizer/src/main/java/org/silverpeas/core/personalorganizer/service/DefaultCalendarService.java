@@ -31,6 +31,7 @@ import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.Category;
 import org.silverpeas.core.personalorganizer.model.HolidayDetail;
@@ -57,6 +58,9 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+
+import static java.util.Collections.emptyList;
 
 /**
  * Calendar service layer to manager calendars in Silverpeas
@@ -932,29 +936,38 @@ public class DefaultCalendarService implements SilverpeasCalendar, ComponentInst
    */
   @Override
   public void indexAllTodo() {
-    Connection con = null;
-    ResultSet rs = null;
-    String selectStatement = "select " + ToDoDAO.COLUMNNAMES + " from CalendarToDo ";
-    PreparedStatement prepStmt = null;
-    try {
-      con = DBUtil.openConnection();
-      prepStmt = con.prepareStatement(selectStatement);
-      rs = prepStmt.executeQuery();
-      ToDoHeader todo;
-      while (rs.next()) {
-        todo = ToDoDAO.getToDoHeaderFromResultSet(rs);
+    final List<ToDoHeader> todos = new ArrayList<>(JdbcSqlQuery.SPLIT_BATCH);
+    final List<String> todoIds = new ArrayList<>(JdbcSqlQuery.SPLIT_BATCH);
+    final Consumer<List<String>> indexationProcess = l -> {
+      final Map<String, List<Attendee>> attendeeMapping = getToDoAttendees(todoIds);
+      for (final ToDoHeader todo : todos) {
         createIndex(todo, todo.getDelegatorId());
-        Collection<Attendee> attendees = getToDoAttendees(todo.getId());
+        final Collection<Attendee> attendees =
+            attendeeMapping.getOrDefault(todo.getId(), emptyList());
         for (Attendee attendee : attendees) {
           createIndex(todo, attendee.getUserId());
         }
       }
+    };
+    try {
+      JdbcSqlQuery.createSelect(ToDoDAO.COLUMNNAMES).from("CalendarToDo").execute(rs -> {
+        final ToDoHeader todo = ToDoDAO.getToDoHeaderFromResultSet(rs);
+        todos.add(todo);
+        todoIds.add(todo.getId());
+        if (todoIds.size() == JdbcSqlQuery.SPLIT_BATCH) {
+          indexationProcess.accept(todoIds);
+          // Cleaning
+          todos.clear();
+          todoIds.clear();
+        }
+        return null;
+      });
+
+      // Indexing the last to do
+      indexationProcess.accept(todoIds);
 
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
-    } finally {
-      DBUtil.close(rs, prepStmt);
-      DBUtil.close(con);
     }
   }
 

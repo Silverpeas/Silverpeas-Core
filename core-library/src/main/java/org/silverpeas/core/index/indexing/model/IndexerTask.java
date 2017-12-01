@@ -71,7 +71,6 @@ public class IndexerTask extends AbstractRequestTask<IndexerTask.IndexerProcessC
   @Override
   protected void afterNoMoreRequest() {
     super.afterNoMoreRequest();
-    getLogger().debug("flushing manager of indexation");
     indexManager.flush();
   }
 
