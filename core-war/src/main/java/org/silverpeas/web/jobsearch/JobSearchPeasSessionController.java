@@ -24,6 +24,7 @@
 package org.silverpeas.web.jobsearch;
 
 import org.silverpeas.core.admin.user.model.GroupDetail;
+import org.silverpeas.core.index.search.model.ParseException;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.core.util.URLUtil;
@@ -51,7 +52,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
 
 import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -219,8 +219,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @param searchField
    * @return
    * @throws PdcException
-   * @throws RemoteException
-   * @throws ParseException
    */
   private List<SearchResult> searchEngineResultSpace(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
@@ -235,8 +233,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       for (MatchingIndexEntry result : plainSearchResults) {
         String nomCrea = getUserName(Integer.parseInt(result.getCreationUser()));
 
-        String objectId = result.getObjectId(); // WA3
-        String spaceId = objectId.substring(2);
+        String spaceId = result.getObjectId();
 
         SpaceInstLight spaceInstLight = getAdminController().getSpaceInstLight(spaceId);
         if (null != spaceInstLight) {
@@ -246,7 +243,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
           SearchResult searchResult = new SearchResult();
           searchResult.setName(result.getTitle(getLanguage()));
           searchResult.setDesc(result.getPreview(getLanguage()));
-          searchResult.setCreaDate(DateUtil.parse(result.getCreationDate(), "yyyy/MM/dd"));
+          searchResult.setCreaDate(DateUtil.parseFromLucene(result.getCreationDate()));
           searchResult.setCreaName(nomCrea);
           searchResult.setPath(listEmplacement);
           if (spaceInstLight.isRoot()) {
@@ -263,7 +260,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
           listSearchResult.add(searchResult);
         }
       }
-    } catch (org.silverpeas.core.index.search.model.ParseException | ParseException e) {
+    } catch (ParseException e) {
       throw new PdcException("JobSearchPeasSessionController.searchEngineResultSpace",
           SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
     }
@@ -274,9 +271,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
   /**
    * @param searchField
    * @return
-   * @throws ParseException
    * @throws PdcException
-   * @throws RemoteException
    */
   private List<SearchResult> searchResultSpace(String searchField) throws PdcException {
     //id espace
@@ -354,8 +349,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @param searchField
    * @return
    * @throws PdcException
-   * @throws RemoteException
-   * @throws ParseException
    */
   private List<SearchResult> searchEngineResultComponent(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
@@ -379,13 +372,13 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         SearchResult searchResult = new SearchResult();
         searchResult.setName(result.getTitle(getLanguage()));
         searchResult.setDesc(result.getPreview(getLanguage()));
-        searchResult.setCreaDate(DateUtil.parse(creationDate, "yyyy/MM/dd"));
+        searchResult.setCreaDate(DateUtil.parseFromLucene(creationDate));
         searchResult.setCreaName(nomCrea);
         searchResult.setPath(listEmplacement);
         searchResult.setUrl("openComponent('" + componentId + "')");
         listSearchResult.add(searchResult);
       }
-    } catch (org.silverpeas.core.index.search.model.ParseException | ParseException e) {
+    } catch (ParseException e) {
       throw new PdcException(
           "JobSearchPeasSessionController.searchEngineResultComponent",
           SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
@@ -492,7 +485,8 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     }
     Domain domain = getAdminController().getDomain(domainId);
     //nom du domaine
-    if ("-1".equals(domainId)) {//domaine mixte
+    if (domain.isMixedOne()) {
+      //domaine mixte
       emplacement.append(getString("JSP.domainMixt"));
     } else {
       emplacement.append(domain.getName());
@@ -536,8 +530,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @param searchField
    * @return
    * @throws PdcException
-   * @throws RemoteException
-   * @throws ParseException
    */
   private List<SearchResult> searchEngineResultGroup(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
@@ -563,13 +555,12 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         SearchResult searchResult = new SearchResult();
         searchResult.setName(result.getTitle(getLanguage()));
         searchResult.setDesc(result.getPreview(getLanguage()));
-        searchResult.setCreaDate(null);
         searchResult.setCreaName("");
         searchResult.setPath(listEmplacement);
         searchResult.setUrl(url);
         listSearchResult.add(searchResult);
       }
-    } catch (org.silverpeas.core.index.search.model.ParseException e) {
+    } catch (ParseException e) {
       throw new PdcException(
           "JobSearchPeasSessionController.searchEngineResultComponent",
           SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
@@ -614,7 +605,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         Domain domain = getAdminController().getDomain(domainId);
         StringBuilder emplacement = new StringBuilder("");
         //nom du domaine
-        if ("-1".equals(domainId)) {//domaine mixte
+        if (domain.isMixedOne()) {
           emplacement.append(getString("JSP.domainMixt"));
         } else {
           emplacement.append(domain.getName());
@@ -638,7 +629,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
       Domain domain = getAdminController().getDomain(domainId);
 
       //nom du domaine
-      if ("-1".equals(domainId)) {//domaine mixte
+      if (domain.isMixedOne()) {
         emplacement.append(getString("JSP.domainMixt"));
       } else {
         emplacement.append(domain.getName());
@@ -679,8 +670,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @param searchField
    * @return
    * @throws PdcException
-   * @throws RemoteException
-   * @throws ParseException
    */
   private List<SearchResult> searchEngineResultUser(String searchField) throws PdcException {
     List<SearchResult> listSearchResult = new ArrayList<SearchResult>();
@@ -709,7 +698,7 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
         searchResult.setUrl(url);
         listSearchResult.add(searchResult);
       }
-    } catch (org.silverpeas.core.index.search.model.ParseException e) {
+    } catch (ParseException e) {
       throw new PdcException("JobSearchPeasSessionController.searchEngineResultUser",
           SilverpeasException.ERROR, "pdcPeas.EX_CANT_GET_SEARCH_ENGINE", e);
     }
@@ -738,11 +727,9 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
    * @param searchField
    * @param category
    * @return
-   * @throws RemoteException
    * @throws PdcException
    */
-  public List<SearchResult> searchResult(String searchField, String category)
-      throws RemoteException, PdcException {
+  public List<SearchResult> searchResult(String searchField, String category) throws PdcException {
     if ("space".equals(category)) {
       return searchResultSpace(searchField);
     } else if ("service".equals(category)) {
@@ -754,6 +741,6 @@ public class JobSearchPeasSessionController extends AbstractComponentSessionCont
     } else if ("user".equals(category)) {
       return searchResultUser(searchField);
     }
-    return null;
+    return Collections.emptyList();
   }
 }

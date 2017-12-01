@@ -23,6 +23,9 @@
  */
 package org.silverpeas.web.jobsearch;
 
+import org.silverpeas.core.util.DateUtil;
+
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -30,7 +33,7 @@ public class SearchResult {
 
   private String name = null;
   private String desc = null;
-  private Date creaDate = null;
+  private LocalDate creaDate = null;
   private String creaName = null;
   private List<String> path = null;
   private String url = null;
@@ -55,11 +58,15 @@ public class SearchResult {
     this.desc = desc;
   }
 
-  public Date getCreaDate() {
+  public LocalDate getCreaDate() {
     return creaDate;
   }
 
   public void setCreaDate(Date creaDate) {
+    this.creaDate = DateUtil.toLocalDate(creaDate);
+  }
+
+  public void setCreaDate(LocalDate creaDate) {
     this.creaDate = creaDate;
   }
 

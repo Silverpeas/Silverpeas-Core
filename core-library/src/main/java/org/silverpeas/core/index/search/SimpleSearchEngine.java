@@ -200,7 +200,7 @@ public class SimpleSearchEngine implements SearchEngine {
   private boolean isSpaceVisible(String spaceId, String userId) {
     // check if space is allowed to current user
     try {
-      return Administration.get().isSpaceAvailable(spaceId, userId);
+      return Administration.get().isSpaceAvailable(userId, spaceId);
     } catch (Exception ignored) {
       SilverLogger.getLogger(this).warn("Can't test if space {0} is available for user {1}",
           new String[] {spaceId, userId}, ignored);
