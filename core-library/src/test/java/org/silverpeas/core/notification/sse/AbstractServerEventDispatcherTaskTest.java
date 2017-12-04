@@ -136,6 +136,6 @@ class AbstractServerEventDispatcherTaskTest {
   }
 
   void pause() throws Exception {
-    Thread.sleep(400);
+    Thread.sleep(800);
   }
 }
