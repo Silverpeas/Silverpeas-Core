@@ -212,12 +212,7 @@ public class JobDomainPeasRequestRouter extends
           // process extra properties
           HashMap<String, String> properties = getExtraPropertyValues(request);
 
-          if (properties.isEmpty()) {
-            jobDomainSC.modifySynchronizedUser(userRequestData);
-          } else {
-            // extra properties have been set, modify user full
-            jobDomainSC.modifyUserFull(userRequestData, properties);
-          }
+          jobDomainSC.modifySynchronizedUser(userRequestData, properties, request);
         } else if (function.startsWith("userSearchToImport")) {
           Map<String, String> query;
           List<UserDetail> users;

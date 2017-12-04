@@ -918,47 +918,40 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     regroupInGroup(properties, lastGroupId);
   }
 
-  public void modifySynchronizedUser(UserRequestData userRequestData)
-      throws JobDomainPeasException {
+  public void modifySynchronizedUser(UserRequestData userRequestData,
+      Map<String, String> properties, HttpRequest req) throws JobDomainPeasException {
 
-
-    UserDetail theModifiedUser = adminCtrl.getUserDetail(userRequestData.getId());
+    UserFull theModifiedUser = adminCtrl.getUserFull(userRequestData.getId());
     if (theModifiedUser == null) {
       throw new JobDomainPeasException(unknown("synchronized user", userRequestData.getId()));
     }
     theModifiedUser.setAccessLevel(userRequestData.getAccessLevel());
     theModifiedUser.setUserManualNotificationUserReceiverLimit(
         userRequestData.getUserManualNotifReceiverLimitValue());
-    String idRet = adminCtrl.updateSynchronizedUser(theModifiedUser);
+
+    // process data of extra template
+    processDataOfExtraTemplate(theModifiedUser.getId(), req);
+
+    String idRet = "";
+    if (theModifiedUser.isAtLeastOnePropertyUpdatableByAdmin()) {
+      // process extra properties
+      for (Map.Entry<String, String> entry : properties.entrySet()) {
+        if (theModifiedUser.isPropertyUpdatableByAdmin(entry.getKey())) {
+          theModifiedUser.setValue(entry.getKey(), entry.getValue());
+        }
+      }
+      try {
+        idRet = adminCtrl.updateUserFull(theModifiedUser);
+      } catch (AdminException e) {
+        throw new JobDomainPeasException(failureOnUpdate("user", userRequestData.getId()), e);
+      }
+    } else {
+      idRet = adminCtrl.updateSynchronizedUser(theModifiedUser);
+    }
+
     if (!StringUtil.isDefined(idRet)) {
       throw new JobDomainPeasException(
           failureOnUpdate("synchronized user", userRequestData.getId()));
-    }
-    refresh();
-    setTargetUser(idRet);
-  }
-
-  public void modifyUserFull(UserRequestData userRequestData, Map<String, String> properties)
-      throws JobDomainPeasException {
-    UserFull theModifiedUser = adminCtrl.getUserFull(userRequestData.getId());
-    if (theModifiedUser == null) {
-      throw new JobDomainPeasException(unknown("user", userRequestData.getId()));
-    }
-
-    theModifiedUser.setAccessLevel(userRequestData.getAccessLevel());
-    theModifiedUser.setUserManualNotificationUserReceiverLimit(
-        userRequestData.getUserManualNotifReceiverLimitValue());
-
-    // process extra properties
-    for (Map.Entry<String, String> entry : properties.entrySet()) {
-      theModifiedUser.setValue(entry.getKey(), entry.getValue());
-    }
-
-    String idRet;
-    try {
-      idRet = adminCtrl.updateUserFull(theModifiedUser);
-    } catch (AdminException e) {
-      throw new JobDomainPeasException(failureOnUpdate("user", userRequestData.getId()), e);
     }
     refresh();
     setTargetUser(idRet);
