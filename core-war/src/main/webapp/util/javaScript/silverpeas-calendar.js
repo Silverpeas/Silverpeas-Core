@@ -363,6 +363,7 @@
   $window.SilverpeasCalendar = function(target, calendarOptions) {
     applyReadyBehaviorOn(this);
     __logDebug("initializing the plugin");
+    var __spCalendarApi = this;
 
     /**
      * Clears all resources related to the silverpeas calendar instance.
@@ -388,16 +389,12 @@
       this.$fc.fullCalendar('changeView', __getFullCalendarView(viewName, displayAsList));
     }.bind(this);
 
-    var __eventSourceCache = {};
-
     /**
      * Hides an event source from a calendar .
      * @param calendar a calendar.
      */
     this.hideEventSource = function(calendar) {
-      var eventSource = this.$fc.fullCalendar('getEventSourceById', calendar.uri);
-      this.$fc.fullCalendar('removeEventSource', eventSource);
-      return eventSource;
+      SpEventSources.remove(calendar.uri, true);
     }.bind(this);
 
     /**
@@ -405,20 +402,13 @@
      * @param calendar a calendar.
      */
     this.showEventSource = function(calendar) {
-      var cachedEventSource = __eventSourceCache[calendar.uri];
-      if (cachedEventSource) {
-        var eventSource = this.$fc.fullCalendar('getEventSourceById', calendar.uri);
-        if (eventSource) {
-          eventSource.backgroundColor = calendar.color;
-          eventSource.color = calendar.color;
-          this.$fc.fullCalendar('refetchEventSources', eventSource);
-        } else {
-          cachedEventSource.backgroundColor = calendar.color;
-          cachedEventSource.color = calendar.color;
-          this.$fc.fullCalendar('addEventSource', cachedEventSource);
-        }
+      var spEventSource = SpEventSources.get(calendar.uri);
+      if (spEventSource) {
+        var fcEventSource = spEventSource.getFcEventSource();
+        fcEventSource.backgroundColor = calendar.color;
+        fcEventSource.color = calendar.color;
+        spEventSource.render();
       }
-      return cachedEventSource;
     }.bind(this);
 
     /**
@@ -429,24 +419,12 @@
      *     the event occurrences belonging the calendar.
      */
     this.registerEventSource = function(calendar, occurrences) {
-      var cachedEventSource = this.$fc.fullCalendar('getEventSourceById', calendar.uri);
-      if (!cachedEventSource) {
-        cachedEventSource = __eventSourceCache[calendar.uri];
-      }
-      if (cachedEventSource) {
-        cachedEventSource.events = __createEvents(occurrences);
-        cachedEventSource.backgroundColor = calendar.color;
-        cachedEventSource.color = calendar.color;
-      } else {
-        cachedEventSource = {
-          id : calendar.uri,
-          events : __createEvents(occurrences),
-          color : calendar.color,
-          backgroundColor : calendar.color
-        };
-      }
-      __eventSourceCache[calendar.uri] = cachedEventSource;
-      return cachedEventSource;
+      var spEventSource = SpEventSources.getOrCreate(calendar.uri);
+      var fcEventSource = spEventSource.getFcEventSource();
+      fcEventSource.backgroundColor = calendar.color;
+      fcEventSource.color = calendar.color;
+      spEventSource.setOccurrences(occurrences);
+      return spEventSource;
     }.bind(this);
 
     /**
@@ -456,14 +434,8 @@
      *     the event occurrences belonging the calendar.
      */
     this.setEventSource = function(calendar, occurrences) {
-      var cachedEventSource = this.registerEventSource(calendar, occurrences);
-      var eventSource = this.$fc.fullCalendar('getEventSourceById', calendar.uri);
-      if (eventSource) {
-        this.$fc.fullCalendar('refetchEventSources', cachedEventSource);
-      } else {
-        this.$fc.fullCalendar('addEventSource', cachedEventSource);
-      }
-      return cachedEventSource;
+      this.registerEventSource(calendar, occurrences);
+      return this.showEventSource(calendar);
     }.bind(this);
 
     /**
@@ -471,10 +443,7 @@
      * @param calendar a calendar.
      */
     this.removeEventSource = function(calendar) {
-      var eventSource = this.$fc.fullCalendar('getEventSourceById', calendar.uri);
-      this.$fc.fullCalendar('removeEventSource', eventSource);
-      delete __eventSourceCache[calendar.uri];
-      return eventSource;
+      SpEventSources.remove(calendar.uri);
     }.bind(this);
 
     /**
@@ -490,29 +459,76 @@
     }.bind(this);
 
     /**
-     * Provides the events dynamically.
-     * @param events an array or a promise which provides an array of events.
-     * @returns {Function}
-     * @private
+     * Silverpeas Event sources manager
      */
-    function __createEvents(events) {
-      return function(start, end, timezone, callback) {
-        var __provide = function(events) {
-          if (typeof calendarOptions.eventfilter === 'function') {
-            callback(events.filter(calendarOptions.eventfilter));
-          } else {
-            callback(events);
-          }
-        };
-        if (sp.promise.isOne(events)) {
-          events.then(function(events) {
-            __provide(events);
-          })
-        } else {
-          __provide(events);
-        }
+    var SpEventSources = new function() {
+      var __cache = {};
+      this.get = function(id) {
+        return __cache[id];
       };
-    }
+      this.getOrCreate = function(id) {
+        var spEventSource =  __cache[id];
+        if (!spEventSource) {
+          spEventSource = new SpEventSource(id);
+          __cache[id] = spEventSource;
+        }
+        return spEventSource;
+      };
+      this.remove = function(id, onlyOnFc) {
+        if (!onlyOnFc) {
+          delete __cache[id];
+        }
+        __spCalendarApi.$fc.fullCalendar('removeEventSource', id);
+      };
+    };
+
+    /**
+     * Representation of an Silverpeas Event Source in charge of doing the mapping with the
+     * fullcalendar Event Source.
+     * @param id
+     * @constructor
+     */
+    var SpEventSource = function(id) {
+      var __onFc = false;
+      var __fcEventSource;
+      var __occurrences = [];
+      this.setOccurrences = function(occurrences) {
+        __occurrences = occurrences ? occurrences : [];
+      };
+      this.getFcEventSource = function() {
+        var fcEventSource = __spCalendarApi.$fc.fullCalendar('getEventSourceById', id);
+        if (fcEventSource) {
+          __onFc = true;
+          __fcEventSource = fcEventSource;
+        } else {
+          __fcEventSource = {
+            id : id,
+            events : function(start, end, timezone, callback) {
+              var __provide = function(events) {
+                if (typeof calendarOptions.eventfilter === 'function') {
+                  callback(events.filter(calendarOptions.eventfilter));
+                } else {
+                  callback(events);
+                }
+              };
+              if (sp.promise.isOne(__occurrences)) {
+                __occurrences.then(function(events) {
+                  __provide(events);
+                })
+              } else {
+                __provide(__occurrences);
+              }
+            }
+          };
+          __onFc = false;
+        }
+        return __fcEventSource;
+      };
+      this.render = function() {
+        var action = __onFc ? 'refetchEventSources' : 'addEventSource';
+        __spCalendarApi.$fc.fullCalendar(action, __fcEventSource);
+      };
+    };
 
     whenSilverpeasReady(function() {
       __logDebug("initializing the view");
@@ -617,7 +633,10 @@
       listDayFormat : 'LL',
       noEventsMessage : $window.CalendarBundle.get("c.e.n"),
       views: {
-        agendaWeek: {
+        month: {
+          displayEventEnd: false
+        },
+        week: {
           columnFormat: 'ddd DD'
         }
       },

@@ -39,8 +39,32 @@
       },
       controllerAs : '$ctrl',
       bindToController : true,
-      controller : function() {
-      }
+      controller : [function() {
+
+        this.onSameDay = function() {
+          var startDate = this.startDate().split('T')[0];
+          var endDate = this.endDate().split('T')[0];
+          return startDate === endDate;
+        };
+
+        this.startDate = function() {
+          return this.occurrence.startDate;
+        }
+
+        this.endDate = function() {
+          if (this.occurrence.onAllDay) {
+            return sp.moment.make(this.occurrence.endDate).add(-1, 'days').format();
+          }
+          return this.occurrence.endDate;
+        }
+
+        this.$onInit = function() {
+          this.occurrence = {
+            startDate : '',
+            endDate : ''
+          };
+        }
+      }]
     };
   });
 

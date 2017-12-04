@@ -53,7 +53,7 @@ public class IndexReadersCache {
           return DirectoryReader.open(FSDirectory.open(directory.toPath()));
         } else {
           SilverLogger.getLogger(IndexReadersCache.class)
-              .warn("index reader for path {0} can not be open as there is no index data", p);
+              .debug("index reader for path {0} can not be open as there is no index data", p);
         }
       } catch (Exception e) {
         SilverLogger.getLogger(IndexReadersCache.class).error(e);

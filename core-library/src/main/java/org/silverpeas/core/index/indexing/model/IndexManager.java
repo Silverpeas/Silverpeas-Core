@@ -165,7 +165,7 @@ public class IndexManager {
    * Optimize all the modified index.
    */
   public void flush() {
-    final SilverLogger logger = SilverLogger.getLogger(IndexerTask.class);
+    final SilverLogger logger = SilverLogger.getLogger(this);
     final Iterator<Map.Entry<String, IndexWriter>> it = indexWriters.entrySet().iterator();
     logger.debug("flushing manager of indexation about {0} writer(s)", indexWriters.size());
     while(it.hasNext()) {

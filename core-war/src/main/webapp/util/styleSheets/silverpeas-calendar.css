@@ -389,12 +389,18 @@ silverpeas-calendar-event-occurrence-tip .occurrence-extra {
   width: 100%;
 }
 
+silverpeas-calendar-event-occurrence-tip .occurrence-date,
 silverpeas-calendar-event-occurrence-tip .occurrence-location,
 silverpeas-calendar-event-occurrence-tip .occurrence-external-link {
   text-align: right;
   margin-bottom: 1em;
 }
 
+silverpeas-calendar-event-occurrence-tip .occurrence-date {
+  text-align: left;
+}
+
+silverpeas-calendar-event-occurrence-tip .occurrence-date span,
 silverpeas-calendar-event-occurrence-tip .occurrence-location span,
 silverpeas-calendar-event-occurrence-tip .occurrence-external-link a {
   border-radius: 4px;
@@ -403,6 +409,10 @@ silverpeas-calendar-event-occurrence-tip .occurrence-external-link a {
   padding: 4px 8px 4px 22px;
   min-height: 16px;
   font-size: 90%;
+}
+
+silverpeas-calendar-event-occurrence-tip .occurrence-date span {
+  background: #f7f7f7 url(../icons/calendar_2.gif) 4px 6px no-repeat;
 }
 
 silverpeas-calendar-event-occurrence-tip .occurrence-location span {
