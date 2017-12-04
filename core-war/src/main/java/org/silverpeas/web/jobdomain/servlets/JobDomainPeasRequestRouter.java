@@ -68,6 +68,7 @@ import java.util.Properties;
 import java.util.StringTokenizer;
 
 import static org.silverpeas.core.admin.domain.DomainDriver.ActionConstants.*;
+import static org.silverpeas.core.web.token.SynchronizerTokenService.SESSION_TOKEN_KEY;
 
 /**
  * Class declaration
@@ -230,7 +231,7 @@ public class JobDomainPeasRequestRouter extends
             String paramValue;
             while (parameters.hasMoreElements()) {
               paramName = parameters.nextElement();
-              if (!paramName.startsWith("Pagination")) {
+              if (!paramName.startsWith("Pagination") && !paramName.equals(SESSION_TOKEN_KEY)) {
                 paramValue = request.getParameter(paramName);
                 if (StringUtil.isDefined(paramValue)) {
                   query.put(paramName, paramValue);

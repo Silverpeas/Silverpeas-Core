@@ -24,31 +24,6 @@
 
 --%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board" %><%--
-
-    Copyright (C) 2000 - 2017 Silverpeas
-
-    This program is free software: you can redistribute it and/or modify
-    it under the terms of the GNU Affero General Public License as
-    published by the Free Software Foundation, either version 3 of the
-    License, or (at your option) any later version.
-
-    As a special exception to the terms and conditions of version 3.0 of
-    the GPL, you may redistribute this Program in connection with Free/Libre
-    Open Source Software ("FLOSS") applications as described in Silverpeas's
-    FLOSS exception.  You should have received a copy of the text describing
-    the FLOSS exception, and it is also available here:
-    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU Affero General Public License for more details.
-
-    You should have received a copy of the GNU Affero General Public License
-    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
---%>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ include file="check.jsp" %>
@@ -56,6 +31,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 
 <fmt:setLocale value="${requestScope.resources.language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
@@ -75,10 +51,8 @@
 <c:set var="displayedLogin"><view:encodeHtml string="${login}" /></c:set>
 
 <%
-    Board board = gef.getBoard();
-
-	Domain 		domObject 		= (Domain)request.getAttribute("domainObject");
-    UserFull	userObject 		= (UserFull)request.getAttribute("UserFull");
+  Domain 		domObject 		= (Domain)request.getAttribute("domainObject");
+  UserFull	userObject 		= (UserFull)request.getAttribute("UserFull");
 
   if (domObject != null) {
     browseBar.setComponentName(getDomainLabel(domObject, resource));
@@ -90,34 +64,12 @@
 <view:looknfeel withFieldsetStyle="true"/>
 <view:includePlugin name="popup"/>
 <title><%=userObject.getDisplayedName()%></title>
-<script type="text/javascript">
-  function ConfirmAndSend(textToDisplay, targetURL) {
-    jQuery.popup.confirm(textToDisplay, function() {
-      window.location.href = targetURL;
-    });
-  }
-
-function resizeMe() {
-	<%
-		int height = 400;
-		if (userObject!=null)
-		{
-			int nbProperty = userObject.getPropertiesNames().length;
-			height = height+11*nbProperty;
-		}
-	%>
-    window.resizeTo(550,<%=height%>);
-}
-</script>
 </head>
-<body class="page_content_admin" onLoad="resizeMe();" id="profil">
+<body class="page_content_admin" id="profil">
 <%
 out.println(window.printBefore());
 %>
 <view:frame>
-<%
-out.println(board.printBefore());
-%>
 	<fieldset class="skinFieldset" id="identity-main">
 		<legend><fmt:message key="myProfile.identity.fieldset.main" bundle="${profile}" /></legend>
 		<ul class="fields">
@@ -146,55 +98,12 @@ out.println(board.printBefore());
 
     <fieldset class="skinFieldset" id="identity-extra">
 		<legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
-		<ul class="fields">
-		  <%
-		    String[] properties = userObject.getPropertiesNames();
-		    for (final String property : properties) {
-				// Not display the password !
-			if (!property.startsWith("password")) {
-		  %>
-			<li id="form-row-<%=property%>" class="field">
-				<label class="txtlibform">
-					<%=WebEncodeHelper.javaStringToHtmlString(userObject.
-					    getSpecificLabel(resource.getLanguage(),
-					       property))%>
-				</label>
-				<div class="champs">
-					<%
-		            if ("STRING".equals(userObject.getPropertyType(property)) ||
-		                "USERID".equals(userObject.getPropertyType(property))) {
-					%>
-					<%=WebEncodeHelper.javaStringToHtmlString(userObject.getValue(property))%>
-					<%
-		            } else if ("BOOLEAN".equals(userObject.getPropertyType(property))) {
-
-		              if (userObject.getValue(property) != null &&
-		                  "1".equals(userObject.getValue(property))) {
-		            %>
-				<fmt:message key="GML.yes"/>
-		            <%
-		              } else if (userObject.getValue(property) == null ||
-		                  "".equals(userObject.getValue(property)) ||
-		                  "0".equals(userObject.getValue(property))) {
-		            %>
-				<fmt:message key="GML.no"/>
-		           <%
-		              }
-		            }
-		           %>
-				</div>
-			</li>
-			<%
-			}
-		}
-			%>
-		</ul>
+      <viewTags:displayUserExtraProperties user="<%=userObject%>" readOnly="true" includeEmail="false"/>
 	</fieldset>
 <%
-out.println(board.printAfter());
 ButtonPane bouton = gef.getButtonPane();
-bouton.addButton((Button) gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false));
-out.print("<BR/>");
+bouton.addButton(gef.getFormButton(resource.getString("GML.close"), "javaScript:window.close();", false));
+out.print("<br/>");
 out.print(bouton.print());
 %>
 <br/>
