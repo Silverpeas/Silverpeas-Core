@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2017 Silverpeas
+ * Copyright (C) 2000 - 2016 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -11,7 +11,7 @@
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "https://www.silverpeas.org/legal/floss_exception.html"
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,41 +21,20 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.scheduler.trigger;
+package org.silverpeas.core.persistence.datasource.model.jpa;
+
+import java.util.UUID;
 
 /**
- * The unit of times as used and supported by the scheduling system in Silverpeas.
+ * A convenient object to generate a unique identifier for an entity and to set it. It is dedicated
+ * to unit tests
+ * @author mmoquillon
  */
-public enum TimeUnit {
+public class PersistenceIdentifierSetter {
 
-  /**
-   * The second.
-   */
-  SECOND(1000),
-  /**
-   * The minute.
-   */
-  MINUTE(60000),
-  /**
-   * The hour.
-   */
-  HOUR(3600000);
-
-  /**
-   * How many milliseconds this unit of time is made.
-   * @return the conversion in milliseconds of this unit of time.
-   */
-  public long inMilliSeconds() {
-    return this.duration;
+  public static <T extends AbstractJpaEntity> T setIdTo(final T entity) {
+    entity.setId(UUID.randomUUID().toString());
+    return entity;
   }
-
-  /**
-   * Creates a TimeUnit instance by specifying the duration of this unit in milliseconds.
-   * @param duration the duration the unit takes in milliseconds.
-   */
-  TimeUnit(int duration) {
-    this.duration = duration;
-  }
-
-  private int duration;
 }
+  

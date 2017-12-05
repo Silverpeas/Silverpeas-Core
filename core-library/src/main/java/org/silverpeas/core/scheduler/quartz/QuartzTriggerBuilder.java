@@ -76,6 +76,9 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
             SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(trigger.getTimeInterval())
                 .repeatForever());
         break;
+      default:
+        // no repeat scheduling
+        break;
     }
     if (trigger.getStartDate() != null) {
       triggerBuilder.startAt(trigger.getStartDate());
