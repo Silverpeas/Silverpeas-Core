@@ -24,6 +24,7 @@
 package org.silverpeas.core.scheduler.trigger;
 
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 import java.util.Date;
 import static org.silverpeas.core.util.ArgumentAssertion.*;
 
@@ -45,11 +46,17 @@ public abstract class JobTrigger {
   public abstract void accept(final JobTriggerVisitor visitor);
 
   /**
-   * Gets the date at which the trigger's scheduling should start. Null means no explicit starting
-   * date and the first fire of the trigger will be done according to the triggering definition. It
-   * may or not be the first actual fire time of the trigger, depending on the type of this trigger
+   * Gets the date at which the trigger's scheduling should start. For one shot trigger, this date
+   * is the one at which the trigger will be fired. For other triggers it is the date at which
+   * the scheduling should start; in that case the trigger may or may not fire at this time,
+   * depending upon the schedule configured for the Trigger.
+   * <p>
+   * For repeatedly trigger, null means no explicit starting date and the first fire of the
+   * trigger will be done according to the triggering definition. It may or not be the first
+   * actual fire time of the trigger, depending on the type of this trigger
    * and its triggering definition. However, the first actual fire time won't be done after this
    * date.
+   * </p>
    * @return the job trigger's scheduling start date.
    */
   public Date getStartDate() {
@@ -77,6 +84,15 @@ public abstract class JobTrigger {
    */
   public static JobTrigger triggerAt(final String cron) throws ParseException {
     return JobTriggerProvider.getJobTriggerWithCronExpression(cron);
+  }
+
+  /**
+   * Creates a new job trigger that will fire a job execution only once at the specified date time.
+   * @param dateTime an {@link OffsetDateTime} value.
+   * @return the one shot job trigger.
+   */
+  public static JobTrigger triggerAt(final OffsetDateTime dateTime) {
+    return JobTriggerProvider.getJobTriggerAtDateTime(dateTime);
   }
 
   /**

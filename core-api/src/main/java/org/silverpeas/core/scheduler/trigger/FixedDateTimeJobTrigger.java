@@ -21,46 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.reminder;
+package org.silverpeas.core.scheduler.trigger;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.date.TimeUnit;
-import org.silverpeas.core.test.rule.CommonAPI4Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.time.OffsetDateTime;
+import java.util.Date;
 
 /**
- * Unit tests on the reminder engine. Its goal is to help to design it.
+ * A job trigger that fires the execution of a job at a specified date and time. The job will be
+ * be triggered only once time.
  * @author mmoquillon
  */
-public class ReminderTest {
+public class FixedDateTimeJobTrigger extends JobTrigger {
 
-  @Rule
-  public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
-  private ReminderTextContext context = new ReminderTextContext(commonAPI4Test);
-
-
-  @Before
-  public void prepareInjection() {
-    context.setUp();
+  protected FixedDateTimeJobTrigger(final OffsetDateTime dateTime) {
+    startAt(Date.from(dateTime.toInstant()));
   }
 
-  @Test
-  public void createNewReminder() {
-    ContributionIdentifier contribution = context.getPlannableContribution();
-    User user = context.getUser();
-    Reminder reminder =
-        new Reminder(contribution, user).withText("Don't forget the meeting in two days!")
-        .triggerBefore(2, TimeUnit.DAY);
-    assertThat(reminder.isPersisted(), is(true));
-    //assertThat(reminder.isScheduled(), is(true));
+  @Override
+  public void accept(final JobTriggerVisitor visitor) {
+    visitor.visit(this);
   }
-
-
 }
   

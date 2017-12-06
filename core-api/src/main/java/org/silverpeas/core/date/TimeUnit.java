@@ -26,7 +26,7 @@ package org.silverpeas.core.date;
 import java.time.temporal.ChronoUnit;
 
 /**
- * An enumeration of time units to be used to express a well known defined unit in the timeline.
+ * An enumeration of time units to be used to express a well known defined unit in the time line.
  */
 public enum TimeUnit {
 

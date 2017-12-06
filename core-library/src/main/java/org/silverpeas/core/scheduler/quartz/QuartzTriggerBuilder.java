@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.scheduler.quartz;
 
-import org.silverpeas.core.scheduler.trigger.CronJobTrigger;
-import org.silverpeas.core.scheduler.trigger.FixedPeriodJobTrigger;
-import org.silverpeas.core.scheduler.trigger.JobTriggerVisitor;
 import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
-
-import java.util.Date;
+import org.silverpeas.core.scheduler.trigger.CronJobTrigger;
+import org.silverpeas.core.scheduler.trigger.FixedDateTimeJobTrigger;
+import org.silverpeas.core.scheduler.trigger.FixedPeriodJobTrigger;
+import org.silverpeas.core.scheduler.trigger.JobTriggerVisitor;
 
 import static org.quartz.TriggerBuilder.newTrigger;
 
@@ -44,7 +44,7 @@ import static org.quartz.TriggerBuilder.newTrigger;
 public final class QuartzTriggerBuilder implements JobTriggerVisitor {
 
   private Trigger quartzTrigger = null;
-  private String jobName = null;
+  private final String jobName;
 
   /**
    * Builds a Quartz trigger from the specified QuartzSchedulerJob instance.
@@ -59,7 +59,7 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
 
   @Override
   public void visit(FixedPeriodJobTrigger trigger) {
-    TriggerBuilder triggerBuilder = newTrigger().withIdentity(jobName);
+    TriggerBuilder<Trigger> triggerBuilder = newTrigger().withIdentity(jobName);
     switch (trigger.getTimeUnit()) {
       case SECOND:
         triggerBuilder.withSchedule(
@@ -83,7 +83,7 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
     if (trigger.getStartDate() != null) {
       triggerBuilder.startAt(trigger.getStartDate());
     } else {
-      triggerBuilder.startAt(quartzTrigger.getFireTimeAfter(new Date()));
+      triggerBuilder.startNow();
     }
     quartzTrigger = triggerBuilder.build();
   }
@@ -91,11 +91,18 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
   @Override
   public void visit(CronJobTrigger trigger) {
     QuartzCronExpression cronExpression = (QuartzCronExpression)trigger.getCronExpression();
-    TriggerBuilder triggerBuilder = newTrigger().withIdentity(jobName)
+    TriggerBuilder<CronTrigger> triggerBuilder = newTrigger().withIdentity(jobName)
         .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression.getExpression()));
     if (trigger.getStartDate() != null) {
       triggerBuilder.startAt(trigger.getStartDate());
     }
+    quartzTrigger = triggerBuilder.build();
+  }
+
+  @Override
+  public void visit(final FixedDateTimeJobTrigger trigger) {
+    TriggerBuilder triggerBuilder = newTrigger().withIdentity(jobName)
+        .startAt(trigger.getStartDate());
     quartzTrigger = triggerBuilder.build();
   }
 

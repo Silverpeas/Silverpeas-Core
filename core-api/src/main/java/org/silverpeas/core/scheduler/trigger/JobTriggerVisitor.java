@@ -40,4 +40,10 @@ public interface JobTriggerVisitor {
    * @param trigger the SimpleCronJobTrigger instance to visit.
    */
   void visit(final CronJobTrigger trigger);
+
+  /**
+   * Visits the specified job trigger.
+   * @param trigger the FixedDateTimeJobTrigger to visit.
+   */
+  void visit(final FixedDateTimeJobTrigger trigger);
 }

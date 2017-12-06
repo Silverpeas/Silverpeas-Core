@@ -101,8 +101,6 @@ import java.text.ParseException;
  */
 public final class CronJobTrigger extends JobTrigger {
 
-  private static final String CRON_SYNTAX_TO_FIX =
-      "[0-9,/\\-\\*]+[ ]+[0-9,/\\-\\*]+[ ]+\\*[ ]+[0-9,/\\-\\*]+[ ]+\\*";
   private CronExpression cron;
 
   /**

@@ -24,6 +24,7 @@
 package org.silverpeas.core.scheduler.trigger;
 
 import java.text.ParseException;
+import java.time.OffsetDateTime;
 
 /**
  * A factory of job triggers. This factory creates the specific job triggers depending upons the
@@ -44,12 +45,11 @@ public class JobTriggerProvider {
    * @return a job trigger whose type depends upon the specified periodicity.
    */
   public static FixedPeriodJobTrigger getJobTriggerWithPeriodicity(int time, final TimeUnit unit) {
-    FixedPeriodJobTrigger trigger = new FixedPeriodJobTrigger(time, unit);
-    return trigger;
+    return new FixedPeriodJobTrigger(time, unit);
   }
 
   /**
-   * Creates a new job trigger that will fire a job exectution at given moments in the time, as
+   * Creates a new job trigger that will fire a job execution at given moments in the time, as
    * defined by the specified cron expression.
    * @param cron the Unix cron-like expression.
    * @see CronJobTrigger
@@ -57,8 +57,16 @@ public class JobTriggerProvider {
    * @throws ParseException if the specified cron expression is not valid.
    */
   public static CronJobTrigger getJobTriggerWithCronExpression(final String cron) throws ParseException {
-    CronJobTrigger trigger = new CronJobTrigger(cron);
-    return trigger;
+    return new CronJobTrigger(cron);
+  }
+
+  /**
+   * Creates a new job trigger that will fire a job execution at the specified date time.
+   * @param dateTime an {@link OffsetDateTime} value.
+   * @return the one shot job trigger.
+   */
+  public static FixedDateTimeJobTrigger getJobTriggerAtDateTime(final OffsetDateTime dateTime) {
+    return new FixedDateTimeJobTrigger(dateTime);
   }
 
 }
