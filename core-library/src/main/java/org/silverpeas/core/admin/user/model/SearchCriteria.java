@@ -75,7 +75,7 @@ public interface SearchCriteria {
    * @param domainId the unique identifier of the user domain.
    * @return the criteria enriched with a criterion on the user domain.
    */
-  SearchCriteria onDomainId(String domainId);
+  SearchCriteria onDomainIds(String... domainId);
 
   /**
    * Appends a criterion on the user groups for which the search must be constrained to. The

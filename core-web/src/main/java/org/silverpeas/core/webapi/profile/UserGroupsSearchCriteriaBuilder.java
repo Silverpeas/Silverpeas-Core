@@ -135,7 +135,7 @@ public class UserGroupsSearchCriteriaBuilder {
     if (withMixedDomain) {
       searchCriteria.onMixedDomainOrOnDomainId(domainId);
     } else if (isDefined(domainId)) {
-      searchCriteria.onDomainId(domainId);
+      searchCriteria.onDomainIds(domainId);
     }
     return searchCriteria;
   }

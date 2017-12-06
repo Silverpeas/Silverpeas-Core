@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.UserDetailsSearchCriteria;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.util.ArrayUtil;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -70,21 +71,19 @@ public class UserProfilesSearchCriteriaBuilder {
     return this;
   }
 
-  public UserProfilesSearchCriteriaBuilder withGroupId(String groupId) {
-    if(isDefined(groupId)) {
-      if (groupId.equals(UserProfileResource.QUERY_ALL_GROUPS)) {
+  public UserProfilesSearchCriteriaBuilder withGroupIds(String[] groupIds) {
+    if(ArrayUtil.isNotEmpty(groupIds)) {
+      if (ArrayUtil.contains(groupIds, UserProfileResource.QUERY_ALL_GROUPS)) {
         searchCriteria.onGroupIds(UserDetailsSearchCriteria.ANY_GROUPS);
       } else {
-        searchCriteria.onGroupIds(groupId);
+        searchCriteria.onGroupIds(groupIds);
       }
     }
     return this;
   }
 
-  public UserProfilesSearchCriteriaBuilder withDomainId(String domainId) {
-    if (isDefined(domainId) && Integer.valueOf(domainId) >= 0) {
-      searchCriteria.onDomainId(domainId);
-    }
+  public UserProfilesSearchCriteriaBuilder withDomainIds(String[] domainIds) {
+    searchCriteria.onDomainIds(domainIds);
     return this;
   }
 

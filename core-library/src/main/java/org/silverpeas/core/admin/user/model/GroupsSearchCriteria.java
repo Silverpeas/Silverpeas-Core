@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.util.ArrayUtil;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -105,9 +106,9 @@ public class GroupsSearchCriteria implements SearchCriteria {
   }
 
   @Override
-  public GroupsSearchCriteria onDomainId(String domainId) {
-    if (isDefined(domainId)) {
-      criteria.put(DOMAIN_IDS, new String[]{domainId});
+  public GroupsSearchCriteria onDomainIds(String... domainIds) {
+    if (domainIds != null && ArrayUtil.isNotEmpty(domainIds)) {
+      criteria.put(DOMAIN_IDS, domainIds);
     }
     return this;
   }

@@ -93,10 +93,8 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   }
 
   @Override
-  public GroupSearchCriteriaForDAO onDomainId(String domainId) {
-    if (isDefined(domainId)) {
-      this.criteria.onDomainId(domainId);
-    }
+  public GroupSearchCriteriaForDAO onDomainIds(String... domainIds) {
+    this.criteria.onDomainIds(domainIds);
     return this;
   }
 

@@ -136,7 +136,7 @@ public class UserManager {
       AdminException {
     try (Connection connection = DBUtil.openConnection()) {
       return userDAO.getUserCountByCriteria(connection, UserSearchCriteriaForDAO.newCriteria()
-          .onDomainId(domainId)
+          .onDomainIds(domainId)
           .onUserStatesToExclude(UserState.DELETED));
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("user count in domain", domainId), e);
@@ -267,7 +267,7 @@ public class UserManager {
       // Get users of domain from Silverpeas database
       ListSlice<UserDetail> users = userDAO.getUsersByCriteria(connection,
           UserSearchCriteriaForDAO.newCriteria()
-              .onDomainId(sDomainId)
+              .onDomainIds(sDomainId)
               .onUserStatesToExclude(UserState.DELETED));
 
       UserDetail[] usersInDomain = new UserDetail[users.size()];

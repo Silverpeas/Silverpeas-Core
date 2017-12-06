@@ -105,11 +105,11 @@ public class GroupManager {
     try (Connection connection = DBUtil.openConnection()){
       ListSlice<GroupDetail> groups = groupDao.getGroupsByCriteria(connection, criteria);
 
-      String domainIdConstraint = null;
+      String[] domainIdConstraint = new String[0];
       List<String> domainIds = criteria.getCriterionOnDomainIds();
       for (String domainId : domainIds) {
         if (!MIXED_DOMAIN_ID.equals(domainId)) {
-          domainIdConstraint = domainId;
+          domainIdConstraint = new String[]{domainId};
           break;
         }
       }
@@ -122,7 +122,7 @@ public class GroupManager {
         UserState[] criterionOnUserStatesToExclude =
             criteria.getCriterionOnUserStatesToExclude();
         int userCount = userDao.getUserCountByCriteria(connection, criteriaOnUsers.
-            onDomainId(domainIdConstraint).
+            onDomainIds(domainIdConstraint).
             onGroupIds(groupIds.toArray(new String[groupIds.size()])).
             onUserStatesToExclude(criterionOnUserStatesToExclude));
         group.setTotalNbUsers(userCount);
@@ -150,7 +150,7 @@ public class GroupManager {
       groupIds.add(groupId);
       UserSearchCriteriaForDAO criteriaOnUsers = factory.getUserSearchCriteriaDAO();
       return userDao.getUserCountByCriteria(connection, criteriaOnUsers.
-          onDomainId(domainId).
+          onDomainIds(domainId).
           onGroupIds(groupIds.toArray(new String[groupIds.size()])));
     } catch (SQLException e) {
       throw new AdminException(e.getMessage(), e);

@@ -4843,7 +4843,7 @@ class Admin implements Administration {
       }
     }
     if (searchCriteria.isCriterionOnDomainIdSet()) {
-      criteria.and().onDomainId(searchCriteria.getCriterionOnDomainId());
+      criteria.and().onDomainIds(searchCriteria.getCriterionOnDomainIds());
     }
     if (searchCriteria.isCriterionOnAccessLevelsSet()) {
       criteria.and().onAccessLevels(searchCriteria.getCriterionOnAccessLevels());
@@ -4907,7 +4907,7 @@ class Admin implements Administration {
       if (searchCriteria.isCriterionOnMixedDomainIdSet()) {
         criteria.onMixedDomainOrOnDomainId(domainId);
       } else {
-        criteria.onDomainId(domainId);
+        criteria.onDomainIds(domainId);
       }
     }
 

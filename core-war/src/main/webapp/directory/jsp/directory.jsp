@@ -58,6 +58,8 @@
 <c:set var="view" value="${silfn:defaultString(requestScope.View, VIEW_ALL)}"/>
 <c:set var="showHelp" value="${requestScope.ShowHelp}"/>
 <c:set var="quickUserSelectionEnabled" value="${requestScope.QuickUserSelectionEnabled}"/>
+<c:set var="domains" value="${requestScope.Domains}"/>
+<c:set var="groups" value="${requestScope.Groups}"/>
 
 <fmt:message key="GML.print" var="labelPrint"/>
 
@@ -249,7 +251,8 @@
             <viewTags:selectUsersAndGroups selectionType="USER" noUserPanel="true" noSelectionClear="true"
                                            doNotSelectAutomaticallyOnDropDownOpen="true"
                                            queryInputName="key" id="directory" initialQuery="${query}"
-                                           navigationalBehavior="true" onChangeJsCallback="jumpToUser"/>
+                                           navigationalBehavior="true" onChangeJsCallback="jumpToUser"
+                                           domainsFilter="${domains}" groupsFilter="${groups}"/>
           </c:otherwise>
         </c:choose>
         <fmt:message key="GML.search" var="buttonLabel"/>

@@ -390,7 +390,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     for (String groupId : groupIds) {
       mergeUsersIntoDirectoryItemList(getOrganisationController().getAllUsersOfGroup(groupId),
           tmpList);
-      currentGroups.add(getOrganisationController().getGroup(groupId));
+      Group group = getOrganisationController().getGroup(groupId);
+      if (group != null) {
+        currentGroups.add(group);
+      }
     }
 
     lastAllListUsersCalled = tmpList;
@@ -692,7 +695,10 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   public void setCurrentDomains(List<String> domainIds) {
     currentDomains = new ArrayList<Domain>();
     for (String domainId : domainIds) {
-      currentDomains.add(getOrganisationController().getDomain(domainId));
+      Domain domain = getOrganisationController().getDomain(domainId);
+      if (domain != null) {
+        currentDomains.add(domain);
+      }
     }
     setCurrentDirectory(DIRECTORY_DOMAIN);
   }
@@ -909,7 +915,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   public boolean isQuickUserSelectionEnabled() {
     return getCurrentDirectory() == DIRECTORY_DEFAULT ||
-        (getCurrentDirectory() == DIRECTORY_DOMAIN && getCurrentDomainIds().size() == 1);
+        getCurrentDirectory() == DIRECTORY_DOMAIN || getCurrentDirectory() == DIRECTORY_GROUP;
   }
 
   private SilverpeasTemplate getFragmentTemplate() {
