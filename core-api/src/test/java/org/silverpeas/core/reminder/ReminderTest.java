@@ -29,7 +29,10 @@ import org.junit.Test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
+
+import java.time.OffsetDateTime;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -51,16 +54,46 @@ public class ReminderTest {
   }
 
   @Test
-  public void createNewReminder() {
+  public void createNewReminderToTriggerBeforeTheStartDateOfAPlannableContribution()
+      throws SchedulerException {
     ContributionIdentifier contribution = context.getPlannableContribution();
     User user = context.getUser();
-    Reminder reminder =
-        new Reminder(contribution, user).withText("Don't forget the meeting in two days!")
+    Reminder reminder = Reminder.make(contribution, user)
+        .withText("Don't forget the meeting in two days!")
         .triggerBefore(2, TimeUnit.DAY);
     assertThat(reminder.isPersisted(), is(true));
-    //assertThat(reminder.isScheduled(), is(true));
+    assertThat(reminder.isScheduled(), is(true));
   }
 
+  @Test(expected = IllegalArgumentException.class)
+  public void userTriggerBeforeWithANonPlannableObjectShouldFail() throws SchedulerException {
+    ContributionIdentifier contribution = context.getNonPlannableContribution();
+    User user = context.getUser();
+    Reminder.make(contribution, user)
+        .withText("Don't forget the meeting in two days!")
+        .triggerBefore(2, TimeUnit.DAY);
+  }
 
+  @Test
+  public void createNewReminderToTriggerAtDateTime() throws SchedulerException {
+    ContributionIdentifier contribution = context.getNonPlannableContribution();
+    User user = context.getUser();
+    Reminder reminder = Reminder.make(contribution, user)
+        .withText("Don't forget the meeting in two days!")
+        .triggerAt(OffsetDateTime.now().plusMonths(1));
+    assertThat(reminder.isPersisted(), is(true));
+    assertThat(reminder.isScheduled(), is(true));
+  }
+
+  @Test
+  public void createNewReminderAboutPlannableToTriggerAtDateTime() throws SchedulerException {
+    ContributionIdentifier contribution = context.getPlannableContribution();
+    User user = context.getUser();
+    Reminder reminder = Reminder.make(contribution, user)
+        .withText("Don't forget the meeting in two days!")
+        .triggerAt(OffsetDateTime.now().plusMonths(1));
+    assertThat(reminder.isPersisted(), is(true));
+    assertThat(reminder.isScheduled(), is(true));
+  }
 }
   

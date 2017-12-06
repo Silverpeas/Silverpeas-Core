@@ -26,7 +26,6 @@ package org.silverpeas.core.reminder;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.calendar.Plannable;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -34,35 +33,54 @@ import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
 
+import javax.persistence.DiscriminatorColumn;
 import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import java.text.MessageFormat;
-import java.time.temporal.Temporal;
+import java.time.OffsetDateTime;
 
 /**
  * A reminder.
  * @author mmoquillon
  */
 @Entity
-public class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> {
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "reminderType")
+public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> {
 
   private static final MessageFormat SCHEDULED_JOB_NAME = new MessageFormat("Reminder#{0}");
 
-  private final ContributionIdentifier contributionId;
-  private final String userId;
+  private ContributionIdentifier contributionId;
+  private String userId;
   private String text;
-  private int duration;
-  private TimeUnit timeUnit;
 
   /**
    * Constructs a new reminder about the given contribution for the specified user.
    * @param contributionId the unique identifier of a contribution.
    * @param user the user for which the reminder is aimed to.
    */
-  public Reminder(final ContributionIdentifier contributionId, final User user) {
+  protected Reminder(final ContributionIdentifier contributionId, final User user) {
+    super();
     this.contributionId = contributionId;
     this.userId = user.getId();
+  }
+
+  protected Reminder() {
+    super();
+  }
+
+  /**
+   * Constructs a {@link ReminderBuilder} to build a new reminder about the specified contribution
+   * and for the given user.
+   * @return a {@link ReminderBuilder};
+   */
+  public static ReminderBuilder make(final ContributionIdentifier contribution, final User user) {
+    return new ReminderBuilder().about(contribution).forUser(user);
   }
 
   /**
@@ -70,9 +88,9 @@ public class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> {
    * @param text a text to attach with the reminder.
    * @return itself.
    */
-  public Reminder withText(final String text) {
+  public <T extends Reminder> T withText(final String text) {
     this.text = text;
-    return this;
+    return (T) this;
   }
 
   /**
@@ -100,47 +118,6 @@ public class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> {
   }
 
   /**
-   * Gets the duration before the start date of a {@link Plannable} object this remainder has to be
-   * triggered.
-   * @return a duration value.
-   */
-  public int getDuration() {
-    return duration;
-  }
-
-  /**
-   * Gets the unit of time the duration is expressed.
-   * @return a time unit value.
-   */
-  public TimeUnit getTimeUnit() {
-    return timeUnit;
-  }
-
-  /**
-   * Triggers this reminder the specified duration before the start date of the plannable
-   * contribution. This type of trigger can only be used with {@link Plannable} object. The
-   * reminder is then scheduled and will be triggered at the specified duration prior the plannable
-   * object.
-   * @param duration the duration value prior to the start date of a {@link Plannable} object
-   * @param timeUnit the time unit in which is expressed the duration.
-   * @return itself.
-   */
-  public Reminder triggerBefore(final int duration, final TimeUnit timeUnit) {
-    this.duration = duration;
-    this.timeUnit = timeUnit;
-    Plannable contribution = getPlannableContribution();
-    Temporal startDate = contribution.getStartDate();
-    startDate.minus(duration, timeUnit.toChronoUnit());
-    return Transaction.getTransaction().perform(() -> {
-      Reminder me = ReminderRepository.get().save(this);
-
-      /*SchedulerProvider.getScheduler()
-          .scheduleJob("Reminder#" + me.getId(), JobTrigger.tr)*/
-      return me;
-    });
-  }
-
-  /**
    * Is this reminder scheduled? The reminder is scheduled if it is taken in charge by the
    * Silverpeas scheduler engine.
    * @return true if this reminder is scheduled to be triggered at its specified date time, false
@@ -151,7 +128,7 @@ public class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> {
         .isJobScheduled(SCHEDULED_JOB_NAME.format(new Object[]{getId()}));
   }
 
-  private Contribution getContribution() {
+  protected Contribution getContribution() {
     return ContributionManager.get()
         .getById(this.contributionId)
         .orElseThrow(() -> new SilverpeasRuntimeException(
@@ -159,13 +136,56 @@ public class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> {
                 contributionId.getLocalId())));
   }
 
-  private Plannable getPlannableContribution() {
-    Contribution contribution = getContribution();
-    if (contribution instanceof Plannable) {
-      return (Plannable) contribution;
+  private String getJobName() {
+    return SCHEDULED_JOB_NAME.format(new Object[]{getId()});
+  }
+
+  protected <T extends Reminder> T scheduleAt(final OffsetDateTime dateTime) {
+    return Transaction.getTransaction().perform(() -> {
+      Reminder me = ReminderRepository.get().save(this);
+      JobTrigger trigger = JobTrigger.triggerAt(dateTime);
+      SchedulerProvider.getScheduler().scheduleJob(getJobName(), trigger, ReminderProcess.get());
+      return (T) me;
+    });
+  }
+
+  protected void unschedule() throws SchedulerException {
+    if (isPersisted() && isScheduled()) {
+      SchedulerProvider.getScheduler().unscheduleJob(getJobName());
     }
-    throw new IllegalArgumentException(
-        "The " + contributionId.getType() + " contribution isn't plannable!");
+  }
+
+  public static class ReminderBuilder {
+
+    private ContributionIdentifier contribution;
+    private User user;
+    private String text;
+
+    public ReminderBuilder about(final ContributionIdentifier contribution) {
+      this.contribution = contribution;
+      return this;
+    }
+
+    public ReminderBuilder forUser(final User user) {
+      this.user = user;
+      return this;
+    }
+
+    public ReminderBuilder withText(final String text) {
+      this.text = text;
+      return this;
+    }
+
+    public DurationReminder triggerBefore(final int duration, final TimeUnit timeUnit)
+        throws SchedulerException {
+      DurationReminder reminder = new DurationReminder(contribution, user).withText(text);
+      return reminder.triggerBefore(duration, timeUnit);
+    }
+
+    public DateTimeReminder triggerAt(final OffsetDateTime dateTime) throws SchedulerException {
+      DateTimeReminder reminder = new DateTimeReminder(contribution, user).withText(text);
+      return reminder.triggerAt(dateTime);
+    }
   }
 }
   

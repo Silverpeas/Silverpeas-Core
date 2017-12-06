@@ -1,0 +1,115 @@
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.silverpeas.core.reminder;
+
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.calendar.Plannable;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.date.TemporalConverter;
+import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.scheduler.SchedulerException;
+
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+
+/**
+ * @author mmoquillon
+ */
+@Entity
+@DiscriminatorValue("duration")
+public class DurationReminder extends Reminder {
+
+  private Integer duration;
+  private TimeUnit timeUnit;
+
+  public DurationReminder(final ContributionIdentifier contributionId, final User user) {
+    super(contributionId, user);
+  }
+
+  protected DurationReminder() {
+    super();
+  }
+
+  /**
+   * Gets the duration before the start date of a {@link Plannable} object this remainder has to be
+   * triggered.
+   * @return a duration value.
+   */
+  public int getDuration() {
+    return duration;
+  }
+
+  /**
+   * Gets the unit of time the duration is expressed.
+   * @return a time unit value.
+   */
+  public TimeUnit getTimeUnit() {
+    return timeUnit;
+  }
+
+  public DurationReminder setDuration(final Integer duration) {
+    this.duration = duration;
+    return this;
+  }
+
+  public DurationReminder setTimeUnit(final TimeUnit timeUnit) {
+    this.timeUnit = timeUnit;
+    return this;
+  }
+
+  /**
+   * Triggers this reminder the specified duration before the start date of the plannable
+   * contribution. This type of trigger can only be used with {@link Plannable} object. The
+   * reminder is then scheduled and will be triggered at the specified duration prior the plannable
+   * object.
+   * @param duration the duration value prior to the start date of a {@link Plannable} object
+   * @param timeUnit the time unit in which is expressed the duration.
+   * @return itself.
+   * @throws SchedulerException is an error occurs while scheduling this reminder.
+   */
+  public DurationReminder triggerBefore(final int duration, final TimeUnit timeUnit)
+      throws SchedulerException {
+    this.duration = duration;
+    this.timeUnit = timeUnit;
+    Plannable contribution = getPlannableContribution();
+    OffsetDateTime startDateTime = TemporalConverter.applyByType(contribution.getStartDate(),
+        d -> d.atStartOfDay().atZone(ZoneId.systemDefault()).toOffsetDateTime(), dt -> dt)
+        .minus(duration, timeUnit.toChronoUnit());
+    unschedule();
+    return scheduleAt(startDateTime);
+  }
+
+  private Plannable getPlannableContribution() {
+    Contribution contribution = getContribution();
+    if (contribution instanceof Plannable) {
+      return (Plannable) contribution;
+    }
+    throw new IllegalArgumentException(
+        "The " + getContributionId().getType() + " contribution isn't plannable!");
+  }
+}
+  

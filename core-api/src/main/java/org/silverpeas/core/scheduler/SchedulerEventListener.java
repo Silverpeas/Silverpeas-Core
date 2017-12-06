@@ -34,8 +34,8 @@ public interface SchedulerEventListener {
 
   /**
    * Invoked when a job trigger fires the execution of a job. The call of this method occurs before
-   * the actual job execution. So, wether an error occurs during the processing of this call, it is
-   * considered as a job failure and as consequency an event about a job failure will be sent to the
+   * the actual job execution. So, whether an error occurs during the processing of this call, it is
+   * considered as a job failure and as consequence an event about a job failure will be sent to the
    * listener. The processing of this event can be, for example for preparing the resources before
    * the job execution or performing the execution of the job itself (delegation).
    * @param anEvent the event coming from the trigger firing.
