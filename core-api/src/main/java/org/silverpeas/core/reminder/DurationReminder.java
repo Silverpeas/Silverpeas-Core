@@ -37,6 +37,8 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 
 /**
+ * A reminder that is triggered at a given duration before the start date of the {@link Plannable}
+ * relarted contribution.
  * @author mmoquillon
  */
 @Entity
@@ -46,12 +48,25 @@ public class DurationReminder extends Reminder {
   private Integer duration;
   private TimeUnit timeUnit;
 
+  /**
+   * Constructs a new reminder about the specified contribution and for the given user.
+   * @param contributionId the unique identifier of the contribution.
+   * @param user the user aimed by this reminder.
+   */
   public DurationReminder(final ContributionIdentifier contributionId, final User user) {
     super(contributionId, user);
   }
 
+  /**
+   * Empty constructors for the persistence engine.
+   */
   protected DurationReminder() {
     super();
+  }
+
+  @Override
+  public DurationReminder withText(final String text) {
+    return super.withText(text);
   }
 
   /**
@@ -71,11 +86,21 @@ public class DurationReminder extends Reminder {
     return timeUnit;
   }
 
+  /**
+   * Sets a new duration to this reminder.
+   * @param duration the duration value.
+   * @return itself.
+   */
   public DurationReminder setDuration(final Integer duration) {
     this.duration = duration;
     return this;
   }
 
+  /**
+   * Sets a new time unit for the duration.
+   * @param timeUnit the time unit in which is expressed the duration.
+   * @return itself.
+   */
   public DurationReminder setTimeUnit(final TimeUnit timeUnit) {
     this.timeUnit = timeUnit;
     return this;
@@ -99,7 +124,6 @@ public class DurationReminder extends Reminder {
     OffsetDateTime startDateTime = TemporalConverter.applyByType(contribution.getStartDate(),
         d -> d.atStartOfDay().atZone(ZoneId.systemDefault()).toOffsetDateTime(), dt -> dt)
         .minus(duration, timeUnit.toChronoUnit());
-    unschedule();
     return scheduleAt(startDateTime);
   }
 

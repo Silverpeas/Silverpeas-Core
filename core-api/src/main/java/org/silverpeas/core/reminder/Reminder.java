@@ -128,6 +128,10 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
         .isJobScheduled(SCHEDULED_JOB_NAME.format(new Object[]{getId()}));
   }
 
+  /**
+   * Gets the contribution related by this reminder.
+   * @return a {@link Contribution} object.
+   */
   protected Contribution getContribution() {
     return ContributionManager.get()
         .getById(this.contributionId)
@@ -140,8 +144,17 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
     return SCHEDULED_JOB_NAME.format(new Object[]{getId()});
   }
 
+  /**
+   * Persists this reminder and schedules it at the specified date time.
+   * @param dateTime the {@link OffsetDateTime} value of the date time to set.
+   * @param <T> the concrete type of the reminder.
+   * @return itself.
+   */
   protected <T extends Reminder> T scheduleAt(final OffsetDateTime dateTime) {
     return Transaction.getTransaction().perform(() -> {
+      if (isPersisted() && isScheduled()) {
+        SchedulerProvider.getScheduler().unscheduleJob(getJobName());
+      }
       Reminder me = ReminderRepository.get().save(this);
       JobTrigger trigger = JobTrigger.triggerAt(dateTime);
       SchedulerProvider.getScheduler().scheduleJob(getJobName(), trigger, ReminderProcess.get());
@@ -149,42 +162,66 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
     });
   }
 
-  protected void unschedule() throws SchedulerException {
-    if (isPersisted() && isScheduled()) {
-      SchedulerProvider.getScheduler().unscheduleJob(getJobName());
-    }
-  }
-
+  /**
+   * A builder of reminders. It builds the concrete reminder according to the type of triggering.
+   */
   public static class ReminderBuilder {
 
     private ContributionIdentifier contribution;
     private User user;
     private String text;
 
+    /**
+     * The reminder is about the specified contribution.
+     * @param contribution the unique identifier of a contribution.
+     * @return itself.
+     */
     public ReminderBuilder about(final ContributionIdentifier contribution) {
       this.contribution = contribution;
       return this;
     }
 
+    /**
+     * The reminders is for the specified user.
+     * @param user the user aimed by the reminder.
+     * @return itself.
+     */
     public ReminderBuilder forUser(final User user) {
       this.user = user;
       return this;
     }
 
+    /**
+     * The reminder is annotated with the specified text.
+     * @param text the text associated with the reminder.
+     * @return itself.
+     */
     public ReminderBuilder withText(final String text) {
       this.text = text;
       return this;
     }
 
+    /**
+     * Triggers the reminder at the specified duration before the start date of the related
+     * contribution. This triggering is only valid for
+     * {@link org.silverpeas.core.calendar.Plannable} contribution.
+     * @param duration a duration value
+     * @param timeUnit the time unit in which is expressed the duration.
+     * @return itself.
+     */
     public DurationReminder triggerBefore(final int duration, final TimeUnit timeUnit)
         throws SchedulerException {
-      DurationReminder reminder = new DurationReminder(contribution, user).withText(text);
-      return reminder.triggerBefore(duration, timeUnit);
+      return new DurationReminder(contribution, user).withText(text)
+          .triggerBefore(duration, timeUnit);
     }
 
+    /**
+     * Triggers the reminder at the specified date time.
+     * @param dateTime the {@link OffsetDateTime} at which the reminder will be triggered.
+     * @return itself.
+     */
     public DateTimeReminder triggerAt(final OffsetDateTime dateTime) throws SchedulerException {
-      DateTimeReminder reminder = new DateTimeReminder(contribution, user).withText(text);
-      return reminder.triggerAt(dateTime);
+      return new DateTimeReminder(contribution, user).withText(text).triggerAt(dateTime);
     }
   }
 }

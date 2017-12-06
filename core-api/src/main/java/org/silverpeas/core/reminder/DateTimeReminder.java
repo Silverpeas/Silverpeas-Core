@@ -33,7 +33,7 @@ import javax.persistence.Entity;
 import java.time.OffsetDateTime;
 
 /**
- * A reminder that is triggered at a specified date time.
+ * A reminder about any contribution that is triggered at a specified date time.
  * @author mmoquillon
  */
 @Entity
@@ -43,18 +43,40 @@ public class DateTimeReminder extends Reminder {
   @Column(name = "dateTime", nullable = false)
   private OffsetDateTime dateTime;
 
+  /**
+   * Constructs a new reminder about the specified contribution and for the given user.
+   * @param contributionId the unique identifier of the contribution.
+   * @param user the user aimed by this reminder.
+   */
   public DateTimeReminder(final ContributionIdentifier contributionId, final User user) {
     super(contributionId, user);
   }
 
+  /**
+   * Empty constructors for the persistence engine.
+   */
   protected DateTimeReminder() {
     super();
   }
 
+  @Override
+  public DateTimeReminder withText(final String text) {
+    return super.withText(text);
+  }
+
+  /**
+   * Gets the date time at which this reminder will be triggered.
+   * @return a {@link OffsetDateTime} value.
+   */
   public OffsetDateTime getDateTime() {
     return dateTime;
   }
 
+  /**
+   * Sets a new date time at which this reminder has to be triggered.
+   * @param dateTime a new date time.
+   * @return itself.
+   */
   public DateTimeReminder setDateTime(final OffsetDateTime dateTime) {
     this.dateTime = dateTime;
     return this;
@@ -68,7 +90,6 @@ public class DateTimeReminder extends Reminder {
    */
   public DateTimeReminder triggerAt(final OffsetDateTime dateTime) throws SchedulerException {
     this.dateTime = dateTime;
-    unschedule();
     return scheduleAt(dateTime);
   }
 }
