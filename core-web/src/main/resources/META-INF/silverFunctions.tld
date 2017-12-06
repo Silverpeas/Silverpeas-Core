@@ -185,10 +185,10 @@
   </function>
   <function>
     <description>Function that converts as a time data the given long time value.</description>
-    <name>getTimeData</name>
+    <name>getDuration</name>
     <function-class>org.silverpeas.core.util.UnitUtil</function-class>
     <function-signature>
-      org.silverpeas.core.util.time.TimeData getTimeData(long)
+      org.silverpeas.core.util.time.Duration getDuration(long)
     </function-signature>
   </function>
   <function>

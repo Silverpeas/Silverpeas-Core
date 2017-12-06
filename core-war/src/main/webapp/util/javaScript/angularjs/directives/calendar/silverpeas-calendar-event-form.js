@@ -261,6 +261,7 @@
                 ceo.onAllDay = this.data.onAllDay;
                 ceo.visibility = this.data.visibility;
                 ceo.priority = this.data.priority;
+                ceo.reminder = this.data.reminder;
               }.bind(this)
             };
 
@@ -361,6 +362,9 @@
                   this.wysiwygEditorConfig = wysiwygEditorConfig;
                 }.bind(this), 0);
               }.bind(this));
+              this.eventContributionId =
+                  sp.contribution.id.from(this.data.componentInstanceId(), this.data.eventType,
+                      this.data.eventId);
               $timeout(function() {
                 var focusSelector = !this.data.title ?
                     '#sp_cal_event_form_main_title' :
@@ -690,7 +694,8 @@
                   notyInfo(errorMsg);
                   return false;
                 }
-              }.bind(this), updateData : function(ceo) {
+              }.bind(this),
+              updateData : function(ceo) {
                 ceo.attachmentParameters = this.fileUpload.serializeArray();
               }.bind(this)
             };

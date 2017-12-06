@@ -69,12 +69,14 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
   private String name;
   private Locale locale;
   private BiFunction<String, Locale, ResourceBundle> loader;
+  private boolean mandatory;
 
   protected LocalizationBundle(String name, Locale locale,
-      BiFunction<String, Locale, ResourceBundle> loader) {
+      BiFunction<String, Locale, ResourceBundle> loader, boolean mandatory) {
     this.name = name;
     this.locale = locale;
     this.loader = loader;
+    this.mandatory = mandatory;
   }
 
   /**
@@ -196,7 +198,9 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
     ResourceBundle generalBundle = getGeneralWrappedBundle();
     Object result = null;
     try {
-      result = bundle.getObject(key);
+      if (mandatory || bundle != null) {
+        result = bundle.getObject(key);
+      }
     } catch (MissingResourceException mrex) {
     }
     if (result == null && generalBundle != NONE) {

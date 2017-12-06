@@ -31,6 +31,11 @@ import java.time.temporal.ChronoUnit;
 public enum TimeUnit {
 
   /**
+   * Time unit representing one millisecond.
+   */
+  MILLISECOND,
+
+  /**
    * Time unit representing one second.
    */
   SECOND,
@@ -70,6 +75,8 @@ public enum TimeUnit {
    */
   public ChronoUnit toChronoUnit() {
     switch (this) {
+      case MILLISECOND:
+        return ChronoUnit.MILLIS;
       case SECOND:
         return ChronoUnit.SECONDS;
       case MINUTE:

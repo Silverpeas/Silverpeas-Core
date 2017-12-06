@@ -31,6 +31,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.opends.server.admin.DurationUnit;
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.io.media.video.VideoThumbnailExtractor;
@@ -40,9 +42,8 @@ import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.exec.CollectingLogOutputStream;
 import org.silverpeas.core.util.exec.ExternalExecution;
 import org.silverpeas.core.util.exec.ExternalExecutionException;
-import org.silverpeas.core.util.time.TimeConversionBoardKey;
-import org.silverpeas.core.util.time.TimeData;
-import org.silverpeas.core.util.time.TimeUnit;
+import org.silverpeas.core.util.time.Duration;
+import org.silverpeas.core.util.time.DurationConversionBoardKey;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -77,7 +78,7 @@ public class FFmpegThumbnailExtractorIT {
           warBuilder.addPackages(true, "org.silverpeas.core.io.media");
           warBuilder.addClasses(ExternalExecution.class, MetadataExtractor.class, MetaData.class,
               ExternalExecutionException.class, CollectingLogOutputStream.class, UnitUtil.class,
-              TimeUnit.class, TimeConversionBoardKey.class, TimeData.class);
+              TimeUnit.class, Duration.class, DurationConversionBoardKey.class, DurationUnit.class);
           warBuilder.addAsResource("video.mp4");
           warBuilder.addAsResource("video.flv");
           warBuilder.addAsResource("video.mov");

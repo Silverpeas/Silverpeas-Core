@@ -38,6 +38,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Date;
 
+import static java.util.Objects.requireNonNull;
+
 /**
  * <p>
  * A reminder that is triggered at a given duration before a given temporal property of the
@@ -128,9 +130,12 @@ public class DurationReminder extends Reminder {
 
   @Override
   protected OffsetDateTime getTriggeringDate() {
-    ContributionModel model = getContribution().getModel();
+    final ContributionModel model = getContribution().getModel();
+    final OffsetDateTime from = OffsetDateTime
+        .now()
+        .plus(this.duration, requireNonNull(this.timeUnit.toChronoUnit()));
     return
-        model.filterByType(getContributionProperty())
+        model.filterByType(getContributionProperty(), from)
             .matchFirst(Date.class::isAssignableFrom,
                 d -> ZonedDateTime.ofInstant(((Date) d).toInstant(), ZoneId.systemDefault())
                     .toOffsetDateTime())

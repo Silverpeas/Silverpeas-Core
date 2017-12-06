@@ -6829,6 +6829,24 @@ silverpeas-pdc-filter option.no-value {
   color: #888888;
 }
 
+/**
+ * AngularJS silverpeas-contribution-reminder component.
+ */
+
+silverpeas-contribution-reminder silverpeas-contribution-reminder-datetime-item,
+silverpeas-contribution-reminder silverpeas-contribution-reminder-duration-item {
+  display: inline-flex;
+}
+
+silverpeas-contribution-reminder div.actions {
+  margin-left: 5px;
+}
+
+silverpeas-contribution-reminder a.add-action {
+  color: #1c94d4;
+  text-decoration: underline;
+  font-weight: 700;
+}
 .maintenanceOn {
   text-align:center;
   line-height:1.4em;

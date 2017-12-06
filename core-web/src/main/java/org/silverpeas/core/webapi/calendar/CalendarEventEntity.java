@@ -38,6 +38,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.webapi.attachment.AttachmentParameterEntity;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
+import org.silverpeas.core.webapi.reminder.ReminderEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -98,6 +99,7 @@ public class CalendarEventEntity implements WebEntity {
   private boolean canBeModified;
   private boolean canBeDeleted;
   private List<AttachmentParameterEntity> attachmentParameters = new ArrayList<>();
+  private ReminderEntity reminder;
   private PdcClassificationEntity pdcClassification;
 
   protected CalendarEventEntity() {
@@ -401,6 +403,15 @@ public class CalendarEventEntity implements WebEntity {
   public PdcClassificationEntity getPdcClassification() {
     return pdcClassification != null ? pdcClassification :
         PdcClassificationEntity.undefinedClassification();
+  }
+
+  /**
+   * Gets reminder data about the entity if any.
+   * @return reminder data, null otherwise.
+   */
+  @XmlElement
+  public ReminderEntity getReminder() {
+    return reminder;
   }
 
   /**

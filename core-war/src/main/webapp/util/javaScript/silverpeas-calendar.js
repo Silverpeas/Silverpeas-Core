@@ -214,7 +214,9 @@
         lastUpdatedById: occurrence.lastUpdatedById,
         canBeAccessed : occurrence.canBeAccessed,
         canBeModified : occurrence.canBeModified,
-        canBeDeleted : occurrence.canBeDeleted
+        canBeDeleted : occurrence.canBeDeleted,
+        /** ADDITIONAL DATA **/
+        reminder : occurrence.reminder
       }
     };
 

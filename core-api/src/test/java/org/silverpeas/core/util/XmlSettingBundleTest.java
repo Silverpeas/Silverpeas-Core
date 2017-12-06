@@ -28,8 +28,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.XmlSettingBundle;
 import org.silverpeas.core.util.lang.SystemWrapper;
 
 import java.util.List;

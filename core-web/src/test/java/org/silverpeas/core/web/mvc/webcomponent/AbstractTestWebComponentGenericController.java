@@ -81,7 +81,7 @@ public abstract class AbstractTestWebComponentGenericController<WEB_COMPONENT_RE
 
     protected LocalizationBundle4Test(final String name, final Locale locale,
         final BiFunction<String, Locale, ResourceBundle> loader) {
-      super(name, locale, loader);
+      super(name, locale, loader, true);
     }
 
     @Override

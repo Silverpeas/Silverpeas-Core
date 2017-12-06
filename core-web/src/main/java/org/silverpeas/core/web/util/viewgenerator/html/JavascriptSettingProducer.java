@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.silverpeas.core.html.plugin.AbstractPluginInitializationProducer;
 import org.silverpeas.core.util.SilverpeasBundle;
 import org.silverpeas.core.util.StringUtil;
 

@@ -27,7 +27,7 @@ import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.DateTime;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.silverpeas.core.util.time.TimeUnit;
+import org.silverpeas.core.date.TimeUnit;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -1004,7 +1004,7 @@ public class DateUtil {
    * @return int the interval in days between the two dates
    */
   public static int getDayNumberBetween(Date date1, Date date2) {
-    return UnitUtil.getTimeData(date2.getTime() - date1.getTime()).getTimeConverted(TimeUnit.DAY)
+    return UnitUtil.getDuration(date2.getTime() - date1.getTime()).getTimeConverted(TimeUnit.DAY)
         .intValue();
   }
 

@@ -33,40 +33,43 @@ import java.lang.reflect.Method;
  * The default implementation of the {@link ContributionModel} interface. In this implementation,
  * the properties defined in the model are expected to be a declared property of the underlying
  * concrete type of the modelled contribution and as such they are get by reflections.
+ * @param <C> the type of linked {@link Contribution} instance.
  * @author mmoquillon
  */
-public class DefaultContributionModel implements ContributionModel {
+public class DefaultContributionModel<C extends Contribution> implements ContributionModel {
 
-  private final Contribution contribution;
+  private final C contribution;
 
-  DefaultContributionModel(final Contribution contribution) {
+  protected DefaultContributionModel(final C contribution) {
     this.contribution = contribution;
   }
 
   @Override
-  public FilterByType filterByType(final String property) {
-    return new FilterByType(getProperty(property));
+  public FilterByType filterByType(final String property, final Object... parameters) {
+    return new FilterByType(getProperty(property, parameters));
   }
 
   @Override
-  public <T> T getProperty(final String property) {
+  public <T> T getProperty(final String property, final Object... parameters) {
     return getByReflection(property);
   }
 
   /**
    * Gets by reflection the value of the specified property of the underlying modelled contribution.
-   * @param property the property to get.
    * @param <T> the type of the property value.
+   * @param property the property to get.
+   * @param parameters some parameters useful for property value computation.
    * @return the value of the property
    */
-  protected <T> T getByReflection(final String property) {
+  @SuppressWarnings("unchecked")
+  protected <T> T getByReflection(final String property, final Object... parameters) {
     String propName = property;
     try {
       if (Character.isLowerCase(property.charAt(0))) {
         propName = "get" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
       }
       Method method = contribution.getClass().getDeclaredMethod(propName);
-      return (T) method.invoke(contribution);
+      return (T) method.invoke(contribution, parameters);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       if (Character.isUpperCase(property.charAt(0))) {
         propName = Character.toLowerCase(property.charAt(0)) + property.substring(1);
@@ -81,6 +84,14 @@ public class DefaultContributionModel implements ContributionModel {
                 contribution.getClass().getSimpleName());
       }
     }
+  }
+
+  /**
+   * Gets the linked {@link Contribution} instance.
+   * @return a {@link Contribution} instance.
+   */
+  protected C getContribution() {
+    return contribution;
   }
 }
   

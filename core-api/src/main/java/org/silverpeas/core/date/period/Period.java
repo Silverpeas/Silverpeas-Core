@@ -23,13 +23,14 @@
  */
 package org.silverpeas.core.date.period;
 
-import org.silverpeas.core.date.Temporal;
-import org.silverpeas.core.date.DateTime;
-import org.silverpeas.core.util.DateUtil;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.date.DateTime;
+import org.silverpeas.core.date.Temporal;
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.message.MessageManager;
-import org.silverpeas.core.util.time.TimeData;
-import org.silverpeas.core.util.time.TimeUnit;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.time.Duration;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -338,7 +339,7 @@ public class Period implements Comparable, Serializable, Cloneable {
 
   /**
    * Computes the elapsed time between the begin and the end dates.
-   * @return the elapsed time computed represented by {@link TimeData}.
+   * @return the elapsed time computed represented by {@link Duration}.
    * To retrieve informations from this returned object :
    * <pre>
    *   // Gets the elpased time in milliseconds<br>
@@ -355,14 +356,14 @@ public class Period implements Comparable, Serializable, Cloneable {
    *   period.getElapsedTimeData().getBestValue();<br>
    * </pre>
    */
-  public TimeData getElapsedTimeData() {
+  public Duration getElapsedTimeData() {
     return beginDatable.getTimeDataTo(endDatable);
   }
 
   /**
    * Computes the number of whole or partial days covered by the period.
    * @return the number of whole or partial days covered by the period. represented by {@link
-   * TimeData}.
+   * Duration}.
    * To retrieve informations from this returned object :
    * <pre>
    *   // Gets the number of days (in milliseconds)<br>
@@ -376,7 +377,7 @@ public class Period implements Comparable, Serializable, Cloneable {
    *   period.getCoveredDaysTimeData().getBestValue();<br>
    * </pre>
    */
-  public TimeData getCoveredDaysTimeData() {
+  public Duration getCoveredDaysTimeData() {
     return beginDatable.getBeginOfDay()
         .getTimeDataTo(endDatable.addMilliseconds(-1).getEndOfDay().addMilliseconds(1));
   }
@@ -490,7 +491,7 @@ public class Period implements Comparable, Serializable, Cloneable {
     try {
       return (Period) super.clone();
     } catch (CloneNotSupportedException e) {
-      throw new RuntimeException(e);
+      throw new SilverpeasRuntimeException(e);
     }
   }
 }

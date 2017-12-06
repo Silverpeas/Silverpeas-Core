@@ -42,15 +42,17 @@ public interface ContributionModel {
    * business concept that can have different types according to the business context).
    * </p>
    * @param property the name of a business property of the represented contribution.
+   * @param parameters some parameters useful for property value computation.
    * @return a filter by the type of the property.
    */
-  Filter<Class<?>, Object> filterByType(final String property);
+  Filter<Class<?>, Object> filterByType(final String property, final Object... parameters);
 
   /**
    * Gets the value of the specified business property.
-   * @param property the name of the business property of the represented contribution.
    * @param <T> the expected type of the property value.
+   * @param property the name of the business property of the represented contribution.
+   * @param parameters some parameters useful for property value computation.
    * @return the value of the asked business property.
    */
-  <T> T getProperty(final String property);
+  <T> T getProperty(final String property, final Object... parameters);
 }

@@ -43,6 +43,8 @@ import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import java.text.MessageFormat;
 import java.time.OffsetDateTime;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * A reminder.
@@ -58,6 +60,26 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
   private ContributionIdentifier contributionId;
   private String userId;
   private String text;
+
+  /**
+   * Gets the list of reminders linked to a contribution represented by the given identifier.
+   * @param contributionId the identifier of a contribution.
+   * @return a list of reminder, empty if no reminder.
+   */
+  public static List<Reminder> getByContributionId(final ContributionIdentifier contributionId) {
+    // TODO when persistence is ready
+    return Collections.emptyList();
+  }
+
+  /**
+   * Gets a reminder by its identifier.
+   * @param reminderId the identifier of a reminder.
+   * @return the right reminder, null otherwise.
+   */
+  public static Reminder getById(final String reminderId) {
+    // TODO when persistence is ready
+    return null;
+  }
 
   /**
    * Constructs a new reminder about the given contribution for the specified user.
@@ -149,6 +171,14 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
   }
 
   /**
+   * Unscheduling this reminder.
+   * @throws TransactionRuntimeException if the persistence or the scheduling fails.
+   */
+  public void unschedule() {
+    // TODO
+  }
+
+  /**
    * Gets the contribution related by this reminder.
    * @return a {@link Contribution} object.
    */
@@ -236,4 +266,3 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
     }
   }
 }
-  

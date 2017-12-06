@@ -27,7 +27,6 @@ import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 
-import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 

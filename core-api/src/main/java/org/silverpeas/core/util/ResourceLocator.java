@@ -28,6 +28,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.ResourceBundle;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -69,6 +70,12 @@ public class ResourceLocator {
       new ConcurrentHashMap<>(INITIAL_CACHE_SIZE);
 
   /**
+   * Hidden constructor.
+   */
+  private ResourceLocator() {
+  }
+
+  /**
    * Gets the localized resource defined under the specified full qualified name and for the
    * specified locale. This resource can be a set of icons or of messages that are defined for
    * the given locale.
@@ -85,7 +92,31 @@ public class ResourceLocator {
     String key =
         name + (localeToUse.getLanguage().isEmpty() ? "" : "_" + localeToUse.getLanguage());
     return (LocalizationBundle) bundles.computeIfAbsent(key,
-        n -> new LocalizationBundle(name, localeToUse, ResourceLocator::loadResourceBundle));
+        n -> new LocalizationBundle(name, localeToUse,
+            (bundleName, locale1) -> loadResourceBundle(bundleName, locale1, true), true));
+  }
+
+  /**
+   * Gets optionally the localized resource defined under the specified full qualified name and
+   * for the specified locale. This resource can be a set of icons or of messages that are
+   * defined for the given locale.
+   * @param name the full qualified name of the localized resource to return. It maps the path
+   * of the file in which the resource is stored (the path is relative to the Silverpeas
+   * resources home directory).
+   * @param locale is an ISO 639-1 code identifying a language. If null, empty or missing, the
+   * default locale of the platform onto which Silverpeas is running will be taken into account.
+   * @return an optional resource bundle with the asked localized resources plus the general ones.
+   */
+  public static Optional<LocalizationBundle> getOptionalLocalizationBundle(String name,
+      String locale) {
+    Locale localeToUse =
+        (locale == null || locale.trim().isEmpty() ? Locale.ROOT : new Locale(locale));
+    String key =
+        name + (localeToUse.getLanguage().isEmpty() ? "" : "_" + localeToUse.getLanguage());
+    final LocalizationBundle bundle = (LocalizationBundle) bundles.computeIfAbsent(key,
+        n -> new LocalizationBundle(name, localeToUse,
+            (bundleName, locale1) -> loadResourceBundle(bundleName, locale1, false), false));
+    return Optional.ofNullable(bundle);
   }
 
   /**
@@ -164,19 +195,23 @@ public class ResourceLocator {
   }
 
   private static ResourceBundle loadResourceBundle(String bundleName) {
-    return loadResourceBundle(bundleName, Locale.ROOT);
+    return loadResourceBundle(bundleName, Locale.ROOT, true);
   }
 
-  private static ResourceBundle loadResourceBundle(String bundleName, Locale locale) {
-      try {
+  private static ResourceBundle loadResourceBundle(String bundleName, Locale locale,
+      final boolean mandatory) {
+    try {
         if (!bundleName.startsWith("org.silverpeas.")) {
           SilverLogger.getLogger(ResourceLocator.class).error("INVALID BUNDLE BASE NAME: " + bundleName);
         }
         return ResourceBundle.getBundle(bundleName, locale, loader, configurationControl);
       } catch (MissingResourceException mex) {
-        SilverLogger.getLogger(ResourceLocator.class).error(mex.getMessage());
-        throw mex;
-      }
+        if (mandatory) {
+          SilverLogger.getLogger(ResourceLocator.class).error(mex.getMessage());
+          throw mex;
+        }
+    }
+    return null;
   }
 
   private static InputStream loadResourceBundleAsStream(String bundleName) {

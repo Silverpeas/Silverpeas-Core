@@ -34,6 +34,7 @@ import org.silverpeas.core.calendar.ical4j.ICal4JDateCodec;
 import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.PersistOperation;
 import org.silverpeas.core.persistence.datasource.UpdateOperation;
@@ -59,9 +60,11 @@ import java.util.stream.Collectors;
 
 import static java.time.DayOfWeek.*;
 import static java.time.Month.*;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyString;
+import static org.mockito.Matchers.anyCollection;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.silverpeas.core.date.TimeUnit.MONTH;
@@ -235,6 +238,328 @@ public class CalendarEventOccurrenceGenerationTest {
     assertThat(occurrence.getEndDate(), is(dateTime(2016, 7, 29, 9, 15)));
   }
 
+  @Test
+  public void nextOccurrenceAboutNonRecurrentOneDayEventShouldWork() {
+    CalendarEvent event =
+        calendarEventForTest(Period.between(date(2017, 12, 12), date(2017, 12, 12)));
+    OffsetDateTime from = OffsetDateTime.parse("2017-12-12T00:00:00+01:00");
+    CalendarEventOccurrence result = generator.generateNextOccurrencesOf(event, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 12)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 13)));
+
+    from = OffsetDateTime.parse("2017-12-11T23:59:59Z");
+    result = generator.generateNextOccurrencesOf(event, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 12)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 13)));
+
+    from = OffsetDateTime.parse("2017-12-12T00:00:00Z");
+    result = generator.generateNextOccurrencesOf(event, from);
+    assertThat(result, nullValue());
+  }
+
+  @Test
+  public void nextOccurrenceAboutNonRecurrentSeveralDayEventShouldWork() {
+    CalendarEvent event =
+        calendarEventForTest(Period.between(date(2017, 12, 12), date(2017, 12, 15)));
+    OffsetDateTime from = OffsetDateTime.parse("2017-12-12T00:00:00+01:00");
+    CalendarEventOccurrence result = generator.generateNextOccurrencesOf(event, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 12)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 15)));
+
+    from = OffsetDateTime.parse("2017-12-11T23:59:59Z");
+    result = generator.generateNextOccurrencesOf(event, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 12)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 15)));
+
+    from = OffsetDateTime.parse("2017-12-12T00:00:00Z");
+    result = generator.generateNextOccurrencesOf(event, from);
+    assertThat(result, nullValue());
+  }
+
+  @Test
+  public void nextOccurrenceAboutNonRecurrentHourEventOnOneDayShouldWork() {
+    CalendarEvent event =
+        calendarEventForTest(Period.between(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 12, 14, 45)));
+    OffsetDateTime from = OffsetDateTime.parse("2017-12-12T13:30:00+01:00");
+    CalendarEventOccurrence result = generator.generateNextOccurrencesOf(event, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 12, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-12T13:29:59Z");
+    result = generator.generateNextOccurrencesOf(event, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 12, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-12T13:30:00Z");
+    result = generator.generateNextOccurrencesOf(event, from);
+    assertThat(result, nullValue());
+  }
+
+  @Test
+  public void nextOccurrenceAboutNonRecurrentHugeHourEventOnOneDayShouldWork() {
+    CalendarEvent event =
+        calendarEventForTest(Period.between(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 15, 14, 45)));
+    OffsetDateTime from = OffsetDateTime.parse("2017-12-12T13:30:00+01:00");
+    CalendarEventOccurrence result = generator.generateNextOccurrencesOf(event, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 15, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-12T13:29:59Z");
+    result = generator.generateNextOccurrencesOf(event, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 15, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-12T13:30:00Z");
+    result = generator.generateNextOccurrencesOf(event, from);
+    assertThat(result, nullValue());
+  }
+
+  @Test
+  public void nextOccurrenceAboutRecurrentOneDayEventShouldWork() {
+    CalendarEvent recurrentEvent =
+        calendarEventForTest(Period.between(date(2017, 12, 12), date(2017, 12, 12)))
+            .recur(Recurrence
+                .every(1, TimeUnit.DAY)
+                .until(3));
+    OffsetDateTime from = OffsetDateTime.parse("2000-01-01T11:11:11+01:11");
+    CalendarEventOccurrence result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 12)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 13)));
+
+    from = OffsetDateTime.parse("2017-12-11T23:59:59Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 12)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 13)));
+
+    from = OffsetDateTime.parse("2017-12-12T00:00:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 13)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 14)));
+
+    from = OffsetDateTime.parse("2017-12-13T00:00:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 14)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 15)));
+
+    from = OffsetDateTime.parse("2017-12-14T00:00:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, nullValue());
+  }
+
+  @Test
+  public void nextOccurrenceAboutRecurrentOneDayEventWithExceptionShouldWork() {
+    CalendarEvent recurrentEvent =
+        calendarEventForTest(Period.between(date(2017, 12, 12), date(2017, 12, 12)))
+            .recur(Recurrence
+                .every(1, TimeUnit.DAY)
+                .until(3)
+                .excludeEventOccurrencesStartingAt(date(2017, 12, 12), date(2017, 12, 14)));
+    OffsetDateTime from = OffsetDateTime.parse("2000-01-01T11:11:11+01:11");
+    CalendarEventOccurrence result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 13)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 14)));
+
+    from = OffsetDateTime.parse("2017-12-13T00:00:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, nullValue());
+  }
+
+  @Test
+  public void nextOccurrenceAboutRecurrentSeveralDayEventShouldWork() {
+    CalendarEvent recurrentEvent =
+        calendarEventForTest(Period.between(date(2017, 12, 12), date(2017, 12, 15)))
+            .recur(Recurrence
+                .every(1, TimeUnit.DAY)
+                .until(3));
+    OffsetDateTime from = OffsetDateTime.parse("2000-01-01T11:11:11+01:11");
+    CalendarEventOccurrence result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 12)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 15)));
+
+    from = OffsetDateTime.parse("2017-12-11T23:59:59Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 12)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 15)));
+
+    from = OffsetDateTime.parse("2017-12-12T00:00:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 13)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 16)));
+
+    from = OffsetDateTime.parse("2017-12-13T00:00:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 14)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 17)));
+
+    from = OffsetDateTime.parse("2017-12-14T00:00:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, nullValue());
+  }
+
+  @Test
+  public void nextOccurrenceAboutRecurrentSeveralDayEventWithExceptionShouldWork() {
+    CalendarEvent recurrentEvent =
+        calendarEventForTest(Period.between(date(2017, 12, 12), date(2017, 12, 15)))
+            .recur(Recurrence
+                .every(1, TimeUnit.DAY)
+                .until(3)
+                .excludeEventOccurrencesStartingAt(date(2017, 12, 12), date(2017, 12, 14)));
+    OffsetDateTime from = OffsetDateTime.parse("2000-01-01T11:11:11+01:11");
+    CalendarEventOccurrence result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(date(2017, 12, 13)));
+    assertThat(result.getEndDate(), is(date(2017, 12, 16)));
+
+    from = OffsetDateTime.parse("2017-12-13T00:00:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, nullValue());
+  }
+
+  @Test
+  public void nextOccurrenceAboutRecurrentHourEventShouldWork() {
+    CalendarEvent recurrentEvent =
+        calendarEventForTest(Period.between(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 12, 14, 45)))
+            .recur(Recurrence
+                .every(1, TimeUnit.DAY)
+                .until(3));
+    OffsetDateTime from = OffsetDateTime.parse("2000-01-01T11:11:11+01:11");
+    CalendarEventOccurrence result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 12, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-12T13:29:59Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 12, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-12T13:30:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 13, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-13T13:30:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 14, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 14, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-14T13:30:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, nullValue());
+  }
+
+  @Test
+  public void nextOccurrenceAboutRecurrentHourEventWithExceptionShouldWork() {
+    CalendarEvent recurrentEvent =
+        calendarEventForTest(Period.between(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 12, 14, 45)))
+            .recur(Recurrence
+                .every(1, TimeUnit.DAY)
+                .until(3)
+                .excludeEventOccurrencesStartingAt(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 14, 13, 30)));
+    OffsetDateTime from = OffsetDateTime.parse("2000-01-01T11:11:11+01:11");
+    CalendarEventOccurrence result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 13, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-12T13:29:59Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 13, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-12T13:30:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 13, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-13T13:30:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, nullValue());
+  }
+
+  @Test
+  public void nextOccurrenceAboutRecurrentHugeHourEventShouldWork() {
+    CalendarEvent recurrentEvent =
+        calendarEventForTest(Period.between(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 15, 14, 45)))
+            .recur(Recurrence
+                .every(1, TimeUnit.DAY)
+                .until(3));
+    OffsetDateTime from = OffsetDateTime.parse("2000-01-01T11:11:11+01:11");
+    CalendarEventOccurrence result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 15, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-12T13:29:59Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 15, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-12T13:30:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 16, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-13T13:30:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 14, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 17, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-14T13:30:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, nullValue());
+  }
+
+  @Test
+  public void nextOccurrenceAboutRecurrentHugeHourEventWithExceptionShouldWork() {
+    CalendarEvent recurrentEvent =
+        calendarEventForTest(Period.between(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 15, 14, 45)))
+            .recur(Recurrence
+                .every(1, TimeUnit.DAY)
+                .until(3)
+                .excludeEventOccurrencesStartingAt(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 14, 13, 30)));
+    OffsetDateTime from = OffsetDateTime.parse("2000-01-01T11:11:11+01:11");
+    CalendarEventOccurrence result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 16, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-13T13:29:59Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, notNullValue());
+    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTime(2017, 12, 16, 14, 45)));
+
+    from = OffsetDateTime.parse("2017-12-13T13:30:00Z");
+    result = generator.generateNextOccurrencesOf(recurrentEvent, from);
+    assertThat(result, nullValue());
+  }
+
   private static List<CalendarEvent> calendarEventsForTest() {
     List<CalendarEvent> events = new ArrayList<>();
     /* event 1 on Thursday 2016-08-11 */
@@ -295,6 +620,21 @@ public class CalendarEventOccurrenceGenerationTest {
       }
     }
     return events;
+  }
+
+  private CalendarEvent calendarEventForTest(Period period) {
+    CalendarEvent event = CalendarEvent
+        .on(period)
+        .withTitle(EVENT_TITLE)
+        .withDescription(EVENT_DESCRIPTION);
+    Calendar calendar = new Calendar();
+    calendar.setZoneId(ZoneId.of("UTC"));
+      try {
+        FieldUtils.writeDeclaredField(event.asCalendarComponent(), "calendar", calendar, true);
+      } catch (IllegalAccessException e) {
+        throw new RuntimeException(e);
+      }
+    return event;
   }
 
   private Period in(Year year) {

@@ -44,11 +44,14 @@ import org.silverpeas.core.importexport.ImportException;
 import org.silverpeas.core.io.upload.FileUploadManager;
 import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
+import org.silverpeas.core.reminder.DurationReminder;
+import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.webapi.reminder.ReminderEntity;
 
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -447,6 +450,16 @@ public class CalendarResource extends AbstractCalendarResource {
         List<PdcPosition> pdcPositions = eventEntity.getPdcClassification().getPdcPositions();
         aPdcClassificationOfContent(event).withPositions(pdcPositions).classifyContent(event);
       }
+      final ReminderEntity reminderEntity = eventEntity.getReminder();
+      if (reminderEntity != null) {
+        final Reminder reminder = new DurationReminder(event.getContributionId(), getUser());
+        try {
+          reminderEntity.mergeInto(reminder).schedule();
+        } catch (Exception e) {
+          getMessager().addInfo(getBundle()
+              .getStringWithParams("calendar.message.event.reminder.add.error", event.getTitle()));
+        }
+      }
       return event;
     }).execute();
     return asEventWebEntity(createdEvent);
@@ -506,6 +519,19 @@ public class CalendarResource extends AbstractCalendarResource {
     List<CalendarEvent> updatedEvents = process(() -> getCalendarWebManager()
         .saveOccurrence(occToUpdate, occurrenceEntity.getUpdateMethodType(), getZoneId()))
         .execute();
+
+    final ReminderEntity reminderEntity = occurrenceEntity.getReminder();
+    if (reminderEntity != null) {
+      final Reminder reminder = Reminder.getById(reminderEntity.getId());
+      try {
+        reminderEntity.mergeInto(reminder).schedule();
+      } catch (Exception e) {
+        getMessager().addInfo(getBundle()
+            .getStringWithParams("calendar.message.event.reminder.update.error",
+                occToUpdate.getCalendarEvent().getTitle()));
+      }
+    }
+
     return asEventWebEntities(updatedEvents);
   }
 

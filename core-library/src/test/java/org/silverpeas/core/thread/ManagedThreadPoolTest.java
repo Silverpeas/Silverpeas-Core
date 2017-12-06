@@ -30,7 +30,7 @@ import org.junit.Test;
 import org.junit.rules.TestName;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.util.time.TimeData;
+import org.silverpeas.core.util.time.Duration;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -73,7 +73,7 @@ public class ManagedThreadPoolTest {
   @Test
   public void invokeRunnables() throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
-    TimeData duration = executeInvokeRunnableTest(
+    Duration duration = executeInvokeRunnableTest(
         () -> managedThreadPool.invoke(runnables.toArray(new Runnable[5])));
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(100L));
     Thread.sleep(100);
@@ -92,7 +92,7 @@ public class ManagedThreadPoolTest {
   @Test
   public void invokeRunnablesAndAwaitTermination() throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
-    TimeData duration =
+    Duration duration =
         executeInvokeRunnableTest(() -> managedThreadPool.invokeAndAwaitTermination(runnables));
     log("Verifying that 5 processes of 1s are ended after {0}ms but before {1}ms...",
         valueOf(SLEEP_TIME_OF_1_SECOND), valueOf(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
@@ -105,7 +105,7 @@ public class ManagedThreadPoolTest {
   @Test
   public void invokeRunnablesAndAwaitTerminationWithShortTimeout() throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
-    TimeData duration = executeInvokeRunnableTest(
+    Duration duration = executeInvokeRunnableTest(
         () -> managedThreadPool.invokeAndAwaitTermination(runnables, timeoutOf(SHORT_TIMEOUT)));
     long expectedLargestDuration = (SHORT_TIMEOUT + OFFSET_TIME);
     log("Verifying that the timeout has been performed after {0}ms but before {1}ms...",
@@ -124,7 +124,7 @@ public class ManagedThreadPoolTest {
   public void invokeRunnablesAndAwaitTerminationWithShortTimeoutAndKillingRunningThreads()
       throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
-    TimeData duration = executeInvokeRunnableTest(() -> managedThreadPool
+    Duration duration = executeInvokeRunnableTest(() -> managedThreadPool
         .invokeAndAwaitTermination(runnables, timeoutOf(SHORT_TIMEOUT).killThreadsAfterTimeout()));
     long expectedLargestDuration = (SHORT_TIMEOUT + OFFSET_TIME);
     log("Verifying that the timeout has been performed after {0}ms but before {1}ms...",
@@ -145,7 +145,7 @@ public class ManagedThreadPoolTest {
       throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
     runnables.addAll(initializeRunnables(100, 200));
-    TimeData duration = executeInvokeRunnableTest(() -> managedThreadPool
+    Duration duration = executeInvokeRunnableTest(() -> managedThreadPool
         .invokeAndAwaitTermination(runnables, timeoutOf(SHORT_TIMEOUT).killThreadsAfterTimeout()));
     long expectedLargestDuration = (SHORT_TIMEOUT + OFFSET_TIME);
     log("Verifying that the timeout has been performed after {0}ms but before {1}ms...",
@@ -165,7 +165,7 @@ public class ManagedThreadPoolTest {
   @Test
   public void invokeRunnablesAndAwaitTerminationWithLargeTimeout() throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
-    TimeData duration = executeInvokeRunnableTest(
+    Duration duration = executeInvokeRunnableTest(
         () -> managedThreadPool.invokeAndAwaitTermination(runnables, timeoutOf(LARGE_TIMEOUT)));
     log("Verifying that the timeout has not been performed after {0}ms but before {1}ms...",
         valueOf(SLEEP_TIME_OF_1_SECOND), valueOf(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
@@ -179,7 +179,7 @@ public class ManagedThreadPoolTest {
   public void invokeRunnablesAndAwaitTerminationWithLargeTimeoutAndKillingRunningThreads()
       throws Exception {
     final List<TestRunnable> runnables = fiveRunnablesOf1SecondOfTreatment();
-    TimeData duration = executeInvokeRunnableTest(() -> managedThreadPool
+    Duration duration = executeInvokeRunnableTest(() -> managedThreadPool
         .invokeAndAwaitTermination(runnables, timeoutOf(LARGE_TIMEOUT).killThreadsAfterTimeout()));
     log("Verifying that the timeout has not been performed after {0}ms but before {1}ms...",
         valueOf(SLEEP_TIME_OF_1_SECOND), valueOf(MAX_DURATION_TIME_OF_PARALLEL_EXEC));
@@ -192,10 +192,10 @@ public class ManagedThreadPoolTest {
   @Test
   public void invokeCallable() throws Exception {
     final TestCallable callable = initializeCallables(SLEEP_TIME_OF_1_SECOND).get(0);
-    Pair<TimeData, List<Future<Long>>> result = executeInvokeCallableTest(
+    Pair<Duration, List<Future<Long>>> result = executeInvokeCallableTest(
         () -> Collections.singletonList(managedThreadPool.invoke(callable)));
     log("Verifying that caller of the invoke method get back the hand immediately...");
-    TimeData duration = result.getLeft();
+    Duration duration = result.getLeft();
     List<Future<Long>> futures = result.getRight();
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(100L));
     assertThat(futures, hasSize(1));
@@ -213,10 +213,10 @@ public class ManagedThreadPoolTest {
   @Test
   public void invokeCallables() throws Exception {
     final List<TestCallable> callables = fiveCallablesOf1SecondOfTreatment();
-    Pair<TimeData, List<Future<Long>>> result =
+    Pair<Duration, List<Future<Long>>> result =
         executeInvokeCallableTest(() -> managedThreadPool.invoke(callables));
     log("Verifying that caller of the invoke method get back the hand immediately...");
-    TimeData duration = result.getLeft();
+    Duration duration = result.getLeft();
     List<Future<Long>> futures = result.getRight();
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(200L));
     assertThat(futures, hasSize(5));
@@ -241,27 +241,27 @@ public class ManagedThreadPoolTest {
 
     log("[without pool size] Processing the invocation...");
     long beforeTime = System.currentTimeMillis();
-    Pair<TimeData, List<Future<Long>>> result =
+    Pair<Duration, List<Future<Long>>> result =
         executeInvokeCallableTest(() -> managedThreadPool.invoke(callables));
     List<Future<Long>> futures = result.getRight();
     for (Future<Long> future : futures) {
       log("[without pool size]\tprocess ended at {0}", valueOf(future.get()));
     }
     long afterTime = System.currentTimeMillis();
-    TimeData duration = UnitUtil.getTimeData(afterTime - beforeTime);
+    Duration duration = UnitUtil.getDuration(afterTime - beforeTime);
     log("[without pool size] Invocation duration of {0}ms", valueOf(duration.getTimeAsLong()));
 
     log("[with pool size of 1] Processing the invocation...");
     long beforeTimeWithPoolSize = System.currentTimeMillis();
-    Pair<TimeData, List<Future<Long>>> resultWithPoolSize = executeInvokeCallableTest(
+    Pair<Duration, List<Future<Long>>> resultWithPoolSize = executeInvokeCallableTest(
         () -> managedThreadPool.invoke(callablesWithPoolSize, maxThreadPoolSizeOf(1)));
     List<Future<Long>> futuresWithPoolSize = resultWithPoolSize.getRight();
     for (Future<Long> future : futuresWithPoolSize) {
       log("[with pool size of 1]\tprocess ended at {0}", valueOf(future.get()));
     }
     long afterTimeWithPoolSize = System.currentTimeMillis();
-    TimeData durationWithPoolSize =
-        UnitUtil.getTimeData(afterTimeWithPoolSize - beforeTimeWithPoolSize);
+    Duration durationWithPoolSize =
+        UnitUtil.getDuration(afterTimeWithPoolSize - beforeTimeWithPoolSize);
     log("[with pool size of 1] Invocation duration of {0}ms",
         valueOf(durationWithPoolSize.getTimeAsLong()));
 
@@ -275,12 +275,12 @@ public class ManagedThreadPoolTest {
   @Test
   public void invokeCallablesWithShortTimeout() throws Exception {
     final List<TestCallable> callables = fiveCallablesOf1SecondOfTreatment();
-    Pair<TimeData, List<Future<Long>>> result = executeInvokeCallableTest(
+    Pair<Duration, List<Future<Long>>> result = executeInvokeCallableTest(
         () -> managedThreadPool.invoke(callables, timeoutOf(SHORT_TIMEOUT)));
     long expectedLargestDuration = (SHORT_TIMEOUT + OFFSET_TIME);
     log("Verifying that the timeout has not been performed after {0}ms but before {1}ms...",
         valueOf(SHORT_TIMEOUT), valueOf(expectedLargestDuration));
-    TimeData duration = result.getLeft();
+    Duration duration = result.getLeft();
     List<Future<Long>> futures = result.getRight();
     assertThat(duration.getTimeAsLong(), greaterThanOrEqualTo(SHORT_TIMEOUT));
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(expectedLargestDuration));
@@ -302,12 +302,12 @@ public class ManagedThreadPoolTest {
   public void invokeCallablesWithShortTimeoutDemonstrationByNotCallingOfGetMethodOfFuture()
       throws Exception {
     final List<TestCallable> callables = fiveCallablesOf1SecondOfTreatment();
-    Pair<TimeData, List<Future<Long>>> result = executeInvokeCallableTest(
+    Pair<Duration, List<Future<Long>>> result = executeInvokeCallableTest(
         () -> managedThreadPool.invoke(callables, timeoutOf(SHORT_TIMEOUT)));
     long expectedLargestDuration = (SHORT_TIMEOUT + OFFSET_TIME);
     log("Verifying that the timeout has not been performed after {0}ms but before {1}ms...",
         valueOf(SHORT_TIMEOUT), valueOf(expectedLargestDuration));
-    TimeData duration = result.getLeft();
+    Duration duration = result.getLeft();
     List<Future<Long>> futures = result.getRight();
     assertThat(duration.getTimeAsLong(), greaterThanOrEqualTo(SHORT_TIMEOUT));
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(expectedLargestDuration));
@@ -324,12 +324,12 @@ public class ManagedThreadPoolTest {
   @Test
   public void invokeCallablesWithShortTimeoutAndKillingRunningThreads() throws Exception {
     final List<TestCallable> callables = fiveCallablesOf1SecondOfTreatment();
-    Pair<TimeData, List<Future<Long>>> result = executeInvokeCallableTest(() -> managedThreadPool
+    Pair<Duration, List<Future<Long>>> result = executeInvokeCallableTest(() -> managedThreadPool
         .invoke(callables, timeoutOf(SHORT_TIMEOUT).killThreadsAfterTimeout()));
     long expectedLargestDuration = (SHORT_TIMEOUT + OFFSET_TIME);
     log("Verifying that the timeout has not been performed after {0}ms but before {1}ms...",
         valueOf(SHORT_TIMEOUT), valueOf(expectedLargestDuration));
-    TimeData duration = result.getLeft();
+    Duration duration = result.getLeft();
     List<Future<Long>> futures = result.getRight();
     assertThat(duration.getTimeAsLong(), greaterThanOrEqualTo(SHORT_TIMEOUT));
     assertThat(duration.getTimeAsLong(), lessThanOrEqualTo(expectedLargestDuration));
@@ -366,11 +366,11 @@ public class ManagedThreadPoolTest {
    * @param test the invoke to perform.
    * @return the duration.
    */
-  private TimeData executeInvokeRunnableTest(InvokeRunnableTest test) throws Exception {
+  private Duration executeInvokeRunnableTest(InvokeRunnableTest test) throws Exception {
     long beforeTime = System.currentTimeMillis();
     test.execute();
     long afterTime = System.currentTimeMillis();
-    TimeData duration = UnitUtil.getTimeData(afterTime - beforeTime);
+    Duration duration = UnitUtil.getDuration(afterTime - beforeTime);
     log("Invocation duration of {0}ms", valueOf(duration.getTimeAsLong()));
     return duration;
   }
@@ -380,12 +380,12 @@ public class ManagedThreadPoolTest {
    * @param test the invoke to perform.
    * @return the duration.
    */
-  private Pair<TimeData, List<Future<Long>>> executeInvokeCallableTest(InvokeCallableTest test)
+  private Pair<Duration, List<Future<Long>>> executeInvokeCallableTest(InvokeCallableTest test)
       throws Exception {
     long beforeTime = System.currentTimeMillis();
     List<Future<Long>> futures = test.execute();
     long afterTime = System.currentTimeMillis();
-    TimeData duration = UnitUtil.getTimeData(afterTime - beforeTime);
+    Duration duration = UnitUtil.getDuration(afterTime - beforeTime);
     log("Invocation duration of {0}ms", valueOf(duration.getTimeAsLong()));
     return Pair.of(duration, futures);
   }

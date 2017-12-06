@@ -154,7 +154,7 @@ public class XmlSettingBundle implements SilverpeasBundle {
    * in the bundle.
    */
   @Override
-  public String getString(final String key) throws MissingResourceException {
+  public String getString(final String key) {
     Node param = getParameter(key);
     String value = null;
     List<Node> values = findAllNodes(param, PARAM_VALUE, false);

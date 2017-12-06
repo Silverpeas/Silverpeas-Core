@@ -27,7 +27,7 @@ import org.silverpeas.core.util.DateUtil;
 import org.apache.commons.lang3.time.DateUtils;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.util.time.TimeData;
+import org.silverpeas.core.util.time.Duration;
 
 /**
  * User: Yohann Chastagnier
@@ -45,8 +45,8 @@ public abstract class AbstractDateTemporal<T extends Temporal<? super T>> extend
   public abstract T clone();
 
   @Override
-  public TimeData getTimeDataTo(final T anotherDatable) {
-    return UnitUtil.getTimeData(anotherDatable.asDate().getTime() - getTime());
+  public Duration getTimeDataTo(final T anotherDatable) {
+    return UnitUtil.getDuration(anotherDatable.asDate().getTime() - getTime());
   }
 
   /**

@@ -395,7 +395,8 @@ silverpeas-calendar-event-occurrence-tip .occurrence-extra {
 
 silverpeas-calendar-event-occurrence-tip .occurrence-date,
 silverpeas-calendar-event-occurrence-tip .occurrence-location,
-silverpeas-calendar-event-occurrence-tip .occurrence-external-link {
+silverpeas-calendar-event-occurrence-tip .occurrence-external-link ,
+silverpeas-calendar-event-occurrence-tip .occurrence-reminder.reminder-set {
   text-align: right;
   margin-bottom: 1em;
 }
@@ -406,7 +407,8 @@ silverpeas-calendar-event-occurrence-tip .occurrence-date {
 
 silverpeas-calendar-event-occurrence-tip .occurrence-date span,
 silverpeas-calendar-event-occurrence-tip .occurrence-location span,
-silverpeas-calendar-event-occurrence-tip .occurrence-external-link a {
+silverpeas-calendar-event-occurrence-tip .occurrence-external-link a,
+silverpeas-calendar-event-occurrence-tip .occurrence-reminder.reminder-set silverpeas-calendar-event-reminder {
   border-radius: 4px;
   border: 1px solid #ebebeb;
   display: inline-block;
@@ -425,6 +427,10 @@ silverpeas-calendar-event-occurrence-tip .occurrence-location span {
 
 silverpeas-calendar-event-occurrence-tip .occurrence-external-link a {
   background: #f7f7f7 url(../icons/webLink.gif) 4px 8px no-repeat;
+}
+
+silverpeas-calendar-event-occurrence-tip .occurrence-reminder silverpeas-calendar-event-reminder {
+  background-color: #f7f7f7;
 }
 
 silverpeas-calendar-event-view .field,
@@ -475,6 +481,16 @@ silverpeas-calendar-event-form-main .occurrence-content {
   background-color: #FFFFFF;
   width: 89%;
   padding: 0 5px 0 5px;
+}
+
+silverpeas-calendar-event-view-reminder h4 {
+  background: transparent url(../../util/icons/urgent.gif) top right no-repeat;
+}
+
+silverpeas-calendar-event-view-reminder .fields .field span,
+silverpeas-calendar-event-view-reminder .fields .field label,
+silverpeas-calendar-event-view-reminder .fields .field div {
+  padding: 5px 0 0 0;
 }
 
 silverpeas-calendar-event-view-recurrence h4 {

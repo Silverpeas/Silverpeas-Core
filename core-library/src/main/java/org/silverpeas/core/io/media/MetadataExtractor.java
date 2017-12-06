@@ -29,11 +29,11 @@ import org.apache.tika.metadata.XMPDM;
 import org.apache.tika.mime.MediaType;
 import org.apache.tika.parser.ParseContext;
 import org.apache.tika.parser.mp4.MP4Parser;
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.util.time.TimeData;
-import org.silverpeas.core.util.time.TimeUnit;
+import org.silverpeas.core.util.time.Duration;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
@@ -116,8 +116,8 @@ public class MetadataExtractor {
   private void adjustMp4Duration(Metadata metadata, MediaType mediaType) {
     if (mp4ParserSupportedTypes.contains(mediaType)) {
       try {
-        TimeData duration =
-            UnitUtil.getTimeData(new BigDecimal(metadata.get(XMPDM.DURATION)), TimeUnit.SEC);
+        Duration duration =
+            UnitUtil.getDuration(new BigDecimal(metadata.get(XMPDM.DURATION)), TimeUnit.SECOND);
         metadata.set(XMPDM.DURATION, String.valueOf(duration.getTimeAsLong()));
       } catch (Exception e) {
         SilverLogger.getLogger(this).warn(e);

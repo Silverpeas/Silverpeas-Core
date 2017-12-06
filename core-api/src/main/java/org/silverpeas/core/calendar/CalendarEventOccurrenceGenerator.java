@@ -26,6 +26,7 @@ package org.silverpeas.core.calendar;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ServiceProvider;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -87,4 +88,18 @@ public interface CalendarEventOccurrenceGenerator {
    * occurrences (endless recurrence).
    */
   long countOccurrencesOf(final CalendarEvent event, Period inPeriod);
+
+  /**
+   * Generates the next occurrence of the specified event from the given date time.
+   *
+   * The next occurrence is computed from the recurrence rule of the specified event, from the date
+   * and times at which the events start, from the specified date, and from recurrence exceptions.
+   *
+   * This method require to be implemented.
+   * @param event an event.
+   * @param from the date time from which the next occurrence must be computed.
+   * @return the next occurrence of the given event, null if not {@link CalendarEventOccurrence}
+   * can be computed.
+   */
+  CalendarEventOccurrence generateNextOccurrencesOf(CalendarEvent event, OffsetDateTime from);
 }

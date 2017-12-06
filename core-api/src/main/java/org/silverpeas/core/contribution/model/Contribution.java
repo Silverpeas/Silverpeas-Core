@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.model;
 
+import org.silverpeas.core.Instance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.AccessController;
@@ -38,7 +39,7 @@ import java.util.Date;
  * always a content that can be of any type (simple text, WYSIWYG, form, image, ...).
  * @author mmoquillon
  */
-public interface Contribution extends Serializable, Securable {
+public interface Contribution extends Serializable, Securable, Instance<Contribution> {
 
   /**
    * Gets the unique identifier of this contribution.
@@ -143,6 +144,7 @@ public interface Contribution extends Serializable, Securable {
    * @return a {@link ContributionModel} object. By default, if this method isn't overridden, a
    * {@link DefaultContributionModel} instance is returned.
    */
+  @SuppressWarnings("unchecked")
   default ContributionModel getModel() {
     return new DefaultContributionModel(this);
   }

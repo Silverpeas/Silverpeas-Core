@@ -41,6 +41,13 @@ public class ContributionEventProcessor
     extends CDIResourceEventListener<AbstractResourceEvent<? extends Contribution>> {
 
   @Override
+  public void onUpdate(final AbstractResourceEvent<? extends Contribution> event)
+      throws Exception {
+    ServiceProvider.getAllServices(ContributionModification.class).forEach(
+        s -> s.update(event.getTransition().getBefore(), event.getTransition().getAfter()));
+  }
+
+  @Override
   public void onDeletion(final AbstractResourceEvent<? extends Contribution> event)
       throws Exception {
     ServiceProvider.getAllServices(ContributionDeletion.class)
