@@ -21,57 +21,25 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.reminder;
+package org.silverpeas.core.contribution.model;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
-
-import java.util.Date;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 /**
+ * Exception that is thrown when a property of a business object isn't found.
  * @author mmoquillon
  */
-public class MyContribution implements Contribution {
-
-  private final ContributionIdentifier id;
-
-  public MyContribution(final ContributionIdentifier id) {
-    this.id = id;
+public class NoSuchPropertyException extends SilverpeasRuntimeException {
+  public NoSuchPropertyException(final String message) {
+    super(message);
   }
 
-  @Override
-  public ContributionIdentifier getContributionId() {
-    return id;
+  public NoSuchPropertyException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public Date getPublicationDate() {
-    return new Date();
-  }
-
-  @Override
-  public User getCreator() {
-    return null;
-  }
-
-  @Override
-  public Date getCreationDate() {
-    return null;
-  }
-
-  @Override
-  public User getLastModifier() {
-    return null;
-  }
-
-  @Override
-  public Date getLastModificationDate() {
-    return null;
-  }
-
-  @Override
-  public String getTitle() {
-    return "";
+  public NoSuchPropertyException(final Throwable cause) {
+    super(cause);
   }
 }
   

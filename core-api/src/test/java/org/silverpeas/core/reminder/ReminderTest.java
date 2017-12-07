@@ -28,8 +28,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.NoSuchPropertyException;
 import org.silverpeas.core.date.TimeUnit;
-import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 
 import java.time.OffsetDateTime;
@@ -54,30 +54,51 @@ public class ReminderTest {
   }
 
   @Test
-  public void createNewReminderToTriggerBeforeTheStartDateOfAPlannableContribution()
-      throws SchedulerException {
+  public void createNewReminderToTriggerBeforeTheStartDateOfAPlannableContribution() {
     ContributionIdentifier contribution = context.getPlannableContribution();
     User user = context.getUser();
     Reminder reminder = Reminder.make(contribution, user)
         .withText("Don't forget the meeting in two days!")
-        .triggerBefore(2, TimeUnit.DAY)
+        .triggerBefore(2, TimeUnit.DAY, "startDate")
         .schedule();
     assertThat(reminder.isPersisted(), is(true));
     assertThat(reminder.isScheduled(), is(true));
   }
 
-  @Test(expected = IllegalArgumentException.class)
-  public void userTriggerBeforeWithANonPlannableObjectShouldFail() throws SchedulerException {
+  @Test
+  public void useTriggerBeforeWithANonPlannable() {
     ContributionIdentifier contribution = context.getNonPlannableContribution();
     User user = context.getUser();
-    new DurationReminder(contribution, user)
+    Reminder reminder = new DurationReminder(contribution, user)
         .withText("Don't forget the meeting in two days!")
-        .triggerBefore(2, TimeUnit.DAY)
+        .triggerBefore(2, TimeUnit.DAY, "publicationDate")
+        .schedule();
+    assertThat(reminder.isPersisted(), is(true));
+    assertThat(reminder.isScheduled(), is(true));
+  }
+
+  @Test(expected = NoSuchPropertyException.class)
+  public void useTriggerBeforeANonValidProperty() {
+    ContributionIdentifier contribution = context.getNonPlannableContribution();
+    User user = context.getUser();
+    Reminder reminder = new DurationReminder(contribution, user)
+        .withText("Don't forget the meeting in two days!")
+        .triggerBefore(2, TimeUnit.DAY, "startDate")
+        .schedule();
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void useTriggerBeforeANonValidPropertyType() {
+    ContributionIdentifier contribution = context.getNonPlannableContribution();
+    User user = context.getUser();
+    Reminder reminder = new DurationReminder(contribution, user)
+        .withText("Don't forget the meeting in two days!")
+        .triggerBefore(2, TimeUnit.DAY, "title")
         .schedule();
   }
 
   @Test
-  public void createNewReminderToTriggerAtDateTime() throws SchedulerException {
+  public void createNewReminderToTriggerAtDateTime() {
     ContributionIdentifier contribution = context.getNonPlannableContribution();
     User user = context.getUser();
     Reminder reminder = Reminder.make(contribution, user)
@@ -89,7 +110,7 @@ public class ReminderTest {
   }
 
   @Test
-  public void createNewReminderAboutPlannableToTriggerAtDateTime() throws SchedulerException {
+  public void createNewReminderAboutPlannableToTriggerAtDateTime() {
     ContributionIdentifier contribution = context.getPlannableContribution();
     User user = context.getUser();
     Reminder reminder = new DateTimeReminder(contribution, user)

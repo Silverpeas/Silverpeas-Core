@@ -34,7 +34,6 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
-import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 
@@ -212,17 +211,19 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
     }
 
     /**
-     * Triggers the reminder at the specified duration before the start date of the related
-     * contribution. This triggering is only valid for
-     * {@link org.silverpeas.core.calendar.Plannable} contribution.
-     * @param duration a duration value
+     * Triggers this reminder the specified duration before the given property of the contribution.
+     * The property must represents either a date or a date time whose the value is a
+     * {@link java.time.temporal.Temporal} object. For example the start
+     * date of an event or the end date of the visibility of a publication.
+     * @param duration the duration value prior to the temporal property of the contribution.
      * @param timeUnit the time unit in which is expressed the duration.
+     * @param temporalProperty the temporal property of the contribution.
      * @return a {@link DurationReminder} instance.
      */
-    public DurationReminder triggerBefore(final int duration, final TimeUnit timeUnit)
-        throws SchedulerException {
+    public DurationReminder triggerBefore(final int duration, final TimeUnit timeUnit,
+        final String temporalProperty) {
       return new DurationReminder(contribution, user).withText(text)
-          .triggerBefore(duration, timeUnit);
+          .triggerBefore(duration, timeUnit, temporalProperty);
     }
 
     /**
@@ -230,7 +231,7 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
      * @param dateTime the {@link OffsetDateTime} at which the reminder will be triggered.
      * @return a {@link DateTimeReminder} instance.
      */
-    public DateTimeReminder triggerAt(final OffsetDateTime dateTime) throws SchedulerException {
+    public DateTimeReminder triggerAt(final OffsetDateTime dateTime) {
       return new DateTimeReminder(contribution, user).withText(text).triggerAt(dateTime);
     }
   }

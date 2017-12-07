@@ -25,19 +25,33 @@ package org.silverpeas.core.reminder;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.Plannable;
-import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.date.TemporalConverter;
+import org.silverpeas.core.contribution.model.ContributionModel;
 import org.silverpeas.core.date.TimeUnit;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.Date;
 
 /**
- * A reminder that is triggered at a given duration before the start date of the {@link Plannable}
- * relarted contribution.
+ * <p>
+ * A reminder that is triggered at a given duration before a given temporal property of the
+ * contribution related by the reminder. Some specific exceptions are thrown when the reminder is
+ * scheduled:
+ * </p>
+ * <ul>
+ *   <li>If the property doesn't exist, a
+ *   {@link org.silverpeas.core.contribution.model.NoSuchPropertyException} is thrown.
+ *   </li>
+ *   <li>If the property isn't a date or a date time, then an {@link IllegalArgumentException} is
+ *   thrown.
+ *   </li>
+ * </ul>
  * @author mmoquillon
  */
 @Entity
@@ -46,6 +60,7 @@ public class DurationReminder extends Reminder {
 
   private Integer duration;
   private TimeUnit timeUnit;
+  private String contributionProperty;
 
   /**
    * Constructs a new reminder about the specified contribution and for the given user.
@@ -86,35 +101,50 @@ public class DurationReminder extends Reminder {
   }
 
   /**
-   * Triggers this reminder the specified duration before the start date of the plannable
-   * contribution. This type of trigger can only be used with {@link Plannable} object. The
-   * reminder, once scheduled, will be triggered at the specified duration prior the start date
-   * of the plannable object.
-   * @param duration the duration value prior to the start date of a {@link Plannable} object
+   * Gets the temporal property of the contribution to which this reminder is related.
+   * @return the name of a temporal business property of the contribution.
+   */
+  public String getContributionProperty() {
+    return contributionProperty;
+  }
+
+  /**
+   * Triggers this reminder the specified duration before the given property of the contribution.
+   * The property must represents either a date or a date time whose the value is a
+   * {@link java.time.temporal.Temporal} object. For example the start
+   * date of an event or the end date of the visibility of a publication.
+   * @param duration the duration value prior to the temporal property of the contribution.
    * @param timeUnit the time unit in which is expressed the duration.
+   * @param temporalProperty the temporal property of the contribution.
    * @return itself.
    */
-  public DurationReminder triggerBefore(final int duration, final TimeUnit timeUnit) {
+  public DurationReminder triggerBefore(final int duration, final TimeUnit timeUnit,
+      String temporalProperty) {
     this.duration = duration;
     this.timeUnit = timeUnit;
+    this.contributionProperty = temporalProperty;
     return this;
   }
 
   @Override
   protected OffsetDateTime getTriggeringDate() {
-    Plannable contribution = getPlannableContribution();
-    return TemporalConverter.applyByType(contribution.getStartDate(),
-        d -> d.atStartOfDay().atZone(ZoneId.systemDefault()).toOffsetDateTime(), dt -> dt)
-        .minus(duration, timeUnit.toChronoUnit());
-  }
-
-  private Plannable getPlannableContribution() {
-    Contribution contribution = getContribution();
-    if (contribution instanceof Plannable) {
-      return (Plannable) contribution;
-    }
-    throw new IllegalArgumentException(
-        "The " + getContributionId().getType() + " contribution isn't plannable!");
+    ContributionModel model = getContribution().getModel();
+    return
+        model.filterByType(getContributionProperty())
+            .matchFirst(Date.class::isAssignableFrom,
+                d -> ZonedDateTime.ofInstant(((Date) d).toInstant(), ZoneId.systemDefault())
+                    .toOffsetDateTime())
+            .matchFirst(OffsetDateTime.class::equals, d -> (OffsetDateTime) d)
+            .matchFirst(LocalDate.class::equals, d -> ((LocalDate) d).atStartOfDay()
+                .atZone(ZoneId.systemDefault())
+                .toOffsetDateTime())
+            .matchFirst(LocalDateTime.class::equals,
+                d -> ((LocalDateTime) d).atZone(ZoneId.systemDefault()).toOffsetDateTime())
+            .matchFirst(ZonedDateTime.class::equals,
+                d -> ((ZonedDateTime) d).toOffsetDateTime())
+            .result()
+            .orElseThrow(() -> new IllegalArgumentException(
+                "The property " + getContributionProperty() + " isn't a date or a date time"));
   }
 }
   

@@ -21,57 +21,43 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.reminder;
+package org.silverpeas.core.util.filter;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
-
-import java.util.Date;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
+ * A filter by the type of the wrapped object. If the type of the object matches a given
+ * predicate then the operation with the matched predicate is performed against this object.
  * @author mmoquillon
  */
-public class MyContribution implements Contribution {
+public class FilterByType implements Filter<Class<?>, Object> {
 
-  private final ContributionIdentifier id;
+  private final Object value;
 
-  public MyContribution(final ContributionIdentifier id) {
-    this.id = id;
+  /**
+   * Constructs a filter by type on the specified value.
+   * @param value the value against which the predicates will be played.
+   */
+  public FilterByType(final Object value) {
+    this.value = value;
+  }
+
+
+  @Override
+  public FilterByType match(final Predicate<Class<?>> predicate, final Consumer<Object> operation) {
+    if (predicate.test(value.getClass())) {
+      operation.accept(value);
+    }
+    return this;
   }
 
   @Override
-  public ContributionIdentifier getContributionId() {
-    return id;
-  }
-
-  public Date getPublicationDate() {
-    return new Date();
-  }
-
-  @Override
-  public User getCreator() {
-    return null;
-  }
-
-  @Override
-  public Date getCreationDate() {
-    return null;
-  }
-
-  @Override
-  public User getLastModifier() {
-    return null;
-  }
-
-  @Override
-  public Date getLastModificationDate() {
-    return null;
-  }
-
-  @Override
-  public String getTitle() {
-    return "";
+  public <V> FilterMatcher<Class<?>, Object, V> matchFirst(final Predicate<Class<?>> predicate,
+      final Function<Object, V> function) {
+    return new FilterMatcher<Class<?>, Object, V>(value.getClass(), value).matchFirst(predicate,
+        function);
   }
 }
   

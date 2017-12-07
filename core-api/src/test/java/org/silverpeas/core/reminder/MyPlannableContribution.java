@@ -77,7 +77,7 @@ public class MyPlannableContribution implements Contribution, Plannable {
 
   @Override
   public String getTitle() {
-    return null;
+    return "";
   }
 
   @Override
