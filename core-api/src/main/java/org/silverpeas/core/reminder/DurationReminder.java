@@ -29,7 +29,6 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeUnit;
-import org.silverpeas.core.scheduler.SchedulerException;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
@@ -65,7 +64,7 @@ public class DurationReminder extends Reminder {
   }
 
   @Override
-  public DurationReminder withText(final String text) {
+  public final DurationReminder withText(final String text) {
     return super.withText(text);
   }
 
@@ -87,44 +86,26 @@ public class DurationReminder extends Reminder {
   }
 
   /**
-   * Sets a new duration to this reminder.
-   * @param duration the duration value.
-   * @return itself.
-   */
-  public DurationReminder setDuration(final Integer duration) {
-    this.duration = duration;
-    return this;
-  }
-
-  /**
-   * Sets a new time unit for the duration.
-   * @param timeUnit the time unit in which is expressed the duration.
-   * @return itself.
-   */
-  public DurationReminder setTimeUnit(final TimeUnit timeUnit) {
-    this.timeUnit = timeUnit;
-    return this;
-  }
-
-  /**
    * Triggers this reminder the specified duration before the start date of the plannable
    * contribution. This type of trigger can only be used with {@link Plannable} object. The
-   * reminder is then scheduled and will be triggered at the specified duration prior the plannable
-   * object.
+   * reminder, once scheduled, will be triggered at the specified duration prior the start date
+   * of the plannable object.
    * @param duration the duration value prior to the start date of a {@link Plannable} object
    * @param timeUnit the time unit in which is expressed the duration.
    * @return itself.
-   * @throws SchedulerException is an error occurs while scheduling this reminder.
    */
-  public DurationReminder triggerBefore(final int duration, final TimeUnit timeUnit)
-      throws SchedulerException {
+  public DurationReminder triggerBefore(final int duration, final TimeUnit timeUnit) {
     this.duration = duration;
     this.timeUnit = timeUnit;
+    return this;
+  }
+
+  @Override
+  protected OffsetDateTime getTriggeringDate() {
     Plannable contribution = getPlannableContribution();
-    OffsetDateTime startDateTime = TemporalConverter.applyByType(contribution.getStartDate(),
+    return TemporalConverter.applyByType(contribution.getStartDate(),
         d -> d.atStartOfDay().atZone(ZoneId.systemDefault()).toOffsetDateTime(), dt -> dt)
         .minus(duration, timeUnit.toChronoUnit());
-    return scheduleAt(startDateTime);
   }
 
   private Plannable getPlannableContribution() {

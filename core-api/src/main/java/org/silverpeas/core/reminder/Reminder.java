@@ -31,6 +31,7 @@ import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.scheduler.SchedulerException;
@@ -129,6 +130,26 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
   }
 
   /**
+   * Schedules this reminder. It persists first the reminder properties and then starts its
+   * scheduling according to its triggering rule.
+   * @throws TransactionRuntimeException if the persistence or the scheduling fails.
+   * @return itself.
+   */
+  public <T extends Reminder> T schedule() {
+    OffsetDateTime dateTime = getTriggeringDate();
+    assert dateTime != null;
+    return Transaction.getTransaction().perform(() -> {
+      if (isPersisted() && isScheduled()) {
+        SchedulerProvider.getScheduler().unscheduleJob(getJobName());
+      }
+      Reminder me = ReminderRepository.get().save(this);
+      JobTrigger trigger = JobTrigger.triggerAt(dateTime);
+      SchedulerProvider.getScheduler().scheduleJob(getJobName(), trigger, ReminderProcess.get());
+      return (T) me;
+    });
+  }
+
+  /**
    * Gets the contribution related by this reminder.
    * @return a {@link Contribution} object.
    */
@@ -140,26 +161,15 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
                 contributionId.getLocalId())));
   }
 
+  /**
+   * Gets the date time at which this reminder has to be triggered. This date time is computed from
+   * the triggering rule of this reminder.
+   * @return an {@link OffsetDateTime} value.
+   */
+  protected abstract OffsetDateTime getTriggeringDate();
+
   private String getJobName() {
     return SCHEDULED_JOB_NAME.format(new Object[]{getId()});
-  }
-
-  /**
-   * Persists this reminder and schedules it at the specified date time.
-   * @param dateTime the {@link OffsetDateTime} value of the date time to set.
-   * @param <T> the concrete type of the reminder.
-   * @return itself.
-   */
-  protected <T extends Reminder> T scheduleAt(final OffsetDateTime dateTime) {
-    return Transaction.getTransaction().perform(() -> {
-      if (isPersisted() && isScheduled()) {
-        SchedulerProvider.getScheduler().unscheduleJob(getJobName());
-      }
-      Reminder me = ReminderRepository.get().save(this);
-      JobTrigger trigger = JobTrigger.triggerAt(dateTime);
-      SchedulerProvider.getScheduler().scheduleJob(getJobName(), trigger, ReminderProcess.get());
-      return (T) me;
-    });
   }
 
   /**
@@ -207,7 +217,7 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
      * {@link org.silverpeas.core.calendar.Plannable} contribution.
      * @param duration a duration value
      * @param timeUnit the time unit in which is expressed the duration.
-     * @return itself.
+     * @return a {@link DurationReminder} instance.
      */
     public DurationReminder triggerBefore(final int duration, final TimeUnit timeUnit)
         throws SchedulerException {
@@ -218,7 +228,7 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
     /**
      * Triggers the reminder at the specified date time.
      * @param dateTime the {@link OffsetDateTime} at which the reminder will be triggered.
-     * @return itself.
+     * @return a {@link DateTimeReminder} instance.
      */
     public DateTimeReminder triggerAt(final OffsetDateTime dateTime) throws SchedulerException {
       return new DateTimeReminder(contribution, user).withText(text).triggerAt(dateTime);

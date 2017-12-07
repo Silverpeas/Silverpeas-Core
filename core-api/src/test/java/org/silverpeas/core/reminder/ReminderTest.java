@@ -60,7 +60,8 @@ public class ReminderTest {
     User user = context.getUser();
     Reminder reminder = Reminder.make(contribution, user)
         .withText("Don't forget the meeting in two days!")
-        .triggerBefore(2, TimeUnit.DAY);
+        .triggerBefore(2, TimeUnit.DAY)
+        .schedule();
     assertThat(reminder.isPersisted(), is(true));
     assertThat(reminder.isScheduled(), is(true));
   }
@@ -69,9 +70,10 @@ public class ReminderTest {
   public void userTriggerBeforeWithANonPlannableObjectShouldFail() throws SchedulerException {
     ContributionIdentifier contribution = context.getNonPlannableContribution();
     User user = context.getUser();
-    Reminder.make(contribution, user)
+    new DurationReminder(contribution, user)
         .withText("Don't forget the meeting in two days!")
-        .triggerBefore(2, TimeUnit.DAY);
+        .triggerBefore(2, TimeUnit.DAY)
+        .schedule();
   }
 
   @Test
@@ -80,7 +82,8 @@ public class ReminderTest {
     User user = context.getUser();
     Reminder reminder = Reminder.make(contribution, user)
         .withText("Don't forget the meeting in two days!")
-        .triggerAt(OffsetDateTime.now().plusMonths(1));
+        .triggerAt(OffsetDateTime.now().plusMonths(1))
+        .schedule();
     assertThat(reminder.isPersisted(), is(true));
     assertThat(reminder.isScheduled(), is(true));
   }
@@ -89,9 +92,10 @@ public class ReminderTest {
   public void createNewReminderAboutPlannableToTriggerAtDateTime() throws SchedulerException {
     ContributionIdentifier contribution = context.getPlannableContribution();
     User user = context.getUser();
-    Reminder reminder = Reminder.make(contribution, user)
+    Reminder reminder = new DateTimeReminder(contribution, user)
         .withText("Don't forget the meeting in two days!")
-        .triggerAt(OffsetDateTime.now().plusMonths(1));
+        .triggerAt(OffsetDateTime.now().plusMonths(1))
+        .schedule();
     assertThat(reminder.isPersisted(), is(true));
     assertThat(reminder.isScheduled(), is(true));
   }

@@ -25,7 +25,6 @@ package org.silverpeas.core.reminder;
 
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
-import org.silverpeas.core.scheduler.SchedulerException;
 
 import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
@@ -60,7 +59,7 @@ public class DateTimeReminder extends Reminder {
   }
 
   @Override
-  public DateTimeReminder withText(final String text) {
+  public final DateTimeReminder withText(final String text) {
     return super.withText(text);
   }
 
@@ -73,24 +72,18 @@ public class DateTimeReminder extends Reminder {
   }
 
   /**
-   * Sets a new date time at which this reminder has to be triggered.
-   * @param dateTime a new date time.
+   * Triggers this reminder at the specified date time.
+   * @param dateTime the date time at which this reminder will be triggered once scheduled.
    * @return itself.
    */
-  public DateTimeReminder setDateTime(final OffsetDateTime dateTime) {
+  public DateTimeReminder triggerAt(final OffsetDateTime dateTime) {
     this.dateTime = dateTime;
     return this;
   }
 
-  /**
-   * Triggers this reminder at the specified date time.
-   * @param dateTime the date time at which this reminder will be triggered.
-   * @return itself.
-   * @throws SchedulerException is an error occurs while scheduling this reminder.
-   */
-  public DateTimeReminder triggerAt(final OffsetDateTime dateTime) throws SchedulerException {
-    this.dateTime = dateTime;
-    return scheduleAt(dateTime);
+  @Override
+  protected OffsetDateTime getTriggeringDate() {
+    return getDateTime();
   }
 }
   
