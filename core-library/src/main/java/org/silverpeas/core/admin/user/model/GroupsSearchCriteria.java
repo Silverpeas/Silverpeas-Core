@@ -109,8 +109,10 @@ public class GroupsSearchCriteria implements SearchCriteria {
 
   @Override
   public GroupsSearchCriteria onDomainIds(String... domainIds) {
-    criteria.put(DOMAIN_IDS,
-        Arrays.stream(domainIds).filter(StringUtil::isDefined).toArray(String[]::new));
+    if (domainIds != null) {
+      criteria.put(DOMAIN_IDS,
+          Arrays.stream(domainIds).filter(StringUtil::isDefined).toArray(String[]::new));
+    }
     return this;
   }
 

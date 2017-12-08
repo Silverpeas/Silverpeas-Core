@@ -109,14 +109,18 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onGroupIds(String... groupIds) {
-    criteria.put(GROUP_IDS,
-        Arrays.stream(groupIds).filter(StringUtil::isDefined).toArray(String[]::new));
+    if (groupIds != null) {
+      criteria.put(GROUP_IDS,
+          Arrays.stream(groupIds).filter(StringUtil::isDefined).toArray(String[]::new));
+    }
     return this;
   }
 
   public UserDetailsSearchCriteria onDomainIds(String... domainIds) {
-    criteria.put(DOMAIN_IDS,
-        Arrays.stream(domainIds).filter(StringUtil::isDefined).toArray(String[]::new));
+    if (domainIds != null) {
+      criteria.put(DOMAIN_IDS,
+          Arrays.stream(domainIds).filter(StringUtil::isDefined).toArray(String[]::new));
+    }
     return this;
   }
 
