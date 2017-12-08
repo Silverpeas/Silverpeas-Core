@@ -59,9 +59,11 @@ public interface Filter<T, U> {
    * Plays the specified predicate against an underlying object and applies the specified function
    * if and only if the predicate is true. If the predicate is true, the result of the function is
    * stored in order to be retrieved later and the chain of predicate to play is stopped; the next
-   * predicates won't be played and hence their associated functions won't be executed.
+   * predicates won't be played and hence their associated functions won't be executed. The result
+   * of the function mustn't be null otherwise an {@link AssertionError} is thrown.
    * @param predicate the predicate to match.
-   * @param function the function associated with the predicate.
+   * @param function the function associated with the predicate and that returns a non-null
+   * computation result.
    * @param <V> the return type of the function.
    * @return a {@link FilterMatcher} instance from which the result can be retrieved and with which
    * other filtering rules can be set.

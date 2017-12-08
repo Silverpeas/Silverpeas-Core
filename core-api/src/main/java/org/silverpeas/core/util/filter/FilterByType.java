@@ -30,6 +30,7 @@ import java.util.function.Predicate;
 /**
  * A filter by the type of the wrapped object. If the type of the object matches a given
  * predicate then the operation with the matched predicate is performed against this object.
+ * The object cannot be null otherwise nothing is performed.
  * @author mmoquillon
  */
 public class FilterByType implements Filter<Class<?>, Object> {
@@ -47,7 +48,7 @@ public class FilterByType implements Filter<Class<?>, Object> {
 
   @Override
   public FilterByType match(final Predicate<Class<?>> predicate, final Consumer<Object> operation) {
-    if (predicate.test(value.getClass())) {
+    if (value != null && predicate.test(value.getClass())) {
       operation.accept(value);
     }
     return this;
@@ -56,8 +57,9 @@ public class FilterByType implements Filter<Class<?>, Object> {
   @Override
   public <V> FilterMatcher<Class<?>, Object, V> matchFirst(final Predicate<Class<?>> predicate,
       final Function<Object, V> function) {
-    return new FilterMatcher<Class<?>, Object, V>(value.getClass(), value).matchFirst(predicate,
-        function);
+    return value != null ?
+        new FilterMatcher<Class<?>, Object, V>(value.getClass(), value).matchFirst(predicate,
+            function) : new EmptyFilterMatcher<>();
   }
 }
   

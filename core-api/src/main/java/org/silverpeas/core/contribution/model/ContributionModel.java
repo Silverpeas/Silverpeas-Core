@@ -25,9 +25,6 @@ package org.silverpeas.core.contribution.model;
 
 import org.silverpeas.core.util.filter.Filter;
 
-import java.time.temporal.Temporal;
-import java.util.Date;
-
 /**
  * Model of a contribution. A model is an object that is the business abstraction of the concrete
  * type of a contribution. Through the model, we can access the business properties specific to that
@@ -37,7 +34,8 @@ import java.util.Date;
 public interface ContributionModel {
 
   /**
-   * Applies a filter on the value of the specified business property.
+   * Applies a filter on the type of the value of the specified business property. If the property
+   * value is null, then no filtering is applied.
    * <p>
    * This method is useful to apply a specific treatment according to the type of the property
    * (in the case the property can be of different type or the property represents a more generic
@@ -49,16 +47,10 @@ public interface ContributionModel {
   Filter<Class<?>, Object> filterByType(final String property);
 
   /**
-   * Gets the {@link Temporal} value of the specified business property.
+   * Gets the value of the specified business property.
    * @param property the name of the business property of the represented contribution.
-   * @return a {@link Temporal} instance.
+   * @param <T> the expected type of the property value.
+   * @return the value of the asked business property.
    */
-  Temporal getTemporal(final String property);
-
-  /**
-   * Gets the {@link Date} value of the specified business property.
-   * @param property the name of the business property of the represented contribution.
-   * @return a {@link Date} instance.
-   */
-  Date getDate(final String property);
+  <T> T getProperty(final String property);
 }

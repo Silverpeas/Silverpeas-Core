@@ -21,38 +21,34 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.reminder;
+package org.silverpeas.core.util.filter;
 
-import org.silverpeas.core.scheduler.SchedulerEvent;
-import org.silverpeas.core.scheduler.SchedulerEventListener;
-import org.silverpeas.core.util.ServiceProvider;
-
-import javax.inject.Singleton;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
- * The process to send a notification to the user aimed by a reminder.
+ * An empty filter matcher. It does nothing and the return result is an empty {@link Optional}
+ * instance.
  * @author mmoquillon
  */
-@Singleton
-public class ReminderProcess implements SchedulerEventListener {
-
-  public static ReminderProcess get() {
-    return ServiceProvider.getService(ReminderProcess.class);
+public class EmptyFilterMatcher<T, U, V> extends FilterMatcher<T, U, V> {
+  /**
+   * Constructs a new {@link EmptyFilterMatcher} instance.
+   */
+  EmptyFilterMatcher() {
+    super(null, null);
   }
 
   @Override
-  public void triggerFired(final SchedulerEvent anEvent) {
-
+  public FilterMatcher<T, U, V> matchFirst(final Predicate<T> predicate,
+      final Function<U, V> function) {
+    return this;
   }
 
   @Override
-  public void jobSucceeded(final SchedulerEvent anEvent) {
-
-  }
-
-  @Override
-  public void jobFailed(final SchedulerEvent anEvent) {
-
+  public Optional<V> result() {
+    return Optional.empty();
   }
 }
   

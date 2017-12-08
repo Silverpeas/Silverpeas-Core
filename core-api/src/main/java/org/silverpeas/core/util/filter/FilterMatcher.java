@@ -53,15 +53,18 @@ public class FilterMatcher<T, U, V> {
   /**
    * Plays the specified predicate against the criterion and applies the specified function
    * if and only if the predicate is true. If the criterion is true, the result is stored and the
-   * other next predicates aren't played.
+   * other next predicates aren't played. The result of the function cannot be null otherwise a
+   * {@link AssertionError} is thrown.
    * @param predicate the predicate to match.
-   * @param function the function associated with the predicate.
+   * @param function the function associated with the predicate and that returns a non-null
+   * computation result.
    * @return itself.
    */
   public FilterMatcher<T, U, V> matchFirst(final Predicate<T> predicate,
       final Function<U, V> function) {
     if (result == null && predicate.test(criterion)) {
       result = function.apply(value);
+      assert result != null;
     }
     return this;
   }

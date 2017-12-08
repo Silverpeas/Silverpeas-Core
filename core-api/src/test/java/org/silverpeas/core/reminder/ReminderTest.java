@@ -47,7 +47,6 @@ public class ReminderTest {
   public CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
   private ReminderTextContext context = new ReminderTextContext(commonAPI4Test);
 
-
   @Before
   public void prepareInjection() {
     context.setUp();

@@ -28,8 +28,6 @@ import org.silverpeas.core.util.filter.FilterByType;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.time.temporal.Temporal;
-import java.util.Date;
 
 /**
  * The default implementation of the {@link ContributionModel} interface. In this implementation,
@@ -50,17 +48,8 @@ public class DefaultContributionModel implements ContributionModel {
     return new FilterByType(getProperty(property));
   }
 
+  @Override
   public <T> T getProperty(final String property) {
-    return getByReflection(property);
-  }
-
-  @Override
-  public Temporal getTemporal(final String property) {
-    return getByReflection(property);
-  }
-
-  @Override
-  public Date getDate(final String property) {
     return getByReflection(property);
   }
 
@@ -79,7 +68,6 @@ public class DefaultContributionModel implements ContributionModel {
       Method method = contribution.getClass().getDeclaredMethod(propName);
       return (T) method.invoke(contribution);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-
       if (Character.isUpperCase(property.charAt(0))) {
         propName = Character.toLowerCase(property.charAt(0)) + property.substring(1);
       }
