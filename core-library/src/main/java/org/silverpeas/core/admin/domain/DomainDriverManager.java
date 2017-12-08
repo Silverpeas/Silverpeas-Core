@@ -839,9 +839,7 @@ public class DomainDriverManager extends AbstractDomainDriver {
     try(Connection connection = DBUtil.openConnection()) {
       List<UserDetail> users = userDAO.getUsersByCriteria(connection,
           UserSearchCriteriaForDAO.newCriteria().onDomainIds(domainId).onUserIds(ids));
-      List<String> specificIds =
-          users.stream().map(UserDetail::getSpecificId).collect(Collectors.toList());
-      return specificIds.toArray(new String[specificIds.size()]);
+      return users.stream().map(UserDetail::getSpecificId).toArray(String[]::new);
     } catch (SQLException e) {
       throw new AdminException(
           failureOnGetting("users", Arrays.stream(ids).collect(Collectors.joining(","))), e);

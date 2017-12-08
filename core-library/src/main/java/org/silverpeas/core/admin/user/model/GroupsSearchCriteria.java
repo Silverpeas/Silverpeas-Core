@@ -23,12 +23,14 @@
  */
 package org.silverpeas.core.admin.user.model;
 
+import org.apache.commons.lang3.ArrayUtils;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
-import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.StringUtil;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -107,9 +109,8 @@ public class GroupsSearchCriteria implements SearchCriteria {
 
   @Override
   public GroupsSearchCriteria onDomainIds(String... domainIds) {
-    if (domainIds != null && ArrayUtil.isNotEmpty(domainIds)) {
-      criteria.put(DOMAIN_IDS, domainIds);
-    }
+    criteria.put(DOMAIN_IDS,
+        Arrays.stream(domainIds).filter(StringUtil::isDefined).toArray(String[]::new));
     return this;
   }
 
@@ -174,11 +175,7 @@ public class GroupsSearchCriteria implements SearchCriteria {
   public boolean isCriterionOnMixedDomainIdSet() {
     if (criteria.containsKey(DOMAIN_IDS)) {
       String[] domainIds = (String[]) criteria.get(DOMAIN_IDS);
-      for (String domainId : domainIds) {
-        if (domainId.equals(Domain.MIXED_DOMAIN_ID)) {
-          return true;
-        }
-      }
+      return Arrays.stream(domainIds).anyMatch(Domain.MIXED_DOMAIN_ID::equals);
     }
     return false;
   }
@@ -247,11 +244,11 @@ public class GroupsSearchCriteria implements SearchCriteria {
    */
   public String getCriterionOnDomainId() {
      String[] domainIds = (String[]) criteria.get(DOMAIN_IDS);
-     if (domainIds != null) {
+     if (ArrayUtils.isNotEmpty(domainIds)) {
        final int domainCount = 2;
        if (domainIds.length == domainCount) {
          return domainIds[1];
-       } else if (!domainIds[0].equals(Domain.MIXED_DOMAIN_ID)) {
+       } else if (!Domain.MIXED_DOMAIN_ID.equals(domainIds[0])) {
          return domainIds[0];
        }
      }

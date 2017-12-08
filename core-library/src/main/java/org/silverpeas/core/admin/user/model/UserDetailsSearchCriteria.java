@@ -109,9 +109,8 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onGroupIds(String... groupIds) {
-    if (groupIds != null && isNotEmpty(groupIds)) {
-      criteria.put(GROUP_IDS, groupIds);
-    }
+    criteria.put(GROUP_IDS,
+        Arrays.stream(groupIds).filter(StringUtil::isDefined).toArray(String[]::new));
     return this;
   }
 
@@ -178,7 +177,8 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   public boolean isCriterionOnGroupIdsSet() {
-    return criteria.containsKey(GROUP_IDS);
+    final String[] groupIds = (String[]) criteria.get(GROUP_IDS);
+    return ArrayUtil.isNotEmpty(groupIds);
   }
 
   public boolean isCriterionOnDomainIdSet() {

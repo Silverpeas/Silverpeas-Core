@@ -220,7 +220,8 @@ out.println(window.printBefore());
         <viewTags:selectUsersAndGroups selectionType="USER_GROUP"
                                        domainIdFilter="<%=domObject.getId()%>"
                                        navigationalBehavior="true"
-                                       onChangeJsCallback="jumpToUser"/>
+                                       onChangeJsCallback="jumpToUser"
+                                       hideDeactivatedState="false"/>
       </div>
     </div>
   </div>

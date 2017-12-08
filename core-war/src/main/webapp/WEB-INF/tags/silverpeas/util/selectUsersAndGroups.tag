@@ -191,7 +191,7 @@
     var domainFilter = [<c:forEach items="${domainsFilter}" var="domain" varStatus="status"><c:if test="${not status.first}">, </c:if>'${domain.id}'</c:forEach>];
     if (domainFilter.length === 0) {
       <c:if test="${not empty domainIdFilter}">
-        domainFilter = [${domainIdFilter}];
+        domainFilter = ['${domainIdFilter}'];
       </c:if>
     }
     var groupFilter = [<c:forEach items="${groupsFilter}" var="group" varStatus="status"><c:if test="${not status.first}">, </c:if>'${group.id}'</c:forEach>];
