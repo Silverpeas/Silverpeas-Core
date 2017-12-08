@@ -72,10 +72,10 @@ public interface SearchCriteria {
    * Appends a criterion on the user domain for which the search must be constrained to. The
    * properties of the resources to fetch have to satisfy this criterion.
    *
-   * @param domainId the unique identifier of the user domain.
+   * @param domainIds the unique identifier of the user domain.
    * @return the criteria enriched with a criterion on the user domain.
    */
-  SearchCriteria onDomainId(String domainId);
+  SearchCriteria onDomainIds(String... domainIds);
 
   /**
    * Appends a criterion on the user groups for which the search must be constrained to. The

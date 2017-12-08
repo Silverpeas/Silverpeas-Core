@@ -352,6 +352,10 @@ silverpeas-calendar-event-occurrence-tip-actions .goto-first-occurrence {
   max-width: 400px;
 }
 
+.tip-occurrence .qtip-title {
+  margin-right: 20px;
+}
+
 .goto-previous-occurrence {
   position: absolute;
   top: -2em;

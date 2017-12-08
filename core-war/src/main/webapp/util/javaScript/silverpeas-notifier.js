@@ -145,7 +145,7 @@ function notyReset() {
  * @param text
  */
 function __noty(customOptions) {
-  if (top !== window && typeof top.window.__noty === 'function') {
+  if (top !== window && typeof top.window.__noty === 'function' && spFscreen.fullscreenElement() === null) {
     return top.window.__noty(customOptions);
   }
   var options = extendsObject({

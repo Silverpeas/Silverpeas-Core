@@ -90,6 +90,9 @@
           if (this.options.roleFilter) {
             params.roles = this.options.roleFilter.join(',')
           }
+          if (this.options.groupFilter) {
+            params.group = this.options.groupFilter
+          }
         }
       }
       if (params.limit) {
@@ -396,6 +399,7 @@
       hideDeactivatedState : true,
       domainIdFilter : '',
       componentIdFilter : '',
+      groupFilter : '',
       roleFilter : [],
       navigationalBehavior : false,
       doNotSelectAutomaticallyOnDropDownOpen : false,
@@ -554,7 +558,7 @@
         };
         this.context.searchInput.processQuery = function(value, callback) {
           var __value = (value || "").toLowerCase();
-          __value = __value.replace(/[^a-z0-9éèëêäâàãïîìñüûùçôöõò]/g, '');
+          __value = __value.trim();
           if (__value && __value.length > 2) {
             if (!__queryRunning) {
               __performSearch(__value, callback);

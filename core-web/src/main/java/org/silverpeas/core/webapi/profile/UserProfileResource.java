@@ -36,8 +36,10 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.chat.ChatUser;
 import org.silverpeas.core.socialnetwork.relationship.RelationShip;
 import org.silverpeas.core.socialnetwork.relationship.RelationShipService;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ListSlice;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
@@ -53,6 +55,8 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.net.URI;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -120,7 +124,7 @@ public class UserProfileResource extends RESTWebService {
    * the count of the answered users.
    *
    * @param userIds requested user identifiers
-   * @param groupId the unique identifier of the group the users must belong to. The particular
+   * @param groupIds the identifier of the groups the users must belong to. The particular
    * identifier "all" means all user groups.
    * @param name a pattern the name of the users has to satisfy. The wildcard * means anything
    * string of characters.
@@ -128,7 +132,7 @@ public class UserProfileResource extends RESTWebService {
    * this parameter is computed the part of users to sent back: those between ((page number - 1) *
    * item count in the page) and ((page number - 1) * item count in the page + item count in the
    * page).
-   * @param domain the unique identifier of the domain the users have to be related.
+   * @param domainIds the identifier of the domains the users have to be related.
    * @param accessLevels filters the users by the access level in Silverpeas.
    * @param userStatesToExclude the user states that users taken into account must not be in.
    * @return the JSON serialization of the array with the user profiles that matches the query.
@@ -136,25 +140,38 @@ public class UserProfileResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public Response getUsers(@QueryParam("id") Set<String> userIds,
-      @QueryParam("group") String groupId,
+      @QueryParam("group") List<String> groupIds,
       @QueryParam("name") String name,
       @QueryParam("page") String page,
-      @QueryParam("domain") String domain,
+      @QueryParam("domain") List<String> domainIds,
       @QueryParam("accessLevel") Set<UserAccessLevel> accessLevels,
       @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
-    String domainId = Domain.MIXED_DOMAIN_ID.equals(domain) ? null : domain;
-    if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
-      Group group = profileService.getGroupAccessibleToUser(groupId, UserDetail.from(getUser()));
-      domainId = group.getDomainId();
+    List<String> effectiveDomainIds = new ArrayList<>(domainIds);
+    if (CollectionUtil.isNotEmpty(domainIds) && domainIds.size() == 1 &&
+        domainIds.get(0).equals(Domain.MIXED_DOMAIN_ID)) {
+      effectiveDomainIds.clear();
+    }
+    if (!groupIds.isEmpty() && !groupIds.contains(QUERY_ALL_GROUPS)) {
+      List<Group> groups =
+          profileService.getGroupsAccessibleToUser(groupIds, UserDetail.from(getUser()));
+      for (Group group : groups) {
+        if (StringUtil.isDefined(group.getDomainId())) {
+          effectiveDomainIds.add(group.getDomainId());
+        } else {
+          // Limitation: when a group on MIXED domain if found, the filter on domain id is ignored
+          effectiveDomainIds.clear();
+          break;
+        }
+      }
     }
     if (getUser().isDomainRestricted()) {
-      domainId = getUser().getDomainId();
+      effectiveDomainIds = Collections.singletonList(getUser().getDomainId());
     }
-    UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder
-        .aSearchCriteria().withDomainId(domainId).
-        withGroupId(groupId).
-        withName(name).
-        withPaginationPage(fromPage(page));
+    UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder.aSearchCriteria()
+        .withDomainIds(effectiveDomainIds.toArray(new String[effectiveDomainIds.size()]))
+        .withGroupIds(groupIds.toArray(new String[groupIds.size()]))
+        .withName(name)
+        .withPaginationPage(fromPage(page));
     if (CollectionUtil.isNotEmpty(userIds)) {
       criteriaBuilder.withUserIds(userIds.toArray(new String[userIds.size()]));
     }
@@ -241,22 +258,27 @@ public class UserProfileResource extends RESTWebService {
       @QueryParam("page") String page,
       @QueryParam("userStatesToExclude") Set<UserState> userStatesToExclude) {
     String[] roleNames = isDefined(roles) ? roles.split(",") : null;
-    String domainId = null;
-    if (isDefined(groupId) && !groupId.equals(QUERY_ALL_GROUPS)) {
+    List<String> domainIds = new ArrayList<>();
+    if (isDefined(groupId) && !QUERY_ALL_GROUPS.equals(groupId)) {
       Group group = profileService.getGroupAccessibleToUser(groupId, UserDetail.from(getUser()));
-      domainId = group.getDomainId();
+      if (StringUtil.isDefined(group.getDomainId())) {
+        domainIds.add(group.getDomainId());
+      } else {
+        // Limitation: when a group on MIXED domain if found, the filter on domain id is ignored
+        domainIds.clear();
+      }
     }
     if (getUser().isDomainRestricted()) {
-      domainId = getUser().getDomainId();
+      domainIds = Collections.singletonList(getUser().getDomainId());
     }
-    UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder
-        .aSearchCriteria().withDomainId(domainId).
-        withComponentInstanceId(instanceId).
-        withRoles(roleNames).
-        withResourceId(resource).
-        withGroupId(groupId).
-        withName(name).
-        withPaginationPage(fromPage(page));
+    UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder.aSearchCriteria()
+        .withDomainIds(domainIds.toArray(new String[domainIds.size()]))
+        .withComponentInstanceId(instanceId)
+        .withRoles(roleNames)
+        .withResourceId(resource)
+        .withGroupIds(ArrayUtil.toArray(groupId))
+        .withName(name)
+        .withPaginationPage(fromPage(page));
 
     // Users to exclude by their state
     if (CollectionUtil.isNotEmpty(userStatesToExclude)) {
@@ -315,15 +337,14 @@ public class UserProfileResource extends RESTWebService {
     String[] contactIds = getContactIds(theUser.getId());
     ListSlice<UserDetail> contacts;
     if (contactIds.length > 0) {
-      UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder
-          .aSearchCriteria().
-          withComponentInstanceId(instanceId).
-          withDomainId(domainId).
-          withRoles(roleNames).
-          withResourceId(resource).
-          withUserIds(contactIds).
-          withName(name).
-          withPaginationPage(fromPage(page));
+      UserProfilesSearchCriteriaBuilder criteriaBuilder = UserProfilesSearchCriteriaBuilder.aSearchCriteria()
+          .withComponentInstanceId(instanceId)
+          .withDomainIds(ArrayUtil.toArray(domainId))
+          .withRoles(roleNames)
+          .withResourceId(resource)
+          .withUserIds(contactIds)
+          .withName(name)
+          .withPaginationPage(fromPage(page));
 
       // Users to exclude by their state
       if (CollectionUtil.isNotEmpty(userStatesToExclude)) {

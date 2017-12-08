@@ -71,6 +71,12 @@
 <%@ attribute name="domainIdFilter" required="false" type="java.lang.String"
               description="The domain id to filter on" %>
 
+<%@ attribute name="domainsFilter" required="false" type="java.util.Collection"
+              description="The domains to filter on" %>
+
+<%@ attribute name="groupsFilter" required="false" type="java.util.Collection"
+              description="The groups to filter on" %>
+
 <%@ attribute name="componentIdFilter" required="false" type="java.lang.String"
               description="The component instance id to filter on" %>
 
@@ -182,12 +188,20 @@
       groupIds = [<c:forEach items="${groupIds}" var="groupId" varStatus="status"><c:if test="${not status.first}">, </c:if>${groupId}</c:forEach>];
     }
     var roleFilter = [<c:forEach items="${roleFilter}" var="role" varStatus="status"><c:if test="${not status.first}">, </c:if>'${role}'</c:forEach>];
+    var domainFilter = [<c:forEach items="${domainsFilter}" var="domain" varStatus="status"><c:if test="${not status.first}">, </c:if>'${domain.id}'</c:forEach>];
+    if (domainFilter.length === 0) {
+      <c:if test="${not empty domainIdFilter}">
+        domainFilter = ['${domainIdFilter}'];
+      </c:if>
+    }
+    var groupFilter = [<c:forEach items="${groupsFilter}" var="group" varStatus="status"><c:if test="${not status.first}">, </c:if>'${group.id}'</c:forEach>];
     var instance = new UserGroupSelect({
       rootContainerId : "select-user-group-${id}",
       hideDeactivatedState : ${hideDeactivatedState},
-      domainIdFilter : '${domainIdFilter}',
+      domainIdFilter : domainFilter,
       componentIdFilter : '${componentIdFilter}',
       roleFilter : roleFilter,
+      groupFilter : groupFilter,
       initialQuery : '${initialQuery}',
       navigationalBehavior : ${navigationalBehavior},
       doNotSelectAutomaticallyOnDropDownOpen : ${doNotSelectAutomaticallyOnDropDownOpen},

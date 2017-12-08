@@ -26,7 +26,10 @@ package org.silverpeas.core.admin.user.model;
 import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.StringUtil;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -106,17 +109,14 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   @Override
   public UserDetailsSearchCriteria onGroupIds(String... groupIds) {
-    if (isNotEmpty(groupIds)) {
-      criteria.put(GROUP_IDS, groupIds);
-    }
+    criteria.put(GROUP_IDS,
+        Arrays.stream(groupIds).filter(StringUtil::isDefined).toArray(String[]::new));
     return this;
   }
 
-  @Override
-  public UserDetailsSearchCriteria onDomainId(String domainId) {
-    if (isDefined(domainId)) {
-      criteria.put(DOMAIN_IDS, domainId);
-    }
+  public UserDetailsSearchCriteria onDomainIds(String... domainIds) {
+    criteria.put(DOMAIN_IDS,
+        Arrays.stream(domainIds).filter(StringUtil::isDefined).toArray(String[]::new));
     return this;
   }
 
@@ -177,11 +177,13 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   public boolean isCriterionOnGroupIdsSet() {
-    return criteria.containsKey(GROUP_IDS);
+    final String[] groupIds = (String[]) criteria.get(GROUP_IDS);
+    return ArrayUtil.isNotEmpty(groupIds);
   }
 
   public boolean isCriterionOnDomainIdSet() {
-    return criteria.containsKey(DOMAIN_IDS);
+    final String[] domainIds = (String[]) criteria.get(DOMAIN_IDS);
+    return ArrayUtil.isNotEmpty(domainIds);
   }
 
   public boolean isCriterionOnAccessLevelsSet() {
@@ -252,8 +254,8 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
    * Gets the domain identifier.
    * @return the domain identifier.
    */
-  public String getCriterionOnDomainId() {
-    return (String) criteria.get(DOMAIN_IDS);
+  public String[] getCriterionOnDomainIds() {
+    return (String[]) criteria.get(DOMAIN_IDS);
   }
 
   /**

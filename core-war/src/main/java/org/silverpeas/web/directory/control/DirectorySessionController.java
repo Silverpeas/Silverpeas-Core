@@ -263,7 +263,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   private List<String> getCurrentDomainIds() {
-    List<String> ids = new ArrayList<String>();
+    List<String> ids = new ArrayList<>();
     for (Domain domain : getCurrentDomains()) {
       ids.add(domain.getId());
     }
@@ -367,7 +367,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     setCurrentView(VIEW_ALL);
     setCurrentDirectory(DIRECTORY_GROUP);
     setCurrentQuery(null);
-    currentGroups = new ArrayList<Group>();
+    currentGroups = new ArrayList<>();
     currentGroups.add(getOrganisationController().getGroup(groupId));
     lastAllListUsersCalled = new DirectoryItemList(getOrganisationController().getAllUsersOfGroup(groupId));
     lastListUsersCalled = lastAllListUsersCalled;
@@ -386,11 +386,14 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
     DirectoryItemList tmpList = new DirectoryItemList();
 
-    currentGroups = new ArrayList<Group>();
+    currentGroups = new ArrayList<>();
     for (String groupId : groupIds) {
       mergeUsersIntoDirectoryItemList(getOrganisationController().getAllUsersOfGroup(groupId),
           tmpList);
-      currentGroups.add(getOrganisationController().getGroup(groupId));
+      Group group = getOrganisationController().getGroup(groupId);
+      if (group != null) {
+        currentGroups.add(group);
+      }
     }
 
     lastAllListUsersCalled = tmpList;
@@ -621,7 +624,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
     }
 
     UserFull userFull = getUserFul(user.getOriginalId());
-    Map<String, String> extra = new HashMap<String, String>();
+    Map<String, String> extra = new HashMap<>();
     if (userFull != null) {
       extra = userFull.getAllDefinedValues(getLanguage());
     }
@@ -690,9 +693,12 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   }
 
   public void setCurrentDomains(List<String> domainIds) {
-    currentDomains = new ArrayList<Domain>();
+    currentDomains = new ArrayList<>();
     for (String domainId : domainIds) {
-      currentDomains.add(getOrganisationController().getDomain(domainId));
+      Domain domain = getOrganisationController().getDomain(domainId);
+      if (domain != null) {
+        currentDomains.add(domain);
+      }
     }
     setCurrentDirectory(DIRECTORY_DOMAIN);
   }
@@ -756,7 +762,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   private List<String> getContactComponentIds() {
     String[] appIds =
         getOrganisationController().getComponentIdsForUser(getUserId(), "yellowpages");
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     for (String appId : appIds) {
       String param =
           getOrganisationController().getComponentParameterValue(appId, "displayedInDirectory");
@@ -909,7 +915,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   public boolean isQuickUserSelectionEnabled() {
     return getCurrentDirectory() == DIRECTORY_DEFAULT ||
-        (getCurrentDirectory() == DIRECTORY_DOMAIN && getCurrentDomainIds().size() == 1);
+        getCurrentDirectory() == DIRECTORY_DOMAIN || getCurrentDirectory() == DIRECTORY_GROUP;
   }
 
   private SilverpeasTemplate getFragmentTemplate() {

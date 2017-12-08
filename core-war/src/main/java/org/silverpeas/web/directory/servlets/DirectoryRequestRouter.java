@@ -253,6 +253,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
           breadCrumb.append(group.getName());
           firstGroup = false;
         }
+        request.setAttribute("Groups", directorySC.getCurrentGroups());
         break;
 
       case DirectorySessionController.DIRECTORY_DOMAIN:
@@ -265,6 +266,7 @@ public class DirectoryRequestRouter extends ComponentRequestRouter<DirectorySess
           breadCrumb.append(domain.getName());
           first = false;
         }
+        request.setAttribute("Domains", directorySC.getCurrentDomains());
         break;
 
       case DirectorySessionController.DIRECTORY_SPACE:

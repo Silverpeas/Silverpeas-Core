@@ -28,6 +28,8 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -48,8 +50,7 @@ class UserProfileService {
    * @throws WebApplicationException exception if either the group doesn't exist or it cannot be
    * accessible to the specified user.
    */
-  public Group getGroupAccessibleToUser(String groupId, final UserDetail user) throws
-      WebApplicationException {
+  public Group getGroupAccessibleToUser(String groupId, final UserDetail user) {
     Group theGroup = Group.getById(groupId);
     if (theGroup == null) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
@@ -63,5 +64,14 @@ class UserProfileService {
       }
     }
     return theGroup;
+  }
+
+  public List<Group> getGroupsAccessibleToUser(List<String> groupIds, final UserDetail user) {
+    List<Group> groups = new ArrayList<>();
+    for (String groupId : groupIds) {
+      Group group = getGroupAccessibleToUser(groupId, user);
+      groups.add(group);
+    }
+    return groups;
   }
 }

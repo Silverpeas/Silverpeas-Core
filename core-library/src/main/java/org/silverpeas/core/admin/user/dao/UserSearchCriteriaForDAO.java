@@ -129,13 +129,10 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     return this;
   }
 
-  @Override
-  public UserSearchCriteriaForDAO onDomainId(String domainId) {
+  public UserSearchCriteriaForDAO onDomainIds(String... domainIds) {
     // all users that are part of the specified domain or that have administration priviledges
     // (the administrators should be visible by anyone in order to be contacted)
-    if (isDefined(domainId)) {
-      criteria.onDomainId(domainId);
-    }
+    criteria.onDomainIds(domainIds);
     return this;
   }
 
@@ -164,7 +161,8 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
     }
 
     if (criteria.isCriterionOnDomainIdSet()) {
-      query.and("st_user.domainId = ?", Integer.parseInt(criteria.getCriterionOnDomainId()));
+      query.and("st_user.domainId").in(Arrays.stream(criteria.getCriterionOnDomainIds()).map(
+          Integer::parseInt).collect(Collectors.toList()));
     }
 
     if (criteria.isCriterionOnFirstNameSet()) {
