@@ -630,7 +630,7 @@ public class DateUtil {
     if (date == null) {
       return null;
     }
-    return DATE_FORMATTER.format(date);
+    return CUSTOM_FORMATTER.format(date);
   }
 
   /**
