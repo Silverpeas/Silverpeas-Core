@@ -95,6 +95,7 @@ function DoIdle()
 <%
 		  // Tableau
           ArrayPane arrayPane = gef.getArrayPane("List", "", request,session);
+          arrayPane.setVisibleLineNumber(20);
 
 		  if (cResultData != null)
 			  arrayPane.setTitle(cResultData.size()+" "+resources.getString("silverStatisticsPeas.usersWithSession"));
