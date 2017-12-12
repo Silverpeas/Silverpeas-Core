@@ -134,8 +134,8 @@ public class TicketEntity implements WebEntity {
     Ticket ticket;
     Long theSharedObjectId = this.sharedObjectId;
     if ("1".equals(this.validity)) {
-      Date theEndDate =
-          DateUtil.getEndOfDay(DateUtil.stringToDate(this.endDateStr, this.endDateFormat));
+      Date theEndDate = DateUtil.getEndOfDay(
+          DateUtil.stringToDate(this.endDateStr, user.getUserPreferences().getLanguage()));
       int maxAccessNb = this.nbAccessMax;
 
       ticket =
@@ -418,7 +418,7 @@ public class TicketEntity implements WebEntity {
     if (StringUtil.isDefined(getToken())) {
       boolean isValid = true;
       if (getEndDate() != null) {
-        isValid = (getEndDate().compareTo(new Date().getTime()) < 0);
+        isValid = getEndDate().compareTo(new Date().getTime()) < 0;
       }
 
       if (getNbAccessMax() > 0) {
