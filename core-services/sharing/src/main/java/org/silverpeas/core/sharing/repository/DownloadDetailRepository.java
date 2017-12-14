@@ -24,8 +24,12 @@
 package org.silverpeas.core.sharing.repository;
 
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 import org.silverpeas.core.sharing.model.DownloadDetail;
+import org.silverpeas.core.sharing.model.DownloadDetail.QUERY_ORDER_BY;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.util.SilverpeasList;
 
 /**
  *
@@ -34,4 +38,22 @@ import org.silverpeas.core.sharing.model.DownloadDetail;
 public interface DownloadDetailRepository extends EntityRepository<DownloadDetail>,
     WithSaveAndFlush<DownloadDetail> {
 
+  /**
+   * Gets paginated ticket downloads.
+   * @param ticket a ticket.
+   * @param paginationCriterion a pagination.
+   * @param orderBy an optional order by.
+   * @return a paginated list of downloads.
+   */
+  SilverpeasList<DownloadDetail> getDownloadsByTicket(Ticket ticket,
+      PaginationCriterion paginationCriterion, QUERY_ORDER_BY orderBy);
+
+  /**
+   * Gets paginated ticket downloads.
+   * @param paginationCriterion a pagination.
+   * @param orderBy an optional order by.
+   * @param ticket a ticket.
+   * @return a paginated list of downloads.
+   */
+  long deleteDownloadsByTicket(Ticket ticket);
 }

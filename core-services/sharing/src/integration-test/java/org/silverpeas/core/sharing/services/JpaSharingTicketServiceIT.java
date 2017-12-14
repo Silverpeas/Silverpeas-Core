@@ -23,29 +23,36 @@
  */
 package org.silverpeas.core.sharing.services;
 
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.sharing.model.DownloadDetail;
-import org.silverpeas.core.sharing.model.SimpleFileTicket;
-import org.silverpeas.core.sharing.model.Ticket;
+import org.apache.commons.lang3.tuple.Pair;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.sharing.test.WarBuilder4Sharing;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.backgroundprocess.BackgroundProcessLogger;
+import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.sharing.model.DownloadDetail;
+import org.silverpeas.core.sharing.model.SimpleFileTicket;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.test.WarBuilder4Sharing;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
+import org.silverpeas.core.thread.task.RequestTaskManager;
 import org.silverpeas.core.util.CollectionUtil;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
+import static java.util.Collections.emptyList;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -66,16 +73,22 @@ public class JpaSharingTicketServiceIT {
 
   @Before
   public void generalSetUp() throws Exception {
+    new BackgroundProcessLogger().init();
     creator = new UserDetail();
     creator.setId("0");
+  }
+
+  @After
+  public void clean() {
+    await().pollDelay(1, TimeUnit.SECONDS)
+        .until(() -> !RequestTaskManager.isTaskRunning(BackgroundProcessTask.class));
   }
 
   @Deployment
   public static Archive<?> createTestArchive() {
     return WarBuilder4Sharing.onWarForTestClass(JpaSharingTicketServiceIT.class)
-        .testFocusedOn(warBuilder -> {
-          warBuilder.addPackages(true, "org.silverpeas.core.sharing");
-        }).build();
+        .testFocusedOn(w -> w.addPackages(true, "org.silverpeas.core.sharing"))
+        .build();
   }
 
 
@@ -86,15 +99,15 @@ public class JpaSharingTicketServiceIT {
   @Transactional
   public void testGetTicketsByUser() {
     String userId = "0";
-    List<Ticket> result = service.getTicketsByUser(userId);
+    List<Ticket> result = service.getTicketsByUser(userId, null, null);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(2));
     userId = "10";
-    result = service.getTicketsByUser(userId);
+    result = service.getTicketsByUser(userId, null, null);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(1));
     userId = "5";
-    result = service.getTicketsByUser(userId);
+    result = service.getTicketsByUser(userId, null, null);
     assertThat(result, is(notNullValue()));
     assertThat(result, hasSize(0));
   }
@@ -111,7 +124,7 @@ public class JpaSharingTicketServiceIT {
     expResult.setNbAccess(1);
     Ticket result = service.getTicket(key);
     assertThat(result, is(expResult));
-    assertThat(result.getDownloads(), hasSize(1));
+    assertThat(service.getTicketDownloads(result, null, null), hasSize(1));
     service.deleteTicketsForSharedObject(5L, "Attachment");
     result = service.getTicket(key);
     assertThat(result, is(nullValue()));
@@ -126,8 +139,8 @@ public class JpaSharingTicketServiceIT {
    */
   @Test
   public void testGetTicket() {
-    Ticket expResult = createExpectedTicketWithOneDownload();
-    Ticket result = service.getTicket(expResult.getToken());
+    Pair<Ticket, List<DownloadDetail>> expResult = createExpectedTicketWithOneDownload();
+    Ticket result = service.getTicket(expResult.getLeft().getToken());
     assertEquals(result, expResult);
   }
 
@@ -143,7 +156,7 @@ public class JpaSharingTicketServiceIT {
     assertThat(key, is(notNullValue()));
     ticket.setToken(key);
     Ticket result = service.getTicket(key);
-    assertEquals(result, ticket);
+    assertEquals(result, Pair.of(ticket, emptyList()));
   }
 
   /**
@@ -152,15 +165,15 @@ public class JpaSharingTicketServiceIT {
   @Test
   @Transactional
   public void testAddDownload() {
-    Ticket expResult = createExpectedTicketWithOneDownload();
-    Ticket result = service.getTicket(expResult.getToken());
+    Pair<Ticket, List<DownloadDetail>> expResult = createExpectedTicketWithOneDownload();
+    Ticket result = service.getTicket(expResult.getLeft().getToken());
     assertEquals(result, expResult);
     Date now = new Date();
     DownloadDetail download = new DownloadDetail(result, now, "192.168.0.1");
     service.addDownload(download);
-    expResult.setDownloads(CollectionUtil.asList(expResult.getDownloads().get(0), download));
-    expResult.addDownload();
-    result = service.getTicket(expResult.getToken());
+    expResult.getRight().add(download);
+    expResult.getLeft().addDownload();
+    result = service.getTicket(expResult.getLeft().getToken());
     assertEquals(result, expResult);
   }
 
@@ -186,7 +199,8 @@ public class JpaSharingTicketServiceIT {
       return ticketToUpdate;
     });
     Ticket expResult = service.getTicket(key);
-    assertEquals(result, expResult);
+    List<DownloadDetail> expResultDownloads = service.getTicketDownloads(expResult, null, null);
+    assertEquals(result, Pair.of(expResult, expResultDownloads));
   }
 
   /**
@@ -209,19 +223,21 @@ public class JpaSharingTicketServiceIT {
     });
   }
 
-  private Ticket createExpectedTicketWithOneDownload() {
+  private Pair<Ticket, List<DownloadDetail>> createExpectedTicketWithOneDownload() {
     String key = "965e985d-c711-47b3-a467-62779505965e";
     Ticket existingTicket =
         new SimpleFileTicket(key, 5, "kmelia2", creator, new Date(1330971989028L), null, -1);
     existingTicket.setNbAccess(1);
     DownloadDetail downloadDetail =
         new DownloadDetail(existingTicket, new Date(1330972518889L), "127.0.0.1");
-    existingTicket.setDownloads(Collections.singletonList(downloadDetail));
     downloadDetail.setId(1L);
-    return existingTicket;
+    return Pair.of(existingTicket, CollectionUtil.asList(downloadDetail));
   }
 
-  private void assertEquals(Ticket ticket, Ticket expected) {
+  private void assertEquals(Ticket ticket, Pair<Ticket, List<DownloadDetail>> expectedTicketDownload) {
+    Ticket expected = expectedTicketDownload.getLeft();
+    List<DownloadDetail> expectedDownloads = expectedTicketDownload.getRight();
+    List<DownloadDetail> ticketDownloads = service.getTicketDownloads(ticket, null, null);
     try {
       assertThat(ticket, not(sameInstance(expected)));
       assertThat(ticket, is(expected));
@@ -239,9 +255,9 @@ public class JpaSharingTicketServiceIT {
       assertThat(ticket.getNbAccessMax(), is(expected.getNbAccessMax()));
       assertThat(ticket.getNbAccess(), is(expected.getNbAccess()));
       assertThat(ticket.getToken(), is(expected.getToken()));
-      assertThat(ticket.getDownloads().size(), is(expected.getDownloads().size()));
-      Iterator<DownloadDetail> expectedIt = expected.getDownloads().iterator();
-      for (DownloadDetail downloadDetail : ticket.getDownloads()) {
+      assertThat(ticketDownloads.size(), is(expectedDownloads.size()));
+      Iterator<DownloadDetail> expectedIt = expectedDownloads.iterator();
+      for (DownloadDetail downloadDetail : ticketDownloads) {
         DownloadDetail expectedDownloadDetail = expectedIt.next();
         assertThat(downloadDetail.getId(), is(expectedDownloadDetail.getId()));
         assertThat(downloadDetail.getDownloadDate(), is(expectedDownloadDetail.getDownloadDate()));

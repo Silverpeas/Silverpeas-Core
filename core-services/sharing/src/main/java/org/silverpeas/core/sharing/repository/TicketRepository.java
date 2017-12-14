@@ -24,8 +24,11 @@
 package org.silverpeas.core.sharing.repository;
 
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.datasource.repository.WithSaveAndFlush;
 import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.model.Ticket.QUERY_ORDER_BY;
+import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.List;
 
@@ -37,7 +40,10 @@ public interface TicketRepository extends EntityRepository<Ticket>, WithSaveAndF
 
   List<Ticket> findAllTicketForSharedObjectId(Long sharedObjectId, String ticketType);
 
-  List<Ticket> findAllReservationsForUser(String userId);
+  long countAllReservationsForUser(String userId);
+
+  SilverpeasList<Ticket> findAllReservationsForUser(String userId,
+      final PaginationCriterion paginationCriterion, final QUERY_ORDER_BY orderBy);
 
   void deleteAllTicketsForComponentInstance(String instanceId);
 }

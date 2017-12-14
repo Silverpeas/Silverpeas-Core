@@ -21,44 +21,52 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.webapi.admin.tools;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.look.LookHelper;
+package org.silverpeas.core.persistence;
 
-import static org.silverpeas.core.sharing.services.SharingServiceProvider.getSharingTicketService;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.asList;
 
 /**
- * @author Yohann Chastagnier
+ * Centralizing the order by processing.
+ * @author silveryocha
  */
-public class FileSharingTool extends AbstractTool {
+public class OrderBy {
 
-  private Boolean isVisible = null;
+  private final String propertyName;
+  private final boolean asc;
 
-  public FileSharingTool(final String language, final LookHelper lookHelper) {
-    super(language, lookHelper, "fileSharingVisible", "sharingTicket", "FileSharing",
-        URLUtil.CMP_FILESHARING);
+  public static OrderBy asc(final String propertyName) {
+    return new OrderBy(propertyName, true);
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.admin.tools.AbstractTool#isVisible()
-   */
-  @Override
-  public boolean isVisible() {
-    if (isVisible == null) {
-      isVisible = super.isVisible();
-      if (isVisible) {
-        try {
-          isVisible = getSharingTicketService().countTicketsByUser(getLookHelper().getUserId()) > 0;
-        } catch (final Exception e) {
-          SilverLogger.getLogger(this).error(e);
-          isVisible = null;
-          return false;
-        }
-      }
-    }
-    return isVisible;
+  public static OrderBy desc(final String propertyName) {
+    return new OrderBy(propertyName, false);
+  }
+
+  private OrderBy(final String propertyName, final boolean asc) {
+    this.propertyName = propertyName;
+    this.asc = asc;
+  }
+
+  public String getPropertyName() {
+    return propertyName;
+  }
+
+  public boolean isAsc() {
+    return asc;
+  }
+
+  public static void append(StringBuilder sb, OrderBy... orderBIES) {
+    append(sb, asList(orderBIES));
+  }
+
+  public static void append(StringBuilder sb, List<OrderBy> orderBIES) {
+    sb.append(" ORDER BY ");
+    sb.append(orderBIES.stream()
+        .map(o -> o.getPropertyName() + (o.isAsc() ? " asc" : " desc"))
+        .collect(Collectors.joining(", ")));
   }
 }

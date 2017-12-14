@@ -23,8 +23,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %><%--
+<%--
 
     Copyright (C) 2000 - 2017 Silverpeas
 
@@ -59,6 +58,11 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons"/>
 
+<c:set var="tickets" value="${requestScope.Tickets}" />
+<jsp:useBean id="tickets" type="org.silverpeas.core.util.SilverpeasList<org.silverpeas.core.sharing.model.Ticket>"/>
+<c:set var="ticketsPagination" value="${requestScope.TicketsPagination}" />
+<jsp:useBean id="ticketsPagination" type="org.silverpeas.core.admin.PaginationPage"/>
+
 <%@ include file="check.jsp" %>
 <html>
 <head>
@@ -87,72 +91,86 @@
   <view:browseBar path="${browseBar}"/>
   <view:window>
     <view:frame>
-      <view:arrayPane var="ticketList" routingAddress="ViewTickets" numberLinesPerPage="15">
-        <fmt:message key="GML.creationDate" var="creationLabel"/>
-        <view:arrayColumn title="${creationLabel}"/>
+      <div id="ticket-list">
+        <view:arrayPane var="ticketList" routingAddress="ViewTickets" numberLinesPerPage="${ticketsPagination.pageSize}">
+          <fmt:message key="GML.creationDate" var="creationLabel"/>
+          <view:arrayColumn title="${creationLabel}" sortable="true"/>
 
-        <fmt:message key="GML.nom" var="ticketName"/>
-        <view:arrayColumn title="${ticketName}"/>
+          <fmt:message key="GML.nom" var="ticketName"/>
+          <c:choose>
+            <c:when test="${tickets.originalListSize() < 200}">
+              <view:arrayColumn title="${ticketName}" compareOn="${t -> t.resource.name}"/>
+            </c:when>
+            <c:otherwise>
+              <view:arrayColumn title="${ticketName}" sortable="false"/>
+            </c:otherwise>
+          </c:choose>
 
-        <fmt:message key="sharing.ticket" var="sharingTicket"/>
-        <view:arrayColumn title="${sharingTicket}" sortable="false"/>
+          <fmt:message key="sharing.ticket" var="sharingTicket"/>
+          <view:arrayColumn title="${sharingTicket}" sortable="false"/>
 
-        <fmt:message key="sharing.endDate" var="endDateTicket"/>
-        <view:arrayColumn title="${endDateTicket}"/>
+          <fmt:message key="sharing.endDate" var="endDateTicket"/>
+          <view:arrayColumn title="${endDateTicket}" sortable="true"/>
 
-        <fmt:message key="sharing.nbAccess" var="nbAccessTicket"/>
-        <view:arrayColumn title="${nbAccessTicket}"/>
+          <fmt:message key="sharing.nbAccess" var="nbAccessTicket"/>
+          <view:arrayColumn title="${nbAccessTicket}" sortable="true"/>
 
-        <fmt:message key="sharing.operation" var="operationTicket"/>
-        <view:arrayColumn title="${operationTicket}" sortable="false"/>
-        <c:forEach items="${requestScope.Tickets}" var="ticket">
-          <c:set var="endDate" value=""/>
-          <c:set var="accessCount" value="${ticket.nbAccess}"/>
-          <c:set var="creationDate"><view:formatDate value="${ticket.creationDate}" language="${language}"/></c:set>
-          <view:arrayLine>
-            <view:arrayCellText text="${creationDate}" compareOn="${ticket.creationDate}"/>
-            <c:set var="lien" value="${ticket.resource.URL}"/>
-            <view:arrayCellText text="<a href=\'${lien}\' class=\'${ticket.sharedObjectType}\' target=\'_blank\'>${ticket.resource.name}</a>" />
-            <%
-              IconPane iconPane = gef.getIconPane();
-              Icon keyIcon = iconPane.addIcon();
-              keyIcon.setProperties(resource.getIcon("sharing.ticket"),
-                  resource.getString("sharing.ticket"), "javascript:go('" + ((Ticket) pageContext.
-                  getAttribute("ticket")).getUrl(request) + "');");
-              pageContext.setAttribute("ticketIcon", keyIcon.print());
-            %>
-            <view:arrayCellText text="${ticketIcon}"/>
-            <c:if test="${ticket.endDate ne null}">
-              <c:set var="endDate"><view:formatDate value="${ticket.endDate}" language="${language}"/></c:set>
-            </c:if>
-            <c:set var="accessCount" value="n/a"/>
-            <c:if test="${ticket.sharedObjectType eq 'Attachment' && ticket.nbAccessMax gt 0}">
-              <c:set var="accessCount" value="${ticket.nbAccess} / ${ticket.nbAccessMax}"/>
-            </c:if>
-            <c:if test="${ticket.sharedObjectType eq 'Attachment' && ticket.nbAccessMax le 0}">
-              <fmt:message key="sharing.access.unlimited" var="sharingUnlimited"></fmt:message>
-              <c:set var="accessCount" value="${ticket.nbAccess} / ${sharingUnlimited}"/>
-            </c:if>
-            <view:arrayCellText text="${endDate}" compareOn="${ticket.endDate}"/>
-            <view:arrayCellText text="${accessCount}" compareOn="${ticket.nbAccess}"/>
-            <%
-              iconPane = gef.getIconPane();
-              Icon updateIcon = iconPane.addIcon();
-              Icon deleteIcon = iconPane.addIcon();
-              String token = ((Ticket)pageContext.getAttribute("ticket")).getToken();
-              updateIcon.setProperties(resource.getIcon("sharing.update"),
-                  resource.getString("sharing.updateTicket"),
-                  "javaScript:onClick=editTicket('" + token + "')");
-              deleteIcon.setProperties(resource.getIcon("sharing.delete"),
-                  resource.getString("sharing.deleteTicket"),
-                  "javaScript:onClick=deleteTicket('" + token + "')");
-              pageContext.setAttribute("ticketUpdateDeleteIcons", updateIcon.print() + "&nbsp;&nbsp;&nbsp;&nbsp;" + deleteIcon.print());
-            %>
-            <view:arrayCellText text="${ticketUpdateDeleteIcons}" />
-          </view:arrayLine>
-        </c:forEach>
-      </view:arrayPane>
-
+          <fmt:message key="sharing.operation" var="operationTicket"/>
+          <view:arrayColumn title="${operationTicket}" sortable="false"/>
+          <view:arrayLines items="${tickets}" var="ticket">
+            <c:set var="endDate" value=""/>
+            <c:set var="accessCount" value="${ticket.nbAccess}"/>
+            <c:set var="creationDate"><view:formatDate value="${ticket.creationDate}" language="${language}"/></c:set>
+            <view:arrayLine>
+              <view:arrayCellText text="${creationDate}"/>
+              <c:set var="lien" value="${ticket.resource.URL}"/>
+              <view:arrayCellText text="<a href=\'${lien}\' class=\'${ticket.sharedObjectType}\' target=\'_blank\'>${ticket.resource.name}</a>"/>
+              <%
+                IconPane iconPane = gef.getIconPane();
+                Icon keyIcon = iconPane.addIcon();
+                keyIcon.setProperties(resource.getIcon("sharing.ticket"),
+                    resource.getString("sharing.ticket"), "javascript:go('" + ((Ticket) pageContext.
+                        getAttribute("ticket")).getUrl(request) + "');");
+                pageContext.setAttribute("ticketIcon", keyIcon.print());
+              %>
+              <view:arrayCellText text="${ticketIcon}"/>
+              <c:if test="${ticket.endDate ne null}">
+                <c:set var="endDate"><view:formatDate value="${ticket.endDate}" language="${language}"/></c:set>
+              </c:if>
+              <c:set var="accessCount" value="n/a"/>
+              <c:if test="${ticket.sharedObjectType eq 'Attachment' && ticket.nbAccessMax gt 0}">
+                <c:set var="accessCount" value="${ticket.nbAccess} / ${ticket.nbAccessMax}"/>
+              </c:if>
+              <c:if test="${ticket.sharedObjectType eq 'Attachment' && ticket.nbAccessMax le 0}">
+                <fmt:message key="sharing.access.unlimited" var="sharingUnlimited"></fmt:message>
+                <c:set var="accessCount" value="${ticket.nbAccess} / ${sharingUnlimited}"/>
+              </c:if>
+              <view:arrayCellText text="${endDate}" />
+              <view:arrayCellText text="${accessCount}" />
+              <%
+                iconPane = gef.getIconPane();
+                Icon updateIcon = iconPane.addIcon();
+                Icon deleteIcon = iconPane.addIcon();
+                String token = ((Ticket) pageContext.getAttribute("ticket")).getToken();
+                updateIcon.setProperties(resource.getIcon("sharing.update"),
+                    resource.getString("sharing.updateTicket"),
+                    "javaScript:onClick=editTicket('" + token + "')");
+                deleteIcon.setProperties(resource.getIcon("sharing.delete"),
+                    resource.getString("sharing.deleteTicket"),
+                    "javaScript:onClick=deleteTicket('" + token + "')");
+                pageContext.setAttribute("ticketUpdateDeleteIcons",
+                    updateIcon.print() + "&nbsp;&nbsp;&nbsp;&nbsp;" + deleteIcon.print());
+              %>
+              <view:arrayCellText text="${ticketUpdateDeleteIcons}"/>
+            </view:arrayLine>
+          </view:arrayLines>
+        </view:arrayPane>
+        <script type="text/javascript">
+          whenSilverpeasReady(function() {
+            sp.arrayPane.ajaxControls('#ticket-list');
+          });
+        </script>
+      </div>
     </view:frame>
   </view:window>
 </form>

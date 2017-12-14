@@ -296,7 +296,7 @@ public class PersonalSpaceJSONServlet extends SilverpeasAuthenticatedHttpServlet
       SharingTicketService sharingTicket =
           SharingServiceProvider.getSharingTicketService();
       try {
-        if (!sharingTicket.getTicketsByUser(helper.getUserId()).isEmpty()) {
+        if (sharingTicket.countTicketsByUser(helper.getUserId()) > 0) {
           addTool(jsonArray, helper, "fileSharingVisible", "sharingTicket",
               message.getString("FileSharing"), URLUtil.getURL(URLUtil.CMP_FILESHARING)
               + "Main");

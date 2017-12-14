@@ -51,7 +51,7 @@ public class DownloadDetailJpaRepositoryIT {
       new DbUnitLoadingRule("create-database.sql", "sharing_dataset.xml");
 
   @Before
-  public void generalSetUp() throws Exception {
+  public void generalSetUp() {
     service = ServiceProvider.getService(DownloadDetailRepository.class);
   }
 
@@ -64,13 +64,13 @@ public class DownloadDetailJpaRepositoryIT {
   }
 
   @Test
-  public void testGetAll() throws Exception {
+  public void testGetAll() {
     List<DownloadDetail> downloads = service.getAll();
     assertThat(2, is(downloads.size()));
   }
 
   @Test
-  public void testGetById() throws Exception {
+  public void testGetById() {
     DownloadDetail download = service.getById("1");
     assertThat(download, is(notNullValue()));
     assertThat(download.getKeyFile(), is("965e985d-c711-47b3-a467-62779505965e"));
