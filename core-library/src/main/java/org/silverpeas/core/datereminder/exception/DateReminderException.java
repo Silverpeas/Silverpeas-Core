@@ -23,21 +23,17 @@
  */
 package org.silverpeas.core.datereminder.exception;
 
+import org.silverpeas.core.SilverpeasException;
+
 /**
  * The exception for all normal errors occuring with the DateReminder API and for which the client requires
  * to perform a dedicated action.
  *
  * @author Cécile Bonin
  */
-public class DateReminderException extends Exception {
+public class DateReminderException extends SilverpeasException {
 
   private static final long serialVersionUID = 815728200596150161L;
-
-  /**
-   * Creates a new instance of <code>DateReminderException</code> without detail message.
-   */
-  public DateReminderException() {
-  }
 
   /**
    * Constructs an instance of <code>DateReminderException</code> with the specified detail message.

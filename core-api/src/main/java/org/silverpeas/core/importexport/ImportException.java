@@ -23,11 +23,13 @@
  */
 package org.silverpeas.core.importexport;
 
+import org.silverpeas.core.SilverpeasException;
+
 /**
  * Exception thrown when the import of a Silverpeas resource failed. It is a business exception that
  * occurs when a business operation invoked by a user fails.
  */
-public class ImportException extends Exception {
+public class ImportException extends SilverpeasException {
 
   private static final long serialVersionUID = 7791895284880044020L;
 

@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.io.file;
 
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -71,7 +71,7 @@ public class ResizedImageCacheCleaner extends Job implements Initialization {
   }
 
   @Override
-  public void execute(final JobExecutionContext context) throws Exception {
+  public void execute(final JobExecutionContext context) {
     List<String> originalImagePaths = ImageCache.getAllImageEntries();
     for (String originalImagePath: originalImagePaths) {
       File originalImage = new File(originalImagePath);

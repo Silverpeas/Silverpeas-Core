@@ -23,8 +23,8 @@
  */
 /**
  * Provides job trigger definitions.
- * A trigger is a definition of the scheduling in time of a job execution. It provides a simplified
- * way to extend and to define new way to trigger a job execution without changing the scheduler's
- * interface.
+ * A trigger defines the rules to trigger in the time the execution execution of a job. It
+ * provides a simplified way to extend and to define new way to trigger a job execution without
+ * changing the scheduler's interface.
  */
 package org.silverpeas.core.scheduler.trigger;

@@ -33,12 +33,6 @@ public class DateReminderValidationException extends DateReminderException {
   private static final long serialVersionUID = -6824029730156116372L;
 
   /**
-   * Creates a new instance of <code>DateReminderValidationException</code> without detail message.
-   */
-  public DateReminderValidationException() {
-  }
-
-  /**
    * Constructs an instance of <code>DateReminderValidationException</code> with the specified detail
    * message.
    *

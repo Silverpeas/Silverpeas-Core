@@ -50,7 +50,7 @@ public interface ProcessManagement {
    * @param process
    * @param processExecutionContext
    */
-  public abstract <C extends ProcessExecutionContext> void execute(SilverpeasProcess<C> process,
+  <C extends ProcessExecutionContext> void execute(SilverpeasProcess<C> process,
       C processExecutionContext) throws Exception;
 
   /**
@@ -58,6 +58,6 @@ public interface ProcessManagement {
    * @param processes
    * @param processExecutionContext
    */
-  public abstract <C extends ProcessExecutionContext> void execute(ProcessList<C> processes,
+  <C extends ProcessExecutionContext> void execute(ProcessList<C> processes,
       C processExecutionContext) throws Exception;
 }

@@ -124,7 +124,7 @@ public class SilverStatisticsManager {
   private void initSchedulerStatistics(String aCronString, String jobName,
       Consumer<Date> jobOperation) throws SilverpeasException {
     try {
-      Scheduler scheduler = SchedulerProvider.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(jobName);
 
       JobTrigger trigger = JobTrigger.triggerAt(aCronString);
@@ -350,7 +350,7 @@ public class SilverStatisticsManager {
       return new Job(jobName) {
 
         @Override
-        public void execute(JobExecutionContext context) throws Exception {
+        public void execute(JobExecutionContext context) {
           Date date = context.getFireTime();
           jobOperation.accept(date);
         }

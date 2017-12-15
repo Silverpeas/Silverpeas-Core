@@ -165,7 +165,7 @@ public class ActifyDocumentProcessSchedulerIT {
     ActifyDocumentProcessScheduler actifyDocumentProcessor = new ActifyDocumentProcessScheduler();
     actifyDocumentProcessor.init();
 
-    Scheduler scheduler = SchedulerProvider.getScheduler();
+    Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
     Job importer = actifyDocumentProcessor.getActifyDocumentImporter();
     Job cleaner = actifyDocumentProcessor.getActifyDocumentCleaner();
     assertThat(scheduler.isJobScheduled(importer.getName()), is(true));

@@ -23,10 +23,11 @@
  */
 package org.silverpeas.core.notification.user.delayed.scheduler;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.notification.user.delayed.delegate.DelayedNotificationDelegate;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 
@@ -41,8 +42,13 @@ public class DelayedNotificationListener implements SchedulerEventListener {
    * @see SchedulerEventListener#triggerFired(SchedulerEvent)
    */
   @Override
-  public void triggerFired(final SchedulerEvent anEvent) throws Exception {
-    DelayedNotificationDelegate.executeDelayedNotificationsSending(anEvent.getJobExecutionContext().getFireTime());
+  public void triggerFired(final SchedulerEvent anEvent) throws SilverpeasException {
+    try {
+      DelayedNotificationDelegate.executeDelayedNotificationsSending(
+          anEvent.getJobExecutionContext().getFireTime());
+    } catch (Exception e) {
+      throw new SilverpeasException(e);
+    }
   }
 
   /*
@@ -51,6 +57,7 @@ public class DelayedNotificationListener implements SchedulerEventListener {
    */
   @Override
   public void jobSucceeded(final SchedulerEvent anEvent) {
+    // nothing to do
   }
 
   /*
@@ -59,7 +66,9 @@ public class DelayedNotificationListener implements SchedulerEventListener {
    */
   @Override
   public void jobFailed(final SchedulerEvent anEvent) {
-    SilverTrace.error("notification", "DelayedNotificationListener.handleSchedulerEvent", "The job '" +
-        anEvent.getJobExecutionContext().getJobName() + "' was not successfull", anEvent.getJobThrowable());
+    SilverLogger.getLogger(this)
+        .error(
+            "The job '" + anEvent.getJobExecutionContext().getJobName() + "' was not successfull",
+            anEvent.getJobThrowable());
   }
 }

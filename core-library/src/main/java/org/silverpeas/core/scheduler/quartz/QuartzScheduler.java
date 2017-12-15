@@ -23,93 +23,121 @@
  */
 package org.silverpeas.core.scheduler.quartz;
 
+import org.quartz.JobDataMap;
+import org.quartz.JobDetail;
+import org.quartz.JobKey;
+import org.quartz.Trigger;
+import org.quartz.TriggerKey;
+import org.quartz.impl.StdSchedulerFactory;
+import org.silverpeas.core.scheduler.EmptyJob;
 import org.silverpeas.core.scheduler.Job;
-import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.ScheduledJob;
 import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.quartz.JobBuilder;
-import org.quartz.JobDataMap;
-import org.quartz.JobDetail;
-import org.quartz.JobExecutionException;
-import org.quartz.JobKey;
-import org.quartz.Trigger;
-import org.quartz.impl.StdSchedulerFactory;
+import org.silverpeas.core.util.Process;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.enterprise.inject.Default;
+import java.util.Optional;
 
 import static org.silverpeas.core.util.ArgumentAssertion.assertDefined;
 import static org.silverpeas.core.util.ArgumentAssertion.assertNotNull;
 
 /**
- * A scheduler implementation using Quartz as scheduling backend. It wraps a Quartz scheduler and
- * delegates to it all of the call after transforming the parameters into their Quartz
- * counterparts.
+ * An abstract scheduler implementation using Quartz as scheduling backend. It wraps a Quartz
+ * scheduler and delegates to it all of the calls after transforming the parameters into their
+ * Quartz counterparts. The way the jobs are stored depends on the concrete type of this abstract
+ * class. It defines the job scheduling mechanism by using the Quartz API.
  */
-@Default
-public class QuartzScheduler implements Scheduler {
+public abstract class QuartzScheduler implements Scheduler {
 
   /**
-   * The key in the job data map that refers the scheduled job in the scheduler. The scheduled job
+   * The key in the job data map that refers to the job implementation in the scheduler. This job
    * is set in the data map in order to be retrieved at job execution. The actual job execution
-   * firing will be delegated by this scheduled job.
+   * firing will be delegated to this job once constructed.
    * @see JobDataMap
    */
-  private static final String SCHEDULED_JOB = "job";
+  protected static final String SCHEDULED_JOB = "job";
+  /**
+   * The key in the job data map that refers the event listener registered in the scheduler for a
+   * given job triggering. The listener is set in the data map in order to be retrieved at
+   * job execution.
+   * @see JobDataMap
+   */
+  protected static final String JOB_LISTENER = "listener";
+
   /**
    * The Quartz scheduler (the backend).
    */
-  private org.quartz.Scheduler backend;
+  private org.quartz.Scheduler quartz;
+
+  protected QuartzScheduler() {
+  }
 
   /**
-   * Constructs a new scheduler and bootstraps the Quartz scheduler backend.
-   * @throws SchedulerException if the unerlying Quartz scheduler setting up fails.
+   * Creates a Quartz scheduler from the specified Quartz properties file and starts it.
+   * @param quartzProperties the path of the Quartz properties file in the Silverpeas
+   * configuration repository.
+   * @throws QuartzSchedulerException if no Quartz scheduler cannot be instantiated or it cannot be
+   * started.
    */
-  protected QuartzScheduler() throws SchedulerException {
-    StdSchedulerFactory quartzSchedulerFactory = new StdSchedulerFactory();
+  protected final void setUpQuartzScheduler(final String quartzProperties) {
     try {
-      backend = quartzSchedulerFactory.getScheduler();
-      backend.start();
+      StdSchedulerFactory quartzSchedulerFactory = new StdSchedulerFactory();
+      if (StringUtil.isDefined(quartzProperties)) {
+        quartzSchedulerFactory.initialize(
+            ResourceLocator.getSettingsAsProperties(quartzProperties));
+      }
+      quartz = quartzSchedulerFactory.getScheduler();
+      if (!quartz.isStarted()) {
+        quartz.start();
+      }
     } catch (org.quartz.SchedulerException ex) {
       SilverLogger.getLogger(this).error("Quartz Scheduler failed to start!", ex);
-      throw new SchedulerException(ex.getMessage(), ex);
+      throw new QuartzSchedulerException(ex.getMessage(), ex);
     }
   }
+
+  /**
+   * Builds a Quartz {@link org.quartz.JobDetail} instance for the specified job by
+   * setting both the {@link Job} to execute and  the {@link SchedulerEventListener} to invoke.
+   * The {@link JobDetail} construction depends on the specific characteristic of the scheduler to
+   * use.
+   * @param job the job to schedule.
+   * @param listener the scheduler event listener to set with the job.
+   * @return a {@link JobDetail} object.
+   */
+  protected abstract JobDetail buildJobDetail(final Job job, final SchedulerEventListener listener);
+
+  /**
+   * Executes the specified task. The execution of the task is delegated to this method that
+   * can wraps the task execution within a peculiar execution context like a transaction for
+   * example for persistent jobs.
+   * @param schedulingTask the scheduling task to execute.
+   */
+  protected abstract void execute(final SchedulingTask schedulingTask)
+      throws org.quartz.SchedulerException;
 
   @Override
   public ScheduledJob scheduleJob(String jobName, JobTrigger trigger,
       SchedulerEventListener listener) throws SchedulerException {
     checkArguments(jobName, trigger, listener);
-    QuartzSchedulerJob job =
-        new QuartzSchedulerJob(jobName, trigger).withSchedulerEventListener(listener);
-    JobDetail jobDetail = JobBuilder.newJob(QuartzJob.class).withIdentity(jobName).build();
-    jobDetail.getJobDataMap().put(SCHEDULED_JOB, job);
-    try {
-      schedule(job, jobDetail);
-      return job;
-    } catch (Exception ex) {
-      SilverLogger.getLogger(this).error("The scheduling of the job ''{0}'' failed!",
-          new String[] {jobName}, ex);
-      throw new SchedulerException(ex.getMessage(), ex);
-    }
+    return scheduleJob(new EmptyJob(jobName), trigger, listener);
   }
 
   @Override
-  public ScheduledJob scheduleJob(Job theJob, JobTrigger trigger, SchedulerEventListener listener)
-      throws SchedulerException {
-    checkArguments(theJob, trigger);
-    QuartzSchedulerJob job =
-        new QuartzSchedulerJob(theJob, trigger).withSchedulerEventListener(listener);
-    JobDetail jobDetail = JobBuilder.newJob(QuartzJob.class).withIdentity(theJob.getName()).build();
-    jobDetail.getJobDataMap().put(SCHEDULED_JOB, job);
+  public ScheduledJob scheduleJob(Job theJob, JobTrigger jobTrigger,
+      SchedulerEventListener listener) throws SchedulerException {
+    checkArguments(theJob, jobTrigger);
+    Trigger quartzTrigger = QuartzTriggerBuilder.forJob(theJob.getName()).buildFrom(jobTrigger);
+    JobDetail jobDetail = buildJobDetail(theJob, listener);
     try {
-      schedule(job, jobDetail);
-      return job;
-    } catch (Exception ex) {
+      execute(() -> this.quartz.scheduleJob(jobDetail, quartzTrigger));
+      return new QuartzScheduledJob(quartzTrigger);
+    } catch (org.quartz.SchedulerException ex) {
       SilverLogger.getLogger(this).error("The scheduling of the job ''{0}'' failed!",
           new String[]{theJob.getName()}, ex);
       throw new SchedulerException(ex.getMessage(), ex);
@@ -125,7 +153,7 @@ public class QuartzScheduler implements Scheduler {
   public void unscheduleJob(String jobName) throws SchedulerException {
     checkJobName(jobName);
     try {
-      this.backend.deleteJob(new JobKey(jobName, org.quartz.Scheduler.DEFAULT_GROUP));
+      execute(() -> this.quartz.deleteJob(JobKey.jobKey(jobName)));
     } catch (org.quartz.SchedulerException ex) {
       SilverLogger.getLogger(this).error("The unscheduling of the job ''{0}'' failed!",
           new String[]{jobName}, ex);
@@ -137,37 +165,31 @@ public class QuartzScheduler implements Scheduler {
   public boolean isJobScheduled(String jobName) {
     checkJobName(jobName);
     try {
-      JobDetail jobDetail =
-          this.backend.getJobDetail(new JobKey(jobName, org.quartz.Scheduler.DEFAULT_GROUP));
+      JobDetail jobDetail = this.quartz.getJobDetail(JobKey.jobKey(jobName));
       return jobDetail != null;
     } catch (org.quartz.SchedulerException ex) {
       return false;
     }
   }
 
+  public Optional<ScheduledJob> getScheduledJob(final String jobName) {
+    checkJobName(jobName);
+    try {
+      Trigger trigger = this.quartz.getTrigger(TriggerKey.triggerKey(jobName));
+      return Optional.of(new QuartzScheduledJob(trigger));
+    } catch (org.quartz.SchedulerException e) {
+      return Optional.empty();
+    }
+  }
+
   @Override
   public void shutdown() throws SchedulerException {
     try {
-      this.backend.shutdown();
+      this.quartz.shutdown();
     } catch (org.quartz.SchedulerException ex) {
       SilverLogger.getLogger(this).error("The scheduler shutdown failed!", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
-  }
-
-  /**
-   * Schedules the specified job with the specified scheduling detail within the Quartz scheduler.
-   * @param job the job to schedule.
-   * @param jobDetail the detail about the scheduling of the job. It contains among others
-   * execution
-   * parameters.
-   * @throws SchedulerException if an error occurs while scheduling the specified job.
-   */
-  private void schedule(final QuartzSchedulerJob job, final JobDetail jobDetail)
-      throws org.quartz.SchedulerException {
-    Trigger quartzTrigger = QuartzTriggerBuilder.buildFrom(job);
-    this.backend.scheduleJob(jobDetail, quartzTrigger);
-    job.setNextExecutionTime(quartzTrigger.getNextFireTime());
   }
 
   /**
@@ -209,40 +231,9 @@ public class QuartzScheduler implements Scheduler {
     assertNotNull(trigger, "The job trigger shouldn't be null");
   }
 
-  /**
-   * A job as registered within the Quartz scheduler. This job performs the actual job execution
-   * flow, taking into account the exceptions handling, and the scheduler event firing.
-   */
-  public static class QuartzJob implements org.quartz.Job {
+  protected interface SchedulingTask<T> extends Process<T> {
 
     @Override
-    public void execute(org.quartz.JobExecutionContext jec) throws JobExecutionException {
-      JobDataMap data = jec.getJobDetail().getJobDataMap();
-      QuartzSchedulerJob job = (QuartzSchedulerJob) data.get(SCHEDULED_JOB);
-      SchedulerEventListener eventListener = job.getSchedulerEventListener();
-      job.setNextExecutionTime(jec.getNextFireTime());
-      JobExecutionContext context =
-          JobExecutionContext.createWith(job.getName(), jec.getFireTime());
-      if (eventListener == null) {
-        try {
-          job.execute(context);
-        } catch (Exception ex) {
-          SilverLogger.getLogger(this).error(ex.getMessage(), ex);
-        }
-      } else {
-        try {
-          eventListener.triggerFired(SchedulerEvent.triggerFired(context));
-          job.execute(context);
-          eventListener.jobSucceeded(SchedulerEvent.jobSucceeded(context));
-        } catch (Exception ex) {
-          try {
-            eventListener.jobFailed(SchedulerEvent.jobFailed(context, ex));
-          } catch (Exception e) {
-            SilverLogger.getLogger(this).error("Error while executing job {0}: {1}",
-                new String[] {job.getName(), e.getMessage()}, e);
-          }
-        }
-      }
-    }
+    T execute() throws org.quartz.SchedulerException;
   }
 }

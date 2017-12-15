@@ -102,8 +102,7 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
    */
   public Set<String> specificKeySet() {
     ResourceBundle bundle = getWrappedBundle();
-    Set<String> keys = bundle.keySet();
-    return keys;
+    return bundle.keySet();
   }
 
   /**
@@ -202,6 +201,7 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
         result = bundle.getObject(key);
       }
     } catch (MissingResourceException mrex) {
+      // nothing to do
     }
     if (result == null && generalBundle != NONE) {
       try {

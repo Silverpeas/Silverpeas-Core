@@ -706,6 +706,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains("org.silverpeas.core.scheduler")) {
       addMavenDependencies("org.quartz-scheduler:quartz");
       addPackages(true, "org.silverpeas.core.scheduler");
+      addAsResource("org/silverpeas/scheduler/settings/persistent-scheduler.properties");
     }
     return this;
   }

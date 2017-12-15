@@ -22,7 +22,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Provides an implementation of the Silverpeas Scheduling API with the Quartz Scheduling system as
- * backend.
+ * Provides an implementation of the Silverpeas Scheduling Engine API built atop the Quartz
+ * scheduling system.
  */
 package org.silverpeas.core.scheduler.quartz;

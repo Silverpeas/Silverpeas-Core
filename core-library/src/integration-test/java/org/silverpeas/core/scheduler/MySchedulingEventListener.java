@@ -23,12 +23,17 @@
  */
 package org.silverpeas.core.scheduler;
 
+import org.silverpeas.core.util.logging.SilverLogger;
+
+import javax.inject.Singleton;
+
 import static org.junit.Assert.*;
 
 /**
  * Handler of scheduling events for testing purpose.
  * It is a stub dedicated to tests.
  */
+@Singleton
 public class MySchedulingEventListener implements SchedulerEventListener {
 
   private boolean fired = false;
@@ -52,13 +57,14 @@ public class MySchedulingEventListener implements SchedulerEventListener {
     fired = false;
     succeeded = false;
     mustFail = false;
+    completed = false;
   }
 
   /**
    * Is a job fired?
    * @return true if an event about a job firing was recieved, false otherwise.
    */
-  public boolean isJobFired() {
+  public synchronized boolean isJobFired() {
     return fired;
   }
 
@@ -67,7 +73,7 @@ public class MySchedulingEventListener implements SchedulerEventListener {
    * @return true if the execution of a job was done correctly, false otherwise. If no job was
    * fired, returns by default false.
    */
-  public boolean isJobSucceeded() {
+  public synchronized boolean isJobSucceeded() {
     return succeeded;
   }
 
@@ -77,13 +83,14 @@ public class MySchedulingEventListener implements SchedulerEventListener {
    * @return true if the listener has finished to treat the different events triggered from the
    * scheduler.
    */
-  public boolean isCompleted() {
+  public synchronized boolean isCompleted() {
     return completed;
   }
 
   @Override
-  public void triggerFired(SchedulerEvent anEvent) {
+  public synchronized void triggerFired(SchedulerEvent anEvent) {
     try {
+      SilverLogger.getLogger(this).info("[EVENT LISTENER] trigger fired");
       assertSchedulerEvent(anEvent);
       if (mustFail) {
         throw new UnsupportedOperationException();
@@ -94,14 +101,16 @@ public class MySchedulingEventListener implements SchedulerEventListener {
   }
 
   @Override
-  public void jobSucceeded(SchedulerEvent anEvent) {
+  public synchronized void jobSucceeded(SchedulerEvent anEvent) {
+    SilverLogger.getLogger(this).info("[EVENT LISTENER] job succeeded");
     assertSchedulerEvent(anEvent);
     succeeded = true;
     completed = true;
   }
 
   @Override
-  public void jobFailed(SchedulerEvent anEvent) {
+  public synchronized void jobFailed(SchedulerEvent anEvent) {
+    SilverLogger.getLogger(this).info("[EVENT LISTENER] job failed");
     assertSchedulerEvent(anEvent);
     assertNotNull(anEvent.getJobThrowable());
     succeeded = false;

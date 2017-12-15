@@ -44,7 +44,7 @@ public class SynchroGroupScheduler implements SchedulerEventListener {
     try {
       this.synchronizedGroupIds = synchronizedGroupIds;
 
-      Scheduler scheduler = SchedulerProvider.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(ADMINSYNCHROGROUP_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(ADMINSYNCHROGROUP_JOB_NAME, trigger, this);

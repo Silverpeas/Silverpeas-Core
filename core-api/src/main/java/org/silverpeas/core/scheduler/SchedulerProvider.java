@@ -25,6 +25,8 @@ package org.silverpeas.core.scheduler;
 
 import org.silverpeas.core.util.ServiceProvider;
 
+import javax.enterprise.util.AnnotationLiteral;
+
 /**
  * The factory of Scheduler objects. The <code>SchedulerFactory</code> class wraps the actual
  * scheduling backend. It delivers SchedulerFactory instances that are built upon this backend, so
@@ -38,11 +40,36 @@ public class SchedulerProvider {
    */
   public static final String MODULE_NAME = "scheduler";
 
+  private SchedulerProvider() {
+
+  }
+
   /**
-   * Gets a scheduler from the underlying scheduling backend.
+   * Gets a volatile scheduler from the underlying scheduling backend. A volatile schedule is a
+   * scheduler that stores all the scheduled jobs in memory meaning they will be lost at each
+   * runtime restart. Such jobs requires then to be scheduled again. Such scheduler is useful for
+   * occasional jobs.
    * @return an instance of the actual scheduler implementation.
    */
-  public static Scheduler getScheduler() {
+  public static Scheduler getVolatileScheduler() {
     return ServiceProvider.getService(Scheduler.class);
+  }
+
+  /**
+   * Gets a persistent scheduler from the underlying scheduling backend. A persistent scheduler is
+   * a scheduler that stores all the scheduled jobs and triggers into a persistence context so
+   * that they can be retrieved later between different runtime bootstrapping. Such a scheduler is
+   * more weighty than the volatile one and requires to be used with case and mainly for very
+   * short-time jobs. Warning, in order to
+   * be persisted a {@link Job} or a {@link SchedulerEventListener} requires to be stateless and
+   * not anonymous; indeed, only their class name is serialized so that they can be constructed
+   * at each job
+   * triggering meaning that any change in their execution logic will be then taken into account.
+   * @return an instance of the actual implementation of a persistent scheduler.
+   */
+  public static Scheduler getPersistentScheduler() {
+    return ServiceProvider.getService(Scheduler.class,
+        new AnnotationLiteral<PersistentScheduling>() {
+        });
   }
 }

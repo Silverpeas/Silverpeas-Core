@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.calendar;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.importexport.ImportDescriptor;
 import org.silverpeas.core.importexport.ImportException;
@@ -52,6 +53,7 @@ import java.time.Duration;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.MissingResourceException;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -100,11 +102,11 @@ public class ICalendarEventSynchronization implements Initialization {
       final SettingBundle settings = ResourceLocator.getSettingBundle(CALENDAR_SETTINGS);
       final String cron = settings.getString("calendar.synchronization.cron");
 
-      Scheduler scheduler = SchedulerProvider.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(getClass().getSimpleName());
       scheduler.scheduleJob(new Job(getClass().getSimpleName()) {
         @Override
-        public void execute(final JobExecutionContext context) throws Exception {
+        public void execute(final JobExecutionContext context) throws SilverpeasException {
           synchronizeAll();
         }
       }, CronJobTrigger.triggerAt(cron));
@@ -115,7 +117,7 @@ public class ICalendarEventSynchronization implements Initialization {
 
   @Override
   public void release() throws Exception {
-    Scheduler scheduler = SchedulerProvider.getScheduler();
+    Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
     scheduler.unscheduleJob(getClass().getSimpleName());
   }
 
@@ -228,8 +230,17 @@ public class ICalendarEventSynchronization implements Initialization {
   }
 
   private String generateReport(final Calendar calendar, final ICalendarImportResult result) {
-    Duration duration =
-        Duration.between(calendar.getLastSynchronizationDate().get(), OffsetDateTime.now());
+    String duration = "N/A";
+    String synchroDate = "N/A";
+    Optional<OffsetDateTime> lastSynchroDate = calendar.getLastSynchronizationDate();
+    if (lastSynchroDate.isPresent()) {
+      OffsetDateTime dateTime = lastSynchroDate.get();
+      synchroDate = dateTime.toString();
+      duration = String.valueOf(
+          Duration.between(dateTime, OffsetDateTime.now())
+              .getSeconds());
+    }
+
     return new StringBuilder("Report of the synchronization of calendar ").append(calendar.getId())
         .append(" ('")
         .append(calendar.getTitle())
@@ -241,10 +252,10 @@ public class ICalendarEventSynchronization implements Initialization {
         .append("')")
         .append("\n")
         .append("Synchronization date: ")
-        .append(calendar.getLastSynchronizationDate().get())
+        .append(synchroDate)
         .append("\n")
         .append("Synchronization duration: ")
-        .append(duration.getSeconds())
+        .append(duration)
         .append(" seconds")
         .append("\n")
         .append("Number of events added: ")

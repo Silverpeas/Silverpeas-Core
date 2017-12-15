@@ -34,6 +34,7 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 
@@ -146,7 +147,7 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
    * otherwise.
    */
   public boolean isScheduled() {
-    return SchedulerProvider.getScheduler()
+    return scheduler()
         .isJobScheduled(SCHEDULED_JOB_NAME.format(new Object[]{getId()}));
   }
 
@@ -161,11 +162,11 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
     assert dateTime != null;
     return Transaction.getTransaction().perform(() -> {
       if (isPersisted() && isScheduled()) {
-        SchedulerProvider.getScheduler().unscheduleJob(getJobName());
+        scheduler().unscheduleJob(getJobName());
       }
       Reminder me = ReminderRepository.get().save(this);
       JobTrigger trigger = JobTrigger.triggerAt(dateTime);
-      SchedulerProvider.getScheduler().scheduleJob(getJobName(), trigger, ReminderProcess.get());
+      scheduler().scheduleJob(getJobName(), trigger, ReminderProcess.get());
       return (T) me;
     });
   }
@@ -199,6 +200,10 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
 
   private String getJobName() {
     return SCHEDULED_JOB_NAME.format(new Object[]{getId()});
+  }
+  
+  private Scheduler scheduler() {
+    return SchedulerProvider.getPersistentScheduler();
   }
 
   /**

@@ -23,8 +23,6 @@
  */
 package org.silverpeas.core.scheduler;
 
-import org.silverpeas.core.scheduler.trigger.JobTrigger;
-
 import java.util.Date;
 
 /**
@@ -47,31 +45,4 @@ public interface ScheduledJob {
    */
   Date getNextExecutionTime();
 
-  /**
-   * Gets the next time in milliseconds at which the execution of this job will be fired. The next
-   * execution time depends upon the trigger with which it is registered in the scheduler.
-   * @return the next time in milliseconds at which this job should be executed.
-   */
-  long getNexExecutionTimeInMillis();
-
-  /**
-   * Gets the trigger responsible of firing the execution of this job.
-   * @return the trigger of this job.
-   */
-  JobTrigger getTrigger();
-
-  /**
-   * Gets the listener of the scheduler's events mapped with the state of this job execution.
-   * @return a scheduler's events listener registered with this job or null if no schedulers were
-   * defined with the job.
-   */
-  SchedulerEventListener getSchedulerEventListener();
-
-  /**
-   * Executes the job with the specified execution context. The context carries the information that
-   * can be required by the job to fulfill its execution, like the job parameters.
-   * @param context the context under which this job is executed.
-   * @throws Exception if an error occurs during the job execution.
-   */
-  void execute(final JobExecutionContext context) throws Exception;
 }

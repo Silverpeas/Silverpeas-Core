@@ -23,14 +23,33 @@
  */
 package org.silverpeas.core.scheduler;
 
+import org.silverpeas.core.SilverpeasException;
+
+import java.io.Serializable;
+
 /**
  * A listener of events generating within the scheduling system and about scheduled jobs. All
  * objects that need to be informed about the state of a job has to implement this interface and to
- * be registered in a scheduler with the job to monitor. So, they will recieve events for each job
+ * be registered in a scheduler with the job to monitor. So, they will receive events for each job
  * triggering and for each job termination (according to the status of this termination: an
  * abnormally termination or successful termination).
+ * <p>
+ * The {@link SchedulerEventListener} is serializable to be able to be stored into a persistence
+ * context. Only stateless and non-anonymous listeners can be serialized correctly as only their
+ * class name is serialized. Indeed, the listener is then constructed each time it is being
+ * invoked so that any change in its execution logic will be taken into account. A persistent
+ * listener can be managed by an underlying IoC container. When fetching from the persistence
+ * context, if such a listener is managed by the
+ * {@link org.silverpeas.core.util.ServiceProvider}, then this managed listener will be used;
+ * otherwise it is constructed.
+ * </p>
+ * <p>
+ * Any listener registered with a job scheduled into a volatile scheduler isn't constrain by the
+ * same limitations that a listener registered with a job scheduled in a persistent scheduler: it
+ * can be a stateful or an anonymous job.
+ * </p>
  */
-public interface SchedulerEventListener {
+public interface SchedulerEventListener extends Serializable {
 
   /**
    * Invoked when a job trigger fires the execution of a job. The call of this method occurs before
@@ -39,9 +58,9 @@ public interface SchedulerEventListener {
    * listener. The processing of this event can be, for example for preparing the resources before
    * the job execution or performing the execution of the job itself (delegation).
    * @param anEvent the event coming from the trigger firing.
-   * @throws java.lang.Exception if the process of this event failed.
+   * @throws SilverpeasException if the process of this event failed.
    */
-  void triggerFired(final SchedulerEvent anEvent) throws Exception;
+  void triggerFired(final SchedulerEvent anEvent) throws SilverpeasException;
 
   /**
    * Invoked when the execution of a job has been completed correctly. The job execution is

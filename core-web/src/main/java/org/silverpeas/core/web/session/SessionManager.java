@@ -308,29 +308,35 @@ public class SessionManager implements SessionManagement {
       String key = sessionUser.getLogin() + sessionUser.getDomainId();
       // keep users with distinct login and domainId
       if (!distinctConnectedUsersList.containsKey(key) && !sessionUser.isAccessGuest()) {
-        if (DomainProperties.areDomainsVisibleToAll()) {
-          // all users are visible
-          distinctConnectedUsersList.put(key, si);
-        } else if (DomainProperties.areDomainsNonVisibleToOthers()) {
-          // only users of user's domain are visible
-          if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
-            distinctConnectedUsersList.put(key, si);
-          }
-        } else if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
-          // default domain users can see all users
-          // users of other domains can see only users of their domain
-          if ("0".equals(user.getDomainId())) {
-            distinctConnectedUsersList.put(key, si);
-          } else {
-            if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
-              distinctConnectedUsersList.put(key, si);
-            }
-          }
-        }
+        addInConnectedUsersList(user, distinctConnectedUsersList, si, sessionUser, key);
       }
     }
 
     return distinctConnectedUsersList.values();
+  }
+
+  private void addInConnectedUsersList(final User user,
+      final Map<String, SessionInfo> distinctConnectedUsersList, final SessionInfo si,
+      final UserDetail sessionUser, final String key) {
+    if (DomainProperties.areDomainsVisibleToAll()) {
+      // all users are visible
+      distinctConnectedUsersList.put(key, si);
+    } else if (DomainProperties.areDomainsNonVisibleToOthers()) {
+      // only users of user's domain are visible
+      if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
+        distinctConnectedUsersList.put(key, si);
+      }
+    } else if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
+      // default domain users can see all users
+      // users of other domains can see only users of their domain
+      if ("0".equals(user.getDomainId())) {
+        distinctConnectedUsersList.put(key, si);
+      } else {
+        if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
+          distinctConnectedUsersList.put(key, si);
+        }
+      }
+    }
   }
 
   /**
@@ -488,7 +494,7 @@ public class SessionManager implements SessionManagement {
   private Job manageSession() {
     return new Job(SESSION_MANAGER_JOB_NAME) {
       @Override
-      public void execute(JobExecutionContext context) throws Exception {
+      public void execute(JobExecutionContext context) {
         Date date = context.getFireTime();
         doSessionManagement(date);
       }

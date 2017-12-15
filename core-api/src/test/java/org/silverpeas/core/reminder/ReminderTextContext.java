@@ -32,12 +32,14 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.persistence.datasource.model.jpa.PersistenceIdentifierSetter;
+import org.silverpeas.core.scheduler.PersistentScheduling;
 import org.silverpeas.core.scheduler.ScheduledJob;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 
+import javax.enterprise.util.AnnotationLiteral;
 import javax.persistence.EntityManager;
 import java.time.OffsetDateTime;
 import java.util.Optional;
@@ -159,7 +161,9 @@ public class ReminderTextContext {
     } catch (SchedulerException e) {
 
     }
-    commonAPI4Test.injectIntoMockedBeanContainer(scheduler);
+    commonAPI4Test.injectIntoMockedBeanContainer(scheduler,
+        new AnnotationLiteral<PersistentScheduling>() {
+        });
   }
 }
   

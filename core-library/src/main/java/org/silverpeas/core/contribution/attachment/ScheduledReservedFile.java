@@ -50,9 +50,10 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
 
-public class ScheduledReservedFile implements SchedulerEventListener, Initialization {
+public class ScheduledReservedFile implements Initialization {
 
   public static final String ATTACHMENT_JOB_NAME_PROCESS = "A_ProcessReservedFileAttachment";
+  private static final String ATTACHMENT_NOTIF_NAME = "attachment.notifName";
   private SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.attachment.Attachment");
   private LocalizationBundle generalMessage =
@@ -63,10 +64,10 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
     try {
       String cron = settings.getString("cronScheduledReservedFile");
       SilverLogger.getLogger(this).debug("Reserved File Processor scheduled with cron ''{0}''", cron);
-      Scheduler scheduler = SchedulerProvider.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(ATTACHMENT_JOB_NAME_PROCESS);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
-      scheduler.scheduleJob(ATTACHMENT_JOB_NAME_PROCESS, trigger, this);
+      scheduler.scheduleJob(ATTACHMENT_JOB_NAME_PROCESS, trigger, new ReservedFileListener());
     } catch (Exception e) {
       SilverLogger.getLogger(this).error("Reservation file scheduling failure", e);
     }
@@ -91,7 +92,7 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
       for (SimpleDocument document : documents) {
         String date = getExpiryDate(document);
         String subject = createMessageSubject(message, false, false);
-        messageBody.append(message.getString("attachment.notifName")).append(" '")
+        messageBody.append(message.getString(ATTACHMENT_NOTIF_NAME)).append(" '")
             .append(document.
                 getFilename()).append("'");
         String body = createMessageBody(message, messageBody, date, false, false);
@@ -114,7 +115,7 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
       for (SimpleDocument document : documents) {
         String date = getExpiryDate(document);
         String subject = createMessageSubject(message, true, false);
-        messageBody.append(message.getString("attachment.notifName")).append(" '")
+        messageBody.append(message.getString(ATTACHMENT_NOTIF_NAME)).append(" '")
             .append(document.
                 getFilename()).append("'");
         String body = createMessageBody(message, messageBody, date, true, false);
@@ -137,7 +138,7 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
       for (SimpleDocument document : documents) {
         String date = getExpiryDate(document);
         String subject = createMessageSubject(message, false, true);
-        messageBody.append(message.getString("attachment.notifName")).append(" '")
+        messageBody.append(message.getString(ATTACHMENT_NOTIF_NAME)).append(" '")
             .append(document.
                 getFilename()).append("'");
         String body = createMessageBody(message, messageBody, date, false, true);
@@ -174,7 +175,7 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
           "org.silverpeas.util.attachment.multilang.attachment", language);
       String subject = createMessageSubject(message, alert, lib);
       StringBuilder messageBody = new StringBuilder();
-      messageBody.append(message.getString("attachment.notifName")).append(" '")
+      messageBody.append(message.getString(ATTACHMENT_NOTIF_NAME)).append(" '")
           .append(document.
               getFilename()).append("'");
       String body = createMessageBody(message, messageBody, date, alert, lib);
@@ -234,18 +235,22 @@ public class ScheduledReservedFile implements SchedulerEventListener, Initializa
     }
   }
 
-  @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
-    doScheduledReservedFile();
-  }
+  public class ReservedFileListener implements SchedulerEventListener {
 
-  @Override
-  public void jobSucceeded(SchedulerEvent anEvent) {
-  }
+    @Override
+    public void triggerFired(SchedulerEvent anEvent) {
+      doScheduledReservedFile();
+    }
 
-  @Override
-  public void jobFailed(SchedulerEvent anEvent) {
-    SilverLogger.getLogger(this).error("The job {0} wasn't successful",
-        anEvent.getJobExecutionContext().getJobName());
+    @Override
+    public void jobSucceeded(SchedulerEvent anEvent) {
+      // nothing to do
+    }
+
+    @Override
+    public void jobFailed(SchedulerEvent anEvent) {
+      SilverLogger.getLogger(this)
+          .error("The job {0} wasn't successful", anEvent.getJobExecutionContext().getJobName());
+    }
   }
 }
