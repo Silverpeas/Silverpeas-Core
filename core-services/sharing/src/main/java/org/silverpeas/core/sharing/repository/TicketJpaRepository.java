@@ -23,10 +23,13 @@
  */
 package org.silverpeas.core.sharing.repository;
 
-import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.persistence.OrderBy;
+import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.sharing.model.Ticket.QUERY_ORDER_BY;
+import org.silverpeas.core.util.SilverpeasList;
 
 import java.util.List;
 
@@ -44,14 +47,27 @@ public class TicketJpaRepository extends BasicJpaEntityRepository<Ticket>
   }
 
   @Override
-  public List<Ticket> findAllReservationsForUser(final String userId) {
-    return listFromNamedQuery("Ticket.findAllReservationsForUser",
+  public long countAllReservationsForUser(final String userId) {
+    return countFromJpqlString("FROM Ticket t WHERE t.creatorId = :userId",
         newNamedParameters().add("userId", userId));
+  }
+
+  @Override
+  public SilverpeasList<Ticket> findAllReservationsForUser(final String userId,
+      final PaginationCriterion paginationCriterion, final QUERY_ORDER_BY orderBy) {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("SELECT DISTINCT t FROM Ticket t WHERE t.creatorId = :userId");
+    OrderBy.append(sb, orderBy != null ?
+        orderBy.getOrderBy() :
+        QUERY_ORDER_BY.CREATION_DATE_DESC.getOrderBy());
+    return listFromJpqlString(sb.toString(), newNamedParameters().add("userId", userId),
+        paginationCriterion);
   }
 
   @Override
   public void deleteAllTicketsForComponentInstance(final String instanceId) {
     NamedParameters parameters = newNamedParameters().add("instanceId", instanceId);
+    deleteFromJpqlQuery("delete from DownloadDetail d where d.ticket.id in (select t.id from Ticket t where t.componentId = :instanceId)", parameters);
     deleteFromJpqlQuery("delete from Ticket t where t.componentId = :instanceId", parameters);
   }
 }

@@ -24,7 +24,6 @@
 package org.silverpeas.core.webapi.sharing;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.sharing.model.DownloadDetail;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.model.TicketFactory;
 import org.silverpeas.core.util.DateUtil;
@@ -35,10 +34,7 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlElement;
 import java.net.URI;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 
 public class TicketEntity implements WebEntity {
 
@@ -84,8 +80,6 @@ public class TicketEntity implements WebEntity {
 
   @XmlElement(defaultValue = "")
   protected String token;
-  @XmlElement
-  protected List<DownloadDetail> downloads = new ArrayList<>();
   @XmlElement(defaultValue = "")
   protected String url;
 
@@ -118,7 +112,6 @@ public class TicketEntity implements WebEntity {
     }
     this.nbAccess = ticket.getNbAccess();
     this.nbAccessMax = ticket.getNbAccessMax();
-    this.downloads = ticket.getDownloads();
     if (ticket.getUpdateDate() != null) {
       this.updateDate = ticket.getUpdateDate().getTime();
     }
@@ -401,17 +394,6 @@ public class TicketEntity implements WebEntity {
    */
   public void setUrl(String url) {
     this.url = url;
-  }
-
-  /**
-   * @param downloads the downloads to set
-   */
-  public void setDownloads(List<DownloadDetail> downloads) {
-    this.downloads = downloads;
-  }
-
-  public List<DownloadDetail> getDownloads() {
-    return Collections.unmodifiableList(downloads);
   }
 
   public boolean isValid() {

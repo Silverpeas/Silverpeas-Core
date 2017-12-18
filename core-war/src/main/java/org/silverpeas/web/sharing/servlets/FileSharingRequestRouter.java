@@ -23,25 +23,26 @@
  */
 package org.silverpeas.web.sharing.servlets;
 
-import java.rmi.RemoteException;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
+import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
+import org.silverpeas.web.sharing.control.FileSharingSessionController;
+
+import javax.servlet.http.HttpServletRequest;
 import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
-
-import org.silverpeas.web.sharing.control.FileSharingSessionController;
-import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.DateUtil;
+import static org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayPane.getOrderByFrom;
+import static org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination
+    .getPaginationPageFrom;
 
 
 public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharingSessionController> {
@@ -87,9 +88,14 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
       if ("Main".equals(function)) {
         destination = getDestination("ViewTickets", fileSharingSC, request);
       } else if ("ViewTickets".equals(function)) {
+        // Download pagination and order by
+        fileSharingSC.setTicketPagination(
+            getPaginationPageFrom(request, fileSharingSC.getTicketPagination()));
+        fileSharingSC.setTicketOrderBy(getOrderByFrom(request, fileSharingSC.getTicketOrderBies()));
         // liste des tickets visibles pour l'utilisateur
         List<Ticket> tickets = fileSharingSC.getTicketsByUser();
         request.setAttribute("Tickets", tickets);
+        request.setAttribute("TicketsPagination", fileSharingSC.getTicketPagination());
         destination = rootDest + "viewTickets.jsp";
       } else if ("DeleteTicket".equals(function)) {
         // Suppression d'un ticket
@@ -108,7 +114,15 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
             request.setAttribute("Updater", updater.getDisplayedName());
           }
         }
+        // Download pagination and order by
+        fileSharingSC.setDownloadPagination(
+            getPaginationPageFrom(request, fileSharingSC.getDownloadPagination()));
+        fileSharingSC
+            .setDownloadOrderBy(getOrderByFrom(request, fileSharingSC.getDownloadOrderBies()));
+        // JSP attributes
         request.setAttribute("Ticket", ticket);
+        request.setAttribute("TicketDownloads", fileSharingSC.getTicketDownloads(ticket));
+        request.setAttribute("TicketDownloadPagination", fileSharingSC.getDownloadPagination());
         request.setAttribute("Url", ticket.getUrl(request));
         request.setAttribute("Action", "UpdateTicket");
         // appel jsp
@@ -145,7 +159,7 @@ public class FileSharingRequestRouter extends ComponentRequestRouter<FileSharing
 
   private Ticket updateTicket(String token, FileSharingSessionController fileSharingSC,
       HttpServletRequest request)
-      throws ParseException, RemoteException {
+      throws ParseException {
     Ticket ticket = fileSharingSC.getTicket(token);
     if ("1".equalsIgnoreCase(request.getParameter("validity"))) {
       String date = request.getParameter("endDate");

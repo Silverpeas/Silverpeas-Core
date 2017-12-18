@@ -192,7 +192,7 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity>
    */
   protected long countFromJpqlString(String query, NamedParameters parameters) {
     String countQuery = "select count(*) " +
-        query.replaceFirst("select .*from ", FROM_CLAUSE).replaceFirst("order by.*", "");
+        query.replaceFirst("(?i)select .*from ", FROM_CLAUSE).replaceFirst("(?i)order by.*", "");
     return getFromJpqlString(countQuery, parameters, Long.class);
   }
 

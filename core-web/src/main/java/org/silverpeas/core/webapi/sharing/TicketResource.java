@@ -23,11 +23,11 @@
  */
 package org.silverpeas.core.webapi.sharing;
 
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.sharing.model.Ticket;
-import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.sharing.services.SharingTicketService;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.web.sharing.bean.SharingNotificationVO;
@@ -42,6 +42,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -49,6 +50,8 @@ import javax.ws.rs.core.Response.Status;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static org.silverpeas.core.sharing.services.SharingServiceProvider.getSharingTicketService;
 
 @Service
 @RequestScoped
@@ -72,9 +75,10 @@ public class TicketResource extends RESTWebService {
 
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<TicketEntity> getMyTickets() {
+  public List<TicketEntity> getMyTickets(@QueryParam("page") final String page) {
+    PaginationPage pagination = fromPage(page);
     List<Ticket> sharingTickets =
-        SharingServiceProvider.getSharingTicketService().getTicketsByUser(getUser().getId());
+        getSharingTicketService().getTicketsByUser(getUser().getId(), pagination, null);
     if (CollectionUtil.isEmpty(sharingTickets)) {
       throw new WebApplicationException(Response.Status.NOT_FOUND);
     }
@@ -120,7 +124,19 @@ public class TicketResource extends RESTWebService {
   }
 
   private SharingTicketService getFileSharingService() {
-    return SharingServiceProvider.getSharingTicketService();
+    return getSharingTicketService();
   }
 
+  private PaginationPage fromPage(String page) {
+    PaginationPage paginationPage = null;
+    if (page != null && !page.isEmpty()) {
+      String[] pageAttributes = page.split(";");
+      int nth = Integer.parseInt(pageAttributes[0]);
+      int count = Integer.parseInt(pageAttributes[1]);
+      if (count > 0) {
+        paginationPage = new PaginationPage(nth, count);
+      }
+    }
+    return paginationPage;
+  }
 }

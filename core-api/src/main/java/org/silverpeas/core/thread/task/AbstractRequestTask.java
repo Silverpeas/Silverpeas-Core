@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.thread.task;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -41,6 +42,7 @@ import java.util.concurrent.Callable;
 public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessContext>
     implements Callable<Void> {
 
+  private static final int NO_REQUEST_QUEUE_LIMIT = 0;
   RequestTaskManager.RequestTaskMonitor<? extends AbstractRequestTask, C> monitor = null;
 
   /**
@@ -54,7 +56,7 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
    * if the limit is reached until there is again possibility to push.
    */
   protected int getRequestQueueLimit() {
-    return 0;
+    return NO_REQUEST_QUEUE_LIMIT;
   }
 
   /**
@@ -84,8 +86,7 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
        */
       try {
         monitor.releaseAccess();
-        debug("processing a new request: {0}", currentRequest.getClass().getSimpleName());
-        currentRequest.process(getProcessContext());
+        processRequest(currentRequest);
       } catch (Exception e) {
         SilverLogger.getLogger(this).error(e);
       }
@@ -114,6 +115,21 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
     }
     debug("no more request to perform, stopping a thread in charge of request processing");
     return null;
+  }
+
+  /**
+   * Processes the given request.<br/>
+   * Useful for a task which needs to perform some stuffs around the process.
+   * @param request the request to process.
+   * @throws SilverpeasException on error.
+   */
+  protected void processRequest(final Request<C> request) throws SilverpeasException {
+    debug("processing a request: {0}", request.getClass().getSimpleName());
+    try {
+      request.process(getProcessContext());
+    } catch (Exception e) {
+      throw new SilverpeasException(e);
+    }
   }
 
   /**

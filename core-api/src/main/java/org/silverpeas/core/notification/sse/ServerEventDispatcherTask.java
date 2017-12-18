@@ -57,6 +57,12 @@ public class ServerEventDispatcherTask extends AbstractRequestTask {
       Collections.synchronizedSet(new LinkedHashSet<>(2000));
 
   /**
+   * Hidden constructor.
+   */
+  ServerEventDispatcherTask() {
+  }
+
+  /**
    * A store of server events.
    */
   private static final ServerEventStore serverEventStore = new ServerEventStore();

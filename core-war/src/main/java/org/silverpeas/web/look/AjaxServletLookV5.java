@@ -41,7 +41,6 @@ import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
-import org.silverpeas.core.sharing.services.SharingServiceProvider;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -69,6 +68,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.MissingResourceException;
+
+import static org.silverpeas.core.sharing.services.SharingServiceProvider.getSharingTicketService;
 
 public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
 
@@ -701,12 +702,11 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
             ComponentItem.of(URLUtil.CMP_MYLINKSPEAS).withLabel(message.getString("FavLinks"))
                 .withSpecificId("links"));
       }
-      if (settings.getBoolean("fileSharingVisible", true)) {
-        if (!SharingServiceProvider.getSharingTicketService().getTicketsByUser(userId).isEmpty()) {
-          componentItems.add(
-              ComponentItem.of(URLUtil.CMP_FILESHARING).withLabel(message.getString("FileSharing"))
-                  .withSpecificId("sharingTicket"));
-        }
+      if (settings.getBoolean("fileSharingVisible", true) &&
+          getSharingTicketService().countTicketsByUser(userId) > 0) {
+        componentItems.add(
+            ComponentItem.of(URLUtil.CMP_FILESHARING).withLabel(message.getString("FileSharing"))
+                .withSpecificId("sharingTicket"));
       }
       // mes connexions
       if (settings.getBoolean("webconnectionsVisible", true)) {

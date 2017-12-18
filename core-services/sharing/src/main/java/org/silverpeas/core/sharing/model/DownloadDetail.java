@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.sharing.model;
 
+import org.silverpeas.core.persistence.OrderBy;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueLongIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 
@@ -33,6 +34,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.io.Serializable;
 import java.util.Date;
+
+import static org.silverpeas.core.persistence.OrderBy.asc;
+import static org.silverpeas.core.persistence.OrderBy.desc;
 
 @Entity
 @Table(name = "sb_filesharing_history")
@@ -83,5 +87,21 @@ public class DownloadDetail extends BasicJpaEntity<DownloadDetail, UniqueLongIde
 
   public void setUserIP(String userIP) {
     this.userIP = userIP;
+  }
+
+  public enum QUERY_ORDER_BY {
+
+    DOWNLOAD_DATE_ASC(asc("downloaddate")), DOWNLOAD_DATE_DESC(desc("downloaddate")),
+    DOWNLOAD_IP_ASC(asc("downloadIp")), DOWNLOAD_IP_DESC(desc("downloadIp"));
+
+    private final OrderBy orderBy;
+
+    QUERY_ORDER_BY(OrderBy orderBy) {
+      this.orderBy = orderBy;
+    }
+
+    public OrderBy getOrderBy() {
+      return orderBy;
+    }
   }
 }

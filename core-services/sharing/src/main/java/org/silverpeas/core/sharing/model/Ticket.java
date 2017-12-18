@@ -23,22 +23,30 @@
  */
 package org.silverpeas.core.sharing.model;
 
-import org.silverpeas.core.sharing.security.ShareableAccessControl;
-import org.silverpeas.core.sharing.security.ShareableResource;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.persistence.OrderBy;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.sharing.security.ShareableAccessControl;
+import org.silverpeas.core.sharing.security.ShareableResource;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 
-import javax.persistence.*;
+import javax.persistence.AttributeOverride;
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
 import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
-import java.util.List;
+
+import static org.silverpeas.core.persistence.OrderBy.asc;
+import static org.silverpeas.core.persistence.OrderBy.desc;
 
 @Entity
 @Table(name = "sb_filesharing_ticket")
@@ -48,8 +56,7 @@ import java.util.List;
     column = @Column(name = "keyfile", columnDefinition = "varchar(40)", length = 40))
 @NamedQueries({@NamedQuery(name = "Ticket.findAllTicketForSharedObjectId",
     query = "SELECT t FROM Ticket t WHERE t.sharedObjectId = :sharedObjectId AND t" +
-        ".sharedObjectType = :ticketType"), @NamedQuery(name = "Ticket.findAllReservationsForUser",
-    query = "SELECT DISTINCT ticket FROM Ticket ticket WHERE ticket.creatorId = :userId ORDER by ticket.creationDate DESC")})
+        ".sharedObjectType = :ticketType")})
 public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
     implements Serializable {
 
@@ -80,9 +87,6 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   protected int nbAccessMax;
   @Column(name = "nbaccess")
   protected int nbAccess;
-  @OneToMany(orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "ticket",
-      cascade = CascadeType.REMOVE)
-  protected List<DownloadDetail> downloads = new ArrayList<>();
 
   protected Ticket() {
   }
@@ -187,15 +191,6 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
     setId(uuid);
   }
 
-  public List<DownloadDetail> getDownloads() {
-    return Collections.unmodifiableList(downloads);
-  }
-
-  public void setDownloads(Collection<DownloadDetail> downloads) {
-    this.downloads.clear();
-    this.downloads.addAll(downloads);
-  }
-
   public String getUrl(HttpServletRequest request) {
     return URLUtil.getFullApplicationURL(request) + getRelativeUrl();
   }
@@ -276,7 +271,7 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
         sharedObjectId + ", componentId=" + componentId + ", creatorId=" + creatorId +
         ", creationDate=" + creationDate + ", updaterId=" + updaterId + ", updateDate=" +
         updateDate + ", endDate=" + endDate + ", nbAccessMax=" + nbAccessMax + ", nbAccess=" +
-        nbAccess + ", token=" + getId() + ", downloads=" + downloads + '}';
+        nbAccess + ", token=" + getId() + '}';
   }
 
   public void addDownload() {
@@ -286,4 +281,21 @@ public abstract class Ticket extends BasicJpaEntity<Ticket, UuidIdentifier>
   public abstract ShareableAccessControl getAccessControl();
 
   public abstract ShareableResource getResource();
+
+  public enum QUERY_ORDER_BY {
+
+    CREATION_DATE_ASC(asc("creationDate")), CREATION_DATE_DESC(desc("creationDate")),
+    END_DATE_ASC(asc("enddate")), END_DATE_DESC(desc("enddate")),
+    NB_ACCESS_DATE_ASC(asc("nbaccess")), NB_ACCESS_DATE_DESC(desc("nbaccess"));
+
+    private final OrderBy orderBy;
+
+    QUERY_ORDER_BY(OrderBy orderBy) {
+      this.orderBy = orderBy;
+    }
+
+    public OrderBy getOrderBy() {
+      return orderBy;
+    }
+  }
 }

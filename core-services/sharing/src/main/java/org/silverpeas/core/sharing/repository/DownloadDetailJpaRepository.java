@@ -23,12 +23,35 @@
  */
 package org.silverpeas.core.sharing.repository;
 
+import org.silverpeas.core.persistence.OrderBy;
+import org.silverpeas.core.persistence.datasource.repository.PaginationCriterion;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
 import org.silverpeas.core.sharing.model.DownloadDetail;
+import org.silverpeas.core.sharing.model.DownloadDetail.QUERY_ORDER_BY;
+import org.silverpeas.core.sharing.model.Ticket;
+import org.silverpeas.core.util.SilverpeasList;
 
 /**
  * @author: ebonnet
  */
 public class DownloadDetailJpaRepository extends BasicJpaEntityRepository<DownloadDetail>
     implements DownloadDetailRepository {
+
+  @Override
+  public SilverpeasList<DownloadDetail> getDownloadsByTicket(final Ticket ticket,
+      final PaginationCriterion paginationCriterion, final QUERY_ORDER_BY orderBy) {
+    final StringBuilder sb = new StringBuilder();
+    sb.append("from DownloadDetail d where d.ticket = :ticket");
+    if (orderBy != null) {
+      OrderBy.append(sb, orderBy.getOrderBy());
+    }
+    return listFromJpqlString(sb.toString(), newNamedParameters().add("ticket", ticket),
+        paginationCriterion);
+  }
+
+  @Override
+  public long deleteDownloadsByTicket(final Ticket ticket) {
+    return deleteFromJpqlQuery("delete from DownloadDetail d where d.ticket = :ticket",
+        newNamedParameters().add("ticket", ticket));
+  }
 }

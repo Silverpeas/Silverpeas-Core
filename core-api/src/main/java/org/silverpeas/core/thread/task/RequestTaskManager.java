@@ -27,6 +27,7 @@ package org.silverpeas.core.thread.task;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.thread.ManagedThreadPool;
 import org.silverpeas.core.thread.task.AbstractRequestTask.Request;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -112,6 +113,24 @@ public class RequestTaskManager {
 
   private static SilverLogger getLogger() {
     return SilverLogger.getLogger("silverpeas.core.thread");
+  }
+
+  /**
+   * This method permits to know if the task is running.
+   * @param taskClass the class of the {@link AbstractRequestTask} implementation which provides
+   * the
+   * {@link AbstractRequestTask.Request}.
+   * @param <T> the type of the task.
+   * @param <C> the type of the task process context.
+   */
+  @SuppressWarnings("unchecked")
+  public static <T extends AbstractRequestTask> boolean isTaskRunning(Class<T> taskClass) {
+    final Mutable<Boolean> isRunning = Mutable.of(false);
+    tasks.computeIfPresent(taskClass, (i, m) -> {
+      isRunning.set(m.isTaskRunning());
+      return m;
+    });
+    return isRunning.get();
   }
 
   /**

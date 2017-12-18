@@ -23,17 +23,23 @@
  */
 package org.silverpeas.core.sharing.services;
 
+import org.silverpeas.core.admin.PaginationPage;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
+import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.sharing.model.DownloadDetail;
+import org.silverpeas.core.sharing.model.DownloadDetail.QUERY_ORDER_BY;
 import org.silverpeas.core.sharing.model.Ticket;
 import org.silverpeas.core.sharing.repository.DownloadDetailRepository;
 import org.silverpeas.core.sharing.repository.TicketRepository;
+import org.silverpeas.core.util.SilverpeasList;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
+
+import static org.silverpeas.core.backgroundprocess.BackgroundProcessTask.LOCK_DURATION.A_DAY;
 
 /**
  *
@@ -45,18 +51,29 @@ public class JpaSharingTicketService implements SharingTicketService, ComponentI
 
   @Inject
   TicketRepository repository;
+
   @Inject
   DownloadDetailRepository historyRepository;
 
   @Override
-  public List<Ticket> getTicketsByUser(String userId) {
-    List<Ticket> tickets = repository.findAllReservationsForUser(userId);
+  public long countTicketsByUser(final String userId) {
+    return repository.countAllReservationsForUser(userId);
+  }
+
+  @Override
+  public SilverpeasList<Ticket> getTicketsByUser(String userId, final PaginationPage paginationPage,
+      final Ticket.QUERY_ORDER_BY orderBy) {
+    final SilverpeasList<Ticket> tickets = repository.findAllReservationsForUser(userId,
+        paginationPage != null ? paginationPage.asCriterion() : null, orderBy);
+    BackgroundProcessTask.push(new CleanUserTicketRequest(userId, this));
     return tickets;
   }
 
   @Override
   public void deleteTicketsForSharedObject(Long sharedObjectId, String type) {
     List<Ticket> tickets = repository.findAllTicketForSharedObjectId(sharedObjectId, type);
+    tickets.forEach(t -> historyRepository.deleteDownloadsByTicket(t));
+    historyRepository.flush();
     repository.delete(tickets);
     repository.flush();
   }
@@ -76,9 +93,6 @@ public class JpaSharingTicketService implements SharingTicketService, ComponentI
   public void addDownload(DownloadDetail download) {
     Ticket ticket = repository.getById(download.getKeyFile());
     if (ticket != null) {
-      List<DownloadDetail> downloads = new ArrayList<>(ticket.getDownloads());
-      downloads.add(download);
-      ticket.setDownloads(downloads);
       historyRepository.saveAndFlush(download);
       ticket.addDownload();
       repository.saveAndFlush(ticket);
@@ -92,7 +106,9 @@ public class JpaSharingTicketService implements SharingTicketService, ComponentI
 
   @Override
   public void deleteTicket(String key) {
-    repository.delete(repository.getById(key));
+    Ticket ticket = repository.getById(key);
+    repository.delete(ticket);
+    historyRepository.deleteDownloadsByTicket(ticket);
   }
 
   /**
@@ -104,5 +120,51 @@ public class JpaSharingTicketService implements SharingTicketService, ComponentI
   @Transactional
   public void delete(final String componentInstanceId) {
     repository.deleteAllTicketsForComponentInstance(componentInstanceId);
+  }
+
+  @Override
+  public SilverpeasList<DownloadDetail> getTicketDownloads(final Ticket ticket,
+      final PaginationPage paginationPage, final QUERY_ORDER_BY orderBy) {
+    return historyRepository
+        .getDownloadsByTicket(ticket, paginationPage != null ? paginationPage.asCriterion() : null,
+            orderBy);
+  }
+
+  /**
+   * Background process which is in charge of cleaning shared ticket which are linked to
+   * resources which do not exist anymore.
+   */
+  private static class CleanUserTicketRequest extends AbstractBackgroundProcessRequest {
+
+    private final String userId;
+    private final SharingTicketService service;
+
+    CleanUserTicketRequest(final String userId, final SharingTicketService service) {
+      super("CleanUserTicketRequest_" + userId, A_DAY);
+      this.userId = userId;
+      this.service = service;
+    }
+
+    @Override
+    protected void process() {
+      int pageIndex = 1;
+      int pageSize = 10000;
+      while (true) {
+        final PaginationPage paginationPage = new PaginationPage(pageIndex, pageSize);
+        final List<Ticket> tickets = service.getTicketsByUser(userId, paginationPage, null);
+        for (Ticket ticket : tickets) {
+          if (ticket.getResource() == null) {
+            // delete obsolete ticket associated to deleted resource
+            service.deleteTicket(ticket.getToken());
+            // Same data will be performed again
+            pageIndex = paginationPage.getPageNumber() - 1;
+          }
+        }
+        if (tickets.size() < pageSize) {
+          break;
+        }
+        pageIndex++;
+      }
+    }
   }
 }

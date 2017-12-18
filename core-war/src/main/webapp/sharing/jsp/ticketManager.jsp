@@ -44,6 +44,10 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
 <c:set var="mandatoryIcon"><fmt:message key='sharing.obligatoire' bundle='${icons}'/></c:set>
 <c:set var="usersIcon"><fmt:message key='sharing.users' bundle='${icons}'/></c:set>
 <c:set var="ticket" value="${requestScope.Ticket}"/>
+<c:set var="ticketDownloads" value="${requestScope.TicketDownloads}"/>
+<jsp:useBean id="ticketDownloads" type="org.silverpeas.core.util.SilverpeasList<org.silverpeas.core.sharing.model.DownloadDetail>"/>
+<c:set var="ticketDownloadPagination" value="${requestScope.TicketDownloadPagination}"/>
+<jsp:useBean id="ticketDownloadPagination" type="org.silverpeas.core.admin.PaginationPage"/>
 <c:set var="ticketURL" value="${requestScope.Url}"/>
 <c:set var="action" value="${requestScope.Action}"/>
 <c:set var="cancellation" value="javascript:window.close();"/>
@@ -62,8 +66,8 @@ response.setDateHeader ("Expires",-1);          //prevents caching at the proxy 
   <c:set var="endDate" value="<%= new java.util.Date() %>"/>
   <c:set var="maxAccessNb" value="0"/>
   <!--
-  <c:if test="${fn:length(ticket.downloads) gt 1}">
-    <c:set var="maxAccessNb" value="${fn:length(ticket.downloads)}"/>
+  <c:if test="${ticketDownloads.originalListSize() gt 1}">
+    <c:set var="maxAccessNb" value="${ticketDownloads.originalListSize()}"/>
   </c:if>
    -->
 </c:if>
@@ -263,18 +267,22 @@ function toggleContinuous(effect) {
                 <div class="fields">
                   <fmt:message var="downloadDate" key="sharing.downloadDate"/>
                   <fmt:message var="downloadIP" key="sharing.IP"/>
-                  <view:arrayPane var="downloadList" routingAddress="EditTicket?token=${ticket.token}">
-                    <view:arrayColumn title="${downloadDate}" />
-                    <view:arrayColumn title="${downloadIP}" />
-                    <c:forEach items="${ticket.downloads}" var="download">
+                  <view:arrayPane var="sharedTicketDownloadList" routingAddress="EditTicket?token=${ticket.token}" numberLinesPerPage="${ticketDownloadPagination.pageSize}">
+                    <view:arrayColumn title="${downloadDate}" sortable="true"/>
+                    <view:arrayColumn title="${downloadIP}" sortable="true"/>
+                    <view:arrayLines items="${ticketDownloads}" var="download">
                       <c:set var="downloadDate"><view:formatDateTime value="${download.downloadDate}" language="${language}"/></c:set>
                       <view:arrayLine>
                         <view:arrayCellText text="${downloadDate}"/>
                         <view:arrayCellText text="${download.userIP}"/>
                       </view:arrayLine>
-                    </c:forEach>
+                    </view:arrayLines>
                   </view:arrayPane>
-
+                  <script type="text/javascript">
+                    whenSilverpeasReady(function() {
+                      sp.arrayPane.ajaxControls('#ticketAccessControl');
+                    });
+                  </script>
                 </div>
               </fieldset>
             </c:if>

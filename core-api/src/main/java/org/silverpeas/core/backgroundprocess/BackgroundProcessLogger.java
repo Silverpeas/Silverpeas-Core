@@ -21,44 +21,30 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.webapi.admin.tools;
+package org.silverpeas.core.backgroundprocess;
 
-import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.look.LookHelper;
-
-import static org.silverpeas.core.sharing.services.SharingServiceProvider.getSharingTicketService;
 
 /**
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-public class FileSharingTool extends AbstractTool {
+public class BackgroundProcessLogger implements Initialization {
 
-  private Boolean isVisible = null;
+  private static SilverLogger silverLogger;
 
-  public FileSharingTool(final String language, final LookHelper lookHelper) {
-    super(language, lookHelper, "fileSharingVisible", "sharingTicket", "FileSharing",
-        URLUtil.CMP_FILESHARING);
+  static void initLogger() {
+    if (silverLogger == null) {
+      silverLogger = SilverLogger.getLogger(BackgroundProcessLogger.class);
+    }
   }
 
-  /*
-   * (non-Javadoc)
-   * @see com.silverpeas.admin.tools.AbstractTool#isVisible()
-   */
+  public static SilverLogger get() {
+    return silverLogger;
+  }
+
   @Override
-  public boolean isVisible() {
-    if (isVisible == null) {
-      isVisible = super.isVisible();
-      if (isVisible) {
-        try {
-          isVisible = getSharingTicketService().countTicketsByUser(getLookHelper().getUserId()) > 0;
-        } catch (final Exception e) {
-          SilverLogger.getLogger(this).error(e);
-          isVisible = null;
-          return false;
-        }
-      }
-    }
-    return isVisible;
+  public void init() throws Exception {
+    initLogger();
   }
 }

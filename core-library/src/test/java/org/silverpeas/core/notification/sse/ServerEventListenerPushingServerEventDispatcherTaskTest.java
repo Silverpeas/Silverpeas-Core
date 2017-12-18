@@ -32,7 +32,6 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
-import javax.servlet.AsyncContext;
 import java.util.ArrayList;
 import java.util.List;
 
