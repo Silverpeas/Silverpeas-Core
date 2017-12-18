@@ -113,6 +113,7 @@ import org.silverpeas.core.persistence.EntityReference;
 import org.silverpeas.core.persistence.jcr.JcrRepositoryProvider;
 import org.silverpeas.core.persistence.jdbc.AbstractTable;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.reminder.DefaultReminderRepository;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.test.jcr.JcrIntegrationIT;
@@ -141,7 +142,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
    */
   protected <T> WarBuilder4LibCore(final Class<T> test) {
     super(test);
-    addClasses(SilverTrace.class);
+    addClasses(SilverTrace.class, DefaultReminderRepository.class);
     addServiceProviderFeatures();
     addBundleBaseFeatures();
     addClasses(EntityReference.class);

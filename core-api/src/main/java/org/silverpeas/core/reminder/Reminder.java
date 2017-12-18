@@ -58,9 +58,7 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "reminderType")
 @Table(name = "sb_reminder")
-public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> {
-
-  private static final MessageFormat SCHEDULED_JOB_NAME = new MessageFormat("Reminder#{0}");
+public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifier> {
 
   @Embedded
   private ContributionIdentifier contributionId;
@@ -68,6 +66,8 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
   private String userId;
   @Column(name = "text")
   private String text;
+  @Column(name = "triggered")
+  private boolean triggered;
 
   /**
    * Gets the list of reminders linked to a contribution represented by the given identifier.
@@ -85,8 +85,7 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
    * @return the right reminder, null otherwise.
    */
   public static Reminder getById(final String reminderId) {
-    // TODO when persistence is ready
-    return null;
+    return ReminderRepository.get().getById(reminderId);
   }
 
   /**
@@ -158,6 +157,21 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
   }
 
   /**
+   * Is this reminder was triggered?
+   * @return true if this reminder was already fired, false otherwise.
+   */
+  public boolean isTriggered() {
+    return triggered;
+  }
+
+  /**
+   * This reminder is currently being triggered.
+   */
+  protected void triggered() {
+    this.triggered = true;
+  }
+
+  /**
    * Schedules this reminder. It persists first the reminder properties and then starts its
    * scheduling according to its triggering rule.
    * @throws TransactionRuntimeException if the persistence or the scheduling fails.
@@ -206,11 +220,11 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
   protected abstract OffsetDateTime getTriggeringDate();
 
   private String getJobName() {
-    return SCHEDULED_JOB_NAME.format(new Object[]{getId()});
+    return this.getId();
   }
 
   private boolean isScheduledWith(final Scheduler scheduler) {
-    return scheduler.isJobScheduled(SCHEDULED_JOB_NAME.format(new Object[]{getId()}));
+    return scheduler.isJobScheduled(this.getJobName());
   }
   
   private Scheduler getScheduler() {

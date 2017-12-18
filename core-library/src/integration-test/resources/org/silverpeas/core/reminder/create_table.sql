@@ -1,11 +1,12 @@
 CREATE TABLE IF NOT EXISTS sb_reminder (
-  id                    VARCHAR(40) NOT NULL,
+  id                    VARCHAR(41) NOT NULL,
   reminderType          VARCHAR(40) NOT NULL,
   contrib_id            VARCHAR(40) NOT NULL,
   contrib_instanceId    VARCHAR(30) NOT NULL,
   contrib_type          VARCHAR(40) NOT NULL,
   userId                VARCHAR(40) NOT NULL,
   text                  VARCHAR(255),
+  triggered             BOOLEAN NOT NULL DEFAULT FALSE,
   trigger_datetime      TIMESTAMP,
   trigger_durationTime  INTEGER,
   trigger_durationUnit  VARCHAR(12),

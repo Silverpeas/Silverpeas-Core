@@ -43,7 +43,10 @@ import org.silverpeas.core.test.rule.DbSetupRule;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.Optional;
+import java.util.concurrent.Callable;
 
+import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.instanceOf;
@@ -84,8 +87,7 @@ public class ReminderIT {
               .addAsResource("org/silverpeas/core/reminder/create_table.sql")
               .addAsResource("org/silverpeas/core/reminder/reminder-dataset.sql")
               .addPackages(true, "org.silverpeas.core.initialization")
-              .addPackages(false, "org.silverpeas.core.contribution")
-              .addClasses(DefaultReminderRepository.class);
+              .addPackages(false, "org.silverpeas.core.contribution");
         })
         .build();
   }
@@ -104,7 +106,7 @@ public class ReminderIT {
   }
 
   @Test
-  public void scheduleAReminderInDateTimeWillPersistItAndScheduleItInTheTime() {
+  public void scheduleAReminderInDateTimeWillPersistIt() {
     final String reminderText = "Remind me!";
     final OffsetDateTime triggerDate = OffsetDateTime.now().plusSeconds(30);
     Reminder expectedReminder =
@@ -125,8 +127,7 @@ public class ReminderIT {
   }
 
   @Test
-  public void scheduleAReminderAtADurationBeforeAGivenDateTimeWillPersistItAndScheduleItInTheTime
-      () {
+  public void scheduleAReminderAtADurationBeforeAGivenDateTimeWillPersistIt() {
     final String reminderText = "Remind me!";
     Reminder expectedReminder =
         new DurationReminder(CONTRIBUTION, User.getById(USER_ID)).withText(reminderText)
@@ -147,6 +148,22 @@ public class ReminderIT {
     assertThat(actualReminder.getDuration(), is(30));
     assertThat(actualReminder.getTimeUnit(), is(TimeUnit.SECOND));
     assertThat(actualReminder.getContributionProperty(), is("startDate"));
+  }
+
+  @Test
+  public void basicReminderTriggeringShouldFireItOneShot() {
+    final String reminderText = "Remind me!";
+    Reminder reminder =
+        new DurationReminder(CONTRIBUTION, User.getById(USER_ID)).withText(reminderText)
+            .triggerBefore(30, TimeUnit.SECOND, "startDate")
+            .schedule();
+    assertThat(reminder.isTriggered(), is(false));
+
+    await().atMost(31, SECONDS).until(isTriggered(reminder));
+  }
+
+  private Callable<Boolean> isTriggered(final Reminder reminder) {
+    return () -> Reminder.getById(reminder.getId()).isTriggered();
   }
 }
   

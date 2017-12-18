@@ -23,49 +23,45 @@
  */
 package org.silverpeas.core.reminder;
 
-import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.scheduler.SchedulerEvent;
-import org.silverpeas.core.scheduler.SchedulerEventListener;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
+import java.text.MessageFormat;
+import java.util.UUID;
 
 /**
- * The process to send a notification to the user aimed by a reminder.
+ * Identifier of a reminder in the persistence context.
  * @author mmoquillon
  */
-@Singleton
-public class ReminderProcess implements SchedulerEventListener {
+@Embeddable
+public class ReminderIdentifier implements EntityIdentifier {
 
-  @Inject
-  private ReminderRepository repository;
+  private static final String ID_PREFIX = "Reminder#";
+  private static final MessageFormat SCHEDULED_JOB_NAME = new MessageFormat(ID_PREFIX + "{0}");
 
-  public static ReminderProcess get() {
-    return ServiceProvider.getService(ReminderProcess.class);
+  @Column(name = "id", columnDefinition = "varchar(41)", length = 41)
+  private String id;
+
+  @Override
+  public ReminderIdentifier fromString(final String id) {
+    if (!id.startsWith(ID_PREFIX) && id.length() != 41) {
+      throw new IllegalArgumentException("The specified id " + id + " isn't of a reminder's one");
+    }
+    this.id = id;
+    return this;
   }
 
   @Override
-  public void triggerFired(final SchedulerEvent anEvent) {
-    final String reminderId = anEvent.getJobExecutionContext().getJobName();
-    Reminder reminder = repository.getById(reminderId);
-    reminder.triggered();
-    notifyUserAbout(reminder);
-    Transaction.performInOne(() -> repository.save(reminder));
+  public ReminderIdentifier generateNewId(final String... parameters) {
+    this.id =
+        SCHEDULED_JOB_NAME.format(new Object[]{UUID.randomUUID().toString().replaceAll("-", "")});
+    return this;
   }
 
   @Override
-  public void jobSucceeded(final SchedulerEvent anEvent) {
-
-  }
-
-  @Override
-  public void jobFailed(final SchedulerEvent anEvent) {
-
-  }
-
-  private void notifyUserAbout(final Reminder reminder) {
-
+  public String asString() {
+    return this.id;
   }
 }
   
