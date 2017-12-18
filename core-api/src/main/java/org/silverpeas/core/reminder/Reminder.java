@@ -80,6 +80,16 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
   }
 
   /**
+   * Gets the list of reminders linked to a user represented by the given identifier.
+   * @param userId the identifier of a user.
+   * @return a list of reminder, empty if no reminder.
+   */
+  public static List<Reminder> getByUserId(final String userId) {
+    // TODO when persistence is ready
+    return Collections.emptyList();
+  }
+
+  /**
    * Gets a reminder by its identifier.
    * @param reminderId the identifier of a reminder.
    * @return the right reminder, null otherwise.

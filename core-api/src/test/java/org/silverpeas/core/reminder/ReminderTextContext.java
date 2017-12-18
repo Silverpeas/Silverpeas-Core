@@ -24,6 +24,7 @@
 package org.silverpeas.core.reminder;
 
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.calendar.Plannable;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
@@ -32,6 +33,8 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.persistence.datasource.model.jpa.PersistenceIdentifierSetter;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.scheduler.PersistentScheduling;
 import org.silverpeas.core.scheduler.ScheduledJob;
 import org.silverpeas.core.scheduler.Scheduler;
@@ -42,7 +45,10 @@ import org.silverpeas.core.test.rule.CommonAPI4Test;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.persistence.EntityManager;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
 import java.util.Optional;
+import java.util.TimeZone;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.mock;
@@ -66,13 +72,24 @@ public class ReminderTextContext {
   }
 
   public void setUp() {
-    when(user.getId()).thenReturn("2");
+    setUpUsers();
     setUpContributions();
     setUpEntityManager();
     setUpReminderRepository();
     setUpReminderProcess();
-    ;
+
     setUpScheduler();
+  }
+
+  private void setUpUsers() {
+    UserProvider userProvider = mock(UserProvider.class);
+    commonAPI4Test.injectIntoMockedBeanContainer(userProvider);
+
+    when(user.getId()).thenReturn("2");
+    when(user.getUserPreferences()).thenReturn(
+        new UserPreferences("2", "fr", ZoneId.of("UTC"), "", "", false, false, false,
+            UserMenuDisplay.DEFAULT));
+    when(userProvider.getUser("2")).thenAnswer(a -> user);
   }
 
   public ContributionIdentifier getPlannableContribution() {
@@ -164,6 +181,12 @@ public class ReminderTextContext {
     commonAPI4Test.injectIntoMockedBeanContainer(scheduler,
         new AnnotationLiteral<PersistentScheduling>() {
         });
+  }
+
+  static {
+    // This static block permits to ensure that the UNIT TEST is entirely executed into UTC
+    // TimeZone.
+    TimeZone.setDefault(TimeZone.getTimeZone(ZoneOffset.UTC));
   }
 }
   

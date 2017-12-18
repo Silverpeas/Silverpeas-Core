@@ -138,25 +138,22 @@ public class DurationReminder extends Reminder {
   @Override
   protected OffsetDateTime getTriggeringDate() {
     final ContributionModel model = getContribution().getModel();
-    final OffsetDateTime from = OffsetDateTime
-        .now()
+    final ZoneId userZoneId = User.getById(getUserId()).getUserPreferences().getZoneId();
+    final ZoneId platformZoneId = ZoneId.systemDefault();
+    final ZonedDateTime from = ZonedDateTime
+        .now(userZoneId)
         .plus(this.duration, requireNonNull(this.timeUnit.toChronoUnit()));
-    return
+    final ZonedDateTime platformZonedTriggeringDate =
         model.filterByType(getContributionProperty(), from)
-            .matchFirst(Date.class::isAssignableFrom,
-                d -> ZonedDateTime.ofInstant(((Date) d).toInstant(), ZoneId.systemDefault())
-                    .toOffsetDateTime())
-            .matchFirst(OffsetDateTime.class::equals, d -> (OffsetDateTime) d)
-            .matchFirst(LocalDate.class::equals, d -> ((LocalDate) d).atStartOfDay()
-                .atZone(ZoneId.systemDefault())
-                .toOffsetDateTime())
-            .matchFirst(LocalDateTime.class::equals,
-                d -> ((LocalDateTime) d).atZone(ZoneId.systemDefault()).toOffsetDateTime())
-            .matchFirst(ZonedDateTime.class::equals,
-                d -> ((ZonedDateTime) d).toOffsetDateTime())
-            .result()
-            .orElseThrow(() -> new IllegalArgumentException(
-                "The property " + getContributionProperty() + " isn't a date or a date time"));
+        .matchFirst(Date.class::isAssignableFrom, d -> ZonedDateTime.ofInstant(((Date) d).toInstant(), platformZoneId))
+        .matchFirst(OffsetDateTime.class::equals, d -> ((OffsetDateTime) d).atZoneSameInstant(platformZoneId))
+        .matchFirst(LocalDate.class::equals, d -> ((LocalDate) d).atStartOfDay(userZoneId).withZoneSameInstant(platformZoneId))
+        .matchFirst(LocalDateTime.class::equals, d -> ((LocalDateTime) d).atZone(platformZoneId))
+        .matchFirst(ZonedDateTime.class::equals, d -> ((ZonedDateTime) d).withZoneSameInstant(platformZoneId))
+        .result()
+        .orElseThrow(() -> new IllegalArgumentException(
+            "The property " + getContributionProperty() + " isn't a date or a date time"));
+    return platformZonedTriggeringDate.toOffsetDateTime();
   }
 }
   

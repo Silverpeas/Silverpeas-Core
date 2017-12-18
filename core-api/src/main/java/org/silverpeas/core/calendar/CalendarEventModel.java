@@ -27,7 +27,7 @@ package org.silverpeas.core.calendar;
 import org.silverpeas.core.contribution.model.ContributionModel;
 import org.silverpeas.core.contribution.model.DefaultContributionModel;
 
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.time.temporal.Temporal;
 
 import static org.silverpeas.core.calendar.CalendarEvent.NEXT_START_DATE_MODEL_PROPERTY;
@@ -45,13 +45,21 @@ public class CalendarEventModel extends DefaultContributionModel<CalendarEvent> 
     super(contribution);
   }
 
+  /**
+   * <p>
+   * About property {@link CalendarEvent#NEXT_START_DATE_MODEL_PROPERTY}:<br/>
+   * If no {@link ZonedDateTime} given as first parameter, then the {@link ZonedDateTime#now()}
+   * is taken into account, otherwise the given {@link ZonedDateTime} is used.<br/>
+   * The next occurrence start date from the {@link ZonedDateTime} instance is returned.
+   * </p>
+   */
   @SuppressWarnings("unchecked")
   @Override
   public <T> T getProperty(final String property, final Object... parameters) {
     if (NEXT_START_DATE_MODEL_PROPERTY.equals(property)) {
-      OffsetDateTime from = OffsetDateTime.now(getContribution().getCalendar().getZoneId());
-      if (parameters.length > 0 && parameters[0] instanceof OffsetDateTime) {
-        from = (OffsetDateTime) parameters[0];
+      ZonedDateTime from = ZonedDateTime.now(getContribution().getCalendar().getZoneId());
+      if (parameters.length > 0 && parameters[0] instanceof ZonedDateTime) {
+        from = (ZonedDateTime) parameters[0];
       }
       return (T) getNextStartDate(from);
     }
@@ -63,9 +71,9 @@ public class CalendarEventModel extends DefaultContributionModel<CalendarEvent> 
    * @param from the date from which the next date is computed.
    * @return a {@link Temporal} if any, null otherwise.
    */
-  private Temporal getNextStartDate(final OffsetDateTime from) {
+  private Temporal getNextStartDate(final ZonedDateTime from) {
     final CalendarEventOccurrence nextOccurrence =
-        CalendarEventOccurrenceGenerator.get().generateNextOccurrencesOf(getContribution(), from);
+        CalendarEventOccurrenceGenerator.get().generateNextOccurrenceOf(getContribution(), from);
     return nextOccurrence != null ? nextOccurrence.getStartDate() : null;
   }
 }

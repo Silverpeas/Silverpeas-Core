@@ -27,7 +27,6 @@ import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 
@@ -43,7 +42,7 @@ import javax.inject.Singleton;
  */
 @Default
 @Singleton
-public class VolatileQuartScheduler extends QuartzScheduler implements Initialization {
+public class VolatileQuartScheduler extends QuartzScheduler {
 
   /**
    * Constructs a new volatile scheduler.

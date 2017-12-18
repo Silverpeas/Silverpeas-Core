@@ -248,7 +248,7 @@ public class ReminderResource extends RESTWebService {
   private String getUiMessageContributionLabel(final ReminderEntity reminder,
       final Contribution contribution) {
     ContributionLocalizationBundle bundle = ContributionLocalizationBundle
-        .getByIdAndLanguage(contribution, getUserPreferences().getLanguage());
+        .getByInstanceAndLanguage(contribution, getUserPreferences().getLanguage());
     if (isNotDefined(reminder.getDateTime())) {
       return bundle.getUiMessageTitleByTypeAndProperty(reminder.getcProperty());
     }
@@ -300,7 +300,7 @@ public class ReminderResource extends RESTWebService {
 
   private static Reminder save(Reminder reminder) {
     try {
-//      reminder.schedule();
+      reminder.schedule();
       if (isNotDefined(reminder.getId())) {
         FieldUtils
             .writeField(reminder, "id", UuidIdentifier.from(UUID.randomUUID().toString()), true);

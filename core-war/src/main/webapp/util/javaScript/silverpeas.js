@@ -1143,10 +1143,11 @@ if (typeof window.sp === 'undefined') {
       },
       /**
        * Gets the offset ('-01:00' for example) of the given zone id.
+       * @param date a data like the one given to the moment constructor
        * @param zoneId the zone id ('Europe/Berlin' for example)
        */
-      getOffsetFromZoneId : function(zoneId) {
-        return moment().tz(zoneId).format('Z');
+      getOffsetFromZoneId : function(date, zoneId) {
+        return sp.moment.make(date).tz(zoneId).format('Z');
       },
       /**
        * Sets the given date at the given timezone.
@@ -1162,7 +1163,7 @@ if (typeof window.sp === 'undefined') {
        * @param zoneId the zone id ('Europe/Berlin' for example)
        */
       atZoneIdSimilarLocal : function(date, zoneId) {
-        return sp.moment.make(date).utcOffset(sp.moment.getOffsetFromZoneId(zoneId), true);
+        return sp.moment.make(date).utcOffset(sp.moment.getOffsetFromZoneId(date, zoneId), true);
       },
       /**
        * Adjusts the the time minutes in order to get a rounded time.

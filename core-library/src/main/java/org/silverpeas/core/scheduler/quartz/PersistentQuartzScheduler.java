@@ -27,7 +27,6 @@ import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.scheduler.Job;
@@ -54,7 +53,7 @@ import java.lang.reflect.InvocationTargetException;
  */
 @Singleton
 @PersistentScheduling
-public class PersistentQuartzScheduler extends QuartzScheduler implements Initialization {
+public class PersistentQuartzScheduler extends QuartzScheduler {
 
   private static final String QUARTZ_PROPERTIES =
       "org.silverpeas.scheduler.settings.persistent-scheduler";

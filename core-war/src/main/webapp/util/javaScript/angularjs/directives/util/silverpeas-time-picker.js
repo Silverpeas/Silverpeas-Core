@@ -59,7 +59,7 @@
                 }
                 $time.hour($timeToSet.hour());
                 $time.minute($timeToSet.minute());
-                this.time = $time.format();
+                this.time = sp.moment.atZoneIdSimilarLocal($time, this.zoneId).format();
               } else {
                 if (!this.formattedTime) {
                   this.status.empty = true;

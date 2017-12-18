@@ -82,7 +82,7 @@ public class ContributionLocalizationBundle {
    * @param language the aimed language for bundles.
    * @return an initialized {@link ContributionLocalizationBundle} instance.
    */
-  public static ContributionLocalizationBundle getByIdAndLanguage(Contribution contribution,
+  public static ContributionLocalizationBundle getByInstanceAndLanguage(Contribution contribution,
       String language) {
     LocalizationBundle main = ResourceLocator
         .getLocalizationBundle("org.silverpeas.contribution.multilang.contribution", language);

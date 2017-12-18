@@ -26,6 +26,7 @@ package org.silverpeas.core.initialization;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.util.Comparator;
 import java.util.Set;
 
 /**
@@ -39,7 +40,9 @@ public class SilverpeasServiceInitialization {
     SilverLogger logger = SilverLogger.getLogger("silverpeas");
     logger.info("Silverpeas Services Initialization...");
     Set<Initialization> initializations = ServiceProvider.getAllServices(Initialization.class);
-    initializations.stream().forEach(initialization -> {
+    initializations.stream()
+        .sorted(Comparator.comparing(Initialization::getPriority))
+        .forEach(initialization -> {
       String simpleClassName = initialization.getClass().getSimpleName();
       try {
         logger.info(" -> {0} initialization...", simpleClassName);

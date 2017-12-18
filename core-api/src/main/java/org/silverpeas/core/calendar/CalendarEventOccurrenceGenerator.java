@@ -26,7 +26,7 @@ package org.silverpeas.core.calendar;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 /**
@@ -101,5 +101,5 @@ public interface CalendarEventOccurrenceGenerator {
    * @return the next occurrence of the given event, null if not {@link CalendarEventOccurrence}
    * can be computed.
    */
-  CalendarEventOccurrence generateNextOccurrencesOf(CalendarEvent event, OffsetDateTime from);
+  CalendarEventOccurrence generateNextOccurrenceOf(CalendarEvent event, ZonedDateTime from);
 }

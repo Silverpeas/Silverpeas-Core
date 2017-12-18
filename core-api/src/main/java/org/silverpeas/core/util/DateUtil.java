@@ -23,15 +23,16 @@
  */
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.date.Temporal;
-import org.silverpeas.core.date.DateTime;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
+import org.silverpeas.core.date.DateTime;
+import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.TimeUnit;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
@@ -703,6 +704,27 @@ public class DateUtil {
       return null;
     }
     return TIME_FORMATTER.format(calend.getTime());
+  }
+
+  /**
+   * Formats an {@link OffsetDateTime} instance with the right given language.
+   * @param dateTime an {@link OffsetDateTime} instance.
+   * @param language the language for formatting.
+   * @return the formatted String.
+   */
+  public static String formatDateAndTime(OffsetDateTime dateTime, String language) {
+    if (dateTime == null) {
+      return null;
+    }
+    boolean sameOffsetAsPlatform = dateTime.getOffset().getTotalSeconds() ==
+        OffsetDateTime.now().getOffset().getTotalSeconds();
+    final String datePattern = getDateOutputFormat(language).getPattern();
+    final String timePattern = getHourOutputFormat(language).getPattern();
+    final String formattedDateTime =
+        dateTime.format(DateTimeFormatter.ofPattern(datePattern + " " + timePattern));
+    return sameOffsetAsPlatform
+        ? formattedDateTime
+        : formattedDateTime + "(" + dateTime.toZonedDateTime().getZone() + ")";
   }
 
   /**

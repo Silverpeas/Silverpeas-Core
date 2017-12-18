@@ -61,7 +61,7 @@ class BackgroundProcessJobInitializer implements Initialization {
     }
 
     @Override
-    public void execute(final JobExecutionContext context) throws Exception {
+    public void execute(final JobExecutionContext context) {
       BackgroundProcessLogger.get().debug(() -> format(
           "cleaning quietly background process task with {0} {0,choice, 1#context| 1<contexts} " +
               "referenced", BackgroundProcessTask.synchronizedContexts.size()));

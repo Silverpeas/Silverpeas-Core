@@ -41,6 +41,17 @@ public interface Initialization {
   void init() throws Exception;
 
   /**
+   * Gets the priority level of the execution of {@link #init()} method.
+   * <p>
+   * The less is the value of the priority the more the priority is high.
+   * </p>
+   * @return an integer priority.
+   */
+  default int getPriority() {
+    return 100;
+  }
+
+  /**
    * Releases the previously initialized resources at Silverpeas shutdown. The implementation of
    * this method is optional. By default it does nothing.
    * @throws java.lang.Exception if an error occurs during the shutdown process. In this case, a log

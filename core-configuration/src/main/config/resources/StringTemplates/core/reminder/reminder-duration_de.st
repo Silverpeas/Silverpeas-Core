@@ -1,0 +1,1 @@
+You set a reminder <b>$reminderTitle$</b> before $contributionTitle$ ($reminderContributionDate$).

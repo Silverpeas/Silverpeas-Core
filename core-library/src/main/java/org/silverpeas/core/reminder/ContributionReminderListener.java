@@ -40,14 +40,10 @@ public class ContributionReminderListener
     implements ContributionModification, ContributionDeletion {
   @Override
   public void update(final Contribution before, final Contribution after) {
-    final List<Reminder> reminders = getReminders(before);
-    reminders.forEach(r -> {
-      if (r instanceof DurationReminder) {
-        final DurationReminder durationReminder = (DurationReminder) r;
-        durationReminder.unschedule();
-        durationReminder.schedule();
-      }
-    });
+    getReminders(before)
+        .stream()
+        .filter(Reminder::isScheduled)
+        .forEach(Reminder::schedule);
   }
 
   @Override

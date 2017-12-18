@@ -30,27 +30,45 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
+import org.silverpeas.core.admin.service.DefaultOrganizationController;
+import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.personalization.UserMenuDisplay;
+import org.silverpeas.core.personalization.UserPreferences;
+import org.silverpeas.core.personalization.service.DefaultPersonalizationService;
+import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.scheduler.SchedulerInitializer;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.util.ServiceProvider;
 
+import javax.annotation.Priority;
+import javax.enterprise.inject.Alternative;
+import javax.inject.Singleton;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 /**
  * Integration tests on the reminders
@@ -87,7 +105,8 @@ public class ReminderIT {
               .addAsResource("org/silverpeas/core/reminder/create_table.sql")
               .addAsResource("org/silverpeas/core/reminder/reminder-dataset.sql")
               .addPackages(true, "org.silverpeas.core.initialization")
-              .addPackages(false, "org.silverpeas.core.contribution");
+              .addPackages(false, "org.silverpeas.core.contribution")
+              .addPackages(true, "org.silverpeas.core.personalization");
         })
         .build();
   }
@@ -98,6 +117,13 @@ public class ReminderIT {
     SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
     cache.put(CACHE_KEY, (ComponentInstanceContributionManager) contributionId -> Optional.of(
         new CustomContrib(contributionId).authoredBy(User.getById(USER_ID))));
+
+    when(StubbedPersonalizationService.getMock().getUserSettings(anyString()))
+        .then((Answer<UserPreferences>) i -> {
+          final String userId = (String) i.getArguments()[0];
+          return new UserPreferences(userId, "fr", ZoneId.of("UTC"), "", "", false, false, false,
+              UserMenuDisplay.DEFAULT);
+        });
   }
 
   @Test
@@ -159,11 +185,32 @@ public class ReminderIT {
             .schedule();
     assertThat(reminder.isTriggered(), is(false));
 
-    await().atMost(31, SECONDS).until(isTriggered(reminder));
+    await().pollInterval(5, SECONDS).atMost(31, SECONDS).until(isTriggered(reminder));
   }
 
   private Callable<Boolean> isTriggered(final Reminder reminder) {
     return () -> Reminder.getById(reminder.getId()).isTriggered();
+  }
+
+  /**
+   * @author Yohann Chastagnier
+   */
+  @Singleton
+  @Alternative
+  @Priority(APPLICATION + 10)
+  public static class StubbedPersonalizationService extends DefaultPersonalizationService {
+
+    private PersonalizationService mock = mock(PersonalizationService.class);
+
+    static PersonalizationService getMock() {
+      return ((StubbedPersonalizationService) ServiceProvider
+          .getService(PersonalizationService.class)).mock;
+    }
+
+    @Override
+    public UserPreferences getUserSettings(final String userId) {
+      return mock.getUserSettings(userId);
+    }
   }
 }
   

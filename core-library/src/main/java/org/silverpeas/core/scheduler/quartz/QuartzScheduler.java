@@ -29,6 +29,7 @@ import org.quartz.JobKey;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
 import org.quartz.impl.StdSchedulerFactory;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.EmptyJob;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.ScheduledJob;
@@ -52,7 +53,7 @@ import static org.silverpeas.core.util.ArgumentAssertion.assertNotNull;
  * Quartz counterparts. The way the jobs are stored depends on the concrete type of this abstract
  * class. It defines the job scheduling mechanism by using the Quartz API.
  */
-public abstract class QuartzScheduler implements Scheduler {
+public abstract class QuartzScheduler implements Scheduler, Initialization {
 
   /**
    * The key in the job data map that refers to the job implementation in the scheduler. This job
@@ -75,6 +76,11 @@ public abstract class QuartzScheduler implements Scheduler {
   private org.quartz.Scheduler quartz;
 
   protected QuartzScheduler() {
+  }
+
+  @Override
+  public int getPriority() {
+    return 0;
   }
 
   /**
