@@ -30,6 +30,7 @@ import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 
 /**
  * A reminder about any contribution that is triggered at a specified date time.
@@ -39,7 +40,7 @@ import java.time.OffsetDateTime;
 @DiscriminatorValue("datetime")
 public class DateTimeReminder extends Reminder {
 
-  @Column(name = "dateTime", nullable = false)
+  @Column(name = "trigger_datetime", nullable = false)
   private OffsetDateTime dateTime;
 
   /**
@@ -64,7 +65,8 @@ public class DateTimeReminder extends Reminder {
   }
 
   /**
-   * Gets the date time at which this reminder will be triggered.
+   * Gets the date time at which this reminder will be triggered. The date time is expressed in
+   * UTC/Greenwich.
    * @return a {@link OffsetDateTime} value.
    */
   public OffsetDateTime getDateTime() {
@@ -72,12 +74,13 @@ public class DateTimeReminder extends Reminder {
   }
 
   /**
-   * Triggers this reminder at the specified date time.
+   * Triggers this reminder at the specified date time. The timezone of the specified date time
+   * will be set in UTC/Greenwich.
    * @param dateTime the date time at which this reminder will be triggered once scheduled.
    * @return itself.
    */
   public DateTimeReminder triggerAt(final OffsetDateTime dateTime) {
-    this.dateTime = dateTime;
+    this.dateTime = dateTime.withOffsetSameInstant(ZoneOffset.UTC);
     return this;
   }
 

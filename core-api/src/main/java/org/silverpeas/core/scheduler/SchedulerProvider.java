@@ -35,11 +35,6 @@ import javax.enterprise.util.AnnotationLiteral;
  */
 public class SchedulerProvider {
 
-  /**
-   * The name of the scheduling system in Silverpeas.
-   */
-  public static final String MODULE_NAME = "scheduler";
-
   private SchedulerProvider() {
 
   }

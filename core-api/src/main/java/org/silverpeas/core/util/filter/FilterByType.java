@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.util.filter;
 
+import org.silverpeas.core.util.Mutable;
+
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -39,10 +42,17 @@ public class FilterByType implements Filter<Class<?>, Object> {
 
   /**
    * Constructs a filter by type on the specified value.
-   * @param value the value against which the predicates will be played.
+   * @param value the value against which the predicates will be played. If the value is an
+   * {@link Optional} or a {@link Mutable} instance, then only its contained value is considered.
    */
   public FilterByType(final Object value) {
-    this.value = value;
+    if (value instanceof Optional) {
+      this.value = ((Optional) value).orElse(null);
+    } else if (value instanceof Mutable) {
+      this.value = ((Mutable) value).orElse(null);
+    } else {
+      this.value = value;
+    }
   }
 
 

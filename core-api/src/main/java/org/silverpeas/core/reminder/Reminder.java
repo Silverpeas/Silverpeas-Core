@@ -38,10 +38,13 @@ import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Table;
 import java.text.MessageFormat;
 import java.time.OffsetDateTime;
 import java.util.Collections;
@@ -54,12 +57,16 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "reminderType")
+@Table(name = "sb_reminder")
 public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> {
 
   private static final MessageFormat SCHEDULED_JOB_NAME = new MessageFormat("Reminder#{0}");
 
+  @Embedded
   private ContributionIdentifier contributionId;
+  @Column(name = "userId", nullable = false, length = 40)
   private String userId;
+  @Column(name = "text")
   private String text;
 
   /**
@@ -147,8 +154,7 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
    * otherwise.
    */
   public boolean isScheduled() {
-    return scheduler()
-        .isJobScheduled(SCHEDULED_JOB_NAME.format(new Object[]{getId()}));
+    return isScheduledWith(getScheduler());
   }
 
   /**
@@ -160,13 +166,14 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
   public <T extends Reminder> T schedule() {
     OffsetDateTime dateTime = getTriggeringDate();
     assert dateTime != null;
-    return Transaction.getTransaction().perform(() -> {
-      if (isPersisted() && isScheduled()) {
-        scheduler().unscheduleJob(getJobName());
+    Scheduler scheduler = getScheduler();
+    return Transaction.performInOne(() -> {
+      if (isPersisted() && isScheduledWith(scheduler)) {
+        scheduler.unscheduleJob(getJobName());
       }
       Reminder me = ReminderRepository.get().save(this);
       JobTrigger trigger = JobTrigger.triggerAt(dateTime);
-      scheduler().scheduleJob(getJobName(), trigger, ReminderProcess.get());
+      scheduler.scheduleJob(getJobName(), trigger, ReminderProcess.get());
       return (T) me;
     });
   }
@@ -201,8 +208,12 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, UuidIdentifier> 
   private String getJobName() {
     return SCHEDULED_JOB_NAME.format(new Object[]{getId()});
   }
+
+  private boolean isScheduledWith(final Scheduler scheduler) {
+    return scheduler.isJobScheduled(SCHEDULED_JOB_NAME.format(new Object[]{getId()}));
+  }
   
-  private Scheduler scheduler() {
+  private Scheduler getScheduler() {
     return SchedulerProvider.getPersistentScheduler();
   }
 

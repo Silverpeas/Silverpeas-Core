@@ -31,6 +31,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.scheduler.SchedulerInitializer.SchedulerType;
 import org.silverpeas.core.scheduler.trigger.CronJobTrigger;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.test.WarBuilder4LibCore;
@@ -88,6 +89,7 @@ public class PersistentSchedulerIT {
 
   @Before
   public void setUp() {
+    SchedulerInitializer.get().init(SchedulerType.PERSISTENT);
     scheduler = SchedulerProvider.getPersistentScheduler();
     assertThat(scheduler, notNullValue());
     assertThat(eventHandler, notNullValue());

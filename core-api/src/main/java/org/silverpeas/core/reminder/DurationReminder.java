@@ -29,8 +29,11 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.ContributionModel;
 import org.silverpeas.core.date.TimeUnit;
 
+import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -60,8 +63,12 @@ import static java.util.Objects.requireNonNull;
 @DiscriminatorValue("duration")
 public class DurationReminder extends Reminder {
 
+  @Column(name = "trigger_durationTime")
   private Integer duration;
+  @Column(name = "trigger_durationUnit")
+  @Enumerated(EnumType.STRING)
   private TimeUnit timeUnit;
+  @Column(name = "trigger_durationProp")
   private String contributionProperty;
 
   /**

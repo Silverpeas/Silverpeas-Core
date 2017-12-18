@@ -28,6 +28,9 @@ import org.silverpeas.core.util.filter.FilterByType;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * The default implementation of the {@link ContributionModel} interface. In this implementation,
@@ -46,12 +49,27 @@ public class DefaultContributionModel<C extends Contribution> implements Contrib
 
   @Override
   public FilterByType filterByType(final String property, final Object... parameters) {
-    return new FilterByType(getProperty(property, parameters));
+    Object value;
+    try {
+      value = getProperty(property, parameters);
+    } catch (NoSuchPropertyException e) {
+      value = invokeProperty(property, parameters);
+    }
+    return new FilterByType(value);
   }
 
   @Override
   public <T> T getProperty(final String property, final Object... parameters) {
-    return getByReflection(property);
+    return getByReflection(property, parameters);
+  }
+
+  @Override
+  public <T> T invokeProperty(final String property, final Object... parameters) {
+    try {
+      return invoke(property, parameters);
+    } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+      return noSuchPropertyException(property, parameters);
+    }
   }
 
   /**
@@ -63,27 +81,63 @@ public class DefaultContributionModel<C extends Contribution> implements Contrib
    */
   @SuppressWarnings("unchecked")
   protected <T> T getByReflection(final String property, final Object... parameters) {
-    String propName = property;
     try {
-      if (Character.isLowerCase(property.charAt(0))) {
-        propName = "get" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
-      }
-      Method method = contribution.getClass().getDeclaredMethod(propName);
-      return (T) method.invoke(contribution, parameters);
+      return invokeAccessor(property, parameters);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-      if (Character.isUpperCase(property.charAt(0))) {
-        propName = Character.toLowerCase(property.charAt(0)) + property.substring(1);
-      }
       try {
-        Field field = contribution.getClass().getDeclaredField(propName);
-        field.setAccessible(true);
-        return (T) field.get(contribution);
+        return accessProperty(property);
       } catch (NoSuchFieldException | IllegalAccessException e1) {
-        throw new NoSuchPropertyException(
-            "The property " + property + " isn't supported by the contribution " +
-                contribution.getClass().getSimpleName());
+        return noSuchPropertyException(property, parameters);
       }
     }
+  }
+
+  private <T> T invokeAccessor(final String property, final Object... parameters)
+      throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    if (property.startsWith("is") || property.startsWith("get") || property.startsWith("has")) {
+      return invoke(property, parameters);
+    }
+
+    String propName = "get" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
+    try {
+      return invoke(propName, parameters);
+    } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException e) {
+      propName = "is" + Character.toUpperCase(property.charAt(0)) + property.substring(1);
+      return invoke(propName, parameters);
+    }
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T> T invoke(final String property, final Object... parameters)
+      throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+    Class[] paramTypes = Stream.of(parameters)
+        .map(Object::getClass)
+        .collect(Collectors.toList())
+        .toArray(new Class[parameters.length]);
+    Method method = contribution.getClass().getDeclaredMethod(property, paramTypes);
+    return (T) method.invoke(contribution, parameters);
+  }
+
+  @SuppressWarnings("unchecked")
+  private <T> T accessProperty(final String property)
+      throws NoSuchFieldException, IllegalAccessException {
+    String propName = property;
+    if (Character.isUpperCase(property.charAt(0))) {
+      propName = Character.toLowerCase(property.charAt(0)) + property.substring(1);
+    }
+    Field field = contribution.getClass().getDeclaredField(propName);
+    field.setAccessible(true);
+    return (T) field.get(contribution);
+  }
+
+  private <T> T noSuchPropertyException(final String property, final Object[] parameters) {
+    String paramsMsg = "";
+    if (parameters.length > 0) {
+      paramsMsg = " with as parameters " + Arrays.toString(parameters);
+    }
+    throw new NoSuchPropertyException(
+        "The property " + property + " isn't supported by the contribution " +
+            contribution.getClass().getSimpleName() + paramsMsg);
   }
 
   /**

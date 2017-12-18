@@ -27,11 +27,10 @@ import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.scheduler.SchedulerInitializer.SchedulerType;
 import org.silverpeas.core.scheduler.trigger.CronJobTrigger;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.scheduler.trigger.TimeUnit;
@@ -61,28 +60,19 @@ import static org.junit.Assert.*;
  * </p>
  */
 @RunWith(Arquillian.class)
-public class SchedulerIT {
+public class VolatileSchedulerIT {
 
   private static final String JOB_NAME = "test";
   private MySchedulingEventListener eventHandler;
   private boolean isJobExecuted;
   private Scheduler scheduler = null;
 
-  public SchedulerIT() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
+  public VolatileSchedulerIT() {
   }
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(SchedulerIT.class)
+    return WarBuilder4LibCore.onWarForTestClass(VolatileSchedulerIT.class)
         .addCommonBasicUtilities()
         .addSchedulerFeatures()
         .addMavenDependencies("org.awaitility:awaitility", "org.antlr:stringtemplate")
@@ -93,6 +83,7 @@ public class SchedulerIT {
 
   @Before
   public void setUp() {
+    SchedulerInitializer.get().init(SchedulerType.VOLATILE);
     scheduler = SchedulerProvider.getVolatileScheduler();
     assertThat(scheduler, notNullValue());
     eventHandler = new MySchedulingEventListener();
@@ -365,7 +356,7 @@ public class SchedulerIT {
   protected void scheduleAJob(final String jobName) {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
     try {
-      ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
+      ScheduledJob job = scheduler.scheduleJob(jobName, trigger, eventHandler);
       assertNotNull(job);
     } catch (SchedulerException ex) {
       fail(ex.getMessage());

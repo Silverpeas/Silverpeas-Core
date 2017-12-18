@@ -27,6 +27,7 @@ import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.TransactionRuntimeException;
 import org.silverpeas.core.scheduler.Job;
@@ -37,6 +38,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.annotation.PostConstruct;
+import javax.inject.Singleton;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
@@ -50,8 +52,9 @@ import java.lang.reflect.InvocationTargetException;
  * such scheduler should be use with care and only for very short-time jobs.
  * @author mmoquillon
  */
+@Singleton
 @PersistentScheduling
-public class PersistentQuartzScheduler extends QuartzScheduler {
+public class PersistentQuartzScheduler extends QuartzScheduler implements Initialization {
 
   private static final String QUARTZ_PROPERTIES =
       "org.silverpeas.scheduler.settings.persistent-scheduler";
@@ -68,6 +71,16 @@ public class PersistentQuartzScheduler extends QuartzScheduler {
   @PostConstruct
   private void bootstrapSchedulingBackend() {
     setUpQuartzScheduler(QUARTZ_PROPERTIES);
+  }
+
+  @Override
+  public void init() {
+    setUpQuartzScheduler(QUARTZ_PROPERTIES);
+  }
+
+  @Override
+  public void release() throws Exception {
+    shutdown();
   }
 
   @Override

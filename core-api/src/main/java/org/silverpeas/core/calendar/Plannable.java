@@ -59,7 +59,7 @@ public interface Plannable extends Serializable {
    * If this plannable object is on all days, then gets a date. Otherwise gets a datetime in
    * UTC/Greenwich.
    * @return a temporal instance of {@link LocalDate} if the object is on all the day or a temporal
-   * instalce of {@link OffsetDateTime}) otherwise.
+   * instance of {@link OffsetDateTime}) otherwise.
    */
   Temporal getStartDate();
 

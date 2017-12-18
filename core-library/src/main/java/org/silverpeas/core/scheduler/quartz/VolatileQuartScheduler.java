@@ -27,11 +27,12 @@ import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 
-import javax.annotation.PostConstruct;
 import javax.enterprise.inject.Default;
+import javax.inject.Singleton;
 
 /**
  * A volatile scheduler implementation using Quartz as scheduling backend. It wraps a Quartz
@@ -41,7 +42,8 @@ import javax.enterprise.inject.Default;
  * scheduled again at the scheduler starting.
  */
 @Default
-public class VolatileQuartScheduler extends QuartzScheduler {
+@Singleton
+public class VolatileQuartScheduler extends QuartzScheduler implements Initialization {
 
   /**
    * Constructs a new volatile scheduler.
@@ -49,12 +51,14 @@ public class VolatileQuartScheduler extends QuartzScheduler {
   protected VolatileQuartScheduler() {
   }
 
-  /**
-   * Bootstraps the Quartz scheduler backend.
-   */
-  @PostConstruct
-  private void bootstrapSchedulingBackend() {
+  @Override
+  public void init() {
     setUpQuartzScheduler(null);
+  }
+
+  @Override
+  public void release() throws Exception {
+    shutdown();
   }
 
   @Override
