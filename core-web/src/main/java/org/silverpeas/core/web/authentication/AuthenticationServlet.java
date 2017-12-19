@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.web.authentication;
 
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
@@ -146,14 +148,17 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       storeDomain(response, authenticationParameters.getDomainId(),
           authenticationParameters.isSecuredAccess());
     }
-    storeLogin(response, authenticationParameters.isNewEncryptionMode(),
-        authenticationParameters.getLogin(),
-        authenticationParameters.isSecuredAccess());
 
-    // if required by user, store password in cookie
-    storePassword(response, authenticationParameters.getStoredPassword(),
-        authenticationParameters.isNewEncryptionMode(),
-        authenticationParameters.getClearPassword(), authenticationParameters.isSecuredAccess());
+    User anonymous = UserDetail.getAnonymousUser();
+    if (anonymous == null || !anonymous.getLogin().equals(authenticationParameters.getLogin())) {
+      storeLogin(response, authenticationParameters.isNewEncryptionMode(),
+          authenticationParameters.getLogin(), authenticationParameters.isSecuredAccess());
+
+      // if required by user, store password in cookie
+      storePassword(response, authenticationParameters.getStoredPassword(),
+          authenticationParameters.isNewEncryptionMode(),
+          authenticationParameters.getClearPassword(), authenticationParameters.isSecuredAccess());
+    }
 
     if (request.getAttribute("skipTermsOfServiceAcceptance") == null) {
       UserMustAcceptTermsOfServiceVerifier verifier = AuthenticationUserVerifierFactory.

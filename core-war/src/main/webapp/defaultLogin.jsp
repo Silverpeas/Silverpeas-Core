@@ -23,7 +23,6 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
-<%@page import="org.silverpeas.core.ui.DisplayI18NHelper" %>
 <%@ page import="org.silverpeas.core.util.LocalizationBundle" %>
 <%@ page import="org.silverpeas.core.util.StringUtil" %>
 <%@ page import="org.silverpeas.core.web.util.DomainDetector" %>

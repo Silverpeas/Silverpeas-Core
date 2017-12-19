@@ -29,6 +29,7 @@ import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
@@ -141,8 +142,15 @@ public class AutoRedirectServlet extends HttpServlet {
       } else {
         if (isAccessComponentForbidden(componentId, mainController) ||
             isAccessSpaceForbidden(spaceId, mainController)) {
-          response.sendRedirect(
-              URLUtil.getFullApplicationURL(request) + "/admin/jsp/accessForbidden.jsp");
+
+          HttpRequest spRequest = HttpRequest.decorate(request);
+          if (spRequest.isWithinAnonymousUserSession()) {
+            response.sendRedirect(
+                URLUtil.getFullApplicationURL(request) + "/Login.jsp");
+          } else {
+            response.sendRedirect(
+                URLUtil.getFullApplicationURL(request) + "/admin/jsp/accessForbidden.jsp");
+          }
         } else if (mainController.isAppInMaintenance() && !mainController.getCurrentUserDetail().
             isAccessAdmin()) {
           out.println("<script>");
