@@ -202,7 +202,7 @@
       componentIdFilter : '${componentIdFilter}',
       roleFilter : roleFilter,
       groupFilter : groupFilter,
-      initialQuery : '${initialQuery}',
+      initialQuery : '${silfn:escapeJs(initialQuery)}',
       navigationalBehavior : ${navigationalBehavior},
       doNotSelectAutomaticallyOnDropDownOpen : ${doNotSelectAutomaticallyOnDropDownOpen},
       noUserPanel : ${noUserPanel},

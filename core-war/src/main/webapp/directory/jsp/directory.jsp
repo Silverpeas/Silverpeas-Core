@@ -52,7 +52,7 @@
 <c:set var="memberPage" value="${requestScope.memberPage}"/>
 <jsp:useBean id="memberPage" type="org.silverpeas.core.admin.PaginationPage"/>
 <c:set var="userTotalNumber" value="${requestScope.userTotalNumber}"/>
-<c:set var="query" value="${silfn:escapeHtml(requestScope.Query)}"/>
+<c:set var="query" value="${requestScope.Query}"/>
 <c:set var="sort" value="${requestScope.Sort}"/>
 <c:set var="scope" value="${requestScope.Scope}"/>
 <c:set var="view" value="${silfn:defaultString(requestScope.View, VIEW_ALL)}"/>
