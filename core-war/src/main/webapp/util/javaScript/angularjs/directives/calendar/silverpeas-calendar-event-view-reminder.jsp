@@ -34,7 +34,7 @@
 
 <fmt:message var="reminderLabel" key="GML.reminder"/>
 
-<div class="bgDegradeGris">
+<div class="bgDegradeGris" ng-show="$ctrl.__reminderShown">
   <div class="bgDegradeGris header">
     <h4 class="clean">${reminderLabel}</h4>
   </div>
@@ -43,6 +43,7 @@
                                       reminder="$ctrl.reminder"
                                       contribution-id="$ctrl.cId"
                                       contribution-property="'NEXT_START_DATE'"
+                                      shown="$ctrl.__reminderShown"
                                       main-label="">
     </silverpeas-contribution-reminder>
   </div>

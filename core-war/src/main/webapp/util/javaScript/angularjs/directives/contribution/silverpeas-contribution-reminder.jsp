@@ -41,16 +41,20 @@
 
 <script type="text/ng-template" id="###silverpeas.contribution.reminder.DURATION">
   <label ng-if="$ctrl.mainLabel">{{$ctrl.mainLabel === 'defaultLabel' ? '${reminderLabel}' : $ctrl.mainLabel}}</label>
-  <silverpeas-contribution-reminder-duration-item ng-if="$ctrl.reminder"
-                                                  reminder="$ctrl.reminder"
-                                                  autonomous="$ctrl.autonomous"
-                                                  on-updated="$ctrl.reminder = reminder;$ctrl.onUpdated({reminder:reminder})"
-                                                  on-deleted="$ctrl.reminder = undefined;$ctrl.onDeleted()"></silverpeas-contribution-reminder-duration-item>
+  <silverpeas-contribution-reminder-duration-item
+      ng-if="$ctrl.reminder"
+      reminder="$ctrl.reminder"
+      possible-durations="$ctrl.possibleDurations"
+      default-duration-index="$ctrl.defaultDurationIndex"
+      autonomous="$ctrl.autonomous"
+      on-updated="$ctrl.onUpdatedHook()"
+      on-deleted="$ctrl.onDeletedHook()"></silverpeas-contribution-reminder-duration-item>
 </script>
 
-<silverpeas-contribution-reminder-management api="$ctrl.reminderApi"
-                                             on-created="$ctrl.reminder = reminder;$ctrl.onCreated({reminder:reminder})"></silverpeas-contribution-reminder-management>
-<div ng-if="$ctrl.cId">
+<silverpeas-contribution-reminder-management
+    api="$ctrl.reminderApi"
+    on-created="$ctrl.reminder = reminder;$ctrl.onCreated({reminder:reminder})"></silverpeas-contribution-reminder-management>
+<div ng-if="$ctrl.shown">
   <a href="javascript:void(0)" class="add-action" ng-click="$ctrl.add()" ng-if="$ctrl.addLabel && !$ctrl.reminder">{{$ctrl.addLabel === 'defaultLabel' ? '${addLabel}' : $ctrl.addLabel}}</a>
   <div ng-if="$ctrl.mode == 'DATETIME' && $ctrl.reminder" ng-include="'###silverpeas.contribution.reminder.DATETIME'"></div>
   <div ng-if="$ctrl.mode == 'DURATION' && $ctrl.reminder" ng-include="'###silverpeas.contribution.reminder.DURATION'"></div>

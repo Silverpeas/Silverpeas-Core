@@ -24,12 +24,15 @@
 package org.silverpeas.core.reminder;
 
 import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.reminder.usernotification.ReminderUserNotificationSender;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 /**
  * The process to send a notification to the user aimed by a reminder.
@@ -47,10 +50,11 @@ public class ReminderProcess implements SchedulerEventListener {
 
   @Override
   public void triggerFired(final SchedulerEvent anEvent) {
+    final ZonedDateTime now = ZonedDateTime.now();
     final String reminderId = anEvent.getJobExecutionContext().getJobName();
     Reminder reminder = repository.getById(reminderId);
     reminder.triggered();
-    notifyUserAbout(reminder);
+    notifyUserAbout(reminder, now);
     Transaction.performInOne(() -> repository.save(reminder));
     if (reminder.isSchedulable()) {
       reminder.schedule();
@@ -67,8 +71,8 @@ public class ReminderProcess implements SchedulerEventListener {
 
   }
 
-  private void notifyUserAbout(final Reminder reminder) {
-
+  private void notifyUserAbout(final Reminder reminder, final ZonedDateTime now) {
+    ReminderUserNotificationSender.get().sendAbout(reminder, now);
   }
 }
   

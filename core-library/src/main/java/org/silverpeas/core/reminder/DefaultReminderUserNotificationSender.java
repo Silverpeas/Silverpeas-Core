@@ -36,7 +36,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.filter.FilterByType;
 
 import javax.inject.Singleton;
-import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Supplier;
@@ -51,8 +51,8 @@ import static org.silverpeas.core.util.DateUtil.formatDateAndTime;
 public class DefaultReminderUserNotificationSender implements ReminderUserNotificationSender {
 
   @Override
-  public void send(final Reminder reminder) {
-    new ContributionReminderUserNotification(reminder).build().send();
+  public void sendAbout(final Reminder reminder, final ZonedDateTime now) {
+    new ContributionReminderUserNotification(reminder, now).build().send();
   }
 
   /**
@@ -63,27 +63,24 @@ public class DefaultReminderUserNotificationSender implements ReminderUserNotifi
 
     private final Reminder reminder;
     private final User receiver;
+    private final ZonedDateTime now;
     private final Supplier<IllegalArgumentException> notHandledReminderType;
-    private final OffsetDateTime reminderContributionDate;
+    private final ZonedDateTime reminderContributionDate;
 
     @SuppressWarnings("ConstantConditions")
-    private ContributionReminderUserNotification(final Reminder reminder) {
+    private ContributionReminderUserNotification(final Reminder reminder, final ZonedDateTime now) {
       super(reminder.getContribution());
       this.reminder = reminder;
       this.receiver = User.getById(reminder.getUserId());
+      this.now = now;
       notHandledReminderType = () -> new IllegalArgumentException(
           "Reminder type " + this.reminder.getClass() + " is not handled");
-      reminderContributionDate =  new FilterByType(getResource())
+      reminderContributionDate =  new FilterByType(reminder)
           .matchFirst(DurationReminder.class::equals, r -> {
             DurationReminder durationReminder = (DurationReminder) r;
-            return durationReminder.getTriggeringDate()
-                .plus(durationReminder.getDuration(), durationReminder.getTimeUnit().toChronoUnit())
-                .minusMinutes(5);
+            return now.plus(durationReminder.getDuration(), durationReminder.getTimeUnit().toChronoUnit());
           })
-          .matchFirst(DateTimeReminder.class::equals, r -> {
-            DateTimeReminder dateTimeReminder = (DateTimeReminder) r;
-            return dateTimeReminder.getTriggeringDate();
-          })
+          .matchFirst(DateTimeReminder.class::equals, r -> null)
           .result()
           .orElseThrow(notHandledReminderType);
     }
@@ -114,7 +111,9 @@ public class DefaultReminderUserNotificationSender implements ReminderUserNotifi
               .getUiMessageTitleByType())
           .result()
           .orElseThrow(notHandledReminderType);
-      final String formattedReminderContributionDate = formatDateAndTime(reminderContributionDate, language);
+      final String formattedReminderContributionDate = reminderContributionDate != null
+          ? formatDateAndTime(reminderContributionDate, language)
+          : "N/A";
       template.setAttribute("contributionTitle", contributionTitle);
       template.setAttribute("reminderContributionDate", formattedReminderContributionDate);
       getNotificationMetaData().addLanguage(language, getMessagesIn(language)

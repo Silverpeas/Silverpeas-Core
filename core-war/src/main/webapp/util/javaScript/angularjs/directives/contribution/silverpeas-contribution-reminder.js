@@ -129,7 +129,7 @@
    * @param
    */
   angular.module('silverpeas.directives').directive('silverpeasContributionReminder',
-      ['ContributionReminderService', function(ContributionReminderService) {
+      ['ContributionReminderService', '$timeout', function(ContributionReminderService, $timeout) {
         return {
           templateUrl : webContext +
           '/util/javaScript/angularjs/directives/contribution/silverpeas-contribution-reminder.jsp',
@@ -139,6 +139,7 @@
             contributionId : '=',
             contributionProperty : '=',
             reminder : '=?',
+            shown : '=?',
             mode : '@',
             autonomous : '=?',
             onCreated : '&?',
@@ -154,31 +155,52 @@
             var __refresh = function(contributionId) {
               if (contributionId) {
                 var cId = sp.contribution.id.from(contributionId);
-                ContributionReminderService.getByContributionId(cId).then(function(reminders) {
-                  if (reminders.length) {
-                    var reminder = reminders[0];
+                var durationPromise = __promiseDurationInit(this.possibleDurations);
+                var reminderPromise = ContributionReminderService.getByContributionId(cId);
+                return sp.promise.whenAllResolved([durationPromise, reminderPromise]).then(function(values) {
+                  this.possibleDurations = values[0];
+                  var possibleDurationsLength = this.possibleDurations.length;
+                  if (possibleDurationsLength > 0) {
+                    this.defaultDurationIndex = DEFAULT_DURATION_INDEX < possibleDurationsLength
+                        ? DEFAULT_DURATION_INDEX
+                        : possibleDurationsLength - 1;
+                  }
+                  var __reminders = values[1];
+                  if (__reminders.length) {
+                    var reminder = __reminders[0];
                     this.reminder = reminder;
                   } else {
                     this.reminder = undefined;
                   }
+                  $timeout(function() {
+                    if (this.mode === 'DATETIME'
+                        || this.reminder
+                        || this.possibleDurations.length > 0) {
+                      // Activating the plugin
+                      // if the mode is DATETIME
+                      // or if it exists an existing reminder on contribution
+                      // or if it exists possible duration reminders
+                      this.shown = true;
+                    }
+                  }.bind(this), 0);
                 }.bind(this));
-                this.cId = cId;
               } else {
                 this.reminder = undefined;
-                this.cId = undefined;
+                this.shown = false;
+                return sp.promise.resolveDirectlyWith();
               }
             }.bind(this);
 
             this.api = {
               refresh : function () {
-                __refresh(this.cId);
+                __refresh(this.contributionId);
               }.bind(this)
             };
 
             this.add = function() {
-              var durationAndUnit = POSSIBLE_DURATIONS[DEFAULT_DURATION_INDEX];
+              var durationAndUnit = this.possibleDurations[this.defaultDurationIndex];
               var reminderToAdd = {
-                contributionId : this.cId,
+                contributionId : sp.contribution.id.from(this.contributionId),
                 contributionProperty : this.contributionProperty
                     ? this.contributionProperty
                     : "DEFAULT_REMINDER",
@@ -191,6 +213,16 @@
                 this.reminder = this.reminderApi.newDurationOne(reminderToAdd);
               }
             };
+
+            this.onUpdatedHook = function(reminder) {
+              this.api.refresh();
+              this.onUpdated({reminder : reminder});
+            }.bind(this);
+
+            this.onDeletedHook = function() {
+              this.api.refresh();
+              this.onDeleted();
+            }.bind(this);
 
             $scope.$watch('$ctrl.contributionId', function(contributionId) {
               __refresh(contributionId);
@@ -208,6 +240,26 @@
               }
               if (typeof this.autonomous === 'undefined') {
                 this.autonomous = true;
+              }
+            }.bind(this);
+
+            var __promiseDurationInit = function() {
+              if (this.mode == 'DURATION') {
+                return ContributionReminderService.getContributionPossibleDurations(this.contributionId,
+                    this.contributionProperty)
+                    .then(// SUCCESS CASE
+                        function(possibleDurationids) {
+                          var _durations = [];
+                          for (var i = 0; i < possibleDurationids.length; i++) {
+                            _durations.push(POSSIBLE_DURATIONS[i]);
+                          }
+                          return _durations;
+                        }.bind(this), // ERROR CASE
+                        function() {
+                          return [];
+                        }.bind(this));
+              } else {
+                return sp.promise.resolveDirectlyWith([]);
               }
             }.bind(this);
           }]
@@ -235,6 +287,8 @@
           restrict : 'E',
           scope : {
             reminder : '=',
+            possibleDurations : '=',
+            defaultDurationIndex : '=',
             autonomous : '=',
             onCreated : '&?',
             onUpdated : '&?',
@@ -245,13 +299,12 @@
           controller : ['$scope', function($scope) {
 
             this.getReminderLabel = function() {
-              return POSSIBLE_DURATIONS.getElement(
-                  {ui_id : this.selectedDurationAndUnit}, 'ui_id=ui_id').label;
+              var durationAndUnit = __getDurationAndUnitById(POSSIBLE_DURATIONS, this.selectedDurationAndUnit);
+              return durationAndUnit ? durationAndUnit.label : '';
             };
 
             this.modify = function() {
-              var durationAndUnit = POSSIBLE_DURATIONS.getElement(
-                  {ui_id : this.selectedDurationAndUnit}, 'ui_id=ui_id');
+              var durationAndUnit = __getDurationAndUnitById(POSSIBLE_DURATIONS, this.selectedDurationAndUnit);
               var reminderToUpdate = extendsObject({}, this.reminder, durationAndUnit);
               if (this.autonomous) {
                 this.reminderApi.modifyDurationOne(reminderToUpdate)["catch"](function() {
@@ -273,16 +326,33 @@
 
             $scope.$watch('$ctrl.reminder', function() {
               if (this.reminder) {
-                this.selectedDurationAndUnit = this.reminder.duration + this.reminder.timeUnit;
+                var selectedDurationAndUnit = this.reminder.duration + this.reminder.timeUnit;
+                if (!__getDurationAndUnitById(this.possibleDurations, selectedDurationAndUnit)) {
+                  if (this.possibleDurations.length === 0) {
+                    this.reminder.canBeModified = false;
+                  } else {
+                    var __newPossibleDurations = [];
+                    Array.prototype.push.apply(__newPossibleDurations, this.possibleDurations);
+                    __newPossibleDurations.push(__getDurationAndUnitById(POSSIBLE_DURATIONS, selectedDurationAndUnit));
+                    this.possibleDurations = __newPossibleDurations;
+                  }
+                }
+                this.selectedDurationAndUnit = selectedDurationAndUnit;
               } else {
-                this.selectedDurationAndUnit = POSSIBLE_DURATIONS[DEFAULT_DURATION_INDEX].ui_id;
+                this.selectedDurationAndUnit = undefined;
               }
             }.bind(this));
-
-            this.$onInit = function() {
-              this.possibleDurations = POSSIBLE_DURATIONS;
-            }.bind(this);
           }]
         };
       }]);
+
+  /**
+   * Gets a duration from its id.
+   * @param durations the durations.
+   * @param id the id.
+   * @private
+   */
+  function __getDurationAndUnitById(durations, id) {
+    return durations.getElement({ui_id : id}, 'ui_id=ui_id');
+  }
 })(window, jQuery);

@@ -23,11 +23,14 @@
  */
 package org.silverpeas.core.initialization;
 
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.enterprise.inject.Any;
+import javax.enterprise.util.AnnotationLiteral;
 import java.util.Comparator;
-import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * This class provides the method to initialize all the services that implement the
@@ -36,21 +39,21 @@ import java.util.Set;
  */
 public class SilverpeasServiceInitialization {
 
+  private SilverpeasServiceInitialization() {
+  }
+
   public static void start() {
     SilverLogger logger = SilverLogger.getLogger("silverpeas");
     logger.info("Silverpeas Services Initialization...");
-    Set<Initialization> initializations = ServiceProvider.getAllServices(Initialization.class);
-    initializations.stream()
-        .sorted(Comparator.comparing(Initialization::getPriority))
-        .forEach(initialization -> {
-      String simpleClassName = initialization.getClass().getSimpleName();
+    getAllInitializations().forEach(i -> {
+      String simpleClassName = i.getClass().getSimpleName();
       try {
         logger.info(" -> {0} initialization...", simpleClassName);
-        initialization.init();
+        i.init();
         logger.info("    {0} initialization done.", simpleClassName);
       } catch (Exception e) {
-        logger.error("    {0} initialization failure!", initialization.getClass().getName());
-        throw new RuntimeException(e.getMessage(), e);
+        logger.error("    {0} initialization failure!", i.getClass().getName());
+        throw new SilverpeasRuntimeException(e.getMessage(), e);
       }
     });
   }
@@ -58,13 +61,18 @@ public class SilverpeasServiceInitialization {
   public static void stop() {
     SilverLogger logger = SilverLogger.getLogger("silverpeas");
     logger.info("Silverpeas Services Release...");
-    Set<Initialization> initializations = ServiceProvider.getAllServices(Initialization.class);
-    for (Initialization initialization : initializations) {
+    getAllInitializations().forEach(i -> {
       try {
-        initialization.release();
+        i.release();
       } catch (Exception ex) {
         logger.warn(ex.getMessage());
       }
-    }
+    });
+  }
+
+  private static Stream<Initialization> getAllInitializations() {
+    return ServiceProvider.getAllServices(Initialization.class, new AnnotationLiteral<Any>() {})
+        .stream()
+        .sorted(Comparator.comparing(Initialization::getPriority));
   }
 }

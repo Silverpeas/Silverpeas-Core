@@ -24,26 +24,23 @@
 
 package org.silverpeas.core.webapi.reminder;
 
-import org.apache.commons.lang3.reflect.FieldUtils;
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.ContributionLocalizationBundle;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
+import org.silverpeas.core.contribution.model.ContributionModel;
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.reminder.DateTimeReminder;
 import org.silverpeas.core.reminder.DurationReminder;
 import org.silverpeas.core.reminder.Reminder;
 import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SilverpeasArrayList;
-import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.annotation.Authorized;
+import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
 import javax.inject.Inject;
 import javax.ws.rs.DELETE;
@@ -56,15 +53,22 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.HashMap;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static javax.ws.rs.core.Response.Status.FORBIDDEN;
+import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
+import static org.silverpeas.core.reminder.Reminder.getByContributionAndUser;
 import static org.silverpeas.core.reminder.ReminderSettings.getMessagesIn;
+import static org.silverpeas.core.reminder.ReminderSettings.getPossibleReminders;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 import static org.silverpeas.core.webapi.reminder.ReminderEntity.fromReminder;
@@ -77,7 +81,7 @@ import static org.silverpeas.core.webapi.reminder.ReminderResourceURIs.REMINDER_
 @Service
 @RequestScoped
 @Path(REMINDER_BASE_URI + "/{componentInstanceId}/{type}/{localId}")
-@Authorized
+@Authenticated
 public class ReminderResource extends RESTWebService {
 
   @Inject
@@ -91,6 +95,44 @@ public class ReminderResource extends RESTWebService {
   private String localId;
 
   /**
+   * Gets the identifier list of possible of durations.
+   * <p>
+   * An identifier of a duration is the concatenation about the duration value and the duration
+   * unit ({@link TimeUnit}).<br/>
+   * {@code 15MINUTE} for example.
+   * </p>
+   * @return a filled list if any, or an empty one if no trigger can be scheduled.
+   * @see WebProcess#execute()
+   */
+  @Path("possibledurations/{property}")
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @SuppressWarnings("ConstantConditions")
+  public List<String> getPossibleDurations(
+      @PathParam("property") final String contributionProperty) {
+    final ContributionModel model = getContribution().getModel();
+    final ZoneId userZoneId = getUserPreferences().getZoneId();
+    final ZoneId platformZoneId = ZoneId.systemDefault();
+    final Mutable<Boolean> lastMatchOk = Mutable.of(true);
+    return getPossibleReminders()
+        .filter(r -> {
+          if (lastMatchOk.is(false)) {
+            return false;
+          }
+          final ZonedDateTime from = ZonedDateTime.now(userZoneId).plus(r.getLeft(), r.getRight().toChronoUnit());
+          final ZonedDateTime dateReference = model.filterByType(contributionProperty, from)
+              .matchFirst(Date.class::isAssignableFrom, d -> ZonedDateTime.ofInstant(((Date) d).toInstant(), platformZoneId))
+              .matchFirst(OffsetDateTime.class::equals, d -> ((OffsetDateTime) d).atZoneSameInstant(platformZoneId))
+              .matchFirst(LocalDate.class::equals, d -> ((LocalDate) d).atStartOfDay(userZoneId).withZoneSameInstant(platformZoneId))
+              .matchFirst(LocalDateTime.class::equals, d -> ((LocalDateTime) d).atZone(platformZoneId))
+              .matchFirst(ZonedDateTime.class::equals, d -> ((ZonedDateTime) d).withZoneSameInstant(platformZoneId)).result().orElse(null);
+          lastMatchOk.set(dateReference != null);
+          return lastMatchOk.get();
+        })
+        .map(r -> String.valueOf(r.getLeft()) + r.getRight()).collect(Collectors.toList());
+  }
+
+  /**
    * Gets the JSON representation of a list of reminder.
    * If it doesn't exist, a 404 HTTP code is returned.
    * @return the response to the HTTP GET request with the JSON representation of the asked
@@ -100,8 +142,7 @@ public class ReminderResource extends RESTWebService {
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<ReminderEntity> getReminders() {
-    List<Reminder> reminders =
-        process(() -> getByContributionId(getContributionIdentifier())).execute();
+    List<Reminder> reminders = getByContributionAndUser(getContributionIdentifier(), getUser());
     return asWebEntities(reminders);
   }
 
@@ -125,22 +166,20 @@ public class ReminderResource extends RESTWebService {
       reminder = new DurationReminder(getContributionIdentifier(), getUser());
     }
     reminderEntity.mergeInto(reminder);
-    final Reminder createdReminder = process(() -> {
-      try {
-        return save(reminder);
-      } catch (IllegalArgumentException e) {
-        errorMessage("reminder.add.duration.error", getReminderLabel(reminderEntity),
-            getUiMessageContributionLabel(reminderEntity, contribution));
-        throw new WebApplicationException(e, Response.Status.PRECONDITION_FAILED);
-      }
-    }).execute();
+    try {
+      reminder.schedule();
+    } catch (AssertionError e) {
+      errorMessage("reminder.add.duration.error", getReminderLabel(reminderEntity),
+          getUiMessageContributionLabel(reminderEntity, contribution));
+      throw new WebApplicationException(e, Response.Status.PRECONDITION_FAILED);
+    }
 
-    if (createdReminder instanceof DurationReminder) {
+    if (reminder instanceof DurationReminder) {
       successMessage("reminder.add.duration.success", getReminderLabel(reminderEntity),
           getUiMessageContributionLabel(reminderEntity, contribution));
     }
 
-    return asWebEntity(createdReminder);
+    return asWebEntity(reminder);
   }
 
   /**
@@ -158,26 +197,26 @@ public class ReminderResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public ReminderEntity updateReminder(@PathParam("id") String id, ReminderEntity reminderEntity) {
     Contribution contribution = getContribution();
-    final Reminder reminder =
-        getByContributionId(getContributionIdentifier()).stream().filter(r -> r.getId().equals(id))
-            .findFirst().orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
+    final Reminder reminder = getByContributionAndUser(getContributionIdentifier(), getUser())
+        .stream()
+        .filter(r -> r.getId().equals(id))
+        .findFirst()
+        .orElseThrow(() -> new WebApplicationException(NOT_FOUND));
     reminderEntity.mergeInto(reminder);
-    final Reminder updatedReminder = process(() -> {
-      try {
-        return save(reminder);
-      } catch (IllegalArgumentException e) {
-        errorMessage("reminder.update.duration.error", getReminderLabel(reminderEntity),
-            getUiMessageContributionLabel(reminderEntity, contribution));
-        throw new WebApplicationException(e, Response.Status.PRECONDITION_FAILED);
-      }
-    }).execute();
+    try {
+      reminder.schedule();
+    } catch (AssertionError e) {
+      errorMessage("reminder.update.duration.error", getReminderLabel(reminderEntity),
+          getUiMessageContributionLabel(reminderEntity, contribution));
+      throw new WebApplicationException(e, Response.Status.PRECONDITION_FAILED);
+    }
 
-    if (updatedReminder instanceof DurationReminder) {
+    if (reminder instanceof DurationReminder) {
       successMessage("reminder.update.duration.success", getReminderLabel(reminderEntity),
           getUiMessageContributionLabel(reminderEntity, contribution));
     }
 
-    return asWebEntity(updatedReminder);
+    return asWebEntity(reminder);
   }
 
   /**
@@ -192,13 +231,12 @@ public class ReminderResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public void deleteReminder(@PathParam("id") String id) {
     Contribution contribution = getContribution();
-    final Reminder reminder =
-        getByContributionId(getContributionIdentifier()).stream().filter(r -> r.getId().equals(id))
-            .findFirst().orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
-    process(() -> {
-      delete(reminder);
-      return null;
-    }).execute();
+    final Reminder reminder = getByContributionAndUser(getContributionIdentifier(), getUser())
+        .stream()
+        .filter(r -> r.getId().equals(id))
+        .findFirst()
+        .orElseThrow(() -> new WebApplicationException(NOT_FOUND));
+      reminder.unschedule();
 
     if (reminder instanceof DurationReminder) {
       successMessage("reminder.delete.success",
@@ -238,11 +276,14 @@ public class ReminderResource extends RESTWebService {
     return ContributionIdentifier.from(getComponentId(), localId, type);
   }
 
-  protected Contribution getContribution() {
-    return ContributionManager.get().getById(getContributionIdentifier()).orElseThrow(
-        () -> new WebApplicationException(
-            failureOnGetting("contribution", getContributionIdentifier().asString()),
-            Response.Status.NOT_FOUND));
+  private Contribution getContribution() {
+    final Contribution contribution = ContributionManager.get().getById(getContributionIdentifier())
+        .orElseThrow(() -> new WebApplicationException(
+            failureOnGetting("contribution", getContributionIdentifier().asString()), NOT_FOUND));
+    if (!contribution.canBeAccessedBy(getUser())) {
+      throw new WebApplicationException(FORBIDDEN);
+    }
+    return contribution;
   }
 
   private String getUiMessageContributionLabel(final ReminderEntity reminder,
@@ -288,45 +329,5 @@ public class ReminderResource extends RESTWebService {
 
   private WebMessager getMessager() {
     return WebMessager.getInstance();
-  }
-
-  // TODO to delete as soon as possible
-
-  private static SilverpeasList<Reminder> getByContributionId(
-      final ContributionIdentifier contributionIdentifier) {
-    return (SilverpeasList<Reminder>) getDevCache()
-        .computeIfAbsent(contributionIdentifier, i -> new SilverpeasArrayList<>());
-  }
-
-  private static Reminder save(Reminder reminder) {
-    try {
-      reminder.schedule();
-      if (isNotDefined(reminder.getId())) {
-        FieldUtils
-            .writeField(reminder, "id", UuidIdentifier.from(UUID.randomUUID().toString()), true);
-      }
-      final SilverpeasList<Reminder> byContributionId = getByContributionId(reminder.getContributionId());
-      final int i = byContributionId.indexOf(reminder);
-      if (i >= 0) {
-        byContributionId.set(i, reminder);
-      } else {
-        byContributionId.add(reminder);
-      }
-      return reminder;
-    } catch (IllegalAccessException e) {
-      throw new SilverpeasRuntimeException(e);
-    }
-  }
-
-  private static void delete(Reminder reminder) {
-    final SilverpeasList<Reminder> byContributionId =
-        getByContributionId(reminder.getContributionId());
-    byContributionId.clear();
-  }
-
-  @SuppressWarnings("unchecked")
-  private static Map<ContributionIdentifier, List<Reminder>> getDevCache() {
-    return CacheServiceProvider.getApplicationCacheService().getCache()
-        .computeIfAbsent("TEMPORARY_REMINDER_CACHE_KEY", Map.class, HashMap::new);
   }
 }

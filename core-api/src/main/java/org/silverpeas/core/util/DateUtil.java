@@ -34,6 +34,7 @@ import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -712,7 +713,7 @@ public class DateUtil {
    * @param language the language for formatting.
    * @return the formatted String.
    */
-  public static String formatDateAndTime(OffsetDateTime dateTime, String language) {
+  public static String formatDateAndTime(ZonedDateTime dateTime, String language) {
     if (dateTime == null) {
       return null;
     }
@@ -724,7 +725,7 @@ public class DateUtil {
         dateTime.format(DateTimeFormatter.ofPattern(datePattern + " " + timePattern));
     return sameOffsetAsPlatform
         ? formattedDateTime
-        : formattedDateTime + "(" + dateTime.toZonedDateTime().getZone() + ")";
+        : formattedDateTime + "(" + dateTime.getZone().getId() + ")";
   }
 
   /**

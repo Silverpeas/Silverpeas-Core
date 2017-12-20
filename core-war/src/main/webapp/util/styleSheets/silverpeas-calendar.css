@@ -433,6 +433,21 @@ silverpeas-calendar-event-occurrence-tip .occurrence-reminder silverpeas-calenda
   background-color: #f7f7f7;
 }
 
+silverpeas-calendar-event-occurrence-tip .occurrence-reminder.reminder-set silverpeas-calendar-event-reminder {
+  padding-left: 8px;
+}
+
+silverpeas-calendar-event-occurrence-tip .occurrence-reminder.reminder-set label {
+  display: block;
+  text-align: left;
+  padding-bottom: 4px;
+}
+
+silverpeas-calendar-event-occurrence-tip .occurrence-reminder.reminder-set .actions img,
+silverpeas-contribution-reminder-duration-item .actions img {
+  margin-top: 2px;
+}
+
 silverpeas-calendar-event-view .field,
 silverpeas-calendar-event-form .field {
   width: 98%;

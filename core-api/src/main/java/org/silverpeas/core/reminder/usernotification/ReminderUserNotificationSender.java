@@ -25,16 +25,24 @@
 package org.silverpeas.core.reminder.usernotification;
 
 import org.silverpeas.core.reminder.Reminder;
+import org.silverpeas.core.util.ServiceProvider;
+
+import java.time.ZonedDateTime;
 
 /**
- * In charge of the send of the user notification of a reminder.
+ * In charge of sending user notifications about reminders.
  * @author silveryocha
  */
 public interface ReminderUserNotificationSender {
 
+  static ReminderUserNotificationSender get() {
+    return ServiceProvider.getService(ReminderUserNotificationSender.class);
+  }
+
   /**
-   * Sends the user notification of a reminder.
+   * Sends the user notification about a specified reminder.
    * @param reminder a reminder.
+   * @param now the {@link ZonedDateTime} of the platform as default.
    */
-  void send(Reminder reminder);
+  void sendAbout(final Reminder reminder, final ZonedDateTime now);
 }

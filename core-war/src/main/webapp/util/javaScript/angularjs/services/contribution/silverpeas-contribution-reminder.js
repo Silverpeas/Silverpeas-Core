@@ -41,6 +41,19 @@
           };
 
           /**
+           * Gets possible reminder duration about a contribution and a contribution property.
+           * @param contributionId the identifier of a contribution.
+           * @param contributionpropertyr the contribution property on which the reminder is based.
+           * @returns {promise|a.fn.promise|*} a promise with the asked possible durations as
+           *     callback parameter.
+           */
+          this.getContributionPossibleDurations = function(contributionId, contributionProperty) {
+            var url = __getContributionBaseUri(contributionId) + '/possibledurations/' + contributionProperty;
+            var adapter = RESTAdapter.get(url, ContributionReminder);
+            return adapter.find();
+          };
+
+          /**
            * Gets reminders linked to a contribution represented by an identifier.
            * @param contributionId the identifier of a contribution.
            * @returns {promise|a.fn.promise|*} a promise with the asked reminders as callback
