@@ -30,7 +30,6 @@ import org.silverpeas.core.contribution.ContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.persistence.Transaction;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.EntityManagerProvider;
 import org.silverpeas.core.persistence.datasource.model.jpa.PersistenceIdentifierSetter;
 import org.silverpeas.core.personalization.UserMenuDisplay;
@@ -47,6 +46,7 @@ import javax.persistence.EntityManager;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.Date;
 import java.util.Optional;
 import java.util.TimeZone;
 
@@ -77,7 +77,6 @@ public class ReminderTextContext {
     setUpEntityManager();
     setUpReminderRepository();
     setUpReminderProcess();
-
     setUpScheduler();
   }
 
@@ -114,9 +113,11 @@ public class ReminderTextContext {
       ContributionIdentifier id = invocation.getArgument(0);
       Contribution contribution;
       if (Plannable.class.getSimpleName().equals(id.getType())) {
-        contribution = new MyPlannableContribution(id).startingAt(OffsetDateTime.now());
+        contribution =
+            new MyPlannableContribution(id).startingAt(OffsetDateTime.now().plusMonths(1));
       } else {
-        contribution = new MyContribution(id);
+        Date publicationDate = Date.from(OffsetDateTime.now().plusWeeks(1).toInstant());
+        contribution = new MyContribution(id).publishedAt(publicationDate);
       }
       return Optional.of(contribution);
     });
@@ -132,10 +133,10 @@ public class ReminderTextContext {
     when(entityManagerProvider.getEntityManager()).thenReturn(entityManager);
 
     DurationReminder durationReminder = new DurationReminder(plannable, user);
-    when(entityManager.find(eq(DurationReminder.class), any(UuidIdentifier.class))).thenReturn(
+    when(entityManager.find(eq(DurationReminder.class), any(ReminderIdentifier.class))).thenReturn(
         durationReminder);
     DateTimeReminder dateTimeReminder = new DateTimeReminder(contribution, user);
-    when(entityManager.find(eq(DateTimeReminder.class), any(UuidIdentifier.class))).thenReturn(
+    when(entityManager.find(eq(DateTimeReminder.class), any(ReminderIdentifier.class))).thenReturn(
         dateTimeReminder);
     commonAPI4Test.injectIntoMockedBeanContainer(entityManagerProvider);
     // inject a Transaction object, dependency of Reminder
@@ -149,7 +150,7 @@ public class ReminderTextContext {
     ReminderRepository repository = mock(ReminderRepository.class);
     when(repository.save(any(Reminder.class))).thenAnswer(invocation -> {
       Reminder reminder = invocation.getArgument(0);
-      PersistenceIdentifierSetter.setIdTo(reminder);
+      PersistenceIdentifierSetter.setIdTo(reminder, ReminderIdentifier.class);
       return reminder;
     });
     // inject a mock of the ReminderRepository

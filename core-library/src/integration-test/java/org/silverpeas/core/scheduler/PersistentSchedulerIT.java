@@ -99,7 +99,9 @@ public class PersistentSchedulerIT {
 
   @After
   public void tearDown() throws Exception {
-    scheduler.unscheduleJob(JOB_NAME);
+    if (scheduler.isJobScheduled(JOB_NAME)) {
+      scheduler.unscheduleJob(JOB_NAME);
+    }
   }
 
   /**
@@ -164,7 +166,7 @@ public class PersistentSchedulerIT {
                 "expected time");
     JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
-    await().atMost(34, SECONDS).until(eventHandlingCompleted());
+    await().pollInterval(5, SECONDS).atMost(34, SECONDS).until(eventHandlingCompleted());
     assertThat(eventHandler.isJobFired(), is(true));
     assertThat(eventHandler.isJobSucceeded(), is(true));
   }
@@ -173,7 +175,7 @@ public class PersistentSchedulerIT {
   public void aFailureJobExecutionShouldFireACorrespondingSchedulerEvent() throws Exception {
     JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler.mustFail());
-    await().atMost(34, SECONDS).until(eventHandlingCompleted());
+    await().pollInterval(5, SECONDS).atMost(34, SECONDS).until(eventHandlingCompleted());
     assertThat(eventHandler.isJobFired(), is(true));
     assertThat(eventHandler.isJobSucceeded(), is(false));
   }
@@ -183,24 +185,24 @@ public class PersistentSchedulerIT {
       throws Exception {
     JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
     scheduler.scheduleJob(new MyJob(JOB_NAME), trigger);
-    await().atMost(34, SECONDS).until(jobIsExecuted());
+    await().pollInterval(5, SECONDS).atMost(34, SECONDS).until(jobIsExecuted());
     assertThat(isJobExecuted(), is(true));
   }
 
   @Test
   public void aFailureJobShouldFireACorrespondingSchedulerEvent() throws Exception {
-    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
+    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(25));
     scheduler.scheduleJob(new MyFailureJob(JOB_NAME), trigger, eventHandler);
-    await().atMost(34, SECONDS).until(eventHandlingCompleted());
+    await().pollInterval(5, SECONDS).atMost(34, SECONDS).until(eventHandlingCompleted());
     assertThat(eventHandler.isJobFired(), is(true));
     assertThat(eventHandler.isJobSucceeded(), is(false));
   }
 
   @Test
   public void schedulingAtGivenTimeAJobShouldRunThatJobAtTheExpectedTime() throws Exception {
-    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
+    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(25));
     scheduler.scheduleJob(new MyJob(JOB_NAME), trigger, eventHandler);
-    await().atMost(34, SECONDS).until(jobIsExecuted());
+    await().pollInterval(5, SECONDS).atMost(34, SECONDS).until(jobIsExecuted());
     assertThat(eventHandler.isJobSucceeded(), is(true));
   }
 

@@ -26,7 +26,6 @@ package org.silverpeas.core.contribution;
 import org.junit.Test;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.util.Mutable;
 
@@ -36,7 +35,6 @@ import java.time.ZoneOffset;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 /**
@@ -47,15 +45,6 @@ import static org.junit.Assert.assertThat;
 public class ContributionModelTest {
 
   private User bart = new MyUser("1", "Bart", "Simpson").inDomainById("0");
-
-  @Test
-  public void testOnField() {
-    MyContribution myContribution = new MyContribution("42").authoredBy(bart);
-
-    ContributionIdentifier id = myContribution.getModel().getProperty("id");
-    assertThat(id, notNullValue());
-    assertThat(id.getLocalId(), is("42"));
-  }
 
   @Test
   public void testOnAccessor() {
@@ -88,7 +77,7 @@ public class ContributionModelTest {
     MyContribution myContribution = new MyContribution("42").authoredBy(bart);
     assertThat(myContribution.isPublished(), is(false));
 
-    myContribution.getModel().invokeProperty("publish");
+    myContribution.getModel().getProperty("publish");
     assertThat(myContribution.isPublished(), is(true));
   }
 
@@ -98,7 +87,7 @@ public class ContributionModelTest {
     MyContribution myContribution = new MyContribution("42").authoredBy(bart);
     assertThat(myContribution.isPublished(), is(false));
 
-    myContribution.getModel().invokeProperty("publishAt", actualDate);
+    myContribution.getModel().getProperty("publishAt", actualDate);
     assertThat(myContribution.isPublished(), is(true));
     assertThat(myContribution.getPublicationDate().isPresent(), is(true));
     assertThat(myContribution.getPublicationDate().get(),

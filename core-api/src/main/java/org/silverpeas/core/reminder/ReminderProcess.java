@@ -52,6 +52,9 @@ public class ReminderProcess implements SchedulerEventListener {
     reminder.triggered();
     notifyUserAbout(reminder);
     Transaction.performInOne(() -> repository.save(reminder));
+    if (reminder.isSchedulable()) {
+      reminder.schedule();
+    }
   }
 
   @Override

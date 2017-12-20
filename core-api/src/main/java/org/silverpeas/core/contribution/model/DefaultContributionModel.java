@@ -25,7 +25,6 @@ package org.silverpeas.core.contribution.model;
 
 import org.silverpeas.core.util.filter.FilterByType;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -49,27 +48,12 @@ public class DefaultContributionModel<C extends Contribution> implements Contrib
 
   @Override
   public FilterByType filterByType(final String property, final Object... parameters) {
-    Object value;
-    try {
-      value = getProperty(property, parameters);
-    } catch (NoSuchPropertyException e) {
-      value = invokeProperty(property, parameters);
-    }
-    return new FilterByType(value);
+    return new FilterByType(getProperty(property, parameters));
   }
 
   @Override
   public <T> T getProperty(final String property, final Object... parameters) {
     return getByReflection(property, parameters);
-  }
-
-  @Override
-  public <T> T invokeProperty(final String property, final Object... parameters) {
-    try {
-      return invoke(property, parameters);
-    } catch (InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-      return noSuchPropertyException(property, parameters);
-    }
   }
 
   /**
@@ -85,8 +69,8 @@ public class DefaultContributionModel<C extends Contribution> implements Contrib
       return invokeAccessor(property, parameters);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
       try {
-        return accessProperty(property);
-      } catch (NoSuchFieldException | IllegalAccessException e1) {
+        return invoke(property, parameters);
+      } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e1) {
         return noSuchPropertyException(property, parameters);
       }
     }
@@ -116,18 +100,6 @@ public class DefaultContributionModel<C extends Contribution> implements Contrib
         .toArray(new Class[parameters.length]);
     Method method = contribution.getClass().getDeclaredMethod(property, paramTypes);
     return (T) method.invoke(contribution, parameters);
-  }
-
-  @SuppressWarnings("unchecked")
-  private <T> T accessProperty(final String property)
-      throws NoSuchFieldException, IllegalAccessException {
-    String propName = property;
-    if (Character.isUpperCase(property.charAt(0))) {
-      propName = Character.toLowerCase(property.charAt(0)) + property.substring(1);
-    }
-    Field field = contribution.getClass().getDeclaredField(propName);
-    field.setAccessible(true);
-    return (T) field.get(contribution);
   }
 
   private <T> T noSuchPropertyException(final String property, final Object[] parameters) {

@@ -51,7 +51,11 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A reminder.
+ * A reminder. A reminder is a notification that is sent to a given user at a specific datetime.
+ * A reminder can be automatically rescheduled, meaning that it is rescheduled at another datetime
+ * at each of its triggering until that another datetime isn't defined. This capability depends on
+ * the concrete type of the used reminder and it is based upon the return of the
+ * {@link #isSchedulable()} method.
  * @author mmoquillon
  */
 @Entity
@@ -183,13 +187,17 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
 
   /**
    * Schedules this reminder. It persists first the reminder properties and then starts its
-   * scheduling according to its triggering rule.
+   * scheduling according to its triggering rule. If this reminder is already scheduled, it is
+   * rescheduled with its new triggering rules and any of its properties changes are persisted.
+   * Hence, this method can be used both for scheduling and for rescheduling a reminder.
    * @throws TransactionRuntimeException if the persistence or the scheduling fails.
+   * @throws AssertionError if no trigger was set or the triggering date is null.
    * @return itself.
    */
   public <T extends Reminder> T schedule() {
     OffsetDateTime dateTime = getTriggeringDate();
-    assert dateTime != null;
+    assert dateTime != null :
+        "The triggering rule is invalid: the computed triggering date is null!";
     Scheduler scheduler = getScheduler();
     return Transaction.performInOne(() -> {
       if (isPersisted() && isScheduledWith(scheduler)) {
@@ -203,12 +211,25 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
   }
 
   /**
-   * Unscheduling this reminder.
+   * Unschedules this reminder. The reminder won't be anymore scheduled and it will be also removed
+   * from the persistence context.
    * @throws TransactionRuntimeException if the persistence or the scheduling fails.
    */
   public void unschedule() {
-    // TODO
+    Scheduler scheduler = getScheduler();
+    Transaction.performInOne(() -> {
+      scheduler.unscheduleJob(getJobName());
+      ReminderRepository.get().delete(this);
+      return null;
+    });
   }
+
+  /**
+   * Is this reminder schedulable? A reminder is schedulable if its trigger is correctly set and it
+   * matches the expectation of the concrete reminder.
+   * @return true if this reminder can be scheduled, false otherwise.
+   */
+  public abstract boolean isSchedulable();
 
   /**
    * Gets the contribution related by this reminder.
@@ -224,7 +245,8 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
 
   /**
    * Gets the date time at which this reminder has to be triggered. This date time is computed from
-   * the triggering rule of this reminder.
+   * the triggering rule of this reminder. The timezone is set with the timezone of the platform as
+   * the scheduler ran onto that platform.
    * @return an {@link OffsetDateTime} value.
    */
   protected abstract OffsetDateTime getTriggeringDate();

@@ -27,24 +27,48 @@ import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
+import java.time.OffsetDateTime;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 /**
  * @author mmoquillon
  */
-public class MyContribution implements Contribution {
+public class EventContrib implements Contribution {
 
   private final ContributionIdentifier id;
-  private Date publicationDate = new Date();
+  private User author;
+  private User lastContributor;
+  private Date creationDate;
+  private Date lastContributionDate;
+  private OffsetDateTime startDate = OffsetDateTime.now();
 
-
-  public MyContribution(final ContributionIdentifier id) {
+  public EventContrib(final ContributionIdentifier id) {
     this.id = id;
   }
 
-  public MyContribution publishedAt(final Date publicationDate) {
-    this.publicationDate = publicationDate;
+  public EventContrib authoredBy(final User author) {
+    if (this.author == null) {
+      this.author = author;
+      this.creationDate = new Date();
+    }
+    this.lastContributor = author;
+    this.lastContributionDate = new Date();
     return this;
+  }
+
+  public EventContrib publishAt(final OffsetDateTime dateTime) {
+    this.startDate = dateTime;
+    return this;
+  }
+
+  public OffsetDateTime nextOccurrenceSince(final ZonedDateTime dateTime) {
+    this.startDate = dateTime.plusSeconds(15).toOffsetDateTime();
+    return this.startDate;
+  }
+
+  public OffsetDateTime getPublicationDate() {
+    return this.startDate;
   }
 
   @Override
@@ -52,33 +76,24 @@ public class MyContribution implements Contribution {
     return id;
   }
 
-  public Date getPublicationDate() {
-    return this.publicationDate;
-  }
-
   @Override
   public User getCreator() {
-    return null;
+    return author;
   }
 
   @Override
   public Date getCreationDate() {
-    return null;
+    return creationDate;
   }
 
   @Override
   public User getLastModifier() {
-    return null;
+    return lastContributor;
   }
 
   @Override
   public Date getLastModificationDate() {
-    return null;
-  }
-
-  @Override
-  public String getTitle() {
-    return "";
+    return lastContributionDate;
   }
 }
   

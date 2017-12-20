@@ -30,13 +30,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
-import org.silverpeas.core.admin.service.DefaultOrganizationController;
-import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -48,22 +44,23 @@ import org.silverpeas.core.personalization.service.PersonalizationService;
 import org.silverpeas.core.scheduler.SchedulerInitializer;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.lang.SystemWrapper;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
+import java.io.File;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
-import java.util.Optional;
 import java.util.concurrent.Callable;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.notNullValue;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -77,13 +74,21 @@ import static org.mockito.Mockito.when;
 @RunWith(Arquillian.class)
 public class ReminderIT {
 
-  private static final ContributionIdentifier CONTRIBUTION =
-      ContributionIdentifier.from("myApp42", "42", "CustomContrib");
+  private static final ContributionIdentifier CONTRIBUTION_FOR_NOW =
+      ContributionIdentifier.from("kmelia42", "42", EventContrib.class.getSimpleName());
+
+  private static final ContributionIdentifier CONTRIBUTION_FOR_LATER =
+      ContributionIdentifier.from("kmelia42", "43", EventContrib.class.getSimpleName());
 
   private static final String USER_ID = "2";
 
+  private static final String REMINDER_ID = "Reminder#1ed074deee814b6a8035b9ced02ff56d";
+
   private static final String CACHE_KEY =
-      ComponentInstanceContributionManager.class.getName() + "###myApp42";
+      ComponentInstanceContributionManager.class.getName() + "###kmelia42";
+
+  @Rule
+  public MavenTargetDirectoryRule mavenTargetDirectoryRule = new MavenTargetDirectoryRule(this);
 
   @Rule
   public DbSetupRule dbSetupRule =
@@ -112,18 +117,25 @@ public class ReminderIT {
   }
 
   @Before
-  public void initSchedulers() {
-    SchedulerInitializer.get().init();
-    SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
-    cache.put(CACHE_KEY, (ComponentInstanceContributionManager) contributionId -> Optional.of(
-        new CustomContrib(contributionId).authoredBy(User.getById(USER_ID))));
+  public void initSchedulers() throws Exception {
+    File silverpeasHome = mavenTargetDirectoryRule.getResourceTestDirFile();
+    SystemWrapper.get().getenv().put("SILVERPEAS_HOME", silverpeasHome.getPath());
+    WAComponentRegistry.get().init();
+    CacheServiceProvider.clearAllThreadCaches();
 
+    SchedulerInitializer.get().init();
     when(StubbedPersonalizationService.getMock().getUserSettings(anyString()))
         .then((Answer<UserPreferences>) i -> {
           final String userId = (String) i.getArguments()[0];
           return new UserPreferences(userId, "fr", ZoneId.of("UTC"), "", "", false, false, false,
               UserMenuDisplay.DEFAULT);
         });
+    KmeliaInstanceContributionManager manager = KmeliaInstanceContributionManager.get();
+    User aUser = User.getById(USER_ID);
+    manager.clearAll();
+    manager.addContribution(new EventContrib(CONTRIBUTION_FOR_NOW).authoredBy(aUser));
+    manager.addContribution(new EventContrib(CONTRIBUTION_FOR_LATER).authoredBy(aUser)
+        .publishAt(OffsetDateTime.now().plusSeconds(45)));
   }
 
   @Test
@@ -134,58 +146,180 @@ public class ReminderIT {
   @Test
   public void scheduleAReminderInDateTimeWillPersistIt() {
     final String reminderText = "Remind me!";
-    final OffsetDateTime triggerDate = OffsetDateTime.now().plusSeconds(30);
+    final OffsetDateTime triggerDate = OffsetDateTime.now().plusDays(1);
     Reminder expectedReminder =
-        new DateTimeReminder(CONTRIBUTION, User.getById(USER_ID)).withText(reminderText)
+        new DateTimeReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID)).withText(reminderText)
             .triggerAt(triggerDate)
             .schedule();
 
     assertThat(expectedReminder.isPersisted(), is(true));
     assertThat(expectedReminder.isScheduled(), is(true));
 
-    Reminder actualReminder = ReminderRepository.get().getById(expectedReminder.getId());
+    Reminder reminder = Reminder.getById(expectedReminder.getId());
+    assertThat(reminder, notNullValue());
+    assertThat(reminder, instanceOf(DateTimeReminder.class));
+
+    DateTimeReminder actualReminder = (DateTimeReminder) reminder;
     assertThat(actualReminder, notNullValue());
-    assertThat(actualReminder.getContributionId(), is(CONTRIBUTION));
+    assertThat(actualReminder.getContributionId(), is(CONTRIBUTION_FOR_NOW));
     assertThat(actualReminder.getUserId(), is(USER_ID));
     assertThat(actualReminder.getText(), is(reminderText));
-    assertThat(actualReminder.getTriggeringDate(),
-        is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
+    assertThat(actualReminder.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
+    assertThat(actualReminder.getTriggeringDate(), is(triggerDate));
   }
 
   @Test
-  public void scheduleAReminderAtADurationBeforeAGivenDateTimeWillPersistIt() {
+  public void scheduleAReminderAtADurationBeforeAGivenAttributeWillPersistIt() {
     final String reminderText = "Remind me!";
     Reminder expectedReminder =
-        new DurationReminder(CONTRIBUTION, User.getById(USER_ID)).withText(reminderText)
-            .triggerBefore(30, TimeUnit.SECOND, "startDate")
+        new DurationReminder(CONTRIBUTION_FOR_LATER, User.getById(USER_ID)).withText(reminderText)
+            .triggerBefore(30, TimeUnit.SECOND, "publicationDate")
             .schedule();
 
     assertThat(expectedReminder.isPersisted(), is(true));
     assertThat(expectedReminder.isScheduled(), is(true));
 
-    Reminder reminder = ReminderRepository.get().getById(expectedReminder.getId());
+    Reminder reminder = Reminder.getById(expectedReminder.getId());
     assertThat(reminder, notNullValue());
     assertThat(reminder, instanceOf(DurationReminder.class));
 
     DurationReminder actualReminder = (DurationReminder) reminder;
-    assertThat(actualReminder.getContributionId(), is(CONTRIBUTION));
+    assertThat(actualReminder.getContributionId(), is(CONTRIBUTION_FOR_LATER));
     assertThat(actualReminder.getUserId(), is(USER_ID));
     assertThat(actualReminder.getText(), is(reminderText));
     assertThat(actualReminder.getDuration(), is(30));
     assertThat(actualReminder.getTimeUnit(), is(TimeUnit.SECOND));
-    assertThat(actualReminder.getContributionProperty(), is("startDate"));
+    assertThat(actualReminder.getContributionProperty(), is("publicationDate"));
   }
 
   @Test
-  public void basicReminderTriggeringShouldFireItOneShot() {
+  public void scheduleAReminderAtADurationBeforeAGivenPropertyWillPersistIt() {
+    final String reminderText = "Remind me!";
+    Reminder expectedReminder =
+        new DurationReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID)).withText(reminderText)
+            .triggerBefore(30, TimeUnit.SECOND, "nextOccurrenceSince")
+            .schedule();
+
+    assertThat(expectedReminder.isPersisted(), is(true));
+    assertThat(expectedReminder.isScheduled(), is(true));
+
+    Reminder reminder = Reminder.getById(expectedReminder.getId());
+    assertThat(reminder, notNullValue());
+    assertThat(reminder, instanceOf(DurationReminder.class));
+
+    DurationReminder actualReminder = (DurationReminder) reminder;
+    assertThat(actualReminder.getContributionId(), is(CONTRIBUTION_FOR_NOW));
+    assertThat(actualReminder.getUserId(), is(USER_ID));
+    assertThat(actualReminder.getText(), is(reminderText));
+    assertThat(actualReminder.getDuration(), is(30));
+    assertThat(actualReminder.getTimeUnit(), is(TimeUnit.SECOND));
+    assertThat(actualReminder.getContributionProperty(), is("nextOccurrenceSince"));
+  }
+
+  @Test
+  public void rescheduleAScheduledReminderShouldApplyTheChange() {
+    final String reminderText = "Remind me!";
+    final OffsetDateTime triggerDate = OffsetDateTime.now().plusSeconds(30);
+    DateTimeReminder reminder = getAReminderScheduledInOneDay();
+    reminder.withText(reminderText).triggerAt(triggerDate).schedule();
+
+    DateTimeReminder actualReminder = (DateTimeReminder) Reminder.getById(reminder.getId());
+    assertThat(actualReminder, notNullValue());
+    assertThat(actualReminder.getContributionId(), is(reminder.getContributionId()));
+    assertThat(actualReminder.getUserId(), is(reminder.getUserId()));
+    assertThat(actualReminder.getText(), is(reminderText));
+    assertThat(actualReminder.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
+    assertThat(actualReminder.getTriggeringDate(), is(triggerDate));
+
+    await().pollInterval(5, SECONDS).atMost(31, SECONDS).until(isTriggered(reminder));
+    assertThat(reminder.isScheduled(), is(false));
+  }
+
+  @Test
+  public void basicDateTimeReminderTriggeringShouldFireItOneShot() {
     final String reminderText = "Remind me!";
     Reminder reminder =
-        new DurationReminder(CONTRIBUTION, User.getById(USER_ID)).withText(reminderText)
-            .triggerBefore(30, TimeUnit.SECOND, "startDate")
+        new DateTimeReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID)).withText(reminderText)
+            .triggerAt(OffsetDateTime.now().plusSeconds(30))
             .schedule();
+    assertThat(reminder.isSchedulable(), is(true));
     assertThat(reminder.isTriggered(), is(false));
 
     await().pollInterval(5, SECONDS).atMost(31, SECONDS).until(isTriggered(reminder));
+    assertThat(reminder.isScheduled(), is(false));
+    assertThat(reminder.isSchedulable(), is(false));
+  }
+
+  @Test
+  public void basicDurationReminderTriggeringShouldFireItOneShot() {
+    final String reminderText = "Remind me!";
+    Reminder reminder =
+        new DurationReminder(CONTRIBUTION_FOR_LATER, User.getById(USER_ID)).withText(reminderText)
+            .triggerBefore(30, TimeUnit.SECOND, "publicationDate")
+            .schedule();
+    assertThat(reminder.isSchedulable(), is(true));
+    assertThat(reminder.isTriggered(), is(false));
+
+    await().pollInterval(5, SECONDS).atMost(31, SECONDS).until(isTriggered(reminder));
+
+    reminder = Reminder.getById(reminder.getId());
+    assertThat(reminder.isScheduled(), is(false));
+    assertThat(reminder.isSchedulable(), is(false));
+  }
+
+  @Test
+  public void repeatableDurationReminderTriggeringShouldFireItSeveralTimes() {
+    final String reminderText = "Remind me!";
+    Reminder reminder =
+        new DurationReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID)).withText(reminderText)
+            .triggerBefore(30, TimeUnit.SECOND, "nextOccurrenceSince")
+            .schedule();
+    assertThat(reminder.isSchedulable(), is(true));
+    assertThat(reminder.isTriggered(), is(false));
+
+    await().pollInterval(5, SECONDS).atMost(31, SECONDS).until(isTriggered(reminder));
+    assertThat(reminder.isSchedulable(), is(true));
+    assertThat(reminder.isScheduled(), is(true));
+
+    await().pollInterval(5, SECONDS).atMost(31, SECONDS).until(isTriggered(reminder));
+    assertThat(reminder.isSchedulable(), is(true));
+    assertThat(reminder.isScheduled(), is(true));
+
+    reminder = Reminder.getById(reminder.getId());
+    assertThat(reminder.getTriggeringDate(), notNullValue());
+  }
+
+  @Test
+  public void unscheduleANonYetTriggeredReminderShouldRemoveIt() {
+    Reminder reminder = getAReminderScheduledInOneDay();
+    assertThat(reminder.isTriggered(), is(false));
+    assertThat(reminder.isScheduled(), is(true));
+
+    reminder.unschedule();
+    assertThat(reminder.isScheduled(), is(false));
+    Reminder unscheduledReminder = Reminder.getById(reminder.getId());
+    assertThat(unscheduledReminder, nullValue());
+  }
+
+  @Test
+  public void unscheduleAnAlreadyTriggeredReminderShouldRemoveIt() {
+    Reminder reminder = getATriggeredReminder();
+    assertThat(reminder.isTriggered(), is(true));
+    assertThat(reminder.isScheduled(), is(false));
+
+    reminder.unschedule();
+    assertThat(reminder.isScheduled(), is(false));
+    Reminder unscheduledReminder = Reminder.getById(reminder.getId());
+    assertThat(unscheduledReminder, nullValue());
+  }
+
+  private DateTimeReminder getAReminderScheduledInOneDay() {
+    return new DateTimeReminder(CONTRIBUTION_FOR_NOW, User.getById(USER_ID)).triggerAt(
+        OffsetDateTime.now().plusDays(1)).schedule();
+  }
+
+  private Reminder getATriggeredReminder() {
+    return Reminder.getById(REMINDER_ID);
   }
 
   private Callable<Boolean> isTriggered(final Reminder reminder) {

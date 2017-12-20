@@ -36,7 +36,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -62,14 +61,6 @@ public class PersistentQuartzScheduler extends QuartzScheduler {
    * Constructs a new persistent scheduler.
    */
   protected PersistentQuartzScheduler() {
-  }
-
-  /**
-   * Bootstraps the Quartz scheduler backend.
-   */
-  @PostConstruct
-  private void bootstrapSchedulingBackend() {
-    setUpQuartzScheduler(QUARTZ_PROPERTIES);
   }
 
   @Override

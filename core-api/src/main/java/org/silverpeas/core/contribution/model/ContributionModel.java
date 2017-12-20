@@ -29,16 +29,14 @@ import org.silverpeas.core.util.filter.Filter;
  * Model of a contribution. A model is an object representing the business abstraction of a concrete
  * type of a contribution. It provides an interface to access in a more generic way the different
  * business properties of the represented contribution without having to be explicitly know.
- * Business properties mean here the whole set of both the business attributes and the business
- * operations.
+ * Business properties mean here the whole interface describing the behaviour of the object.
  * @author mmoquillon
  */
 public interface ContributionModel {
 
   /**
    * Applies a filter on the type of the value of the specified business property. If the property
-   * value is null, then no filtering is applied. The business property can be either an
-   * accessor/attribute or a business operation.
+   * value is null, then no filtering is applied.
    * <p>
    * This method is useful to apply a specific treatment according to the type of the property
    * (in the case the property can be of different type or the property represents a more generic
@@ -51,22 +49,14 @@ public interface ContributionModel {
   Filter<Class<?>, Object> filterByType(final String property, final Object... parameters);
 
   /**
-   * Gets the value of the specified business property. The property can be an accessor to an
-   * attribute of the contribution or the attribute itself of the contribution.
+   * Gets the value of the specified business property. The property can accept zero, one or more
+   * parameters.
    * @param property the name of the business property of the represented contribution.
    * @param parameters optionally some parameters required to select the correct value of the
    * property
    * @param <T> the expected type of the property value.
-   * @return the value of the asked business attribute.
+   * @return the value of the asked business property.
    */
   <T> T getProperty(final String property, final Object... parameters);
 
-  /**
-   * Invokes the specified business property. In this case, the property is a business operation.
-   * @param property the name of the business property of the represented contribution.
-   * @param parameters optionally some parameters required by the computation of the property.
-   * @param <T> the expected type of the property value.
-   * @return the value of the invoked business operation.
-   */
-  <T> T invokeProperty(final String property, final Object... parameters);
 }

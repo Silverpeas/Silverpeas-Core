@@ -23,7 +23,10 @@
  */
 package org.silverpeas.core.persistence.datasource.model.jpa;
 
-import java.util.UUID;
+import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
 /**
  * A convenient object to generate a unique identifier for an entity and to set it. It is dedicated
@@ -32,8 +35,27 @@ import java.util.UUID;
  */
 public class PersistenceIdentifierSetter {
 
-  public static <T extends AbstractJpaEntity> T setIdTo(final T entity) {
-    entity.setId(UUID.randomUUID().toString());
+  private final EntityIdentifier generator;
+
+  public PersistenceIdentifierSetter(final Class<? extends EntityIdentifier> idType) {
+    try {
+      Constructor<? extends EntityIdentifier> constructor = idType.getDeclaredConstructor();
+      constructor.setAccessible(true);
+      this.generator = constructor.newInstance();
+    } catch (NoSuchMethodException | InvocationTargetException | InstantiationException |
+        IllegalAccessException e) {
+      throw new IllegalArgumentException(e);
+    }
+  }
+
+  public static <T extends AbstractJpaEntity> T setIdTo(final T entity,
+      final Class<? extends EntityIdentifier> idType) {
+    PersistenceIdentifierSetter setter = new PersistenceIdentifierSetter(idType);
+    return setter.setIdTo(entity);
+  }
+
+  public <T extends AbstractJpaEntity> T setIdTo(final T entity) {
+    entity.setId(this.generator.generateNewId().asString());
     return entity;
   }
 }

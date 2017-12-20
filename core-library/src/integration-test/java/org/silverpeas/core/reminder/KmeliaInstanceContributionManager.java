@@ -23,66 +23,44 @@
  */
 package org.silverpeas.core.reminder;
 
-import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.util.ServiceProvider;
 
-import java.time.OffsetDateTime;
-import java.util.Date;
+import javax.inject.Named;
+import javax.inject.Singleton;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 /**
+ * A manager of contributions managed by an custom application dedicated to the tests.
  * @author mmoquillon
  */
-public class CustomContrib implements Contribution {
+@Singleton
+@Named("kmeliaInstanceContributionManager")
+public class KmeliaInstanceContributionManager implements ComponentInstanceContributionManager {
 
-  private final ContributionIdentifier id;
-  private User author;
-  private User lastContributor;
-  private Date creationDate;
-  private Date lastContributionDate;
-  private OffsetDateTime startDate = OffsetDateTime.now();
+  private static final String APP_PREFIX = "kmelia";
 
-  public CustomContrib(final ContributionIdentifier id) {
-    this.id = id;
+  private Map<ContributionIdentifier, Contribution> contributions = new HashMap<>();
+
+  public static KmeliaInstanceContributionManager get() {
+    return ServiceProvider.getService(KmeliaInstanceContributionManager.class);
   }
 
-  public CustomContrib authoredBy(final User author) {
-    if (this.author == null) {
-      this.author = author;
-      this.creationDate = new Date();
-    }
-    this.lastContributor = author;
-    this.lastContributionDate = new Date();
-    return this;
+  public void clearAll() {
+    this.contributions.clear();
   }
 
-  public OffsetDateTime nextOccurrenceSince(final OffsetDateTime dateTime) {
-    return startDate;
+  public void addContribution(final EventContrib contribution) {
+    contributions.put(contribution.getContributionId(), contribution);
   }
 
   @Override
-  public ContributionIdentifier getContributionId() {
-    return id;
-  }
-
-  @Override
-  public User getCreator() {
-    return author;
-  }
-
-  @Override
-  public Date getCreationDate() {
-    return creationDate;
-  }
-
-  @Override
-  public User getLastModifier() {
-    return lastContributor;
-  }
-
-  @Override
-  public Date getLastModificationDate() {
-    return lastContributionDate;
+  public Optional<Contribution> getById(final ContributionIdentifier contributionId) {
+    return Optional.ofNullable(contributions.get(contributionId));
   }
 }
   
