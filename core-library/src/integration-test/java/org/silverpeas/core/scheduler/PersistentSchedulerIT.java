@@ -166,7 +166,7 @@ public class PersistentSchedulerIT {
                 "expected time");
     JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
-    await().pollInterval(5, SECONDS).atMost(34, SECONDS).until(eventHandlingCompleted());
+    await().pollInterval(5, SECONDS).atMost(44, SECONDS).until(eventHandlingCompleted());
     assertThat(eventHandler.isJobFired(), is(true));
     assertThat(eventHandler.isJobSucceeded(), is(true));
   }
@@ -175,7 +175,7 @@ public class PersistentSchedulerIT {
   public void aFailureJobExecutionShouldFireACorrespondingSchedulerEvent() throws Exception {
     JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler.mustFail());
-    await().pollInterval(5, SECONDS).atMost(34, SECONDS).until(eventHandlingCompleted());
+    await().pollInterval(5, SECONDS).atMost(44, SECONDS).until(eventHandlingCompleted());
     assertThat(eventHandler.isJobFired(), is(true));
     assertThat(eventHandler.isJobSucceeded(), is(false));
   }

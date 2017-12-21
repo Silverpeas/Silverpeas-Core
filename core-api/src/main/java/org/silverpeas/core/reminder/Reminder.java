@@ -63,10 +63,10 @@ import java.util.List;
 @DiscriminatorColumn(name = "reminderType")
 @Table(name = "sb_reminder")
 @NamedQueries(
-    {@NamedQuery(name = "byUserId", query = "select r from Reminder r where r.userId = :userId"),
-        @NamedQuery(name = "byContributionId",
+    {@NamedQuery(name = "remindersByUserId", query = "select r from Reminder r where r.userId = :userId"),
+        @NamedQuery(name = "remindersByContributionId",
             query = "select r from Reminder r where r.contributionId = :contributionId"),
-        @NamedQuery(name = "byContributionIdAndUserId",
+        @NamedQuery(name = "remindersByContributionIdAndUserId",
             query = "select r from Reminder r where r.userId = :userId and r.contributionId = " +
                 ":contributionId")})
 public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifier> {

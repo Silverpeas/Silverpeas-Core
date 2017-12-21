@@ -40,13 +40,13 @@ public class DefaultReminderRepository extends BasicJpaEntityRepository<Reminder
   @Override
   public List<Reminder> findByUserId(final String id) {
     NamedParameters parameters = newNamedParameters().add("userId", id);
-    return findByNamedQuery("byUserId", parameters);
+    return findByNamedQuery("remindersByUserId", parameters);
   }
 
   @Override
   public List<Reminder> findByContributionId(final ContributionIdentifier contributionId) {
     NamedParameters parameters = newNamedParameters().add("contributionId", contributionId);
-    return findByNamedQuery("byContributionId", parameters);
+    return findByNamedQuery("remindersByContributionId", parameters);
   }
 
   @Override
@@ -54,7 +54,7 @@ public class DefaultReminderRepository extends BasicJpaEntityRepository<Reminder
       final String userId) {
     NamedParameters parameters =
         newNamedParameters().add("userId", userId).add("contributionId", contributionId);
-    return findByNamedQuery("byContributionIdAndUserId", parameters);
+    return findByNamedQuery("remindersByContributionIdAndUserId", parameters);
   }
 }
   
