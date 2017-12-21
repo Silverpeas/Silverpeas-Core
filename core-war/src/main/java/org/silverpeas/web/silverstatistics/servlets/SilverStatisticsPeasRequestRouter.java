@@ -99,7 +99,6 @@ public class SilverStatisticsPeasRequestRouter extends
     }
 
     Calendar calendar = Calendar.getInstance();
-    calendar.add(Calendar.MONTH, -1);
     String monthOfCurrentYear = String.valueOf(calendar.get(Calendar.MONTH));
     String currentYear = String.valueOf(calendar.get(Calendar.YEAR));
     calendar.add(Calendar.YEAR, -1);
