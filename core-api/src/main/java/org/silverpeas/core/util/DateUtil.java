@@ -725,7 +725,7 @@ public class DateUtil {
         dateTime.format(DateTimeFormatter.ofPattern(datePattern + " " + timePattern));
     return sameOffsetAsPlatform
         ? formattedDateTime
-        : formattedDateTime + "(" + dateTime.getZone().getId() + ")";
+        : formattedDateTime + " (" + dateTime.getZone().getId() + ")";
   }
 
   /**

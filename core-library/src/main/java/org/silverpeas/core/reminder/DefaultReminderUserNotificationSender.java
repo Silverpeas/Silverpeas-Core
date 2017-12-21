@@ -24,10 +24,12 @@
 
 package org.silverpeas.core.reminder;
 
+import net.htmlparser.jericho.Source;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionLocalizationBundle;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
+import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.builder
     .AbstractContributionTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
@@ -59,11 +61,11 @@ public class DefaultReminderUserNotificationSender implements ReminderUserNotifi
    * @author silveryocha
    */
   private static class ContributionReminderUserNotification
-      extends AbstractContributionTemplateUserNotificationBuilder<Contribution> {
+      extends AbstractContributionTemplateUserNotificationBuilder<Contribution> implements
+      FallbackToCoreTemplatePathBehavior {
 
     private final Reminder reminder;
     private final User receiver;
-    private final ZonedDateTime now;
     private final Supplier<IllegalArgumentException> notHandledReminderType;
     private final ZonedDateTime reminderContributionDate;
 
@@ -72,7 +74,6 @@ public class DefaultReminderUserNotificationSender implements ReminderUserNotifi
       super(reminder.getContribution());
       this.reminder = reminder;
       this.receiver = User.getById(reminder.getUserId());
-      this.now = now;
       notHandledReminderType = () -> new IllegalArgumentException(
           "Reminder type " + this.reminder.getClass() + " is not handled");
       reminderContributionDate =  new FilterByType(reminder)
@@ -99,7 +100,7 @@ public class DefaultReminderUserNotificationSender implements ReminderUserNotifi
         final SilverpeasTemplate template) {
       super.performTemplateData(localizedContribution, template);
       final String language = ((LocalizedContribution) localizedContribution).getLanguage();
-      final String contributionTitle = new FilterByType(getResource())
+      final String contributionTitle = new FilterByType(reminder)
           .matchFirst(DurationReminder.class::equals, r -> {
             DurationReminder durationReminder = (DurationReminder) r;
             return ContributionLocalizationBundle
@@ -114,15 +115,16 @@ public class DefaultReminderUserNotificationSender implements ReminderUserNotifi
       final String formattedReminderContributionDate = reminderContributionDate != null
           ? formatDateAndTime(reminderContributionDate, language)
           : "N/A";
+      final String contributionTitleText = new Source(contributionTitle).getTextExtractor().toString();
       template.setAttribute("contributionTitle", contributionTitle);
       template.setAttribute("reminderContributionDate", formattedReminderContributionDate);
       getNotificationMetaData().addLanguage(language, getMessagesIn(language)
-          .getStringWithParams("reminder.on", contributionTitle, formattedReminderContributionDate), "");
+          .getStringWithParams("reminder.on", contributionTitleText, formattedReminderContributionDate), "");
     }
 
     @Override
     protected String getTemplateFileName() {
-      return new FilterByType(getResource())
+      return new FilterByType(reminder)
           .matchFirst(DurationReminder.class::equals, r -> "reminder-duration")
           .matchFirst(DateTimeReminder.class::equals, r -> "reminder-datetime")
           .result()

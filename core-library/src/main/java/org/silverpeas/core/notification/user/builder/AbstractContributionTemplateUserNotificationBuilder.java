@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.notification.user.builder;
 
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
@@ -31,6 +32,7 @@ import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
 
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Centralization of common behavior around the contribution implementations.
@@ -50,9 +52,11 @@ public abstract class AbstractContributionTemplateUserNotificationBuilder<C exte
   protected final void performTemplateData(final String language, final C contribution,
       final SilverpeasTemplate template) {
     localizedContribution = LocalizedContribution.from(contribution, language);
-    getNotificationMetaData().addLanguage(language,
-        defaultStringIfNotDefined(getBundle(language).getString(getBundleSubjectKey()), getTitle()),
-        "");
+    String title = getTitle();
+    if (StringUtils.isNotBlank(getMultilangPropertyFile())) {
+      title = defaultStringIfNotDefined(getBundle(language).getString(getBundleSubjectKey()), getTitle());
+    }
+    getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("contribution", localizedContribution);
     template.setAttribute("contributionName", localizedContribution.getTitle());
     template.setAttribute("senderName", getSenderName());
@@ -66,7 +70,7 @@ public abstract class AbstractContributionTemplateUserNotificationBuilder<C exte
    * @return the sender name as string.
    */
   protected String getSenderName() {
-    return getSender() != null ? User.getById(getSender()).getDisplayedName() : "";
+    return isDefined(getSender()) ? User.getById(getSender()).getDisplayedName() : "";
   }
 
   /**
