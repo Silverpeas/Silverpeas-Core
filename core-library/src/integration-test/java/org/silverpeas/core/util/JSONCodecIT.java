@@ -34,6 +34,7 @@ import org.silverpeas.core.calendar.ical4j.ICal4JRecurrenceCodec;
 import org.silverpeas.core.calendar.repository.DefaultCalendarEventRepository;
 import org.silverpeas.core.exception.DecodingException;
 import org.silverpeas.core.exception.EncodingException;
+import org.silverpeas.core.reminder.DefaultReminderRepository;
 import org.silverpeas.core.test.BasicWarBuilder;
 
 import javax.json.Json;
@@ -64,9 +65,10 @@ public class JSONCodecIT {
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return BasicWarBuilder.onWarForTestClass(JSONCodecIT.class).testFocusedOn(
-        war -> war.addClasses(TestSerializableBean.class, TestBean.class, DecodingException.class,
-            EncodingException.class, JSONCodec.class))
+    return BasicWarBuilder.onWarForTestClass(JSONCodecIT.class)
+        .addClasses(DefaultReminderRepository.class)
+        .testFocusedOn(war -> war.addClasses(TestSerializableBean.class, TestBean.class,
+            DecodingException.class, EncodingException.class, JSONCodec.class))
         .addClasses(ICal4JImporter.class, ICal4JDateCodec.class, ICal4JRecurrenceCodec.class,
             DefaultCalendarEventRepository.class)
         .build();

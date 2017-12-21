@@ -23,21 +23,21 @@
  */
 package org.silverpeas.core.io.temp;
 
-import org.silverpeas.core.scheduler.Job;
-import org.silverpeas.core.scheduler.JobExecutionContext;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.AgeFileFilter;
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.scheduler.Job;
+import org.silverpeas.core.scheduler.JobExecutionContext;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.thread.ManagedThreadPool;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.util.Collection;
 
@@ -50,9 +50,6 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
 
   protected static final String JOB_NAME = "TemporayDataCleanerJob";
   private static final File tempPath = new File(FileRepositoryManager.getTemporaryPath());
-
-  @Inject
-  private Scheduler scheduler;
 
   Thread startTask;
 
@@ -72,6 +69,7 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
 
     // Setting CRON
     final String cron = TemporaryDataManagementSetting.getJobCron();
+    Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
     scheduler.unscheduleJob(JOB_NAME);
     if (StringUtil.isDefined(cron)) {
       scheduler.scheduleJob(temporaryDataCleanerJob, JobTrigger.triggerAt(cron));
