@@ -32,7 +32,6 @@ import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.TransactionRuntimeException;
-import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerProvider;
@@ -44,8 +43,9 @@ import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import java.text.MessageFormat;
 import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.List;
@@ -62,6 +62,13 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name = "reminderType")
 @Table(name = "sb_reminder")
+@NamedQueries(
+    {@NamedQuery(name = "byUserId", query = "select r from Reminder r where r.userId = :userId"),
+        @NamedQuery(name = "byContributionId",
+            query = "select r from Reminder r where r.contributionId = :contributionId"),
+        @NamedQuery(name = "byContributionIdAndUserId",
+            query = "select r from Reminder r where r.userId = :userId and r.contributionId = " +
+                ":contributionId")})
 public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifier> {
 
   @Embedded
@@ -74,23 +81,33 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
   private boolean triggered;
 
   /**
-   * Gets the list of reminders linked to a contribution represented by the given identifier.
+   * Gets the reminders linked to a contribution represented by the given identifier.
    * @param contributionId the identifier of a contribution.
-   * @return a list of reminder, empty if no reminder.
+   * @return a list of reminders related to the specified contribution, empty if no such reminders.
    */
-  public static List<Reminder> getByContributionId(final ContributionIdentifier contributionId) {
-    // TODO when persistence is ready
-    return Collections.emptyList();
+  public static List<Reminder> getByContribution(final ContributionIdentifier contributionId) {
+    return ReminderRepository.get().findByContributionId(contributionId);
   }
 
   /**
-   * Gets the list of reminders linked to a user represented by the given identifier.
-   * @param userId the identifier of a user.
-   * @return a list of reminder, empty if no reminder.
+   * Gets the reminders set by the specified user for himself.
+   * @param user the user.
+   * @return a list of the user's reminders, empty if no such reminders.
    */
-  public static List<Reminder> getByUserId(final String userId) {
-    // TODO when persistence is ready
-    return Collections.emptyList();
+  public static List<Reminder> getByUser(final User user) {
+    return ReminderRepository.get().findByUserId(user.getId());
+  }
+
+  /**
+   * Gets the reminders that was set by the specified user for himself and that are about the
+   * specified contribution.
+   * @param contributionId the unique identifier of a contribution.
+   * @param user the user.
+   * @return a list of the user's reminders related to the contribution, empty if no such reminders.
+   */
+  public static List<Reminder> getByContributionAndUser(final ContributionIdentifier contributionId,
+      final User user) {
+    return ReminderRepository.get().findByContributionAndUserIds(contributionId, user.getId());
   }
 
   /**

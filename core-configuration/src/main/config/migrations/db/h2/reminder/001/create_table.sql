@@ -18,4 +18,7 @@ CREATE INDEX IDX_REMINDER_CONTRIB
   ON sb_reminder (contrib_id, contrib_instanceId, contrib_type);
 
 CREATE INDEX IDX_REMINDER_USER
-  ON sb_reminder (userId)
+  ON sb_reminder (userId);
+
+CREATE INDEX IDX_REMINDER_CONTRIB_USER
+  ON sb_reminder (contrib_id, contrib_instanceId, contrib_type, userId);

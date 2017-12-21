@@ -55,6 +55,7 @@ import java.io.File;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import static java.util.concurrent.TimeUnit.SECONDS;
@@ -141,6 +142,76 @@ public class ReminderIT {
   @Test
   public void emptyTest() {
     // empty test to check the testing environment is working
+  }
+
+  @Test
+  public void getAllRemindersAboutAGivenContribution() {
+    List<Reminder> reminders = Reminder.getByContribution(
+        ContributionIdentifier.from("myApp42", "42", EventContrib.class.getSimpleName()));
+    assertThat(reminders.size(), is(2));
+    assertThat(reminders.get(0).getId(), is("Reminder#1ed074deee814b6a8035b9ced02ff56d"));
+    assertThat(reminders.get(0), instanceOf(DateTimeReminder.class));
+    assertThat(reminders.get(0).getUserId(), is("2"));
+    assertThat(reminders.get(0).getContributionId().getLocalId(), is("42"));
+    assertThat(reminders.get(1).getId(), is("Reminder#1ed074deee814b6a8035b9ced02ff56e"));
+    assertThat(reminders.get(1), instanceOf(DurationReminder.class));
+    assertThat(reminders.get(1).getUserId(), is("3"));
+    assertThat(reminders.get(1).getContributionId().getLocalId(), is("42"));
+  }
+
+  @Test
+  public void getAllRemindersOfAGivenUser() {
+    List<Reminder> reminders = Reminder.getByUser(User.getById("3"));
+    assertThat(reminders.size(), is(2));
+    assertThat(reminders.get(0).getId(), is("Reminder#1ed074deee814b6a8035b9ced02ff56e"));
+    assertThat(reminders.get(0), instanceOf(DurationReminder.class));
+    assertThat(reminders.get(0).getUserId(), is("3"));
+    assertThat(reminders.get(0).getContributionId().getLocalId(), is("42"));
+    assertThat(reminders.get(1).getId(), is("Reminder#1ed074deee814b6a8035b9ced02ff56f"));
+    assertThat(reminders.get(1), instanceOf(DateTimeReminder.class));
+    assertThat(reminders.get(1).getUserId(), is("3"));
+    assertThat(reminders.get(1).getContributionId().getLocalId(), is("12"));
+  }
+
+  @Test
+  public void getAllRemindersOfAGivenUserAboutAGivenContribution() {
+    List<Reminder> reminders = Reminder.getByContributionAndUser(
+        ContributionIdentifier.from("myApp42", "42", EventContrib.class.getSimpleName()),
+        User.getById("3"));
+    assertThat(reminders.size(), is(1));
+    assertThat(reminders.get(0).getId(), is("Reminder#1ed074deee814b6a8035b9ced02ff56e"));
+    assertThat(reminders.get(0), instanceOf(DurationReminder.class));
+    assertThat(reminders.get(0).getUserId(), is("3"));
+    assertThat(reminders.get(0).getContributionId().getLocalId(), is("42"));
+  }
+
+  @Test
+  public void getNoRemindersAboutAContributionWithoutAnyReminders() {
+    List<Reminder> reminders = Reminder.getByContribution(
+        ContributionIdentifier.from("bidule22", "22", EventContrib.class.getSimpleName()));
+    assertThat(reminders.isEmpty(), is(true));
+  }
+
+  @Test
+  public void getNoRemindersOfAUserHavingSetNoReminders() {
+    List<Reminder> reminders = Reminder.getByUser(User.getById("1"));
+    assertThat(reminders.isEmpty(), is(true));
+  }
+
+  @Test
+  public void getNoRemindersOfAUserAboutAContributionWithoutAnyReminders() {
+    List<Reminder> reminders = Reminder.getByContributionAndUser(
+        ContributionIdentifier.from("bidule22", "22", EventContrib.class.getSimpleName()),
+        User.getById("2"));
+    assertThat(reminders.isEmpty(), is(true));
+  }
+
+  @Test
+  public void getNoRemindersOfAUserHavingSetNoRemindersAndAboutAContribution() {
+    List<Reminder> reminders = Reminder.getByContributionAndUser(
+        ContributionIdentifier.from("myApp42", "42", EventContrib.class.getSimpleName()),
+        User.getById("1"));
+    assertThat(reminders.isEmpty(), is(true));
   }
 
   @Test

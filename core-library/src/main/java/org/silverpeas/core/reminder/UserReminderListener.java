@@ -34,6 +34,6 @@ public class UserReminderListener extends CDIResourceEventListener<UserEvent> {
 
   @Override
   public void onDeletion(final UserEvent event) throws Exception {
-    Reminder.getByUserId(event.getTransition().getBefore().getId()).forEach(Reminder::unschedule);
+    Reminder.getByUser(event.getTransition().getBefore()).forEach(Reminder::unschedule);
   }
 }

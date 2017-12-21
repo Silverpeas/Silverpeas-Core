@@ -38,7 +38,7 @@ public class UserPreferenceReminderListener extends CDIResourceEventListener<Use
     UserPreferences previous = event.getTransition().getBefore();
     UserPreferences current = event.getTransition().getAfter();
     if (!previous.getZoneId().equals(current.getZoneId())) {
-      Reminder.getByUserId(current.getUser().getId())
+      Reminder.getByUser(current.getUser())
           .stream()
           .filter(Reminder::isScheduled)
           .forEach(Reminder::schedule);

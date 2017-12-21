@@ -23,9 +23,12 @@
  */
 package org.silverpeas.core.reminder;
 
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.jpa.BasicJpaEntityRepository;
+import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 
 import javax.inject.Singleton;
+import java.util.List;
 
 /**
  * Default implementation of the JPA repository that stores the reminders for Silverpeas
@@ -34,5 +37,24 @@ import javax.inject.Singleton;
 @Singleton
 public class DefaultReminderRepository extends BasicJpaEntityRepository<Reminder>
     implements ReminderRepository {
+  @Override
+  public List<Reminder> findByUserId(final String id) {
+    NamedParameters parameters = newNamedParameters().add("userId", id);
+    return findByNamedQuery("byUserId", parameters);
+  }
+
+  @Override
+  public List<Reminder> findByContributionId(final ContributionIdentifier contributionId) {
+    NamedParameters parameters = newNamedParameters().add("contributionId", contributionId);
+    return findByNamedQuery("byContributionId", parameters);
+  }
+
+  @Override
+  public List<Reminder> findByContributionAndUserIds(final ContributionIdentifier contributionId,
+      final String userId) {
+    NamedParameters parameters =
+        newNamedParameters().add("userId", userId).add("contributionId", contributionId);
+    return findByNamedQuery("byContributionIdAndUserId", parameters);
+  }
 }
   

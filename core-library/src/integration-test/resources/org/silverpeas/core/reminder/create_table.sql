@@ -14,5 +14,11 @@ CREATE TABLE IF NOT EXISTS sb_reminder (
   CONSTRAINT PK_REMINDER PRIMARY KEY (id)
 );
 
-CREATE INDEX IDX_REMINDER_USER_CONTRIB
-  ON sb_reminder (userId, contrib_id, contrib_instanceId, contrib_type);
+CREATE INDEX IDX_REMINDER_CONTRIB
+  ON sb_reminder (contrib_id, contrib_instanceId, contrib_type);
+
+CREATE INDEX IDX_REMINDER_USER
+  ON sb_reminder (userId);
+
+CREATE INDEX IDX_REMINDER_CONTRIB_USER
+  ON sb_reminder (contrib_id, contrib_instanceId, contrib_type, userId);

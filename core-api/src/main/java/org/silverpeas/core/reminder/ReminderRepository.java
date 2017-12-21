@@ -23,18 +23,52 @@
  */
 package org.silverpeas.core.reminder;
 
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
+import java.util.List;
+
 /**
- * Repository of reminders. It manages the persistence of the reminders on contributions.
+ * Repository of reminders. It manages the persistence of the reminders of the users on
+ * contributions.
  * @author mmoquillon
  */
 public interface ReminderRepository extends EntityRepository<Reminder> {
 
+  /**
+   * Gets an instance of this repository.
+   * @return a {@link ReminderRepository} instance.
+   */
   static ReminderRepository get() {
     return ServiceProvider.getService(ReminderRepository.class);
   }
+
+  /**
+   * Finds in this repository all the reminders set by and for the specified user.
+   * @param id the unique identifier of a user.
+   * @return a list of {@link Reminder} instances. Empty if the user has no reminders.
+   */
+  List<Reminder> findByUserId(final String id);
+
+  /**
+   * Finds in this repository all the reminders related to the specified contribution.
+   * @param contributionId the unique identifier of a contribution.
+   * @return a list of {@link Reminder} instances. Empty if there is no reminders that were set for
+   * the contribution.
+   */
+  List<Reminder> findByContributionId(final ContributionIdentifier contributionId);
+
+  /**
+   * Finds in this repository all the reminders related to the specified contribution that were set
+   * by and for the specified user.
+   * @param contributionId the unique identifier of a contribution.
+   * @param userId the unique identifier of a user.
+   * @return a list of {@link Reminder} instances. Empty if the user has set no reminders for the
+   * contribution.
+   */
+  List<Reminder> findByContributionAndUserIds(final ContributionIdentifier contributionId,
+      final String userId);
 
 }
   
