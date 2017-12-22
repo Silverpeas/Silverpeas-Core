@@ -26,8 +26,8 @@ package org.silverpeas.core.contribution.content.wysiwyg.service.directive;
 import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
-import org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerDirective;
+import org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static java.lang.Character.isDigit;
 import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 import static org.silverpeas.core.util.StringDataExtractor.from;
 
@@ -48,19 +49,19 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
   private static final String HEIGHT_ATTR = "height";
   private static final String STYLE_ATTR = "style";
 
-  private static List<RegexpPatternDirective> WIDTH_NUMERIC_VALUE = Arrays
-      .asList(regexp(Pattern.compile("(?i)" + WIDTH_ATTR + "Attr[ ]*([0-9]+)"), 1),
-          regexp(Pattern.compile("(?i)[ ;]" + WIDTH_ATTR + "[ ]*:[ ]*([0-9]+)"), 1));
-  private static List<RegexpPatternDirective> HEIGHT_NUMERIC_VALUE = Arrays
-      .asList(regexp(Pattern.compile("(?i)" + HEIGHT_ATTR + "Attr[ ]*([0-9]+)"), 1),
-          regexp(Pattern.compile("(?i)[ ;]" + HEIGHT_ATTR + "[ ]*:[ ]*([0-9]+)"), 1));
+  private static final List<RegexpPatternDirective> WIDTH_NUMERIC_VALUE = Arrays.asList(
+      regexp(Pattern.compile("(?i)" + WIDTH_ATTR + "Attr[ ]*([0-9]+.?)"), 1),
+      regexp(Pattern.compile("(?i)[ ;]" + WIDTH_ATTR + "[ ]*:[ ]*([0-9]+.?)"), 1));
+  private static final List<RegexpPatternDirective> HEIGHT_NUMERIC_VALUE = Arrays.asList(
+      regexp(Pattern.compile("(?i)" + HEIGHT_ATTR + "Attr[ ]*([0-9]+.?)"), 1),
+      regexp(Pattern.compile("(?i)[ ;]" + HEIGHT_ATTR + "[ ]*:[ ]*([0-9]+.?)"), 1));
 
   @Override
   public String execute(final String wysiwygContent) {
     String wysiwygToTransform = wysiwygContent != null ? wysiwygContent : "";
     Source source = new Source(wysiwygToTransform);
     List<Element> imgElements = source.getAllElements(HTMLElementName.IMG);
-    Map<String, String> replacements = new HashMap<String, String>();
+    Map<String, String> replacements = new HashMap<>();
     for (Element currentImg : imgElements) {
 
       // The part that is not modified
@@ -76,9 +77,9 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
         // then guessing the new src URL
         String width = getWidth(currentImg);
         String height = getHeight(currentImg);
-        String sizeUrlPart = width + "x" + height;
+        StringBuilder sizeUrlPart = new StringBuilder().append(width).append("x").append(height);
         if (sizeUrlPart.length() > 1) {
-          sizeUrlPart = "/size/" + sizeUrlPart;
+          sizeUrlPart.insert(0, "/size/");
           newSrc = newSrc.replaceFirst("/name/", sizeUrlPart + "/name/");
         }
 
@@ -127,6 +128,10 @@ public class ImageUrlAccordingToHtmlSizeDirective implements WysiwygContentTrans
             imgElement.getAttributeValue(attrName);
     List<String> sizeData =
         from(stringToParse.replaceAll("[\n\r]*", "")).withDirectives(directives).extract();
-    return sizeData.isEmpty() ? "" : sizeData.get(0);
+    return sizeData.stream()
+        .filter(s -> s.charAt(s.length() - 1) != '%')
+        .map(s -> isDigit(s.charAt(s.length() - 1)) ? s : s.substring(0, s.length() - 1))
+        .findFirst()
+        .orElse("");
   }
 }
