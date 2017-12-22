@@ -41,7 +41,7 @@ import java.util.List;
  */
 public class SilverStatisticsPeasDAO {
   private static final String STATS_GET_LIST_PUBLI_ACCESS =
-      "SELECT componentid, objectid, count(*) FROM sb_statistic_history WHERE datestat >= ? AND datestat <= ? GROUP BY objectid, componentid ORDER BY componentid, objectid";
+      "SELECT componentid, resourceid, count(*) FROM sb_statistic_history WHERE datestat >= ? AND datestat <= ? GROUP BY resourceid, componentid ORDER BY componentid, resourceid";
 
   public static List<AccessPublicationVO> getListPublicationAccess(String startDate, String endDate)
       throws SQLException {
