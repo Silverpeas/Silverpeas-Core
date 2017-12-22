@@ -27,12 +27,16 @@ import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.Value;
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static java.text.MessageFormat.format;
 
 /**
  * @author David Derigent
@@ -73,7 +77,7 @@ public class HighlightGlossaryTerms {
         Collections.sort(glossary, new TermComparator());
       }
     } catch (PdcException pdcEx) {
-      SilverLogger.getLogger(this).warn(pdcEx.getMessage());
+      SilverLogger.getLogger(this).warn(pdcEx);
     }
     // highlight the term retrieved in the content
     if (glossary != null && !glossary.isEmpty()) {
@@ -90,19 +94,29 @@ public class HighlightGlossaryTerms {
   String highlight(String term, String content, String definition, String className,
       boolean onlyFirst) {
     // escape HTML character
-    String escapedTerm = StringEscapeUtils.escapeHtml4(term);
+    String escapedTerm = WebEncodeHelper.convertHTMLEntities(term).replaceAll("'", "&#39;");
+    String groupName = "realTerm";
     // regular expression which allows to search all the term except the HTML tag Searches the
     // exact term
-    String regex = "((?i)\\b" + escapedTerm + "\\b)(?=[^>]*<(?!/a))";
+    Pattern pattern = Pattern.compile("(?i)(?<realTerm>\\b" + escapedTerm + "\\b)(?=[^>]*<(?!/a))");
 
     // highlights the term
-    String replacement = "<a href=\"#\" class=\"" + className + "\" title=\"" +
-        definition.replaceAll("\"", "&quot;") + "\">" + escapedTerm + "</a>";
+    String template = "<span class=\"" + className + "\" title=\"" +
+        definition.replaceAll("\"", "&quot;").replaceAll("'", "''") + "\">{0}</span>";
 
-    if (onlyFirst) {
-      // highlights only the first occurrence
-      return content.replaceFirst(regex, replacement);
+    StringBuilder sb = new StringBuilder();
+    Matcher matcher = pattern.matcher(content);
+    int lastBeginIndex = 0;
+    while (matcher.find()) {
+      sb.append(content.substring(lastBeginIndex, matcher.start(groupName)));
+      String realTerm = matcher.group(groupName);
+      sb.append(format(template, realTerm));
+      lastBeginIndex = matcher.end(groupName);
+      if (onlyFirst) {
+        break;
+      }
     }
-    return content.replaceAll(regex, replacement);
+    sb.append(content.substring(lastBeginIndex));
+    return sb.toString();
   }
 }
