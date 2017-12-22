@@ -28,10 +28,10 @@ import org.silverpeas.core.reminder.usernotification.ReminderUserNotificationSen
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
 
 /**
@@ -63,12 +63,19 @@ public class ReminderProcess implements SchedulerEventListener {
 
   @Override
   public void jobSucceeded(final SchedulerEvent anEvent) {
-
+    final String reminderId = anEvent.getJobExecutionContext().getJobName();
+    SilverLogger.getLogger(this).info("The reminder {0} was correctly fired", reminderId);
   }
 
   @Override
   public void jobFailed(final SchedulerEvent anEvent) {
-
+    final String reminderId = anEvent.getJobExecutionContext().getJobName();
+    if (anEvent.isExceptionThrown()) {
+      final Throwable throwable = anEvent.getJobThrowable();
+      SilverLogger.getLogger(this).error("The reminder {0} firing failed", throwable);
+    } else {
+      SilverLogger.getLogger(this).error("The reminder " + reminderId + " firing failed");
+    }
   }
 
   private void notifyUserAbout(final Reminder reminder, final ZonedDateTime now) {

@@ -236,7 +236,6 @@ public class ReminderIT {
     assertThat(actualReminder.getUserId(), is(USER_ID));
     assertThat(actualReminder.getText(), is(reminderText));
     assertThat(actualReminder.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
-    assertThat(actualReminder.getTriggeringDate(), is(triggerDate));
   }
 
   @Test
@@ -300,7 +299,6 @@ public class ReminderIT {
     assertThat(actualReminder.getUserId(), is(reminder.getUserId()));
     assertThat(actualReminder.getText(), is(reminderText));
     assertThat(actualReminder.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
-    assertThat(actualReminder.getTriggeringDate(), is(triggerDate));
 
     await().pollInterval(5, SECONDS).atMost(31, SECONDS).until(isTriggered(reminder));
     assertThat(reminder.isScheduled(), is(false));
@@ -357,7 +355,7 @@ public class ReminderIT {
     assertThat(reminder.isScheduled(), is(true));
 
     reminder = Reminder.getById(reminder.getId());
-    assertThat(reminder.getTriggeringDate(), notNullValue());
+    assertThat(reminder.computeTriggeringDate(), notNullValue());
   }
 
   @Test

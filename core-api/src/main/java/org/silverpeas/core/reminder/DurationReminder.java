@@ -170,7 +170,7 @@ public class DurationReminder extends Reminder {
   @Override
   public boolean isSchedulable() {
     try {
-      nextTriggeringDate = getTriggeringDate();
+      nextTriggeringDate = computeTriggeringDate();
       return nextTriggeringDate != null;
     } catch (NoSuchPropertyException e) {
       return false;
@@ -178,7 +178,17 @@ public class DurationReminder extends Reminder {
   }
 
   @Override
-  protected OffsetDateTime getTriggeringDate() {
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  protected OffsetDateTime computeTriggeringDate() {
     if (nextTriggeringDate != null && !nextTriggeringDate.isBefore(OffsetDateTime.now())) {
       return nextTriggeringDate;
     }

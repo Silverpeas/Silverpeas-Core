@@ -26,11 +26,11 @@ package org.silverpeas.core.reminder;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 
-import javax.persistence.Column;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.persistence.Transient;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
 
 /**
  * A reminder about any contribution that is triggered at a specified date time.
@@ -40,8 +40,8 @@ import java.time.ZoneOffset;
 @DiscriminatorValue("datetime")
 public class DateTimeReminder extends Reminder {
 
-  @Column(name = "trigger_datetime", nullable = false)
-  private OffsetDateTime dateTime;
+  @Transient
+  private transient OffsetDateTime dateTime;
 
   /**
    * Constructs a new reminder about the specified contribution and for the given user.
@@ -64,24 +64,26 @@ public class DateTimeReminder extends Reminder {
     return super.withText(text);
   }
 
-  /**
-   * Gets the date time at which this reminder will be triggered. The date time is expressed in
-   * UTC/Greenwich.
-   * @return a {@link OffsetDateTime} value.
-   */
-  public OffsetDateTime getDateTime() {
-    return dateTime;
-  }
 
   /**
    * Triggers this reminder at the specified date time. The timezone of the specified date time
-   * will be set in UTC/Greenwich.
+   * will be set in the timezone of the user behind this reminder.
    * @param dateTime the date time at which this reminder will be triggered once scheduled.
    * @return itself.
    */
   public DateTimeReminder triggerAt(final OffsetDateTime dateTime) {
-    this.dateTime = dateTime.withOffsetSameInstant(ZoneOffset.UTC);
+    final ZoneId userZoneId = User.getById(getUserId()).getUserPreferences().getZoneId();
+    this.dateTime = dateTime.atZoneSameInstant(userZoneId).toOffsetDateTime();
     return this;
+  }
+
+  /**
+   * Gets the datetime at which the trigger of this reminder is set. The returned datetime is
+   * based upon the timezone of the user behind this reminder.
+   * @return the datetime of this reminder's trigger.
+   */
+  public OffsetDateTime getDateTime() {
+    return isScheduled() ? getScheduledDateTime() : dateTime;
   }
 
   /**
@@ -90,12 +92,22 @@ public class DateTimeReminder extends Reminder {
    */
   @Override
   public boolean isSchedulable() {
-    return !getDateTime().isBefore(OffsetDateTime.now());
+    return !this.dateTime.isBefore(OffsetDateTime.now());
   }
 
   @Override
-  protected OffsetDateTime getTriggeringDate() {
-    return getDateTime().atZoneSameInstant(ZoneOffset.systemDefault()).toOffsetDateTime();
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  protected OffsetDateTime computeTriggeringDate() {
+    return dateTime;
   }
 }
   

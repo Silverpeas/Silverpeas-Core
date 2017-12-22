@@ -47,7 +47,6 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.time.OffsetDateTime;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -79,6 +78,8 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
   private String text;
   @Column(name = "triggered")
   private boolean triggered;
+  @Column(name = "trigger_datetime", nullable = false)
+  private OffsetDateTime triggerDateTime;
 
   /**
    * Gets the reminders linked to a contribution represented by the given identifier.
@@ -178,6 +179,16 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
   }
 
   /**
+   * Gets the datetime at which this reminder is scheduled. If this reminder isn't yet scheduled,
+   * the datetime returned is null, even if its triggering rule is set. The datetime is based upon
+   * the timezone of the user behind this reminder.
+   * @return a {@link OffsetDateTime} value or null if no yet scheduled is set.
+   */
+  public OffsetDateTime getScheduledDateTime() {
+    return this.triggerDateTime;
+  }
+
+  /**
    * Is this reminder scheduled? The reminder is scheduled if it is taken in charge by the
    * Silverpeas scheduler engine.
    * @return true if this reminder is scheduled to be triggered at its specified date time, false
@@ -212,8 +223,8 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
    * @return itself.
    */
   public <T extends Reminder> T schedule() {
-    OffsetDateTime dateTime = getTriggeringDate();
-    assert dateTime != null :
+    this.triggerDateTime = computeTriggeringDate();
+    assert this.triggerDateTime != null :
         "The triggering rule is invalid: the computed triggering date is null!";
     Scheduler scheduler = getScheduler();
     return Transaction.performInOne(() -> {
@@ -221,7 +232,7 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
         scheduler.unscheduleJob(getJobName());
       }
       Reminder me = ReminderRepository.get().save(this);
-      JobTrigger trigger = JobTrigger.triggerAt(dateTime);
+      JobTrigger trigger = JobTrigger.triggerAt(this.triggerDateTime);
       scheduler.scheduleJob(getJobName(), trigger, ReminderProcess.get());
       return (T) me;
     });
@@ -248,6 +259,16 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
    */
   public abstract boolean isSchedulable();
 
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
   /**
    * Gets the contribution related by this reminder.
    * @return a {@link Contribution} object.
@@ -261,12 +282,14 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
   }
 
   /**
-   * Gets the date time at which this reminder has to be triggered. This date time is computed from
-   * the triggering rule of this reminder. The timezone is set with the timezone of the platform as
-   * the scheduler ran onto that platform.
+   * Computes the date time at which this reminder will be triggered. This method is invoked in
+   * {@link Reminder#schedule()} in order to plan the trigger of this reminder in the timeline.
+   * The triggering datetime is computed from the triggering rule that is specific to the
+   * concrete type of this reminder. The timezone of the returned triggering date has to be set
+   * with the timezone of the user behind the reminder.
    * @return an {@link OffsetDateTime} value.
    */
-  protected abstract OffsetDateTime getTriggeringDate();
+  protected abstract OffsetDateTime computeTriggeringDate();
 
   private String getJobName() {
     return this.getId();
