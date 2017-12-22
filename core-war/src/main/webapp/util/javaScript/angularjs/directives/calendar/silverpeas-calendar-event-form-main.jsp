@@ -194,6 +194,7 @@
       <label class="txtlibform">${reminderLabel}</label>
       <div class="champs">
         <silverpeas-contribution-reminder mode="DURATION"
+                                          api="$ctrl.reminderApi"
                                           reminder="$ctrl.data.reminder"
                                           contribution-id="$ctrl.eventContributionId"
                                           contribution-property="'NEXT_START_DATE'"

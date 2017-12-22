@@ -24,6 +24,7 @@
 package org.silverpeas.core.cache.model;
 
 import java.util.UUID;
+import java.util.function.Supplier;
 
 /**
  * Implementation of the Cache that uses EhCache API.
@@ -58,5 +59,17 @@ public abstract class AbstractCache extends AbstractSimpleCache
   @Override
   public void put(final Object key, final Object value, final int timeToLive) {
     put(key, value, timeToLive, DEFAULT_TIME_TO_IDLE);
+  }
+
+  @Override
+  public <T> T computeIfAbsent(final Object key, final Class<T> classType,
+      final Supplier<T> valueSupplier) {
+    return computeIfAbsent(key, classType, 0, valueSupplier);
+  }
+
+  @Override
+  public <T> T computeIfAbsent(final Object key, final Class<T> classType, final int timeToLive,
+      final Supplier<T> valueSupplier) {
+    return computeIfAbsent(key, classType, 0, DEFAULT_TIME_TO_IDLE, valueSupplier);
   }
 }

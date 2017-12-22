@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
 import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.backgroundprocess.BackgroundProcessLogger;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.contribution.ComponentInstanceContributionManager;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
@@ -47,6 +48,7 @@ import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.lang.SystemWrapper;
+import org.silverpeas.core.util.logging.Level;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
@@ -137,6 +139,8 @@ public class ReminderIT {
     manager.addContribution(new EventContrib(CONTRIBUTION_FOR_NOW).authoredBy(aUser));
     manager.addContribution(new EventContrib(CONTRIBUTION_FOR_LATER).authoredBy(aUser)
         .publishAt(OffsetDateTime.now().plusSeconds(45)));
+    new BackgroundProcessLogger().init();
+    BackgroundProcessLogger.get().setLevel(Level.DEBUG);
   }
 
   @Test

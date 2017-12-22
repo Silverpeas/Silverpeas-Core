@@ -283,6 +283,9 @@
                   this.data.endDate =
                       sp.moment.make(dateTime).add(this.offsetDateTime, 'milliseconds').format();
                 }
+                if (this.reminderApi) {
+                  this.reminderApi.refresh();
+                }
               }
             }.bind(this));
 

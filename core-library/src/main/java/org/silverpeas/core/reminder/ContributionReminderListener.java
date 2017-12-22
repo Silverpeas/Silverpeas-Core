@@ -26,6 +26,7 @@ package org.silverpeas.core.reminder;
 import org.silverpeas.core.contribution.ContributionDeletion;
 import org.silverpeas.core.contribution.ContributionModification;
 import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.List;
 import java.util.Optional;
@@ -40,15 +41,20 @@ public class ContributionReminderListener
     implements ContributionModification, ContributionDeletion {
   @Override
   public void update(final Contribution before, final Contribution after) {
-    getReminders(before)
-        .stream()
-        .filter(Reminder::isScheduled)
-        .forEach(Reminder::schedule);
+    try {
+      getReminders(before).stream().filter(Reminder::isScheduled).forEach(Reminder::schedule);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
   }
 
   @Override
   public void delete(final Contribution contribution) {
-    getReminders(contribution).forEach(Reminder::unschedule);
+    try {
+      getReminders(contribution).forEach(Reminder::unschedule);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
   }
 
   /**

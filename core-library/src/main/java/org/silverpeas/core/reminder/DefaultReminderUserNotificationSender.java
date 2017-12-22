@@ -53,16 +53,16 @@ import static org.silverpeas.core.util.DateUtil.formatDateAndTime;
 public class DefaultReminderUserNotificationSender implements ReminderUserNotificationSender {
 
   @Override
-  public void sendAbout(final Reminder reminder, final ZonedDateTime now) {
-    new ContributionReminderUserNotification(reminder, now).build().send();
+  public void sendAbout(final Reminder reminder) {
+    new ContributionReminderUserNotification(reminder).build().send();
   }
 
   /**
    * @author silveryocha
    */
   private static class ContributionReminderUserNotification
-      extends AbstractContributionTemplateUserNotificationBuilder<Contribution> implements
-      FallbackToCoreTemplatePathBehavior {
+      extends AbstractContributionTemplateUserNotificationBuilder<Contribution>
+      implements FallbackToCoreTemplatePathBehavior {
 
     private final Reminder reminder;
     private final User receiver;
@@ -70,16 +70,20 @@ public class DefaultReminderUserNotificationSender implements ReminderUserNotifi
     private final ZonedDateTime reminderContributionDate;
 
     @SuppressWarnings("ConstantConditions")
-    private ContributionReminderUserNotification(final Reminder reminder, final ZonedDateTime now) {
+    private ContributionReminderUserNotification(final Reminder reminder) {
       super(reminder.getContribution());
       this.reminder = reminder;
       this.receiver = User.getById(reminder.getUserId());
       notHandledReminderType = () -> new IllegalArgumentException(
           "Reminder type " + this.reminder.getClass() + " is not handled");
-      reminderContributionDate =  new FilterByType(reminder)
+      reminderContributionDate = new FilterByType(reminder)
           .matchFirst(DurationReminder.class::equals, r -> {
             DurationReminder durationReminder = (DurationReminder) r;
-            return now.plus(durationReminder.getDuration(), durationReminder.getTimeUnit().toChronoUnit());
+            return durationReminder
+                .getScheduledDateTime()
+                .atZoneSameInstant(receiver.getUserPreferences().getZoneId())
+                .plus(durationReminder.getDuration(),
+                      durationReminder.getTimeUnit().toChronoUnit());
           })
           .matchFirst(DateTimeReminder.class::equals, r -> null)
           .result()
@@ -107,19 +111,26 @@ public class DefaultReminderUserNotificationSender implements ReminderUserNotifi
                 .getByInstanceAndLanguage(getResource(), language)
                 .getUiMessageTitleByTypeAndProperty(durationReminder.getContributionProperty());
           })
-          .matchFirst(DateTimeReminder.class::equals, r -> ContributionLocalizationBundle
-              .getByInstanceAndLanguage(getResource(), language)
-              .getUiMessageTitleByType())
+          .matchFirst(DateTimeReminder.class::equals,
+                      r -> ContributionLocalizationBundle
+                          .getByInstanceAndLanguage(getResource(), language)
+                          .getUiMessageTitleByType())
           .result()
           .orElseThrow(notHandledReminderType);
       final String formattedReminderContributionDate = reminderContributionDate != null
           ? formatDateAndTime(reminderContributionDate, language)
           : "N/A";
-      final String contributionTitleText = new Source(contributionTitle).getTextExtractor().toString();
+      final String contributionTitleText = new Source(contributionTitle)
+          .getTextExtractor()
+          .toString();
       template.setAttribute("contributionTitle", contributionTitle);
       template.setAttribute("reminderContributionDate", formattedReminderContributionDate);
-      getNotificationMetaData().addLanguage(language, getMessagesIn(language)
-          .getStringWithParams("reminder.on", contributionTitleText, formattedReminderContributionDate), "");
+      getNotificationMetaData().addLanguage(language,
+                                            getMessagesIn(language).getStringWithParams(
+                                                "reminder.on",
+                                                contributionTitleText,
+                                                formattedReminderContributionDate),
+                                            "");
     }
 
     @Override

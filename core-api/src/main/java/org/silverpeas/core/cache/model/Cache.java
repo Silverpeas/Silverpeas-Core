@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.cache.model;
 
+import java.util.function.Supplier;
+
 /**
  * User: Yohann Chastagnier
  * Date: 11/09/13
@@ -82,4 +84,40 @@ public interface Cache extends SimpleCache {
    * After this time, the value expires and consequently it is remove from the cache. 0 = unlimited.
    */
   void put(Object key, Object value, int timeToLive, int timeToIdle);
+
+  /**
+   * Gets a typed element from the cache and computes it if it does not yet exist.
+   * If an element exists for the given key but the object type doesn't correspond, a new
+   * computation is performed.
+   * @param <T> the concrete type of the object to get.
+   * @param key the key with which the object to get is mapped in the cache.
+   * @param timeToLive the time to live in seconds of the object in the cache. The time to live
+   * can be exceeded if the time to idle is set and the value is accessed after the time to live
+   * minus the time to idle. 0 = unlimited.
+   * @param classType the class of the instance to get.
+   * @param valueSupplier the function that will computes the data to put into the cache.
+   * @return the object mapped with the key or null if no there is no object mapped with the
+   * specified key.
+   */
+  <T> T computeIfAbsent(Object key, Class<T> classType, int timeToLive, Supplier<T> valueSupplier);
+
+  /**
+   * Gets a typed element from the cache and computes it if it does not yet exist.
+   * If an element exists for the given key but the object type doesn't correspond, a new
+   * computation is performed.
+   * @param <T> the concrete type of the object to get.
+   * @param key the key with which the object to get is mapped in the cache.
+   * @param timeToLive the time to live in seconds of the object in the cache. The time to live
+   * can be exceeded if the time to idle is set and the value is accessed after the time to live
+   * minus the time to idle. 0 = unlimited.
+   * @param timeToIdle the time to idle in seconds of the object in the cache between two accesses.
+   * With the time to live set, the time to idle is taken into account only once the time starting
+   * at the access time exceed the initial lifetime of the value computed from the time to live.
+   * After this time, the value expires and consequently it is remove from the cache. 0 = unlimited.
+   * @param classType the class of the instance to get.
+   * @param valueSupplier the function that will computes the data to put into the cache.
+   * @return the object mapped with the key or null if no there is no object mapped with the
+   * specified key.
+   */
+  <T> T computeIfAbsent(Object key, Class<T> classType, int timeToLive, int timeToIdle, Supplier<T> valueSupplier);
 }

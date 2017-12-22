@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.webapi.reminder;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.ContributionManager;
@@ -61,11 +62,14 @@ import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.Status.FORBIDDEN;
 import static javax.ws.rs.core.Response.Status.NOT_FOUND;
 import static org.silverpeas.core.SilverpeasExceptionMessages.failureOnGetting;
+import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
+    .getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.reminder.Reminder.getByContributionAndUser;
 import static org.silverpeas.core.reminder.ReminderSettings.getMessagesIn;
 import static org.silverpeas.core.reminder.ReminderSettings.getPossibleReminders;
@@ -83,6 +87,9 @@ import static org.silverpeas.core.webapi.reminder.ReminderResourceURIs.REMINDER_
 @Path(REMINDER_BASE_URI + "/{componentInstanceId}/{type}/{localId}")
 @Authenticated
 public class ReminderResource extends RESTWebService {
+
+  private static final Function<Pair<Integer, TimeUnit>, String> DURATION_IDS =
+      r -> String.valueOf(r.getLeft()) + r.getRight();
 
   @Inject
   private ReminderResourceURIs uri;
@@ -110,6 +117,9 @@ public class ReminderResource extends RESTWebService {
   @SuppressWarnings("ConstantConditions")
   public List<String> getPossibleDurations(
       @PathParam("property") final String contributionProperty) {
+    if (getSessionVolatileResourceCacheService().contains(localId, componentInstanceId)) {
+      return getPossibleReminders().map(DURATION_IDS).collect(Collectors.toList());
+    }
     final ContributionModel model = getContribution().getModel();
     final ZoneId userZoneId = getUserPreferences().getZoneId();
     final ZoneId platformZoneId = ZoneId.systemDefault();
@@ -129,7 +139,8 @@ public class ReminderResource extends RESTWebService {
           lastMatchOk.set(dateReference != null);
           return lastMatchOk.get();
         })
-        .map(r -> String.valueOf(r.getLeft()) + r.getRight()).collect(Collectors.toList());
+        .map(DURATION_IDS)
+        .collect(Collectors.toList());
   }
 
   /**

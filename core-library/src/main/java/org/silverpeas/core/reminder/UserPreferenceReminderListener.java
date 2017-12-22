@@ -27,6 +27,7 @@ package org.silverpeas.core.reminder;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.notification.UserPreferenceEvent;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * @author Yohann Chastagnier
@@ -35,13 +36,18 @@ public class UserPreferenceReminderListener extends CDIResourceEventListener<Use
 
   @Override
   public void onUpdate(final UserPreferenceEvent event) {
-    UserPreferences previous = event.getTransition().getBefore();
-    UserPreferences current = event.getTransition().getAfter();
-    if (!previous.getZoneId().equals(current.getZoneId())) {
-      Reminder.getByUser(current.getUser())
-          .stream()
-          .filter(Reminder::isScheduled)
-          .forEach(Reminder::schedule);
+    try {
+      UserPreferences previous = event.getTransition().getBefore();
+      UserPreferences current = event.getTransition().getAfter();
+      if (!previous.getZoneId().equals(current.getZoneId())) {
+        Reminder
+            .getByUser(current.getUser())
+            .stream()
+            .filter(Reminder::isScheduled)
+            .forEach(Reminder::schedule);
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
     }
   }
 }

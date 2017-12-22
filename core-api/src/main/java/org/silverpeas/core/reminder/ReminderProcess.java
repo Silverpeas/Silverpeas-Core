@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.reminder;
 
+import org.silverpeas.core.backgroundprocess.AbstractBackgroundProcessRequest;
+import org.silverpeas.core.backgroundprocess.BackgroundProcessTask;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.reminder.usernotification.ReminderUserNotificationSender;
 import org.silverpeas.core.scheduler.SchedulerEvent;
@@ -50,11 +52,10 @@ public class ReminderProcess implements SchedulerEventListener {
 
   @Override
   public void triggerFired(final SchedulerEvent anEvent) {
-    final ZonedDateTime now = ZonedDateTime.now();
     final String reminderId = anEvent.getJobExecutionContext().getJobName();
     Reminder reminder = repository.getById(reminderId);
     reminder.triggered();
-    notifyUserAbout(reminder, now);
+    notifyUserAbout(reminder);
     Transaction.performInOne(() -> repository.save(reminder));
     if (reminder.isSchedulable()) {
       reminder.schedule();
@@ -78,8 +79,27 @@ public class ReminderProcess implements SchedulerEventListener {
     }
   }
 
-  private void notifyUserAbout(final Reminder reminder, final ZonedDateTime now) {
-    ReminderUserNotificationSender.get().sendAbout(reminder, now);
+  private void notifyUserAbout(final Reminder reminder) {
+    BackgroundProcessTask.push(new BackgroundReminderUserNotificationProcess(reminder));
+  }
+
+  /**
+   * Background process request which ensure the reminder scheduler to not be disturbed by user
+   * notification send processing.
+   */
+  private class BackgroundReminderUserNotificationProcess extends AbstractBackgroundProcessRequest {
+
+    private final Reminder reminder;
+
+    private BackgroundReminderUserNotificationProcess(final Reminder reminder) {
+      super();
+      this.reminder = reminder;
+    }
+
+    @Override
+    protected void process() {
+      ReminderUserNotificationSender.get().sendAbout(reminder);
+    }
   }
 }
   
