@@ -261,7 +261,12 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             Arrays.asList(componentsArray), url));
         // Loop increase
         cptSrv++;
-        srvName = getSettings().getString(prefixKey + cptSrv + nameKey);
+        try {
+          srvName = getSettings().getString(prefixKey + cptSrv + nameKey);
+        } catch (MissingResourceException e) {
+          SilverLogger.getLogger(this).debug("", e);
+          break;
+        }
       }
     }
   }

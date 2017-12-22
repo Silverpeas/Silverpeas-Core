@@ -26,6 +26,7 @@ package org.silverpeas.core.index.indexing.model;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.FSDirectory;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
@@ -49,7 +50,7 @@ public class IndexReadersCache {
     return getInstance().indexReaders.computeIfAbsent(path, p -> {
       try {
         final File directory = new File(p);
-        if (directory.length() > 0) {
+        if (ArrayUtil.isNotEmpty(directory.list())) {
           return DirectoryReader.open(FSDirectory.open(directory.toPath()));
         } else {
           SilverLogger.getLogger(IndexReadersCache.class)
