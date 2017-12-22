@@ -30,58 +30,51 @@
 <%@ page import="org.silverpeas.core.contribution.content.form.DataRecord"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.Form"%>
 <%@ page import="org.silverpeas.core.contribution.content.form.PagesContext" %>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
 
 <%
 Form 				formUpdate 	= (Form) request.getAttribute("XMLForm");
 DataRecord 			data 		= (DataRecord) request.getAttribute("XMLData");
-String				xmlFormName = (String) request.getAttribute("XMLFormName");
 PagesContext		context		= (PagesContext) request.getAttribute("PagesContext");
 
 context.setBorderPrinted(false);
 context.setFormIndex("0");
 
 %>
-<HTML>
-<HEAD>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
 <view:looknfeel/>
 <% formUpdate.displayScripts(out, context); %>
-<script language="javaScript">
-function B_VALIDER_ONCLICK()
-{
-	if (isCorrectForm())
-	{
-		document.myForm.submit();
-	}
+<script type="text/javascript">
+function B_VALIDER_ONCLICK() {
+  ifCorrectFormExecute(function() {
+	  document.myForm.submit();
+	});
 }
 
-function B_ANNULER_ONCLICK()
-{
+function B_ANNULER_ONCLICK() {
 	window.close();
 }
 </script>
-</HEAD>
-<BODY class="yui-skin-sam">
-<%
-    Board board = gef.getBoard();
-    out.println(board.printBefore());
-%>
-<FORM NAME="myForm" METHOD="POST" ACTION="Update" ENCTYPE="multipart/form-data">
+</head>
+<body class="yui-skin-sam">
+<view:window popup="true" browseBarVisible="false">
+<view:board>
+<form name="myForm" method="post" action="Update" enctype="multipart/form-data">
 	<%
 		formUpdate.display(out, context, data);
 	%>
-	<input type="hidden" name="Name" value="<%=xmlFormName%>">
-</FORM>
+</form>
+</view:board>
 <%
-	out.println(board.printAfter());
-
 	ButtonPane buttonPane = gef.getButtonPane();
-	buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
-	buttonPane.addButton((Button) gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
-    out.println("<br><center>"+buttonPane.print()+"</center>");
+	buttonPane.addButton(gef.getFormButton(resources.getString("GML.validate"), "javascript:onClick=B_VALIDER_ONCLICK();", false));
+	buttonPane.addButton(gef.getFormButton(resources.getString("GML.cancel"), "javascript:onClick=B_ANNULER_ONCLICK();", false));
+    out.println("<br/>"+buttonPane.print());
 %>
-</BODY>
-<script language="javascript">
+</view:window>
+</body>
+<script type="text/javascript">
 	document.myForm.elements[1].focus();
 </script>
-</HTML>
+</html>

@@ -305,7 +305,7 @@
                 <span class="description"><view:encodeHtmlParagraph string="${currentAttachment.description}" /></span>
             </c:if>
               <c:if test="${silfn:isDefined(currentAttachment.xmlFormId)}">
-                <br/><a rel='<c:url value="/RformTemplate/jsp/View">
+                <a class="extraForm-file-more" rel='<c:url value="/RformTemplate/jsp/View">
                         <c:param name="width" value="400"/>
                         <c:param name="ObjectId" value="${currentAttachment.id}"/>
                         <c:param name="ObjectLanguage" value="${contentLanguage}"/>
@@ -436,8 +436,7 @@
         },
         style : {
           tip : true, // Apply a speech bubble tip to the tooltip at the designated tooltip corner
-          width : 570,
-          classes : "qtip-shadow qtip-light"
+          classes : "qtip-shadow qtip-light qtip-attachment-extraForm"
         }
       })
     });

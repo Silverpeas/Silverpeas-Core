@@ -331,19 +331,15 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     RecordTemplate dataTemplate = getRecordTemplate();
     if (formTemplate != null && dataTemplate != null) {
       String fieldNames[] = formTemplate.getFieldNames();
-      int size = fieldNames.length;
-      String fieldName;
       GenericFieldTemplate formFieldTemplate;
       GenericFieldTemplate dataFieldTemplate;
-      for (int i = 0; i < size; i++) {
-        fieldName = fieldNames[i];
-
+      for (String fieldName : fieldNames) {
         try {
           formFieldTemplate = (GenericFieldTemplate) formTemplate.getFieldTemplate(fieldName);
           dataFieldTemplate = (GenericFieldTemplate) dataTemplate.getFieldTemplate(fieldName);
           formFieldTemplate.setTypeName(dataFieldTemplate.getTypeName());
-          formFieldTemplate.setParametersObj(dataFieldTemplate
-              .getParametersObj());
+          formFieldTemplate.setParametersObj(dataFieldTemplate.getParametersObj());
+          formFieldTemplate.setLabelsObj(dataFieldTemplate.getLabelsObj());
         } catch (FormException e) {
           SilverTrace.error("form", "PublicationTemplateImpl.mergeTemplates",
               "form.EXP_UNKNOWN_FIELD", null, e);

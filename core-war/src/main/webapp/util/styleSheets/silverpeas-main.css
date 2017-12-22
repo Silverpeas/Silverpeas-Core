@@ -3240,6 +3240,10 @@ ul#attachmentList li.attachmentListItem .linkAllVersions {
   font-weight: bold;
 }
 
+.qtip.qtip-attachment-extraForm {
+  max-width: inherit;
+}
+
 /*- [ attachments END ] ------------------------- */
 
 #admin-component .componentIcon {

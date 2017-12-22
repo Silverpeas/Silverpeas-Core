@@ -31,7 +31,6 @@
 <%@ page import="org.silverpeas.core.util.ResourceLocator"%>
 
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory"%>
-<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.board.Board"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane"%>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button"%>
 
@@ -48,13 +47,4 @@
 	}
 
 	MultiSilverpeasBundle resources = (MultiSilverpeasBundle)request.getAttribute("resources");
-
-	String[] browseContext = (String[]) request.getAttribute("browseContext");
-	String spaceLabel = browseContext[0];
-	String componentLabel = browseContext[1];
-	String spaceId = browseContext[2];
-	String componentId = browseContext[3];
-
-	//R�cup�ration du contexte
-	String m_context = ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL");
 %>
