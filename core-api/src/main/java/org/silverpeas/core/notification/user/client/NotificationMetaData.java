@@ -252,14 +252,13 @@ public class NotificationMetaData implements java.io.Serializable {
       if (template != null) {
         result.append(template.applyFileTemplate(fileName + '_' + language));
       }
-      appendExtraMessageHtmlFragment(result, language);
     } else {
       String content = contents.get(language);
       if(content != null) {
         result.append(content);
       }
-      appendExtraMessageHtmlFragment(result, language);
     }
+    appendExtraMessageHtmlFragment(result, language);
 
     // This below TAG permits to next treatments to decorate the message just before this footer
     result.append(BEFORE_MESSAGE_FOOTER_TAG);
@@ -308,7 +307,8 @@ public class NotificationMetaData implements java.io.Serializable {
   private void appendExtraMessageHtmlFragment(final StringBuilder messageContent,
       final String language) {
     final String extraMessage = getOriginalExtraMessage();
-    if (isDefined(extraMessage) && messageContent.indexOf(extraMessage) < 0) {
+    if (isDefined(extraMessage) &&
+        !messageContent.toString().replace("\r", "").contains(extraMessage.replace("\r", ""))) {
       SilverpeasTemplate templateRepository =
           SilverpeasTemplateFactory.createSilverpeasTemplateOnCore("notification");
       templateRepository.setAttribute(SENDER_MESSAGE_ATTRIBUTE, extraMessage);
