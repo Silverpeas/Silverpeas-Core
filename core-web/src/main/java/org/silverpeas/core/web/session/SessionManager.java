@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.cache.service.VolatileResourceCacheService;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
 import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
@@ -57,7 +58,6 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -86,7 +86,7 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
  * @author Nicolas Eysseric
  */
 @Singleton
-public class SessionManager implements SessionManagement {
+public class SessionManager implements SessionManagement, Initialization {
 
   // Object on which to synchronize (the instance indeed)
   private final Object mutex;
@@ -128,11 +128,8 @@ public class SessionManager implements SessionManagement {
     this.mutex = this;
   }
 
-  /**
-   * Init attributes
-   */
-  @PostConstruct
-  public void initSessionManager() {
+  @Override
+  public void init() {
     try {
       // init maxRefreshInterval : add 60 seconds delay because of network traffic
       SettingBundle rl =
@@ -167,6 +164,11 @@ public class SessionManager implements SessionManagement {
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
+  }
+
+  @Override
+  public void release() throws Exception {
+    scheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
   }
 
   @Override

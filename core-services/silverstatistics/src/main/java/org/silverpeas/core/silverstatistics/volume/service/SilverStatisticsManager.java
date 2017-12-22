@@ -24,6 +24,7 @@
 package org.silverpeas.core.silverstatistics.volume.service;
 
 import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
@@ -39,7 +40,6 @@ import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import java.io.File;
 import java.util.ArrayList;
@@ -59,7 +59,7 @@ import static org.silverpeas.core.silverstatistics.volume.model.StatType.*;
  * @author Marc Guillemin
  */
 @Singleton
-public class SilverStatisticsManager {
+public class SilverStatisticsManager implements Initialization {
 
   private static final String STAT_SIZE_JOB_NAME = "SilverStatisticsSize";
   private static final String STAT_CUMUL_JOB_NAME = "SilverStatisticsCumul";
@@ -78,8 +78,8 @@ public class SilverStatisticsManager {
    * Init attributes.
    * This method is invoked by the IoC container. Don't invoke it!
    */
-  @PostConstruct
-  public void initSilverStatisticsManager() {
+  @Override
+  public void init() {
     directoryToScan = new ArrayList<>();
     try {
       statsConfig = new StatisticsConfig();
@@ -102,6 +102,14 @@ public class SilverStatisticsManager {
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex);
     }
+  }
+
+  @Override
+  public void release() throws Exception {
+    Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
+    scheduler.unscheduleJob(STAT_SIZE_JOB_NAME);
+    scheduler.unscheduleJob(STAT_VOLUME_JOB_NAME);
+    scheduler.unscheduleJob(STAT_CUMUL_JOB_NAME);
   }
 
   /**

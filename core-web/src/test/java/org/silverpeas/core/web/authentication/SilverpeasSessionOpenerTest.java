@@ -39,7 +39,6 @@ import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.silverstatistics.volume.service.SilverStatisticsManager;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.session.SessionManager;
@@ -194,7 +193,7 @@ public class SilverpeasSessionOpenerTest {
     }
 
     @Override
-    public void initSessionManager() {
+    public void init() {
     }
   }
 }
