@@ -27,6 +27,8 @@ import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -80,18 +82,19 @@ public class HighlightGlossaryTerms {
       SilverLogger.getLogger(this).warn(pdcEx);
     }
     // highlight the term retrieved in the content
-    if (glossary != null && !glossary.isEmpty()) {
+    if (CollectionUtil.isNotEmpty(glossary)) {
       for (Value node : glossary) {
-        replacedContent =
-            highlight(node.getName(language), replacedContent, node.getDescription(language),
-                className, onlyFirst);
+        String desc = node.getDescription(language);
+        if (StringUtil.isDefined(desc)) {
+          replacedContent =
+              highlight(node.getName(language), replacedContent, desc, className, onlyFirst);
+        }
       }
     }
     return replacedContent;
-
   }
 
-  String highlight(String term, String content, String definition, String className,
+  private String highlight(String term, String content, String definition, String className,
       boolean onlyFirst) {
     // escape HTML character
     String escapedTerm = WebEncodeHelper.convertHTMLEntities(term).replaceAll("'", "&#39;");
