@@ -6828,3 +6828,31 @@ silverpeas-pdc-filter select.no-value option.no-value,
 silverpeas-pdc-filter option.no-value {
   color: #888888;
 }
+
+.maintenanceOn {
+  text-align:center;
+  line-height:1.4em;
+  background-color:#e6e6e6
+}
+.maintenanceOn .userzoom-tooltip {
+  text-align: left;
+}
+.maintenanceOn h2 {
+  font-size:1.4em;
+}
+.maintenanceOn .content {
+  border:6px solid #d1d1d1;
+  border-radius:12px;
+  background:#FFF url(../../admin/jsp/icons/maintenance.png) bottom left no-repeat;
+  width:500px;
+  margin:100px auto 0;
+  padding:1em 1em 120px 1em;
+  line-height:2.4em;
+}
+.maintenanceOn .administrator {
+  border:1px solid #ccc;
+  background-color:#f2f2f2;
+  display:inline-block;
+  margin:1em 0.5em;
+  padding: 0.5em 1em;
+}
