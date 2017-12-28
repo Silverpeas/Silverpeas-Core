@@ -136,6 +136,8 @@ public class JavascriptPluginInclusion {
   private static final String STYLESHEET_PASSWORD = "silverpeas-password.css";
   private static final String WYSIWYG_PATH = URLUtil.getApplicationURL() + "/wysiwyg/jsp/";
   private static final String JAVASCRIPT_CKEDITOR = "ckeditor/ckeditor.js";
+  private static final String CODE_HIGHLIGHTER_JAVASCRIPT = "ckeditor/plugins/codesnippet/lib/highlight/highlight.pack.js";
+  private static final String CODE_HIGHLIGHTER_CSS = "ckeditor/plugins/codesnippet/lib/highlight/styles/monokai_sublime.css";
   private static final String SILVERPEAS_WYSIWYG_TOOLBAR = "javaScript/wysiwygToolBar.js";
   private static final String JAVASCRIPT_TYPE = "text/javascript";
   private static final String STYLESHEET_TYPE = "text/css";
@@ -520,9 +522,12 @@ public class JavascriptPluginInclusion {
   }
 
   static ElementContainer includeWysiwygEditor(final ElementContainer xhtml) {
+    xhtml.addElement(link(WYSIWYG_PATH+CODE_HIGHLIGHTER_CSS));
     xhtml.addElement(script(WYSIWYG_PATH + JAVASCRIPT_CKEDITOR));
+    xhtml.addElement(script(WYSIWYG_PATH + CODE_HIGHLIGHTER_JAVASCRIPT));
     xhtml.addElement(script(WYSIWYG_PATH + SILVERPEAS_WYSIWYG_TOOLBAR));
     xhtml.addElement(script(ANGULARJS_PATH + ANGULAR_CKEDITOR_JS));
+    xhtml.addElement(scriptContent("hljs.initHighlightingOnLoad();"));
     return xhtml;
   }
 
