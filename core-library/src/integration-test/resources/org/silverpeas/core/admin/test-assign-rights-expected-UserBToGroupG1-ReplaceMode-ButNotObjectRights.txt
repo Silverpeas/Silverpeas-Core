@@ -1,6 +1,5 @@
 0	(G) - G1-2_D0            	* SPACE            - admin@Space-B_Level-1
 0	(G) - G1-2_D0            	^ COMPONENT        - admin@almanach-Space-B_Level-1
-[REMOVED]0	(G) - G1_D0              	* COMPONENT-OBJECT - writer@kmelia-Space-A_Level-1#Folder-1-1
 [REMOVED]0	(G) - G1_D0              	* SPACE            - admin@Space-A_Level-1
 [REMOVED]0	(G) - G1_D0              	^ COMPONENT        - admin@blog-Space-A_Level-2
 [REMOVED]0	(G) - G1_D0              	^ COMPONENT        - admin@kmelia-Space-A_Level-1
@@ -9,6 +8,7 @@
 0	(G) - G1_D0              	* COMPONENT        - admin@kmelia-Space-A_Level-1
 0	(G) - G1_D0              	* SPACE            - publisher@Space-B_Level-1
 0	(G) - G1_D0              	^ COMPONENT        - publisher@almanach-Space-B_Level-1
+0	(G) - G1_D0              	* COMPONENT-OBJECT - writer@kmelia-Space-A_Level-1#Folder-1-1
 [ADDED FROM user_b - END]
 1	(G) - G2_D1              	* COMPONENT        - admin@almanach-Space-B_Level-1
 0	(U) - user_a             	* COMPONENT        - writer@kmelia-Space-A_Level-1

@@ -1130,7 +1130,12 @@ class Admin implements Administration {
     if (persist) {
       for (SpaceProfileInst profile : subSpace.getInheritedProfiles()) {
         if (StringUtil.isDefined(profile.getId())) {
-          updateSpaceProfileInst(profile, null);
+          if (profile.isEmpty()) {
+            // we delete a space profile in this context only if it is empty
+            deleteSpaceProfileInst(profile.getId(), null);
+          } else {
+            updateSpaceProfileInst(profile, null);
+          }
         } else {
           addSpaceProfileInst(profile, null);
         }
@@ -1152,16 +1157,15 @@ class Admin implements Administration {
     if (subSpaceProfile != null) {
       subSpaceProfile.removeAllGroups();
       subSpaceProfile.removeAllUsers();
+    } else {
+      subSpaceProfile = new SpaceProfileInst();
+      subSpaceProfile.setName(profileName);
+      subSpaceProfile.setInherited(true);
     }
 
     // Retrieve superSpace local profile
     SpaceProfileInst profile = space.getSpaceProfileInst(profileName);
     if (profile != null) {
-      if (subSpaceProfile == null) {
-        subSpaceProfile = new SpaceProfileInst();
-        subSpaceProfile.setName(profileName);
-        subSpaceProfile.setInherited(true);
-      }
       subSpaceProfile.addGroups(profile.getAllGroups());
       subSpaceProfile.addUsers(profile.getAllUsers());
     }
@@ -1169,16 +1173,11 @@ class Admin implements Administration {
     // Retrieve superSpace inherited profile
     SpaceProfileInst inheritedProfile = space.getInheritedSpaceProfileInst(profileName);
     if (inheritedProfile != null) {
-      if (subSpaceProfile == null) {
-        subSpaceProfile = new SpaceProfileInst();
-        subSpaceProfile.setName(profileName);
-        subSpaceProfile.setInherited(true);
-      }
       subSpaceProfile.addGroups(inheritedProfile.getAllGroups());
       subSpaceProfile.addUsers(inheritedProfile.getAllUsers());
     }
 
-    if (subSpaceProfile != null) {
+    if (!subSpaceProfile.isEmpty()) {
       subSpace.addSpaceProfileInst(subSpaceProfile);
     }
   }
@@ -1325,7 +1324,6 @@ class Admin implements Administration {
       } else {
         if (!space.isInheritanceBlocked()) {
           // space inherits rights from parent
-          space = spaceManager.getSpaceInstById(shortSpaceId);
           SpaceInst father = getSpaceInstById(shortFatherId);
           setSpaceProfilesToSubSpace(space, father, true, false);
         } else {

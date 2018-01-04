@@ -102,28 +102,18 @@ VALUES (2, 2, 'blog', 0, 0, 'blog-Space-A_Level-2', 0, 0);
 INSERT INTO st_componentinstance (id, spaceid, componentname, ordernum, ispublic, name, isinheritanceblocked, ishidden)
 VALUES (3, 10, 'almanach', 1, 0, 'almanach-Space-B_Level-1', 0, 0);
 
-
-INSERT INTO sb_node_node (nodeId, instanceid, nodeName, nodepath, nodefatherid, nodeCreationDate, nodeCreatorId, rightsdependson, nodelevelnumber)
-VALUES (10, '1', 'Root', '/', -1, '2014/11/06', '0', -1, 1);
-INSERT INTO sb_node_node (nodeId, instanceid, nodeName, nodePath, nodefatherid, nodeCreationDate, nodeCreatorId, rightsdependson, nodelevelnumber)
-VALUES (101, '1', 'Folder-1', '/10/', 10, '2014/11/06', '0', -1, 2);
-INSERT INTO sb_node_node (nodeId, instanceid, nodeName, nodePath, nodefatherid, nodeCreationDate, nodeCreatorId, rightsdependson, nodelevelnumber)
-VALUES (1011, '1', 'Folder-1-1', '/10/101', 101, '2014/11/06', '0', 1011, 3);
-
-
 /*
 Node of kmelia-Space-A_Level-1
 - Root
 - ... Folder-1
 - ...... Folder-1-1
  */
-INSERT INTO st_spaceuserrole (id, spaceid, rolename, isinherited) VALUES (10, 1, 'admin', 0);
-INSERT INTO st_spaceuserrole (id, spaceid, rolename, isinherited) VALUES (100, 2, 'admin', 1);
-INSERT INTO st_spaceuserrole (id, spaceid, rolename, isinherited) VALUES (11, 1, 'writer', 0);
-INSERT INTO st_spaceuserrole (id, spaceid, rolename, isinherited) VALUES (30, 10, 'admin', 0);
-INSERT INTO st_spaceuserrole (id, spaceid, rolename, isinherited) VALUES (31, 10, 'writer', 0);
-INSERT INTO st_spaceuserrole (id, spaceid, rolename, isinherited) VALUES (32, 10, 'publisher', 0);
-
+INSERT INTO sb_node_node (nodeId, instanceid, nodeName, nodepath, nodefatherid, nodeCreationDate, nodeCreatorId, rightsdependson, nodelevelnumber)
+VALUES (10, '1', 'Root', '/', -1, '2014/11/06', '0', -1, 1);
+INSERT INTO sb_node_node (nodeId, instanceid, nodeName, nodePath, nodefatherid, nodeCreationDate, nodeCreatorId, rightsdependson, nodelevelnumber)
+VALUES (101, '1', 'Folder-1', '/10/', 10, '2014/11/06', '0', -1, 2);
+INSERT INTO sb_node_node (nodeId, instanceid, nodeName, nodePath, nodefatherid, nodeCreationDate, nodeCreatorId, rightsdependson, nodelevelnumber)
+VALUES (1011, '1', 'Folder-1-1', '/10/101', 101, '2014/11/06', '0', 1011, 3);
 
 /*
 Space User roles
@@ -136,6 +126,14 @@ Space User roles
 - ..... kmelia_1
 - - Space-B_Level-1:
  */
+INSERT INTO st_spaceuserrole (id, spaceid, rolename, isinherited) VALUES (10, 1, 'admin', 0);
+INSERT INTO st_spaceuserrole (id, spaceid, rolename, isinherited) VALUES (100, 2, 'admin', 1);
+INSERT INTO st_spaceuserrole (id, spaceid, rolename, isinherited) VALUES (11, 1, 'writer', 0);
+INSERT INTO st_spaceuserrole (id, spaceid, rolename, isinherited) VALUES (30, 10, 'admin', 0);
+INSERT INTO st_spaceuserrole (id, spaceid, rolename, isinherited) VALUES (31, 10, 'writer', 0);
+INSERT INTO st_spaceuserrole (id, spaceid, rolename, isinherited) VALUES (32, 10, 'publisher', 0);
+
+
 INSERT INTO st_userrole (id, instanceid, rolename, isinherited, objectid, objecttype)
 VALUES (10, 1, 'admin', 0, NULL, NULL);
 INSERT INTO st_userrole (id, instanceid, rolename, isinherited)
@@ -180,13 +178,13 @@ INSERT INTO st_spaceuserrole_group_rel (spaceuserroleid, groupid) VALUES (100, 1
 INSERT INTO st_spaceuserrole_group_rel (spaceuserroleid, groupid) VALUES (30, 3);
 
 
-/* Component User roles */
+/* Space USER roles Relations */
 INSERT INTO st_spaceuserrole_user_rel (spaceuserroleid, userid) VALUES (32, 2);
 INSERT INTO st_spaceuserrole_user_rel (spaceuserroleid, userid) VALUES (10, 3);
 INSERT INTO st_spaceuserrole_user_rel (spaceuserroleid, userid) VALUES (100, 3);
 
 
-/* Space GROUP Role Relations */
+/* Component GROUP Role Relations */
 INSERT INTO st_userrole_group_rel (userroleid, groupid) VALUES (100, 1);
 INSERT INTO st_userrole_group_rel (userroleid, groupid) VALUES (200, 1);
 INSERT INTO st_userrole_group_rel (userroleid, groupid) VALUES (911, 1);

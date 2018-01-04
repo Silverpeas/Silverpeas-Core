@@ -49,8 +49,8 @@ public class SpaceProfileInst implements Serializable {
     label = "";
     description = "";
     spaceFatherId = "";
-    groups = new ArrayList<String>();
-    users = new ArrayList<String>();
+    groups = new ArrayList<>();
+    users = new ArrayList<>();
   }
 
   public void setId(String sId) {
@@ -149,7 +149,7 @@ public class SpaceProfileInst implements Serializable {
   }
 
   public void addGroups(List<String> groups) {
-    ArrayList<String> a = new ArrayList<String>(groups);
+    ArrayList<String> a = new ArrayList<>(groups);
     a.removeAll(this.groups);
     this.groups.addAll(a);
   }
@@ -164,7 +164,7 @@ public class SpaceProfileInst implements Serializable {
   }
 
   public void removeAllUsers() {
-    users = new ArrayList<String>();
+    users = new ArrayList<>();
   }
 
   public boolean isInherited() {
@@ -177,6 +177,14 @@ public class SpaceProfileInst implements Serializable {
 
   public boolean isManager() {
     return SPACE_MANAGER.equalsIgnoreCase(name);
+  }
+
+  /**
+   * Is this profile empty?
+   * @return true if there is no users and no groups in this profile. Otherwise false.
+   */
+  public boolean isEmpty() {
+    return users.isEmpty() && groups.isEmpty();
   }
 
   @Override

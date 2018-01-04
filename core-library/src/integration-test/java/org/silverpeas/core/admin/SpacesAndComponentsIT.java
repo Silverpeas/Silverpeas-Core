@@ -654,7 +654,7 @@ public class SpacesAndComponentsIT {
     // check profiles before moving
     SpaceInst fullSpace = adminController.getSpaceInstById(spaceId);
     assertThat(fullSpace.getAllSpaceProfilesInst(), hasSize(0));
-    assertThat(fullSpace.getAllSpaceProfilesInst(), hasSize(0));
+    assertThat(fullSpace.getProfiles(), hasSize(0));
     // check if space on top level
     List<String> rootSpaceIds = Arrays.asList(adminController.getAllRootSpaceIds());
     assertThat(rootSpaceIds, not(hasItem(spaceId)));

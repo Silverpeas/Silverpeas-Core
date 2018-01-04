@@ -145,7 +145,7 @@ public class AssignRightIT  {
   }
 
   @Test
-  public void testDirectKmeliaSubNodeRightMustBeDeletedIfUserHasNoMoreAccessOnKmelia()
+  public void testDirectKmeliaSubNodeRightMustNotBeDeletedIfUserHasNoMoreAccessOnKmelia()
       throws AdminException {
     // Adding writer right on sub node of kmelia to user A
     ProfileInst profileInst =
@@ -165,8 +165,8 @@ public class AssignRightIT  {
     administrationService.updateProfileInst(profileInst);
 
     // Verifying that the writer right on component has been removed,
-    // and also the one on the sub node as the user is no more in a group that has yet right on
-    // kmelia component
+    // but the rights on the sub nodes are kept even if the the user is no more in a group that has
+    // yet right on kmelia component
     verifyCurrentDirectRights("test-assign-rights-expected-userAWithKmeliaSubNodeRight" +
         "-removedFromGoupG1_2AndDirectRightRemovedFromKmelia.txt");
   }
