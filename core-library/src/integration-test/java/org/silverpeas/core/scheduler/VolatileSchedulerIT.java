@@ -38,6 +38,7 @@ import org.silverpeas.core.test.WarBuilder4LibCore;
 
 import java.text.ParseException;
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.concurrent.Callable;
 
@@ -223,6 +224,19 @@ public class VolatileSchedulerIT {
       }
     }, trigger, eventHandler);
     await().atMost(3, SECONDS).until(jobIsExecuted());
+    assertThat(eventHandler.isJobSucceeded(), is(true));
+  }
+
+  @Test
+  public void schedulingAJobInThePastShouldFireIt() throws Exception {
+    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().minusDays(1));
+    scheduler.scheduleJob(new Job(JOB_NAME) {
+      @Override
+      public void execute(JobExecutionContext context) {
+        jobExecuted();
+      }
+    }, trigger, eventHandler);
+    await().atMost(1, SECONDS).until(jobIsExecuted());
     assertThat(eventHandler.isJobSucceeded(), is(true));
   }
 

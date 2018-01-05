@@ -221,13 +221,13 @@ public class CalendarEventOccurrenceGenerationTest {
     Iterator<CalendarEventOccurrence> iterator = occurrences.iterator();
     CalendarEventOccurrence occurrence = iterator.next();
     assertThat(occurrence.getCalendarEvent().getAttributes().get(ATTR_TEST_ID).get(), is("3"));
-    assertThat(occurrence.getStartDate(), is(dateTime(2016, 7, 1, 9, 0)));
-    assertThat(occurrence.getEndDate(), is(dateTime(2016, 7, 1, 9, 15)));
+    assertThat(occurrence.getStartDate(), is(dateTimeInUTC(2016, 7, 1, 9, 0)));
+    assertThat(occurrence.getEndDate(), is(dateTimeInUTC(2016, 7, 1, 9, 15)));
     // second occurrence
     occurrence = iterator.next();
     assertThat(occurrence.getCalendarEvent().getAttributes().get(ATTR_TEST_ID).get(), is("3"));
-    assertThat(occurrence.getStartDate(), is(dateTime(2016, 7, 8, 9, 0)));
-    assertThat(occurrence.getEndDate(), is(dateTime(2016, 7, 8, 9, 15)));
+    assertThat(occurrence.getStartDate(), is(dateTimeInUTC(2016, 7, 8, 9, 0)));
+    assertThat(occurrence.getEndDate(), is(dateTimeInUTC(2016, 7, 8, 9, 15)));
     // third occurrence
     occurrence = iterator.next();
     assertThat(occurrence.getCalendarEvent().getAttributes().get(ATTR_TEST_ID).get(), is("4"));
@@ -236,8 +236,8 @@ public class CalendarEventOccurrenceGenerationTest {
     // fourth occurrence
     occurrence = iterator.next();
     assertThat(occurrence.getCalendarEvent().getAttributes().get(ATTR_TEST_ID).get(), is("3"));
-    assertThat(occurrence.getStartDate(), is(dateTime(2016, 7, 29, 9, 0)));
-    assertThat(occurrence.getEndDate(), is(dateTime(2016, 7, 29, 9, 15)));
+    assertThat(occurrence.getStartDate(), is(dateTimeInUTC(2016, 7, 29, 9, 0)));
+    assertThat(occurrence.getEndDate(), is(dateTimeInUTC(2016, 7, 29, 9, 15)));
   }
 
   @Test
@@ -301,18 +301,19 @@ public class CalendarEventOccurrenceGenerationTest {
   @Test
   public void nextOccurrenceAboutNonRecurrentHourEventOnOneDayShouldWork() {
     CalendarEvent event =
-        calendarEventForTest(Period.between(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 12, 14, 45)));
+        calendarEventForTest(Period.between(
+            dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 12, 14, 45)));
     ZonedDateTime from = ZonedDateTime.parse("2017-12-12T13:30:00+01:00");
     CalendarEventOccurrence result = generator.generateNextOccurrenceOf(event, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 12, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 12, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-12T13:29:59Z");
     result = generator.generateNextOccurrenceOf(event, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 12, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 12, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-12T13:30:00Z");
     result = generator.generateNextOccurrenceOf(event, from);
@@ -322,18 +323,19 @@ public class CalendarEventOccurrenceGenerationTest {
   @Test
   public void nextOccurrenceAboutNonRecurrentHugeHourEventOnOneDayShouldWork() {
     CalendarEvent event =
-        calendarEventForTest(Period.between(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 15, 14, 45)));
+        calendarEventForTest(Period.between(
+            dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 15, 14, 45)));
     ZonedDateTime from = ZonedDateTime.parse("2017-12-12T13:30:00+01:00[Europe/Paris]");
     CalendarEventOccurrence result = generator.generateNextOccurrenceOf(event, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 15, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 15, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-12T13:29:59Z");
     result = generator.generateNextOccurrenceOf(event, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 15, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 15, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-12T13:30:00Z");
     result = generator.generateNextOccurrenceOf(event, from);
@@ -453,33 +455,34 @@ public class CalendarEventOccurrenceGenerationTest {
   @Test
   public void nextOccurrenceAboutRecurrentHourEventShouldWork() {
     CalendarEvent recurrentEvent =
-        calendarEventForTest(Period.between(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 12, 14, 45)))
+        calendarEventForTest(Period.between(
+            dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 12, 14, 45)))
             .recur(Recurrence
                 .every(1, TimeUnit.DAY)
                 .until(3));
     ZonedDateTime from = ZonedDateTime.parse("2000-01-01T11:11:11-01:00[Atlantic/Azores]");
     CalendarEventOccurrence result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 12, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 12, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-12T13:29:59Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 12, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 12, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-12T13:30:00Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 13, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 13, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-13T13:30:00Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 14, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 14, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 14, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 14, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-14T13:30:00Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
@@ -490,10 +493,14 @@ public class CalendarEventOccurrenceGenerationTest {
   public void nextOccurrenceAboutRecurrentHourEventStartingOnSummerShouldWork() {
     final OffsetDateTime startDateTimeOnParis = dateTimeOnParis(2017, 7, 11, 23, 0);
     final OffsetDateTime endDateTimeOnParis = dateTimeOnParis(2017, 7, 12, 0, 45);
-    assertThat(startDateTimeOnParis.withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2017, 7, 11, 21, 0)));
-    assertThat(endDateTimeOnParis.withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2017, 7, 11, 22, 45)));
-    assertThat(dateTimeOnParis(2017, 12, 11, 23, 0).withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2017, 12, 11, 22, 0)));
-    assertThat(dateTimeOnParis(2017, 12, 12, 0, 45).withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2017, 12, 11, 23, 45)));
+    assertThat(startDateTimeOnParis.withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2017, 7, 11, 21, 0)));
+    assertThat(endDateTimeOnParis.withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2017, 7, 11, 22, 45)));
+    assertThat(dateTimeOnParis(2017, 12, 11, 23, 0).withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2017, 12, 11, 22, 0)));
+    assertThat(dateTimeOnParis(2017, 12, 12, 0, 45).withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2017, 12, 11, 23, 45)));
     CalendarEvent recurrentEvent =
         calendarEventForTest(Period.between(startDateTimeOnParis, endDateTimeOnParis), PARIS_ZONE_ID)
             .recur(Recurrence
@@ -502,38 +509,38 @@ public class CalendarEventOccurrenceGenerationTest {
     ZonedDateTime from = ZonedDateTime.parse("2017-12-11T21:59:59-01:00[Atlantic/Azores]");
     CalendarEventOccurrence result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2018, 1, 11, 22, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2018, 1, 11, 23, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 1, 11, 22, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 1, 11, 23, 45)));
 
     from = ZonedDateTime.parse("2017-12-11T22:00:00-01:00[Atlantic/Azores]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2018, 1, 11, 22, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2018, 1, 11, 23, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 1, 11, 22, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 1, 11, 23, 45)));
 
     from = ZonedDateTime.parse("2017-12-11T22:59:59+00:00[UTC]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2018, 1, 11, 22, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2018, 1, 11, 23, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 1, 11, 22, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 1, 11, 23, 45)));
 
     from = ZonedDateTime.parse("2017-12-11T23:00:00+00:00[UTC]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2018, 1, 11, 22, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2018, 1, 11, 23, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 1, 11, 22, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 1, 11, 23, 45)));
 
     from = ZonedDateTime.parse("2017-12-11T22:59:59+01:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 11, 22, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 11, 23, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 11, 22, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 11, 23, 45)));
 
     from = ZonedDateTime.parse("2017-12-11T23:00:00+01:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2018, 1, 11, 22, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2018, 1, 11, 23, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 1, 11, 22, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 1, 11, 23, 45)));
   }
 
   @Test
@@ -541,15 +548,24 @@ public class CalendarEventOccurrenceGenerationTest {
   nextOccurrenceAboutRecurrentHourEventStartingOnSummerAndNowAboutHourChangingShouldWork() {
     final OffsetDateTime startDateTimeOnParis = dateTimeOnParis(2017, 7, 29, 3, 0);
     final OffsetDateTime endDateTimeOnParis = dateTimeOnParis(2017, 7, 29, 4, 30);
-    assertThat(startDateTimeOnParis.withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2017, 7, 29, 1, 0)));
-    assertThat(endDateTimeOnParis.withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2017, 7, 29, 2, 30)));
-    assertThat(dateTimeOnParis(2017, 10, 28, 23, 59).withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2017, 10, 28, 21, 59)));
-    assertThat(dateTimeOnParis(2017, 10, 29, 0, 0).withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2017, 10, 28, 22, 0)));
-    assertThat(dateTimeOnParis(2017, 10, 29, 2, 0).withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2017, 10, 29, 0, 0)));
-    assertThat(dateTimeOnParis(2017, 10, 29, 2, 59).withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2017, 10, 29, 0, 59)));
-    assertThat(dateTimeOnParis(2017, 10, 29, 3, 0).withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2017, 10, 29, 2, 0)));
-    assertThat(dateTimeOnParis(2018, 3, 25, 2, 59).withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2018, 3, 25, 1, 59)));
-    assertThat(dateTimeOnParis(2018, 3, 25, 3, 0).withOffsetSameInstant(ZoneOffset.UTC), is(dateTime(2018, 3, 25, 1, 0)));
+    assertThat(startDateTimeOnParis.withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2017, 7, 29, 1, 0)));
+    assertThat(endDateTimeOnParis.withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2017, 7, 29, 2, 30)));
+    assertThat(dateTimeOnParis(2017, 10, 28, 23, 59).withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2017, 10, 28, 21, 59)));
+    assertThat(dateTimeOnParis(2017, 10, 29, 0, 0).withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2017, 10, 28, 22, 0)));
+    assertThat(dateTimeOnParis(2017, 10, 29, 2, 0).withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2017, 10, 29, 0, 0)));
+    assertThat(dateTimeOnParis(2017, 10, 29, 2, 59).withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2017, 10, 29, 0, 59)));
+    assertThat(dateTimeOnParis(2017, 10, 29, 3, 0).withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2017, 10, 29, 2, 0)));
+    assertThat(dateTimeOnParis(2018, 3, 25, 2, 59).withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2018, 3, 25, 1, 59)));
+    assertThat(dateTimeOnParis(2018, 3, 25, 3, 0).withOffsetSameInstant(ZoneOffset.UTC), is(
+        dateTimeInUTC(2018, 3, 25, 1, 0)));
     CalendarEvent recurrentEvent =
         calendarEventForTest(Period.between(startDateTimeOnParis, endDateTimeOnParis), PARIS_ZONE_ID)
             .recur(Recurrence
@@ -558,101 +574,102 @@ public class CalendarEventOccurrenceGenerationTest {
     ZonedDateTime from = ZonedDateTime.parse("2017-10-29T00:59:59-01:00[Atlantic/Azores]");
     CalendarEventOccurrence result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 10, 29, 2, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 10, 29, 3, 30)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 10, 29, 2, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 10, 29, 3, 30)));
 
     from = ZonedDateTime.parse("2017-10-29T01:00:00-01:00[Atlantic/Azores]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 11, 29, 2, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 11, 29, 3, 30)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 11, 29, 2, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 11, 29, 3, 30)));
 
     from = ZonedDateTime.parse("2017-10-29T01:59:59+00:00[UTC]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 10, 29, 2, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 10, 29, 3, 30)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 10, 29, 2, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 10, 29, 3, 30)));
 
     from = ZonedDateTime.parse("2017-10-29T02:00:00+00:00[UTC]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 11, 29, 2, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 11, 29, 3, 30)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 11, 29, 2, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 11, 29, 3, 30)));
 
     from = ZonedDateTime.parse("2017-10-29T02:59:59+01:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 10, 29, 2, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 10, 29, 3, 30)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 10, 29, 2, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 10, 29, 3, 30)));
 
     from = ZonedDateTime.parse("2017-10-29T03:00:00+01:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 11, 29, 2, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 11, 29, 3, 30)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 11, 29, 2, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 11, 29, 3, 30)));
 
     from = ZonedDateTime.parse("2018-01-29T02:59:59+01:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2018, 1, 29, 2, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2018, 1, 29, 3, 30)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 1, 29, 2, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 1, 29, 3, 30)));
 
     from = ZonedDateTime.parse("2018-01-29T03:00:00+01:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2018, 3, 29, 1, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2018, 3, 29, 2, 30)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 3, 29, 1, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 3, 29, 2, 30)));
 
     from = ZonedDateTime.parse("2018-02-28T02:59:59+01:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2018, 3, 29, 1, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2018, 3, 29, 2, 30)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 3, 29, 1, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 3, 29, 2, 30)));
 
     from = ZonedDateTime.parse("2018-02-28T03:00:00+01:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2018, 3, 29, 1, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2018, 3, 29, 2, 30)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 3, 29, 1, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 3, 29, 2, 30)));
 
     from = ZonedDateTime.parse("2018-03-29T02:59:59+01:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2018, 3, 29, 1, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2018, 3, 29, 2, 30)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 3, 29, 1, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 3, 29, 2, 30)));
 
     from = ZonedDateTime.parse("2018-03-29T03:00:00+01:00[Europe/Paris]");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2018, 4, 29, 1, 0)));
-    assertThat(result.getEndDate(), is(dateTime(2018, 4, 29, 2, 30)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2018, 4, 29, 1, 0)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2018, 4, 29, 2, 30)));
   }
 
   @Test
   public void nextOccurrenceAboutRecurrentHourEventWithExceptionShouldWork() {
     CalendarEvent recurrentEvent =
-        calendarEventForTest(Period.between(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 12, 14, 45)))
+        calendarEventForTest(Period.between(
+            dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 12, 14, 45)))
             .recur(Recurrence
                 .every(1, TimeUnit.DAY)
                 .until(3)
-                .excludeEventOccurrencesStartingAt(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 14, 13, 30)));
+                .excludeEventOccurrencesStartingAt(dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 14, 13, 30)));
     ZonedDateTime from = ZonedDateTime.parse("2000-01-01T11:11:11-01:00[Atlantic/Azores]");
     CalendarEventOccurrence result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 13, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 13, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-12T13:29:59Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 13, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 13, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-12T13:30:00Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 13, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 13, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-13T13:30:00Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
@@ -662,33 +679,34 @@ public class CalendarEventOccurrenceGenerationTest {
   @Test
   public void nextOccurrenceAboutRecurrentHugeHourEventShouldWork() {
     CalendarEvent recurrentEvent =
-        calendarEventForTest(Period.between(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 15, 14, 45)))
+        calendarEventForTest(Period.between(
+            dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 15, 14, 45)))
             .recur(Recurrence
                 .every(1, TimeUnit.DAY)
                 .until(3));
     ZonedDateTime from = ZonedDateTime.parse("2000-01-01T11:11:11-01:00[Atlantic/Azores]");
     CalendarEventOccurrence result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 15, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 15, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-12T13:29:59Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 12, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 15, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 12, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 15, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-12T13:30:00Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 16, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 16, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-13T13:30:00Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 14, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 17, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 14, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 17, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-14T13:30:00Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
@@ -698,22 +716,23 @@ public class CalendarEventOccurrenceGenerationTest {
   @Test
   public void nextOccurrenceAboutRecurrentHugeHourEventWithExceptionShouldWork() {
     CalendarEvent recurrentEvent =
-        calendarEventForTest(Period.between(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 15, 14, 45)))
+        calendarEventForTest(Period.between(
+            dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 15, 14, 45)))
             .recur(Recurrence
                 .every(1, TimeUnit.DAY)
                 .until(3)
-                .excludeEventOccurrencesStartingAt(dateTime(2017, 12, 12, 13, 30), dateTime(2017, 12, 14, 13, 30)));
+                .excludeEventOccurrencesStartingAt(dateTimeInUTC(2017, 12, 12, 13, 30), dateTimeInUTC(2017, 12, 14, 13, 30)));
     ZonedDateTime from = ZonedDateTime.parse("2000-01-01T11:11:11-01:00[Atlantic/Azores]");
     CalendarEventOccurrence result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 16, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 16, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-13T13:29:59Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
     assertThat(result, notNullValue());
-    assertThat(result.getStartDate(), is(dateTime(2017, 12, 13, 13, 30)));
-    assertThat(result.getEndDate(), is(dateTime(2017, 12, 16, 14, 45)));
+    assertThat(result.getStartDate(), is(dateTimeInUTC(2017, 12, 13, 13, 30)));
+    assertThat(result.getEndDate(), is(dateTimeInUTC(2017, 12, 16, 14, 45)));
 
     from = ZonedDateTime.parse("2017-12-13T13:30:00Z");
     result = generator.generateNextOccurrenceOf(recurrentEvent, from);
@@ -729,14 +748,15 @@ public class CalendarEventOccurrenceGenerationTest {
         .withAttribute(ATTR_TEST_ID, "1"));
     /* event 2 at Friday 2016-05-20 15h00 - 15h35 */
     events.add(CalendarEvent.on(
-        Period.between(dateTime(2016, 5, 20, 15, 0), dateTime(2016, 5, 20, 15, 35)))
+        Period.between(dateTimeInUTC(2016, 5, 20, 15, 0), dateTimeInUTC(2016, 5, 20, 15, 35)))
         .withTitle(EVENT_TITLE + " 2")
         .withDescription(EVENT_DESCRIPTION + " 2")
         .withAttribute(ATTR_TEST_ID, "2"));
     /* event 3 at 09h00 - 09h15 every Fridays from 2016-03-04 excluding
        Friday 2016-07-15 and Friday 2016-07-22 */
     events.add(
-        CalendarEvent.on(Period.between(dateTime(2016, 3, 4, 9, 0), dateTime(2016, 3, 4, 9, 15)))
+        CalendarEvent.on(Period.between(
+            dateTimeInUTC(2016, 3, 4, 9, 0), dateTimeInUTC(2016, 3, 4, 9, 15)))
             .withTitle(EVENT_TITLE + " 3")
             .withDescription(EVENT_DESCRIPTION + " 3")
             .withAttribute(ATTR_TEST_ID, "3")
@@ -751,18 +771,20 @@ public class CalendarEventOccurrenceGenerationTest {
     /* event 5 at 10h00 - 11h00 every Monday, Tuesday and Wednesday from Thursday 2016-09-01 to
        Tuesday 2016-12-20 excluding Wednesday 2016-11-30 and Monday 2016-12-12 */
     events.add(
-        CalendarEvent.on(Period.between(dateTime(2016, 9, 1, 10, 0), dateTime(2016, 9, 1, 11, 0)))
+        CalendarEvent.on(Period.between(
+            dateTimeInUTC(2016, 9, 1, 10, 0), dateTimeInUTC(2016, 9, 1, 11, 0)))
             .withTitle(EVENT_TITLE + " 5")
             .withDescription(EVENT_DESCRIPTION + " 5")
             .withAttribute(ATTR_TEST_ID, "5")
             .recur(Recurrence.every(WEEK)
                 .on(MONDAY, TUESDAY, WEDNESDAY)
-                .until(dateTime(2016, 12, 20, 10, 0))
+                .until(dateTimeInUTC(2016, 12, 20, 10, 0))
                 .excludeEventOccurrencesStartingAt(date(2016, 11, 30), date(2016, 12, 12))));
     /* event 6 at 08h00 - 09h00 every month on all Thursdays and on the third Friday
        from Thursday 2016-04-28 to Friday 2016-07-01 */
     events.add(
-        CalendarEvent.on(Period.between(dateTime(2016, 4, 28, 8, 0), dateTime(2016, 4, 28, 9, 0)))
+        CalendarEvent.on(Period.between(
+            dateTimeInUTC(2016, 4, 28, 8, 0), dateTimeInUTC(2016, 4, 28, 9, 0)))
             .withTitle(EVENT_TITLE + " 6")
             .withDescription(EVENT_DESCRIPTION + " 6")
             .withAttribute(ATTR_TEST_ID, "6")
@@ -826,7 +848,7 @@ public class CalendarEventOccurrenceGenerationTest {
     return LocalDate.of(year, month, day);
   }
 
-  private static OffsetDateTime dateTime(int year, int month, int day, int hour, int minute) {
+  private static OffsetDateTime dateTimeInUTC(int year, int month, int day, int hour, int minute) {
     return OffsetDateTime.of(year, month, day, hour, minute, 0, 0, ZoneOffset.UTC);
   }
 

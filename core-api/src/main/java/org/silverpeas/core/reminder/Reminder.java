@@ -219,13 +219,12 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
    * rescheduled with its new triggering rules and any of its properties changes are persisted.
    * Hence, this method can be used both for scheduling and for rescheduling a reminder.
    * @throws TransactionRuntimeException if the persistence or the scheduling fails.
-   * @throws AssertionError if no trigger was set or the triggering date is null.
+   * @throws IllegalStateException if no trigger was set or the triggering date is null.
    * @return itself.
    */
   public <T extends Reminder> T schedule() {
     this.triggerDateTime = computeTriggeringDate();
-    assert this.triggerDateTime != null :
-        "The triggering rule is invalid: the computed triggering date is null!";
+    checkTriggeringDate(this.triggerDateTime);
     Scheduler scheduler = getScheduler();
     return Transaction.performInOne(() -> {
       if (isPersisted() && isScheduledWith(scheduler)) {
@@ -301,6 +300,13 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
   
   private Scheduler getScheduler() {
     return SchedulerProvider.getPersistentScheduler();
+  }
+
+  private void checkTriggeringDate(final OffsetDateTime dateTime) {
+    if (dateTime == null) {
+      throw new IllegalStateException(
+          "The triggering rule is invalid: the computed triggering date is null!");
+    }
   }
 
   /**

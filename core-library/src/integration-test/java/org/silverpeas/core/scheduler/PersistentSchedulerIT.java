@@ -172,6 +172,14 @@ public class PersistentSchedulerIT {
   }
 
   @Test
+  public void schedulingAJobInThePastShouldFireIt() throws Exception {
+    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().minusDays(1));
+    scheduler.scheduleJob(new MyJob(JOB_NAME), trigger);
+    await().pollInterval(5, SECONDS).atMost(44, SECONDS).until(jobIsExecuted());
+    assertThat(isJobExecuted(), is(true));
+  }
+
+  @Test
   public void aFailureJobExecutionShouldFireACorrespondingSchedulerEvent() throws Exception {
     JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler.mustFail());

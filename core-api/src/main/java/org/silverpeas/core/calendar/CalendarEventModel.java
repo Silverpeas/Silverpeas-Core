@@ -68,12 +68,12 @@ public class CalendarEventModel extends DefaultContributionModel<CalendarEvent> 
 
   /**
    * Gets the next start date from a date.
-   * @param from the date from which the next date is computed.
+   * @param since the date from which the next date is computed.
    * @return a {@link Temporal} if any, null otherwise.
    */
-  private Temporal getNextStartDate(final ZonedDateTime from) {
+  private Temporal getNextStartDate(final ZonedDateTime since) {
     final CalendarEventOccurrence nextOccurrence =
-        CalendarEventOccurrenceGenerator.get().generateNextOccurrenceOf(getContribution(), from);
+        CalendarEventOccurrenceGenerator.get().generateNextOccurrenceOf(getContribution(), since);
     return nextOccurrence != null ? nextOccurrence.getStartDate() : null;
   }
 }

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.scheduler.quartz;
 
-import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
 import org.quartz.JobExecutionException;
 import org.quartz.SchedulerException;
@@ -61,14 +60,18 @@ public class VolatileQuartScheduler extends QuartzScheduler {
   }
 
   @Override
-  protected JobDetail buildJobDetail(final Job theJob, final SchedulerEventListener listener) {
-    JobDetail jobDetail =
-        JobBuilder.newJob(VolatileJobExecutor.class).withIdentity(theJob.getName()).build();
-    jobDetail.getJobDataMap().put(SCHEDULED_JOB, theJob);
-    if (listener != null) {
-      jobDetail.getJobDataMap().put(JOB_LISTENER, listener);
-    }
-    return jobDetail;
+  protected Job encodeJob(final Job job) {
+    return job;
+  }
+
+  @Override
+  protected SchedulerEventListener encodeEventListener(final SchedulerEventListener listener) {
+    return listener;
+  }
+
+  @Override
+  protected Class<VolatileJobExecutor> getJobExecutor() {
+    return VolatileJobExecutor.class;
   }
 
   @Override

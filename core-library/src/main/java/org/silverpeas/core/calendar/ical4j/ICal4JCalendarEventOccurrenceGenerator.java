@@ -48,17 +48,16 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.Collections.singletonList;
-import static org.silverpeas.core.calendar.ical4j.ICal4JDateCodec.UTC_ZONE_ID;
 
 /**
  * An implementation of the {@link CalendarEventOccurrenceGenerator} by using the iCal4J library.
@@ -121,24 +120,27 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
 
   @Override
   public CalendarEventOccurrence generateNextOccurrenceOf(final CalendarEvent event,
-      final ZonedDateTime from) {
+      final ZonedDateTime since) {
     if (event.isRecurrent()) {
-      return generateNextOccurrenceOfRecurrentEvent(event, from);
+      return generateNextOccurrenceOfRecurrentEvent(event, since);
     }
-    return generateNextOccurrenceOfSingleEvent(event, from);
+    return generateNextOccurrenceOfSingleEvent(event, since);
   }
 
   private CalendarEventOccurrence generateNextOccurrenceOfSingleEvent(final CalendarEvent event,
-      final ZonedDateTime from) {
-    final Temporal temporalStartDate = event.getStartDate();
-    final boolean isOnDay = temporalStartDate instanceof LocalDate;
-    final Date eventStartDate = isOnDay
-        ? iCal4JDateCodec.encode(temporalStartDate)
-        : iCal4JDateCodec.encode(((OffsetDateTime)temporalStartDate).atZoneSameInstant(from.getZone()));
-    final Date fromDate = iCal4JDateCodec.encode(isOnDay ? from.toLocalDate() : from);
-    if (fromDate.compareTo(eventStartDate) < 0) {
+      final ZonedDateTime since) {
+    final ZoneId actualZoneId = event.getCalendar().getZoneId();
+    boolean isEventAfter;
+    if (event.isOnAllDay()) {
+      isEventAfter = since.toLocalDate().isBefore((LocalDate) event.getStartDate());
+    } else {
+      isEventAfter = since.withZoneSameInstant(actualZoneId)
+          .isBefore(((OffsetDateTime) event.getStartDate()).atZoneSameInstant(actualZoneId));
+    }
+
+    if (isEventAfter) {
       return CalendarEventOccurrenceBuilder.forEvent(event)
-          .startingAt(temporalStartDate)
+          .startingAt(event.getStartDate())
           .endingAt(event.getEndDate())
           .build();
     }
@@ -146,42 +148,42 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
   }
 
   private CalendarEventOccurrence generateNextOccurrenceOfRecurrentEvent(final CalendarEvent event,
-      final ZonedDateTime from) {
-    final Temporal temporalStartDate = event.getStartDate();
-    final boolean isOnDay = temporalStartDate instanceof LocalDate;
-    final Date eventStartDate = isOnDay
-        ? iCal4JDateCodec.encode(temporalStartDate)
-        : iCal4JDateCodec.encode(((OffsetDateTime)temporalStartDate).atZoneSameInstant(from.getZone()));
+      final ZonedDateTime since) {
+    final ZoneId actualZoneId = event.getCalendar().getZoneId();
+    final ZonedDateTime eventStartDate =
+        event.isOnAllDay() ? ((LocalDate) event.getStartDate()).atStartOfDay(actualZoneId) :
+            ((OffsetDateTime) event.getStartDate()).atZoneSameInstant(actualZoneId);
+    final Optional<Temporal> optionalRecurEndDate = event.getRecurrence().getEndDate();
+    LocalDate recurEndDate = null;
+    if (optionalRecurEndDate.isPresent()) {
+      recurEndDate =
+          optionalRecurEndDate.get() instanceof LocalDate ? (LocalDate) optionalRecurEndDate.get() :
+              ((OffsetDateTime) optionalRecurEndDate.get()).toLocalDate();
+    }
     final VEvent vEvent = fromCalendarEvent(event);
-    final Recur vEventRecur = ((RRule) vEvent.getProperty(RRule.RRULE)).getRecur();
-    Temporal nextFrom = isOnDay ? from.toLocalDate() : from;
+    final ChronoUnit recurUnit = event.getRecurrence().getFrequency().getUnit().toChronoUnit();
+
+    final ZonedDateTime sinceDateTime =
+        since.withZoneSameInstant(actualZoneId).isBefore(eventStartDate) ?
+            eventStartDate.minusMinutes(1) : since.withZoneSameInstant(actualZoneId);
+    final Date iCalSinceDate = iCal4JDateCodec.encode(sinceDateTime);
+    LocalDate searchPeriodStart = sinceDateTime.toLocalDate();
     int nbNextStartDateComputations = 0;
     do {
-      final Date currentFromDate = iCal4JDateCodec.encode(nextFrom);
-      final Date nextStartDate = vEventRecur.getNextDate(eventStartDate, currentFromDate);
-      if (nextStartDate == null) {
-        // No next start date = no more occurrence
+      // Taking care about date exceptions
+      if (recurEndDate != null && recurEndDate.isBefore(searchPeriodStart)) {
         return null;
       }
-      // Taking care about date exceptions
-      final Temporal nextStartReference = isOnDay
-          ? iCal4JDateCodec.decode(nextStartDate)
-          : ((OffsetDateTime)iCal4JDateCodec.decode(nextStartDate, UTC_ZONE_ID)).toLocalDate();
-      final ChronoUnit chronoUnit = event.getRecurrence().getFrequency().getUnit().toChronoUnit();
-      final List<CalendarEventOccurrence> potentialOccurrences = generateOccurrencesOf(
-          singletonList(event), Period.between(
-                                       nextStartReference.minus(2,chronoUnit),
-                                       nextStartReference.plus(2, chronoUnit)));
-      final Optional<CalendarEventOccurrence> occurrence = potentialOccurrences.stream()
-          .filter(o -> from.withZoneSameInstant(UTC_ZONE_ID).toOffsetDateTime().toString()
-                           .compareTo(o.getStartDate().toString()) < 0)
-          .findFirst();
-      if (occurrence.isPresent()) {
-        return occurrence.get();
+      final PeriodList occurDateList = getPeriodList(vEvent,
+          Period.between(searchPeriodStart, searchPeriodStart.plus(2, recurUnit)));
+      Iterator<net.fortuna.ical4j.model.Period> occurDateIt = occurDateList.iterator();
+      while (occurDateIt.hasNext()) {
+        net.fortuna.ical4j.model.Period nextOccurDate = occurDateIt.next();
+        if (nextOccurDate.getStart().after(iCalSinceDate)) {
+          return buildCalendarEventOccurrence(event, nextOccurDate);
+        }
       }
-      nextFrom = isOnDay
-          ? nextStartReference
-          : ((OffsetDateTime)iCal4JDateCodec.decode(nextStartDate, UTC_ZONE_ID)).atZoneSameInstant(from.getZone());
+      searchPeriodStart = searchPeriodStart.plus(2, recurUnit);
       nbNextStartDateComputations++;
     } while (nbNextStartDateComputations < 100);
     throw new IllegalStateException("the next date seems to be hard to guess...");

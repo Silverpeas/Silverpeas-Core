@@ -90,16 +90,18 @@ public interface CalendarEventOccurrenceGenerator {
   long countOccurrencesOf(final CalendarEvent event, Period inPeriod);
 
   /**
-   * Generates the next occurrence of the specified event from the given date time.
+   * Generates the next occurrence of the specified event since the given date time.
    *
    * The next occurrence is computed from the recurrence rule of the specified event, from the date
    * and times at which the events start, from the specified date, and from recurrence exceptions.
    *
-   * This method require to be implemented.
+   * This method requires to be implemented.
    * @param event an event.
-   * @param from the date time from which the next occurrence must be computed.
+   * @param since the date time since which the next occurrence must be computed. No occurrence
+   * occurring at this exact given date time (with a precision of one minute) isn't taken into
+   * account.
    * @return the next occurrence of the given event, null if not {@link CalendarEventOccurrence}
    * can be computed.
    */
-  CalendarEventOccurrence generateNextOccurrenceOf(CalendarEvent event, ZonedDateTime from);
+  CalendarEventOccurrence generateNextOccurrenceOf(CalendarEvent event, ZonedDateTime since);
 }

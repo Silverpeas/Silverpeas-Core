@@ -54,8 +54,12 @@ public abstract class JobExecutor implements org.quartz.Job {
     JobDetail jobDetail = jec.getJobDetail();
     Job job = getJob(jobDetail);
     SchedulerEventListener eventListener = getSchedulerEventListener(jobDetail);
-    JobExecutionContext context =
-        JobExecutionContext.createWith(job.getName(), jec.getFireTime());
+    JobExecutionContext context = JobExecutionContext.createWith(job.getName(), jec.getFireTime());
+    execute(context, job, eventListener);
+  }
+
+  protected final void execute(final JobExecutionContext context, final Job job,
+      final SchedulerEventListener eventListener) {
     if (eventListener == null) {
       try {
         job.execute(context);
@@ -71,8 +75,9 @@ public abstract class JobExecutor implements org.quartz.Job {
         try {
           eventListener.jobFailed(SchedulerEvent.jobFailed(context, ex));
         } catch (Exception e) {
-          SilverLogger.getLogger(this).error("Error while executing job {0}: {1}",
-              new String[] {job.getName(), e.getMessage()}, e);
+          SilverLogger.getLogger(this)
+              .error("Error while executing job {0}: {1}",
+                  new String[]{job.getName(), e.getMessage()}, e);
         }
       }
     }

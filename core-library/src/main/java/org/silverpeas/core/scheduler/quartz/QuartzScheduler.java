@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.scheduler.quartz;
 
+import org.quartz.JobBuilder;
 import org.quartz.JobDataMap;
 import org.quartz.JobDetail;
 import org.quartz.JobKey;
@@ -42,6 +43,8 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.Optional;
 
 import static org.silverpeas.core.util.ArgumentAssertion.assertDefined;
@@ -108,15 +111,48 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
   }
 
   /**
+   * Encodes the specified job into an object ready to be handled by the job executor related to
+   * this scheduler.
+   * Each type of scheduler has its own way to encode a job in order to be retrieved by the job
+   * executor related by the scheduler.
+   * @param job the job to encode for the job executor related to this scheduler.
+   * @return the encoded job.
+   */
+  protected abstract Object encodeJob(final Job job);
+
+  /**
+   * Encodes the specified scheduler event listener into an object ready to be handled by the job
+   * executor related to this scheduler.
+   * Each type of scheduler has its own way to encode an event listener in order to be retrieved
+   * by the job executor related by the scheduler.
+   * @param listener the event listener to encode for the job executor related to this scheduler.
+   * @return the encoded scheduler event listener.
+   */
+  protected abstract Object encodeEventListener(final SchedulerEventListener listener);
+
+  /**
+   * Gets the job executor related to this scheduler. Each type of scheduler has its own job
+   * executor that knows how to handle jobs and event listeners.
+   * @param <T> the concrete type of the job executor
+   * @return the class of the job executor.
+   */
+  protected abstract <T extends JobExecutor> Class<T> getJobExecutor();
+
+  /**
    * Builds a Quartz {@link org.quartz.JobDetail} instance for the specified job by
    * setting both the {@link Job} to execute and  the {@link SchedulerEventListener} to invoke.
-   * The {@link JobDetail} construction depends on the specific characteristic of the scheduler to
-   * use.
    * @param job the job to schedule.
    * @param listener the scheduler event listener to set with the job.
    * @return a {@link JobDetail} object.
    */
-  protected abstract JobDetail buildJobDetail(final Job job, final SchedulerEventListener listener);
+  private JobDetail buildJobDetail(final Job job, final SchedulerEventListener listener) {
+    JobDetail jobDetail = JobBuilder.newJob(getJobExecutor()).withIdentity(job.getName()).build();
+    jobDetail.getJobDataMap().put(SCHEDULED_JOB, encodeJob(job));
+    if (listener != null) {
+      jobDetail.getJobDataMap().put(JOB_LISTENER, encodeEventListener(listener));
+    }
+    return jobDetail;
+  }
 
   /**
    * Executes the specified task. The execution of the task is delegated to this method that
@@ -126,6 +162,24 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
    */
   protected abstract void execute(final SchedulingTask schedulingTask)
       throws org.quartz.SchedulerException;
+
+  private void fireNow(final Date expectedFireTime, final Job job,
+      final SchedulerEventListener listener) throws org.quartz.SchedulerException {
+    Date fireTime = expectedFireTime;
+    if (fireTime == null) {
+      fireTime = new Date();
+    }
+    Class<? extends JobExecutor> jobExecutorClass = getJobExecutor();
+    JobExecutor executor;
+    try {
+      executor = jobExecutorClass.newInstance();
+    } catch (InstantiationException | IllegalAccessException e) {
+      throw new org.quartz.SchedulerException(e.getMessage(), e);
+    }
+    org.silverpeas.core.scheduler.JobExecutionContext context =
+        org.silverpeas.core.scheduler.JobExecutionContext.createWith(job.getName(), fireTime);
+    executor.execute(context, job, listener);
+  }
 
   @Override
   public ScheduledJob scheduleJob(String jobName, JobTrigger trigger,
@@ -141,7 +195,11 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
     Trigger quartzTrigger = QuartzTriggerBuilder.forJob(theJob.getName()).buildFrom(jobTrigger);
     JobDetail jobDetail = buildJobDetail(theJob, listener);
     try {
-      execute(() -> this.quartz.scheduleJob(jobDetail, quartzTrigger));
+      if (isInPast(quartzTrigger)) {
+        fireNow(quartzTrigger.getFinalFireTime(), theJob, listener);
+      } else {
+        execute(() -> this.quartz.scheduleJob(jobDetail, quartzTrigger));
+      }
       return new QuartzScheduledJob(quartzTrigger);
     } catch (org.quartz.SchedulerException ex) {
       SilverLogger.getLogger(this).error("The scheduling of the job ''{0}'' failed!",
@@ -196,6 +254,11 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
       SilverLogger.getLogger(this).error("The scheduler shutdown failed!", ex);
       throw new SchedulerException(ex.getMessage(), ex);
     }
+  }
+
+  private boolean isInPast(final Trigger trigger) {
+    return !trigger.mayFireAgain() && trigger.getFinalFireTime() != null &&
+        trigger.getFinalFireTime().before(Date.from(OffsetDateTime.now().toInstant()));
   }
 
   /**
