@@ -45,6 +45,7 @@ import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.concurrent.Callable;
 
+import static java.time.temporal.ChronoUnit.HOURS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.*;
@@ -114,38 +115,38 @@ public class PersistentSchedulerIT {
 
   @Test
   public void schedulingAJobThatIsPerformedByAnEventListener() throws Exception {
-    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
+    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusHours(1));
     ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
     assertThat(job, notNullValue());
     assertThat(JOB_NAME, is(job.getName()));
-    assertThat(Instant.now().plusSeconds(30),
+    assertThat(Instant.now().plus(1, HOURS),
         greaterThanOrEqualTo(job.getNextExecutionTime().toInstant()));
   }
 
   @Test
   public void schedulingAJobWithoutEventListener() throws Exception {
-    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
+    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusHours(1));
     ScheduledJob job = scheduler.scheduleJob(new MyJob(JOB_NAME), trigger);
     assertThat(job, notNullValue());
     assertThat(JOB_NAME, is(job.getName()));
-    assertThat(Instant.now().plusSeconds(30),
+    assertThat(Instant.now().plus(1, HOURS),
         greaterThanOrEqualTo(job.getNextExecutionTime().toInstant()));
   }
 
   @Test
   public void schedulingAJobWithAnEventListener() throws Exception {
-    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
+    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusHours(1));
     ScheduledJob job = scheduler.scheduleJob(new MyJob(JOB_NAME), trigger, eventHandler);
     assertThat(job, notNullValue());
     assertThat(JOB_NAME, is(job.getName()));
-    assertThat(Instant.now().plusSeconds(30),
+    assertThat(Instant.now().plus(1, HOURS),
         greaterThanOrEqualTo(job.getNextExecutionTime().toInstant()));
   }
 
   @Test(expected = SchedulerException.class)
   public void schedulingAnAlreadyScheduledJobShouldThrowASchedulerException() throws Exception {
     scheduleAJob(JOB_NAME);
-    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
+    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusHours(1));
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
   }
 
@@ -153,7 +154,7 @@ public class PersistentSchedulerIT {
   public void schedulingAnAlreadyScheduledJobExecutionShouldThrowASchedulerException()
       throws Exception {
     scheduleAJob(JOB_NAME);
-    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
+    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusHours(1));
     scheduler.scheduleJob(new MyJob(JOB_NAME), trigger, eventHandler);
   }
 
@@ -199,7 +200,7 @@ public class PersistentSchedulerIT {
 
   @Test
   public void aFailureJobShouldFireACorrespondingSchedulerEvent() throws Exception {
-    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(25));
+    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
     scheduler.scheduleJob(new MyFailureJob(JOB_NAME), trigger, eventHandler);
     await().pollInterval(5, SECONDS).atMost(34, SECONDS).until(eventHandlingCompleted());
     assertThat(eventHandler.isJobFired(), is(true));
@@ -208,7 +209,7 @@ public class PersistentSchedulerIT {
 
   @Test
   public void schedulingAtGivenTimeAJobShouldRunThatJobAtTheExpectedTime() throws Exception {
-    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(25));
+    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().plusSeconds(30));
     scheduler.scheduleJob(new MyJob(JOB_NAME), trigger, eventHandler);
     await().pollInterval(5, SECONDS).atMost(34, SECONDS).until(jobIsExecuted());
     assertThat(eventHandler.isJobSucceeded(), is(true));
