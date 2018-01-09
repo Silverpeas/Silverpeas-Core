@@ -42,7 +42,6 @@ import static java.util.Collections.singletonList;
 import static java.util.Collections.synchronizedList;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 
 /**
@@ -194,8 +193,8 @@ public class BackgroundProcessTaskTest {
 
     waitEndOfBackgroundProcessTask();
 
-    assertIds(asList(r1, r3));
-    assertNums(asList(r1, r3));
+    assertIds(asList(r1, r2));
+    assertNums(asList(r1, r2));
   }
 
   @Test
@@ -261,7 +260,7 @@ public class BackgroundProcessTaskTest {
     DurationProcessRequest4Test durationRequest =
         (DurationProcessRequest4Test) processedRequest.stream()
             .filter(r -> r instanceof DurationProcessRequest4Test).findFirst().get();
-    assertThat(durationRequest.num, greaterThanOrEqualTo(26000));
+    assertThat(durationRequest.num, is(26000));
   }
 
   private void assertIds(final List<AbstractBackgroundProcessRequest> expected) {
