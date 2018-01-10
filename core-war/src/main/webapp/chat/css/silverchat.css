@@ -207,10 +207,6 @@
   background: url('../img/packIconsChat.png') 0 -221px no-repeat;
 }
 
-#manage_notifications:before {
-  background: url('../img/packIconsChat.png') right 0 no-repeat;
-}
-
 #new_talk:before {
   background: url('../img/packIconsChat.png') 0 -295px no-repeat;
 }
@@ -392,10 +388,6 @@
 
 #silverchat_roster_footer  > div > span {
   cursor: pointer;
-}
-
-#manage_notifications.mute:before {
-  background: url('../img/packIconsChat.png') 0 0 no-repeat;
 }
 
 #jsxc_buddylist .jsxc_rosteritem.selected {

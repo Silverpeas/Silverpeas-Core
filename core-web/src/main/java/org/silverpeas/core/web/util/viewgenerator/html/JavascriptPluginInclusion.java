@@ -785,6 +785,10 @@ public class JavascriptPluginInclusion {
       xhtml.addElement(link(jsxcDir + "css/jsxc.css"));
       xhtml.addElement(link(jsxcDir + "css/magnific-popup.css"));
       xhtml.addElement(link(chatDir + "css/silverchat.css"));
+      xhtml.addElement(scriptContent(
+          JavascriptSettingProducer.settingVariableName("SilverChatSettings")
+              .add("un.d.i.u", URLUtil.getApplicationURL() + getUserNotificationDesktopIconUrl())
+              .produce()));
     }
     return xhtml;
   }
