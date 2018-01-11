@@ -23,22 +23,22 @@
  */
 package org.silverpeas.core.web.authentication;
 
+import org.jasig.cas.client.util.AbstractCasFilter;
+import org.jasig.cas.client.validation.Assertion;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.model.Cache;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.socialnetwork.model.ExternalAccount;
 import org.silverpeas.core.socialnetwork.model.SocialNetworkID;
 import org.silverpeas.core.socialnetwork.service.AccessToken;
 import org.silverpeas.core.socialnetwork.service.SocialNetworkService;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.jasig.cas.client.util.AbstractCasFilter;
-import org.jasig.cas.client.validation.Assertion;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.spnego.SpnegoPrincipal;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.sso.SilverpeasSsoPrincipal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -51,7 +51,7 @@ public class AuthenticationParameters {
 
   private final SettingBundle authenticationSettings = ResourceLocator.getSettingBundle(
       "org.silverpeas.authentication.settings.authenticationSettings");
-  private final int keyMaxLength = 12;
+  private static final int KEY_MAX_LENGTH = 12;
 
   private String login;
   private String password;
@@ -61,21 +61,20 @@ public class AuthenticationParameters {
   private String clearPassword;
   private String domainIdParam;
   private boolean casMode;
-  private boolean ssoMode;
+  private SilverpeasSsoPrincipal ssoPrincipal;
   private boolean userByInternalAuthTokenMode;
   private boolean useNewEncryptionMode;
   private boolean secured;
 
   private boolean socialNetworkMode;
-  private SocialNetworkID networkId;
   private AuthenticationCredential credential;
 
-  public AuthenticationParameters(HttpServletRequest request) {
+  AuthenticationParameters(HttpServletRequest request) {
     HttpSession session = request.getSession();
     boolean cookieEnabled = authenticationSettings.getBoolean(
         "cookieEnabled", false);
     UserDetail userByInternalAuthToken = getUserByInternalAuthToken(request);
-    this.ssoMode = (getSSOUser(request) != null);
+    this.ssoPrincipal = getSSOPrincipal(request);
     this.casMode = (getCASUser(session) != null);
     checkSocialNetworkMode(session);
 
@@ -86,18 +85,18 @@ public class AuthenticationParameters {
     domainIdParam = request.getParameter("DomainId");
     secured = request.isSecure();
 
-    final String noTakenIntoAccount = "";
+    final String notTakenIntoAccount = "";
     if (userByInternalAuthToken != null) {
       userByInternalAuthTokenMode = true;
       login = userByInternalAuthToken.getLogin();
       domainId = userByInternalAuthToken.getDomainId();
-      password = noTakenIntoAccount;
-    } else if (ssoMode) {
-      login = getSSOUser(request);
-      password = noTakenIntoAccount;
+      password = notTakenIntoAccount;
+    } else if (ssoPrincipal != null) {
+      login = ssoPrincipal.getLogin();
+      password = notTakenIntoAccount;
     } else if (casMode) {
       login = getCASUser(session);
-      password = noTakenIntoAccount;
+      password = notTakenIntoAccount;
     } else if (socialNetworkMode) {
       // nothing else to do
     } else if (useNewEncryptionMode) {
@@ -153,7 +152,7 @@ public class AuthenticationParameters {
   }
 
   public boolean isSsoMode() {
-    return ssoMode;
+    return ssoPrincipal != null;
   }
 
   public boolean isUserByInternalAuthTokenMode() {
@@ -168,7 +167,7 @@ public class AuthenticationParameters {
     if (isUserByInternalAuthTokenMode() || isSocialNetworkMode()) {
       return domainId;
     } else if (isSsoMode()) {
-      return authenticationSettings.getString("sso.authentication.domainId", "0");
+      return ssoPrincipal.getDomainId();
     } else if (isCasMode()) {
       return authenticationSettings.getString("cas.authentication.domainId", "0");
     }
@@ -178,8 +177,8 @@ public class AuthenticationParameters {
 
   private void checkSocialNetworkMode(HttpSession session) {
     this.socialNetworkMode = false;
-    this.networkId = SocialNetworkService.getInstance().getSocialNetworkIDUsedForLogin(session);
-    if (this.networkId != null) {
+    final SocialNetworkID networkId = SocialNetworkService.getInstance().getSocialNetworkIDUsedForLogin(session);
+    if (networkId != null) {
       AccessToken authorizationToken =
           SocialNetworkService.getInstance().getStoredAuthorizationToken(session, networkId);
       String profileId =
@@ -192,7 +191,7 @@ public class AuthenticationParameters {
           .getOrganisationController().getUserDetail(account.getSilverpeasUserId());
       this.domainId = user.getDomainId();
       this.login = user.getLogin();
-      this.socialNetworkMode = (user != null);
+      this.socialNetworkMode = true;
     }
   }
 
@@ -204,10 +203,8 @@ public class AuthenticationParameters {
       clearPassword = ((!StringUtil.isDefined(cryptedPassword)) ? encryption
           .decode(password, stringKey, false) : encryption.decode(
           password, stringKey, true));
-      if (cookieEnabled) {
-        if (StringUtil.isDefined(cryptedPassword)) {
-          decodedLogin = encryption.decode(login, stringKey, true);
-        }
+      if (cookieEnabled && StringUtil.isDefined(cryptedPassword)) {
+        decodedLogin = encryption.decode(login, stringKey, true);
       }
       login = decodedLogin;
     } else {
@@ -218,13 +215,12 @@ public class AuthenticationParameters {
 
   /**
    * Convert a string to a string with only letters in upper case
-   * @param toConvert
+   * @param toConvert the string to convert
    * @return the String in UpperCase
    */
   private String convert2Alpha(String toConvert) {
     StringBuilder alphaString = new StringBuilder();
-    for (int i = 0; i < toConvert.length()
-        && alphaString.length() < keyMaxLength; i++) {
+    for (int i = 0; i < toConvert.length() && alphaString.length() < KEY_MAX_LENGTH; i++) {
       int asciiCode = toConvert.toUpperCase().charAt(i);
       if (asciiCode >= 65 && asciiCode <= 90) {
         alphaString.append(toConvert.substring(i, i + 1));
@@ -232,8 +228,8 @@ public class AuthenticationParameters {
     }
     // We fill the key to keyMaxLength char. if not enough letters in
     // sessionId.
-    if (alphaString.length() < keyMaxLength) {
-      alphaString.append("ZFGHZSZHHJNT".substring(0, keyMaxLength
+    if (alphaString.length() < KEY_MAX_LENGTH) {
+      alphaString.append("ZFGHZSZHHJNT".substring(0, KEY_MAX_LENGTH
           - alphaString.length()));
     }
     return alphaString.toString();
@@ -249,9 +245,9 @@ public class AuthenticationParameters {
     return casUser;
   }
 
-  private String getSSOUser(HttpServletRequest request) {
-    if (request.getUserPrincipal() instanceof SpnegoPrincipal) {
-      return request.getRemoteUser();
+  private SilverpeasSsoPrincipal getSSOPrincipal(HttpServletRequest request) {
+    if (request.getUserPrincipal() instanceof SilverpeasSsoPrincipal) {
+      return (SilverpeasSsoPrincipal) request.getUserPrincipal();
     }
     return null;
   }
@@ -261,8 +257,8 @@ public class AuthenticationParameters {
    * Cache}. The module that must authenticate a user by this
    * way have to set a token value to the request attribute "internalAuthToken". The token has to be
    * a key of the common cache that references a {@link UserDetail}
-   * @param request
-   * @return
+   * @param request the request to perform
+   * @return the details of a user.
    */
   private UserDetail getUserByInternalAuthToken(HttpServletRequest request) {
     String internalAuthToken = (String) request.getAttribute("internalAuthToken");

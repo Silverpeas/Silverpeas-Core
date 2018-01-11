@@ -48,7 +48,7 @@
               timeout: false,
               closeWith: ['button']
             };
-          notySuccess($('<a></a>').attr("href", webContext + "/LogoutServlet").attr("target", "_top").html(__getFromBundleKey('GML.reconnect')), changeLanguageOptions);
+          notySuccess($('<a></a>').attr("href", webContext + "/Logout").attr("target", "_top").html(__getFromBundleKey('GML.reconnect')), changeLanguageOptions);
         }
       });
     },

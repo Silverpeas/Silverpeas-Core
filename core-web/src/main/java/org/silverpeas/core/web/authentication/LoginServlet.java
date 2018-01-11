@@ -119,7 +119,7 @@ public class LoginServlet extends SilverpeasHttpServlet {
     String loginPage;
     String errorCode = getErrorCode(request);
     if (isSsoEnabled() && isNotDefined(errorCode)) {
-      loginPage = request.getContextPath() + "/sso";
+      loginPage = request.getContextPath() + "/sso/kerberos";
     } else {
       loginPage = general.getString("loginPage");
 

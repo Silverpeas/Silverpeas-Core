@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2000 - 2017 Silverpeas
+ * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
@@ -9,9 +9,9 @@
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have recieved a copy of the text describing
+ * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ * "https://www.silverpeas.org/legal/floss_exception.html"
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -21,22 +21,27 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-function login() {
-  var loginField = document.authForm.Login.value;
-  if (loginField.length != 0) {
-    document.authForm.action = getContext() + "/AuthenticationServlet";
-    document.authForm.submit();
-  }
-}
 
-function logout() {
-  document.authForm.action = getContext() + "/Logout";
-  document.authForm.submit();
-}
+package org.silverpeas.core.web.sso;
 
-function checkSubmitToLogin(ev) {
-  var touche = ev.keyCode;
-  if (touche == 13) {
-    login();
+import java.security.Principal;
+
+/**
+ * @author silveryocha
+ */
+public interface SilverpeasSsoPrincipal extends Principal {
+
+  /**
+   * The login of the user behind the principal. By default it corresponds to {@link #getName()}.
+   * @return login as string.
+   */
+  default String getLogin() {
+    return getName();
   }
+
+  /**
+   * The domain identifier of Silverpeas domain from which the SSO is performed.
+   * @return an identifier as string.
+   */
+  String getDomainId();
 }

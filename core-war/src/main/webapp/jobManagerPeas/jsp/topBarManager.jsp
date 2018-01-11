@@ -61,7 +61,7 @@ function routPage() {
 }
 
 function exit(){
-  window.parent.location.href="<%=m_context%>/LogoutServlet";
+  window.parent.location.href="<%=m_context%>/Logout";
 }
 
 // User Notification Popup

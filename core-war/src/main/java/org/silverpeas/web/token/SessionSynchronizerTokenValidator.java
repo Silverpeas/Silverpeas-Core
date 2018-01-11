@@ -25,13 +25,13 @@ package org.silverpeas.web.token;
 
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
-import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
-import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.security.token.exception.TokenValidationException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.util.security.SecuritySettings;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
 
 import javax.inject.Inject;
 import javax.servlet.Filter;
@@ -45,6 +45,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+
+import static org.silverpeas.core.util.URLUtil.getApplicationURL;
 
 /**
  * A validator of a session token for each incoming request. For each protected web resources, the
@@ -94,8 +96,7 @@ public class SessionSynchronizerTokenValidator implements Filter {
         tokenService.validate(httpRequest);
         chain.doFilter(request, response);
       } catch (TokenValidationException ex) {
-        logger.error("The request for path {0} isn''t valid: {1}",
-            new String[]{pathOf(request), ex.getMessage()});
+        logger.error("The request for path {0} isn''t valid: {1}", pathOf(request), ex.getMessage());
         ((HttpServletResponse) response).sendError(HttpServletResponse.SC_FORBIDDEN);
       } catch (UnauthenticatedRequestException ex) {
         logger.error("The request for path {0} isn''t sent within an opened session",
@@ -163,9 +164,9 @@ public class SessionSynchronizerTokenValidator implements Filter {
   }
 
   private boolean isProtectedResource(HttpServletRequest request) {
-    return tokenService.isAProtectedResource(request) && !isFileDragAndDrop(request)
-        && !(isWebServiceRequested(request) && StringUtil.isDefined(request.getHeader(
-                UserPrivilegeValidation.HTTP_SESSIONKEY)));
+    return tokenService.isAProtectedResource(request) && !isFileDragAndDrop(request) &&
+        !isSsoAuthentication(request) && !(isWebServiceRequested(request) &&
+        StringUtil.isDefined(request.getHeader(UserPrivilegeValidation.HTTP_SESSIONKEY)));
   }
 
   private boolean isWebDAVResource(HttpServletRequest request) {
@@ -178,7 +179,11 @@ public class SessionSynchronizerTokenValidator implements Filter {
   }
 
   private boolean isWebServiceRequested(HttpServletRequest request) {
-    return request.getRequestURI().contains("/services/");
+    return request.getRequestURI().contains(getApplicationURL() + "/services/");
+  }
+
+  private boolean isSsoAuthentication(HttpServletRequest request) {
+    return request.getRequestURI().contains(getApplicationURL() + "/sso");
   }
 
   private String pathOf(ServletRequest request) {

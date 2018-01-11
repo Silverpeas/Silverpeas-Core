@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.web.authentication;
 
-import org.silverpeas.core.security.session.SessionManagementProvider;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -33,6 +33,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+
+import static org.silverpeas.core.security.session.SessionManagementProvider.getSessionManagement;
 
 public class LogoutServlet extends HttpServlet {
 
@@ -43,7 +45,12 @@ public class LogoutServlet extends HttpServlet {
     // Get the session
     HttpSession session = request.getSession(false);
     if (session != null) {
-      SessionManagementProvider.getSessionManagement().closeSession(session.getId());
+      getSessionManagement().closeSession(session.getId());
+      try {
+        session.invalidate();
+      } catch (IllegalStateException e) {
+        SilverLogger.getLogger(this).silent(e);
+      }
     }
     StringBuilder buffer = new StringBuilder(512);
     buffer.append(request.getScheme()).append("://").append(request.getServerName()).append(':');
