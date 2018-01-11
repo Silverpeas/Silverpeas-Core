@@ -86,6 +86,7 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
+    // nothing to do
   }
 
   @Override

@@ -88,8 +88,8 @@ public class BackgroundProcessTask extends AbstractRequestTask {
         getLogger().debug(() -> format("pushing a new process {0}", newRequestContext));
         RequestTaskManager.push(BackgroundProcessTask.class, request);
       } else {
-        getLogger().debug(() -> format(
-            "ignoring a process because it is yet registered and " + "still" + " living {0}",
+        getLogger().debug(
+            () -> format("ignoring a process because it is yet registered and still living {0}",
             context));
       }
     }

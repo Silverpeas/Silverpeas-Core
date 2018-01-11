@@ -25,26 +25,25 @@ package org.silverpeas.core.scheduler;
 
 import org.silverpeas.core.SilverpeasException;
 
-import java.io.Serializable;
-
 /**
  * A job to schedule at a given moments in time. A job is identified in the scheduler by a name that
  * must be unique.
  * <p>
- * The job is serializable to be able to be stored into a persistence context. Only
- * stateless and non-anonymous jobs can be serialized correctly as only its class name is
- * serialized. Indeed, the job is then constructed each time it is being executed so that any
- * change in its execution logic will be taken into account. A persistent job can be managed by
- * an underlying IoC container. When fetching from the persistence context, if
- * such a job is managed by the {@link org.silverpeas.core.util.ServiceProvider}, then this
- * managed job will be used; otherwise it is constructed.
+ * The {@link Job} can be taken into account by persistent schedulers as it isn't
+ * really persisted. Indeed, only the class name of the job is serialized so that it can be
+ * constructed each time it is being invoked. Therefore, any change in the execution login of the
+ * job will be taken into account. Nevertheless, for doing, the job has to be stateless
+ * and non anonymous and it must define a constructor without parameters. However, the job
+ * can be also managed by the underlying IoC container. Indeed, when fetching from the persistence
+ * context, if such a job is managed by the {@link org.silverpeas.core.util.ServiceProvider}, then
+ * this is this managed job that will be used; otherwise it will be constructed.
  * </p>
  * <p>
  * Any jobs scheduled by a volatile scheduler aren't constrains by the same limitations that a job
  * scheduled by a persistent scheduler: it can be a stateful or an anonymous job.
  * </p>
  */
-public abstract class Job implements Serializable {
+public abstract class Job {
 
   private String name;
 

@@ -25,8 +25,6 @@ package org.silverpeas.core.scheduler;
 
 import org.silverpeas.core.SilverpeasException;
 
-import java.io.Serializable;
-
 /**
  * A listener of events generating within the scheduling system and about scheduled jobs. All
  * objects that need to be informed about the state of a job has to implement this interface and to
@@ -34,22 +32,22 @@ import java.io.Serializable;
  * triggering and for each job termination (according to the status of this termination: an
  * abnormally termination or successful termination).
  * <p>
- * The {@link SchedulerEventListener} is serializable to be able to be stored into a persistence
- * context. Only stateless and non-anonymous listeners can be serialized correctly as only their
- * class name is serialized. Indeed, the listener is then constructed each time it is being
- * invoked so that any change in its execution logic will be taken into account. A persistent
- * listener can be managed by an underlying IoC container. When fetching from the persistence
- * context, if such a listener is managed by the
- * {@link org.silverpeas.core.util.ServiceProvider}, then this managed listener will be used;
- * otherwise it is constructed.
+ * The {@link SchedulerEventListener} can be taken into account by persistent schedulers as it isn't
+ * really persisted. Indeed, only the class name of the listener is serialized so that it can be
+ * constructed each time it is being invoked. Therefore, any change in the execution login of the
+ * listener will be taken into account. Nevertheless, for doing, the listener has to be stateless
+ * and non anonymous and it must define a constructor without parameters. However, the listener
+ * can be also managed by the underlying IoC container. Indeed, when fetching from the persistence
+ * context, if such a listener is managed by the {@link org.silverpeas.core.util.ServiceProvider},
+ * then this is this managed listener that will be used; otherwise it will be constructed.
  * </p>
  * <p>
  * Any listener registered with a job scheduled into a volatile scheduler isn't constrain by the
  * same limitations that a listener registered with a job scheduled in a persistent scheduler: it
- * can be a stateful or an anonymous job.
+ * can be a stateful or an anonymous listener.
  * </p>
  */
-public interface SchedulerEventListener extends Serializable {
+public interface SchedulerEventListener {
 
   /**
    * Invoked when a job trigger fires the execution of a job. The call of this method occurs before

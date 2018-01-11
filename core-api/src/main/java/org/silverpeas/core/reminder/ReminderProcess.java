@@ -34,7 +34,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-import java.time.ZonedDateTime;
 
 /**
  * The process to send a notification to the user aimed by a reminder.

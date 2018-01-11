@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.scheduler.trigger;
 
-import java.io.Serializable;
 import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.Date;
@@ -37,7 +36,7 @@ import static org.silverpeas.core.util.ArgumentAssertion.assertNotNull;
  * new job trigger can be defined. Currently two types of trigger is supported: a trigger with an
  * Unix-like cron expression and another one with a simple periodicity.
  */
-public abstract class JobTrigger implements Serializable {
+public abstract class JobTrigger {
 
   private Date startDate;
 

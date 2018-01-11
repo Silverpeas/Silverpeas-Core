@@ -136,32 +136,6 @@ public class ActifyDocumentProcessScheduler implements SchedulerEventListener, I
     };
   }
 
-  private boolean isManagedBySilverpeas(File directory) {
-    String directoryName = directory.getName();
-    return directory.isDirectory() && (directoryName.startsWith("a_") || directoryName.
-        startsWith("v_"));
-  }
-
-  private boolean documentExists(SimpleDocument document) {
-    return document != null;
-  }
-
-  private SimpleDocument getSourceDocument(String filename, ForeignPK publication) {
-    SimpleDocument source = null;
-    SimpleDocumentList<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKey(publication, null);
-    for (SimpleDocument aDocument : documents) {
-      String destfile = FilenameUtils.getBaseName(filename);
-      String srcfile = FilenameUtils.getBaseName(aDocument.getFilename());
-      if (ActifyDocumentProcessor.isCADDocumentSupported(aDocument.getFilename()) && srcfile.equals(
-          destfile)) {
-        source = aDocument;
-        break;
-      }
-    }
-    return source;
-  }
-
   public class ActifyDocumentImportJob extends Job {
 
     /**
@@ -209,6 +183,32 @@ public class ActifyDocumentProcessScheduler implements SchedulerEventListener, I
           FileUtils.deleteQuietly(new File(resultActifyFullPath));
         }
       }
+    }
+
+    private boolean isManagedBySilverpeas(File directory) {
+      String directoryName = directory.getName();
+      return directory.isDirectory() && (directoryName.startsWith("a_") || directoryName.
+          startsWith("v_"));
+    }
+
+    private boolean documentExists(SimpleDocument document) {
+      return document != null;
+    }
+
+    private SimpleDocument getSourceDocument(String filename, ForeignPK publication) {
+      SimpleDocument source = null;
+      SimpleDocumentList<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
+          listDocumentsByForeignKey(publication, null);
+      for (SimpleDocument aDocument : documents) {
+        String destfile = FilenameUtils.getBaseName(filename);
+        String srcfile = FilenameUtils.getBaseName(aDocument.getFilename());
+        if (ActifyDocumentProcessor.isCADDocumentSupported(aDocument.getFilename()) && srcfile.equals(
+            destfile)) {
+          source = aDocument;
+          break;
+        }
+      }
+      return source;
     }
 
     private void importActifyDocuments(final String publicationId, final String componentId,
