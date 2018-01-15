@@ -28,6 +28,7 @@ import org.silverpeas.core.calendar.Attendee;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.notification.user.UserNotification;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 
 import java.util.List;
 
@@ -47,7 +48,7 @@ public class CalendarEventAttendeeNotifier
     List<Attendee> attendees = attendeesIn(created.asCalendarComponent());
     UserNotification notification =
         new AttendeeNotificationBuilder(created, NotifAction.CREATE).immediately()
-            .from(User.getCurrentRequester())
+            .from(getSender())
             .to(attendees)
             .about(operation, attendees)
             .build();
@@ -66,7 +67,7 @@ public class CalendarEventAttendeeNotifier
           CalendarOperation.EVENT_UPDATE;
       UserNotification notification =
           new AttendeeNotificationBuilder(after, NotifAction.UPDATE).immediately()
-              .from(User.getCurrentRequester())
+              .from(getSender())
               .to(concernedAttendeesIn(before.asCalendarComponent()))
               .about(operation)
               .build();
@@ -90,10 +91,20 @@ public class CalendarEventAttendeeNotifier
         CalendarOperation.EVENT_DELETION;
     UserNotification notification =
         new AttendeeNotificationBuilder(deleted, NotifAction.DELETE).immediately()
-            .from(User.getCurrentRequester())
+            .from(getSender())
             .to(concernedAttendeesIn(deleted.asCalendarComponent()))
             .about(operation)
             .build();
     notification.send();
+  }
+
+  /**
+   * Gets the user behind the invocation of the attendees notification. It should be set in the
+   * {@link OperationContext} of the current process (thread). Otherwise it is the current
+   * requester that is used.
+   * @return the user sending the notification.
+   */
+  private User getSender() {
+    return OperationContext.fromCurrentRequester().getUser();
   }
 }

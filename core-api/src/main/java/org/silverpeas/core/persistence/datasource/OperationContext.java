@@ -35,14 +35,22 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
+ * <p>
  * This class permits to give details about operation actions (save action for now), especially the
- * user who is the author of the operation.
+ * user who is the trigger of the operation.
  * It is usually used from service method implementation. It is used by JPA Silverpeas API to set
- * the technical entity informations on:
+ * the technical entity information on:
+ * </p>
  * <ul>
  *   <li>entity create</li>
  *   <li>entity update</li>
  * </ul>
+ * <p>
+ * As each operation in Silverpeas is relative to a thread, such an operation context is then
+ * attached to the thread that processes the operation. So, the operation context can be get by
+ * any processing actors within the same thread without being worried on the context
+ * transmission between them.
+ * </p>
  * @author Yohann Chastagnier
  */
 public class OperationContext {
@@ -65,8 +73,9 @@ public class OperationContext {
   }
 
   /**
-   * Creates an instance from the given identifier which aims a user.
-   * @param userId the unique identifier of a user.
+   * Creates an instance from the given identifier which aims a user. If an operation context
+   * already exists for the current thread, then sets it with the specified user and returns it.
+   * @param userId the unique identifier of the user at the source of the operation.
    * @return a new {@link OperationContext} for the specified user identifier.
    */
   public static OperationContext fromUser(String userId) {
@@ -74,8 +83,9 @@ public class OperationContext {
   }
 
   /**
-   * Creates an instance from the given user.
-   * @param user a user
+   * Creates an instance from the given user. If an operation context already exists for the current
+   * thread, then sets it with the specified user and returns it.
+   * @param user the user at the source of the operation.
    * @return a new {@link OperationContext} for the specified user.
    */
   public static OperationContext fromUser(User user) {
@@ -83,7 +93,10 @@ public class OperationContext {
   }
 
   /**
-   * Creates an instance from the current requester ({@link User#getCurrentRequester()}).
+   * Creates an instance from the current requester ({@link User#getCurrentRequester()}). If an
+   * operation context exists for the current thread, then returns it. Otherwise, constructs a new
+   * one from the current requester of the operation (if any). If there is no user set, then set
+   * it with the current requester before returning it.
    * @return a new {@link OperationContext} for the current user.
    */
   public static OperationContext fromCurrentRequester() {
