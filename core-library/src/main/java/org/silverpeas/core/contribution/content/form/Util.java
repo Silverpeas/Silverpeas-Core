@@ -25,7 +25,6 @@ package org.silverpeas.core.contribution.content.form;
 
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;

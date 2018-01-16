@@ -39,7 +39,7 @@ import java.net.URI;
 import java.util.Base64;
 
 /**
- * Base URIs from which the REST-based ressources representing calendar and event entities are
+ * Base URIs from which the REST-based resources representing calendar and event entities are
  * defined.
  * @author Yohann Chastagnier
  */

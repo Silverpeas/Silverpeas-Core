@@ -54,6 +54,7 @@ import java.util.stream.Collectors;
 @Singleton
 public class ICal4JDateCodec {
 
+  static final ZoneId UTC_ZONE_ID = ZoneId.of("UTC");
   private static final String ICAL_LOCAL_PATTERN = "yyyyMMdd'T'HHmmss";
   private static final String ICAL_UTC_PATTERN = ICAL_LOCAL_PATTERN + "'Z'";
   private static final String ICAL_DATE_PATTERN = "yyyyMMdd";

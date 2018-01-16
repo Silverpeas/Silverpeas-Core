@@ -33,6 +33,7 @@ import org.silverpeas.core.calendar.repository.CalendarEventOccurrenceRepository
 import org.silverpeas.core.calendar.repository.CalendarEventRepository;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.ContributionModel;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WithAttachment;
 import org.silverpeas.core.contribution.model.WysiwygContent;
@@ -42,6 +43,7 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.reminder.WithReminder;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.SecurableRequestCache;
 import org.silverpeas.core.util.StringUtil;
@@ -239,9 +241,10 @@ import static org.silverpeas.core.persistence.datasource.OperationContext.State.
             "ORDER BY ob_1, ob_2, ob_3")})
 public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     implements Plannable, Recurrent, Categorized, Prioritized, Contribution, Securable,
-    WithAttachment {
+    WithAttachment, WithReminder {
 
   public static final String TYPE = "CalendarEvent";
+  public static final String NEXT_START_DATE_MODEL_PROPERTY = "NEXT_START_DATE";
 
   private static final long serialVersionUID = 1L;
   public static final String THE_EVENT = "The event ";
@@ -1465,5 +1468,10 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     }
 
     return this.asCalendarComponent().isModifiedSince(previous.asCalendarComponent());
+  }
+
+  @Override
+  public ContributionModel getModel() {
+    return new CalendarEventModel(this);
   }
 }

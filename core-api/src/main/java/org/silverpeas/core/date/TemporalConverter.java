@@ -24,9 +24,11 @@
 package org.silverpeas.core.date;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.time.chrono.ChronoZonedDateTime;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -86,6 +88,25 @@ public class TemporalConverter {
       return dateTimeFunction.apply(OffsetDateTime.from(temporal));
     } else if (temporal instanceof ZonedDateTime) {
       return zonedDateTimeTFunction.apply(ZonedDateTime.from(temporal));
+    } else {
+      throw new IllegalArgumentException(
+          "Temporal parameters must be both of type LocalDate or OffsetDateTime or ZonedDateTime");
+    }
+  }
+
+  public static <T> T applyByType(java.time.temporal.Temporal temporal,
+      Function<LocalDate, T> localDateFunction,
+      Function<LocalDateTime, T> localDateTimeFunction,
+      Function<ZonedDateTime, T> zonedDateTimeFunction,
+      Function<OffsetDateTime, T> offsetDateTimeFunction) {
+    if (temporal instanceof LocalDate) {
+      return localDateFunction.apply(LocalDate.from(temporal));
+    } else if (temporal instanceof OffsetDateTime) {
+      return offsetDateTimeFunction.apply(OffsetDateTime.from(temporal));
+    } else if (temporal instanceof ChronoZonedDateTime) {
+      return zonedDateTimeFunction.apply(ZonedDateTime.from(temporal));
+    } else if (temporal instanceof LocalDateTime) {
+      return localDateTimeFunction.apply(LocalDateTime.from(temporal));
     } else {
       throw new IllegalArgumentException(
           "Temporal parameters must be both of type LocalDate or OffsetDateTime or ZonedDateTime");

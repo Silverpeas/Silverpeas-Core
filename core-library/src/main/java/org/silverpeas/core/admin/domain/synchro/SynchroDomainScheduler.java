@@ -43,7 +43,7 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
     try {
       this.domainIds = domainIds;
 
-      Scheduler scheduler = SchedulerProvider.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(ADMINSYNCHRODOMAIN_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(ADMINSYNCHRODOMAIN_JOB_NAME, trigger, this);
@@ -86,6 +86,7 @@ public class SynchroDomainScheduler implements SchedulerEventListener {
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
+    // nothing to do
   }
 
   @Override

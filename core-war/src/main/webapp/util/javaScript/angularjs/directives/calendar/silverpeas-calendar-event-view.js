@@ -231,4 +231,23 @@
           }]
         };
       }]);
+
+  angular.module('silverpeas.directives').directive('silverpeasCalendarEventViewReminder', function() {
+    return {
+      templateUrl : webContext +
+      '/util/javaScript/angularjs/directives/calendar/silverpeas-calendar-event-view-reminder.jsp',
+      restrict : 'E',
+      scope : {
+        ceo : '=calendarEventOccurrence'
+      },
+      controllerAs : '$ctrl',
+      bindToController : true,
+      controller : [function() {
+        this.$postLink = function() {
+          var o = this.ceo;
+          this.cId = sp.contribution.id.from(o.componentInstanceId(), o.eventType, o.eventId);
+        }.bind(this);
+      }]
+    };
+  });
 })();

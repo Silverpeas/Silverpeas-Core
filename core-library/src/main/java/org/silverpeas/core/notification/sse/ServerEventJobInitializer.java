@@ -36,11 +36,9 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
 
-import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask
-    .getAsyncContextSnapshot;
+import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.getAsyncContextSnapshot;
 import static org.silverpeas.core.notification.sse.ServerEventDispatcherTask.unregisterAsyncContext;
-import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
-    .getSseAsyncJobTrigger;
+import static org.silverpeas.core.notification.user.client.NotificationManagerSettings.getSseAsyncJobTrigger;
 
 /**
  * This JOB is in charge of cleanup the SSE contexts if necessary.
@@ -76,7 +74,7 @@ class ServerEventJobInitializer implements Initialization {
     }
 
     @Override
-    public void execute(final JobExecutionContext context) throws Exception {
+    public void execute(final JobExecutionContext context) {
       List<SilverpeasAsyncContext> asyncContexts = getAsyncContextSnapshot();
       SseLogger.get()
           .debug("doing quietly some stuffs over {0} {0,choice, 1#async context| 1<async contexts}",

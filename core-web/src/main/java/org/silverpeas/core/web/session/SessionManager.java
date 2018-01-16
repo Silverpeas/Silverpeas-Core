@@ -30,6 +30,7 @@ import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.cache.service.VolatileResourceCacheService;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.io.upload.UploadSession;
 import org.silverpeas.core.notification.sse.DefaultServerEventNotifier;
 import org.silverpeas.core.notification.sse.ServerEventDispatcherTask;
@@ -57,7 +58,6 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
-import javax.annotation.PostConstruct;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
@@ -86,7 +86,7 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
  * @author Nicolas Eysseric
  */
 @Singleton
-public class SessionManager implements SessionManagement {
+public class SessionManager implements SessionManagement, Initialization {
 
   // Object on which to synchronize (the instance indeed)
   private final Object mutex;
@@ -128,11 +128,8 @@ public class SessionManager implements SessionManagement {
     this.mutex = this;
   }
 
-  /**
-   * Init attributes
-   */
-  @PostConstruct
-  public void initSessionManager() {
+  @Override
+  public void init() {
     try {
       // init maxRefreshInterval : add 60 seconds delay because of network traffic
       SettingBundle rl =
@@ -167,6 +164,11 @@ public class SessionManager implements SessionManagement {
     } catch (Exception ex) {
       SilverLogger.getLogger(this).error(ex.getMessage(), ex);
     }
+  }
+
+  @Override
+  public void release() throws Exception {
+    scheduler.unscheduleJob(SESSION_MANAGER_JOB_NAME);
   }
 
   @Override
@@ -308,29 +310,35 @@ public class SessionManager implements SessionManagement {
       String key = sessionUser.getLogin() + sessionUser.getDomainId();
       // keep users with distinct login and domainId
       if (!distinctConnectedUsersList.containsKey(key) && !sessionUser.isAccessGuest()) {
-        if (DomainProperties.areDomainsVisibleToAll()) {
-          // all users are visible
-          distinctConnectedUsersList.put(key, si);
-        } else if (DomainProperties.areDomainsNonVisibleToOthers()) {
-          // only users of user's domain are visible
-          if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
-            distinctConnectedUsersList.put(key, si);
-          }
-        } else if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
-          // default domain users can see all users
-          // users of other domains can see only users of their domain
-          if ("0".equals(user.getDomainId())) {
-            distinctConnectedUsersList.put(key, si);
-          } else {
-            if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
-              distinctConnectedUsersList.put(key, si);
-            }
-          }
-        }
+        addInConnectedUsersList(user, distinctConnectedUsersList, si, sessionUser, key);
       }
     }
 
     return distinctConnectedUsersList.values();
+  }
+
+  private void addInConnectedUsersList(final User user,
+      final Map<String, SessionInfo> distinctConnectedUsersList, final SessionInfo si,
+      final UserDetail sessionUser, final String key) {
+    if (DomainProperties.areDomainsVisibleToAll()) {
+      // all users are visible
+      distinctConnectedUsersList.put(key, si);
+    } else if (DomainProperties.areDomainsNonVisibleToOthers()) {
+      // only users of user's domain are visible
+      if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
+        distinctConnectedUsersList.put(key, si);
+      }
+    } else if (DomainProperties.areDomainsVisibleOnlyToDefaultOne()) {
+      // default domain users can see all users
+      // users of other domains can see only users of their domain
+      if ("0".equals(user.getDomainId())) {
+        distinctConnectedUsersList.put(key, si);
+      } else {
+        if (user.getDomainId().equalsIgnoreCase(sessionUser.getDomainId())) {
+          distinctConnectedUsersList.put(key, si);
+        }
+      }
+    }
   }
 
   /**
@@ -488,7 +496,7 @@ public class SessionManager implements SessionManagement {
   private Job manageSession() {
     return new Job(SESSION_MANAGER_JOB_NAME) {
       @Override
-      public void execute(JobExecutionContext context) throws Exception {
+      public void execute(JobExecutionContext context) {
         Date date = context.getFireTime();
         doSessionManagement(date);
       }

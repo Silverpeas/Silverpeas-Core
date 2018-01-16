@@ -30,7 +30,7 @@ import org.silverpeas.core.thread.task.AbstractRequestTask;
 import java.util.UUID;
 
 import static org.silverpeas.core.backgroundprocess.BackgroundProcessTask.LOCK_DURATION
-    .NO_TIME_TO_LIVE;
+    .NO_TIME;
 
 /**
  * Defines a request performed by {@link BackgroundProcessTask}.
@@ -45,7 +45,7 @@ public abstract class AbstractBackgroundProcessRequest implements AbstractReques
    * Initializes a unique request.
    */
   protected AbstractBackgroundProcessRequest() {
-    this(UUID.randomUUID().toString(), NO_TIME_TO_LIVE);
+    this(UUID.randomUUID().toString(), NO_TIME);
   }
 
   /**

@@ -32,6 +32,9 @@ import org.ehcache.expiry.Duration;
 import org.ehcache.expiry.Expiry;
 import org.silverpeas.core.cache.model.AbstractCache;
 
+import java.util.Objects;
+import java.util.function.Supplier;
+
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
@@ -47,6 +50,7 @@ final class EhCache extends AbstractCache {
    *
    * @param nbMaxElements maximum capacity of the cache.
    */
+  @SuppressWarnings("unchecked")
   EhCache(long nbMaxElements) {
     UserManagedCacheBuilder cacheBuilder =
         UserManagedCacheBuilder.newUserManagedCacheBuilder(Object.class, Element.class)
@@ -111,6 +115,18 @@ final class EhCache extends AbstractCache {
     getCache().put(key, element);
   }
 
+  @Override
+  public <T> T computeIfAbsent(final Object key, final Class<T> classType, final int timeToLive,
+      final int timeToIdle, final Supplier<T> valueSupplier) {
+    Objects.requireNonNull(valueSupplier);
+    T value = get(key, classType);
+    if (value == null) {
+      value = valueSupplier.get();
+      put(key, value, timeToLive, timeToIdle);
+    }
+    return value;
+  }
+
   /**
    * An element in the cache. It decorated any value to put into the cache with TTL and TTI
    * information.
@@ -124,12 +140,12 @@ final class EhCache extends AbstractCache {
       this.value = value;
     }
 
-    public Element withTimeToLive(int ttl) {
+    Element withTimeToLive(int ttl) {
       this.ttl = ttl;
       return this;
     }
 
-    public Element withTimeToIdle(int tti) {
+    Element withTimeToIdle(int tti) {
       this.tti = tti;
       return this;
     }
@@ -138,6 +154,7 @@ final class EhCache extends AbstractCache {
       return value;
     }
 
+    @SuppressWarnings("unchecked")
     public <T> T getValue(Class<T> clazz) {
       if (value == null || !clazz.isAssignableFrom(value.getClass())) {
         return null;

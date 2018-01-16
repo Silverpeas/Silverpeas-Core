@@ -53,7 +53,7 @@ public enum TimeUnit {
    * Creates a TimeUnit instance by specifying the duration of this unit in milliseconds.
    * @param duration the duration the unit takes in milliseconds.
    */
-  private TimeUnit(int duration) {
+  TimeUnit(int duration) {
     this.duration = duration;
   }
 

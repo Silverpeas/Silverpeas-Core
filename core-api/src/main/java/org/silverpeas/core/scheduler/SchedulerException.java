@@ -23,19 +23,14 @@
  */
 package org.silverpeas.core.scheduler;
 
+import org.silverpeas.core.SilverpeasException;
+
 /**
  * Exception thrown when an error occurs within the scheduler.
  */
-public class SchedulerException extends Exception {
+public class SchedulerException extends SilverpeasException {
 
   private static final long serialVersionUID = 8770810910927989722L;
-
-  /**
-   * Constructs an empty SchedulerException.
-   */
-  public SchedulerException() {
-    super();
-  }
 
   /**
    * Constructs a SchedulerException with the specified message.

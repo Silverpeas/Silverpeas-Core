@@ -35,6 +35,7 @@ import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.IdentifiableEntity;
 import org.silverpeas.core.persistence.datasource.model.identifier.ExternalStringIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.reminder.WithReminder;
 import org.silverpeas.core.util.Mutable;
 
 import javax.persistence.*;
@@ -90,7 +91,7 @@ import static org.silverpeas.core.persistence.datasource.model.jpa.JpaEntityRefl
         "= :event")})
 public class CalendarEventOccurrence
     extends BasicJpaEntity<CalendarEventOccurrence, ExternalStringIdentifier>
-    implements IdentifiableEntity, Occurrence, Contribution {
+    implements IdentifiableEntity, Occurrence, Contribution, WithReminder {
 
   public static final String TYPE = "CalendarEventOccurrence";
 
@@ -224,6 +225,12 @@ public class CalendarEventOccurrence
       }
     });
     return occurrences;
+  }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public Optional<CalendarEvent> getParent() {
+    return Optional.ofNullable(getCalendarEvent());
   }
 
   @Override

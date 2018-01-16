@@ -21,46 +21,24 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.util.time;
 
-import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.apache.commons.lang3.builder.EqualsBuilder;
+package org.silverpeas.core;
+
+import java.util.Optional;
 
 /**
- * A key for the conversion board.
+ * An object satisfying this interface means that it COULD be born from an other object (so the
+ * parent).
+ * @param <T> the type of the parent object.
+ * @author silveryocha
  */
-public class TimeConversionBoardKey {
-  private final TimeUnit smallestUnit;
-  private final TimeUnit largestUnit;
+public interface Instance<T> {
 
-  TimeConversionBoardKey(TimeUnit from, TimeUnit to) {
-    if (from.ordinal() < to.ordinal()) {
-      smallestUnit = from;
-      largestUnit = to;
-    } else {
-      smallestUnit = to;
-      largestUnit = from;
-    }
-  }
-
-  @Override
-  public int hashCode() {
-    return new HashCodeBuilder().append(smallestUnit.name()).append(largestUnit.name())
-        .toHashCode();
-  }
-
-  @Override
-  public boolean equals(final Object obj) {
-    if (obj == null) {
-      return false;
-    }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final TimeConversionBoardKey other = (TimeConversionBoardKey) obj;
-    EqualsBuilder matcher = new EqualsBuilder();
-    matcher.append(smallestUnit, other.smallestUnit);
-    matcher.append(largestUnit, other.largestUnit);
-    return matcher.isEquals();
+  /**
+   * Gets the possible parent object from which the instance could be spawn.
+   * @return an optional parent instance of type T.
+   */
+  default <U extends T> Optional<U> getParent() {
+    return Optional.empty();
   }
 }

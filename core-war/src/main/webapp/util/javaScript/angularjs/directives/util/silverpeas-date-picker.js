@@ -77,7 +77,7 @@
                 }
                 $date.year($dateToSet.year());
                 $date.dayOfYear($dateToSet.dayOfYear());
-                this.date = $date.format();
+                this.date = sp.moment.atZoneIdSimilarLocal($date, this.zoneId).format();
               } else {
                 if (!this.formattedDate) {
                   this.status.empty = true;

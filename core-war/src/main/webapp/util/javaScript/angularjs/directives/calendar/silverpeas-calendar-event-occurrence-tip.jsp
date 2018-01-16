@@ -56,6 +56,13 @@
   <div class="occurrence-external-link" ng-if="$ctrl.occurrence.externalUrl()">
     <a target="_blank" href="{{$ctrl.occurrence.externalUrl()}}">{{$ctrl.occurrence.externalUrl()}}</a>
   </div>
+  <div class="occurrence-reminder" ng-class="{'reminder-set':$ctrl.reminder, 'no-reminder':!$ctrl.reminder}">
+    <silverpeas-calendar-event-reminder occurrence="$ctrl.occurrence"
+                                        reminder="$ctrl.reminder"
+                                        on-created="$ctrl.onReminderChange($ctrl.occurrence)"
+                                        on-updated="$ctrl.onReminderChange($ctrl.occurrence)"
+                                        on-deleted="$ctrl.onReminderChange($ctrl.occurrence)"></silverpeas-calendar-event-reminder>
+  </div>
 </div>
 <div>
   <span class="occurrence-description" ng-bind-html="$ctrl.occurrence.description | noHTML | newlines"></span>

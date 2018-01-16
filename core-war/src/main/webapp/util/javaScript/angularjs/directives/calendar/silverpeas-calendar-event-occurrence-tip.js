@@ -35,7 +35,8 @@
         onModify : '&?',
         onDelete : '&?',
         onGoToFirstOccurrence : '&?',
-        onAttendeeParticipationAnswer : '&?'
+        onAttendeeParticipationAnswer : '&?',
+        onReminderChange : '&?'
       },
       controllerAs : '$ctrl',
       bindToController : true,

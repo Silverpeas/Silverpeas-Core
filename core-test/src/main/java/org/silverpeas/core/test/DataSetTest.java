@@ -37,6 +37,11 @@ import java.sql.SQLException;
  */
 public abstract class DataSetTest {
 
+  /**
+   * Constant the getDbSetupInitializations() should return if there is no database initialization.
+   */
+  protected static final Object NO_INITIALIZATION = null;
+
   private DbSetupRule dbSetupRule;
 
   /**
@@ -49,11 +54,12 @@ public abstract class DataSetTest {
 
   /**
    * Gets the necessary to initialize the data into the database.<br>
+   * If null, then the database isn't set up with some data.
    * @param <T> {@link Operation}, array of {@link Operation}, {@link String} or array of {@link
    * String}.
    * @return Must return an {@link Operation}, an array of {@link Operation}, a dataset path or
    * an array of dataset path (.sql or .xml), otherwise an exception is thrown during the
-   * database loading.
+   * database loading. Can be null to indicate no initialization.
    */
   protected abstract <T> T getDbSetupInitializations();
 
@@ -61,7 +67,9 @@ public abstract class DataSetTest {
   public DbSetupRule getDbSetupRule() {
     if (dbSetupRule == null) {
       Object dbSetupInitializations = getDbSetupInitializations();
-      if (dbSetupInitializations instanceof Operation) {
+      if (dbSetupInitializations == NO_INITIALIZATION) {
+        dbSetupRule = newDbSetupRule();
+      } else if (dbSetupInitializations instanceof Operation) {
 
         dbSetupRule = loadFrom(new Operation[]{(Operation) dbSetupInitializations});
 
@@ -98,6 +106,10 @@ public abstract class DataSetTest {
       return DbSetupRule.createTablesFrom(getDbSetupTableCreationSqlScript())
           .loadInitialDataSetFrom(dataset);
     }
+  }
+
+  private DbSetupRule newDbSetupRule() {
+    return DbSetupRule.createTablesFrom(getDbSetupTableCreationSqlScript());
   }
 
   protected Connection getConnection() throws SQLException {

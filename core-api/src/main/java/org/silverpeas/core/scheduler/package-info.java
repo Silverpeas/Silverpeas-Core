@@ -22,7 +22,11 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 /**
- * Provides a Scheduling API with which Silverpeas components can schedule jobs at given moments
- * in time and in a periodic way.
+ * The Scheduling Engine in Silverpeas provides an API to get either a volatile or a persistent
+ * scheduler. The first one is for scheduling volatile jobs in the time, jobs that will be
+ * discarded at each VM restarting. The last one is for scheduling persistent jobs, meaning the
+ * scheduled jobs are serialized into a persistence context so that they can be restored at each
+ * VM restarting. Both are built atop of an existing scheduling system and the Scheduling Engine
+ * encapsulates it.
  */
 package org.silverpeas.core.scheduler;

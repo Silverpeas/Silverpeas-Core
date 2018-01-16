@@ -887,6 +887,37 @@ if (typeof window.silverpeasAjax === 'undefined') {
   }
 }
 
+if (!window.SilverpeasContributionIdentifier) {
+  SilverpeasContributionIdentifier = SilverpeasClass.extend({
+    initialize : function(instanceId, type, localId) {
+      this.instanceId = instanceId;
+      this.type = type;
+      this.localId = localId;
+    },
+    getComponentInstanceId : function() {
+      return this.instanceId;
+    },
+    getType : function() {
+      return this.type;
+    },
+    getLocalId : function() {
+      return this.localId;
+    },
+    asString : function() {
+      return this.instanceId + ':' + this.type + ':' + this.localId;
+    },
+    asBase64 : function() {
+      return sp.base64.encode(this.instanceId + ':' + this.type + ':' + this.localId);
+    },
+    sameAs : function(other) {
+      return (other instanceof SilverpeasContributionIdentifier)
+          && this.componentInstanceId === other.getComponentInstanceId()
+          && this.type === other.getType()
+          && this.localId === other.getLocalId()
+    }
+  });
+}
+
 if(typeof window.whenSilverpeasReady === 'undefined') {
   var whenSilverpeasReadyPromise = false;
   function whenSilverpeasReady(callback) {
@@ -1112,10 +1143,11 @@ if (typeof window.sp === 'undefined') {
       },
       /**
        * Gets the offset ('-01:00' for example) of the given zone id.
+       * @param date a data like the one given to the moment constructor
        * @param zoneId the zone id ('Europe/Berlin' for example)
        */
-      getOffsetFromZoneId : function(zoneId) {
-        return moment().tz(zoneId).format('Z');
+      getOffsetFromZoneId : function(date, zoneId) {
+        return sp.moment.make(date).tz(zoneId).format('Z');
       },
       /**
        * Sets the given date at the given timezone.
@@ -1131,7 +1163,7 @@ if (typeof window.sp === 'undefined') {
        * @param zoneId the zone id ('Europe/Berlin' for example)
        */
       atZoneIdSimilarLocal : function(date, zoneId) {
-        return sp.moment.make(date).utcOffset(sp.moment.getOffsetFromZoneId(zoneId), true);
+        return sp.moment.make(date).utcOffset(sp.moment.getOffsetFromZoneId(date, zoneId), true);
       },
       /**
        * Adjusts the the time minutes in order to get a rounded time.
@@ -1600,6 +1632,42 @@ if (typeof window.sp === 'undefined') {
         }, queryDescription);
         var url = webContext + '/services/search';
         return sp.ajaxRequest(url).withParams(params).sendAndPromiseJsonResponse();
+      }
+    },
+    contribution : {
+      id : {
+        from : function() {
+          if (arguments.length > 2) {
+            var instanceId = arguments[0];
+            var type = arguments[1];
+            var localId = arguments[2];
+            return new SilverpeasContributionIdentifier(instanceId, type, localId);
+          } else {
+            var contributionId = arguments[0];
+            if (contributionId instanceof SilverpeasContributionIdentifier) {
+              return contributionId;
+            } else {
+              var decodedContributionId = sp.contribution.id.fromString(contributionId);
+              if (!decodedContributionId) {
+                decodedContributionId = sp.contribution.id.fromBase64(contributionId);
+              }
+              return decodedContributionId;
+            }
+          }
+        },
+        fromString : function(contributionId) {
+          var contributionIdRegExp = /^([^:]+):([^:]+):(.+)$/g;
+          var match = contributionIdRegExp.exec(contributionId);
+          if (match) {
+            var instanceId = match[1];
+            var type = match[2];
+            var localId = match[3];
+            return new SilverpeasContributionIdentifier(instanceId, type, localId);
+          }
+        },
+        fromBase64: function(contributionId) {
+          return sp.contribution.id.from(sp.base64.decode(contributionId));
+        }
       }
     }
   };

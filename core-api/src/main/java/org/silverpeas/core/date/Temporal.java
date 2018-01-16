@@ -24,7 +24,7 @@
 package org.silverpeas.core.date;
 
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.time.TimeData;
+import org.silverpeas.core.util.time.Duration;
 
 import java.util.TimeZone;
 
@@ -233,9 +233,9 @@ public interface Temporal<T extends Temporal<? super T>> extends Cloneable {
   /**
    * Compute the time between the temporal instance and another one.
    * @param anotherDatable another date
-   * @return the time between the temporal instance and another one represented by {@link TimeData}.
+   * @return the time between the temporal instance and another one represented by {@link Duration}.
    */
-  TimeData getTimeDataTo(T anotherDatable);
+  Duration getTimeDataTo(T anotherDatable);
 
   /**
    * Adds a number of years to the temporal instance returning a new one.

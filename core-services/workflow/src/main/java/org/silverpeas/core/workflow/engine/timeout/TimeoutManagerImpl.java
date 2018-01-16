@@ -65,7 +65,7 @@ public class TimeoutManagerImpl implements Initialization, SchedulerEventListene
     try {
       SettingBundle settings = ResourceLocator.getSettingBundle(
           "org.silverpeas.workflow.engine.schedulerSettings");
-      Scheduler scheduler = SchedulerProvider.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       if (scheduler.isJobScheduled(TIMEOUT_MANAGER_JOB_NAME)) {
         // Remove previous scheduled job
         scheduler.unscheduleJob(TIMEOUT_MANAGER_JOB_NAME);
@@ -95,22 +95,26 @@ public class TimeoutManagerImpl implements Initialization, SchedulerEventListene
       Date now = new Date();
 
       for (final ProcessInstance instance : instances) {
-        try {
-          ActionAndState timeoutActionAndState = instance.getTimeOutAction(now);
-          TimeoutEvent event = new TimeoutEventImpl(instance, timeoutActionAndState.getState(),
-              timeoutActionAndState.getAction());
-          WorkflowEngineTask.addTimeoutRequest(event);
-        } catch (WorkflowException e) {
-          SilverLogger.getLogger(this).error(e.getMessage(), e);
-        }
+        addTimeoutRequest(now, instance);
       }
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
   }
 
+  private void addTimeoutRequest(final Date now, final ProcessInstance instance) {
+    try {
+      ActionAndState timeoutActionAndState = instance.getTimeOutAction(now);
+      TimeoutEvent event = new TimeoutEventImpl(instance, timeoutActionAndState.getState(),
+          timeoutActionAndState.getAction());
+      WorkflowEngineTask.addTimeoutRequest(event);
+    } catch (WorkflowException e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+  }
+
   @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+  public void triggerFired(SchedulerEvent anEvent) {
     doTimeoutManagement();
   }
 

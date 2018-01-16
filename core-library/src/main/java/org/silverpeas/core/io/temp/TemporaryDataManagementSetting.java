@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.io.temp;
 
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.util.time.TimeUnit;
 
 /**
  * All settings around the temporary data management services.
@@ -36,6 +36,10 @@ public class TemporaryDataManagementSetting {
 
   protected static SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.util.data.temporaryDataManagementSettings");
+
+  private TemporaryDataManagementSetting() {
+    throw new IllegalStateException("Setting class");
+  }
 
   /**
    * Gets the CRON setting for the scheduler of the cleaning job.
@@ -66,7 +70,7 @@ public class TemporaryDataManagementSetting {
 
   private static long getTimeInMs(long nbHours) {
     if (nbHours > 0) {
-      return UnitUtil.getTimeData(nbHours, TimeUnit.HOUR).getTimeAsLong();
+      return UnitUtil.getDuration(nbHours, TimeUnit.HOUR).getTimeAsLong();
     }
     return nbHours;
   }

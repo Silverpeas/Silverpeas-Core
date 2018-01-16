@@ -23,7 +23,9 @@
  */
 package org.silverpeas.core.util;
 
+import java.util.Enumeration;
 import java.util.MissingResourceException;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.function.Function;
@@ -111,7 +113,7 @@ public class SettingBundle implements SilverpeasBundle {
    * @return the value of the data as a string of characters.
    * @throws MissingResourceException if the bundle doesn't exist.
    */
-  public String getString(String key, String defaultValue) throws MissingResourceException {
+  public String getString(String key, String defaultValue) {
     try {
       String value = getString(key);
       return (isDefined(value) ? value : defaultValue);
@@ -188,12 +190,28 @@ public class SettingBundle implements SilverpeasBundle {
   }
 
   /**
-   * Gets this setting bundle as a simply {@code java.util.ResourceBundle} instance. This can be
-   * useful when a ResourceBundle is expected in some codes.
-   * @return a ResourceBundle representation of this setting bundle.
+   * Gets this setting bundle as a simply {@link ResourceBundle} instance. This can be
+   * useful when a {@link ResourceBundle} is expected in some codes.
+   * @return a {@link ResourceBundle} representation of this setting bundle.
    */
   public ResourceBundle asResourceBundle() {
     return getWrappedBundle();
+  }
+
+  /**
+   * Gets this setting bundle as a simply {@link Properties} instance. This can be useful when a
+   * {@link Properties} is expected in some codes.
+   * @return a {@link Properties} representation of this setting bundle.
+   */
+  public Properties asProperties() {
+    ResourceBundle bundle = getWrappedBundle();
+    Properties properties = new Properties();
+    Enumeration<String> keys = bundle.getKeys();
+    while(keys.hasMoreElements()) {
+      String key = keys.nextElement();
+      properties.put(key, bundle.getObject(key));
+    }
+    return properties;
   }
 
   private ResourceBundle getWrappedBundle() {

@@ -34,6 +34,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.scheduler.SchedulerInitializer;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.test.util.SilverProperties;
@@ -107,6 +108,7 @@ public class TemporaryDataCleanerSchedulerInitializerIT {
   @Before
   public void before() throws Exception {
     rootTempFile = new File(FileRepositoryManager.getTemporaryPath());
+    SchedulerInitializer.get().init(SchedulerInitializer.SchedulerType.VOLATILE);
     initializer.init();
   }
 

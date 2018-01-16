@@ -61,7 +61,7 @@ public interface SilverpeasBundle {
    * @throws MissingResourceException if either the bundle doesn't exist or the key isn't defined
    * in the bundle.
    */
-  String getString(String key) throws MissingResourceException;
+  String getString(String key);
 
   /**
    * The resource is a list of objects. Gets the value(s) of the specified property of one or more

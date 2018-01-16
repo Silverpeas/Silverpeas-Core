@@ -29,12 +29,12 @@ import org.apache.tika.metadata.OfficeOpenXMLCore;
 import org.apache.tika.metadata.Property;
 import org.apache.tika.metadata.TikaCoreProperties;
 import org.apache.tika.metadata.XMPDM;
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.memory.MemoryData;
-import org.silverpeas.core.util.time.TimeData;
-import org.silverpeas.core.util.time.TimeUnit;
+import org.silverpeas.core.util.time.Duration;
 
 import java.io.File;
 import java.math.BigDecimal;
@@ -209,16 +209,16 @@ public class MetaData {
   /**
    * Return the duration of the file.
    */
-  public TimeData getDuration() {
-    TimeData result = null;
+  public Duration getDuration() {
+    Duration result = null;
     BigDecimal duration = getBigDecimal(XMPDM.DURATION);
     if (duration != null) {
-      result = UnitUtil.getTimeData(duration);
+      result = UnitUtil.getDuration(duration);
     }
     if (result == null) {
       duration = getBigDecimal(FLV.DURATION);
       if (duration != null) {
-        result = UnitUtil.getTimeData(duration, TimeUnit.SEC);
+        result = UnitUtil.getDuration(duration, TimeUnit.SECOND);
       }
     }
     return result;

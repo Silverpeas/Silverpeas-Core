@@ -1,5 +1,4 @@
-<%@ page import="org.silverpeas.core.i18n.I18NHelper" %>
-<%@ page import="org.silverpeas.core.util.logging.SilverLogger" %><%--
+<%--
   ~ Copyright (C) 2000 - 2017 Silverpeas
   ~
   ~ This program is free software: you can redistribute it and/or modify
@@ -49,6 +48,7 @@
 <fmt:message var="atTimeLabel" key="GML.at"/>
 <fmt:message var="visibilityLabel" key="calendar.label.event.visibility"/>
 <fmt:message var="priorityLabel" key="calendar.label.event.priority"/>
+<fmt:message var="reminderLabel" key="GML.reminder"/>
 
 <div style="display: none">
   <span ng-init="$ctrl.labels.mainInfo = '${silfn:escapeJs(mainInfoLabel)}'"></span>
@@ -188,6 +188,20 @@
           <input type="radio" ng-model="$ctrl.data.priority" ng-value="priority.name">
           {{priority.label}}
         </label>
+      </div>
+    </div>
+    <div class="field" ng-show="$ctrl.__reminderShown">
+      <label class="txtlibform">${reminderLabel}</label>
+      <div class="champs">
+        <silverpeas-contribution-reminder mode="DURATION"
+                                          api="$ctrl.reminderApi"
+                                          reminder="$ctrl.data.reminder"
+                                          contribution-id="$ctrl.eventContributionId"
+                                          contribution-property="'NEXT_START_DATE'"
+                                          main-label=""
+                                          shown="$ctrl.__reminderShown"
+                                          autonomous="false">
+        </silverpeas-contribution-reminder>
       </div>
     </div>
   </div>

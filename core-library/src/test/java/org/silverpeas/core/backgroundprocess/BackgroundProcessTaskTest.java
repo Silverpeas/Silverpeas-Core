@@ -66,7 +66,7 @@ public class BackgroundProcessTaskTest {
 
   @After
   public void clean() {
-    await().pollDelay(1, TimeUnit.SECONDS).until(() -> true);
+    await().pollInterval(1, TimeUnit.SECONDS).until(() -> true);
   }
 
   @Test
@@ -103,7 +103,7 @@ public class BackgroundProcessTaskTest {
 
     requests.forEach((r) -> {
       push(r);
-      await().pollDelay(5, TimeUnit.MILLISECONDS).until(() -> true);
+      await().pollInterval(5, TimeUnit.MILLISECONDS).until(() -> true);
     });
 
     waitEndOfBackgroundProcessTask();
@@ -121,7 +121,7 @@ public class BackgroundProcessTaskTest {
 
     requests.forEach((r) -> {
       push(r);
-      await().pollDelay(10, TimeUnit.MILLISECONDS).until(() -> true);
+      await().pollInterval(10, TimeUnit.MILLISECONDS).until(() -> true);
     });
 
     waitEndOfBackgroundProcessTask();
@@ -139,7 +139,7 @@ public class BackgroundProcessTaskTest {
 
     requests.forEach((r) -> {
       push(r);
-      await().pollDelay(5, TimeUnit.MILLISECONDS).until(() -> true);
+      await().pollInterval(5, TimeUnit.MILLISECONDS).until(() -> true);
     });
 
     waitEndOfBackgroundProcessTask();
@@ -154,7 +154,7 @@ public class BackgroundProcessTaskTest {
     DurationProcessRequest4Test r2 = new DurationProcessRequest4Test(1, "ID", 10);
 
     push(r1);
-    await().pollDelay(200, TimeUnit.MILLISECONDS).until(() -> true);
+    await().pollInterval(200, TimeUnit.MILLISECONDS).until(() -> true);
     push(r2);
 
     waitEndOfBackgroundProcessTask();
@@ -169,7 +169,7 @@ public class BackgroundProcessTaskTest {
     DurationProcessRequest4Test r2 = new DurationProcessRequest4Test(1, "ID", 10);
 
     push(r1);
-    await().timeout(20, TimeUnit.SECONDS).pollDelay(15000, TimeUnit.MILLISECONDS).until(() -> true);
+    await().timeout(20, TimeUnit.SECONDS).pollInterval(15000, TimeUnit.MILLISECONDS).until(() -> true);
     push(r2);
 
     waitEndOfBackgroundProcessTask();
@@ -188,13 +188,13 @@ public class BackgroundProcessTaskTest {
     push(r1);
     push(r2);
     push(r3);
-    await().pollDelay(5, TimeUnit.SECONDS).until(() -> true);
+    await().pollInterval(5, TimeUnit.SECONDS).until(() -> true);
     push(r4);
 
     waitEndOfBackgroundProcessTask();
 
-    assertIds(asList(r1, r3));
-    assertNums(asList(r1, r3));
+    assertIds(asList(r1, r2));
+    assertNums(asList(r1, r2));
   }
 
   @Test
@@ -207,10 +207,10 @@ public class BackgroundProcessTaskTest {
       for (int i = 0; i < 100; i++) {
         requestsT1.add(new DurationProcessRequest4Test(i, "__ID", 100));
       }
-      await().pollDelay(2, TimeUnit.SECONDS).until(() -> true);
+      await().pollInterval(2, TimeUnit.SECONDS).until(() -> true);
       requestsT1.forEach((r) -> {
         push(r);
-        await().pollDelay(4, TimeUnit.MILLISECONDS).until(() -> true);
+        await().pollInterval(4, TimeUnit.MILLISECONDS).until(() -> true);
       });
     });
     final Thread t2 = new Thread(() -> {
@@ -219,7 +219,7 @@ public class BackgroundProcessTaskTest {
       }
       requestsT2.forEach((r) -> {
         push(r);
-        await().pollDelay(9, TimeUnit.MILLISECONDS).until(() -> true);
+        await().pollInterval(9, TimeUnit.MILLISECONDS).until(() -> true);
       });
     });
     final Thread t3 = new Thread(() -> {
@@ -228,7 +228,7 @@ public class BackgroundProcessTaskTest {
       }
       requestsT3.forEach((r) -> {
         push(r);
-        await().pollDelay(5, TimeUnit.MILLISECONDS).until(() -> true);
+        await().pollInterval(5, TimeUnit.MILLISECONDS).until(() -> true);
       });
     });
     final Thread t4 = new Thread(() -> {
@@ -237,7 +237,7 @@ public class BackgroundProcessTaskTest {
       }
       requestsT4.forEach((r) -> {
         push(r);
-        await().pollDelay(2, TimeUnit.MILLISECONDS).until(() -> true);
+        await().pollInterval(2, TimeUnit.MILLISECONDS).until(() -> true);
       });
     });
 
@@ -295,7 +295,7 @@ public class BackgroundProcessTaskTest {
   private void waitEndOfBackgroundProcessTask() {
     await()
         .timeout(5, TimeUnit.MINUTES)
-        .pollDelay(200, TimeUnit.MILLISECONDS)
+        .pollInterval(200, TimeUnit.MILLISECONDS)
         .until(() -> !RequestTaskManager.isTaskRunning(BackgroundProcessTask.class));
   }
 
@@ -307,7 +307,7 @@ public class BackgroundProcessTaskTest {
 
     @Override
     protected void process() {
-      await().pollDelay(5, TimeUnit.MILLISECONDS).until(() -> true);
+      await().pollInterval(5, TimeUnit.MILLISECONDS).until(() -> true);
       processedRequest.add(this);
     }
   }
@@ -323,7 +323,7 @@ public class BackgroundProcessTaskTest {
 
     @Override
     protected void process() {
-      await().pollDelay(duration, TimeUnit.MILLISECONDS).until(() -> true);
+      await().pollInterval(duration, TimeUnit.MILLISECONDS).until(() -> true);
       processedRequest.add(this);
     }
   }

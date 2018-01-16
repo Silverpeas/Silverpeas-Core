@@ -26,7 +26,7 @@ package org.silverpeas.core.util;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.model.Cache;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -36,7 +36,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.regex.Pattern;
 
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
 import static org.silverpeas.core.util.ResourceLocator.getGeneralSettingBundle;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
@@ -46,42 +48,46 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 public class URLUtil {
 
-  public final static String CMP_AGENDA = "agenda";
-  public final static String CMP_SILVERMAIL = "SILVERMAIL";
-  public final static String CMP_POPUP = "POPUP";
-  public final static String CMP_PERSONALIZATION = "personalization";
-  public final static String CMP_TODO = "todo";
-  public final static String CMP_SCHEDULE_EVENT = "scheduleEvent";
-  public final static String CMP_CLIPBOARD = "clipboard";
-  public final static String CMP_NOTIFICATIONUSER = "notificationUser";
-  public final static String CMP_JOBMANAGERPEAS = "jobManagerPeas";
-  public final static String CMP_JOBDOMAINPEAS = "jobDomainPeas";
-  public final static String CMP_JOBSTARTPAGEPEAS = "jobStartPagePeas";
-  public final static String CMP_JOBSEARCHPEAS = "jobSearchPeas";
-  public final static String CMP_ALERTUSERPEAS = "alertUserPeas";
-  public final static String CMP_SILVERSTATISTICSPEAS = "silverStatisticsPeas";
-  public final static String CMP_PDC = "pdc";
-  public final static String CMP_THESAURUS = "thesaurus";
-  public final static String CMP_INTERESTCENTERPEAS = "interestCenterPeas";
-  public final static String CMP_MYLINKSPEAS = "myLinksPeas";
-  public final static String CMP_PDCSUBSCRIPTION = "pdcSubscriptionPeas";
-  public final static String CMP_VERSIONINGPEAS = "versioningPeas";
-  public final static String CMP_FILESHARING = "fileSharing";
-  public final static String CMP_WEBCONNECTIONS = "webConnections";
-  public final static String CMP_JOBBACKUP = "jobBackup";
-  public final static String CMP_TEMPLATEDESIGNER = "templateDesigner";
-  public final static String CMP_MYPROFILE = "MyProfile";
-  public final static int URL_SPACE = 0;
-  public final static int URL_COMPONENT = 1;
-  public final static int URL_PUBLI = 2;
-  public final static int URL_TOPIC = 3;
-  public final static int URL_FILE = 4;
-  public final static int URL_SURVEY = 5;
-  public final static int URL_QUESTION = 6;
-  public final static int URL_MESSAGE = 7;
-  public final static int URL_DOCUMENT = 8;
-  public final static int URL_VERSION = 9;
-  public final static int URL_MEDIA = 10;
+  public static final String CMP_AGENDA = "agenda";
+  public static final String CMP_SILVERMAIL = "SILVERMAIL";
+  public static final String CMP_POPUP = "POPUP";
+  public static final String CMP_PERSONALIZATION = "personalization";
+  public static final String CMP_TODO = "todo";
+  public static final String CMP_SCHEDULE_EVENT = "scheduleEvent";
+  public static final String CMP_CLIPBOARD = "clipboard";
+  public static final String CMP_NOTIFICATIONUSER = "notificationUser";
+  public static final String CMP_JOBMANAGERPEAS = "jobManagerPeas";
+  public static final String CMP_JOBDOMAINPEAS = "jobDomainPeas";
+  public static final String CMP_JOBSTARTPAGEPEAS = "jobStartPagePeas";
+  public static final String CMP_JOBSEARCHPEAS = "jobSearchPeas";
+  public static final String CMP_ALERTUSERPEAS = "alertUserPeas";
+  public static final String CMP_SILVERSTATISTICSPEAS = "silverStatisticsPeas";
+  public static final String CMP_PDC = "pdc";
+  public static final String CMP_THESAURUS = "thesaurus";
+  public static final String CMP_INTERESTCENTERPEAS = "interestCenterPeas";
+  public static final String CMP_MYLINKSPEAS = "myLinksPeas";
+  public static final String CMP_PDCSUBSCRIPTION = "pdcSubscriptionPeas";
+  public static final String CMP_VERSIONINGPEAS = "versioningPeas";
+  public static final String CMP_FILESHARING = "fileSharing";
+  public static final String CMP_WEBCONNECTIONS = "webConnections";
+  public static final String CMP_JOBBACKUP = "jobBackup";
+  public static final String CMP_TEMPLATEDESIGNER = "templateDesigner";
+  public static final String CMP_MYPROFILE = "MyProfile";
+  public static final int URL_SPACE = 0;
+  public static final int URL_COMPONENT = 1;
+  public static final int URL_PUBLI = 2;
+  public static final int URL_TOPIC = 3;
+  public static final int URL_FILE = 4;
+  public static final int URL_SURVEY = 5;
+  public static final int URL_QUESTION = 6;
+  public static final int URL_MESSAGE = 7;
+  public static final int URL_DOCUMENT = 8;
+  public static final int URL_VERSION = 9;
+  public static final int URL_MEDIA = 10;
+  private static final String CURRENT_SERVER_URL_CACHE_KEY =
+      URLUtil.class.getSimpleName() + ".currentServerURL";
+  private static final String CURRENT_LOCAL_SERVER_URL_CACHE_KEY =
+      URLUtil.class.getSimpleName() + ".currentLocalServerURL";
   private static final String APPLICATION_URL =
       ResourceLocator.getGeneralSettingBundle().getString("ApplicationURL", "/silverpeas");
   private static final Pattern MINIFY_FILTER = Pattern.compile(".*(/util/yui/|/ckeditor).*");
@@ -90,8 +96,8 @@ public class URLUtil {
   static SettingBundle settings = null;
   static String httpMode = null;
   static boolean universalLinksUsed = false;
-  private static String SILVERPEAS_VERSION = null; // ie 5.14.1-SNAPSHOT
-  private static String SILVERPEAS_VERSION_MIN = null;  // ie 5141SNAPSHOT
+  private static String silverpeasVersion = null; // ie 5.14.1-SNAPSHOT
+  private static String silverpeasVersionMin = null;  // ie 5141SNAPSHOT
 
   /**
    * Construit l'URL standard afin d'acceder à un composant
@@ -101,6 +107,10 @@ public class URLUtil {
   private static String buildStandardURL(String componentName, String sComponentId) {
     return '/' + AdministrationServiceProvider.getAdminService().getRequestRouter(componentName) +
         '/' + sComponentId + '/';
+  }
+
+  private static Cache getAppCache() {
+    return getApplicationCacheService().getCache();
   }
 
   /**
@@ -170,7 +180,7 @@ public class URLUtil {
    * @return the absolute application URL as string.
    */
   public static String getAbsoluteApplicationURL() {
-    return getCurrentServerURL() + getApplicationURL();
+    return defaultStringIfNotDefined(getCurrentServerURL(), getServerURL(null)) + getApplicationURL();
   }
 
   /**
@@ -183,20 +193,24 @@ public class URLUtil {
   }
 
   public static void setCurrentServerUrl(HttpServletRequest request) {
-    CacheServiceProvider.getRequestCacheService().getCache()
-        .put(URLUtil.class.getSimpleName() + ".currentServerURL", getServerURL(request));
-    CacheServiceProvider.getRequestCacheService().getCache()
-        .put(URLUtil.class.getSimpleName() + ".currentLocalServerURL", getLocalServerURL(request));
+    getAppCache().computeIfAbsent(CURRENT_SERVER_URL_CACHE_KEY, String.class, 0, 0,
+      () -> {
+        final String serverUrl = getServerURL(request);
+        return isDefined(serverUrl) ? serverUrl : null;
+      });
+    getAppCache().computeIfAbsent(CURRENT_LOCAL_SERVER_URL_CACHE_KEY, String.class, 0, 0,
+      () -> {
+        final String localServerUrl = getLocalServerURL(request);
+        return isDefined(localServerUrl) ? localServerUrl : null;
+      });
   }
 
   public static String getCurrentServerURL() {
-    return CacheServiceProvider.getRequestCacheService().getCache()
-        .get(URLUtil.class.getSimpleName() + ".currentServerURL", String.class);
+    return getAppCache().get(CURRENT_SERVER_URL_CACHE_KEY, String.class);
   }
 
   public static String getCurrentLocalServerURL() {
-    return CacheServiceProvider.getRequestCacheService().getCache()
-        .get(URLUtil.class.getSimpleName() + ".currentLocalServerURL", String.class);
+    return getAppCache().get(CURRENT_LOCAL_SERVER_URL_CACHE_KEY, String.class);
   }
 
   public static String getLocalServerURL(HttpServletRequest request) {
@@ -337,16 +351,16 @@ public class URLUtil {
   }
 
   public static String getSilverpeasVersion() {
-    return SILVERPEAS_VERSION;
+    return silverpeasVersion;
   }
 
   public static void setSilverpeasVersion(String version) {
-    SILVERPEAS_VERSION = version;
-    SILVERPEAS_VERSION_MIN = StringUtil.remove(StringUtil.remove(version, '.'), '-');
+    silverpeasVersion = version;
+    silverpeasVersionMin = StringUtil.remove(StringUtil.remove(version, '.'), '-');
   }
 
   public static String getSilverpeasVersionMinify(){
-    return SILVERPEAS_VERSION_MIN;
+    return silverpeasVersionMin;
   }
 
   public static String appendVersion(String url) {

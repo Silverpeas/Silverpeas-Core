@@ -44,7 +44,7 @@ public class SynchroGroupScheduler implements SchedulerEventListener {
     try {
       this.synchronizedGroupIds = synchronizedGroupIds;
 
-      Scheduler scheduler = SchedulerProvider.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(ADMINSYNCHROGROUP_JOB_NAME);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(ADMINSYNCHROGROUP_JOB_NAME, trigger, this);
@@ -69,7 +69,7 @@ public class SynchroGroupScheduler implements SchedulerEventListener {
 
   public void addGroup(String groupId) {
     if (synchronizedGroupIds == null) {
-      synchronizedGroupIds = new ArrayList<String>();
+      synchronizedGroupIds = new ArrayList<>();
     }
     synchronizedGroupIds.add(groupId);
   }
@@ -87,6 +87,7 @@ public class SynchroGroupScheduler implements SchedulerEventListener {
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
+    // nothing to do
   }
 
   @Override

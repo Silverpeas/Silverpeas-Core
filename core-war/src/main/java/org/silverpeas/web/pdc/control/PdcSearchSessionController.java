@@ -25,7 +25,6 @@ package org.silverpeas.web.pdc.control;
 
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.component.model.SilverpeasComponent;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.UserIndexation;

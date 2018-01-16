@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.apache.ecs.Element;
 import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.link;
@@ -31,9 +32,11 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.chat.servers.ChatServer;
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.html.SupportedWebPlugins;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.notification.user.client.NotificationManagerSettings;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -55,6 +58,8 @@ import static org.silverpeas.core.html.SupportedWebPlugins.*;
 import static org.silverpeas.core.notification.user.UserNotificationServerEvent.getNbUnreadFor;
 import static org.silverpeas.core.notification.user.client.NotificationManagerSettings
     .getUserNotificationDesktopIconUrl;
+import static org.silverpeas.core.reminder.ReminderSettings.getDefaultReminder;
+import static org.silverpeas.core.reminder.ReminderSettings.getPossibleReminders;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -612,6 +617,7 @@ public class JavascriptPluginInclusion {
     includeAttendeeWebComponent(xhtml);
     includeDragAndDropUpload(xhtml, language);
     includeWysiwygEditor(xhtml);
+    includeContributionReminder(xhtml, language);
 
     SettingBundle calendarSettings = ResourceLocator
         .getSettingBundle("org.silverpeas.calendar.settings.calendar");
@@ -663,6 +669,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_CALENDAR));
 
     String calendarPath = "calendar/";
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-event-reminder.js"));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-management.js"));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-event-management.js"));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + calendarPath + "silverpeas-calendar-event-occurrence-tip.js"));
@@ -922,6 +929,28 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includePanes(final ElementContainer xhtml) {
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-panes.js"));
+    return xhtml;
+  }
+
+  static ElementContainer includeContributionReminder(final ElementContainer xhtml,
+      final String language) {
+    final LocalizationBundle localizedUnits =
+        ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.util", language);
+    final String beforeLabel = " " + localizedUnits.getString("GML.before");
+    final Pair<Integer, TimeUnit> defaultReminder = getDefaultReminder();
+    xhtml.addElement(scriptContent(JavascriptSettingProducer
+        .settingVariableName("ReminderSettings")
+        .add("r.p", getPossibleReminders()
+            .map( r -> JSONCodec.encodeObject(o -> o
+                .put("label", localizedUnits.getStringWithParams(r.getRight() + ".precise", r.getLeft()) + beforeLabel)
+                .put("duration", r.getLeft())
+                .put("timeUnit", r.getRight().name()))), false)
+        .add("r.d.l", localizedUnits
+            .getStringWithParams(defaultReminder.getRight() + ".precise",
+                defaultReminder.getLeft()) + beforeLabel)
+        .produce()));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "contribution/silverpeas-contribution-reminder.js"));
+    xhtml.addElement(script(ANGULARJS_SERVICES_PATH + "contribution/silverpeas-contribution-reminder.js"));
     return xhtml;
   }
 

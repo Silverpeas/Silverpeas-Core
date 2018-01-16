@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.model;
 
+import org.silverpeas.core.Instance;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.Securable;
 import org.silverpeas.core.security.authorization.AccessController;
@@ -38,7 +39,7 @@ import java.util.Date;
  * always a content that can be of any type (simple text, WYSIWYG, form, image, ...).
  * @author mmoquillon
  */
-public interface Contribution extends Serializable, Securable {
+public interface Contribution extends Serializable, Securable, Instance<Contribution> {
 
   /**
    * Gets the unique identifier of this contribution.
@@ -133,5 +134,18 @@ public interface Contribution extends Serializable, Securable {
         AccessControllerProvider.getAccessController(ComponentAccessControl.class);
     return accessController
         .isUserAuthorized(user.getId(), getContributionId().getComponentInstanceId());
+  }
+
+  /**
+   * Gets a model to this contribution. A model is a business abstract representation of the
+   * concrete type of this contribution. If not overridden, it returns by default a
+   * {@link DefaultContributionModel} instance that access the business properties of the
+   * contribution by reflection.
+   * @return a {@link ContributionModel} object. By default, if this method isn't overridden, a
+   * {@link DefaultContributionModel} instance is returned.
+   */
+  @SuppressWarnings("unchecked")
+  default ContributionModel getModel() {
+    return new DefaultContributionModel(this);
   }
 }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.util.time;
 
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
@@ -34,92 +35,91 @@ import java.util.Map;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
- * User: Yohann Chastagnier
- * Date: 15/11/13
- */ /* Byte, Kilo-Byte, Mega-Byte, ... */
-public enum TimeUnit {
+ * Technical enum used by {@link Duration} class.
+ */
+enum DurationUnit {
   MILLI("ms"), SEC("s"), MIN("m"), HOUR("h"), DAY("d"), WEEK("w"), MONTH("M"), YEAR("y");
   private final String bundleDefault;
 
   /**
    * The complete conversion board.
    */
-  private final static Map<TimeConversionBoardKey, BigDecimal> conversionBoard = new HashMap<>();
+  private static final Map<DurationConversionBoardKey, BigDecimal> conversionBoard = new HashMap<>();
 
   static {
     // From milliseconds
-    conversionBoard.put(new TimeConversionBoardKey(MILLI, SEC), new BigDecimal("1000"));
-    conversionBoard.put(new TimeConversionBoardKey(MILLI, MIN),
+    conversionBoard.put(new DurationConversionBoardKey(MILLI, SEC), new BigDecimal("1000"));
+    conversionBoard.put(new DurationConversionBoardKey(MILLI, MIN),
         new BigDecimal("1000").multiply(new BigDecimal("60")));
-    conversionBoard.put(new TimeConversionBoardKey(MILLI, HOUR),
+    conversionBoard.put(new DurationConversionBoardKey(MILLI, HOUR),
         new BigDecimal("1000").multiply(new BigDecimal("60")).multiply(new BigDecimal("60")));
-    conversionBoard.put(new TimeConversionBoardKey(MILLI, DAY),
+    conversionBoard.put(new DurationConversionBoardKey(MILLI, DAY),
         new BigDecimal("1000").multiply(new BigDecimal("60")).multiply(new BigDecimal("60"))
             .multiply(new BigDecimal("24")));
-    conversionBoard.put(new TimeConversionBoardKey(MILLI, WEEK),
+    conversionBoard.put(new DurationConversionBoardKey(MILLI, WEEK),
         new BigDecimal("1000").multiply(new BigDecimal("60")).multiply(new BigDecimal("60"))
             .multiply(new BigDecimal("24")).multiply(new BigDecimal("7")));
-    conversionBoard.put(new TimeConversionBoardKey(MILLI, MONTH),
+    conversionBoard.put(new DurationConversionBoardKey(MILLI, MONTH),
         new BigDecimal("1000").multiply(new BigDecimal("60")).multiply(new BigDecimal("60"))
             .multiply(new BigDecimal("24")).multiply(
             new BigDecimal("365").divide(new BigDecimal("12"), 30, BigDecimal.ROUND_HALF_DOWN)));
-    conversionBoard.put(new TimeConversionBoardKey(MILLI, YEAR),
+    conversionBoard.put(new DurationConversionBoardKey(MILLI, YEAR),
         new BigDecimal("1000").multiply(new BigDecimal("60")).multiply(new BigDecimal("60"))
             .multiply(new BigDecimal("24")).multiply(new BigDecimal("365")));
 
     // From seconds
-    conversionBoard.put(new TimeConversionBoardKey(SEC, MIN), new BigDecimal("60"));
-    conversionBoard.put(new TimeConversionBoardKey(SEC, HOUR),
+    conversionBoard.put(new DurationConversionBoardKey(SEC, MIN), new BigDecimal("60"));
+    conversionBoard.put(new DurationConversionBoardKey(SEC, HOUR),
         new BigDecimal("60").multiply(new BigDecimal("60")));
-    conversionBoard.put(new TimeConversionBoardKey(SEC, DAY),
+    conversionBoard.put(new DurationConversionBoardKey(SEC, DAY),
         new BigDecimal("60").multiply(new BigDecimal("60")).multiply(new BigDecimal("24")));
-    conversionBoard.put(new TimeConversionBoardKey(SEC, WEEK),
+    conversionBoard.put(new DurationConversionBoardKey(SEC, WEEK),
         new BigDecimal("60").multiply(new BigDecimal("60")).multiply(new BigDecimal("24"))
             .multiply(new BigDecimal("7")));
-    conversionBoard.put(new TimeConversionBoardKey(SEC, MONTH),
+    conversionBoard.put(new DurationConversionBoardKey(SEC, MONTH),
         new BigDecimal("60").multiply(new BigDecimal("60")).multiply(new BigDecimal("24")).multiply(
             new BigDecimal("365").divide(new BigDecimal("12"), 30, BigDecimal.ROUND_HALF_DOWN)));
-    conversionBoard.put(new TimeConversionBoardKey(SEC, YEAR),
+    conversionBoard.put(new DurationConversionBoardKey(SEC, YEAR),
         new BigDecimal("60").multiply(new BigDecimal("60")).multiply(new BigDecimal("24"))
             .multiply(new BigDecimal("365")));
 
     // From minutes
-    conversionBoard.put(new TimeConversionBoardKey(MIN, HOUR), new BigDecimal("60"));
-    conversionBoard.put(new TimeConversionBoardKey(MIN, DAY),
+    conversionBoard.put(new DurationConversionBoardKey(MIN, HOUR), new BigDecimal("60"));
+    conversionBoard.put(new DurationConversionBoardKey(MIN, DAY),
         new BigDecimal("60").multiply(new BigDecimal("24")));
-    conversionBoard.put(new TimeConversionBoardKey(MIN, WEEK),
+    conversionBoard.put(new DurationConversionBoardKey(MIN, WEEK),
         new BigDecimal("60").multiply(new BigDecimal("24")).multiply(new BigDecimal("7")));
-    conversionBoard.put(new TimeConversionBoardKey(MIN, MONTH),
+    conversionBoard.put(new DurationConversionBoardKey(MIN, MONTH),
         new BigDecimal("60").multiply(new BigDecimal("24")).multiply(
             new BigDecimal("365").divide(new BigDecimal("12"), 30, BigDecimal.ROUND_HALF_DOWN)));
-    conversionBoard.put(new TimeConversionBoardKey(MIN, YEAR),
+    conversionBoard.put(new DurationConversionBoardKey(MIN, YEAR),
         new BigDecimal("60").multiply(new BigDecimal("24")).multiply(new BigDecimal("365")));
 
     // From hours
-    conversionBoard.put(new TimeConversionBoardKey(HOUR, DAY), new BigDecimal("24"));
-    conversionBoard.put(new TimeConversionBoardKey(HOUR, WEEK),
+    conversionBoard.put(new DurationConversionBoardKey(HOUR, DAY), new BigDecimal("24"));
+    conversionBoard.put(new DurationConversionBoardKey(HOUR, WEEK),
         new BigDecimal("24").multiply(new BigDecimal("7")));
-    conversionBoard.put(new TimeConversionBoardKey(HOUR, MONTH), new BigDecimal("24").multiply(
+    conversionBoard.put(new DurationConversionBoardKey(HOUR, MONTH), new BigDecimal("24").multiply(
         new BigDecimal("365").divide(new BigDecimal("12"), 30, BigDecimal.ROUND_HALF_DOWN)));
-    conversionBoard.put(new TimeConversionBoardKey(HOUR, YEAR),
+    conversionBoard.put(new DurationConversionBoardKey(HOUR, YEAR),
         new BigDecimal("24").multiply(new BigDecimal("365")));
 
     // From days
-    conversionBoard.put(new TimeConversionBoardKey(DAY, WEEK), new BigDecimal("7"));
-    conversionBoard.put(new TimeConversionBoardKey(DAY, MONTH),
+    conversionBoard.put(new DurationConversionBoardKey(DAY, WEEK), new BigDecimal("7"));
+    conversionBoard.put(new DurationConversionBoardKey(DAY, MONTH),
         new BigDecimal("365").divide(new BigDecimal("12"), 30, BigDecimal.ROUND_HALF_DOWN));
-    conversionBoard.put(new TimeConversionBoardKey(DAY, YEAR), new BigDecimal("365"));
+    conversionBoard.put(new DurationConversionBoardKey(DAY, YEAR), new BigDecimal("365"));
 
     // From weeks
-    conversionBoard.put(new TimeConversionBoardKey(WEEK, MONTH),
+    conversionBoard.put(new DurationConversionBoardKey(WEEK, MONTH),
         new BigDecimal("52").divide(new BigDecimal("12"), 30, BigDecimal.ROUND_HALF_DOWN));
-    conversionBoard.put(new TimeConversionBoardKey(WEEK, YEAR), new BigDecimal("52"));
+    conversionBoard.put(new DurationConversionBoardKey(WEEK, YEAR), new BigDecimal("52"));
 
     // From months
-    conversionBoard.put(new TimeConversionBoardKey(MONTH, YEAR), new BigDecimal("12"));
+    conversionBoard.put(new DurationConversionBoardKey(MONTH, YEAR), new BigDecimal("12"));
   }
 
-  TimeUnit(final String bundleDefault) {
+  DurationUnit(final String bundleDefault) {
     this.bundleDefault = bundleDefault;
   }
 
@@ -135,14 +135,14 @@ public enum TimeUnit {
     return defaultStringIfNotDefined(getStringTranslation(getBundleKey()), getBundleDefault());
   }
 
-  public BigDecimal getMultiplier(TimeUnit to) {
-    return conversionBoard.get(new TimeConversionBoardKey(this, to));
+  public BigDecimal getMultiplier(DurationUnit to) {
+    return conversionBoard.get(new DurationConversionBoardKey(this, to));
   }
 
   /**
    * Gets the translation of an element
-   * @param key
-   * @return
+   * @param key the key
+   * @return the right translation.
    */
   private static String getStringTranslation(final String key) {
     String language = MessageManager.getLanguage();
@@ -151,4 +151,12 @@ public enum TimeUnit {
     return localizedUnits.getString(key);
   }
 
+  /**
+   * Gets the duration unit corresponding to a given {@link TimeUnit}.
+   * @param unit a {@link TimeUnit} instance.
+   * @return a {@link DurationUnit} instance.
+   */
+  static DurationUnit from(TimeUnit unit) {
+    return DurationUnit.values()[unit.ordinal()];
+  }
 }

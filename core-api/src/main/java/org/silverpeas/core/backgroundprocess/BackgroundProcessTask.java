@@ -42,11 +42,28 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
  * All services which needs to perform background processes needs to push a
  * {@link AbstractBackgroundProcessRequest} to {@link BackgroundProcessTask}.
  * <p>
- * Each request has an identifier set by the caller.<br/>
- * If a request is performing, then the new request is pushed into queue.<br/>
- * If a request is in queue, then the caller choose if the existing must be replaced by a new or
- * ignored.<br/>
- * In other cases, the request is pushed into queue.
+ *  Each request has an identifier and a lock duration set by the caller (through the
+ *  {@link AbstractBackgroundProcessRequest} implementation). The lock duration is the minimal
+ *  time the requests are ignored after a first one with a same identifier has been processed.
+ * </p>
+ * <p>
+ *  Here the rules:
+ *  <ul>
+ *    <li>If a new request is pushed whereas it does not exist already one into the queue with a
+ *    same identifier, then the new request is pushed into queue.</li>
+ *    <li>If a new request is pushed whereas it exists already one into the queue with a same
+ *    identifier:
+ *      <ul>
+ *        <li>the lock duration has passed, then the new request is pushed into queue</li>
+ *        <li>the lock duration nas not passed or the existing request has not yet been performed,
+ *        then the new request is ignored</li>
+ *    </ul>
+ *    </li>
+ *  </ul>
+ * </p>
+ * <p>
+ *   If a request has not yet been processed, it could happen that the lock duration will be
+ *   greater than the one specified in case a new request with a same identifier is pushed.
  * </p>
  * @author silveryocha
  */
@@ -63,36 +80,18 @@ public class BackgroundProcessTask extends AbstractRequestTask {
 
   @SuppressWarnings("unchecked")
   private static void updateContextWith(final AbstractBackgroundProcessRequest request) {
-    final boolean hasToPush;
     synchronized (synchronizedContexts) {
       RequestContext context = synchronizedContexts.get(request.getUniqueId());
-      if (context == null) {
+      if (context == null || context.isRemovable()) {
         final RequestContext newRequestContext = new RequestContext(request);
         synchronizedContexts.put(request.getUniqueId(), newRequestContext);
-        hasToPush = true;
-        getLogger()
-            .debug(() -> format("pushing a not yet referenced process {0}", newRequestContext));
+        getLogger().debug(() -> format("pushing a new process {0}", newRequestContext));
+        RequestTaskManager.push(BackgroundProcessTask.class, request);
       } else {
-        if (!context.hasBeenProcessed()) {
-          // Request to process is updated
-          context.setRealRequest(request);
-          hasToPush = false;
-          getLogger().debug(() -> format("replacing a referenced process {0}", context));
-        } else if (context.isRemovable()) {
-          final RequestContext newRequestContext = new RequestContext(request);
-          synchronizedContexts.put(request.getUniqueId(), newRequestContext);
-          hasToPush = true;
-          getLogger().debug(() -> format("replacing referenced process, but no more valid, {0}",
-              newRequestContext));
-        } else {
-          getLogger().debug(() -> format(
-              "ignoring a process because it is yet valid and it has been processed {0}", context));
-          hasToPush = false;
-        }
+        getLogger().debug(
+            () -> format("ignoring a process because it is yet registered and still living {0}",
+            context));
       }
-    }
-    if (hasToPush) {
-      RequestTaskManager.push(BackgroundProcessTask.class, request);
     }
   }
 
@@ -116,18 +115,16 @@ public class BackgroundProcessTask extends AbstractRequestTask {
   @Override
   protected void processRequest(final Request request) throws SilverpeasException {
     AbstractBackgroundProcessRequest currentRequest = (AbstractBackgroundProcessRequest) request;
-    final AbstractBackgroundProcessRequest realRequest;
     synchronized (synchronizedContexts) {
       final RequestContext context = synchronizedContexts.get(currentRequest.getUniqueId());
-      getLogger().debug(() -> format("get real request {0}", context));
-      realRequest = context.getRealRequest();
+      getLogger().debug(() -> format("process will be executed {0}", context));
       context.requestWillBeExecuted();
     }
-    super.processRequest(realRequest);
+    super.processRequest(request);
   }
 
   public enum LOCK_DURATION {
-    NO_TIME_TO_LIVE(0), TEN_SECONDS(10000), AN_HOUR(60 * 60000), AN_HALF_DAY(12 * 60 * 60000),
+    NO_TIME(0), TEN_SECONDS(10000), AN_HOUR(60 * 60000), AN_HALF_DAY(12 * 60 * 60000),
     A_DAY(24 * 60 * 60000);
 
     private final long duration;
@@ -147,11 +144,11 @@ public class BackgroundProcessTask extends AbstractRequestTask {
   }
 
   private static class RequestContext {
-    private AbstractBackgroundProcessRequest realRequest;
+    private AbstractBackgroundProcessRequest request;
     private long lastProcessing = 0;
 
     RequestContext(AbstractBackgroundProcessRequest request) {
-      this.realRequest = request;
+      this.request = request;
     }
 
     void requestWillBeExecuted() {
@@ -159,33 +156,21 @@ public class BackgroundProcessTask extends AbstractRequestTask {
         lastProcessing = System.currentTimeMillis();
         if (isRemovable()) {
           getLogger().debug(() -> format("removing {0} from context", this));
-          synchronizedContexts.remove(realRequest.getUniqueId());
+          synchronizedContexts.remove(request.getUniqueId());
         }
       }
     }
 
-    AbstractBackgroundProcessRequest getRealRequest() {
-      return realRequest;
-    }
-
-    void setRealRequest(final AbstractBackgroundProcessRequest realRequest) {
-      this.realRequest = realRequest;
-    }
-
-    boolean hasBeenProcessed() {
-      return lastProcessing > 0;
-    }
-
     boolean isRemovable() {
-      return hasBeenProcessed() && realRequest.getLockDuration().isNoMoreValid(lastProcessing);
+      return lastProcessing > 0 && request.getLockDuration().isNoMoreValid(lastProcessing);
     }
 
     @Override
     public String toString() {
       synchronized (synchronizedContexts) {
         return new ToStringBuilder(this, SHORT_PREFIX_STYLE)
-            .append("uniqueId", realRequest.getUniqueId())
-            .append("lock duration", realRequest.getLockDuration())
+            .append("uniqueId", request.getUniqueId())
+            .append("lock duration", request.getLockDuration())
             .append("last processing time", lastProcessing).build();
       }
     }

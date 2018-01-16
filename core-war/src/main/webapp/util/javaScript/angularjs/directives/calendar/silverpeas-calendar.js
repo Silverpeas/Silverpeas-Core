@@ -282,6 +282,9 @@
                         this.eventMng.eventAttendeeParticipationAnswer(occurrence, attendee);
                       }
                     }.bind(this);
+                    data.onReminderChange = function(occurrence) {
+                      this.api.refetchCalendarEvent({id: occurrence.eventId, uri: occurrence.eventUri});
+                    }.bind(this);
                     $scope.$apply();
                     break;
                   }
@@ -694,6 +697,7 @@
                 }.bind(this));
 
                 var period = __getAjaxCurrentTimeWindowPeriod();
+                var _sp_ui_version = new Date().getTime();
                 CalendarService.getEventOccurrencesBetween(_eventUri, period).then(
                     function(occurrences) {
                       occurrences.forEach(function(occurrence) {
@@ -701,6 +705,7 @@
                           var occurrenceToRefresh = occurrencesToRefresh[i];
                           if (occurrenceToRefresh.id === occurrence.id) {
                             extendsObject(occurrenceToRefresh, occurrence);
+                            occurrenceToRefresh._sp_ui_version = _sp_ui_version;
                             break;
                           }
                         }

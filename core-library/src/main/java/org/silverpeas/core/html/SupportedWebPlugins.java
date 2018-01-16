@@ -217,5 +217,9 @@ public enum SupportedWebPlugins {
   /**
    * Silverpeas plugin to render panes (view layout).
    */
-  PANES
+  PANES,
+  /**
+   * Silverpeas plugin to manage reminder linked to contributions.
+   */
+  CONTRIBUTIONREMINDER
 }

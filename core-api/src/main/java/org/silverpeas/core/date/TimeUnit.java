@@ -26,9 +26,14 @@ package org.silverpeas.core.date;
 import java.time.temporal.ChronoUnit;
 
 /**
- * An enumeration of time units to be used to express a well known defined unit in the timeline.
+ * An enumeration of time units to be used to express a well known defined unit in the time line.
  */
 public enum TimeUnit {
+
+  /**
+   * Time unit representing one millisecond.
+   */
+  MILLISECOND,
 
   /**
    * Time unit representing one second.
@@ -70,6 +75,8 @@ public enum TimeUnit {
    */
   public ChronoUnit toChronoUnit() {
     switch (this) {
+      case MILLISECOND:
+        return ChronoUnit.MILLIS;
       case SECOND:
         return ChronoUnit.SECONDS;
       case MINUTE:

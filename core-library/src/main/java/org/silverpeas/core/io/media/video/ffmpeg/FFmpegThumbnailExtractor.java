@@ -28,7 +28,7 @@ import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.io.media.video.ThumbnailPeriod;
 import org.silverpeas.core.io.media.video.VideoThumbnailExtractor;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.util.time.TimeData;
+import org.silverpeas.core.util.time.Duration;
 
 import java.io.File;
 
@@ -53,11 +53,11 @@ public class FFmpegThumbnailExtractor implements VideoThumbnailExtractor {
 
   @Override
   public void generateThumbnailsFrom(final MetaData metadata, final File video) {
-    TimeData timeData = metadata.getDuration();
-    if (timeData != null) {
+    Duration duration = metadata.getDuration();
+    if (duration != null) {
       File thumbnailDir = video.getParentFile();
       for (ThumbnailPeriod thumbPeriod : ThumbnailPeriod.ALL_VALIDS) {
-        double timePeriod = thumbPeriod.getPercent() * timeData.getTimeAsLong() / 1000;
+        double timePeriod = thumbPeriod.getPercent() * duration.getTimeAsLong() / 1000;
         FFmpegUtil.extractVideoThumbnail(video,
             new File(thumbnailDir, thumbPeriod.getFilename()), (int) timePeriod);
       }

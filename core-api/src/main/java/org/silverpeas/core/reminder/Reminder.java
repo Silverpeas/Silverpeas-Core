@@ -1,0 +1,376 @@
+/*
+ * Copyright (C) 2000 - 2016 Silverpeas
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as
+ * published by the Free Software Foundation, either version 3 of the
+ * License, or (at your option) any later version.
+ *
+ * As a special exception to the terms and conditions of version 3.0 of
+ * the GPL, you may redistribute this Program in connection with Free/Libre
+ * Open Source Software ("FLOSS") applications as described in Silverpeas's
+ * FLOSS exception.  You should have received a copy of the text describing
+ * the FLOSS exception, and it is also available here:
+ * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+package org.silverpeas.core.reminder;
+
+import org.silverpeas.core.SilverpeasExceptionMessages;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.ContributionManager;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.persistence.Transaction;
+import org.silverpeas.core.persistence.TransactionRuntimeException;
+import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
+
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorColumn;
+import javax.persistence.Embedded;
+import javax.persistence.Entity;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import java.time.OffsetDateTime;
+import java.util.List;
+
+/**
+ * A reminder. A reminder is a notification that is sent to a given user at a specific datetime.
+ * A reminder can be automatically rescheduled, meaning that it is rescheduled at another datetime
+ * at each of its triggering until that another datetime isn't defined. This capability depends on
+ * the concrete type of the used reminder and it is based upon the return of the
+ * {@link #isSchedulable()} method.
+ * @author mmoquillon
+ */
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "reminderType")
+@Table(name = "sb_reminder")
+@NamedQueries(
+    {@NamedQuery(name = "remindersByUserId", query = "select r from Reminder r where r.userId = :userId"),
+        @NamedQuery(name = "remindersByContributionId",
+            query = "select r from Reminder r where r.contributionId = :contributionId"),
+        @NamedQuery(name = "remindersByContributionIdAndUserId",
+            query = "select r from Reminder r where r.userId = :userId and r.contributionId = " +
+                ":contributionId")})
+public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifier> {
+
+  @Embedded
+  private ContributionIdentifier contributionId;
+  @Column(name = "userId", nullable = false, length = 40)
+  private String userId;
+  @Column(name = "text")
+  private String text;
+  @Column(name = "triggered")
+  private boolean triggered;
+  @Column(name = "trigger_datetime", nullable = false)
+  private OffsetDateTime triggerDateTime;
+
+  /**
+   * Gets the reminders linked to a contribution represented by the given identifier.
+   * @param contributionId the identifier of a contribution.
+   * @return a list of reminders related to the specified contribution, empty if no such reminders.
+   */
+  public static List<Reminder> getByContribution(final ContributionIdentifier contributionId) {
+    return ReminderRepository.get().findByContributionId(contributionId);
+  }
+
+  /**
+   * Gets the reminders set by the specified user for himself.
+   * @param user the user.
+   * @return a list of the user's reminders, empty if no such reminders.
+   */
+  public static List<Reminder> getByUser(final User user) {
+    return ReminderRepository.get().findByUserId(user.getId());
+  }
+
+  /**
+   * Gets the reminders that was set by the specified user for himself and that are about the
+   * specified contribution.
+   * @param contributionId the unique identifier of a contribution.
+   * @param user the user.
+   * @return a list of the user's reminders related to the contribution, empty if no such reminders.
+   */
+  public static List<Reminder> getByContributionAndUser(final ContributionIdentifier contributionId,
+      final User user) {
+    return ReminderRepository.get().findByContributionAndUserIds(contributionId, user.getId());
+  }
+
+  /**
+   * Gets a reminder by its identifier.
+   * @param reminderId the identifier of a reminder.
+   * @return the right reminder, null otherwise.
+   */
+  public static Reminder getById(final String reminderId) {
+    return ReminderRepository.get().getById(reminderId);
+  }
+
+  /**
+   * Constructs a new reminder about the given contribution for the specified user.
+   * @param contributionId the unique identifier of a contribution.
+   * @param user the user for which the reminder is aimed to.
+   */
+  protected Reminder(final ContributionIdentifier contributionId, final User user) {
+    super();
+    this.contributionId = contributionId;
+    this.userId = user.getId();
+  }
+
+  protected Reminder() {
+    super();
+  }
+
+  /**
+   * Constructs a {@link ReminderBuilder} to build a new reminder about the specified contribution
+   * and for the given user.
+   * @return a {@link ReminderBuilder};
+   */
+  public static ReminderBuilder make(final ContributionIdentifier contribution, final User user) {
+    return new ReminderBuilder().about(contribution).forUser(user);
+  }
+
+  /**
+   * Sets a text with this reminder. The text will be sent with the notification to the user.
+   * @param text a text to attach with the reminder.
+   * @return itself.
+   */
+  public <T extends Reminder> T withText(final String text) {
+    this.text = text;
+    return (T) this;
+  }
+
+  /**
+   * Gets the unique identifier of the contribution this remainder is set of.
+   * @return the contribution unique identifier.
+   */
+  public ContributionIdentifier getContributionId() {
+    return contributionId;
+  }
+
+  /**
+   * Gets the unique identifier of the user against which this reminder is aimed.
+   * @return the identifier of a user as a String
+   */
+  public String getUserId() {
+    return userId;
+  }
+
+  /**
+   * Gets the reminder text.
+   * @return the text associated with this reminder.
+   */
+  public String getText() {
+    return text;
+  }
+
+  /**
+   * Gets the datetime at which this reminder is scheduled. If this reminder isn't yet scheduled,
+   * the datetime returned is null, even if its triggering rule is set. The datetime is based upon
+   * the timezone of the user behind this reminder.
+   * @return a {@link OffsetDateTime} value or null if no yet scheduled is set.
+   */
+  public OffsetDateTime getScheduledDateTime() {
+    return this.triggerDateTime;
+  }
+
+  /**
+   * Is this reminder scheduled? The reminder is scheduled if it is taken in charge by the
+   * Silverpeas scheduler engine.
+   * @return true if this reminder is scheduled to be triggered at its specified date time, false
+   * otherwise.
+   */
+  public boolean isScheduled() {
+    return isScheduledWith(getScheduler());
+  }
+
+  /**
+   * Is this reminder was triggered?
+   * @return true if this reminder was already fired, false otherwise.
+   */
+  public boolean isTriggered() {
+    return triggered;
+  }
+
+  /**
+   * This reminder is currently being triggered.
+   */
+  protected void triggered() {
+    this.triggered = true;
+  }
+
+  /**
+   * Schedules this reminder. It persists first the reminder properties and then starts its
+   * scheduling according to its triggering rule. If this reminder is already scheduled, it is
+   * rescheduled with its new triggering rules and any of its properties changes are persisted.
+   * Hence, this method can be used both for scheduling and for rescheduling a reminder.
+   * @throws TransactionRuntimeException if the persistence or the scheduling fails.
+   * @throws IllegalStateException if no trigger was set or the triggering date is null.
+   * @return itself.
+   */
+  public <T extends Reminder> T schedule() {
+    this.triggerDateTime = computeTriggeringDate();
+    checkTriggeringDate(this.triggerDateTime);
+    Scheduler scheduler = getScheduler();
+    return Transaction.performInOne(() -> {
+      if (isPersisted() && isScheduledWith(scheduler)) {
+        scheduler.unscheduleJob(getJobName());
+      }
+      Reminder me = ReminderRepository.get().save(this);
+      JobTrigger trigger = JobTrigger.triggerAt(this.triggerDateTime);
+      scheduler.scheduleJob(getJobName(), trigger, ReminderProcess.get());
+      return (T) me;
+    });
+  }
+
+  /**
+   * Unschedules this reminder. The reminder won't be anymore scheduled and it will be also removed
+   * from the persistence context.
+   * @throws TransactionRuntimeException if the persistence or the scheduling fails.
+   */
+  public void unschedule() {
+    Scheduler scheduler = getScheduler();
+    Transaction.performInOne(() -> {
+      scheduler.unscheduleJob(getJobName());
+      ReminderRepository.get().delete(this);
+      return null;
+    });
+  }
+
+  /**
+   * Is this reminder schedulable? A reminder is schedulable if its trigger is correctly set and it
+   * matches the expectation of the concrete reminder.
+   * @return true if this reminder can be scheduled, false otherwise.
+   */
+  public abstract boolean isSchedulable();
+
+  @Override
+  public boolean equals(final Object o) {
+    return super.equals(o);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  /**
+   * Gets the contribution related by this reminder.
+   * @return a {@link Contribution} object.
+   */
+  protected Contribution getContribution() {
+    return ContributionManager.get()
+        .getById(this.contributionId)
+        .orElseThrow(() -> new SilverpeasRuntimeException(
+            SilverpeasExceptionMessages.failureOnGetting(contributionId.getType() + " contribution",
+                contributionId.getLocalId())));
+  }
+
+  /**
+   * Computes the date time at which this reminder will be triggered. This method is invoked in
+   * {@link Reminder#schedule()} in order to plan the trigger of this reminder in the timeline.
+   * The triggering datetime is computed from the triggering rule that is specific to the
+   * concrete type of this reminder. The timezone of the returned triggering date has to be set
+   * with the timezone of the user behind the reminder.
+   * @return an {@link OffsetDateTime} value.
+   */
+  protected abstract OffsetDateTime computeTriggeringDate();
+
+  private String getJobName() {
+    return this.getId();
+  }
+
+  private boolean isScheduledWith(final Scheduler scheduler) {
+    return scheduler.isJobScheduled(this.getJobName());
+  }
+  
+  private Scheduler getScheduler() {
+    return SchedulerProvider.getPersistentScheduler();
+  }
+
+  private void checkTriggeringDate(final OffsetDateTime dateTime) {
+    if (dateTime == null) {
+      throw new IllegalStateException(
+          "The triggering rule is invalid: the computed triggering date is null!");
+    }
+  }
+
+  /**
+   * A builder of reminders. It builds the concrete reminder according to the type of triggering.
+   */
+  public static class ReminderBuilder {
+
+    private ContributionIdentifier contribution;
+    private User user;
+    private String text;
+
+    /**
+     * The reminder is about the specified contribution.
+     * @param contribution the unique identifier of a contribution.
+     * @return itself.
+     */
+    public ReminderBuilder about(final ContributionIdentifier contribution) {
+      this.contribution = contribution;
+      return this;
+    }
+
+    /**
+     * The reminders is for the specified user.
+     * @param user the user aimed by the reminder.
+     * @return itself.
+     */
+    public ReminderBuilder forUser(final User user) {
+      this.user = user;
+      return this;
+    }
+
+    /**
+     * The reminder is annotated with the specified text.
+     * @param text the text associated with the reminder.
+     * @return itself.
+     */
+    public ReminderBuilder withText(final String text) {
+      this.text = text;
+      return this;
+    }
+
+    /**
+     * Triggers this reminder the specified duration before the given property of the contribution.
+     * The property must represents either a date or a date time whose the value is a
+     * {@link java.time.temporal.Temporal} object. For example the start
+     * date of an event or the end date of the visibility of a publication.
+     * @param duration the duration value prior to the temporal property of the contribution.
+     * @param timeUnit the time unit in which is expressed the duration.
+     * @param temporalProperty the temporal property of the contribution.
+     * @return a {@link DurationReminder} instance.
+     */
+    public DurationReminder triggerBefore(final int duration, final TimeUnit timeUnit,
+        final String temporalProperty) {
+      return new DurationReminder(contribution, user).withText(text)
+          .triggerBefore(duration, timeUnit, temporalProperty);
+    }
+
+    /**
+     * Triggers the reminder at the specified date time.
+     * @param dateTime the {@link OffsetDateTime} at which the reminder will be triggered.
+     * @return a {@link DateTimeReminder} instance.
+     */
+    public DateTimeReminder triggerAt(final OffsetDateTime dateTime) {
+      return new DateTimeReminder(contribution, user).withText(text).triggerAt(dateTime);
+    }
+  }
+}

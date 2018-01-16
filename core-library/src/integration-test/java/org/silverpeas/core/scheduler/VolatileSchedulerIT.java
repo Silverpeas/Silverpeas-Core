@@ -23,64 +23,57 @@
  */
 package org.silverpeas.core.scheduler;
 
-import org.silverpeas.core.scheduler.trigger.CronJobTrigger;
-import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.scheduler.trigger.TimeUnit;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.scheduler.SchedulerInitializer.SchedulerType;
+import org.silverpeas.core.scheduler.trigger.CronJobTrigger;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.scheduler.trigger.TimeUnit;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 
 import java.text.ParseException;
+import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Calendar;
 import java.util.concurrent.Callable;
 
-import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.*;
 
 /**
- * The scheduling system is backed by an interface, Scheduler, and a factory on implementation of
- * this interface, SchedulerFactory.
- * The factory hides the concrete underlying scheduling system in use by Silverpeas and provides a
- * a single access to it through the Scheduler interface.
- * Silverpeas scheduling API provides its own interface to manage scheduled jobs that are eaten by
- * a scheduler and keeps actually a backward compability with its old previous API.
- * This test checks the current concrete scheduler is ok.
+ * The scheduling engine in Silverpeas provides an API to get either a volatile or a persistent
+ * scheduler. The first one is for scheduling volatile jobs in the time, jobs that will be
+ * discarded at each VM restarting. The last one is for scheduling persistent jobs, that is to say
+ * the scheduled jobs are serialized into a persistence context so that they can be restored at
+ * each VM restarting. Both are built atop of an existing scheduling system (currently Quartz) and
+ * the Scheduling Engine encapsulates it. It keeps a backward compatibility with an old previous
+ * API, this is why a there is a great use of the scheduler event listeners in the code to perform
+ * the actual jobs (instead of using a {@link Job} itself).
+ * <p>
+ * This integration test is about the volatile scheduler.
+ * </p>
  */
 @RunWith(Arquillian.class)
-public class SchedulerIT {
+public class VolatileSchedulerIT {
 
   private static final String JOB_NAME = "test";
   private MySchedulingEventListener eventHandler;
   private boolean isJobExecuted;
   private Scheduler scheduler = null;
 
-  public SchedulerIT() {
-  }
-
-  @BeforeClass
-  public static void setUpClass() throws Exception {
-  }
-
-
-  @AfterClass
-  public static void tearDownClass() throws Exception {
+  public VolatileSchedulerIT() {
   }
 
   @Deployment
   public static Archive<?> createTestArchive() {
-    return WarBuilder4LibCore.onWarForTestClass(SchedulerIT.class)
+    return WarBuilder4LibCore.onWarForTestClass(VolatileSchedulerIT.class)
         .addCommonBasicUtilities()
         .addSchedulerFeatures()
         .addMavenDependencies("org.awaitility:awaitility", "org.antlr:stringtemplate")
@@ -91,7 +84,8 @@ public class SchedulerIT {
 
   @Before
   public void setUp() {
-    scheduler = SchedulerProvider.getScheduler();
+    SchedulerInitializer.get().init(SchedulerType.VOLATILE);
+    scheduler = SchedulerProvider.getVolatileScheduler();
     assertThat(scheduler, notNullValue());
     eventHandler = new MySchedulingEventListener();
     isJobExecuted = false;
@@ -106,7 +100,6 @@ public class SchedulerIT {
    * An empty test just to check the setting up of the fixture is ok.
    */
   @Test
-  @Ignore
   public void emptyTest() {
 
   }
@@ -118,8 +111,8 @@ public class SchedulerIT {
     ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
     assertThat(job, notNullValue());
     assertThat(JOB_NAME, is(job.getName()));
-    assertThat(eventHandler, is(job.getSchedulerEventListener()));
-    assertThat(trigger, is(job.getTrigger()));
+    assertThat(Instant.now().plusSeconds(1),
+        greaterThanOrEqualTo(job.getNextExecutionTime().toInstant()));
   }
 
   @Test
@@ -128,14 +121,14 @@ public class SchedulerIT {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
     ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME) {
       @Override
-      public void execute(JobExecutionContext context) throws Exception {
+      public void execute(JobExecutionContext context) {
         jobExecuted();
       }
     }, trigger);
     assertThat(job, notNullValue());
     assertThat(JOB_NAME, is(job.getName()));
-    assertThat(job.getSchedulerEventListener(), nullValue());
-    assertThat(trigger, is(job.getTrigger()));
+    assertThat(Instant.now().plusSeconds(1),
+        greaterThanOrEqualTo(job.getNextExecutionTime().toInstant()));
   }
 
   @Test
@@ -144,14 +137,14 @@ public class SchedulerIT {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
     ScheduledJob job = scheduler.scheduleJob(new Job(JOB_NAME) {
       @Override
-      public void execute(JobExecutionContext context) throws Exception {
+      public void execute(JobExecutionContext context) {
         jobExecuted();
       }
     }, trigger, eventHandler);
     assertThat(job, notNullValue());
     assertThat(JOB_NAME, is(job.getName()));
-    assertThat(eventHandler, is(job.getSchedulerEventListener()));
-    assertThat(trigger, is(job.getTrigger()));
+    assertThat(Instant.now().plusSeconds(1),
+        greaterThanOrEqualTo(job.getNextExecutionTime().toInstant()));
   }
 
   @Test(expected = SchedulerException.class)
@@ -169,7 +162,7 @@ public class SchedulerIT {
     scheduler.scheduleJob(new Job(JOB_NAME) {
 
       @Override
-      public void execute(JobExecutionContext context) throws Exception {
+      public void execute(JobExecutionContext context) {
         jobExecuted();
       }
     }, trigger, eventHandler);
@@ -200,7 +193,7 @@ public class SchedulerIT {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
     scheduler.scheduleJob(new Job(JOB_NAME) {
       @Override
-      public void execute(JobExecutionContext context) throws Exception {
+      public void execute(JobExecutionContext context) {
         jobExecuted();
       }
     }, trigger);
@@ -213,7 +206,7 @@ public class SchedulerIT {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
     scheduler.scheduleJob(new Job(JOB_NAME) {
       @Override
-      public void execute(JobExecutionContext context) throws Exception {
+      public void execute(JobExecutionContext context) {
         throw new UnsupportedOperationException("Not supported yet.");
       }
     }, trigger, eventHandler);
@@ -226,7 +219,7 @@ public class SchedulerIT {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
     scheduler.scheduleJob(new Job(JOB_NAME) {
       @Override
-      public void execute(JobExecutionContext context) throws Exception {
+      public void execute(JobExecutionContext context) {
         jobExecuted();
       }
     }, trigger, eventHandler);
@@ -235,7 +228,20 @@ public class SchedulerIT {
   }
 
   @Test
-  public void schedulingWithDayOfMonthAndDayOfWeekBothSetShouldThrowAnException() throws Exception {
+  public void schedulingAJobInThePastShouldFireIt() throws Exception {
+    JobTrigger trigger = JobTrigger.triggerAt(OffsetDateTime.now().minusDays(1));
+    scheduler.scheduleJob(new Job(JOB_NAME) {
+      @Override
+      public void execute(JobExecutionContext context) {
+        jobExecuted();
+      }
+    }, trigger, eventHandler);
+    await().atMost(1, SECONDS).until(jobIsExecuted());
+    assertThat(eventHandler.isJobSucceeded(), is(true));
+  }
+
+  @Test
+  public void schedulingWithDayOfMonthAndDayOfWeekBothSetShouldThrowAnException() {
     try {
       String cron = "* * 24 * 3";
       JobTrigger.triggerAt(cron);
@@ -256,6 +262,7 @@ public class SchedulerIT {
     JobTrigger trigger = JobTrigger.triggerAt(cron);
     scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
     assertThat(scheduler.isJobScheduled(JOB_NAME), is(true));
+    assertThat(scheduler.getScheduledJob(JOB_NAME).isPresent(), is(true));
   }
 
   @Test
@@ -363,7 +370,7 @@ public class SchedulerIT {
   protected void scheduleAJob(final String jobName) {
     JobTrigger trigger = JobTrigger.triggerEvery(1, TimeUnit.SECOND);
     try {
-      ScheduledJob job = scheduler.scheduleJob(JOB_NAME, trigger, eventHandler);
+      ScheduledJob job = scheduler.scheduleJob(jobName, trigger, eventHandler);
       assertNotNull(job);
     } catch (SchedulerException ex) {
       fail(ex.getMessage());

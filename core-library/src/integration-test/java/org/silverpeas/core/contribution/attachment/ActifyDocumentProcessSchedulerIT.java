@@ -45,6 +45,7 @@ import org.silverpeas.core.scheduler.Job;
 import org.silverpeas.core.scheduler.JobExecutionContext;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerException;
+import org.silverpeas.core.scheduler.SchedulerInitializer;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.util.MimeTypes;
@@ -92,6 +93,7 @@ public class ActifyDocumentProcessSchedulerIT {
 
   @Before
   public void setUpTest() {
+    SchedulerInitializer.get().init(SchedulerInitializer.SchedulerType.VOLATILE);
     initActifyDirectories();
 
     attachmentService = AttachmentServiceProvider.getAttachmentService();
@@ -165,7 +167,7 @@ public class ActifyDocumentProcessSchedulerIT {
     ActifyDocumentProcessScheduler actifyDocumentProcessor = new ActifyDocumentProcessScheduler();
     actifyDocumentProcessor.init();
 
-    Scheduler scheduler = SchedulerProvider.getScheduler();
+    Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
     Job importer = actifyDocumentProcessor.getActifyDocumentImporter();
     Job cleaner = actifyDocumentProcessor.getActifyDocumentCleaner();
     assertThat(scheduler.isJobScheduled(importer.getName()), is(true));

@@ -40,6 +40,6 @@ public class QuartzCronExpressionFactory implements CronExpressionFactory {
    */
   @Override
   public CronExpression create(final String expression) throws ParseException {
-    return new QuartzCronExpression("0 " + expression);
+    return new QuartzCronExpression("1 " + expression);
   }
 }

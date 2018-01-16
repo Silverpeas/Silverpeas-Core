@@ -23,9 +23,25 @@
  */
 package org.silverpeas.core.scheduler;
 
+import org.silverpeas.core.SilverpeasException;
+
 /**
  * A job to schedule at a given moments in time. A job is identified in the scheduler by a name that
  * must be unique.
+ * <p>
+ * The {@link Job} can be taken into account by persistent schedulers as it isn't
+ * really persisted. Indeed, only the class name of the job is serialized so that it can be
+ * constructed each time it is being invoked. Therefore, any change in the execution login of the
+ * job will be taken into account. Nevertheless, for doing, the job has to be stateless
+ * and non anonymous and it must define a constructor without parameters. However, the job
+ * can be also managed by the underlying IoC container. Indeed, when fetching from the persistence
+ * context, if such a job is managed by the {@link org.silverpeas.core.util.ServiceProvider}, then
+ * this is this managed job that will be used; otherwise it will be constructed.
+ * </p>
+ * <p>
+ * Any jobs scheduled by a volatile scheduler aren't constrains by the same limitations that a job
+ * scheduled by a persistent scheduler: it can be a stateful or an anonymous job.
+ * </p>
  */
 public abstract class Job {
 
@@ -46,7 +62,7 @@ public abstract class Job {
    * Gets the name under which this job should be scheduled.
    * @return the job name.
    */
-  public String getName() {
+  public final String getName() {
     return name;
   }
 
@@ -54,8 +70,8 @@ public abstract class Job {
    * Executes the job with the specified execution context. The context carries the information that
    * can be required by the job to fulfill its execution, like the job parameters.
    * @param context the context under which this job is executed.
-   * @throws Exception if an error occurs during the job execution.
+   * @throws SilverpeasException if an error occurs during the job execution.
    */
-  public abstract void execute(final JobExecutionContext context) throws Exception;
+  public abstract void execute(final JobExecutionContext context) throws SilverpeasException;
 
 }

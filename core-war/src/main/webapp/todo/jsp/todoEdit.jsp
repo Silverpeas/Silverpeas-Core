@@ -45,7 +45,6 @@
 <%@ page import="java.util.Collection" %>
 <%@ page import="java.util.Date" %>
 <%@ page import="java.util.Iterator" %>
-<%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
 
 <%@ include file="checkTodo.jsp" %>
 

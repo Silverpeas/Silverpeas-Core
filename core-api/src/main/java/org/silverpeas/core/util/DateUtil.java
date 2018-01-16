@@ -23,16 +23,18 @@
  */
 package org.silverpeas.core.util;
 
-import org.silverpeas.core.date.Temporal;
-import org.silverpeas.core.date.DateTime;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.silverpeas.core.util.time.TimeUnit;
+import org.silverpeas.core.date.DateTime;
+import org.silverpeas.core.date.Temporal;
+import org.silverpeas.core.date.TimeUnit;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
 import java.util.Date;
@@ -706,6 +708,27 @@ public class DateUtil {
   }
 
   /**
+   * Formats an {@link OffsetDateTime} instance with the right given language.
+   * @param dateTime an {@link OffsetDateTime} instance.
+   * @param language the language for formatting.
+   * @return the formatted String.
+   */
+  public static String formatDateAndTime(ZonedDateTime dateTime, String language) {
+    if (dateTime == null) {
+      return null;
+    }
+    boolean sameOffsetAsPlatform = dateTime.getOffset().getTotalSeconds() ==
+        OffsetDateTime.now().getOffset().getTotalSeconds();
+    final String datePattern = getDateOutputFormat(language).getPattern();
+    final String timePattern = getHourOutputFormat(language).getPattern();
+    final String formattedDateTime =
+        dateTime.format(DateTimeFormatter.ofPattern(datePattern + " " + timePattern));
+    return sameOffsetAsPlatform
+        ? formattedDateTime
+        : formattedDateTime + " (" + dateTime.getZone().getId() + ")";
+  }
+
+  /**
    * Formats the specified date according to the ISO 8601 format.
    * @param date the date to format.
    * @return a String representation of the date in one of the ISO 8601 format (down to the minute
@@ -1004,7 +1027,7 @@ public class DateUtil {
    * @return int the interval in days between the two dates
    */
   public static int getDayNumberBetween(Date date1, Date date2) {
-    return UnitUtil.getTimeData(date2.getTime() - date1.getTime()).getTimeConverted(TimeUnit.DAY)
+    return UnitUtil.getDuration(date2.getTime() - date1.getTime()).getTimeConverted(TimeUnit.DAY)
         .intValue();
   }
 

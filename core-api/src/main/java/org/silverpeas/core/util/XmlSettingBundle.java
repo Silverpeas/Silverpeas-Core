@@ -68,8 +68,9 @@ public class XmlSettingBundle implements SilverpeasBundle {
 
   private static final String PARAM = "param";
   private static final String PARAM_NAME = "param-name";
-  private static final String PARAM_DESCRIPTION = "param-description";
   private static final String PARAM_VALUE = "param-value";
+  private static final String RESOURCE_NOT_FOUND = "Can't find resource for bundle ";
+  private static final String KEY = ", key ";
 
 
   private final Function<String, InputStream> loader;
@@ -154,7 +155,7 @@ public class XmlSettingBundle implements SilverpeasBundle {
    * in the bundle.
    */
   @Override
-  public String getString(final String key) throws MissingResourceException {
+  public String getString(final String key) {
     Node param = getParameter(key);
     String value = null;
     List<Node> values = findAllNodes(param, PARAM_VALUE, false);
@@ -179,7 +180,7 @@ public class XmlSettingBundle implements SilverpeasBundle {
    * @throws MissingResourceException if either the bundle doesn't exist or the key isn't defined
    * in the bundle.
    */
-  public String[] getStringArray(final String key) throws MissingResourceException {
+  public String[] getStringArray(final String key) {
     Node param = getParameter(key);
     List<Node> valueNodes = findAllNodes(param, PARAM_VALUE, false);
     List<String> values =
@@ -218,7 +219,7 @@ public class XmlSettingBundle implements SilverpeasBundle {
    * @throws MissingResourceException if the specified node doesn't exist in the XML setting
    * bundle or if the specified node represents a parameter and not a section.
    */
-  public SettingSection getSettingSection(final String path) throws MissingResourceException {
+  public SettingSection getSettingSection(final String path) {
     Node rootNode = getCurrentRootNode();
     String absolutePath = path;
     if (!path.startsWith(rootNode.getNodeName())) {
@@ -247,8 +248,7 @@ public class XmlSettingBundle implements SilverpeasBundle {
    * @throws MissingResourceException if no nodes at the specified path are found in the XML
    * setting bundle or if the specified node represents a parameter and not a section.
    */
-  public List<SettingSection> getAllSettingSection(final String path)
-      throws MissingResourceException {
+  public List<SettingSection> getAllSettingSection(final String path) {
     Node rootNode = getCurrentRootNode();
     String absolutePath = path;
     if (!path.startsWith(rootNode.getNodeName())) {
@@ -258,8 +258,8 @@ public class XmlSettingBundle implements SilverpeasBundle {
     Node parentNode = getNodeAt(Arrays.copyOf(nodePath, nodePath.length - 1));
     List<Node> nodes = findAllNodes(parentNode, nodePath[nodePath.length - 1], false);
     if (nodes.isEmpty()) {
-      throw new MissingResourceException(
-          "Can't find resource for bundle " + this.name + ", key " + path, this.name, path);
+      throw new MissingResourceException(RESOURCE_NOT_FOUND + this.name + KEY + path, this.name,
+          path);
     }
     return nodes.stream().map(n -> new SettingSection(this.name, n)).collect(Collectors.toList());
   }
@@ -270,11 +270,15 @@ public class XmlSettingBundle implements SilverpeasBundle {
 
   private Document getXMLDocument() {
     if (dom == null) {
-      String name = this.name.replaceAll("\\.", "/");
-      if (!name.toLowerCase().endsWith(".xml")) {
-        name += ".xml";
+      String theName = this.name;
+      if (theName.toLowerCase().endsWith(".xml")) {
+        int suffixIdx = theName.lastIndexOf('.');
+        theName =
+            theName.substring(0, suffixIdx).replaceAll("\\.", "/") + theName.substring(suffixIdx);
+      } else {
+        theName = theName.replaceAll("\\.", "/") + ".xml";
       }
-      try (InputStream stream = this.loader.apply(name)) {
+      try (InputStream stream = this.loader.apply(theName)) {
         DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder = builderFactory.newDocumentBuilder();
         InputSource inputSource = new InputSource(stream);
@@ -295,7 +299,7 @@ public class XmlSettingBundle implements SilverpeasBundle {
    * @throws MissingResourceException if no such parameter, relative to the current node, is
    * defined into the bundle.
    */
-  private Node getParameter(final String key) throws MissingResourceException {
+  private Node getParameter(final String key) {
     Node rootNode = getCurrentRootNode();
     String path = key;
     if (!key.startsWith(rootNode.getNodeName())) {
@@ -306,12 +310,12 @@ public class XmlSettingBundle implements SilverpeasBundle {
     List<Node> params = findAllNodes(currentNode, PARAM, false);
     for (Node param : params) {
       Node paramName = findNode(param, PARAM_NAME, true);
-      if (paramName.getTextContent().equals(nodePath[nodePath.length - 1])) {
+      if (paramName != null && paramName.getTextContent().equals(nodePath[nodePath.length - 1])) {
         return param;
       }
     }
-    throw new MissingResourceException(
-        "Can't find resource for bundle " + this.name + ", key " + path, this.name, path);
+    throw new MissingResourceException(RESOURCE_NOT_FOUND + this.name + KEY + path, this.name,
+        path);
   }
 
   /**
@@ -320,21 +324,14 @@ public class XmlSettingBundle implements SilverpeasBundle {
    * @return the node at the given path.
    * @throws MissingResourceException if no such node exists at the given path.
    */
-  private Node getNodeAt(String[] nodePath) throws MissingResourceException {
+  private Node getNodeAt(String[] nodePath) {
     Node currentNode = getCurrentRootNode();
-    for (int i = 0; i < nodePath.length - 1 && currentNode != null; ) {
+    int i = 0;
+    while (i < nodePath.length - 1 && currentNode != null) {
       if (currentNode.getNodeName().equals(nodePath[i])) {
         if (currentNode.hasChildNodes() && i < nodePath.length - 1) {
-          Node nextNode = null;
-          NodeList childNodes = currentNode.getChildNodes();
           i = i + 1;
-          for (int j = 0; j < childNodes.getLength() && nextNode == null; j++) {
-            Node childNode = childNodes.item(j);
-            if (childNode.getNodeName().equals(nodePath[i])) {
-              nextNode = childNode;
-            }
-          }
-          currentNode = nextNode;
+          currentNode = findNextNode(nodePath[i], currentNode);
         }
       } else {
         currentNode = null;
@@ -343,9 +340,22 @@ public class XmlSettingBundle implements SilverpeasBundle {
     if (currentNode == null ||
         (nodePath.length > 0 && !currentNode.getNodeName().equals(nodePath[nodePath.length - 1]))) {
       String key = Arrays.toString(nodePath);
-      throw new MissingResourceException(
-          "Can't find resource for bundle " + this.name + ", key " + key, this.name, key);
+      throw new MissingResourceException(RESOURCE_NOT_FOUND + this.name + KEY + key, this.name,
+          key);
     }
+    return currentNode;
+  }
+
+  private Node findNextNode(final String anObject, Node currentNode) {
+    NodeList childNodes = currentNode.getChildNodes();
+    Node nextNode = null;
+    for (int j = 0; j < childNodes.getLength() && nextNode == null; j++) {
+      Node childNode = childNodes.item(j);
+      if (childNode.getNodeName().equals(anObject)) {
+        nextNode = childNode;
+      }
+    }
+    currentNode = nextNode;
     return currentNode;
   }
 

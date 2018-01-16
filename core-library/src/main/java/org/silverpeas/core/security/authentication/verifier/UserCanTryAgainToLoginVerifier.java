@@ -81,11 +81,11 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
     super(user);
     if (isActivated && !isCacheCleanerInitialized) {
       synchronized (cache) {
-        if (!SchedulerProvider.getScheduler()
+        if (!SchedulerProvider.getVolatileScheduler()
             .isJobScheduled(CacheCleanerJob.JOB_NAME)) {
           // Cache cleaner.
           try {
-            SchedulerProvider.getScheduler()
+            SchedulerProvider.getVolatileScheduler()
                 .scheduleJob(new CacheCleanerJob(), JobTrigger.triggerEvery(10, TimeUnit.MINUTE));
             isCacheCleanerInitialized = true;
           } catch (SchedulerException e) {
@@ -260,7 +260,7 @@ public class UserCanTryAgainToLoginVerifier extends AbstractAuthenticationVerifi
     }
 
     @Override
-    public void execute(final JobExecutionContext context) throws Exception {
+    public void execute(final JobExecutionContext context) {
       Date now = DateUtil.getNow();
       Iterator<Map.Entry<String, UserCanTryAgainToLoginVerifier>> it = cache.entrySet().iterator();
       while (it.hasNext()) {

@@ -23,25 +23,27 @@
  */
 package org.silverpeas.core.importexport.control;
 
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.report.ImportReport;
+import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
-import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 
 public class ScheduledImport implements SchedulerEventListener, Initialization {
 
@@ -63,18 +65,15 @@ public class ScheduledImport implements SchedulerEventListener, Initialization {
       String sDir = resources.getString("importRepository");
       dir = new File(sDir);
       if (!dir.exists() && !dir.isDirectory()) {
-        SilverTrace.warn("importExport", "ScheduledImport.initialize()",
-            "importExport.EX_CANT_INIT_SCHEDULED_IMPORT", "Repository '" + sDir
-            + "' does not exists !");
+        SilverLogger.getLogger(this).warn("Repository {0} doesn't exist!", sDir);
       } else {
-        Scheduler scheduler = SchedulerProvider.getScheduler();
+        Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
         scheduler.unscheduleJob(IMPORTENGINE_JOB_NAME);
         JobTrigger trigger = JobTrigger.triggerAt(cron);
         scheduler.scheduleJob(IMPORTENGINE_JOB_NAME, trigger, this);
       }
     } catch (Exception e) {
-      SilverTrace.error("importExport", "ScheduledImport.initialize()",
-          "importExport.EX_CANT_INIT_SCHEDULED_IMPORT", e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
@@ -99,13 +98,12 @@ public class ScheduledImport implements SchedulerEventListener, Initialization {
 
             // Successfully import. Remove or rename import descriptor.
             if ("remove".equalsIgnoreCase(postPolicy)) {
-              file.delete();
+              Files.delete(file.toPath());
             } else if ("rename".equalsIgnoreCase(postPolicy)) {
-              file.renameTo(new File(file.getAbsolutePath() + ".old"));
+              Files.move(file.toPath(), new File(file.getAbsolutePath() + ".old").toPath());
             }
-          } catch (ImportExportException e) {
-            SilverTrace.error("importExport", "ScheduledImport.doScheduledImport()",
-                "importExport.EX_CANT_PROCESS_IMPORT", "file = " + file.getAbsolutePath(), e);
+          } catch (IOException | ImportExportException e) {
+            SilverLogger.getLogger(this).error(e);
           }
         }
       }
@@ -120,11 +118,12 @@ public class ScheduledImport implements SchedulerEventListener, Initialization {
 
   @Override
   public void jobSucceeded(SchedulerEvent anEvent) {
+    // nothing to do
   }
 
   @Override
   public void jobFailed(SchedulerEvent anEvent) {
-    SilverTrace.error("importExport", "ScheduledImport.handleSchedulerEvent", "The job '"
+    SilverLogger.getLogger(this).error("The job '"
         + anEvent.getJobExecutionContext().getJobName() + "' was not successfull");
   }
 }

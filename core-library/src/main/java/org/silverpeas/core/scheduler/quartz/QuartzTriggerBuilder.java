@@ -23,43 +23,57 @@
  */
 package org.silverpeas.core.scheduler.quartz;
 
-import org.silverpeas.core.scheduler.trigger.CronJobTrigger;
-import org.silverpeas.core.scheduler.trigger.FixedPeriodJobTrigger;
-import org.silverpeas.core.scheduler.trigger.JobTriggerVisitor;
 import org.quartz.CronScheduleBuilder;
+import org.quartz.CronTrigger;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.Trigger;
 import org.quartz.TriggerBuilder;
-
-import java.util.Date;
+import org.silverpeas.core.scheduler.trigger.CronJobTrigger;
+import org.silverpeas.core.scheduler.trigger.FixedDateTimeJobTrigger;
+import org.silverpeas.core.scheduler.trigger.FixedPeriodJobTrigger;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
+import org.silverpeas.core.scheduler.trigger.JobTriggerVisitor;
 
 import static org.quartz.TriggerBuilder.newTrigger;
 
 /**
- * A builder of a Quartz trigger from the data defined in a QuartzSchedulerJob instance. A
- * QuartzSchedulerJob is a job that will be indirectly scheduled by quartz and thus fired by a
- * Quartz trigger. As such a Quartz trigger is required for doing and it can be obtained from the
- * QuartzSchedulerJob information.
+ * A builder of a Quartz {@link Trigger} for a given job and from a {@link JobTrigger} instance
+ * representing a triggering rules in Silverpeas. In Quartz, a trigger is always related to a
+ * given job and a job can have one or more triggers. In Silverpeas, a trigger isn't related to
+ * a specific job and it represents only a job triggering rule that can be used to schedule one or
+ * more job; hence a job in Silverpeas is always related to one and only one trigger. The builder
+ * converts the {@link JobTrigger} representation in Silverpeas into a {@link Trigger}
+ * representation in Quartz for the job the trigger will be used to schedule it.
  */
 public final class QuartzTriggerBuilder implements JobTriggerVisitor {
 
   private Trigger quartzTrigger = null;
-  private String jobName = null;
+  private final String jobName;
 
   /**
-   * Builds a Quartz trigger from the specified QuartzSchedulerJob instance.
-   * @param job the scheduler job implementation for Quartz.
-   * @return a Quartz scheduler trigger.
+   * Constructs a new Quartz {@link Trigger} builder for the specified job name to which it will
+   * be related in the Quartz scheduler.
+   * @param jobName the name of a job to schedule.
+   * @return a {@link QuartzTriggerBuilder} instance.
    */
-  public static Trigger buildFrom(final QuartzSchedulerJob job) {
-    QuartzTriggerBuilder visitor = new QuartzTriggerBuilder(job.getName());
-    job.getTrigger().accept(visitor);
-    return visitor.quartzTrigger;
+  public static QuartzTriggerBuilder forJob(final String jobName) {
+    return new QuartzTriggerBuilder(jobName);
+  }
+
+  /**
+   * Builds from the {@link JobTrigger} instance a {@link Trigger} object to be used to schedule
+   * the underlying job with a Quartz scheduler.
+   * @param jobTrigger the {@link JobTrigger} to convert.
+   * @return a {@link Trigger} object.
+   */
+  public Trigger buildFrom(final JobTrigger jobTrigger) {
+    jobTrigger.accept(this);
+    return quartzTrigger;
   }
 
   @Override
   public void visit(FixedPeriodJobTrigger trigger) {
-    TriggerBuilder triggerBuilder = newTrigger().withIdentity(jobName);
+    TriggerBuilder<Trigger> triggerBuilder = newTrigger().withIdentity(jobName);
     switch (trigger.getTimeUnit()) {
       case SECOND:
         triggerBuilder.withSchedule(
@@ -76,23 +90,33 @@ public final class QuartzTriggerBuilder implements JobTriggerVisitor {
             SimpleScheduleBuilder.simpleSchedule().withIntervalInHours(trigger.getTimeInterval())
                 .repeatForever());
         break;
+      default:
+        // no repeat scheduling
+        break;
     }
     if (trigger.getStartDate() != null) {
       triggerBuilder.startAt(trigger.getStartDate());
     } else {
-      triggerBuilder.startAt(quartzTrigger.getFireTimeAfter(new Date()));
+      triggerBuilder.startNow();
     }
-    quartzTrigger = triggerBuilder.build();
+    quartzTrigger = triggerBuilder.forJob(jobName).build();
   }
 
   @Override
   public void visit(CronJobTrigger trigger) {
     QuartzCronExpression cronExpression = (QuartzCronExpression)trigger.getCronExpression();
-    TriggerBuilder triggerBuilder = newTrigger().withIdentity(jobName)
-        .withSchedule(CronScheduleBuilder.cronSchedule(cronExpression.getExpression()));
+    TriggerBuilder<CronTrigger> triggerBuilder = newTrigger().withIdentity(jobName).forJob
+        (jobName).withSchedule(CronScheduleBuilder.cronSchedule(cronExpression.getExpression()));
     if (trigger.getStartDate() != null) {
       triggerBuilder.startAt(trigger.getStartDate());
     }
+    quartzTrigger = triggerBuilder.build();
+  }
+
+  @Override
+  public void visit(final FixedDateTimeJobTrigger trigger) {
+    TriggerBuilder triggerBuilder = newTrigger().withIdentity(jobName).forJob(jobName).startAt
+        (trigger.getStartDate());
     quartzTrigger = triggerBuilder.build();
   }
 

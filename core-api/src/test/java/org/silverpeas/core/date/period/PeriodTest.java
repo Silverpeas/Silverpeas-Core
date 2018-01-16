@@ -27,9 +27,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.silverpeas.core.date.DateTime;
+import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.time.TimeUnit;
 
 import java.sql.Timestamp;
 import java.util.Date;

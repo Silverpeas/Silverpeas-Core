@@ -23,21 +23,21 @@
  */
 package org.silverpeas.core.io.temp;
 
-import org.silverpeas.core.scheduler.Job;
-import org.silverpeas.core.scheduler.JobExecutionContext;
-import org.silverpeas.core.scheduler.Scheduler;
-import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.apache.commons.io.filefilter.AbstractFileFilter;
 import org.apache.commons.io.filefilter.AgeFileFilter;
 import org.apache.commons.io.filefilter.AndFileFilter;
 import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.scheduler.Job;
+import org.silverpeas.core.scheduler.JobExecutionContext;
+import org.silverpeas.core.scheduler.Scheduler;
+import org.silverpeas.core.scheduler.SchedulerProvider;
+import org.silverpeas.core.scheduler.trigger.JobTrigger;
 import org.silverpeas.core.thread.ManagedThreadPool;
-import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileRepositoryManager;
 
-import javax.inject.Inject;
 import java.io.File;
 import java.util.Collection;
 
@@ -51,9 +51,6 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
   protected static final String JOB_NAME = "TemporayDataCleanerJob";
   private static final File tempPath = new File(FileRepositoryManager.getTemporaryPath());
 
-  @Inject
-  private Scheduler scheduler;
-
   Thread startTask;
 
   @Override
@@ -63,13 +60,16 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
     final TemporaryDataCleanerJob temporaryDataCleanerJob = new TemporaryDataCleanerJob();
 
     // Cleaning temporary data at start if requested
-    startTask = ManagedThreadPool.getPool().invoke(() -> {
+    startTask = ManagedThreadPool.getPool()
+        .invoke(() ->
       temporaryDataCleanerJob.clean(
-          TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeletedAtServerStart());
-    }).iterator().next();
+          TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeletedAtServerStart()))
+        .iterator()
+        .next();
 
     // Setting CRON
     final String cron = TemporaryDataManagementSetting.getJobCron();
+    Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
     scheduler.unscheduleJob(JOB_NAME);
     if (StringUtil.isDefined(cron)) {
       scheduler.scheduleJob(temporaryDataCleanerJob, JobTrigger.triggerAt(cron));
@@ -90,7 +90,7 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
     }
 
     @Override
-    public void execute(final JobExecutionContext context) throws Exception {
+    public void execute(final JobExecutionContext context) {
 
       // 1 hour minimum or each time
       long nbMilliseconds = TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeleted();
@@ -107,33 +107,29 @@ public class TemporaryDataCleanerSchedulerInitializer implements Initialization 
     private synchronized void clean(final long nbMilliseconds) {
 
       // Temporary temp directory
-      if (tempPath.exists()) {
+      // Nothing to do if fileAge is negative
+      if (tempPath.exists() && nbMilliseconds >= 0) {
+        // Calculating the date from which files should be deleted from their date of last
+        // modification. (in milliseconds)
+        long fileAge = System.currentTimeMillis() - nbMilliseconds;
 
-        // Nothing to do if fileAge is negative
-        if (nbMilliseconds >= 0) {
+        // List all files to clean in temp directory and its subdirectories if any
+        delete(listFiles(tempPath, new AgeFileFilter(fileAge), TrueFileFilter.TRUE));
 
-          // Calculating the date from which files should be deleted from their date of last
-          // modification. (in milliseconds)
-          long fileAge = System.currentTimeMillis() - nbMilliseconds;
+        // Calculating the date from which empty directories should be deleted from their date of
+        // last modification. (in milliseconds)
+        fileAge = System.currentTimeMillis() - nbMilliseconds;
 
-          // List all files to clean in temp directory and its subdirectories if any
-          delete(listFiles(tempPath, new AgeFileFilter(fileAge), TrueFileFilter.TRUE));
+        // Deleting all empty subdirectories
+        delete(listFilesAndDirs(tempPath, FalseFileFilter.FALSE,
+            new AndFileFilter(new AgeFileFilter(fileAge), new AbstractFileFilter() {
 
-          // Calculating the date from which empty directories should be deleted from their date of
-          // last modification. (in milliseconds)
-          fileAge = System.currentTimeMillis() - nbMilliseconds;
-
-          // Deleting all empty subdirectories
-          delete(listFilesAndDirs(tempPath, FalseFileFilter.FALSE,
-              new AndFileFilter(new AgeFileFilter(fileAge), new AbstractFileFilter() {
-
-                @Override
-                public boolean accept(final File file, final String name) {
-                  // Checks subdirectories
-                  return listFiles(file, TrueFileFilter.TRUE, TrueFileFilter.TRUE).size() == 0;
-                }
-              })));
-        }
+              @Override
+              public boolean accept(final File file, final String name) {
+                // Checks subdirectories
+                return listFiles(file, TrueFileFilter.TRUE, TrueFileFilter.TRUE).isEmpty();
+              }
+            })));
       }
     }
 

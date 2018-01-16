@@ -25,6 +25,8 @@ package org.silverpeas.core.scheduler;
 
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
 
+import java.util.Optional;
+
 /**
  * It is the main interface of a Silverpeas scheduler. It provides the features needed by Silverpeas
  * components to schedule some jobs at given moments in time or at regular time. A Scheduler object
@@ -109,6 +111,13 @@ public interface Scheduler {
    * otherwise.
    */
   boolean isJobScheduled(final String jobName);
+
+  /**
+   * Gets detail about the job that was scheduled under the specified name.
+   * @param jobName a name of a scheduled job.
+   * @return optionally the scheduled job or nothing if no such job is scheduled.
+   */
+  Optional<ScheduledJob> getScheduledJob(final String jobName);
 
   /**
    * Shutdowns this scheduler. The firing of triggers are halted and the jobs removed. All of the

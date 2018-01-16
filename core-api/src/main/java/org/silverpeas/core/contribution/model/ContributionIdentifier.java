@@ -30,6 +30,8 @@ import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.ContributionLocator;
 import org.silverpeas.core.util.Mutable;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -54,6 +56,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
+@Embeddable
 public class ContributionIdentifier implements ResourceIdentifier, Serializable {
 
   public static final String MISSING_PART = "?";
@@ -64,12 +67,15 @@ public class ContributionIdentifier implements ResourceIdentifier, Serializable 
 
   @XmlElement(required = true)
   @NotNull
+  @Column(name = "contrib_instanceId", nullable = false, length = 30)
   private String instanceId;
   @XmlElement(required = true)
   @NotNull
+  @Column(name = "contrib_type", nullable = false, length = 40)
   private String type;
   @XmlElement(required = true)
   @NotNull
+  @Column(name = "contrib_id", nullable = false, length = 40)
   private String localId;
 
   protected ContributionIdentifier() {

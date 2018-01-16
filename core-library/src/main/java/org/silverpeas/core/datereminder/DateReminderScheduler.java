@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.datereminder;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
@@ -57,12 +58,12 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
   public static final String DATEREMINDER_JOB_NAME_PROCESS = "A_ProcessDateReminder";
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     try {
       SettingBundle settings = ResourceLocator.getSettingBundle("org.silverpeas.dateReminder.settings.dateReminderSettings");
       String cron = settings.getString("cronScheduledDateReminder");
       SilverLogger.getLogger(this).debug("Date reminder Processor scheduled with cron ''{0}''", cron);
-      Scheduler scheduler = SchedulerProvider.getScheduler();
+      Scheduler scheduler = SchedulerProvider.getVolatileScheduler();
       scheduler.unscheduleJob(DATEREMINDER_JOB_NAME_PROCESS);
       JobTrigger trigger = JobTrigger.triggerAt(cron);
       scheduler.scheduleJob(DATEREMINDER_JOB_NAME_PROCESS, trigger, this);
@@ -111,7 +112,7 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
   }
 
   @Override
-  public void triggerFired(SchedulerEvent anEvent) throws Exception {
+  public void triggerFired(SchedulerEvent anEvent) throws SilverpeasException {
     doScheduledDateReminder();
   }
 

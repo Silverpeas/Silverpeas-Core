@@ -24,6 +24,7 @@
 package org.silverpeas.core.persistence;
 
 
+import org.silverpeas.core.util.Process;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.transaction.Transactional;
@@ -114,12 +115,4 @@ public class Transaction {
     return true;
   }
 
-  /**
-   * Defines a process to execute.
-   * @param <V> the type of the returned value.
-   */
-  @FunctionalInterface
-  public interface Process<V> {
-    V execute() throws Exception;
-  }
 }

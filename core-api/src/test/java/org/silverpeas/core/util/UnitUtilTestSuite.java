@@ -25,6 +25,7 @@ package org.silverpeas.core.util;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
+import org.silverpeas.core.util.time.TestDuration;
 
 /**
  * Test suite to sequence the unit tests on unit management tools.
@@ -35,7 +36,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses({
     TestMemoryData.class,
-    TestTimeData.class,
+    TestDuration.class,
     TestUnitUtil.class
 })
 public class UnitUtilTestSuite {

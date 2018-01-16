@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.quota.exception.QuotaOutOfBoundsException;
 import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.quota.offset.SimpleQuotaCountingOffset;
 import org.silverpeas.core.admin.quota.repository.QuotaRepository;
+import org.silverpeas.core.util.Process;
 
 import javax.inject.Inject;
 
@@ -179,7 +180,7 @@ public abstract class AbstractQuotaService<T extends QuotaKey> implements QuotaS
   }
 
   private <RETURN_VALUE> RETURN_VALUE requiredTransaction(
-      final Transaction.Process<RETURN_VALUE> process) throws QuotaException {
+      final Process<RETURN_VALUE> process) throws QuotaException {
     try {
       return Transaction.performInOne(process);
     } catch (TransactionRuntimeException e) {
