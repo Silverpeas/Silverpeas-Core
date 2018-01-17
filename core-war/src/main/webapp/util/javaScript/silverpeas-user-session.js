@@ -76,7 +76,7 @@ Silverpeas plugin which handles the behaviour about the connected users informat
      */
     this.logout = function(options) {
       var params = extendsObject({
-        logoutDestination : webContext + '/LogoutServlet'
+        logoutDestination : webContext + '/Logout'
       }, options);
       spServerEventSource.close();
       __doLogout(function() {

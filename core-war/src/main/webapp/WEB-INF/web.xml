@@ -722,7 +722,7 @@
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>LogoutServlet</servlet-name>
-    <url-pattern>/LogoutServlet</url-pattern>
+    <url-pattern>/Logout</url-pattern>
   </servlet-mapping>
   <servlet-mapping>
     <servlet-name>POPUPRequestRouter</servlet-name>

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.authentication;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.security.authentication.Authentication;
 import org.silverpeas.core.security.authentication.AuthenticationCredential;
 import org.silverpeas.core.security.authentication.AuthenticationService;
@@ -55,6 +56,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Map;
+
+import static java.text.MessageFormat.format;
 
 /**
  * This servlet listens for incoming authentication requests for Silverpeas.
@@ -90,22 +93,35 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
    * Ask for an authentication for the user behind the incoming HTTP request from a form.
    *
    * @param servletRequest the HTTP request.
-   * @param servletResponse the HTTP response.
+   * @param response the HTTP response.
    * @throws IOException when an error occurs while processing the request or sending the response.
    * @throws ServletException if the request for the POST couldn't be handled.
    */
   @Override
-  public void doPost(HttpServletRequest servletRequest, HttpServletResponse servletResponse)
+  public void doPost(HttpServletRequest servletRequest, HttpServletResponse response)
       throws IOException, ServletException {
     HttpRequest request = HttpRequest.decorate(servletRequest);
 
     final UserSessionStatus userSessionStatus = existOpenedUserSession(servletRequest);
+    final AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
     if (userSessionStatus.isValid()) {
+      final User connectedUser = userSessionStatus.getInfo().getUserDetail();
+      // Prevent trashing the user session on SSO authentication when user behind the current
+      // session is the one authenticated for SSO.
+      if (authenticationParameters.isSsoMode() &&
+          connectedUser.getLogin().equals(authenticationParameters.getLogin()) &&
+          connectedUser.getDomainId().equals(authenticationParameters.getDomainId())) {
+        SilverLogger.getLogger("silverpeas.sso").debug(() -> format(
+            "SSO Authentication of PRINCIPAL {0} on domain {1}, keeping existing user session alive {2}",
+            connectedUser.getLogin(), connectedUser.getDomainId(), userSessionStatus.getInfo().getSessionId()));
+        forward(request, response, "/Login");
+        return;
+      }
       final HttpSession session = servletRequest.getSession(false);
       silverpeasSessionOpener.closeSession(session);
     }
 
-    // get an existing session or creates a new one.
+    // Get an existing session or creates a new one.
     HttpSession session = request.getSession();
 
     if (!StringUtil.isDefined(request.getCharacterEncoding())) {
@@ -115,7 +131,6 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       session.invalidate();
     }
 
-    AuthenticationParameters authenticationParameters = new AuthenticationParameters(request);
     String authenticationKey = authenticate(request, authenticationParameters);
 
     // Verify if the user can try again to login.
@@ -125,10 +140,10 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     userCanTryAgainToLoginVerifier.clearSession(request);
 
     if (authService.isInError(authenticationKey)) {
-      processError(authenticationKey, request, servletResponse, authenticationParameters,
+      processError(authenticationKey, request, response, authenticationParameters,
           userCanTryAgainToLoginVerifier);
     } else {
-      openNewSession(authenticationKey, request, servletResponse, authenticationParameters,
+      openNewSession(authenticationKey, request, response, authenticationParameters,
           userCanTryAgainToLoginVerifier);
     }
   }
@@ -150,7 +165,7 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
         authenticationParameters.getLogin(),
         authenticationParameters.isSecuredAccess());
 
-    // if required by user, store password in cookie
+    // If required by user, store password in cookie
     storePassword(response, authenticationParameters.getStoredPassword(),
         authenticationParameters.isNewEncryptionMode(),
         authenticationParameters.getClearPassword(), authenticationParameters.isSecuredAccess());
