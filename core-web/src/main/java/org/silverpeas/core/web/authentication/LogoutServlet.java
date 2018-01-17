@@ -47,6 +47,9 @@ public class LogoutServlet extends HttpServlet {
     if (session != null) {
       getSessionManagement().closeSession(session.getId());
       try {
+        // In some cases, a wildfly session is yet valid whereas it does not exist anymore a
+        // Silverpeas session. But the wildfly session must be invalidated because the logout can
+        // be performed by a cloud mechanism which need clean wildfly session.
         session.invalidate();
       } catch (IllegalStateException e) {
         SilverLogger.getLogger(this).silent(e);
