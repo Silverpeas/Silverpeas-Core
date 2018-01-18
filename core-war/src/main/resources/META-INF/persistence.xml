@@ -33,6 +33,7 @@
     <jta-data-source>java:/datasources/silverpeas</jta-data-source>
     <properties>
       <!-- Properties for Hibernate (default provider for JBoss AS, must be installed on GlassFish) -->
+      <property name="hibernate.dialect_resolvers" value="org.silverpeas.core.persistence.SilverpeasDialectResolver"/>
       <property name="hibernate.show_sql" value="false"/>
       <property name="hibernate.format_sql" value="false"/>
       <property name="hibernate.cache.provider_class" value="org.hibernate.cache.NoCacheProvider"/>

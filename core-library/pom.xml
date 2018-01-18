@@ -221,6 +221,11 @@
       <artifactId>encoder</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.hibernate</groupId>
+      <artifactId>hibernate-core</artifactId>
+    </dependency>
+
     <!-- Mail -->
     <dependency>
       <groupId>com.icegreen</groupId>
