@@ -352,9 +352,9 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
           // Initialize search context
           String[] arrayAxis = listAxis.split(",\\s*");
           for (String curAxis : arrayAxis) {
-            pdcSC.getSearchContext().addCriteria(new SearchCriteria(Integer.parseInt(curAxis
-                .substring("Axis".length(), curAxis.indexOf('='))), curAxis.substring(curAxis
-                .indexOf('=') + 1)));
+            pdcSC.getSearchContext().addCriteria(
+                new SearchCriteria(Integer.parseInt(curAxis.substring(0, curAxis.indexOf(':'))),
+                    curAxis.substring(curAxis.indexOf(':') + 1)));
           }
         }
 
@@ -373,7 +373,7 @@ public class PdcSearchRequestRouter extends ComponentRequestRouter<PdcSearchSess
         searchParameters.setSpaceIdAndInstanceId(curSpaceId, strComponentIds);
         pdcSC.buildCustomComponentListWhereToSearch(curSpaceId, componentIds);
 
-        pdcSC.search(isOnlyInPdcSearch(request));
+        pdcSC.search(listAxis, isOnlyInPdcSearch(request));
 
         if (StringUtil.isDefined(pdcSC.getResultPage())
             && !pdcSC.getResultPage().equals("globalResult")) {
