@@ -7,7 +7,7 @@ CREATE TABLE sb_reminder (
   userId                VARCHAR(40) NOT NULL,
   text                  VARCHAR(255),
   triggered             INT NOT NULL DEFAULT 0,
-  trigger_datetime      TIMESTAMP,
+  trigger_datetime      DATETIME,
   trigger_durationTime  INTEGER,
   trigger_durationUnit  VARCHAR(12),
   trigger_durationProp  VARCHAR(30),
