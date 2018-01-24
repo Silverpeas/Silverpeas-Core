@@ -203,7 +203,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         List<String> processList = Workflow.getProcessModelManager().listProcessModels();
         strProcessModelFileName = StringUtil.toAcceptableFilename(processModel.getName());
         strProcessModelFileName = strProcessModelFileName.replace(' ', '_');
-        strProcessModelFileName = strProcessModelFileName+'/'+strProcessModelFileName+".xml";
+        strProcessModelFileName = strProcessModelFileName+".xml";
         strProcessModelFileName = FileUtil.convertPathToServerOS(strProcessModelFileName);
 
         if (processList.contains(strProcessModelFileName)) {
