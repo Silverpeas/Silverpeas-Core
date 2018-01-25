@@ -1474,4 +1474,9 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   public ContributionModel getModel() {
     return new CalendarEventModel(this);
   }
+
+  @Override
+  public boolean isIndexable() {
+    return false;
+  }
 }
