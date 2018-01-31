@@ -1590,13 +1590,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     return NavigationStock.filterGroupsToGroupManager(getUserManageableGroupIds(), groups);
   }
 
-  public String createDomain(Domain theNewDomain)
+  public String createDomain(Domain theNewDomain, final DomainType domainType)
       throws JobDomainPeasException, JobDomainPeasTrappedException {
-    String newDomainId = null;
+    String newDomainId;
     try {
-      theNewDomain.setId(Domain.MIXED_DOMAIN_ID);
-
-      DomainServiceProvider.getDomainService(DomainType.EXTERNAL).createDomain(theNewDomain);
+      newDomainId = DomainServiceProvider.getDomainService(domainType).createDomain(theNewDomain);
       refresh();
     } catch (DomainCreationException e) {
       throw new JobDomainPeasException(e);
@@ -1752,9 +1750,9 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
     }
   }
 
-  public void deleteDomain() throws JobDomainPeasException {
+  public void deleteDomain(final DomainType domainType) throws JobDomainPeasException {
     try {
-      DomainServiceProvider.getDomainService(DomainType.EXTERNAL).deleteDomain(getTargetDomain());
+      DomainServiceProvider.getDomainService(domainType).deleteDomain(getTargetDomain());
     } catch (DomainDeletionException e) {
       throw new JobDomainPeasException(e);
     }
@@ -1858,6 +1856,11 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
 
     if (!StringUtil.isDefined(targetDomainId) || Domain.MIXED_DOMAIN_ID.equals(targetDomainId)) {
       selection.setElementSelectable(false);
+    }
+
+    if (getTargetDomain() != null &&
+        "autDomainSCIM".equals(getTargetDomain().getAuthenticationServer())) {
+      selection.setSetSelectable(false);
     }
 
     // Add extra params

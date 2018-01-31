@@ -99,7 +99,7 @@ out.println(board.printBefore());
                     <tr>
                         <td class="txtlibform"><%=resource.getString("JDP.silverpeasServerURL")%> :</td>
                         <td>
-                            <input type="text" name="silverpeasServerURL" size="40" maxlength="399" value="<%=WebEncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%>"/>&nbsp;<img src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/> <%=resource.getString("JDP.silverpeasServerURLEx")%>
+                            <input type="text" name="silverpeasServerURL" size="40" maxlength="399" value="<%=WebEncodeHelper.javaStringToHtmlString(domObject.getSilverpeasServerURL())%>"/>&nbsp;<img src="<%=resource.getIcon("JDP.mandatory")%>" width="5" height="5"/>
                         </td>
                     </tr>
                     <% if (JobDomainSettings.usersInDomainQuotaActivated) { %>

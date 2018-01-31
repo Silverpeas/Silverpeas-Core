@@ -34,5 +34,4 @@ import javax.ws.rs.core.Application;
  */
 @ApplicationPath(SilverpeasWebResource.BASE_PATH)
 public class WebResourceProvider extends Application {
-
 }

@@ -40,6 +40,7 @@ import java.util.Date;
  * @author remipassmoilesel
  */
 public class ChatUser extends UserDetail {
+  private static final long serialVersionUID = 3020578029905358343L;
 
   private final User user;
 
@@ -90,7 +91,11 @@ public class ChatUser extends UserDetail {
    * @return the login of the user in the chat service.
    */
   public String getChatLogin() {
-    return getLogin().replaceAll("(@\\w+\\.\\w+$|'*)", "").toLowerCase();
+    return getLogin().replaceAll("(@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\\.)+[a-z0-9]" +
+        "(?:[a-z0-9-]*[a-z0-9])?|\\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\\.){3}" +
+        "(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:" +
+        "(?:[\\x01-\\x08\\x0b\\x0c\\x0e-\\x1f\\x21-\\x5a\\x53-\\x7f]|\\\\[\\x01-\\x09\\x0b\\x0c" +
+        "\\x0e-\\x7f])+)\\])|'*)", "").toLowerCase();
   }
 
   /**
@@ -297,5 +302,15 @@ public class ChatUser extends UserDetail {
   @Override
   public String getDurationOfCurrentSession() {
     return user.getDurationOfCurrentSession();
+  }
+
+  @Override
+  public boolean equals(final Object other) {
+    return super.equals(other);
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
   }
 }

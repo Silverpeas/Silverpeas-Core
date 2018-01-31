@@ -4903,6 +4903,9 @@ class Admin implements Administration {
     if (searchCriteria.isCriterionOnDomainIdSet()) {
       criteria.and().onDomainIds(searchCriteria.getCriterionOnDomainIds());
     }
+    if (searchCriteria.isCriterionOnUserSpecificIdsSet()) {
+      criteria.and().onUserSpecificIds(searchCriteria.getCriterionOnUserSpecificIds());
+    }
     if (searchCriteria.isCriterionOnAccessLevelsSet()) {
       criteria.and().onAccessLevels(searchCriteria.getCriterionOnAccessLevels());
     }

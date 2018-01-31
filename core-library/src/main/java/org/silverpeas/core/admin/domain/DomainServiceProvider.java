@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.admin.domain;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.core.admin.quota.service.QuotaService;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -38,6 +38,10 @@ import javax.inject.Singleton;
  */
 @Singleton
 public class DomainServiceProvider {
+
+  @Inject
+  @Named("scimDomainService")
+  private DomainService scimDomainService;
 
   @Inject
   @Named("externalDomainService")
@@ -64,13 +68,15 @@ public class DomainServiceProvider {
    */
   public static DomainService getDomainService(final DomainType type) {
     switch (type) {
+      case SCIM:
+        return getProvider().scimDomainService;
       case EXTERNAL:
         return getProvider().externalDomainService;
       case SQL:
         return getProvider().sqlDomainService;
       default:
-        SilverTrace.error("admin", getProvider().getClass().getSimpleName() + ".getDomainService()",
-            "EX_NO_MESSAGES", "Only SQL and SILVERPEAS Domain Services are implemented");
+        SilverLogger.getLogger(DomainServiceProvider.class)
+            .error("Only SQL and SILVERPEAS Domain Services are implemented");
         return null;
     }
   }

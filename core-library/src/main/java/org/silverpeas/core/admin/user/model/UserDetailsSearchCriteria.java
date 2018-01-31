@@ -47,6 +47,7 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   private static final String GROUP_IDS = "groupId";
   private static final String USER_IDS = "userIds";
+  private static final String USER_SPECIFIC_IDS = "userSpecificIds";
   private static final String ROLE_NAMES = "roleIds";
   private static final String DOMAIN_IDS = "domainIds";
   private static final String RESOURCE_ID = "resourceId";
@@ -157,6 +158,14 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
   }
 
   @Override
+  public SearchCriteria onUserSpecificIds(final String... userSpecificIds) {
+    if (isNotEmpty(userSpecificIds)) {
+      criteria.put(USER_SPECIFIC_IDS, userSpecificIds);
+    }
+    return this;
+  }
+
+  @Override
   public UserDetailsSearchCriteria onPagination(PaginationPage page) {
     if (page != null) {
       criteria.put(PAGINATION, page);
@@ -178,6 +187,10 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
 
   public boolean isCriterionOnUserIdsSet() {
     return criteria.containsKey(USER_IDS);
+  }
+
+  public boolean isCriterionOnUserSpecificIdsSet() {
+    return isCriterionOnDomainIdSet() && criteria.containsKey(USER_SPECIFIC_IDS);
   }
 
   public boolean isCriterionOnGroupIdsSet() {
@@ -244,6 +257,14 @@ public class UserDetailsSearchCriteria implements SearchCriteria {
    */
   public String[] getCriterionOnUserIds() {
     return (String[]) criteria.get(USER_IDS);
+  }
+
+  /**
+   * Gets the disjonction on the user specific identifiers.
+   * @return an array with each element of the disjonction.
+   */
+  public String[] getCriterionOnUserSpecificIds() {
+    return (String[]) criteria.get(USER_SPECIFIC_IDS);
   }
 
   /**

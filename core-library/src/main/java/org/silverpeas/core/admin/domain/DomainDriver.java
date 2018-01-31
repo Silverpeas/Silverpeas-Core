@@ -123,6 +123,16 @@ public interface DomainDriver {
      */
     public static final long ACTION_X509_USER = 0x00008000;
     /**
+     * Updates user Silverpeas infos from PUSH action
+     * @see #getDriverActions
+     */
+    public static final long ACTION_PUSH_USER = 0x00010000;
+    /**
+     * Updates group Silverpeas infos from PUSH action
+     * @see #getDriverActions
+     */
+    public static final long ACTION_PUSH_GROUP = 0x00020000;
+    /**
      * All available actions Mask
      * @see #getDriverActions
      */
@@ -134,6 +144,9 @@ public interface DomainDriver {
     public static final long ACTION_MASK_RO =
         ACTION_READ_USER | ACTION_READ_GROUP | ACTION_IMPORT_USER | ACTION_SYNCHRO_USER |
             ACTION_REMOVE_USER | ACTION_IMPORT_GROUP | ACTION_SYNCHRO_GROUP | ACTION_REMOVE_GROUP;
+    public static final long ACTION_MASK_RO_FROM_PUSH =
+        ACTION_READ_USER | ACTION_READ_GROUP | ACTION_PUSH_USER | ACTION_REMOVE_USER |
+            ACTION_PUSH_GROUP | ACTION_REMOVE_GROUP;
     public static final long ACTION_MASK_MIXED_GROUPS =
         ACTION_READ_GROUP | ACTION_UPDATE_GROUP | ACTION_CREATE_GROUP | ACTION_DELETE_GROUP |
             ACTION_EDIT_USER_IN_GROUP;

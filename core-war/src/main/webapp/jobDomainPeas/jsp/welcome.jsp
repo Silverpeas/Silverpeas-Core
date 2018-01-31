@@ -74,8 +74,9 @@
 <body class="domainPeasWelcome page_content_admin">
 <%
   if (displayOperations) {
-    operationPane.addOperationOfCreation(resource.getIcon("JDP.domainAdd"), resource.getString("JDP.domainAdd"), "displayDomainCreate");
     operationPane.addOperationOfCreation(resource.getIcon("JDP.domainSqlAdd"), resource.getString("JDP.domainSQLAdd"), "displayDomainSQLCreate");
+    operationPane.addOperationOfCreation(resource.getIcon("JDP.domainAdd"), resource.getString("JDP.domainAdd"), "displayDomainCreate");
+    operationPane.addOperationOfCreation(resource.getIcon("JDP.domainSCIMAdd"), resource.getString("JDP.domainSCIMAdd"), "displayDomainSCIMCreate");
     if (ChatServer.isEnabled()) {
       operationPane.addOperation(resource.getIcon("JDP.IMUserRegistering"), resource.getString("JDP.IMUserRegistering"), "javascript:syncIM();");
     }

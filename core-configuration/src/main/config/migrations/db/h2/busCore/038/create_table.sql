@@ -12,7 +12,7 @@ CREATE TABLE ST_User
   firstName                     VARCHAR(100),
   lastName                      VARCHAR(100)         NOT NULL,
   email                         VARCHAR(100),
-  login                         VARCHAR(50)          NOT NULL,
+  login                         VARCHAR(100)         NOT NULL,
   loginMail                     VARCHAR(100),
   accessLevel                   CHAR(1) DEFAULT 'U'  NOT NULL,
   loginquestion                 VARCHAR(200),
@@ -209,7 +209,7 @@ CREATE TABLE ST_Domain (
 
 CREATE TABLE ST_KeyStore (
 	userKey		decimal(18, 0)	NOT NULL ,
-	login		varchar(50)	NOT NULL ,
+	login		varchar(100)	NOT NULL ,
 	domainId	int		NOT NULL
 );
 

@@ -23,18 +23,20 @@
  */
 package org.silverpeas.core.security.authentication;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationBadCredentialException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationExceptionVisitor;
 import org.silverpeas.core.security.authentication.exception.AuthenticationHostException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPasswordAboutToExpireException;
-import org.silverpeas.core.security.authentication.exception.AuthenticationPwdChangeNotAvailException;
+import org.silverpeas.core.security.authentication.exception
+    .AuthenticationPasswordAboutToExpireException;
+import org.silverpeas.core.security.authentication.exception
+    .AuthenticationPwdChangeNotAvailException;
 import org.silverpeas.core.security.authentication.exception.AuthenticationPwdNotAvailException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,7 +59,6 @@ import java.util.List;
  */
 public class AuthenticationServer {
 
-  private static final String module = "authentication";
   protected String fallbackMode;
   protected List<Authentication> authServers;
   protected boolean passwordChangeAllowed;
@@ -86,7 +87,7 @@ public class AuthenticationServer {
       fallbackMode = serverSettings.getString("fallbackType");
       passwordChangeAllowed = serverSettings.getBoolean("allowPasswordChange", false);
       int nbServers = Integer.parseInt(serverSettings.getString("autServersCount"));
-      authServers = new ArrayList<Authentication>(nbServers);
+      authServers = new ArrayList<>(nbServers);
       for (int i = 0; i < nbServers; i++) {
         String serverName = "autServer" + i;
         if (serverSettings.getBoolean(serverName + ".enabled", true)) {
@@ -96,15 +97,12 @@ public class AuthenticationServer {
             authenticationWithAServer.init(serverName, serverSettings);
             authServers.add(authenticationWithAServer);
           } catch (Exception ex) {
-            SilverTrace.error(module, "AuthenticationServer.AuthenticationServer",
-                "authentication.EX_CANT_INSTANCIATE_SERVER_CLASS",
-                authServerName + " / " + serverName, ex);
+            SilverLogger.getLogger(this).error(authServerName + " / " + serverName, ex);
           }
         }
       }
     } catch (Exception e) {
-      SilverTrace.error(module, "AuthenticationServer.AuthenticationServer",
-          "authentication.EX_DOMAIN_INFO_ERROR", "Server=" + authServerName, e);
+      SilverLogger.getLogger(this).error("Server=" + authServerName, e);
     }
   }
 
@@ -146,7 +144,7 @@ public class AuthenticationServer {
           SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
     }
 
-    doSecurityOperation(new SecurityOperation(SecurityOperation.PASSWORD_CHANGE, credential) {
+    doSecurityOperation(new SecurityOperation(SecurityOperation.P_CHANGE, credential) {
       @Override
       public void performWith(Authentication authentication) throws AuthenticationException {
         authentication.changePassword(credential, newPassword);
@@ -183,7 +181,7 @@ public class AuthenticationServer {
           SilverpeasException.ERROR, "authentication.EX_PASSWD_CHANGE_NOTAVAILABLE");
     }
 
-    doSecurityOperation(new SecurityOperation(SecurityOperation.PASSWORD_RESET,
+    doSecurityOperation(new SecurityOperation(SecurityOperation.P_RESET,
         AuthenticationCredential.newWithAsLogin(login)) {
       @Override
       public void performWith(Authentication authentication) throws AuthenticationException {
@@ -233,8 +231,8 @@ public class AuthenticationServer {
   private abstract class SecurityOperation {
 
     public static final String AUTHENTICATION = "authenticate";
-    public static final String PASSWORD_CHANGE = "changePassword";
-    public static final String PASSWORD_RESET = "resetPassword";
+    public static final String P_CHANGE = "changePassword";
+    public static final String P_RESET = "resetPassword";
     private String name;
     private AuthenticationCredential credential;
 

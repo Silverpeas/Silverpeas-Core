@@ -36,7 +36,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Optional;
 
+import static javax.ws.rs.core.UriBuilder.fromPath;
 import static org.silverpeas.core.util.StringUtil.*;
 
 /**
@@ -45,6 +47,7 @@ import static org.silverpeas.core.util.StringUtil.*;
  * @author Yohann Chastagnier
  */
 public class LoginServlet extends SilverpeasHttpServlet {
+  private static final long serialVersionUID = 4492227920914085441L;
 
   @Inject
   private SilverpeasSessionOpener silverpeasSessionOpener;
@@ -98,14 +101,18 @@ public class LoginServlet extends SilverpeasHttpServlet {
    * @return true if the session must be closed, false otherwise.
    */
   private boolean mustCloseSession(final HttpServletRequest request) {
-    return isSsoEnabled() || "Error_SsoNotAllowed".equals(getErrorCode(request));
+    return getSsoLoginPage(request).isPresent() || "Error_SsoNotAllowed".equals(getErrorCode(request));
   }
 
   /**
-   * @return true if SSO is enabled, false otherwise.
+   * @param request the current request.
+   * @return an optional SSO login page.
    */
-  private boolean isSsoEnabled() {
-    return general.getBoolean("login.sso.enabled", false);
+  private Optional<String> getSsoLoginPage(final HttpServletRequest request) {
+    final String ssoPath = general.getString("login.sso.path", "");
+    return isDefined(ssoPath) ?
+        Optional.of(fromPath(request.getContextPath()).path(ssoPath).build().toString()) :
+        Optional.empty();
   }
 
   private boolean isAnonymousAccessActivated() {
@@ -126,8 +133,9 @@ public class LoginServlet extends SilverpeasHttpServlet {
 
     String loginPage;
     String errorCode = getErrorCode(request);
-    if (isSsoEnabled() && isNotDefined(errorCode)) {
-      loginPage = request.getContextPath() + "/sso/kerberos";
+    final Optional<String> ssoLoginPage = getSsoLoginPage(request);
+    if (ssoLoginPage.isPresent() && (isNotDefined(errorCode) || "3".equals(errorCode))) {
+      loginPage = ssoLoginPage.get();
       response.sendRedirect(response.encodeRedirectURL(loginPage));
     } else if (isAnonymousAccessActivated() && !request.isWithinAnonymousUserSession() &&
         !request.isWithinUserSession()) {

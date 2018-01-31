@@ -25,11 +25,12 @@
 --%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
-<%@ page import="org.silverpeas.core.notification.user.client.NotificationManagerSettings" %>
 <%@ page import="org.silverpeas.core.admin.user.constant.UserState" %>
-<%@ page import="org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController" %>
+<%@ page import="org.silverpeas.core.notification.user.client.NotificationManagerSettings" %>
 <%@ page import="org.silverpeas.core.util.URLUtil" %>
+<%@ page import="org.silverpeas.web.jobdomain.control.JobDomainPeasSessionController" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
@@ -70,6 +71,8 @@
 <fmt:message key="GML.user.account.state.${userInfos.state.name}" var="stateLabel"/>
 <fmt:message key="JDP.user.state.${userInfos.state.name}" var="stateIcon" bundle="${icons}"/>
 
+<c:set var="userObject" value="${requestScope.userObject}" />
+<jsp:useBean id="userObject" type="org.silverpeas.core.admin.user.model.UserFull"/>
 <c:set var="userGroups" value="${requestScope.UserGroups}" />
 <c:set var="userManageableSpaces" value="${requestScope.UserManageableSpaces}" />
 <c:set var="userManageableGroups" value="${requestScope.UserManageableGroups}" />
@@ -78,10 +81,10 @@
 <%@ include file="check.jsp" %>
 <%
   Domain domObject = (Domain) request.getAttribute("domainObject");
-  UserFull userObject = (UserFull) request.getAttribute("userObject");
   String groupsPath = (String) request.getAttribute("groupsPath");
   boolean isDomainRW = (Boolean) request.getAttribute("isDomainRW");
   boolean isDomainSync = (Boolean) request.getAttribute("isDomainSync");
+  boolean isDomainPush = (Boolean) request.getAttribute("isDomainPush");
   boolean isUserRW = (Boolean) request.getAttribute("isUserRW");
   boolean isX509Enabled = (Boolean) request.getAttribute("isX509Enabled");
   boolean isGroupManager = (Boolean) request.getAttribute("isOnlyGroupManager");
@@ -128,7 +131,7 @@
     operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.delete"),
         "javascript:deleteUser()");
   }
-  if (isDomainSync && !isGroupManager) {
+  if ((isDomainSync || isDomainPush) && !isGroupManager) {
     operationPane
         .addOperation(resource.getIcon("JDP.userUpdate"), resource.getString("GML.modify"),
             "displayUserMS?Iduser=" + thisUserId);
@@ -151,11 +154,14 @@
           .addOperation(resource.getIcon("JDP.userDeactivate"), resource.getString("JDP.userDeactivate"),
               "userDeactivate?Iduser=" + thisUserId);
     }
-    operationPane
-        .addOperation(resource.getIcon("JDP.userSynchro"), resource.getString("JDP.userSynchro"),
-            "userSynchro?Iduser=" + thisUserId);
-    operationPane.addOperation(resource.getIcon("JDP.userUnsynchro"),
-        resource.getString("JDP.userUnsynchro"), "userUnSynchro?Iduser=" + thisUserId);
+    if (isDomainSync) {
+      operationPane.addOperation(resource.getIcon("JDP.userSynchro"), resource.getString("JDP.userSynchro"),
+          "userSynchro?Iduser=" + thisUserId);
+      operationPane.addOperation(resource.getIcon("JDP.userUnsynchro"), resource.getString("JDP.userUnsynchro"), "userUnSynchro?Iduser=" + thisUserId);
+    } else {
+      operationPane.addOperation(resource.getIcon("JDP.userDel"), resource.getString("GML.delete"),
+          "javascript:deleteUser()");
+    }
   }
   operationPane.addLine();
   operationPane.addOperation("useless", resource.getString("JDP.user.rights.action"), "userViewRights");
@@ -364,10 +370,12 @@ out.println(window.printBefore());
       </fieldset>
     </div>
     <div class="cell">
-      <fieldset id="identity-extra" class="skinFieldset">
-        <legend><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
-        <viewTags:displayUserExtraProperties user="<%=userObject%>" readOnly="true" includeEmail="false"/>
-      </fieldset>
+      <c:if test="${fn:length(userObject.propertiesNames) > 0}">
+        <fieldset id="identity-extra" class="skinFieldset">
+          <legend><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
+          <viewTags:displayUserExtraProperties user="<%=userObject%>" readOnly="true" includeEmail="false"/>
+        </fieldset>
+      </c:if>
     </div>
   </div>
 

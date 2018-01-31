@@ -39,8 +39,17 @@
 
 <fmt:setLocale value="${sessionScope[sessionController].language}" />
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
+
+<c:set var="domObject" value="${requestScope.domainObject}"/>
+<jsp:useBean id="domObject" type="org.silverpeas.core.admin.domain.model.Domain"/>
+
+<c:set var="isSCIMDomain" value="${d -> d != null and d.authenticationServer eq 'autDomainSCIM'}"/>
+<c:set var="isGroupHandled" value="${not isSCIMDomain(domObject)}"/>
+
+<fmt:message var="userPanelAccessLabel" key="JDP.userPanelAccess"><fmt:param value="${not isGroupHandled ? 0 : 2}"/></fmt:message>
+<jsp:useBean id="userPanelAccessLabel" type="java.lang.String"/>
+
 <%
-  Domain  domObject 			= (Domain)request.getAttribute("domainObject");
   UserDetail theUser 			= (UserDetail)request.getAttribute("theUser");
   boolean isDomainRW 			= (Boolean)request.getAttribute("isDomainRW");
   boolean isDomainSync 		= (Boolean)request.getAttribute("isDomainSync");
@@ -51,6 +60,7 @@
   List<UserDetail> subUsers = (List<UserDetail>)request.getAttribute("subUsers");
 
   boolean isDomainSql = "org.silverpeas.core.admin.domain.driver.sqldriver.SQLDriver".equals(domObject.getDriverClassName());
+  boolean isDomainScim = "org.silverpeas.core.admin.domain.driver.scimdriver.SCIMDriver".equals(domObject.getDriverClassName());
   boolean mixedDomain = domObject.isMixedOne();
   Date lastSyncDate = domObject.getLastSyncDate();
 
@@ -60,7 +70,7 @@
   boolean isUserDomainQuotaFull = JobDomainSettings.usersInDomainQuotaActivated && domObject.isQuotaReached();
 
   // Domain operations
-	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),resource.getString("JDP.userPanelAccess"),"displaySelectUserOrGroup");
+	operationPane.addOperation(resource.getIcon("JDP.userPanelAccess"),userPanelAccessLabel,"displaySelectUserOrGroup");
 	if (theUser.isAccessAdmin())
 	{
 	    if (!mixedDomain) {
@@ -71,7 +81,7 @@
 		    } else {
 		        operationPane.addOperation(resource.getIcon("JDP.domainUpdate"),resource.getString("JDP.domainUpdate"),"displayDomainModify");
 		        if (!domObject.getId().equals("0"))
-				operationPane.addOperation(resource.getIcon("JDP.domainDel"),resource.getString("JDP.domainDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.domainDelConfirm")+"','domainDelete')");
+				operationPane.addOperation(resource.getIcon("JDP.domainDel"),resource.getString("JDP.domainDel"),"javascript:ConfirmAndSend('"+resource.getString("JDP.domainDelConfirm")+"','"+(isDomainScim ? "domainSCIMDelete" : "domainDelete")+"')");
 		    }
 	    }
 	}
@@ -200,9 +210,12 @@ out.println(window.printBefore());
   <h2 class="principal-content-title sql-domain"> <%=getDomainLabel(domObject, resource)%> </h2>
   <div id="number-user-group-domainContent">
     <% if (!mixedDomain) { %>
-      <span id="number-user-domainContent"><%=subUsers.size() %> <%=resource.getString("GML.user_s") %></span> -
+      <span id="number-user-domainContent"><%=subUsers.size() %> <%=resource.getString("GML.user_s") %></span>
     <% } %>
-    <span id="number-group-domainContent"><%=subGroups.length %> <%=resource.getString("GML.group_s") %></span>
+    <c:if test="${isGroupHandled}">
+      <span> -</span>
+      <span id="number-group-domainContent"><%=subGroups.length %> <%=resource.getString("GML.group_s") %></span>
+    </c:if>
   </div>
   <% if (StringUtil.isDefined(domObject.getDescription()) && !mixedDomain) { %>
     <p id="description-domainContent"><%=WebEncodeHelper.javaStringToHtmlString(domObject.getDescription())%></p>
@@ -215,10 +228,10 @@ out.println(window.printBefore());
 
   <div class="tableBoard" id="domain-search">
     <div class="field">
-      <label class="txtlibform"><fmt:message key="JDP.userPanelAccess"/></label>
+      <label class="txtlibform">${userPanelAccessLabel}</label>
       <div class="champs">
-        <viewTags:selectUsersAndGroups selectionType="USER_GROUP"
-                                       domainIdFilter="<%=domObject.getId()%>"
+        <viewTags:selectUsersAndGroups selectionType="${not isGroupHandled ? 'USER' : 'USER_GROUP'}"
+                                       domainIdFilter="${domObject.id}"
                                        navigationalBehavior="true"
                                        onChangeJsCallback="jumpToUser"
                                        hideDeactivatedState="false"/>
@@ -226,6 +239,7 @@ out.println(window.printBefore());
     </div>
   </div>
 
+  <c:if test="${isGroupHandled}">
   <%
   ArrayPane arrayPane = gef.getArrayPane("_dc_groupe", "domainContent.jsp", request, session);
   arrayPane.setVisibleLineNumber(JobDomainSettings.m_GroupsByPage);
@@ -258,7 +272,8 @@ out.println(window.printBefore());
       }
   }
   out.println(arrayPane.print());
-%>
+  %>
+  </c:if>
 <br/>
 
 <%

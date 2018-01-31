@@ -345,6 +345,11 @@ public class GroupsSearchCriteria implements SearchCriteria {
   }
 
   @Override
+  public SearchCriteria onUserSpecificIds(final String... userSpecificIds) {
+    return this;
+  }
+
+  @Override
   public SearchCriteria onResourceId(String resourceId) {
     if (isDefined(resourceId)) {
       criteria.put(RESOURCE_ID, resourceId);

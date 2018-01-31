@@ -131,6 +131,11 @@ public class GroupSearchCriteriaForDAO implements SearchCriteria {
   }
 
   @Override
+  public SearchCriteria onUserSpecificIds(final String... userSpecificIds) {
+    return this;
+  }
+
+  @Override
   public SearchCriteria onRoleNames(String... roleIds) {
     if (roleIds != null && roleIds.length > 0) {
       tables.add("st_userrole_group_rel");
