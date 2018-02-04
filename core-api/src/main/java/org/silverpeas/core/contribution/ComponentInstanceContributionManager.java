@@ -39,7 +39,7 @@ import java.util.Optional;
  * Each component should implement this interface if its {@link Contribution} has to be managed by
  * centralized services.
  * </p>
- * </p>
+ * <p>
  * Any application that requires to provide {@link Contribution} to core services
  * has to implement this interface and the implementation has to be qualified with the @{@link
  * javax.inject.Named} annotation by a name satisfying the following convention

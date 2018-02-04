@@ -192,7 +192,7 @@ public class Calendar extends SilverpeasJpaEntity<Calendar, UuidIdentifier> impl
   }
 
   /**
-   * Gets a calendar events instance which permits to get (as stream) events.<br/>
+   * Gets a calendar events instance which permits to get (as stream) events.<br>
    * @return a calendar events instance.
    */
   public static CalendarEvents getEvents() {

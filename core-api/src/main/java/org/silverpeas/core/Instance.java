@@ -36,7 +36,8 @@ public interface Instance<T> {
 
   /**
    * Gets the possible parent object from which the instance could be spawn.
-   * @return an optional parent instance of type T.
+   * @param <U> a refinement of T
+   * @return an optional parent instance of type U.
    */
   default <U extends T> Optional<U> getParent() {
     return Optional.empty();

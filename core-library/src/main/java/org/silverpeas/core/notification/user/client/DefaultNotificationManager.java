@@ -181,7 +181,6 @@ public class DefaultNotificationManager extends AbstractNotification
    * @param aNotificationAddressId
    * @return
    * @throws NotificationManagerException
-   * @see
    */
   @Override
   public Properties getNotificationAddress(int aNotificationAddressId, int aUserId)
@@ -253,7 +252,6 @@ public class DefaultNotificationManager extends AbstractNotification
    * @param aUserId
    * @return The user's default address Id
    * @throws NotificationManagerException
-   * @see
    */
   @Override
   public int getDefaultAddress(int aUserId) throws NotificationManagerException {
@@ -397,7 +395,6 @@ public class DefaultNotificationManager extends AbstractNotification
    * @param aUserId
    * @return
    * @throws NotificationManagerException
-   * @see
    */
   @Override
   public Properties getNotifPreference(int aPrefId, int aUserId)
@@ -421,7 +418,6 @@ public class DefaultNotificationManager extends AbstractNotification
    * @param aNotificationAddressId
    * @param aUserId
    * @throws NotificationManagerException
-   * @see
    */
   @Override
   public void setDefaultAddress(int aNotificationAddressId, int aUserId)
@@ -474,7 +470,6 @@ public class DefaultNotificationManager extends AbstractNotification
    * @param aMessageType
    * @param aDestinationId
    * @throws NotificationManagerException
-   * @see
    */
   @Override
   public void savePreferences(int aUserId, int aInstanceId, int aMessageType, int aDestinationId) throws NotificationManagerException {
@@ -527,7 +522,6 @@ public class DefaultNotificationManager extends AbstractNotification
    * @param aAddress
    * @param aUsage
    * @throws NotificationManagerException
-   * @see
    */
   @Override
   public void saveNotifAddress(int aNotificationAddressId, int aUserId, String aNotifName,
@@ -558,7 +552,6 @@ public class DefaultNotificationManager extends AbstractNotification
    * Method declaration
    * @param aPreferenceId
    * @throws NotificationManagerException
-   * @see
    */
   @Override
   public void deletePreference(int aPreferenceId)
@@ -579,7 +572,6 @@ public class DefaultNotificationManager extends AbstractNotification
    * Method declaration
    * @param aNotificationAddressId
    * @throws NotificationManagerException
-   * @see
    */
   @Override
   public void deleteNotifAddress(int aNotificationAddressId)
@@ -601,7 +593,6 @@ public class DefaultNotificationManager extends AbstractNotification
    * Method declaration
    * @param userId
    * @throws NotificationManagerException
-   * @see
    */
   @Override
   public void deleteAllAddress(int userId)
@@ -779,7 +770,6 @@ public class DefaultNotificationManager extends AbstractNotification
    * @param compInst
    * @return
    * @throws NotificationManagerException
-   * @see
    */
   @Override
   public String getComponentFullName(String compInst) throws NotificationManagerException {
@@ -793,7 +783,6 @@ public class DefaultNotificationManager extends AbstractNotification
    * @param isPathToComponent
    * @return
    * @throws NotificationManagerException
-   * @see
    */
   @Override
   public String getComponentFullName(String compInst, String separator, boolean isPathToComponent)

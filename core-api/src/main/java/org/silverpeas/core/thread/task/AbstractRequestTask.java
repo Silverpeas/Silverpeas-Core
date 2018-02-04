@@ -118,7 +118,7 @@ public abstract class AbstractRequestTask<C extends AbstractRequestTask.ProcessC
   }
 
   /**
-   * Processes the given request.<br/>
+   * Processes the given request.<br>
    * Useful for a task which needs to perform some stuffs around the process.
    * @param request the request to process.
    * @throws SilverpeasException on error.

@@ -654,16 +654,16 @@ public class ICal4JExporterTest {
   }
 
   /**
-   * Centralization of verification.<br/>
+   * Centralization of verification.<br>
    * <p>
-   * The mechanism is the following:<br/>
+   * The mechanism is the following:<br>
    * <p/>
    * the first parameter represent the list of calendar events to export and the second one is the
-   * name of the file that contains the expected result.<br/>
-   * Each lines starting with '#' character is ignored.<br/>
-   * If the file content is equal to the result of export, the test is successfully verified.<br/>
+   * name of the file that contains the expected result.<br>
+   * Each lines starting with '#' character is ignored.<br>
+   * If the file content is equal to the result of export, the test is successfully verified.<br>
    * If not, the different lines between the file content and the export result are logged to the
-   * console.<br/>
+   * console.<br>
    * Only event parts are verified from the contents.
    * </p>
    * @param descriptor

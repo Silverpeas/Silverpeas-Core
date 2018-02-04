@@ -251,10 +251,10 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity>
    * Lists entities from a the specified JPQL query and with the specified parameters.
    * This method is for fetching any information about the entities stored into this repository; it
    * can be the entities themselves or some of their properties or relationships, and so on.
-   * @param <U> the type of the returned entitie.<br/>
+   * @param <U> the type of the returned entitie.<br>
    * Please be careful to always close the streams in order to avoid memory leaks!!!
    * <pre>
-   *   try(Stream<T> object : streamAllFromQuery(...)) {
+   *   try(Stream&lt;T&gt; object : streamAllFromQuery(...)) {
    *     // Performing the treatment
    *   }
    * </pre>
@@ -290,7 +290,7 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity>
   }
 
   /**
-   * Streams entities from the specified JPQL query and with the specified parameters.<br/>
+   * Streams entities from the specified JPQL query and with the specified parameters.<br>
    * Useful for treatment over a large number of data.
    * @param query the JPQL query.
    * @param parameters the parameters to apply to the query.
@@ -304,11 +304,11 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity>
   /**
    * Stream entities from a the specified JPQL query and with the specified parameters.
    * This method is for fetching any information about the entities stored into this repository; it
-   * can be the entities themselves or some of their properties or relationships, and so on.<br/>
-   * Useful for treatment over a large number of data.<br/>
+   * can be the entities themselves or some of their properties or relationships, and so on.<br>
+   * Useful for treatment over a large number of data.<br>
    * Please be careful to always close the streams in order to avoid memory leaks!!!
    * <pre>
-   *   try(Stream<T> object : streamAllFromQuery(...)) {
+   *   try(Stream&lt;T&gt; object : streamAllFromQuery(...)) {
    *     // Performing the treatment
    *   }
    * </pre>
@@ -398,11 +398,11 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity>
   }
 
   /**
-   * Streams entities from a named query and with the specified parameters.<br/>
-   * Useful for treatment over a large number of data.<br/>
+   * Streams entities from a named query and with the specified parameters.<br>
+   * Useful for treatment over a large number of data.<br>
    * Please be careful to always close the stream in order to avoid memory leaks!!!
    * <pre>
-   *   try(Stream<T> object : streamAllFromQuery(...)) {
+   *   try(Stream&lt;T&gt; object : streamAllFromQuery(...)) {
    *     // Performing the treatment
    *   }
    * </pre>
@@ -415,11 +415,11 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity>
   }
 
   /**
-   * Streams entities from a named query and with the specified parameters.<br/>
-   * Useful for treatment over a large number of data.<br/>
+   * Streams entities from a named query and with the specified parameters.<br>
+   * Useful for treatment over a large number of data.<br>
    * Please be careful to always close the stream in order to avoid memory leaks!!!
    * <pre>
-   *   try(Stream<T> object : streamAllFromQuery(...)) {
+   *   try(Stream&lt;T&gt; object : streamAllFromQuery(...)) {
    *     // Performing the treatment
    *   }
    * </pre>
@@ -542,17 +542,17 @@ public abstract class AbstractJpaEntityRepository<T extends AbstractJpaEntity>
   }
 
   /**
-   * Gets a stream on the query result.<br/>
+   * Gets a stream on the query result.<br>
    * Please be careful to always close the stream in order to avoid memory leaks!!!
    * <pre>
    *   try(Stream<T> object : streamAllFromQuery(...)) {
    *     // Performing the treatment
    *   }
    * </pre>
-   * TODO use an implementation which performs a real stream operation.<br/>
-   * TODO so, getResultList() method call must disappear.<br/>
+   * TODO use an implementation which performs a real stream operation.<br>
+   * TODO so, getResultList() method call must disappear.<br>
    * A real stream operation is able to provide the reading of a large set of result bu using
-   * small memory space.<br/>
+   * small memory space.<br>
    * Using the Hibernate implementation (since version 5.2) is surely a good solution for now.
    */
   private <U> Stream<U> streamAllFromQuery(TypedQuery<U> query, NamedParameters parameters) {

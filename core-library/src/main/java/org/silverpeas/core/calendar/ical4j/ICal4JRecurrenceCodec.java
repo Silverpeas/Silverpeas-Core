@@ -165,7 +165,7 @@ public class ICal4JRecurrenceCodec {
   }
 
   /**
-   * Decodes the recurrence of the specified iCal4J event into a Silverpeas event recurrence.<br/>
+   * Decodes the recurrence of the specified iCal4J event into a Silverpeas event recurrence.<br>
    * The presence of an exception date must be verified before calling this method.
    * @param vEvent the iCal4J event source which contains recurrence data.
    * @param defaultZoneId the default zone id.

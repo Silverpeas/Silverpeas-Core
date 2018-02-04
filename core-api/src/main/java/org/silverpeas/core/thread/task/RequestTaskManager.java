@@ -121,7 +121,6 @@ public class RequestTaskManager {
    * the
    * {@link AbstractRequestTask.Request}.
    * @param <T> the type of the task.
-   * @param <C> the type of the task process context.
    */
   @SuppressWarnings("unchecked")
   public static <T extends AbstractRequestTask> boolean isTaskRunning(Class<T> taskClass) {
@@ -135,12 +134,12 @@ public class RequestTaskManager {
 
   /**
    * This method is the only entry point to add a request to process.
-   * <p>There is three synchronized steps performed into this method:
+   * <p>There is three synchronized steps performed into this method:</p>
    * <ul><li>first, starting the consummation task if exists at least one request into the queue and
    * if the task is not running</li>
    * <li>then, acquiring a semaphore access if the queue size is limited</li>
    * <li>finally, adding the request into the queue and starting the task if it is not running</li>
-   * </ul></p>
+   * </ul>
    * @param taskClass the class of the {@link AbstractRequestTask} implementation which provides
    * the
    * {@link AbstractRequestTask.Request}.

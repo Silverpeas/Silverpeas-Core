@@ -134,7 +134,7 @@ public class CalendarResource extends AbstractCalendarResource {
   }
 
   /**
-   * Creates the calendar from its JSON representation and returns it once created.<br/>
+   * Creates the calendar from its JSON representation and returns it once created.<br>
    * If the user isn't authenticated, a 401 HTTP code is returned. If the user isn't authorized to
    * save the calendar, a 403 is returned. If a problem occurs when processing the request, a 503
    * HTTP code is returned.
@@ -236,8 +236,8 @@ public class CalendarResource extends AbstractCalendarResource {
 
   /**
    * Permits to import one iCalendar file from http request.
-   * The file upload is performed by FileUploadResource mechanism.<br/>
-   * This service is awaiting the upload parameters handled by silverpeas-fileUpload.js plugin.<br/>
+   * The file upload is performed by FileUploadResource mechanism.<br>
+   * This service is awaiting the upload parameters handled by silverpeas-fileUpload.js plugin.<br>
    * (see {@link FileUploadManager}) in order to get more information.
    * If the user isn't authenticated, a 401 HTTP code is returned.
    * If a problem occurs when processing the request, a 503 HTTP code is returned.
@@ -424,7 +424,7 @@ public class CalendarResource extends AbstractCalendarResource {
 
   /**
    * Creates a calendar event from the JSON representation of an occurrence and returns the
-   * created event.<br/> If the user isn't authenticated, a 401 HTTP code is returned. If the user
+   * created event.<br> If the user isn't authenticated, a 401 HTTP code is returned. If the user
    * isn't authorized to save the calendar, a 403 is returned. If a problem occurs when
    * processing the request, a 503 HTTP code is returned.
    * @param calendarId the identifier of calendar the event must belong with
@@ -492,7 +492,7 @@ public class CalendarResource extends AbstractCalendarResource {
 
   /**
    * Updates a occurrence from its JSON representation and returns the list of
-   * updated and created events.<br/> If the user isn't authenticated, a 401 HTTP code is
+   * updated and created events.<br> If the user isn't authenticated, a 401 HTTP code is
    * returned. If the user isn't authorized to save the calendar, a 403 is returned. If a problem
    * occurs when processing the request, a 503 HTTP code is returned.
    * @param calendarId the identifier of calendar the event must belong with.
@@ -537,7 +537,7 @@ public class CalendarResource extends AbstractCalendarResource {
 
   /**
    * Deletes an event from the JSON representation of an occurrence and returns an updated event if
-   * any.<br/> If the user isn't authenticated, a 401 HTTP code is returned. If the user isn't
+   * any.<br> If the user isn't authenticated, a 401 HTTP code is returned. If the user isn't
    * authorized to save the calendar, a 403 is returned. If a problem occurs when processing the
    * request, a 503 HTTP code is returned.
    * @param calendarId the identifier of calendar the event must belong with.
@@ -568,7 +568,7 @@ public class CalendarResource extends AbstractCalendarResource {
   }
 
   /**
-   * Updates the participation status of an attendee about an event.<br/> If the user isn't
+   * Updates the participation status of an attendee about an event.<br> If the user isn't
    * authenticated, a 401 HTTP code is returned. If the user isn't authorized to save the calendar,
    * a 403 is returned. If a problem occurs when processing the request, a 503 HTTP code is
    * returned.

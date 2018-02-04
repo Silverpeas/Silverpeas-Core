@@ -41,8 +41,7 @@ import static org.apache.commons.lang3.ArrayUtils.toArray;
  * Useful to gets localized labels, for example, according to the type of a contribution and also
  * according to the component which is handling the contribution.
  * </p
- * <p>
- * It exists two possible bundle repositories:
+ * <p>It exists two possible bundle repositories:</p>
  * <ul>
  * <li>a main one: <code>org.silverpeas.contribution.multilang.contribution.properties</code></li>
  * <li>an optional component specific one: <code>org.silverpeas.[component name].multilang
@@ -54,7 +53,6 @@ import static org.apache.commons.lang3.ArrayUtils.toArray;
  * <li>the main bundle otherwise</li>
  * </ul>
  * If the key is not defined by any of bundles, then a {@link MissingResourceException} is thrown.
- * </p>
  * @author silveryocha
  */
 public class ContributionLocalizationBundle {

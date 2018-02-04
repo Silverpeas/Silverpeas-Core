@@ -60,7 +60,7 @@ public interface Contribution extends Serializable, Securable, Instance<Contribu
   Date getCreationDate();
 
   /**
-   * Gets the last user that has modified this contribution.<br/>
+   * Gets the last user that has modified this contribution.<br>
    * When some old entities can not provide a modifier, then the creator is returned.
    * @return the detail about the user that has modified this contribution.
    */
@@ -118,11 +118,11 @@ public interface Contribution extends Serializable, Securable, Instance<Contribu
    * <p>
    * By default {@link Securable#canBeAccessedBy(User)} is implemented so that a user can access
    * a contribution if it has enough rights to access the application instance in which is
-   * managed this contribution.<br/>
-   * Indeed, this behavior is mostly the common one.<br/>
+   * managed this contribution.<br>
+   * Indeed, this behavior is mostly the common one.<br>
    * But In the case the application instance distributes its contribution along of a
    * categorization tree and the nodes of this tree support access rights, then the user must
-   * have also the rights to access the node to which belongs the content.<br/>
+   * have also the rights to access the node to which belongs the content.<br>
    * Of course it could exist other access rules...
    * </p>
    * @param user a user in Silverpeas.

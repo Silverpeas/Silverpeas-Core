@@ -55,7 +55,7 @@ public class Period implements Cloneable {
    * If date parameters are instances of {@link LocalDate}, take a look at method
    * {@link #between(LocalDate, LocalDate)}.
    * If date parameters are instances of {@link OffsetDateTime}, take a look at method
-   * {@link #between(OffsetDateTime, OffsetDateTime)}.<br/>
+   * {@link #between(OffsetDateTime, OffsetDateTime)}.<br>
    * @param start the start of the period. It defines the inclusive date or datetime at which the
    * period starts.
    * @param end the end day of the period. It defines the exclusive date or the exclusive datetime
@@ -63,7 +63,7 @@ public class Period implements Cloneable {
    * equal to the start date means the period is spanning all the day; it is equivalent to an end
    * date being one day after the start date.
    * @return the period of days between the two specified dates.
-   * @throw IllegalArgumentException if date parameters are not both {@link LocalDate} or
+   * @throws IllegalArgumentException if date parameters are not both {@link LocalDate} or
    * {@link OffsetDateTime} instances.
    */
   public static Period between(java.time.temporal.Temporal start, java.time.temporal.Temporal end) {
@@ -152,7 +152,7 @@ public class Period implements Cloneable {
    * Gets the inclusive temporal start date of this period of time.
    *
    * If the period is in days, then the returned temporal is a {@link LocalDate} which represents
-   * the first day of the period.<br/>
+   * the first day of the period.<br>
    * Otherwise, the date and the time in UTC/Greenwich at which this period starts on the
    * timeline is returned.
    * @return a temporal instance ({@link LocalDate} if all day period or {@link OffsetDateTime})
@@ -166,7 +166,7 @@ public class Period implements Cloneable {
    * Gets the exclusive temporal end date of this period of time.
    *
    * If the period is in days, then the returned temporal is a {@link LocalDate} which represents
-   * the last day of the period.<br/>
+   * the last day of the period.<br>
    * Otherwise, the date and the time in UTC/Greenwich at which this period ends on the
    * timeline is returned.
    * @return a temporal instance ({@link LocalDate} if all day period or {@link OffsetDateTime})

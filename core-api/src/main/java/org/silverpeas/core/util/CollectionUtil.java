@@ -204,7 +204,7 @@ public class CollectionUtil {
   }
 
   /**
-   * Makes an union between both of the given collections.<br/>
+   * Makes an union between both of the given collections.<br>
    * The result contains unique values.
    * @param col1 the first collection.
    * @param col2 the second collection.
@@ -219,7 +219,7 @@ public class CollectionUtil {
   }
 
   /**
-   * Makes an intersection between both of the given lists.<br/>
+   * Makes an intersection between both of the given lists.<br>
    * The result contains unique values.
    * @param list1 the first list.
    * @param list2 the second list.
@@ -232,7 +232,7 @@ public class CollectionUtil {
   }
 
   /**
-   * Makes an intersection between both of the given collections.<br/>
+   * Makes an intersection between both of the given collections.<br>
    * The result contains unique values.
    * @param col1 the first collection.
    * @param col2 the second collection.
@@ -338,9 +338,9 @@ public class CollectionUtil {
   }
 
   /**
-   * Handles the context of a rupture treatment.<br/>
+   * Handles the context of a rupture treatment.<br>
    * It must by initialized by calling {@link RuptureContext#newOne(List)} after using
-   * {@link CollectionUtil#findNextRupture(RuptureContext, Predicate)}.<br/>
+   * {@link CollectionUtil#findNextRupture(RuptureContext, Predicate)}.<br>
    * Callers can verify if it is no more possible to get an element from the rupture by calling
    * {@link RuptureContext#isTerminated()}.
    * @param <T> the type of the items in the list

@@ -55,7 +55,7 @@ import java.util.List;
  *   <li>{@link RedirectToPreviousNavigationStep}: when defined the user is redirected to the
  *   previous navigation step from the navigation stack</li>
  *   <li>{@link RedirectToNavigationStep}: when defined the user is redirected to the
- *   navigation step from the navigation stack that is identifier by {@link
+ *   navigation step from the navigation stack that is identifier by {@code
  *   RedirectToNavigationStep#value()}</li>
  * </ul>
  * The navigation context can be specified to the path attribute of TAG <view:browseBar .../>.

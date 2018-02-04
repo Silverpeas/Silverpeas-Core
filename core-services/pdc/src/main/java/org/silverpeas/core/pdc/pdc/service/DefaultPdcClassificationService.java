@@ -265,7 +265,7 @@ public class DefaultPdcClassificationService implements PdcClassificationService
    * </p>
    * <p>
    * Otherwise, the silverpeas content id is get or created by using the right implementation of
-   * {@link ContentInterface}.<br/>
+   * {@link ContentInterface}.<br>
    * If no implementation exists, and so that no silverpeas content id can be get or created, a
    * {@link NotSupportedException} is thrown because the process is in a case where no classification
    * should be used.

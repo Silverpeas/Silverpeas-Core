@@ -29,7 +29,7 @@ import java.util.BitSet;
  * URL-encoding utility for each URL part according to the RFC specs.
  * The original code, renamed to URLEncoder to match its responsibility, is available on :
  * https://github.com/resteasy/Resteasy/blob/master/jaxrs/security/resteasy-oauth/src/main/java/org/jboss/resteasy/auth/oauth/URLUtils.java
- * {@link http://www.ietf.org/rfc/rfc3986.txt}
+ * <a href="http://www.ietf.org/rfc/rfc3986.txt">IETF RFC 3986</a>}
  * @author stephane@epardaud.fr
  */
 public class URLEncoder {
@@ -49,7 +49,7 @@ public class URLEncoder {
 	}
 
 	/**
-	 * sub-delims = "!" / "$" / "&" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
+	 * sub-delims = "!" / "$" / "&amp;" / "'" / "(" / ")" / "*" / "+" / "," / ";" / "="
 	 */
 	public final static BitSet SUB_DELIMS = new BitSet(11);
 	static {
@@ -206,7 +206,7 @@ public class URLEncoder {
 	}
 
 	/**
-	 * path_segment = pchar <without> ";"
+	 * path_segment = pchar &lt;without&gt; ";"
 	 */
 	public final static BitSet PATH_SEGMENT = new BitSet();
 	static {
@@ -216,7 +216,7 @@ public class URLEncoder {
 	}
 
 	/**
-	 * path_param_name = pchar <without> ";" | "="
+	 * path_param_name = pchar &lt;without&gt; ";" | "="
 	 */
 	public final static BitSet PATH_PARAM_NAME = new BitSet();
 	static {
@@ -227,7 +227,7 @@ public class URLEncoder {
 	}
 
 	/**
-	 * path_param_value = pchar <without> ";"
+	 * path_param_value = pchar &lt;without&gt; ";"
 	 */
 	public final static BitSet PATH_PARAM_VALUE = new BitSet();
 	static {
@@ -289,7 +289,7 @@ public class URLEncoder {
 	}
 
 	/**
-	 * Encodes a string to be a valid query, which means it can contain PCHAR* | "?" | "/" without "=" | "&" | "+". Uses
+	 * Encodes a string to be a valid query, which means it can contain PCHAR* | "?" | "/" without "=" | "&amp;" | "+". Uses
 	 * UTF-8.
 	 */
 	public static String encodeQueryNameOrValue(final String queryNameOrValue) {
@@ -304,7 +304,7 @@ public class URLEncoder {
 
 	/**
 	 * Encodes a string to be a valid query with no parenthesis, which means it can contain PCHAR* | "?" | "/" without
-	 * "=" | "&" | "+" | "(" | ")". It strips parenthesis. Uses UTF-8.
+	 * "=" | "&amp;" | "+" | "(" | ")". It strips parenthesis. Uses UTF-8.
 	 */
 	public static String encodeQueryNameOrValueNoParen(final String queryNameOrValueNoParen) {
 		try {

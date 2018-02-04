@@ -79,7 +79,7 @@ public class PaginationPage {
   }
 
   /**
-   * Gets a paginated list from the given one by applying the pagination page context.<br/>
+   * Gets a paginated list from the given one by applying the pagination page context.<br>
    * If the list size is lower than the pagination page index, then pagination context is adjusted.
    * @param list the list to paginate.
    * @return the paginated list.
@@ -95,7 +95,7 @@ public class PaginationPage {
   }
 
   /**
-   * Gets the start index and the last index.<br/>
+   * Gets the start index and the last index.<br>
    * If the list size is lower than the pagination page index, then pagination context is adjusted.
    * @return the indexes.
    */

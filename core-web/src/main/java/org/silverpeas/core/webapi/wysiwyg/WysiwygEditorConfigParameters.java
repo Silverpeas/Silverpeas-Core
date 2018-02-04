@@ -34,7 +34,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * Representation of different parameters with which the WYSIWYG editor configuration could be
- * overridden.<br/>
+ * overridden.<br>
  * To get a loaded container, use {@link RequestParameterDecoder#decode(HttpRequest, Class)}.
  * @author Yohann Chastagnier
  */

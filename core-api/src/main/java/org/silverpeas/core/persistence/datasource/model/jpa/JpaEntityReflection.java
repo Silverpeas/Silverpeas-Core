@@ -28,7 +28,7 @@ import org.silverpeas.core.admin.user.model.User;
 import java.util.Date;
 
 /**
- * This class permits to manipulate hidden attributes of a Silverpeas JPA entity.<br/>
+ * This class permits to manipulate hidden attributes of a Silverpeas JPA entity.<br>
  * It is useful in particular case of technical treatments.
  * @author Yohann Chastagnier
  */

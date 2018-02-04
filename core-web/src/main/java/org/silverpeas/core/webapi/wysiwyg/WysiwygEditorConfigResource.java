@@ -52,7 +52,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * A REST Web resource which permits to obtain volatile identifier scoped into a component
- * instance.<br/>
+ * instance.<br>
  * Please consult {@link VolatileResourceCacheService}.
  * @author Yohann Chastagnier
  */

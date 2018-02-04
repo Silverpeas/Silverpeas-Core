@@ -393,7 +393,7 @@ public class CalendarEventEntity implements WebEntity {
   /**
    * Gets the pdc classification of this event.
    * <p>
-   * PDC classification can be set on the save of an event.<br/>
+   * PDC classification can be set on the save of an event.<br>
    * Once the creation of the event is validated by the user and the event is eventually created,
    * the PDC classification sent with this Web representation is used with PDC services.
    * </p>

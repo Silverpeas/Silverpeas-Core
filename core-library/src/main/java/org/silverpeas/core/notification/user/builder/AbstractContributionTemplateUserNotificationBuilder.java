@@ -76,13 +76,12 @@ public abstract class AbstractContributionTemplateUserNotificationBuilder<C exte
   /**
    * Performs additional template data.
    * <p>
-   * Following attributes have already been set:
+   * Following attributes have already been set:</p>
    * <ul>
    * <li>{@code contribution} with instance of {@link LocalizedContribution}</li>
    * <li>{@code contributionName} from the contribution title</li>
    * <li>{@code senderName} from {@link #getSenderName()} method</li>
    * </ul>
-   * </p>
    * @param localizedContribution the localized contribution.
    * @param template the current localized template.
    */

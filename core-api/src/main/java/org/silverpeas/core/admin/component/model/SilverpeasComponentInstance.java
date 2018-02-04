@@ -84,7 +84,7 @@ public interface SilverpeasComponentInstance extends Serializable {
 
   /**
    * Gets the translated name of the component according to given language (from a functional point
-   * of view).<br/>
+   * of view).<br>
    * If no translation exists for given language, then the one of {@link
    * DisplayI18NHelper#defaultLanguage} is returned.
    * @return the translated name of the component.
@@ -99,7 +99,7 @@ public interface SilverpeasComponentInstance extends Serializable {
 
   /**
    * Gets the translated description of the component according to given language (from a functional
-   * point of view).<br/>
+   * point of view).<br>
    * If no translation exists for given language, then the one of {@link
    * DisplayI18NHelper#defaultLanguage} is returned.
    * @return the translated description of the component.
@@ -107,7 +107,7 @@ public interface SilverpeasComponentInstance extends Serializable {
   String getDescription(String language);
 
   /**
-   * Indicates if the component instance is a personal one.<br/>
+   * Indicates if the component instance is a personal one.<br>
    * A personal component instance is linked to a user.
    * @return true if it is a personal one, false otherwise.
    */
@@ -148,7 +148,7 @@ public interface SilverpeasComponentInstance extends Serializable {
   }
 
   /**
-   * Gets the silverpeas role the given user has on the component instance.<br/>
+   * Gets the silverpeas role the given user has on the component instance.<br>
    * BE CAREFUL, the manager role is never returned as it corresponds to a space role.
    * @param user the user for which the roles are retrieved.
    * @return a list of {@link SilverpeasRole}, empty of no roles.
@@ -156,7 +156,7 @@ public interface SilverpeasComponentInstance extends Serializable {
   Collection<SilverpeasRole> getSilverpeasRolesFor(User user);
 
   /**
-   * Gets the highest silverpeas role the given user has on the component instance.<br/>
+   * Gets the highest silverpeas role the given user has on the component instance.<br>
    * BE CAREFUL, the manager role is never returned as it corresponds to a space role.
    * @param user the user for which the roles are retrieved.
    * @return a role if any, null otherwise.

@@ -227,7 +227,7 @@ public class CalendarEntity implements WebEntity {
   }
 
   /**
-   * Merges into given calendar instance the data from the entity.<br/>
+   * Merges into given calendar instance the data from the entity.<br>
    * System data are not merged (id, creation date, update date, ...)
    * @param calendar the calendar which will get the new data.
    * @return the given calendar instance with merged data.

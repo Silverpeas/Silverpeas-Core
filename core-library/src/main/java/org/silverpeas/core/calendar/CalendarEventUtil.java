@@ -62,7 +62,7 @@ public class CalendarEventUtil {
   }
 
   /**
-   * Gets the given temporal according to the calendar component data.<br/>
+   * Gets the given temporal according to the calendar component data.<br>
    * If the component is on all days, no offset is applied.
    * @param component the component data.
    * @param temporal the temporal to format.
@@ -74,7 +74,7 @@ public class CalendarEventUtil {
   }
 
   /**
-   * Gets the given temporal according to the calendar component data.<br/>
+   * Gets the given temporal according to the calendar component data.<br>
    * If the component is on all days, no offset is applied.
    * If a specific zoneId is given, then the date is set to the offset of the given zoneId
    * instead of the one linked to the calendar.

@@ -37,7 +37,7 @@ import java.util.Optional;
  * </p>
  * <p>
  * The aim is to compute from partial identifier the full {@link ContributionIdentifier} which can
- * then be used by {@link ContributionManager} services to get the contribution data.<br/>
+ * then be used by {@link ContributionManager} services to get the contribution data.<br>
  * This mechanism is useful for core services which have to perform treatments on contribution data.
  * (permalink for example)
  * </p>
@@ -61,9 +61,9 @@ public interface ContributionLocator {
    * and a type.
    * </p>
    * <p>
-   * A local identifier is an identifier which is unique into the context of a component.<br/>
+   * A local identifier is an identifier which is unique into the context of a component.<br>
    * In a higher scope level, application level so, there is no guarantee that the local identifier
-   * could be unique.<br/>
+   * could be unique.<br>
    * That is why the type is a mandatory data for the contribution location search. Indeed, a local
    * id could not be unique at application level, but a couple localId / type has to (publication
    * services for example).

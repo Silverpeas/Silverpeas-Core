@@ -142,7 +142,7 @@ public class CalendarWebManager {
   }
 
   /**
-   * Asserts the consistency of given data, otherwise an HTTP error is sent back.<br/>
+   * Asserts the consistency of given data, otherwise an HTTP error is sent back.<br>
    * Calendar must exists and be linked to the component instance represented bu given identifier.
    * @param componentInstanceId the identifier of current handled component instance.
    * @param originalCalendar the calendar to check against the other data.
@@ -156,7 +156,7 @@ public class CalendarWebManager {
   }
 
   /**
-   * Asserts the consistency of given data, otherwise an HTTP error is sent back.<br/>
+   * Asserts the consistency of given data, otherwise an HTTP error is sent back.<br>
    * Checks of {@link #assertDataConsistency(String, Calendar)} is performed.
    * And also the followings ones:
    * <ul>
@@ -184,7 +184,7 @@ public class CalendarWebManager {
   }
 
   /**
-   * Asserts the consistency of given data, otherwise an HTTP error is sent back.<br/>
+   * Asserts the consistency of given data, otherwise an HTTP error is sent back.<br>
    * Checks of {@link #assertDataConsistency(String, Calendar, CalendarEvent)} is performed.
    * And also the followings ones:
    * <ul>
@@ -224,7 +224,7 @@ public class CalendarWebManager {
   }
 
   /**
-   * Creates an event from the given calendar and event data.<br/>
+   * Creates an event from the given calendar and event data.<br>
    * This method handles also a common behavior the UI must have between each way an event is
    * saved (from a controller, a WEB service...)
    * @param calendar the calendar on which the event is added.
@@ -276,7 +276,7 @@ public class CalendarWebManager {
   }
 
   /**
-   * Saves the given calendar.<br/>
+   * Saves the given calendar.<br>
    * This method handles also a common behavior the UI must have between each way a calendar is
    * saved (from a controller, a WEB service...)
    * @param calendar the calendar to save.
@@ -298,7 +298,7 @@ public class CalendarWebManager {
   }
 
   /**
-   * Deletes the given calendar.<br/>
+   * Deletes the given calendar.<br>
    * This method handles also a common behavior the UI must have between each way a calendar is
    * deleted (from a controller, a WEB service...)
    * @param calendar the calendar to delete.
@@ -380,7 +380,7 @@ public class CalendarWebManager {
   }
 
   /**
-   * Saves an event occurrence.<br/>
+   * Saves an event occurrence.<br>
    * This method handles also a common behavior the UI must have between each way an event is
    * saved (from a controller, a WEB service...)
    * @param occurrence the occurrence to save.
@@ -447,7 +447,7 @@ public class CalendarWebManager {
   }
 
   /**
-   * Deletes occurrences of an event from the given occurrence.<br/>
+   * Deletes occurrences of an event from the given occurrence.<br>
    * This method handles also a common behavior the UI must have between each way an event is
    * deleted (from a controller, a WEB service...)
    * @param occurrence the occurrence to delete.
@@ -497,7 +497,7 @@ public class CalendarWebManager {
 
   /**
    * Updates the participation of an attendee of an event or on an occurrence of an event from
-   * the given data.<br/>
+   * the given data.<br>
    * This method handles also a common behavior the UI must have between each way an event is
    * deleted (from a controller, a WEB service...)
    * @param occurrence the occurrence.
@@ -616,7 +616,7 @@ public class CalendarWebManager {
 
   /**
    * Gets the event occurrences associated to a calendar and contained a the time window specified
-   * by the start and end datetimes.<br/>
+   * by the start and end datetimes.<br>
    * The occurrences are sorted from the lowest to the highest date.
    * @param startDate the start date of time window.
    * @param endDate the end date of time window.
@@ -633,7 +633,7 @@ public class CalendarWebManager {
 
   /**
    * Gets all event occurrences associated to users and contained a the time window specified
-   * by the start and end date times.<br/>
+   * by the start and end date times.<br>
    * Attendees which have answered negatively about their presence are not taken into account.
    * The occurrences are sorted from the lowest to the highest date and mapped by user identifiers.
    * @param currentUserAndComponentInstanceId the current user and the current component instance

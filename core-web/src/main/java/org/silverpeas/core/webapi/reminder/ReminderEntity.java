@@ -196,7 +196,7 @@ public class ReminderEntity implements WebEntity {
   }
 
   /**
-   * Merges into given reminder instance the data from the entity.<br/>
+   * Merges into given reminder instance the data from the entity.<br>
    * System data are not merged (id, creation date, update date, ...)
    * @param reminder the reminder which will get the new data.
    * @return the given reminder instance with merged data.

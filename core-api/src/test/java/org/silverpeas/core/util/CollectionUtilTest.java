@@ -177,7 +177,7 @@ public class CollectionUtilTest {
   }
 
   /**
-   * Creating an list of TestElement.<br/>
+   * Creating an list of TestElement.<br>
    * [{100,2},{110,2},{null,3},{110,3},{110,null},{120,null}]
    * @throws Exception
    */

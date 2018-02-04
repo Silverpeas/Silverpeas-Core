@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
 
 /**
  * This class is a request parameter container dedicated to occurrence of calendar event
- * queries.<br/>
+ * queries.<br>
  * To get a loaded container, use {@link RequestParameterDecoder#decode(HttpRequest, Class)}.
  * @author Yohann Chastagnier
  */

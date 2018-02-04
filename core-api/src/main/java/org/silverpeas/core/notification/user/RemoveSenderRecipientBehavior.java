@@ -28,7 +28,7 @@ import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
 /**
  * Implementation of {@link UserNotificationBuilder} must implement this interface in order to
  * specify to the mechanism that the sender of a notification must be removed from the
- * recipients.<br/>
+ * recipients.<br>
  * By this way, the implementation takes advantage on centralized treatments.
  * @author Yohann Chastagnier
  */

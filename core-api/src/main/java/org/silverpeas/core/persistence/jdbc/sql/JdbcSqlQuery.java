@@ -365,7 +365,7 @@ public class JdbcSqlQuery {
   }
 
   /**
-   * Configures the query execution in order to retrieve only items of pagination.<br/>
+   * Configures the query execution in order to retrieve only items of pagination.<br>
    * Be careful to execute a SQL query containing an {@code ORDER BY} clause!!!
    * @param pagination the pagination criterion to apply.
    * @return the instance of {@link JdbcSqlQuery} that represents the SQL query.

@@ -80,7 +80,7 @@ public class ArrayColumnTag extends BodyTagSupport {
 
   /**
    * This class has been created in order to get a right context for the {@link Function} delivered
-   * by the execution of {@link LambdaExpression} of {@link #compareOn} attribute.<br/>
+   * by the execution of {@link LambdaExpression} of {@link #compareOn} attribute.<br>
    * Without this class which creates a sub context for Lambda, compareOn of each arrayColumn tag
    * has the same comparator, the last one.
    */

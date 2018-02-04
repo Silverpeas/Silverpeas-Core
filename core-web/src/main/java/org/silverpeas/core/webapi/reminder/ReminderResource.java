@@ -105,7 +105,7 @@ public class ReminderResource extends RESTWebService {
    * Gets the identifier list of possible of durations.
    * <p>
    * An identifier of a duration is the concatenation about the duration value and the duration
-   * unit ({@link TimeUnit}).<br/>
+   * unit ({@link TimeUnit}).<br>
    * {@code 15MINUTE} for example.
    * </p>
    * @return a filled list if any, or an empty one if no trigger can be scheduled.
@@ -158,7 +158,7 @@ public class ReminderResource extends RESTWebService {
   }
 
   /**
-   * Creates the reminder from its JSON representation and returns it once created.<br/>
+   * Creates the reminder from its JSON representation and returns it once created.<br>
    * If the user isn't authenticated, a 401 HTTP code is returned. If the user isn't authorized to
    * save the reminder, a 403 is returned. If a problem occurs when processing the request, a 503
    * HTTP code is returned.
@@ -194,7 +194,7 @@ public class ReminderResource extends RESTWebService {
   }
 
   /**
-   * Updates the reminder from its JSON representation and returns it once updated.<br/>
+   * Updates the reminder from its JSON representation and returns it once updated.<br>
    * If the user isn't authenticated, a 401 HTTP code is returned. If the user isn't authorized to
    * save the reminder, a 403 is returned. If a problem occurs when processing the request, a 503
    * HTTP code is returned.
@@ -231,7 +231,7 @@ public class ReminderResource extends RESTWebService {
   }
 
   /**
-   * Deletes the given reminder from its JSON representation.<br/>
+   * Deletes the given reminder from its JSON representation.<br>
    * If the user isn't authenticated, a 401 HTTP code is returned. If the user isn't authorized to
    * delete the reminder, a 403 is returned. If a problem occurs when processing the request, a 503
    * HTTP code is returned.

@@ -173,7 +173,7 @@ public abstract class AbstractContentInterface implements ContentInterface {
   /**
    * Same as {@link #createSilverContent(Contribution, String)}, but here the {@link Connection}
    * is given and instead of {@link Contribution} resource identifier and component instance
-   * identifier are given.<br/>
+   * identifier are given.<br>
    * Internal method {@link #computeSilverContentVisibility(Contribution)} will be called with a
    * null parameter.
    * @throws ContentManagerException on technical error.

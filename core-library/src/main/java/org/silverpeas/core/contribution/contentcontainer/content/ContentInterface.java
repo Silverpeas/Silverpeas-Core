@@ -68,7 +68,7 @@ public interface ContentInterface {
   <T extends Contribution> int getSilverContentId(T contribution);
 
   /**
-   * Gets the silverpeas content identifier about a contribution.<br/>
+   * Gets the silverpeas content identifier about a contribution.<br>
    * If no content identifier exists, then it is created.
    * @param <T> a contribution implementation.
    * @param contribution a contribution.
@@ -82,9 +82,9 @@ public interface ContentInterface {
    * component instance (represented by an id).
    * </p>
    * <p>
-   * In a first time, the {@link Contribution} from the given identifiers is retrieved.<br/>
-   * An error is thrown if it does not exists.<br/>
-   * Then the getting or creating of the linked silverpeas content id is performed.<br/>
+   * In a first time, the {@link Contribution} from the given identifiers is retrieved.<br>
+   * An error is thrown if it does not exists.<br>
+   * Then the getting or creating of the linked silverpeas content id is performed.<br>
    * For performances, and if it knows his context, the caller can performed {@link
    * ContentManager#getSilverContentId(String, String)} before calling this method.
    * </p>

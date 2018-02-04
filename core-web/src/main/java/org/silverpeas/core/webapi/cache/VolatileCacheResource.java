@@ -40,7 +40,7 @@ import javax.ws.rs.core.MediaType;
 
 /**
  * A REST Web resource which permits to obtain volatile identifier scoped into a component
- * instance.<br/>
+ * instance.<br>
  * Please consule {@link VolatileResourceCacheService}.
  * @author Yohann Chastagnier
  */

@@ -302,7 +302,7 @@ public class Recurrence implements Cloneable {
   }
 
   /**
-   * Sets a frequency to this recurrence by specifying a recurrence period.<br/>
+   * Sets a frequency to this recurrence by specifying a recurrence period.<br>
    * When the new frequency is a daily or a yearly one, days of weeks are reset.
    * @param frequency the frequency to set.
    * @return itself.

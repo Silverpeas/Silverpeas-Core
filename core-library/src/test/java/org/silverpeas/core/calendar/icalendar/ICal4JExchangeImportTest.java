@@ -510,12 +510,12 @@ public class ICal4JExchangeImportTest {
   }
 
   /**
-   * Centralization of verification.<br/>
+   * Centralization of verification.<br>
    * <p>
-   * The mechanism is the following:<br/>
+   * The mechanism is the following:<br>
    * <p/>
    * the first parameter represent the name of the file that contains events to import and the
-   * second one is the list of expected calendar events.<br/>
+   * second one is the list of expected calendar events.<br>
    * Each lines starting with '#' character is ignored.
    * </p>
    * @param fileNameOfImport the name of the file that contains events to import.

@@ -115,7 +115,7 @@ public interface SilverpeasComponent {
   }
 
   /**
-   * Indicates if the component instance is a personal one.<br/>
+   * Indicates if the component instance is a personal one.<br>
    * A personal component instance is linked to a user.
    * @return true if it is a personal one, false otherwise.
    */

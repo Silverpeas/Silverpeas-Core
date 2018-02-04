@@ -47,9 +47,9 @@ public class CalendarEventModel extends DefaultContributionModel<CalendarEvent> 
 
   /**
    * <p>
-   * About property {@link CalendarEvent#NEXT_START_DATE_MODEL_PROPERTY}:<br/>
+   * About property {@link CalendarEvent#NEXT_START_DATE_MODEL_PROPERTY}:<br>
    * If no {@link ZonedDateTime} given as first parameter, then the {@link ZonedDateTime#now()}
-   * is taken into account, otherwise the given {@link ZonedDateTime} is used.<br/>
+   * is taken into account, otherwise the given {@link ZonedDateTime} is used.<br>
    * The next occurrence start date from the {@link ZonedDateTime} instance is returned.
    * </p>
    */

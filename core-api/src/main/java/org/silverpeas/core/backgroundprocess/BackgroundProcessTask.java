@@ -38,7 +38,7 @@ import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
 
 /**
- * This task is in charge of processing background processes.<br/>
+ * This task is in charge of processing background processes.<br>
  * All services which needs to perform background processes needs to push a
  * {@link AbstractBackgroundProcessRequest} to {@link BackgroundProcessTask}.
  * <p>
@@ -46,9 +46,8 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
  *  {@link AbstractBackgroundProcessRequest} implementation). The lock duration is the minimal
  *  time the requests are ignored after a first one with a same identifier has been processed.
  * </p>
- * <p>
- *  Here the rules:
- *  <ul>
+ * <p>Here the rules:</p>
+ * <ul>
  *    <li>If a new request is pushed whereas it does not exist already one into the queue with a
  *    same identifier, then the new request is pushed into queue.</li>
  *    <li>If a new request is pushed whereas it exists already one into the queue with a same
@@ -60,7 +59,6 @@ import static org.apache.commons.lang3.builder.ToStringStyle.SHORT_PREFIX_STYLE;
  *    </ul>
  *    </li>
  *  </ul>
- * </p>
  * <p>
  *   If a request has not yet been processed, it could happen that the lock duration will be
  *   greater than the one specified in case a new request with a same identifier is pushed.

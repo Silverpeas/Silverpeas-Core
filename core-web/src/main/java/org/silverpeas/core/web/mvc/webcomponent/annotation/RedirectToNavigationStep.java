@@ -40,7 +40,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
  * <p>
  * When a HTTP method with this annotation is called, the redirection is performed from
  * informations known by the navigation step returned by {@link
- * NavigationContext#findNavigationStepFrom(String)} ()} method with {@link #value()} as given
+ * NavigationContext#findNavigationStepFrom(String)} ()} method with {@code #value()} as given
  * parameter.
  */
 @Inherited

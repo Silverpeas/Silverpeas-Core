@@ -58,9 +58,9 @@ public class TimeZoneUtil {
 
   /**
    * Gets the zone id instance from a time zone id which could be different than the registered
-   * identifiers of {@link ZoneId#getAvailableZoneIds()} instances.<br/>
+   * identifiers of {@link ZoneId#getAvailableZoneIds()} instances.<br>
    * If not registered, the zone identifier is search into a property file:
-   * org.silverpeas.util.timezone.properties<br/>
+   * org.silverpeas.util.timezone.properties<br>
    * The mapping comes from
    * <a href="http://unicode.org/repos/cldr/trunk/common/supplemental/windowsZones.xml">this
    * source</a>.

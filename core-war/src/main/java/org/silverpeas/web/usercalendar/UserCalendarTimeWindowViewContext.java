@@ -35,7 +35,7 @@ import java.time.ZoneId;
 public class UserCalendarTimeWindowViewContext extends CalendarTimeWindowViewContext {
 
   /**
-   * Constructs a new calendar view of the specified user calendar.<br/>
+   * Constructs a new calendar view of the specified user calendar.<br>
    * @param componentInstanceId the component instance identifier.
    * @param locale the locale to take into account (fr for the french locale (fr_FR) for example).
    * @param zoneId the zoneId to take into account (ZoneId.of("Europe/Paris") for example).

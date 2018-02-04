@@ -36,7 +36,7 @@ import java.lang.reflect.Type;
  * The type of the entity referred by a such reference is defined by the type of the reference
  * itself; An entity reference must be concrete and its type carries the type of the entity it is
  * upon. For example, you can implement a reference to a user by naming it
- * <code>UserReference<UserDetail></code>.
+ * <code>UserReference&lt;UserDetail&gt;</code>.
  *
  * @param <T> the type of the entity on which this reference is about.
  * @author mmoquillon

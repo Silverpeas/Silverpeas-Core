@@ -33,7 +33,7 @@ import java.util.function.Function;
 
 /**
  * Extension of {@link SelectableUIEntity} which handles simple cases of {@link Contribution} UI
- * selection.<br/>
+ * selection.<br>
  * Of course, if some stuffs are missing into this implementation, it is highly recommended to
  * extend this class.
  * @param <C> the type of the {@link Contribution}.

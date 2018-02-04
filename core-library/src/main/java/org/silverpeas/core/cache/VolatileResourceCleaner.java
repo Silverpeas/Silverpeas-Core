@@ -33,13 +33,13 @@ import org.silverpeas.core.contribution.model.Contribution;
  * identifier (WYSIWYG and images on a contribution creation for example). But the {@link
  * Contribution} is not always yet registered into the repository when the attachments are
  * realized.
- * It is at this moment that {@link VolatileResourceCacheService} is used.<br/>
+ * It is at this moment that {@link VolatileResourceCacheService} is used.<br>
  * When a such service is used, some resources have to be cleared in case where creation of a
  * {@link Contribution} that has been aborted before its validation.
  * </p>
  * <p>
  * So all the services which potentially are used by volatile services should implements this
- * interface.<br/>
+ * interface.<br>
  * At the end of the user session, {@link #cleanVolatileResources(String, String)} of all
  * implementations is called in order to clean the volatile context.
  * </p>

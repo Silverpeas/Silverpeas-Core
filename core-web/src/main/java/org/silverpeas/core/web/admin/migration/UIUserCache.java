@@ -29,7 +29,7 @@ import org.silverpeas.core.admin.user.model.User;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 
 /**
- * Handles a cache of user dedicated to the UI.<br/>
+ * Handles a cache of user dedicated to the UI.<br>
  * When a user is not yet into the cache, then it is loaded from the persistence and put into cache.
  * @author silveryocha
  */

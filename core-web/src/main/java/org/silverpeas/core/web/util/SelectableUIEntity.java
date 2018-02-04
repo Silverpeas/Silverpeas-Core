@@ -44,7 +44,7 @@ public abstract class SelectableUIEntity<D> {
   private Boolean selected;
 
   /**
-   * Initializes the item with the given data.<br/>
+   * Initializes the item with the given data.<br>
    * By default, item is marked as not selected.
    * @param data the data to handle.
    */
@@ -54,7 +54,7 @@ public abstract class SelectableUIEntity<D> {
 
   /**
    * Initializes the item with the given data and a set of item identifiers which will provide
-   * the selected indicator lazily.<br/>
+   * the selected indicator lazily.<br>
    * If no selected id set is given, then the item is marked as not selected by default.
    * @param data the data to handle.
    * @param selectedIds the set of selected identifiers (identifiers provided by {@link #getId()}

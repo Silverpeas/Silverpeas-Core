@@ -1987,9 +1987,9 @@ public class ProcessInstanceImpl
    * If the 7 lists @OneToMany were eagerly, the SQL query could be super huge when getting data,
    * even for only one process instance.<br>
    * As an example, if it exists 5 lines into each list, the SQL query loads
-   * 5x5x5x5x5x5x5=78125 lines for one process instance!!! Not amazing...<br/>
+   * 5x5x5x5x5x5x5=78125 lines for one process instance!!! Not amazing...<br>
    * Graph entity is not the solution as it should do here the same thing that the EAGER fetch
-   * directive on @ManyToOne.<br/>
+   * directive on @ManyToOne.<br>
    * So there is yet 2 options:
    * <ul>
    *   <li>loading the things by sub SQL queries</li>

@@ -118,7 +118,7 @@ public class CalendarEventAttendeeEntity implements WebEntity {
   }
 
   /**
-   * Adds to the given event the current attendee if it is not already existing.<br/>
+   * Adds to the given event the current attendee if it is not already existing.<br>
    * If the attendee is already referenced by the event, only the presence status is updated.
    * @return a {@link CalendarEvent} instance.
    */

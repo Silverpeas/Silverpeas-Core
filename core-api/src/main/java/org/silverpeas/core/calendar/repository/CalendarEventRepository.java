@@ -53,7 +53,7 @@ public interface CalendarEventRepository extends EntityRepository<CalendarEvent>
   CalendarEvent getByExternalId(final Calendar calendar, final String externalId);
 
   /**
-   * Gets all the events that satisfies the specified filter<br/>
+   * Gets all the events that satisfies the specified filter<br>
    * Please be careful to always close the streams in order to avoid memory leaks!!!
    * <pre>
    * {@code

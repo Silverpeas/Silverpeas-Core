@@ -46,7 +46,7 @@
       <name>attachment</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
-      <type>org.silverpeas.attachment.model.SimpleDocument</type>
+      <type>org.silverpeas.core.contribution.attachment.model.SimpleDocument</type>
     </attribute>
     <attribute>
       <description>To indicate if there is a xml form attached to the attachment.</description>

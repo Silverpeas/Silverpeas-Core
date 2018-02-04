@@ -209,7 +209,7 @@ public interface Administration {
   Map<String, WAComponent> getAllWAComponents();
 
   /**
-   * Gets the component instance related to the given identifier.<br/>
+   * Gets the component instance related to the given identifier.<br>
    * In contrary to {@link #getComponentInst(String)}, {@link #getComponentInstLight(String)}
    * signatures, this one is able to return different kinds of implementation of {@link
    * SilverpeasComponentInstance}:

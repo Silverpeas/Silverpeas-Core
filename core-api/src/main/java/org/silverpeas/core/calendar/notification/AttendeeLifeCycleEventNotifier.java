@@ -66,7 +66,6 @@ public class AttendeeLifeCycleEventNotifier
    * @param subType the subtype of the lifecycle change indicating if it is for a single or more
    * events.
    * @param attendees the attendees concerned by the event.
-   * @return the event relating a change in the lifecycle of the attendees.
    */
   protected final void notifyEventOn(final ResourceEvent.Type type, LifeCycleEventSubType subType,
       Attendee... attendees) {

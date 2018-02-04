@@ -31,7 +31,7 @@ package org.silverpeas.core.calendar;
  * "LOW" is mapped into this property such that a property value in the range of one (US-ASCII
  * decimal 49) to four (US-ASCII decimal 52) specifies "HIGH" priority. A value of five (US-ASCII
  * decimal 53) is the normal or "MEDIUM" priority. A value in the range of six (US- ASCII decimal
- * 54) to nine (US-ASCII decimal 58) is "LOW" priority.<br/>
+ * 54) to nine (US-ASCII decimal 58) is "LOW" priority.<br>
  * As Silverpeas Handles for now only HIGH or NORMAL, Silverpeas considers LOW as NORMAL.
  * </p>
  * @author mmoquillon

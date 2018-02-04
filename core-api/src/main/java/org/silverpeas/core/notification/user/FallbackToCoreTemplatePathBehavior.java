@@ -28,7 +28,7 @@ import org.silverpeas.core.notification.user.builder.UserNotificationBuilder;
 /**
  * Implementation of {@link UserNotificationBuilder} must implement this interface in order to
  * specify to the mechanism that if the template path does not exist into component repository then
- * it is looked up into core repository.<br/>
+ * it is looked up into core repository.<br>
  * This interface must be used only by {@link UserNotificationBuilder} implemented into the core.
  * Indeed, there is no advantage to use it from {@link UserNotificationBuilder} implementations from
  * components.

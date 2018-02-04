@@ -51,7 +51,7 @@ public class SilverpeasComponentInstanceRoleProvider {
 
   /**
    * Gets the highest role on the component represented by the given identifier the current user
-   * has.<br/>
+   * has.<br>
    * The result is put into request cache in order to improve performances in case of multiple
    * access from a single HTTP request.
    * @param componentInstanceId a component instance identifier.

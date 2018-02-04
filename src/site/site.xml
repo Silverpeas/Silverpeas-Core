@@ -13,7 +13,7 @@
     Open Source Software ("FLOSS") applications as described in Silverpeas's
     FLOSS exception.  You should have received a copy of the text describing
     the FLOSS exception, and it is also available here:
-    "https://www.silverpeas.org/legal/floss_exception.html"
+    "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
 
     This program is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -24,63 +24,31 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 -->
-<project xmlns="http://maven.apache.org/DECORATION/1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/DECORATION/1.0.0 http://maven.apache.org/xsd/decoration-1.0.0.xsd">
+
+<project xmlns="http://maven.apache.org/DECORATION/1.8.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/DECORATION/1.8.0 http://maven.apache.org/xsd/decoration-1.8.0.xsd">
   <bannerLeft>
     <name>Silverpeas</name>
     <src>images/logo-silverpeas.png</src>
-    <href>http://www.silverpeas.org/</href>
+    <href>https://www.silverpeas.org/</href>
   </bannerLeft>
+  <googleAnalyticsAccountId>UA-2015926-3</googleAnalyticsAccountId>
   <publishDate position="right" format="yyyy-MM-dd" />
   <version position="right" />
+  <!-- Powered By -->
+  <poweredBy>
+    <logo name="Netbeans" href="http://netbeans.org/downloads/index.html" img="https://www.silverpeas.org/images/logos/logo_netBeans.gif" />
+    <logo name="Eclipse"  href="http://www.eclipse.org" img="https://www.silverpeas.org/images/logos/logo_eclipse.png" />
+    <logo name="Maven" href="http://maven.apache.org/" img="https://www.silverpeas.org/images/logos/logo_maven.png" />
+    <logo name="Izpack" href="http://izpack.org/" img="https://www.silverpeas.org/images/logos/logo_izPack.png" />
+    <logo name="Subshell Toromiro" href="http://www.subshell.com/en/toromiro/" img="https://www.silverpeas.org/images/logos/toromiro-logo.png" />
+    <logo name="Yourkit" href="http://www.yourkit.com" img="https://www.silverpeas.org/images/logos/yourkit-logo.png" />
+  </poweredBy>
   <skin>
     <groupId>org.apache.maven.skins</groupId>
     <artifactId>maven-fluido-skin</artifactId>
-    <version>1.3.0</version>
+    <version>1.7</version>
   </skin>
-  <custom>
-    <fluidoSkin>
-      <topBarEnabled>true</topBarEnabled>
-      <sideBarEnabled>false</sideBarEnabled>
-      <sourceLineNumbersEnabled>false</sourceLineNumbersEnabled>
-      <navBarStyle>navbar-inverse</navBarStyle>
-      <gitHub>
-        <projectId>Silverpeas</projectId>
-        <ribbonOrientation>right</ribbonOrientation>
-        <ribbonColor>orange</ribbonColor>
-      </gitHub>
-      <!--
-      <twitter>
-        <user>Silverpeas</user>
-        <showUser>true</showUser>
-        <showFollowers>true</showFollowers>
-      </twitter>
-      -->
-    </fluidoSkin>
-  </custom>
-  <!-- Powered By -->
-  <poweredBy>
-    <logo name="Netbeans 7.3" href="http://netbeans.org/downloads/index.html" img="http://repository.silverpeas.org/docs/core/images/logos/logo_netBeans.gif" />
-    <logo name="Eclipse 3.7"  href="http://www.eclipse.org" img="http://repository.silverpeas.org/docs/core/images/logos/logo_eclipse.png" />
-    <logo name="Intellij Idea" href="http://www.jetbrains.com/idea/" img="http://www.jetbrains.com/idea/opensource/img/all/banners/idea120x60_white.gif" />
-    <logo name="Maven 3.0.x" href="http://maven.apache.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_maven.png" />
-    <!-- logo name="Zeroturnaround" href="http://www.zeroturnaround.com/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_zeroTurnaround.png" / -->
-    <logo name="Izpack" href="http://izpack.org/" img="http://repository.silverpeas.org/docs/core/images/logos/logo_izPack.png" />
-    <logo name="Subshell Toromiro" href="http://www.subshell.com/en/toromiro/" img="http://repository.silverpeas.org/docs/core/images/logos/toromiro-logo.png" />
-    <logo name="Yourkit" href="http://www.yourkit.com" img="http://repository.silverpeas.org/docs/core/images/logos/yourkit-logo.png" />
-  </poweredBy>
   <body>
-    <head>
-      <script type="text/javascript">
-        var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-        document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-      </script>
-      <script type="text/javascript">
-        try {
-        var pageTracker = _gat._getTracker("UA-2015926-3");
-        pageTracker._trackPageview();
-        } catch(err) {}
-      </script>
-    </head>
     <breadcrumbs>
       <item name="Silverpeas" href="http://www.silverpeas.org"/>
       <item name="Silverpeas Core" href="index.html"/>
@@ -100,23 +68,14 @@
       <item name="Screenshots" href="../../screenshots.html" collapse="true"/>
       <item name="Install Silverpeas" href="../../installation/index.html" collapse="true">
         <item name="Try Silverpeas" href="../../installation/izpack.html" collapse="false"/>
-        <item name="Installation" href="../../installation/installation.html" collapse="false"/>
-        <item name="GNU/Linux Native Packages" href="http://www.silverpeas.org/repo/index.html" collapse="false" />
+        <item name="Installation of Silverpeas 6" href="../../installation/installationV6.html" collapse="false"/>
         <item name="Silverpeas in the Cloud" href="../../installation/cloud.html" collapse="false" />
+        <item name="Online Edition of Documents" href="../../installation/webdav.html" collapse="false"/>
       </item>
       <item name="Our versions" href="#" collapse="true">
         <item name="Roadmap" href="https://tracker.silverpeas.org/projects/silverpeas/roadmap?completed=1" collapse="false"/>
         <item name="Changelog" href="https://tracker.silverpeas.org/projects/silverpeas/roadmap?completed=1&amp;with_subprojects=1"/>
-        <item name="Release Notes" href="../../releasenotes.html" collapse="false"/>
-      </item>
-      <item name="Source Code" href="../../source-repository.html" collapse="true"/>
-      <item name="Configuration" href="#" collapse="true">
-        <item name="Securing JBoss" href="../../configuration/securing_jboss.html" collapse="false"/>
-        <item name="Security" href="../../configuration/securing.html" collapse="false"/>
-        <item name="Migration" href="../../configuration/migration.html"  collapse="false"/>
-        <item name="LDAP Synchronization" href="../../configuration/ldap.html" collapse="false"/>
-        <item name="Configuring a reverse-proxy" href="../../configuration/proxy.html"  collapse="true"/>
-        <item name="CAS" href="../../configuration/cas.html" collapse="true"/>
+        <item name="Release Notes" href="releasenotes.html" collapse="false"/>
       </item>
       <item name="FAQ" href="../../faq.html" collapse="true"/>
       <item name="Blog" href="http://www.silverpeas.org/blog" collapse="true"/>
@@ -145,6 +104,33 @@
       <item name="Silverpeas Trade Mark" href="../../legal/trademark.html" collapse="true"/>
     </menu>
     <menu name="Silverpeas Core Documentation" ref="reports"/>
+    <footer>
+      <![CDATA[
+      <div class="license">
+        <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Licence Creative Commons" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a>.
+      </div>
+      ]]>
+    </footer>
   </body>
-</project>
 
+  <custom>
+    <fluidoSkin>
+      <topBarEnabled>true</topBarEnabled>
+      <sideBarEnabled>false</sideBarEnabled>
+      <sourceLineNumbersEnabled>false</sourceLineNumbersEnabled>
+      <navBarStyle>navbar-inverse</navBarStyle>
+      <gitHub>
+        <projectId>Silverpeas</projectId>
+        <ribbonOrientation>right</ribbonOrientation>
+        <ribbonColor>orange</ribbonColor>
+      </gitHub>
+      <!--
+      <twitter>
+        <user>Silverpeas</user>
+        <showUser>true</showUser>
+        <showFollowers>true</showFollowers>
+      </twitter>
+      -->
+    </fluidoSkin>
+  </custom>
+</project>

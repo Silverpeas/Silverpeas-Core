@@ -153,7 +153,6 @@ public class PersistentResourceToken
    * Removes the token for the specified resource.
    *
    * @param resource the resource for which the token has to be removed.
-   * @throws TokenException
    */
   public static void removeToken(final EntityReference resource) {
     PersistentResourceTokenService service = PersistentResourceTokenService.get();

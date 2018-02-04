@@ -191,8 +191,8 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   }
 
   /**
-   * Accepts the attendance.<br/>
-   * Calling this method represents an answer action.<br/>
+   * Accepts the attendance.<br>
+   * Calling this method represents an answer action.<br>
    * Call {@link #setParticipationStatus(ParticipationStatus)} method to modify the status
    * without specifying that is in case of an answer.
    */
@@ -202,8 +202,8 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   }
 
   /**
-   * Declines the attendance.<br/>
-   * Calling this method represents an answer action.<br/>
+   * Declines the attendance.<br>
+   * Calling this method represents an answer action.<br>
    * Call {@link #setParticipationStatus(ParticipationStatus)} method to modify the status
    * without specifying that is in case of an answer.
    */
@@ -213,8 +213,8 @@ public abstract class Attendee extends SilverpeasJpaEntity<Attendee, UuidIdentif
   }
 
   /**
-   * Tentatively accepts the attendance.<br/>
-   * Calling this method represents an answer action.<br/>
+   * Tentatively accepts the attendance.<br>
+   * Calling this method represents an answer action.<br>
    * Call {@link #setParticipationStatus(ParticipationStatus)} method to modify the status
    * without specifying that is in case of an answer.
    */

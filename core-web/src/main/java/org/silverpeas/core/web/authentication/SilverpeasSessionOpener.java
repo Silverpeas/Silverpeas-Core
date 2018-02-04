@@ -219,7 +219,7 @@ public class SilverpeasSessionOpener {
   }
 
   /**
-   * Indicates if the change of password is allowed.<br/>
+   * Indicates if the change of password is allowed.<br>
    * The information is taken from the HTTP session which has been updated by the
    * {@link AuthenticationService}
    * @param session the HTTP session.

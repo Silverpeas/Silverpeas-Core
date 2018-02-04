@@ -156,7 +156,7 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
   }
 
   /**
-   * Gets the selection parameters about the view of user participation.<br/>
+   * Gets the selection parameters about the view of user participation.<br>
    * This method must be overrated in case of additional settings to apply.
    * @return the selection parameters.
    */
@@ -183,7 +183,7 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
   }
 
   /**
-   * Gets the selection parameters about attendees.<br/>
+   * Gets the selection parameters about attendees.<br>
    * This method must be overrated in case of additional settings to apply.
    * @return the selection parameters.
    */

@@ -137,10 +137,10 @@ public interface OrganizationController extends java.io.Serializable {
   String getComponentParameterValue(String sComponentId, String parameterName);
 
   /**
-   * Gets the component instance related to the given identifier.<br/>
+   * Gets the component instance related to the given identifier.<br>
    * In contrary to {@link #getComponentInst(String)}, {@link #getComponentInstLight(String)}
    * signatures, this one is able to return different kinds of implementation of {@link
-   * SilverpeasComponentInstance}.<br/>
+   * SilverpeasComponentInstance}.<br>
    * So, this signature is useful into contexts of transversal treatments.
    * @param componentInstanceIdentifier the identifier of the requested component instance.
    * @return an optional component instance.
@@ -250,13 +250,13 @@ public interface OrganizationController extends java.io.Serializable {
 
   /**
    * Gets the collection of silverpeas roles the given user has on the component instance
-   * represented by the given identifier.<br/>
+   * represented by the given identifier.<br>
    * In contrary to {@link #getUserProfiles(String, String)},
    * {@link #getUserProfiles(String, String, String)} or
    * {@link #getUserProfiles(String, String, int, ObjectType)}
    * signatures, this one is able to return user roles of different kinds of implementation of
-   * {@link SilverpeasComponentInstance}.<br/>
-   * So, this signature is useful into contexts of transversal treatments.<br/>
+   * {@link SilverpeasComponentInstance}.<br>
+   * So, this signature is useful into contexts of transversal treatments.<br>
    * BE CAREFUL, the manager role is never returned as it corresponds to a space role.
    * @param componentInstanceIdentifier the identifier of the component instance.
    * @return an optional component instance.

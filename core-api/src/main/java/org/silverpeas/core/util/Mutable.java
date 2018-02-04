@@ -84,7 +84,7 @@ public final class Mutable<T> {
   }
 
   /**
-   * Returns an empty {@¢ode Mutable}. Its value is by default null.
+   * Returns an empty {@code Mutable}. Its value is by default null.
    * @param <T> class of the value.
    * @return a {@code Mutable} with a null value.
    */

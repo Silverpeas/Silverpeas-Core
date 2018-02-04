@@ -54,7 +54,7 @@ public class CalendarEvents {
   }
 
   /**
-   * Gets as a stream all the events verifying the filters if any.<br/>
+   * Gets as a stream all the events verifying the filters if any.<br>
    * Please be careful to always close the streams in order to avoid memory leaks!!!
    * @return a stream of events verifying the filters.
    */

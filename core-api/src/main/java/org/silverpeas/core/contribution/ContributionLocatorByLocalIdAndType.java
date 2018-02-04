@@ -38,7 +38,7 @@ import java.util.Optional;
  * <p>
  * From a local identifier and a type, the system asks to the several {@link
  * ContributionLocatorByLocalIdAndType} implements the related full {@link
- * ContributionIdentifier}.<br/>
+ * ContributionIdentifier}.<br>
  * Ths {@link ContributionIdentifier} permits to use {@link ContributionManager} service to retrieve
  * contribution data.
  * </p>
@@ -65,9 +65,9 @@ public interface ContributionLocatorByLocalIdAndType {
    * and a type.
    * </p>
    * <p>
-   * A local identifier is an identifier which is unique into the context of a component.<br/>
+   * A local identifier is an identifier which is unique into the context of a component.<br>
    * In a higher scope level, application level so, there is no guarantee that the local identifier
-   * could be unique.<br/>
+   * could be unique.<br>
    * That is why the type is a mandatory data for the contribution location search. Indeed, a local
    * id could not be unique at application level, but a couple localId / type has to (publication
    * services for example).

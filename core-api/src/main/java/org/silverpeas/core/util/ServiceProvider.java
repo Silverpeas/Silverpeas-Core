@@ -135,14 +135,14 @@ public final class ServiceProvider {
    * </p>
    * <p>
    * This method offers to provide an implementation of an API by observing following convention of
-   * service naming: <br/><code>[COMPONENT NAME][SERVICE NAME
-   * SUFFIX]</code><br/><code>kmeliaInstancePostConstruction</code> for example, where
+   * service naming: <br><code>[COMPONENT NAME][SERVICE NAME
+   * SUFFIX]</code><br><code>kmeliaInstancePostConstruction</code> for example, where
    * <code>kmelia</code> the component name and <code>InstancePostConstruction</code> the service
    * name suffix.
    * </p>
    * <p>
    * To be provided by this way, an implementation of an API must use {@link Named}
-   * annotation and fill {@link Named#value()} in case where the implementation class name does not
+   * annotation and fill {@code Named#value()} in case where the implementation class name does not
    * correspond to <code>[COMPONENT NAME][SERVICE NAME SUFFIX]</code> concatenation.
    * </p>
    * <p>
