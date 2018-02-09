@@ -187,4 +187,9 @@
       };
     })();
   });
+
+  whenSilverpeasReady(function() {
+    jQuery('.silverpeas-selectize').selectize();
+  });
+
 })();

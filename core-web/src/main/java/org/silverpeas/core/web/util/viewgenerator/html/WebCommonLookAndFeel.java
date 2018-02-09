@@ -222,6 +222,7 @@ class WebCommonLookAndFeel {
     code.append(includeAngular(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeNotifier(new ElementContainer()).toString()).append(STR_NEW_LINE);
+    code.append(includeSelectize(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includePopup(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(includeUserZoom(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
     code.append(includeCkeditorAddOns(new ElementContainer()).toString()).append(

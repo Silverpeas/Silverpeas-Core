@@ -90,12 +90,3 @@ function openGalleryFileManager(editorName, context, language) {
 function choixImageInGallery(url) {
 	getCKEditor().insertHtml('<img border="0" src="'+url+'" alt=""/>');
 }
-
-function chooseDynamicValuesdefault(editorName) {
-	setEditorName(editorName);
-	var index = document.getElementByName("dynamicValues").selectedIndex;
-	var str = document.getElementByName("dynamicValues").options[index].value;
-	if (index != 0 && str != null){
-		getCKEditor().insertHtml('(%'+str+'%)');
-	}
-}

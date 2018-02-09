@@ -352,22 +352,6 @@
     </function-signature>
   </function>
   <function>
-    <description>Function that indicates if the dynamic value functionality in wysiwyg is active.</description>
-    <name>isDynamicValueActivate</name>
-    <function-class>org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
-    <function-signature>
-      boolean isActivate()
-    </function-signature>
-  </function>
-  <function>
-    <description>Function that returns the html code of the list of dynamic value in wysiwyg.</description>
-    <name>buildHtmlListDynamicValue</name>
-    <function-class>org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
-    <function-signature>
-      java.lang.String buildHTMLSelect(java.lang.String, java.lang.String, java.lang.String)
-    </function-signature>
-  </function>
-  <function>
     <description>Gets the highest role on the component represented by the given identifier the current user has.</description>
     <name>getHighestRoleOfCurrentUserOn</name>
     <function-class>org.silverpeas.core.webapi.admin.component.SilverpeasComponentInstanceRoleProvider</function-class>
