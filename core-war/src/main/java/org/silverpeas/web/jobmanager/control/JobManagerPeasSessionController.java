@@ -118,6 +118,8 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
         + "/admin/jsp/cipherkey.jsp", null, false);
     JobManagerService jabout = new JobManagerService("50", "JAB", LEVEL_OPERATION, webContext
         + "/silverpeasinfos.jsp", null, false);
+    JobManagerService variables = new JobManagerService("51", "JDV", LEVEL_OPERATION, webContext
+        + "/Rvariables/jsp/Main", null, false);
 
     // initialisation des opérations du service jKM
     JobManagerService jKM1 = new JobManagerService("21", "JKM1", LEVEL_OPERATION, webContext
@@ -172,6 +174,8 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
           ids.add(jWorkflowDesigner.getId());
           services.put(jWorkflowDesigner.getId(), jWorkflowDesigner);
         }
+        ids.add(variables.getId());
+        services.put(variables.getId(), variables);
         ids.add(jImportExport.getId());
         services.put(jImportExport.getId(), jImportExport);
         if (jobManagerSettings.isPortletDeployerVisible()) {

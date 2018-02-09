@@ -38,10 +38,9 @@ import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.GalleryHelper;
 import org.silverpeas.core.contribution.content.form.PagesContext;
+import org.silverpeas.core.contribution.content.form.RenderingContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
-import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control
-    .DynamicValueReplacement;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.exception.UtilException;
@@ -173,25 +172,20 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
 
     if (template.isDisabled() || template.isReadOnly()) {
-      code = WysiwygContentTransformer.on(code).modifyImageUrlAccordingToHtmlSizeDirective()
-          .transform();
+      final WysiwygContentTransformer wysiwygContentTransformer =
+          WysiwygContentTransformer.on(code).modifyImageUrlAccordingToHtmlSizeDirective();
 
-      // dynamic value functionality
-      if (DynamicValueReplacement.isActivate()) {
-        DynamicValueReplacement replacement = new DynamicValueReplacement();
-        code = replacement.replaceKeyByValue(code);
+      if (pageContext.getRenderingContext() == RenderingContext.EXPORT) {
+        // dynamic value functionality
+        wysiwygContentTransformer.resolveVariablesDirective();
       }
+
+      code = wysiwygContentTransformer.transform();
+
       out.println(code);
 
     } else {
       out.println("<table>");
-      // Dynamic value functionality
-      if (DynamicValueReplacement.isActivate()) {
-        out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\" align=\"center\">");
-        out.println(DynamicValueReplacement.buildHTMLSelect(pageContext.getLanguage(), fieldName,
-            fieldName));
-        out.println("</td></tr>");
-      }
 
       String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
 
@@ -334,22 +328,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       out.println(stringBuilder.toString());
 
       // field name used to generate a javascript function name
-      // dynamic value functionality
-      if (DynamicValueReplacement.isActivate()) {
-
-        out.println("function chooseDynamicValues"
-            + fieldNameFunction + "(){");
-        out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
-        out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
-        out.println(" focusManager.focus();");
-        out.println("index = document.getElementById(\"dynamicValues_" + fieldName
-            + "\").selectedIndex;");
-        out.println("var str = document.getElementById(\"dynamicValues_" + fieldName
-            + "\").options[index].value;");
-        out.println("if (index != 0 && str != null){");
-        out.println("oEditor.insertHtml('(%'+str+'%)');");
-        out.println("} }");
-      }
 
       // Storage file exists : javascript functions
       if (fileStorage != null && !fileStorage.isEmpty()) {

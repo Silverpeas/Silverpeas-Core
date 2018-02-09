@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
+import org.silverpeas.core.contribution.content.wysiwyg.service.directive.VariablesReplacementDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.directive.ImageUrlAccordingToHtmlSizeDirective;
 import org.silverpeas.core.contribution.content.wysiwyg.service.process.MailContentProcess;
 
@@ -61,6 +62,15 @@ public class WysiwygContentTransformer {
    */
   public WysiwygContentTransformer modifyImageUrlAccordingToHtmlSizeDirective() {
     directives.add(new ImageUrlAccordingToHtmlSizeDirective());
+    return this;
+  }
+
+  /**
+   * Replaces all variables element by theirs corresponding values.
+   * @return the instance of the current {@link WysiwygContentTransformer}.
+   */
+  public WysiwygContentTransformer resolveVariablesDirective() {
+    directives.add(new VariablesReplacementDirective());
     return this;
   }
 

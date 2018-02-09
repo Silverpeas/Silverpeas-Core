@@ -64,7 +64,6 @@
 <c:set var="_listComponentsFileStorage" value="${silfn:componentsFileStorage()}"/>
 <c:set var="_nodeType" value="<%=NodeType.COMPONENT%>"/>
 <c:set var="_listComponentsImageStorage" value="${silfn:componentsImageStorage()}"/>
-<c:set var="_isDynamicValueActivate" value="${silfn:isDynamicValueActivate()}"/>
 
 <!-- list of kmelia applications -->
 <c:if test="${not empty _listComponentsFileStorage}">
@@ -111,10 +110,4 @@
       <option value="${componentImageStorage.id}">${componentImageStorage.label}</option>
     </c:forEach>
   </select>
-</c:if>
-
-<!-- dynamic value -->
-<c:if test="${_isDynamicValueActivate}">
-  <c:set var="_htmlListDynamicValue" value="${silfn:buildHtmlListDynamicValue(_language, 'default', editorName)}"/>
-  ${_htmlListDynamicValue}
 </c:if>

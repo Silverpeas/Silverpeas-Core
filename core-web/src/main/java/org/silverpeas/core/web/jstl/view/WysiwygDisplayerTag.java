@@ -24,7 +24,6 @@
 package org.silverpeas.core.web.jstl.view;
 
 import org.silverpeas.core.web.glossary.HighlightGlossaryTerms;
-import org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
@@ -100,12 +99,6 @@ public class WysiwygDisplayerTag extends TagSupport {
           currentLang = languages.next();
           content = WysiwygController.loadForReadOnly(getComponentId(), getObjectId(), currentLang);
         }
-      }
-
-      //dynamic value functionnality : check if active and try to replace the keys by their values
-      if (DynamicValueReplacement.isActivate()) {
-        DynamicValueReplacement replacement = new DynamicValueReplacement();
-        content = replacement.replaceKeyByValue(content);
       }
 
       //highlight glossary term

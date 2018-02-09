@@ -158,6 +158,7 @@ public class JavascriptPluginInclusion {
   private static final String LIGHTSLIDESHOW_JS = "slideShow/slideshow.js";
   private static final String LIGHTSLIDESHOW_CSS = "slideShow/slideshow.css";
   private static final String SILVERPEAS_IDENTITYCARD = "silverpeas-identitycard.js";
+  private static final String SILVERPEAS_VARIABLES = "silverpeas-variables.js";
   private static final String SILVERPEAS_MYLINKS = "silverpeas-mylinks.js";
   private static final String SILVERPEAS_LANG = "silverpeas-lang.js";
   private static final String SILVERPEAS_USER_SESSION_JS = "silverpeas-user-session.js";
@@ -320,6 +321,7 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml) {
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_IDENTITYCARD));
+    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_VARIABLES));
     return xhtml;
   }
 

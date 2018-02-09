@@ -46,6 +46,7 @@ import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.importexport.model.PublicationType;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
@@ -171,6 +172,8 @@ public class HtmlExportPublicationGenerator {
       String htmlResult = formView.toString(context, dataRecord);
       htmlResult = replaceImagesPathForExport(htmlResult);
       htmlResult = replaceFilesPathForExport(htmlResult);
+      htmlResult =
+          WysiwygContentTransformer.on(htmlResult).resolveVariablesDirective().transform();
       return htmlResult;
     } catch (Exception e) {
       SilverTrace.error("form", "HtmlExportPublicationGenerator.toHtmlXMLModel",
