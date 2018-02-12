@@ -70,6 +70,7 @@ public class SearchResource extends RESTWebService {
       @QueryParam("startDate") String startDate, @QueryParam("endDate") String endDate,
       @QueryParam("form") String form) {
     QueryDescription queryDescription = new QueryDescription(query);
+    queryDescription.setSearchingUser(getUser().getId());
     queryDescription.setTaxonomyPosition(position);
 
     setCreationDateInterval(queryDescription, startDate, endDate);
