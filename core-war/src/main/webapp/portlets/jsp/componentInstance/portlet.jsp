@@ -70,9 +70,14 @@ if (windowState.equals(WindowState.MAXIMIZED))
 	height = "750px";
 
 String url = (String) pReq.getAttribute("URL");
+String portletWindowName = (String) pReq.getAttribute("PortletWindowName");
 
 if (StringUtil.isDefined(url)) { %>
 	<iframe src="<%=m_sContext+url%>" frameborder="0" scrolling="auto" width="100%" height="<%=height%>"></iframe>
 <% } else { %>
 	<fmt:message key="portlets.portlet.componentInstance.error.accessForbidden"/>
+
+  <script type="text/javascript">
+    $("#portal-content .ui-non-sortable #portlet_<%=portletWindowName%>").hide();
+  </script>
 <% } %>

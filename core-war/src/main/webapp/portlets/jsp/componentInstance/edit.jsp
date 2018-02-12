@@ -63,7 +63,7 @@
             <!-- START "url" text box -->
             <tr>
                 <td class="txtlibform"><fmt:message key="portlets.portlet.componentInstance.pref.instanceId" /> :</td>
-                <td><input name="instanceId" value="<%=pref.getValue("instanceId","")%>" type="text" size="10"/></td>
+                <td><input name="instanceId" value="<%=pref.getValue("instanceId","")%>" type="text" size="30"/></td>
             </tr>
 
             <!-- START "finished" and "cancel" buttons -->
