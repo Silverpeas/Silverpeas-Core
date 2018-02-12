@@ -77,7 +77,7 @@
   <c:otherwise>
   <c:choose>
   <c:when test="${disableMove==true}">
-  <div id="thick">
+  <div id="thick" class="ui-non-sortable">
     </c:when>
     <c:otherwise>
     <div id="thick" class="ui-sortable">
@@ -94,7 +94,7 @@
 
     <c:choose>
     <c:when test="${disableMove==true}">
-    <div id="thin">
+    <div id="thin" class="ui-non-sortable">
       </c:when>
       <c:otherwise>
       <div id="thin" class="ui-sortable">
