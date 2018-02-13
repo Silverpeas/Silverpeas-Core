@@ -28,9 +28,9 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.logging.SilverLoggerFactory;
 import org.silverpeas.core.util.logging.SilverLoggerProvider;
 
-import java.lang.ref.WeakReference;
-import java.util.Hashtable;
 import java.util.Map;
+import java.util.Objects;
+import java.util.WeakHashMap;
 
 /**
  * Implementation of the {@code org.silverpeas.core.util.logging.LoggerFactory} interface to provide
@@ -43,46 +43,48 @@ import java.util.Map;
  */
 public class SysLoggerFactory implements SilverLoggerFactory {
 
-  private static Map<String, WeakLoggerReference> loggers = new Hashtable<>();
+  private final Map<SilverLoggerKey, SilverLogger> loggers = new WeakHashMap<>();
 
   @Override
   public SilverLogger getLogger(final String namespace, LoggerConfiguration configuration) {
-    WeakLoggerReference weakRef = loggers.get(namespace);
-    if (weakRef == null || weakRef.get() == null) {
-      if (weakRef != null) {
-        loggers.remove(weakRef.getNamespace());
-      }
-
-      weakRef = loggers.computeIfAbsent(namespace, n -> {
+    return loggers.computeIfAbsent(new SilverLoggerKey(namespace), n -> {
         SysLogger logger = new SysLogger(namespace);
-        if (!configuration.getNamespace().equals(SilverLoggerProvider.ROOT_NAMESPACE) ||
-            configuration.getLevel() != null) {
-          // we take care to not erase the root logger level
-          logger.setLevel(configuration.getLevel());
-        }
-        return new WeakLoggerReference(logger);
-      });
-    }
-    return weakRef.get();
+      if (!configuration.getNamespace().equals(SilverLoggerProvider.ROOT_NAMESPACE) ||
+          configuration.getLevel() != null) {
+        // we take care to not erase the root logger level
+        logger.setLevel(configuration.getLevel());
+      }
+      return logger;
+    });
   }
 
-  private static class WeakLoggerReference extends WeakReference<SilverLogger> {
-
+  /*
+   * A String cannot be weakly referred. So we wrap it by an object that can be  weakly referred
+   * into the WeakHashMap cache.
+   */
+  private static class SilverLoggerKey {
     private final String namespace;
 
-    /**
-     * Creates a new weak reference that refers to the given object.  The new
-     * reference is not registered with any queue.
-     * @param referent object the new weak reference will refer to
-     */
-    public WeakLoggerReference(final SilverLogger referent) {
-      super(referent);
-      this.namespace = referent.getNamespace();
+    private SilverLoggerKey(final String namespace) {
+      Objects.requireNonNull(namespace);
+      this.namespace = namespace;
     }
 
-    public String getNamespace() {
-      return namespace;
+    @Override
+    public boolean equals(final Object o) {
+      if (this == o) {
+        return true;
+      }
+      if (!(o instanceof SilverLoggerKey)) {
+        return false;
+      }
+      final SilverLoggerKey loggerKey = (SilverLoggerKey) o;
+      return Objects.equals(namespace, loggerKey.namespace);
+    }
+
+    @Override
+    public int hashCode() {
+      return Objects.hash(namespace);
     }
   }
-
 }

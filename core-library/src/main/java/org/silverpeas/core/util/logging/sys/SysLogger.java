@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.util.logging.sys;
 
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.logging.Level;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.util.logging.SilverLoggerFactory;
 import org.silverpeas.core.util.logging.SilverLoggerProvider;
 
 import java.text.MessageFormat;
@@ -46,7 +46,7 @@ public class SysLogger implements SilverLogger {
                                         // with logging level and handlers
 
   private static SilverLogger getLoggerByNamespace(String namespace) {
-    return SilverLoggerFactory.get().getLogger(namespace);
+    return ServiceProvider.getService(SilverLoggerProvider.class).getLogger(namespace);
   }
 
   protected SysLogger(String namespace) {
