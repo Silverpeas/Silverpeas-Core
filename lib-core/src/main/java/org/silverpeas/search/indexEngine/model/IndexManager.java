@@ -24,8 +24,6 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.i18n.I18NHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.ResourceLocator;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.LimitTokenCountAnalyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -47,10 +45,13 @@ import org.silverpeas.search.util.SearchEnginePropertiesManager;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 import static com.silverpeas.util.i18n.I18NHelper.defaultLocale;
@@ -100,7 +101,8 @@ public class IndexManager {
   public static final int ADD = 0;
   public static final int REMOVE = 1;
   public static final int READD = 2;
-  private Pair<String, IndexWriter> indexWriter = Pair.of("",null);
+
+  private Map<String, IndexWriter> indexWriters = new HashMap<String, IndexWriter>();
 
   /**
    * The constructor takes no parameters and all the index engine parameters are taken from the
@@ -132,29 +134,27 @@ public class IndexManager {
    * Optimize all the modified index.
    */
   public void flush() {
-    String writerPath = indexWriter.getKey();
-    SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.INFO_STARTS_INDEX_OPTIMIZATION",
-        "writerPath = " + writerPath);
-
-    if (StringUtil.isDefined(writerPath)) {
-      IndexWriter writer = indexWriter.getValue();
-      if (writer != null) {
-        SilverTrace.debug("indexEngine", "IndexManager.optimize()", "root_MSG_GEN_PARAM_VALUE",
-            "try to optimize " + writerPath);
-        // Then, close the writer
-        try {
-          writer.close();
-        } catch (IOException e) {
-          SilverTrace.error("indexEngine", "IndexManager.optimize()",
-              "indexEngine.MSG_INDEX_OPTIMIZATION_FAILED", "Can't Close index " + writerPath, e);
-        }
+    final Iterator<Map.Entry<String, IndexWriter>> it = indexWriters.entrySet().iterator();
+    SilverTrace.debug("searchEngine", "IndexManager.getIndexReader()", MessageFormat
+        .format("flushing manager of indexation about {0} writer(s)", indexWriters.size()));
+    while (it.hasNext()) {
+      final Map.Entry<String, IndexWriter> entry = it.next();
+      final String path = entry.getKey();
+      final IndexWriter writer = entry.getValue();
+      SilverTrace.debug("searchEngine", "IndexManager.getIndexReader()",
+          MessageFormat.format("\t- closing writer of path {0}", path));
+      try {
+        writer.close();
+      } catch (IOException e) {
+        SilverTrace
+            .error("searchEngine", "IndexManager.getIndexReader()", "Cannot close index " + path,
+                e);
       }
       // update the spelling index
       if (enableDymIndexing) {
-        DidYouMeanIndexer.createSpellIndexForAllLanguage("content", writerPath);
+        DidYouMeanIndexer.createSpellIndexForAllLanguage(CONTENT, path);
       }
-
-      indexWriter = Pair.of("", null);
+      it.remove();
     }
   }
 
@@ -265,31 +265,27 @@ public class IndexManager {
    * @return an IndexWriter or null if the index can't be found or create or read.
    */
   private IndexWriter getIndexWriter(String path, String language) {
-    IndexWriter writer = indexWriter.getKey().equals(path) ? indexWriter.getValue() : null;
-    if (writer == null) {
-      flush();
+    IndexWriter indexWriter = indexWriters.get(path);
+    if (indexWriter == null) {
       try {
-        File file = new File(path);
+        final File file = new File(path);
         if (!file.exists()) {
           file.mkdirs();
         }
-        LogDocMergePolicy policy = new LogDocMergePolicy();
+        final LogDocMergePolicy policy = new LogDocMergePolicy();
         policy.setMergeFactor(mergeFactor);
         policy.setMaxMergeDocs(maxMergeDocs);
-        IndexWriterConfig configuration = new IndexWriterConfig(LUCENE_36, getAnalyzer(
-            language)).setRAMBufferSizeMB(RAMBufferSizeMB).setMergePolicy(policy);
-        writer = new IndexWriter(FSDirectory.open(file), configuration);
+        final IndexWriterConfig configuration = new IndexWriterConfig(LUCENE_36,
+            getAnalyzer(language)).setRAMBufferSizeMB(RAMBufferSizeMB).setMergePolicy(policy);
+        indexWriter = new IndexWriter(FSDirectory.open(file), configuration);
+        indexWriters.put(path, indexWriter);
       } catch (IOException e) {
-        IOUtils.closeQuietly(writer);
-        writer = null;
-        SilverTrace.error("indexEngine", "IndexManager.getIndexWriter",
-            "indexEngine.MSG_UNKNOWN_INDEX_FILE", path, e);
-      }
-      if (writer != null) {
-        indexWriter = Pair.of(path, writer);
+        SilverTrace
+            .error("searchEngine", "IndexManager.getIndexReader()", "Unknown index file " + path,
+                e);
       }
     }
-    return writer;
+    return indexWriter;
   }
 
   /**
