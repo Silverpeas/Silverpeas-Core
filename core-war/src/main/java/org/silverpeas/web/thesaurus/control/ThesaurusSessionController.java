@@ -342,28 +342,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
 
   // *** Gestion des synonymes *** //
   /**
-   * Retourne un nouveau Synonyme pour le terme et le vocabulaire courant (new Synonym(), set ...)
-   * @param name
-   * @return Synonym
-   * @throws ThesaurusException
-   * @see
-   */
-  private Synonym getNewSynonym(String name, String termId) {
-    Synonym syno = new Synonym();
-    syno.setName(name);
-    if (getCurrentVoca() != null && getCurrentAxis() != null) {
-      long idVoca = ((IdPK) getCurrentVoca().getPK()).getIdAsLong();
-      long idTree = new Integer(getCurrentAxis().getAxisHeader().getRootId())
-          .longValue();
-      long idTerm = new Long(termId).longValue();
-      syno.setIdVoca(idVoca);
-      syno.setIdTree(idTree);
-      syno.setIdTerm(idTerm);
-    }
-    return syno;
-  }
-
-  /**
    * Retourne la liste des synonymes du vocabulaire et du terme courant
    * @param
    * @return Collection
@@ -378,38 +356,6 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
     Collection<Synonym> synonyms = getThBm().getSynonyms(idVoca, idTree, idTerm);
     // Collections.sort((List)synonyms);
     return synonyms;
-  }
-
-  /**
-   * Met à jour la liste des synonymes du vocabulaire et du terme courant
-   * @param names
-   * @return
-   * @throws ThesaurusException
-   * @see
-   */
-  public void updateSynonyms(Collection<String> names, String termId)
-      throws ThesaurusException {
-    Collection<Synonym> synonyms = new ArrayList<Synonym>();
-    if (names != null && !names.isEmpty()) {
-      for (String name : names) {
-        Synonym syno = getNewSynonym(name, termId);
-        synonyms.add(syno);
-      }
-      getThBm().updateSynonyms(synonyms);
-    } else {
-      getThBm().deleteSynonyms(currentVoca.getPK().getId(),
-          currentAxis.getAxisHeader().getPK().getId(), termId);
-    }
-  }
-
-  /**
-   * Supprime un ensemble de synonymes à partir de leur id
-   * @param idSynonyms
-   * @return
-   * @throws ThesaurusException
-   */
-  public void deleteSynonyms(Collection<Long> idSynonyms) throws ThesaurusException {
-    getThBm().deleteSynonyms(idSynonyms);
   }
 
   // *** Gestion des users et groupes affectés aux vocabulaire *** //
