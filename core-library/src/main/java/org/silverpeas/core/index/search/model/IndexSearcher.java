@@ -39,6 +39,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.TopDocs;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.ExternalComponent;
 import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
@@ -58,6 +59,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.*;
 
@@ -154,8 +156,7 @@ public class IndexSearcher {
    */
   public MatchingIndexEntry search(String component, String objectId, String objectType)
       throws IOException {
-    Set<String> set = new HashSet<>(1);
-    set.add(component);
+    final Set<String> set = Collections.singleton(component);
 
     IndexEntryKey indexEntryKey = new IndexEntryKey(component, objectType, objectId);
     MatchingIndexEntry matchingIndexEntry = null;
@@ -167,7 +168,7 @@ public class IndexSearcher {
       TopDocs topDocs = searcher.search(query, maxNumberResult);
       ScoreDoc scoreDoc = topDocs.scoreDocs[0];
 
-      matchingIndexEntry = createMatchingIndexEntry(scoreDoc, "*", searcher);
+      matchingIndexEntry = createMatchingIndexEntry(set, scoreDoc, "*", searcher);
     } catch (IOException ioe) {
       SilverLogger.getLogger(this).error("Index file corrupted", ioe);
     }
@@ -184,6 +185,7 @@ public class IndexSearcher {
    */
   public MatchingIndexEntry[] search(QueryDescription query)
       throws org.silverpeas.core.index.search.model.ParseException {
+    long startTime = System.nanoTime();
     List<MatchingIndexEntry> results;
 
     org.apache.lucene.search.IndexSearcher searcher = getSearcher(query);
@@ -214,6 +216,10 @@ public class IndexSearcher {
       SilverLogger.getLogger(this).error("Index file corrupted", ioe);
       results = new ArrayList<>();
     }
+    long endTime = System.nanoTime();
+
+    SilverLogger.getLogger(this).debug(
+        () -> MessageFormat.format(" search duration in {0}ms", (endTime - startTime) / 1000000));
     return results.toArray(new MatchingIndexEntry[results.size()]);
   }
 
@@ -379,39 +385,50 @@ public class IndexSearcher {
   }
 
   /**
-   * @param scoreDoc occurence of Lucene search result
-   * @param requestedLanguage
-   * @param searcher
-   * @return MatchingIndexEntry wraps the Lucene search result
+   * @param possibleComponents the possible components
+   * @param scoreDoc occurrence of Lucene search result
+   * @param requestedLanguage a language as short string
+   * @param searcher the index search result instance
+   * @return MatchingIndexEntry wraps the Lucene search result, null if the lucene result is not
+   * expected according to possible components.
    * @throws IOException if there is a problem when searching Lucene index
    */
-  private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage,
-      org.apache.lucene.search.IndexSearcher searcher) throws IOException {
-    Document doc = searcher.doc(scoreDoc.doc);
-    MatchingIndexEntry indexEntry =
-        new MatchingIndexEntry(IndexEntryKey.create(doc.get(IndexManager.KEY)));
-
-    Iterator<String> languages = I18NHelper.getLanguages();
-    while (languages.hasNext()) {
-      String language = languages.next();
-      indexEntry.setTitle(doc.get(getFieldName(IndexManager.TITLE, language)), language);
-      indexEntry.setPreview(doc.get(getFieldName(IndexManager.PREVIEW, language)), language);
+  private MatchingIndexEntry createMatchingIndexEntry(Set<String> possibleComponents,
+      ScoreDoc scoreDoc, String requestedLanguage, org.apache.lucene.search.IndexSearcher searcher)
+      throws IOException {
+    final Document doc = searcher.doc(scoreDoc.doc);
+    final MatchingIndexEntry indexEntry = new MatchingIndexEntry(
+        IndexEntryKey.create(doc.get(IndexManager.KEY)));
+    if (!possibleComponents.contains(indexEntry.getComponent())) {
+      return null;
     }
 
-    indexEntry.setKeywords(doc.get(IndexManager.KEYWORDS));
-    indexEntry.setCreationUser(doc.get(IndexManager.CREATIONUSER));
-    indexEntry.setCreationDate(parseDate(doc.get(IndexManager.CREATIONDATE)));
-    indexEntry.setLastModificationUser(doc.get(IndexManager.LASTUPDATEUSER));
-    indexEntry.setLastModificationDate(parseDate(doc.get(IndexManager.LASTUPDATEDATE)));
-    indexEntry.setThumbnail(doc.get(IndexManager.THUMBNAIL));
-    indexEntry.setThumbnailMimeType(doc.get(IndexManager.THUMBNAIL_MIMETYPE));
-    indexEntry.setThumbnailDirectory(doc.get(IndexManager.THUMBNAIL_DIRECTORY));
-    indexEntry.setStartDate(parseDate(doc.get(IndexManager.STARTDATE)));
-    indexEntry.setEndDate(parseDate(doc.get(IndexManager.ENDDATE)));
-    indexEntry.setEmbeddedFileIds(doc.getValues(IndexManager.EMBEDDED_FILE_IDS));
-    indexEntry.setFilename(doc.get(IndexManager.FILENAME));
-    indexEntry.setAlias(StringUtil.getBooleanValue(doc.get(IndexManager.ALIAS)));
-    indexEntry.setScore(scoreDoc.score);
+    setIndexEntryLanguageData(indexEntry, doc);
+    setIndexEntryCommonData(indexEntry, doc, scoreDoc);
+    setIndexEntryPublicationData(indexEntry, doc, requestedLanguage);
+    setIndexEntryFacetData(indexEntry, doc);
+
+    // Set server name
+    indexEntry.setServerName(doc.get(IndexManager.SERVER_NAME));
+    return indexEntry;
+  }
+
+  private void setIndexEntryFacetData(final MatchingIndexEntry indexEntry, final Document doc) {
+    // adds fields and values used to generate facets
+    String fieldsForFacets = doc.get(IndexManager.FIELDS_FOR_FACETS);
+    if (StringUtil.isDefined(fieldsForFacets)) {
+      Map<String, String> fieldsValueForFacets = new HashMap<>();
+      StringTokenizer tokenizer = new StringTokenizer(fieldsForFacets, ",");
+      while (tokenizer.hasMoreTokens()) {
+        String fieldName = tokenizer.nextToken();
+        fieldsValueForFacets.put(fieldName, doc.get(fieldName));
+      }
+      indexEntry.setXMLFormFieldsForFacets(fieldsValueForFacets);
+    }
+  }
+
+  private void setIndexEntryPublicationData(final MatchingIndexEntry indexEntry, final Document doc,
+      final String requestedLanguage) {
     // Checks the content to see if it contains sortable field
     // and puts them in MatchingIndexEntry object
     if ("Publication".equals(indexEntry.getObjectType())) {
@@ -430,21 +447,33 @@ public class IndexSearcher {
       }
       indexEntry.setSortableXMLFormFields(sortableField);
     }
-    // adds fields and values used to generate facets
-    String fieldsForFacets = doc.get(IndexManager.FIELDS_FOR_FACETS);
-    if (StringUtil.isDefined(fieldsForFacets)) {
-      Map<String, String> fieldsValueForFacets = new HashMap<>();
-      StringTokenizer tokenizer = new StringTokenizer(fieldsForFacets, ",");
-      while (tokenizer.hasMoreTokens()) {
-        String fieldName = tokenizer.nextToken();
-        fieldsValueForFacets.put(fieldName, doc.get(fieldName));
-      }
-      indexEntry.setXMLFormFieldsForFacets(fieldsValueForFacets);
-    }
+  }
 
-    // Set server name
-    indexEntry.setServerName(doc.get(IndexManager.SERVER_NAME));
-    return indexEntry;
+  private void setIndexEntryCommonData(final MatchingIndexEntry indexEntry, final Document doc,
+      final ScoreDoc scoreDoc) {
+    indexEntry.setKeywords(doc.get(IndexManager.KEYWORDS));
+    indexEntry.setCreationUser(doc.get(IndexManager.CREATIONUSER));
+    indexEntry.setCreationDate(parseDate(doc.get(IndexManager.CREATIONDATE)));
+    indexEntry.setLastModificationUser(doc.get(IndexManager.LASTUPDATEUSER));
+    indexEntry.setLastModificationDate(parseDate(doc.get(IndexManager.LASTUPDATEDATE)));
+    indexEntry.setThumbnail(doc.get(IndexManager.THUMBNAIL));
+    indexEntry.setThumbnailMimeType(doc.get(IndexManager.THUMBNAIL_MIMETYPE));
+    indexEntry.setThumbnailDirectory(doc.get(IndexManager.THUMBNAIL_DIRECTORY));
+    indexEntry.setStartDate(parseDate(doc.get(IndexManager.STARTDATE)));
+    indexEntry.setEndDate(parseDate(doc.get(IndexManager.ENDDATE)));
+    indexEntry.setEmbeddedFileIds(doc.getValues(IndexManager.EMBEDDED_FILE_IDS));
+    indexEntry.setFilename(doc.get(IndexManager.FILENAME));
+    indexEntry.setAlias(StringUtil.getBooleanValue(doc.get(IndexManager.ALIAS)));
+    indexEntry.setScore(scoreDoc.score);
+  }
+
+  private void setIndexEntryLanguageData(final MatchingIndexEntry indexEntry, final Document doc) {
+    final Iterator<String> languages = I18NHelper.getLanguages();
+    while (languages.hasNext()) {
+      final String language = languages.next();
+      indexEntry.setTitle(doc.get(getFieldName(IndexManager.TITLE, language)), language);
+      indexEntry.setPreview(doc.get(getFieldName(IndexManager.PREVIEW, language)), language);
+    }
   }
 
   /**
@@ -458,9 +487,11 @@ public class IndexSearcher {
     if (topDocs != null) {
       for (int i = 0; i < topDocs.scoreDocs.length; i++) {
         ScoreDoc scoreDoc = topDocs.scoreDocs[i];
-        MatchingIndexEntry indexEntry = createMatchingIndexEntry(scoreDoc, query
-            .getRequestedLanguage(), searcher);
-        results.add(indexEntry);
+        final MatchingIndexEntry indexEntry = createMatchingIndexEntry(query.getWhereToSearch(),
+            scoreDoc, query.getRequestedLanguage(), searcher);
+        if (indexEntry != null) {
+          results.add(indexEntry);
+        }
       }
     }
     return results;
@@ -516,8 +547,10 @@ public class IndexSearcher {
   }
 
   private String getExternalComponentPath(ExternalComponent extComp) {
+    final String externalComponentPathPart = IndexFileManager
+        .extractComponentPath(extComp.getComponent());
     return extComp.getDataPath() + File.separator + "index" + File.separator +
-        extComp.getComponent() + File.separator + "index";
+        externalComponentPathPart + File.separator + "index";
   }
 
   /**
