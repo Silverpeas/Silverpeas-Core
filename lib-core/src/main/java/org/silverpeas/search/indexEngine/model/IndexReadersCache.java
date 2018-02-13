@@ -1,23 +1,23 @@
 /**
  * Copyright (C) 2000 - 2013 Silverpeas
- *
+ * <p>
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU Affero General Public License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
- *
+ * <p>
  * As a special exception to the terms and conditions of version 3.0 of
  * the GPL, you may redistribute this Program in connection with Free/Libre
  * Open Source Software ("FLOSS") applications as described in Silverpeas's
  * FLOSS exception.  You should have received a copy of the text describing
  * the FLOSS exception, and it is also available here:
  * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
+ * <p>
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU Affero General Public License for more details.
- *
+ * <p>
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
@@ -25,15 +25,16 @@
 package org.silverpeas.search.indexEngine.model;
 
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.store.FSDirectory;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.store.FSDirectory;
 
 public class IndexReadersCache {
-  private final static IndexReadersCache instance = new IndexReadersCache();
+  private static final IndexReadersCache instance = new IndexReadersCache();
   private Map<String, IndexReader> indexReaders;
 
   private IndexReadersCache() {
@@ -45,28 +46,29 @@ public class IndexReadersCache {
   }
 
   public static synchronized IndexReader getIndexReader(String path) {
-    if (!getInstance().indexReaders.containsKey(path)) {
+    IndexReader indexReader = getInstance().indexReaders.get(path);
+    if (indexReader == null) {
       try {
-        getInstance().indexReaders.put(path, IndexReader.open(FSDirectory.open(new File(path))));
+        indexReader = IndexReader.open(FSDirectory.open(new File(path)));
       } catch (Exception e) {
         SilverTrace.warn("searchEngine", "IndexManager.getIndexReader()",
             "searchEngine.MSG_CANT_OPEN_INDEX_SEARCHER", e);
+        return null;
       }
+      getInstance().indexReaders.put(path, indexReader);
     }
-    return getInstance().indexReaders.get(path);
+    return indexReader;
   }
 
   public static synchronized void removeIndexReader(String path) {
-    if (getInstance().indexReaders.containsKey(path)) {
-      IndexReader indexReader = getInstance().indexReaders.get(path);
+    final IndexReader indexReader = getInstance().indexReaders.remove(path);
+    if (indexReader != null) {
       try {
         indexReader.close();
       } catch (IOException e) {
         SilverTrace.warn("indexEngine", "IndexManager.removeIndexReader",
             "indexEngine.MSG_CANT_CLOSE_INDEX_SEARCHER", path, e);
       }
-      getInstance().indexReaders.remove(path);
     }
   }
-
 }
