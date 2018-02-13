@@ -69,6 +69,15 @@ public class SysLoggerTest {
   }
 
   @Test
+  public void getADeepLogger() {
+    final String namespace = LOGGER_NAMESPACE + ".toto.titi.tutu.boo";
+    SilverLogger logger = new SysLogger(namespace);
+    assertThat(logger.getNamespace(), is(namespace));
+    assertThat(logger.getLevel(), notNullValue());
+    assertThat(logger.getLevel(), is(Level.INFO));
+  }
+
+  @Test
   public void changeLoggerLevel() {
     final String namespace = LOGGER_NAMESPACE;
     SilverLogger logger = new SysLogger(namespace);
