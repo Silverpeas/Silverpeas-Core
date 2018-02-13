@@ -20,6 +20,31 @@
  */
 package org.silverpeas.search.searchEngine.model;
 
+import com.silverpeas.util.StringUtil;
+import com.silverpeas.util.i18n.I18NHelper;
+import com.stratelia.silverpeas.silvertrace.SilverTrace;
+import com.stratelia.webactiv.util.DateUtil;
+import com.stratelia.webactiv.util.ResourceLocator;
+import org.apache.commons.io.IOUtils;
+import org.apache.lucene.analysis.Analyzer;
+import org.apache.lucene.document.Document;
+import org.apache.lucene.index.IndexReader;
+import org.apache.lucene.index.MultiReader;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.queryParser.MultiFieldQueryParser;
+import org.apache.lucene.queryParser.ParseException;
+import org.apache.lucene.queryParser.QueryParser;
+import org.apache.lucene.search.*;
+import org.apache.lucene.util.Version;
+import org.silverpeas.search.indexEngine.model.ExternalComponent;
+import org.silverpeas.search.indexEngine.model.FieldDescription;
+import org.silverpeas.search.indexEngine.model.IndexEntry;
+import org.silverpeas.search.indexEngine.model.IndexEntryPK;
+import org.silverpeas.search.indexEngine.model.IndexManager;
+import org.silverpeas.search.indexEngine.model.IndexReadersCache;
+import org.silverpeas.search.indexEngine.model.SpaceComponentPair;
+import org.silverpeas.search.util.SearchEnginePropertiesManager;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,40 +57,7 @@ import java.util.MissingResourceException;
 import java.util.Set;
 import java.util.StringTokenizer;
 
-import org.apache.commons.io.IOUtils;
-import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.index.IndexReader;
-import org.apache.lucene.index.MultiReader;
-import org.apache.lucene.index.Term;
-import org.apache.lucene.queryParser.MultiFieldQueryParser;
-import org.apache.lucene.queryParser.ParseException;
-import org.apache.lucene.queryParser.QueryParser;
-import org.apache.lucene.search.BooleanClause;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.PrefixQuery;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.QueryWrapperFilter;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermRangeQuery;
-import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.util.Version;
-import org.silverpeas.search.indexEngine.model.ExternalComponent;
-import org.silverpeas.search.indexEngine.model.FieldDescription;
-import org.silverpeas.search.indexEngine.model.IndexEntry;
-import org.silverpeas.search.indexEngine.model.IndexEntryPK;
-import org.silverpeas.search.indexEngine.model.IndexManager;
-import org.silverpeas.search.indexEngine.model.IndexReadersCache;
-import org.silverpeas.search.indexEngine.model.SpaceComponentPair;
-import org.silverpeas.search.util.SearchEnginePropertiesManager;
-
-import com.silverpeas.util.StringUtil;
-import com.silverpeas.util.i18n.I18NHelper;
-import com.stratelia.silverpeas.silvertrace.SilverTrace;
-import com.stratelia.webactiv.util.DateUtil;
-import com.stratelia.webactiv.util.ResourceLocator;
+import static java.util.Collections.singleton;
 
 /**
  * The WAIndexSearcher class implements search over all the WebActiv's index. A WAIndexSearcher
@@ -151,7 +143,7 @@ public class WAIndexSearcher {
       topDocs = searcher.search(query, maxNumberResult);
       ScoreDoc scoreDoc = topDocs.scoreDocs[0];
 
-      matchingIndexEntry = createMatchingIndexEntry(scoreDoc, "*", searcher);
+      matchingIndexEntry = createMatchingIndexEntry(singleton(component), scoreDoc, "*", searcher);
     } catch (IOException ioe) {
       SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
           "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
@@ -388,14 +380,19 @@ public class WAIndexSearcher {
    * @param scoreDoc occurence of Lucene search result
    * @param requestedLanguage
    * @param searcher
-   * @return MatchingIndexEntry wraps the Lucene search result
+   * @return MatchingIndexEntry wraps the Lucene search result, null if the lucene result is not
+   * expected according to possible components.
    * @throws IOException if there is a problem when searching Lucene index
    */
-  private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage,
+  private MatchingIndexEntry createMatchingIndexEntry(Set<String> possibleComponents,
+      ScoreDoc scoreDoc, String requestedLanguage,
       IndexSearcher searcher) throws IOException {
     Document doc = searcher.doc(scoreDoc.doc);
     MatchingIndexEntry indexEntry =
         new MatchingIndexEntry(IndexEntryPK.create(doc.get(IndexManager.KEY)));
+    if (!possibleComponents.contains(indexEntry.getComponent())) {
+      return null;
+    }
 
     Iterator<String> languages = I18NHelper.getLanguages();
     while (languages.hasNext()) {
@@ -463,16 +460,28 @@ public class WAIndexSearcher {
 
     if (topDocs != null) {
       ScoreDoc scoreDoc;
-
+      final Set<String> possibleComponents = extractPossibleComponents(query);
       for (int i = 0; i < topDocs.scoreDocs.length; i++) {
         scoreDoc = topDocs.scoreDocs[i];
-        MatchingIndexEntry indexEntry = createMatchingIndexEntry(scoreDoc, query
-            .getRequestedLanguage(), searcher);
-        results.add(indexEntry);
+        final MatchingIndexEntry indexEntry = createMatchingIndexEntry(possibleComponents, scoreDoc,
+            query.getRequestedLanguage(), searcher);
+        if (indexEntry != null) {
+          results.add(indexEntry);
+        }
       }
     }
     return results;
   }
+
+  private Set<String> extractPossibleComponents(QueryDescription query) {
+    final Set<SpaceComponentPair> pairs = query.getSpaceComponentPairSet();
+    final Set<String> result = new HashSet<String>(pairs.size());
+    for (SpaceComponentPair pair : pairs) {
+      result.add(pair.getComponent());
+    }
+    return result;
+  }
+
   /**
    * The manager of all the Web'Activ index.
    */
