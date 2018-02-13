@@ -34,7 +34,7 @@ import java.io.IOException;
 
 public class ComponentInstancePortlet extends GenericPortlet implements FormNames {
 
-  private static String PREFINSTANCEID = "instanceId";
+  private static final String PREFINSTANCEID = "instanceId";
 
   @Override
   public void doView(RenderRequest request, RenderResponse response)
