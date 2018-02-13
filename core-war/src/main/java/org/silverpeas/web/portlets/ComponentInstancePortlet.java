@@ -23,28 +23,43 @@
  */
 package org.silverpeas.web.portlets;
 
-import org.silverpeas.core.web.portlets.FormNames;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.portlets.FormNames;
 
 import javax.portlet.*;
 import java.io.IOException;
 
 public class ComponentInstancePortlet extends GenericPortlet implements FormNames {
 
+  private static String PREFINSTANCEID = "instanceId";
+
   @Override
   public void doView(RenderRequest request, RenderResponse response)
       throws PortletException, IOException {
     PortletPreferences pref = request.getPreferences();
-    String instanceId = pref.getValue("instanceId", "");
+    String instanceId = pref.getValue(PREFINSTANCEID, "");
 
     if (OrganizationControllerProvider.getOrganisationController().isComponentAvailable(instanceId,
         UserDetail.getCurrentRequester().getId())) {
       request.setAttribute("URL", URLUtil.getURL(null, null, instanceId) + "portlet");
+    } else {
+      // get portlet window name to hide it (client side)
+      setPortletWindowName(request);
     }
     include(request, response, "portlet.jsp");
+  }
+
+  private void setPortletWindowName(RenderRequest request) {
+    String windowId = request.getWindowID();
+    if (StringUtil.isDefined(windowId)) {
+      String portletWindowName = windowId.substring(windowId.lastIndexOf('|')+1);
+      if (StringUtil.isDefined(portletWindowName)) {
+        request.setAttribute("PortletWindowName", portletWindowName);
+      }
+    }
   }
 
   @Override
@@ -77,15 +92,14 @@ public class ComponentInstancePortlet extends GenericPortlet implements FormName
       // handle "cancel" button on edit page
       // return to view mode
       //
-      processEditCancelAction(request, response);
+      processEditCancelAction(response);
     }
   }
 
   /*
    * Process the "cancel" action for the edit page.
    */
-  private void processEditCancelAction(ActionRequest request, ActionResponse response) throws
-      PortletException {
+  private void processEditCancelAction(ActionResponse response) throws PortletException {
     response.setPortletMode(PortletMode.VIEW);
   }
 
@@ -95,30 +109,18 @@ public class ComponentInstancePortlet extends GenericPortlet implements FormName
    */
   private void processEditFinishedAction(ActionRequest request, ActionResponse response) throws
       PortletException {
-    String instanceId = request.getParameter("instanceId");
+    String instanceId = request.getParameter(PREFINSTANCEID);
 
-    // Check if it is a number
+    // store preference
+    PortletPreferences pref = request.getPreferences();
     try {
-      // store preference
-      PortletPreferences pref = request.getPreferences();
-      try {
-        pref.setValue("instanceId", instanceId);
-        pref.store();
-      } catch (ValidatorException ve) {
-        getPortletContext().log("could not set instanceId", ve);
-        throw new PortletException("IFramePortlet.processEditFinishedAction",
-            ve);
-      } catch (IOException ioe) {
-        getPortletContext().log("could not set instanceId", ioe);
-        throw new PortletException("IFramePortlet.prcoessEditFinishedAction",
-            ioe);
-      }
-      response.setPortletMode(PortletMode.VIEW);
-
-    } catch (NumberFormatException e) {
-      response.setRenderParameter(ERROR_BAD_VALUE, "true");
-      response.setPortletMode(PortletMode.EDIT);
+      pref.setValue(PREFINSTANCEID, instanceId);
+      pref.store();
+    } catch (Exception e) {
+      getPortletContext().log("could not set instanceId", e);
+      throw new PortletException("IFramePortlet.processEditFinishedAction", e);
     }
+    response.setPortletMode(PortletMode.VIEW);
   }
 
   /**
