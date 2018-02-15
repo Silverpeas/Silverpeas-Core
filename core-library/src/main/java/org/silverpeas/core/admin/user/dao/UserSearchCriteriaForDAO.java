@@ -145,6 +145,14 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
   }
 
   @Override
+  public SearchCriteria onUserSpecificIds(final String... userSpecificIds) {
+    if (userSpecificIds != ANY) {
+      criteria.onUserSpecificIds(userSpecificIds);
+    }
+    return this;
+  }
+
+  @Override
   public UserSearchCriteriaForDAO onUserStatesToExclude(final UserState... userStates) {
     criteria.onUserStatesToExclude(userStates);
     return this;
@@ -189,6 +197,17 @@ public class UserSearchCriteriaForDAO implements SearchCriteria {
           .map(Integer::parseInt)
           .collect(Collectors.toList());
       query.and("st_user.id").in(userIds);
+    }
+
+    if (criteria.isCriterionOnUserSpecificIdsSet()) {
+      if (criteria.getCriterionOnDomainIds().length > 1) {
+        throw new IllegalArgumentException(
+            "one, and ony one, domain id must be set as filter when searching user on its " +
+                "specific id");
+      }
+      final List<String> userSpecificIds = Arrays.stream(criteria.getCriterionOnUserSpecificIds())
+          .collect(Collectors.toList());
+      query.and("st_user.specificId").in(userSpecificIds);
     }
 
     if (criteria.isCriterionOnGroupIdsSet()) {

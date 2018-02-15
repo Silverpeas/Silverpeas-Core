@@ -24,5 +24,5 @@
 package org.silverpeas.core.admin.domain;
 
 public enum DomainType {
-  EXTERNAL, SQL;
+  EXTERNAL, SQL, SCIM;
 }

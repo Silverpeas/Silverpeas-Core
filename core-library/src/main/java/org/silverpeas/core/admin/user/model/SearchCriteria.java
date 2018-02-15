@@ -123,6 +123,17 @@ public interface SearchCriteria {
   SearchCriteria onUserIds(String... userIds);
 
   /**
+   * Appends a criteria on the user profiles for which the search must be constrained to. The
+   * properties of the resources to fetch have to satisfy this criterion.
+   * <p>
+   * One, and only one, domain id will be mandatory!
+   * </p>
+   * @param userSpecificIds the user specific identifiers.
+   * @return the criteria enriched with a criterion on the user identifiers.
+   */
+  SearchCriteria onUserSpecificIds(String... userSpecificIds);
+
+  /**
    * Appends a criteria on the user states that must exclude users from the result. The
    * properties of the resources to fetch have to satisfy this criterion.
    *

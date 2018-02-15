@@ -45,6 +45,10 @@ import static org.junit.Assert.assertThat;
 public class DomainServiceProviderIT {
 
   @Inject
+  @Named("scimDomainService")
+  private DomainService scimDomainService;
+
+  @Inject
   @Named("externalDomainService")
   private DomainService externalDomainService;
 
@@ -74,6 +78,10 @@ public class DomainServiceProviderIT {
     // It exists two implementations today
     assertThat(ServiceProvider.getAllServices(DomainService.class),
         hasSize(DomainType.values().length));
+    // Verifying the type for SCIM
+    DomainService testScimDomainService = DomainServiceProvider.getDomainService(DomainType.SCIM);
+    assertThat(testScimDomainService, sameInstance(testScimDomainService));
+    assertThat(testScimDomainService, instanceOf(ScimDomainService.class));
     // Verifying the type for EXTERNAL
     DomainService testExternalDomainService =
         DomainServiceProvider.getDomainService(DomainType.EXTERNAL);
@@ -92,9 +100,9 @@ public class DomainServiceProviderIT {
     // order to check that among all this implementation, the right aimed is injected.
     assertThat(dummyQuotaServiceWithAdditionalTools, notNullValue());
     // Verifying the injection
-    QuotaService<UserDomainQuotaKey> testExternalDomainService =
+    QuotaService<UserDomainQuotaKey> testEUserDomainQuotaService =
         DomainServiceProvider.getUserDomainQuotaService();
-    assertThat(testExternalDomainService, sameInstance(userDomainQuotaService));
-    assertThat(testExternalDomainService, instanceOf(UserDomainQuotaService.class));
+    assertThat(testEUserDomainQuotaService, sameInstance(userDomainQuotaService));
+    assertThat(testEUserDomainQuotaService, instanceOf(UserDomainQuotaService.class));
   }
 }

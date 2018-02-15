@@ -59,6 +59,7 @@
 <%@ include file="check.jsp" %>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -455,10 +456,12 @@ out.println(window.printBefore());
       </fieldset>
     </c:if>
 
-    <fieldset id="identity-extra" class="skinFieldset">
-      <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
-      <viewTags:displayUserExtraProperties user="${userObject}" allFieldsUpdatable="<%=extraInfosUpdatable%>" readOnly="false" includeEmail="false"/>
-    </fieldset>
+    <c:if test="${fn:length(userObject.propertiesNames) > 0}">
+      <fieldset id="identity-extra" class="skinFieldset">
+        <legend class="without-img"><fmt:message key="myProfile.identity.fieldset.extra" bundle="${profile}"/></legend>
+        <viewTags:displayUserExtraProperties user="${userObject}" allFieldsUpdatable="<%=extraInfosUpdatable%>" readOnly="false" includeEmail="false"/>
+      </fieldset>
+    </c:if>
 
     <view:directoryExtraForm userId="${userObject.id}" edition="true"/>
 

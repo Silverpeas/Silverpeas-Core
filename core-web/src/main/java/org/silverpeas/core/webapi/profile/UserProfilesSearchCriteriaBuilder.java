@@ -101,6 +101,13 @@ public class UserProfilesSearchCriteriaBuilder {
     return this;
   }
 
+  public UserProfilesSearchCriteriaBuilder withUserSpecificIds(String[] userSpecificIds) {
+    if (userSpecificIds != null && userSpecificIds.length > 0) {
+      searchCriteria.onUserSpecificIds(userSpecificIds);
+    }
+    return this;
+  }
+
   public UserProfilesSearchCriteriaBuilder withUserStatesToExclude(UserState[] userStates) {
     if (userStates != null && userStates.length > 0) {
       searchCriteria.onUserStatesToExclude(userStates);

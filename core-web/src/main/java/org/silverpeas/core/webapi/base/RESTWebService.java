@@ -26,13 +26,8 @@ package org.silverpeas.core.webapi.base;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.cache.service.CacheServiceProvider;
-import org.silverpeas.core.cache.service.SessionCacheService;
-import org.silverpeas.core.notification.message.MessageManager;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
-import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
@@ -42,6 +37,8 @@ import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.webapi.base.aspect.ComponentInstMustExistIfSpecified;
 import org.silverpeas.core.webapi.base.aspect.WebEntityMustBeValid;
 
+import javax.annotation.PostConstruct;
+import javax.enterprise.inject.Default;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -65,6 +62,9 @@ public abstract class RESTWebService implements ProtectedWebResource {
    */
   public static final String RESPONSE_HEADER_ARRAYSIZE = "X-Silverpeas-Size";
   @Inject
+  @Default
+  private RESTRequestContext restRequestContext;
+  @Inject
   private OrganizationController organizationController;
   @Context
   private UriInfo uriInfo;
@@ -73,13 +73,22 @@ public abstract class RESTWebService implements ProtectedWebResource {
   private HttpRequest httpRequest;
   @Context
   private HttpServletResponse httpResponse;
-  private UserDetail userDetail = null;
   private Collection<SilverpeasRole> userRoles = null;
   private SilverpeasRole highestUserRole;
 
   private LocalizationBundle bundle = null;
 
   private WebResourceUri webResourceUri;
+
+  @PostConstruct
+  protected void initContext() {
+    restRequestContext.init(httpServletRequest, httpResponse);
+  }
+
+  @Override
+  public RESTRequestContext getSilverpeasContext() {
+    return restRequestContext;
+  }
 
   @Override
   public WebResourceUri getUri() {
@@ -123,27 +132,6 @@ public abstract class RESTWebService implements ProtectedWebResource {
    */
   protected abstract String getResourceBasePath();
 
-  @Override
-  public void validateUserAuthentication(final UserPrivilegeValidation validation) {
-    HttpServletRequest request = getHttpServletRequest();
-    SessionInfo session = validation.validateUserAuthentication(request, getHttpServletResponse());
-    this.userDetail = session.getUserDetail();
-    if (this.userDetail != null) {
-      MessageManager.setLanguage(this.userDetail.getUserPreferences().getLanguage());
-      if (User.getCurrentRequester() == null && session != SessionInfo.AnonymousSession) {
-        ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
-            .setCurrentSessionCache(session.getCache());
-      }
-    }
-  }
-
-  @Override
-  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
-    validation.validateUserAuthorizationOnComponentInstance(getUser(), getComponentId());
-  }
-
-  public abstract String getComponentId();
-
   /**
    * Gets the HTTP servlet request mapped with the execution context of this web service.
    *
@@ -184,7 +172,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * @return the detail about the user.
    */
   protected User getUser() {
-    return userDetail;
+    return getSilverpeasContext().getUser();
   }
 
   /**

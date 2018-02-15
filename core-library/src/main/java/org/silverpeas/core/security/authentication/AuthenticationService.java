@@ -27,7 +27,7 @@ import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.user.model.UserFull;
 import org.silverpeas.core.exception.SilverpeasException;
@@ -61,11 +61,14 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static java.util.Arrays.stream;
 
 /**
  * A service for authenticating a user in Silverpeas. This service is the entry point for any
@@ -101,6 +104,12 @@ public class AuthenticationService {
 
   @Inject
   private AdminController adminController;
+
+  private static final Predicate<Domain> DOMAIN_WITH_AUTHENTICATION_SERVER = d -> {
+    final AuthenticationServer authenticationServer = AuthenticationServer
+        .getAuthenticationServer(d.getAuthenticationServer());
+    return !authenticationServer.authServers.isEmpty();
+  };
 
   /**
    * Constructs a new AuthenticationService instance.
@@ -144,7 +153,9 @@ public class AuthenticationService {
   public List<Domain> getAllDomains() {
     List<Domain> domains;
     try {
-      domains = Arrays.asList(AdministrationServiceProvider.getAdminService().getAllDomains());
+      domains = stream(Administration.get().getAllDomains())
+          .filter(DOMAIN_WITH_AUTHENTICATION_SERVER)
+          .collect(Collectors.toList());
     } catch (AdminException e) {
       SilverLogger.getLogger(this).error(e);
       domains = Collections.emptyList();

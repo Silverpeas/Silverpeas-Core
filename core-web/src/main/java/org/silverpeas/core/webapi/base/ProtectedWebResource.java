@@ -23,8 +23,15 @@
  */
 package org.silverpeas.core.webapi.base;
 
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
+import org.silverpeas.core.notification.message.MessageManager;
+import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.web.SilverpeasWebResource;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 
 /**
@@ -33,6 +40,13 @@ import javax.ws.rs.WebApplicationException;
  * @author mmoquillon
  */
 public interface ProtectedWebResource extends SilverpeasWebResource {
+
+  /**
+   * Gets the context of Silverpeas linked to the current request.
+   * This context must be initialized before the functional request processing.
+   * @return {@link SilverpeasRequestContext} instance.
+   */
+  SilverpeasRequestContext getSilverpeasContext();
 
   /**
    * Validates the authentication of the user requesting this web service. If no session was opened
@@ -47,7 +61,20 @@ public interface ProtectedWebResource extends SilverpeasWebResource {
    * @throws WebApplicationException if the authentication isn't valid (no authentication and
    * authentication failure).
    */
-  void validateUserAuthentication(final UserPrivilegeValidation validation);
+  default void validateUserAuthentication(final UserPrivilegeValidation validation) {
+    final HttpServletRequest request = getSilverpeasContext().getRequest();
+    final SessionInfo session = validation
+        .validateUserAuthentication(request, getSilverpeasContext().getResponse());
+    final UserDetail currentUser = session.getUserDetail();
+    getSilverpeasContext().setUser(currentUser);
+    if (currentUser != null) {
+      MessageManager.setLanguage(currentUser.getUserPreferences().getLanguage());
+      if (User.getCurrentRequester() == null && session != SessionInfo.AnonymousSession) {
+        ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+            .setCurrentSessionCache(session.getCache());
+      }
+    }
+  }
 
   /**
    * Validates the authorization of the user to request this web service. For doing, the user must
@@ -63,5 +90,8 @@ public interface ProtectedWebResource extends SilverpeasWebResource {
    * @throws WebApplicationException if the rights of the user are not enough to access this web
    * resource.
    */
-  void validateUserAuthorization(final UserPrivilegeValidation validation);
+  default void validateUserAuthorization(final UserPrivilegeValidation validation) {
+    validation.validateUserAuthorizationOnComponentInstance(getSilverpeasContext().getUser(),
+        getComponentId());
+  }
 }

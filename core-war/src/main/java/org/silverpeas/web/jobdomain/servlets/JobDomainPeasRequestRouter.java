@@ -27,6 +27,7 @@ import org.apache.commons.fileupload.FileItem;
 import org.silverpeas.core.admin.domain.DomainDriver;
 import org.silverpeas.core.admin.domain.DomainDriverManager;
 import org.silverpeas.core.admin.domain.DomainDriverManagerProvider;
+import org.silverpeas.core.admin.domain.DomainType;
 import org.silverpeas.core.admin.domain.model.Domain;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminController;
@@ -42,6 +43,7 @@ import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.util.file.FileUploadUtil;
 import org.silverpeas.core.util.logging.Level;
@@ -79,6 +81,15 @@ public class JobDomainPeasRequestRouter extends
     ComponentRequestRouter<JobDomainPeasSessionController> {
 
   private static final long serialVersionUID = 1L;
+
+  private static final String DOMAIN_CREATE_FUNCTION = "domainCreate";
+  private static final String DOMAIN_SCIM_CREATE_FUNCTION = "domainSCIMCreate";
+  private static final String DOMAIN_SQL_CREATE_FUNCTION = "domainSQLCreate";
+  private static final String DOMAIN_DELETE_FUNCTION = "domainDelete";
+  private static final String DOMAIN_SCIM_DELETE_FUNCTION = "domainSCIMDelete";
+  private static final String DOMAIN_SQL_DELETE_FUNCTION = "domainSQLDelete";
+
+  private static final String DOMAIN_CREATE_JSP = "domainCreate.jsp";
 
   /**
    * Method declaration
@@ -455,11 +466,15 @@ public class JobDomainPeasRequestRouter extends
         } else {
           if (function.startsWith("domainContent")) {
             jobDomainSC.returnIntoGroup(null);
-          } else if (function.startsWith("domainCreate")) {
-            String newDomainId = jobDomainSC.createDomain(request2Domain(request));
+          } else if (function.startsWith(DOMAIN_CREATE_FUNCTION) ||
+              function.startsWith(DOMAIN_SCIM_CREATE_FUNCTION)) {
+            String newDomainId = jobDomainSC.createDomain(request2Domain(request),
+                function.startsWith(DOMAIN_CREATE_FUNCTION)
+                    ? DomainType.EXTERNAL
+                    : DomainType.SCIM);
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + newDomainId);
             destination = "goBack.jsp";
-          } else if (function.startsWith("domainSQLCreate")) {
+          } else if (function.startsWith(DOMAIN_SQL_CREATE_FUNCTION)) {
             String newDomainId = jobDomainSC.createSQLDomain(WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainName")),
                 WebEncodeHelper.htmlStringToJavaString(request.getParameter("domainDescription")),
                 WebEncodeHelper.htmlStringToJavaString(request.getParameter("silverpeasServerURL")),
@@ -478,11 +493,15 @@ public class JobDomainPeasRequestRouter extends
                 request.getParameter("userDomainQuotaMaxCount"));
             request.setAttribute("URLForContent", "domainNavigation?Iddomain=" + modifiedDomainId);
             destination = "goBack.jsp";
-          } else if (function.startsWith("domainDelete")) {
-            jobDomainSC.deleteDomain();
+          } else if (function.startsWith(DOMAIN_DELETE_FUNCTION)) {
+            jobDomainSC.deleteDomain(DomainType.EXTERNAL);
             request.setAttribute("URLForContent", "domainNavigation");
             destination = "goBack.jsp";
-          } else if (function.startsWith("domainSQLDelete")) {
+          }  else if (function.startsWith(DOMAIN_SCIM_DELETE_FUNCTION)) {
+            jobDomainSC.deleteDomain(DomainType.SCIM);
+            request.setAttribute("URLForContent", "domainNavigation");
+            destination = "goBack.jsp";
+          } else if (function.startsWith(DOMAIN_SQL_DELETE_FUNCTION)) {
             jobDomainSC.deleteSQLDomain();
             request.setAttribute("URLForContent", "domainNavigation");
             destination = "goBack.jsp";
@@ -599,17 +618,28 @@ public class JobDomainPeasRequestRouter extends
           theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.ldapdriver.LDAPDriver");
           theNewDomain.setPropFileName("org.silverpeas.domains.domain");
           theNewDomain.setAuthenticationServer("autDomain");
+          theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
           request.setAttribute("domainObject", theNewDomain);
-          request.setAttribute("action", "domainCreate");
-          destination = "domainCreate.jsp";
+          request.setAttribute("action", DOMAIN_CREATE_FUNCTION);
+          destination = DOMAIN_CREATE_JSP;
+        } else if (function.startsWith("displayDomainSCIMCreate")) {
+          Domain theNewDomain = new Domain();
+          theNewDomain.setDriverClassName("org.silverpeas.core.admin.domain.driver.scimdriver.SCIMDriver");
+          theNewDomain.setPropFileName("org.silverpeas.domains.domainSCIM");
+          theNewDomain.setAuthenticationServer("autDomainSCIM");
+          theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
+          request.setAttribute("domainObject", theNewDomain);
+          request.setAttribute("action", DOMAIN_SCIM_CREATE_FUNCTION);
+          destination = DOMAIN_CREATE_JSP;
         } else if (function.startsWith("displayDomainSQLCreate")) {
           Domain theNewDomain = new Domain();
+          theNewDomain.setSilverpeasServerURL(URLUtil.getAbsoluteApplicationURL());
           request.setAttribute("domainObject", theNewDomain);
-          request.setAttribute("action", "domainSQLCreate");
+          request.setAttribute("action", DOMAIN_SQL_CREATE_FUNCTION);
           destination = "domainSQLCreate.jsp";
         } else if (function.startsWith("displayDomainModify")) {
           request.setAttribute("action", "domainModify");
-          destination = "domainCreate.jsp";
+          destination = DOMAIN_CREATE_JSP;
         } else if (function.startsWith("displayDomainSQLModify")) {
           request.setAttribute("action", "domainSQLModify");
           destination = "domainSQLCreate.jsp";
@@ -692,12 +722,7 @@ public class JobDomainPeasRequestRouter extends
         request.setAttribute("theUser", jobDomainSC.getUserDetail());
         request.setAttribute("subGroups", jobDomainSC.getSubGroups(false));
         request.setAttribute("subUsers", jobDomainSC.getSubUsers(false));
-        request.setAttribute("isDomainRW", ((domainRight & ACTION_CREATE_GROUP) != 0)
-            || ((domainRight & ACTION_CREATE_USER) != 0));
-        request.setAttribute("isUserRW", (domainRight & ACTION_CREATE_USER) != 0);
-        request.setAttribute("isDomainSync",
-            ((domainRight & ACTION_SYNCHRO_USER) != 0)
-            || ((domainRight & ACTION_SYNCHRO_GROUP) != 0));
+        setRightManagementAttributes(request, domainRight);
 
         request.setAttribute("isOnlyGroupManager", jobDomainSC.isOnlyGroupManager());
         request.setAttribute("isUserAddingAllowedForGroupManager", jobDomainSC.
@@ -710,12 +735,7 @@ public class JobDomainPeasRequestRouter extends
             "myComponentURL"), null));
         request.setAttribute("subGroups", jobDomainSC.getSubGroups(true));
         request.setAttribute("subUsers", jobDomainSC.getSubUsers(true));
-        request.setAttribute("isDomainRW", ((domainRight & ACTION_CREATE_GROUP) != 0)
-            || ((domainRight & ACTION_CREATE_USER) != 0));
-        request.setAttribute("isUserRW", (domainRight & ACTION_CREATE_USER) != 0);
-        request.setAttribute("isDomainSync",
-            ((domainRight & ACTION_SYNCHRO_USER) != 0)
-            || ((domainRight & ACTION_SYNCHRO_GROUP) != 0));
+        setRightManagementAttributes(request, domainRight);
 
         request
             .setAttribute("isGroupManagerOnThisGroup", jobDomainSC.isGroupManagerOnCurrentGroup());
@@ -732,14 +752,7 @@ public class JobDomainPeasRequestRouter extends
 
         if (jobDomainSC.getTargetDomain() != null) {
           long domainRight = jobDomainSC.getDomainActions();
-
-          request.setAttribute("isDomainRW",
-              ((domainRight & ACTION_CREATE_GROUP) != 0)
-              || ((domainRight & ACTION_CREATE_USER) != 0));
-          request.setAttribute("isUserRW", (domainRight & ACTION_CREATE_USER) != 0);
-          request.setAttribute("isDomainSync",
-              ((domainRight & ACTION_SYNCHRO_USER) != 0)
-              || ((domainRight & ACTION_SYNCHRO_GROUP) != 0));
+          setRightManagementAttributes(request, domainRight);
           request.setAttribute("isX509Enabled", (domainRight & ACTION_X509_USER) != 0);
           request.setAttribute("isOnlyGroupManager", jobDomainSC.isOnlyGroupManager());
           request.setAttribute("userManageableByGroupManager", jobDomainSC.
@@ -787,6 +800,16 @@ public class JobDomainPeasRequestRouter extends
 
 
     return destination;
+  }
+
+  private void setRightManagementAttributes(final HttpRequest request, final long domainRight) {
+    request.setAttribute("isDomainRW",
+        ((domainRight & ACTION_CREATE_GROUP) != 0) || ((domainRight & ACTION_CREATE_USER) != 0));
+    request.setAttribute("isUserRW", (domainRight & ACTION_CREATE_USER) != 0);
+    request.setAttribute("isDomainSync",
+        ((domainRight & ACTION_SYNCHRO_USER) != 0) || ((domainRight & ACTION_SYNCHRO_GROUP) != 0));
+    request.setAttribute("isDomainPush",
+        ((domainRight & ACTION_PUSH_USER) != 0) || ((domainRight & ACTION_PUSH_GROUP) != 0));
   }
 
   /**

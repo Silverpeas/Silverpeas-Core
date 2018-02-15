@@ -106,6 +106,15 @@
     <async-supported>true</async-supported>
   </filter>
   <filter>
+    <!-- ScimFilter Filter -->
+    <description>
+      To manage for each incoming request, the life-cycle of a SCIM client.
+    </description>
+    <filter-name>ScimServerFilter</filter-name>
+    <filter-class>org.silverpeas.core.webapi.admin.scim.ScimServerFilter</filter-class>
+    <async-supported>true</async-supported>
+  </filter>
+  <filter>
     <description>
       To validate each incoming HTTP request to a protected resource by using a synchronizer token
       mechanism.
@@ -158,6 +167,10 @@
   <filter-mapping>
     <filter-name>MessageFilter</filter-name>
     <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>ScimServerFilter</filter-name>
+    <url-pattern>/services/domains/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <filter-name>SessionSynchronizerTokenValidator</filter-name>
