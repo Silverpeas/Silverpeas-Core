@@ -484,13 +484,8 @@ public class IndexSearcher {
     List<MatchingIndexEntry> results = new ArrayList<>();
 
     if (topDocs != null) {
-      for (int i = 0; i < topDocs.scoreDocs.length; i++) {
-        ScoreDoc scoreDoc = topDocs.scoreDocs[i];
-        final MatchingIndexEntry indexEntry =
-            createMatchingIndexEntry(scoreDoc, query.getRequestedLanguage(), searcher);
-        if (indexEntry != null) {
-          results.add(indexEntry);
-        }
+      for (ScoreDoc scoreDoc : topDocs.scoreDocs) {
+        results.add(createMatchingIndexEntry(scoreDoc, query.getRequestedLanguage(), searcher));
       }
     }
     return results;

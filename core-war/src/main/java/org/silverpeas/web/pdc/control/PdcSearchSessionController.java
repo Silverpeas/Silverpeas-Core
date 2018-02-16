@@ -25,7 +25,6 @@ package org.silverpeas.web.pdc.control;
 
 import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.UserIndexation;
 import org.silverpeas.core.admin.user.model.User;
@@ -547,31 +546,33 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private void processFacetComponent(Facet facet, GlobalSilverResult result, List<String> blackList,
       Map<String, ComponentInstLight> components) {
     String instanceId = result.getInstanceId();
-    String type = result.getType();
-    if (!blackList.contains(type)) {
-      FacetEntryVO facetEntry = facet.getEntryById(instanceId);
-      if (facetEntry == null) {
-        Mutable<String> appLabel = Mutable.empty();
-        ComponentInstLight component = components.computeIfAbsent(instanceId,
-            k -> getOrganisationController().getComponentInstLight(instanceId));
-        if (component != null) {
-          appLabel.set(component.getLabel(getLanguage()));
-        }
-        String appLocation = appLabel.orElse("");
-        if (StringUtil.isNotDefined(appLocation) && DIRECTORY_SERVICE.equals(instanceId)) {
-          appLocation = getString("pdcPeas.facet.service.directory");
-        }
-        if (StringUtil.isDefined(appLocation)) {
-          facetEntry = new FacetEntryVO(appLocation, instanceId);
 
-          if (getSelectedFacetEntries() != null &&
-              instanceId.equals(getSelectedFacetEntries().getComponentId())) {
-            facetEntry.setSelected(true);
-          }
+    if (blackList.contains(result.getType())) {
+      return;
+    }
+
+    FacetEntryVO facetEntry = facet.getEntryById(instanceId);
+    if (facetEntry == null) {
+      Mutable<String> appLabel = Mutable.empty();
+      ComponentInstLight component = components.computeIfAbsent(instanceId,
+          k -> getOrganisationController().getComponentInstLight(instanceId));
+      if (component != null) {
+        appLabel.set(component.getLabel(getLanguage()));
+      }
+      String appLocation = appLabel.orElse("");
+      if (StringUtil.isNotDefined(appLocation) && DIRECTORY_SERVICE.equals(instanceId)) {
+        appLocation = getString("pdcPeas.facet.service.directory");
+      }
+      if (StringUtil.isDefined(appLocation)) {
+        facetEntry = new FacetEntryVO(appLocation, instanceId);
+
+        if (getSelectedFacetEntries() != null &&
+            instanceId.equals(getSelectedFacetEntries().getComponentId())) {
+          facetEntry.setSelected(true);
         }
       }
-      facet.addEntry(facetEntry);
     }
+    facet.addEntry(facetEntry);
   }
 
   private void processFacetsFormField(Map<String, Facet> fieldFacetsMap, GlobalSilverResult result) {

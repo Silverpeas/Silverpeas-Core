@@ -67,7 +67,6 @@ import org.silverpeas.core.admin.user.model.*;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -115,7 +114,6 @@ class Admin implements Administration {
    * Silverpeas.
    */
   private static final String ADMIN_ID = "0";
-  public static final String ADMIN_DELETE_USER = "Admin.deleteUser()";
   public static final String REMOVE_OF = "Suppression de ";
 
   // Divers
