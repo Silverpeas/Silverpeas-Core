@@ -887,7 +887,7 @@ class Admin implements Administration {
     FileRepositoryManager.deleteAbsolutePath(null, componentId, "");
 
     // deleting index files
-    IndexFileManager.deleteComponentIndexFolder(componentId);
+    IndexEngineProxy.removeScopedIndexEntries(componentId);
   }
 
   @Override
