@@ -35,7 +35,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.WebApplicationException;
 
 /**
- * A protected Web resource is a Web resource in Silvepreas that can require the user to be
+ * A protected Web resource is a Web resource in Silverpeas that can require the user to be
  * authenticated or authorized to access the instances of the resource.
  * @author mmoquillon
  */

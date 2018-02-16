@@ -23,6 +23,9 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 --%>
+<%@ page import="java.util.Map" %>
+<%@ page import="java.util.List" %>
+
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <%@ include file="checkThesaurus.jsp"%>
@@ -34,7 +37,7 @@
 	String idAxis = (String) request.getAttribute("idAxis");
 	idAxis = (idVoca == null) ? null : idAxis;
     String showSynonyms = (String) request.getAttribute("showSynonyms");
-    Hashtable synonyms = (Hashtable) request.getAttribute("synonyms");
+    Map<String, List<String>> synonyms = (Map) request.getAttribute("synonyms");
     Iterator itVoca = vocas.iterator();
 	Iterator itAxis = axis.iterator();
 	Iterator itTerm = terms.iterator();
@@ -72,7 +75,11 @@
 	display: none;
 }
 .colorRed {
-    color:red
+  color:red;
+  border-color: red;
+}
+.validationButton {
+  display: none;
 }
 </style>
 <title><%=resource.getString("GML.popupTitle")%></title>
@@ -152,14 +159,6 @@ function SetAxis()
     }
 }
 
-function setColorToRed(field){
-    var coll = document.all[field.name];
-    for (i=0; i< coll.length; i++ )
-        if (coll[i].id == 'status_'+field.id)
-            coll[i].value= 'unverified';
-    field.className = 'colorRed';
-}
-
 function showButtonClick()
 {
 
@@ -170,13 +169,27 @@ function showButtonClick()
     }
 }
 
-function validateSynonyms(termId)
-{
-    document.forms[0].action = "validateSynonyms";
-    document.forms[0].termId.value = termId;
-    document.forms[0].submit();
+function validateSynonyms(termId) {
+  var url = webContext+"/services/thesaurus/vocabulary/<%=idVoca%>/axis/<%=idAxis%>/values/"+termId+"/synonyms";
+  var ajaxRequest = sp.ajaxRequest(url).byPostMethod();
+  var synonyms = "";
+  $("#value_"+termId+" input:text").each(function () {
+    ajaxRequest.addParam("synonym", $(this).val());
+  });
+
+  ajaxRequest.send().then(function() {
+    $("#value_"+termId+" input:text").removeClass("colorRed");
+    $("#value_"+termId+" .validationButton").hide();
+  });
 }
 
+$(document).ready(function() {
+  $( "input:text" ).on('input', function() {
+    $(this).addClass("colorRed");
+    var id = $(this).attr("name").substring("field".length);
+    $("#value_"+id+" .validationButton").show();
+  });
+});
 </script>
 </head>
 <body class="page_content_admin">
@@ -295,7 +308,7 @@ function validateSynonyms(termId)
                       <td class="intfdcolor" align="center" nowrap width="100%" height="24">
                         <%
                             ButtonPane buttonPane = gef.getButtonPane();
-                            Button showButton = (Button) gef.getFormButton(resource.getString("thesaurus.show"), "javascript:onClick=showButtonClick()", false);
+                            Button showButton = gef.getFormButton(resource.getString("thesaurus.show"), "javascript:onClick=showButtonClick()", false);
                             buttonPane.addButton(showButton);
                             buttonPane.setHorizontalPosition();
                             out.println(buttonPane.print());
@@ -326,7 +339,6 @@ function validateSynonyms(termId)
         <%
             int i;
             int j;
-            Button validateButton;
             Value value;
             String  valueName;
             String  valueId;
@@ -334,50 +346,36 @@ function validateSynonyms(termId)
             String increment;
             StringBuffer synonymsFields;
             Collection names;
-            Iterator itNames;
-            String[] strNames;
-            String status;
+            Iterator<String> itNames;
             boolean isChild;
             String parentId;
-            Hashtable hSynonym;
 
-            while (idAxis!= null && itTerm!= null && itTerm.hasNext()) {
+            while (idAxis!= null && itTerm.hasNext()) {
               value		= (Value) itTerm.next();
               valueName	= value.getName();
               valueId		= value.getValuePK().getId();
               valueLevel	= value.getLevelNumber();
               increment	= "";
               synonymsFields = new StringBuffer(openBorder);
-              names = (Collection) synonyms.get(valueId);
+              names = synonyms.get(valueId);
               itNames = names.iterator();
-              strNames = new String[maxSyn];
-              status = "";
-              for (i = 0; i < strNames.length; i++) {
+              for (i = 0; i < maxSyn; i++) {
                   if (itNames.hasNext()) {
-                   hSynonym = (Hashtable) itNames.next();
-                   status = (String) hSynonym.get("status");
-                   synonymsFields.append("<input type=\"hidden\" id=\"status_field"+valueId+"_"+i+"\" name=\"field"+valueId+"\" value=\""+status+"\">");
-                   name = Encode.javaStringToHtmlString((String)hSynonym.get("name"));
-                    if ("verified".equals(status) && !"".equals(name)) {
-                        synonymsFields.append("<input type=\"text\" onchange=\"setColorToRed(this)\" id=\"field"+valueId+"_"+i+"\" name=\"field"+valueId+"\" value=\""+name+"\" size=\"12\">&nbsp;\n");
-                    } else {
-                       synonymsFields.append("<input type=\"text\" class=\"colorRed\" id=\"field"+valueId+"_"+i+"\" name=\"field"+valueId+"\" value=\""+name+"\" size=\"12\">&nbsp;\n");
-                    }
-
-                }  else {
-                    synonymsFields.append("<input type=\"hidden\" id=\"status_field"+valueId+"_"+i+"\" name=\"field"+valueId+"\" value=\"unferified\">");
-                    synonymsFields.append("<input type=\"text\" class=\"colorRed\" id=\"field"+valueId+"_"+i+"\" name=\"field"+valueId+"\" value=\"\" size=\"12\">&nbsp;\n");
-                }
+                   name = Encode.javaStringToHtmlString(itNames.next());
+                   synonymsFields.append("<input type=\"text\" id=\"field"+valueId+"_"+i+"\" name=\"field"+valueId+"\" value=\""+name+"\" size=\"12\">&nbsp;\n");
+                  } else {
+                    synonymsFields.append("<input type=\"text\" id=\"field"+valueId+"_"+i+"\" name=\"field"+valueId+"\" value=\"\" size=\"12\">&nbsp;\n");
+                  }
               }
               synonymsFields.append(closeBorder);
 
               isChild = false;
               parentId = "";
 
-               out.println("<tr>");
+               out.println("<tr id=\"value_"+valueId+"\">");
                out.println("<td background=\""+m_context+"/pdcPeas/jsp/icons/quadrillage.gif\" width=\"50%\">");
                for (j = 0; j < valueLevel; j++) {
-                    increment += "<img src=\""+m_context+"/util/icons/shim.gif\" width=\"18\" align=\"absmiddle\">";
+                    increment += "<img src=\""+m_context+"/util/icons/shim.gif\" width=\"18\" align=\"absmiddle\"/>";
                }
 
                if (valueLevel == 0) {
@@ -389,7 +387,7 @@ function validateSynonyms(termId)
                    out.println("</td><td>");
                    out.println(synonymsFields.toString());
                    out.println("</td>");
-                   out.println("<td>"+openBorder+"<a class=\"intfdcolor\" href=\"javascript:validateSynonyms('"+valueId+"')\" ><img border=0 src=\""+m_context+"/util/icons/ok.gif\" alt=\"" + resource.getString("thesaurus.validateSynonyms") + "\" align=\"absmiddle\"></a>"+closeBorder+"</td>");
+                   out.println("<td>"+openBorder+"<a class=\"intfdcolor validationButton\" href=\"javascript:validateSynonyms('"+valueId+"')\" title=\""+resource.getString("thesaurus.validateSynonyms")+"\" ><img border=0 src=\""+m_context+"/util/icons/ok.gif\" alt=\"" + resource.getString("thesaurus.validateSynonyms") + "\" align=\"absmiddle\"></a>"+closeBorder+"</td>");
                    out.println("</tr>");
                } else {
                         //there is a child value
@@ -401,7 +399,7 @@ function validateSynonyms(termId)
                        out.println("</td><td>");
                        out.println("   " + synonymsFields.toString());
                        out.println("</td>");
-                       out.println("<td>"+openBorder+"<a class=\"intfdcolor\" href=\"javascript:validateSynonyms('"+valueId+"')\" ><img border=0 src=\""+m_context+"/util/icons/ok.gif\" alt=\"" + resource.getString("thesaurus.validateSynonyms") + "\" align=\"absmiddle\"></a>"+closeBorder+"</td>");
+                       out.println("<td>"+openBorder+"<a class=\"intfdcolor validationButton\" href=\"javascript:validateSynonyms('"+valueId+"')\" title=\""+resource.getString("thesaurus.validateSynonyms")+"\" ><img border=0 src=\""+m_context+"/util/icons/ok.gif\" alt=\"" + resource.getString("thesaurus.validateSynonyms") + "\" align=\"absmiddle\"></a>"+closeBorder+"</td>");
                         out.println("</tr>");
                                  //there is no child values
                         if (isChild && !value.getMotherId().equals(parentId)) {
