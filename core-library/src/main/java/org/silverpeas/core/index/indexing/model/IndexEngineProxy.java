@@ -56,6 +56,14 @@ public final class IndexEngineProxy {
     IndexerTask.removeIndexEntry(entryKey);
   }
 
+  /**
+   * Removes from the index the entries matching the specified scope.
+   * @param scope the scope of the entries in the index.
+   */
+  public void deleteByScope(String scope) {
+    IndexerTask.removeIndexEntriesByScope(scope);
+  }
+
   public static IndexEngineProxy get() {
     return ServiceProvider.getService(IndexEngineProxy.class);
   }
@@ -73,4 +81,12 @@ public final class IndexEngineProxy {
   public static void removeIndexEntry(IndexEntryKey indexEntry) {
     get().delete(indexEntry);
   }
+
+  /**
+   * Removes an entry index.
+   */
+  public static void removeScopedIndexEntries(String scope) {
+    get().deleteByScope(scope);
+  }
+
 }

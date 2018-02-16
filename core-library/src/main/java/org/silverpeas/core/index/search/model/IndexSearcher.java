@@ -35,9 +35,11 @@ import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.PrefixQuery;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TermInSetQuery;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.util.BytesRef;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.model.ExternalComponent;
@@ -168,7 +170,7 @@ public class IndexSearcher {
       TopDocs topDocs = searcher.search(query, maxNumberResult);
       ScoreDoc scoreDoc = topDocs.scoreDocs[0];
 
-      matchingIndexEntry = createMatchingIndexEntry(set, scoreDoc, "*", searcher);
+      matchingIndexEntry = createMatchingIndexEntry(scoreDoc, "*", searcher);
     } catch (IOException ioe) {
       SilverLogger.getLogger(this).error("Index file corrupted", ioe);
     }
@@ -195,6 +197,8 @@ public class IndexSearcher {
       BooleanQuery.Builder rangeClausesBuilder = new BooleanQuery.Builder();
       rangeClausesBuilder.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
       rangeClausesBuilder.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
+      // filtering on searched scopes
+      booleanQueryBuilder.add(getScopeQuery(query), BooleanClause.Occur.FILTER);
 
       parseQuery(query, booleanQueryBuilder, rangeClausesBuilder);
 
@@ -239,8 +243,8 @@ public class IndexSearcher {
     TermRangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
     if (!StringUtil.isDefined(query.getQuery()) && (query.isSearchBySpace() || query.
         isSearchByComponentType()) && !query.isPeriodDefined()) {
-      rangeQuery = TermRangeQuery.newStringRange(IndexManager.CREATIONDATE, "1900/01/01", "2200/01/01",
-          true, true);
+      rangeQuery = TermRangeQuery
+            .newStringRange(IndexManager.CREATIONDATE, "1900/01/01", "2200/01/01", true, true);
     }
     if (rangeQuery != null) {
       rangeClausesBuilder.add(rangeQuery, BooleanClause.Occur.MUST);
@@ -385,7 +389,6 @@ public class IndexSearcher {
   }
 
   /**
-   * @param possibleComponents the possible components
    * @param scoreDoc occurrence of Lucene search result
    * @param requestedLanguage a language as short string
    * @param searcher the index search result instance
@@ -393,15 +396,11 @@ public class IndexSearcher {
    * expected according to possible components.
    * @throws IOException if there is a problem when searching Lucene index
    */
-  private MatchingIndexEntry createMatchingIndexEntry(Set<String> possibleComponents,
-      ScoreDoc scoreDoc, String requestedLanguage, org.apache.lucene.search.IndexSearcher searcher)
-      throws IOException {
+  private MatchingIndexEntry createMatchingIndexEntry(ScoreDoc scoreDoc, String requestedLanguage,
+      org.apache.lucene.search.IndexSearcher searcher) throws IOException {
     final Document doc = searcher.doc(scoreDoc.doc);
     final MatchingIndexEntry indexEntry = new MatchingIndexEntry(
         IndexEntryKey.create(doc.get(IndexManager.KEY)));
-    if (!possibleComponents.contains(indexEntry.getComponent())) {
-      return null;
-    }
 
     setIndexEntryLanguageData(indexEntry, doc);
     setIndexEntryCommonData(indexEntry, doc, scoreDoc);
@@ -487,8 +486,8 @@ public class IndexSearcher {
     if (topDocs != null) {
       for (int i = 0; i < topDocs.scoreDocs.length; i++) {
         ScoreDoc scoreDoc = topDocs.scoreDocs[i];
-        final MatchingIndexEntry indexEntry = createMatchingIndexEntry(query.getWhereToSearch(),
-            scoreDoc, query.getRequestedLanguage(), searcher);
+        final MatchingIndexEntry indexEntry =
+            createMatchingIndexEntry(scoreDoc, query.getRequestedLanguage(), searcher);
         if (indexEntry != null) {
           results.add(indexEntry);
         }
@@ -632,5 +631,13 @@ public class IndexSearcher {
       SilverLogger.getLogger(this).warn(e);
     }
     return null;
+  }
+
+  private TermInSetQuery getScopeQuery(QueryDescription query) {
+    List<BytesRef> terms = new ArrayList<>();
+    for (String scope : query.getWhereToSearch()) {
+      terms.add(new BytesRef(scope));
+    }
+    return new TermInSetQuery(IndexManager.SCOPE, terms);
   }
 }

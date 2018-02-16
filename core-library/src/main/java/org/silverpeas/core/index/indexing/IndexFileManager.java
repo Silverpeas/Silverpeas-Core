@@ -23,10 +23,7 @@
  */
 package org.silverpeas.core.index.indexing;
 
-import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.util.ResourceLocator;
-
-import java.io.File;
 
 import static java.io.File.separatorChar;
 
@@ -71,17 +68,6 @@ public class IndexFileManager {
       sb.append("unknown");
     }
     return sb.toString();
-  }
-
-  /**
-   * @param componentId the identifier of a component or something else.
-   * @deprecated as now the root of a component instance is the name of the component, this
-   * method deletes nothing according to a component instance identifier.
-   */
-  @Deprecated
-  public static void deleteComponentIndexFolder(String componentId) {
-    final File folder = new File(getIndexUpLoadPath(), componentId);
-    FileUtils.deleteQuietly(folder);
   }
 
   /**

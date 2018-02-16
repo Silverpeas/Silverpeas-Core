@@ -63,6 +63,14 @@ public class IndexerTask extends AbstractRequestTask<IndexerTask.IndexerProcessC
     RequestTaskManager.push(IndexerTask.class, new RemoveIndexEntryRequest(indexEntry));
   }
 
+  /**
+   * Add a request 'remove index entries by scope'.
+   * @param scope the scope of index entries to process.
+   */
+  public static void removeIndexEntriesByScope(String scope) {
+    RequestTaskManager.push(IndexerTask.class, new RemoveScopedIndexEntriesRequest(scope));
+  }
+
   @Override
   protected int getRequestQueueLimit() {
     return QUEUE_LIMIT;
@@ -133,6 +141,29 @@ public class IndexerTask extends AbstractRequestTask<IndexerTask.IndexerProcessC
     @Override
     public void process(IndexerProcessContext context) {
       context.getIndexManager().removeIndexEntry(indexEntry);
+    }
+  }
+
+  /**
+   * A RemoveEntryIndex remove an entry index.
+   */
+  static class RemoveScopedIndexEntriesRequest
+      implements AbstractRequestTask.Request<IndexerProcessContext> {
+    private final String scope;
+
+    /**
+     * @param scope the scope of index entries to process.
+     */
+    RemoveScopedIndexEntriesRequest(String scope) {
+      this.scope = scope;
+    }
+
+    /**
+     * @param context process context.
+     */
+    @Override
+    public void process(IndexerProcessContext context) {
+      context.getIndexManager().removeIndexEntries(scope);
     }
   }
 }
