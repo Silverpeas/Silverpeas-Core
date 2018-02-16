@@ -26,6 +26,7 @@ package com.stratelia.webactiv.util.viewGenerator.html.window;
 
 import java.util.List;
 
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import org.silverpeas.core.admin.OrganisationController;
 
 import com.silverpeas.util.StringUtil;
@@ -53,13 +54,9 @@ public class WindowWithContextualDiv extends AbstractWindow {
     String componentId = getGEF().getComponentIdOfCurrentRequest();
     OrganisationController oc = getGEF().getMainSessionController().getOrganisationController();
     if (StringUtil.isDefined(componentId)) {
-      List<SpaceInst> spaces = oc.getSpacePathToComponent(componentId);
-
-      for (SpaceInst spaceInst : spaces) {
-        String spaceId = spaceInst.getId();
-        if (!spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
-          spaceId = Admin.SPACE_KEY_PREFIX + spaceId;
-        }
+      List<SpaceInstLight> spaces = oc.getPathToComponent(componentId);
+      for (SpaceInstLight spaceInst : spaces) {
+        String spaceId = spaceInst.getFullId();
         spaceIds += spaceId + " ";
       }
     }

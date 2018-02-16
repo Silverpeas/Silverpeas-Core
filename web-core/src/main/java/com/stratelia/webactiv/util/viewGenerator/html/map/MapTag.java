@@ -28,14 +28,14 @@ import com.silverpeas.look.LookHelper;
 import com.silverpeas.util.StringUtil;
 import com.stratelia.silverpeas.peasCore.MainSessionController;
 import com.stratelia.silverpeas.peasCore.URLManager;
-import com.stratelia.webactiv.beans.admin.ComponentInst;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
-import org.silverpeas.core.admin.OrganisationController;
+import com.stratelia.webactiv.beans.admin.ComponentInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
+import com.stratelia.webactiv.beans.admin.SpaceWithSubSpacesAndComponents;
+import org.silverpeas.core.admin.OrganisationControllerFactory;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
-import java.io.IOException;
 import java.util.List;
 
 public class MapTag extends TagSupport {
@@ -57,19 +57,21 @@ public class MapTag extends TagSupport {
       LookHelper helper =
           (LookHelper) pageContext.getSession().getAttribute(LookHelper.SESSION_ATT);
       boolean showHiddenComponents = helper.getSettings("display.all.components", false);
-      pageContext.getOut().print(printSpaceAndSubSpaces(spaceId, 0, showHiddenComponents));
-    } catch (IOException e) {
+      SpaceWithSubSpacesAndComponents root = OrganisationControllerFactory.getOrganisationController().getFullTreeview(helper.getUserId());
+      for (SpaceWithSubSpacesAndComponents space : root.getSubSpaces()) {
+        pageContext.getOut().print(printSpaceAndSubSpaces(space, 0, showHiddenComponents));
+      }
+    } catch (Exception e) {
       throw new JspException("Can't display the site map", e);
     }
     return SKIP_BODY;
   }
 
-  private String printSpaceAndSubSpaces(String spaceId, int depth, boolean showHiddenComponents) {
+  private String printSpaceAndSubSpaces(SpaceWithSubSpacesAndComponents space, int depth, boolean showHiddenComponents) {
     String contextPath = ((HttpServletRequest) pageContext.getRequest()).getContextPath();
     MainSessionController sessionController = (MainSessionController) pageContext.getSession().
         getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT);
-    OrganisationController organisationController = sessionController.getOrganisationController();
-    SpaceInst spaceInst = organisationController.getSpaceInstById(spaceId);
+    SpaceInstLight spaceInst = space.getSpace();
     StringBuilder result = new StringBuilder(500);
     if (spaceInst != null) {
       String language = sessionController.getFavoriteLanguage();
@@ -80,7 +82,7 @@ public class MapTag extends TagSupport {
       result.append("<tr>\n");
       if (URLManager.displayUniversalLinks()) {
         result.append("<td class=\"txttitrecol\">&#8226; <a href=\"");
-        result.append(URLManager.getSimpleURL(URLManager.URL_SPACE, spaceInst.getId()));
+        result.append(URLManager.getSimpleURL(URLManager.URL_SPACE, spaceInst.getFullId()));
         result.append("\" target=\"_top\">").append(spaceInst.getName(language));
         result.append("</a></td></tr>\n");
       } else {
@@ -88,49 +90,44 @@ public class MapTag extends TagSupport {
         result.append("</td></tr>\n");
       }
       result.append("<tr><td>\n");
-      List<ComponentInst> alCompoInst = spaceInst.getAllComponentsInst();
-      for (ComponentInst componentInst : alCompoInst) {
+      List<ComponentInstLight> alCompoInst = space.getComponents();
+      for (ComponentInstLight componentInst : alCompoInst) {
         if (!componentInst.isHidden() || showHiddenComponents) {
-          boolean bAllowed = organisationController.isComponentAvailable(componentInst.getId(),
-              sessionController.getUserId());
-          if (bAllowed) {
-            String label = componentInst.getLabel(language);
-            if (!StringUtil.isDefined(label)) {
-              label = componentInst.getName();
-            }
+          String label = componentInst.getLabel(language);
+          if (!StringUtil.isDefined(label)) {
+            label = componentInst.getName();
+          }
 
-            // display component icon
-            result.append("&nbsp;<img src=\"").append(contextPath).append("/util/icons/component/");
-            if (componentInst.isWorkflow()) {
-              result.append("processManager");
-            } else {
-              result.append(componentInst.getName());
-            }
-            result.append("Small.gif\" border=\"0\" width=\"15\" align=\"top\" alt=\"\"/>&nbsp;");
+          // display component icon
+          result.append("&nbsp;<img src=\"").append(contextPath).append("/util/icons/component/");
+          if (componentInst.isWorkflow()) {
+            result.append("processManager");
+          } else {
+            result.append(componentInst.getName());
+          }
+          result.append("Small.gif\" border=\"0\" width=\"15\" align=\"top\" alt=\"\"/>&nbsp;");
 
-            // display component link
-            if (URLManager.displayUniversalLinks()) {
-              result.append("<a href=\"");
-              result
-                  .append(URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentInst.getId()));
-              result.append("\" target=\"_top\">").append(label).append("</a>\n");
-            } else {
-              result.append("<a href=\"");
-              result.append(contextPath).append(
-                  URLManager.getURL(componentInst.getName(), spaceId, componentInst.getId()));
-              result.append("Main\" target=\"MyMain\" title=\"").append(
-                  componentInst.getDescription()).append("\">").append(label).append("</a>\n");
-            }
+          // display component link
+          if (URLManager.displayUniversalLinks()) {
+            result.append("<a href=\"");
+            result
+                .append(URLManager.getSimpleURL(URLManager.URL_COMPONENT, componentInst.getId()));
+            result.append("\" target=\"_top\">").append(label).append("</a>\n");
+          } else {
+            result.append("<a href=\"");
+            result.append(contextPath).append(
+                URLManager.getURL(componentInst.getName(), spaceId, componentInst.getId()));
+            result.append("Main\" target=\"MyMain\" title=\"").append(
+                componentInst.getDescription()).append("\">").append(label).append("</a>\n");
           }
         }
       }
 
       // Get all sub spaces
-      String[] subSpaceIds = organisationController.getAllowedSubSpaceIds(sessionController.
-          getUserId(), spaceId);
-      for (String subSpaceId : subSpaceIds) {
+      List<SpaceWithSubSpacesAndComponents> subSpaces = space.getSubSpaces();
+      for (SpaceWithSubSpacesAndComponents subSpace : subSpaces) {
         String subSpaceContent =
-            printSpaceAndSubSpaces(subSpaceId, depth + 1, showHiddenComponents);
+            printSpaceAndSubSpaces(subSpace, depth + 1, showHiddenComponents);
         if (StringUtil.isDefined(subSpaceContent)) {
           result.append("<table border=\"0\" cellspacing=\"0\" cellpadding=\"5\">\n");
           result.append("<tr><td>&nbsp;&nbsp;</td>\n");

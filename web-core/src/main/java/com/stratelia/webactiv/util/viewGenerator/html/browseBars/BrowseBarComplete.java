@@ -25,9 +25,10 @@ import com.silverpeas.util.StringUtil;
 import com.silverpeas.util.html.HtmlCleaner;
 import com.stratelia.silverpeas.peasCore.URLManager;
 import com.stratelia.webactiv.beans.admin.ComponentInstLight;
-import com.stratelia.webactiv.beans.admin.SpaceInst;
 import java.io.IOException;
 import java.util.List;
+
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import org.apache.xerces.xni.XNIException;
 import org.owasp.encoder.Encode;
 
@@ -88,20 +89,17 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     String language = (getMainSessionController() == null) ? "" : getMainSessionController()
         .getFavoriteLanguage();
     if (StringUtil.isDefined(getComponentId()) || StringUtil.isDefined(getSpaceId())) {
-      List<SpaceInst> spaces;
+      List<SpaceInstLight> spaces;
 
       if (StringUtil.isDefined(getComponentId())) {
-        spaces = getMainSessionController().getOrganisationController().getSpacePathToComponent(
+        spaces = getMainSessionController().getOrganisationController().getPathToComponent(
             getComponentId());
       } else {
-        spaces = getMainSessionController().getOrganisationController().getSpacePath(getSpaceId());
+        spaces = getMainSessionController().getOrganisationController().getPathToSpace(getSpaceId());
       }
       boolean firstSpace = true;
-      for (SpaceInst spaceInst : spaces) {
-        String spaceId = spaceInst.getId();
-        if (!spaceId.startsWith("WA")) {
-          spaceId = "WA" + spaceId;
-        }
+      for (SpaceInstLight spaceInst : spaces) {
+        String spaceId = spaceInst.getFullId();
         String href = "javascript:" + getSpaceJavascriptCallback() + "('" + spaceId + "')";
         if (!isClickable()) {
           href = "#";

@@ -21,28 +21,30 @@
 
 package com.stratelia.webactiv.jaas;
 
+import com.silverpeas.accesscontrol.AccessController;
+import com.silverpeas.accesscontrol.AccessControllerProvider;
+
 import java.security.Principal;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.regex.Pattern;
 
 public class SilverpeasUserPrincipal implements Principal {
 
   private String userId;
   private boolean administrator;
-  private Map<String, SilverpeasUserProfileEntry> entries;
+  private static final Pattern COMPONENTID_PATTERN = Pattern.compile("^([a-zA-Z]+)([0-9]+)$");
 
   public SilverpeasUserPrincipal(String userId, boolean administrator) {
     this.userId = userId;
     this.administrator = administrator;
-    this.entries = new HashMap<String, SilverpeasUserProfileEntry>(100);
   }
 
-  public void addUserProfile(SilverpeasUserProfileEntry entry) {
-    entries.put(entry.getComponentId(), entry);
-  }
-
-  public SilverpeasUserProfileEntry getUserProfile(String componentId) {
-    return this.entries.get(componentId);
+  public boolean canAccess(String componentId) {
+    if (COMPONENTID_PATTERN.matcher(componentId).find()) {
+      AccessController<String> accessController =
+          AccessControllerProvider.getAccessController("componentAccessController");
+      return accessController.isUserAuthorized(userId, componentId);
+    }
+    return false;
   }
 
   public String getUserId() {

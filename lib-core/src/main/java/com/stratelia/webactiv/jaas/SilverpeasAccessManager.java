@@ -177,8 +177,7 @@ public class SilverpeasAccessManager implements AccessManager {
     Path.Element[] elements = path.getElements();
     for (SilverpeasUserPrincipal principal : principals) {
       for (Path.Element element : elements) {
-        if (principal.isAdministrator() || principal.getUserProfile(
-            element.getName().getLocalName()) != null) {
+        if (principal.isAdministrator() || principal.canAccess(element.getName().getLocalName())) {
           return true;
         }
       }

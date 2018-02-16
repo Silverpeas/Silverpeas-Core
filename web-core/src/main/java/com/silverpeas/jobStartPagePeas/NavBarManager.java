@@ -353,25 +353,12 @@ public class NavBarManager {
     if (spaceInst.isRoot()) {
       valret.type = DisplaySorted.TYPE_SPACE;
       valret.isAdmin = m_user.isAccessAdmin() || m_ManageableSpaces.contains(valret.id);
-      if (!valret.isAdmin) { // Rattrapage....
-        String[] manageableSubSpaceIds = m_administrationCtrl
-            .getUserManageableSubSpaceIds(m_user.getId(), valret.id);
-        if ((manageableSubSpaceIds == null)
-            || (manageableSubSpaceIds.length <= 0)) {
-          valret.isVisible = false;
-        }
-      }
     } else {
       valret.type = DisplaySorted.TYPE_SUBSPACE;
       valret.isAdmin = m_user.isAccessAdmin() || isAdminOfSpace(spaceInst);
-      if (!valret.isAdmin) { // Rattrapage....
-        String[] manageableSubSpaceIds = m_administrationCtrl
-            .getUserManageableSubSpaceIds(m_user.getId(), valret.id);
-        if ((manageableSubSpaceIds == null)
-            || (manageableSubSpaceIds.length <= 0)) {
-          valret.isVisible = false;
-        }
-      }
+    }
+    if (!valret.isAdmin) { // Rattrapage....
+      valret.isVisible = isAtLeastOneSubSpaceManageable(valret.id);
     }
     valret.name = spaceInst.getName(m_SessionCtrl.getLanguage());
     valret.orderNum = spaceInst.getOrderNum();
@@ -381,6 +368,21 @@ public class NavBarManager {
         "root.MSG_GEN_PARAM_VALUE", "Space=" + valret.id + " Name="
         + valret.name + " Type=" + valret.type);
     return valret;
+  }
+
+  private boolean isAtLeastOneSubSpaceManageable(String spaceId) {
+    String[] subSpaceIds = m_administrationCtrl.getAllSubSpaceIds(spaceId);
+    for (String subSpaceId : subSpaceIds) {
+      if (m_ManageableSpaces.contains(getShortSpaceId(subSpaceId))) {
+        return true;
+      }
+    }
+    for (String subSpaceId : subSpaceIds) {
+      if (isAtLeastOneSubSpaceManageable(subSpaceId)) {
+        return true;
+      }
+    }
+    return false;
   }
 
   protected String getShortSpaceId(String spaceId) {

@@ -20,10 +20,7 @@
  */
 package org.silverpeas.search.indexEngine;
 
-import java.io.File;
-
-import org.apache.commons.io.FileUtils;
-
+import com.silverpeas.util.ComponentHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
 
@@ -44,20 +41,16 @@ public class IndexFileManager {
   }
   private static String indexUpLoadPath = GeneralPropertiesManager.getString("uploadsIndexPath");
 
-  static public String getAbsoluteIndexPath(String particularSpace, String sComponentId) {
+  static public String getAbsoluteIndexPath(String particularSpace, String componentId) {
+    final String componentName = ComponentHelper.getInstance().extractComponentName(componentId);
     SilverTrace.debug("util", "FileRepositoryManager.getAbsoluteIndexPath",
-            "particularSpace = " + particularSpace + " sComponentId= " + sComponentId);
-    if (particularSpace != null && (particularSpace.startsWith("user@")
-            || "transverse".equals(particularSpace))) {
-      return getIndexUpLoadPath() + particularSpace + separatorChar + sComponentId + separatorChar
+            "particularSpace = " + particularSpace + " componentName= " + componentName);
+    if (particularSpace != null &&
+        (particularSpace.startsWith("user@") || "transverse".equals(particularSpace))) {
+      return getIndexUpLoadPath() + particularSpace + separatorChar + componentName + separatorChar
               + "index";
     }
-    return getIndexUpLoadPath() + sComponentId + separatorChar + "index";
-  }
-  
-  public static void deleteComponentIndexFolder(String componentId) {
-    File folder = new File(getIndexUpLoadPath(), componentId);
-    FileUtils.deleteQuietly(folder);
+    return getIndexUpLoadPath() + componentName + separatorChar + "index";
   }
 
   /**

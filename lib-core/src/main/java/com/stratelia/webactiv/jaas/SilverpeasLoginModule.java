@@ -38,7 +38,6 @@ import javax.security.auth.spi.LoginModule;
 
 import org.silverpeas.authentication.AuthenticationCredential;
 import org.silverpeas.authentication.AuthenticationService;
-import org.silverpeas.core.admin.OrganisationController;
 import org.silverpeas.util.crypto.CryptMD5;
 
 import com.silverpeas.jcrutil.security.impl.DigestCredentials;
@@ -64,7 +63,6 @@ public class SilverpeasLoginModule implements LoginModule {
   private CallbackHandler callbackHandler;
   private Set<Principal> principals = new HashSet<Principal>();
   private AuthenticationService authenticator;
-  private OrganisationController controller;
   private Admin administrator;
 
   public String getUserId() {
@@ -77,10 +75,6 @@ public class SilverpeasLoginModule implements LoginModule {
 
   public void setAuthenticator(AuthenticationService authenticator) {
     this.authenticator = authenticator;
-  }
-
-  public void setController(OrganisationController controller) {
-    this.controller = controller;
   }
 
   public void setAdministrator(Admin administrator) {
@@ -141,7 +135,6 @@ public class SilverpeasLoginModule implements LoginModule {
               userId = administrator.identify(key, null, false);
               SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId,
                   isRoot(userId));
-              fillPrincipal(principal);
               principals.add(principal);
             }
           }
@@ -153,7 +146,6 @@ public class SilverpeasLoginModule implements LoginModule {
           String theUserId = ((SilverpeasCredentials) creds).getUserId();
           SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(theUserId, isRoot(
               theUserId));
-          fillPrincipal(principal);
           principals.add(principal);
           authenticated = true;
         } else if (creds instanceof SilverpeasSystemCredentials) {
@@ -173,7 +165,6 @@ public class SilverpeasLoginModule implements LoginModule {
               SilverpeasUserPrincipal principal = new SilverpeasUserPrincipal(userId,
                   isRoot(userId));
               validateDigestUser(principal, sc);
-              fillPrincipal(principal);
               principals.add(principal);
             }
           }
@@ -231,16 +222,6 @@ public class SilverpeasLoginModule implements LoginModule {
     subject.getPrincipals().removeAll(principals);
     principals.clear();
     return true;
-  }
-
-  protected void fillPrincipal(SilverpeasUserPrincipal principal) {
-    String[] componentIds = controller.getAllowedComponentIds(principal.getUserId());
-    for (String componentId : componentIds) {
-      String[] profiles = controller.getUserProfiles(principal.getUserId(), componentId);
-      for (String profile : profiles) {
-        principal.addUserProfile(new SilverpeasUserProfileEntry(componentId, profile));
-      }
-    }
   }
 
   public boolean validateDigestUser(SilverpeasUserPrincipal principal, DigestCredentials sc) throws

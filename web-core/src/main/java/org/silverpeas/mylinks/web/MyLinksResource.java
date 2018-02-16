@@ -218,9 +218,9 @@ public class MyLinksResource extends RESTWebService {
   }
 
   private StringBuilder buildSpacePathName(String spaceId, String userLanguage) {
-    List<SpaceInst> spaces = organisationController.getSpacePath(spaceId);
+    List<SpaceInstLight> spaces = organisationController.getPathToSpace(spaceId);
     StringBuilder nameBuilder = new StringBuilder();
-    for (SpaceInst spaceInst : spaces) {
+    for (SpaceInstLight spaceInst : spaces) {
       if (nameBuilder.length() > 0) {
         nameBuilder.append(PATH_SEPARATOR);
       }
@@ -275,9 +275,9 @@ public class MyLinksResource extends RESTWebService {
   }
 
   private StringBuilder buildAppPathName(String applicationId, String userLanguage) {
-    List<SpaceInst> spaces = organisationController.getSpacePathToComponent(applicationId);
+    List<SpaceInstLight> spaces = organisationController.getPathToComponent(applicationId);
     StringBuilder nameBuilder = new StringBuilder();
-    for (SpaceInst spaceInst : spaces) {
+    for (SpaceInstLight spaceInst : spaces) {
       if (nameBuilder.length() > 0) {
         nameBuilder.append(PATH_SEPARATOR);
       }

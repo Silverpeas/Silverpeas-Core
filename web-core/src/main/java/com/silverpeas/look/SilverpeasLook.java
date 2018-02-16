@@ -27,6 +27,8 @@ package com.silverpeas.look;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import com.stratelia.webactiv.util.FileServerUtils;
 import com.silverpeas.util.FileUtil;
 import com.silverpeas.util.StringUtil;
@@ -87,10 +89,10 @@ public class SilverpeasLook {
    * space and for any of its parent spaces.
    */
   public String getWallpaperOfSpace(String spaceId) {
-    List<SpaceInst> path = organizationController.getSpacePath(spaceId);
+    List<SpaceInstLight> path = organizationController.getPathToSpace(spaceId);
     for (int i = path.size() - 1; i >= 0; i--) {
-      SpaceInst space = path.get(i);
-      String wallpaperURL = getWallPaperURL(space.getId());
+      SpaceInstLight space = path.get(i);
+      String wallpaperURL = getWallPaperURL(space.getFullId());
       if (isDefined(wallpaperURL)) {
         return wallpaperURL;
       }
@@ -144,12 +146,12 @@ public class SilverpeasLook {
    * in path have got specific CSS, returns null.
    */
   public String getSpaceWithCSS(String spaceId) {
-    List<SpaceInst> path = organizationController.getSpacePath(spaceId);
+    List<SpaceInstLight> path = organizationController.getPathToSpace(spaceId);
     Collections.reverse(path);
-    for (SpaceInst space : path) {
-      String url = getSpaceCSSURL(space.getId());
+    for (SpaceInstLight space : path) {
+      String url = getSpaceCSSURL(space.getFullId());
       if (isDefined(url)) {
-        return getShortSpaceId(space.getId());
+        return space.getShortId();
       }
     }
     return null;
@@ -163,10 +165,10 @@ public class SilverpeasLook {
    * in path have got specific CSS, returns null.
    */
   public String getCSSOfSpace(String spaceId) {
-    List<SpaceInst> path = organizationController.getSpacePath(spaceId);
+    List<SpaceInstLight> path = organizationController.getPathToSpace(spaceId);
     Collections.reverse(path);
-    for (SpaceInst space : path) {
-      String url = getSpaceCSSURL(space.getId());
+    for (SpaceInstLight space : path) {
+      String url = getSpaceCSSURL(space.getFullId());
       if (isDefined(url)) {
         return url;
       }
@@ -175,10 +177,10 @@ public class SilverpeasLook {
   }
   
   public String getCSSOfSpaceLook(String spaceId) {
-    List<SpaceInst> path = organizationController.getSpacePath(spaceId);
+    List<SpaceInstLight> path = organizationController.getPathToSpace(spaceId);
     Collections.reverse(path);
     String cssURL = null;
-    for (SpaceInst space : path) {
+    for (SpaceInstLight space : path) {
       if (StringUtil.isDefined(space.getLook())) {
         cssURL = GraphicElementFactory.getCSSOfLook(space.getLook());
       }
@@ -190,10 +192,10 @@ public class SilverpeasLook {
   }
   
   public String getSpaceLook(String spaceId) {
-    List<SpaceInst> path = organizationController.getSpacePath(spaceId);
+    List<SpaceInstLight> path = organizationController.getPathToSpace(spaceId);
     Collections.reverse(path);
     String spaceLook = null;
-    for (SpaceInst space : path) {
+    for (SpaceInstLight space : path) {
       spaceLook = space.getLook();
       if (StringUtil.isDefined(space.getLook())) {
         break;

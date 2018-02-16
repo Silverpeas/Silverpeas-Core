@@ -36,6 +36,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import com.stratelia.webactiv.beans.admin.SpaceInstLight;
 import org.silverpeas.util.GlobalContext;
 import org.silverpeas.util.crypto.CryptoException;
 
@@ -404,12 +405,9 @@ public class PublicationTemplateManager {
   private boolean isTemplateVisibleAccordingToSpace(PublicationTemplate template,
       GlobalContext context, OrganisationController oc) {
     List<String> restrictedSpaceIds = template.getSpaces();
-    List<SpaceInst> spacePath = oc.getSpacePath(context.getSpaceId());
-    for (SpaceInst space : spacePath) {
-      String spaceId = space.getId();
-      if (!spaceId.startsWith(Admin.SPACE_KEY_PREFIX)) {
-        spaceId = Admin.SPACE_KEY_PREFIX + spaceId;
-      }
+    List<SpaceInstLight> spacePath = oc.getPathToSpace(context.getSpaceId());
+    for (SpaceInstLight space : spacePath) {
+      String spaceId = space.getFullId();
       if (restrictedSpaceIds.contains(spaceId)) {
         return true;
       }

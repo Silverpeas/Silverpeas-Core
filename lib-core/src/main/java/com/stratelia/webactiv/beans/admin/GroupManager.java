@@ -455,17 +455,8 @@ public class GroupManager {
       ddManager.getOrganizationSchema();
       GroupRow gr = ddManager.getOrganization().group.getGroup(idAsInt(sGroupId));
 
-      Group group = new Group();
+      Group group = groupRow2Group(gr);
 
-      if (gr != null) {
-        group.setId(idAsString(gr.id));
-        group.setSpecificId(gr.specificId);
-        group.setDomainId(idAsString(gr.domainId));
-        group.setSuperGroupId(idAsString(gr.superGroupId));
-        group.setName(gr.name);
-        group.setDescription(gr.description);
-        group.setRule(gr.rule);
-      }
       // Get the selected users for this group
       setDirectUsersOfGroup(ddManager, group);
 

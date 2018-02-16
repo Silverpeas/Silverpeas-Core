@@ -148,21 +148,30 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String code = "";
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
     if (!field.getTypeName().equals(TextField.TYPE)) {
       SilverTrace.info("form", "WysiwygFCKFieldDisplayer.display", "form.INFO_NOT_CORRECT_TYPE",
           TextField.TYPE);
     }
-    if (!field.isNull()) {
-      code = field.getValue(pageContext.getLanguage());
-    }
 
     String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
 
-    code = getContent(pageContext.getComponentId(), pageContext.getObjectId(), template.
-        getFieldName(), code, contentLanguage);
+    String code = getContent(pageContext.getComponentId(), pageContext.getObjectId(), template.
+        getFieldName(), "useless", contentLanguage);
+
+    if (code == null) {
+      // get content in other languages
+      List<String> languages = new ArrayList<String>(I18NHelper.getAllSupportedLanguages());
+      languages.remove(contentLanguage);
+      for (String lang : languages) {
+        code = getContent(pageContext.getComponentId(), pageContext.getObjectId(),
+            template.getFieldName(), "useless", lang);
+        if (code != null) {
+          break;
+        }
+      }
+    }
 
     if (pageContext.isSharingContext()) {
       code = pageContext.getSharingContext().applyOn(code);
@@ -529,18 +538,12 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   }
 
   private String getContent(String componentId, String objectId, String fieldName, String code,
-      String language) throws
-      FormException {
-    if (!code.startsWith(dbKey)) {
-      setContentIntoFile(componentId, objectId, fieldName, code, language);
-    } else {
-      try {
-        code = getContentFromFile(componentId, objectId, fieldName, language);
-      } catch (UtilException e) {
-        throw new FormException("WysiwygFCKFieldDisplayer.getContent", e.getMessage(), e);
-      }
+      String language) throws FormException {
+    try {
+      return getContentFromFile(componentId, objectId, fieldName, language);
+    } catch (UtilException e) {
+      throw new FormException("WysiwygFCKFieldDisplayer.getContent", e.getMessage(), e);
     }
-    return code;
   }
 
   private String setContentIntoFile(String componentId, String objectId, String fieldName,
