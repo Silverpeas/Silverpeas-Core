@@ -23,9 +23,6 @@ package org.silverpeas.search.indexEngine;
 import com.silverpeas.util.ComponentHelper;
 import com.stratelia.silverpeas.silvertrace.SilverTrace;
 import com.stratelia.webactiv.util.GeneralPropertiesManager;
-import org.apache.commons.io.FileUtils;
-
-import java.io.File;
 
 import static java.io.File.separatorChar;
 
@@ -54,11 +51,6 @@ public class IndexFileManager {
               + "index";
     }
     return getIndexUpLoadPath() + componentName + separatorChar + "index";
-  }
-  
-  public static void deleteComponentIndexFolder(String componentId) {
-    File folder = new File(getIndexUpLoadPath(), componentId);
-    FileUtils.deleteQuietly(folder);
   }
 
   /**

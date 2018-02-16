@@ -1221,7 +1221,7 @@ public class Admin {
     FileRepositoryManager.deleteAbsolutePath(null, componentId, "");
     
     // deleting index files
-    IndexFileManager.deleteComponentIndexFolder(componentId);
+    IndexEngineProxy.deleteByScope(componentId);
   }
 
   public String addComponentInst(String sUserId, ComponentInst componentInst)

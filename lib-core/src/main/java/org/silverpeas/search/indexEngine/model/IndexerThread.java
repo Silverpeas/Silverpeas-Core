@@ -93,6 +93,24 @@ public class IndexerThread extends Thread {
   }
 
   /**
+   * Add a request 'remove entries index'
+   */
+  static public void removeIndexEntriesByScope(String scope) {
+    try {
+      queueSemaphore.acquire();
+      synchronized (requestList) {
+        SilverTrace.debug("indexEngine", "IndexerThread", "indexEngine.INFO_ADDS_REMOVE_REQUEST",
+            "scope = "+scope);
+        requestList.add(new RemoveIndexEntriesRequest(scope));
+        requestList.notify();
+      }
+    } catch (InterruptedException e) {
+      SilverTrace
+          .error("indexEngine", "IndexerThread", "indexEngine.INFO_STARTS_INDEXER_THREAD", e);
+    }
+  }
+
+  /**
    * Process all the requests. When the queue is empty : sends an optimize query to the
    * indexManager. This method should be private but is already declared public in the base class
    * Thread.
@@ -267,4 +285,33 @@ class RemoveIndexEntryRequest implements Request {
   }
 
   private final IndexEntryPK indexEntry;
+}
+
+/**
+ * A RemoveEntriesIndex remove entries index.
+ */
+class RemoveIndexEntriesRequest implements Request {
+
+  /**
+   * Constructor declaration
+   * @param scope
+   */
+  public RemoveIndexEntriesRequest(String scope) {
+    this.scope = scope;
+  }
+
+  /**
+   * Method declaration
+   * @param indexManager
+   */
+  @Override
+  public void process(IndexManager indexManager) {
+    SilverTrace.info("indexEngine", "RemoveIndexEntriesRequest.process", "root.MSG_GEN_ENTER_METHOD",
+        "scope = "+scope);
+    indexManager.removeIndexEntries(scope);
+    SilverTrace.info("indexEngine", "RemoveIndexEntryRequest.process", "root.MSG_GEN_EXIT_METHOD",
+        "scope = "+scope);
+  }
+
+  private final String scope;
 }

@@ -72,6 +72,7 @@ public class IndexManager {
    */
   public static final String ID = "id";
   public static final String KEY = "key";
+  public static final String SCOPE = "scope";
   public static final String TITLE = "title";
   public static final String PREVIEW = "preview";
   public static final String KEYWORDS = "keywords";
@@ -186,6 +187,27 @@ public class IndexManager {
     } else {
       SilverTrace.debug("indexEngine", "IndexManager", "indexEngine.MSG_UNKNOWN_INDEX_FILE",
           indexPath);
+    }
+  }
+
+  private void removeIndexEntries(IndexWriter writer, String scope) {
+    Term term = new Term(SCOPE, scope);
+    try {
+      // removing documents according to SCOPE term
+      writer.deleteDocuments(term);
+      // closing associated index searcher and removing it from cache
+      IndexReadersCache.removeIndexReader(getIndexDirectoryPath("useless", scope));
+    } catch (IOException e) {
+      SilverTrace.error("indexEngine", "IndexManager", "indexEngine.MSG_UNKNOWN_INDEX_FILE",
+          "scope = "+scope, e);
+    }
+  }
+
+  void removeIndexEntries(String scope) {
+    String indexPath = getIndexDirectoryPath("useless", scope);
+    IndexWriter writer = getIndexWriter(indexPath, "");
+    if (writer != null) {
+      removeIndexEntries(writer, scope);
     }
   }
 
@@ -318,6 +340,7 @@ public class IndexManager {
     Document doc = new Document();
     // fields creation
     doc.add(new Field(KEY, indexEntry.getPK().toString(), YES, NOT_ANALYZED));
+    doc.add(new Field(SCOPE, indexEntry.getPK().getComponent(), YES, NOT_ANALYZED));
     Iterator<String> languages = indexEntry.getLanguages();
     if (indexEntry.getObjectType() != null && indexEntry.getObjectType().startsWith("Attachment")) {
       String lang = indexEntry.getLang();

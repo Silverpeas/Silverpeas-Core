@@ -64,6 +64,20 @@ public final class IndexEngineProxy {
   }
 
   /**
+    * Removes from the index the entries matching the specified scope.
+    * @param scope the scope of the entries in the index.
+    */
+  public static void deleteByScope(String scope) {
+    init();
+    if (indexEngine != null) {
+      IndexerThread.removeIndexEntriesByScope(scope);
+    } else {
+      SilverTrace.error("indexEngine", "IndexEngineProxy",
+          "indexEngine.MSG_REMOVE_REQUEST_IGNORED");
+    }
+  }
+
+  /**
    * Initialize the class, if this is not already done.
    */
   static private void init() {
