@@ -27,9 +27,12 @@ import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.pdc.thesaurus.model.Synonym;
 import org.silverpeas.core.pdc.thesaurus.service.ThesaurusService;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.webapi.base.RESTWebService;
-import org.silverpeas.core.webapi.base.annotation.Authenticated;
+import org.silverpeas.core.webapi.base.UserPrivilegeValidation;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
@@ -45,14 +48,22 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 @Service
 @RequestScoped
 @Path(ThesaurusResource.PATH)
-@Authenticated
+@Authorized
 public class ThesaurusResource extends RESTWebService {
 
   static final String PATH = "thesaurus";
+
+  @Override
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
+    if (!getUser().isAccessAdmin() && !getUser().isAccessPdcManager()) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
 
   @POST
   @Path("/vocabulary/{vocabularyId}/axis/{axisId}/values/{valueId}/synonyms")
@@ -61,13 +72,21 @@ public class ThesaurusResource extends RESTWebService {
       @PathParam("axisId") String axisId, @PathParam("valueId") String valueId,
       @FormParam("synonym") Set<String> synonyms) {
 
-    if (!getUser().isAccessAdmin() && !getUser().isAccessPdcManager()) {
-      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    final List<Synonym> synonymList = synonyms.stream()
+        .flatMap(s -> Arrays.stream(s.split(",")))
+        .distinct()
+        .filter(StringUtil::isDefined)
+        .map(s -> getNewSynonym(vocabularyId, axisId, valueId, s))
+        .collect(Collectors.toList());
+
+    final int nbLimit = ResourceLocator
+        .getSettingBundle("org.silverpeas.thesaurusPeas.settings.thesaurusSettings")
+        .getInteger("thesaurus.synonym.nbmax", 5);
+    if (synonymList.size() > nbLimit) {
+      throw new WebApplicationException("only " + nbLimit + " synonyms at most",
+          Response.Status.NOT_ACCEPTABLE);
     }
 
-    List<Synonym> synonymList = synonyms.stream()
-        .flatMap(s -> Arrays.stream(s.split(",")))
-        .map(s -> getNewSynonym(vocabularyId, axisId, valueId, s)).collect(Collectors.toList());
     try {
       getThesaurusService().updateSynonyms(synonymList);
     } catch (Exception e) {
@@ -77,12 +96,12 @@ public class ThesaurusResource extends RESTWebService {
   }
 
   private Synonym getNewSynonym(String vocabularyId, String axisId, String valueId, String name) {
-    Synonym syno = new Synonym();
-    syno.setName(name);
-    syno.setIdVoca(new Integer(vocabularyId).longValue());
-    syno.setIdTree(new Integer(axisId).longValue());
-    syno.setIdTerm(new Integer(valueId).longValue());
-    return syno;
+    Synonym synonym = new Synonym();
+    synonym.setName(name);
+    synonym.setIdVoca(new Integer(vocabularyId).longValue());
+    synonym.setIdTree(new Integer(axisId).longValue());
+    synonym.setIdTerm(new Integer(valueId).longValue());
+    return synonym;
   }
 
   private ThesaurusService getThesaurusService() {
