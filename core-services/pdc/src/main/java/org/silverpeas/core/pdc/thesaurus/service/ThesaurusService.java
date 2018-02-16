@@ -32,6 +32,7 @@ import org.silverpeas.core.persistence.jdbc.bean.PersistenceException;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAO;
 import org.silverpeas.core.persistence.jdbc.bean.SilverpeasBeanDAOFactory;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.exception.SilverpeasException;
@@ -320,7 +321,9 @@ public class ThesaurusService {
       throws ThesaurusException {
     try {
       for (Synonym synonyme : synonyms) {
-        createSynonym(con, synonyme);
+        if (StringUtil.isDefined(synonyme.getName())) {
+          createSynonym(con, synonyme);
+        }
       }
     } catch (ThesaurusException e) {
       throw new ThesaurusException("ThesaurusService.createSynonyms",
@@ -642,7 +645,7 @@ public class ThesaurusService {
         user.add(idUser);
         List<Jargon> actualJargon = new ArrayList<Jargon>(getJargons(user, type));
 
-        if (actualJargon.size() > 0) {// l'utilisateur avait deja un jargon
+        if (!actualJargon.isEmpty()) {// l'utilisateur avait deja un jargon
           Jargon theActualJargon = actualJargon.get(0);
           if (theActualJargon.getIdVoca() != idVoca) {// update de l'idVoca
             IdPK pk = new IdPK();
@@ -678,7 +681,7 @@ public class ThesaurusService {
         user.add(idUser);
         List<Jargon> actualJargon = new ArrayList<Jargon>(getJargons(con, user, type));
 
-        if (actualJargon.size() > 0) {// l'utilisateur avait deja un jargon
+        if (!actualJargon.isEmpty()) {// l'utilisateur avait deja un jargon
           Jargon theActualJargon = actualJargon.get(0);
           if (theActualJargon.getIdVoca() != idVoca) {// update de l'idVoca
             IdPK pk = new IdPK();

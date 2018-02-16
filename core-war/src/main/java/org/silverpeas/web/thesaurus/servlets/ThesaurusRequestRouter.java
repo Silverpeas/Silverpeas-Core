@@ -36,9 +36,9 @@ import org.silverpeas.core.web.http.HttpRequest;
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Hashtable;
-import java.util.Iterator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ThesaurusRequestRouter extends ComponentRequestRouter<ThesaurusSessionController> {
 
@@ -206,39 +206,6 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter<ThesaurusSess
         request.setAttribute("listVoca", scc.getListVoca());
         destination = "/thesaurusPeas/jsp/selectVocabulary.jsp";
 
-      } else if (function.equals("validateSynonyms")) {
-        String termId = request.getParameter("termId");
-        String[] names = request.getParameterValues("field" + termId);
-        List<String> namesA = new ArrayList<String>();
-        List<Hashtable<String, String>> namesWithStatus =
-            new ArrayList<Hashtable<String, String>>();
-        Hashtable<String, String> h;
-        String status;
-        String name;
-        if (names != null) {
-          for (int i = 0; i < names.length; i++) {
-            status = names[i];
-            h = new Hashtable<String, String>();
-            h.put("status", status);
-            i++;
-            name = names[i];
-            if (!name.equals("")) {
-              namesA.add(name);
-              h.put("name", name);
-              namesWithStatus.add(h);
-            }
-          }
-        }
-        scc.updateSynonyms(namesA, termId);
-        processSynonyms(request, termId, scc);
-        request.setAttribute("idVoca", scc.getCurrentVoca().getPK().getId());
-        request.setAttribute("listVoca", scc.getListVoca());
-        request.setAttribute("listAxis", scc.getListAxis());
-        request.setAttribute("listTerms", scc.getAxisTerms());
-        request.setAttribute("idAxis", scc.getCurrentAxis().getAxisHeader()
-            .getPK().getId());
-        request.setAttribute("showSynonyms", "yes");
-        destination = "/thesaurusPeas/jsp/thesaurus.jsp";
       } else if (function.equals("SaveAssignVoca")) {
 
         long idVoca = new Long(request.getParameter("idVoca")).longValue();
@@ -300,61 +267,19 @@ public class ThesaurusRequestRouter extends ComponentRequestRouter<ThesaurusSess
     return destination;
   }
 
-  private void processSynonyms(HttpServletRequest request, String termId,
-      ThesaurusSessionController scc) {
-    Iterator<Value> it = scc.getAxisTerms().iterator();
-    String id;
-    List<Hashtable<String, String>> namesWithStatus;
-    String temp[];
-    Hashtable<String, List<Hashtable<String, String>>> hTermSynonyms =
-        new Hashtable<String, List<Hashtable<String, String>>>();
-    Hashtable<String, String> hSynonym;
-    String status;
-    int i;
-    while (it.hasNext()) {
-      id = it.next().getValuePK().getId();
-      temp = request.getParameterValues("field" + id);
-      namesWithStatus = new ArrayList<Hashtable<String, String>>();
-      for (i = 0; i < temp.length; i++) {
-        status = temp[i];
-        hSynonym = new Hashtable<String, String>();
-        if (id.equals(termId)) {
-          hSynonym.put("status", "verified");
-        } else {
-          hSynonym.put("status", status);
-        }
-        i++;
-        hSynonym.put("name", temp[i]);
-        namesWithStatus.add(hSynonym);
-      }
-      hTermSynonyms.put(id, namesWithStatus);
-    }
-    request.setAttribute("synonyms", hTermSynonyms);
-  }
-
   private void loadSynonyms(HttpServletRequest request,
       ThesaurusSessionController scc) throws ThesaurusException {
-    Iterator<Value> it = scc.getAxisTerms().iterator();
-    Iterator<Synonym> itSynonyms;
-    String id;
-    List<Hashtable<String, String>> namesWithStatus;
-    Hashtable<String, List<Hashtable<String, String>>> hTermSynonyms =
-        new Hashtable<String, List<Hashtable<String, String>>>();
-    Hashtable<String, String> hSynonym;
-    Collection<Synonym> synonyms;
-    while (it.hasNext()) {
-      id = it.next().getValuePK().getId();
-      synonyms = scc.getSynonyms(id);
-      namesWithStatus = new ArrayList<Hashtable<String, String>>();
-      itSynonyms = synonyms.iterator();
-      while (itSynonyms.hasNext()) {
-        hSynonym = new Hashtable<String, String>();
-        hSynonym.put("status", "verified");
-        hSynonym.put("name", itSynonyms.next().getName());
-        namesWithStatus.add(hSynonym);
+    Collection<Value> terms = scc.getAxisTerms();
+    Map<String, List<String>> termsSynonyms = new HashMap<>();
+    for (Value term : terms) {
+      Collection<Synonym> synonyms = scc.getSynonyms(term.getValuePK().getId());
+      List<String> names = new ArrayList<>();
+      for (Synonym synonym : synonyms) {
+        names.add(synonym.getName());
       }
-      hTermSynonyms.put(id, namesWithStatus);
+      termsSynonyms.put(term.getValuePK().getId(), names);
     }
-    request.setAttribute("synonyms", hTermSynonyms);
+
+    request.setAttribute("synonyms", termsSynonyms);
   }
 }
