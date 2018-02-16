@@ -140,6 +140,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private static final String GALLERY_COMPONENT = "gallery";
   private static final String SILVER_CRAWLER_COMPONENT = "silverCrawler";
   private static final String DIRECTORY_SERVICE = "users";
+  private static final String PDC_SERVICE = "pdc";
+  private static final String SPACES_INDEX = "Spaces";
+  private static final String COMPONENTS_INDEX = "Components";
+
   private static String[] KEYWORDS = null;
   // Container and Content Peas
   private SearchContext searchContext = null;
@@ -435,6 +439,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       // Retrieve the black list component (we don't need to filter data on it)
       List<String> blackList = getFacetBlackList();
       Map<String, ComponentInstLight> components = new HashMap<>();
+      Map<String, String> userNames = new HashMap<>();
 
       // Loop on each result
       for (GlobalSilverResult result : results) {
@@ -443,15 +448,15 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
         }
 
         // manage "author" facet
-        processFacetAuthor(authorFacet, result);
+        processFacetAuthor(authorFacet, result, userNames);
 
         processFacetLastUpdate(lastUpdateFacet, result);
 
-        // manage "component" facet
-        processFacetComponent(componentFacet, result, blackList);
-
         // manage "datatype" facet
         processFacetDatatype(dataTypeFacet, result, components);
+
+        // manage "component" facet
+        processFacetComponent(componentFacet, result, blackList, components);
 
         processFacetFiletype(fileTypeFacet, result);
 
@@ -491,9 +496,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-  private void processFacetAuthor(Facet facet, GlobalSilverResult result) {
-    String authorName = result.getCreatorName();
+  private void processFacetAuthor(Facet facet, GlobalSilverResult result,
+      Map<String, String> userNames) {
     String authorId = result.getCreatorId();
+    String authorName = userNames.computeIfAbsent(authorId, k -> result.getCreatorName());
     if (StringUtil.isDefined(authorId) && StringUtil.isDefined(authorName)) {
       FacetEntryVO facetEntry = new FacetEntryVO(authorName, authorId);
       if (getSelectedFacetEntries() != null &&
@@ -538,15 +544,19 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     }
   }
 
-  private void processFacetComponent(Facet facet, GlobalSilverResult result, List<String> blackList) {
+  private void processFacetComponent(Facet facet, GlobalSilverResult result, List<String> blackList,
+      Map<String, ComponentInstLight> components) {
     String instanceId = result.getInstanceId();
     String type = result.getType();
     if (!blackList.contains(type)) {
       FacetEntryVO facetEntry = facet.getEntryById(instanceId);
       if (facetEntry == null) {
         Mutable<String> appLabel = Mutable.empty();
-        SilverpeasComponentInstance.getById(instanceId)
-            .ifPresent(c -> appLabel.set(c.getLabel(getLanguage())));
+        ComponentInstLight component = components.computeIfAbsent(instanceId,
+            k -> getOrganisationController().getComponentInstLight(instanceId));
+        if (component != null) {
+          appLabel.set(component.getLabel(getLanguage()));
+        }
         String appLocation = appLabel.orElse("");
         if (StringUtil.isNotDefined(appLocation) && DIRECTORY_SERVICE.equals(instanceId)) {
           appLocation = getString("pdcPeas.facet.service.directory");
@@ -1020,7 +1030,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
               componentId.substring(5, componentId.indexOf("_")));
           String component = componentId.substring(componentId.indexOf("_") + 1);
           place = user.getDisplayedName() + " " + LOCATION_SEPARATOR + " " + component;
-        } else if ("pdc".equals(componentId)) {
+        } else if (PDC_SERVICE.equals(componentId)) {
           place = getString("pdcPeas.pdc");
         } else if (DIRECTORY_SERVICE.equals(componentId)) {
           place = "";
@@ -1965,7 +1975,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
 
   private SearchTypeConfigurationVO getSearchType(String componentId, String type,
       Map<String, ComponentInstLight> components) {
-    if (defaultStringIfNotDefined(componentId).startsWith(USER_PREFIX)) {
+    if (isNotAContributionFromAComponent(componentId)) {
       return null;
     }
     ComponentInstLight component = components.computeIfAbsent(componentId,
@@ -1982,6 +1992,13 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
     }
     return null;
+  }
+
+  private boolean isNotAContributionFromAComponent(String componentId) {
+    boolean isUserRelative = DIRECTORY_SERVICE.equals(componentId) ||
+        defaultStringIfNotDefined(componentId).startsWith(USER_PREFIX);
+    return isUserRelative || PDC_SERVICE.equals(componentId) ||
+        SPACES_INDEX.equals(componentId) || COMPONENTS_INDEX.equals(componentId);
   }
 
   /**
@@ -2117,10 +2134,10 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       // description
       query.addComponent(USER_PREFIX + getUserId() + "_todo");
       if (includePDC) {
-        query.addComponent("pdc");
+        query.addComponent(PDC_SERVICE);
       }
-      query.addComponent("Spaces");
-      query.addComponent("Components");
+      query.addComponent(SPACES_INDEX);
+      query.addComponent(COMPONENTS_INDEX);
       if (includeUsers) {
         query.addComponent(DIRECTORY_SERVICE);
       }
