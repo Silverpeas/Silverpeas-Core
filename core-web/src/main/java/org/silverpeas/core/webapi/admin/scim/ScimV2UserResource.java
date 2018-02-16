@@ -36,6 +36,7 @@ import edu.psu.swe.scim.spec.resources.ScimUser;
 import org.apache.commons.io.IOUtils;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.webapi.admin.scim.adaptation.SilverpeasPatchRequest;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
@@ -55,6 +56,7 @@ import java.io.StringWriter;
 
 import static java.text.MessageFormat.format;
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.admin.scim.ScimLogger.logger;
 import static org.silverpeas.core.webapi.admin.scim.ScimResourceURIs.SCIM_2_BASE_URI;
 
@@ -174,7 +176,10 @@ public class ScimV2UserResource extends UserResourceImpl implements ScimProtecte
       @QueryParam("excludedAttributes") final AttributeReferenceListWrapper excludedAttributes)
       throws IOException {
     final StringWriter writer = new StringWriter();
-    IOUtils.copy(httpRequest.getInputStream(), writer);
+    final String charset = isDefined(httpRequest.getCharacterEncoding())
+        ? httpRequest.getCharacterEncoding()
+        : Charsets.UTF_8.name();
+    IOUtils.copy(httpRequest.getInputStream(), writer, charset);
     // Adapting the JSON structure in order to use the work done by edu.psu.swe
     final String scimJson = writer.toString();
     final String adaptedScimJson = scimJson

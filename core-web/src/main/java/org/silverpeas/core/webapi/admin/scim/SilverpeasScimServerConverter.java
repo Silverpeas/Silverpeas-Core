@@ -35,6 +35,7 @@ import org.silverpeas.core.admin.user.model.UserFull;
 import java.util.ArrayList;
 import java.util.Optional;
 
+import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.util.StringUtil.isNotDefined;
 
 /**
@@ -95,7 +96,7 @@ class SilverpeasScimServerConverter {
       final UserDetail user = (UserDetail) genericUser;
       scimUser.setExternalId(user.getSpecificId());
       scimUser.setUserName(user.getLogin());
-      if (!user.getLogin().equals(user.geteMail())) {
+      if (isDefined(user.geteMail()) && !user.getLogin().equals(user.geteMail())) {
         // putting an email if it exist an other one different from the user name
         scimUser.setEmails(new ArrayList<>(1));
         final Email email = new Email();
