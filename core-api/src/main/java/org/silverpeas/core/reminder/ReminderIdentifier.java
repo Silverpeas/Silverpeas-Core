@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.reminder;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.silverpeas.core.persistence.datasource.model.EntityIdentifier;
 
 import javax.persistence.Column;
@@ -36,6 +38,7 @@ import java.util.UUID;
  */
 @Embeddable
 public class ReminderIdentifier implements EntityIdentifier {
+  private static final long serialVersionUID = -8752448963347095783L;
 
   private static final String ID_PREFIX = "Reminder#";
   private static final MessageFormat SCHEDULED_JOB_NAME = new MessageFormat(ID_PREFIX + "{0}");
@@ -57,6 +60,23 @@ public class ReminderIdentifier implements EntityIdentifier {
     this.id =
         SCHEDULED_JOB_NAME.format(new Object[]{UUID.randomUUID().toString().replaceAll("-", "")});
     return this;
+  }
+
+  @Override
+  public int hashCode() {
+    return new HashCodeBuilder().append(this.id).toHashCode();
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    if (obj == null) {
+      return false;
+    }
+    if (getClass() != obj.getClass()) {
+      return false;
+    }
+    final ReminderIdentifier other = (ReminderIdentifier) obj;
+    return new EqualsBuilder().append(this.id, other.id).isEquals();
   }
 
   @Override
