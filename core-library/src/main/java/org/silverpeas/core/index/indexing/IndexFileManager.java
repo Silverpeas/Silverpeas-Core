@@ -23,10 +23,7 @@
  */
 package org.silverpeas.core.index.indexing;
 
-import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.util.ResourceLocator;
-
-import java.io.File;
 
 import static java.io.File.separatorChar;
 
@@ -35,25 +32,42 @@ import static java.io.File.separatorChar;
  */
 public class IndexFileManager {
 
+  private static String indexUpLoadPath = ResourceLocator.getGeneralSettingBundle()
+      .getString("uploadsIndexPath");
+
+  private IndexFileManager() {
+    throw new IllegalStateException("Utility class");
+  }
+
   /**
    * For test purpose only
    *
-   * @param indexPath
+   * @param indexPath the path to configure.
    */
   public static void configure(String indexPath) {
     indexUpLoadPath = indexPath;
   }
 
-  private static String indexUpLoadPath =
-      ResourceLocator.getGeneralSettingBundle().getString("uploadsIndexPath");
-
-  static public String getAbsoluteIndexPath(String sComponentId) {
-    return getIndexUpLoadPath() + sComponentId + separatorChar + "index";
+  public static String getAbsoluteIndexPath(String componentId) {
+    final String componentPath = extractComponentPath(componentId);
+    return getIndexUpLoadPath() + componentPath + separatorChar + "index";
   }
 
-  public static void deleteComponentIndexFolder(String componentId) {
-    File folder = new File(getIndexUpLoadPath(), componentId);
-    FileUtils.deleteQuietly(folder);
+  public static String extractComponentPath(final String componentId) {
+    final int originalLength = componentId.length();
+    final StringBuilder sb = new StringBuilder(originalLength);
+    for (int i = 0; i < originalLength; i++) {
+      final char current = componentId.charAt(i);
+      if (Character.isDigit(current)) {
+        break;
+      }
+      sb.append(current);
+    }
+    if (sb.length() == 0) {
+      // If path cannot be extracted, using unknown path
+      sb.append("unknown");
+    }
+    return sb.toString();
   }
 
   /**

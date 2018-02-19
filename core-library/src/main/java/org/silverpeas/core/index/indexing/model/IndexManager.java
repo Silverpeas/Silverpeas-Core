@@ -73,6 +73,7 @@ public class IndexManager {
    */
   public static final String ID = "id";
   public static final String KEY = "key";
+  public static final String SCOPE = "scope";
   public static final String TITLE = "title";
   public static final String PREVIEW = "preview";
   public static final String KEYWORDS = "keywords";
@@ -211,6 +212,26 @@ public class IndexManager {
     }
   }
 
+  private void removeIndexEntries(IndexWriter writer, String scope) {
+    Term term = new Term(SCOPE, scope);
+    try {
+      // removing documents according to SCOPE term
+      writer.deleteDocuments(term);
+      // closing associated index searcher and removing it from cache
+      IndexReadersCache.removeIndexReader(getIndexDirectoryPath(scope));
+    } catch (IOException e) {
+      SilverLogger.getLogger(this).error("Index deletion failure for scope : " + scope, e);
+    }
+  }
+
+  void removeIndexEntries(String scope) {
+    String indexPath = getIndexDirectoryPath(scope);
+    IndexWriter writer = getIndexWriter(indexPath, "");
+    if (writer != null) {
+      removeIndexEntries(writer, scope);
+    }
+  }
+
   /**
    * Return the path to the directory where are stored the index for the given index entry.
    *
@@ -326,6 +347,7 @@ public class IndexManager {
     Document doc = new Document();
     // fields creation
     doc.add(new StringField(KEY, indexEntry.getPK().toString(), Field.Store.YES));
+    doc.add(new StringField(SCOPE, indexEntry.getPK().getComponent(), Field.Store.YES));
     setTitleField(indexEntry, doc);
     setPreviewAndKeyWordsField(indexEntry, doc);
     setCreationAndUpdateFields(indexEntry, doc);
