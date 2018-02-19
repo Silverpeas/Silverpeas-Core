@@ -32,13 +32,15 @@ import org.silverpeas.core.util.lang.SystemWrapper;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.logging.SilverLoggerFactory;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.lang.reflect.Field;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
@@ -76,39 +78,81 @@ public class SysLoggerFactoryTest {
   public void getDifferentLoggersFromDifferentThreads() throws Exception {
     final int maxThreads = Runtime.getRuntime().availableProcessors() + 1;
     ExecutorService executor = Executors.newFixedThreadPool(maxThreads);
-    final Set<SilverLogger> loggers = new HashSet<>(maxThreads);
     SilverLoggerFactory loggerFactory = new SysLoggerFactory();
+    Map<String, SilverLogger> cachedLoggers = getCachedLoggers(loggerFactory);
+
+    // explicit garbage collecting to avoid its running while performing the core of this test.
+    System.gc();
+    await().atMost(10, TimeUnit.SECONDS).until(() -> cachedLoggers.isEmpty());
 
     for (int i = 0; i < maxThreads; i++) {
       final int nb = i;
-      executor.execute(() -> {
-        loggers.add(loggerFactory.getLogger(LOGGER_NAMESPACE + nb));
-      });
+      executor.execute(() -> loggerFactory.getLogger(LOGGER_NAMESPACE + nb));
     }
     executor.shutdown();
     do {
       executor.awaitTermination(100, TimeUnit.MILLISECONDS);
     } while (!executor.isTerminated());
-    assertThat(loggers.size(), is(maxThreads));
+    assertThat(cachedLoggers.size(), is(maxThreads));
   }
 
   @Test
   public void getTheSameLoggerFromDifferentThreads() throws Exception {
     final int maxThreads = Runtime.getRuntime().availableProcessors() + 1;
     ExecutorService executor = Executors.newFixedThreadPool(maxThreads);
-    final Set<SilverLogger> loggers = new HashSet<>(maxThreads);
     SilverLoggerFactory loggerFactory = new SysLoggerFactory();
+    Map<String, SilverLogger> cachedLoggers = getCachedLoggers(loggerFactory);
 
     // explicit garbage collecting to avoid its running while performing the core of this test.
     System.gc();
+    await().atMost(10, TimeUnit.SECONDS).until(() -> cachedLoggers.isEmpty());
 
     for (int i = 0; i < maxThreads; i++) {
-      executor.execute(() -> loggers.add(loggerFactory.getLogger(LOGGER_NAMESPACE)));
+      executor.execute(() -> loggerFactory.getLogger(LOGGER_NAMESPACE));
     }
     executor.shutdown();
     do {
       executor.awaitTermination(100, TimeUnit.MILLISECONDS);
     } while (!executor.isTerminated());
-    assertThat(loggers.size(), is(1));
+    assertThat(cachedLoggers.size(), is(1));
+  }
+
+  @Test
+  public void getTheSameLoggerBetweenOneGc() throws Exception {
+    SilverLoggerFactory loggerFactory = new SysLoggerFactory();
+    Map<String, SilverLogger> cachedLoggers = getCachedLoggers(loggerFactory);
+
+    // explicit garbage collecting to avoid its running while performing the core of this test.
+    System.gc();
+    await().atMost(10, TimeUnit.SECONDS).until(() -> cachedLoggers.isEmpty());
+
+    SilverLogger logger1 = loggerFactory.getLogger(LOGGER_NAMESPACE);
+    assertThat(cachedLoggers.size(), is(1));
+
+    System.gc();
+    await().atMost(10, TimeUnit.SECONDS).until(() -> cachedLoggers.isEmpty());
+
+    SilverLogger logger2 = loggerFactory.getLogger(LOGGER_NAMESPACE);
+    assertThat(cachedLoggers.size(), is(1));
+    assertThat(logger1, not(logger2));
+  }
+
+  private Map<String, SilverLogger> getCachedLoggers(final SilverLoggerFactory loggerFactory)
+      throws NoSuchFieldException, IllegalAccessException {
+    Field loggers = loggerFactory.getClass().getDeclaredField("loggers");
+    loggers.setAccessible(true);
+    return (Map<String, SilverLogger>) loggers.get(loggerFactory);
+  }
+
+  private static class LoggerKey {
+    private String namespace;
+
+    public LoggerKey(final String namespace) {
+      this.namespace = namespace;
+    }
+
+    public String getNamespace() {
+      return this.namespace;
+    }
   }
 }

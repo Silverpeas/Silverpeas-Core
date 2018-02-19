@@ -47,6 +47,7 @@ public class SilverLoggerProvider {
   public static final String ROOT_NAMESPACE = "silverpeas";
 
   private LoggerConfigurationManager configurationManager;
+  private SilverLoggerFactory loggerFactory = SilverLoggerFactory.get();
 
   @Inject
   protected SilverLoggerProvider(final LoggerConfigurationManager loggerConfigurationManager) {
@@ -80,7 +81,7 @@ public class SilverLoggerProvider {
   public SilverLogger getLogger(final String module) {
     LoggerConfigurationManager.LoggerConfiguration configuration =
         this.configurationManager.getLoggerConfiguration(module);
-    return SilverLoggerFactory.get().getLogger(configuration.getNamespace(), configuration);
+    return loggerFactory.getLogger(configuration.getNamespace(), configuration);
   }
 
   /**
@@ -109,6 +110,5 @@ public class SilverLoggerProvider {
     }
     return getLogger(namespace);
   }
-
 }
   
