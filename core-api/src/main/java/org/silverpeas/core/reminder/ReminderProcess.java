@@ -72,14 +72,15 @@ public class ReminderProcess implements SchedulerEventListener {
     final String reminderId = anEvent.getJobExecutionContext().getJobName();
     if (anEvent.isExceptionThrown()) {
       final Throwable throwable = anEvent.getJobThrowable();
-      SilverLogger.getLogger(this).error("The reminder {0} firing failed", throwable);
+      SilverLogger.getLogger(this).error("The reminder " + reminderId + " firing failed", throwable);
     } else {
       SilverLogger.getLogger(this).error("The reminder " + reminderId + " firing failed");
     }
   }
 
   private void notifyUserAbout(final Reminder reminder) {
-    BackgroundProcessTask.push(new BackgroundReminderUserNotificationProcess(reminder));
+    final Reminder reminderCopy = reminder.clone();
+    BackgroundProcessTask.push(new BackgroundReminderUserNotificationProcess(reminderCopy));
   }
 
   /**

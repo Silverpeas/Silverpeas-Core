@@ -197,7 +197,7 @@
                                           api="$ctrl.reminderApi"
                                           reminder="$ctrl.data.reminder"
                                           contribution-id="$ctrl.eventContributionId"
-                                          contribution-property="'NEXT_START_DATE'"
+                                          contribution-property="'NEXT_START_DATE_HOUR'"
                                           main-label=""
                                           shown="$ctrl.__reminderShown"
                                           autonomous="false">
