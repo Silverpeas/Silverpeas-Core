@@ -94,8 +94,8 @@ public class ICal4JExporterTest {
 
   private CommonAPI4Test commonAPI4Test = new CommonAPI4Test();
 
-  private Calendar calendar = CalendarMockBuilder.from("instanceId").withId("calendarUuid")
-      .atZoneId(ZoneId.of("Europe/Paris")).build();
+  private static final Calendar calendar = CalendarMockBuilder.from("instanceId")
+      .withId("calendarUuid").atZoneId(ZoneId.of("Europe/Paris")).build();
 
   @Inject
   private Provider<ICalendarExporter> iCalendarExporterProvider;

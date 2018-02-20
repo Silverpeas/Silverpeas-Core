@@ -172,7 +172,7 @@ public class DurationReminder extends Reminder {
     try {
       nextTriggeringDate = computeTriggeringDate();
       return nextTriggeringDate != null;
-    } catch (NoSuchPropertyException e) {
+    } catch (IllegalArgumentException | NoSuchPropertyException e) {
       return false;
     }
   }

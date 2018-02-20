@@ -243,10 +243,23 @@ public abstract class Reminder extends BasicJpaEntity<Reminder, ReminderIdentifi
    * @throws TransactionRuntimeException if the persistence or the scheduling fails.
    */
   public void unschedule() {
+    unschedule(true);
+  }
+
+  /**
+   * Unschedules this reminder. The reminder won't be anymore scheduled and it will be also removed
+   * from the persistence context according to given indicator.
+   * @param deleteReminder if true the reminder is also removed from the persistence, if false
+   * only the trigger is unscheduled.
+   * @throws TransactionRuntimeException if the persistence or the scheduling fails.
+   */
+  void unschedule(boolean deleteReminder) {
     Scheduler scheduler = getScheduler();
     Transaction.performInOne(() -> {
       scheduler.unscheduleJob(getJobName());
-      ReminderRepository.get().delete(this);
+      if (deleteReminder) {
+        ReminderRepository.get().delete(this);
+      }
       return null;
     });
   }

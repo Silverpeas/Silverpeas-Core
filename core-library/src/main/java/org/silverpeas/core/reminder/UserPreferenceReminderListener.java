@@ -29,6 +29,9 @@ import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.notification.UserPreferenceEvent;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @author Yohann Chastagnier
  */
@@ -40,14 +43,21 @@ public class UserPreferenceReminderListener extends CDIResourceEventListener<Use
       UserPreferences previous = event.getTransition().getBefore();
       UserPreferences current = event.getTransition().getAfter();
       if (!previous.getZoneId().equals(current.getZoneId())) {
-        Reminder
-            .getByUser(current.getUser())
-            .stream()
+        final List<Reminder> toUnschedule = new ArrayList<>();
+        Reminder.getByUser(current.getUser()).stream()
             .filter(Reminder::isScheduled)
-            .forEach(Reminder::schedule);
+            .forEach(r -> {
+              try {
+                r.schedule();
+              } catch (IllegalArgumentException | IllegalStateException e) {
+                toUnschedule.add(r);
+                SilverLogger.getLogger(this).warn(e);
+              }
+            });
+        toUnschedule.forEach(r -> r.unschedule(false));
       }
     } catch (Exception e) {
-      SilverLogger.getLogger(this).warn(e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 }

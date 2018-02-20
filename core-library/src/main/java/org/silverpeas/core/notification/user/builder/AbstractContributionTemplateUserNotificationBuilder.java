@@ -52,12 +52,14 @@ public abstract class AbstractContributionTemplateUserNotificationBuilder<C exte
   protected final void performTemplateData(final String language, final C contribution,
       final SilverpeasTemplate template) {
     localizedContribution = LocalizedContribution.from(contribution, language);
+    final String contributionType = localizedContribution.getContributionType();
     String title = getTitle();
     if (StringUtils.isNotBlank(getMultilangPropertyFile())) {
       title = defaultStringIfNotDefined(getBundle(language).getString(getBundleSubjectKey()), getTitle());
     }
     getNotificationMetaData().addLanguage(language, title, "");
     template.setAttribute("contribution", localizedContribution);
+    template.setAttribute("contributionType_" + contributionType, contributionType);
     template.setAttribute("contributionName", localizedContribution.getTitle());
     template.setAttribute("senderName", getSenderName());
     performTemplateData((C) localizedContribution, template);
