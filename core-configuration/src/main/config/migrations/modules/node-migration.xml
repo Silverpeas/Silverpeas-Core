@@ -25,7 +25,9 @@
 
 -->
 <migration module="node" order="2"
-           xmlns="http://www.silverpeas.org/schema/migration">
+           xmlns="http://silverpeas.org/xml/ns/migration"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://silverpeas.org/xml/ns/migration https://www.silverpeas.org/xsd/migration.xsd">
 
   <current version="006">
     <script name="create_table.sql" type="sql"/>

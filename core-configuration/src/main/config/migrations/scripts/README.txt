@@ -6,8 +6,8 @@ subdirectory whose path matches the following pattern:
   scripts/<module>/[<version>|<fromVersion>/
 
 where:
-  <module> is the name of the module (see migration descriptor in the modules/ directory) they
-belong to,
+  <module> is the name of the module (see migration descriptors in the modules/ directory) they
+  belong to,
   <version> is the current version at which the module has to be installed,
   <fromVersion> is the upgrade version (prefixed by the word 'up'); it means the version from which
   a module will be upgraded to the next one.
@@ -15,3 +15,6 @@ belong to,
 In order to be executed by the migration tool, these scripts has to be referred through the XML tag
 'script' (the 'type' attribute should be valued with 'groovy') in the corresponding migration
 descriptor located in the modules/ directory.
+
+For more information about the schema of those descriptors, please see
+https://www.silverpeas.org/xsd/migration.xsd
