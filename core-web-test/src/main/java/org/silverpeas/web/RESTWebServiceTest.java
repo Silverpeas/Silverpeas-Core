@@ -55,11 +55,21 @@ public abstract class RESTWebServiceTest {
       "/org/silverpeas/web/environment/create-table-domain-user-group.sql",
       "/org/silverpeas/web/environment/create-table-space-component.sql",
       "/org/silverpeas/web/environment/create-table-profile.sql",
-      "/org/silverpeas/web/environment/create-table-token.sql");
+      "/org/silverpeas/web/environment/create-table-token.sql",
+      getCreationTable());
 
   @Before
   public void reloadAdminCaches() {
     Administration.get().reloadCache();
+  }
+
+  /**
+   * Gets the SQL script file in the classpath that contains statements to create table(s)
+   * specific to this test.
+   * @return the path in the classpath of a SQL script file (or empty if no such SQL script).
+   */
+  protected String getCreationTable() {
+    return StringUtil.EMPTY;
   }
 
   /**
@@ -69,7 +79,7 @@ public abstract class RESTWebServiceTest {
    * @return an array with the identifier of the component instances to take into account in tests.
    * The array cannot be null but it can be empty.
    */
-  abstract public String[] getExistingComponentInstances();
+  public abstract String[] getExistingComponentInstances();
 
   /**
    * Gets tools to take into account in tests. Theses tools will be considered as existing. Others
