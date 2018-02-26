@@ -65,7 +65,7 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
    * @param name
    * @param request
    * @param session
-   * @see
+   *
    */
   public ArrayPaneWithDataSource(String name,
       javax.servlet.ServletRequest request, HttpSession session) {
@@ -75,7 +75,7 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
   /**
    * Method declaration
    * @param p
-   * @see
+   *
    */
   public void setDataSource(WADataPaginator p) {
     m_DataSource = p;
@@ -88,7 +88,7 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
    * @param url
    * @param request
    * @param session
-   * @see
+   *
    */
   public ArrayPaneWithDataSource(String name, String url,
       javax.servlet.ServletRequest request, HttpSession session) {
@@ -98,7 +98,7 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   private String printPseudoColumn() {
     return "<td>&nbsp;</td>";
@@ -107,7 +107,7 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String print() {
     if (m_DataSource == null) {
@@ -120,7 +120,7 @@ public class ArrayPaneWithDataSource extends AbstractArrayPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   private String dataSourcePrint() {
     int columnsCount = 0;

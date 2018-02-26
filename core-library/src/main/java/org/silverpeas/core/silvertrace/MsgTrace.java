@@ -49,7 +49,7 @@ final class MsgTrace {
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   MsgTrace() {
   }
@@ -60,7 +60,7 @@ final class MsgTrace {
    * files
    * @param language name of the sub directory containing the error messages (empty = default = "en"
    * = english)
-   * @see
+   *
    */
   public void initFromProperties(String filePath, String language) {
     allMessages.clear();
@@ -90,7 +90,7 @@ final class MsgTrace {
    * Return the string associated to the message ID
    * @param messageID looks like "modulename.MSG_..."
    * @return the message string (could be language dependant)
-   * @see
+   *
    */
   public String getMsgString(String messageID) {
     return allMessages.getProperty(messageID, "!!! Message " + messageID + " NOT INITIALIZED !!!");
@@ -100,7 +100,7 @@ final class MsgTrace {
    * Return the string associated to the message ID
    * @param messageID looks like "modulename.MSG_..."
    * @return the message string (could be language dependant)
-   * @see
+   *
    */
   public String getMsgString(String messageID, String language) {
     if (!StringUtil.isDefined(language) || language.equalsIgnoreCase(languageMessages)) {
@@ -133,7 +133,7 @@ final class MsgTrace {
    * @param propertyName the name of the property to test
    * @param defaultValue the default value to set to the property if it doesn't exist
    * @return true/false
-   * @see
+   *
    */
   static public boolean getBooleanProperty(Properties theProps, String propertyName,
       boolean defaultValue) {
@@ -151,7 +151,7 @@ final class MsgTrace {
    * @param propertyName the name of the property to test
    * @param defaultValue the default value to set to the property if it doesn't exist
    * @return true/false
-   * @see
+   *
    */
   static public boolean getBooleanProperty(ResourceBundle resource,
       String propertyName, boolean defaultValue) {
@@ -168,7 +168,7 @@ final class MsgTrace {
    * @param pathFiles
    * @param suffix
    * @return
-   * @see
+   *
    */
   public List<File> getPropertyFiles(String pathFiles, String suffix) {
     File pathMessagesFile = new File(pathFiles);
@@ -189,7 +189,7 @@ final class MsgTrace {
    * Method declaration
    * @param language
    * @return
-   * @see
+   *
    */
   protected boolean isDefaultLanguage(String language) {
     return (!StringUtil.isDefined(language) || defaultLanguage.equalsIgnoreCase(language));

@@ -51,7 +51,7 @@ public class DeleteSentNotification implements SILVERMAILRequestHandler {
    * @return
    * @throws NotificationManagerException
    * @throws SILVERMAILException
-   * @see
+   *
    */
   public String handleRequest(ComponentSessionController componentSC,
       HttpServletRequest request) throws SILVERMAILException {

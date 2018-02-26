@@ -90,7 +90,7 @@ public class SilverStatisticsPeasDAO {
   /**
    * Method declaration
    * @return a new connection
-   * @see
+   *
    */
   private static Connection getConnection() {
 

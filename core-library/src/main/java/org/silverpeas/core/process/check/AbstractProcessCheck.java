@@ -29,7 +29,7 @@ import org.silverpeas.core.process.management.ProcessCheckRegistration;
  * The abstract root implementation of <code>Check</code> interface.
  * Methods <code>register</code> and <code>unregister</code> are implemented at this level, and be
  * sure <code>@Named</code> class annotation is well mentionned in the final implementation in the
- * aim to be taken in charge by <code>ProcessCheckRegistration</code> (@see
+ * aim to be taken in charge by <code>ProcessCheckRegistration</code> (
  * {@link ProcessCheckRegistration}).
  * @author Yohann Chastagnier
  */

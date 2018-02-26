@@ -39,7 +39,7 @@ public class CoordinatePK extends WAPrimaryKey implements Serializable {
   /**
    * Constructor declaration
    * @param id
-   * @see
+   *
    */
   public CoordinatePK(String id) {
     super(id);
@@ -50,7 +50,7 @@ public class CoordinatePK extends WAPrimaryKey implements Serializable {
    * @param id
    * @param spaceId
    * @param componentId
-   * @see
+   *
    */
   public CoordinatePK(String id, String spaceId, String componentId) {
     super(id, spaceId, componentId);
@@ -60,7 +60,7 @@ public class CoordinatePK extends WAPrimaryKey implements Serializable {
    * Constructor declaration
    * @param id
    * @param pk
-   * @see
+   *
    */
   public CoordinatePK(String id, WAPrimaryKey pk) {
     super(id, pk);
@@ -69,7 +69,7 @@ public class CoordinatePK extends WAPrimaryKey implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getRootTableName() {
     return "Coordinates";
@@ -78,7 +78,7 @@ public class CoordinatePK extends WAPrimaryKey implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getTableName() {
     return "SB_Coordinates_Coordinates";
@@ -88,7 +88,7 @@ public class CoordinatePK extends WAPrimaryKey implements Serializable {
    * Method declaration
    * @param other
    * @return
-   * @see
+   *
    */
   public boolean equals(Object other) {
     if (!(other instanceof CoordinatePK)) {
@@ -102,7 +102,7 @@ public class CoordinatePK extends WAPrimaryKey implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public int hashCode() {
     return toString().hashCode();

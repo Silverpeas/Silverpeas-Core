@@ -70,7 +70,7 @@ public class CoordinatesDAO {
    * @param rs the Resultset which contains data from database
    * @return a CoordinatePoint build with data from resultset
    * @throws SQLException
-   * @see
+   *
    */
   private static CoordinatePoint getCoordinatePointFromResultSet(ResultSet rs)
       throws SQLException {
@@ -88,7 +88,7 @@ public class CoordinatesDAO {
    * @param pk a CoordinatePK
    * @return an ArrayList which contains CoordinatePoint corresponding to fatherIds
    * @throws SQLException
-   * @see
+   *
    */
   private static List<CoordinatePoint> selectCoordinatePointsByNodeIds(Connection con,
       List<Integer> fatherIds, CoordinatePK pk) throws SQLException {
@@ -135,7 +135,7 @@ public class CoordinatesDAO {
    * @param toCheck
    * @param begin
    * @return
-   * @see
+   *
    */
   private static int getNbMatchingCoordinates(int currentCoordinateId, List<Integer> fatherIds,
       List<CoordinatePoint> toCheck, int begin) {
@@ -166,7 +166,7 @@ public class CoordinatesDAO {
    * @param pk
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<String> selectByFatherIds(Connection con, List<Integer> fatherIds,
       CoordinatePK pk) throws SQLException {
@@ -271,7 +271,7 @@ public class CoordinatesDAO {
    * @param point
    * @param coordinateId
    * @throws SQLException
-   * @see
+   *
    */
   private static void addCoordinatePoint(Connection con, CoordinatePK pk,
       CoordinatePoint point, int coordinateId) throws SQLException {
@@ -300,7 +300,7 @@ public class CoordinatesDAO {
    * @param coordinatePoints
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static int addCoordinate(Connection con, CoordinatePK pk,
       List<CoordinatePoint> coordinatePoints)
@@ -319,7 +319,7 @@ public class CoordinatesDAO {
    * @param pk
    * @param coordinateIds
    * @throws SQLException
-   * @see
+   *
    */
   public static void removeCoordinates(Connection con, CoordinatePK pk, List<String> coordinateIds)
       throws SQLException {
@@ -353,7 +353,7 @@ public class CoordinatesDAO {
    * @param pk
    * @param coordinatePoints
    * @throws SQLException
-   * @see
+   *
    */
   public static void removeCoordinatesByPoints(Connection con, CoordinatePK pk,
       List<String> coordinatePoints) throws SQLException {
@@ -395,7 +395,7 @@ public class CoordinatesDAO {
    * @param pk
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   private static int getMaxCoordinateId(Connection con, CoordinatePK pk)
       throws SQLException {
@@ -421,7 +421,7 @@ public class CoordinatesDAO {
    * @param pk
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   private static int getMaxDisplayOrder(Connection con, CoordinatePK pk)
       throws SQLException {
@@ -447,7 +447,7 @@ public class CoordinatesDAO {
    * @param pk
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   private static Coordinate selectCoordinateByCoordinatePK(Connection con,
       CoordinatePK pk) throws SQLException {
@@ -477,7 +477,7 @@ public class CoordinatesDAO {
    * @param pk
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static ArrayList<Coordinate> selectCoordinatesByCoordinateIds(Connection con,
       List<String> coordinateIds, CoordinatePK pk) throws SQLException {
@@ -494,7 +494,7 @@ public class CoordinatesDAO {
    * @param pk
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   static Collection<String> getCoordinateIds(Connection con, CoordinatePK pk)
       throws SQLException {
@@ -520,7 +520,7 @@ public class CoordinatesDAO {
    * @param pk
    * @param point
    * @throws SQLException
-   * @see
+   *
    */
   public static void addPointToAllCoordinates(Connection con, CoordinatePK pk,
       CoordinatePoint point) throws SQLException {
@@ -540,7 +540,7 @@ public class CoordinatesDAO {
    * @param nodeId
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<String> getCoordinateIdsByNodeId(Connection con, CoordinatePK pk,
       String nodeId)

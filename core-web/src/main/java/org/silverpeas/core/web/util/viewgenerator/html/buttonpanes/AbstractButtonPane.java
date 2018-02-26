@@ -44,7 +44,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public AbstractButtonPane() {
     buttons = new ArrayList<Button>();
@@ -53,7 +53,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
   /**
    * Method declaration
    * @param button
-   * @see
+   *
    */
   @Override
   public void addButton(Button button) {
@@ -62,7 +62,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Method declaration
-   * @see
+   *
    */
   @Override
   public void setVerticalPosition() {
@@ -72,7 +72,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
   /**
    * Method declaration
    * @param width
-   * @see
+   *
    */
   @Override
   public void setVerticalWidth(String width) {
@@ -81,7 +81,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
 
   /**
    * Method declaration
-   * @see
+   *
    */
   @Override
   public void setHorizontalPosition() {
@@ -91,7 +91,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public List<Button> getButtons() {
     return Collections.unmodifiableList(this.buttons);
@@ -100,7 +100,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public int getViewType() {
     return this.viewType;
@@ -109,7 +109,7 @@ public abstract class AbstractButtonPane implements ButtonPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getVerticalWidth() {
     return this.verticalWidth;
@@ -118,21 +118,21 @@ public abstract class AbstractButtonPane implements ButtonPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public abstract String horizontalPrint();
 
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public abstract String verticalPrint();
 
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public abstract String print();

@@ -117,7 +117,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
 *
 * @param mainSessionCtrl The user's profile
 * @param componentContext The component's profile
-* @see
+*
 */
   public WorkflowDesignerSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {

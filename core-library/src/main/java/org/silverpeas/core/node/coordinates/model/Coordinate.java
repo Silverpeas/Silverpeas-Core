@@ -46,7 +46,7 @@ public class Coordinate implements Serializable {
    * Constructor declaration
    * @param coordinateId
    * @param coordinatePoints
-   * @see
+   *
    */
   public Coordinate(int coordinateId, Collection coordinatePoints) {
     this.coordinateId = coordinateId;
@@ -56,7 +56,7 @@ public class Coordinate implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public int getCoordinateId() {
     return this.coordinateId;
@@ -65,7 +65,7 @@ public class Coordinate implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public Collection getCoordinatePoints() {
     return this.coordinatePoints;
@@ -74,7 +74,7 @@ public class Coordinate implements Serializable {
   /**
    * Method declaration
    * @param coordinateId
-   * @see
+   *
    */
   public void setCoordinateId(int coordinateId) {
     this.coordinateId = coordinateId;
@@ -83,7 +83,7 @@ public class Coordinate implements Serializable {
   /**
    * Method declaration
    * @param coordinatePoints
-   * @see
+   *
    */
   public void setCoordinatePoints(Collection coordinatePoints) {
     this.coordinatePoints = coordinatePoints;
@@ -92,7 +92,7 @@ public class Coordinate implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public String toString() {

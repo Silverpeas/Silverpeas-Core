@@ -86,7 +86,7 @@ public class ThesaurusService {
    * Retourne la liste des vocabulaires (Collection de Vocabulary)
    * @return Collection
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Collection<Vocabulary> getListVocabulary() throws ThesaurusException {
     try {
@@ -103,7 +103,7 @@ public class ThesaurusService {
    * @param idVoca
    * @return Vocabulary
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Vocabulary getVocabulary(long idVoca) throws ThesaurusException {
     Vocabulary vocab = null;
@@ -123,7 +123,7 @@ public class ThesaurusService {
    * @param voca
    * @return long
    * @throws ThesaurusException
-   * @see
+   *
    */
   public long createVocabulary(Vocabulary voca) throws ThesaurusException {
     try {
@@ -140,7 +140,7 @@ public class ThesaurusService {
    * @param name
    * @return boolean
    * @throws ThesaurusException
-   * @see
+   *
    */
   @SuppressWarnings("unchecked")
   public boolean existVocabulary(String name) throws ThesaurusException {
@@ -161,7 +161,7 @@ public class ThesaurusService {
    * @param name
    * @return String
    * @throws
-   * @see
+   *
    */
   private String encode(String name) {
     StringBuilder str = new StringBuilder();
@@ -183,7 +183,7 @@ public class ThesaurusService {
    * @param voca
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public void updateVocabulary(Vocabulary voca) throws ThesaurusException {
     try {
@@ -242,7 +242,7 @@ public class ThesaurusService {
    * @param idVoca
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   private void deleteVocaSynonyms(Connection con, long idVoca)
       throws ThesaurusException {
@@ -260,7 +260,7 @@ public class ThesaurusService {
    * @param idVoca
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   private void deleteVocaJargons(Connection con, long idVoca)
       throws ThesaurusException {
@@ -297,7 +297,7 @@ public class ThesaurusService {
    * @param idJargon
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   private void deleteJargon(String idJargon) throws ThesaurusException {
     try {
@@ -337,7 +337,7 @@ public class ThesaurusService {
    * @param synonym
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   private void createSynonym(Connection con, Synonym synonym)
       throws ThesaurusException {
@@ -357,7 +357,7 @@ public class ThesaurusService {
    * @param idTerm
    * @return Collection
    * @throws ThesaurusException
-   * @see
+   *
    */
   @SuppressWarnings("unchecked")
   public Collection<Synonym> getSynonyms(long idVoca, long idTree, long idTerm)
@@ -421,7 +421,7 @@ public class ThesaurusService {
    * @param idTerm
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public void deleteSynonyms(String idVoca, String idTree, String idTerm) throws ThesaurusException {
     Connection con = null;
@@ -473,7 +473,7 @@ public class ThesaurusService {
    * @param idSynonym
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   private void deleteSynonym(long idSynonym) throws ThesaurusException {
     try {
@@ -492,7 +492,7 @@ public class ThesaurusService {
    * @param idTree
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public void deleteSynonymsAxis(Connection con, long idTree)
       throws ThesaurusException {
@@ -534,7 +534,7 @@ public class ThesaurusService {
    * @param idTerm
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   private void deleteSynonymsTerm(Connection con, long idTree, long idTerm)
       throws ThesaurusException {
@@ -555,7 +555,7 @@ public class ThesaurusService {
    * @param idVoca
    * @return Collection
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Collection<Jargon> getJargons(long idVoca) throws ThesaurusException {
     try {
@@ -574,7 +574,7 @@ public class ThesaurusService {
    * @param type (0=UserDetail ou 1=Group)
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Collection<Jargon> getJargons(Collection<String> idUsers, int type)
       throws ThesaurusException {
@@ -604,7 +604,7 @@ public class ThesaurusService {
    * @param type (0=UserDetail ou 1=Group)
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Collection<Jargon> getJargons(Connection con, Collection<String> idUsers, int type)
       throws ThesaurusException {
@@ -735,7 +735,7 @@ public class ThesaurusService {
    * @param jargon
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   private void createJargon(Jargon jargon) throws ThesaurusException {
     try {
@@ -752,7 +752,7 @@ public class ThesaurusService {
    * @param jargon
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   private void updateJargon(Jargon jargon) throws ThesaurusException {
     try {
@@ -774,7 +774,7 @@ public class ThesaurusService {
    * @param jargon
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   private void createJargon(Connection con, Jargon jargon)
       throws ThesaurusException {
@@ -792,7 +792,7 @@ public class ThesaurusService {
    * @param idUser
    * @return Jargon
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Jargon getJargon(String idUser) throws ThesaurusException {
     Jargon jargon = null;
@@ -819,7 +819,7 @@ public class ThesaurusService {
    * @param name
    * @return Collection
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Collection<Synonym> getSynonyms(long idVoca, String name) throws ThesaurusException {
     try {
@@ -844,7 +844,7 @@ public class ThesaurusService {
    * @param idTree
    * @return Collection
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Collection<Synonym> getSynonymsByTree(long idVoca, long idTree)
       throws ThesaurusException {

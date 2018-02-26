@@ -50,7 +50,7 @@ public class BoardSilverpeasV5 extends AbstractBoard {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String printBefore() {
     String classes = "tableBoard";
@@ -64,7 +64,7 @@ public class BoardSilverpeasV5 extends AbstractBoard {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String printAfter() {
     StringBuilder result = new StringBuilder(20);
@@ -77,7 +77,7 @@ public class BoardSilverpeasV5 extends AbstractBoard {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String print() {
     StringBuilder result = new StringBuilder();

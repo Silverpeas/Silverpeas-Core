@@ -41,7 +41,7 @@ public class TwoNavigationsSpecifiedController extends ParentTestWebComponentCon
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public TwoNavigationsSpecifiedController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

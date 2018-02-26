@@ -69,7 +69,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
    * @param pk
    * @return
    * @
-   * @see
+   *
    */
   @Override
   public Collection<String> getCoordinatesByFatherIds(List<Integer> fatherIds, CoordinatePK pk) {
@@ -107,7 +107,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
    * @param coordinatePoints
    * @return
    * @
-   * @see
+   *
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
@@ -131,7 +131,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
    * @param pk
    * @param coordinates
    * @
-   * @see
+   *
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
@@ -154,7 +154,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
    * @param pk
    * @param coordinatePoints
    * @
-   * @see
+   *
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
@@ -178,7 +178,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
    * @param pk
    * @return
    * @
-   * @see
+   *
    */
   @Override
   public List<Coordinate> getCoordinatesByCoordinateIds(List<String> coordinateIds, CoordinatePK pk) {
@@ -200,7 +200,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
    * @param pk
    * @param point
    * @
-   * @see
+   *
    */
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
@@ -224,7 +224,7 @@ public class DefaultCoordinatesService implements CoordinatesService, ComponentI
    * @param nodeId
    * @return
    * @
-   * @see
+   *
    */
   @Override
   public Collection<String> getCoordinateIdsByNodeId(CoordinatePK pk, String nodeId) {

@@ -63,7 +63,7 @@ public class ClassifyEngineException extends SilverpeasException {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getModule() {
     return "classifyEngine";

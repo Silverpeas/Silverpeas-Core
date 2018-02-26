@@ -52,7 +52,7 @@ public class SentUserNotifications implements SILVERMAILRequestHandler {
    * @param request
    * @return
    * @throws SILVERMAILException
-   * @see
+   *
    */
   @Override
   public String handleRequest(ComponentSessionController componentSC,

@@ -25,7 +25,7 @@ package org.silverpeas.core.io.file;
 
 /**
  * A processor to check the existence of a {@link SilverpeasFile}. It the
- * file doesn't exist, then {@¢ode NO_FILE} is returned.
+ * file doesn't exist, then {@code NO_FILE} is returned.
  * @author mmoquillon
  */
 public class FileExistenceCheckingProcessor extends AbstractSilverpeasFileProcessor{

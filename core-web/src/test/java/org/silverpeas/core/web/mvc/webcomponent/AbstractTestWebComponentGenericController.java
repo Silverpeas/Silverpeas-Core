@@ -51,7 +51,7 @@ public abstract class AbstractTestWebComponentGenericController<WEB_COMPONENT_RE
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public AbstractTestWebComponentGenericController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

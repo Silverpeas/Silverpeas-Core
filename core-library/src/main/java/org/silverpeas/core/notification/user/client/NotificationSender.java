@@ -72,7 +72,7 @@ public class NotificationSender implements java.io.Serializable {
    * Method declaration
    * @param metaData
    * @throws NotificationManagerException
-   * @see
+   *
    */
   public void notifyUser(NotificationMetaData metaData)
       throws NotificationManagerException {
@@ -84,7 +84,7 @@ public class NotificationSender implements java.io.Serializable {
    * @param aMediaType
    * @param metaData
    * @throws NotificationManagerException
-   * @see
+   *
    */
   public void notifyUser(int aMediaType, NotificationMetaData metaData)
       throws NotificationManagerException {

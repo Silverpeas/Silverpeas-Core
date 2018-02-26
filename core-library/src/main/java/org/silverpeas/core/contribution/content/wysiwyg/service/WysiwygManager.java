@@ -743,7 +743,7 @@ public class WysiwygManager implements WysiwygContentRepository {
    * @param componentId
    * @param objectId
    * @param userId
-   * @see
+   *
    */
   public Map<String, String> copy(String oldComponentId, String oldObjectId, String componentId,
       String objectId, String userId) {

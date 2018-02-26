@@ -40,7 +40,7 @@ public interface CoordinatesService {
    * @param pk
    * @return
    * @
-   * @see
+   *
    */
   public Collection<String> getCoordinatesByFatherIds(List<Integer> fatherIds, CoordinatePK pk);
 
@@ -58,7 +58,7 @@ public interface CoordinatesService {
    * @param coordinatePoints
    * @return
    * @
-   * @see
+   *
    */
   public int addCoordinate(CoordinatePK pk, List<CoordinatePoint> coordinatePoints);
 
@@ -68,7 +68,7 @@ public interface CoordinatesService {
    * @param pk
    * @param coordinates
    * @
-   * @see
+   *
    */
   public void deleteCoordinates(CoordinatePK pk, List<String> coordinates);
 
@@ -78,7 +78,7 @@ public interface CoordinatesService {
    * @param pk
    * @param coordinatePoints
    * @
-   * @see
+   *
    */
   public void deleteCoordinatesByPoints(CoordinatePK pk, List<String> coordinatePoints);
 
@@ -89,7 +89,7 @@ public interface CoordinatesService {
    * @param pk
    * @return
    * @
-   * @see
+   *
    */
   public List<Coordinate> getCoordinatesByCoordinateIds(List<String> coordinateIds, CoordinatePK pk);
 
@@ -99,7 +99,7 @@ public interface CoordinatesService {
    * @param pk
    * @param point
    * @
-   * @see
+   *
    */
   public void addPointToAllCoordinates(CoordinatePK pk, CoordinatePoint point);
 
@@ -110,7 +110,7 @@ public interface CoordinatesService {
    * @param nodeId
    * @return
    * @
-   * @see
+   *
    */
   public Collection<String> getCoordinateIdsByNodeId(CoordinatePK pk, String nodeId);
 }

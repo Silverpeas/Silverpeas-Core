@@ -45,7 +45,7 @@ public class HomePageUtil {
    * @param exception
    * @param language
    * @return
-   * @see
+   *
    */
   public static String getMessageToDisplay(Throwable exception, String language) {
     if (exception == null) {
@@ -64,7 +64,7 @@ public class HomePageUtil {
    * @param exception
    * @param language
    * @return
-   * @see
+   *
    */
   public static String getMessagesToDisplay(Throwable exception, String language) {
 
@@ -90,7 +90,7 @@ public class HomePageUtil {
    * @param toDisplayException
    * @param language
    * @return
-   * @see
+   *
    */
   public static String getMessageFromException(Throwable toDisplayException, String language) {
     if (toDisplayException.getMessage() == null) {
@@ -110,7 +110,7 @@ public class HomePageUtil {
    * Method declaration
    * @param exception
    * @return
-   * @see
+   *
    */
   public static Throwable getExceptionToDisplay(Throwable exception) {
     Throwable toDisplayException = null;

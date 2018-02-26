@@ -54,7 +54,7 @@ public class WebConnectionsRequestRouter extends
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
+   *
    */
   public WebConnectionsSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext componentContext) {

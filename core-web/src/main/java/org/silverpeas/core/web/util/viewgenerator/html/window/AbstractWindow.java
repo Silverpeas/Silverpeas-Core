@@ -59,7 +59,7 @@ public abstract class AbstractWindow implements Window {
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public AbstractWindow() {
   }

@@ -54,7 +54,7 @@ public class Link {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getLabel() {
     return label;
@@ -65,7 +65,7 @@ public class Link {
   /**
    * Method declaration
    * @param label
-   * @see
+   *
    */
   public void setLabel(String label) {
     this.label = label;
@@ -76,7 +76,7 @@ public class Link {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getURL() {
     return URL;
@@ -87,7 +87,7 @@ public class Link {
   /**
    * Method declaration
    * @param URL
-   * @see
+   *
    */
   public void setURL(String URL) {
     this.URL = URL;

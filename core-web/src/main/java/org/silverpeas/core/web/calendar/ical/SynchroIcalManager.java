@@ -89,7 +89,7 @@ public class SynchroIcalManager {
 
   /**
    * Method declaration
-   * @see
+   *
    */
   private void setCalendarBm() {
     if (calendarBm == null) {

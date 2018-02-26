@@ -51,7 +51,7 @@ public class CoordinatePoint implements Serializable {
    * @param coordinateId
    * @param nodeId
    * @param leaf
-   * @see
+   *
    */
   public CoordinatePoint(int coordinateId, int nodeId, boolean leaf) {
     this.coordinateId = coordinateId;
@@ -66,7 +66,7 @@ public class CoordinatePoint implements Serializable {
    * @param nodeId
    * @param leaf
    * @param level
-   * @see
+   *
    */
   public CoordinatePoint(int coordinateId, int nodeId, boolean leaf, int level) {
     this.coordinateId = coordinateId;
@@ -82,7 +82,7 @@ public class CoordinatePoint implements Serializable {
    * @param leaf
    * @param level
    * @param displayOrder
-   * @see
+   *
    */
   public CoordinatePoint(int coordinateId, int nodeId, boolean leaf, int level,
       int displayOrder) {
@@ -96,7 +96,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public int getCoordinateId() {
     return this.coordinateId;
@@ -105,7 +105,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public int getNodeId() {
     return this.nodeId;
@@ -114,7 +114,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public boolean isLeaf() {
     return this.leaf;
@@ -123,7 +123,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getName() {
     return this.name;
@@ -132,7 +132,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public int getLevel() {
     return this.level;
@@ -141,7 +141,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public int getOrder() {
     return this.displayOrder;
@@ -150,7 +150,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @param coordinateId
-   * @see
+   *
    */
   public void setCoordinateId(int coordinateId) {
     this.coordinateId = coordinateId;
@@ -159,7 +159,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @param nodeId
-   * @see
+   *
    */
   public void setNodeId(int nodeId) {
     this.nodeId = nodeId;
@@ -168,7 +168,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @param leaf
-   * @see
+   *
    */
   public void setLeaf(boolean leaf) {
     this.leaf = leaf;
@@ -177,7 +177,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @param name
-   * @see
+   *
    */
   public void setName(String name) {
     this.name = name;
@@ -186,7 +186,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @param level
-   * @see
+   *
    */
   public void setLevel(int level) {
     this.level = level;
@@ -195,7 +195,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @param order
-   * @see
+   *
    */
   public void setOrder(int order) {
     this.displayOrder = order;
@@ -204,7 +204,7 @@ public class CoordinatePoint implements Serializable {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String toString() {
     String result = "CoordinatePoint {" + "\n";

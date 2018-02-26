@@ -34,7 +34,7 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public TabbedPaneSilverpeasV5() {
     super();
@@ -43,7 +43,7 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String print() {
     StringBuilder result = new StringBuilder();
@@ -59,7 +59,7 @@ public class TabbedPaneSilverpeasV5 extends AbstractTabbedPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   private String printTabLine() {
     StringBuilder result = new StringBuilder();

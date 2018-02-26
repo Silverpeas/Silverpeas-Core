@@ -63,7 +63,7 @@ public class PeasCoreRuntimeException extends SilverpeasRuntimeException {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getModule() {
     return "peasCore";

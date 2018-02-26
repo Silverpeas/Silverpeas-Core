@@ -301,7 +301,7 @@ public class ScoreDAO {
    * @param fatherId the father idenfifier
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<ScoreDetail> getScoresByFatherId(Connection con, ScorePK scorePK,
       String fatherId) throws SQLException {

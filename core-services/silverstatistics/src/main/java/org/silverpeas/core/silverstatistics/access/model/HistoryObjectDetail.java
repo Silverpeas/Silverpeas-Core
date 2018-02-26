@@ -47,7 +47,7 @@ public class HistoryObjectDetail implements Serializable {
    * @param date
    * @param userId
    * @param foreignPK
-   * @see
+   *
    */
   public HistoryObjectDetail(Date date, String userId, ForeignPK foreignPK) {
     this.date = date;

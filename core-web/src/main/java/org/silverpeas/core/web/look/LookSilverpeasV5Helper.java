@@ -210,7 +210,7 @@ public class LookSilverpeasV5Helper extends LookHelper {
 
   /*
    * (non-Javadoc)
-   * @see
+   *
    * org.silverpeas.core.web.look.LookHelper#init(org.silverpeas.core.web.mvc.controller.MainSessionController,
    * org.silverpeas.core.util.ResourceLocator, org.silverpeas.core.util.ResourceLocator)
    */

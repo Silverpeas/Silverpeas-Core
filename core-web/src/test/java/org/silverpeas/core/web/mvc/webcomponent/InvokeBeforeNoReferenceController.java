@@ -43,7 +43,7 @@ public class InvokeBeforeNoReferenceController extends ParentTestWebComponentCon
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public InvokeBeforeNoReferenceController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

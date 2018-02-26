@@ -197,7 +197,7 @@ public class ThesaurusManager {
    * @param tab
    * @return boolean
    * @throws
-   * @see
+   *
    */
   private boolean isExist(String nom, Collection<String> tab) {
     for (String mot : tab) {

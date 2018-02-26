@@ -48,7 +48,7 @@ public class IconWA extends AbstractIcon {
    *
    * @param iconName
    * @param altText
-   * @see
+   *
    */
   public IconWA(String iconName, String altText) {
     super(iconName, altText);
@@ -60,7 +60,7 @@ public class IconWA extends AbstractIcon {
    * @param iconName
    * @param altText
    * @param action
-   * @see
+   *
    */
   public IconWA(String iconName, String altText, String action) {
     super(iconName, altText, action);
@@ -73,7 +73,7 @@ public class IconWA extends AbstractIcon {
    * @param altText
    * @param action
    * @param imagePath
-   * @see
+   *
    */
   public IconWA(String iconName, String altText, String action, String imagePath) {
     super(iconName, altText, action, imagePath);
@@ -83,7 +83,7 @@ public class IconWA extends AbstractIcon {
    * Method declaration
    *
    * @return
-   * @see
+   *
    */
   @Override
   public String print() {

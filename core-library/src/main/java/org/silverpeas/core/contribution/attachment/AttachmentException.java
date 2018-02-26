@@ -46,7 +46,7 @@ public class AttachmentException extends SilverpeasRuntimeException {
    * @param errorLevel
    * @param message
    * @param extraParams
-   * @see
+   *
    */
   public AttachmentException(String callingClass, int errorLevel, String message, String extraParams) {
     super(callingClass, errorLevel, message, extraParams);
@@ -59,7 +59,7 @@ public class AttachmentException extends SilverpeasRuntimeException {
    * @param errorLevel
    * @param message
    * @param nested
-   * @see
+   *
    */
   public AttachmentException(String callingClass, int errorLevel, String message, Exception nested) {
     super(callingClass, errorLevel, message, nested);
@@ -73,7 +73,7 @@ public class AttachmentException extends SilverpeasRuntimeException {
    * @param message
    * @param extraParams
    * @param nested
-   * @see
+   *
    */
   public AttachmentException(String callingClass, int errorLevel, String message, String extraParams,
       Exception nested) {

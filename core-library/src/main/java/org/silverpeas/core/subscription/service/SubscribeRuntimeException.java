@@ -68,7 +68,7 @@ public class SubscribeRuntimeException extends SilverpeasRuntimeException {
    * @param errorLevel
    * @param message
    * @param extraParams
-   * @see
+   *
    */
   public SubscribeRuntimeException(String callingClass, int errorLevel,
       String message, String extraParams) {
@@ -81,7 +81,7 @@ public class SubscribeRuntimeException extends SilverpeasRuntimeException {
    * @param errorLevel
    * @param message
    * @param nested
-   * @see
+   *
    */
   public SubscribeRuntimeException(String callingClass, int errorLevel,
       String message, Exception nested) {
@@ -95,7 +95,7 @@ public class SubscribeRuntimeException extends SilverpeasRuntimeException {
    * @param message
    * @param extraParams
    * @param nested
-   * @see
+   *
    */
   public SubscribeRuntimeException(String callingClass, int errorLevel,
       String message, String extraParams, Exception nested) {
@@ -105,7 +105,7 @@ public class SubscribeRuntimeException extends SilverpeasRuntimeException {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getModule() {
     return "subscribe";

@@ -54,7 +54,7 @@ public class ComponentFileFilterProcessCheck extends AbstractFileProcessCheck {
 
   /*
    * (non-Javadoc)
-   * @see
+   *
    * AbstractFileProcessCheck#checkFiles(org.silverpeas.process
    * .management.ProcessExecutionContext, FileHandler)
    */

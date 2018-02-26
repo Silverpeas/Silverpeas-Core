@@ -161,7 +161,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public SilverStatisticsPeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

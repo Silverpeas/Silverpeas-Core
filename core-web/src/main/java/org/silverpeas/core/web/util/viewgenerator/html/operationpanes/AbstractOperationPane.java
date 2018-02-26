@@ -53,7 +53,7 @@ public abstract class AbstractOperationPane implements OperationPane {
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public AbstractOperationPane() {
     stack = new Vector<String>();
@@ -73,7 +73,7 @@ public abstract class AbstractOperationPane implements OperationPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getIconsPath() {
     return GraphicElementFactory.getIconsPath();
@@ -82,7 +82,7 @@ public abstract class AbstractOperationPane implements OperationPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public Vector<String> getStack() {
     return this.stack;
@@ -95,7 +95,7 @@ public abstract class AbstractOperationPane implements OperationPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public int nbOperations() {

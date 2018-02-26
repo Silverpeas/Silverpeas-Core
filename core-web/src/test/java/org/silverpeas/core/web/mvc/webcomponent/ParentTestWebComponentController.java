@@ -36,7 +36,7 @@ public class ParentTestWebComponentController
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public ParentTestWebComponentController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

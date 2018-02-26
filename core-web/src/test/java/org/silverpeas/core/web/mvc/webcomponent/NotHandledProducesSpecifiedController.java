@@ -48,7 +48,7 @@ public class NotHandledProducesSpecifiedController extends ParentTestWebComponen
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public NotHandledProducesSpecifiedController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

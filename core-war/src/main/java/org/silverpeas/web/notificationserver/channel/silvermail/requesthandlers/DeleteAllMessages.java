@@ -48,7 +48,7 @@ public class DeleteAllMessages implements SILVERMAILRequestHandler {
    * @param request
    * @return
    * @throws SILVERMAILException
-   * @see
+   *
    */
   public String handleRequest(ComponentSessionController componentSC,
       HttpServletRequest request) throws SILVERMAILException {

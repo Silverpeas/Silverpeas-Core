@@ -45,7 +45,7 @@ public class FormButtonSubmit extends FormButton {
    * Constructor declaration
    * @param nam
    * @param val
-   * @see
+   *
    */
   public FormButtonSubmit(String nam, String val) {
     super(nam, val);
@@ -55,7 +55,7 @@ public class FormButtonSubmit extends FormButton {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String print() {
     String retour = "\n<td><input type=\"submit\" name=\"" + name
@@ -70,7 +70,7 @@ public class FormButtonSubmit extends FormButton {
    * @param url
    * @param pc
    * @return
-   * @see
+   *
    */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
     FormPaneWA fpw = new FormPaneWA(nam, url, pc);
@@ -85,7 +85,7 @@ public class FormButtonSubmit extends FormButton {
   /**
    * Method declaration
    * @param req
-   * @see
+   *
    */
   public void getConfigurationByRequest(HttpServletRequest req) {
   }
@@ -93,7 +93,7 @@ public class FormButtonSubmit extends FormButton {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String printDemo() {
     String retour = "\n<td><input type=\"submit\" name=\"" + name
@@ -105,7 +105,7 @@ public class FormButtonSubmit extends FormButton {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String toXML() {
     String retour = "\n<field id=\"" + id + "\" type=\"label\">";
@@ -117,7 +117,7 @@ public class FormButtonSubmit extends FormButton {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String toLineXML() {
     String retour = "\n<action id=\"" + id + "\" value=\"" + value + "\"/>";

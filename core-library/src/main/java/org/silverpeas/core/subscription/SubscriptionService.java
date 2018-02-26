@@ -80,7 +80,7 @@ public interface SubscriptionService {
    * If given resource is a node, please notice that subscriptions of linked nodes (sub nodes) are
    * not deleted
    * @param resource the aimed resource
-   * @see
+   *
    */
   public void unsubscribeByResource(SubscriptionResource resource);
 
@@ -89,7 +89,7 @@ public interface SubscriptionService {
    * If it exists one or several resources of nodes, please notice that subscriptions of linked
    * nodes (sub nodes) are not deleted
    * @param resources the aimed resources
-   * @see
+   *
    */
   public void unsubscribeByResources(Collection<? extends SubscriptionResource> resources);
 

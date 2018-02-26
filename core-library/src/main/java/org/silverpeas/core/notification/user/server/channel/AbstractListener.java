@@ -41,7 +41,7 @@ public abstract class AbstractListener implements INotificationServerChannel {
   /**
    * Constructor declaration
    *
-   * @see
+   *
    */
   public AbstractListener() {
   }

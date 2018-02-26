@@ -41,14 +41,14 @@ public interface BrowseBar extends SimpleGraphicElement {
   /**
    * Method declaration
    * @param domainName
-   * @see
+   *
    */
   public void setDomainName(String domainName);
 
   /**
    * Method declaration
    * @param componentName
-   * @see
+   *
    */
   public void setComponentName(String componentName);
 
@@ -56,21 +56,21 @@ public interface BrowseBar extends SimpleGraphicElement {
    * Method declaration
    * @param componentName
    * @param link
-   * @see
+   *
    */
   public void setComponentName(String componentName, String link);
 
   /**
    * Method declaration
    * @param information
-   * @see
+   *
    */
   public void setExtraInformation(String information);
 
   /**
    * Method declaration
    * @param path
-   * @see
+   *
    */
   public void setPath(String path);
 

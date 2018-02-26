@@ -42,7 +42,7 @@ public class SamePathsWithVariablesController extends ParentTestWebComponentCont
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public SamePathsWithVariablesController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

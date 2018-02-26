@@ -42,7 +42,7 @@ public class TwoHomepagesController extends WebComponentController<TestWebCompon
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public TwoHomepagesController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

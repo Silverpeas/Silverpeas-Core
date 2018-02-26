@@ -35,7 +35,7 @@ public class BadTestWebComponentController extends ParentTestWebComponentControl
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public BadTestWebComponentController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

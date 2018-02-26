@@ -44,7 +44,7 @@ public class DefaultComponentSpaceQuotaService
 
   /*
    * (non-Javadoc)
-   * @see
+   *
    * org.silverpeas.core.admin.space.quota.AbstractSpaceQuotaService#createKeyFrom(com.stratelia.webactiv
    * .beans.admin.SpaceInst)
    */

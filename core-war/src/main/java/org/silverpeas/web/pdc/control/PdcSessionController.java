@@ -68,7 +68,7 @@ public class PdcSessionController extends AbstractComponentSessionController {
    *
    * @param mainSessionCtrl
    * @param componentContext
-   * @see
+   *
    */
   public PdcSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext, String multilangBundle,

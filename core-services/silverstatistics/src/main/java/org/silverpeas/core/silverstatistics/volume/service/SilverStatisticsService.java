@@ -91,7 +91,7 @@ public class SilverStatisticsService implements SilverStatistics {
   /**
    * Constructor declaration
    *
-   * @see
+   *
    */
   public SilverStatisticsService() {
     myStatsConfig = new StatisticsConfig();

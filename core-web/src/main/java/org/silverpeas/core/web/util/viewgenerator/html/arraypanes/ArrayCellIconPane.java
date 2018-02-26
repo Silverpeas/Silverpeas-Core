@@ -39,7 +39,7 @@ public class ArrayCellIconPane extends ArrayCell implements SimpleGraphicElement
    * Constructor declaration
    * @param iconPane
    * @param line
-   * @see
+   *
    */
   public ArrayCellIconPane(IconPane iconPane, ArrayLine line) {
     super(line);
@@ -49,7 +49,7 @@ public class ArrayCellIconPane extends ArrayCell implements SimpleGraphicElement
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public IconPane getIconPane() {
     return iconPane;
@@ -72,7 +72,7 @@ public class ArrayCellIconPane extends ArrayCell implements SimpleGraphicElement
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String print() {
     String result = "<td";

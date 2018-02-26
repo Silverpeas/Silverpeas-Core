@@ -62,7 +62,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public TreeNode() {
     init("0", "", "", "", "", "", "", 0, 0, "0");
@@ -78,7 +78,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
    * @param path
    * @param levelNumber
    * @param fatherId
-   * @see
+   *
    */
   private void init(String id, String treeId, String name, String description,
       String creationDate, String creatorId, String path, int levelNumber,
@@ -105,7 +105,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
    * @param path
    * @param levelNumber
    * @param fatherId
-   * @see
+   *
    */
   public TreeNode(String id, String treeId, String name, String description,
       String creationDate, String creatorId, String path, int levelNumber,
@@ -147,7 +147,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getCreationDate() {
     return (this.creationDate);
@@ -156,7 +156,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getCreatorId() {
     return (this.creatorId);
@@ -165,7 +165,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getPath() {
     return (this.path);
@@ -174,7 +174,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public int getLevelNumber() {
     return (this.levelNumber);
@@ -183,7 +183,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public int getOrderNumber() {
     return (this.orderNumber);
@@ -192,7 +192,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getFatherId() {
     return (this.fatherId);
@@ -205,7 +205,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @param date
-   * @see
+   *
    */
   public void setCreationDate(String date) {
     this.creationDate = date;
@@ -214,7 +214,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @param creatorId
-   * @see
+   *
    */
   public void setCreatorId(String creatorId) {
     this.creatorId = creatorId;
@@ -223,7 +223,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @param fatherId
-   * @see
+   *
    */
   public void setFatherId(String fatherId) {
     this.fatherId = fatherId;
@@ -232,7 +232,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @param path
-   * @see
+   *
    */
   public void setPath(String path) {
     this.path = path;
@@ -241,7 +241,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @param levelNumber
-   * @see
+   *
    */
   public void setLevelNumber(int levelNumber) {
     this.levelNumber = levelNumber;
@@ -250,7 +250,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @param orderNumber
-   * @see
+   *
    */
   public void setOrderNumber(int orderNumber) {
     this.orderNumber = orderNumber;
@@ -259,7 +259,7 @@ public class TreeNode extends AbstractI18NBean<TreeNodeI18N> implements java.io.
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String toString() {
     return "(pk = " + getPK().toString() + ", treeId = " + treeId + ", name = "

@@ -85,7 +85,7 @@ public class DefaultDataStorageSpaceQuotaService
 
   /*
    * (non-Javadoc)
-   * @see
+   *
    * org.silverpeas.core.admin.space.quota.AbstractSpaceQuotaService#createKeyFrom(com.stratelia.webactiv
    * .beans.admin.SpaceInst)
    */
@@ -122,7 +122,7 @@ public class DefaultDataStorageSpaceQuotaService
 
   /*
    * (non-Javadoc)
-   * @see
+   *
    * org.silverpeas.core.admin.space.quota.AbstractSpaceQuotaService#verify(org.silverpeas.core.admin.space
    * .quota.AbstractSpaceQuotaKey, AbstractQuotaCountingOffset)
    */

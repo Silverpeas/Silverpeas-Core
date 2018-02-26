@@ -43,7 +43,7 @@ public class ArrayCell {
   /**
    * Constructor declaration
    * @param line
-   * @see
+   *
    */
   public ArrayCell(ArrayLine line) {
     this.line = line;
@@ -52,7 +52,7 @@ public class ArrayCell {
   /**
    * Method declaration
    * @param css
-   * @see
+   *
    */
   public void setStyleSheet(String css) {
     this.css = css;
@@ -61,7 +61,7 @@ public class ArrayCell {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getStyleSheet() {
     if (css != null) {
@@ -76,7 +76,7 @@ public class ArrayCell {
   /**
    * Method declaration
    * @param mode
-   * @see
+   *
    */
   public void setSortMode(int mode) {
     m_SortMode = mode;

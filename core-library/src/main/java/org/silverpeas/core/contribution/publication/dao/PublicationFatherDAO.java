@@ -243,7 +243,7 @@ public class PublicationFatherDAO {
    * @param pubPK
    * @param fatherPK
    * @throws SQLException
-   * @see
+   *
    */
   public static void removeFatherToPublications(Connection con,
       PublicationPK pubPK, NodePK fatherPK) throws SQLException {
@@ -279,7 +279,7 @@ public class PublicationFatherDAO {
    * @param pubPK
    * @param fatherIds
    * @throws SQLException
-   * @see
+   *
    */
   public static void removeFathersToPublications(Connection con,
       PublicationPK pubPK, Collection<String> fatherIds) throws SQLException {
@@ -362,7 +362,7 @@ public class PublicationFatherDAO {
    * @param fatherPKs
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<PublicationPK> getPubPKsInFatherPKs(Connection con,
       Collection<WAPrimaryKey> fatherPKs) throws SQLException {
@@ -422,7 +422,7 @@ public class PublicationFatherDAO {
    * @param fatherPK
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<PublicationPK> getPubPKsInFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {

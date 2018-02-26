@@ -58,7 +58,7 @@ public interface OperationPane extends SimpleGraphicElement {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public int nbOperations();
 
@@ -67,7 +67,7 @@ public interface OperationPane extends SimpleGraphicElement {
    * @param iconPath
    * @param label
    * @param action
-   * @see
+   *
    */
   public void addOperation(String iconPath, String label, String action);
 
@@ -77,7 +77,7 @@ public interface OperationPane extends SimpleGraphicElement {
    * @param label
    * @param action
    * @param classes
-   * @see
+   *
    */
   public abstract void addOperation(String iconPath, String label, String action, String classes);
 
@@ -87,7 +87,7 @@ public interface OperationPane extends SimpleGraphicElement {
 
   /**
    * Method declaration
-   * @see
+   *
    */
   public void addLine();
 

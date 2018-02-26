@@ -42,7 +42,7 @@ public class TreeFilterTheme implements TreeFilter {
 
   /*
    * (non-Javadoc)
-   * @see
+   *
    * org.silverpeas.core.web.treemenu.model.TreeFilter#acceptNodeType(org.silverpeas.core.web.treemenu.model.NodeType)
    */
   @Override

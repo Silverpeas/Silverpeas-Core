@@ -52,7 +52,7 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   private String printPseudoColumn() {
     return "<td><img src=\"" + GraphicElementFactory.getIconsPath() + "/1px.gif\" width=\"2\" height=\"2\" alt=\"\"/></td>";
@@ -61,7 +61,7 @@ public class ArrayPaneSilverpeasV5 extends AbstractArrayPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public String print() {

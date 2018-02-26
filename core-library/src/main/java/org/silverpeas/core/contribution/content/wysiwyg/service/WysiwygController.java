@@ -337,7 +337,7 @@ public class WysiwygController {
    * @param componentId
    * @param objectId
    * @param userId
-   * @see
+   *
    */
   public static Map<String, String> copy(String oldComponentId, String oldObjectId,
       String componentId, String objectId, String userId) {

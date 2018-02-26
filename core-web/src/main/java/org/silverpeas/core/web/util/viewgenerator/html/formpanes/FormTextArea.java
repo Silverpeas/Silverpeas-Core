@@ -47,7 +47,7 @@ public class FormTextArea extends FormLine {
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public FormTextArea() {
     super();
@@ -64,7 +64,7 @@ public class FormTextArea extends FormLine {
    * Constructor declaration
    * @param nam
    * @param val
-   * @see
+   *
    */
   public FormTextArea(String nam, String val) {
     super(nam, val);
@@ -81,7 +81,7 @@ public class FormTextArea extends FormLine {
    * @param nam
    * @param val
    * @param lab
-   * @see
+   *
    */
   public FormTextArea(String nam, String val, String lab) {
     super(nam, val);
@@ -100,7 +100,7 @@ public class FormTextArea extends FormLine {
    * @param lab
    * @param nbcols
    * @param nbrows
-   * @see
+   *
    */
   public FormTextArea(String nam, String val, String lab, int nbcols, int nbrows) {
     super(nam, val);
@@ -115,7 +115,7 @@ public class FormTextArea extends FormLine {
   /**
    * Method declaration
    * @param nbcols
-   * @see
+   *
    */
   public void setCols(int nbcols) {
     cols = nbcols;
@@ -124,7 +124,7 @@ public class FormTextArea extends FormLine {
   /**
    * Method declaration
    * @param nbrows
-   * @see
+   *
    */
   public void setRows(int nbrows) {
     rows = nbrows;
@@ -133,7 +133,7 @@ public class FormTextArea extends FormLine {
   /**
    * Method declaration
    * @param nb
-   * @see
+   *
    */
   public void setNbCharMax(int nb) {
     nbCharMax = nb;
@@ -142,7 +142,7 @@ public class FormTextArea extends FormLine {
   /**
    * Method declaration
    * @param nbcols
-   * @see
+   *
    */
   public void setCols(String nbcols) {
     if (nbcols != null) {
@@ -156,7 +156,7 @@ public class FormTextArea extends FormLine {
   /**
    * Method declaration
    * @param nbrows
-   * @see
+   *
    */
   public void setRows(String nbrows) {
     if (nbrows != null) {
@@ -170,7 +170,7 @@ public class FormTextArea extends FormLine {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String print() {
     String retour =
@@ -191,7 +191,7 @@ public class FormTextArea extends FormLine {
    * @param url
    * @param pc
    * @return
-   * @see
+   *
    */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
     FormPaneWA fpw = new FormPaneWA(nam, url, pc);
@@ -218,7 +218,7 @@ public class FormTextArea extends FormLine {
   /**
    * Method declaration
    * @param req
-   * @see
+   *
    */
   public void getConfigurationByRequest(HttpServletRequest req) {
     setLabel(req.getParameter("configuratorLabelValue"));
@@ -230,7 +230,7 @@ public class FormTextArea extends FormLine {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String printDemo() {
     String retour =
@@ -248,7 +248,7 @@ public class FormTextArea extends FormLine {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String toXML() {
     String retour = "\n<field id=\"" + id + "\" type=\"textarea\">";
@@ -267,7 +267,7 @@ public class FormTextArea extends FormLine {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getDBColumnCreationRequest() {
     String result = id + " " + DBType;

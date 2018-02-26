@@ -47,7 +47,7 @@ public class AlertUserPeasRequestRouter extends ComponentRequestRouter<AlertUser
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
+   *
    */
   @Override
   public AlertUserPeasSessionController createComponentSessionController(

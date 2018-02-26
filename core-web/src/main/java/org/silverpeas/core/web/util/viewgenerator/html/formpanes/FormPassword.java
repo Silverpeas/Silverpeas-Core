@@ -45,7 +45,7 @@ public class FormPassword extends FormLine {
    * Constructor declaration
    * @param nam
    * @param val
-   * @see
+   *
    */
   public FormPassword(String nam, String val) {
     super(nam, val);
@@ -58,7 +58,7 @@ public class FormPassword extends FormLine {
    * @param nam
    * @param val
    * @param lab
-   * @see
+   *
    */
   public FormPassword(String nam, String val, String lab) {
     super(nam, val);
@@ -69,7 +69,7 @@ public class FormPassword extends FormLine {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String print() {
     String retour = "\n<td>" + label + "</td>";
@@ -85,7 +85,7 @@ public class FormPassword extends FormLine {
    * @param url
    * @param pc
    * @return
-   * @see
+   *
    */
   public FormPane getDescriptor(String nam, String url, PageContext pc) {
     FormPaneWA fpw = new FormPaneWA(nam, url, pc);
@@ -100,7 +100,7 @@ public class FormPassword extends FormLine {
   /**
    * Method declaration
    * @param req
-   * @see
+   *
    */
   public void getConfigurationByRequest(HttpServletRequest req) {
     setLabel(req.getParameter("configuratorLabelValue"));
@@ -109,7 +109,7 @@ public class FormPassword extends FormLine {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String printDemo() {
     String retour = "\n<td>" + label + "</td>";
@@ -121,7 +121,7 @@ public class FormPassword extends FormLine {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String toXML() {
     String retour = "\n<field id=\"" + id + "\" type=\"label\">";

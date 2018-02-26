@@ -149,7 +149,7 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
    *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public JobDomainPeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

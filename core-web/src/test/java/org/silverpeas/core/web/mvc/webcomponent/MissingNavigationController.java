@@ -40,7 +40,7 @@ public class MissingNavigationController extends ParentTestWebComponentControlle
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public MissingNavigationController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

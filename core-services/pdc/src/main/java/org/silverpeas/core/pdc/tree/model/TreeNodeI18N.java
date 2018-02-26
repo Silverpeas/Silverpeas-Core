@@ -35,7 +35,7 @@ public class TreeNodeI18N extends BeanTranslation implements java.io.Serializabl
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public TreeNodeI18N() {
   }

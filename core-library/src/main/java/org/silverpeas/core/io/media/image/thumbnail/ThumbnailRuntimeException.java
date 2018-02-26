@@ -51,7 +51,7 @@ public class ThumbnailRuntimeException extends SilverpeasRuntimeException {
    * @param errorLevel
    * @param message
    * @param extraParams
-   * @see
+   *
    */
   public ThumbnailRuntimeException(String callingClass, int errorLevel,
       String message, String extraParams) {
@@ -64,7 +64,7 @@ public class ThumbnailRuntimeException extends SilverpeasRuntimeException {
    * @param errorLevel
    * @param message
    * @param nested
-   * @see
+   *
    */
   public ThumbnailRuntimeException(String callingClass, int errorLevel,
       String message, Exception nested) {
@@ -78,7 +78,7 @@ public class ThumbnailRuntimeException extends SilverpeasRuntimeException {
    * @param message
    * @param extraParams
    * @param nested
-   * @see
+   *
    */
   public ThumbnailRuntimeException(String callingClass, int errorLevel,
       String message, String extraParams, Exception nested) {

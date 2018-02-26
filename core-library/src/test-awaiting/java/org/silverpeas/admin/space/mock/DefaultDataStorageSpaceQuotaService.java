@@ -113,7 +113,6 @@ public class DefaultDataStorageSpaceQuotaService implements DataStorageSpaceQuot
 
   /*
    * (non-Javadoc)
-   * @see
    * org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaService#getQuotaReachedFromSpacePath(
    * org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey)
    */

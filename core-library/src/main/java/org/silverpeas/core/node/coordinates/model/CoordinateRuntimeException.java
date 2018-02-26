@@ -50,7 +50,7 @@ public class CoordinateRuntimeException extends SilverpeasRuntimeException {
    * @param errorLevel
    * @param message
    * @param extraParams
-   * @see
+   *
    */
   public CoordinateRuntimeException(String callingClass, int errorLevel,
       String message, String extraParams) {
@@ -63,7 +63,7 @@ public class CoordinateRuntimeException extends SilverpeasRuntimeException {
    * @param errorLevel
    * @param message
    * @param nested
-   * @see
+   *
    */
   public CoordinateRuntimeException(String callingClass, int errorLevel,
       String message, Exception nested) {
@@ -77,7 +77,7 @@ public class CoordinateRuntimeException extends SilverpeasRuntimeException {
    * @param message
    * @param extraParams
    * @param nested
-   * @see
+   *
    */
   public CoordinateRuntimeException(String callingClass, int errorLevel,
       String message, String extraParams, Exception nested) {

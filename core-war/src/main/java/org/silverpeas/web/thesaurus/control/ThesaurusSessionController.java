@@ -146,7 +146,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return Collection
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Collection<AxisHeader> getListAxis() throws ThesaurusException {
     try {
@@ -162,7 +162,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param idAxis
    * @return Axis
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Axis getAxis(String idAxis) throws ThesaurusException {
     try {
@@ -184,7 +184,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return Collection
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Collection<Value> getAxisTerms() {
     Collection<Value> terms = new ArrayList<Value>();
@@ -199,7 +199,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * en session (currentTerm)
    * @param idTerm
    * @return Value
-   * @see
+   *
    */
   public Value getTerm(String idTerm) throws ThesaurusException {
     try {
@@ -228,7 +228,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return Collection
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Collection<Vocabulary> getListVoca() throws ThesaurusException {
     Collection<Vocabulary> vocas = new ArrayList<Vocabulary>();
@@ -248,7 +248,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param idVoca
    * @return Vocabulary
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Vocabulary getVocabulary(long idVoca) throws ThesaurusException {
     if (idVoca == 0) {
@@ -269,7 +269,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param desc
    * @return long
    * @throws ThesaurusException
-   * @see
+   *
    */
   public long createVocabulary(String name, String desc)
       throws ThesaurusException {
@@ -288,7 +288,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param name
    * @return boolean
    * @throws ThesaurusException
-   * @see
+   *
    */
   private boolean existVocabulary(String name) throws ThesaurusException {
     return getThBm().existVocabulary(name);
@@ -302,7 +302,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param desc
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public long updateVocabulary(String name, String desc)
       throws ThesaurusException {
@@ -320,7 +320,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param idVoca
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public void deleteVocabulary(long idVoca) throws ThesaurusException {
     getThBm().deleteVocabulary(idVoca);
@@ -331,7 +331,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public void deleteVocabulary() throws ThesaurusException {
     long idVoca = ((IdPK) getCurrentVoca().getPK()).getIdAsLong();
@@ -346,7 +346,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return Collection
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Collection<Synonym> getSynonyms(String termId) throws ThesaurusException {
     long idVoca = ((IdPK) getCurrentVoca().getPK()).getIdAsLong();
@@ -364,7 +364,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return Collection
    * @throws ThesaurusException
-   * @see
+   *
    */
   public Collection<Jargon> getJargons() throws ThesaurusException {
     long idVoca = ((IdPK) getCurrentVoca().getPK()).getIdAsLong();
@@ -442,7 +442,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public String initUserPanel() throws ThesaurusException {
     String m_context = URLUtil.getApplicationURL();
@@ -475,7 +475,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public void setUserPanelJargons() throws ThesaurusException {
     Selection sel = getSelection();
@@ -494,7 +494,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public void setJargons() throws ThesaurusException {
     setUserSelectedJargons();
@@ -507,7 +507,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return Collection
    * @throws ThesaurusException
-   * @see
+   *
    */
   private void setUserSelectedJargons() throws ThesaurusException {
     Collection<Jargon> userJargons = getThBm().getJargons(getUsersSelected(), 0);
@@ -533,7 +533,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * userPanel n'ayant pas de jargons
    * @param
    * @return
-   * @see
+   *
    */
   private void setUserSelectedNewJargons() {
     Collection<Jargon> jargons = new ArrayList<Jargon>();
@@ -603,7 +603,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param idVoca
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   private int existJargonsConflict(long idVoca) {
     int nbConflict = 0;
@@ -622,7 +622,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public void createJargons() throws ThesaurusException {
     long idVoca = ((IdPK) getCurrentVoca().getPK()).getIdAsLong();
@@ -651,7 +651,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * @param idVoca
    * @return
    * @throws ThesaurusException
-   * @see
+   *
    */
   public void createJargons(long idVoca) throws ThesaurusException {
     getThBm().createJargons(getJargons(idVoca));
@@ -676,7 +676,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * (jargonsSelected)
    * @param idVoca
    * @return Collection
-   * @see
+   *
    */
   private Collection<Jargon> getNewJargons(long idVoca) {
     Collection<Jargon> jargons = getUserSelectedNewJargons();
@@ -696,7 +696,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * users et groupes sélectionnés au travers du userPanel
    * @param idVoca
    * @return Collection
-   * @see
+   *
    */
   private Collection<Jargon> getSameJargons(long idVoca) {
     Collection<Jargon> jargons = getUserSelectedJargons();
@@ -714,7 +714,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * sélectionnés au travers du userPanel
    * @param idVoca
    * @return Collection
-   * @see
+   *
    */
   private Collection<Jargon> getJargons(long idVoca) {
     Collection<Jargon> jargons = getUserSelectedJargons();
@@ -735,7 +735,7 @@ public class ThesaurusSessionController extends AbstractComponentSessionControll
    * travers du userPanel
    * @param
    * @return
-   * @see
+   *
    */
   public void deleteJargons() throws ThesaurusException {
     Collection<Jargon> jargons = getUserSelectedJargons();

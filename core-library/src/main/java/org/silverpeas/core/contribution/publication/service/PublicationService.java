@@ -133,7 +133,7 @@ public interface PublicationService {
    * @param pubPK
    * @param creatorId
    * @
-   * @see
+   *
    */
   void deleteOrphanPublicationsByCreatorId(PublicationPK pubPK, String creatorId);
 
@@ -202,7 +202,7 @@ public interface PublicationService {
    * @param fatherId
    * @return
    * @
-   * @see
+   *
    */
   Collection<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
       PublicationPK pk, String status, int nbPubs, String fatherId);
@@ -230,7 +230,7 @@ public interface PublicationService {
    * @param pubPK
    * @return
    * @
-   * @see
+   *
    */
   Collection<PublicationDetail> getPublicationsByStatus(String status, PublicationPK pubPK);
 
@@ -261,7 +261,7 @@ public interface PublicationService {
    * @param pubPK
    * @return
    * @
-   * @see
+   *
    */
   Collection<PublicationDetail> searchByKeywords(String query, PublicationPK pubPK);
 
@@ -271,7 +271,7 @@ public interface PublicationService {
    * @param fatherPKs
    * @return
    * @
-   * @see
+   *
    */
   int getNbPubInFatherPKs(Collection<NodePK> fatherPKs);
 
@@ -282,7 +282,7 @@ public interface PublicationService {
    * @param fatherPath
    * @return
    * @
-   * @see
+   *
    */
   int getNbPubByFatherPath(NodePK fatherPK, String fatherPath);
 
@@ -305,7 +305,7 @@ public interface PublicationService {
    * @param pubPK
    * @return
    * @
-   * @see
+   *
    */
   Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
       PublicationPK pubPK);
@@ -331,7 +331,7 @@ public interface PublicationService {
    * @param fatherPKs
    * @return
    * @
-   * @see
+   *
    */
   Collection<PublicationPK> getPubPKsInFatherPKs(Collection<WAPrimaryKey> fatherPKs);
 
@@ -341,7 +341,7 @@ public interface PublicationService {
    * @param fatherPK
    * @return
    * @
-   * @see
+   *
    */
   Collection<PublicationPK> getPubPKsInFatherPK(NodePK fatherPK);
 
@@ -350,7 +350,7 @@ public interface PublicationService {
    *
    * @param pubPK
    * @
-   * @see
+   *
    */
   void createIndex(PublicationPK pubPK);
 
@@ -361,7 +361,7 @@ public interface PublicationService {
    *
    * @param pubPK
    * @
-   * @see
+   *
    */
   void deleteIndex(PublicationPK pubPK);
 
@@ -371,7 +371,7 @@ public interface PublicationService {
    * @param pubPK
    * @return
    * @
-   * @see
+   *
    */
   Collection<PublicationDetail> getAllPublications(PublicationPK pubPK);
 

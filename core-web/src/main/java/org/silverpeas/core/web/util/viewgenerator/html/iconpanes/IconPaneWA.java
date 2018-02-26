@@ -45,7 +45,7 @@ public class IconPaneWA extends AbstractIconPane {
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public IconPaneWA() {
     super();
@@ -54,7 +54,7 @@ public class IconPaneWA extends AbstractIconPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String horizontalPrint() {
     StringBuilder result = new StringBuilder();
@@ -81,7 +81,7 @@ public class IconPaneWA extends AbstractIconPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String verticalPrint() {
     StringBuilder result = new StringBuilder();
@@ -111,7 +111,7 @@ public class IconPaneWA extends AbstractIconPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String print() {
     int viewType = getViewType();

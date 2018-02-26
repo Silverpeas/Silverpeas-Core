@@ -33,7 +33,7 @@ public class WindowWeb20V5 extends AbstractWindow {
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public WindowWeb20V5() {
     super();

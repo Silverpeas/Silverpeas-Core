@@ -45,7 +45,7 @@ public interface Button extends SimpleGraphicElement {
    * @param label
    * @param action
    * @param disabled
-   * @see
+   *
    */
   void init(String label, String action, boolean disabled);
 
@@ -60,14 +60,14 @@ public interface Button extends SimpleGraphicElement {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   String print();
 
   /**
    * Method declaration
    * @param s
-   * @see
+   *
    */
   @Deprecated
   void setRootImagePath(String s);

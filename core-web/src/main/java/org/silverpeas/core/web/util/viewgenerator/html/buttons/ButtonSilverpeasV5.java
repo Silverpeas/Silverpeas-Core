@@ -40,7 +40,7 @@ public class ButtonSilverpeasV5 extends AbstractButton {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public String renderButtonHtml() {

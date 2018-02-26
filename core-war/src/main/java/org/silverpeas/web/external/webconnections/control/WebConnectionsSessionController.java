@@ -42,7 +42,7 @@ public class WebConnectionsSessionController extends AbstractComponentSessionCon
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public WebConnectionsSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

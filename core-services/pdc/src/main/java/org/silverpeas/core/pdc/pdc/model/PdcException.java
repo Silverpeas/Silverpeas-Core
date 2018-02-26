@@ -38,7 +38,7 @@ public class PdcException extends SilverpeasException implements java.io.Seriali
    * @param callingClass
    * @param errorLevel
    * @param message
-   * @see
+   *
    */
   public PdcException(String callingClass, int errorLevel, String message) {
     super(callingClass, errorLevel, message);
@@ -50,7 +50,7 @@ public class PdcException extends SilverpeasException implements java.io.Seriali
    * @param errorLevel
    * @param message
    * @param extraParams
-   * @see
+   *
    */
   public PdcException(String callingClass, int errorLevel, String message,
       String extraParams) {
@@ -63,7 +63,7 @@ public class PdcException extends SilverpeasException implements java.io.Seriali
    * @param errorLevel
    * @param message
    * @param nested
-   * @see
+   *
    */
   public PdcException(String callingClass, int errorLevel, String message,
       Exception nested) {
@@ -77,7 +77,7 @@ public class PdcException extends SilverpeasException implements java.io.Seriali
    * @param message
    * @param extraParams
    * @param nested
-   * @see
+   *
    */
   public PdcException(String callingClass, int errorLevel, String message,
       String extraParams, Exception nested) {
@@ -87,7 +87,7 @@ public class PdcException extends SilverpeasException implements java.io.Seriali
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getModule() {
     return "Pdc";

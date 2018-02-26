@@ -76,7 +76,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public TemplateDesignerSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

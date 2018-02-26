@@ -29,7 +29,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 /**
  * A processor to assert that the path of a {@link SilverpeasFile} does not contains relative parts.
- * It the file doesn't exist, then {@¢ode NO_FILE} is returned.
+ * It the file doesn't exist, then {@code NO_FILE} is returned.
  * @author Yohann Chastagnier
  */
 public class RelativePathCheckingProcessor extends AbstractSilverpeasFileProcessor {

@@ -182,7 +182,7 @@ public class PublicationDAO {
    * @param fatherPKs
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static int getNbPubInFatherPKs(Connection con, Collection<NodePK> fatherPKs)
       throws SQLException {
@@ -264,7 +264,7 @@ public class PublicationDAO {
    * @param fatherPath
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static int getNbPubByFatherPath(Connection con, NodePK fatherPK,
       String fatherPath) throws SQLException {
@@ -414,7 +414,7 @@ public class PublicationDAO {
    * @param con
    * @param detail
    * @throws SQLException
-   * @see
+   *
    */
   public static void insertRow(Connection con, PublicationDetail detail)
       throws SQLException {
@@ -543,7 +543,7 @@ public class PublicationDAO {
    * @param con
    * @param pk
    * @throws SQLException
-   * @see
+   *
    */
   public static void deleteRow(Connection con, PublicationPK pk)
       throws SQLException {
@@ -732,7 +732,7 @@ public class PublicationDAO {
    * @param fatherPK
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<PublicationDetail> selectByFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
@@ -815,7 +815,7 @@ public class PublicationDAO {
    * @param fatherPK
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<PublicationDetail> selectNotInFatherPK(Connection con, NodePK fatherPK)
       throws SQLException {
@@ -1016,7 +1016,7 @@ public class PublicationDAO {
    * @param status
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<PublicationDetail> selectByStatus(Connection con, PublicationPK pubPK,
       String status) throws SQLException {
@@ -1274,7 +1274,7 @@ public class PublicationDAO {
    * @param pubPK
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<PublicationDetail> selectAllPublications(Connection con,
       PublicationPK pubPK) throws SQLException {
@@ -1317,7 +1317,7 @@ public class PublicationDAO {
    * @param status
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<PublicationDetail> selectByBeginDateDescAndStatus(Connection con,
       PublicationPK pubPK, String status) throws SQLException {
@@ -1435,7 +1435,7 @@ public class PublicationDAO {
    * @param pubPK
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<PublicationDetail> selectByBeginDateDesc(Connection con,
       PublicationPK pubPK) throws SQLException {
@@ -1493,7 +1493,7 @@ public class PublicationDAO {
    * @param pubPK
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<PublicationDetail> getOrphanPublications(Connection con,
       PublicationPK pubPK) throws SQLException {
@@ -1526,7 +1526,7 @@ public class PublicationDAO {
    * @param pubPK
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<PublicationDetail> getNotOrphanPublications(Connection con,
       PublicationPK pubPK) throws SQLException {
@@ -1585,7 +1585,7 @@ public class PublicationDAO {
    * @param pubPK
    * @param creatorId
    * @throws SQLException
-   * @see
+   *
    */
   public static void deleteOrphanPublicationsByCreatorId(Connection con,
       PublicationPK pubPK, String creatorId) throws SQLException {
@@ -1614,7 +1614,7 @@ public class PublicationDAO {
    * @param nodeId
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<PublicationDetail> getUnavailablePublicationsByPublisherId(
       Connection con, PublicationPK pubPK, String publisherId, String nodeId)
@@ -1674,7 +1674,7 @@ public class PublicationDAO {
    * @param pubPK
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static Collection<PublicationDetail> searchByKeywords(Connection con, String query,
       PublicationPK pubPK) {
@@ -1688,7 +1688,7 @@ public class PublicationDAO {
    * @param pk
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static PublicationDetail loadRow(Connection con, PublicationPK pk)
       throws SQLException {

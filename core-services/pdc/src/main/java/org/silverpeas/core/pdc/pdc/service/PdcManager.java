@@ -66,7 +66,7 @@ public interface PdcManager {
    *
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public List<AxisHeader> getAxis() throws PdcException;
 
@@ -75,7 +75,7 @@ public interface PdcManager {
    *
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public int getNbAxis() throws PdcException;
 
@@ -87,7 +87,7 @@ public interface PdcManager {
    * @param axisHeader
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public int createAxis(AxisHeader axisHeader) throws PdcException;
 
@@ -97,7 +97,7 @@ public interface PdcManager {
    * @param axisHeader
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public int updateAxis(AxisHeader axisHeader) throws PdcException;
 
@@ -106,7 +106,7 @@ public interface PdcManager {
    *
    * @param axisId
    * @throws PdcException
-   * @see
+   *
    */
   public void deleteAxis(Connection con, String axisId) throws PdcException;
 
@@ -116,7 +116,7 @@ public interface PdcManager {
    * @param axisId
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public Axis getAxisDetail(String axisId) throws PdcException;
 
@@ -126,7 +126,7 @@ public interface PdcManager {
    * @param axisId
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public AxisHeader getAxisHeader(String axisId) throws PdcException;
 
@@ -138,7 +138,7 @@ public interface PdcManager {
    * @param valueId
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public Value getAxisValue(String valueId, String treeId) throws PdcException;
 
@@ -148,7 +148,7 @@ public interface PdcManager {
    * @param valueName
    * @return List
    * @throws PdcException
-   * @see
+   *
    */
   public List<Value> getAxisValuesByName(String valueName) throws PdcException;
 
@@ -159,7 +159,7 @@ public interface PdcManager {
    * @param valueId
    * @return List
    * @throws PdcException
-   * @see
+   *
    */
   public List<String> getDaughterValues(String axisId, String valueId)
       throws PdcException;
@@ -170,7 +170,7 @@ public interface PdcManager {
    * @param axisId
    * @return Value
    * @throws PdcException
-   * @see
+   *
    */
   public Value getRoot(String axisId) throws PdcException;
 
@@ -188,7 +188,7 @@ public interface PdcManager {
    * @param axisId
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public int insertMotherValue(Value valueToInsert, String refValue,
       String axisId) throws PdcException;
@@ -251,7 +251,7 @@ public interface PdcManager {
    * @param refValue
    * @return status
    * @throws PdcException
-   * @see
+   *
    */
   public int createDaughterValue(Value valueToInsert, String refValue,
       String treeId) throws PdcException;
@@ -263,7 +263,7 @@ public interface PdcManager {
    * @param refValue
    * @return daughterid
    * @throws PdcException
-   * @see
+   *
    */
   public String createDaughterValueWithId(Value valueToInsert, String refValue,
       String treeId) throws PdcException;
@@ -274,7 +274,7 @@ public interface PdcManager {
    * @param value
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public int updateValue(Value value, String treeId) throws PdcException;
 
@@ -283,7 +283,7 @@ public interface PdcManager {
    *
    * @param valueId
    * @throws PdcException
-   * @see
+   *
    */
   public void deleteValueAndSubtree(Connection con, String valueId,
       String axisId, String treeId) throws PdcException;
@@ -293,7 +293,7 @@ public interface PdcManager {
    *
    * @param valueId
    * @throws PdcException
-   * @see
+   *
    */
   public String deleteValue(Connection con, String valueId, String axisId,
       String treeId) throws PdcException;
@@ -304,7 +304,7 @@ public interface PdcManager {
    * @param valueId
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public List<Value> getFullPath(String valueId, String treeId) throws PdcException;
 
@@ -325,7 +325,7 @@ public interface PdcManager {
    * @param instanceId
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public List<UsedAxis> getUsedAxisByInstanceId(String instanceId) throws PdcException;
 
@@ -335,7 +335,7 @@ public interface PdcManager {
    * @param usedAxis
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public int addUsedAxis(UsedAxis usedAxis) throws PdcException;
 
@@ -345,7 +345,7 @@ public interface PdcManager {
    * @param usedAxis
    * @return
    * @throws PdcException
-   * @see
+   *
    */
   public int updateUsedAxis(UsedAxis usedAxis) throws PdcException;
 
@@ -354,7 +354,7 @@ public interface PdcManager {
    *
    * @param usedAxisId
    * @throws PdcException
-   * @see
+   *
    */
   public void deleteUsedAxis(String usedAxisId) throws PdcException;
 
@@ -363,7 +363,7 @@ public interface PdcManager {
    *
    * @param usedAxisIds
    * @throws PdcException
-   * @see
+   *
    */
   public void deleteUsedAxis(Collection<String> usedAxisIds) throws PdcException;
 

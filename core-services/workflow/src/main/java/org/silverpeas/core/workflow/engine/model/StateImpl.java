@@ -273,7 +273,7 @@ public class StateImpl implements State, Serializable {
 
   /*
    * (non-Javadoc)
-   * @see
+   *
    * State#setAllowedActions(com.silverpeas.workflow.api.model
    * .AllowedActions)
    */
@@ -331,7 +331,7 @@ public class StateImpl implements State, Serializable {
 
   /*
    * (non-Javadoc)
-   * @see
+   *
    * State#setTimeoutAction(com.silverpeas.workflow.api.model.
    * Action)
    */

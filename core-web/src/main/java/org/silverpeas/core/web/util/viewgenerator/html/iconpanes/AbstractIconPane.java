@@ -52,7 +52,7 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public AbstractIconPane() {
     icons = new Vector();
@@ -65,7 +65,7 @@ public abstract class AbstractIconPane implements IconPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public Icon addIcon() {
@@ -84,7 +84,7 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Method declaration
-   * @see
+   *
    */
   public void setVerticalPosition() {
     viewType = VERTICAL_PANE;
@@ -93,7 +93,7 @@ public abstract class AbstractIconPane implements IconPane {
   /**
    * Method declaration
    * @param width
-   * @see
+   *
    */
   public void setVerticalWidth(String width) {
     verticalWidth = width;
@@ -101,7 +101,7 @@ public abstract class AbstractIconPane implements IconPane {
 
   /**
    * Method declaration
-   * @see
+   *
    */
   public void setHorizontalPosition() {
     viewType = HORIZONTAL_PANE;
@@ -110,7 +110,7 @@ public abstract class AbstractIconPane implements IconPane {
   /**
    * Method declaration
    * @param space
-   * @see
+   *
    */
   public void setSpacing(String space) {
     this.spacing = space;
@@ -119,7 +119,7 @@ public abstract class AbstractIconPane implements IconPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public Vector getIcons() {
     return this.icons;
@@ -128,7 +128,7 @@ public abstract class AbstractIconPane implements IconPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public int getViewType() {
     return this.viewType;
@@ -137,7 +137,7 @@ public abstract class AbstractIconPane implements IconPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getSpacing() {
     return this.spacing;
@@ -146,7 +146,7 @@ public abstract class AbstractIconPane implements IconPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getVerticalWidth() {
     return this.verticalWidth;
@@ -155,21 +155,21 @@ public abstract class AbstractIconPane implements IconPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public abstract String horizontalPrint();
 
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public abstract String verticalPrint();
 
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public abstract String print();
 }

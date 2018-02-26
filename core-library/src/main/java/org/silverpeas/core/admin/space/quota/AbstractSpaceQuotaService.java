@@ -49,7 +49,7 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
 
   /*
      * (non-Javadoc)
-     * @see
+     *
      * org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaService#getQuotaReachedFromSpacePath(org.
      * silverpeas.admin.space.quota.ComponentSpaceQuotaKey)
      */

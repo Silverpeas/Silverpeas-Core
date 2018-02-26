@@ -338,7 +338,7 @@ public class SilverStatisticsPeasDAOAccesVolume {
    * @return
    * @throws SQLException
    * @throws ParseException
-   * @see
+   *
    */
   private static List<String[]> getStatsUserFromResultSet(ResultSet rs)
       throws SQLException, ParseException {

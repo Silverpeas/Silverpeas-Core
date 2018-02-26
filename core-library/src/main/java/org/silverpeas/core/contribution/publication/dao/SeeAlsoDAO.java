@@ -46,7 +46,7 @@ public class SeeAlsoDAO {
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public SeeAlsoDAO() {
   }
@@ -70,7 +70,7 @@ public class SeeAlsoDAO {
    * @param infoPK
    * @param infoLink
    * @throws SQLException
-   * @see
+   *
    */
   public static void addLink(Connection con, WAPrimaryKey objectPK,
       WAPrimaryKey targetPK) throws SQLException {
@@ -156,7 +156,7 @@ public class SeeAlsoDAO {
    * @param infoPK
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public static List<ForeignPK> getLinks(Connection con, WAPrimaryKey objectPK)
       throws SQLException {

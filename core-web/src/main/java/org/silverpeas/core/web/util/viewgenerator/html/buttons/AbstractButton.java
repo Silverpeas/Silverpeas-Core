@@ -67,7 +67,7 @@ public abstract class AbstractButton implements Button {
    * @param label
    * @param action
    * @param disabled
-   * @see
+   *
    */
   @Override
   public void init(String label, String action, boolean disabled) {
@@ -79,7 +79,7 @@ public abstract class AbstractButton implements Button {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getIconsPath() {
     return GraphicElementFactory.getIconsPath();
@@ -88,7 +88,7 @@ public abstract class AbstractButton implements Button {
   /**
    * Method declaration
    * @param s
-   * @see
+   *
    */
   @Override
   public void setRootImagePath(String s) {
@@ -97,7 +97,7 @@ public abstract class AbstractButton implements Button {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public final String print() {

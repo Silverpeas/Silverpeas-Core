@@ -55,7 +55,7 @@ public class AgendaAccess {
    * @param userId
    * @return
    * @throws AgendaException
-   * @see
+   *
    */
   static public boolean hasTentativeSchedulables(String userId) throws AgendaException {
     try {

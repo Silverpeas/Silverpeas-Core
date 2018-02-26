@@ -55,7 +55,7 @@ public class MyLinksPeasSessionController extends AbstractComponentSessionContro
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public MyLinksPeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

@@ -43,7 +43,7 @@ public class InvokeAfterNoReferenceController extends ParentTestWebComponentCont
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public InvokeAfterNoReferenceController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

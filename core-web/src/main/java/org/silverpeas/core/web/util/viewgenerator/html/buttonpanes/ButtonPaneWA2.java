@@ -40,7 +40,7 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public ButtonPaneWA2() {
     super();
@@ -49,7 +49,7 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public String horizontalPrint() {
@@ -73,7 +73,7 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public String verticalPrint() {
@@ -93,7 +93,7 @@ public class ButtonPaneWA2 extends AbstractButtonPane {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public String print() {

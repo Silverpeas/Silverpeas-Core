@@ -64,7 +64,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
   /**
    * Constructor declaration
    *
-   * @see
+   *
    */
   public AgendaRequestRouter() {
   }
@@ -75,7 +75,7 @@ public class AgendaRequestRouter extends ComponentRequestRouter<AgendaSessionCon
    * @param mainSessionCtrl
    * @param context
    * @return
-   * @see
+   *
    */
   public AgendaSessionController createComponentSessionController(
       MainSessionController mainSessionCtrl, ComponentContext context) {

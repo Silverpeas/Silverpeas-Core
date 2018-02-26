@@ -42,7 +42,7 @@ public class ProgressMessageSilverpeasV5 extends AbstractProgressMessage {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public String print() {

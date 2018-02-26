@@ -45,7 +45,7 @@ public class JobStartPagePeasException extends SilverpeasException {
    * @param callingClass
    * @param errorLevel
    * @param message
-   * @see
+   *
    */
   public JobStartPagePeasException(String callingClass, int errorLevel,
       String message) {
@@ -58,7 +58,7 @@ public class JobStartPagePeasException extends SilverpeasException {
    * @param errorLevel
    * @param message
    * @param extraParams
-   * @see
+   *
    */
   public JobStartPagePeasException(String callingClass, int errorLevel,
       String message, String extraParams) {
@@ -71,7 +71,7 @@ public class JobStartPagePeasException extends SilverpeasException {
    * @param errorLevel
    * @param message
    * @param nested
-   * @see
+   *
    */
   public JobStartPagePeasException(String callingClass, int errorLevel,
       String message, Exception nested) {
@@ -85,7 +85,7 @@ public class JobStartPagePeasException extends SilverpeasException {
    * @param message
    * @param extraParams
    * @param nested
-   * @see
+   *
    */
   public JobStartPagePeasException(String callingClass, int errorLevel,
       String message, String extraParams, Exception nested) {
@@ -95,7 +95,7 @@ public class JobStartPagePeasException extends SilverpeasException {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getModule() {
     return "jobStartPagePeas";

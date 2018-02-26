@@ -70,7 +70,7 @@ public class AgendaHtmlView {
    * Constructor declaration
    *
    * @param viewType
-   * @see
+   *
    */
   public AgendaHtmlView(int viewType) {
     this.viewType = viewType;
@@ -84,7 +84,7 @@ public class AgendaHtmlView {
    * @param date
    * @param agendaSessionController
    * @param settings
-   * @see
+   *
    */
   public AgendaHtmlView(int viewType, Date date,
       AgendaSessionController agendaSessionController, SettingBundle settings) {
@@ -102,7 +102,7 @@ public class AgendaHtmlView {
    * Method declaration
    *
    * @param on
-   * @see
+   *
    */
   public void setCalendarVisible(boolean on) {
     this.calendarVisible = on;
@@ -112,7 +112,7 @@ public class AgendaHtmlView {
    * Method declaration
    *
    * @param date
-   * @see
+   *
    */
   public final void setDate(Date date) {
     if (date == null) {
@@ -136,7 +136,7 @@ public class AgendaHtmlView {
    * Method declaration
    *
    * @param scheduleCount
-   * @see
+   *
    */
   public void add(SchedulableCount scheduleCount) {
     if (calendarHtmlView == null) {
@@ -149,7 +149,7 @@ public class AgendaHtmlView {
    * Method declaration
    *
    * @param schedule
-   * @see
+   *
    */
   public void add(Schedulable schedule) {
     if (schedule.getStartDay() == null) {
@@ -207,7 +207,7 @@ public class AgendaHtmlView {
    * Method declaration
    *
    * @return
-   * @see
+   *
    */
   public String getHtmlView() throws AgendaException {
     if (viewType == BYDAY) {
@@ -230,7 +230,7 @@ public class AgendaHtmlView {
    *
    * @param startDate
    * @return
-   * @see
+   *
    */
   public String getHtmlViewByMonth(String startDate) {
     if (calendarHtmlView == null) {
@@ -283,7 +283,7 @@ public class AgendaHtmlView {
    *
    * @param startDate
    * @return
-   * @see
+   *
    */
   public String getHtmlViewByYear(String startDate) {
     CalendarHtmlView calendarHtmlView = new CalendarHtmlView();
@@ -344,7 +344,7 @@ public class AgendaHtmlView {
    *
    * @param today
    * @return
-   * @see
+   *
    */
   public String getHtmlViewByDay(String today) throws AgendaException {
 
@@ -709,7 +709,7 @@ public class AgendaHtmlView {
    *
    * @param firstDay
    * @return
-   * @see
+   *
    */
   public String getHtmlViewByWeek(String firstDay) throws AgendaException {
 
@@ -969,7 +969,7 @@ public class AgendaHtmlView {
    *
    * @param schedule
    * @return
-   * @see
+   *
    */
   private int getDuration(Schedulable schedule) {
     try {
@@ -993,7 +993,7 @@ public class AgendaHtmlView {
    *
    * @param group
    * @return
-   * @see
+   *
    */
   private int getDuration(SchedulableGroup group) {
     try {

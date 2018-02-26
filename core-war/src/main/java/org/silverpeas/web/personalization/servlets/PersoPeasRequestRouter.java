@@ -49,7 +49,7 @@ public class PersoPeasRequestRouter extends
    * @param mainSessionCtrl
    * @param componentContext
    * @return
-   * @see
+   *
    */
   @Override
   public PersonalizationSessionController createComponentSessionController(

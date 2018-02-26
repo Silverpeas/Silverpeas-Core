@@ -40,7 +40,7 @@ public class WindowWithContextualDiv extends AbstractWindow {
 
   /**
    * Constructor declaration
-   * @see
+   *
    */
   public WindowWithContextualDiv() {
     super();

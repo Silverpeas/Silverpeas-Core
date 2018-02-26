@@ -43,7 +43,7 @@ public class HttpMethodWithInvokableAnnotationController
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public HttpMethodWithInvokableAnnotationController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

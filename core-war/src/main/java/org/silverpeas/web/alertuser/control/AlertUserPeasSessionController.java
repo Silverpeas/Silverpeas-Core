@@ -63,7 +63,7 @@ public class AlertUserPeasSessionController extends AbstractComponentSessionCont
    *
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public AlertUserPeasSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

@@ -176,7 +176,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public DirectorySessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -200,7 +200,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   /**
    * get All Users
-   * @see
+   *
    */
   public DirectoryItemList getAllUsers() {
     setCurrentView(VIEW_ALL);
@@ -288,7 +288,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   /**
    * get all Users that their Last Name begin with 'Index'
    * @param index:Alphabetical Index like A,B,C,E......
-   * @see
+   *
    */
   public DirectoryItemList getUsersByIndex(String index) {
     setCurrentView(index);
@@ -319,7 +319,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
    * @param queryDescription the search request
    * @param globalSearch true if it's a search outside directory (direct from URL)
    * @throws DirectoryException
-   * @see
+   *
    */
   public DirectoryItemList getUsersByQuery(QueryDescription queryDescription,
       boolean globalSearch) throws DirectoryException {
@@ -361,7 +361,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   /**
    * get all User of the Group who has Id="groupId"
    * @param groupId:the ID of group
-   * @see
+   *
    */
   public DirectoryItemList getAllUsersByGroup(String groupId) {
     setCurrentView(VIEW_ALL);
@@ -377,7 +377,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   /**
    * get all Users of the Groups which Id is in "groupIds"
    * @param groupIds:a list of groups' ids
-   * @see
+   *
    */
   public DirectoryItemList getAllUsersByGroups(List<String> groupIds) {
     setCurrentView(VIEW_ALL);
@@ -415,7 +415,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   /**
    * get all User "we keep the last list of All users"
-   * @see
+   *
    */
   public DirectoryItemList getLastListOfAllUsers() {
     setCurrentView(VIEW_ALL);
@@ -430,7 +430,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
 
   /**
    * get the last list of users called "keep the session"
-   * @see
+   *
    */
   public DirectoryItemList getLastListOfUsersCalled() {
     return lastListUsersCalled;
@@ -439,7 +439,7 @@ public class DirectorySessionController extends AbstractComponentSessionControll
   /**
    * return All users of Space who has Id="spaceId"
    * @param spaceId:the ID of Space
-   * @see
+   *
    */
   public DirectoryItemList getAllUsersBySpace(String spaceId) {
     setCurrentView(VIEW_ALL);

@@ -37,7 +37,7 @@ public class HomePageIsNotSpecifiedController extends ParentTestWebComponentCont
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public HomePageIsNotSpecifiedController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

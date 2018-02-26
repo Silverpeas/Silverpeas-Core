@@ -54,7 +54,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * Constructor declaration
    * @param mainSessionCtrl
    * @param componentContext
-   * @see
+   *
    */
   public PersonalizationSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {
@@ -78,7 +78,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * Method declaration
    * @return
    * @throws PeasCoreException
-   * @see
+   *
    */
   public ArrayList<Properties> getNotificationAddresses() throws PeasCoreException {
     int userId = Integer.parseInt(getUserId());
@@ -95,7 +95,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * @param aNotificationAddressId
    * @return
    * @throws PeasCoreException
-   * @see
+   *
    */
   public Properties getNotificationAddress(String aNotificationAddressId)
       throws PeasCoreException {
@@ -115,7 +115,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * Method declaration
    * @return
    * @throws PeasCoreException
-   * @see
+   *
    */
   public ArrayList<Properties> getNotifChannels() throws PeasCoreException {
     try {
@@ -131,7 +131,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * @param aPreferenceId
    * @return
    * @throws PeasCoreException
-   * @see
+   *
    */
   public Properties getNotifPreference(String aPreferenceId)
       throws PeasCoreException {
@@ -151,7 +151,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * Method declaration
    * @return
    * @throws PeasCoreException
-   * @see
+   *
    */
   public ArrayList<Properties> getNotifPreferences() throws PeasCoreException {
     int userId = Integer.parseInt(getUserId());
@@ -172,7 +172,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * @param aAddress
    * @param aUsage
    * @throws PeasCoreException
-   * @see
+   *
    */
   public void saveNotifAddress(String aNotifAddressId, String aNotifName, String aChannelId,
       String aAddress, String aUsage) throws PeasCoreException {
@@ -200,7 +200,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * Method declaration
    * @param aNotifAddressId
    * @throws PeasCoreException
-   * @see
+   *
    */
   public void deleteNotifAddress(String aNotifAddressId)
       throws PeasCoreException {
@@ -221,7 +221,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * Method declaration
    * @param aPreferenceId
    * @throws PeasCoreException
-   * @see
+   *
    */
   public void deletePreference(String aPreferenceId) throws PeasCoreException {
     try {
@@ -301,7 +301,7 @@ public class PersonalizationSessionController extends AbstractComponentSessionCo
    * @param priorityId
    * @param notificationId
    * @throws PeasCoreException
-   * @see
+   *
    */
   public void addPreference(String componentId, String priorityId, String notificationId) throws
       PeasCoreException {

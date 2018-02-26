@@ -103,7 +103,7 @@ public class SubscriptionDao {
    * @param con
    * @param subscription
    * @throws SQLException
-   * @see
+   *
    */
   public void add(Connection con, Subscription subscription) throws SQLException, AssertionError {
 
@@ -141,7 +141,7 @@ public class SubscriptionDao {
    * @param con
    * @param subscription
    * @throws SQLException
-   * @see
+   *
    */
   public void remove(Connection con, Subscription subscription) throws SQLException {
 
@@ -165,7 +165,7 @@ public class SubscriptionDao {
    * @param con
    * @param subscriber
    * @throws SQLException
-   * @see
+   *
    */
   public void removeBySubscriber(Connection con, SubscriptionSubscriber subscriber)
       throws SQLException {
@@ -184,7 +184,7 @@ public class SubscriptionDao {
    * Method declaration
    * @param con
    * @throws SQLException
-   * @see
+   *
    */
   public void removeByResource(Connection con, SubscriptionResource resource) throws SQLException {
     PreparedStatement prepStmt = null;
@@ -212,7 +212,7 @@ public class SubscriptionDao {
    * @param subscription
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public boolean existsSubscription(Connection con, Subscription subscription) throws SQLException {
     SilverTrace
@@ -240,7 +240,7 @@ public class SubscriptionDao {
    * @param subscriber
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public SubscriptionList getSubscriptionsBySubscriber(Connection con,
       SubscriptionSubscriber subscriber) throws SQLException {
@@ -264,7 +264,7 @@ public class SubscriptionDao {
    * @param subscriber
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public SubscriptionList getSubscriptionsBySubscriberAndComponent(Connection con,
       SubscriptionSubscriber subscriber, String instanceId) throws SQLException {
@@ -290,7 +290,7 @@ public class SubscriptionDao {
    * @param method
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public SubscriptionList getSubscriptionsByResource(Connection con,
       SubscriptionResource resource, final SubscriptionMethod method) throws SQLException {
@@ -323,7 +323,7 @@ public class SubscriptionDao {
    * @param resource
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public SubscriptionList getSubscriptionsBySubscriberAndResource(Connection con,
       SubscriptionSubscriber subscriber, SubscriptionResource resource) throws SQLException {
@@ -351,7 +351,7 @@ public class SubscriptionDao {
    * @param method
    * @return
    * @throws SQLException
-   * @see
+   *
    */
   public SubscriptionSubscriberList getSubscribers(Connection con,
       SubscriptionResource resource, SubscriptionMethod method) throws SQLException {

@@ -53,7 +53,7 @@ public class TestWebComponentController extends ParentTestWebComponentController
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public TestWebComponentController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

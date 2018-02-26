@@ -117,7 +117,7 @@ public interface ArrayPane extends SimpleGraphicElement {
    * @param name
    * @param request
    * @param session
-   * @see
+   *
    */
   void init(String name, javax.servlet.ServletRequest request,
       HttpSession session);
@@ -128,7 +128,7 @@ public interface ArrayPane extends SimpleGraphicElement {
    * @param url
    * @param request
    * @param session
-   * @see
+   *
    */
   void init(String name, String url,
       javax.servlet.ServletRequest request, HttpSession session);

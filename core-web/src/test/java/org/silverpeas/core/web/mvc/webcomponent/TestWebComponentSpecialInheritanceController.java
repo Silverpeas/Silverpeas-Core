@@ -42,7 +42,7 @@ public class TestWebComponentSpecialInheritanceController
    * Standard Session Controller Constructor
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public TestWebComponentSpecialInheritanceController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

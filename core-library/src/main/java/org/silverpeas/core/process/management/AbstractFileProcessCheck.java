@@ -45,7 +45,7 @@ public abstract class AbstractFileProcessCheck extends AbstractProcessCheck {
 
   /*
    * (non-Javadoc)
-   * @see
+   *
    * org.silverpeas.process.check.Check#check(ProcessExecutionContext
    * )
    */

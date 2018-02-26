@@ -49,7 +49,7 @@ public class SILVERMAILException extends SilverpeasException {
    * @param errorLevel
    * @param message
    * @param extraParams
-   * @see
+   *
    */
   public SILVERMAILException(String callingClass, int errorLevel, String message,
       String extraParams) {
@@ -62,7 +62,7 @@ public class SILVERMAILException extends SilverpeasException {
    * @param errorLevel
    * @param message
    * @param nested
-   * @see
+   *
    */
   public SILVERMAILException(String callingClass, int errorLevel, String message,
       Exception nested) {
@@ -76,7 +76,7 @@ public class SILVERMAILException extends SilverpeasException {
    * @param message
    * @param extraParams
    * @param nested
-   * @see
+   *
    */
   public SILVERMAILException(String callingClass, int errorLevel, String message,
       String extraParams,

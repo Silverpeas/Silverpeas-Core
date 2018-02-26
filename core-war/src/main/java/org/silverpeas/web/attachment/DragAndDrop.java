@@ -59,7 +59,7 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
    * @param res
    * @throws IOException
    * @throws ServletException
-   * @see
+   *
    */
   @Override
   public void doGet(HttpServletRequest req, HttpServletResponse res)
@@ -73,7 +73,7 @@ public class DragAndDrop extends SilverpeasAuthenticatedHttpServlet {
    * @param res
    * @throws IOException
    * @throws ServletException
-   * @see
+   *
    */
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse res)

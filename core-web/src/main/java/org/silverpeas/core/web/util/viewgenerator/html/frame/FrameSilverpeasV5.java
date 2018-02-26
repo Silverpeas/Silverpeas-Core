@@ -39,7 +39,7 @@ public class FrameSilverpeasV5 extends AbstractFrame {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public String printBefore() {
@@ -61,7 +61,7 @@ public class FrameSilverpeasV5 extends AbstractFrame {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public String printMiddle() {
@@ -77,7 +77,7 @@ public class FrameSilverpeasV5 extends AbstractFrame {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public String printAfter() {
@@ -97,7 +97,7 @@ public class FrameSilverpeasV5 extends AbstractFrame {
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   @Override
   public String print() {

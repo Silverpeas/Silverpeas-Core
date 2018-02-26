@@ -59,7 +59,7 @@ public class ArrayCellInputText extends ArrayCell implements SimpleGraphicElemen
    * @param name
    * @param value
    * @param line
-   * @see
+   *
    */
   public ArrayCellInputText(String name, String value, ArrayLine line) {
     super(line);
@@ -200,7 +200,7 @@ public class ArrayCellInputText extends ArrayCell implements SimpleGraphicElemen
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String getSyntax() {
 
@@ -275,7 +275,7 @@ public class ArrayCellInputText extends ArrayCell implements SimpleGraphicElemen
   /**
    * Method declaration
    * @return
-   * @see
+   *
    */
   public String print() {
     String result = "<td ";

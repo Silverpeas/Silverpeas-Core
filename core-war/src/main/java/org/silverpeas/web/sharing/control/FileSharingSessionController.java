@@ -69,7 +69,7 @@ public class FileSharingSessionController extends AbstractComponentSessionContro
    * Standard Session Controller Constructeur
    * @param mainSessionCtrl The user's profile
    * @param componentContext The component's profile
-   * @see
+   *
    */
   public FileSharingSessionController(MainSessionController mainSessionCtrl,
       ComponentContext componentContext) {

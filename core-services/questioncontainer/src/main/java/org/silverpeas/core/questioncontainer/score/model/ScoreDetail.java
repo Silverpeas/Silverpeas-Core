@@ -66,7 +66,7 @@ public class ScoreDetail implements java.io.Serializable {
    * @param score
    * @param elapsedTime
    * @param suggestion
-   * @see
+   *
    */
   public ScoreDetail(ScorePK scorePK, String fatherId, String userId, int participationId,
       String participationDate, int score, int elapsedTime, String suggestion) {
