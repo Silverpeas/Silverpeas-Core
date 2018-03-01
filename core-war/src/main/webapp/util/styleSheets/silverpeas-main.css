@@ -4843,11 +4843,8 @@ input.search:focus {
   z-index: 2000;
 }
 
-.ui-dialog .label-ui-dialog {
-  float:left;
-  clear:both;
-  width:30%;
-  margin-bottom:14px;
+.ui-dialog .ui-dialog-content {
+  padding: 1em 1em 0.5em 1em;
 }
 
 .ui-dialog .champs-ui-dialog {
@@ -5581,6 +5578,12 @@ blockquote {
     padding-left:1.5em;
     font-style:italic;
     color:#666;
+}
+
+span.sp-variable.cke_widget_element {
+  border: 2px dotted #F9E98E;
+  padding: 0 3px;
+  background-color: #faf8d3;
 }
 
 .container-wysiwyg {

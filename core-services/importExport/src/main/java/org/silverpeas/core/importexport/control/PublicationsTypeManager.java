@@ -24,6 +24,7 @@
 package org.silverpeas.core.importexport.control;
 
 import org.silverpeas.core.contribution.content.form.XMLField;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.importexport.versioning.VersioningImport;
 import org.silverpeas.core.node.importexport.NodeImportExport;
@@ -212,6 +213,8 @@ public class PublicationsTypeManager {
     try {
       wysiwygText = WysiwygController.load(componentId, pubId, language);
       wysiwygText = HtmlExportPublicationGenerator.replaceImagesPathForExport(wysiwygText);
+      wysiwygText =
+          WysiwygContentTransformer.on(wysiwygText).resolveVariablesDirective().transform();
       if (wysiwygText == null) {
         wysiwygText = ""; // To avoid exception in createFile below
       }

@@ -664,6 +664,10 @@
       <param-value>org.silverpeas.web.usercalendar.UserCalendarWebController</param-value>
     </init-param>
   </servlet>
+  <servlet>
+    <servlet-name>VariablesRequestRouter</servlet-name>
+    <servlet-class>org.silverpeas.web.variables.VariablesRequestRouter</servlet-class>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>LoginDispatcher</servlet-name>
@@ -1067,6 +1071,10 @@
   <servlet-mapping>
     <servlet-name>UserCalendarRequestRouter</servlet-name>
     <url-pattern>/RuserCalendar/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>VariablesRequestRouter</servlet-name>
+    <url-pattern>/Rvariables/*</url-pattern>
   </servlet-mapping>
 
   <jsp-config>
