@@ -44,7 +44,9 @@ import java.util.TimeZone;
  * <p>
  * User: Yohann Chastagnier
  * Date: 19/04/13
+ * @deprecated Use {@link org.silverpeas.core.date.Period}
  */
+@Deprecated
 public class Period implements Comparable, Serializable, Cloneable {
   private static final long serialVersionUID = 6378275537498456869L;
 

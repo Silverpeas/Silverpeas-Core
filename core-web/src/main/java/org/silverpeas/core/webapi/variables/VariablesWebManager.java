@@ -24,21 +24,20 @@
 package org.silverpeas.core.webapi.variables;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.variables.Variable;
-import org.silverpeas.core.variables.VariablePeriod;
-import org.silverpeas.core.variables.VariablePeriodsRepository;
-import org.silverpeas.core.variables.VariablesRepository;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.variables.Variable;
+import org.silverpeas.core.variables.VariableScheduledValue;
 import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 
+import javax.persistence.PersistenceException;
+import javax.transaction.Transactional;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
-
-import static org.silverpeas.core.persistence.Transaction.performInOne;
+import java.util.function.Supplier;
 
 public class VariablesWebManager {
 
@@ -51,111 +50,121 @@ public class VariablesWebManager {
   }
 
   public List<Variable> getAllVariables() {
-    return VariablesRepository.get().getAllVariables();
+    return Variable.getAll();
   }
 
   public List<Variable> getCurrentVariables() {
-    List<VariablePeriod> periods = VariablePeriodsRepository.get().getCurrentPeriods();
+    List<VariableScheduledValue> periods = VariableScheduledValue.getCurrentOnes();
     List<Variable> variables = new ArrayList<>();
-    for (VariablePeriod period : periods) {
+    for (VariableScheduledValue period : periods) {
       variables.add(period.getVariable());
     }
     return variables;
   }
 
   public Variable getVariable(String id) {
-    return VariablesRepository.get().getById(id);
+    Variable variable = Variable.getById(id);
+    if (variable == null) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+    return variable;
   }
 
-  public Variable createVariable(Variable variable, VariablePeriod period) {
+  @Transactional
+  public Variable createVariable(Variable variable) {
     checkAdminAccess();
-    return performInOne(() -> {
-      // create variable
-      Variable createdValue = VariablesRepository.get().save(variable);
 
-      // create its first period
-      period.setVariable(createdValue);
-      createdValue.getPeriods().add(period);
+    Variable createdVariable = process(variable::save, "variables.variable.create.failure");
 
-      createdValue = VariablesRepository.get().save(createdValue);
+    addSuccess("variables.variable.create.success");
 
-      addSuccess("variables.variable.create.success");
-
-      return createdValue;
-    });
+    return createdVariable;
   }
 
-  public Variable updateVariable(Variable variableToUpdate) {
+  @Transactional
+  public Variable updateVariable(final String variableId, final Variable variableToUpdate) {
     checkAdminAccess();
-    return performInOne(() -> {
-      VariablesRepository vr = getVariablesRepository();
-      Variable value = vr.getById(variableToUpdate.getId());
-      value.merge(variableToUpdate);
-      value = vr.save(value);
 
-      addSuccess("variables.variable.update.success");
+    Variable updatedVariable = process(() -> {
+      Variable variable = getVariable(variableId);
+      variable.merge(variableToUpdate);
+      return variable.save();
+    }, "variables.variable.update.failure");
 
-      return value;
-    });
+    addSuccess("variables.variable.update.success");
+
+    return updatedVariable;
   }
 
+  @Transactional
   public void deleteVariable(String id) {
     checkAdminAccess();
-    performInOne(() -> {
-      VariablesRepository vr = getVariablesRepository();
-      Variable variable = vr.getById(id);
-      vr.delete(variable);
-
-      addSuccess("variables.variable.delete.success");
-
+    process(() -> {
+      Variable variable = getVariable(id);
+      if (variable != null) {
+        variable.delete();
+      }
       return null;
-    });
+    }, "variables.variable.delete.failure");
+
+    addSuccess("variables.variable.delete.success");
   }
 
+  @Transactional
   public void deleteVariables(List<String> ids) {
     checkAdminAccess();
-    performInOne(() -> {
-      VariablesRepository vr = getVariablesRepository();
+    process(() -> {
       for (String id : ids) {
-        Variable variable = vr.getById(id);
-        vr.delete(variable);
+        Variable variable = getVariable(id);
+        if (variable != null) {
+          variable.delete();
+        }
       }
-
-      addSuccess("variables.variable.delete.success.many", ids.size());
-
       return null;
-    });
+    }, "variables.variable.delete.failure.many");
+
+    addSuccess("variables.variable.delete.success.many", ids.size());
   }
 
-  public VariablePeriod createPeriod(VariablePeriod period) {
+  @Transactional
+  public VariableScheduledValue createPeriod(VariableScheduledValue period, String variableId) {
     checkAdminAccess();
-    return performInOne(() -> {
-      VariablePeriod createdPeriod = VariablePeriodsRepository.get().save(period);
-      addSuccess("variables.variable.period.create.success");
-      return createdPeriod;
-    });
+    VariableScheduledValue createdPeriod = process(() -> {
+      Variable variable = getVariable(variableId);
+      return variable.getVariableValues().addAndSave(period);
+    }, "variables.variable.value.create.failure");
+    addSuccess("variables.variable.value.create.success");
+    return createdPeriod;
   }
 
-  public VariablePeriod updatePeriod(VariablePeriod period) {
+  @Transactional
+  public VariableScheduledValue updatePeriod(String periodId, String variableId,
+      VariableScheduledValue period) {
     checkAdminAccess();
-    return performInOne(() -> {
-      VariablePeriod updatedPeriod = VariablePeriodsRepository.get().save(period);
-      addSuccess("variables.variable.period.update.success");
-      return updatedPeriod;
-    });
+
+    VariableScheduledValue updatedValue = process(() -> {
+      Variable variable = getVariable(variableId);
+      VariableScheduledValue value = variable.getVariableValues()
+          .get(periodId)
+          .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
+      return value.updateFrom(period);
+    }, "variables.variable.value.update.failure");
+
+    addSuccess("variables.variable.value.update.success");
+    return updatedValue;
   }
 
-  public void deletePeriod(String id) {
+  @Transactional
+  public void deletePeriod(String periodId, String variableId) {
     checkAdminAccess();
-    performInOne(() -> {
-      VariablePeriodsRepository.get().deleteById(id);
-      addSuccess("variables.variable.period.delete.success");
-      return null;
-    });
-  }
-
-  private VariablesRepository getVariablesRepository() {
-    return VariablesRepository.get();
+    process(() -> {
+      Variable variable = getVariable(variableId);
+      if (!variable.getVariableValues().remove(periodId)) {
+        throw new WebApplicationException(Response.Status.NOT_FOUND);
+      }
+      return variable.save();
+    }, "variables.variable.value.delete.failure");
+    addSuccess("variables.variable.value.delete.success");
   }
 
   private void checkAdminAccess() {
@@ -172,6 +181,10 @@ public class VariablesWebManager {
     getMessager().addSuccess(getLocalizationBundle().getStringWithParams(key, params));
   }
 
+  private void addFailure(String key) {
+    getMessager().addError(getLocalizationBundle().getString(key));
+  }
+
   private LocalizationBundle getLocalizationBundle() {
     return ResourceLocator
         .getLocalizationBundle("org.silverpeas.variables.multilang.variables", getUserLanguage());
@@ -186,4 +199,12 @@ public class VariablesWebManager {
     return WebMessager.getInstance();
   }
 
+  private <T> T process(final Supplier<T> processor, final String keyIfFailure) {
+    try {
+      return processor.get();
+    } catch (PersistenceException e) {
+      addFailure(keyIfFailure);
+      throw e;
+    }
+  }
 }

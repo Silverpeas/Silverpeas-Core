@@ -3,10 +3,11 @@ package org.silverpeas.core.webapi.variables;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.variables.Variable;
-import org.silverpeas.core.variables.VariablePeriod;
+import org.silverpeas.core.variables.VariableScheduledValue;
 import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.webapi.base.annotation.Authenticated;
 
+import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -27,10 +28,13 @@ public class VariablesResource extends RESTWebService {
 
   static final String PATH = "variables";
 
+  @Inject
+  private VariablesWebManager webManager;
+
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<VariableEntity> getAllVariables() {
-    List<Variable> allVariables = VariablesWebManager.get().getAllVariables();
+    List<Variable> allVariables = webManager.getAllVariables();
     return asWebEntities(allVariables);
   }
 
@@ -38,7 +42,7 @@ public class VariablesResource extends RESTWebService {
   @Path("/currents")
   @Produces(MediaType.APPLICATION_JSON)
   public List<VariableEntity> getCurrentVariables() {
-    List<Variable> variables = VariablesWebManager.get().getCurrentVariables();
+    List<Variable> variables = webManager.getCurrentVariables();
     return asWebEntities(variables);
   }
 
@@ -46,7 +50,7 @@ public class VariablesResource extends RESTWebService {
   @Path("/{variableId}")
   @Produces(MediaType.APPLICATION_JSON)
   public VariableEntity getVariable(@PathParam("variableId") String variableId) {
-    Variable variable = VariablesWebManager.get().getVariable(variableId);
+    Variable variable = webManager.getVariable(variableId);
     return VariableEntity.fromVariable(variable);
   }
 
@@ -55,9 +59,8 @@ public class VariablesResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public VariableEntity createVariable(final VariableEntity entity) {
     Variable variable = entity.toVariable();
-    VariablePeriodEntity periodEntity = entity.getPeriods().get(0);
     Variable newVariable =
-        VariablesWebManager.get().createVariable(variable, periodEntity.toVariablePeriod());
+        webManager.createVariable(variable);
     return VariableEntity.fromVariable(newVariable);
   }
 
@@ -67,9 +70,7 @@ public class VariablesResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public VariableEntity updateVariable(@PathParam("variableId") String variableId,
       final VariableEntity entity) {
-    Variable variable = VariablesWebManager.get().getVariable(variableId);
-    entity.merge(variable);
-    Variable updatedVariable = VariablesWebManager.get().updateVariable(variable);
+    Variable updatedVariable = webManager.updateVariable(variableId, entity.toVariable());
     return VariableEntity.fromVariable(updatedVariable);
   }
 
@@ -77,51 +78,44 @@ public class VariablesResource extends RESTWebService {
   @Path("/{variableId}")
   @Produces(MediaType.APPLICATION_JSON)
   public void deleteVariable(@PathParam("variableId") String variableId) {
-    VariablesWebManager.get().deleteVariable(variableId);
+    webManager.deleteVariable(variableId);
   }
 
   @DELETE
   @Produces(MediaType.APPLICATION_JSON)
   public void deleteVariables() {
     List<String> ids = getHttpRequest().getParameterAsList("selectedIds");
-    VariablesWebManager.get().deleteVariables(ids);
+    webManager.deleteVariables(ids);
   }
 
   @POST
-  @Path("/{variableId}/periods")
+  @Path("/{variableId}/values")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public VariablePeriodEntity createVariablePeriod(@PathParam("variableId") String variableId,
-      final VariablePeriodEntity entity) {
-    VariablePeriod period = entity.toVariablePeriod();
-    Variable value = VariablesWebManager.get().getVariable(variableId);
-    period.setVariable(value);
-    VariablePeriod createdPeriod = VariablesWebManager.get().createPeriod(period);
-    return VariablePeriodEntity.fromVariablePeriod(createdPeriod);
+  public VariableScheduledValueEntity createVariableValue(@PathParam("variableId") String variableId,
+      final VariableScheduledValueEntity entity) {
+    VariableScheduledValue period = entity.toVariableScheduledValue();
+    VariableScheduledValue createdPeriod = webManager.createPeriod(period, variableId);
+    return VariableScheduledValueEntity.fromVariableScheduledValue(createdPeriod);
   }
 
   @POST
-  @Path("/{variableId}/periods/{periodId}")
+  @Path("/{variableId}/values/{valueId}")
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
-  public VariablePeriodEntity updateVariablePeriod(@PathParam("variableId") String variableId,
-      @PathParam("periodId") String periodId, final VariablePeriodEntity entity) {
-    VariablePeriod period = entity.toVariablePeriod();
-    period.setId(periodId);
-
-    Variable variable = VariablesWebManager.get().getVariable(variableId);
-    period.setVariable(variable);
-
-    VariablePeriod updatedPeriod = VariablesWebManager.get().updatePeriod(period);
-    return VariablePeriodEntity.fromVariablePeriod(updatedPeriod);
+  public VariableScheduledValueEntity updateVariableValue(@PathParam("variableId") String variableId,
+      @PathParam("valueId") String periodId, final VariableScheduledValueEntity entity) {
+    VariableScheduledValue period = entity.toVariableScheduledValue();
+    VariableScheduledValue updatedPeriod = webManager.updatePeriod(periodId, variableId, period);
+    return VariableScheduledValueEntity.fromVariableScheduledValue(updatedPeriod);
   }
 
   @DELETE
-  @Path("/{variableId}/periods/{periodId}")
+  @Path("/{variableId}/values/{periodId}")
   @Produces(MediaType.APPLICATION_JSON)
-  public void deleteVariablePeriod(@PathParam("variableId") String variableId,
+  public void deleteVariableValues(@PathParam("variableId") String variableId,
       @PathParam("periodId") String periodId) {
-    VariablesWebManager.get().deletePeriod(periodId);
+    webManager.deletePeriod(periodId, variableId);
   }
 
   private List<VariableEntity> asWebEntities(Collection<Variable> variables) {

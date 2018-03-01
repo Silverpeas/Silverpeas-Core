@@ -4,6 +4,7 @@ import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
 import javax.inject.Singleton;
+import java.time.LocalDate;
 import java.util.List;
 
 @Singleton
@@ -15,4 +16,9 @@ public class DefaultVariablesRepository extends SilverpeasJpaEntityRepository<Va
     return listFromNamedQuery("allVariables", params);
   }
 
+  @Override
+  public List<Variable> getAllCurrentVariables() {
+    NamedParameters params = newNamedParameters().add("today", LocalDate.now());
+    return listFromNamedQuery("currentVariables", params);
+  }
 }

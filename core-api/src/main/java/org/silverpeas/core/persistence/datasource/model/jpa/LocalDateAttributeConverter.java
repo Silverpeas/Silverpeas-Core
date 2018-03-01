@@ -28,6 +28,9 @@ import javax.persistence.Converter;
 import java.sql.Date;
 import java.time.LocalDate;
 
+import static org.silverpeas.core.persistence.datasource.model.jpa.SQLDateTimeConstants.MAX_DATE;
+import static org.silverpeas.core.persistence.datasource.model.jpa.SQLDateTimeConstants.MIN_DATE;
+
 /**
  * An automatic converter of {@link LocalDate} values to SQL {@link Date} values for
  * JPA 2.1 (JPA 2.1 was release before Java 8 and hence it doesn't support yet the new java time
@@ -40,11 +43,29 @@ public class LocalDateAttributeConverter implements
 
   @Override
   public Date convertToDatabaseColumn(LocalDate locDate) {
-    return locDate == null ? null : Date.valueOf(locDate);
+    if (locDate == null) {
+      return null;
+    }
+    if (locDate.equals(LocalDate.MIN)) {
+      return MIN_DATE;
+    }
+    if (locDate.equals(LocalDate.MAX)) {
+      return MAX_DATE;
+    }
+    return Date.valueOf(locDate);
   }
 
   @Override
   public LocalDate convertToEntityAttribute(Date sqlDate) {
-    return sqlDate == null ? null : sqlDate.toLocalDate();
+    if (sqlDate == null) {
+      return null;
+    }
+    if (sqlDate.equals(MIN_DATE)) {
+      return LocalDate.MIN;
+    }
+    if (sqlDate.equals(MAX_DATE)) {
+      return LocalDate.MAX;
+    }
+    return sqlDate.toLocalDate();
   }
 }

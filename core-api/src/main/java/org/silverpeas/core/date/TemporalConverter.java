@@ -29,6 +29,11 @@ import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
+import java.time.temporal.Temporal;
+import java.util.Date;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -39,6 +44,20 @@ import java.util.function.Function;
  * @author mmoquillon
  */
 public class TemporalConverter {
+
+  /**
+   * <p>
+   * Formatter enough flexible to parse and format any kind of temporal among the followings:
+   * </p>
+   * <ul>
+   * <li>{@link ZonedDateTime}</li>
+   * <li>{@link OffsetDateTime}</li>
+   * <li>{@link LocalDateTime}</li>
+   * <li>{@link LocalDate}</li>
+   * </ul>
+   */
+  private static final DateTimeFormatter flexibleFormatter =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd['T'HH:mm:ss.n[XXX]['['VV']']]");
 
   private TemporalConverter() {
 
@@ -57,6 +76,9 @@ public class TemporalConverter {
    */
   public static <T> T applyByType(java.time.temporal.Temporal temporal,
       Function<LocalDate, T> dateFunction, Function<OffsetDateTime, T> dateTimeFunction) {
+    Objects.requireNonNull(temporal);
+    Objects.requireNonNull(dateFunction);
+    Objects.requireNonNull(dateTimeFunction);
     if (temporal instanceof LocalDate) {
       return dateFunction.apply(LocalDate.from(temporal));
     } else if (temporal instanceof OffsetDateTime) {
@@ -82,6 +104,10 @@ public class TemporalConverter {
   public static <T> T applyByType(java.time.temporal.Temporal temporal,
       Function<LocalDate, T> dateFunction, Function<OffsetDateTime, T> dateTimeFunction,
       Function<ZonedDateTime, T> zonedDateTimeTFunction) {
+    Objects.requireNonNull(temporal);
+    Objects.requireNonNull(dateFunction);
+    Objects.requireNonNull(dateTimeFunction);
+    Objects.requireNonNull(zonedDateTimeTFunction);
     if (temporal instanceof LocalDate) {
       return dateFunction.apply(LocalDate.from(temporal));
     } else if (temporal instanceof OffsetDateTime) {
@@ -95,10 +121,15 @@ public class TemporalConverter {
   }
 
   public static <T> T applyByType(java.time.temporal.Temporal temporal,
-      Function<LocalDate, T> localDateFunction,
-      Function<LocalDateTime, T> localDateTimeFunction,
-      Function<ZonedDateTime, T> zonedDateTimeFunction,
-      Function<OffsetDateTime, T> offsetDateTimeFunction) {
+      Function<LocalDate, T> localDateFunction, Function<LocalDateTime, T> localDateTimeFunction,
+      Function<OffsetDateTime, T> offsetDateTimeFunction,
+      Function<ZonedDateTime, T> zonedDateTimeFunction) {
+    Objects.requireNonNull(temporal);
+    Objects.requireNonNull(localDateFunction);
+    Objects.requireNonNull(localDateTimeFunction);
+    Objects.requireNonNull(zonedDateTimeFunction);
+    Objects.requireNonNull(offsetDateTimeFunction);
+
     if (temporal instanceof LocalDate) {
       return localDateFunction.apply(LocalDate.from(temporal));
     } else if (temporal instanceof OffsetDateTime) {
@@ -124,6 +155,9 @@ public class TemporalConverter {
    */
   public static void consumeByType(java.time.temporal.Temporal temporal,
       Consumer<LocalDate> dateConsumer, Consumer<OffsetDateTime> dateTimeConsumer) {
+    Objects.requireNonNull(temporal);
+    Objects.requireNonNull(dateTimeConsumer);
+    Objects.requireNonNull(dateConsumer);
     applyByType(temporal, date -> {
       dateConsumer.accept(date);
       return null;
@@ -133,5 +167,152 @@ public class TemporalConverter {
     });
   }
 
+  /**
+   * <p>
+   * Converts the specified temporal instance to an {@link OffsetDateTime} instance. The temporal
+   * instance must be of one of the following type:</p>
+   * <ul>
+   * <li>{@link LocalDate}</li>
+   * <li>{@link LocalDateTime}</li>
+   * <li>{@link ZonedDateTime}</li>
+   * <li>{@link OffsetDateTime}</li>
+   * </ul>
+   * <p>
+   * Any other types aren't supported and as such an {@link IllegalArgumentException} is thrown.
+   * </p>
+   * <p>
+   * If the temporal is already an {@link OffsetDateTime} instance, then nothing is converted and
+   * the temporal is directly returned. If the temporal is a {@link LocalDate} instance then the
+   * date is converted into an {@link OffsetDateTime} instance by taking the start of the day in
+   * UTC/Greenwich. If the temporal is a {@link LocalDateTime} instance then the time is converted
+   * in UTC/Greenwich.
+   * </p>
+   * @param temporal the temporal to convert.
+   * @return an {@link OffsetDateTime} instance.
+   * @throws IllegalArgumentException if the specified temporal is of a type not supported by
+   * this converter.
+   */
+  public static OffsetDateTime asOffsetDateTime(final Temporal temporal) {
+    Objects.requireNonNull(temporal);
+    return TemporalConverter.applyByType(temporal,
+        date -> date.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime(),
+        localDateTime -> localDateTime.atOffset(ZoneOffset.UTC), dateTime -> dateTime,
+        ZonedDateTime::toOffsetDateTime);
+  }
+
+  /**
+   * <p>
+   * Converts the specified temporal instance to an {@link LocalDate} instance. The temporal
+   * instance must be of one of the following type:</p>
+   * <ul>
+   * <li>{@link LocalDate}</li>
+   * <li>{@link LocalDateTime}</li>
+   * <li>{@link ZonedDateTime}</li>
+   * <li>{@link OffsetDateTime}</li>
+   * </ul>
+   * <p>
+   * Any other types aren't supported and as such an {@link IllegalArgumentException} is thrown.
+   * </p>
+   * <p>
+   * If the temporal is already an {@link LocalDate} instance, then nothing is converted and
+   * the temporal is directly returned. If the temporal is a datetime, then only the date is
+   * returned.
+   * </p>
+   * @param temporal the temporal to convert.
+   * @return an {@link LocalDate} instance.
+   * @throws IllegalArgumentException if the specified temporal is of a type not supported by
+   * this converter.
+   */
+  public static LocalDate asLocalDate(final Temporal temporal) {
+    Objects.requireNonNull(temporal);
+    return TemporalConverter.applyByType(temporal, date -> date, LocalDateTime::toLocalDate,
+        OffsetDateTime::toLocalDate, ZonedDateTime::toLocalDate);
+  }
+
+  /**
+   * <p>
+   * Converts the specified date/datetime ISO-8601 formatted into a {@link Temporal} instance.
+   * @param iso8601DateTime an ISO-8601 string representation of a date or of a datetime.
+   * @param strict should be the parsing of the specified string strict? If true, a
+   * {@link DateTimeParseException} exception will be thrown if the string isn't correctly
+   * formatted. Otherwise null is simply returned.
+   * @return the {@link Temporal} instance decoded from the specified string. According to the
+   * date/datetime representation in the string, the following temporal is returned:
+   * </p>
+   * <ul>
+   * <li>a datetime with an offset indication: returns a {@link OffsetDateTime} instance</li>
+   * <li>a datetime with a Zone id indication: returns a {@link ZonedDateTime} instance</li>
+   * <li>a datetime without any offset nor zone id indication: returns a {@link LocalDateTime}
+   * instance</li>
+   * <li>a date: returns a {@link LocalDate} instance</li>
+   * </ul>
+   */
+  public static Temporal asTemporal(final String iso8601DateTime, final boolean strict) {
+    Objects.requireNonNull(iso8601DateTime);
+    try {
+      return (Temporal) flexibleFormatter.parseBest(iso8601DateTime, ZonedDateTime::from,
+          OffsetDateTime::from, LocalDateTime::from, LocalDate::from);
+    } catch (DateTimeParseException e) {
+      if (strict) {
+        throw e;
+      }
+      return null;
+    }
+  }
+
+  /**
+   * Converts the specified temporal in a Date instance. If the temporal is a date then it is
+   * converted into a datetime in UTC/Greenwich. If the temporal is a local datetime, then the time
+   * is set in UTC/Greenwich.
+   * @param temporal a date or a datetime.
+   * @return a {@link Date} instance.
+   */
+  public static Date asDate(final Temporal temporal) {
+    Objects.requireNonNull(temporal);
+    Long epochMilli =
+        applyByType(temporal, localDate2EpochMilli, localDateTime2EpochMilli,
+            offsetDateTime2EpochMilli, zonedDateTime2EpochMilli);
+    return new Date(epochMilli);
+  }
+
+  private static Function<LocalDate, Long> localDate2EpochMilli = t -> {
+    if (t.equals(LocalDate.MIN)) {
+      return Long.MIN_VALUE;
+    }
+    if (t.equals(LocalDate.MAX)) {
+      return Long.MAX_VALUE;
+    }
+    return t.atStartOfDay().atOffset(ZoneOffset.UTC).toInstant().toEpochMilli();
+  };
+
+  private static Function<LocalDateTime, Long> localDateTime2EpochMilli = t -> {
+    if (t.equals(LocalDateTime.MIN)) {
+      return Long.MIN_VALUE;
+    }
+    if (t.equals(LocalDateTime.MAX)) {
+      return Long.MAX_VALUE;
+    }
+    return t.toInstant(ZoneOffset.UTC).toEpochMilli();
+  };
+
+  private static Function<OffsetDateTime, Long> offsetDateTime2EpochMilli = t -> {
+    if (t.equals(OffsetDateTime.MIN)) {
+      return Long.MIN_VALUE;
+    }
+    if (t.equals(OffsetDateTime.MAX)) {
+      return Long.MAX_VALUE;
+    }
+    return t.toInstant().toEpochMilli();
+  };
+
+  private static Function<ZonedDateTime, Long> zonedDateTime2EpochMilli = t -> {
+    if (t.toOffsetDateTime().equals(OffsetDateTime.MIN)) {
+      return Long.MIN_VALUE;
+    }
+    if (t.toOffsetDateTime().equals(OffsetDateTime.MAX)) {
+      return Long.MAX_VALUE;
+    }
+    return t.toInstant().toEpochMilli();
+  };
 }
   

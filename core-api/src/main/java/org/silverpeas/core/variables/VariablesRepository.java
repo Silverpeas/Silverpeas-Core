@@ -28,12 +28,30 @@ import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
 
+/**
+ * The repository in which are persisted the variables.
+ */
 public interface VariablesRepository extends EntityRepository<Variable> {
 
+  /**
+   * Gets an instance of a {@link VariablesRepository}.
+   * @return a {@link VariablesRepository} instance.
+   */
   static VariablesRepository get() {
     return ServiceProvider.getService(VariablesRepository.class);
   }
 
-  public List<Variable> getAllVariables();
+  /**
+   * Gets all the variables that are persisted into this repository.
+   * @return a list of all of the persisted variables.
+   */
+  List<Variable> getAllVariables();
+
+  /**
+   * Gets all the variables that are currently active. An active variable is a variable that have
+   * now a scheduled value.
+   * @return a list of all of the currently active variables.
+   */
+  List<Variable> getAllCurrentVariables();
 
 }

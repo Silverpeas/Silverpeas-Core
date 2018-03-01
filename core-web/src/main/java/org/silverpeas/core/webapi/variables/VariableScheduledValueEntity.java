@@ -24,23 +24,24 @@
 package org.silverpeas.core.webapi.variables;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.variables.VariablePeriod;
-import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.date.Period;
+import org.silverpeas.core.variables.VariableScheduledValue;
 import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.temporal.Temporal;
+
+import static org.silverpeas.core.date.TemporalConverter.asLocalDate;
+import static org.silverpeas.core.date.TemporalConverter.asTemporal;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class VariablePeriodEntity implements WebEntity {
+public class VariableScheduledValueEntity implements WebEntity {
 
   private URI uri;
 
@@ -49,23 +50,24 @@ public class VariablePeriodEntity implements WebEntity {
   private String beginDate;
   private String endDate;
 
-  public static VariablePeriodEntity fromVariablePeriod(VariablePeriod period) {
-    return new VariablePeriodEntity().decorate(period);
+  public static VariableScheduledValueEntity fromVariableScheduledValue(
+      VariableScheduledValue period) {
+    return new VariableScheduledValueEntity().decorate(period);
   }
 
-  public VariablePeriod toVariablePeriod() {
-    return new VariablePeriod(value, getPeriod());
+  public VariableScheduledValue toVariableScheduledValue() {
+    return new VariableScheduledValue(value, getPeriod());
   }
 
-  protected VariablePeriodEntity decorate(final VariablePeriod vPeriod) {
+  protected VariableScheduledValueEntity decorate(final VariableScheduledValue vPeriod) {
     this.id = vPeriod.getId();
     this.value = vPeriod.getValue();
     Period period = vPeriod.getPeriod();
-    if (period.isBeginDefined()) {
-      this.beginDate = DateUtil.formatAsISO8601Day(period.getBeginDate());
+    if (!period.startsAtMinDate()) {
+      this.beginDate = asLocalDate(period.getStartDate()).toString();
     }
-    if (period.isEndDefined()) {
-      this.endDate = DateUtil.formatAsISO8601Day(period.getEndDate());
+    if (!period.endsAtMaxDate()) {
+      this.endDate = asLocalDate(period.getEndDate()).toString();
     }
     return this;
   }
@@ -96,21 +98,14 @@ public class VariablePeriodEntity implements WebEntity {
   }
 
   private Period getPeriod() {
-    Date bDate = getDate(beginDate);
-    Date eDate = getDate(endDate);
-    return Period.getPeriodWithUndefinedIfNull(bDate, eDate);
+    LocalDate start = getDate(beginDate);
+    LocalDate end = getDate(endDate);
+    return Period.betweenNullable(start, end);
   }
 
-  private Date getDate(String iso8601Date) {
-    Date date = null;
-    if (StringUtil.isDefined(iso8601Date)) {
-      try {
-        date = DateUtil.parseISO8601Date(iso8601Date);
-      } catch (Exception e) {
-        SilverLogger.getLogger(this).error(e);
-      }
-    }
-    return date;
+  private LocalDate getDate(String iso8601Date) {
+    Temporal date = asTemporal(iso8601Date, false);
+    return date == null ? null : asLocalDate(date);
   }
 
 }

@@ -54,7 +54,7 @@
 <fmt:message var="colValue" key="variables.variable.current"/>
 <fmt:message var="colStart" key="variables.variable.start"/>
 <fmt:message var="colEnd" key="variables.variable.end"/>
-<fmt:message var="colPeriods" key="variables.variable.periods.number"/>
+<fmt:message var="colPeriods" key="variables.variable.values.number"/>
 <fmt:message var="colOperations" key="GML.operations"/>
 
 <fmt:message var="opUpdate" key="GML.update"/>
@@ -106,7 +106,7 @@
           if (checkForm()) {
             var variable = {
               "label": $("#dnForm #label").val(),
-              "periods": [{
+              "values": [{
                 "value": $("#dnForm #value").val(),
                 "beginDate": sp.moment.formatUiDateAsLocalDate($("#dnForm #startDate").val()),
                 "endDate": sp.moment.formatUiDateAsLocalDate($("#dnForm #endDate").val())
@@ -175,19 +175,19 @@
     <view:arrayPane var="myForms" routingAddress="Main" numberLinesPerPage="25">
       <view:arrayColumn width="10" sortable="false"/>
       <view:arrayColumn title="${colLabel}" compareOn="${r -> r.data.label}"/>
-      <view:arrayColumn title="${colValue}" compareOn="${r -> r.data.currentPeriod.value}"/>
-      <view:arrayColumn title="${colStart}" compareOn="${r -> r.data.currentPeriod.period.beginDate}"/>
-      <view:arrayColumn title="${colEnd}" compareOn="${r -> r.data.currentPeriod.period.endDate}"/>
+      <view:arrayColumn title="${colValue}" compareOn="${r -> r.refVariableValue.value}"/>
+      <view:arrayColumn title="${colStart}" compareOn="${r -> r.refStartDate}"/>
+      <view:arrayColumn title="${colEnd}" compareOn="${r -> r.refEndDate}"/>
       <view:arrayColumn title="${colPeriods}" sortable="false"/>
       <view:arrayColumn title="${colOperations}" sortable="false"/>
       <view:arrayLines var="variable" items="${valueItems}">
         <view:arrayLine>
           <view:arrayCellCheckbox name="selection" checked="${variable.selected}" value="${variable.id}"/>
           <view:arrayCellText>${variable.data.label}</view:arrayCellText>
-          <view:arrayCellText text="${variable.data.currentPeriod.valueForHTML}"/>
-          <view:arrayCellText text="${silfn:formatDate(variable.data.currentPeriod.period.beginDate, lang)}"/>
-          <view:arrayCellText text="${silfn:formatDate(variable.data.currentPeriod.period.endDate, lang)}"/>
-          <view:arrayCellText>${variable.data.numberOfPeriods}</view:arrayCellText>
+          <view:arrayCellText text="${variable.refVariableValue.valueForHTML}"/>
+          <view:arrayCellText text="${silfn:formatDate(variable.refStartDate, lang)}"/>
+          <view:arrayCellText text="${silfn:formatDate(variable.refEndDate, lang)}"/>
+          <view:arrayCellText>${variable.data.variableValues.size()}</view:arrayCellText>
           <view:arrayCellText>
             <a href="#" onclick="javascript:editVariable('${variable.id}'); return false;" title="${opUpdate}"><img src="${iconUpdate}" alt="${opUpdate}"/></a>
             <a href="#" onclick="javascript:deleteVariable('${variable.id}'); return false;" title="${opDelete}"><img src="${iconDelete}" alt="${opDelete}"/></a>

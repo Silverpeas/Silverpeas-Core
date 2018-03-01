@@ -1438,7 +1438,11 @@ if (typeof window.sp === 'undefined') {
         var __refreshFromRequestResponse = function(request) {
           return sp.updateTargetWithHtmlContent(containerCssSelector, request.responseText, true)
               .then(function() {
-                window.top.spProgressMessage.hide();
+                if (window.spProgressMessage) {
+                  window.spProgressMessage.hide();
+                } else if (window.top.spProgressMessage) {
+                  window.top.spProgressMessage.hide();
+                }
               });
         };
         var params = {

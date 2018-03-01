@@ -28,14 +28,10 @@ import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerDirective;
 import org.silverpeas.core.variables.Variable;
-import org.silverpeas.core.variables.VariablesRepository;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import static java.lang.Character.isDigit;
-import static org.silverpeas.core.util.StringDataExtractor.RegexpPatternDirective.regexp;
 
 /**
  * Transforms all URL of images to take into account theirs display size.
@@ -58,12 +54,13 @@ public class VariablesReplacementDirective implements WysiwygContentTransformerD
       if ("sp-variable".equals(spanClass)) {
         String valueId = currentSpan.getAttributeValue("rel");
         if (!replacements.containsKey(spanTag)) {
-          Variable variable = VariablesRepository.get().getById(valueId);
+          Variable variable = Variable.getById(valueId);
           if (variable != null) {
-            String value = variable.getCurrentPeriod().getValue();
-            String newSpanTag =
-                currentSpan.getStartTag().toString() + value + currentSpan.getEndTag().toString();
-            replacements.put(spanTag, newSpanTag);
+            variable.getVariableValues().getCurrent().ifPresent(v -> {
+              String newSpanTag = currentSpan.getStartTag().toString() + v.getValue() +
+                  currentSpan.getEndTag().toString();
+              replacements.put(spanTag, newSpanTag);
+            });
           }
         }
       }

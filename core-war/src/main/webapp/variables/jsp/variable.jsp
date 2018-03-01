@@ -36,13 +36,16 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <c:set var="variable" value="${requestScope['Variable']}"/>
-<c:set var="periods" value="${variable.periods}"/>
+<c:set var="values" value="${variable.variableValues}"/>
+
+<jsp:useBean id="variable" type="org.silverpeas.core.variables.Variable"/>
+<jsp:useBean id="values" type="org.silverpeas.core.variables.VariableValueSet"/>
 
 <fmt:message var="browseBarAll" key="variables.breadcrumb.all"/>
-<fmt:message var="deleteConfirm" key="variables.variable.period.delete.confirm"/>
-<fmt:message var="addPeriod" key="variables.variable.period.create"/>
-<fmt:message var="updatePeriod" key="variables.variable.period.update"/>
-<fmt:message var="labelPeriods" key="variables.variable.periods"/>
+<fmt:message var="deleteConfirm" key="variables.variable.value.delete.confirm"/>
+<fmt:message var="addValue" key="variables.variable.value.create"/>
+<fmt:message var="updateValue" key="variables.variable.value.update"/>
+<fmt:message var="labelValues" key="variables.variable.values"/>
 
 <fmt:message var="fieldsetVariable" key="variables.variable"/>
 <fmt:message var="colLabel" key="GML.label"/>
@@ -83,19 +86,19 @@
       return !SilverpeasError.show();
     }
 
-    function newPeriod() {
+    function newScheduledValue() {
       clearForm();
       $('#variablePeriod-popin').popup('validation', {
-        title : "${addPeriod}",
+        title : "${addValue}",
         width : "700px",
         isMaxWidth: false,
         callback : function() {
           if (checkForm()) {
-            var url = baseURL+"/periods";
-            var period = getPeriod();
+            var url = baseURL+"/values";
+            var scheduledValue = getScheduledValue();
             var ajaxRequest = sp.ajaxRequest(url).byPostMethod();
-            ajaxRequest.send(period).then(function() {
-              reloadPeriods();
+            ajaxRequest.send(scheduledValue).then(function() {
+              reloadScheduledValues();
             });
           } else {
             return false;
@@ -104,32 +107,31 @@
       });
     }
 
-    function getPeriod() {
-      var period = {
+    function getScheduledValue() {
+      return {
         "value": $("#dnForm #value").val(),
         "beginDate": sp.moment.formatUiDateAsLocalDate($("#dnForm #startDate").val()),
         "endDate": sp.moment.formatUiDateAsLocalDate($("#dnForm #endDate").val())
       };
-      return period;
     }
 
-    function editPeriod(id) {
+    function editScheduledValue(id) {
       clearForm();
       $("#dnForm #value").val($("#"+id+" .colValue").text());
       $("#dnForm #startDate").val($("#"+id+" .colBegin").text());
       $("#dnForm #endDate").val($("#"+id+" .colEnd").text());
 
       $('#variablePeriod-popin').popup('validation', {
-        title : "${updatePeriod}",
+        title : "${updateValue}",
         width : "700px",
         isMaxWidth: false,
         callback : function() {
           if (checkForm()) {
-            var url = baseURL+"/periods/"+id;
-            var period = getPeriod();
+            var url = baseURL+"/values/"+id;
+            var scheduledValue = getScheduledValue();
             var ajaxRequest = sp.ajaxRequest(url).byPostMethod();
-            ajaxRequest.send(period).then(function() {
-              reloadPeriods();
+            ajaxRequest.send(scheduledValue).then(function() {
+              reloadScheduledValues();
             });
           } else {
             return false;
@@ -144,17 +146,17 @@
       $("#dnForm #endDate").val("");
     }
 
-    function deletePeriod(id) {
+    function deleteScheduledValue(id) {
       jQuery.popup.confirm("${deleteConfirm}", function() {
-        var url = baseURL+"/periods/"+id;
+        var url = baseURL+"/values/"+id;
         var ajaxRequest = sp.ajaxRequest(url).byDeleteMethod();
         ajaxRequest.send().then(function() {
-          $("#periods #"+id).remove();
+          $("#values #"+id).remove();
         });
       });
     }
 
-    function reloadPeriods() {
+    function reloadScheduledValues() {
       var ajaxRequest = sp.ajaxRequest("EditVariable").withParam("Id", "${variable.id}");
       ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
     }
@@ -177,10 +179,11 @@
   <view:browseBarElt link="Main" label="${browseBarAll}"/>
 </view:browseBar>
 <view:operationPane>
-  <view:operationOfCreation action="javascript:newPeriod()" icon="${iconAdd}" altText="${addPeriod}" />
+  <view:operationOfCreation action="javascript:newScheduledValue()" icon="${iconAdd}" altText="${addValue}" />
 </view:operationPane>
 <view:window>
 <view:frame>
+  <p>PROUT PROUT</p>
   <form id="valueForm">
     <input type="hidden" name="Id" value="${variable.id}"/>
     <fieldset id="main" class="skinFieldset">
@@ -199,23 +202,23 @@
 
   <view:areaOfOperationOfCreation/>
 
-  <fieldset id="periods" class="skinFieldset">
-    <legend>${labelPeriods}</legend>
+  <fieldset id="values" class="skinFieldset">
+    <legend>${labelValues}</legend>
     <div id="dynamic-container">
-      <view:arrayPane var="myForms" routingAddress="InBox" numberLinesPerPage="1000">
-        <view:arrayColumn title="${colValue}"/>
+      <view:arrayPane var="myForms" routingAddress="EditVariable" numberLinesPerPage="1000">
+        <view:arrayColumn title="${colValue}" />
         <view:arrayColumn title="${colStart}"/>
         <view:arrayColumn title="${colEnd}"/>
         <view:arrayColumn title="${colOperations}" sortable="false"/>
 
-        <c:forEach var="period" items="${periods}">
-        <view:arrayLine id="${period.id}">
-          <view:arrayCellText text="${period.value}" classes="ArrayCell colValue"/>
-          <view:arrayCellText text="${silfn:formatDate(period.period.beginDate, lang)}" compareOn="${period.period.beginDate}" classes="ArrayCell colBegin"/>
-          <view:arrayCellText text="${silfn:formatDate(period.period.endDate, lang)}" compareOn="${period.period.endDate}" classes="ArrayCell colEnd"/>
+        <c:forEach var="value" items="${values}">
+        <view:arrayLine id="${value.id}">
+          <view:arrayCellText text="${value.value}" classes="ArrayCell colValue"/>
+          <view:arrayCellText text="${silfn:formatDate(silfn:toDate(value.period.startDate), lang)}" compareOn="${value.period.startDate}" classes="ArrayCell colBegin"/>
+          <view:arrayCellText text="${silfn:formatDate(silfn:toDate(value.period.endDate), lang)}" compareOn="${value.period.endDate}" classes="ArrayCell colEnd"/>
           <view:arrayCellText>
-            <a href="#" onclick="editPeriod('${period.id}')" title="${opUpdate}"><img src="${iconUpdate}" alt="${opUpdate}"/></a>
-            <a href="#" onclick="deletePeriod('${period.id}')" title="${opDelete}"><img src="${iconDelete}" alt="${opDelete}"/></a>
+            <a href="#" onclick="editScheduledValue('${value.id}')" title="${opUpdate}"><img src="${iconUpdate}" alt="${opUpdate}"/></a>
+            <a href="#" onclick="deleteScheduledValue('${value.id}')" title="${opDelete}"><img src="${iconDelete}" alt="${opDelete}"/></a>
           </view:arrayCellText>
         </view:arrayLine>
         </c:forEach>

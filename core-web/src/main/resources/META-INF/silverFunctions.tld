@@ -247,6 +247,12 @@
     </example>
   </function>
   <function>
+    <description>Function to format a Temporal into a Date</description>
+    <name>toDate</name>
+    <function-class>org.silverpeas.core.date.TemporalConverter</function-class>
+    <function-signature>java.util.Date asDate(java.time.temporal.Temporal)</function-signature>
+  </function>
+  <function>
     <description>Function to format a date.</description>
     <name>formatDateAndHour</name>
     <function-class>org.silverpeas.core.util.DateUtil</function-class>

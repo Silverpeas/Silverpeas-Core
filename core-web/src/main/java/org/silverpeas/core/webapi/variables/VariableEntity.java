@@ -25,7 +25,7 @@ package org.silverpeas.core.webapi.variables;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import org.silverpeas.core.variables.Variable;
-import org.silverpeas.core.variables.VariablePeriod;
+import org.silverpeas.core.variables.VariableScheduledValue;
 import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -34,6 +34,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.PROPERTY)
@@ -46,32 +47,32 @@ public class VariableEntity implements WebEntity {
   private String label;
   private String description;
   private String value;
-  private List<VariablePeriodEntity> periods;
+  private List<VariableScheduledValueEntity> values = new ArrayList<>();
 
   protected VariableEntity() {
   }
 
   public static VariableEntity fromVariable(Variable variable) {
     VariableEntity entity = new VariableEntity().decorate(variable);
-    List<VariablePeriodEntity> periods = new ArrayList<>();
-    for (VariablePeriod period : variable.getPeriods()) {
-      periods.add(VariablePeriodEntity.fromVariablePeriod(period));
-    }
-    entity.setValue(variable.getCurrentPeriod().getValue());
-    entity.setPeriods(periods);
+    List<VariableScheduledValueEntity> periods = variable.getVariableValues()
+        .stream()
+        .map(v -> VariableScheduledValueEntity.fromVariableScheduledValue(v))
+        .collect(Collectors.toList());
+    variable.getVariableValues().getCurrent().ifPresent(v -> entity.setValue(v.getValue()));
+    entity.setValues(periods);
     return entity;
   }
 
   public Variable toVariable() {
     Variable variable = new Variable(label, description);
-    variable.getPeriods().addAll(toPeriods());
+    variable.getVariableValues().addAll(toScheduledValues());
     return variable;
   }
 
-  public List<VariablePeriod> toPeriods() {
-    List<VariablePeriod> result = new ArrayList<>();
-    for (VariablePeriodEntity entity : this.periods) {
-      result.add(entity.toVariablePeriod());
+  public List<VariableScheduledValue> toScheduledValues() {
+    List<VariableScheduledValue> result = new ArrayList<>();
+    for (VariableScheduledValueEntity entity : this.values) {
+      result.add(entity.toVariableScheduledValue());
     }
     return result;
   }
@@ -129,12 +130,12 @@ public class VariableEntity implements WebEntity {
     this.value = value;
   }
 
-  public List<VariablePeriodEntity> getPeriods() {
-    return periods;
+  public List<VariableScheduledValueEntity> getValues() {
+    return values;
   }
 
-  public void setPeriods(List<VariablePeriodEntity> periods) {
-    this.periods = periods;
+  public void setValues(List<VariableScheduledValueEntity> values) {
+    this.values = values;
   }
 
 }

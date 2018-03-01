@@ -28,7 +28,9 @@ import org.silverpeas.core.date.DateTime;
 /**
  * User: Yohann Chastagnier
  * Date: 21/04/13
+ * @deprecated Use {@link org.silverpeas.core.date.Period}
  */
+@Deprecated
 public class WeekPeriod extends Period {
   private static final long serialVersionUID = -7309818467821642640L;
 

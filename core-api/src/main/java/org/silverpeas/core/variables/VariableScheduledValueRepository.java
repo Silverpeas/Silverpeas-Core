@@ -26,14 +26,17 @@ package org.silverpeas.core.variables;
 import org.silverpeas.core.persistence.datasource.repository.EntityRepository;
 import org.silverpeas.core.util.ServiceProvider;
 
-import java.util.List;
+/**
+ * The repository into which the scheduled values of the variables are persisted.
+ */
+public interface VariableScheduledValueRepository extends EntityRepository<VariableScheduledValue> {
 
-public interface VariablePeriodsRepository extends EntityRepository<VariablePeriod> {
-
-  static VariablePeriodsRepository get() {
-    return ServiceProvider.getService(VariablePeriodsRepository.class);
+  /**
+   * Gets an instance of this repository.
+   * @return a {@link VariableScheduledValueRepository} instance.
+   */
+  static VariableScheduledValueRepository get() {
+    return ServiceProvider.getService(VariableScheduledValueRepository.class);
   }
-
-  public List<VariablePeriod> getCurrentPeriods();
 
 }

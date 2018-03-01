@@ -30,8 +30,10 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * An immutable UNDIFINED period.
+ * An immutable UNDEFINED period.
+ * @deprecated Use {@link org.silverpeas.core.date.Period}
  */
+@Deprecated
 class UndefinedPeriod extends Period {
   private static final long serialVersionUID = 2619196735517207878L;
 

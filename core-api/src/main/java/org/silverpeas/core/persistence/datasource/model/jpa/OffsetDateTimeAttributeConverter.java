@@ -29,6 +29,11 @@ import java.sql.Timestamp;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 
+import static org.silverpeas.core.persistence.datasource.model.jpa.SQLDateTimeConstants
+    .MAX_TIMESTAMP;
+import static org.silverpeas.core.persistence.datasource.model.jpa.SQLDateTimeConstants
+    .MIN_TIMESTAMP;
+
 /**
  * An automatic converter of {@link java.time.OffsetDateTime} values to SQL {@link Timestamp} values
  * for JPA 2.1 (JPA 2.1 was release before Java 8 and hence it doesn't support yet the new java time
@@ -41,12 +46,28 @@ public class OffsetDateTimeAttributeConverter
 
   @Override
   public Timestamp convertToDatabaseColumn(OffsetDateTime dateTime) {
-    return dateTime == null ? null :
-        Timestamp.valueOf(dateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime());
+    if (dateTime == null) {
+      return null;
+    }
+    if (dateTime.equals(OffsetDateTime.MIN)) {
+      return MIN_TIMESTAMP;
+    }
+    if (dateTime.equals(OffsetDateTime.MAX)) {
+      return MAX_TIMESTAMP;
+    }
+    return Timestamp.valueOf(dateTime.withOffsetSameInstant(ZoneOffset.UTC).toLocalDateTime());
   }
 
   @Override
   public OffsetDateTime convertToEntityAttribute(Timestamp sqlTimestamp) {
-    return sqlTimestamp == null ? null : sqlTimestamp.toLocalDateTime().atOffset(ZoneOffset.UTC);
+    if (sqlTimestamp == null) {
+      return null;
+    }
+    if (sqlTimestamp.equals(MIN_TIMESTAMP)) {
+      return OffsetDateTime.MIN;
+    } else if (sqlTimestamp.equals(MAX_TIMESTAMP)) {
+      return OffsetDateTime.MAX;
+    }
+    return  sqlTimestamp.toLocalDateTime().atOffset(ZoneOffset.UTC);
   }
 }

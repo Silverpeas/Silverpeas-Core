@@ -23,19 +23,13 @@
  */
 package org.silverpeas.core.variables;
 
-import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 
 import javax.inject.Singleton;
-import java.util.Date;
-import java.util.List;
 
 @Singleton
-public class DefaultVariablePeriodsRepository extends
-    SilverpeasJpaEntityRepository<VariablePeriod> implements VariablePeriodsRepository {
+public class DefaultVariableScheduledValueRepository
+    extends SilverpeasJpaEntityRepository<VariableScheduledValue>
+    implements VariableScheduledValueRepository {
 
-  public List<VariablePeriod> getCurrentPeriods() {
-    NamedParameters params = newNamedParameters().add("today", new Date());
-    return listFromNamedQuery("currentPeriods", params);
-  }
 }
