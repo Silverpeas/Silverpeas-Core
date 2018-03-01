@@ -184,8 +184,12 @@ public class GenericDataRecord implements DataRecord, Serializable {
   @Override
   public Map<String, String> getValues(String language) {
     Map<String, String> formValues = new HashMap<>();
-    String fieldNames[] = getFieldNames();
+    String[] fieldNames = getFieldNames();
     PagesContext pageContext = new PagesContext();
+    pageContext.setObjectId(externalId);
+    if (template instanceof IdentifiedRecordTemplate) {
+      pageContext.setComponentId(((IdentifiedRecordTemplate) template).getInstanceId());
+    }
     pageContext.setLanguage(language);
     for (String fieldName : fieldNames) {
       try {
@@ -194,6 +198,11 @@ public class GenericDataRecord implements DataRecord, Serializable {
             (GenericFieldTemplate) template.getFieldTemplate(fieldName);
         FieldDisplayer fieldDisplayer =
             TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
+        if ("wysiwyg".equals(fieldTemplate.getDisplayerName())) {
+          fieldTemplate.setReadOnly(true);
+          fieldDisplayer =
+              TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "wysiwyg");
+        }
         StringWriter sw = new StringWriter();
         PrintWriter out = new PrintWriter(sw);
         //noinspection unchecked
