@@ -21,30 +21,6 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-
-/*
- * Copyright (C) 2000 - 2016 Silverpeas
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
- * published by the Free Software Foundation, either version 3 of the
- * License, or (at your option) any later version.
- *
- * As a special exception to the terms and conditions of version 3.0 of
- * the GPL, you may redistribute this Program in connection with Free/Libre
- * Open Source Software ("FLOSS") applications as described in Silverpeas's
- * FLOSS exception.  You should have received a copy of the text describing
- * the FLOSS exception, and it is also available here:
- * "http://www.silverpeas.org/docs/core/legal/floss_exception.html"
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
 package org.silverpeas.core.date;
 
 import org.junit.Test;
@@ -52,6 +28,8 @@ import org.junit.Test;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.temporal.Temporal;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -277,6 +255,87 @@ public class PeriodTest {
     assertThat(period.getStartDate(), is(OffsetDateTime.MIN));
     assertThat(period.getEndDate(), is(OffsetDateTime.MAX));
     assertThat(period.isInDays(), is(false));
+  }
+
+  @Test
+  public void periodWithBothNonDefinedStartAndEndTemporal() {
+    Temporal start = null;
+    Temporal end = null;
+    Period period = Period.betweenNullable(start, end);
+    assertThat(period.startsAtMinDate(), is(true));
+    assertThat(period.endsAtMaxDate(), is(true));
+    assertThat(period.getStartDate(), is(LocalDate.MIN));
+    assertThat(period.getEndDate(), is(LocalDate.MAX));
+    assertThat(period.isInDays(), is(true));
+  }
+
+  @Test
+  public void periodWithNonDefinedStartTemporalAndEndingAtADefinedDate() {
+    Temporal start = null;
+    Temporal end = LocalDate.now().plusDays(1);
+    Period period = Period.betweenNullable(start, end);
+    assertThat(period.startsAtMinDate(), is(true));
+    assertThat(period.endsAtMaxDate(), is(false));
+    assertThat(period.getStartDate(), is(LocalDate.MIN));
+    assertThat(period.getEndDate(), is(end));
+    assertThat(period.isInDays(), is(true));
+  }
+
+  @Test
+  public void periodWithNonDefinedStartTemporalAndEndingAtADefinedDateTime() {
+    Temporal start = null;
+    Temporal end = OffsetDateTime.now().plusDays(1).withOffsetSameInstant(ZoneOffset.UTC);
+    Period period = Period.betweenNullable(start, end);
+    assertThat(period.startsAtMinDate(), is(true));
+    assertThat(period.endsAtMaxDate(), is(false));
+    assertThat(period.getStartDate(), is(OffsetDateTime.MIN));
+    assertThat(period.getEndDate(), is(end));
+    assertThat(period.isInDays(), is(false));
+  }
+
+  @Test
+  public void periodStartingAtADefinedDateAndEndingAtAnUndefinedTemporal() {
+    Temporal start = LocalDate.now().minusDays(1);
+    Temporal end = null;
+    Period period = Period.betweenNullable(start, end);
+    assertThat(period.startsAtMinDate(), is(false));
+    assertThat(period.endsAtMaxDate(), is(true));
+    assertThat(period.getStartDate(), is(start));
+    assertThat(period.getEndDate(), is(LocalDate.MAX));
+    assertThat(period.isInDays(), is(true));
+  }
+
+  @Test
+  public void periodStartingAtADefinedDateTimeAndEndingAtAnUndefinedTemporal() {
+    Temporal start = OffsetDateTime.now().minusDays(1).withOffsetSameInstant(ZoneOffset.UTC);
+    Temporal end = null;
+    Period period = Period.betweenNullable(start, end);
+    assertThat(period.startsAtMinDate(), is(false));
+    assertThat(period.endsAtMaxDate(), is(true));
+    assertThat(period.getStartDate(), is(start));
+    assertThat(period.getEndDate(), is(OffsetDateTime.MAX));
+    assertThat(period.isInDays(), is(false));
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void periodWithDifferentNullableTypeOfDateTime() {
+    Temporal start = OffsetDateTime.now().minusDays(1);
+    Temporal end = LocalDate.now().plusDays(1);
+    Period.betweenNullable(start, end);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void periodWithDifferentTypeOfDateTime() {
+    Temporal start = OffsetDateTime.now().minusDays(1);
+    Temporal end = LocalDate.now().plusDays(1);
+    Period.between(start, end);
+  }
+
+  @Test(expected = IllegalArgumentException.class)
+  public void periodWithDifferentZonedDateTime() {
+    Temporal start = ZonedDateTime.now().minusDays(1);
+    Temporal end = ZonedDateTime.now().plusDays(1);
+    Period.between(start, end);
   }
 }
   

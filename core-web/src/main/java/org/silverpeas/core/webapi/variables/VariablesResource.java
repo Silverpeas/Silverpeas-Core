@@ -94,9 +94,9 @@ public class VariablesResource extends RESTWebService {
   @Produces(MediaType.APPLICATION_JSON)
   public VariableScheduledValueEntity createVariableValue(@PathParam("variableId") String variableId,
       final VariableScheduledValueEntity entity) {
-    VariableScheduledValue period = entity.toVariableScheduledValue();
-    VariableScheduledValue createdPeriod = webManager.createPeriod(period, variableId);
-    return VariableScheduledValueEntity.fromVariableScheduledValue(createdPeriod);
+    VariableScheduledValue value = entity.toVariableScheduledValue();
+    VariableScheduledValue createdValue = webManager.scheduleValue(value, variableId);
+    return VariableScheduledValueEntity.fromVariableScheduledValue(createdValue);
   }
 
   @POST
@@ -104,18 +104,18 @@ public class VariablesResource extends RESTWebService {
   @Consumes(MediaType.APPLICATION_JSON)
   @Produces(MediaType.APPLICATION_JSON)
   public VariableScheduledValueEntity updateVariableValue(@PathParam("variableId") String variableId,
-      @PathParam("valueId") String periodId, final VariableScheduledValueEntity entity) {
-    VariableScheduledValue period = entity.toVariableScheduledValue();
-    VariableScheduledValue updatedPeriod = webManager.updatePeriod(periodId, variableId, period);
-    return VariableScheduledValueEntity.fromVariableScheduledValue(updatedPeriod);
+      @PathParam("valueId") String valueId, final VariableScheduledValueEntity entity) {
+    VariableScheduledValue value = entity.toVariableScheduledValue();
+    VariableScheduledValue updatedValue = webManager.updateValue(valueId, variableId, value);
+    return VariableScheduledValueEntity.fromVariableScheduledValue(updatedValue);
   }
 
   @DELETE
-  @Path("/{variableId}/values/{periodId}")
+  @Path("/{variableId}/values/{valueId}")
   @Produces(MediaType.APPLICATION_JSON)
   public void deleteVariableValues(@PathParam("variableId") String variableId,
-      @PathParam("periodId") String periodId) {
-    webManager.deletePeriod(periodId, variableId);
+      @PathParam("valueId") String valueId) {
+    webManager.deleteValue(valueId, variableId);
   }
 
   private List<VariableEntity> asWebEntities(Collection<Variable> variables) {

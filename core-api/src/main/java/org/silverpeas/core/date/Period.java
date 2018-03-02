@@ -24,6 +24,7 @@
 package org.silverpeas.core.date;
 
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.annotation.constraint.DateRange;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -33,6 +34,7 @@ import java.time.ZoneOffset;
 import java.time.temporal.Temporal;
 import java.util.Objects;
 
+import static org.silverpeas.core.date.TemporalConverter.asLocalDate;
 import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 /**
@@ -43,6 +45,7 @@ import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
  * @author mmoquillon
  */
 @Embeddable
+@DateRange(start = "startDate", end = "endDate")
 public class Period {
 
   @Column(name = "startDate", nullable = false)
@@ -156,14 +159,18 @@ public class Period {
       java.time.temporal.Temporal end) {
     if (start == null && end == null) {
       return betweenNullable(LocalDate.MIN, LocalDate.MAX);
-    } else if (start instanceof LocalDate && end instanceof LocalDate) {
-      return betweenNullable(LocalDate.from(start), LocalDate.from(end));
-    } else if (start instanceof OffsetDateTime && end instanceof OffsetDateTime) {
-      return betweenNullable(OffsetDateTime.from(start), OffsetDateTime.from(end));
-    } else {
-      throw new IllegalArgumentException(
-          "Temporal parameters must be either of type LocalDate or OffsetDateTime");
     }
+    if (start != null && end != null) {
+      // we ensure start and end are of the same type
+      return between(start, end);
+    }
+    if (start instanceof LocalDate || end instanceof LocalDate) {
+      return betweenNullable(minOrDate(start), maxOrDate(end));
+    } else if (start instanceof OffsetDateTime || end instanceof OffsetDateTime) {
+      return betweenNullable(minOrDateTime(start), maxOrDateTime(end));
+    }
+    throw new IllegalArgumentException(
+          "Temporal parameters must be either of type LocalDate or OffsetDateTime");
   }
 
   /**
@@ -318,20 +325,20 @@ public class Period {
     }
   }
 
-  private static LocalDate minOrDate(final LocalDate date) {
-    return date == null ? LocalDate.MIN : date;
+  private static LocalDate minOrDate(final Temporal date) {
+    return date == null ? LocalDate.MIN : asLocalDate(date);
   }
 
-  private static LocalDate maxOrDate(final LocalDate date) {
-    return date == null ? LocalDate.MAX : date;
+  private static LocalDate maxOrDate(final Temporal date) {
+    return date == null ? LocalDate.MAX : asLocalDate(date);
   }
 
-  private static OffsetDateTime minOrDateTime(final OffsetDateTime dateTime) {
-    return dateTime == null ? OffsetDateTime.MIN : dateTime;
+  private static OffsetDateTime minOrDateTime(final Temporal dateTime) {
+    return dateTime == null ? OffsetDateTime.MIN : asOffsetDateTime(dateTime);
   }
 
-  private static OffsetDateTime maxOrDateTime(final OffsetDateTime dateTime) {
-    return dateTime == null ? OffsetDateTime.MAX : dateTime;
+  private static OffsetDateTime maxOrDateTime(final Temporal dateTime) {
+    return dateTime == null ? OffsetDateTime.MAX : asOffsetDateTime(dateTime);
   }
 
   public Period copy() {

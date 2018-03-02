@@ -54,12 +54,12 @@ public class VariableEntity implements WebEntity {
 
   public static VariableEntity fromVariable(Variable variable) {
     VariableEntity entity = new VariableEntity().decorate(variable);
-    List<VariableScheduledValueEntity> periods = variable.getVariableValues()
+    List<VariableScheduledValueEntity> valueEntities = variable.getVariableValues()
         .stream()
-        .map(v -> VariableScheduledValueEntity.fromVariableScheduledValue(v))
+        .map(VariableScheduledValueEntity::fromVariableScheduledValue)
         .collect(Collectors.toList());
     variable.getVariableValues().getCurrent().ifPresent(v -> entity.setValue(v.getValue()));
-    entity.setValues(periods);
+    entity.setValues(valueEntities);
     return entity;
   }
 

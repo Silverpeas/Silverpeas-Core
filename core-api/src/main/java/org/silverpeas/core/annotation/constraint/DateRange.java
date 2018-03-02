@@ -23,17 +23,26 @@
  */
 package org.silverpeas.core.annotation.constraint;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.Retention;
-import static java.lang.annotation.RetentionPolicy.*;
-import static java.lang.annotation.ElementType.*;
-import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Retention;
+import java.lang.annotation.Target;
+
+import static java.lang.annotation.ElementType.ANNOTATION_TYPE;
+import static java.lang.annotation.ElementType.TYPE;
+import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Annotation for JSR-303 validator. It validates the range of dates are coherent: the end date is
- * after or equals the start one.
+ * <p>
+ * Annotation for JSR-303 validator. It validates the range of dates/date times are coherent:
+ * </p>
+ * <ul>
+ *   <li>In the case of date: the start date must be either before or equal the end date</li>
+ *   <li>In the case of datetime: the start datetime must be before the end datetime</li>
+ * </ul>
+ * It is expected that the dates/date times are {@link java.time.temporal.Temporal} objects of the
+ * same concrete type.
  */
 @Target( { TYPE, ANNOTATION_TYPE })
 @Retention(RUNTIME)
@@ -41,21 +50,22 @@ import javax.validation.Payload;
 @Documented
 public @interface DateRange {
 
-  String message() default "The end date isn't after or equal the start date";
+  String message() default "Either the end and start date aren't of the same type or the end date" +
+      " isn't after the start date";
 
   Class<?>[] groups() default {};
 
   Class<? extends Payload>[] payload() default {};
 
   /**
-   * The name of the field representing the date starting a range.
-   * @return the field name of the range start date.
+   * The name of the field representing the temporal starting a range.
+   * @return the field name of the range start temporal.
    */
-  String startDate();
+  String start();
 
   /**
-   * The name of the field representing the date ending a range.
-   * @return the field name of the range end date.
+   * The name of the field representing the temporal ending a range.
+   * @return the field name of the range end temporal.
    */
-  String endDate();
+  String end();
 }

@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.webapi.calendar;
 
-import org.silverpeas.core.date.Temporal;
-import org.silverpeas.core.webapi.base.WebEntity;
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.webapi.base.WebEntity;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -35,10 +35,14 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
+import java.time.temporal.Temporal;
+
+import static org.silverpeas.core.date.TemporalConverter.asIso8601;
 
 /**
- * Web entity abstraction which provides common event informations of a web entity
+ * Web entity abstraction which provides common event information of a web entity
  * @author Yohann Chastagnier
+ * @deprecated
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -70,7 +74,6 @@ public abstract class AbstractEventEntity<T extends AbstractEventEntity<T>> impl
   private boolean allDay = false;
 
   @XmlElement(defaultValue = "")
-  @NotNull
   @Size(min = 1)
   private final String start;
 
@@ -80,33 +83,22 @@ public abstract class AbstractEventEntity<T extends AbstractEventEntity<T>> impl
   @XmlElement(defaultValue = "")
   private final String url;
 
-  /**
-   * Default constructor.
-   * @param type
-   * @param instanceId
-   * @param id
-   * @param title
-   * @param description
-   * @param start
-   * @param end
-   * @param url
-   */
-  protected AbstractEventEntity(final String type, final String instanceId, final String id,
+  protected AbstractEventEntity(final ContributionIdentifier identifier,
       final String title, final String description, final Temporal start, final Temporal end,
       final String url) {
-    this.type = type;
-    this.instanceId = instanceId;
-    this.id = id;
+    this.type = identifier.getType();
+    this.instanceId = identifier.getComponentInstanceId();
+    this.id = identifier.getLocalId();
     this.title = title;
     this.description = description;
-    this.start = (start != null ? start.toShortISO8601() : null);
-    this.end = (end != null ? end.toShortISO8601() : null);
+    this.start = (start != null ? asIso8601(start, false) : null);
+    this.end = (end != null ? asIso8601(end, false) : null);
     allDay = (start == null && end == null);
     this.url = url;
   }
 
   protected AbstractEventEntity() {
-    this("", "", "", "", "", null, null, "");
+    this(ContributionIdentifier.from("", "", ""), "", "", null, null, "");
   }
 
   /**

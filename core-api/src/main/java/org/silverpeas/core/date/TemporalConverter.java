@@ -30,12 +30,17 @@ import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Date;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
+
+import static java.time.temporal.ChronoField.HOUR_OF_DAY;
+import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 
 /**
  * A converter of date and datetime into different temporal types used in Silverpeas. It provides
@@ -258,6 +263,43 @@ public class TemporalConverter {
       }
       return null;
     }
+  }
+
+  /**
+   * <p>
+   * Converts the specified temporal into an ISO-8601 string representation. The rules of formatting
+   * are based upon the {@link DateTimeFormatter} that fully follows the ISO-8601 specification.
+   * </p>
+   * <p>
+   * If the temporal is a date, then the ISO-8601 representation will be of an ISO local date.
+   * If the temporal is a local datetime, it will be converted without any Zone Offset indication,
+   * otherwise the offset will be printed out.
+   * </p>
+   * @param temporal a {@link Temporal} object to convert.
+   * @param withSeconds if in the ISO-8601 string the seconds have to be represented (seconds
+   * following by nanoseconds can be optional an part according to the ISO 8601 specification).
+   * @return an ISO-8601 string representation of the temporal.
+   */
+  public static String asIso8601(final Temporal temporal, final boolean withSeconds) {
+    if (temporal.isSupported(ChronoUnit.HOURS)) {
+      if (temporal instanceof LocalDateTime) {
+        return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(temporal);
+      }
+      if (withSeconds) {
+        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(temporal);
+      } else {
+        return new DateTimeFormatterBuilder().parseCaseInsensitive()
+            .append(DateTimeFormatter.ISO_LOCAL_DATE)
+            .appendLiteral('T')
+            .appendValue(HOUR_OF_DAY, 2)
+            .appendLiteral(':')
+            .appendValue(MINUTE_OF_HOUR, 2)
+            .appendOffsetId()
+            .toFormatter()
+            .format(temporal);
+      }
+    }
+    return DateTimeFormatter.ISO_LOCAL_DATE.format(temporal);
   }
 
   /**

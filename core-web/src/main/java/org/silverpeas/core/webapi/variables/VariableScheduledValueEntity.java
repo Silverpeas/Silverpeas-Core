@@ -51,8 +51,8 @@ public class VariableScheduledValueEntity implements WebEntity {
   private String endDate;
 
   public static VariableScheduledValueEntity fromVariableScheduledValue(
-      VariableScheduledValue period) {
-    return new VariableScheduledValueEntity().decorate(period);
+      VariableScheduledValue value) {
+    return new VariableScheduledValueEntity().decorate(value);
   }
 
   public VariableScheduledValue toVariableScheduledValue() {

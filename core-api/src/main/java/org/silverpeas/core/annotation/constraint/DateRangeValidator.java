@@ -23,13 +23,14 @@
  */
 package org.silverpeas.core.annotation.constraint;
 
-import org.silverpeas.core.date.Temporal;
-import org.silverpeas.core.date.Date;
-import org.silverpeas.core.date.DateTime;
+import org.silverpeas.core.date.TemporalConverter;
 
-import java.lang.reflect.Field;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
+import java.lang.reflect.Field;
+import java.time.LocalDate;
+import java.time.OffsetDateTime;
+import java.time.temporal.Temporal;
 
 /**
  * The validator of a date range constraint.
@@ -47,8 +48,8 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
 
   @Override
   public void initialize(DateRange constraintAnnotation) {
-    this.startDateFieldName = constraintAnnotation.startDate();
-    this.endDateFieldName = constraintAnnotation.endDate();
+    this.startDateFieldName = constraintAnnotation.start();
+    this.endDateFieldName = constraintAnnotation.end();
   }
 
   @Override
@@ -59,16 +60,19 @@ public class DateRangeValidator implements ConstraintValidator<DateRange, Object
       Field endDateField = object.getClass().getDeclaredField(endDateFieldName);
       startDateField.setAccessible(true);
       endDateField.setAccessible(true);
-      Temporal<?> startDate = (Temporal<?>) startDateField.get(object);
-      Temporal<?> endDate = (Temporal<?>) endDateField.get(object);
-      if (!startDate.isTimeSupported() || !endDate.isTimeSupported()) {
-        Date start = new Date(startDate.asDate());
-        Date end = new Date(endDate.asDate());
-        isValid = start.isBefore(end) || start.isEqualTo(end);
-      } else {
-        DateTime start = (DateTime) startDate;
-        DateTime end = (DateTime) endDate;
-        isValid = start.isBefore(end) || start.isEqualTo(end);
+      Temporal startDate = (Temporal) startDateField.get(object);
+      Temporal endDate = (Temporal) endDateField.get(object);
+      isValid = startDate.getClass().equals(endDate.getClass());
+      if (isValid) {
+        if (startDate instanceof LocalDate && endDate instanceof LocalDate) {
+          LocalDate startLocalDate = TemporalConverter.asLocalDate(startDate);
+          LocalDate endLocalDate = TemporalConverter.asLocalDate(endDate);
+          isValid = startLocalDate.isBefore(endLocalDate) || startLocalDate.isEqual(endLocalDate);
+        } else {
+          OffsetDateTime startDateTime = TemporalConverter.asOffsetDateTime(startDate);
+          OffsetDateTime endDateTime = TemporalConverter.asOffsetDateTime(endDate);
+          isValid = startDateTime.isBefore(endDateTime);
+        }
       }
     } catch (Exception ex) {
       isValid = false;

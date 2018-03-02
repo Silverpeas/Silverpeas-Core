@@ -25,8 +25,6 @@ package org.silverpeas.core.util;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.silverpeas.core.date.DateTime;
-import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.TimeUnit;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -775,22 +773,6 @@ public class DateUtil {
   public static Date parseISO8601Date(final String date) throws ParseException {
     return DateUtils
         .parseDate(date, ISO8601DATE_FORMATTER.getPattern(), ISO8601DAY_FORMATTER.getPattern());
-  }
-
-  /**
-   * Converts the specified date as a Temporal object with the time set or not.
-   * @param aDate a Java date to convert.
-   * @param withTime the time in the Java date has to be taken into account.
-   * @return a Temporal object.
-   */
-  public static Temporal asTemporal(final java.util.Date aDate, boolean withTime) {
-    Temporal temporal;
-    if (withTime) {
-      temporal = new DateTime(aDate);
-    } else {
-      temporal = new org.silverpeas.core.date.Date(aDate);
-    }
-    return temporal;
   }
 
   /**

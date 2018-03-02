@@ -183,7 +183,6 @@
 </view:operationPane>
 <view:window>
 <view:frame>
-  <p>PROUT PROUT</p>
   <form id="valueForm">
     <input type="hidden" name="Id" value="${variable.id}"/>
     <fieldset id="main" class="skinFieldset">

@@ -21,27 +21,26 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.silverpeas.annotation;
+package org.silverpeas.core.annotation.constraint;
 
-import org.silverpeas.core.annotation.constraint.DateRange;
-import org.silverpeas.core.date.Temporal;
+import java.time.temporal.Temporal;
 
 /**
  * Objects representing an interval of dates. It is aiming for tests on the DateRangeValidator
  * validation.
  */
-@DateRange(startDate="from", endDate="to")
+@DateRange(start ="from", end ="to")
 public class DateInterval {
 
-  private Temporal<?> from;
-  private Temporal<?> to;
+  private Temporal from;
+  private Temporal to;
 
   /**
    * Constructs a new interval from the two specified dates.
    * @param startDate the start date of the interval.
    * @param endDate the end date of the interval.
    */
-  public DateInterval(final Temporal<?> startDate, final Temporal<?> endDate) {
+  public DateInterval(final Temporal startDate, final Temporal endDate) {
     this.from = startDate;
     this.to = endDate;
   }
@@ -50,7 +49,7 @@ public class DateInterval {
    * Gets the start date of the interval.
    * @return the interval start date.
    */
-  public Temporal<?> getStartDate() {
+  public Temporal getStartDate() {
     return from;
   }
 
@@ -58,7 +57,7 @@ public class DateInterval {
    * Gets the end date of the interval.
    * @return the interval end date.
    */
-  public Temporal<?> getEndDate() {
+  public Temporal getEndDate() {
     return to;
   }
 

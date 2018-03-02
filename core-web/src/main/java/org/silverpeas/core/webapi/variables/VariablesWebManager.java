@@ -54,10 +54,10 @@ public class VariablesWebManager {
   }
 
   public List<Variable> getCurrentVariables() {
-    List<VariableScheduledValue> periods = VariableScheduledValue.getCurrentOnes();
+    List<VariableScheduledValue> currentValues = VariableScheduledValue.getCurrentOnes();
     List<Variable> variables = new ArrayList<>();
-    for (VariableScheduledValue period : periods) {
-      variables.add(period.getVariable());
+    for (VariableScheduledValue currentValue : currentValues) {
+      variables.add(currentValue.getVariable());
     }
     return variables;
   }
@@ -127,27 +127,27 @@ public class VariablesWebManager {
   }
 
   @Transactional
-  public VariableScheduledValue createPeriod(VariableScheduledValue period, String variableId) {
+  public VariableScheduledValue scheduleValue(VariableScheduledValue value, String variableId) {
     checkAdminAccess();
     VariableScheduledValue createdPeriod = process(() -> {
       Variable variable = getVariable(variableId);
-      return variable.getVariableValues().addAndSave(period);
+      return variable.getVariableValues().addAndSave(value);
     }, "variables.variable.value.create.failure");
     addSuccess("variables.variable.value.create.success");
     return createdPeriod;
   }
 
   @Transactional
-  public VariableScheduledValue updatePeriod(String periodId, String variableId,
-      VariableScheduledValue period) {
+  public VariableScheduledValue updateValue(String valueId, String variableId,
+      VariableScheduledValue newValueState) {
     checkAdminAccess();
 
     VariableScheduledValue updatedValue = process(() -> {
       Variable variable = getVariable(variableId);
       VariableScheduledValue value = variable.getVariableValues()
-          .get(periodId)
+          .get(valueId)
           .orElseThrow(() -> new WebApplicationException(Response.Status.NOT_FOUND));
-      return value.updateFrom(period);
+      return value.updateFrom(newValueState);
     }, "variables.variable.value.update.failure");
 
     addSuccess("variables.variable.value.update.success");
@@ -155,11 +155,11 @@ public class VariablesWebManager {
   }
 
   @Transactional
-  public void deletePeriod(String periodId, String variableId) {
+  public void deleteValue(String valueId, String variableId) {
     checkAdminAccess();
     process(() -> {
       Variable variable = getVariable(variableId);
-      if (!variable.getVariableValues().remove(periodId)) {
+      if (!variable.getVariableValues().remove(valueId)) {
         throw new WebApplicationException(Response.Status.NOT_FOUND);
       }
       return variable.save();

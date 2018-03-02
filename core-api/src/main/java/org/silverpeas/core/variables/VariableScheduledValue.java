@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.variables;
 
+import org.silverpeas.core.annotation.constraint.DateRange;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
@@ -35,8 +36,6 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.util.List;
@@ -55,6 +54,7 @@ import static org.silverpeas.core.date.TemporalConverter.asLocalDate;
  */
 @Entity
 @Table(name = "sb_variables_value")
+@DateRange(start = "startDate", end = "endDate")
 public class VariableScheduledValue
     extends SilverpeasJpaEntity<VariableScheduledValue, UuidIdentifier> implements Securable {
 
