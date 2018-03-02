@@ -32,7 +32,9 @@ import org.silverpeas.core.util.time.Duration;
 /**
  * User: Yohann Chastagnier
  * Date: 06/12/13
+ * @deprecated Use the java.time API
  */
+@Deprecated
 public abstract class AbstractDateTemporal<T extends Temporal<? super T>> extends java.util.Date
     implements Temporal<T> {
   private static final long serialVersionUID = 4908009936415992351L;

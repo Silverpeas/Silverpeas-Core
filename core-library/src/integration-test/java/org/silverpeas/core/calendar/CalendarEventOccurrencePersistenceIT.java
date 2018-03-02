@@ -53,6 +53,7 @@ import java.util.TimeZone;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 @RunWith(Arquillian.class)
 public class CalendarEventOccurrencePersistenceIT extends BaseCalendarTest {
@@ -91,7 +92,7 @@ public class CalendarEventOccurrencePersistenceIT extends BaseCalendarTest {
       expectedOccurrences.add(repository.save(occurrences.get(2)));
       expectedOccurrences.add(repository.save(occurrences.get(4)));
       expectedOccurrences.sort(
-          Comparator.comparing(o -> Period.asOffsetDateTime(o.getStartDate())));
+          Comparator.comparing(o -> asOffsetDateTime(o.getStartDate())));
       return occurrences.get(0).getCalendarEvent();
     });
   }

@@ -31,7 +31,6 @@ import net.fortuna.ical4j.model.TimeZoneRegistry;
 import net.fortuna.ical4j.model.TimeZoneRegistryFactory;
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.calendar.CalendarComponent;
-import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.date.TimeZoneUtil;
 
@@ -68,16 +67,6 @@ public class ICal4JDateCodec {
   public boolean isEventDateToBeEncodedIntoUtc(final boolean eventRecurrent,
       final CalendarComponent component) {
     return component.getPeriod().isInDays() || !eventRecurrent;
-  }
-
-  /**
-   * Encodes a Silverpeas date into an iCal4J date.
-   * @param aDate the date to encode.
-   * @return an iCal4J date.
-   * @throws SilverpeasRuntimeException if the encoding fails.
-   */
-  public Date encode(final Temporal<?> aDate) {
-    return encode(aDate, false);
   }
 
   /**
@@ -164,51 +153,6 @@ public class ICal4JDateCodec {
     } catch (ParseException e) {
       throw new SilverpeasRuntimeException(e.getMessage(), e);
     }
-  }
-
-  /**
-   * Encodes the specified Silverpeas date into an iCal4J date set in UTC.
-   * @param aDate the date to encode.
-   * @return an iCal4J date.
-   * @throws SilverpeasRuntimeException if the encoding fails.
-   */
-  public Date encodeInUTC(final Temporal<?> aDate) {
-    return encode(aDate, true);
-  }
-
-  /**
-   * Encodes the specified Silverpeas date into an iCal4J date set or not in UTC according to the
-   * specified UTC flag. If the UTC flag is positioned at false, then the encoded date is set in the
-   * same timezone than the specified date to encode.
-   * @param aDate the date to encode.
-   * @param inUTC the UTC flag indicating whether the iCal4J date must be set in UTC. If false, the
-   * encoded date will be in the same timezone than the specified date.
-   * @return an iCal4J date.
-   * @throws SilverpeasRuntimeException if the encoding fails.
-   */
-  public Date encode(final Temporal<?> aDate, boolean inUTC) {
-    Date iCal4JDate = null;
-    try {
-      if (aDate.isTimeSupported()) {
-        if (inUTC) {
-          iCal4JDate = new DateTime(aDate.toICalInUTC());
-        } else {
-          iCal4JDate = new DateTime(aDate.toICal());
-          ((DateTime) iCal4JDate).setTimeZone(getTimeZone(aDate));
-        }
-      } else if (!aDate.isTimeSupported()) {
-        iCal4JDate = new Date(aDate.toICal());
-      }
-    } catch (ParseException ex) {
-
-      throw new SilverpeasRuntimeException(ex.getMessage(), ex);
-    }
-    return iCal4JDate;
-  }
-
-  private TimeZone getTimeZone(final Temporal<?> date) {
-    TimeZoneRegistry registry = TimeZoneRegistryFactory.getInstance().createRegistry();
-    return registry.getTimeZone(date.getTimeZone().getID());
   }
 
   private TimeZone getTimeZone(final ZonedDateTime date) {

@@ -35,7 +35,9 @@ import java.util.TimeZone;
 /**
  * A datetime, expressed in a given timezone. If no timezone is specified explicitly, then
  * the one of the JVM is used by default.
+ * @deprecated Use the java.time API
  */
+@Deprecated
 public class DateTime extends AbstractDateTemporal<DateTime> {
 
   private static final long serialVersionUID = -2562622075317046753L;

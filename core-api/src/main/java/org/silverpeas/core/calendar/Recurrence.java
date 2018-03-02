@@ -50,6 +50,8 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
+
 /**
  * It defines the rules of the recurrence of a {@link Plannable} in its planning in a calendar.
  * A {@link Plannable} recurrence is defined by a recurrence period, id est a frequency (hourly,
@@ -537,12 +539,12 @@ public class Recurrence implements Cloneable {
   private void clearsUnnecessaryExceptionDates() {
     if (!this.exceptionDates.isEmpty()) {
       getEndDate().ifPresent(e -> exceptionDates.removeIf(
-          exceptionDate -> Period.asOffsetDateTime(e).isBefore(exceptionDate)));
+          exceptionDate -> asOffsetDateTime(e).isBefore(exceptionDate)));
     }
   }
 
   private OffsetDateTime normalize(final Temporal temporal) {
-    OffsetDateTime dateTime = Period.asOffsetDateTime(temporal);
+    OffsetDateTime dateTime = asOffsetDateTime(temporal);
     if (this.startDate != null) {
       return TemporalConverter.applyByType(this.startDate,
           t -> dateTime.with(LocalTime.MIDNIGHT.atOffset(ZoneOffset.UTC)),

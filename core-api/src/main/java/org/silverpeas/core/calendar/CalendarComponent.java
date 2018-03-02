@@ -298,7 +298,7 @@ public class CalendarComponent extends SilverpeasJpaEntity<CalendarComponent, Uu
     anotherComponent.title = title;
     anotherComponent.description = description;
     anotherComponent.location = location;
-    anotherComponent.period = period.clone();
+    anotherComponent.period = period.copy();
     anotherComponent.priority = priority;
     anotherComponent.attributes = attributes.clone();
     if (OperationContext.statesOf(IMPORT)) {

@@ -38,7 +38,9 @@ import java.util.TimeZone;
  * interface with a generic type. Temporal can be then considered as a type generator that satisfies
  * a bound constraint (a fix point).
  * @param <T> A temporal type this class should generate.
+ * @deprecated Use the java.time API
  */
+@Deprecated
 public interface Temporal<T extends Temporal<? super T>> extends Cloneable {
 
   /**

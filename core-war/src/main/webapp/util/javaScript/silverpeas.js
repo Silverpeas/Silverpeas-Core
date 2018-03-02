@@ -1225,6 +1225,22 @@ if (typeof window.sp === 'undefined') {
         return sp.moment.displayAsDate(date) + sp.moment.make(date).format('LT');
       },
       /**
+       * Formats the given UI date in order to get ISO representation of LocalDate as string.
+       * @param uiDate an UI date.
+       * @private
+       */
+      formatUiDateAsLocalDate : function(uiDate) {
+        return sp.moment.make(uiDate, 'L').format().split('T')[0];
+      },
+      /**
+       * Formats the given UI date in order to get ISO representation of OffsetDateTime as string
+       * @param uiDate an UI date.
+       * @private
+       */
+      formatUiDateAsOffsetDateTime : function(uiDate) {
+        return sp.moment.make(uiDate, 'L').format();
+      },
+      /**
        * Replaces from the given text date or date time which are specified into an ISO format.
        * Two kinds of replacement are performed :
        * - "${[ISO string date],date}" is replaced by a readable date
@@ -1422,7 +1438,11 @@ if (typeof window.sp === 'undefined') {
         var __refreshFromRequestResponse = function(request) {
           return sp.updateTargetWithHtmlContent(containerCssSelector, request.responseText, true)
               .then(function() {
-                window.top.spProgressMessage.hide();
+                if (window.spProgressMessage) {
+                  window.spProgressMessage.hide();
+                } else if (window.top.spProgressMessage) {
+                  window.top.spProgressMessage.hide();
+                }
               });
         };
         var params = {

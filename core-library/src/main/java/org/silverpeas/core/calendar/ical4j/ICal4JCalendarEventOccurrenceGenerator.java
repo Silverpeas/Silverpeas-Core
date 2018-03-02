@@ -88,7 +88,8 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
         occurrences.add(occurrence);
       });
     });
-    occurrences.sort(Comparator.comparing(o -> Period.asOffsetDateTime(o.getStartDate())));
+    occurrences.sort(
+        Comparator.comparing(o -> TemporalConverter.asOffsetDateTime(o.getStartDate())));
     return occurrences;
   }
 
@@ -280,8 +281,8 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
   }
 
   private net.fortuna.ical4j.model.Period fromPeriod(final Period period) {
-    final OffsetDateTime start = Period.asOffsetDateTime(period.getStartDate());
-    final OffsetDateTime end = Period.asOffsetDateTime(period.getEndDate());
+    final OffsetDateTime start = TemporalConverter.asOffsetDateTime(period.getStartDate());
+    final OffsetDateTime end = TemporalConverter.asOffsetDateTime(period.getEndDate());
     return new net.fortuna.ical4j.model.Period(
         iCal4JDateCodec.encode(start),
         iCal4JDateCodec.encode(end));

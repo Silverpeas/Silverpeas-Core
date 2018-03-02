@@ -29,7 +29,9 @@ import com.fasterxml.jackson.annotation.JsonValue;
 /**
  * User: Yohann Chastagnier
  * Date: 17/04/13
+ * @deprecated Use {@link org.silverpeas.core.date.Period}
  */
+@Deprecated
 public enum PeriodType {
   unknown, year, month, week, day;
 

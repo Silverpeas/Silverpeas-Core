@@ -247,6 +247,12 @@
     </example>
   </function>
   <function>
+    <description>Function to format a Temporal into a Date</description>
+    <name>toDate</name>
+    <function-class>org.silverpeas.core.date.TemporalConverter</function-class>
+    <function-signature>java.util.Date asDate(java.time.temporal.Temporal)</function-signature>
+  </function>
+  <function>
     <description>Function to format a date.</description>
     <name>formatDateAndHour</name>
     <function-class>org.silverpeas.core.util.DateUtil</function-class>
@@ -349,22 +355,6 @@
     <function-class>org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController</function-class>
     <function-signature>
       java.util.List getGalleries()
-    </function-signature>
-  </function>
-  <function>
-    <description>Function that indicates if the dynamic value functionality in wysiwyg is active.</description>
-    <name>isDynamicValueActivate</name>
-    <function-class>org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
-    <function-signature>
-      boolean isActivate()
-    </function-signature>
-  </function>
-  <function>
-    <description>Function that returns the html code of the list of dynamic value in wysiwyg.</description>
-    <name>buildHtmlListDynamicValue</name>
-    <function-class>org.silverpeas.core.contribution.content.wysiwyg.dynamicvalue.control.DynamicValueReplacement</function-class>
-    <function-signature>
-      java.lang.String buildHTMLSelect(java.lang.String, java.lang.String, java.lang.String)
     </function-signature>
   </function>
   <function>

@@ -37,7 +37,6 @@ import org.silverpeas.web.pdc.control.Keys;
 import org.silverpeas.web.pdc.control.PdcSearchSessionController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.text.ParseException;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -58,7 +57,7 @@ public class PdcSearchRequestRouterHelper {
    */
   public static QueryParameters saveUserChoicesAndSetPdcInfo(
       PdcSearchSessionController pdcSC, HttpServletRequest request,
-      boolean setPdcInfo) throws Exception {
+      boolean setPdcInfo) {
     QueryParameters queryParameters = saveUserChoices(pdcSC, request);
     setUserChoices(request, pdcSC);
     setAttributesAdvancedSearch(pdcSC, request, setPdcInfo);
@@ -130,7 +129,7 @@ public class PdcSearchRequestRouterHelper {
    * @throws Exception
    */
   public static QueryParameters saveUserChoices(PdcSearchSessionController pdcSC,
-      HttpServletRequest request) throws Exception {
+      HttpServletRequest request) {
     String query = request.getParameter("query");
 
     QueryParameters queryParameters = pdcSC.getQueryParameters();
@@ -185,12 +184,7 @@ public class PdcSearchRequestRouterHelper {
     if (!StringUtil.isDefined(str)) {
       return null;
     }
-    try {
-      return DateUtil.stringToLocalDate(str, language);
-    } catch (ParseException e) {
-      SilverLogger.getLogger(PdcSearchRequestRouter.class).warn(e.getMessage());
-    }
-    return null;
+    return DateUtil.stringToLocalDate(str, language);
   }
 
   /**

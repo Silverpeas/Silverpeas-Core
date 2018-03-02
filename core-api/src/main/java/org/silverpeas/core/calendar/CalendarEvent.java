@@ -290,10 +290,6 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     // this constructor is for the persistence engine.
   }
 
-  private static CalendarEventOccurrenceGenerator generator() {
-    return CalendarEventOccurrenceGenerator.get();
-  }
-
   /**
    * Gets a calendar event by its identifier.
    * @param id the identifier of the aimed calendar event.
@@ -1243,7 +1239,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   }
 
   private EventOperationResult updateFromOccurrence(final CalendarEventOccurrence occurrence) {
-    Period previousPeriod = this.getPeriod().clone();
+    Period previousPeriod = this.getPeriod().copy();
     this.component = occurrence.asCalendarComponent().copyTo(this.component);
     if (!this.getPeriod().equals(previousPeriod)) {
       this.getAttendees().forEach(Attendee::resetParticipation);
@@ -1303,8 +1299,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
   private void checkOccurrence(final CalendarEventOccurrence occurrence) {
     if (occurrence == null || !this.equals(occurrence.getCalendarEvent())) {
       throw new IllegalArgumentException(
-          "The occurrence comes from a different event! Current event is '" + this.getId() +
-              "' whereas the event of the occurrence is '" + occurrence.getCalendarEvent().getId() +
+          "The occurrence is either null or comes from a different event than '" + this.getId() +
               "'");
     }
   }
@@ -1421,6 +1416,10 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
 
     public OrElse(Supplier<EventOperationResult> operationForSingleOccurrence) {
       this.operationForSingleOccurrence = operationForSingleOccurrence;
+    }
+
+    private CalendarEventOccurrenceGenerator generator() {
+      return CalendarEventOccurrenceGenerator.get();
     }
 
     public EventOperationResult orElse(

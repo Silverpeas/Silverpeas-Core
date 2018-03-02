@@ -6,7 +6,6 @@ import org.junit.Test;
 import org.silverpeas.core.admin.user.service.UserProvider;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.TestCalendarEventOccurrenceBuilder;
-import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.PersistOperation;
 import org.silverpeas.core.persistence.datasource.UpdateOperation;
 import org.silverpeas.core.persistence.datasource.model.jpa.JpaPersistOperation;
@@ -22,6 +21,7 @@ import java.util.Map;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
+import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 /**
  * Unit test on the view applying on a list of calendar event occurrences.
@@ -89,8 +89,8 @@ public class CalendarEventInternalParticipationViewTest {
           .getId()
           .compareTo(occurrences.get(i + 1).getCalendarEvent().getCalendar().getId());
       if (result == 0) {
-         if (Period.asOffsetDateTime(occurrences.get(i).getStartDate())
-            .isAfter(Period.asOffsetDateTime(occurrences.get(i + 1).getStartDate()))) {
+         if (asOffsetDateTime(occurrences.get(i).getStartDate())
+            .isAfter(asOffsetDateTime(occurrences.get(i + 1).getStartDate()))) {
           return false;
         }
       } else if (result > 0) {

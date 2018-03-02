@@ -28,6 +28,11 @@ import javax.persistence.Converter;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
+import static org.silverpeas.core.persistence.datasource.model.jpa.SQLDateTimeConstants
+    .MAX_TIMESTAMP;
+import static org.silverpeas.core.persistence.datasource.model.jpa.SQLDateTimeConstants
+    .MIN_TIMESTAMP;
+
 /**
  * An automatic converter of {@link LocalDateTime} values to SQL {@link Timestamp} values for
  * JPA 2.1 (JPA 2.1 was release before Java 8 and hence it doesn't support yet the new java time
@@ -40,11 +45,28 @@ public class LocalDateTimeAttributeConverter implements
 
   @Override
   public Timestamp convertToDatabaseColumn(LocalDateTime locDateTime) {
-    return locDateTime == null ? null : Timestamp.valueOf(locDateTime);
+    if (locDateTime == null) {
+      return null;
+    }
+    if (locDateTime.equals(LocalDateTime.MIN)) {
+      return MIN_TIMESTAMP;
+    }
+    if (locDateTime.equals(LocalDateTime.MAX)) {
+      return MAX_TIMESTAMP;
+    }
+    return Timestamp.valueOf(locDateTime);
   }
 
   @Override
   public LocalDateTime convertToEntityAttribute(Timestamp sqlTimestamp) {
-    return sqlTimestamp == null ? null : sqlTimestamp.toLocalDateTime();
+    if (sqlTimestamp == null) {
+      return null;
+    }
+    if (sqlTimestamp.equals(MIN_TIMESTAMP)) {
+      return LocalDateTime.MIN;
+    } else if (sqlTimestamp.equals(MAX_TIMESTAMP)) {
+      return LocalDateTime.MAX;
+    }
+    return sqlTimestamp.toLocalDateTime();
   }
 }

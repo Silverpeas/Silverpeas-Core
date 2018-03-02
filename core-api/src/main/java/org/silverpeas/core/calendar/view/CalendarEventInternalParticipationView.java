@@ -26,10 +26,10 @@ package org.silverpeas.core.calendar.view;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.calendar.CalendarEventOccurrence;
 import org.silverpeas.core.calendar.InternalAttendee;
-import org.silverpeas.core.date.Period;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 
 import static org.silverpeas.core.calendar.Attendee.ParticipationStatus.DECLINED;
 import static org.silverpeas.core.calendar.Attendee.PresenceStatus.REQUIRED;
+import static org.silverpeas.core.date.TemporalConverter.asOffsetDateTime;
 
 /**
  * A view in which the occurrences of calendar events are grouped by their participants.
@@ -77,12 +78,9 @@ public class CalendarEventInternalParticipationView implements CalendarEventView
           .filter(a -> REQUIRED == a.getPresenceStatus() || DECLINED != a.getParticipationStatus())
           .forEach(a -> add(view, a.getId(), occurrence));
     }
-    view.values().forEach(userOccurrences -> userOccurrences.sort((o1, o2) -> {
-      int c = o1.getCalendarEvent().getCalendar().getId()
-          .compareTo(o2.getCalendarEvent().getCalendar().getId());
-      return c == 0 ? Period.asOffsetDateTime(o1.getStartDate())
-          .compareTo(Period.asOffsetDateTime(o2.getStartDate())) : c;
-    }));
+    view.values().forEach(userOccurrences -> userOccurrences.sort(Comparator.comparing(
+        (CalendarEventOccurrence o) -> o.getCalendarEvent().getCalendar().getId())
+        .thenComparing(o -> asOffsetDateTime(o.getStartDate()))));
     return view;
   }
 

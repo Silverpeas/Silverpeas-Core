@@ -25,10 +25,10 @@ package org.silverpeas.core.util;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
-import org.silverpeas.core.date.DateTime;
-import org.silverpeas.core.date.Temporal;
 import org.silverpeas.core.date.TimeUnit;
+import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Singleton;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -49,54 +49,49 @@ import static java.util.Calendar.*;
  * DateUtil is an helper class for date manipulation.
  * @author squere
  */
+@Singleton
 public class DateUtil {
   public static final Date MINIMUM_DATE = java.sql.Date.valueOf("1900-01-01");
   public static final Date MAXIMUM_DATE = java.sql.Date.valueOf("2999-12-31");
 
-  private static final long millisPerHour = 60l * 60l * 1000l;
-  private static final long millisPerMinute = 60l * 1000l;
+  private static final long MILLIS_PER_HOUR = 60l * 60l * 1000l;
+  private static final long MILLIS_PER_MINUTE = 60l * 1000l;
+  private static final String HOUR_OUTPUT_FORMAT = "hourOutputFormat";
+  private static final String DATE_INPUT_FORMAT = "dateInputFormat";
+  private static final String FRENCH_DATE_PATTERN = "yyyy/MM/dd";
   private static Map<String, FastDateFormat> outputFormatters = new HashMap<>(5);
   private static Map<String, SimpleDateFormat> inputParsers = new HashMap<>(5);
   /**
    * Format and parse dates.
    */
-  public static final SimpleDateFormat DATE_PARSER;
-  public static final FastDateFormat DATE_FORMATTER;
-  public static final SimpleDateFormat DATETIME_PARSER;
-  public static final FastDateFormat DATETIME_FORMATTER;
-  public static final FastDateFormat ISO8601DATE_FORMATTER;
-  public static final FastDateFormat ISO8601DAY_FORMATTER;
-  public static final FastDateFormat ICALDAY_FORMATTER;
-  public static final FastDateFormat ICALDATE_FORMATTER;
-  public static final FastDateFormat ICALUTCDATE_FORMATTER;
-  public static final FastDateFormat ISO8601_FORMATTER;
+  private final SimpleDateFormat dateParser;
+  private static final FastDateFormat DATE_FORMATTER =
+      FastDateFormat.getInstance(FRENCH_DATE_PATTERN);
+  private static final SimpleDateFormat DATETIME_PARSER = new SimpleDateFormat("yyyy/MM/dd HH:mm");
+  private static final FastDateFormat ISO8601DATE_FORMATTER =
+      FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm");
+  private static final FastDateFormat ISO8601DAY_FORMATTER =
+      FastDateFormat.getInstance("yyyy-MM-dd");
+  private static final FastDateFormat ICALDAY_FORMATTER = FastDateFormat.getInstance("yyyyMMdd");
+  private static final FastDateFormat ICALDATE_FORMATTER =
+      FastDateFormat.getInstance("yyyyMMdd'T'HHmmss");
+  private static final FastDateFormat ICALUTCDATE_FORMATTER =
+      FastDateFormat.getInstance("yyyyMMdd'T'HHmmss'Z'", TimeZone.getTimeZone("UTC"));
   private static final DateTimeFormatter CUSTOM_FORMATTER =
-      DateTimeFormatter.ofPattern("yyyy/MM/dd");
+      DateTimeFormatter.ofPattern(FRENCH_DATE_PATTERN);
   public static final DateTimeFormatter LUCENE_FORMATTER = DateTimeFormatter.ofPattern("yyyyMMdd");
 
   /**
    * Format and parse dates.
    */
-  public static final SimpleDateFormat TIME_PARSER;
-  public static final FastDateFormat TIME_FORMATTER;
+  public final SimpleDateFormat timeParser;
+  public static final FastDateFormat TIME_FORMATTER = FastDateFormat.getInstance("HH:mm");
 
-  static {
-    DATE_PARSER = new SimpleDateFormat("yyyy/MM/dd");
-    DATE_PARSER.setLenient(false);
-    DATE_FORMATTER = FastDateFormat.getInstance("yyyy/MM/dd");
-    DATETIME_PARSER = new SimpleDateFormat("yyyy/MM/dd HH:mm");
-    DATETIME_FORMATTER = FastDateFormat.getInstance("yyyy/MM/dd HH:mm");
-    TIME_PARSER = new SimpleDateFormat("HH:mm");
-    TIME_PARSER.setLenient(false);
-    TIME_FORMATTER = FastDateFormat.getInstance("HH:mm");
-    ISO8601DATE_FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm");
-    ISO8601DAY_FORMATTER = FastDateFormat.getInstance("yyyy-MM-dd");
-    ICALDAY_FORMATTER = FastDateFormat.getInstance("yyyyMMdd");
-    ICALDATE_FORMATTER = FastDateFormat.getInstance("yyyyMMdd'T'HHmmss");
-    ICALUTCDATE_FORMATTER =
-        FastDateFormat.getInstance("yyyyMMdd'T'HHmmss'Z'", TimeZone.getTimeZone("UTC"));
-    ISO8601_FORMATTER =
-        FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("UTC"));
+  private DateUtil() {
+    dateParser = new SimpleDateFormat(FRENCH_DATE_PATTERN);
+    dateParser.setLenient(false);
+    timeParser = new SimpleDateFormat("HH:mm");
+    timeParser.setLenient(false);
   }
 
   /**
@@ -114,11 +109,15 @@ public class DateUtil {
   }
 
   public static String getOutputDate(Date date, String language) {
-    if (isNotDefined(date)) {
+    if (isNotDefined(date) || isInfinite(date)) {
       return "";
     }
     FastDateFormat formatter = getOutputFormatter(language);
     return formatter.format(date);
+  }
+
+  private static boolean isInfinite(final Date date) {
+    return date.getTime() == Long.MIN_VALUE || date.getTime() == Long.MAX_VALUE;
   }
 
   public static String getOutputDate(LocalDate date, String language) {
@@ -169,9 +168,9 @@ public class DateUtil {
       return getOutputDate(date, language);
     }
     FastDateFormat formatter = FastDateFormat.getInstance(
-        getLocalizedProperties(language).getString("dateOutputFormat") + " " + getLocalizedProperties(
-            language).getString(
-        "hourOutputFormat"));
+        getLocalizedProperties(language).getString("dateOutputFormat") + " " +
+            getLocalizedProperties(
+            language).getString(HOUR_OUTPUT_FORMAT));
     return formatter.format(date);
   }
 
@@ -223,13 +222,9 @@ public class DateUtil {
     }
   }
 
-  public static LocalDate stringToLocalDate(String string, String language) throws ParseException {
+  public static LocalDate stringToLocalDate(String string, String language) {
     DateTimeFormatter format = getLocalDateInputFormat(language);
-    try {
-      return LocalDate.parse(string, format);
-    } catch (Exception e) {
-      throw e;
-    }
+    return LocalDate.parse(string, format);
   }
 
   public static Date stringToDate(String date, String hour, String language) throws ParseException {
@@ -315,11 +310,12 @@ public class DateUtil {
    * @return A SimpleDateFormat initialized with the language specific input format.
    */
   public static SimpleDateFormat getDateInputFormat(String language) {
-    return new SimpleDateFormat(getLocalizedProperties(language).getString("dateInputFormat"));
+    return new SimpleDateFormat(getLocalizedProperties(language).getString(DATE_INPUT_FORMAT));
   }
 
   public static DateTimeFormatter getLocalDateInputFormat(String language) {
-    return DateTimeFormatter.ofPattern(getLocalizedProperties(language).getString("dateInputFormat"));
+    return DateTimeFormatter.ofPattern(
+        getLocalizedProperties(language).getString(DATE_INPUT_FORMAT));
   }
 
   /**
@@ -328,7 +324,7 @@ public class DateUtil {
    * @return A SimpleDateFormat initialized with the language specific output format.
    */
   public static FastDateFormat getHourOutputFormat(String lang) {
-    return FastDateFormat.getInstance(getLocalizedProperties(lang).getString("hourOutputFormat"));
+    return FastDateFormat.getInstance(getLocalizedProperties(lang).getString(HOUR_OUTPUT_FORMAT));
   }
 
   /**
@@ -346,8 +342,8 @@ public class DateUtil {
    * @return A SimpleDateFormat initialized with the language specific input format.
    */
   public static SimpleDateFormat getDateAndHourInputFormat(String lang) {
-    return new SimpleDateFormat(getLocalizedProperties(lang).getString("dateInputFormat") + " " +
-        getLocalizedProperties(lang).getString("hourOutputFormat"));
+    return new SimpleDateFormat(getLocalizedProperties(lang).getString(DATE_INPUT_FORMAT) + " " +
+        getLocalizedProperties(lang).getString(HOUR_OUTPUT_FORMAT));
   }
 
   /**
@@ -369,9 +365,17 @@ public class DateUtil {
    * @throws ParseException if the date is malformed.
    */
   public static Date parse(String date) throws ParseException {
-    synchronized (DATE_PARSER) {
-      return DATE_PARSER.parse(date);
+    return getDateUtil().parseWithDateParser(date);
+  }
+
+  private Date parseWithDateParser(String date) throws ParseException {
+    synchronized (dateParser) {
+      return dateParser.parse(date);
     }
+  }
+
+  private static DateUtil getDateUtil() {
+    return ServiceProvider.getService(DateUtil.class);
   }
 
   public static LocalDate toLocalDate(String date) {
@@ -445,10 +449,7 @@ public class DateUtil {
    * null
    */
   public static String date2SQLDate(Date date) {
-    if (date == null) {
-      return null;
-    }
-    return DATE_FORMATTER.format(date);
+    return formatDate(date);
   }
 
   public static String date2SQLDate(String date, String language) throws ParseException {
@@ -475,9 +476,9 @@ public class DateUtil {
   }
 
   public static String formatDuration(long duration) {
-    long hourDuration = duration / millisPerHour;
-    long minuteDuration = (duration % millisPerHour) / millisPerMinute;
-    long secondDuration = ((duration % millisPerHour) % millisPerMinute) / 1000;
+    long hourDuration = duration / MILLIS_PER_HOUR;
+    long minuteDuration = (duration % MILLIS_PER_HOUR) / MILLIS_PER_MINUTE;
+    long secondDuration = ((duration % MILLIS_PER_HOUR) % MILLIS_PER_MINUTE) / 1000;
     StringBuilder result = new StringBuilder(10);
     if (hourDuration > 0) {
       if (hourDuration < 10) {
@@ -516,8 +517,7 @@ public class DateUtil {
   }
 
   public static String getFormattedTime(Date date) {
-    String time = formatTime(date);
-    return time;
+    return formatTime(date);
   }
 
   /**
@@ -531,9 +531,7 @@ public class DateUtil {
       return null;
     }
     Calendar result = getInstance();
-    synchronized (DATE_PARSER) {
-      result.setTime(DATE_PARSER.parse(date));
-    }
+    result.setTime(parse(date));
     return resetHour(result).getTime();
   }
 
@@ -593,27 +591,14 @@ public class DateUtil {
       return null;
     }
     Calendar result = getInstance();
-    synchronized (TIME_PARSER) {
-      result.setTime(TIME_PARSER.parse(time));
-    }
+    result.setTime(getDateUtil().parseWithTimeParser(time));
     return result.getTime();
   }
 
-  /**
-   * Parse a String of format yyyy/MM/dd and return the corresponding Date.
-   * @param date the String to be parsed.
-   * @return the corresponding date.
-   * @throws ParseException if the date is malformed
-   */
-  public static Calendar parseCalendar(String date) throws ParseException {
-    if (date == null) {
-      return null;
+  private Date parseWithTimeParser(String date) throws ParseException {
+    synchronized (timeParser) {
+      return timeParser.parse(date);
     }
-    Calendar result = getInstance();
-    synchronized (DATE_PARSER) {
-      result.setTime(DATE_PARSER.parse(date));
-    }
-    return resetHour(result);
   }
 
   /**
@@ -670,13 +655,12 @@ public class DateUtil {
     if (time != null) {
       try {
         Calendar result = Calendar.getInstance();
-        synchronized (TIME_PARSER) {
-          result.setTime(TIME_PARSER.parse(time));
-        }
+        result.setTime(getDateUtil().parseWithTimeParser(time));
         calend.set(HOUR_OF_DAY, result.get(HOUR_OF_DAY));
         calend.set(MINUTE, result.get(MINUTE));
         return;
       } catch (ParseException pex) {
+        SilverLogger.getLogger(DateUtil.class).warn(pex);
       }
     }
     calend.set(HOUR_OF_DAY, 0);
@@ -789,22 +773,6 @@ public class DateUtil {
   public static Date parseISO8601Date(final String date) throws ParseException {
     return DateUtils
         .parseDate(date, ISO8601DATE_FORMATTER.getPattern(), ISO8601DAY_FORMATTER.getPattern());
-  }
-
-  /**
-   * Converts the specified date as a Temporal object with the time set or not.
-   * @param aDate a Java date to convert.
-   * @param withTime the time in the Java date has to be taken into account.
-   * @return a Temporal object.
-   */
-  public static Temporal<?> asTemporal(final java.util.Date aDate, boolean withTime) {
-    Temporal<?> temporal;
-    if (withTime) {
-      temporal = new DateTime(aDate);
-    } else {
-      temporal = new org.silverpeas.core.date.Date(aDate);
-    }
-    return temporal;
   }
 
   /**
@@ -1072,6 +1040,4 @@ public class DateUtil {
     return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
   }
 
-  private DateUtil() {
-  }
 }
