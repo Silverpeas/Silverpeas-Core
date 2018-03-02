@@ -24,21 +24,23 @@
 package org.silverpeas.core.datereminder;
 
 import org.silverpeas.core.SilverpeasException;
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.datereminder.exception.DateReminderException;
+import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
+import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
+import org.silverpeas.core.datereminder.persistence.service.DateReminderServiceProvider;
+import org.silverpeas.core.datereminder.provider.DateReminderProcess;
+import org.silverpeas.core.datereminder.provider.DateReminderProcessRegistration;
+import org.silverpeas.core.initialization.Initialization;
+import org.silverpeas.core.notification.user.client.NotificationManagerException;
+import org.silverpeas.core.persistence.EntityReference;
+import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.scheduler.Scheduler;
 import org.silverpeas.core.scheduler.SchedulerEvent;
 import org.silverpeas.core.scheduler.SchedulerEventListener;
 import org.silverpeas.core.scheduler.SchedulerProvider;
 import org.silverpeas.core.scheduler.trigger.JobTrigger;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
-import org.silverpeas.core.datereminder.exception.DateReminderException;
-import org.silverpeas.core.datereminder.persistence.DateReminderDetail;
-import org.silverpeas.core.datereminder.provider.DateReminderProcessRegistration;
-import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.persistence.EntityReference;
-import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
-import org.silverpeas.core.datereminder.persistence.service.DateReminderServiceProvider;
-import org.silverpeas.core.datereminder.provider.DateReminderProcess;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -76,6 +78,7 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
    * Schedule the date reminder process
    */
   public void doScheduledDateReminder() throws DateReminderException {
+    CacheServiceProvider.clearAllThreadCaches();
     Calendar calendar = Calendar.getInstance(Locale.FRENCH);
     calendar.set(java.util.Calendar.HOUR_OF_DAY, 0);
     calendar.set(java.util.Calendar.MINUTE, 0);
@@ -100,6 +103,9 @@ public class DateReminderScheduler implements SchedulerEventListener, Initializa
         }
 
         if (performed) {
+          // as it is a batch context and also that the entity is a SilverpeasJpaEntity one
+          // setting manually last updated by because of batch context
+          OperationContext.getFromCache().withUser(resourceDateReminder.getLastUpdater());
           //set processStatus to 1
           DateReminderDetail dateReminderDetail = resourceDateReminder.getDateReminder();
           dateReminderDetail.setProcessStatus(DateReminderDetail.REMINDER_PROCESSED);

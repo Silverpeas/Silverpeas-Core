@@ -89,13 +89,15 @@ public class ResourceLocator {
    * @return a resource bundle with the asked localized resources plus the general ones.
    */
   public static LocalizationBundle getLocalizationBundle(String name, String locale) {
-    Locale localeToUse =
+    final Locale localeToUse =
         (locale == null || locale.trim().isEmpty() ? Locale.ROOT : new Locale(locale));
-    String key =
+    final String key =
         name + (localeToUse.getLanguage().isEmpty() ? "" : "_" + localeToUse.getLanguage());
-    return (LocalizationBundle) bundles.computeIfAbsent(key,
+    final LocalizationBundle bundle = (LocalizationBundle) bundles.computeIfAbsent(key,
         n -> new LocalizationBundle(name, localeToUse,
             (bundleName, locale1) -> loadResourceBundle(bundleName, locale1, true), true));
+    bundle.changeLocale(localeToUse);
+    return bundle;
   }
 
   /**
@@ -111,14 +113,16 @@ public class ResourceLocator {
    */
   public static Optional<LocalizationBundle> getOptionalLocalizationBundle(String name,
       String locale) {
-    Locale localeToUse =
+    final Locale localeToUse =
         (locale == null || locale.trim().isEmpty() ? Locale.ROOT : new Locale(locale));
-    String key =
+    final String key =
         name + (localeToUse.getLanguage().isEmpty() ? "" : "_" + localeToUse.getLanguage());
     final LocalizationBundle bundle = (LocalizationBundle) bundles.computeIfAbsent(key,
         n -> new LocalizationBundle(name, localeToUse,
             (bundleName, locale1) -> loadResourceBundle(bundleName, locale1, false), false));
-    return Optional.ofNullable(bundle);
+    final Optional<LocalizationBundle> optionalBundle = Optional.ofNullable(bundle);
+    optionalBundle.ifPresent(b -> b.changeLocale(localeToUse));
+    return optionalBundle;
   }
 
   /**

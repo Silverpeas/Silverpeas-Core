@@ -29,11 +29,7 @@ import org.silverpeas.core.datereminder.provider.DateReminderProcess;
 import org.silverpeas.core.datereminder.provider.DateReminderProcessRegistration;
 import org.silverpeas.core.initialization.Initialization;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
-import org.silverpeas.core.notification.user.client.NotificationManagerException;
 import org.silverpeas.core.persistence.EntityReference;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.text.MessageFormat;
@@ -50,29 +46,24 @@ import java.text.MessageFormat;
 public class PublicationDateReminderProcess implements DateReminderProcess, Initialization {
 
   @Override
-  public void init() throws Exception {
+  public void init() {
     DateReminderProcessRegistration.register(PublicationDetail.class, this);
   }
 
   @Override
-  public void release() throws Exception {
+  public void release() {
     DateReminderProcessRegistration.unregister(PublicationDetail.class, this);
   }
 
   @Override
-  public EntityReference perform(final PersistentResourceDateReminder resourceDateReminder)
-      throws NotificationManagerException {
-    PublicationNoteReference pubNoteReference =
+  public EntityReference perform(final PersistentResourceDateReminder resourceDateReminder) {
+    final PublicationNoteReference pubNoteReference =
         resourceDateReminder.getResource(PublicationNoteReference.class);
 
     if (pubNoteReference.getEntity() != null) {
-      LocalizationBundle message = ResourceLocator
-          .getLocalizationBundle("org.silverpeas.dateReminder.multilang.dateReminder",
-              DisplayI18NHelper.getDefaultLanguage());
-
       //Perform date reminder about publication : send a notification
-      PublicationDateReminderUserNotification publicationDateReminderUserNotification =
-          new PublicationDateReminderUserNotification(resourceDateReminder, message);
+      final PublicationDateReminderUserNotification publicationDateReminderUserNotification =
+          new PublicationDateReminderUserNotification(resourceDateReminder);
       UserNotificationHelper.buildAndSend(publicationDateReminderUserNotification);
     } else {
       SilverLogger.getLogger(this).warn(MessageFormat

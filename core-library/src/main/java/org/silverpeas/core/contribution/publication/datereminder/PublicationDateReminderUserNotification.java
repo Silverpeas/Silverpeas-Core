@@ -23,37 +23,35 @@
  */
 package org.silverpeas.core.contribution.publication.datereminder;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
-import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.datereminder.persistence.PersistentResourceDateReminder;
+import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
+import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
+import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.LocalizationBundle;
+import org.silverpeas.core.util.URLUtil;
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Set parameters for user notifications sended automatically for date reminder.
  * @author Cécile Bonin
  */
 public class PublicationDateReminderUserNotification
-    extends AbstractTemplateUserNotificationBuilder<PersistentResourceDateReminder> {
+    extends AbstractTemplateUserNotificationBuilder<PersistentResourceDateReminder>
+    implements FallbackToCoreTemplatePathBehavior {
 
-  private final LocalizationBundle componentMessages;
   private final PublicationDetail pubDetail;
 
-  public PublicationDateReminderUserNotification(
-      final PersistentResourceDateReminder resourceDateReminder,
-      final LocalizationBundle componentMessages) {
+  PublicationDateReminderUserNotification(
+      final PersistentResourceDateReminder resourceDateReminder) {
     super(resourceDateReminder);
     PublicationNoteReference pubNoteReference = resourceDateReminder.getResource(PublicationNoteReference.class);
     this.pubDetail = pubNoteReference.getEntity();
-    this.componentMessages = componentMessages;
   }
 
   @Override
@@ -76,7 +74,6 @@ public class PublicationDateReminderUserNotification
   @Override
   protected void performTemplateData(final String language, final PersistentResourceDateReminder resource,
       final SilverpeasTemplate template) {
-    componentMessages.changeLocale(language);
     getNotificationMetaData().addLanguage(language, getBundle(language).getString(
         getBundleSubjectKey()), "");
     template.setAttribute("resourceTitle", this.pubDetail.getName(language));
@@ -91,13 +88,6 @@ public class PublicationDateReminderUserNotification
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceName(this.pubDetail.getTitle());
     notificationResourceData.setResourceDescription(this.pubDetail.getDescription());
-  }
-
-  @Override
-  protected SilverpeasTemplate createTemplate() {
-    SilverpeasTemplate template =
-        SilverpeasTemplateFactory.createSilverpeasTemplateOnCore(getTemplatePath());
-    return template;
   }
 
   @Override

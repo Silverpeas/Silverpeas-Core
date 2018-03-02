@@ -153,7 +153,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
     return rootTemplatePath;
   }
 
-  protected SilverpeasTemplate createTemplate() {
+  private SilverpeasTemplate createTemplate() {
     final Boolean fromComponent = getRootTemplatePath().getFirst();
     final String templatePath = getRootTemplatePath().getSecond();
     if (fromComponent) {
