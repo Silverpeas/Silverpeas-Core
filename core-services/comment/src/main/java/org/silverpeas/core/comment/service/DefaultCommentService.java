@@ -23,27 +23,26 @@
  */
 package org.silverpeas.core.comment.service;
 
+import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
+import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.comment.dao.CommentDAO;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.service.notification.CommentEventNotifier;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
-import org.silverpeas.core.socialnetwork.model.SocialInformation;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.WAPrimaryKey;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -64,9 +63,7 @@ import java.util.List;
 @Named("commentService")
 public class DefaultCommentService implements CommentService, ComponentInstanceDeletion {
 
-  private static final String SETTINGS_PATH = "org.silverpeas.util.comment.Comment";
   private static final String MESSAGES_PATH = "org.silverpeas.util.comment.multilang.comment";
-  private static final SettingBundle settings = ResourceLocator.getSettingBundle(SETTINGS_PATH);
 
   @Inject
   private CommentDAO commentDAO;
@@ -405,11 +402,6 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
    */
   protected OrganizationController getOrganisationController() {
     return OrganizationControllerProvider.getOrganisationController();
-  }
-
-  @Override
-  public SettingBundle getComponentSettings() {
-    return settings;
   }
 
   @Override
