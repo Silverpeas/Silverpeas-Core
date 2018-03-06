@@ -46,6 +46,8 @@ import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.List;
 
+import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
+
 /**
  * @author Michael Nikolaenko
  * @version 1.0
@@ -148,7 +150,7 @@ public class VersioningSessionController extends AbstractComponentSessionControl
   }
 
   public void setContentLanguage(final String contentLanguage) {
-    this.contentLanguage = contentLanguage;
+    this.contentLanguage = defaultStringIfNotDefined(contentLanguage, this.contentLanguage);
   }
 
   /**

@@ -51,6 +51,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import static com.silverpeas.jcrutil.JcrConstants.*;
+import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
 import static javax.jcr.Property.JCR_FROZEN_PRIMARY_TYPE;
 import static javax.jcr.Property.JCR_LAST_MODIFIED_BY;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
@@ -341,11 +342,13 @@ class DocumentConverter extends AbstractJcrConverter {
     if (!StringUtil.isDefined(language)) {
       language = I18NHelper.defaultLanguage;
     }
-    String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
+    final String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
     if (documentNode.hasNode(attachmentNodeName)) {
-      Node attachmentNode = getAttachmentNode(attachmentNodeName, documentNode);
-      addStringProperty(attachmentNode, JCR_LAST_MODIFIED_BY, getStringProperty(documentNode,
-          SLV_PROPERTY_OWNER));
+      final Node attachmentNode = getAttachmentNode(attachmentNodeName, documentNode);
+      final String currentLastModifiedBy = getStringProperty(attachmentNode, JCR_LAST_MODIFIED_BY);
+      final String ownerId = getStringProperty(documentNode, SLV_PROPERTY_OWNER);
+      final String lastModifiedBy = defaultStringIfNotDefined(ownerId, currentLastModifiedBy);
+      addStringProperty(attachmentNode, JCR_LAST_MODIFIED_BY, lastModifiedBy);
     }
     addDateProperty(documentNode, SLV_PROPERTY_EXPIRY_DATE, null);
     addDateProperty(documentNode, SLV_PROPERTY_ALERT_DATE, null);
