@@ -31,7 +31,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
-import java.net.URLDecoder;
 
 public class WysiwygTag extends TagSupport {
 
@@ -176,13 +175,10 @@ public class WysiwygTag extends TagSupport {
     HttpSession session = pageContext.getSession();
     GraphicElementFactory gef =
         (GraphicElementFactory) session.getAttribute(GraphicElementFactory.GE_FACTORY_SESSION_ATT);
-    session.setAttribute("WYSIWYG_SpaceLabel",
-        getSpaceLabel() != null ? URLDecoder.decode(getSpaceLabel()) : null);
+    session.setAttribute("WYSIWYG_SpaceLabel", getSpaceLabel());
     session.setAttribute("WYSIWYG_ComponentId", getComponentId());
-    session.setAttribute("WYSIWYG_ComponentLabel",
-        getComponentLabel() != null ? URLDecoder.decode(getComponentLabel()) : null);
-    session.setAttribute("WYSIWYG_BrowseInfo",
-        getBrowseInfo() != null ? URLDecoder.decode(getBrowseInfo()) : null);
+    session.setAttribute("WYSIWYG_ComponentLabel", getComponentLabel());
+    session.setAttribute("WYSIWYG_BrowseInfo", getBrowseInfo());
     session.setAttribute("WYSIWYG_ObjectId", getObjectId());
     session.setAttribute("WYSIWYG_ObjectType", getObjectType());
     session.setAttribute("WYSIWYG_Language", wysiwygEditor.getLanguage());
