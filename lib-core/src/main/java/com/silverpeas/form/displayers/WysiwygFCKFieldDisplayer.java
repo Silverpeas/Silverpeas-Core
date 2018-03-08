@@ -305,6 +305,10 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         editorHeight = Integer.parseInt(parameters.get("height"));
       }
 
+      if (code == null) {
+        code = "";
+      }
+
       out.println("<td valign=\"top\">");
       out.println("<textarea id=\"" + fieldName + "\" name=\"" + fieldName
           + "\" rows=\"10\" cols=\"10\">" + code + "</textarea>");
@@ -570,10 +574,12 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
   public static String getContentFromFile(String componentId, String objectId, String fieldName,
       String language) throws UtilException {
-    String fileName = getFileName(fieldName, objectId, language);
-    String path = getPath(componentId);
-
-    return FileFolderManager.getCode(path, fileName);
+    if (isDirectoryExists(componentId)) {
+      String fileName = getFileName(fieldName, objectId, language);
+      String path = getPath(componentId);
+      return FileFolderManager.getCode(path, fileName);
+    }
+    return "";
   }
 
   private static String getFileName(String fieldName, String objectId) {
@@ -759,5 +765,11 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   private static String getPath(String componentId) {
     String[] dirs = { dir };
     return FileRepositoryManager.getAbsolutePath(componentId, dirs);
+  }
+
+  private static boolean isDirectoryExists(String componentId) {
+    String path = getPath(componentId);
+    File directory = new File(path);
+    return directory.exists();
   }
 }
