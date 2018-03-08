@@ -1,7 +1,6 @@
 package com.stratelia.webactiv.util.viewGenerator.html.wysiwyg;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -141,16 +140,16 @@ public class WysiwygTag extends TagSupport {
       session.setAttribute("WYSIWYG_SpaceId", getSpaceId());
     }
     if(getSpaceName() != null) {
-      session.setAttribute("WYSIWYG_SpaceName", URLDecoder.decode(getSpaceName()));
+      session.setAttribute("WYSIWYG_SpaceName", getSpaceName());
     }
     if(getComponentId() != null) {
       session.setAttribute("WYSIWYG_ComponentId", getComponentId());
     }
     if(getComponentName() != null) {
-      session.setAttribute("WYSIWYG_ComponentName", URLDecoder.decode(getComponentName()));
+      session.setAttribute("WYSIWYG_ComponentName", getComponentName());
     }
     if(getBrowseInfo() != null) {
-      session.setAttribute("WYSIWYG_BrowseInfo", URLDecoder.decode(getBrowseInfo()));
+      session.setAttribute("WYSIWYG_BrowseInfo", getBrowseInfo());
     }
     if(getObjectId() != null) {
       session.setAttribute("WYSIWYG_ObjectId", getObjectId());
