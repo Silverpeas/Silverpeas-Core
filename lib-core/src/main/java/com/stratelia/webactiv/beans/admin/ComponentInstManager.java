@@ -644,6 +644,21 @@ public class ComponentInstManager {
     }
   }
 
+  public List<String> getComponentIds(DomainDriverManager ddManager, Parameter parameter)
+      throws AdminException {
+    try {
+      ddManager.getOrganizationSchema();
+      return ddManager.getOrganization().instanceData
+          .getComponentIdsWithParameterValue(parameter);
+    } catch (Exception e) {
+      throw new AdminException("ComponentInstManager.getComponentIds", SilverpeasException.ERROR,
+          "admin.EX_ERR_GET_COMPONENTIDS",
+          "parameterName = " + parameter.getName() + ", value = " + parameter.getValue(), e);
+    } finally {
+      ddManager.releaseOrganizationSchema();
+    }
+  }
+
   /**
    * Converts ComponentInst to ComponentInstanceRow
    */

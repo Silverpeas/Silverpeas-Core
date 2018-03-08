@@ -1046,18 +1046,9 @@ public class WysiwygManager {
   }
 
   public List<ComponentInstLight> getGalleries() {
-    List<ComponentInstLight> galleries = new ArrayList<ComponentInstLight>();
-    OrganisationController orgaController = OrganisationControllerFactory
+    OrganisationController controller = OrganisationControllerFactory
         .getOrganisationController();
-    String[] compoIds = orgaController.getCompoId("gallery");
-    for (String compoId : compoIds) {
-      if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue("gallery" + compoId,
-          "viewInWysiwyg"))) {
-        ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
-        galleries.add(gallery);
-      }
-    }
-    return galleries;
+    return controller.getComponentsWithParameterValue("viewInWysiwyg", "yes");
   }
 
   /**
@@ -1066,19 +1057,9 @@ public class WysiwygManager {
    * @return a components list
    */
   public List<ComponentInstLight> getStorageFile() {
-    // instiate all needed objects
-    List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
     OrganisationController controller = OrganisationControllerFactory.getOrganisationController();
-    // gets all kmelia components
-    String[] compoIds = controller.getCompoId("kmelia");
-    for (String compoId : compoIds) {
-      // retain only the components considered as a file storage
-      if (StringUtil.getBooleanValue(controller.getComponentParameterValue(compoId, "publicFiles"))) {
-        ComponentInstLight component = controller.getComponentInstLight(compoId);
-        components.add(component);
-      }
-    }
-    return components;
+    // get only the components considered as a file storage
+    return controller.getComponentsWithParameterValue("publicFiles", "yes");
   }
 
   /**

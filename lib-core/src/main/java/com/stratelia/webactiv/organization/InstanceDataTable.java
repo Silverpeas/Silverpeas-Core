@@ -45,6 +45,9 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
   }
 
   static final private String INSTANCEDATA_COLUMNS = "id,componentId,name,label,value";
+  private static final String SELECT_ALL_COMPONENTS_BY_PARAMETER_VALUE = "select "
+      + INSTANCEDATA_COLUMNS + " from ST_Instance_Data where name = ? and value = ? order by id";
+
 
   /**
    * Fetch the current instanceData row from a resultSet.
@@ -185,5 +188,21 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     update.setString(1, row.value);
     update.setInt(2, row.componentId);
     update.setString(3, row.name);
+  }
+
+  /**
+   * Returns all component ids according to given param and param value
+   */
+  public List<String> getComponentIdsWithParameterValue(Parameter param)
+      throws AdminPersistenceException {
+    List<String> queryParams = new ArrayList<String>();
+    queryParams.add(param.getName());
+    queryParams.add(param.getValue());
+    List<InstanceDataRow> rows = getRows(SELECT_ALL_COMPONENTS_BY_PARAMETER_VALUE, queryParams);
+    List<String> ids = new ArrayList<String>();
+    for (InstanceDataRow row : rows) {
+      ids.add(Integer.toString(row.componentId));
+    }
+    return ids;
   }
 }

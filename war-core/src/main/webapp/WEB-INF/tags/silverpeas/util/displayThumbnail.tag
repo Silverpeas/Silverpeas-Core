@@ -41,15 +41,8 @@
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="generalBundle"/>
 
 <%
-List<ComponentInstLight> galleries = new ArrayList<ComponentInstLight>();
 OrganisationController orgaController = OrganisationControllerFactory.getOrganisationController();
-String[] compoIds = orgaController.getCompoId("gallery");
-for (String compoId : compoIds) {
-  if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue("gallery" + compoId, "viewInWysiwyg"))) {
-    ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
-    galleries.add(gallery);
-  }
-}
+List<ComponentInstLight> galleries = orgaController.getComponentsWithParameterValue("viewInWysiwyg", "yes");
 request.setAttribute("galleries", galleries);
 %>
 

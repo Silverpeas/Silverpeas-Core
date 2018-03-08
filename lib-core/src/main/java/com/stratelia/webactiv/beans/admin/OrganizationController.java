@@ -275,6 +275,10 @@ public class OrganizationController implements OrganisationController {
     return getAdminService().getComponentParameterValue(sComponentId, parameterName);
   }
 
+  public List<ComponentInstLight> getComponentsWithParameterValue(String param, String value) {
+    return getAdminService().getComponentsWithParameter(param, value);
+  }
+
   // -------------------------------------------------------------------
   // COMPONENTS QUERIES
   // -------------------------------------------------------------------

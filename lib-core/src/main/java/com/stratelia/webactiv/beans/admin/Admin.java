@@ -1131,6 +1131,34 @@ public class Admin {
     return "";
   }
 
+  public List<ComponentInstLight> getComponentsWithParameter(String paramName, String paramValue) {
+    DomainDriverManager domainDriverManager = DomainDriverManagerFactory.getFactory()
+        .getDomainDriverManager();
+    try {
+      Parameter param = new Parameter();
+      param.setName(paramName);
+      param.setValue(paramValue);
+      List<String> driverComponentIds =
+          componentManager.getComponentIds(domainDriverManager, param);
+      List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+      for (String id : driverComponentIds) {
+        ComponentInst component = getComponentInst(id, true, null);
+        // check TreeCache to know if component is not removed neither into a removed space
+        ComponentInstLight componentLight =
+            TreeCache.getComponent(component.getName() + component.getId());
+        if (componentLight != null) {
+          components.add(componentLight);
+        }
+      }
+      return components;
+    } catch (Exception e) {
+      SilverTrace
+          .error(MODULE_ADMIN, "Admin.getComponentIdsWithParameter", "admin.EX_ERR_GET_COMPONENTS",
+              "param = " + paramName + ", value = " + paramValue, e);
+      return Collections.emptyList();
+    }
+  }
+
   public void restoreComponentFromBasket(String componentId) throws AdminException {
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.getFactory()
         .getDomainDriverManager();
