@@ -24,27 +24,17 @@
 
 package org.silverpeas.core.reminder;
 
-import net.htmlparser.jericho.Source;
-import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.contribution.model.Contribution;
-import org.silverpeas.core.contribution.model.ContributionLocalizationBundle;
-import org.silverpeas.core.contribution.model.LocalizedContribution;
-import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
-import org.silverpeas.core.notification.user.builder
-    .AbstractContributionTemplateUserNotificationBuilder;
-import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.reminder.usernotification.ReminderUserNotificationSender;
-import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.util.filter.FilterByType;
+import org.silverpeas.core.reminder.usernotification
+    .ReminderUserNotificationSenderByContributionType;
+import org.silverpeas.core.util.ServiceProvider;
 
 import javax.inject.Singleton;
-import java.time.ZonedDateTime;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.function.Supplier;
-
-import static org.silverpeas.core.reminder.ReminderSettings.getMessagesIn;
-import static org.silverpeas.core.util.DateUtil.formatDateAndTime;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * @author silveryocha
@@ -52,121 +42,50 @@ import static org.silverpeas.core.util.DateUtil.formatDateAndTime;
 @Singleton
 public class DefaultReminderUserNotificationSender implements ReminderUserNotificationSender {
 
+  private Map<String, Class<? extends ReminderUserNotificationSenderByContributionType>>
+      potentialSendersByType = new HashMap<>();
+
   @Override
   public void sendAbout(final Reminder reminder) {
-    new ContributionReminderUserNotification(reminder).build().send();
+    final String contributionType = reminder.getContributionId().getType();
+
+    final Class<? extends ReminderUserNotificationSenderByContributionType> senderClass =
+        getNotificationSender(
+        contributionType);
+
+    final ReminderUserNotificationSenderByContributionType sender = ServiceProvider
+        .getService(senderClass);
+
+    sender.sendAbout(reminder, contributionType);
   }
 
   /**
-   * @author silveryocha
+   * From the given contribution type, returning the potential implementations of {@link Reminder}
+   * notification sender.
+   * @param type type of a {@link Contribution}.
+   * @return the potential sender.
    */
-  private static class ContributionReminderUserNotification
-      extends AbstractContributionTemplateUserNotificationBuilder<Contribution>
-      implements FallbackToCoreTemplatePathBehavior {
-
-    private final Reminder reminder;
-    private final User receiver;
-    private final Supplier<IllegalArgumentException> notHandledReminderType;
-    private final ZonedDateTime reminderContributionDate;
-
-    @SuppressWarnings("ConstantConditions")
-    private ContributionReminderUserNotification(final Reminder reminder) {
-      super(reminder.getContribution());
-      this.reminder = reminder;
-      this.receiver = User.getById(reminder.getUserId());
-      notHandledReminderType = () -> new IllegalArgumentException(
-          "Reminder type " + this.reminder.getClass() + " is not handled");
-      reminderContributionDate = new FilterByType(reminder)
-          .matchFirst(DurationReminder.class::equals, r -> {
-            DurationReminder durationReminder = (DurationReminder) r;
-            return durationReminder
-                .getScheduledDateTime()
-                .atZoneSameInstant(receiver.getUserPreferences().getZoneId())
-                .plus(durationReminder.getDuration(),
-                      durationReminder.getTimeUnit().toChronoUnit());
-          })
-          .matchFirst(DateTimeReminder.class::equals, r -> null)
-          .result()
-          .orElseThrow(notHandledReminderType);
-    }
-
-    /**
-     * The title is built by {@link #getTitle()}
-     * @return null value.
-     */
-    @Override
-    protected String getBundleSubjectKey() {
-      return null;
-    }
-
-    @Override
-    protected void performTemplateData(final Contribution localizedContribution,
-        final SilverpeasTemplate template) {
-      super.performTemplateData(localizedContribution, template);
-      final String language = ((LocalizedContribution) localizedContribution).getLanguage();
-      final String contributionTitle = new FilterByType(reminder)
-          .matchFirst(DurationReminder.class::equals, r -> {
-            DurationReminder durationReminder = (DurationReminder) r;
-            return ContributionLocalizationBundle
-                .getByInstanceAndLanguage(getResource(), language)
-                .getUiMessageTitleByTypeAndProperty(durationReminder.getContributionProperty());
-          })
-          .matchFirst(DateTimeReminder.class::equals,
-                      r -> ContributionLocalizationBundle
-                          .getByInstanceAndLanguage(getResource(), language)
-                          .getUiMessageTitleByType())
-          .result()
-          .orElseThrow(notHandledReminderType);
-      final String formattedReminderContributionDate = reminderContributionDate != null
-          ? formatDateAndTime(reminderContributionDate, language)
-          : "N/A";
-      final String contributionTitleText = new Source(contributionTitle)
-          .getTextExtractor()
-          .toString();
-      template.setAttribute("contributionTitle", contributionTitle);
-      template.setAttribute("reminderContributionDate", formattedReminderContributionDate);
-      getNotificationMetaData().addLanguage(language,
-                                            getMessagesIn(language).getStringWithParams(
-                                                "reminder.on",
-                                                contributionTitleText,
-                                                formattedReminderContributionDate),
-                                            "");
-    }
-
-    @Override
-    protected String getTemplateFileName() {
-      return new FilterByType(reminder)
-          .matchFirst(DurationReminder.class::equals, r -> "reminder-duration")
-          .matchFirst(DateTimeReminder.class::equals, r -> "reminder-datetime")
-          .result()
-          .orElseThrow(notHandledReminderType);
-    }
-
-    @Override
-    protected String getTemplatePath() {
-      return "reminder";
-    }
-
-    @Override
-    protected NotifAction getAction() {
-      return NotifAction.REPORT;
-    }
-
-    @Override
-    protected String getSender() {
-      // Empty is here returned, because the notification is from the platform and not from an
-      // other user.
-      return "";
-    }
-
-    @Override
-    protected Collection<String> getUserIdsToNotify() {
-      return Collections.singleton(receiver.getId());
-    }
-
-    @Override
-    protected boolean isSendImmediately() {
-      return true;
-    }
+  private Class<? extends ReminderUserNotificationSenderByContributionType> getNotificationSender(
+      final String type) {
+    return potentialSendersByType.computeIfAbsent(type, t -> {
+      Class<? extends ReminderUserNotificationSenderByContributionType> potentialSender = null;
+      // looking for potential implementations
+      Collection<ReminderUserNotificationSenderByContributionType> senders = ServiceProvider
+          .getAllServices(ReminderUserNotificationSenderByContributionType.class);
+      for (ReminderUserNotificationSenderByContributionType sender : senders) {
+        if (sender.isReminderNotificationSenderOfContributionType(t)) {
+          if (potentialSender == null) {
+            potentialSender = sender.getClass();
+          } else {
+            throw new SilverpeasRuntimeException(
+                "only one reminder sender can be implemented by contribution type");
+          }
+        }
+      }
+      return potentialSender != null
+          ? potentialSender
+          : DefaultContributionReminderUserNotification.class;
+    });
   }
+
 }

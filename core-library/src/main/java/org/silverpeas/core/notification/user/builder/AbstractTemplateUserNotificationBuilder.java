@@ -34,13 +34,19 @@ import org.silverpeas.core.template.SilverpeasStringTemplateUtil;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.Pair;
 
+import java.time.ZoneId;
+import java.time.temporal.Temporal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+
+import static org.silverpeas.core.util.DateUtil.*;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 
 /**
  * @author Yohann Chastagnier
@@ -188,5 +194,87 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
    */
   protected String getContributionAccessLinkLabelBundleKey() {
     return null;
+  }
+
+  /**
+   * Handles the date formats into notification building context.
+   */
+  public class NotificationTemporal {
+    final Temporal temporal;
+    final ZoneId zoneIdReference;
+    final String language;
+
+    public NotificationTemporal(final Temporal temporal, final ZoneId zoneIdReference,
+        final String language) {
+      this.temporal = temporal;
+      this.zoneIdReference = zoneIdReference;
+      this.language = language;
+    }
+
+    /**
+     * Indicates if the date exist.
+     * @return true if exists, false otherwise.
+     */
+    public boolean isDateExisting() {
+      return isDefined(getDayDate());
+    }
+
+    /**
+     * Gets the date of the day.
+     * @return a string.
+     */
+    public String getDayDate() {
+      return DateUtil.getOutputDate(temporal, language);
+    }
+
+    /**
+     * Gets the date with hour if the temporal has hour data.
+     * @return a string.
+     */
+    public String getDate() {
+      return getOutputDateAndHour(temporal, language, null);
+    }
+
+    /**
+     * Gets the date with hour data if the temporal has hour data.<br/>
+     * If the zone id is not the same of the platform, the zone id is also filled.
+     * @return a string.
+     */
+    public String getFullDate() {
+      return getOutputDateAndHour(temporal, language, zoneIdReference);
+    }
+
+    /**
+     * Indicates if the date has hour data.
+     * @return true if exists, false otherwise.
+     */
+    public boolean isHourExisting() {
+      return isDefined(getHour());
+    }
+
+    /**
+     * Gets the hour data if the temporal has hour data.
+     * @return a string.
+     */
+    public String getHour() {
+      return getOutputHour(temporal, language, null);
+    }
+
+    /**
+     * Gets the hour data if the temporal has hour data.<br/>
+     * If the zone id is not the same of the platform, the zone id is also filled.
+     * @return a string.
+     */
+    public String getFullHour() {
+      return getOutputHour(temporal, language, zoneIdReference);
+    }
+
+    /**
+     * Gets the zone id of the temporal if the data exists.
+     * @return a string.
+     */
+    public String getZoneId() {
+      return getOutputZoneId(temporal);
+    }
   }
 }

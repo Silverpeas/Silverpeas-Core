@@ -1,0 +1,1 @@
+Vous avez demandé un rappel <b>$reminderTitle$</b> avant $contributionTitle$ ($reminderContributionStart.fullDate$).

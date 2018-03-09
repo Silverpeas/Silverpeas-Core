@@ -45,7 +45,7 @@ import java.util.Optional;
 @Named
 public class CalendarContributionLocator implements ContributionLocatorByLocalIdAndType {
 
-  private static List<String> HANDLED_TYPES =
+  private static final List<String> HANDLED_TYPES =
       Arrays.asList(CalendarEvent.TYPE, CalendarEventOccurrence.TYPE);
 
   @Override

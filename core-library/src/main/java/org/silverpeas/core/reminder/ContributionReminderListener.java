@@ -28,6 +28,7 @@ import org.silverpeas.core.contribution.ContributionModification;
 import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,16 +43,38 @@ public class ContributionReminderListener
   @Override
   public void update(final Contribution before, final Contribution after) {
     try {
-      getReminders(before).stream().filter(Reminder::isScheduled).forEach(Reminder::schedule);
+      final List<Reminder> toUnschedule = new ArrayList<>();
+      getReminders(before).forEach(r -> {
+        try {
+          r.schedule();
+        } catch (IllegalArgumentException | IllegalStateException e) {
+          toUnschedule.add(r);
+          SilverLogger.getLogger(this).warn(e);
+        }
+      });
+      toUnschedule.stream()
+          .filter(Reminder::isScheduled)
+          .forEach(r -> r.unschedule(false));
     } catch (Exception e) {
-      SilverLogger.getLogger(this).warn(e);
+      SilverLogger.getLogger(this).error(e);
     }
   }
 
   @Override
   public void delete(final Contribution contribution) {
     try {
-      getReminders(contribution).forEach(Reminder::unschedule);
+      List<Reminder> reminders = emptyList();
+      if (contribution instanceof WithReminder) {
+        reminders = Reminder.getByContribution(contribution.getContributionId());
+      }
+      if (reminders.isEmpty()) {
+        Optional<Contribution> parent = contribution.getParent();
+        if (parent.isPresent() && parent.get() instanceof WithReminder) {
+          update(parent.get(), null);
+        }
+      } else {
+        reminders.forEach(Reminder::unschedule);
+      }
     } catch (Exception e) {
       SilverLogger.getLogger(this).warn(e);
     }

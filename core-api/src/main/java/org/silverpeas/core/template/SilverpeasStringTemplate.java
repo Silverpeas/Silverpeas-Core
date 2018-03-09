@@ -28,6 +28,7 @@ import org.antlr.stringtemplate.StringTemplate;
 import org.antlr.stringtemplate.StringTemplateGroup;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.template.renderer.DateRenderer;
+import org.silverpeas.core.template.renderer.StringRenderer;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;
@@ -76,6 +77,7 @@ public class SilverpeasStringTemplate implements SilverpeasTemplate {
 
   protected String applyAttributes(StringTemplate template) {
     template.registerRenderer(Date.class, new DateRenderer());
+    template.registerRenderer(String.class, new StringRenderer());
     for (Map.Entry<String, Object> attribute : attributes.entrySet()) {
       template.setAttribute(attribute.getKey(), attribute.getValue());
     }

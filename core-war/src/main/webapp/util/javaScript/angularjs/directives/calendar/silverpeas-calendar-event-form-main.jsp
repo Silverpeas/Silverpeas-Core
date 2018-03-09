@@ -190,14 +190,14 @@
         </label>
       </div>
     </div>
-    <div class="field" ng-show="$ctrl.__reminderShown">
+    <div class="field" ng-if="!$ctrl.data.occurrenceId" ng-show="$ctrl.__reminderShown">
       <label class="txtlibform">${reminderLabel}</label>
       <div class="champs">
         <silverpeas-contribution-reminder mode="DURATION"
                                           api="$ctrl.reminderApi"
                                           reminder="$ctrl.data.reminder"
                                           contribution-id="$ctrl.eventContributionId"
-                                          contribution-property="'NEXT_START_DATE'"
+                                          contribution-property="'NEXT_START_DATE_TIME'"
                                           main-label=""
                                           shown="$ctrl.__reminderShown"
                                           autonomous="false">
