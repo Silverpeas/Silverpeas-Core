@@ -24,7 +24,7 @@
 package org.silverpeas.core.comment.service;
 
 import org.silverpeas.core.comment.model.Comment;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
@@ -43,7 +43,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * @author Yohann Chastagnier
  */
 public class CommentUserNotification
-    extends AbstractTemplateUserNotificationBuilder<SilverpeasContent>
+    extends AbstractTemplateUserNotificationBuilder<Contribution>
     implements FallbackToCoreTemplatePathBehavior {
 
   /**
@@ -76,7 +76,7 @@ public class CommentUserNotification
   private final Set<String> recipients;
 
   public CommentUserNotification(final CommentService commentService, final Comment comment,
-      final SilverpeasContent commentedContent, final String subjectKey,
+      final Contribution commentedContent, final String subjectKey,
       final LocalizationBundle componentMessages, final Set<String> recipients) {
     super(commentedContent);
     this.commentService = commentService;
@@ -113,12 +113,12 @@ public class CommentUserNotification
   }
 
   @Override
-  protected void perform(final SilverpeasContent resource) {
+  protected void perform(final Contribution resource) {
     getNotificationMetaData().setOriginalExtraMessage(comment.getMessage());
   }
 
   @Override
-  protected void performTemplateData(final String language, final SilverpeasContent resource,
+  protected void performTemplateData(final String language, final Contribution resource,
       final SilverpeasTemplate template) {
     componentMessages.changeLocale(language);
     getNotificationMetaData().addLanguage(language, getTitle(), "");
@@ -127,7 +127,7 @@ public class CommentUserNotification
   }
 
   @Override
-  protected void performNotificationResource(final String language, final SilverpeasContent resource,
+  protected void performNotificationResource(final String language, final Contribution resource,
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceName(resource.getTitle());
     notificationResourceData.setResourceDescription(resource.getDescription());

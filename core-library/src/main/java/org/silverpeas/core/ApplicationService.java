@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.SettingBundle;
 
@@ -52,7 +52,7 @@ import org.silverpeas.core.util.SettingBundle;
  *
  * @param <T> The concrete type of the content the component is dedicated to manage.
  */
-public interface ApplicationService<T extends SilverpeasContent> {
+public interface ApplicationService<T extends Contribution> {
 
   /**
    * Gets the content handled by an instance of the component with the specified unique identifier.
