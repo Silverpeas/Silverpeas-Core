@@ -124,10 +124,19 @@ public class DateUtil {
     return date.getTime() == Long.MIN_VALUE || date.getTime() == Long.MAX_VALUE;
   }
 
+  /**
+   * Gets a localized String representation of the specified temporal according to the specified
+   * ISO 632-1 language code.
+   * @param temporal a temporal.
+   * @param language an ISO 632-1 locale code.
+   * @return a localized string representation of a date or of a datetime.
+   * @deprecated replaced by
+   * {@link org.silverpeas.core.date.TemporalConverter#asLocalized(Temporal, String)}
+   */
+  @Deprecated
   public static String getOutputDate(Temporal temporal, String language) {
     final DateTimeFormatter dateFormat = ofPattern(getOutputFormatter(language).getPattern());
-    return new FilterByType(temporal)
-        .matchFirst(LocalDate.class::equals, t -> dateFormat.format((LocalDate) t))
+    return new FilterByType(temporal).matchFirst(LocalDate.class::equals, t -> dateFormat.format((LocalDate) t))
         .matchFirst(LocalDateTime.class::equals, t -> dateFormat.format((LocalDateTime) t))
         .matchFirst(OffsetDateTime.class::equals, t -> dateFormat.format((OffsetDateTime) t))
         .matchFirst(ZonedDateTime.class::equals, t -> dateFormat.format((ZonedDateTime) t))
@@ -709,7 +718,7 @@ public class DateUtil {
    * into account if null.
    * @return the formatted String.
    */
-  public static String getOutputDateAndHour(java.time.temporal.Temporal temporal, String language,
+  public static String getOutputDateAndHour(Temporal temporal, String language,
       ZoneId zoneIdReference) {
     if (temporal == null) {
       return null;
@@ -726,7 +735,7 @@ public class DateUtil {
    * into account if null.
    * @return the formatted String.
    */
-  public static String getOutputHour(java.time.temporal.Temporal temporal, String language,
+  public static String getOutputHour(Temporal temporal, String language,
       ZoneId zoneIdReference) {
     final DateTimeFormatter hourFormat = ofPattern(getHourOutputFormat(language).getPattern());
     final Mutable<ZoneId> zoneIdIfDifferentToReference = Mutable.empty();
@@ -755,7 +764,7 @@ public class DateUtil {
         : hour + " (" + zoneIdIfDifferentToReference.get().getId() + ")";
   }
 
-  public static String getOutputZoneId(java.time.temporal.Temporal temporal) {
+  public static String getOutputZoneId(Temporal temporal) {
     return new FilterByType(temporal)
         .matchFirst(OffsetDateTime.class::equals, t -> ((OffsetDateTime) t).toZonedDateTime().getZone().getId())
         .matchFirst(ZonedDateTime.class::equals, t -> ((ZonedDateTime) t).getZone().getId())

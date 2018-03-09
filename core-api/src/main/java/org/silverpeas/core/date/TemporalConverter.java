@@ -32,9 +32,11 @@ import java.time.chrono.ChronoZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeFormatterBuilder;
 import java.time.format.DateTimeParseException;
+import java.time.format.FormatStyle;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -45,7 +47,11 @@ import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 /**
  * A converter of date and datetime into different temporal types used in Silverpeas. It provides
  * methods to perform operations against temporal objects according their concrete type; the
- * temporal objects are then converted before passing them to the matching function.
+ * temporal objects are then converted before passing them to the matching function. It provides
+ * also convenient methods to convert a temporal, whatever its type, to another type like a
+ * {@link LocalDate} or an {@link OffsetDateTime}. It provides also methods dedicated to convert
+ * a string representation of a date or a datetime to its corresponding temporal instance and
+ * vice-versa.
  * @author mmoquillon
  */
 public class TemporalConverter {
@@ -300,6 +306,35 @@ public class TemporalConverter {
       }
     }
     return DateTimeFormatter.ISO_LOCAL_DATE.format(temporal);
+  }
+
+  /**
+   * <p>
+   * Converts the specified temporal into a string representation that conforms to the l10n rules of
+   * the country/language identified by the given ISO 632-1 locale code. The rules of formatting
+   * are based upon the {@link DateTimeFormatter} that fully follows the l10n rules of several
+   * country/language calendar systems.
+   * </p>
+   * <p>
+   * If the temporal is a date, then the localized representation will be of a local date.
+   * If the temporal is a local datetime, then the localized representation will be of a localized
+   * date + localized time.
+   * </p>
+   * @param temporal a {@link Temporal} object to convert.
+   * @param language an ISO 632-1 language code.
+   * @return a localized string representation of the temporal. The localized representation is
+   * based upon the l10n standard rules for the specified ISO 632-1 code.
+   */
+  public static String asLocalized(final Temporal temporal, final String language) {
+    if (temporal.isSupported(ChronoUnit.HOURS)) {
+      return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
+          .withLocale(Locale.forLanguageTag(language))
+          .format(temporal);
+    } else {
+      return DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
+          .withLocale(Locale.forLanguageTag(language))
+          .format(temporal);
+    }
   }
 
   /**
