@@ -244,7 +244,7 @@ public class CalendarEvent extends BasicJpaEntity<CalendarEvent, UuidIdentifier>
     WithAttachment, WithReminder {
 
   public static final String TYPE = "CalendarEvent";
-  public static final String NEXT_START_DATE_HOUR_MODEL_PROPERTY = "NEXT_START_DATE_HOUR";
+  public static final String NEXT_START_DATE_TIME_MODEL_PROPERTY = "NEXT_START_DATE_TIME";
 
   private static final long serialVersionUID = 1L;
   public static final String THE_EVENT = "The event ";
