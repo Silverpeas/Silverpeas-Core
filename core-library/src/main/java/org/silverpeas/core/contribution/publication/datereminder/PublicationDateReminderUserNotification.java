@@ -31,7 +31,6 @@ import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotific
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.URLUtil;
 
 import java.util.ArrayList;
@@ -61,7 +60,7 @@ public class PublicationDateReminderUserNotification
 
   @Override
   protected Collection<String> getUserIdsToNotify() {
-    Collection<String> userIds = new ArrayList<String>();
+    Collection<String> userIds = new ArrayList<>();
     String creatorId = this.pubDetail.getCreatorId();
     userIds.add(creatorId);
     String updaterId = this.pubDetail.getUpdaterId();

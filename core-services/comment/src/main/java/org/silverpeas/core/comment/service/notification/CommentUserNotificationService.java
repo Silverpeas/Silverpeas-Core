@@ -31,7 +31,7 @@ import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.service.CommentService;
 import org.silverpeas.core.comment.service.CommentUserNotification;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.contribution.model.Contribution;
 import org.silverpeas.core.notification.system.CDIResourceEventListener;
 import org.silverpeas.core.notification.user.builder.helper.UserNotificationHelper;
 import org.silverpeas.core.notification.user.client.NotificationManagerException;
@@ -69,7 +69,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
    * example, for a Silverpeas component classifieds, a property classifieds.commentAddingSubject
    * must be defined with the subject of the notification.
    */
-  private static String SUBJECT_COMMENT_ADDING = "commentAddingSubject";
+  private static final String SUBJECT_COMMENT_ADDING = "commentAddingSubject";
 
   private static Map<String, ApplicationService> services = new ConcurrentHashMap<>();
 
@@ -89,7 +89,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
       ApplicationService service = lookupComponentService(componentInstanceId);
       if (service != null) {
         try {
-          SilverpeasContent commentedContent =
+          Contribution commentedContent =
               service.getContentById(comment.getForeignKey().getId());
           final Set<String> recipients =
               getInterestedUsers(comment.getCreator().getId(), commentedContent);
@@ -151,9 +151,10 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
    * @param content the content that was commented by the specified comment.
    * @return a list with the identifier of the interested users.
    */
-  private Set<String> getInterestedUsers(final String commentAuthorId, SilverpeasContent content) {
-    Set<String> interestedUsers = new LinkedHashSet<String>();
-    WAPrimaryKey pk = new ForeignPK(content.getId(), content.getComponentInstanceId());
+  private Set<String> getInterestedUsers(final String commentAuthorId, Contribution content) {
+    Set<String> interestedUsers = new LinkedHashSet<>();
+    WAPrimaryKey pk = new ForeignPK(content.getContributionId().getLocalId(),
+        content.getContributionId().getComponentInstanceId());
     List<Comment> comments = getCommentService().getAllCommentsOnPublication(content.
         getContributionType(), pk);
     for (Comment aComment : comments) {
@@ -189,7 +190,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
     return commentService;
   }
 
-  private boolean canBeSent(SilverpeasContent content, User recipient) {
+  private boolean canBeSent(Contribution content, User recipient) {
     return content.canBeAccessedBy(recipient);
   }
 }
