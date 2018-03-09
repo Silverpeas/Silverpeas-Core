@@ -39,7 +39,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import static java.util.Collections.singletonList;
-import static org.silverpeas.core.calendar.CalendarEvent.NEXT_START_DATE_HOUR_MODEL_PROPERTY;
+import static org.silverpeas.core.calendar.CalendarEvent.NEXT_START_DATE_TIME_MODEL_PROPERTY;
 import static org.silverpeas.core.date.Period.between;
 
 /**
@@ -57,7 +57,7 @@ public class CalendarEventModel extends DefaultContributionModel<CalendarEvent> 
 
   /**
    * <p>
-   * About property {@link CalendarEvent#NEXT_START_DATE_HOUR_MODEL_PROPERTY}:<br/>
+   * About property {@link CalendarEvent#NEXT_START_DATE_TIME_MODEL_PROPERTY}:<br/>
    * If no {@link ZonedDateTime} given as first parameter, then the {@link ZonedDateTime#now()}
    * is taken into account, otherwise the given {@link ZonedDateTime} is used.<br/>
    * The next occurrence start date from the {@link ZonedDateTime} instance is returned.
@@ -66,7 +66,7 @@ public class CalendarEventModel extends DefaultContributionModel<CalendarEvent> 
   @SuppressWarnings("unchecked")
   @Override
   public <T> T getProperty(final String property, final Object... parameters) {
-    if (NEXT_START_DATE_HOUR_MODEL_PROPERTY.equals(property)) {
+    if (NEXT_START_DATE_TIME_MODEL_PROPERTY.equals(property)) {
       ZonedDateTime from = ZonedDateTime.now(getContribution().getCalendar().getZoneId());
       if (parameters.length > 0 && parameters[0] instanceof ZonedDateTime) {
         from = (ZonedDateTime) parameters[0];

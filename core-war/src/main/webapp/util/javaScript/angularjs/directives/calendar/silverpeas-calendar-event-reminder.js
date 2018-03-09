@@ -27,7 +27,7 @@
   angular.module('silverpeas.directives').directive('silverpeasCalendarEventReminder', function() {
     return {
       template : '<silverpeas-contribution-reminder api="$ctrl.reminderApi" mode="DURATION" reminder="$ctrl.reminder" ' +
-                                                   'contribution-id="$ctrl.cId" contribution-property="\'NEXT_START_DATE_HOUR\'" ' +
+                                                   'contribution-id="$ctrl.cId" contribution-property="\'NEXT_START_DATE_TIME\'" ' +
                                                    'on-created="$ctrl.onCreated({reminder:reminder})" ' +
                                                    'on-updated="$ctrl.onUpdated({reminder:reminder})" ' +
                                                    'on-deleted="$ctrl.onDeleted()"></silverpeas-contribution-reminder>',

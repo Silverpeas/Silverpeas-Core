@@ -46,6 +46,7 @@ import org.silverpeas.core.io.upload.UploadedFile;
 import org.silverpeas.core.pdc.pdc.model.PdcPosition;
 import org.silverpeas.core.reminder.DurationReminder;
 import org.silverpeas.core.reminder.Reminder;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.http.RequestParameterDecoder;
@@ -520,16 +521,24 @@ public class CalendarResource extends AbstractCalendarResource {
         .saveOccurrence(occToUpdate, occurrenceEntity.getUpdateMethodType(), getZoneId()))
         .execute();
 
-    final ReminderEntity reminderEntity = occurrenceEntity.getReminder();
-    if (reminderEntity != null) {
-      final Reminder reminder = Reminder.getById(reminderEntity.getId());
-      try {
-        reminderEntity.mergeInto(reminder).schedule();
-      } catch (Exception e) {
-        getMessager().addInfo(getBundle()
-            .getStringWithParams("calendar.message.event.reminder.update.error",
-                occToUpdate.getCalendarEvent().getTitle()));
-      }
+    if (updatedEvents.size() > 1) {
+      final CalendarEvent original = updatedEvents.get(0);
+      final CalendarEvent created = updatedEvents.get(1);
+      final Mutable<Boolean> reminderError = Mutable.of(false);
+      Reminder.getByContribution(original.getContributionId()).stream()
+          .map(DurationReminder.class::cast)
+          .map(r -> new DurationReminder(created.getContributionId(), User.getById(r.getUserId()))
+              .withText(r.getText()).triggerBefore(r.getDuration(), r.getTimeUnit(), r.getContributionProperty()))
+          .forEach(r -> {
+            try {
+              r.schedule();
+            } catch (Exception e) {
+              reminderError.set(true);
+            }
+          });
+      reminderError.ifPresent(e -> getMessager().addInfo(
+          getBundle().getStringWithParams("calendar.message.event.reminder.update.error",
+              occToUpdate.getCalendarEvent().getTitle())));
     }
 
     return asEventWebEntities(updatedEvents);
