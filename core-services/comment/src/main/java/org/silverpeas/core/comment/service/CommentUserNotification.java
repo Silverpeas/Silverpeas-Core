@@ -23,20 +23,18 @@
  */
 package org.silverpeas.core.comment.service;
 
-import org.silverpeas.core.contribution.model.SilverpeasContent;
-import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.comment.model.Comment;
+import org.silverpeas.core.contribution.model.Contribution;
+import org.silverpeas.core.contribution.model.SilverpeasToolContent;
+import org.silverpeas.core.notification.user.FallbackToCoreTemplatePathBehavior;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
-import org.silverpeas.core.util.LocalizationBundle;
-import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.template.SilverpeasTemplate;
-import org.silverpeas.core.template.SilverpeasTemplateFactory;
+import org.silverpeas.core.util.LocalizationBundle;
 
 import java.util.Collection;
 import java.util.MissingResourceException;
-import java.util.Properties;
 import java.util.Set;
 
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -44,13 +42,9 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 /**
  * @author Yohann Chastagnier
  */
-public class CommentUserNotification extends AbstractTemplateUserNotificationBuilder<SilverpeasContent> {
-
-  /**
-   * If no property with the subject of the notification message is defined in a Silverpeas component, then the below
-   * default property is taken.
-   */
-  public static final String DEFAULT_SUBJECT_COMMENT_ADDING = "comments.commentAddingSubject";
+public class CommentUserNotification
+    extends AbstractTemplateUserNotificationBuilder<Contribution>
+    implements FallbackToCoreTemplatePathBehavior {
 
   /**
    * The name of the attribute in a notification message that refers the comment responsable of the triggering of this
@@ -59,10 +53,21 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
   public static final String NOTIFICATION_COMMENT_ATTRIBUTE = "comment";
 
   /**
+   * Template path.
+   */
+  private static final String TEMPLATE_PATH = "comment";
+
+  /**
+   * If no property with the subject of the notification message is defined in a Silverpeas component, then the below
+   * default property is taken.
+   */
+  private static final String DEFAULT_SUBJECT_COMMENT_ADDING = "comments.commentAddingSubject";
+
+  /**
    * The name of the attribute in a notification message that refers the content commented by the comment responsable of
    * the triggering of this service.
    */
-  public static final String NOTIFICATION_CONTENT_ATTRIBUTE = "content";
+  private static final String NOTIFICATION_CONTENT_ATTRIBUTE = "content";
 
   private final CommentService commentService;
   private final String subjectKey;
@@ -71,7 +76,7 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
   private final Set<String> recipients;
 
   public CommentUserNotification(final CommentService commentService, final Comment comment,
-      final SilverpeasContent commentedContent, final String subjectKey,
+      final Contribution commentedContent, final String subjectKey,
       final LocalizationBundle componentMessages, final Set<String> recipients) {
     super(commentedContent);
     this.commentService = commentService;
@@ -108,43 +113,29 @@ public class CommentUserNotification extends AbstractTemplateUserNotificationBui
   }
 
   @Override
-  protected void perform(final SilverpeasContent resource) {
+  protected void perform(final Contribution resource) {
     getNotificationMetaData().setOriginalExtraMessage(comment.getMessage());
   }
 
   @Override
-  protected void performTemplateData(final String language, final SilverpeasContent resource,
+  protected void performTemplateData(final String language, final Contribution resource,
       final SilverpeasTemplate template) {
     componentMessages.changeLocale(language);
     getNotificationMetaData().addLanguage(language, getTitle(), "");
+    template.setAttribute(NOTIFICATION_CONTENT_ATTRIBUTE, getResource());
+    template.setAttribute(NOTIFICATION_COMMENT_ATTRIBUTE, comment);
   }
 
   @Override
-  protected void performNotificationResource(final String language, final SilverpeasContent resource,
+  protected void performNotificationResource(final String language, final Contribution resource,
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setResourceName(resource.getTitle());
     notificationResourceData.setResourceDescription(resource.getDescription());
   }
 
   @Override
-  protected SilverpeasTemplate createTemplate() {
-    final SettingBundle settings = commentService.getComponentSettings();
-    final Properties templateConfiguration = new Properties();
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_ROOT_DIR,
-        settings.getString("templatePath"));
-    templateConfiguration.setProperty(SilverpeasTemplate.TEMPLATE_CUSTOM_DIR,
-        settings.getString("customersTemplatePath"));
-
-    final SilverpeasTemplate template =
-        SilverpeasTemplateFactory.createSilverpeasTemplate(templateConfiguration);
-    template.setAttribute(NOTIFICATION_CONTENT_ATTRIBUTE, getResource());
-    template.setAttribute(NOTIFICATION_COMMENT_ATTRIBUTE, comment);
-    return template;
-  }
-
-  @Override
   protected String getTemplatePath() {
-    return null;
+    return TEMPLATE_PATH;
   }
 
   @Override

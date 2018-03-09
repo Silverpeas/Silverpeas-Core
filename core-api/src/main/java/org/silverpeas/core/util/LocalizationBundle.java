@@ -169,7 +169,16 @@ public class LocalizationBundle extends ResourceBundle implements SilverpeasBund
    * @param locale the new locale.
    */
   public void changeLocale(String locale) {
-    this.locale = new Locale(locale);
+    changeLocale(new Locale(locale));
+  }
+
+  /**
+   * Changes the locale of this localization bundle. The bundle content will be loaded for the
+   * specified locale.
+   * @param locale the new locale.
+   */
+  public void changeLocale(Locale locale) {
+    this.locale = locale;
   }
 
   /**
