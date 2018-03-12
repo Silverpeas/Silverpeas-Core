@@ -90,7 +90,7 @@ public class SilverpeasExceptionMessages {
    * @return an exception message.
    */
   public static String failureOnAdding(String resource, Object id) {
-    return ADDING_FAILURE.format(new Object[]{resource, id});
+    return ADDING_FAILURE.format(new Object[]{resource, id == null ? "" : id});
   }
 
   /**
