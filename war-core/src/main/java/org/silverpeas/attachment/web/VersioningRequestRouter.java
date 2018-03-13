@@ -34,6 +34,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.rmi.RemoteException;
 import java.util.List;
 
+import static com.silverpeas.util.StringUtil.defaultStringIfNotDefined;
+
 public class VersioningRequestRouter extends ComponentRequestRouter<VersioningSessionController> {
 
   private static final long serialVersionUID = 4808952397898736028L;
