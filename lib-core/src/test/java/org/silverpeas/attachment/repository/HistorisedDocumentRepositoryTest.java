@@ -2229,7 +2229,6 @@ public class HistorisedDocumentRepositoryTest {
       document.setForeignId(targetForeignId);
       document.setPK(result);
       document.setNodeName(doc.getNodeName());
-      document.setUpdatedBy(null);
       assertThat(doc, SimpleDocumentAttributesMatcher.matches(document));
       checkEnglishSimpleDocument(doc);
       assertThat(doc.getMajorVersion(), is(0));
@@ -3387,7 +3386,6 @@ public class HistorisedDocumentRepositoryTest {
       assertThat(doc, SimpleDocumentMatcher.matches(document));
       doc = documentRepository.findDocumentByOldSilverpeasId(session, instanceId, oldSilverpeasId,
           true, language);
-      document.setUpdatedBy(null);
       assertThat(doc, is(notNullValue()));
       assertThat(doc.getOldSilverpeasId(), is(2048L));
       assertThat(doc.getCreated(), is(creationDate));
