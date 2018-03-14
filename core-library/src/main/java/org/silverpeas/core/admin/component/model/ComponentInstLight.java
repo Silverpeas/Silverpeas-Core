@@ -198,6 +198,10 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
     return status;
   }
 
+  public void setStatus(String status) {
+    this.status = status;
+  }
+
   public Date getUpdateDate() {
     return updateDate;
   }
@@ -340,6 +344,10 @@ public class ComponentInstLight extends AbstractI18NBean<ComponentI18N>
   @Override
   public String getParameterValue(final String parameterName) {
     return getCachedComponentInst().getParameterValue(parameterName);
+  }
+
+  public boolean isRemoved() {
+    return ComponentInst.STATUS_REMOVED.equals(getStatus());
   }
 
   @Override

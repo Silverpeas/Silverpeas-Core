@@ -26,7 +26,6 @@ package org.silverpeas.core.contribution.content.form.displayers;
 import net.htmlparser.jericho.Source;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -36,7 +35,6 @@ import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.GalleryHelper;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RenderingContext;
 import org.silverpeas.core.contribution.content.form.Util;
@@ -48,14 +46,12 @@ import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -187,99 +183,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     } else {
       out.println("<table>");
 
-      String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
-
-      LocalizationBundle resources = ResourceLocator.getLocalizationBundle(
-          "org.silverpeas.wysiwyg.multilang.wysiwygBundle", contentLanguage);
-
-      // Storage file : HTML select building
-      List<ComponentInstLight> fileStorage = null;
-      boolean showFileStorages = true;
-      if (parameters.containsKey("fileStorages")) {
-        showFileStorages = StringUtil.getBooleanValue(parameters.get("fileStorages"));
-      }
-      if (showFileStorages) {
-        fileStorage = WysiwygController.getStorageFile();
-        if (!fileStorage.isEmpty()) {
-          out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
-          StringBuilder stringBuilder = new StringBuilder();
-          stringBuilder.append("<select id=\"storageFile_").append(fieldName).append(
-              "\" name=\"storageFile\" onchange=\"openStorageFileManager").append(
-              FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
-              "();this.selectedIndex=0\">");
-          stringBuilder.append("<option value=\"\">").append(
-              resources.getString("storageFile.select.title")).append("</option>");
-          for (ComponentInstLight component : fileStorage) {
-            stringBuilder.append("<option value=\"").append(component.getId()).append("\">")
-                .append(
-                    component.getLabel(contentLanguage)).append("</option>");
-          }
-          stringBuilder.append("</select>");
-          out.println(stringBuilder.toString());
-        }
-      }
-
-      // Images uploaded : HTML select building
-      List<SimpleDocument> listImages = null;
-      if(pageContext.getObjectId() != null &&
-          !"useless".equals(pageContext.getComponentId())) {
-        listImages = WysiwygController.getImages(pageContext.getObjectId(), pageContext.getComponentId());
-        if (!listImages.isEmpty()) {
-          if (fileStorage == null || fileStorage.isEmpty()) {
-            out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
-          }
-          StringBuilder stringBuilder = new StringBuilder();
-          stringBuilder.append("<select id=\"images_").append(fieldName).append(
-              "\" name=\"images\" onchange=\"choixImage").append(
-              FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
-              "();this.selectedIndex=0\">");
-          stringBuilder.append("<option value=\"\">").append(
-              resources.getString("Image")).append("</option>");
-          for (SimpleDocument image : listImages) {
-            stringBuilder.append("<option value=\"").append(URLUtil.getApplicationURL()+image.getAttachmentURL()).append("\">")
-                .append(image.getFilename()).append("</option>");
-          }
-          stringBuilder.append("</select>");
-          out.println(stringBuilder.toString());
-        }
-      }
-
-      // Gallery file : HTML select building
-      List<ComponentInstLight> galleries = null;
-      boolean showGalleries = true;
-      if (parameters.containsKey("galleries")) {
-        showGalleries = StringUtil.getBooleanValue(parameters.get("galleries"));
-      }
-      if (showGalleries) {
-        galleries = WysiwygController.getGalleries();
-        if (!galleries.isEmpty()) {
-          if ((fileStorage == null || fileStorage.isEmpty()) &&
-              (listImages == null || listImages.isEmpty())) {
-            out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
-          }
-          StringBuilder stringBuilder = new StringBuilder();
-          stringBuilder.append("<select id=\"galleryFile_").append(fieldName).append(
-              "\" name=\"galleryFile\" onchange=\"openGalleryFileManager").append(
-              fieldNameFunction).append("();this.selectedIndex=0\">");
-          stringBuilder.append("<option value=\"\">").append(
-              Util.getString("GML.galleries", contentLanguage)).append("</option>");
-          for (ComponentInstLight component : galleries) {
-            stringBuilder.append("<option value=\"").append(component.getId()).append("\">")
-                .append(
-                    component.getLabel(contentLanguage)).append("</option>");
-          }
-          stringBuilder.append("</select>");
-          out.println(stringBuilder.toString());
-        }
-      }
-
-      if ((fileStorage != null && !fileStorage.isEmpty()) ||
-          (listImages != null && !listImages.isEmpty()) ||
-          (galleries != null && !galleries.
-          isEmpty())) {
-        out.println("</td></tr>");
-      }
-
       out.println("<tr>");
 
       // looks for size parameters
@@ -292,11 +195,22 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         editorHeight = Integer.parseInt(parameters.get("height"));
       }
 
+      boolean showFileStorages = true;
+      if (parameters.containsKey("fileStorages")) {
+        showFileStorages = StringUtil.getBooleanValue(parameters.get("fileStorages"));
+      }
+
+      boolean showGalleries = true;
+      if (parameters.containsKey("galleries")) {
+        showGalleries = StringUtil.getBooleanValue(parameters.get("galleries"));
+      }
+
+      String toolbarStartupExpanded = Util.getSetting("form.field.wysiwyg.toolbar.startupExpanded");
+
       out.println("<td valign=\"top\">");
       out.println("<textarea id=\"" + fieldName + "\" name=\"" + fieldName
           + "\" rows=\"10\" cols=\"10\">" + code + "</textarea>");
       out.println("<script type=\"text/javascript\">");
-
 
       StringBuilder stringBuilder = new StringBuilder();
       String configFile = getWysiwygConfigFile();
@@ -316,81 +230,21 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       stringBuilder.append("filebrowserImageBrowseUrl : '").append(fileBrowserUrl).append("',\n");
       stringBuilder.append("filebrowserFlashBrowseUrl : '").append(fileBrowserUrl).append("',\n");
       stringBuilder.append("filebrowserBrowseUrl : '").append(fileBrowserUrl).append("',\n");
-      stringBuilder.append("toolbarStartupExpanded : ").append("false").append(",\n");
+      stringBuilder.append("toolbarStartupExpanded : ").append(toolbarStartupExpanded).append(",\n");
       stringBuilder.append("customConfig : '").append(configFile).append("',\n");
       stringBuilder.append("toolbar : '").append("XMLForm").append("',\n");
       String skin = settings.getString("skin", "");
       if (StringUtil.isDefined(skin)) {
-        stringBuilder.append("skin : '").append(skin).append("'\n");
+        stringBuilder.append("skin : '").append(skin).append("',\n");
       }
+      stringBuilder.append("filebank : ").append(showFileStorages).append(",\n");
+      stringBuilder.append("imagebank : ").append(showGalleries).append(",\n");
+      stringBuilder.append("silverpeasObjectId : '").append(pageContext.getObjectId()).append("',\n");
+      stringBuilder.append("silverpeasObjectId : '").append(pageContext.getObjectId()).append("',\n");
+      stringBuilder.append("silverpeasComponentId : '").append(pageContext.getComponentId()).append("'\n");
       stringBuilder.append("});");
 
       out.println(stringBuilder.toString());
-
-      // field name used to generate a javascript function name
-
-      // Storage file exists : javascript functions
-      if (fileStorage != null && !fileStorage.isEmpty()) {
-        out.println("var storageFileWindow=window;");
-        out.println("function openStorageFileManager" + fieldNameFunction + "(){");
-        out.println("index = document.getElementById(\"storageFile_" + fieldName
-            + "\").selectedIndex;");
-        out.println("var componentId = document.getElementById(\"storageFile_" + fieldName
-            + "\").options[index].value;");
-        out.println("if (index != 0){ ");
-        out.println("url = \""
-            + URLUtil.getApplicationURL()
-            +
-            "/kmelia/jsp/attachmentLinkManagement.jsp?key=\"+componentId+\"&ntype=COMPONENT&fieldname="
-            + fieldNameFunction + "\";");
-        out.println("windowName = \"StorageFileWindow\";");
-        out.println("width = \"750\";");
-        out.println("height = \"580\";");
-        out.
-            println("windowParams = \"scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised\";");
-        out.println("if (!storageFileWindow.closed && storageFileWindow.name==windowName)");
-        out.println("storageFileWindow.close();");
-        out.
-            println("storageFileWindow = SP_openWindow(url, windowName, width, height, windowParams);");
-        out.println("}}");
-
-        out.println("function insertAttachmentLink" + fieldNameFunction + "(url,img,label){");
-        out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
-        out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
-        out.println(" focusManager.focus();");
-        out.
-            println(
-            "oEditor.insertHtml('<a href=\"'+url+'\"> <img src=\"'+img+'\" width=\"20\" border=\"0\" alt=\"\"/> '+label+'</a> ');");
-        out.println("}");
-      }
-
-      // Images uploaded : javascript functions
-      if (listImages != null && !listImages.isEmpty()) {
-        out.println("function choixImage" + fieldNameFunction +"() {");
-        out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
-        out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
-        out.println(" focusManager.focus();");
-        out.println(" var index = document.getElementById(\"images_" + fieldName
-            + "\").selectedIndex;");
-        out.println(" var str = document.getElementById(\"images_" + fieldName
-            + "\").options[index].value;");
-        out.println(" if (index != 0 && str != null) {");
-        out.println("   oEditor.insertHtml('<img border=\"0\" src=\"'+str+'\" alt=\"\"/>');");
-        out.println(" }");
-        out.println("}");
-      }
-
-      // Gallery files exists : javascript functions
-      if (galleries != null && !galleries.isEmpty()) {
-        GalleryHelper.getJavaScript(fieldNameFunction, fieldName, contentLanguage, out);
-
-        out.println("function choixImageInGallery" + fieldNameFunction + "(url){");
-        out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
-        out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
-        out.println(" focusManager.focus();");
-        out.println("oEditor.insertHtml('<img src=\"'+url+'\" border=\"0\" alt=\"\"/>');");
-        out.println("}");
-      }
 
       out.println("</script>");
 
@@ -401,7 +255,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       out.println("</td>");
       out.println("</tr>");
       out.println("</table>");
-
     }
   }
 

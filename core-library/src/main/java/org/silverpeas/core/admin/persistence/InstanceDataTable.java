@@ -38,11 +38,22 @@ import java.util.List;
  */
 public class InstanceDataTable extends Table<InstanceDataRow> {
 
+  private static final String INSTANCEDATA_COLUMNS = "id,componentId,name,label,value";
+  private static final String INSERT_INSTANCEDATA = "insert into ST_Instance_Data("
+      + INSTANCEDATA_COLUMNS + ") values (?,?,?,?,?)";
+  private static final String SELECT_ALL_COMPONENTS_BY_PARAMETER_VALUE =
+      "select " + INSTANCEDATA_COLUMNS +
+          " from ST_Instance_Data where name = ? and value = ? order by id";
+  private static final String SELECT_ALL_COMPONENT_PARAMETERS = "select " + INSTANCEDATA_COLUMNS
+      + " from ST_Instance_Data where componentId = ? order by id";
+  private static final String UPDATE_INSTANCEDATA = "UPDATE ST_Instance_Data"
+      + " SET value = ?" + " where componentId = ? and name = ?";
+  private static final String REMOVE_INSTANCEDATA = "delete from ST_Instance_Data"
+      + " where componentid = ?";
+
   public InstanceDataTable() {
     super("ST_Instance_Data");
   }
-
-  private static final String INSTANCEDATA_COLUMNS = "id,componentId,name,label,value";
 
   /**
    * Inserts in the database a new instanceData row.
@@ -58,19 +69,6 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
 
     insertRow(INSERT_INSTANCEDATA, idr);
   }
-
-  private static final String INSERT_INSTANCEDATA = "insert into ST_Instance_Data("
-      + INSTANCEDATA_COLUMNS + ") values (?,?,?,?,?)";
-
-  /**
-   * Returns the instance whith the given id.
-   */
-  public InstanceDataRow getInstanceData(int id) throws SQLException {
-    return getUniqueRow(SELECT_INSTANCEDATA_BY_ID, id);
-  }
-
-  private static final String SELECT_INSTANCEDATA_BY_ID = "select "
-      + INSTANCEDATA_COLUMNS + " from ST_Instance_Data where id = ?";
 
   @Override
   protected void prepareInsert(String insertQuery, PreparedStatement insert, InstanceDataRow row)
@@ -101,9 +99,20 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     return params;
   }
 
-  private static final String SELECT_ALL_COMPONENT_PARAMETERS = "select "
-      + INSTANCEDATA_COLUMNS
-      + " from ST_Instance_Data where componentId = ? order by id";
+  /**
+   * Returns all component ids according to given param and param value
+   */
+  public List<Integer> getComponentIdsWithParameterValue(Parameter param) throws SQLException {
+    List<String> queryParams = new ArrayList<>();
+    queryParams.add(param.getName());
+    queryParams.add(param.getValue());
+    List<InstanceDataRow> rows = getRows(SELECT_ALL_COMPONENTS_BY_PARAMETER_VALUE, queryParams);
+    List<Integer> ids = new ArrayList<>();
+    for (InstanceDataRow row : rows) {
+      ids.add(row.componentId);
+    }
+    return ids;
+  }
 
   /**
    * Updates a instance data row.
@@ -121,18 +130,12 @@ public class InstanceDataTable extends Table<InstanceDataRow> {
     }
   }
 
-  private static final String UPDATE_INSTANCEDATA = "UPDATE ST_Instance_Data"
-      + " SET value = ?" + " where componentId = ? and name = ?";
-
   /**
    * Removes a instance data row.
    */
   public void removeInstanceData(int id) throws SQLException {
     updateRelation(REMOVE_INSTANCEDATA, id);
   }
-
-  private static final String REMOVE_INSTANCEDATA = "delete from ST_Instance_Data"
-      + " where componentid = ?";
 
   /**
    * Fetch the current instanceData row from a resultSet.

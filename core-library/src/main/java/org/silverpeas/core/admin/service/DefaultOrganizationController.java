@@ -232,6 +232,11 @@ public class DefaultOrganizationController implements OrganizationController {
     return getAdminService().getComponentParameterValue(sComponentId, parameterName);
   }
 
+  @Override
+  public List<ComponentInstLight> getComponentsWithParameterValue(String param, String value) {
+    return getAdminService().getComponentsWithParameter(param, value);
+  }
+
   // -------------------------------------------------------------------
   // COMPONENTS QUERIES
   // -------------------------------------------------------------------

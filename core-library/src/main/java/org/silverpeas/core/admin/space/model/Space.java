@@ -26,6 +26,7 @@ package org.silverpeas.core.admin.space.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import java.util.LinkedHashMap;
@@ -88,7 +89,12 @@ public class Space {
   }
 
   public ComponentInstLight getComponent(String componentId) {
-    return components.get(componentId);
+    ComponentInstLight component = components.get(componentId);
+    // an application which belongs to a removed space must be considered as removed too
+    if (component != null && getSpace().isRemoved()) {
+      component.setStatus(ComponentInst.STATUS_REMOVED);
+    }
+    return component;
   }
 
   public void updateSubspace(SpaceInstLight subspace) {

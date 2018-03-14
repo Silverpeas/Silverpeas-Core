@@ -21,9 +21,6 @@
   You should have received a copy of the GNU Affero General Public License
   along with this program.  If not, see <http://www.gnu.org/licenses/>.
   --%>
-<%@tag import="java.util.ArrayList"%>
-<%@tag import="org.silverpeas.core.util.StringUtil"%>
-<%@tag import="org.silverpeas.core.admin.service.OrganizationControllerProvider"%>
 <%@tag import="org.silverpeas.core.admin.service.OrganizationController"%>
 <%@tag import="org.silverpeas.core.admin.component.model.ComponentInstLight"%>
 <%@tag import="java.util.List"%>
@@ -41,16 +38,11 @@
 <view:setBundle basename="org.silverpeas.multilang.generalMultilang" var="generalBundle"/>
 
 <%
-List<ComponentInstLight> galleries = new ArrayList<>();
-OrganizationController orgaController = OrganizationControllerProvider.getOrganisationController();
-String[] compoIds = orgaController.getCompoId("gallery");
-for (String compoId : compoIds) {
-  if (StringUtil.getBooleanValue(orgaController.getComponentParameterValue("gallery" + compoId, "viewInWysiwyg"))) {
-    ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
-    galleries.add(gallery);
-  }
-}
+List<ComponentInstLight> galleries = OrganizationController.get().getComponentsWithParameterValue("viewInWysiwyg", "yes");
 request.setAttribute("galleries", galleries);
+if (galleries.size() == 1) {
+  request.setAttribute("uniqueGallery", galleries.get(0));
+}
 %>
 
 <%@ attribute name="thumbnail" required="true" type="org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail" description="The thumbnail to manage" %>
@@ -138,19 +130,22 @@ function updateThumbnail() {
 
   var galleryWindow = window;
 
-  function openGallery(liste) {
-    index = liste.selectedIndex;
-    var componentId = liste.options[index].value;
-	if (index != 0) {
+  function openGalleryFromList(liste) {
+    var componentId = liste.options[liste.selectedIndex].value;
+    if (componentId) {
+      openGallery(componentId);
+    }
+  }
+
+  function openGallery(componentId) {
+    if (componentId) {
       url = webContext+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&Language=${_language}&FieldName=Thumbnail";
       windowName = "galleryWindow";
-      larg = "820";
-      haut = "600";
       windowParams = "directories=0,menubar=0,toolbar=0, alwaysRaised";
-      if (!galleryWindow.closed && galleryWindow.name=="galleryWindow") {
+      if (!galleryWindow.closed && galleryWindow.name==="galleryWindow") {
         galleryWindow.close();
       }
-      galleryWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+      galleryWindow = SP_openWindow(url, windowName, "820", "600", windowParams);
     }
   }
 
@@ -199,12 +194,20 @@ function updateThumbnail() {
 			<img src="<c:url value="/util/icons/images.png"/>" alt="<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>" title="<fmt:message key="GML.thumbnail.update" bundle="${generalBundle}"/>"/> <input type="file" name="WAIMGVAR0" size="40" id="thumbnailFile"/>
 			<c:if test="${not empty galleries}">
 				<span class="txtsublibform"> <fmt:message key="GML.or" bundle="${generalBundle}"/> </span><input type="hidden" id="valueImageGallery" name="valueImageGallery"/>
-				<select id="galleries" name="galleries" onchange="openGallery(this);this.selectedIndex=0;">
-					<option selected><fmt:message key="GML.thumbnail.galleries" bundle="${generalBundle}"/></option>
-				    <c:forEach items="${galleries}" var="gallery">
-					<option value="${gallery.id}">${gallery.label}</option>
-					</c:forEach>
-		</select>
+        <c:choose>
+          <c:when test="${empty uniqueGallery}">
+            <select id="galleries" name="galleries" onchange="openGalleryFromList(this);this.selectedIndex=0;">
+              <option selected><fmt:message key="GML.thumbnail.galleries" bundle="${generalBundle}"/></option>
+              <c:forEach items="${galleries}" var="gallery">
+                <option value="${gallery.id}">${gallery.label}</option>
+              </c:forEach>
+            </select>
+          </c:when>
+          <c:otherwise>
+            <fmt:message key="GML.thumbnail.gallery.help" bundle="${generalBundle}" var="labelHelp"/>
+            <a href="#" onclick="openGallery('${uniqueGallery.id}'); return false;" class="sp_button button-imageBank" title="${labelHelp}"><fmt:message key="GML.thumbnail.gallery" bundle="${generalBundle}"/></a>
+          </c:otherwise>
+        </c:choose>
 			</c:if>
 		<c:if test="${mandatory}">
 				<img src="<c:url value="/util/icons/mandatoryField.gif"/>" width="5" height="5" border="0" alt=""/>
