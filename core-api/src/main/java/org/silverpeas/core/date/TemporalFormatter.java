@@ -214,30 +214,29 @@ public class TemporalFormatter {
    * that conforms to the l10n rules of the country/language identified by the given ISO 632-1
    * locale code. The rules of formatting are based upon the {@link DateTimeFormatter} that fully
    * follows the l10n rules of several country/language calendar systems. If the zone id of the
-   * temporal differs from the specified one, then the zone id will be also formatted and
-   * represented into the returned result. Otherwise, this method will behave as the
+   * temporal differs from the specified one, then the zone id of the temporal will be also
+   * formatted and represented into the returned result. Otherwise, this method will behave as the
    * {@link #toLocalized(Temporal, String)} one.
    * </p>
    * <p>
-   * This method is useful to format temporal expressed in a given timezone into a localized form
-   * in another timezone.
+   * This method is useful to format temporal expressed in a given timezone in its localized
+   * representation and for which the renderer is on a possible different timezone.
    * </p>
    * <p>
    * If the temporal is a date, then the localized representation will be of a local date.
    * If the temporal is a local datetime, then the localized representation will be of a localized
    * date + localized time.
    * If the temporal is in another timezone than the specified one, then the localized
-   * representation of the temporal will be expressed in the given timezone and that timezone will
-   * be indicated into the result. For datetime, the seconds and nanoseconds aren't represented
-   * as localized datetime are meaningful only for displaying usage (for transport, the ISO-8601 is
-   * always used).
+   * representation of the temporal will be expressed with its timezone. For datetime, the
+   * seconds and nanoseconds aren't represented as localized datetime are meaningful only for
+   * displaying usage (for transport, the ISO-8601 is always used).
    * </p>
    * <p>
    * Examples:
    * <pre>
-   *   {@code TemporalConverter.toLocalized(OffsetDateTime.now(), ZoneId.of("America/Cancun"),
-   *   "fr")}
-   *   {@code Result: 13/03/2018 09:11 (America/Cancun)}
+   *   {@code TemporalConverter.toLocalized(OffsetDateTime.now(ZoneId.of("Europe/Paris")),
+   *   ZoneId.of("America/Cancun"), "fr")}
+   *   {@code Result: 13/03/2018 09:11 (Europe/Paris)}
    *
    *   {@code TemporalConverter.toLocalized(OffsetDateTime.now(ZoneId.of("America/Cancun")),
    *   ZoneId.of("America/Cancun"), "fr")}
@@ -245,6 +244,8 @@ public class TemporalFormatter {
    * </pre>
    * </p>
    * @param temporal a {@link Temporal} object to convert.
+   * @param zoneId the zone id of the renderer or any objects that will handle the localized
+   * representation of the temporal.
    * @param language an ISO 632-1 language code.
    * @return a localized string representation of the temporal. The localized representation is
    * based upon the l10n standard rules for the specified ISO 632-1 code.
