@@ -23,15 +23,14 @@
  */
 package org.silverpeas.core.util;
 
-import java.util.Calendar;
-import java.util.Date;
-import java.util.TimeZone;
-
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Rule;
 import org.junit.Test;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
-import org.silverpeas.core.util.DateUtil;
+
+import java.util.Calendar;
+import java.util.Date;
+import java.util.TimeZone;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -52,64 +51,64 @@ public class DateUtilTest {
   @Test
   public void testGetOutputDateAndHour() {
     Date date = DateUtil.resetHour(java.sql.Date.valueOf("2013-05-21"));
-    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("2013/05/21"));
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("05/21/2013"));
 
     Date year = DateUtils.addYears(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(year, LANGUAGE), is("2014/05/21"));
+    assertThat(DateUtil.getOutputDateAndHour(year, LANGUAGE), is("05/21/2014"));
 
     Date month = DateUtils.addMonths(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(month, LANGUAGE), is("2013/06/21"));
+    assertThat(DateUtil.getOutputDateAndHour(month, LANGUAGE), is("06/21/2013"));
 
     Date day = DateUtils.addDays(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(day, LANGUAGE), is("2013/05/22"));
+    assertThat(DateUtil.getOutputDateAndHour(day, LANGUAGE), is("05/22/2013"));
 
     Date hour = DateUtils.addHours(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("2013/05/21 01:00"));
+    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("05/21/2013 01:00 AM"));
     hour = DateUtils.addHours(date, 12);
-    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("2013/05/21 12:00"));
+    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("05/21/2013 12:00 PM"));
     hour = DateUtils.addHours(date, 22);
-    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("2013/05/21 22:00"));
+    assertThat(DateUtil.getOutputDateAndHour(hour, LANGUAGE), is("05/21/2013 10:00 PM"));
 
     Date minute = DateUtils.addMinutes(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("2013/05/21 00:01"));
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("05/21/2013 12:01 AM"));
     minute = DateUtils.addMinutes(date, 59);
-    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("2013/05/21 00:59"));
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("05/21/2013 12:59 AM"));
     minute = DateUtils.addMinutes(date, 60);
-    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("2013/05/21 01:00"));
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("05/21/2013 01:00 AM"));
     minute = DateUtils.addMinutes(date, 61);
-    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("2013/05/21 01:01"));
+    assertThat(DateUtil.getOutputDateAndHour(minute, LANGUAGE), is("05/21/2013 01:01 AM"));
 
     Date second = DateUtils.addSeconds(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("2013/05/21 00:00"));
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("05/21/2013 12:00 AM"));
     second = DateUtils.addSeconds(date, 59);
-    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("2013/05/21 00:00"));
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("05/21/2013 12:00 AM"));
     second = DateUtils.addSeconds(date, 60);
-    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("2013/05/21 00:01"));
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("05/21/2013 12:01 AM"));
     second = DateUtils.addSeconds(date, 61);
-    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("2013/05/21 00:01"));
+    assertThat(DateUtil.getOutputDateAndHour(second, LANGUAGE), is("05/21/2013 12:01 AM"));
 
     Date millisecond = DateUtils.addMilliseconds(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("2013/05/21 00:00"));
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("05/21/2013 12:00 AM"));
     millisecond = DateUtils.addMilliseconds(date, 999);
-    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("2013/05/21 00:00"));
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("05/21/2013 12:00 AM"));
     millisecond = DateUtils.addMilliseconds(date, 1000);
-    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("2013/05/21 00:00"));
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("05/21/2013 12:00 AM"));
     millisecond = DateUtils.addMilliseconds(date, 1001);
-    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("2013/05/21 00:00"));
+    assertThat(DateUtil.getOutputDateAndHour(millisecond, LANGUAGE), is("05/21/2013 12:00 AM"));
 
     // 2013-05-21 23:59:59.999
     date = DateUtils.addHours(
         DateUtils.addMinutes(DateUtils.addSeconds(DateUtils.addMilliseconds(date, 999), 59), 59),
         23);
-    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("2013/05/21 23:59"));
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("05/21/2013 11:59 PM"));
 
     // 2013-05-22 00:00:00.000
     date = DateUtils.addMilliseconds(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("2013/05/22"));
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("05/22/2013"));
 
     // 2013-05-22 00:00:00.001
     date = DateUtils.addMilliseconds(date, 1);
-    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("2013/05/22 00:00"));
+    assertThat(DateUtil.getOutputDateAndHour(date, LANGUAGE), is("05/22/2013 12:00 AM"));
   }
 
   /**
