@@ -825,4 +825,8 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
   public String getPermalink() {
     return URLUtil.getSimpleURL(URLUtil.URL_SPACE, getId());
   }
+
+  public boolean isRemoved() {
+    return STATUS_REMOVED.equals(getStatus());
+  }
 }

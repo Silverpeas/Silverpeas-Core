@@ -139,6 +139,12 @@ public class OrganizationControllerMock implements OrganizationController {
   }
 
   @Override
+  public List<ComponentInstLight> getComponentsWithParameterValue(String paramName,
+      String paramValue) {
+    return null;
+  }
+
+  @Override
   public Optional<SilverpeasComponentInstance> getComponentInstance(
       final String componentInstanceIdentifier) {
     return null;

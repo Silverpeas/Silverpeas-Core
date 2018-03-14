@@ -29,6 +29,8 @@ import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 
+import java.util.List;
+
 /**
  * This service provides several common operations for the REST-based resources representing admin
  * entities.
@@ -84,6 +86,10 @@ public class AdminWebService {
    */
   public ComponentInstLight getComponentById(final String componentId) {
     return getOrganisationController().getComponentInstLight(componentId);
+  }
+
+  public List<ComponentInstLight> getComponentsByParameterValue(String param, String value) {
+    return getOrganisationController().getComponentsWithParameterValue(param, value);
   }
 
   /**

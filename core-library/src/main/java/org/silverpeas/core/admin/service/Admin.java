@@ -3575,6 +3575,29 @@ class Admin implements Administration {
   }
 
   @Override
+  public List<ComponentInstLight> getComponentsWithParameter(String paramName, String paramValue) {
+    try {
+      Parameter param = new Parameter();
+      param.setName(paramName);
+      param.setValue(paramValue);
+      List<Integer> componentIds = componentManager.getComponentIds(param);
+      List<ComponentInstLight> components = new ArrayList<>();
+      for (Integer id : componentIds) {
+        ComponentInst component = getComponentInst(id, null);
+        // check TreeCache to know if component is not removed neither into a removed space
+        ComponentInstLight componentLight = TreeCache.getComponent(component.getId());
+        if (componentLight != null && !componentLight.isRemoved()) {
+          components.add(componentLight);
+        }
+      }
+      return components;
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+      return Collections.emptyList();
+    }
+  }
+
+  @Override
   public String[] getProfileIds(String sUserId) throws AdminException {
     try {
       // Get the profile ids from cache

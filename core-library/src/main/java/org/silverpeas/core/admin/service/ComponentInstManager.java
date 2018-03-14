@@ -347,9 +347,9 @@ public class ComponentInstManager {
           componentInst.addTranslation(new ComponentI18N(row));
         }
 
-        componentInst.setPublic((instance.publicAccess == 1));
-        componentInst.setHidden((instance.hidden == 1));
-        componentInst.setInheritanceBlocked((instance.inheritanceBlocked == 1));
+        componentInst.setPublic(instance.publicAccess == 1);
+        componentInst.setHidden(instance.hidden == 1);
+        componentInst.setInheritanceBlocked(instance.inheritanceBlocked == 1);
       } else {
         SilverLogger.getLogger(this).error("Component instance " + compLocalId + " not found!");
       }
@@ -590,11 +590,19 @@ public class ComponentInstManager {
   public List<Parameter> getParameters(int compLocalId) throws AdminException {
     try {
       // Get the parameters if any
-      List<Parameter> parameters = organizationSchema.instanceData()
-          .getAllParametersInComponent(compLocalId);
-      return (parameters);
+      return organizationSchema.instanceData().getAllParametersInComponent(compLocalId);
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("parameters of component", compLocalId), e);
+    }
+  }
+
+  public List<Integer> getComponentIds(Parameter parameter) throws AdminException {
+    try {
+      return organizationSchema.instanceData().getComponentIdsWithParameterValue(parameter);
+    } catch (Exception e) {
+      throw new AdminException(
+          "Can't get components with parameter '" + parameter.getName() + "' = '" +
+              parameter.getValue() + "'", e);
     }
   }
 
@@ -648,12 +656,14 @@ public class ComponentInstManager {
    */
   private int idAsInt(String id) {
     if (id == null || id.length() == 0) {
-      return -1; // the null id.
+      // the null id.
+      return -1;
     }
     try {
       return Integer.parseInt(id);
     } catch (NumberFormatException e) {
-      return -1; // the null id.
+      // the null id.
+      return -1;
     }
   }
 

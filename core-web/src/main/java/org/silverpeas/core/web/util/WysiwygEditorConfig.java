@@ -54,6 +54,8 @@ public class WysiwygEditorConfig implements Cloneable {
   private boolean fileBrowserDisplayed = true;
   private String skin = DEFAULT_WYSIWYG_SETTINGS.getString("skin", "");
   private String stylesheet;
+  private String componentId;
+  private String objectId;
 
   /**
    * Constructs a WYSIWYG editor configuration for the specified component. According to the
@@ -85,7 +87,11 @@ public class WysiwygEditorConfig implements Cloneable {
           .put("baseHref", getServerURL())
           .put("toolbarStartupExpanded", isToolbarStartExpanded())
           .put("customConfig", getConfigFile())
-          .put("toolbar", getToolbar());
+          .put("toolbar", getToolbar())
+          .put("imagebank", true)
+          .put("filebank", true)
+          .put("silverpeasObjectId", getObjectId())
+          .put("silverpeasComponentId", getComponentId());
       object = putFileBrowserUrls(object);
       object = putSkin(object);
       object = putCustomStylesheets(object);
@@ -273,6 +279,22 @@ public class WysiwygEditorConfig implements Cloneable {
    */
   public void setFileBrowserDisplayed(final boolean fileBrowserDisplayed) {
     this.fileBrowserDisplayed = fileBrowserDisplayed;
+  }
+
+  public String getComponentId() {
+    return componentId;
+  }
+
+  public void setComponentId(final String componentId) {
+    this.componentId = componentId;
+  }
+
+  public String getObjectId() {
+    return objectId;
+  }
+
+  public void setObjectId(final String objectId) {
+    this.objectId = objectId;
   }
 
   @Override

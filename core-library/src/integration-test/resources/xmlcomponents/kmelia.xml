@@ -837,8 +837,8 @@
     <parameter>
       <name>publicFiles</name>
       <label>
-        <message lang="fr">Fichiers réutilisables</message>
-        <message lang="en">Re-usable files.</message>
+        <message lang="fr">Banque de fichiers</message>
+        <message lang="en">File store</message>
       </label>
       <order>39</order>
       <mandatory>false</mandatory>
@@ -849,12 +849,12 @@
         <message lang="fr">
           Ce paramètre permet de définir ce composant comme une banque de fichiers.
           Les pièces jointes d'une banque peuvent être insérées dans le corps d'une publication
-          grâce à l'éditeur Wysiwyg.
+          grâce à l'éditeur WYSIWYG.
         </message>
         <message lang="en">
-          This feature allows indicating this component as a file storage. The
-          attachment of a file storage can be inserted into the body of a publication with the help
-          of Wysiwyg editor.
+          This feature allows indicating this component as a file store. The
+          attachment of a file store can be inserted into the body of a publication with the help
+          of WYSIWYG editor.
         </message>
       </help>
     </parameter>

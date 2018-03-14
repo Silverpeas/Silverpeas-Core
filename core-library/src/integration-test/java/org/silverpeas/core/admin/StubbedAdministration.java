@@ -206,6 +206,12 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
+  public List<ComponentInstLight> getComponentsWithParameter(final String paramName,
+      final String paramValue) {
+    return null;
+  }
+
+  @Override
   public void restoreComponentFromBasket(final String componentId) throws AdminException {
 
   }

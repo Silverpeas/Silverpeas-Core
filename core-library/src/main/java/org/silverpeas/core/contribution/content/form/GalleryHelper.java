@@ -32,12 +32,14 @@ public class GalleryHelper {
   public static void getJavaScript(String fieldNameFunction, String fieldName, String language,
       PrintWriter out) {
     out.println("var galleryFileWindow=window;");
-    out.println("function openGalleryFileManager" + fieldNameFunction + "(){");
+    out.println("function openGalleryFileManager" + fieldNameFunction + "(componentId){");
+    out.println("if (!componentId) { ");
     out.println("index = document.getElementById(\"galleryFile_" + fieldName +
         "\").selectedIndex;");
-    out.println("var componentId = document.getElementById(\"galleryFile_" + fieldName +
+    out.println("componentId = document.getElementById(\"galleryFile_" + fieldName +
         "\").options[index].value;");
-    out.println("if (index != 0){  ");
+    out.println("}");
+    out.println("if (componentId){  ");
     out.println("url = \"" +
         URLUtil.getApplicationURL() +
         "/gallery/jsp/wysiwygBrowser.jsp?ComponentId=\"+componentId+\"&Language=" +

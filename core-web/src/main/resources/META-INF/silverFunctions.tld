@@ -342,22 +342,6 @@
     </function-signature>
   </function>
   <function>
-    <description>Function that returns the list of components kmelia (object org.silverpeas.core.admin.component.model.ComponentInstLight) dedicated to file storage.</description>
-    <name>componentsFileStorage</name>
-    <function-class>org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController</function-class>
-    <function-signature>
-      java.util.List getStorageFile()
-    </function-signature>
-  </function>
-  <function>
-    <description>Function that returns the list of components gallery (object org.silverpeas.core.admin.component.model.ComponentInstLight) dedicated to image storage.</description>
-    <name>componentsImageStorage</name>
-    <function-class>org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController</function-class>
-    <function-signature>
-      java.util.List getGalleries()
-    </function-signature>
-  </function>
-  <function>
     <description>Gets the highest role on the component represented by the given identifier the current user has.</description>
     <name>getHighestRoleOfCurrentUserOn</name>
     <function-class>org.silverpeas.core.webapi.admin.component.SilverpeasComponentInstanceRoleProvider</function-class>

@@ -30,7 +30,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -959,39 +958,7 @@ public class WysiwygManager implements WysiwygContentRepository {
   }
 
   public List<ComponentInstLight> getGalleries() {
-    List<ComponentInstLight> galleries = new ArrayList<>();
-    OrganizationController orgaController =
-        OrganizationControllerProvider.getOrganisationController();
-    String[] compoIds = orgaController.getCompoId("gallery");
-    for (String compoId : compoIds) {
-      if (StringUtil.getBooleanValue(
-          orgaController.getComponentParameterValue("gallery" + compoId, "viewInWysiwyg"))) {
-        ComponentInstLight gallery = orgaController.getComponentInstLight("gallery" + compoId);
-        galleries.add(gallery);
-      }
-    }
-    return galleries;
-  }
-
-  /**
-   * Gets the components dedicated to file storage
-   * @return a components list
-   */
-  public List<ComponentInstLight> getStorageFile() {
-    // instiate all needed objects
-    List<ComponentInstLight> components = new ArrayList<>();
-    OrganizationController controller = OrganizationControllerProvider.getOrganisationController();
-    // gets all kmelia components
-    String[] compoIds = controller.getCompoId("kmelia");
-    for (String compoId : compoIds) {
-      // retain only the components considered as a file storage
-      if (StringUtil
-          .getBooleanValue(controller.getComponentParameterValue(compoId, "publicFiles"))) {
-        ComponentInstLight component = controller.getComponentInstLight(compoId);
-        components.add(component);
-      }
-    }
-    return components;
+    return OrganizationController.get().getComponentsWithParameterValue("viewInWysiwyg", "yes");
   }
 
   /**

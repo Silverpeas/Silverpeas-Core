@@ -10,7 +10,7 @@ CKEDITOR.editorConfig = function( config )
   config.filebrowserImageBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';
-  config.extraPlugins = 'userzoom,identitycard,autolink,video,html5audio,imageresizerowandcolumn,variables';
+  config.extraPlugins = 'userzoom,identitycard,autolink,video,html5audio,imageresizerowandcolumn,variables,listblock,floatpanel,richcombo,imagesofcontribution,imagebank,filebank';
   config.allowedContent = true;
   config.toolbarCanCollapse = true;
   config.disableNativeSpellChecker = false;
@@ -31,7 +31,7 @@ CKEDITOR.editorConfig = function( config )
     { name: 'basicstyles', items : [ 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
     { name: 'paragraph',   items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock' ] },
     { name: 'links',       items : [ 'Link','Unlink','Anchor' ] },
-    { name: 'insert',      items : [ 'Image','Video','Html5audio','Iframe','Table','HorizontalRule','Smiley','SpecialChar','PageBreak', 'identitycard', 'userzoom', 'variables' ] },
+    { name: 'insert',      items : [ 'Image','imagesofcontribution','imagebank','Video','Html5audio','Iframe','filebank','Table','HorizontalRule','Smiley','SpecialChar','PageBreak', 'identitycard', 'userzoom', 'variables' ] },
     '/',
     { name: 'styles',      items : [ 'Styles','Format','Font','FontSize' ] },
     { name: 'colors',      items : [ 'TextColor','BGColor' ] },

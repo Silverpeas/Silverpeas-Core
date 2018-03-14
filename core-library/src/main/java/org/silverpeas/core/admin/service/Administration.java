@@ -255,6 +255,8 @@ public interface Administration {
    */
   String getComponentParameterValue(String componentId, String parameterName);
 
+  List<ComponentInstLight> getComponentsWithParameter(String paramName, String paramValue);
+
   void restoreComponentFromBasket(String componentId) throws AdminException;
 
   /**
