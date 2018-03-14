@@ -1184,14 +1184,19 @@
     $('.mandatory').show();
   }
 
-  function displayWarningOnTranslations(nbTranslations) {
+  function handleWarningOnTranslations(attachments) {
     try {
-      if (nbTranslations === 1) {
-        $('#translationWarningLabel').hide();
-        $('#translationWarning').hide();
+      var $fileLang = $('#fileLang');
+      var $translationWarningPart = $('#translationWarningPart');
+      $('#fileLangText').remove();
+      if (attachments.length === 1) {
+        $translationWarningPart.hide();
+        $fileLang.css('display', 'none');
+        var $fileLangText = $('<span>', {id:'fileLangText'});
+        $fileLang.parent().append($fileLangText.text($('option[value="' + attachments[0].lang + '"]', $fileLang).text()));
       } else {
-        $('#translationWarningLabel').show();
-        $('#translationWarning').show();
+        $translationWarningPart.show();
+        $fileLang.css('display', 'block');
       }
     } catch (e) {
       // in case elements are not in DOM
@@ -1213,11 +1218,11 @@
       contentType: "application/json",
       dataType: "json",
       cache: false,
-      success: function(data) {
+      success: function(attachments) {
         $('#attachmentId').val(id);
         clearAttachment();
-        displayWarningOnTranslations(data.length);
-        $.each(data, function(index, attachment) {
+        handleWarningOnTranslations(attachments);
+        $.each(attachments, function(index, attachment) {
           if (attachment.lang == lang) {
             displayAttachment(attachment);
             return false;
@@ -1285,8 +1290,10 @@
   <form name="update-attachment-form" id="update-attachment-form" method="post" enctype="multipart/form-data;charset=utf-8" accept-charset="UTF-8">
     <input type="hidden" name="IdAttachment" id="attachmentId"/>
         <c:if test="${_isI18nHandled}">
-          <label class="label-ui-dialog" id="translationWarningLabel" for="translationWarning"><fmt:message key="attachment.warning.translations.label"/></label>
-          <span class="champ-ui-dialog warning" id="translationWarning"><fmt:message key="attachment.warning.translations"/></span>
+          <div id="translationWarningPart">
+            <label class="label-ui-dialog" for="translationWarning"><fmt:message key="attachment.warning.translations.label"/></label>
+            <span class="champ-ui-dialog warning" id="translationWarning"><fmt:message key="attachment.warning.translations"/></span>
+          </div>
           <label for="langCreate" class="label-ui-dialog"><fmt:message key="GML.language"/></label>
           <span class="champ-ui-dialog"><view:langSelect elementName="fileLang" elementId="fileLang" langCode="${contentLanguage}" includeLabel="false" /></span>
         </c:if>
