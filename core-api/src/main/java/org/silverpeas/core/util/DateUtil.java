@@ -26,19 +26,14 @@ package org.silverpeas.core.util;
 import org.apache.commons.lang3.time.DateUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.core.date.TimeUnit;
-import org.silverpeas.core.util.filter.FilterByType;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Singleton;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.Temporal;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -122,26 +117,6 @@ public class DateUtil {
 
   private static boolean isInfinite(final Date date) {
     return date.getTime() == Long.MIN_VALUE || date.getTime() == Long.MAX_VALUE;
-  }
-
-  /**
-   * Gets a localized String representation of the specified temporal according to the specified
-   * ISO 632-1 language code.
-   * @param temporal a temporal.
-   * @param language an ISO 632-1 locale code.
-   * @return a localized string representation of a date or of a datetime.
-   * @deprecated replaced by
-   * {@link org.silverpeas.core.date.TemporalConverter#asLocalized(Temporal, String)}
-   */
-  @Deprecated
-  public static String getOutputDate(Temporal temporal, String language) {
-    final DateTimeFormatter dateFormat = ofPattern(getOutputFormatter(language).getPattern());
-    return new FilterByType(temporal).matchFirst(LocalDate.class::equals, t -> dateFormat.format((LocalDate) t))
-        .matchFirst(LocalDateTime.class::equals, t -> dateFormat.format((LocalDateTime) t))
-        .matchFirst(OffsetDateTime.class::equals, t -> dateFormat.format((OffsetDateTime) t))
-        .matchFirst(ZonedDateTime.class::equals, t -> dateFormat.format((ZonedDateTime) t))
-        .result()
-        .orElse("");
   }
 
   public static String getOutputDate(String dateDB, String language) throws ParseException {
@@ -708,68 +683,6 @@ public class DateUtil {
       return null;
     }
     return TIME_FORMATTER.format(calend.getTime());
-  }
-
-  /**
-   * Formats an {@link OffsetDateTime} instance with the right given language.
-   * @param temporal an {@link OffsetDateTime} instance.
-   * @param language the language for formatting.
-   * @param zoneIdReference the identifier of the zone which represents the reference, not taken
-   * into account if null.
-   * @return the formatted String.
-   */
-  public static String getOutputDateAndHour(Temporal temporal, String language,
-      ZoneId zoneIdReference) {
-    if (temporal == null) {
-      return null;
-    }
-    return (getOutputDate(temporal, language) + " " +
-        getOutputHour(temporal, language, zoneIdReference)).trim();
-  }
-
-  /**
-   * Formats the time of an {@link OffsetDateTime} instance with the right given language.
-   * @param temporal an {@link OffsetDateTime} instance.
-   * @param language the language for formatting.
-   * @param zoneIdReference the identifier of the zone which represents the reference, not taken
-   * into account if null.
-   * @return the formatted String.
-   */
-  public static String getOutputHour(Temporal temporal, String language,
-      ZoneId zoneIdReference) {
-    final DateTimeFormatter hourFormat = ofPattern(getHourOutputFormat(language).getPattern());
-    final Mutable<ZoneId> zoneIdIfDifferentToReference = Mutable.empty();
-    final String hour = new FilterByType(temporal)
-        .matchFirst(LocalDateTime.class::equals, t -> hourFormat.format((LocalDateTime) t))
-        .matchFirst(OffsetDateTime.class::equals, t -> {
-          final OffsetDateTime o = (OffsetDateTime) t;
-          if (zoneIdReference != null && o.getOffset().getTotalSeconds() !=
-              OffsetDateTime.now(zoneIdReference).getOffset().getTotalSeconds()) {
-            zoneIdIfDifferentToReference.set(o.toZonedDateTime().getZone());
-          }
-          return hourFormat.format(o);
-        })
-        .matchFirst(ZonedDateTime.class::equals, t -> {
-          final ZonedDateTime o = (ZonedDateTime) t;
-          if (zoneIdReference != null && o.getOffset().getTotalSeconds() !=
-              ZonedDateTime.now(zoneIdReference).getOffset().getTotalSeconds()) {
-            zoneIdIfDifferentToReference.set(o.getZone());
-          }
-          return hourFormat.format(o);
-        })
-        .result()
-        .orElse("");
-    return !zoneIdIfDifferentToReference.isPresent()
-        ? hour
-        : hour + " (" + zoneIdIfDifferentToReference.get().getId() + ")";
-  }
-
-  public static String getOutputZoneId(Temporal temporal) {
-    return new FilterByType(temporal)
-        .matchFirst(OffsetDateTime.class::equals, t -> ((OffsetDateTime) t).toZonedDateTime().getZone().getId())
-        .matchFirst(ZonedDateTime.class::equals, t -> ((ZonedDateTime) t).getZone().getId())
-        .result()
-        .orElse("");
   }
 
   /**

@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.time.temporal.Temporal;
 
-import static org.silverpeas.core.date.TemporalConverter.asIso8601;
+import static org.silverpeas.core.date.TemporalFormatter.toIso8601;
 
 /**
  * Web entity abstraction which provides common event information of a web entity
@@ -91,8 +91,8 @@ public abstract class AbstractEventEntity<T extends AbstractEventEntity<T>> impl
     this.id = identifier.getLocalId();
     this.title = title;
     this.description = description;
-    this.start = (start != null ? asIso8601(start, false) : null);
-    this.end = (end != null ? asIso8601(end, false) : null);
+    this.start = (start != null ? toIso8601(start, false) : null);
+    this.end = (end != null ? toIso8601(end, false) : null);
     allDay = (start == null && end == null);
     this.url = url;
   }

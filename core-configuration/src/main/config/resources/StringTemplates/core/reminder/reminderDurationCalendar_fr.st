@@ -1,12 +1,12 @@
 RAPPEL : $contributionTitle;format="toUpperFirstChar"$ aura lieu $if(reminderContributionSeveralDays)$
-$if(reminderContributionStart.hourExisting)$
-du $reminderContributionStart.dayDate$ à $reminderContributionStart.hour$ au $reminderContributionEnd.dayDate$ à $reminderContributionEnd.hour$
+$if(reminderContributionStart.timeExisting)$
+du $reminderContributionStart.dayDate$ à $reminderContributionStart.dayTime$ au $reminderContributionEnd.dayDate$ à $reminderContributionEnd.dayTime$
 $else$
 du $reminderContributionStart.dayDate$ au $reminderContributionEnd.dayDate$
 $endif$
 $else$
-$if(reminderContributionStart.hourExisting)$
-le $reminderContributionStart.dayDate$ de $reminderContributionStart.hour$ à $reminderContributionEnd.hour$
+$if(reminderContributionStart.timeExisting)$
+le $reminderContributionStart.dayDate$ de $reminderContributionStart.dayTime$ à $reminderContributionEnd.dayTime$
 $else$
 le $reminderContributionStart.dayDate$
 $endif$

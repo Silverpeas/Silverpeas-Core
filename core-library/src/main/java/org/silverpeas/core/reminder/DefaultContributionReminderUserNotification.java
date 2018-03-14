@@ -240,9 +240,9 @@ public class DefaultContributionReminderUserNotification
         if (isReminderContributionOnSeveralDays()) {
           sb.append(" - ");
           sb.append(end.getDate());
-        } else if (end.isHourExisting()) {
+        } else if (end.isTimeExisting()) {
           sb.append(" - ");
-          sb.append(end.getHour());
+          sb.append(end.getDayTime());
         }
       }
       if (isDefined(zoneIdIfDifferentToContribution)) {

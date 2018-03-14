@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.web.search;
 
+import org.silverpeas.core.date.TemporalFormatter;
+import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
 import org.silverpeas.core.personalization.UserPreferences;
 import org.silverpeas.core.personalization.service.PersonalizationServiceProvider;
-import org.silverpeas.core.pdc.pdc.model.GlobalSilverResult;
-import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WebEncodeHelper;
-import org.silverpeas.core.util.MultiSilverpeasBundle;
-import org.silverpeas.core.template.SilverpeasTemplate;
 
 /**
  * This class shares common method to implement ResultDisplayer interface.
@@ -79,13 +79,11 @@ public abstract class AbstractResultDisplayer implements ResultDisplayer {
     String sCreationDate;
     try {
       if (searchResult.getSortValue() == 4) {
-        sCreationDate =
-            DateUtil.getOutputDate(silverResult.getCreationDate(), getUserPreferences(
-            searchResult.getUserId()).getLanguage());
+        sCreationDate = TemporalFormatter.toLocalized(silverResult.getCreationDate(),
+            getUserPreferences(searchResult.getUserId()).getLanguage());
       } else {
-        sCreationDate =
-            DateUtil.getOutputDate(silverResult.getLastUpdateDate(), getUserPreferences(
-            searchResult.getUserId()).getLanguage());
+        sCreationDate = TemporalFormatter.toLocalized(silverResult.getLastUpdateDate(),
+            getUserPreferences(searchResult.getUserId()).getLanguage());
       }
     } catch (Exception e) {
       sCreationDate = null;

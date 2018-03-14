@@ -26,23 +26,15 @@ package org.silverpeas.core.date;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.chrono.ChronoZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeFormatterBuilder;
-import java.time.format.DateTimeParseException;
-import java.time.format.FormatStyle;
-import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.Date;
-import java.util.Locale;
 import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
-
-import static java.time.temporal.ChronoField.HOUR_OF_DAY;
-import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
 
 /**
  * A converter of date and datetime into different temporal types used in Silverpeas. It provides
@@ -56,22 +48,7 @@ import static java.time.temporal.ChronoField.MINUTE_OF_HOUR;
  */
 public class TemporalConverter {
 
-  /**
-   * <p>
-   * Formatter enough flexible to parse and format any kind of temporal among the followings:
-   * </p>
-   * <ul>
-   * <li>{@link ZonedDateTime}</li>
-   * <li>{@link OffsetDateTime}</li>
-   * <li>{@link LocalDateTime}</li>
-   * <li>{@link LocalDate}</li>
-   * </ul>
-   */
-  private static final DateTimeFormatter flexibleFormatter =
-      DateTimeFormatter.ofPattern("yyyy-MM-dd['T'HH:mm:ss.n[XXX]['['VV']']]");
-
   private TemporalConverter() {
-
   }
 
   /**
@@ -207,8 +184,43 @@ public class TemporalConverter {
     Objects.requireNonNull(temporal);
     return TemporalConverter.applyByType(temporal,
         date -> date.atStartOfDay(ZoneOffset.UTC).toOffsetDateTime(),
-        localDateTime -> localDateTime.atOffset(ZoneOffset.UTC), dateTime -> dateTime,
+        localDateTime -> localDateTime.atOffset(ZoneOffset.UTC),
+        offsetDateTime -> offsetDateTime,
         ZonedDateTime::toOffsetDateTime);
+  }
+
+  /**
+   * <p>
+   * Converts the specified temporal instance to a {@link ZonedDateTime} instance. The temporal
+   * instance must be of one of the following type:</p>
+   * <ul>
+   * <li>{@link LocalDate}</li>
+   * <li>{@link LocalDateTime}</li>
+   * <li>{@link ZonedDateTime}</li>
+   * <li>{@link OffsetDateTime}</li>
+   * </ul>
+   * <p>
+   * Any other types aren't supported and as such an {@link IllegalArgumentException} is thrown.
+   * </p>
+   * <p>
+   * If the temporal is already a {@link ZonedDateTime} instance, then nothing is converted and
+   * the temporal is directly returned. If the temporal is a {@link LocalDate} instance then the
+   * date is converted into a {@link ZonedDateTime} instance by taking the start of the day in
+   * UTC/Greenwich. If the temporal is a {@link LocalDateTime} instance then the time is converted
+   * in UTC/Greenwich.
+   * </p>
+   * @param temporal the temporal to convert.
+   * @return a {@link ZonedDateTime} instance.
+   * @throws IllegalArgumentException if the specified temporal is of a type not supported by
+   * this converter.
+   */
+  public static ZonedDateTime asZonedDateTime(final Temporal temporal) {
+    Objects.requireNonNull(temporal);
+    return TemporalConverter.applyByType(temporal,
+        date -> date.atStartOfDay(ZoneOffset.UTC),
+        localDateTime -> localDateTime.atZone(ZoneId.of(ZoneOffset.UTC.getId())),
+        OffsetDateTime::toZonedDateTime,
+        zonedDateTime -> zonedDateTime);
   }
 
   /**
@@ -236,105 +248,11 @@ public class TemporalConverter {
    */
   public static LocalDate asLocalDate(final Temporal temporal) {
     Objects.requireNonNull(temporal);
-    return TemporalConverter.applyByType(temporal, date -> date, LocalDateTime::toLocalDate,
-        OffsetDateTime::toLocalDate, ZonedDateTime::toLocalDate);
-  }
-
-  /**
-   * <p>
-   * Converts the specified date/datetime ISO-8601 formatted into a {@link Temporal} instance.
-   * @param iso8601DateTime an ISO-8601 string representation of a date or of a datetime.
-   * @param strict should be the parsing of the specified string strict? If true, a
-   * {@link DateTimeParseException} exception will be thrown if the string isn't correctly
-   * formatted. Otherwise null is simply returned.
-   * @return the {@link Temporal} instance decoded from the specified string. According to the
-   * date/datetime representation in the string, the following temporal is returned:
-   * </p>
-   * <ul>
-   * <li>a datetime with an offset indication: returns a {@link OffsetDateTime} instance</li>
-   * <li>a datetime with a Zone id indication: returns a {@link ZonedDateTime} instance</li>
-   * <li>a datetime without any offset nor zone id indication: returns a {@link LocalDateTime}
-   * instance</li>
-   * <li>a date: returns a {@link LocalDate} instance</li>
-   * </ul>
-   */
-  public static Temporal asTemporal(final String iso8601DateTime, final boolean strict) {
-    Objects.requireNonNull(iso8601DateTime);
-    try {
-      return (Temporal) flexibleFormatter.parseBest(iso8601DateTime, ZonedDateTime::from,
-          OffsetDateTime::from, LocalDateTime::from, LocalDate::from);
-    } catch (DateTimeParseException e) {
-      if (strict) {
-        throw e;
-      }
-      return null;
-    }
-  }
-
-  /**
-   * <p>
-   * Converts the specified temporal into an ISO-8601 string representation. The rules of formatting
-   * are based upon the {@link DateTimeFormatter} that fully follows the ISO-8601 specification.
-   * </p>
-   * <p>
-   * If the temporal is a date, then the ISO-8601 representation will be of an ISO local date.
-   * If the temporal is a local datetime, it will be converted without any Zone Offset indication,
-   * otherwise the offset will be printed out.
-   * </p>
-   * @param temporal a {@link Temporal} object to convert.
-   * @param withSeconds if in the ISO-8601 string the seconds have to be represented (seconds
-   * following by nanoseconds can be optional an part according to the ISO 8601 specification).
-   * @return an ISO-8601 string representation of the temporal.
-   */
-  public static String asIso8601(final Temporal temporal, final boolean withSeconds) {
-    if (temporal.isSupported(ChronoUnit.HOURS)) {
-      if (temporal instanceof LocalDateTime) {
-        return DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(temporal);
-      }
-      if (withSeconds) {
-        return DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(temporal);
-      } else {
-        return new DateTimeFormatterBuilder().parseCaseInsensitive()
-            .append(DateTimeFormatter.ISO_LOCAL_DATE)
-            .appendLiteral('T')
-            .appendValue(HOUR_OF_DAY, 2)
-            .appendLiteral(':')
-            .appendValue(MINUTE_OF_HOUR, 2)
-            .appendOffsetId()
-            .toFormatter()
-            .format(temporal);
-      }
-    }
-    return DateTimeFormatter.ISO_LOCAL_DATE.format(temporal);
-  }
-
-  /**
-   * <p>
-   * Converts the specified temporal into a string representation that conforms to the l10n rules of
-   * the country/language identified by the given ISO 632-1 locale code. The rules of formatting
-   * are based upon the {@link DateTimeFormatter} that fully follows the l10n rules of several
-   * country/language calendar systems.
-   * </p>
-   * <p>
-   * If the temporal is a date, then the localized representation will be of a local date.
-   * If the temporal is a local datetime, then the localized representation will be of a localized
-   * date + localized time.
-   * </p>
-   * @param temporal a {@link Temporal} object to convert.
-   * @param language an ISO 632-1 language code.
-   * @return a localized string representation of the temporal. The localized representation is
-   * based upon the l10n standard rules for the specified ISO 632-1 code.
-   */
-  public static String asLocalized(final Temporal temporal, final String language) {
-    if (temporal.isSupported(ChronoUnit.HOURS)) {
-      return DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT)
-          .withLocale(Locale.forLanguageTag(language))
-          .format(temporal);
-    } else {
-      return DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
-          .withLocale(Locale.forLanguageTag(language))
-          .format(temporal);
-    }
+    return TemporalConverter.applyByType(temporal,
+        date -> date,
+        LocalDateTime::toLocalDate,
+        OffsetDateTime::toLocalDate,
+        ZonedDateTime::toLocalDate);
   }
 
   /**

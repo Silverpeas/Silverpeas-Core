@@ -34,19 +34,22 @@ import org.silverpeas.core.template.SilverpeasStringTemplateUtil;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.Link;
 import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.Pair;
 
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.time.temporal.Temporal;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.silverpeas.core.util.DateUtil.*;
-import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.date.TemporalConverter.asLocalDate;
+import static org.silverpeas.core.date.TemporalFormatter.toLocalized;
 
 /**
  * @author Yohann Chastagnier
@@ -216,7 +219,7 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
      * @return true if exists, false otherwise.
      */
     public boolean isDateExisting() {
-      return isDefined(getDayDate());
+      return temporal != null && temporal.isSupported(ChronoUnit.DAYS);
     }
 
     /**
@@ -224,15 +227,15 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
      * @return a string.
      */
     public String getDayDate() {
-      return DateUtil.getOutputDate(temporal, language);
+      return toLocalized(asLocalDate(temporal), language);
     }
 
     /**
-     * Gets the date with hour if the temporal has hour data.
+     * Gets the date with time (if the temporal has time data otherwise only date is returned).
      * @return a string.
      */
     public String getDate() {
-      return getOutputDateAndHour(temporal, language, null);
+      return toLocalized(temporal, language);
     }
 
     /**
@@ -241,40 +244,29 @@ public abstract class AbstractTemplateUserNotificationBuilder<T> extends
      * @return a string.
      */
     public String getFullDate() {
-      return getOutputDateAndHour(temporal, language, zoneIdReference);
+      return toLocalized(temporal, zoneIdReference, language);
     }
 
     /**
-     * Indicates if the date has hour data.
-     * @return true if exists, false otherwise.
+     * Indicates if the underlying temporal has time data.
+     * @return true if the time exists in the temporal, false otherwise.
      */
-    public boolean isHourExisting() {
-      return isDefined(getHour());
+    public boolean isTimeExisting() {
+      return temporal.isSupported(ChronoUnit.HOURS);
     }
 
     /**
-     * Gets the hour data if the temporal has hour data.
+     * Gets the time data if the temporal supports such a chronology unit.
      * @return a string.
      */
-    public String getHour() {
-      return getOutputHour(temporal, language, null);
-    }
-
-    /**
-     * Gets the hour data if the temporal has hour data.<br/>
-     * If the zone id is not the same of the platform, the zone id is also filled.
-     * @return a string.
-     */
-    public String getFullHour() {
-      return getOutputHour(temporal, language, zoneIdReference);
-    }
-
-    /**
-     * Gets the zone id of the temporal if the data exists.
-     * @return a string.
-     */
-    public String getZoneId() {
-      return getOutputZoneId(temporal);
+    public String getDayTime() {
+      String hour = "";
+      if (isTimeExisting()) {
+        hour = DateTimeFormatter.ofLocalizedTime(FormatStyle.SHORT)
+            .withLocale(Locale.forLanguageTag(language))
+            .format(temporal);
+      }
+      return hour;
     }
   }
 }

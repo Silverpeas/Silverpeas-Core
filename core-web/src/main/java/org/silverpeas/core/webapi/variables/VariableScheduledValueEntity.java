@@ -36,7 +36,7 @@ import java.time.LocalDate;
 import java.time.temporal.Temporal;
 
 import static org.silverpeas.core.date.TemporalConverter.asLocalDate;
-import static org.silverpeas.core.date.TemporalConverter.asTemporal;
+import static org.silverpeas.core.date.TemporalFormatter.toTemporal;
 
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
@@ -104,7 +104,7 @@ public class VariableScheduledValueEntity implements WebEntity {
   }
 
   private LocalDate getDate(String iso8601Date) {
-    Temporal date = asTemporal(iso8601Date, false);
+    Temporal date = toTemporal(iso8601Date, false);
     return date == null ? null : asLocalDate(date);
   }
 
