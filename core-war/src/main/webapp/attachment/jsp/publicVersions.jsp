@@ -94,7 +94,7 @@
   <view:includePlugin name="qtip"/>
 </head>
 <body>
-<view:window>
+<view:window popup="true">
   <view:browseBar extraInformations="${requestScope.Document.title}" clickable="false"/>
 
   <%
@@ -104,7 +104,7 @@
 
 // header of the array
     ArrayColumn arrayColumn_version = arrayPane.addArrayColumn(messages.getString("version"));
-    arrayColumn_version.setSortable(false);
+    arrayColumn_version.setSortable(true);
     ArrayColumn arrayColumn_mimeType =
         arrayPane.addArrayColumn(messages.getString("GML.attachments"));
     arrayColumn_mimeType.setSortable(false);
@@ -162,6 +162,9 @@
         sb.append("</a>");
       }
       sb.append(permalink).append(spinFire);
+      final String sortMajorPart = StringUtil.leftPad(String.valueOf(publicVersion.getMajorVersion()), 5, "0");
+      final String sortMinorPart = StringUtil.leftPad(String.valueOf(publicVersion.getMinorVersion()), 5, "0");
+      sb.insert(0, "<!--" + sortMajorPart + "." + sortMinorPart + "-->");
       arrayLine.addArrayCellText(sb.toString());
       sb.setLength(0);
       sb.append("<img src=\"")

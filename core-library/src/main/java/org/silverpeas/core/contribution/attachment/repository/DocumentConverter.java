@@ -23,20 +23,20 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
-import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.jackrabbit.core.state.NoSuchItemStateException;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocumentVersion;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentVersion;
+import org.silverpeas.core.contribution.attachment.util.SimpleDocumentList;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jcr.AbstractJcrConverter;
+import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.StringUtil;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -50,10 +50,11 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
 import static javax.jcr.Property.JCR_FROZEN_PRIMARY_TYPE;
 import static javax.jcr.Property.JCR_LAST_MODIFIED_BY;
 import static javax.jcr.nodetype.NodeType.MIX_SIMPLE_VERSIONABLE;
+import static org.silverpeas.core.persistence.jcr.util.JcrConstants.*;
+import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 
 /**
  *
@@ -341,11 +342,13 @@ class DocumentConverter extends AbstractJcrConverter {
     if (!StringUtil.isDefined(language)) {
       language = I18NHelper.defaultLanguage;
     }
-    String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
+    final String attachmentNodeName = SimpleDocument.FILE_PREFIX + language;
     if (documentNode.hasNode(attachmentNodeName)) {
-      Node attachmentNode = getAttachmentNode(attachmentNodeName, documentNode);
-      addStringProperty(attachmentNode, JCR_LAST_MODIFIED_BY, getStringProperty(documentNode,
-          SLV_PROPERTY_OWNER));
+      final Node attachmentNode = getAttachmentNode(attachmentNodeName, documentNode);
+      final String currentLastModifiedBy = getStringProperty(attachmentNode, JCR_LAST_MODIFIED_BY);
+      final String ownerId = getStringProperty(documentNode, SLV_PROPERTY_OWNER);
+      final String lastModifiedBy = defaultStringIfNotDefined(ownerId, currentLastModifiedBy);
+      addStringProperty(attachmentNode, JCR_LAST_MODIFIED_BY, lastModifiedBy);
     }
     addDateProperty(documentNode, SLV_PROPERTY_EXPIRY_DATE, null);
     addDateProperty(documentNode, SLV_PROPERTY_ALERT_DATE, null);
