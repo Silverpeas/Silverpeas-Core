@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.ForeignPK;
 
 import java.util.List;
 import java.util.Map;
@@ -92,10 +92,10 @@ public interface RecordSet {
    */
   void delete(String objectId, String language) throws FormException;
 
-  void copy(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate,
+  void copy(ResourceReference fromPK, ResourceReference toPK, RecordTemplate toRecordTemplate,
       Map<String, String> oldAndNewFileIds) throws FormException;
 
-  void move(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate)
+  void move(ResourceReference fromPK, ResourceReference toPK, RecordTemplate toRecordTemplate)
       throws FormException;
 
   /**

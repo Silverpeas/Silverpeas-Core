@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.form.field;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -103,7 +103,7 @@ public class ExplorerField extends AbstractField {
    * language parameter is unused.
    */
   public String getValue(String language) {
-    ForeignPK pk = (ForeignPK) getObjectValue();
+    ResourceReference pk = (ResourceReference) getObjectValue();
     if (pk == null) {
       return "";
     }
@@ -146,15 +146,15 @@ public class ExplorerField extends AbstractField {
       return null;
     }
     String[] ids = getNodePK().split("-");
-    return new ForeignPK(ids[1], ids[0]);
+    return new ResourceReference(ids[1], ids[0]);
   }
 
   /**
    * Set node referenced by this field.
    */
   public void setObjectValue(Object value) throws FormException {
-    if (value instanceof ForeignPK) {
-      ForeignPK pk = (ForeignPK) value;
+    if (value instanceof ResourceReference) {
+      ResourceReference pk = (ResourceReference) value;
       setNodePK(pk.getInstanceId() + "-" + pk.getId());
     } else if (value == null) {
       setNodePK(null);

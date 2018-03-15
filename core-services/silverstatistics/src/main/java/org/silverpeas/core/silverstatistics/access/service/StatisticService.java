@@ -23,10 +23,10 @@
  */
 package org.silverpeas.core.silverstatistics.access.service;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.Collection;
@@ -38,37 +38,37 @@ import java.util.List;
  */
 public interface StatisticService {
 
-  void addStat(String userId, ForeignPK foreignPK, int action, String objectType);
+  void addStat(String userId, ResourceReference resourceReference, int action, String objectType);
 
   void addStat(String userId, SilverpeasContent content);
 
-  Collection<HistoryObjectDetail> getHistoryByAction(ForeignPK foreignPK, int action,
+  Collection<HistoryObjectDetail> getHistoryByAction(ResourceReference resourceReference, int action,
       String objectType);
 
-  Collection<HistoryObjectDetail> getHistoryByObjectAndUser(ForeignPK foreignPK, int action,
+  Collection<HistoryObjectDetail> getHistoryByObjectAndUser(ResourceReference resourceReference, int action,
       String objectType, String userId);
 
-  Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
+  Collection<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
       String objectType);
 
-  Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
+  Collection<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
       String objectType, List<String> userIds);
 
-  void deleteStats(ForeignPK foreignPK, String objectType);
+  void deleteStats(ResourceReference resourceReference, String objectType);
 
   void deleteStats(SilverpeasContent content);
 
-  int getCount(List<ForeignPK> foreignPKs, int action, String objectType);
+  int getCount(List<ResourceReference> resourceReferences, int action, String objectType);
 
   int getCount(SilverpeasContent content, int action);
 
-  int getCount(ForeignPK foreignPK, int action, String objectType);
+  int getCount(ResourceReference resourceReference, int action, String objectType);
 
-  int getCount(ForeignPK foreignPK, String objectType);
+  int getCount(ResourceReference resourceReference, String objectType);
 
   int getCount(SilverpeasContent content);
 
-  void moveStat(ForeignPK toForeignPK, int actionType, String objectType);
+  void moveStat(ResourceReference toResourceReference, int actionType, String objectType);
 
   /**
    * @param primaryKeys

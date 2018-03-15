@@ -25,7 +25,7 @@
 package org.silverpeas.core.webapi.calendar;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.PersonalComponent;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasPersonalComponentInstance;
@@ -241,8 +241,9 @@ public class CalendarWebManager {
     // Attaching all documents linked to volatile identifier to the persisted one
     final String finalEventId = event.getId();
     final String instanceId = calendar.getComponentInstanceId();
-    final ForeignPK volatileAttachmentSourcePK = new ForeignPK(volatileEventId, instanceId);
-    final ForeignPK finalAttachmentSourcePK = new ForeignPK(finalEventId, instanceId);
+    final ResourceReference
+        volatileAttachmentSourcePK = new ResourceReference(volatileEventId, instanceId);
+    final ResourceReference finalAttachmentSourcePK = new ResourceReference(finalEventId, instanceId);
     final List<SimpleDocumentPK> movedDocumentPks = getAttachmentService()
         .moveAllDocuments(volatileAttachmentSourcePK, finalAttachmentSourcePK);
     if (!movedDocumentPks.isEmpty()) {

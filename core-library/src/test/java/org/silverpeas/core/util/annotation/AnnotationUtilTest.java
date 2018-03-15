@@ -24,7 +24,7 @@
 package org.silverpeas.core.util.annotation;
 
 import org.junit.Test;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.util.CollectionUtil;
 
 import javax.inject.Inject;
@@ -50,9 +50,9 @@ public class AnnotationUtilTest {
     // Prepare data
     annotationParameterValues.put((Class) Language.class, CollectionUtil.asList((Object) "fr"));
     annotationParameterValues.put((Class) SourcePK.class, CollectionUtil
-        .asList(new ForeignPK("1", "componentId1"), (Object) new ForeignPK("2", "componentId2")));
+        .asList(new ResourceReference("1", "componentId1"), (Object) new ResourceReference("2", "componentId2")));
     annotationParameterValues.put((Class) TargetPK.class,
-        CollectionUtil.asList((Object) new ForeignPK("1", "targetComponentId")));
+        CollectionUtil.asList((Object) new ResourceReference("1", "targetComponentId")));
 
     // Test
     List<Object> test =

@@ -23,10 +23,10 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.web.silverstatistics.vo.AccessPublicationVO;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -80,8 +80,8 @@ public class SilverStatisticsPeasDAO {
       componentId = rs.getString(1);
       objectId = rs.getString(2);
       nbAccess = rs.getInt(3);
-      ForeignPK foreignPK = new ForeignPK(objectId, componentId);
-      AccessPublicationVO accessVO = new AccessPublicationVO(foreignPK, nbAccess);
+      ResourceReference resourceReference = new ResourceReference(objectId, componentId);
+      AccessPublicationVO accessVO = new AccessPublicationVO(resourceReference, nbAccess);
       list.add(accessVO);
     }
     return list;

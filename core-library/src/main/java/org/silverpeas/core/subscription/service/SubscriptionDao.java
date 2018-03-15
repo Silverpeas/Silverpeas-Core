@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.subscription.service;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
 import org.silverpeas.core.subscription.SubscriptionSubscriber;
@@ -31,7 +32,6 @@ import org.silverpeas.core.subscription.constant.SubscriptionMethod;
 import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
 import org.silverpeas.core.subscription.util.SubscriptionList;
 import org.silverpeas.core.subscription.util.SubscriptionSubscriberList;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -509,7 +509,7 @@ public class SubscriptionDao {
           resource = null;
         } else {
           resource =
-              new PKSubscriptionResource(new ForeignPK(resourceId, instanceId), resourceType);
+              new PKSubscriptionResource(new ResourceReference(resourceId, instanceId), resourceType);
         }
     }
     return resource;

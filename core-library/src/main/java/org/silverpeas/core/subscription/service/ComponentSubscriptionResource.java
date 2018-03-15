@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.subscription.service;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.subscription.constant.SubscriptionResourceType;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.node.model.NodePK;
 
 /**
  * User: Yohann Chastagnier
  * Date: 20/02/13
  */
-public class ComponentSubscriptionResource extends AbstractSubscriptionResource<ForeignPK> {
+public class ComponentSubscriptionResource extends AbstractSubscriptionResource<ResourceReference> {
 
   /**
    * A way to get an instance of a component subscription resource.
@@ -48,7 +48,7 @@ public class ComponentSubscriptionResource extends AbstractSubscriptionResource<
    */
   protected ComponentSubscriptionResource(String instanceId) {
     super(NodePK.ROOT_NODE_ID, SubscriptionResourceType.COMPONENT,
-        new ForeignPK(NodePK.ROOT_NODE_ID));
+        new ResourceReference(NodePK.ROOT_NODE_ID));
     getPK().setSpace("component");
     getPK().setComponentName(instanceId);
   }
@@ -58,7 +58,7 @@ public class ComponentSubscriptionResource extends AbstractSubscriptionResource<
    * @return
    */
   @Override
-  public ForeignPK getPK() {
+  public ResourceReference getPK() {
     return super.getPK();
   }
 }

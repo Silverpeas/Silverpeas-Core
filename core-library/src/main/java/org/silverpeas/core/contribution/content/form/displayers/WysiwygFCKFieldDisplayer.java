@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.content.form.displayers;
 
 import net.htmlparser.jericho.Source;
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -486,7 +486,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
   }
 
-  public String duplicateContent(Field field, FieldTemplate template, ForeignPK from, ForeignPK to,
+  public String duplicateContent(Field field, FieldTemplate template, ResourceReference from, ResourceReference to,
       String language) throws FormException {
     String code = field.getStringValue();
     code = getContent(from.getInstanceId(), from.getId(), template.getFieldName(), code, language);
@@ -565,11 +565,11 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
   }
 
-  public void move(ForeignPK fromPK, ForeignPK toPK) throws IOException {
+  public void move(ResourceReference fromPK, ResourceReference toPK) throws IOException {
     moveOrCopy(fromPK, toPK, false, null);
   }
 
-  private void moveOrCopy(ForeignPK fromPK, ForeignPK toPK, boolean copy,
+  private void moveOrCopy(ResourceReference fromPK, ResourceReference toPK, boolean copy,
       Map<String, String> oldAndNewFileIds) throws IOException {
     String fromPath = getPath(fromPK.getInstanceId());
     String toPath = getPath(toPK.getInstanceId());
@@ -627,8 +627,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   private void changeImagePath(File file, String from, String to,
       Map<String, String> oldAndNewFileIds) throws IOException {
     String content = FileUtils.readFileToString(file, Charsets.UTF_8);
-    ForeignPK fromPK = new ForeignPK("unknown", from);
-    ForeignPK toPK = new ForeignPK("unknown", to);
+    ResourceReference fromPK = new ResourceReference(ResourceReference.UNKNOWN_ID, from);
+    ResourceReference toPK = new ResourceReference(ResourceReference.UNKNOWN_ID, to);
     for (String oldId : oldAndNewFileIds.keySet()) {
       fromPK.setId(oldId);
       toPK.setId(oldAndNewFileIds.get(oldId));
@@ -637,13 +637,13 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     FileUtils.writeStringToFile(file, content, Charsets.UTF_8);
   }
 
-  private String replaceInternalImageId(String content, ForeignPK oldPK, ForeignPK newPK) {
+  private String replaceInternalImageId(String content, ResourceReference oldPK, ResourceReference newPK) {
     String from = "/componentId/" + oldPK.getInstanceId() + "/attachmentId/" + oldPK.getId() + "/";
     String to = "/componentId/" + newPK.getInstanceId() + "/attachmentId/" + newPK.getId() + "/";
     return content.replaceAll(from, to);
   }
 
-  public void cloneContents(ForeignPK fromPK, ForeignPK toPK, Map<String, String> oldAndNewFileIds)
+  public void cloneContents(ResourceReference fromPK, ResourceReference toPK, Map<String, String> oldAndNewFileIds)
       throws IOException {
     if (oldAndNewFileIds == null) {
       oldAndNewFileIds = new HashMap<>();
@@ -719,7 +719,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   * @param fieldNames list of name of fields to delete
   * @param language the language to delete
   */
-  public static void removeContents(ForeignPK pk, List<String> fieldNames, String language) {
+  public static void removeContents(ResourceReference pk, List<String> fieldNames, String language) {
     String fromPath = getPath(pk.getInstanceId());
     File directory = new File(fromPath);
     if (directory.exists()) {

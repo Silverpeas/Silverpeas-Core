@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.answer.service;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.dao.AnswerDAO;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
@@ -49,7 +49,7 @@ public class DefaultAnswerService implements AnswerService {
 
   @Override
   @Transactional(Transactional.TxType.SUPPORTS)
-  public Collection<Answer> getAnswersByQuestionPK(ForeignPK questionPK) {
+  public Collection<Answer> getAnswersByQuestionPK(ResourceReference questionPK) {
 
     Connection con = getConnection();
     try {
@@ -62,7 +62,7 @@ public class DefaultAnswerService implements AnswerService {
   }
 
   @Override
-  public void recordThisAnswerAsVote(ForeignPK questionPK, AnswerPK answerPK) {
+  public void recordThisAnswerAsVote(ResourceReference questionPK, AnswerPK answerPK) {
 
     Connection con = getConnection();
     try {
@@ -75,7 +75,7 @@ public class DefaultAnswerService implements AnswerService {
   }
 
   @Override
-  public void addAnswersToAQuestion(Collection<Answer> answers, ForeignPK questionPK) {
+  public void addAnswersToAQuestion(Collection<Answer> answers, ResourceReference questionPK) {
     Connection con = getConnection();
     try {
       AnswerDAO.addAnswersToAQuestion(con, answers, questionPK);
@@ -87,7 +87,7 @@ public class DefaultAnswerService implements AnswerService {
   }
 
   @Override
-  public void addAnswerToAQuestion(Answer answer, ForeignPK questionPK) {
+  public void addAnswerToAQuestion(Answer answer, ResourceReference questionPK) {
     Connection con = getConnection();
     try {
       AnswerDAO.addAnswerToAQuestion(con, answer, questionPK);
@@ -99,7 +99,7 @@ public class DefaultAnswerService implements AnswerService {
   }
 
   @Override
-  public void deleteAnswersToAQuestion(ForeignPK questionPK) {
+  public void deleteAnswersToAQuestion(ResourceReference questionPK) {
 
     Connection con = getConnection();
     try {
@@ -112,7 +112,7 @@ public class DefaultAnswerService implements AnswerService {
   }
 
   @Override
-  public void deleteAnswerToAQuestion(ForeignPK questionPK, String answerId) {
+  public void deleteAnswerToAQuestion(ResourceReference questionPK, String answerId) {
 
     Connection con = getConnection();
     try {
@@ -125,7 +125,7 @@ public class DefaultAnswerService implements AnswerService {
   }
 
   @Override
-  public void updateAnswerToAQuestion(ForeignPK questionPK, Answer answer) {
+  public void updateAnswerToAQuestion(ResourceReference questionPK, Answer answer) {
 
     Connection con = getConnection();
     try {

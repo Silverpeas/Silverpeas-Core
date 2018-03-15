@@ -27,6 +27,7 @@
  */
 package org.silverpeas.core.comment.dao;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.dao.jdbc.JDBCCommentRequester;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
@@ -47,7 +48,6 @@ import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.ForeignPK;
 
 import java.sql.Connection;
 import java.util.Date;
@@ -100,7 +100,7 @@ public class CommentRequesterIT {
   public void testCreateComment() throws Exception {
     CommentPK pk = new CommentPK(null, null, "kmelia18");
     String resourceType = "RtypeTest";
-    ForeignPK foreignKey = new ForeignPK("200", "kmelia18");
+    ResourceReference foreignKey = new ResourceReference("200", "kmelia18");
     UserDetail author = aUser();
     String message = "A dummy message";
     Date creationDate = aDate();
@@ -224,7 +224,7 @@ public class CommentRequesterIT {
     String newResourceType = "RtypeTestUpdate";
     String newMessage = "A dummy message";
     Date modificationDate = aDate();
-    ForeignPK foreignKey = new ForeignPK(DUMMY_COMMENT_ID, DUMMY_INSTANCE_ID);
+    ResourceReference foreignKey = new ResourceReference(DUMMY_COMMENT_ID, DUMMY_INSTANCE_ID);
     comment.setMessage(newMessage);
     comment.setModificationDate(modificationDate);
     comment.setCreationDate(modificationDate);
@@ -262,8 +262,9 @@ public class CommentRequesterIT {
     assertEquals("1000", result.getCommentPK().getId());
     String srcResourceType = "RtypeTest";
     String targetResourceType = "RtypeTestTo";
-    ForeignPK srcForeignKey = new ForeignPK(result.getForeignKey().getId(), "instanceId10");
-    ForeignPK targetForeignKey = new ForeignPK(DUMMY_COMMENT_ID, DUMMY_INSTANCE_ID);
+    ResourceReference
+        srcForeignKey = new ResourceReference(result.getForeignKey().getId(), "instanceId10");
+    ResourceReference targetForeignKey = new ResourceReference(DUMMY_COMMENT_ID, DUMMY_INSTANCE_ID);
     commentRequester
         .moveComments(con, srcResourceType, srcForeignKey, targetResourceType, targetForeignKey);
     result = commentRequester.getComment(con, pk);
@@ -324,7 +325,7 @@ public class CommentRequesterIT {
    */
   @Test
   public void testGetCommentsCount() throws Exception {
-    ForeignPK foreignKey = new ForeignPK("500", "instanceId10");
+    ResourceReference foreignKey = new ResourceReference("500", "instanceId10");
     String srcResourceType = "RtypeTest";
     assertEquals(2, commentRequester.getCommentsCount(con, srcResourceType, foreignKey));
 
@@ -338,7 +339,7 @@ public class CommentRequesterIT {
     srcResourceType = "RtypeTestAutre";
     assertEquals(0, commentRequester.getCommentsCount(con, srcResourceType, foreignKey));
 
-    foreignKey = new ForeignPK("50", "instanceId10");
+    foreignKey = new ResourceReference("50", "instanceId10");
     assertEquals(0, commentRequester.getCommentsCount(con, srcResourceType, foreignKey));
 
     foreignKey.setId(null);
@@ -351,7 +352,7 @@ public class CommentRequesterIT {
    */
   @Test
   public void testGetAllComments() throws Exception {
-    ForeignPK foreignKey = new ForeignPK("500", "instanceId10");
+    ResourceReference foreignKey = new ResourceReference("500", "instanceId10");
     String resourceType = "RtypeTest";
     List<Comment> comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
@@ -373,7 +374,7 @@ public class CommentRequesterIT {
     assertNotNull(comments);
     assertEquals(0, comments.size());
 
-    foreignKey = new ForeignPK("50", "instanceId10");
+    foreignKey = new ResourceReference("50", "instanceId10");
     comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(0, comments.size());
@@ -389,7 +390,7 @@ public class CommentRequesterIT {
     assertEquals(2, comments.size());
 
     resourceType = null;
-    foreignKey = new ForeignPK("500", "instanceId10");
+    foreignKey = new ResourceReference("500", "instanceId10");
     comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
     assertEquals(3, comments.size());
@@ -421,7 +422,7 @@ public class CommentRequesterIT {
    */
   @Test
   public void testDeleteAllComments() throws Exception {
-    ForeignPK foreignKey = new ForeignPK("500", "instanceId10");
+    ResourceReference foreignKey = new ResourceReference("500", "instanceId10");
     String resourceType = "RtypeTest";
     List<Comment> comments = commentRequester.getAllComments(con, resourceType, foreignKey);
     assertNotNull(comments);
@@ -470,7 +471,7 @@ public class CommentRequesterIT {
    */
   @Test
   public void testDeleteAllCommentsOnResourceIdOnly() throws Exception {
-    ForeignPK foreignKey = new ForeignPK("500");
+    ResourceReference foreignKey = new ResourceReference("500");
 
     int nbDeletes = commentRequester.deleteAllComments(con, null, foreignKey);
     assertEquals(3, nbDeletes);
@@ -484,7 +485,7 @@ public class CommentRequesterIT {
    */
   @Test
   public void testDeleteAllCommentsOnInstanceIdOnly() throws Exception {
-    ForeignPK foreignKey = new ForeignPK(null, "instanceId20");
+    ResourceReference foreignKey = new ResourceReference(null, "instanceId20");
 
     int nbDeletes = commentRequester.deleteAllComments(con, null, foreignKey);
     assertEquals(2, nbDeletes);

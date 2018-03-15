@@ -58,8 +58,8 @@ public class MyLastPubliReadPortlet extends GenericPortlet implements FormNames 
         getStatisticBm().getLastHistoryOfObjectsForUser(UserDetail.getCurrentRequester().getId(), 1,
             "Publication", nbPublis);
     for (HistoryObjectDetail object : listObject) {
-      PublicationPK pubPk = new PublicationPK(object.getForeignPK().getId(),
-          object.getForeignPK().getComponentName());
+      PublicationPK pubPk = new PublicationPK(object.getResourceReference().getId(),
+          object.getResourceReference().getComponentName());
       PublicationDetail pubDetail = getPublicationBm().getDetail(pubPk);
       if (pubDetail != null) {
         // the publication exists (it wasn't deleted)

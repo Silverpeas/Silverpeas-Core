@@ -1564,8 +1564,8 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
       String instanceId = curGSC.getInstanceId();
       // Compute statistics on read publications
       for (AccessPublicationVO accessPub : accessPublis) {
-        if (accessPub.getForeignPK().getId().equals(publicationId) &&
-            accessPub.getForeignPK().getInstanceId().equals(instanceId)) {
+        if (accessPub.getResourceReference().getId().equals(publicationId) &&
+            accessPub.getResourceReference().getInstanceId().equals(instanceId)) {
           nbAxisAccess += accessPub.getNbAccess();
         }
       }

@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -45,13 +46,12 @@ import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 
 public class FormTemplateImportExport {
 
-  public void importXMLModelContentType(ForeignPK pk, String objectType,
+  public void importXMLModelContentType(ResourceReference pk, String objectType,
       XMLModelContentType xmlModel, String userId) throws Exception {
     String externalId = pk.getInstanceId() + ":" + xmlModel.getName();
     if (StringUtil.isDefined(objectType)) {
@@ -92,7 +92,7 @@ public class FormTemplateImportExport {
     set.save(data);
   }
 
-  public String manageFileField(ForeignPK pk, String userId, String xmlFieldValue)
+  public String manageFileField(ResourceReference pk, String userId, String xmlFieldValue)
       throws IOException {
     String fieldValue = null;
     DocumentType type = DocumentType.form;

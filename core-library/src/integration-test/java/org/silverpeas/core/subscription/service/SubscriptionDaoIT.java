@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.subscription.service;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.subscription.AbstractCommonSubscriptionIntegrationTest;
 import org.silverpeas.core.subscription.Subscription;
 import org.silverpeas.core.subscription.SubscriptionResource;
@@ -39,7 +40,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.rule.DbUnitLoadingRule;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.WAPrimaryKey;
 
 import java.sql.Connection;
@@ -127,7 +127,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
    */
   @Test
   public void testGetSubscriptionsByPKResource() throws Exception {
-    ForeignPK pk = new ForeignPK("26", FORUM_INSTANCE_ID);
+    ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
     SubscriptionResource resource =
         PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM_MESSAGE);
     Collection<Subscription> subscriptions = subscriptionDao.getSubscriptionsByResource(
@@ -375,7 +375,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
    */
   @Test
   public void testAddPKSubscriptionForUserBySelfCreation() throws Exception {
-    ForeignPK pk = new ForeignPK("26", FORUM_INSTANCE_ID);
+    ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
     pk.setSpace("100");
     Subscription subscription =
         new PKSubscription("200", PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM));
@@ -534,7 +534,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
    */
   @Test
   public void testRemovePKSubscriptionForUserBySelfCreationMethod() throws Exception {
-    ForeignPK pk = new ForeignPK("26", FORUM_INSTANCE_ID);
+    ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
     String userId = "126";
     Subscription subscription =
         new PKSubscription(userId, new PKSubscriptionResource(pk, SubscriptionResourceType.FORUM));
@@ -650,7 +650,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
         is(false));
 
     // PK - User 126 - Forced method
-    ForeignPK pk = new ForeignPK("26", FORUM_INSTANCE_ID);
+    ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
     assertThat(subscriptionDao.
         existsSubscription(getConnection(),
             new PKSubscription(UserSubscriptionSubscriber.from("126"),
@@ -759,7 +759,7 @@ public class SubscriptionDaoIT extends AbstractCommonSubscriptionIntegrationTest
    */
   @Test
   public void testGetSubscribersForPKResource() throws Exception {
-    ForeignPK pk = new ForeignPK("26", FORUM_INSTANCE_ID);
+    ResourceReference pk = new ResourceReference("26", FORUM_INSTANCE_ID);
     Collection<SubscriptionSubscriber> result = subscriptionDao.getSubscribers(getConnection(),
         PKSubscriptionResource.from(pk, SubscriptionResourceType.FORUM_MESSAGE), null);
     assertThat(result, hasSize(0));

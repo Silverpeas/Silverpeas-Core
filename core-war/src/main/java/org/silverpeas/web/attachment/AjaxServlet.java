@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.attachment;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
@@ -32,7 +33,6 @@ import org.silverpeas.core.contribution.attachment.model.UnlockContext;
 import org.silverpeas.core.contribution.attachment.model.UnlockOption;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.util.DateUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.servlet.ServletException;
@@ -83,13 +83,13 @@ public class AjaxServlet extends SilverpeasAuthenticatedHttpServlet {
     return req.getParameter("Action");
   }
 
-  private ForeignPK getForeignPK(HttpRequest req) {
+  private ResourceReference getForeignPK(HttpRequest req) {
     HttpSession session = req.getSession();
 
     String id = (String) session.getAttribute("Silverpeas_Attachment_ObjectId");
     String componentId = (String) session.getAttribute("Silverpeas_Attachment_ComponentId");
 
-    return new ForeignPK(id, componentId);
+    return new ResourceReference(id, componentId);
   }
 
   private String getUserId() {

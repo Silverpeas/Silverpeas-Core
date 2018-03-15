@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.User;
@@ -196,7 +196,7 @@ public class WysiwygController {
    * @param pk the primary key of the container of the wysiwyg.
    * @param language the language.
    */
-  public static void addToIndex(FullIndexEntry indexEntry, ForeignPK pk, String language) {
+  public static void addToIndex(FullIndexEntry indexEntry, ResourceReference pk, String language) {
     getManager().addToIndex(indexEntry, pk, language);
   }
 

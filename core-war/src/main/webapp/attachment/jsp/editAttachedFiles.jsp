@@ -37,7 +37,7 @@
 <%@ page import="org.silverpeas.core.contribution.attachment.model.DocumentType" %>
 <%@ page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument" %>
 <%@ page import="org.silverpeas.web.attachment.VersioningSessionController" %>
-<%@ page import="org.silverpeas.core.ForeignPK" %>
+<%@ page import="org.silverpeas.core.ResourceReference" %>
 <%@ include file="checkAttachment.jsp"%>
 <view:setConstant var="spinfire" constant="org.silverpeas.core.util.MimeTypes.SPINFIRE_MIME_TYPE" />
 <c:set var="mainSessionController" value="<%=m_MainSessionCtrl%>" />
@@ -77,7 +77,7 @@
 <c:set var="_isI18nHandled" value="${silfn:isI18n() && silfn:isDefined(contentLanguage)}" />
 <%
   List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
-          listDocumentsByForeignKeyAndType(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
+          listDocumentsByForeignKeyAndType(new ResourceReference(request.getParameter("Id"), request.getParameter("ComponentId")),
           DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")),
           (String) pageContext.getAttribute("contentLanguage"));
   pageContext.setAttribute("attachments", attachments);

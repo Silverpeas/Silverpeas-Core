@@ -25,7 +25,7 @@ package org.silverpeas.core.questioncontainer.answer.model;
 
 import java.io.Serializable;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 
 public class Answer implements Serializable {
   private static final long serialVersionUID = 7915608110782813687L;
@@ -35,7 +35,7 @@ public class Answer implements Serializable {
   private int nbVoters = 0;
   private String image = null;
   private AnswerPK pk = null;
-  private ForeignPK questionPK = null;
+  private ResourceReference questionPK = null;
   private String label = null;
   private String comment = null;
 
@@ -47,7 +47,7 @@ public class Answer implements Serializable {
   /**
    * @deprecated
    */
-  public Answer(AnswerPK pk, ForeignPK questionPK, String label, int nbPointsPos, int nbPointsNeg,
+  public Answer(AnswerPK pk, ResourceReference questionPK, String label, int nbPointsPos, int nbPointsNeg,
       boolean isSolution, String comment, int nbVoters, boolean isOpened, String image) {
     this.questionPK = questionPK;
     this.label = label;
@@ -59,7 +59,7 @@ public class Answer implements Serializable {
     this.image = image;
   }
 
-  public Answer(AnswerPK pk, ForeignPK questionPK, String label, int nbPoints, boolean isSolution,
+  public Answer(AnswerPK pk, ResourceReference questionPK, String label, int nbPoints, boolean isSolution,
       String comment, int nbVoters, boolean isOpened, String image, String questionLink) {
     this.questionPK = questionPK;
     this.label = label;
@@ -73,7 +73,7 @@ public class Answer implements Serializable {
     this.nbPoints = nbPoints;
   }
 
-  public Answer(AnswerPK pk, ForeignPK questionPK, String label, String comment, int nbVoters,
+  public Answer(AnswerPK pk, ResourceReference questionPK, String label, String comment, int nbVoters,
       boolean isOpened, String image, String questionLink) {
     this(pk, questionPK, label, 0, false, comment, nbVoters, isOpened, image, questionLink);
   }
@@ -82,7 +82,7 @@ public class Answer implements Serializable {
     this.pk = pk;
   }
 
-  public void setQuestionPK(ForeignPK questionPK) {
+  public void setQuestionPK(ResourceReference questionPK) {
     this.questionPK = questionPK;
   }
 
@@ -122,7 +122,7 @@ public class Answer implements Serializable {
     return this.pk;
   }
 
-  public ForeignPK getQuestionPK() {
+  public ResourceReference getQuestionPK() {
     return this.questionPK;
   }
 

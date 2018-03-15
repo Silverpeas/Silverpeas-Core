@@ -24,7 +24,7 @@
 package org.silverpeas.core.util.annotation;
 
 import org.apache.commons.lang3.NotImplementedException;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.model.PasteDetailFromToPK;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -168,15 +168,15 @@ public class AnnotationUtil {
     if (object instanceof Contribution) {
       ContributionIdentifier contributionIdentifier = ((Contribution) object).getContributionId();
       waPrimaryKey =
-          new ForeignPK(contributionIdentifier.getLocalId(), contributionIdentifier.getComponentInstanceId());
+          new ResourceReference(contributionIdentifier.getLocalId(), contributionIdentifier.getComponentInstanceId());
     } else if (object instanceof SilverpeasContent) {
       SilverpeasContent silverpeasContent = (SilverpeasContent) object;
       waPrimaryKey =
-          new ForeignPK(silverpeasContent.getId(), silverpeasContent.getComponentInstanceId());
+          new ResourceReference(silverpeasContent.getId(), silverpeasContent.getComponentInstanceId());
     } else if (object instanceof SilverContentInterface) {
       SilverContentInterface silverContentInterface = (SilverContentInterface) object;
       waPrimaryKey =
-          new ForeignPK(silverContentInterface.getId(), silverContentInterface.getInstanceId());
+          new ResourceReference(silverContentInterface.getId(), silverContentInterface.getInstanceId());
     } else if (object instanceof PasteDetailFromToPK) {
       PasteDetailFromToPK pasteDetail = (PasteDetailFromToPK) object;
       if (SourcePK.class.equals(annotationClass)) {

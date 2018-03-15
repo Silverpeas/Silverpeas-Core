@@ -24,7 +24,7 @@
 package org.silverpeas.core.test;
 
 import org.silverpeas.core.ActionType;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.IdentifiableResource;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.ObjectType;
@@ -329,7 +329,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(ContentManagerException.class);
     }
     if (!contains(WAPrimaryKey.class)) {
-      addClasses(WAPrimaryKey.class, ForeignPK.class, SimpleDocumentPK.class, PasteDetail.class,
+      addClasses(WAPrimaryKey.class, ResourceReference.class, SimpleDocumentPK.class, PasteDetail.class,
           PasteDetailFromToPK.class);
     }
     addClasses(ContentManager.class, SilverContentPostUpdate.class);

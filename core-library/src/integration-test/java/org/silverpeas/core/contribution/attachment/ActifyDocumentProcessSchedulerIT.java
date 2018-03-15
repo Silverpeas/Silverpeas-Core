@@ -32,7 +32,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.mock.AttachmentServiceMockWrapper;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -354,7 +354,7 @@ public class ActifyDocumentProcessSchedulerIT {
      * then should require a new version (an update).
      */
     private void prepareMock() {
-      when(attachmentService.listDocumentsByForeignKey(any(ForeignPK.class), eq((String) null)))
+      when(attachmentService.listDocumentsByForeignKey(any(ResourceReference.class), eq((String) null)))
           .thenReturn(new SimpleDocumentList<SimpleDocument>());
       if (isVersioned()) {
         String lastFilename = ACTIFY_DOCUMENT_PREFIX + (actifyDocuments - 1) + ".3d";
@@ -363,7 +363,7 @@ public class ActifyDocumentProcessSchedulerIT {
         SimpleDocument existingDocument = new SimpleDocument(new SimpleDocumentPK(UUID.randomUUID().
             toString(), instanceId), publicationId, 0, versioned, existingAttachment);
         when(attachmentService.findExistingDocument(any(SimpleDocumentPK.class), eq(lastFilename),
-            any(ForeignPK.class), (String) eq(null))).thenReturn(existingDocument);
+            any(ResourceReference.class), (String) eq(null))).thenReturn(existingDocument);
       }
     }
 

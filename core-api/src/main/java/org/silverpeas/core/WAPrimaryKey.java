@@ -109,6 +109,10 @@ public abstract class WAPrimaryKey implements Serializable, Cloneable {
     setComponentName(pk.getComponentName());
   }
 
+  public ResourceReference toResourceReference() {
+    return new ResourceReference(this);
+  }
+
 
   /**
    * This method must be specialized - Check if an another object is equal to this object

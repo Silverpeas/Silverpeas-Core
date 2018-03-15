@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.questioncontainer.answer.service;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.Collection;
@@ -41,46 +41,46 @@ public interface AnswerService {
    * @param questionPK the QuestionPK (question id)
    * @return a Collection of Answer
    */
-  public Collection<Answer> getAnswersByQuestionPK(ForeignPK questionPK);
+  public Collection<Answer> getAnswersByQuestionPK(ResourceReference questionPK);
 
   /**
    * Record that the answer (answerPK) has been chosen to the question (questionPK)
    * @param questionPK the QuestionPK (question id)
    * @param answerPK the AnswerPK (answer id)
    */
-  public void recordThisAnswerAsVote(ForeignPK questionPK, AnswerPK answerPK);
+  public void recordThisAnswerAsVote(ResourceReference questionPK, AnswerPK answerPK);
 
   /**
    * Add some answers to a question
    * @param answers a Collection of Answer
    * @param questionPK the QuestionPK (question id)
    */
-  public void addAnswersToAQuestion(Collection<Answer> answers, ForeignPK questionPK);
+  public void addAnswersToAQuestion(Collection<Answer> answers, ResourceReference questionPK);
 
   /**
    * Add an answer to a question
    * @param answer the Answer
    * @param questionPK the QuestionPK (question id)
    */
-  public void addAnswerToAQuestion(Answer answer, ForeignPK questionPK);
+  public void addAnswerToAQuestion(Answer answer, ResourceReference questionPK);
 
   /**
    * Update an answer to a question
    * @param questionPK the QuestionPK (question id)
    * @param answer the Answer
    */
-  public void updateAnswerToAQuestion(ForeignPK questionPK, Answer answer);
+  public void updateAnswerToAQuestion(ResourceReference questionPK, Answer answer);
 
   /**
    * Delete all answers to a given question
    * @param questionPK the QuestionPK (question id)
    */
-  public void deleteAnswersToAQuestion(ForeignPK questionPK);
+  public void deleteAnswersToAQuestion(ResourceReference questionPK);
 
   /**
    * Delete an answer to a question
    * @param questionPK the QuestionPK (question id)
    * @param answerId the answer id
    */
-  public void deleteAnswerToAQuestion(ForeignPK questionPK, String answerId);
+  public void deleteAnswerToAQuestion(ResourceReference questionPK, String answerId);
 }

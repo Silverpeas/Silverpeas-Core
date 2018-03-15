@@ -28,7 +28,7 @@ package org.silverpeas.web.silverstatistics.vo;
 
 import java.io.Serializable;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 
 /**
  * Class declaration
@@ -38,31 +38,31 @@ public class AccessPublicationVO implements Serializable {
 
   private static final long serialVersionUID = 1L;
 
-  private ForeignPK foreignPK;
+  private ResourceReference resourceReference;
   private int nbAccess;
 
   /**
    * Constructor declaration
    * @param nbAccess
    */
-  public AccessPublicationVO(ForeignPK foreignPK, int nbAccess) {
+  public AccessPublicationVO(ResourceReference resourceReference, int nbAccess) {
     super();
-    this.foreignPK = foreignPK;
+    this.resourceReference = resourceReference;
     this.nbAccess = nbAccess;
   }
 
   /**
-   * @return the foreignPK
+   * @return the resourceReference
    */
-  public ForeignPK getForeignPK() {
-    return foreignPK;
+  public ResourceReference getResourceReference() {
+    return resourceReference;
   }
 
   /**
-   * @param foreignPK the foreignPK to set
+   * @param resourceReference the resourceReference to set
    */
-  public void setForeignPK(ForeignPK foreignPK) {
-    this.foreignPK = foreignPK;
+  public void setResourceReference(ResourceReference resourceReference) {
+    this.resourceReference = resourceReference;
   }
 
   /**

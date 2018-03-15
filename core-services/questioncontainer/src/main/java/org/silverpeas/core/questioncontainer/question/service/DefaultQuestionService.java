@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.question.service;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
@@ -85,7 +85,7 @@ public class DefaultQuestionService implements QuestionService {
   }
 
   private Collection<Answer> getAnswersByQuestionPK(QuestionPK questionPK) {
-    return currentAnswerService.getAnswersByQuestionPK(new ForeignPK(questionPK));
+    return currentAnswerService.getAnswersByQuestionPK(new ResourceReference(questionPK));
   }
 
   @Override
@@ -115,7 +115,7 @@ public class DefaultQuestionService implements QuestionService {
     Connection con = getConnection();
     try {
       QuestionPK questionPK = QuestionDAO.createQuestion(con, question);
-      currentAnswerService.addAnswersToAQuestion(question.getAnswers(), new ForeignPK(questionPK));
+      currentAnswerService.addAnswersToAQuestion(question.getAnswers(), new ResourceReference(questionPK));
       return questionPK;
     } catch (Exception e) {
       throw new QuestionRuntimeException(
@@ -148,9 +148,9 @@ public class DefaultQuestionService implements QuestionService {
       for (final Question question : questions) {
         QuestionPK questionPKToDelete = question.getPK();
         // delete all results
-        questionResultService.deleteQuestionResultsToQuestion(new ForeignPK(questionPKToDelete));
+        questionResultService.deleteQuestionResultsToQuestion(new ResourceReference(questionPKToDelete));
         // delete all answers
-        answerService.deleteAnswersToAQuestion(new ForeignPK(questionPKToDelete));
+        answerService.deleteAnswersToAQuestion(new ResourceReference(questionPKToDelete));
       }
       // delete all questions
       QuestionDAO.deleteQuestionsByFatherPK(con, questionPK, fatherId);
@@ -166,7 +166,7 @@ public class DefaultQuestionService implements QuestionService {
 
     Connection con = getConnection();
     try {
-      currentQuestionResultService.deleteQuestionResultsToQuestion(new ForeignPK(questionPK));
+      currentQuestionResultService.deleteQuestionResultsToQuestion(new ResourceReference(questionPK));
       // delete all answers
       deleteAnswersToAQuestion(questionPK);
       // delete question
@@ -219,7 +219,7 @@ public class DefaultQuestionService implements QuestionService {
 
   @Override
   public void deleteAnswerToAQuestion(AnswerPK answerPK, QuestionPK questionPK) {
-    currentAnswerService.deleteAnswerToAQuestion(new ForeignPK(questionPK), answerPK.getId());
+    currentAnswerService.deleteAnswerToAQuestion(new ResourceReference(questionPK), answerPK.getId());
   }
 
   @Override
@@ -232,7 +232,7 @@ public class DefaultQuestionService implements QuestionService {
 
   @Override
   public AnswerPK createAnswerToAQuestion(Answer answerDetail, QuestionPK questionPK) {
-    currentAnswerService.addAnswerToAQuestion(answerDetail, new ForeignPK(questionPK));
+    currentAnswerService.addAnswerToAQuestion(answerDetail, new ResourceReference(questionPK));
     return null;
   }
 

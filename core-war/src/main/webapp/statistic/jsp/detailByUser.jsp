@@ -43,8 +43,8 @@
 	    String userName		= request.getParameter("userName");
 	    String objectType	= request.getParameter("objectType");
 	    StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
-	    ForeignPK foreignPK = new ForeignPK(objectId, componentId);
-	    Collection readingState = statisticService.getHistoryByObjectAndUser(foreignPK, 1, objectType, userId);
+	    ResourceReference resourceReference = new ResourceReference(objectId, componentId);
+	    Collection readingState = statisticService.getHistoryByObjectAndUser(resourceReference, 1, objectType, userId);
 
 	    // affichage du nom de l'utilisateur
 	    %>

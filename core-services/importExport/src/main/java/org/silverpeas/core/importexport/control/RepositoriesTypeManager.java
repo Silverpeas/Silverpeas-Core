@@ -26,7 +26,7 @@ package org.silverpeas.core.importexport.control;
 import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.apache.commons.lang3.text.translate.EntityArrays;
 import org.apache.commons.lang3.text.translate.LookupTranslator;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -280,7 +280,7 @@ public class RepositoriesTypeManager {
     }
 
     SimpleDocument document = getAttachmentService().
-        findExistingDocument(documentPK, fileName, new ForeignPK(resourceId, componentId),
+        findExistingDocument(documentPK, fileName, new ResourceReference(resourceId, componentId),
             contentLanguage);
 
     final boolean needCreation = (document == null || !document.isVersioned());

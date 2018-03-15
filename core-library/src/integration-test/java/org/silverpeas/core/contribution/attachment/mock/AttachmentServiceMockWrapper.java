@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.mock;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.mockito.Mockito;
 import org.silverpeas.core.contribution.attachment.AttachmentException;
@@ -97,13 +97,13 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public Map<String, String> mergeDocuments(ForeignPK originalForeignKey, ForeignPK cloneForeignKey,
+  public Map<String, String> mergeDocuments(ResourceReference originalForeignKey, ResourceReference cloneForeignKey,
       DocumentType type) {
     return mock.mergeDocuments(originalForeignKey, cloneForeignKey, type);
   }
 
   @Override
-  public SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk) {
+  public SimpleDocumentPK copyDocument(SimpleDocument original, ResourceReference targetPk) {
     return mock.copyDocument(original, targetPk);
   }
 
@@ -114,7 +114,7 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public SimpleDocumentPK moveDocument(SimpleDocument document, ForeignPK destination) {
+  public SimpleDocumentPK moveDocument(SimpleDocument document, ResourceReference destination) {
     return mock.moveDocument(document, destination);
   }
 
@@ -281,7 +281,7 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
   }
 
   @Override
-  public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
+  public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ResourceReference foreign,
       String lang) {
     return mock.findExistingDocument(pk, fileName, foreign, lang);
   }

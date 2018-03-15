@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.importexport.control;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.XMLField;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
@@ -65,7 +66,6 @@ import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.io.media.MetaData;
 import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.util.StringUtil;
@@ -776,7 +776,7 @@ public class PublicationsTypeManager {
 
                 // Copy files on disk, set info on each version
                 List<SimpleDocument> copiedFiles = versioningIE.
-                    importDocuments(new ForeignPK(pubDetail.getId(), componentId), documentsSizeOk,
+                    importDocuments(new ResourceReference(pubDetail.getId(), componentId), documentsSizeOk,
                         Integer.parseInt(userDetail.getId()),
                         ImportExportHelper.isIndexable(pubDetail));
                 reportManager.addNumberOfFilesProcessed(copiedFiles.size());

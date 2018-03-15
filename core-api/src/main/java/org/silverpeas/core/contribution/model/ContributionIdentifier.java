@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.model;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.silverpeas.core.ResourceIdentifier;
+import org.silverpeas.core.ComponentResourceIdentifier;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.ContributionLocator;
 import org.silverpeas.core.util.Mutable;
@@ -57,7 +57,7 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
 @Embeddable
-public class ContributionIdentifier implements ResourceIdentifier, Serializable {
+public class ContributionIdentifier implements ComponentResourceIdentifier, Serializable {
 
   public static final String MISSING_PART = "?";
 
@@ -196,6 +196,7 @@ public class ContributionIdentifier implements ResourceIdentifier, Serializable 
    * types.
    * @return the local contribution identifier.
    */
+  @Override
   public String getLocalId() {
     return localId;
   }
@@ -206,6 +207,7 @@ public class ContributionIdentifier implements ResourceIdentifier, Serializable 
    * @return the component instance identifier (either an application instance or a tool instance
    * identifier).
    */
+  @Override
   public String getComponentInstanceId() {
     return instanceId;
   }

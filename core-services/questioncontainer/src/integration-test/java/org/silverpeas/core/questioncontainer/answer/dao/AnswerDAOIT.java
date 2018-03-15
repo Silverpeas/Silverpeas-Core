@@ -25,6 +25,7 @@ package org.silverpeas.core.questioncontainer.answer.dao;
 
 import com.ninja_squad.dbsetup.Operations;
 import com.ninja_squad.dbsetup.operation.Operation;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -37,7 +38,6 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.test.DataSetTest;
 import org.silverpeas.core.test.BasicWarBuilder;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
 
 import java.sql.Connection;
 import java.util.Collection;
@@ -101,7 +101,7 @@ public class AnswerDAOIT extends DataSetTest {
     Connection con = getConnection();
     String questionId = "177";
     String componentId = "quizz83";
-    ForeignPK questionPK = new ForeignPK(questionId, componentId);
+    ResourceReference questionPK = new ResourceReference(questionId, componentId);
     try {
       Collection<Answer> result = AnswerDAO.getAnswersByQuestionPK(con, questionPK);
       Assert.assertEquals(3, result.size());
@@ -117,7 +117,7 @@ public class AnswerDAOIT extends DataSetTest {
   @Ignore
   public void testRecordThisAnswerAsVote() throws Exception {
     Connection con = null;
-    ForeignPK questionPK = null;
+    ResourceReference questionPK = null;
     AnswerPK answerPK = null;
     //AnswerDAO.recordThisAnswerAsVote(con, questionPK, answerPK);
     // TODO review the generated test code and remove the default call to fail.
@@ -132,7 +132,7 @@ public class AnswerDAOIT extends DataSetTest {
   public void testAddAnswersToAQuestion() throws Exception {
     Connection con = null;
     Collection<Answer> answers = null;
-    ForeignPK questionPK = null;
+    ResourceReference questionPK = null;
     AnswerDAO.addAnswersToAQuestion(con, answers, questionPK);
     // TODO review the generated test code and remove the default call to fail.
     //fail("The test case is a prototype.");
@@ -146,7 +146,7 @@ public class AnswerDAOIT extends DataSetTest {
   public void testAddAnswerToAQuestion() throws Exception {
     Connection con = null;
     Answer answer = null;
-    ForeignPK questionPK = null;
+    ResourceReference questionPK = null;
     //AnswerDAO.addAnswerToAQuestion(con, answer, questionPK);
     // TODO review the generated test code and remove the default call to fail.
     //fail("The test case is a prototype.");
@@ -158,10 +158,10 @@ public class AnswerDAOIT extends DataSetTest {
   @Test
   public void testDeleteAnswersToAQuestion() throws Exception {
     Connection con = getConnection();
-    ForeignPK foreignPK = new ForeignPK("178", "quizz83");
+    ResourceReference resourceReference = new ResourceReference("178", "quizz83");
     try (Connection otherCon = getConnection()) {
-      AnswerDAO.deleteAnswersToAQuestion(otherCon, foreignPK);
-      Collection<Answer> answers = AnswerDAO.getAnswersByQuestionPK(con, foreignPK);
+      AnswerDAO.deleteAnswersToAQuestion(otherCon, resourceReference);
+      Collection<Answer> answers = AnswerDAO.getAnswersByQuestionPK(con, resourceReference);
       Assert.assertEquals(0, answers.size());
     } finally {
       DBUtil.close(con);
@@ -175,10 +175,10 @@ public class AnswerDAOIT extends DataSetTest {
   public void testDeleteAnswerToAQuestion() throws Exception {
     Connection con = getConnection();
     String answerId = "1018";
-    ForeignPK foreignPK = new ForeignPK("178", "quizz83");
+    ResourceReference resourceReference = new ResourceReference("178", "quizz83");
     try (Connection otherCon = getConnection()) {
-      AnswerDAO.deleteAnswerToAQuestion(otherCon, foreignPK, answerId);
-      Collection<Answer> answers = AnswerDAO.getAnswersByQuestionPK(con, foreignPK);
+      AnswerDAO.deleteAnswerToAQuestion(otherCon, resourceReference, answerId);
+      Collection<Answer> answers = AnswerDAO.getAnswersByQuestionPK(con, resourceReference);
       Assert.assertEquals(2, answers.size());
     } finally {
       DBUtil.close(con);
@@ -192,7 +192,7 @@ public class AnswerDAOIT extends DataSetTest {
   @Ignore
   public void testUpdateAnswerToAQuestion() throws Exception {
     Connection con = getConnection();
-    ForeignPK questionPK = null;
+    ResourceReference questionPK = null;
     Answer answer = null;
     //AnswerDAO.updateAnswerToAQuestion(con, questionPK, answer);
     // TODO review the generated test code and remove the default call to fail.

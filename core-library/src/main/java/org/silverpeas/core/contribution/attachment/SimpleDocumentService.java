@@ -27,7 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.silverpeas.core.ActionType;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
@@ -57,7 +57,6 @@ import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.jcr.JcrSession;
 import org.silverpeas.core.process.annotation.SimulationActionProcess;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -309,7 +308,7 @@ public class SimpleDocumentService
   @Override
   public void deleteAllAttachments(final String resourceId, final String componentInstanceId) {
     List<SimpleDocument> documentsToDelete =
-        listAllDocumentsByForeignKey(new ForeignPK(resourceId, componentInstanceId), null);
+        listAllDocumentsByForeignKey(new ResourceReference(resourceId, componentInstanceId), null);
     for (SimpleDocument documentToDelete : documentsToDelete) {
       deleteAttachment(documentToDelete);
     }
@@ -517,7 +516,7 @@ public class SimpleDocumentService
     try (JcrSession session = openSystemSession();
          InputStream in = new FileInputStream(original.getAttachmentPath())) {
       SimpleDocumentPK clonePk = repository
-          .copyDocument(session, original, new ForeignPK(foreignCloneId, original.getInstanceId()));
+          .copyDocument(session, original, new ResourceReference(foreignCloneId, original.getInstanceId()));
       SimpleDocument clone = repository.findDocumentById(session, clonePk, null);
       repository.copyMultilangContent(original, clone);
       repository.setClone(session, original, clone);
@@ -538,7 +537,7 @@ public class SimpleDocumentService
   @Action(ActionType.COPY)
   @Override
   public SimpleDocumentPK copyDocument(@SourceObject SimpleDocument original,
-      @TargetPK ForeignPK targetPk) {
+      @TargetPK ResourceReference targetPk) {
     try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK copyPk;
       if (original instanceof HistorisedDocument) {
@@ -568,7 +567,7 @@ public class SimpleDocumentService
     List<SimpleDocumentPK> copiedDocumentKeys = new ArrayList<SimpleDocumentPK>();
     List<SimpleDocument> documentsToCopy = listAllDocumentsByForeignKey(resourceSourcePk, null);
     for (SimpleDocument documentToCopy : documentsToCopy) {
-      copiedDocumentKeys.add(copyDocument(documentToCopy, new ForeignPK(targetDestinationPk)));
+      copiedDocumentKeys.add(copyDocument(documentToCopy, new ResourceReference(targetDestinationPk)));
     }
     return copiedDocumentKeys;
   }
@@ -854,7 +853,7 @@ public class SimpleDocumentService
 
   @Override
   public SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName,
-      ForeignPK foreign, String lang) {
+      ResourceReference foreign, String lang) {
     List<SimpleDocument> exisitingsDocuments = listDocumentsByForeignKey(foreign, lang);
     SimpleDocument document = searchDocumentById(pk, lang);
     if (document == null) {
@@ -892,7 +891,7 @@ public class SimpleDocumentService
   @Action(ActionType.MOVE)
   @Override
   public SimpleDocumentPK moveDocument(@SourceObject SimpleDocument document,
-      @TargetPK ForeignPK destination) {
+      @TargetPK ResourceReference destination) {
     try (JcrSession session = openSystemSession()) {
       SimpleDocumentPK pk = repository.moveDocument(session, document, destination);
       SimpleDocument moveDoc = repository.findDocumentById(session, pk, null);
@@ -915,7 +914,7 @@ public class SimpleDocumentService
     List<SimpleDocumentPK> movedDocumentKeys = new ArrayList<SimpleDocumentPK>();
     List<SimpleDocument> documentsToMove = listAllDocumentsByForeignKey(resourceSourcePk, null);
     for (SimpleDocument documentToMove : documentsToMove) {
-      movedDocumentKeys.add(moveDocument(documentToMove, new ForeignPK(targetDestinationPk)));
+      movedDocumentKeys.add(moveDocument(documentToMove, new ResourceReference(targetDestinationPk)));
     }
     return movedDocumentKeys;
   }
@@ -924,7 +923,7 @@ public class SimpleDocumentService
   public void updateIndexEntryWithDocuments(FullIndexEntry indexEntry) {
     if (settings.getBoolean("attachment.index.incorporated", true)) {
       if (!indexEntry.getObjectType().startsWith("Attachment")) {
-        ForeignPK pk = new ForeignPK(indexEntry.getObjectId(), indexEntry.getComponent());
+        ResourceReference pk = new ResourceReference(indexEntry.getObjectId(), indexEntry.getComponent());
         List<SimpleDocument> documents = listDocumentsByForeignKey(pk, indexEntry.getLang());
         for (SimpleDocument currentDocument : documents) {
           SimpleDocument version = currentDocument.getLastPublicVersion();
@@ -947,7 +946,7 @@ public class SimpleDocumentService
   }
 
   @Override
-  public Map<String, String> mergeDocuments(ForeignPK originalForeignKey, ForeignPK cloneForeignKey,
+  public Map<String, String> mergeDocuments(ResourceReference originalForeignKey, ResourceReference cloneForeignKey,
       DocumentType type) {
     try (JcrSession session = openSystemSession()) {
       // On part des fichiers d'origine
@@ -988,9 +987,9 @@ public class SimpleDocumentService
 
   }
 
-  private Map<String, SimpleDocument> listDocumentsOfClone(ForeignPK foreignPk, DocumentType type,
+  private Map<String, SimpleDocument> listDocumentsOfClone(ResourceReference resourceReference, DocumentType type,
       String lang) {
-    List<SimpleDocument> documents = listDocumentsByForeignKeyAndType(foreignPk, type, lang);
+    List<SimpleDocument> documents = listDocumentsByForeignKeyAndType(resourceReference, type, lang);
     Map<String, SimpleDocument> result = new HashMap<String, SimpleDocument>(documents.size());
     for (SimpleDocument doc : documents) {
       if (StringUtil.isDefined(doc.getCloneId())) {

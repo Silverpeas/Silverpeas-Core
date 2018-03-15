@@ -26,7 +26,7 @@ package org.silverpeas.core.contribution.publication.model;
 import java.io.Serializable;
 import java.util.List;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 
 /**
  * This object contains the description of a complete publication (publication parameter, info)
@@ -42,12 +42,12 @@ public class CompletePublication implements Serializable {
   /**
    * The publications linked to the current publication
    */
-  private List<ForeignPK> linkList = null;
+  private List<ResourceReference> linkList = null;
 
   /**
    * The publications which are a reference to the current publication
    */
-  private List<ForeignPK> reverseLinkList = null;
+  private List<ResourceReference> reverseLinkList = null;
 
   private List<ValidationStep> validationSteps = null;
 
@@ -61,8 +61,8 @@ public class CompletePublication implements Serializable {
    * @see org.silverpeas.core.contribution.publication.info.model.ModelDetail
    * @see org.silverpeas.core.contribution.publication.info.model.InfoDetail
    */
-  public CompletePublication(PublicationDetail pubDetail, List<ForeignPK> linkList,
-      List<ForeignPK> reverseLinkList) {
+  public CompletePublication(PublicationDetail pubDetail, List<ResourceReference> linkList,
+      List<ResourceReference> reverseLinkList) {
     this.pubDetail = pubDetail;
     this.linkList = linkList;
     this.reverseLinkList = reverseLinkList;
@@ -81,28 +81,28 @@ public class CompletePublication implements Serializable {
   /**
    * @return the linkList
    */
-  public List<ForeignPK> getLinkList() {
+  public List<ResourceReference> getLinkList() {
     return linkList;
   }
 
   /**
    * @param linkList the linkList to set
    */
-  public void setLinkList(List<ForeignPK> linkList) {
+  public void setLinkList(List<ResourceReference> linkList) {
     this.linkList = linkList;
   }
 
   /**
    * @return the reverseLinkList
    */
-  public List<ForeignPK> getReverseLinkList() {
+  public List<ResourceReference> getReverseLinkList() {
     return reverseLinkList;
   }
 
   /**
    * @param reverseLinkList the reverseLinkList to set
    */
-  public void setReverseLinkList(List<ForeignPK> reverseLinkList) {
+  public void setReverseLinkList(List<ResourceReference> reverseLinkList) {
     this.reverseLinkList = reverseLinkList;
   }
 

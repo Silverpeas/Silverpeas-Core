@@ -23,16 +23,16 @@
  */
 package org.silverpeas.core.process.management.interceptor;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 
 /**
  * @author Yohann Chastagnier
  */
 public interface Service {
 
-  InterceptorTestFile create(InterceptorTestFile file, ForeignPK destination);
+  InterceptorTestFile create(InterceptorTestFile file, ResourceReference destination);
 
-  void delete(InterceptorTestFile file, ForeignPK destination);
+  void delete(InterceptorTestFile file, ResourceReference destination);
 
-  void move(ForeignPK from, ForeignPK destination);
+  void move(ResourceReference from, ResourceReference destination);
 }

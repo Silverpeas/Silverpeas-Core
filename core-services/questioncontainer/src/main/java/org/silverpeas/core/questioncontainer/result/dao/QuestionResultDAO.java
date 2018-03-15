@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.result.dao;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
@@ -59,7 +59,7 @@ public class QuestionResultDAO {
   private QuestionResultDAO() {
   }
 
-  private static QuestionResult getQuestionResultFromResultSet(ResultSet rs, ForeignPK questionPK)
+  private static QuestionResult getQuestionResultFromResultSet(ResultSet rs, ResourceReference questionPK)
       throws SQLException {
 
     String id = Integer.toString(rs.getInt(1));
@@ -73,12 +73,13 @@ public class QuestionResultDAO {
     int participationId = rs.getInt(9);
 
     return new QuestionResult(new QuestionResultPK(id, questionPK),
-        new ForeignPK(questionId, questionPK), new AnswerPK(answerId, questionPK), userId,
+        new ResourceReference(questionId, questionPK.getInstanceId()),
+        new AnswerPK(answerId, questionPK), userId,
         openAnswer, nbPoints, pollDate, elapsedTime, participationId);
   }
 
   public static Collection<QuestionResult> getUserQuestionResultsToQuestion(Connection con,
-      String userId, ForeignPK questionPK) throws SQLException {
+      String userId, ResourceReference questionPK) throws SQLException {
 
     ResultSet rs = null;
     QuestionResult questionResult;
@@ -132,7 +133,7 @@ public class QuestionResultDAO {
   }
 
   public static Collection<QuestionResult> getUserQuestionResultsToQuestionByParticipation(
-      Connection con, String userId, ForeignPK questionPK, int participationId)
+      Connection con, String userId, ResourceReference questionPK, int participationId)
       throws SQLException {
     ResultSet rs = null;
     QuestionResult questionResult;
@@ -162,7 +163,7 @@ public class QuestionResultDAO {
   }
 
   public static Collection<QuestionResult> getQuestionResultToQuestion(Connection con,
-      ForeignPK questionPK) throws SQLException {
+      ResourceReference questionPK) throws SQLException {
 
     ResultSet rs = null;
     QuestionResult questionResult;
@@ -189,7 +190,7 @@ public class QuestionResultDAO {
   }
 
   public static Collection<QuestionResult> getQuestionResultToQuestionByParticipation(
-      Connection con, ForeignPK questionPK, int participationId) throws SQLException {
+      Connection con, ResourceReference questionPK, int participationId) throws SQLException {
     ResultSet rs = null;
     QuestionResult questionResult;
     String tableName = new QuestionResultPK("", questionPK).getTableName();
@@ -263,7 +264,7 @@ public class QuestionResultDAO {
     }
   }
 
-  public static void deleteQuestionResultToQuestion(Connection con, ForeignPK questionPK)
+  public static void deleteQuestionResultToQuestion(Connection con, ResourceReference questionPK)
       throws SQLException {
 
 
@@ -287,7 +288,7 @@ public class QuestionResultDAO {
   }
 
   public static QuestionResult getUserAnswerToQuestion(Connection con, String userId,
-      ForeignPK questionPK, AnswerPK answerPK) throws SQLException {
+      ResourceReference questionPK, AnswerPK answerPK) throws SQLException {
 
     ResultSet rs = null;
     String tableName = "SB_Question_QuestionResult";

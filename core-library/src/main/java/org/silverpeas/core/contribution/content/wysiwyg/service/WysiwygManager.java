@@ -27,7 +27,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.CharEncoding;
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
@@ -138,7 +138,7 @@ public class WysiwygManager implements WysiwygContentRepository {
    */
   public List<SimpleDocument> getImages(String id, String componentId) {
     List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKeyAndType(new ForeignPK(id, componentId), DocumentType.image, null);
+        listDocumentsByForeignKeyAndType(new ResourceReference(id, componentId), DocumentType.image, null);
     Iterator<SimpleDocument> it = attachments.iterator();
     while (it.hasNext()) {
       SimpleDocument document = it.next();
@@ -339,7 +339,7 @@ public class WysiwygManager implements WysiwygContentRepository {
   }
 
   public void deleteFileAndAttachment(String componentId, String id) {
-    ForeignPK foreignKey = new ForeignPK(id, componentId);
+    ResourceReference foreignKey = new ResourceReference(id, componentId);
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(foreignKey, null);
     for (SimpleDocument doc : documents) {
@@ -348,7 +348,7 @@ public class WysiwygManager implements WysiwygContentRepository {
   }
 
   public void deleteFile(String componentId, String objectId, String language) {
-    ForeignPK foreignKey = new ForeignPK(objectId, componentId);
+    ResourceReference foreignKey = new ResourceReference(objectId, componentId);
     List<SimpleDocument> files = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(foreignKey, null);
     for (SimpleDocument file : files) {
@@ -431,7 +431,7 @@ public class WysiwygManager implements WysiwygContentRepository {
    * @param pk the primary key of the container of the wysiwyg.
    * @param language the language.
    */
-  public void addToIndex(FullIndexEntry indexEntry, ForeignPK pk, String language) {
+  public void addToIndex(FullIndexEntry indexEntry, ResourceReference pk, String language) {
     List<SimpleDocument> docs = AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKeyAndType(pk, DocumentType.wysiwyg, language);
     if (!docs.isEmpty()) {
@@ -497,7 +497,7 @@ public class WysiwygManager implements WysiwygContentRepository {
   public void deleteWysiwygAttachments(String componentId, String objectId) {
     try {
       // delete all the attachments
-      ForeignPK foreignKey = new ForeignPK(objectId, componentId);
+      ResourceReference foreignKey = new ResourceReference(objectId, componentId);
       List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
           .listAllDocumentsByForeignKey(foreignKey, null);
       for (SimpleDocument document : documents) {
@@ -519,7 +519,7 @@ public class WysiwygManager implements WysiwygContentRepository {
   public void deleteWysiwygAttachmentsOnly(String componentId, String objectId)
       throws WysiwygException {
     try {
-      ForeignPK foreignKey = new ForeignPK(objectId, componentId);
+      ResourceReference foreignKey = new ResourceReference(objectId, componentId);
       List<SimpleDocument> docs = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKeyAndType(foreignKey, DocumentType.wysiwyg, null);
       for (SimpleDocument wysiwygAttachment : docs) {
@@ -698,7 +698,7 @@ public class WysiwygManager implements WysiwygContentRepository {
     String language = I18NHelper.checkLanguage(lang);
     SimpleDocumentList<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
         .listDocumentsByForeignKeyAndType(
-            new ForeignPK(id.getLocalId(), id.getComponentInstanceId()), context, language);
+            new ResourceReference(id.getLocalId(), id.getComponentInstanceId()), context, language);
     if (!documents.isEmpty()) {
       return documents.orderByLanguageAndLastUpdate(lang).get(0);
     }
@@ -748,8 +748,8 @@ public class WysiwygManager implements WysiwygContentRepository {
   public Map<String, String> copy(String oldComponentId, String oldObjectId, String componentId,
       String objectId, String userId) {
 
-    ForeignPK foreignKey = new ForeignPK(oldObjectId, oldComponentId);
-    ForeignPK targetPk = new ForeignPK(objectId, componentId);
+    ResourceReference foreignKey = new ResourceReference(oldObjectId, oldComponentId);
+    ResourceReference targetPk = new ResourceReference(objectId, componentId);
     SimpleDocument copy = null;
     List<Pair<SimpleDocumentPK, SimpleDocumentPK>> oldNewImagePkMapping = new ArrayList<>();
     Map<String, String> fileIds = new HashMap<>();
@@ -802,12 +802,12 @@ public class WysiwygManager implements WysiwygContentRepository {
 
   public void move(String fromComponentId, String fromObjectId, String componentId,
       String objectId) {
-    ForeignPK fromForeignPK = new ForeignPK(fromObjectId, fromComponentId);
+    ResourceReference fromResourceReference = new ResourceReference(fromObjectId, fromComponentId);
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService()
-        .listAllDocumentsByForeignKey(fromForeignPK, null);
-    ForeignPK toForeignPK = new ForeignPK(objectId, componentId);
+        .listAllDocumentsByForeignKey(fromResourceReference, null);
+    ResourceReference toResourceReference = new ResourceReference(objectId, componentId);
     for (SimpleDocument document : documents) {
-      AttachmentServiceProvider.getAttachmentService().moveDocument(document, toForeignPK);
+      AttachmentServiceProvider.getAttachmentService().moveDocument(document, toResourceReference);
     }
 
     // change images path in wysiwyg
@@ -916,7 +916,7 @@ public class WysiwygManager implements WysiwygContentRepository {
 
   public void wysiwygPlaceHaveChanged(String oldComponentId, String oldObjectId,
       String newComponentId, String newObjectId) {
-    ForeignPK foreignKey = new ForeignPK(newObjectId, newComponentId);
+    ResourceReference foreignKey = new ResourceReference(newObjectId, newComponentId);
     List<SimpleDocument> images = null;
     for (String language : I18NHelper.getAllSupportedLanguages()) {
       List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
@@ -946,7 +946,7 @@ public class WysiwygManager implements WysiwygContentRepository {
 
   public String getWysiwygPath(String componentId, String objectId, String language) {
     List<SimpleDocument> attachements = AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKeyAndType(new ForeignPK(objectId, componentId),
+        .listDocumentsByForeignKeyAndType(new ResourceReference(objectId, componentId),
             DocumentType.wysiwyg, language);
     if (!attachements.isEmpty()) {
       return attachements.get(0).getAttachmentPath();

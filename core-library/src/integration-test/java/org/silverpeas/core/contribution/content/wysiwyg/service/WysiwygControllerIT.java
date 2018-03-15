@@ -30,7 +30,7 @@ import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
@@ -221,14 +221,14 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
-    ForeignPK resourceSrcTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "de"), hasSize(0));
 
     String destComponentId = "kmelia26";
     String destMessageId = "38";
-    ForeignPK resourceDestTestPK = new ForeignPK(destMessageId, destComponentId);
+    ResourceReference resourceDestTestPK = new ResourceReference(destMessageId, destComponentId);
     assertThat(listWysiwygs(resourceDestTestPK), hasSize(0));
 
     assertThat(WysiwygController.load(componentId, messageId, "fr"),
@@ -275,13 +275,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
 
-    ForeignPK resourceSrcTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "de"), hasSize(0));
     String destComponentId = "kmelia26";
     String destMessageId = "38";
-    ForeignPK resourceDestTestPK = new ForeignPK(destMessageId, destComponentId);
+    ResourceReference resourceDestTestPK = new ResourceReference(destMessageId, destComponentId);
     assertThat(listWysiwygs(resourceDestTestPK), hasSize(0));
 
     // No image
@@ -343,14 +343,14 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
             image.getId() + "/";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
-    ForeignPK resourceSrcTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "de"), hasSize(0));
 
     String destComponentId = "kmelia26";
     String destMessageId = "38";
-    ForeignPK resourceDestTestPK = new ForeignPK(destMessageId, destComponentId);
+    ResourceReference resourceDestTestPK = new ResourceReference(destMessageId, destComponentId);
     assertThat(listWysiwygs(resourceDestTestPK), hasSize(0));
 
     // One image
@@ -421,7 +421,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     expectedContent = "empty";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Empty FR wysiwyg ...
-    ForeignPK resourceSrcTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
@@ -434,7 +434,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
 
     String destComponentId = "kmelia26";
     String destMessageId = "38";
-    ForeignPK resourceDestTestPK = new ForeignPK(destMessageId, destComponentId);
+    ResourceReference resourceDestTestPK = new ResourceReference(destMessageId, destComponentId);
     SimpleDocumentList<SimpleDocument> wysiwygs = listWysiwygs(resourceDestTestPK);
     assertThat(wysiwygs, hasSize(0));
 
@@ -508,7 +508,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
             image.getId() + "/";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Empty FR wysiwyg ...
-    ForeignPK resourceSrcTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
@@ -527,7 +527,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
 
     String destComponentId = "kmelia26";
     String destMessageId = "38";
-    ForeignPK resourceDestTestPK = new ForeignPK(destMessageId, destComponentId);
+    ResourceReference resourceDestTestPK = new ResourceReference(destMessageId, destComponentId);
     SimpleDocumentList<SimpleDocument> wysiwygs = listWysiwygs(resourceDestTestPK);
     assertThat(wysiwygs, hasSize(0));
 
@@ -578,14 +578,14 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
-    ForeignPK resourceSrcTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "de"), hasSize(0));
 
     String destComponentId = "kmelia26";
     String destMessageId = "38";
-    ForeignPK resourceDestTestPK = new ForeignPK(destMessageId, destComponentId);
+    ResourceReference resourceDestTestPK = new ResourceReference(destMessageId, destComponentId);
     assertThat(listWysiwygs(resourceDestTestPK), hasSize(0));
 
     assertThat(WysiwygController.load(componentId, messageId, "fr"),
@@ -630,13 +630,13 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
 
-    ForeignPK resourceSrcTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "de"), hasSize(0));
     String destComponentId = "kmelia26";
     String destMessageId = "38";
-    ForeignPK resourceDestTestPK = new ForeignPK(destMessageId, destComponentId);
+    ResourceReference resourceDestTestPK = new ResourceReference(destMessageId, destComponentId);
     assertThat(listWysiwygs(resourceDestTestPK), hasSize(0));
 
     // No image
@@ -694,14 +694,14 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
             image.getId() + "/";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
-    ForeignPK resourceSrcTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "de"), hasSize(0));
 
     String destComponentId = "kmelia26";
     String destMessageId = "38";
-    ForeignPK resourceDestTestPK = new ForeignPK(destMessageId, destComponentId);
+    ResourceReference resourceDestTestPK = new ResourceReference(destMessageId, destComponentId);
     assertThat(listWysiwygs(resourceDestTestPK), hasSize(0));
 
     // One image
@@ -766,7 +766,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
             image.getId() + "/";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Empty FR wysiwyg ...
-    ForeignPK resourceSrcTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
@@ -779,7 +779,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
 
     String destComponentId = "kmelia26";
     String destMessageId = "38";
-    ForeignPK resourceDestTestPK = new ForeignPK(destMessageId, destComponentId);
+    ResourceReference resourceDestTestPK = new ResourceReference(destMessageId, destComponentId);
     SimpleDocumentList<SimpleDocument> wysiwygs = listWysiwygs(resourceDestTestPK);
     assertThat(wysiwygs, hasSize(0));
 
@@ -845,7 +845,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
             image.getId() + "/";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Empty FR wysiwyg ...
-    ForeignPK resourceSrcTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceSrcTestPK = new ResourceReference(messageId, componentId);
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceSrcTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
@@ -864,7 +864,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
 
     String destComponentId = "kmelia26";
     String destMessageId = "38";
-    ForeignPK resourceDestTestPK = new ForeignPK(destMessageId, destComponentId);
+    ResourceReference resourceDestTestPK = new ResourceReference(destMessageId, destComponentId);
     SimpleDocumentList<SimpleDocument> wysiwygs = listWysiwygs(resourceDestTestPK);
     assertThat(wysiwygs, hasSize(0));
 
@@ -914,7 +914,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -931,7 +931,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String componentId = "blog974";
     String messageId = "18";
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -949,7 +949,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String messageId = "18";
     createLegacyWysiwygContent(componentId, messageId, "fr", "<mark>LegacyContent");
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -968,7 +968,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String messageId = "18";
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -987,7 +987,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     WysiwygController.save("ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1010,7 +1010,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "LegacyContent");
     // Empty EN wysiwyg ...
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
@@ -1035,7 +1035,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Empty EN wysiwyg ...
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
@@ -1065,7 +1065,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     language = "fr";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1090,7 +1090,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     language = "fr";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1114,7 +1114,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     language = "fr";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Empty FR wysiwyg ...
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
@@ -1147,7 +1147,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1164,7 +1164,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String componentId = "blog974";
     String messageId = "18";
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1182,7 +1182,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String messageId = "18";
     createLegacyWysiwygContent(componentId, messageId, "fr", "<mark>LegacyContent");
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1201,7 +1201,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String messageId = "18";
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1220,7 +1220,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     WysiwygController.save("ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1243,7 +1243,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "LegacyContent");
     // Empty EN wysiwyg ...
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
@@ -1269,7 +1269,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Empty EN wysiwyg ...
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
@@ -1299,7 +1299,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     language = "fr";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1323,7 +1323,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     language = "fr";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Empty FR wysiwyg ...
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
@@ -1356,7 +1356,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String language = "en";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1373,7 +1373,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String componentId = "blog974";
     String messageId = "18";
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1391,7 +1391,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String messageId = "18";
     createLegacyWysiwygContent(componentId, messageId, "fr", "<mark>LegacyContent");
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1410,7 +1410,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String messageId = "18";
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1429,7 +1429,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     WysiwygController.save("ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(0));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1452,7 +1452,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "LegacyContent");
     // Empty EN wysiwyg ...
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
@@ -1477,7 +1477,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     WysiwygController.save("<mark>ENContent", componentId, messageId, USER_ID, "en", false);
     createLegacyWysiwygContent(componentId, messageId, "fr", "");
     // Empty EN wysiwyg ...
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File enWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "en").get(0).getAttachmentPath());
     assertThat(enWysiwygFile.length(), greaterThan(0L));
@@ -1507,7 +1507,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     language = "fr";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Jcr State
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "en"), hasSize(1));
     assertThat(listWysiwygsWithNoLanguageFallback(resourceTestPK, "de"), hasSize(0));
@@ -1531,7 +1531,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     language = "fr";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
     // Empty FR wysiwyg ...
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     File frWysiwygFile = new File(
         listWysiwygsWithNoLanguageFallback(resourceTestPK, "fr").get(0).getAttachmentPath());
     assertThat(frWysiwygFile.length(), greaterThan(0L));
@@ -1581,7 +1581,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String expectedContent = "EN_Content";
     String userId = USER_ID;
     String language = "en";
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     List<SimpleDocument> wysiwygs = listWysiwygs(resourceTestPK);
     assertThat(wysiwygs, hasSize(0));
     assertThat(WysiwygController.load(componentId, messageId, language), isEmptyString());
@@ -1606,27 +1606,29 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     assertThat(WysiwygController.load(componentId, messageId, "en"), is("EN_Content"));
   }
 
-  private SimpleDocumentList<SimpleDocument> listWysiwygs(ForeignPK foreignPK) {
+  private SimpleDocumentList<SimpleDocument> listWysiwygs(ResourceReference resourceReference) {
     return AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.wysiwyg, null);
+        .listDocumentsByForeignKeyAndType(resourceReference, DocumentType.wysiwyg, null);
   }
 
-  private SimpleDocumentList<SimpleDocument> listImages(ForeignPK foreignPK) {
+  private SimpleDocumentList<SimpleDocument> listImages(ResourceReference resourceReference) {
     return AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.image, null);
+        .listDocumentsByForeignKeyAndType(resourceReference, DocumentType.image, null);
   }
 
-  private SimpleDocumentList<SimpleDocument> listWysiwygsWithNoLanguageFallback(ForeignPK foreignPK,
+  private SimpleDocumentList<SimpleDocument> listWysiwygsWithNoLanguageFallback(ResourceReference
+      resourceReference,
       String language) {
     return AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.wysiwyg, language)
+        .listDocumentsByForeignKeyAndType(resourceReference, DocumentType.wysiwyg, language)
         .removeLanguageFallbacks();
   }
 
-  private SimpleDocumentList<SimpleDocument> listImagesWithNoLanguageFallback(ForeignPK foreignPK,
+  private SimpleDocumentList<SimpleDocument> listImagesWithNoLanguageFallback(ResourceReference
+      resourceReference,
       String language) {
     return AttachmentServiceProvider.getAttachmentService()
-        .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.image, language)
+        .listDocumentsByForeignKeyAndType(resourceReference, DocumentType.image, language)
         .removeLanguageFallbacks();
   }
 
@@ -1640,7 +1642,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     String expectedContent = "EN_Content";
     String userId = USER_ID;
     String language = "en";
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     List<SimpleDocument> wysiwygs = listWysiwygs(resourceTestPK);
     assertThat(wysiwygs, hasSize(0));
     assertThat(WysiwygController.load(componentId, messageId, language), isEmptyString());
@@ -1681,7 +1683,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     language = "fr";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     List<SimpleDocument> wysiwygs = listWysiwygs(resourceTestPK);
     assertThat(wysiwygs, hasSize(0));
     assertThat(WysiwygController.load(componentId, messageId, "fr"), is(""));
@@ -1704,7 +1706,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     language = "fr";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     List<SimpleDocument> wysiwygs = listWysiwygs(resourceTestPK);
     assertThat(wysiwygs, hasSize(1));
     assertThat(WysiwygController.load(componentId, messageId, "fr"), is("FR_Content"));
@@ -1734,7 +1736,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     language = "fr";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     List<SimpleDocument> wysiwygs = listWysiwygs(resourceTestPK);
     assertThat(wysiwygs, hasSize(1));
     assertThat(WysiwygController.load(componentId, messageId, "fr"), is("FR_Content"));
@@ -1826,7 +1828,7 @@ public class WysiwygControllerIT extends JcrIntegrationIT {
     language = "fr";
     WysiwygController.save(expectedContent, componentId, messageId, userId, language, false);
 
-    ForeignPK resourceTestPK = new ForeignPK(messageId, componentId);
+    ResourceReference resourceTestPK = new ResourceReference(messageId, componentId);
     List<SimpleDocument> wysiwygs = listWysiwygs(resourceTestPK);
     assertThat(wysiwygs, hasSize(1));
     assertThat(WysiwygController.load(componentId, messageId, "fr"), is("FR_Content"));

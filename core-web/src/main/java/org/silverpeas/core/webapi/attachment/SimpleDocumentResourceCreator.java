@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.attachment;
 
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
@@ -172,7 +172,7 @@ public class SimpleDocumentResourceCreator extends AbstractSimpleDocumentResourc
         if (uploadData.getVersionType() != null) {
           document = AttachmentServiceProvider.getAttachmentService()
               .findExistingDocument(pk, uploadedFilename,
-                  new ForeignPK(uploadData.getForeignId(), getComponentId()), lang);
+                  new ResourceReference(uploadData.getForeignId(), getComponentId()), lang);
           publicDocument = uploadData.getVersionType() == DocumentVersion.TYPE_PUBLIC_VERSION;
           needCreation = document == null;
           if (document == null) {

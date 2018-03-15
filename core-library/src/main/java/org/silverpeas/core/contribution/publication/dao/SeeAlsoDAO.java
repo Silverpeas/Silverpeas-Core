@@ -31,7 +31,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
@@ -158,7 +158,7 @@ public class SeeAlsoDAO {
    * @throws SQLException
    *
    */
-  public static List<ForeignPK> getLinks(Connection con, WAPrimaryKey objectPK)
+  public static List<ResourceReference> getLinks(Connection con, WAPrimaryKey objectPK)
       throws SQLException {
     ResultSet rs = null;
     String selectStatement = "select targetId, targetInstanceId from "
@@ -172,11 +172,11 @@ public class SeeAlsoDAO {
 
       String targetId = "";
       String targetInstanceId = "";
-      List<ForeignPK> list = new ArrayList<ForeignPK>();
+      List<ResourceReference> list = new ArrayList<ResourceReference>();
       while (rs.next()) {
         targetId = Integer.toString(rs.getInt(1));
         targetInstanceId = rs.getString(2);
-        ForeignPK targetPK = new ForeignPK(targetId, targetInstanceId);
+        ResourceReference targetPK = new ResourceReference(targetId, targetInstanceId);
 
         list.add(targetPK);
       }
@@ -193,7 +193,7 @@ public class SeeAlsoDAO {
    * @return a list of publication identifier
    * @throws SQLException
    */
-  public static List<ForeignPK> getReverseLinks(Connection con, WAPrimaryKey objectPK)
+  public static List<ResourceReference> getReverseLinks(Connection con, WAPrimaryKey objectPK)
       throws SQLException {
     ResultSet rs = null;
     String selectStatement = "select objectId, objectInstanceId  from "
@@ -207,11 +207,11 @@ public class SeeAlsoDAO {
 
       String objectId = "";
       String objectInstanceId = "";
-      List<ForeignPK> list = new ArrayList<ForeignPK>();
+      List<ResourceReference> list = new ArrayList<ResourceReference>();
       while (rs.next()) {
         objectId = Integer.toString(rs.getInt(1));
         objectInstanceId = rs.getString(2);
-        ForeignPK targetPK = new ForeignPK(objectId, objectInstanceId);
+        ResourceReference targetPK = new ResourceReference(objectId, objectInstanceId);
 
         list.add(targetPK);
       }

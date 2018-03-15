@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.container.service;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -382,7 +382,7 @@ public class DefaultQuestionContainerService
       questions = questionService.getQuestionsByFatherPK(questionPK, questionContainerPK.getId());
       for (Question question : questions) {
         userVotes = questionResultService.getUserQuestionResultsToQuestionByParticipation(userId,
-            new ForeignPK(question.getPK()), participationId);
+            new ResourceReference(question.getPK()), participationId);
         question.setQuestionResults(userVotes);
         nbMaxPoints += question.getNbPointsMax();
       }
@@ -501,7 +501,7 @@ public class DefaultQuestionContainerService
         newVectorSize = answerIdIndex;
         answerPK = new AnswerPK(answerId, questionContainerPK);
         result =
-            new QuestionResult(null, new ForeignPK(questionPK), answerPK, userId, openedAnswer);
+            new QuestionResult(null, new ResourceReference(questionPK), answerPK, userId, openedAnswer);
         result.setParticipationId(participationId);
         result.setNbPoints(answer.getNbPoints() - penaltyValue);
         try {
@@ -511,7 +511,7 @@ public class DefaultQuestionContainerService
         }
         try {
           // Add this vote to the corresponding answer
-          answerService.recordThisAnswerAsVote(new ForeignPK(questionPK), answerPK);
+          answerService.recordThisAnswerAsVote(new ResourceReference(questionPK), answerPK);
         } catch (Exception e) {
           throw new QuestionContainerRuntimeException(e);
         }
@@ -522,7 +522,7 @@ public class DefaultQuestionContainerService
         answer = question.getAnswer(answerId);
         questionUserScore += answer.getNbPoints() - penaltyValue;
         answerPK = new AnswerPK(answerId, questionContainerPK);
-        result = new QuestionResult(null, new ForeignPK(questionPK), answerPK, userId, null);
+        result = new QuestionResult(null, new ResourceReference(questionPK), answerPK, userId, null);
         result.setParticipationId(participationId);
         result.setNbPoints(answer.getNbPoints() - penaltyValue);
         try {
@@ -532,7 +532,7 @@ public class DefaultQuestionContainerService
         }
         try {
           // Add this vote to the corresponding answer
-          answerService.recordThisAnswerAsVote(new ForeignPK(questionPK), answerPK);
+          answerService.recordThisAnswerAsVote(new ResourceReference(questionPK), answerPK);
         } catch (Exception e) {
           throw new QuestionContainerRuntimeException(e);
         }
@@ -669,7 +669,7 @@ public class DefaultQuestionContainerService
         for (Question question : questions) {
           QuestionPK questionPKToDelete = question.getPK();
           // delete all results
-          questionResultService.deleteQuestionResultsToQuestion(new ForeignPK(questionPKToDelete));
+          questionResultService.deleteQuestionResultsToQuestion(new ResourceReference(questionPKToDelete));
           Collection<Answer> answers = question.getAnswers();
           Collection<Answer> newAnswers = new ArrayList<>();
           for (Answer answer : answers) {
@@ -732,7 +732,7 @@ public class DefaultQuestionContainerService
             questionContainerPK.getComponentName());
 
     try {
-      suggestions = questionResultService.getQuestionResultToQuestion(new ForeignPK(questionPK));
+      suggestions = questionResultService.getQuestionResultToQuestion(new ResourceReference(questionPK));
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(e);
     }
@@ -745,7 +745,7 @@ public class DefaultQuestionContainerService
 
     try {
       suggestion =
-          questionResultService.getUserAnswerToQuestion(userId, new ForeignPK(questionPK), answerPK);
+          questionResultService.getUserAnswerToQuestion(userId, new ResourceReference(questionPK), answerPK);
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(e);
     }
@@ -767,7 +767,7 @@ public class DefaultQuestionContainerService
     for (Question question : questions) {
       try {
         votes = questionResultService
-            .getUserQuestionResultsToQuestion(userId, new ForeignPK(question.getPK()));
+            .getUserQuestionResultsToQuestion(userId, new ResourceReference(question.getPK()));
       } catch (Exception e) {
         throw new QuestionContainerRuntimeException(e);
       }
@@ -986,7 +986,7 @@ public class DefaultQuestionContainerService
         Collection<Answer> answers = question.getAnswers();
         for (Answer answer : answers) {
           int nbUsers = questionResultService
-              .getQuestionResultToQuestion(new ForeignPK(question.getPK())).size();
+              .getQuestionResultToQuestion(new ResourceReference(question.getPK())).size();
           String percent =
               Math.round((answer.getNbVoters() * PERCENT_MULTIPLICATOR) / nbUsers) + "%";
           addCSVValue(csvRow, question.getLabel(), answer.getLabel(), percent, addScore,

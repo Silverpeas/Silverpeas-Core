@@ -25,7 +25,7 @@ package org.silverpeas.core.questioncontainer.result.model;
 
 import java.io.Serializable;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 
 public class QuestionResult implements Serializable {
@@ -34,7 +34,7 @@ public class QuestionResult implements Serializable {
   private int participationId = 1;
   private QuestionResultPK pk = null;
   private AnswerPK answerPK = null;
-  private ForeignPK questionPK = null;
+  private ResourceReference questionPK = null;
   private String userId = null;
   private String openedAnswer = null;
   private String voteDate = null;
@@ -43,12 +43,12 @@ public class QuestionResult implements Serializable {
   /**
    * Smallest QuestionResult Constructor
    * @param pk a QuestionResultPK object
-   * @param questionPK a ForeignPK object
+   * @param questionPK a ResourceReference object
    * @param answerPK the answer id
    * @param userId the user id
    * @param openedAnswer
    */
-  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK, String userId,
+  public QuestionResult(QuestionResultPK pk, ResourceReference questionPK, AnswerPK answerPK, String userId,
       String openedAnswer) {
     super();
     this.pk = pk;
@@ -58,20 +58,20 @@ public class QuestionResult implements Serializable {
     this.openedAnswer = openedAnswer;
   }
 
-  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK, String userId,
+  public QuestionResult(QuestionResultPK pk, ResourceReference questionPK, AnswerPK answerPK, String userId,
       String openedAnswer, String voteDate) {
     this(pk, questionPK, answerPK, userId, openedAnswer);
     this.voteDate = voteDate;
   }
 
-  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK, String userId,
+  public QuestionResult(QuestionResultPK pk, ResourceReference questionPK, AnswerPK answerPK, String userId,
       String openedAnswer, String voteDate, int elapsedTime, int participationId) {
     this(pk, questionPK, answerPK, userId, openedAnswer, voteDate);
     this.elapsedTime = elapsedTime;
     this.participationId = participationId;
   }
 
-  public QuestionResult(QuestionResultPK pk, ForeignPK questionPK, AnswerPK answerPK, String userId,
+  public QuestionResult(QuestionResultPK pk, ResourceReference questionPK, AnswerPK answerPK, String userId,
       String openedAnswer, int nbPoints, String voteDate, int elapsedTime, int participationId) {
     this(pk, questionPK, answerPK, userId, openedAnswer, voteDate, elapsedTime, participationId);
     this.nbPoints = nbPoints;
@@ -85,7 +85,7 @@ public class QuestionResult implements Serializable {
     this.answerPK = answerPK;
   }
 
-  public void setQuestionPK(ForeignPK questionPK) {
+  public void setQuestionPK(ResourceReference questionPK) {
     this.questionPK = questionPK;
   }
 
@@ -121,7 +121,7 @@ public class QuestionResult implements Serializable {
     return this.answerPK;
   }
 
-  public ForeignPK getQuestionPK() {
+  public ResourceReference getQuestionPK() {
     return this.questionPK;
   }
 

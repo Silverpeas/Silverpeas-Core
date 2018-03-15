@@ -24,7 +24,7 @@
 package org.silverpeas.core.webapi.attachment;
 
 import org.apache.commons.io.FileUtils;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.ActifyDocumentProcessor;
@@ -353,7 +353,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   private List<SimpleDocument> getListDocuments(SimpleDocument document) {
     List<SimpleDocument> docs =
         AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
-            new ForeignPK(document.getForeignId(), getComponentId()), document.getDocumentType(), defaultLanguage);
+            new ResourceReference(document.getForeignId(), getComponentId()), document.getDocumentType(), defaultLanguage);
     return docs;
   }
 

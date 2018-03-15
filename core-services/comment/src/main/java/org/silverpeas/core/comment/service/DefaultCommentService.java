@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.comment.service;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -146,7 +146,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
    */
   @Override
   public void deleteAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
-    List<Comment> comments = getCommentDAO().getAllCommentsByForeignKey(resourceType, new ForeignPK(
+    List<Comment> comments = getCommentDAO().getAllCommentsByForeignKey(resourceType, new ResourceReference(
         pk));
     for (Comment comment : comments) {
       deleteComment(comment);
@@ -183,7 +183,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   public void moveComments(final String resourceType, final WAPrimaryKey fromPK,
       final WAPrimaryKey toPK) {
     unindexAllCommentsOnPublication(resourceType, fromPK);
-    getCommentDAO().moveComments(resourceType, new ForeignPK(fromPK), new ForeignPK(toPK));
+    getCommentDAO().moveComments(resourceType, new ResourceReference(fromPK), new ResourceReference(toPK));
   }
 
   /**
@@ -256,7 +256,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   @Override
   public List<Comment> getAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
     List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(resourceType,
-        new ForeignPK(pk));
+        new ResourceReference(pk));
     for (Comment comment : vComments) {
       setOwnerDetail(comment);
     }
@@ -314,7 +314,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
    */
   @Override
   public int getCommentsCountOnPublication(final String resourceType, final WAPrimaryKey pk) {
-    return getCommentDAO().getCommentsCountByForeignKey(resourceType, new ForeignPK(pk));
+    return getCommentDAO().getCommentsCountByForeignKey(resourceType, new ResourceReference(pk));
   }
 
   /**
@@ -328,7 +328,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   @Override
   public void indexAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
     List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(resourceType,
-        new ForeignPK(pk));
+        new ResourceReference(pk));
     for (Comment comment : vComments) {
       createIndex(comment);
     }
@@ -345,7 +345,7 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   @Override
   public void unindexAllCommentsOnPublication(final String resourceType, final WAPrimaryKey pk) {
     List<Comment> vComments = getCommentDAO().getAllCommentsByForeignKey(resourceType,
-        new ForeignPK(pk));
+        new ResourceReference(pk));
     for (Comment comment : vComments) {
       deleteIndex(comment);
     }
@@ -452,6 +452,6 @@ public class DefaultCommentService implements CommentService, ComponentInstanceD
   @Override
   @Transactional
   public void delete(final String componentInstanceId) {
-    getCommentDAO().removeAllCommentsByForeignPk(null, new ForeignPK(null, componentInstanceId));
+    getCommentDAO().removeAllCommentsByForeignPk(null, new ResourceReference(null, componentInstanceId));
   }
 }

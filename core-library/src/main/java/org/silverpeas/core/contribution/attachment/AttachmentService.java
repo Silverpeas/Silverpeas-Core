@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.index.indexing.model.DocumentIndexing;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.WAPrimaryKey;
@@ -110,7 +110,7 @@ public interface AttachmentService extends DocumentIndexing {
    * @param type
    * @return a map with the cloned document id as key and the original document id as value.
    */
-  Map<String, String> mergeDocuments(ForeignPK originalForeignKey, ForeignPK cloneForeignKey,
+  Map<String, String> mergeDocuments(ResourceReference originalForeignKey, ResourceReference cloneForeignKey,
       DocumentType type);
 
   /**
@@ -119,7 +119,7 @@ public interface AttachmentService extends DocumentIndexing {
    * @param targetPk
    * @return
    */
-  SimpleDocumentPK copyDocument(SimpleDocument original, ForeignPK targetPk);
+  SimpleDocumentPK copyDocument(SimpleDocument original, ResourceReference targetPk);
 
   /**
    * Copies all the attachment linked to a resource to another one.
@@ -139,7 +139,7 @@ public interface AttachmentService extends DocumentIndexing {
    * @param destination the foreign id to be moved to.
    * @return the new document id.
    */
-  SimpleDocumentPK moveDocument(SimpleDocument document, ForeignPK destination);
+  SimpleDocumentPK moveDocument(SimpleDocument document, ResourceReference destination);
 
   /*
    * Moves all the attachment linked to a resource to another one.
@@ -438,7 +438,7 @@ public interface AttachmentService extends DocumentIndexing {
    * @param foreign the id of the container of the document.
    * @return a document with the same filename - null if none is found.
    */
-  SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ForeignPK foreign,
+  SimpleDocument findExistingDocument(SimpleDocumentPK pk, String fileName, ResourceReference foreign,
       String lang);
 
   /**

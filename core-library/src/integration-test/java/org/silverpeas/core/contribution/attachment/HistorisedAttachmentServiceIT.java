@@ -33,7 +33,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
@@ -475,7 +475,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
   @Test
   public void testReorderAttachments() throws RepositoryException,
       IOException {
-    WAPrimaryKey foreignKey = new ForeignPK("node36", instanceId);
+    WAPrimaryKey foreignKey = new ResourceReference("node36", instanceId);
     try (JcrSession session = openSystemSession()) {
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -549,7 +549,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testSwitchAllowingDownloadForReaders() throws RepositoryException, IOException {
-    WAPrimaryKey foreignKey = new ForeignPK("node36", instanceId);
+    WAPrimaryKey foreignKey = new ResourceReference("node36", instanceId);
     SimpleDocumentPK documentPK;
     try (JcrSession session = openSystemSession()) {
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
@@ -627,7 +627,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
   @Test
   public void testSearchAttachmentsByExternalObject() throws RepositoryException,
       IOException {
-    WAPrimaryKey foreignKey = new ForeignPK("node36", instanceId);
+    WAPrimaryKey foreignKey = new ResourceReference("node36", instanceId);
     try (JcrSession session = openSystemSession()) {
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
       SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
@@ -876,7 +876,7 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
     assertThat(result.getHistory(), is(notNullValue()));
     assertThat(result.getHistory(), hasSize(1));
     String foreignId = "node56";
-    SimpleDocumentPK copyPk = instance.copyDocument(result, new ForeignPK(foreignId, instanceId));
+    SimpleDocumentPK copyPk = instance.copyDocument(result, new ResourceReference(foreignId, instanceId));
     HistorisedDocument copy = (HistorisedDocument) instance.searchDocumentById(copyPk, "fr");
     assertThat(copy, is(notNullValue()));
     assertThat(copy.getAlert(), is(nullValue()));

@@ -24,7 +24,7 @@
 package org.silverpeas.core.comment.service.notification;
 
 import org.silverpeas.core.ApplicationService;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.comment.model.Comment;
@@ -153,7 +153,7 @@ public class CommentUserNotificationService extends CDIResourceEventListener<Com
    */
   private Set<String> getInterestedUsers(final String commentAuthorId, Contribution content) {
     Set<String> interestedUsers = new LinkedHashSet<>();
-    WAPrimaryKey pk = new ForeignPK(content.getContributionId().getLocalId(),
+    WAPrimaryKey pk = new ResourceReference(content.getContributionId().getLocalId(),
         content.getContributionId().getComponentInstanceId());
     List<Comment> comments = getCommentService().getAllCommentsOnPublication(content.
         getContributionType(), pk);

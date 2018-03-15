@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.comment.test;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
-import org.silverpeas.core.ForeignPK;
 
 import java.util.Date;
 
@@ -76,8 +76,8 @@ public class CommentBuilder {
    * CommentBuilder instances.
    * @return the primary key of the commented resource.
    */
-  public static ForeignPK getResourcePrimaryPK() {
-    return new ForeignPK(RESOURCE_ID, COMPONENT_ID);
+  public static ResourceReference getResourcePrimaryPK() {
+    return new ResourceReference(RESOURCE_ID, COMPONENT_ID);
   }
 
   private CommentBuilder() {

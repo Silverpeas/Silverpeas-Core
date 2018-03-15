@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.io.upload;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -162,7 +162,7 @@ public class UploadedFile {
       String contributionLanguage, boolean indexIt) {
 
     // Retrieve the simple document
-    SimpleDocument document = retrieveSimpleDocument(new ForeignPK(resourceId, componentInstanceId),
+    SimpleDocument document = retrieveSimpleDocument(new ResourceReference(resourceId, componentInstanceId),
         contributionLanguage);
 
     // Create attachment (please read the method documentation ...)

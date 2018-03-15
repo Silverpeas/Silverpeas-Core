@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.comment.dao.jdbc;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
@@ -32,7 +33,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.date.period.Period;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.WAPrimaryKey;
 
@@ -159,8 +159,8 @@ public class JDBCCommentRequester {
    * @param toPK the destination unique identifier of another comment in the data source.
    * @throws SQLException if an error occurs during the operation.
    */
-  public void moveComments(Connection con, String fromResourceType, ForeignPK fromPK,
-      String toResourceType, ForeignPK toPK)
+  public void moveComments(Connection con, String fromResourceType, ResourceReference fromPK,
+      String toResourceType, ResourceReference toPK)
       throws SQLException {
     String update_query
         = "UPDATE sb_comment_comment SET resourceType=?, resourceId=?, instanceId=? "
@@ -375,11 +375,12 @@ public class JDBCCommentRequester {
     return comments;
   }
 
-  public int deleteAllComments(Connection con, String resourceType, ForeignPK foreignPK)
+  public int deleteAllComments(Connection con, String resourceType, ResourceReference
+      resourceReference)
       throws SQLException {
     final List<Object> params = new ArrayList<Object>();
     final StringBuilder delete_query = new StringBuilder("DELETE FROM sb_comment_comment");
-    performQueryAndParams(delete_query, params, resourceType, foreignPK);
+    performQueryAndParams(delete_query, params, resourceType, resourceReference);
 
     PreparedStatement prep_stmt = null;
     try {

@@ -31,6 +31,7 @@
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.iconpanes.IconPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.icons.Icon" %>
 <%@ page import="org.silverpeas.core.admin.user.model.UserDetail" %>
+<%@ page import="org.silverpeas.core.ResourceReference" %>
 
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
@@ -56,8 +57,8 @@
     <%
     StatisticService statisticService =  ServiceProvider.getService(StatisticService.class);
 
-    ForeignPK foreignPK = new ForeignPK(id, componentId);
-    Collection<HistoryByUser> readingState = statisticService.getHistoryByObject(foreignPK, 1, objectType, userIds);
+    ResourceReference resourceReference = new ResourceReference(id, componentId);
+    Collection<HistoryByUser> readingState = statisticService.getHistoryByObject(resourceReference, 1, objectType, userIds);
 
     // displaying reading control
     ArrayPane arrayPane = gef.getArrayPane("readingControl", "ReadingControl", request, session);

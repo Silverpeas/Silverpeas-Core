@@ -31,7 +31,7 @@ import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.WAPrimaryKey;
 
@@ -55,7 +55,7 @@ public class NodeAccessControl<R> extends AbstractShareableAccessControl<NodeTic
     autorizedNodes.add(nodePk);
     if (accessedObject instanceof SimpleDocument) {
       SimpleDocument attachment = (SimpleDocument) accessedObject;
-      return isPublicationReadable(new ForeignPK(attachment.
+      return isPublicationReadable(new ResourceReference(attachment.
           getForeignId(), attachment.getInstanceId()), nodePk.getInstanceId(), autorizedNodes);
     }
     if (accessedObject instanceof NodeDetail) {

@@ -30,9 +30,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.test.util.log.TestSilverpeasTrace;
 import org.silverpeas.core.test.WarBuilder4LibCore;
-import org.silverpeas.core.ForeignPK;
 
 import javax.ejb.EJBException;
 import javax.inject.Inject;
@@ -92,12 +92,12 @@ public class SimulationActionInterceptorIT {
 
   @Test(expected = EJBException.class)
   public void testInterceptorIsHandledForEjbServicesOnDeleteMethodWithMissingActionAnnotation() {
-    ejbService.delete(new InterceptorTestFile("FromEJB"), new ForeignPK("id", "instanceId"));
+    ejbService.delete(new InterceptorTestFile("FromEJB"), new ResourceReference("id", "instanceId"));
   }
 
   @Test
   public void testInterceptorIsHandledForEjbServicesOnMoveMethodWithMissingSourceAnnotation() {
-    ejbService.move(new ForeignPK("id", "instanceId"), new ForeignPK("id", "instanceId"));
+    ejbService.move(new ResourceReference("id", "instanceId"), new ResourceReference("id", "instanceId"));
     assertCheckNotCalled();
     assertThat(TestSilverpeasTrace.getWarnMessages(), contains(
         "Process@SimulationActionProcessAnnotationInterceptor.intercept()@intercepted method " +
@@ -109,7 +109,7 @@ public class SimulationActionInterceptorIT {
 
   @Test
   public void testInterceptorIsHandledForSimpleServicesOnDeleteMethodWithMissingTargetAnnotation() {
-    simpleService.delete(new InterceptorTestFile("FromService"), new ForeignPK("id", "instanceId"));
+    simpleService.delete(new InterceptorTestFile("FromService"), new ResourceReference("id", "instanceId"));
     assertCheckNotCalled();
     assertThat(TestSilverpeasTrace.getWarnMessages(), contains(
         "Process@SimulationActionProcessAnnotationInterceptor.intercept()@intercepted method " +
@@ -122,7 +122,7 @@ public class SimulationActionInterceptorIT {
 
   @Test
   public void testInterceptorIsHandledForEjbServicesOnCreateMethod() {
-    ejbService.create(new InterceptorTestFile("FromEJB"), new ForeignPK("id", "instanceId"));
+    ejbService.create(new InterceptorTestFile("FromEJB"), new ResourceReference("id", "instanceId"));
     assertCheckCalled();
     assertThat(TestSilverpeasTrace.getInfoMessages(),
         hasItems("InterceptorTest@DefaultEjbService@create called"));
@@ -130,7 +130,7 @@ public class SimulationActionInterceptorIT {
 
   @Test
   public void testInterceptorIsHandledForSimpleServicesOnCreateMethod() {
-    simpleService.create(new InterceptorTestFile("FromSimple"), new ForeignPK("id", "instanceId"));
+    simpleService.create(new InterceptorTestFile("FromSimple"), new ResourceReference("id", "instanceId"));
     assertCheckCalled();
     assertThat(TestSilverpeasTrace.getInfoMessages(),
         hasItem("InterceptorTest@DefaultSimpleService@create called"));

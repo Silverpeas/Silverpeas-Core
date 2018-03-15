@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.importexport.attachment;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.importexport.form.FormTemplateImportExport;
 import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.silvertrace.SilverTrace;
@@ -37,7 +38,6 @@ import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -105,7 +105,7 @@ public class AttachmentImportExport {
           if (xmlIE == null) {
             xmlIE = new FormTemplateImportExport();
           }
-          ForeignPK pk = new ForeignPK(attDetail.getPK().getId(), attDetail.getPK().getInstanceId());
+          ResourceReference pk = new ResourceReference(attDetail.getPK().getId(), attDetail.getPK().getInstanceId());
           xmlIE.importXMLModelContentType(pk, "Attachment", xmlContent, attDetail.getAuthor());
         }
       } catch (Exception e) {
@@ -140,7 +140,7 @@ public class AttachmentImportExport {
   private SimpleDocument addAttachmentToPublication(String pubId, String componentId,
       AttachmentDetail attachment, InputStream input, boolean indexIt) {
     SimpleDocumentPK attachmentPk = new SimpleDocumentPK(null, componentId);
-    ForeignPK foreignKey = new ForeignPK(pubId, componentId);
+    ResourceReference foreignKey = new ResourceReference(pubId, componentId);
     List<SimpleDocument> existingAttachments = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKeyAndType(foreignKey, DocumentType.attachment, null);
 

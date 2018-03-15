@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.result.service;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.questioncontainer.result.dao.QuestionResultDAO;
@@ -62,7 +62,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
   }
 
   @Override
-  public Collection<QuestionResult> getQuestionResultToQuestion(ForeignPK questionPK) {
+  public Collection<QuestionResult> getQuestionResultToQuestion(ResourceReference questionPK) {
 
     Connection con = getConnection();
     try {
@@ -76,7 +76,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
 
   @Override
   public Collection<QuestionResult> getUserQuestionResultsToQuestion(String userId,
-      ForeignPK questionPK) {
+      ResourceReference questionPK) {
     Connection con = getConnection();
     try {
       return QuestionResultDAO.getUserQuestionResultsToQuestion(con, userId, questionPK);
@@ -101,7 +101,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
 
   @Override
   @Transactional(Transactional.TxType.REQUIRED)
-  public void deleteQuestionResultsToQuestion(ForeignPK questionPK) {
+  public void deleteQuestionResultsToQuestion(ResourceReference questionPK) {
     Connection con = getConnection();
     try {
       QuestionResultDAO.deleteQuestionResultToQuestion(con, questionPK);
@@ -113,7 +113,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
   }
 
   @Override
-  public Collection<QuestionResult> getQuestionResultToQuestionByParticipation(ForeignPK questionPK,
+  public Collection<QuestionResult> getQuestionResultToQuestionByParticipation(ResourceReference questionPK,
       int participationId) {
     Connection con = getConnection();
     try {
@@ -128,7 +128,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
 
   @Override
   public Collection<QuestionResult> getUserQuestionResultsToQuestionByParticipation(String userId,
-      ForeignPK questionPK, int participationId) {
+      ResourceReference questionPK, int participationId) {
     Connection con = getConnection();
     try {
       return QuestionResultDAO
@@ -153,7 +153,7 @@ public class DefaultQuestionResultService implements QuestionResultService {
   }
 
   @Override
-  public QuestionResult getUserAnswerToQuestion(String userId, ForeignPK questionPK,
+  public QuestionResult getUserAnswerToQuestion(String userId, ResourceReference questionPK,
       AnswerPK answerPK) {
     Connection con = getConnection();
     try {

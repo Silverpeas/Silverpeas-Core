@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.silverstatistics.access.service;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.user.model.UserDetail;
@@ -33,7 +34,6 @@ import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
@@ -65,11 +65,11 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public void addStat(String userId, ForeignPK foreignPK, int actionType, String objectType) {
+  public void addStat(String userId, ResourceReference resourceReference, int actionType, String objectType) {
 
     Connection con = getConnection();
     try {
-      HistoryObjectDAO.add(con, userId, foreignPK, actionType, objectType);
+      HistoryObjectDAO.add(con, userId, resourceReference, actionType, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException("DefaultStatisticService().addStat()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_ADD_VISITE_NODE", e);
@@ -84,10 +84,10 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public int getCount(List<ForeignPK> foreignPKs, int action, String objectType) {
+  public int getCount(List<ResourceReference> resourceReferences, int action, String objectType) {
     Connection con = getConnection();
     try {
-      return HistoryObjectDAO.getCount(con, foreignPKs, objectType);
+      return HistoryObjectDAO.getCount(con, resourceReferences, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException("DefaultStatisticService().getCount()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
@@ -98,10 +98,10 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public int getCount(ForeignPK foreignPK, int action, String objectType) {
+  public int getCount(ResourceReference resourceReference, int action, String objectType) {
     Connection con = getConnection();
     try {
-      return HistoryObjectDAO.getCount(con, foreignPK, objectType);
+      return HistoryObjectDAO.getCount(con, resourceReference, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException("DefaultStatisticService().getCount()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
@@ -117,8 +117,8 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public int getCount(ForeignPK foreignPK, String objectType) {
-    return getCount(foreignPK, ACTION_ACCESS, objectType);
+  public int getCount(ResourceReference resourceReference, String objectType) {
+    return getCount(resourceReference, ACTION_ACCESS, objectType);
   }
 
   @Override
@@ -127,12 +127,12 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public Collection<HistoryObjectDetail> getHistoryByAction(ForeignPK foreignPK, int action,
+  public Collection<HistoryObjectDetail> getHistoryByAction(ResourceReference resourceReference, int action,
       String objectType) {
 
     Connection con = getConnection();
     try {
-      return HistoryObjectDAO.getHistoryDetailByObject(con, foreignPK, objectType);
+      return HistoryObjectDAO.getHistoryDetailByObject(con, resourceReference, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException("DefaultStatisticService().getHistoryByAction()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
@@ -143,11 +143,12 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public Collection<HistoryObjectDetail> getHistoryByObjectAndUser(ForeignPK foreignPK, int action,
+  public Collection<HistoryObjectDetail> getHistoryByObjectAndUser(ResourceReference
+      resourceReference, int action,
       String objectType, String userId) {
     Connection con = getConnection();
     try {
-      return HistoryObjectDAO.getHistoryDetailByObjectAndUser(con, foreignPK, objectType, userId);
+      return HistoryObjectDAO.getHistoryDetailByObjectAndUser(con, resourceReference, objectType, userId);
     } catch (Exception e) {
       throw new StatisticRuntimeException("DefaultStatisticService().getHistoryByObjectAndUser()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
@@ -158,31 +159,31 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
+  public Collection<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
       String objectType) {
     UserDetail[] allUsers = OrganizationControllerProvider.getOrganisationController()
-        .getAllUsers(foreignPK.getInstanceId());
-    return getHistoryByObject(foreignPK, action, objectType, allUsers);
+        .getAllUsers(resourceReference.getInstanceId());
+    return getHistoryByObject(resourceReference, action, objectType, allUsers);
   }
 
   @Override
-  public Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
+  public Collection<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
       String objectType, List<String> userIds) {
     if (userIds == null || userIds.isEmpty()) {
-      return getHistoryByObject(foreignPK, action, objectType);
+      return getHistoryByObject(resourceReference, action, objectType);
     }
     UserDetail[] users = OrganizationControllerProvider.getOrganisationController()
         .getUserDetails(userIds.toArray(new String[userIds.size()]));
-    return getHistoryByObject(foreignPK, action, objectType, users);
+    return getHistoryByObject(resourceReference, action, objectType, users);
   }
 
-  private Collection<HistoryByUser> getHistoryByObject(ForeignPK foreignPK, int action,
+  private Collection<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
       String objectType, UserDetail[] users) {
     SilverTrace
         .info("statistic", "DefaultStatisticService.getHistoryByObject()", "root.MSG_GEN_ENTER_METHOD");
     Collection<HistoryObjectDetail> list;
     try {
-      list = getHistoryByAction(foreignPK, action, objectType);
+      list = getHistoryByAction(resourceReference, action, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException("DefaultStatisticService.getHistoryByObject()",
           SilverpeasRuntimeException.ERROR, "statistic.EX_IMPOSSIBLE_DOBTENIR_LETAT_DES_LECTURES",
@@ -272,11 +273,11 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public void deleteStats(ForeignPK foreignPK, String objectType) {
+  public void deleteStats(ResourceReference resourceReference, String objectType) {
 
     Connection con = getConnection();
     try {
-      HistoryObjectDAO.deleteHistoryByObject(con, foreignPK, objectType);
+      HistoryObjectDAO.deleteHistoryByObject(con, resourceReference, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException("DefaultStatisticService().deleteHistoryByAction",
           SilverpeasRuntimeException.ERROR,
@@ -292,12 +293,12 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
   }
 
   @Override
-  public void moveStat(ForeignPK toForeignPK, int actionType, String objectType) {
+  public void moveStat(ResourceReference toResourceReference, int actionType, String objectType) {
     SilverTrace
         .info("statistic", "DefaultStatisticService.deleteHistoryByAction", "root.MSG_GEN_ENTER_METHOD");
     Connection con = getConnection();
     try {
-      HistoryObjectDAO.move(con, toForeignPK, actionType, objectType);
+      HistoryObjectDAO.move(con, toResourceReference, actionType, objectType);
     } catch (Exception e) {
       throw new StatisticRuntimeException("DefaultStatisticService().addObjectToHistory()",
           SilverpeasRuntimeException.ERROR, "statistic.CANNOT_ADD_VISITE_NODE", e);
@@ -429,8 +430,8 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
     }
   }
 
-  private ForeignPK getForeignPK(SilverpeasContent content) {
-    return new ForeignPK(content.getId(), content.getComponentInstanceId());
+  private ResourceReference getForeignPK(SilverpeasContent content) {
+    return new ResourceReference(content.getId(), content.getComponentInstanceId());
   }
 
   /**

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.questioncontainer.answer.dao;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.Answer;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
@@ -94,7 +94,8 @@ public class AnswerDAO {
     String image = rs.getString(9);
     String questionLink = rs.getString(10);
 
-    return new Answer(new AnswerPK(id, answerPK), new ForeignPK(questionId, answerPK), label, nbPoints,
+    return new Answer(new AnswerPK(id, answerPK),
+        new ResourceReference(questionId, answerPK.getInstanceId()), label, nbPoints,
         isSolution, comment, nbVoters, isOpened, image, questionLink);
   }
 
@@ -105,7 +106,8 @@ public class AnswerDAO {
    * @return a Collection of Answer
    * @throws SQLException
    */
-  public static Collection<Answer> getAnswersByQuestionPK(Connection con, ForeignPK questionPK)
+  public static Collection<Answer> getAnswersByQuestionPK(Connection con,
+      ResourceReference questionPK)
       throws SQLException {
 
     ResultSet rs = null;
@@ -141,7 +143,8 @@ public class AnswerDAO {
    * @param answerPK the AnswerPK (answer id)
    * @throws SQLException
    */
-  public static void recordThisAnswerAsVote(Connection con, ForeignPK questionPK, AnswerPK answerPK)
+  public static void recordThisAnswerAsVote(Connection con, ResourceReference questionPK,
+      AnswerPK answerPK)
       throws SQLException {
 
 
@@ -169,7 +172,7 @@ public class AnswerDAO {
    * @throws SQLException
    */
   public static void addAnswersToAQuestion(Connection con, Collection<Answer> answers,
-      ForeignPK questionPK) throws SQLException {
+      ResourceReference questionPK) throws SQLException {
 
     if (answers != null) {
       for (Answer answer : answers) {
@@ -185,7 +188,8 @@ public class AnswerDAO {
    * @param questionPK the QuestionPK (question id)
    * @throws SQLException
    */
-  public static void addAnswerToAQuestion(Connection con, Answer answer, ForeignPK questionPK)
+  public static void addAnswerToAQuestion(Connection con, Answer answer,
+      ResourceReference questionPK)
       throws SQLException {
 
     int newId;
@@ -230,7 +234,7 @@ public class AnswerDAO {
    * @param questionPK the QuestionPK (question id)
    * @throws SQLException
    */
-  public static void deleteAnswersToAQuestion(Connection con, ForeignPK questionPK)
+  public static void deleteAnswersToAQuestion(Connection con, ResourceReference questionPK)
       throws SQLException {
 
     PreparedStatement prepStmt = null;
@@ -250,7 +254,8 @@ public class AnswerDAO {
    * @param answerId the answer id
    * @throws SQLException
    */
-  public static void deleteAnswerToAQuestion(Connection con, ForeignPK questionPK, String answerId)
+  public static void deleteAnswerToAQuestion(Connection con, ResourceReference questionPK,
+      String answerId)
       throws SQLException {
 
     PreparedStatement prepStmt = null;
@@ -285,7 +290,8 @@ public class AnswerDAO {
    * @param answer the Answer
    * @throws SQLException
    */
-  public static void updateAnswerToAQuestion(Connection con, ForeignPK questionPK, Answer answer)
+  public static void updateAnswerToAQuestion(Connection con, ResourceReference questionPK,
+      Answer answer)
       throws SQLException {
 
 

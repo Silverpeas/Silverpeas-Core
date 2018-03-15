@@ -33,7 +33,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
@@ -386,7 +386,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     SimpleDocument original = instance.searchDocumentById(existingFrDoc, language);
     File originalContent = new File(original.getAttachmentPath());
     assertThat(originalContent.exists(), is(true));
-    SimpleDocumentPK pk = instance.moveDocument(original, new ForeignPK(foreignId,
+    SimpleDocumentPK pk = instance.moveDocument(original, new ResourceReference(foreignId,
         foreignInstanceId));
     SimpleDocument movedDocument = instance.searchDocumentById(pk, language);
     original.setForeignId(foreignId);
@@ -593,9 +593,9 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(1L));
     assertThat(getJcrNode(foreignInstanceId), nullValue());
 
-    ForeignPK newResourcePK = new ForeignPK("newResourcePK", foreignInstanceId);
+    ResourceReference newResourcePK = new ResourceReference("newResourcePK", foreignInstanceId);
     List<SimpleDocumentPK> copiedDocumentPks = instance
-        .copyAllDocuments(new ForeignPK(documentFr.getForeignId(), documentFr.getInstanceId()),
+        .copyAllDocuments(new ResourceReference(documentFr.getForeignId(), documentFr.getInstanceId()),
             newResourcePK);
 
     assertThat(copiedDocumentPks, hasSize(2));
@@ -655,9 +655,9 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(1L));
     assertThat(getJcrNode(foreignInstanceId), nullValue());
 
-    ForeignPK newResourcePK = new ForeignPK("newResourcePK", instanceId);
+    ResourceReference newResourcePK = new ResourceReference("newResourcePK", instanceId);
     List<SimpleDocumentPK> movedDocumentPks = instance
-        .moveAllDocuments(new ForeignPK(documentFr.getForeignId(), documentFr.getInstanceId()),
+        .moveAllDocuments(new ResourceReference(documentFr.getForeignId(), documentFr.getInstanceId()),
             newResourcePK);
 
     assertThat(movedDocumentPks, hasSize(2));
@@ -716,9 +716,9 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
     assertThat(getComponentJcrNode(DocumentType.form.name() + "s").getNbChildren(), is(1L));
     assertThat(getJcrNode(foreignInstanceId), nullValue());
 
-    ForeignPK newResourcePK = new ForeignPK("newResourcePK", foreignInstanceId);
+    ResourceReference newResourcePK = new ResourceReference("newResourcePK", foreignInstanceId);
     List<SimpleDocumentPK> movedDocumentPks = instance
-        .moveAllDocuments(new ForeignPK(documentFr.getForeignId(), documentFr.getInstanceId()),
+        .moveAllDocuments(new ResourceReference(documentFr.getForeignId(), documentFr.getInstanceId()),
             newResourcePK);
 
     assertThat(movedDocumentPks, hasSize(2));
@@ -816,7 +816,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testReorderAttachments() throws RepositoryException, IOException {
-    WAPrimaryKey foreignKey = new ForeignPK("node36", instanceId);
+    WAPrimaryKey foreignKey = new ResourceReference("node36", instanceId);
     try (JcrSession session = openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();
@@ -908,7 +908,7 @@ public class AttachmentServiceIT extends JcrIntegrationIT {
    */
   @Test
   public void testSearchAttachmentsByExternalObject() throws RepositoryException, IOException {
-    WAPrimaryKey foreignKey = new ForeignPK("node36", instanceId);
+    WAPrimaryKey foreignKey = new ResourceReference("node36", instanceId);
     try (JcrSession session = openSystemSession()) {
       DocumentRepository documentRepository = new DocumentRepository();
       Date creationDate = RandomGenerator.getRandomCalendar().getTime();

@@ -48,7 +48,7 @@ public class HtmlExportGeneratorIT {
   public static Archive<?> createTestArchive() {
     WebArchive war = ShrinkWrap.create(WebArchive.class, "test.war");
 //        .addClasses(SilverpeasTrace.class, SilverTrace.class, TestSilverpeasTrace.class,
-//            WAPrimaryKey.class, ForeignPK.class);
+//            WAPrimaryKey.class, ResourceReference.class);
 //    war.addAsLibraries(Maven.resolver().loadPomFromFile("pom.xml")
 //        .resolve("com.ninja-squad:DbSetup", "org.apache.commons:commons-lang3",
 //            "commons-codec:commons-codec", "commons-io:commons-io", "org.silverpeas.core:silverpeas-core-test",

@@ -24,7 +24,7 @@
 package org.silverpeas.core.workflow.engine.instance;
 
 import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
@@ -1015,8 +1015,8 @@ public class ProcessInstanceImpl
       if ("file".equals(tmpl.getTypeName())) {
         String attachmentId = updatedField.getValue();
         if (StringUtil.isDefined(attachmentId)) {
-          ForeignPK fromPK = new ForeignPK(getId(), modelId);
-          ForeignPK toPK = new ForeignPK("Step" + step.getId(), modelId);
+          ResourceReference fromPK = new ResourceReference(getId(), modelId);
+          ResourceReference toPK = new ResourceReference("Step" + step.getId(), modelId);
 
           List<SimpleDocument> attachments = AttachmentServiceProvider
               .getAttachmentService().listDocumentsByForeignKey(fromPK, null);

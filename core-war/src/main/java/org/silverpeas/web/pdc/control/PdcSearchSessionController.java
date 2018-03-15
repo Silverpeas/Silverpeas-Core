@@ -23,7 +23,7 @@
  */
 package org.silverpeas.web.pdc.control;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.space.SpaceInstLight;
 import org.silverpeas.core.admin.user.UserIndexation;
@@ -725,7 +725,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private void setPopularityToResults() {
     List<GlobalSilverResult> results = getGlobalSR();
     StatisticService statisticService = getStatisticBm();
-    ForeignPK pk = new ForeignPK("unknown");
+    ResourceReference pk = new ResourceReference(ResourceReference.UNKNOWN_ID);
     for (GlobalSilverResult result : results) {
       if (isPopularityCompliant(result)) {
         pk.setComponentName(result.getInstanceId());

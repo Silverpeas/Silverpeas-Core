@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.comment.dao;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.socialnetwork.model.SocialInformation;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.WAPrimaryKey;
 
 import java.util.List;
@@ -55,7 +55,7 @@ public interface CommentDAO {
    * @param resourceType type of the commented publication.
    * @param pk the foreign key refering the publication in the data source
    */
-  void removeAllCommentsByForeignPk(final String resourceType, final ForeignPK pk);
+  void removeAllCommentsByForeignPk(final String resourceType, final ResourceReference pk);
 
   /**
    * Deletes the comment identified by the specified primary key
@@ -71,7 +71,7 @@ public interface CommentDAO {
    * @return a list with all of the publication comments. If the publication isn't commented, then
    * an empty list is returned.
    */
-  List<Comment> getAllCommentsByForeignKey(final String resourceType, final ForeignPK pk);
+  List<Comment> getAllCommentsByForeignKey(final String resourceType, final ResourceReference pk);
 
   /**
    * Gets the comment identified by the specified primary key. If no comment exist with a such
@@ -88,7 +88,7 @@ public interface CommentDAO {
    * @param pk the foreign key refering the publication.
    * @return the number of the publication comments.
    */
-  int getCommentsCountByForeignKey(final String resourceType, final ForeignPK pk);
+  int getCommentsCountByForeignKey(final String resourceType, final ResourceReference pk);
 
   /**
    * Among all the publications identified by the resource type and the specified primary keys, gets
@@ -123,7 +123,7 @@ public interface CommentDAO {
    * @param fromPK the foreign key refering the source publication.
    * @param toPK the foreign key refering the destination publication.
    */
-  void moveComments(final String resourceType, final ForeignPK fromPK, final ForeignPK toPK);
+  void moveComments(final String resourceType, final ResourceReference fromPK, final ResourceReference toPK);
 
   /**
    * Moves all the comments from the publication identified by the resource type and the specified
@@ -134,8 +134,8 @@ public interface CommentDAO {
    * @param toResourceType type of the destination publication.
    * @param toPK the foreign key refering the destination publication.
    */
-  void moveComments(final String fromResourceType, final ForeignPK fromPK,
-      final String toResourceType, final ForeignPK toPK);
+  void moveComments(final String fromResourceType, final ResourceReference fromPK,
+      final String toResourceType, final ResourceReference toPK);
 
   /**
    * Updates the comment in the data source identified by the specified one with the values carried

@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.contribution.rating.model;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 
 import java.io.Serializable;
 
 /**
  * This class represents a technical primary key of a contribution rating.
  */
-public class ContributionRatingPK extends ForeignPK implements Serializable {
+public class ContributionRatingPK extends ResourceReference implements Serializable {
 
   private static final long serialVersionUID = -4144961919465268637L;
   private String contributionType;

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.service;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
@@ -207,7 +207,7 @@ public interface PublicationService {
   Collection<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
       PublicationPK pk, String status, int nbPubs, String fatherId);
 
-  void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links);
+  void deleteInfoLinks(PublicationPK pubPK, List<ResourceReference> links);
 
   /**
    * @param pubPK
@@ -428,7 +428,7 @@ public interface PublicationService {
    * @param links list of publication to link with current.
    * @
    */
-  void addLinks(PublicationPK pubPK, List<ForeignPK> links);
+  void addLinks(PublicationPK pubPK, List<ResourceReference> links);
 
   List<SocialInformation> getAllPublicationsWithStatusbyUserid(String userId,
       Date begin, Date end);

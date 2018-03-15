@@ -25,7 +25,7 @@ package org.silverpeas.core.contribution.attachment;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -195,7 +195,7 @@ public class ActifyDocumentProcessScheduler implements SchedulerEventListener, I
       return document != null;
     }
 
-    private SimpleDocument getSourceDocument(String filename, ForeignPK publication) {
+    private SimpleDocument getSourceDocument(String filename, ResourceReference publication) {
       SimpleDocument source = null;
       SimpleDocumentList<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
           listDocumentsByForeignKey(publication, null);
@@ -221,7 +221,7 @@ public class ActifyDocumentProcessScheduler implements SchedulerEventListener, I
         SimpleDocument document = null;
         if (isVersioned) {
           document = attachmentService.findExistingDocument(new SimpleDocumentPK(null,
-              componentId), fileName, new ForeignPK(publicationId), null);
+              componentId), fileName, new ResourceReference(publicationId), null);
           if (documentExists(document)) {
             attachmentService.updateAttachment(document, file, false, false);
             UnlockContext unlockContext = new UnlockContext(document.getId(), "", null, "");
@@ -235,7 +235,7 @@ public class ActifyDocumentProcessScheduler implements SchedulerEventListener, I
         if (!documentExists(document)) {
           String userId = "0";
           DocumentType documentType = DocumentType.attachment;
-          SimpleDocument documentSource = getSourceDocument(fileName, new ForeignPK(
+          SimpleDocument documentSource = getSourceDocument(fileName, new ResourceReference(
               publicationId, componentId));
           if (documentSource != null) {
             userId = documentSource.getCreatedBy();

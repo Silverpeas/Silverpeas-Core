@@ -33,7 +33,7 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/contextMenu" prefix="menu" %>
 <%@ taglib tagdir="/WEB-INF/tags/silverpeas/util" prefix="viewTags" %>
 <%@ page errorPage="../../admin/jsp/errorpage.jsp"%>
-<%@ page import="org.silverpeas.core.ForeignPK" %>
+<%@ page import="org.silverpeas.core.ResourceReference" %>
 <%@ page import="org.silverpeas.core.web.mvc.controller.ComponentContext" %>
 <%@ page import="org.silverpeas.core.contribution.attachment.AttachmentServiceProvider" %>
 <%@ page import="org.silverpeas.core.contribution.attachment.model.DocumentType" %>
@@ -198,7 +198,7 @@
   <c:set var="_isI18nHandled" value="${silfn:isI18n() && silfn:isDefined(contentLanguage)}" />
 <%
   List<SimpleDocument> attachments = AttachmentServiceProvider.getAttachmentService().
-          listDocumentsByForeignKeyAndType(new ForeignPK(request.getParameter("Id"), request.getParameter("ComponentId")),
+          listDocumentsByForeignKeyAndType(new ResourceReference(request.getParameter("Id"), request.getParameter("ComponentId")),
           DocumentType.valueOf((String)session.getAttribute("Silverpeas_Attachment_Context")),
           (String) pageContext.getAttribute("contentLanguage"));
   pageContext.setAttribute("attachments", attachments);

@@ -25,7 +25,7 @@ package org.silverpeas.core.importexport.versioning;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
@@ -74,7 +74,7 @@ public class VersioningImport {
     int versionType = DocumentVersion.TYPE_PUBLIC_VERSION;
     int nbFilesProcessed = 0;
     AttachmentImportExport attachmentImportExport = new AttachmentImportExport(user);
-    ForeignPK pubPK = new ForeignPK(objectId, componentId);
+    ResourceReference pubPK = new ResourceReference(objectId, componentId);
 
     // get existing documents of object
     List<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
@@ -134,7 +134,7 @@ public class VersioningImport {
     return null;
   }
 
-  public List<SimpleDocument> importDocuments(ForeignPK objectPK, List<Document> documents,
+  public List<SimpleDocument> importDocuments(ResourceReference objectPK, List<Document> documents,
       int userId, boolean indexIt) throws FileNotFoundException {
     List<SimpleDocument> importedDocs = new ArrayList<>(documents.size());
 
@@ -149,7 +149,7 @@ public class VersioningImport {
     return importedDocs;
   }
 
-  private void importDocument(final ForeignPK objectPK, final int userId, final boolean indexIt,
+  private void importDocument(final ResourceReference objectPK, final int userId, final boolean indexIt,
       final List<SimpleDocument> importedDocs,
       final List<SimpleDocument> existingDocuments, final FormTemplateImportExport xmlIE,
       final Document document) throws FileNotFoundException {
@@ -193,7 +193,7 @@ public class VersioningImport {
     }
   }
 
-  private SimpleDocument addVersionForExistingDocument(final ForeignPK objectPK, final int userId,
+  private SimpleDocument addVersionForExistingDocument(final ResourceReference objectPK, final int userId,
       final boolean indexIt, final FormTemplateImportExport xmlIE, final Document document,
       SimpleDocument existingDocument) throws FileNotFoundException {
     List<DocumentVersion> versions = document.getVersionsType();
@@ -206,7 +206,7 @@ public class VersioningImport {
     return lastDocumentVersion;
   }
 
-  private SimpleDocument createSimpleDocument(final ForeignPK objectPK, final boolean indexIt,
+  private SimpleDocument createSimpleDocument(final ResourceReference objectPK, final boolean indexIt,
       final Document document, final DocumentVersion version, final boolean isPublic)
       throws FileNotFoundException {
     XMLModelContentType xmlContent = version.getXMLModelContentType();
@@ -233,7 +233,7 @@ public class VersioningImport {
     return existingDocument;
   }
 
-  private SimpleDocument getExistingDocument(final ForeignPK objectPK,
+  private SimpleDocument getExistingDocument(final ResourceReference objectPK,
       final List<SimpleDocument> existingDocuments, final Document document) {
     SimpleDocument existingDocument = null;
     if (document.getPk() != null && StringUtil.isDefined(document.getPk().getId())
@@ -255,7 +255,7 @@ public class VersioningImport {
     XMLModelContentType xmlContent = version.getXMLModelContentType();
     try {
       if (xmlContent != null) {
-        ForeignPK pk = new ForeignPK(version.getPk().getId(), version.getPk().
+        ResourceReference pk = new ResourceReference(version.getPk().getId(), version.getPk().
             getInstanceId());
         xmlIE.importXMLModelContentType(pk, "Versioning", xmlContent,
             Integer.toString(version.getAuthorId()));

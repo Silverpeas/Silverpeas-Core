@@ -67,7 +67,7 @@ import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.index.indexing.model.IndexManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
@@ -365,7 +365,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
                 getTypeName(), fieldTemplate.getDisplayerName());
             if (field.getTypeName().equals(FileField.TYPE) && StringUtil.isDefined(xmlFieldValue)) {
               fieldValue = new FormTemplateImportExport()
-                  .manageFileField(new ForeignPK(pubPK), userId, xmlFieldValue);
+                  .manageFileField(new ResourceReference(pubPK), userId, xmlFieldValue);
             } else {
               fieldValue = xmlFieldValue;
             }
@@ -432,7 +432,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
     newWysiwygText = removeWysiwygStringsForImport(newWysiwygText);
     newWysiwygText = replaceWysiwygStringsForImport(newWysiwygText);
     WysiwygController.createFileAndAttachment(newWysiwygText,
-        new ForeignPK(String.valueOf(pubId), getCurrentComponentId()),
+        new ResourceReference(String.valueOf(pubId), getCurrentComponentId()),
         WysiwygController.WYSIWYG_CONTEXT, userId, lang);
   }
 
@@ -583,7 +583,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
    */
   public void copyWysiwygImageForExport(String pubId, String componentId,
       String exportPublicationPath) {
-    ForeignPK foreignKey = new ForeignPK(pubId, componentId);
+    ResourceReference foreignKey = new ResourceReference(pubId, componentId);
     Collection<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
         listDocumentsByForeignKey(foreignKey, null);
     for (SimpleDocument attDetail : documents) {

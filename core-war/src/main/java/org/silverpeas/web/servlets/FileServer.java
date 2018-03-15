@@ -23,6 +23,7 @@
  */
 package org.silverpeas.web.servlets;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.mvc.AbstractFileSender;
@@ -32,7 +33,6 @@ import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.io.file.SilverpeasFile;
 import org.silverpeas.core.io.file.SilverpeasFileDescriptor;
 import org.silverpeas.core.io.file.SilverpeasFileProvider;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
@@ -121,7 +121,7 @@ public class FileServer extends AbstractFileSender {
     if (StringUtil.isDefined(archiveIt)) {
       String nodeId = req.getParameter(NODE_ID_PARAMETER);
       String pubId = req.getParameter(PUBLICATION_ID_PARAMETER);
-      ForeignPK pubPK = new ForeignPK(pubId, componentId);
+      ResourceReference pubPK = new ResourceReference(pubId, componentId);
       try {
         StatisticService statisticService = ServiceProvider.getService(StatisticService.class);
         statisticService.addStat(userId, pubPK, 1, "Publication");

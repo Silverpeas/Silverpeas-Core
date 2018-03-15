@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.form.record;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
@@ -39,7 +40,6 @@ import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 
@@ -223,14 +223,14 @@ public class GenericRecordSet implements RecordSet, Serializable {
    */
   private void delete(DataRecord record, String language) throws FormException {
     if (record != null) {
-      ForeignPK foreignPK = new ForeignPK(record.getId(), recordTemplate.getInstanceId());
+      ResourceReference resourceReference = new ResourceReference(record.getId(), recordTemplate.getInstanceId());
 
       // remove files managed by WYSIWYG fields
-      WysiwygFCKFieldDisplayer.removeContents(foreignPK, getWYSIWYGFieldNames(record), language);
+      WysiwygFCKFieldDisplayer.removeContents(resourceReference, getWYSIWYGFieldNames(record), language);
 
       // remove form documents registered into record but stored into JCR
       List<SimpleDocument> docs = AttachmentServiceProvider.getAttachmentService()
-          .listDocumentsByForeignKeyAndType(foreignPK, DocumentType.form, language);
+          .listDocumentsByForeignKeyAndType(resourceReference, DocumentType.form, language);
       for (SimpleDocument doc : docs) {
         AttachmentServiceProvider.getAttachmentService().deleteAttachment(doc, false);
       }
@@ -289,7 +289,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
   }
   
   @Override
-  public void move(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate)
+  public void move(ResourceReference fromPK, ResourceReference toPK, RecordTemplate toRecordTemplate)
       throws FormException {
 
     // move WYSIWYG fields
@@ -320,7 +320,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
   }
 
   @Override
-  public void copy(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate,
+  public void copy(ResourceReference fromPK, ResourceReference toPK, RecordTemplate toRecordTemplate,
       Map<String, String> oldAndNewFileIds) throws FormException {
 
     // clone WYSIWYG fields content
@@ -370,8 +370,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
     record.setInternalId(-1);
     record.setId(cloneExternalId);
 
-    ForeignPK fromPK = new ForeignPK(originalExternalId, originalComponentId);
-    ForeignPK toPK = new ForeignPK(cloneExternalId, cloneComponentId);
+    ResourceReference fromPK = new ResourceReference(originalExternalId, originalComponentId);
+    ResourceReference toPK = new ResourceReference(cloneExternalId, cloneComponentId);
 
     // clone wysiwyg fields content
     WysiwygFCKFieldDisplayer wysiwygDisplayer = new WysiwygFCKFieldDisplayer();
@@ -419,8 +419,8 @@ public class GenericRecordSet implements RecordSet, Serializable {
     }
 
     // merge images and videos
-    ForeignPK fromPK = new ForeignPK(fromExternalId, fromComponentId);
-    ForeignPK toPK = new ForeignPK(toExternalId, toComponentId);
+    ResourceReference fromPK = new ResourceReference(fromExternalId, fromComponentId);
+    ResourceReference toPK = new ResourceReference(toExternalId, toComponentId);
     try {
       Map<String, String> ids = AttachmentServiceProvider.getAttachmentService().mergeDocuments(toPK,
           fromPK, DocumentType.form);

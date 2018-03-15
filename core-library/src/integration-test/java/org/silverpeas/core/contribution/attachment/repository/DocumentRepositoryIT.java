@@ -31,7 +31,7 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
@@ -1072,7 +1072,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       documentRepository.createDocument(session, document);
       documentRepository.storeContent(document, content);
       foreignId = "kmelia36";
-      SimpleDocumentPK result = documentRepository.moveDocument(session, document, new ForeignPK(
+      SimpleDocumentPK result = documentRepository.moveDocument(session, document, new ResourceReference(
           "45", foreignId));
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), foreignId);
       expResult.setOldSilverpeasId(document.getOldSilverpeasId());
@@ -1105,7 +1105,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(document.getDocumentType(), is(DocumentType.attachment));
       document.setDocumentType(DocumentType.form);
       SimpleDocumentPK result =
-          documentRepository.moveDocument(session, document, new ForeignPK("45", foreignId));
+          documentRepository.moveDocument(session, document, new ResourceReference("45", foreignId));
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), foreignId);
       expResult.setOldSilverpeasId(document.getOldSilverpeasId());
       assertThat(result, is(expResult));
@@ -1139,7 +1139,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       session.save();
       foreignId = "node36";
       SimpleDocumentPK result =
-          documentRepository.copyDocument(session, document, new ForeignPK(foreignId, instanceId));
+          documentRepository.copyDocument(session, document, new ResourceReference(foreignId, instanceId));
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       expResult.setOldSilverpeasId(result.getOldSilverpeasId());
       assertThat(result, is(expResult));
@@ -1203,7 +1203,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       String targetInstanceId = "kmelia26";
       String targetForeignId = "node36";
       SimpleDocumentPK result = documentRepository
-          .copyDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .copyDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), targetInstanceId);
       expResult.setOldSilverpeasId(result.getOldSilverpeasId());
       assertThat(result, is(expResult));
@@ -1291,7 +1291,7 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       assertThat(document.getDocumentType(), is(DocumentType.attachment));
       document.setDocumentType(DocumentType.form);
       SimpleDocumentPK result =
-          documentRepository.copyDocument(session, document, new ForeignPK(foreignId, instanceId));
+          documentRepository.copyDocument(session, document, new ResourceReference(foreignId, instanceId));
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
       expResult.setOldSilverpeasId(result.getOldSilverpeasId());
       assertThat(result, is(expResult));

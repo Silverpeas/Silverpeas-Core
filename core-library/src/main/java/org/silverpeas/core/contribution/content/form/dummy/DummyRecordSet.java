@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.contribution.content.form.dummy;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.ForeignPK;
 
 import java.util.Collections;
 import java.util.List;
@@ -126,12 +126,12 @@ public class DummyRecordSet implements RecordSet {
   }
 
   @Override
-  public void copy(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate,
+  public void copy(ResourceReference fromPK, ResourceReference toPK, RecordTemplate toRecordTemplate,
       Map<String, String> attachmentIds) throws FormException {
   }
 
   @Override
-  public void move(ForeignPK fromPK, ForeignPK toPK, RecordTemplate toRecordTemplate)
+  public void move(ResourceReference fromPK, ResourceReference toPK, RecordTemplate toRecordTemplate)
       throws FormException {
   }
 }

@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.publication.service;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.WAComponent;
@@ -979,10 +979,10 @@ public class DefaultPublicationService implements PublicationService, ComponentI
    * @param links list of links to remove
    */
   @Override
-  public void deleteInfoLinks(PublicationPK pubPK, List<ForeignPK> links) {
+  public void deleteInfoLinks(PublicationPK pubPK, List<ResourceReference> links) {
     Connection con = getConnection();
     try {
-      for (ForeignPK link : links) {
+      for (ResourceReference link : links) {
         PublicationPK targetPK = new PublicationPK(link.getId(), link.getInstanceId());
         SeeAlsoDAO.deleteLink(con, pubPK, targetPK);
       }
@@ -1006,8 +1006,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, detail);
       }
-      List<ForeignPK> links = SeeAlsoDAO.getLinks(con, pubPK);
-      List<ForeignPK> reverseLinks = SeeAlsoDAO.getReverseLinks(con, pubPK);
+      List<ResourceReference> links = SeeAlsoDAO.getLinks(con, pubPK);
+      List<ResourceReference> reverseLinks = SeeAlsoDAO.getReverseLinks(con, pubPK);
       CompletePublication cp = new CompletePublication(detail, links, reverseLinks);
       cp.setValidationSteps(getValidationSteps(pubPK));
       return cp;
@@ -1267,7 +1267,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
 
         Iterator<String> languages = pubDetail.getLanguages();
         while (languages.hasNext()) {
-          WysiwygController.addToIndex(indexEntry, new ForeignPK(pubPK), languages.next());
+          WysiwygController.addToIndex(indexEntry, new ResourceReference(pubPK), languages.next());
         }
       }
     } catch (Exception e) {
@@ -1689,13 +1689,13 @@ public class DefaultPublicationService implements PublicationService, ComponentI
    * @
    */
   @Override
-  public void addLinks(PublicationPK pubPK, List<ForeignPK> links) {
+  public void addLinks(PublicationPK pubPK, List<ResourceReference> links) {
     Connection con = getConnection();
     try {
       if (links != null) {
         // deletes existing links
         SeeAlsoDAO.deleteLinksByObjectId(con, pubPK);
-        for (ForeignPK link : links) {
+        for (ResourceReference link : links) {
           PublicationPK targetPK = new PublicationPK(link.getId(), link.getInstanceId());
           SeeAlsoDAO.addLink(con, pubPK, targetPK);
         }

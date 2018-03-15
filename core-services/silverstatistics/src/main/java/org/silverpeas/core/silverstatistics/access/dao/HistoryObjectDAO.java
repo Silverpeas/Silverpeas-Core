@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.silverstatistics.access.dao;
 
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
@@ -93,8 +93,8 @@ public class HistoryObjectDAO {
       }
       userId = rs.getString(3);
       foreignId = String.valueOf(rs.getInt(4));
-      ForeignPK foreignPK = new ForeignPK(foreignId, componentName);
-      HistoryObjectDetail detail = new HistoryObjectDetail(date, userId, foreignPK);
+      ResourceReference resourceReference = new ResourceReference(foreignId, componentName);
+      HistoryObjectDetail detail = new HistoryObjectDetail(date, userId, resourceReference);
 
       list.add(detail);
     }
@@ -110,12 +110,12 @@ public class HistoryObjectDAO {
   /**
    * @param con the database connection
    * @param userId the user identifier
-   * @param foreignPK
+   * @param resourceReference
    * @param actionType
    * @param objectType
    * @throws SQLException
    */
-  public static void add(Connection con, String userId, ForeignPK foreignPK, int actionType,
+  public static void add(Connection con, String userId, ResourceReference resourceReference, int actionType,
       String objectType) throws SQLException {
 
     PreparedStatement prepStmt = null;
@@ -126,8 +126,8 @@ public class HistoryObjectDAO {
       prepStmt.setString(1, DateUtil.date2SQLDate(now));
       prepStmt.setString(2, DateUtil.formatTime(now));
       prepStmt.setString(3, userId);
-      prepStmt.setString(4, foreignPK.getId());
-      prepStmt.setString(5, foreignPK.getInstanceId());
+      prepStmt.setString(4, resourceReference.getId());
+      prepStmt.setString(5, resourceReference.getInstanceId());
       prepStmt.setInt(6, actionType);
       prepStmt.setString(7, objectType);
       prepStmt.executeUpdate();
@@ -138,15 +138,15 @@ public class HistoryObjectDAO {
 
   /**
    * @param con the database connection
-   * @param foreignPK
+   * @param resourceReference
    * @param objectType
    * @return
    * @throws SQLException
    */
   public static Collection<HistoryObjectDetail> getHistoryDetailByObject(Connection con,
-      ForeignPK foreignPK, String objectType) throws SQLException {
+      ResourceReference resourceReference, String objectType) throws SQLException {
 
-    String componentName = foreignPK.getComponentName();
+    String componentName = resourceReference.getComponentName();
     String selectStatement =
         "select dateStat, heureStat, userId, resourceId, componentId, actionType, resourceType " +
         "from " + historyTableName
@@ -157,8 +157,8 @@ public class HistoryObjectDAO {
     ResultSet rs = null;
     try {
       stmt = con.prepareStatement(selectStatement);
-      stmt.setString(1, foreignPK.getId());
-      stmt.setString(2, foreignPK.getInstanceId());
+      stmt.setString(1, resourceReference.getId());
+      stmt.setString(2, resourceReference.getInstanceId());
       stmt.setString(3, objectType);
 
       rs = stmt.executeQuery();
@@ -169,12 +169,12 @@ public class HistoryObjectDAO {
   }
 
   public static Collection<HistoryObjectDetail> getHistoryDetailByObjectAndUser(Connection con,
-      ForeignPK foreignPK, String objectType, String userId) throws SQLException {
+      ResourceReference resourceReference, String objectType, String userId) throws SQLException {
 
-    String componentName = foreignPK.getComponentName();
+    String componentName = resourceReference.getComponentName();
     String selectStatement =
-        "select * from " + historyTableName + " where resourceId='" + foreignPK.getId() +
-            "' and componentId='" + foreignPK.getInstanceId() + "'" + " and resourceType='" +
+        "select * from " + historyTableName + " where resourceId='" + resourceReference.getId() +
+            "' and componentId='" + resourceReference.getInstanceId() + "'" + " and resourceType='" +
             objectType + "'" + " and userId ='" + userId + "'" +
             " order by dateStat desc, heureStat desc";
 
@@ -191,17 +191,17 @@ public class HistoryObjectDAO {
 
   /**
    * @param con the database connection
-   * @param foreignPK
+   * @param resourceReference
    * @param objectType
    * @throws SQLException
    */
-  public static void deleteHistoryByObject(Connection con, ForeignPK foreignPK, String objectType)
+  public static void deleteHistoryByObject(Connection con, ResourceReference resourceReference, String objectType)
       throws SQLException {
     PreparedStatement prepStmt = null;
     try {
       prepStmt = con.prepareStatement(QUERY_STATISTIC_DELETE_BY_RESOURCE);
-      prepStmt.setString(1, foreignPK.getId());
-      prepStmt.setString(2, foreignPK.getInstanceId());
+      prepStmt.setString(1, resourceReference.getId());
+      prepStmt.setString(2, resourceReference.getInstanceId());
       prepStmt.setString(3, objectType);
       prepStmt.executeUpdate();
     } finally {
@@ -223,16 +223,16 @@ public class HistoryObjectDAO {
     }
   }
 
-  public static int getCount(Connection con, Collection<ForeignPK> foreignPKs, String objectType)
+  public static int getCount(Connection con, Collection<ResourceReference> resourceReferences, String objectType)
       throws SQLException {
     int nb = 0;
-    for (ForeignPK pk : foreignPKs) {
+    for (ResourceReference pk : resourceReferences) {
       nb = nb + getCount(con, pk, objectType);
     }
     return nb;
   }
 
-  public static int getCount(Connection con, ForeignPK foreignPK, String objectType)
+  public static int getCount(Connection con, ResourceReference resourceReference, String objectType)
       throws SQLException {
     int nb = 0;
 
@@ -240,8 +240,8 @@ public class HistoryObjectDAO {
     ResultSet rs = null;
     try {
       prepStmt = con.prepareStatement(QUERY_STATISTIC_COUNT);
-      prepStmt.setString(1, foreignPK.getId());
-      prepStmt.setString(2, foreignPK.getInstanceId());
+      prepStmt.setString(1, resourceReference.getId());
+      prepStmt.setString(2, resourceReference.getInstanceId());
       prepStmt.setString(3, objectType);
       rs = prepStmt.executeQuery();
       if (rs.next()) {
@@ -315,7 +315,7 @@ public class HistoryObjectDAO {
     }
   }
 
-  public static void move(Connection con, ForeignPK toForeignPK, int actionType, String objectType)
+  public static void move(Connection con, ResourceReference toResourceReference, int actionType, String objectType)
       throws SQLException {
 
 
@@ -325,8 +325,8 @@ public class HistoryObjectDAO {
 
     try {
       prepStmt = con.prepareStatement(insertStatement);
-      prepStmt.setString(1, toForeignPK.getInstanceId());
-      prepStmt.setString(2, toForeignPK.getId());
+      prepStmt.setString(1, toResourceReference.getInstanceId());
+      prepStmt.setString(2, toResourceReference.getId());
       prepStmt.setInt(3, actionType);
       prepStmt.setString(4, objectType);
       prepStmt.executeUpdate();
@@ -442,7 +442,7 @@ public class HistoryObjectDAO {
     Statement stmt = null;
     ResultSet rs = null;
     List<HistoryObjectDetail> result = new ArrayList<>();
-    Set<ForeignPK> performedIds = new HashSet<>(nbObjects * 2);
+    Set<ResourceReference> performedIds = new HashSet<>(nbObjects * 2);
     Date date;
 
     try {
@@ -456,10 +456,10 @@ public class HistoryObjectDAO {
         // Id
         String componentId = rs.getString(1);
         String foreignId = rs.getString(2);
-        ForeignPK foreignPK = new ForeignPK(foreignId, componentId);
+        ResourceReference resourceReference = new ResourceReference(foreignId, componentId);
 
         // If id is already performed, then it is skiped
-        if (performedIds.add(foreignPK)) {
+        if (performedIds.add(resourceReference)) {
           try {
             // First the date of the day is parsed
             date = DateUtil.parse(rs.getString(3));
@@ -470,7 +470,7 @@ public class HistoryObjectDAO {
                 "HistoryObjectDAO.getLastHistoryDetailOfObjectsForUser()",
                 SilverpeasRuntimeException.ERROR, "statistic.INCORRECT_DATE", e);
           }
-          result.add(new HistoryObjectDetail(date, userId, foreignPK));
+          result.add(new HistoryObjectDetail(date, userId, resourceReference));
         }
       }
     } finally {

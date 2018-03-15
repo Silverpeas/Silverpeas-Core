@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.comment.service;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.test.WarBuilder4Comment;
 import org.jboss.arquillian.container.test.api.Deployment;
@@ -32,7 +33,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.test.rule.DbSetupRule;
-import org.silverpeas.core.ForeignPK;
 
 import javax.inject.Inject;
 import java.util.List;
@@ -90,6 +90,6 @@ public class ComponentInstanceDeletionIT {
   }
 
   private List<Comment> getAllCommentsFor(String instanceId) {
-    return service.getAllCommentsOnPublication(null, new ForeignPK(null, instanceId));
+    return service.getAllCommentsOnPublication(null, new ResourceReference(null, instanceId));
   }
 }

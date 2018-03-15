@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.contribution.attachment.repository;
 
-import org.junit.Ignore;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.io.FileUtils;
@@ -47,7 +47,6 @@ import org.silverpeas.core.test.util.RandomGenerator;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.MimeTypes;
 
 import javax.jcr.Node;
@@ -892,7 +891,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String targetForeignId = "foreignId45";
       assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(false));
       SimpleDocumentPK result = documentRepository
-          .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .moveDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       try {
         assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
         session.getNode(document.getFullJcrPath());
@@ -1023,7 +1022,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String targetForeignId = "foreignId45";
       assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(true));
       SimpleDocumentPK result = documentRepository
-          .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .moveDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       try {
         assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
         session.getNode(document.getFullJcrPath());
@@ -1144,7 +1143,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String targetForeignId = "foreignId45";
       assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(false));
       SimpleDocumentPK result = documentRepository
-          .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .moveDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       try {
         assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
         session.getNode(document.getFullJcrPath());
@@ -1303,7 +1302,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String targetForeignId = "foreignId45";
       assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(false));
       SimpleDocumentPK result = documentRepository
-          .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .moveDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       try {
         assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
         session.getNode(document.getFullJcrPath());
@@ -1602,7 +1601,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String targetForeignId = "foreignId45";
       assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(false));
       SimpleDocumentPK result = documentRepository
-          .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .moveDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       try {
         assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
         session.getNode(document.getFullJcrPath());
@@ -1947,7 +1946,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String targetForeignId = "foreignId45";
       assertThat(session.getNodeByIdentifier(document.getId()).isCheckedOut(), is(false));
       SimpleDocumentPK result = documentRepository
-          .moveDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .moveDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       try {
         assertThat(document.getRepositoryPath(), is("/kmelia73/attachments/simpledoc_1"));
         session.getNode(document.getFullJcrPath());
@@ -2087,7 +2086,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String targetInstanceId = "kmelia26";
       String targetForeignId = "node36";
       SimpleDocumentPK result = documentRepository
-          .copyDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .copyDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), targetInstanceId);
       expResult.setOldSilverpeasId(result.getOldSilverpeasId());
       assertThat(result, is(expResult));
@@ -2196,7 +2195,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String targetInstanceId = "kmelia26";
       String targetForeignId = "node36";
       SimpleDocumentPK result = documentRepository
-          .copyDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .copyDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), targetInstanceId);
       expResult.setOldSilverpeasId(result.getOldSilverpeasId());
       assertThat(result, is(expResult));
@@ -2340,7 +2339,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String targetInstanceId = "kmelia26";
       String targetForeignId = "node36";
       SimpleDocumentPK result = documentRepository
-          .copyDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .copyDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), targetInstanceId);
       expResult.setOldSilverpeasId(result.getOldSilverpeasId());
       assertThat(result, is(expResult));
@@ -2479,7 +2478,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String targetInstanceId = "kmelia26";
       String targetForeignId = "node36";
       SimpleDocumentPK result = documentRepository
-          .copyDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .copyDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), targetInstanceId);
       expResult.setOldSilverpeasId(result.getOldSilverpeasId());
       assertThat(result, is(expResult));
@@ -2758,7 +2757,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String targetInstanceId = "kmelia26";
       String targetForeignId = "node36";
       SimpleDocumentPK result = documentRepository
-          .copyDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .copyDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), targetInstanceId);
       expResult.setOldSilverpeasId(result.getOldSilverpeasId());
       assertThat(result, is(expResult));
@@ -3083,7 +3082,7 @@ public class HistorisedDocumentRepositoryIT extends JcrIntegrationIT {
       String targetInstanceId = "kmelia26";
       String targetForeignId = "node36";
       SimpleDocumentPK result = documentRepository
-          .copyDocument(session, document, new ForeignPK(targetForeignId, targetInstanceId));
+          .copyDocument(session, document, new ResourceReference(targetForeignId, targetInstanceId));
       SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), targetInstanceId);
       expResult.setOldSilverpeasId(result.getOldSilverpeasId());
       assertThat(result, is(expResult));

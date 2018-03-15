@@ -23,13 +23,13 @@
  */
 package org.silverpeas.core.comment.dao.jdbc;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.comment.dao.CommentDAO;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.WAPrimaryKey;
 
@@ -129,7 +129,7 @@ public class JDBCCommentDAO implements CommentDAO {
   }
 
   @Override
-  public int getCommentsCountByForeignKey(final String resourceType, final ForeignPK foreign_pk) {
+  public int getCommentsCountByForeignKey(final String resourceType, final ResourceReference foreign_pk) {
     int publicationCommentsCount = 0;
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
@@ -142,7 +142,7 @@ public class JDBCCommentDAO implements CommentDAO {
 
   @Override
   public List<Comment> getAllCommentsByForeignKey(final String resourceType,
-      final ForeignPK foreign_pk) {
+      final ResourceReference foreign_pk) {
     List<Comment> vRet;
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
@@ -158,7 +158,7 @@ public class JDBCCommentDAO implements CommentDAO {
   }
 
   @Override
-  public void removeAllCommentsByForeignPk(final String resourceType, final ForeignPK foreign_pk) {
+  public void removeAllCommentsByForeignPk(final String resourceType, final ResourceReference foreign_pk) {
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       requester.deleteAllComments(con, resourceType, foreign_pk);
@@ -168,13 +168,13 @@ public class JDBCCommentDAO implements CommentDAO {
   }
 
   @Override
-  public void moveComments(String resourceType, ForeignPK fromPK, ForeignPK toPK) {
+  public void moveComments(String resourceType, ResourceReference fromPK, ResourceReference toPK) {
     moveComments(resourceType, fromPK, resourceType, toPK);
   }
 
   @Override
-  public void moveComments(final String fromResourceType, final ForeignPK fromPK,
-      final String toResourceType, final ForeignPK toPK) {
+  public void moveComments(final String fromResourceType, final ResourceReference fromPK,
+      final String toResourceType, final ResourceReference toPK) {
     try (Connection con = openConnection()) {
       JDBCCommentRequester requester = getCommentDAO();
       requester.moveComments(con, fromResourceType, fromPK, toResourceType, toPK);

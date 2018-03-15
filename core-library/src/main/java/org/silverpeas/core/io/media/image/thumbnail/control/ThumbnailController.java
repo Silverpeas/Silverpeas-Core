@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.io.media.image.thumbnail.control;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailException;
 import org.silverpeas.core.io.media.image.thumbnail.ThumbnailRuntimeException;
@@ -30,7 +31,6 @@ import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailService;
 import org.silverpeas.core.io.media.image.thumbnail.service.ThumbnailServiceProvider;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.util.ImageUtil;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -93,7 +93,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     }
   }
 
-  public static boolean processThumbnail(ForeignPK pk, String objectType, List<FileItem> parameters)
+  public static boolean processThumbnail(ResourceReference pk, String objectType, List<FileItem> parameters)
       throws Exception {
     boolean thumbnailChanged = false;
     String mimeType = null;
@@ -232,7 +232,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     }
   }
 
-  public static void copyThumbnail(ForeignPK fromPK, ForeignPK toPK) {
+  public static void copyThumbnail(ResourceReference fromPK, ResourceReference toPK) {
     ThumbnailDetail vignette =
         ThumbnailController.getCompleteThumbnail(new ThumbnailDetail(
             fromPK.getInstanceId(), Integer.parseInt(fromPK.getId()),
@@ -279,7 +279,7 @@ public class ThumbnailController implements ComponentInstanceDeletion {
     }
   }
 
-  public static void moveThumbnail(ForeignPK fromPK, ForeignPK toPK) {
+  public static void moveThumbnail(ResourceReference fromPK, ResourceReference toPK) {
     ThumbnailDetail thumbnail =
       ThumbnailController.getCompleteThumbnail(new ThumbnailDetail(
           fromPK.getInstanceId(), Integer.parseInt(fromPK.getId()),
