@@ -26,11 +26,11 @@ package org.silverpeas.core.clipboard.service;
 import org.silverpeas.core.clipboard.ClipboardException;
 import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
-import org.silverpeas.core.silvertrace.SilverTrace;
 
 import javax.annotation.PostConstruct;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
+import java.awt.datatransfer.UnsupportedFlavorException;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -53,7 +53,6 @@ public class MainClipboardService implements Clipboard, Serializable {
   private boolean multipleClipboardSupported = true;
   private boolean addingToSelection = true;
   private int count = 0;
-  private String name = null;
   /**
    * User alert in case of error during operation
    */
@@ -63,39 +62,21 @@ public class MainClipboardService implements Clipboard, Serializable {
   @Override
   public void add(ClipboardSelection objectToCopy) throws ClipboardException {
     try {
-
       count += 1;
-      boolean failed = false;
       if (objectToCopy != null) {
         if (!addingToSelection) {
-          // we have to deselect the object still in clipboard
-          for (ClipboardSelection clipObject : objectsInClipboard) {
-            clipObject.setSelected(false);
-          }
-          // now we add...
-          addingToSelection = true;
+          unselectAllItems();
         }
+
+        boolean selected = false;
         if (objectToCopy.isDataFlavorSupported(IndexFlavor)) {
-          try {
-            IndexEntry MainIndexEntry = (IndexEntry) objectToCopy.getTransferData(IndexFlavor);
-            for (ClipboardSelection clipObject : objectsInClipboard) {
-              if (clipObject.isDataFlavorSupported(IndexFlavor)) {
-                IndexEntry indexEntry = (IndexEntry) clipObject.getTransferData(IndexFlavor);
-                if (indexEntry.equals(MainIndexEntry)) {
-                  clipObject.setSelected(true);
-                  clipObject.setCutted(objectToCopy.isCutted());
-                  throw new Exception("");
-                }
-              }
-            }
-          } catch (Exception e) {
-            // We dont add an other copy of this object
-            // but we need to select it
-            objectToCopy.setSelected(true);
-            failed = true;
-          }
+          selected = isObjectShouldBeSelected(objectToCopy);
         }
-        if (!failed) {
+        if (selected) {
+          // We don't add an other copy of this object
+          // but we need to select it
+          objectToCopy.setSelected(true);
+        } else {
           lastObject = objectToCopy;
           if (multipleClipboardSupported) {
             objectsInClipboard.add(lastObject);
@@ -105,11 +86,35 @@ public class MainClipboardService implements Clipboard, Serializable {
       }
 
     } catch (Exception e) {
-      SilverTrace.warn("clipboard", "ClipboardBmEJB.add()", "root.MSG_GEN_ERROR",
-          "ERROR occured in ClipboardBmEJB.add()", e);
-      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
-          "ERROR occured in ClipboardBmEJB.add()", e);
+      throw new ClipboardException("Error while adding object into the clipboard", e);
     }
+  }
+
+  private boolean isObjectShouldBeSelected(final ClipboardSelection objectToCopy)
+      throws UnsupportedFlavorException {
+    boolean selectionFound = false;
+    IndexEntry mainIndexEntry = (IndexEntry) objectToCopy.getTransferData(IndexFlavor);
+    for (ClipboardSelection clipObject : objectsInClipboard) {
+      if (clipObject.isDataFlavorSupported(IndexFlavor)) {
+        IndexEntry indexEntry = (IndexEntry) clipObject.getTransferData(IndexFlavor);
+        if (indexEntry.equals(mainIndexEntry)) {
+          clipObject.setSelected(true);
+          clipObject.setCutted(objectToCopy.isCutted());
+          selectionFound = true;
+          break;
+        }
+      }
+    }
+    return selectionFound;
+  }
+
+  private void unselectAllItems() {
+    // we have to deselect the object still in clipboard
+    for (ClipboardSelection clipObject : objectsInClipboard) {
+      clipObject.setSelected(false);
+    }
+    // now we add...
+    addingToSelection = true;
   }
 
   @Override
@@ -128,7 +133,7 @@ public class MainClipboardService implements Clipboard, Serializable {
   public Collection<ClipboardSelection> getSelectedObjects() throws ClipboardException {
     try {
       count += 1;
-      List<ClipboardSelection> result = new ArrayList<ClipboardSelection>(objectsInClipboard.size());
+      List<ClipboardSelection> result = new ArrayList<>(objectsInClipboard.size());
       for (ClipboardSelection clipObject : objectsInClipboard) {
         if (clipObject.isSelected()) {
           result.add(clipObject);
@@ -136,10 +141,7 @@ public class MainClipboardService implements Clipboard, Serializable {
       }
       return result;
     } catch (Exception e) {
-      SilverTrace.warn("clipboard", "ClipboardBmEJB.getSelectedObjects()", "root.MSG_GEN_ERROR",
-          "ERROR occured in ClipboardBmEJB.getSelectedObjects()", e);
-      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
-          "ERROR occured in ClipboardBmEJB.getSelectedObjects()", e);
+      throw new ClipboardException("Error while getting the selected object from the clipboard", e);
     }
   }
 
@@ -148,10 +150,7 @@ public class MainClipboardService implements Clipboard, Serializable {
     try {
       return objectsInClipboard.size();
     } catch (Exception e) {
-      SilverTrace.warn("clipboard", "ClipboardBmEJB.size()", "root.MSG_GEN_ERROR",
-          "ERROR occured in ClipboardBmEJB.size()", e);
-      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
-          "ERROR occured in ClipboardBmEJB.size()", e);
+      throw new ClipboardException("Error while computing the clipboard size", e);
     }
   }
 
@@ -160,10 +159,8 @@ public class MainClipboardService implements Clipboard, Serializable {
     try {
       return objectsInClipboard.get(index);
     } catch (Exception e) {
-      SilverTrace.warn("clipboard", "ClipboardBmEJB.getObject()", "root.MSG_GEN_ERROR",
-          "ERROR occured in ClipboardBmEJB.getObject() index = " + index, e);
-      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
-          "ERROR occured in getObject(" + index + ")", e);
+      throw new ClipboardException(
+          "Error while getting the object at index " + index + " from the clipboard", e);
     }
   }
 
@@ -188,10 +185,9 @@ public class MainClipboardService implements Clipboard, Serializable {
         clipObject.setSelected(setIt);
       }
     } catch (Exception e) {
-      SilverTrace.warn("clipboard", "ClipboardBmEJB.setSelected()", "root.MSG_GEN_ERROR",
-          "ERROR occured in ClipboardBmEJB.setSelected() index = " + index, e);
-      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
-          "ERROR occured in getSelectedObject(" + index + ", " + setIt + ")", e);
+      throw new ClipboardException(
+          "Error while selecting or deselecting the object at index " + index + " in the clipboard",
+          e);
     }
   }
 
@@ -200,10 +196,8 @@ public class MainClipboardService implements Clipboard, Serializable {
     try {
       objectsInClipboard.remove(index);
     } catch (Exception e) {
-      SilverTrace.warn("clipboard", "ClipboardBmEJB.remove()", "root.MSG_GEN_ERROR",
-          "ERROR occured in ClipboardBmEJB.remove() index = " + index, e);
-      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
-          "ERROR occured in ClipboardBmEJB.remove(" + index + ")", e);
+      throw new ClipboardException(
+          "Error while removing the object at index " + index + " from the clipboard", e);
 
     }
   }
@@ -223,10 +217,7 @@ public class MainClipboardService implements Clipboard, Serializable {
         objectsInClipboard.add(lastObject);
       }
     } catch (Exception e) {
-      SilverTrace.warn("clipboard", "ClipboardBmEJB.setMultiClipboard()",
-          "root.MSG_GEN_ERROR", "ERROR occured in ClipboardBmEJB.setMultiClipboard()", e);
-      throw new ClipboardException("ClipboardBmEJB", SilverTrace.TRACE_LEVEL_ERROR,
-          "ERROR occured in ClipboardBmEJB.setMultiClipboard()", e);
+      throw new ClipboardException("Error while enabling the support of multi-clipboards", e);
     }
   }
 
@@ -264,13 +255,8 @@ public class MainClipboardService implements Clipboard, Serializable {
     error = e;
   }
 
-  public MainClipboardService() {
-
-  }
-
   @PostConstruct
   public void setUp() {
-    this.name = "MainClipboard";
     lastObject = null;
     objectsInClipboard = new ArrayList<>();
   }

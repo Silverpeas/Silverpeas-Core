@@ -28,8 +28,8 @@ import java.io.Serializable;
 /**
  * This PrimaryKey object must be used between two different and independents modules. It avoids
  * circular dependencies.
- * It is now replaced by {@link org.silverpeas.core.ResourceIdentifier} but it is still
- * used in old code.
+ * It is now replaced by {@link org.silverpeas.core.contribution.model.ContributionIdentifier}
+ * but it is still used in old code.
  * @deprecated
  * @author Nicolas Eysseric
  */

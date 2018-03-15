@@ -26,6 +26,7 @@ package org.silverpeas.core.web.mvc.webcomponent;
 import org.silverpeas.core.security.session.SessionInfo;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
@@ -161,6 +162,38 @@ public class SilverpeasHttpServlet extends HttpServlet {
    */
   protected void throwHttpNotFoundError(String message) {
     throw new HttpError(HttpServletResponse.SC_NOT_FOUND, message);
+  }
+
+  /**
+   * Sends an HTTP error to the client with the specified error code. Once the error is sent, the
+   * HTTP response is consumed and it cannot be used anymore; so the servlet service should returns
+   * directly after invoking this method.
+   * @param response the HTTP response
+   * @param status the error status code
+   */
+  protected void sendError(HttpServletResponse response, final int status) {
+    sendError(response, status, null);
+  }
+
+  /**
+   * Sends an HTTP error to the client with the specified error code and error message. Once the
+   * error is sent, the HTTP response is consumed and it cannot be used anymore; so the servlet
+   * service should returns directly after invoking this method.
+   * @param response the HTTP response
+   * @param status the error status code
+   * @param message the message to pass in the response and giving details about the error.
+   */
+  protected void sendError(HttpServletResponse response, final int status, final String message) {
+    try {
+      if (StringUtil.isDefined(message)) {
+        response.sendError(status, message);
+      } else {
+        response.sendError(status);
+      }
+      return;
+    } catch (IOException e1) {
+      SilverLogger.getLogger(this).error(e1);
+    }
   }
 
   protected static class UserSessionStatus {

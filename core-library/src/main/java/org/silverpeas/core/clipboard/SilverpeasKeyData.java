@@ -100,9 +100,7 @@ public class SilverpeasKeyData implements Serializable {
    */
   public void setProperty(String key, String value) throws SKDException {
     if (m_KeyData.containsKey(key)) {
-      throw new SKDException("SilverpeasKeyData.setProperty()",
-          SKDException.ERROR, "root.EX_CLIPBOARD_COPY_FAILED",
-          "Key still used (" + key + ")");
+      throw new SKDException("The property already contains the key " + key);
     } else {
       m_KeyData.setProperty(key, value);
     }

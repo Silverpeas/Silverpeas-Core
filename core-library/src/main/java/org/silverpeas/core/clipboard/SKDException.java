@@ -25,33 +25,21 @@ package org.silverpeas.core.clipboard;
 
 /*
  * @author Dominique Blot
- * @version 1.0
  */
 public class SKDException extends ClipboardException {
 
   private static final long serialVersionUID = -3001137137162651068L;
 
-  public SKDException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+
+  public SKDException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public SKDException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public SKDException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public SKDException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public SKDException(final Throwable cause) {
+    super(cause);
   }
-
-  public SKDException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "clipboard";
-  }
-
 }

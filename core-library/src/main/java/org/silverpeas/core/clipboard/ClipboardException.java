@@ -24,37 +24,25 @@
 
 package org.silverpeas.core.clipboard;
 
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 
 /*
  * @author Dominique Blot
- * @version 1.0
  */
 public class ClipboardException extends SilverpeasException {
 
   private static final long serialVersionUID = 8029410339708408226L;
 
-  public ClipboardException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+
+  public ClipboardException(final String message, final String... parameters) {
+    super(message, parameters);
   }
 
-  public ClipboardException(String callingClass, int errorLevel,
-      String message, String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public ClipboardException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  public ClipboardException(String callingClass, int errorLevel,
-      String message, Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public ClipboardException(final Throwable cause) {
+    super(cause);
   }
-
-  public ClipboardException(String callingClass, int errorLevel,
-      String message, String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  public String getModule() {
-    return "clipboard";
-  }
-
 }
