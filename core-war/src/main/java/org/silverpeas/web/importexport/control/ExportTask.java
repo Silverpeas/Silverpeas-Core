@@ -23,34 +23,58 @@
  */
 package org.silverpeas.web.importexport.control;
 
+import org.silverpeas.core.cache.service.CacheServiceProvider;
+import org.silverpeas.core.cache.service.SessionCacheService;
 import org.silverpeas.core.importexport.report.ExportReport;
+import org.silverpeas.core.thread.ManagedThreadPool;
 
-public class ExportThread extends Thread {
-  protected ImportExportSessionController m_toAwake = null;
-  protected boolean m_isEncours = false;
-  protected Exception m_ErrorOccured = null;
-  protected ExportReport m_ExportReport = null;
+public abstract class ExportTask implements Runnable {
+  final ImportExportSessionController toAwake;
+  private final Object mutex = new Object();
+  Exception errorOccurred = null;
+  ExportReport exportReport = null;
+  private boolean isRunning = false;
 
-  public ExportThread(ImportExportSessionController toAwake) {
-    m_toAwake = toAwake;
+  ExportTask(ImportExportSessionController toAwake) {
+    super();
+    this.toAwake = toAwake;
   }
 
-  public boolean isEnCours() {
-    return m_isEncours;
+  public boolean isRunning() {
+    synchronized (mutex) {
+      return isRunning;
+    }
   }
 
-  public Exception getErrorOccured() {
-    return m_ErrorOccured;
+  void markAsEnded() {
+    synchronized (mutex) {
+      isRunning = false;
+      toAwake.threadFinished();
+    }
+  }
+
+  public Exception getErrorOccurred() {
+    return errorOccurred;
   }
 
   public ExportReport getReport() {
-    return m_ExportReport;
+    return exportReport;
   }
 
-  public void startTheThread() {
-    m_isEncours = true;
-    m_ErrorOccured = null;
-    m_ExportReport = null;
-    start();
+  public void startTheExport() {
+    isRunning = true;
+    errorOccurred = null;
+    exportReport = null;
+    ManagedThreadPool.getPool().invoke(this);
   }
+
+  @Override
+  public final void run() {
+    CacheServiceProvider.clearAllThreadCaches();
+    ((SessionCacheService) CacheServiceProvider.getSessionCacheService())
+        .newSessionCache(this.toAwake.getUserDetail());
+    doExport();
+  }
+
+  protected abstract void doExport();
 }

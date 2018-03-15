@@ -23,21 +23,21 @@
  */
 package org.silverpeas.web.importexport.control;
 
-import java.util.List;
-
 import org.silverpeas.core.importexport.control.ImportExport;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.WAAttributeValuePair;
-import org.silverpeas.core.node.model.NodePK;
 
-public class ExportXMLThread extends ExportThread {
+import java.util.List;
+
+public class ExportXMLTask extends ExportTask {
 
   private final List<WAAttributeValuePair> pksToExport;
   private final String language;
   private final NodePK rootPK;
   private final int mode;
 
-  public ExportXMLThread(ImportExportSessionController toAwake, List<WAAttributeValuePair> pks,
+  ExportXMLTask(ImportExportSessionController toAwake, List<WAAttributeValuePair> pks,
       String language, NodePK rootPK, int mode) {
     super(toAwake);
     pksToExport = pks;
@@ -47,22 +47,16 @@ public class ExportXMLThread extends ExportThread {
   }
 
   @Override
-  public void run() {
-
+  protected void doExport() {
     try {
-      ImportExport importExport = ServiceProvider.getService(ImportExport.class);
-      m_ExportReport =
-          importExport.processExport(super.m_toAwake.getUserDetail(), language, pksToExport,
+      final ImportExport importExport = ServiceProvider.getService(ImportExport.class);
+      exportReport =
+          importExport.processExport(super.toAwake.getUserDetail(), language, pksToExport,
           rootPK, mode);
-
-      m_isEncours = false;
-      m_toAwake.threadFinished();
-
     } catch (Exception e) {
-      m_ErrorOccured = e;
-      m_isEncours = false;
-      m_toAwake.threadFinished();
-
+      errorOccurred = e;
+    } finally {
+      markAsEnded();
     }
   }
 }
