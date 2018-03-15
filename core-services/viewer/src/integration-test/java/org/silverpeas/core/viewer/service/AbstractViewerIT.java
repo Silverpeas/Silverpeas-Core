@@ -30,15 +30,14 @@ import org.junit.Before;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.io.media.image.imagemagick.Im4javaManager;
 import org.silverpeas.core.initialization.Initialization;
-import org.silverpeas.core.viewer.test.WarBuilder4Viewer;
+import org.silverpeas.core.io.media.image.imagemagick.Im4javaManager;
 import org.silverpeas.core.test.rule.MavenTargetDirectoryRule;
 import org.silverpeas.core.test.util.SilverProperties;
 import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.viewer.test.WarBuilder4Viewer;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.logging.Logger;
 
@@ -47,15 +46,19 @@ import java.util.logging.Logger;
  */
 public abstract class AbstractViewerIT {
 
+  private static final String DOC_ID = "doc-id";
+  private static final String LANG = "fr";
+
+
   @Deployment
-  public static Archive<?> createTestArchive() throws IOException {
+  public static Archive<?> createTestArchive() {
     return WarBuilder4Viewer.onWarForTestClass(AbstractViewerIT.class).build();
   }
 
   private static File tempPath;
   private static File resourceTestDir;
 
-  protected static void init() {
+  private static void init() {
     if (tempPath == null) {
       SilverProperties properties =
           MavenTargetDirectoryRule.loadPropertiesForTestClass(AbstractViewerIT.class);
@@ -85,11 +88,11 @@ public abstract class AbstractViewerIT {
   }
 
   @SuppressWarnings("ConstantConditions")
-  protected File getDocumentNamed(final String name) throws Exception {
+  File getDocumentNamed(final String name) {
     return FileUtils.getFile(getResourceTestDirFile(), "org/silverpeas/viewer", name);
   }
 
-  protected SimpleDocument getSimpleDocumentNamed(final String name) throws Exception {
+  protected SimpleDocument getSimpleDocumentNamed(final String name) {
     final File document = getDocumentNamed(name);
     return new SimpleDocument(new SimpleDocumentPK("simple_doc_UUID_" + name, "instanceId"),
         "foreignId", 0, false,
@@ -104,7 +107,7 @@ public abstract class AbstractViewerIT {
     };
   }
 
-  protected boolean canPerformViewConversionTest() {
+  boolean canPerformViewConversionTest() {
     if (SwfToolManager.isActivated()) {
       return true;
     }
@@ -113,11 +116,11 @@ public abstract class AbstractViewerIT {
     return false;
   }
 
-  protected void saveInTemporaryPath(String simpleFileName, String value) throws Exception {
+  void saveInTemporaryPath(String simpleFileName, String value) throws Exception {
     FileUtils.writeStringToFile(new File(getTemporaryPath(), simpleFileName), value);
   }
 
-  protected String readAndRemoveFromTemporaryPath(String simpleFileName) throws Exception {
+  String readAndRemoveFromTemporaryPath(String simpleFileName) throws Exception {
     File fileToReadAndRemove = new File(getTemporaryPath(), simpleFileName);
     try {
       return FileUtils.readFileToString(fileToReadAndRemove);
@@ -126,7 +129,11 @@ public abstract class AbstractViewerIT {
     }
   }
 
-  protected Long readAndRemoveFromTemporaryPathAsLong(String simpleFileName) throws Exception {
+  Long readAndRemoveFromTemporaryPathAsLong(String simpleFileName) throws Exception {
     return Long.valueOf(readAndRemoveFromTemporaryPath(simpleFileName));
+  }
+
+  ViewerContext createViewerContext(final String originalFileName, final File originalSourceFile) {
+    return new ViewerContext(DOC_ID, originalFileName, originalSourceFile, LANG);
   }
 }

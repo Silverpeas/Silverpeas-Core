@@ -24,8 +24,8 @@
 package org.silverpeas.core.viewer.service;
 
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation;
+import org.silverpeas.core.util.StringUtil;
 
 import java.io.File;
 
@@ -37,8 +37,10 @@ import static org.silverpeas.core.viewer.model.ViewerSettings.isCacheEnabled;
  */
 public class ViewerContext implements Cloneable {
 
+  private final String documentId;
   private final String originalFileName;
   private final File originalSourceFile;
+  private final String language;
   private String initializerProcessName;
   private String uniqueDocumentId = String.valueOf(System.nanoTime());
   private boolean cacheRequired = false;
@@ -50,13 +52,26 @@ public class ViewerContext implements Cloneable {
    * @return an instance of {@link ViewerContext} initialized from the given {@link SimpleDocument}.
    */
   public static ViewerContext from(SimpleDocument document) {
-    return new ViewerContext(document.getFilename(), new File(document.
-        getAttachmentPath())).withUniqueDocumentId(document.getLanguage() + "-" + document.getId());
+    final String contentLanguage = document.getLanguage();
+    return new ViewerContext(document.getId(), document.getFilename(), new File(document.
+        getAttachmentPath()), contentLanguage)
+        .withUniqueDocumentId(contentLanguage + "-" + document.getId());
   }
 
-  protected ViewerContext(final String originalFileName, final File originalSourceFile) {
+  protected ViewerContext(final String documentId, final String originalFileName,
+      final File originalSourceFile, final String language) {
+    this.documentId = documentId;
     this.originalFileName = originalFileName;
     this.originalSourceFile = originalSourceFile;
+    this.language = language;
+  }
+
+  /**
+   * Gets the identifier of the {@link SimpleDocument}.
+   * @return a string.
+   */
+  public String getDocumentId() {
+    return documentId;
   }
 
   /**
@@ -140,6 +155,14 @@ public class ViewerContext implements Cloneable {
    */
   public void processingCache() {
     this.processingCache = true;
+  }
+
+  /**
+   * Gets the language of the content
+   * @return a string.
+   */
+  public String getLanguage() {
+    return language;
   }
 
   @SuppressWarnings("CloneDoesntDeclareCloneNotSupportedException")

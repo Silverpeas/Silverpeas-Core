@@ -30,10 +30,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.viewer.model.DocumentView;
-import org.silverpeas.core.viewer.model.ViewerSettings;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.viewer.model.DocumentView;
+import org.silverpeas.core.viewer.model.ViewerSettings;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -55,7 +55,7 @@ public class ViewServiceSplitMethodIT extends AbstractViewerIT {
   private ViewService viewService;
 
   @Before
-  public void setup() throws Exception {
+  public void setup() {
     FileUtils.deleteQuietly(getTemporaryPath());
     getTemporaryPath().mkdirs();
     final SettingBundle mockedSettings =
@@ -70,21 +70,21 @@ public class ViewServiceSplitMethodIT extends AbstractViewerIT {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     FileUtils.deleteQuietly(getTemporaryPath());
   }
 
   @Test
-  public void testOdtFileView() throws Exception {
+  public void testOdtFileView() {
     if (canPerformViewConversionTest()) {
       final DocumentView view =
-          viewService.getDocumentView(new ViewerContext("file.pdf", getDocumentNamed("file.odt")));
+          viewService.getDocumentView(createViewerContext("file.pdf", getDocumentNamed("file.odt")));
       assertOfficeOrPdfDocumentView(view);
     }
   }
 
   @Test
-  public void testOdtFileViewFromSimpleDocument() throws Exception {
+  public void testOdtFileViewFromSimpleDocument() {
     if (canPerformViewConversionTest()) {
       final DocumentView view =
           viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.odt")));
@@ -93,16 +93,16 @@ public class ViewServiceSplitMethodIT extends AbstractViewerIT {
   }
 
   @Test
-  public void testPptFileView() throws Exception {
+  public void testPptFileView() {
     if (canPerformViewConversionTest()) {
       final DocumentView view =
-          viewService.getDocumentView(new ViewerContext("file.pdf", getDocumentNamed("file.ppt")));
+          viewService.getDocumentView(createViewerContext("file.pdf", getDocumentNamed("file.ppt")));
       assertPptDocumentView(view);
     }
   }
 
   @Test
-  public void testPptFileViewFromSimpleDocument() throws Exception {
+  public void testPptFileViewFromSimpleDocument() {
     if (canPerformViewConversionTest()) {
       final DocumentView view =
           viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.ppt")));
@@ -111,16 +111,16 @@ public class ViewServiceSplitMethodIT extends AbstractViewerIT {
   }
 
   @Test
-  public void testPdfFileView() throws Exception {
+  public void testPdfFileView() {
     if (canPerformViewConversionTest()) {
       final DocumentView view =
-          viewService.getDocumentView(new ViewerContext("file.pdf", getDocumentNamed("file.pdf")));
+          viewService.getDocumentView(createViewerContext("file.pdf", getDocumentNamed("file.pdf")));
       assertOfficeOrPdfDocumentView(view);
     }
   }
 
   @Test
-  public void testPdfFileViewFromSimpleDocument() throws Exception {
+  public void testPdfFileViewFromSimpleDocument() {
     if (canPerformViewConversionTest()) {
       final DocumentView view =
           viewService.getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file.pdf")));
@@ -129,16 +129,16 @@ public class ViewServiceSplitMethodIT extends AbstractViewerIT {
   }
 
   @Test
-  public void testPdfFileViewWithSpecialChars() throws Exception {
+  public void testPdfFileViewWithSpecialChars() {
     if (canPerformViewConversionTest()) {
       final DocumentView view = viewService.getDocumentView(
-          new ViewerContext("file ' - '' .pdf", getDocumentNamed("file ' - '' .pdf")));
+          createViewerContext("file ' - '' .pdf", getDocumentNamed("file ' - '' .pdf")));
       assertOfficeOrPdfDocumentView(view);
     }
   }
 
   @Test
-  public void testPdfFileViewWithSpecialCharsFromSimpleDocument() throws Exception {
+  public void testPdfFileViewWithSpecialCharsFromSimpleDocument() {
     if (canPerformViewConversionTest()) {
       final DocumentView view = viewService
           .getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file ' - '' .pdf")));
@@ -147,16 +147,16 @@ public class ViewServiceSplitMethodIT extends AbstractViewerIT {
   }
 
   @Test
-  public void testPdfFileViewWithSpaces() throws Exception {
+  public void testPdfFileViewWithSpaces() {
     if (canPerformViewConversionTest()) {
       final DocumentView view = viewService.getDocumentView(
-          new ViewerContext("file with spaces.pdf", getDocumentNamed("file with spaces.pdf")));
+          createViewerContext("file with spaces.pdf", getDocumentNamed("file with spaces.pdf")));
       assertOfficeOrPdfDocumentView(view);
     }
   }
 
   @Test
-  public void testPdfFileViewWithSpacesFromSimpleDocument() throws Exception {
+  public void testPdfFileViewWithSpacesFromSimpleDocument() {
     if (canPerformViewConversionTest()) {
       final DocumentView view = viewService
           .getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file with spaces.pdf")));
@@ -165,17 +165,17 @@ public class ViewServiceSplitMethodIT extends AbstractViewerIT {
   }
 
   @Test
-  public void testPdfFileViewWithQuotes() throws Exception {
+  public void testPdfFileViewWithQuotes() {
     if (canPerformViewConversionTest()) {
       final DocumentView view = viewService.getDocumentView(
-          new ViewerContext("file_with_'_quotes_'.pdf",
+          createViewerContext("file_with_'_quotes_'.pdf",
               getDocumentNamed("file_with_'_quotes_'.pdf")));
       assertOfficeOrPdfDocumentView(view);
     }
   }
 
   @Test
-  public void testPdfFileViewWithQuotesFromSimpleDocument() throws Exception {
+  public void testPdfFileViewWithQuotesFromSimpleDocument() {
     if (canPerformViewConversionTest()) {
       final DocumentView view = viewService
           .getDocumentView(ViewerContext.from(getSimpleDocumentNamed("file_with_'_quotes_'.pdf")));

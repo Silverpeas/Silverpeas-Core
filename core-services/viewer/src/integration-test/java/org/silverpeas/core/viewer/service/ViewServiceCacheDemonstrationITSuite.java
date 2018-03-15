@@ -37,6 +37,6 @@ import org.junit.runners.Suite;
 })
 public class ViewServiceCacheDemonstrationITSuite {
 
-  public final static String CONVERSION_DURATION_FILE_NAME = "CONVERSION_DURATION";
-  public final static String DOCUMENT_VIEW_FILE_NAME = "DOCUMENT_VIEW";
+  public static final String CONVERSION_DURATION_FILE_NAME = "CONVERSION_DURATION";
+  public static final String DOCUMENT_VIEW_FILE_NAME = "DOCUMENT_VIEW";
 }

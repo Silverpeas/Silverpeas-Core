@@ -23,10 +23,14 @@
  */
 package org.silverpeas.core.viewer.model;
 
-import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.ImageUtil;
+import org.silverpeas.core.util.file.FileServerUtils;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static org.silverpeas.core.util.file.FileRepositoryManager.getTemporaryPath;
 
 /**
  * @author Yohann Chastagnier
@@ -34,6 +38,8 @@ import java.io.File;
 public abstract class AbstractPreview implements Preview {
   private static final long serialVersionUID = 3597757215012779572L;
 
+  private final String documentId;
+  private final String language;
   private final String originalFileName;
   private final File physicalFile;
   private String[] widthAndHeight = null;
@@ -49,12 +55,23 @@ public abstract class AbstractPreview implements Preview {
 
   /**
    * Default constructor
-   * @param originalFileName
-   * @param physicalFile
    */
-  protected AbstractPreview(final String originalFileName, final File physicalFile) {
+  AbstractPreview(final String documentId, final String language, final String originalFileName,
+      final File physicalFile) {
+    this.documentId = documentId;
+    this.language = language;
     this.originalFileName = originalFileName;
     this.physicalFile = physicalFile;
+  }
+
+  @Override
+  public String getDocumentId() {
+    return this.documentId;
+  }
+
+  @Override
+  public String getLanguage() {
+    return this.language;
   }
 
   /*
@@ -100,6 +117,12 @@ public abstract class AbstractPreview implements Preview {
   @Override
   public String getURLAsString() {
     return FileServerUtils.getUrlToTempDir(getPhysicalFile().getParentFile().getName() + "/" +
+        getPhysicalFile().getName());
+  }
+
+  @Override
+  public Path getServerFilePath() {
+    return Paths.get(getTemporaryPath(), getPhysicalFile().getParentFile().getName(),
         getPhysicalFile().getName());
   }
 

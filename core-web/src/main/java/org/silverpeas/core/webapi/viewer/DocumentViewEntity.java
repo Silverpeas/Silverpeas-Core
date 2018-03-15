@@ -23,14 +23,16 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.viewer.model.DocumentView;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import static org.silverpeas.core.util.StringUtil.isDefined;
+import static org.silverpeas.core.util.URLUtil.getApplicationURL;
+import static org.silverpeas.core.viewer.model.ViewerSettings.getLicenceKey;
 
 /**
  * The document view entity is a document view instance that is exposed in the web as
@@ -43,13 +45,7 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
   private static final long serialVersionUID = 4270519541076741138L;
 
   @XmlElement(defaultValue = "")
-  private String displayLicenseKey;
-
-  @XmlElement(defaultValue = "")
-  private String displayViewerPath;
-
-  @XmlElement(defaultValue = "")
-  private String url;
+  private String documentId;
 
   @XmlElement(defaultValue = "")
   private String originalFileName;
@@ -64,69 +60,50 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
   private String language;
 
   @XmlElement(defaultValue = "")
-  private int nbPages;
+  private String viewerUri;
 
   @XmlElement(defaultValue = "")
-  private boolean documentSplit;
-
-  @XmlElement(defaultValue = "")
-  private boolean searchDataComputed;
+  private String viewMode = "Default";
 
   /**
    * Creates a new document view entity from the specified document view.
-   * @param documentView
-   * @param language
+   * @param documentView the {@link DocumentView} data.
    * @return the entity representing the specified document view.
    */
-  public static DocumentViewEntity createFrom(final DocumentView documentView,
-      final String language) {
-    return new DocumentViewEntity(documentView, language);
+  public static DocumentViewEntity createFrom(final DocumentView documentView) {
+    return new DocumentViewEntity(documentView);
   }
 
   /**
    * Default constructor
-   * @param documentView
-   * @param language
+   * @param documentView the {@link DocumentView} data.
+   *
    */
-  protected DocumentViewEntity(final DocumentView documentView, final String language) {
-    displayLicenseKey = documentView.getDisplayLicenseKey();
-    if (StringUtil.isDefined(displayLicenseKey)) {
-      displayViewerPath = "/weblib/flexpaper/flash";
-    } else {
-      displayViewerPath = URLUtil.getApplicationURL() + "/util/flash/flexpaper";
-    }
-    url = documentView.getURLAsString();
+  private DocumentViewEntity(final DocumentView documentView) {
+    documentId = documentView.getDocumentId();
+    language = documentView.getLanguage();
     originalFileName = documentView.getOriginalFileName();
     width = documentView.getWidth();
     height = documentView.getHeight();
-    this.language = language;
-    nbPages = documentView.getNbPages();
-    documentSplit = documentView.isDocumentSplit();
-    searchDataComputed = documentView.areSearchDataComputed();
+    this.viewerUri = getApplicationURL() + "/services/media/viewer/embed/";
+    if (documentView.getServerFilePath().endsWith("file.pdf")) {
+      viewerUri += "pdf";
+    } else {
+      if (isDefined(getLicenceKey())) {
+        viewMode = "Zine";
+      }
+      viewerUri += "fp";
+    }
   }
 
   protected DocumentViewEntity() {
   }
 
   /**
-   * @return the displayLicenseKey
+   * @return the documentId
    */
-  protected String getDisplayLicenseKey() {
-    return displayLicenseKey;
-  }
-
-  /**
-   * @return the displayViewerPath
-   */
-  protected String getDisplayViewerPath() {
-    return displayViewerPath;
-  }
-
-  /**
-   * @return the urlBase
-   */
-  protected String getUrl() {
-    return url;
+  protected String getDocumentId() {
+    return documentId;
   }
 
   /**
@@ -157,24 +134,11 @@ public class DocumentViewEntity extends AbstractPreviewEntity<DocumentViewEntity
     return language;
   }
 
-  /**
-   * @return the nbPages
-   */
-  protected int getNbPages() {
-    return nbPages;
+  public String getViewerUri() {
+    return viewerUri;
   }
 
-  /**
-   * @return the documentSplit
-   */
-  protected boolean getDocumentSplit() {
-    return documentSplit;
-  }
-
-  /**
-   * @return the searchDataComputed
-   */
-  protected boolean getSearchDataComputed() {
-    return searchDataComputed;
+  public String getViewMode() {
+    return viewMode;
   }
 }

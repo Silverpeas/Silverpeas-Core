@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
-import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.webapi.base.RESTWebService;
 import org.silverpeas.core.contribution.attachment.AttachmentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.viewer.model.DocumentView;
-import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.viewer.service.ViewService;
+import org.silverpeas.core.viewer.service.ViewerContext;
 import org.silverpeas.core.viewer.service.ViewerException;
+import org.silverpeas.core.webapi.base.RESTWebService;
+import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -106,10 +106,14 @@ public class DocumentViewResource extends RESTWebService {
       @QueryParam("lang") final String language) {
     try {
 
+      // Content Language
+      final String contentLanguage = StringUtil.isNotDefined(language)
+          ? getUserPreferences().getLanguage()
+          : language;
+
       // Retrieve attachment data
       final SimpleDocument attachment = attachmentService
-          .searchDocumentById(new SimpleDocumentPK(id, getComponentId()),
-              StringUtil.isNotDefined(language) ? getUserPreferences().getLanguage() : language);
+          .searchDocumentById(new SimpleDocumentPK(id, getComponentId()), contentLanguage);
 
       // Checking availability
       if (attachment == null) {
@@ -135,8 +139,7 @@ public class DocumentViewResource extends RESTWebService {
    * @return the corresponding view entity.
    */
   protected DocumentViewEntity asWebEntity(final DocumentView documentView) {
-    return DocumentViewEntity.createFrom(documentView, getUserPreferences().getLanguage()).withURI(
-        getUri().getRequestUri());
+    return DocumentViewEntity.createFrom(documentView).withURI(getUri().getRequestUri());
   }
 
   @Override

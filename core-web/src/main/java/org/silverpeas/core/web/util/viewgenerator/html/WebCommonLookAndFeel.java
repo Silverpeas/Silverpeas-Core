@@ -163,19 +163,7 @@ class WebCommonLookAndFeel {
     if (specificComponentCSS != null) {
       code.append(specificComponentCSS);
     }
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/array.generics.min.js"));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/es6-promise.min.js"));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/classList.min.js"));
-    code.append(scriptContent("window.EVENT_SOURCE_POLYFILL_ACTIVATED=(typeof window.EventSource === 'undefined');"));
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/polyfill/eventsource.min.js"));
-    code.append(
-        getJavaScriptTag(contextPath + "/util/javaScript/polyfill/customEventIEPolyfill.min.js"));
-    code.append(
-        getJavaScriptTag(contextPath + "/util/javaScript/polyfill/eventListenerIEPolyfill.min.js"));
-    code.append(
-        getJavaScriptTag(contextPath + "/util/javaScript/polyfill/silverpeas-polyfills.js"));
-    code.append(
-        getJavaScriptTag(contextPath + "/util/javaScript/polyfill/silverpeas-fscreen.js"));
+    code.append(includePolyfills(new ElementContainer()).toString()).append(STR_NEW_LINE);
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap-global-bind.min.js"));
     code.append(getJavaScriptTag(contextPath + "/util/javaScript/mousetrap-pause.min.js"));

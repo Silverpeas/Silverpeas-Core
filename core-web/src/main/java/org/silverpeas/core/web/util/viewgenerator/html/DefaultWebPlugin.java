@@ -42,7 +42,8 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
 public class DefaultWebPlugin implements WebPlugin, Initialization {
 
   @Override
-  public void init() throws Exception {
+  public void init() {
+    WebPluginConsumerRegistry.add(POLYFILLS, (xhtml, language) -> includePolyfills(xhtml));
     WebPluginConsumerRegistry.add(EMBEDPLAYER, (xhtml, language) -> includeEmbedPlayer(xhtml));
     WebPluginConsumerRegistry.add(MEDIAPLAYER, (xhtml, language) -> includeMediaPlayer(xhtml));
     WebPluginConsumerRegistry.add(QTIP, (xhtml, language) -> includeQTip(xhtml));
@@ -58,6 +59,8 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     WebPluginConsumerRegistry.add(CALENDAR, JavascriptPluginInclusion::includeCalendar);
     WebPluginConsumerRegistry.add(IFRAMEAJAXTRANSPORT, (xhtml, language) -> includeIFrameAjaxTransport(xhtml));
     WebPluginConsumerRegistry.add(PREVIEW, (xhtml, language) -> includePreview(xhtml));
+    WebPluginConsumerRegistry.add(FPVIEWER, (xhtml, language) -> includeFlexPaperViewer(xhtml));
+    WebPluginConsumerRegistry.add(PDFVIEWER, JavascriptPluginInclusion::includePdfViewer);
     WebPluginConsumerRegistry.add(NOTIFIER, (xhtml, language) -> includeNotifier(xhtml));
     WebPluginConsumerRegistry.add(PASSWORD, (xhtml, language) -> includePassword(xhtml));
     WebPluginConsumerRegistry.add(GAUGE, (xhtml, language) -> includeGauge(xhtml));

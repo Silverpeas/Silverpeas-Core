@@ -24,28 +24,28 @@
 package org.silverpeas.core.contribution.attachment.model;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.persistence.jcr.JcrDataConverter;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.security.authorization.AccessControlContext;
 import org.silverpeas.core.security.authorization.AccessControlOperation;
 import org.silverpeas.core.security.authorization.AccessController;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
-import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.URLEncoder;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.SimpleDocumentAccessControl;
-import org.silverpeas.core.contribution.attachment.WebdavServiceProvider;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLEncoder;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.i18n.I18NHelper;
 
 import javax.ws.rs.core.UriBuilder;
 import java.io.Serializable;
@@ -818,7 +818,7 @@ public class SimpleDocument implements Serializable {
     return getDocumentType().getFolderName();
   }
 
-  public boolean isSharingAllowedForRolesFrom(final UserDetail user) {
+  public boolean isSharingAllowedForRolesFrom(final User user) {
     if (user == null || StringUtil.isNotDefined(user.getId()) || !user.isValidState()) {
       // In that case, from point of security view if no user data exists,
       // then download is forbidden.
@@ -837,7 +837,7 @@ public class SimpleDocument implements Serializable {
    * @param user a user in Silverpeas.
    * @return true if the user can access this document, false otherwise.
    */
-  public boolean canBeAccessedBy(final UserDetail user) {
+  public boolean canBeAccessedBy(final User user) {
     AccessController<SimpleDocument> accessController =
         AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), this);
@@ -848,7 +848,7 @@ public class SimpleDocument implements Serializable {
    * @param user a user in Silverpeas.
    * @return true if the user can access this document, false otherwise.
    */
-  public boolean canBeModifiedBy(final UserDetail user) {
+  public boolean canBeModifiedBy(final User user) {
     AccessController<SimpleDocument> accessController =
         AccessControllerProvider.getAccessController(SimpleDocumentAccessControl.class);
     return accessController.isUserAuthorized(user.getId(), this,
@@ -862,7 +862,7 @@ public class SimpleDocument implements Serializable {
    * @param user
    * @return true if download is allowed.
    */
-  public boolean isDownloadAllowedForRolesFrom(final UserDetail user) {
+  public boolean isDownloadAllowedForRolesFrom(final User user) {
     if (user == null || StringUtil.isNotDefined(user.getId()) || !user.isValidState()) {
       // In that case, from point of security view if no user data exists,
       // then download is forbidden.

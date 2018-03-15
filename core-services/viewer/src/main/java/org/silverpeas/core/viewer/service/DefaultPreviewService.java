@@ -56,7 +56,7 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
   private static final String PROCESS_NAME = "PREVIEW";
 
   // Extension of pdf document file
-  private final static Set<String> imageMimeTypePreviewable = new HashSet<>();
+  private static final Set<String> imageMimeTypePreviewable = new HashSet<>();
   static {
     for (final String imageExtension : new String[] { BMP_IMAGE_EXTENSION, GIF_IMAGE_EXTENSION,
         JPG_IMAGE_EXTENSION, PCD_IMAGE_EXTENSION, PNG_IMAGE_EXTENSION, TGA_IMAGE_EXTENSION,
@@ -78,8 +78,8 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
     final String fileName = file.getPath();
     if (imageTool.isActivated() && file.exists()) {
       final String mimeType = FileUtil.getMimeType(fileName);
-      return ((imageMimeTypePreviewable.contains(mimeType) || FileUtil.isPdf(fileName) ||
-          FileUtil.isOpenOfficeCompatible(fileName) || PLAIN_TEXT_MIME_TYPE.equals(mimeType)));
+      return imageMimeTypePreviewable.contains(mimeType) || FileUtil.isPdf(fileName) ||
+          FileUtil.isOpenOfficeCompatible(fileName) || PLAIN_TEXT_MIME_TYPE.equals(mimeType);
     }
     return false;
   }
@@ -128,17 +128,17 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
         }
 
         // Returning the result
-        return new TemporaryPreview(viewerContext.getOriginalFileName(), resultFile);
+        return new TemporaryPreview(viewerContext.getDocumentId(), viewerContext.getLanguage(),
+            viewerContext.getOriginalFileName(), resultFile);
       }
 
       @Override
       public Preview performAfterSuccess(final Preview result) {
         if (isSilentConversionEnabled() && viewerContext.isProcessingCache() &&
-            ViewService.get().isViewable(viewerContext.getOriginalSourceFile())) {
+            ViewService.get().isViewable(viewerContext.getOriginalSourceFile()))
           ManagedThreadPool.getPool().invoke(() -> {
             ViewService.get().getDocumentView(viewerContext.clone());
           });
-        }
         return super.performAfterSuccess(result);
       }
     }).execute(viewerContext);

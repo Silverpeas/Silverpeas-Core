@@ -49,6 +49,7 @@ import org.silverpeas.core.web.util.viewgenerator.html.operationpanes.Operations
 import org.silverpeas.core.web.util.viewgenerator.html.pdc.BaseClassificationPdCTag;
 
 import java.text.MessageFormat;
+import java.util.Set;
 
 import static java.util.Arrays.stream;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
@@ -77,6 +78,8 @@ public class JavascriptPluginInclusion {
   private static final String FLASH_PATH = URLUtil.getApplicationURL() + "/util/flash/";
   private static final String STYLESHEET_PATH =
       URLUtil.getApplicationURL() + "/util/styleSheets/";
+  private static final String FP_VIEWER_BASE = URLUtil.getApplicationURL() + "/media/jsp/fp";
+  private static final String PDF_VIEWER_BASE = URLUtil.getApplicationURL() + "/media/jsp/pdf";
   private static final String JQUERY_PATH = JAVASCRIPT_PATH + "jquery/";
   private static final String JQUERY_CSS_PATH = STYLESHEET_PATH + "jquery/";
   private static final String ANGULARJS_PATH = JAVASCRIPT_PATH + "angularjs/";
@@ -126,8 +129,6 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_PDC_WIDGET = "silverpeas-pdc-widgets.js";
   private static final String SILVERPEAS_PDC = "silverpeas-pdc.js";
   private static final String SILVERPEAS_SUBSCRIPTION = "silverpeas-subscription.js";
-  private static final String FLEX_PAPER_PATH = JAVASCRIPT_PATH + "flexpaper/";
-  private static final String FLEXPAPER_FLASH = "flexpaper.js";
   private static final String JQUERY_NOTIFIER_PATH = JQUERY_PATH + "noty/";
   private static final String JQUERY_NOTIFIER_BASE = "jquery.noty.js";
   private static final String JQUERY_NOTIFIER_TOP = "layouts/top.js";
@@ -322,6 +323,19 @@ public class JavascriptPluginInclusion {
   static ElementContainer includeCkeditorAddOns(final ElementContainer xhtml) {
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_IDENTITYCARD));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_VARIABLES));
+    return xhtml;
+  }
+
+  static ElementContainer includePolyfills(final ElementContainer xhtml) {
+    xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/array.generics.min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/es6-promise.min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/classList.min.js"));
+    xhtml.addElement(scriptContent("window.EVENT_SOURCE_POLYFILL_ACTIVATED=(typeof window.EventSource === 'undefined');"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/eventsource.min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/customEventIEPolyfill.min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/eventListenerIEPolyfill.min.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/silverpeas-polyfills.js"));
+    xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/silverpeas-fscreen.js"));
     return xhtml;
   }
 
@@ -566,9 +580,33 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includePreview(final ElementContainer xhtml) {
     includePopup(xhtml);
+    includeEmbedPlayer(xhtml);
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PREVIEW));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_VIEW));
-    xhtml.addElement(script(FLEX_PAPER_PATH + FLEXPAPER_FLASH));
+    return xhtml;
+  }
+
+  static ElementContainer includeFlexPaperViewer(final ElementContainer xhtml) {
+    xhtml.addElement(link(FP_VIEWER_BASE + "/viewer.css"));
+    xhtml.addElement(script(FP_VIEWER_BASE + "/core/flexpaper.js"));
+    xhtml.addElement(script(FP_VIEWER_BASE + "/viewer.js"));
+    return xhtml;
+  }
+
+  static ElementContainer includePdfViewer(final ElementContainer xhtml, final String language) {
+    xhtml.addElement(scriptContent(JavascriptSettingProducer.settingVariableName("PdfViewerSettings")
+        .add("p.i.p", PDF_VIEWER_BASE + "/images/")
+        .add("p.w.f", PDF_VIEWER_BASE + "/core/pdf.worker.min.js")
+        .add("p.c.p", PDF_VIEWER_BASE + "/cmaps/")
+        .produce()));
+    final LocalizationBundle viewerBundle = ResourceLocator.getLocalizationBundle("org.silverpeas.viewer.multilang.viewerBundle", language);
+    final JavascriptBundleProducer pdfViewerBundle = JavascriptBundleProducer.bundleVariableName("PdfViewerBundle");
+    final Set<String> keys = viewerBundle.specificKeySet();
+    pdfViewerBundle.add(viewerBundle, keys.toArray(new String[keys.size()]));
+    xhtml.addElement(scriptContent(pdfViewerBundle.produce()));
+    xhtml.addElement(link(PDF_VIEWER_BASE + "/viewer.min.css"));
+    xhtml.addElement(script(PDF_VIEWER_BASE + "/core/pdf.min.js"));
+    xhtml.addElement(script(PDF_VIEWER_BASE + "/viewer.min.js"));
     return xhtml;
   }
 

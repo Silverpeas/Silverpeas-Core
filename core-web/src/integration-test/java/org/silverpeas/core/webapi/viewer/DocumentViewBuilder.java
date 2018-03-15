@@ -27,6 +27,10 @@ import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.service.ViewerException;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static org.silverpeas.core.webapi.viewer.DocumentViewGettingIT.ATTACHMENT_ID;
 
 /**
  * @author Yohann Chastagnier
@@ -53,6 +57,21 @@ public class DocumentViewBuilder {
     public DocumentViewMock(final String uriId, final String fileName) {
       this.uriId = uriId;
       this.fileName = fileName;
+    }
+
+    @Override
+    public String getDocumentId() {
+      return ATTACHMENT_ID;
+    }
+
+    @Override
+    public String getLanguage() {
+      return "fr";
+    }
+
+    @Override
+    public Path getServerFilePath() {
+      return Paths.get(fileName);
     }
 
     /*

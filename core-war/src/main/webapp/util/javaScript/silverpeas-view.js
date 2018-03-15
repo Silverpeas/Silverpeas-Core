@@ -26,43 +26,10 @@
  * Silverpeas plugin build upon JQuery to display a document view.
  * It uses the JQuery UI framework.
  */
-(function( $ ){
+(function($){
 
   $.view = {
-    webServiceContext : webContext + '/services',
-    initialized: false,
-    languages : null,
-    doInitialize : function() {
-      if (! $.view.initialized) {
-        $.view.initialized = true;
-        // FlexPaper languages
-        $.view.languages = [];
-        $.view.languages["en"] = "en_US";
-        $.view.languages["us"] = "en_US";
-        $.view.languages["fr"] = "fr_FR";
-        $.view.languages["zh"] = "zh_CN";
-        $.view.languages["cn"] = "zh_CN";
-        $.view.languages["es"] = "es_ES";
-        $.view.languages["br"] = "pt_BR";
-        $.view.languages["pt"] = "pt_BR";
-        $.view.languages["ru"] = "ru_RU";
-        $.view.languages["fi"] = "fi_FN";
-        $.view.languages["fn"] = "fi_FN";
-        $.view.languages["de"] = "de_DE";
-        $.view.languages["nl"] = "nl_NL";
-        $.view.languages["tr"] = "tr_TR";
-        $.view.languages["se"] = "se_SE";
-        $.view.languages["pt"] = "pt_PT";
-        $.view.languages["el"] = "el_EL";
-        $.view.languages["da"] = "da_DN";
-        $.view.languages["dn"] = "da_DN";
-        $.view.languages["cz"] = "cz_CS";
-        $.view.languages["cs"] = "cz_CS";
-        $.view.languages["it"] = "it_IT";
-        $.view.languages["pl"] = "pl_PL";
-        $.view.languages["pv"] = "pv_FN";
-      }
-    }
+    webServiceContext : webContext + '/services'
   };
 
   /**
@@ -110,7 +77,6 @@
       return false;
     }
 
-    $.view.doInitialize();
     if ( methods[method] ) {
       return methods[ method ].apply( this, Array.prototype.slice.call( arguments, 1 ));
     } else if ( typeof method === 'object' || ! method ) {
@@ -159,33 +125,28 @@
     })
   }
 
-  /** Technical attribute to avoid having several same functions triggered on keydown */
-  var __previousOrNextPage;
-
   /**
    * Private function that centralizes the dialog view construction.
    */
   function __openDialogView($this, view) {
     sp.navigation.mute();
-    if (__previousOrNextPage) {
-      $(document).unbind('keydown', __previousOrNextPage);
-    }
 
     __adjustViewSize(view);
 
     // Initializing the resulting html container
     var $baseContainer = $("#documentView");
-    if ($baseContainer.length === 0) {
-      $baseContainer = $("<div>")
-                        .attr('id', 'documentView')
-                        .css('display', 'block')
-                        .css('border', '0px')
-                        .css('padding', '0px')
-                        .css('margin', '0px auto')
-                        .css('text-align', 'center')
-                        .css('background-color', 'white');
-      $baseContainer.insertAfter($this);
+    if ($baseContainer.length !== 0) {
+      $baseContainer.remove();
     }
+    $baseContainer = $("<div>")
+                      .attr('id', 'documentView')
+                      .css('display', 'block')
+                      .css('border', '0px')
+                      .css('padding', '0px')
+                      .css('margin', '0px auto')
+                      .css('text-align', 'center')
+                      .css('background-color', 'white');
+    $baseContainer.insertAfter($this);
 
     // Settings
     var settings = {
@@ -193,14 +154,22 @@
       width : view.width,
       height : view.height,
       callbackOnClose: function() {
-        $(document).unbind('keydown', __previousOrNextPage);
         sp.navigation.unmute();
       }
     };
 
     // Popup
     __setView($baseContainer, view);
-    __configureFlexPaper(view);
+
+    // Player
+    $('#documentViewer').embedPlayer({
+      url : sp.ajaxRequest(view.viewerUri)
+              .withParam('documentId', view.documentId)
+              .withParam('language', view.language)
+              .getUrl(),
+      width : view.width,
+      height : view.height
+    });
 
     $baseContainer.popup('view', settings);
   }
@@ -209,9 +178,10 @@
    * Private function that adjust size of view (size limitations)
    */
   function __adjustViewSize(view) {
+    var isDefaultView = view.viewMode === 'Default';
 
     // Screen size
-    var offsetWidth = view.displayLicenseKey.length == 0 ? 1 : (view.width < view.height ? 2 : 1.75);
+    var offsetWidth = isDefaultView ? 1 : (view.width < view.height ? 2 : 1.75);
     var parentWidth = $(window).width() * 0.9;
     var parentHeight = $(window).height() * 0.9;
 
@@ -230,7 +200,7 @@
     }
 
     // Size
-    if (view.displayLicenseKey.length == 0)  {
+    if (isDefaultView)  {
       view.height = (height < 480) ? 480 : height;
       view.width = (width < 680) ? 680 : width;
     } else {
@@ -260,123 +230,4 @@
             .css('height', view.height + 'px')
             .css('background-color', '#222222')));
   }
-
-  /**
-   * Private function that configures FlexPaper plugin.
-   */
-  function __configureFlexPaper(view) {
-    var viewUrl = decodeURIComponent(view.url);
-    var swfUrl = viewUrl;
-    var jsonUrl = '';
-    if (view.documentSplit) {
-      swfUrl = "{" + viewUrl.replace(/page[.]swf$/g, 'page-[*,0].swf') + "," + view.nbPages + "}";
-      if (view.searchDataComputed) {
-        jsonUrl = viewUrl + "_{page}.js";
-      }
-    }
-    var __docViewApi = false;
-    var $documentViewer = $('#documentViewer');
-    $documentViewer.FlexPaperViewer({
-      config : {
-        flashDirectory : view.displayViewerPath,
-        jsDirectory : (webContext + '/util/javaScript/flexpaper'),
-        SwfFile : swfUrl,
-        JSONFile : jsonUrl,
-        key : view.displayLicenseKey,
-        Scale : 0.6,
-        ZoomTransition : 'easeOut',
-        ZoomTime : 0.5,
-        ZoomInterval : 0.2,
-        FitPageOnLoad : true,
-        FitWidthOnLoad : false,
-        FullScreenAsMaxWindow : false,
-        ProgressiveLoading : true,
-        MinZoomSize : 0.2,
-        MaxZoomSize : 5,
-        SearchMatchAll : false,
-        InitViewMode : (view.displayLicenseKey.length == 0 ? 'Portrait' : 'TwoPage' ),
-        PrintPaperAsBitmap : false,
-
-        ViewModeToolsVisible : true,
-        ZoomToolsVisible : true,
-        NavToolsVisible : true,
-        CursorToolsVisible : true,
-        SearchToolsVisible : (!view.documentSplit || view.searchDataComputed),
-
-        BackgroundColor : '#222222',
-        PanelColor : '#555555',
-        EnableCornerDragging : true,
-
-        WMode : 'transparent',
-        localeChain : __getFlexPaperLanguage(view)
-      }
-    });
-    loadFlexPaperHandlers();
-
-    $documentViewer.bind('onDocumentLoaded', function(e,totalPages){
-      if (!__docViewApi) {
-        __docViewApi = getDocViewer('documentViewer');
-      }
-    });
-
-    // Function to navigate between images
-    __previousOrNextPage = function(e) {
-      var keyCode = eval(e.keyCode);
-      if (__docViewApi && 37 <= keyCode && keyCode <= 40) {
-        e.preventDefault();
-        if (39 === keyCode) {
-          // Right
-          __docViewApi.nextPage();
-        } else if (37 === keyCode) {
-          // Left
-          __docViewApi.prevPage();
-        }
-        return false;
-      }
-      return true;
-    };
-    $(document).bind('keydown', __previousOrNextPage);
-  }
-
-  /**
-   * Loading handlers (dynamic load)
-   */
-  function loadFlexPaperHandlers() {
-    $.ajax({
-      url : webContext + '/util/javaScript/flexpaper/flexpaper_handlers.js',
-      dataType : "script",
-      cache : true
-    });
-  }
-
-  /**
-   * Private function that returns the FlexPaper locale chain.
-   * FlexPaper knows following languages :
-   * en_US (English)
-   * fr_FR (French)
-   * zh_CN (Chinese, Simple)
-   * es_ES (Spanish)
-   * pt_BR (Brazilian Portugese)
-   * ru_RU (Russian)
-   * fi_FN (Finnish)
-   * de_DE (German)
-   * nl_NL (Netherlands)
-   * tr_TR (Turkish)
-   * se_SE (Swedish)
-   * pt_PT (Portugese)
-   * el_EL (Greek)
-   * da_DN (Danish)
-   * cz_CS (Czech)
-   * it_IT (Italian)
-   * pl_PL (Polish)
-   * pv_FN (Finnish)
-   * hu_HU (Hungarian)
-   */
-  function __getFlexPaperLanguage(view) {
-    var language = $.view.languages[view.language];
-    if (language == null || language.length == 0) {
-      language = $.view.languages["en"];
-    }
-    return language;
-  }
-})( jQuery );
+})(jQuery);

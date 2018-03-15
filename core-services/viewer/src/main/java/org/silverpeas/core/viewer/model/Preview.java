@@ -25,6 +25,7 @@ package org.silverpeas.core.viewer.model;
 
 import java.io.File;
 import java.io.Serializable;
+import java.nio.file.Path;
 
 /**
  * @author Yohann Chastagnier
@@ -32,38 +33,56 @@ import java.io.Serializable;
 public interface Preview extends Serializable {
 
   /**
+   * Getting the document identifier.
+   * @return a string.
+   */
+  String getDocumentId();
+
+  /**
+   * Getting the language of the document content.
+   * @return a string.
+   */
+  String getLanguage();
+
+  /**
    * Getting the license of display software product if any
-   * @return
+   * @return a string.
    */
   String getDisplayLicenseKey();
 
   /**
    * Getting URL of the document
-   * @return
+   * @return a string.
    */
-  String getURLAsString();
+String getURLAsString();
+
+  /**
+   * Getting {@link Path} of the document on the server.
+   * @return a {@link Path} instance.
+   */
+  Path getServerFilePath();
 
   /**
    * Getting the original file of the document
-   * @return
+   * @return a string.
    */
   String getOriginalFileName();
 
   /**
    * Getting the physical file of the document
-   * @return
+   * @return a {@link File} instance.
    */
   File getPhysicalFile();
 
   /**
    * Getting the width of the document
-   * @return
+   * @return a string.
    */
   String getWidth();
 
   /**
    * Getting the height of the document
-   * @return
+   * @return a string.
    */
   String getHeight();
 }

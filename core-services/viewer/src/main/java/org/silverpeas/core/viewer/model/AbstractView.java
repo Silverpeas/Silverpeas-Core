@@ -39,11 +39,10 @@ public abstract class AbstractView extends AbstractPreview implements DocumentVi
 
   /**
    * Default constructor
-   * @param originalFileName
-   * @param physicalFile
    */
-  protected AbstractView(final String originalFileName, final File physicalFile, final int nbPages) {
-    super(originalFileName, physicalFile);
+  protected AbstractView(final String documentId, final String language,
+      final String originalFileName, final File physicalFile, final int nbPages) {
+    super(documentId, language, originalFileName, physicalFile);
     this.nbPages = nbPages;
   }
 

@@ -87,8 +87,23 @@
   );
 
   window.spFscreen = new function () {
+    this.supportsFullscreen = function() {
+      var support = false;
+      try {
+        support = Boolean(document.documentElement[vendor[key.requestFullscreen]]) && this.fullscreenEnabled();
+      } catch (e) {
+        console.warn(e);
+      }
+      return support;
+    };
     this.requestFullscreen = function(element) {
-      element[vendor[key.requestFullscreen]]();
+      try {
+        element[vendor[key.requestFullscreen]]();
+      } catch (e) {
+        console.warn(e);
+        return false;
+      }
+      return true;
     };
     this.exitFullscreen = function() {
       return document[vendor[key.exitFullscreen]].call(document);

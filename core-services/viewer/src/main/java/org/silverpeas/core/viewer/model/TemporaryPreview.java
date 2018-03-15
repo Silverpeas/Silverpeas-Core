@@ -33,9 +33,9 @@ public class TemporaryPreview extends AbstractPreview {
 
   /**
    * Default constructor
-   * @param physicalFile
    */
-  public TemporaryPreview(final String originalFilename, final File physicalFile) {
-    super(originalFilename, physicalFile);
+  public TemporaryPreview(final String documentId, final String language, final String originalFilename,
+      final File physicalFile) {
+    super(documentId, language, originalFilename, physicalFile);
   }
 }

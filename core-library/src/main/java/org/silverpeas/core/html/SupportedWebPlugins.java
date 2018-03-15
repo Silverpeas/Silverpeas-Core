@@ -29,6 +29,11 @@ package org.silverpeas.core.html;
 public enum SupportedWebPlugins {
 
   /**
+   * Polyfills needed by all Silverpeas Javascript environment.
+   */
+  POLYFILLS,
+
+  /**
    * JQuery itself
    */
   JQUERY,
@@ -113,6 +118,14 @@ public enum SupportedWebPlugins {
    * Silverpeas plugin to open document preview dialog.
    */
   PREVIEW,
+  /**
+   * Silverpeas plugin to handle flowpaper viewer.
+   */
+  FPVIEWER,
+  /**
+   * Silverpeas plugin to view pdf document.
+   */
+  PDFVIEWER,
   /**
    * Silverpeas plugin to notify user.
    */

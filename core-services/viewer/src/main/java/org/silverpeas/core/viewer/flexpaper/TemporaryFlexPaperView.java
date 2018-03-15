@@ -34,16 +34,15 @@ import java.io.File;
 public class TemporaryFlexPaperView extends AbstractView {
   private static final long serialVersionUID = 2467847236159432664L;
 
-  private int width = 0;
-  private int height = 0;
+  private final int width;
+  private final int height;
 
   /**
    * Default constructor
-   * @param physicalFile
    */
-  public TemporaryFlexPaperView(final String originalFileName, final File physicalFile,
-      final DocumentInfo info) {
-    super(originalFileName, physicalFile, info.getNbPages());
+  public TemporaryFlexPaperView(final String documentId, final String language,
+      final String originalFileName, final File physicalFile, final DocumentInfo info) {
+    super(documentId, language, originalFileName, physicalFile, info.getNbPages());
     width = info.getMaxWidh();
     height = info.getMaxHeight();
   }
