@@ -260,10 +260,10 @@ public class JDBCCommentRequester {
     List<String> resourceIds = new ArrayList<String>(pks.size());
     List<String> instanceIds = new ArrayList<String>(pks.size());
     for (WAPrimaryKey aPk : pks) {
-      if (StringUtil.isDefined(aPk.getId())) {
+      if (isIdDefined(aPk.getId())) {
         resourceIds.add(aPk.getId());
       }
-      if (StringUtil.isDefined(aPk.getInstanceId())) {
+      if (isIdDefined(aPk.getInstanceId())) {
         instanceIds.add(aPk.getInstanceId());
       }
     }
@@ -420,12 +420,12 @@ public class JDBCCommentRequester {
       clause = "AND ";
     }
     if (foreignPK != null) {
-      if (StringUtil.isDefined(foreignPK.getId())) {
+      if (isIdDefined(foreignPK.getId())) {
         query.append(clause).append("resourceId = ? ");
         clause = "AND ";
         params.add(foreignPK.getId());
       }
-      if (StringUtil.isDefined(foreignPK.getInstanceId())) {
+      if (isIdDefined(foreignPK.getInstanceId())) {
         query.append(clause).append("instanceId = ? ");
         clause = "AND ";
         params.add(foreignPK.getInstanceId());
@@ -563,5 +563,9 @@ public class JDBCCommentRequester {
 
     return listSocialInformationComment;
 
+  }
+
+  private static boolean isIdDefined(final String id) {
+    return StringUtil.isDefined(id) && !ResourceReference.UNKNOWN_ID.equals(id);
   }
 }

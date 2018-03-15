@@ -52,7 +52,7 @@ public class ResourceReference extends WAPrimaryKey
   /**
    * Identifier referring that the resource behind is unknown and doesn't required to be known.
    */
-  public static final String UNKNOWN_ID = "UNKNOWN";
+  public static final String UNKNOWN_ID = "";
 
   /**
    * Constructs a new reference to a resource with the specified identifier. The resource doesn't
