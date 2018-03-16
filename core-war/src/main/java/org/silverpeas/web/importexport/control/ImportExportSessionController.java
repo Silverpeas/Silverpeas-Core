@@ -28,13 +28,13 @@ import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.report.ExportPDFReport;
 import org.silverpeas.core.importexport.report.ExportReport;
 import org.silverpeas.core.importexport.report.ImportReport;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.WAAttributeValuePair;
-import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import java.util.List;
 
@@ -43,7 +43,7 @@ import java.util.List;
  */
 public class ImportExportSessionController extends AbstractComponentSessionController {
 
-  ExportThread exportThread = null;
+  ExportTask exportTask = null;
   Exception errorOccured = null;
   ExportReport exportReport = null;
   ImportExport importExport = ServiceProvider.getService(ImportExport.class);
@@ -63,30 +63,21 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
     return importReport;
   }
 
-  public void processExport(List<WAAttributeValuePair> itemsToExport, NodePK rootPK)
-      throws ImportExportException {
+  public void processExport(List<WAAttributeValuePair> itemsToExport, NodePK rootPK) {
     processExport(itemsToExport, rootPK, ImportExport.EXPORT_FULL);
   }
 
-  public void processExport(List<WAAttributeValuePair> itemsToExport, NodePK rootPK, int mode)
-      throws ImportExportException {
-
-    if (exportThread == null) {
-      exportThread = new ExportXMLThread(this, itemsToExport, getLanguage(), rootPK, mode);
+  private void processExport(List<WAAttributeValuePair> itemsToExport, NodePK rootPK, int mode) {
+    if (exportTask == null) {
+      exportTask = new ExportXMLTask(this, itemsToExport, getLanguage(), rootPK, mode);
       errorOccured = null;
       exportReport = null;
-      exportThread.startTheThread();
-
-    } else {
-
+      exportTask.startTheExport();
     }
   }
 
   public boolean isExportInProgress() {
-    if (exportThread == null) {
-      return false;
-    }
-    return exportThread.isEnCours();
+    return exportTask != null && exportTask.isRunning();
   }
 
   public Exception getErrorOccured() {
@@ -101,9 +92,9 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
   }
 
   public void threadFinished() {
-    errorOccured = exportThread.getErrorOccured();
-    exportReport = exportThread.getReport();
-    exportThread = null;
+    errorOccured = exportTask.getErrorOccurred();
+    exportReport = exportTask.getReport();
+    exportTask = null;
   }
 
   /**
@@ -130,12 +121,11 @@ public class ImportExportSessionController extends AbstractComponentSessionContr
    */
   public ExportReport processExportKmax(String language, List<WAAttributeValuePair> itemsToExport,
       List combination, String timeCriteria) throws ImportExportException {
-    ExportReport report = importExport.processExportKmax(getUserDetail(),
+    return importExport.processExportKmax(getUserDetail(),
         language, itemsToExport, combination, timeCriteria);
-    return report;
   }
 
-  public void processExportOfSavedItems(String mode) throws ImportExportException {
+  public void processExportOfSavedItems(String mode) {
     processExport(this.items, this.rootPK, Integer.parseInt(mode));
   }
 
