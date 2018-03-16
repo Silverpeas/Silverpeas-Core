@@ -225,9 +225,9 @@ public class ResourceLocator {
   }
 
   private static void checkBundleName(String bundleName) {
-    if (!bundleName.startsWith("org.silverpeas.")) {
-      SilverLogger.getLogger(ResourceLocator.class)
-          .error("INVALID BUNDLE BASE NAME: " + bundleName);
+    if (!bundleName.startsWith("org.silverpeas.") &&
+        !bundleName.startsWith("com.silverpeas.customers")) {
+      SilverLogger.getLogger(ResourceLocator.class).warn("INVALID BUNDLE BASE NAME: " + bundleName);
     }
   }
 
