@@ -88,8 +88,7 @@ public class HistoryObjectDAO {
         // Then the hour is set
         date = DateUtil.getDate(date, rs.getString(2));
       } catch (java.text.ParseException e) {
-        throw new StatisticRuntimeException("HistoryObjectDAO.getHistoryDetails()",
-            SilverpeasRuntimeException.ERROR, "statistic.INCORRECT_DATE", e);
+        throw new StatisticRuntimeException(e);
       }
       userId = rs.getString(3);
       foreignId = String.valueOf(rs.getInt(4));
@@ -466,9 +465,7 @@ public class HistoryObjectDAO {
             // Then the hour is set
             date = DateUtil.getDate(date, rs.getString(4));
           } catch (java.text.ParseException e) {
-            throw new StatisticRuntimeException(
-                "HistoryObjectDAO.getLastHistoryDetailOfObjectsForUser()",
-                SilverpeasRuntimeException.ERROR, "statistic.INCORRECT_DATE", e);
+            throw new StatisticRuntimeException(e);
           }
           result.add(new HistoryObjectDetail(date, userId, resourceReference));
         }

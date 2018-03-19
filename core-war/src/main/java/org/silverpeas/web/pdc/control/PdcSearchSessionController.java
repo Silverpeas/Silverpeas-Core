@@ -59,7 +59,6 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import org.silverpeas.core.pdc.pdc.model.Value;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.thesaurus.model.Jargon;
 import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
@@ -749,8 +748,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     try {
       return ServiceProvider.getService(StatisticService.class);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("PdcSearchSessionController.getStatisticBm()",
-          SilverpeasException.ERROR, "root.EX_CANT_GET_REMOTE_OBJECT", e);
+      throw new StatisticRuntimeException(e);
     }
   }
 
@@ -1688,7 +1686,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   // searchEngine
   private PdcManager getPdcManager() {
     if (pdcManager == null) {
-      pdcManager = new GlobalPdcManager();
+      pdcManager = PdcManager.get();
     }
     return pdcManager;
   }

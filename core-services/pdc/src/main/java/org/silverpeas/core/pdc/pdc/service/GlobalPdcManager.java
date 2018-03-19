@@ -52,6 +52,7 @@ import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -74,24 +75,26 @@ public class GlobalPdcManager implements PdcManager {
    */
   private SilverpeasBeanDAO<AxisHeaderPersistence> dao = null;
 
+  @Inject
   private AxisHeaderI18NDAO axisHeaderI18NDAO;
   /**
    * PdcUtilizationBm, the pdc utilization interface to manage which axis are used by which
    * instance
    */
+  @Inject
   private PdcUtilizationService pdcUtilizationService;
   /**
    * PdcClassifyBm, the pdc classify interface to manage how are classified object in the pdc
    */
+  @Inject
   private PdcClassifyManager pdcClassifyManager;
-
+  @Inject
   private ContentManager contentManager;
+  @Inject
   private PdcClassificationService pdcClassificationService;
+  @Inject
   private PdcSubscriptionManager pdcSubscriptionManager;
-
-  /**
-   * TreeBm, the node interface to manage operations user
-   */
+  @Inject
   private TreeService treeService;
 
   private static Map<String, AxisHeader> axisHeaders = Collections.synchronizedMap(new HashMap<>());
@@ -99,20 +102,13 @@ public class GlobalPdcManager implements PdcManager {
   /**
    * Constructor declaration
    */
-  public GlobalPdcManager() {
+  protected GlobalPdcManager() {
     try {
-      dao = SilverpeasBeanDAOFactory.<AxisHeaderPersistence>getDAO(
+      dao = SilverpeasBeanDAOFactory.getDAO(
           "org.silverpeas.core.pdc.pdc.model.AxisHeaderPersistence");
     } catch (PersistenceException exceDAO) {
       SilverLogger.getLogger(this).error("Cannot get DAO for AxisHeader", exceDAO);
     }
-    axisHeaderI18NDAO = ServiceProvider.getService(AxisHeaderI18NDAO.class);
-    pdcUtilizationService = ServiceProvider.getService(PdcUtilizationService.class);
-    pdcClassifyManager = ServiceProvider.getService(PdcClassifyManager.class);
-    contentManager = ServiceProvider.getService(ContentManager.class);
-    pdcClassificationService = ServiceProvider.getService(PdcClassificationService.class);
-    pdcSubscriptionManager = ServiceProvider.getService(PdcSubscriptionManager.class);
-    treeService = ServiceProvider.getService(TreeService.class);
   }
 
   @Override
@@ -2242,6 +2238,7 @@ public class GlobalPdcManager implements PdcManager {
   /**
    * Get the SearchContext of the first position for the given SilverContentId
    */
+  @Override
   public SearchContext getSilverContentIdSearchContext(int nSilverContentId,
       String sComponentId) throws PdcException {
     try {

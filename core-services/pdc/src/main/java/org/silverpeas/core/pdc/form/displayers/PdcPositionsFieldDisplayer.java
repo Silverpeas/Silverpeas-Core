@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.pdc.form.displayers;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.html.TD;
+import org.apache.ecs.html.TR;
+import org.apache.ecs.html.Table;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
@@ -34,16 +39,10 @@ import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.Value;
-import org.apache.commons.fileupload.FileItem;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.html.TD;
-import org.apache.ecs.html.TR;
-import org.apache.ecs.html.Table;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.util.StringUtil;
 
 import java.io.PrintWriter;
@@ -177,7 +176,7 @@ public class PdcPositionsFieldDisplayer extends AbstractFieldDisplayer<TextField
 
   private PdcManager getPdcManager() {
     if (pdcManager == null) {
-      pdcManager = new GlobalPdcManager();
+      pdcManager = PdcManager.get();
     }
     return pdcManager;
   }

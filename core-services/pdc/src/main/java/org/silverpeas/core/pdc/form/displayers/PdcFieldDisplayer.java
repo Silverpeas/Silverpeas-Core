@@ -23,14 +23,15 @@
  */
 package org.silverpeas.core.pdc.form.displayers;
 
+import org.apache.ecs.AlignType;
+import org.apache.ecs.ElementContainer;
+import org.apache.ecs.html.*;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.displayers.AbstractFieldDisplayer;
 import org.silverpeas.core.pdc.form.fieldtype.PdcField;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
@@ -39,10 +40,8 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
 import org.silverpeas.core.pdc.pdc.model.UsedAxisPK;
 import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.tree.model.TreeNode;
-import org.apache.ecs.AlignType;
-import org.apache.ecs.ElementContainer;
-import org.apache.ecs.html.*;
 import org.silverpeas.core.util.MultiSilverpeasBundle;
 import org.silverpeas.core.util.ResourceLocator;
 
@@ -662,7 +661,7 @@ public class PdcFieldDisplayer extends AbstractFieldDisplayer<PdcField> {
    */
   private PdcManager getPdcManager() {
     if (pdcManager == null) {
-      pdcManager = new GlobalPdcManager();
+      pdcManager = PdcManager.get();
     }
     return pdcManager;
   }

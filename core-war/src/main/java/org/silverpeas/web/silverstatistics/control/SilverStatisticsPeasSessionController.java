@@ -23,23 +23,41 @@
  */
 package org.silverpeas.web.silverstatistics.control;
 
-import org.silverpeas.core.security.session.SessionInfo;
-import org.silverpeas.core.security.session.SessionManagement;
-import org.silverpeas.core.security.session.SessionManagementProvider;
+import org.apache.commons.lang3.StringUtils;
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.AdminController;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
+import org.silverpeas.core.admin.space.SpaceInstLight;
+import org.silverpeas.core.admin.user.constant.UserAccessLevel;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.chart.period.PeriodChart;
+import org.silverpeas.core.chart.pie.PieChart;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
+import org.silverpeas.core.date.period.PeriodType;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.SearchCriteria;
 import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.security.session.SessionInfo;
+import org.silverpeas.core.security.session.SessionManagement;
+import org.silverpeas.core.security.session.SessionManagementProvider;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.Pair;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.memory.MemoryUnit;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
@@ -51,25 +69,6 @@ import org.silverpeas.web.silverstatistics.vo.CrossAxisStatsFilter;
 import org.silverpeas.web.silverstatistics.vo.CrossStatisticVO;
 import org.silverpeas.web.silverstatistics.vo.StatisticAxisVO;
 import org.silverpeas.web.silverstatistics.vo.StatisticVO;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
-import org.silverpeas.core.admin.space.SpaceInstLight;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.apache.commons.lang3.StringUtils;
-import org.silverpeas.core.admin.user.constant.UserAccessLevel;
-import org.silverpeas.core.chart.period.PeriodChart;
-import org.silverpeas.core.chart.pie.PieChart;
-import org.silverpeas.core.date.period.PeriodType;
-import org.silverpeas.core.util.Pair;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.ServiceProvider;
-import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.util.UnitUtil;
-import org.silverpeas.core.util.memory.MemoryUnit;
 
 import java.math.BigDecimal;
 import java.sql.SQLException;
@@ -1277,7 +1276,7 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
    */
   private PdcManager getPdcManager() {
     if (pdcManager == null) {
-      pdcManager = (PdcManager) new GlobalPdcManager();
+      pdcManager = PdcManager.get();
     }
     return pdcManager;
   }

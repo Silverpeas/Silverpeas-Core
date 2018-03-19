@@ -38,7 +38,6 @@ import org.silverpeas.core.clipboard.service.Clipboard;
 import org.silverpeas.core.clipboard.service.MainClipboard;
 import org.silverpeas.core.contribution.contentcontainer.content.GlobalSilverContent;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcSettings;
 import org.silverpeas.core.personalization.UserPreferences;
@@ -404,7 +403,7 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
 
   private PdcManager getPdcManager() {
     if (pdcManager == null) {
-      pdcManager = new GlobalPdcManager();
+      pdcManager = PdcManager.get();
     }
 
     return pdcManager;

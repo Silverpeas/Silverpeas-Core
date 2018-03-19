@@ -23,21 +23,19 @@
  */
 package org.silverpeas.core.pdc.thesaurus.service;
 
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.pdc.pdc.model.PdcException;
+import org.silverpeas.core.pdc.pdc.model.Value;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.pdc.thesaurus.model.Jargon;
+import org.silverpeas.core.pdc.thesaurus.model.Synonym;
+import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
+
+import javax.inject.Inject;
 import java.sql.Connection;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.silverpeas.core.pdc.thesaurus.model.ThesaurusException;
-import org.silverpeas.core.pdc.thesaurus.model.Jargon;
-import org.silverpeas.core.pdc.thesaurus.model.Synonym;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
-import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.model.Value;
-import org.silverpeas.core.exception.SilverpeasException;
-
-import javax.inject.Inject;
 
 /**
  * Class ThesaurusManager Classe servant d'interface aux autres composants ayant besoin du thesaurus
@@ -111,7 +109,7 @@ public class ThesaurusManager {
     Collection<String> theList = new ArrayList<String>();
     try {
       // recupere les termes correspondant à un nom de terme
-      PdcManager pdc = new GlobalPdcManager();
+      PdcManager pdc = PdcManager.get();
       List<Value> valueList = pdc.getAxisValuesByName(term);
 
       for (Value value : valueList) {
@@ -168,7 +166,7 @@ public class ThesaurusManager {
           theList.add(name);
 
           // recupere le nom du terme correspondant
-          PdcManager pdc = new GlobalPdcManager();
+          PdcManager pdc = PdcManager.get();
           Value value = pdc.getAxisValue(Long.toString(idTerm), Long.toString(idTree));
           String nameTerm = value.getName();
           theList.add(nameTerm);
@@ -275,7 +273,7 @@ public class ThesaurusManager {
         long idVoca = jargon.getIdVoca();
 
         // recupere le treeId et le idTerm de l'axe
-        PdcManager pdc = new GlobalPdcManager();
+        PdcManager pdc = PdcManager.get();
         Value value = pdc.getRoot(axisId);
 
         long idTree = Long.parseLong(value.getTreeId());

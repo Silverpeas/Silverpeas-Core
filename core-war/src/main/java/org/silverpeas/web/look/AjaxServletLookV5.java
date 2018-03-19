@@ -37,7 +37,6 @@ import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.SearchAxis;
 import org.silverpeas.core.pdc.pdc.model.SearchContext;
 import org.silverpeas.core.pdc.pdc.model.Value;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
 import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.personalization.UserMenuDisplay;
 import org.silverpeas.core.personalization.UserPreferences;
@@ -543,7 +542,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     List<SearchAxis> primaryAxis = null;
     SearchContext searchContext = new SearchContext(userId);
 
-    PdcManager pdc = new GlobalPdcManager();
+    PdcManager pdc = PdcManager.get();
 
     if (StringUtil.isDefined(componentId)) {
       // L'item courant est un composant
@@ -604,7 +603,7 @@ public class AjaxServletLookV5 extends SilverpeasAuthenticatedHttpServlet {
     SearchContext searchContext = new SearchContext(userId);
 
     if (StringUtil.isDefined(axisId)) {
-      PdcManager pdc = new GlobalPdcManager();
+      PdcManager pdc = PdcManager.get();
 
       // TODO : some improvements can be made here !
       // daughters contains all pertinent values of axis instead of pertinent

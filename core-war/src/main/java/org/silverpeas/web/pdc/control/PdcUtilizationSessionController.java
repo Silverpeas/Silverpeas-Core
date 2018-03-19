@@ -23,16 +23,15 @@
  */
 package org.silverpeas.web.pdc.control;
 
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
-import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.pdc.pdc.model.Axis;
 import org.silverpeas.core.pdc.pdc.model.AxisHeader;
 import org.silverpeas.core.pdc.pdc.model.PdcException;
 import org.silverpeas.core.pdc.pdc.model.UsedAxis;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
+import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
 
@@ -80,7 +79,7 @@ public class PdcUtilizationSessionController extends AbstractComponentSessionCon
 
   private PdcManager getPdcManager() {
     if (pdcManager == null) {
-      pdcManager = (PdcManager) new GlobalPdcManager();
+      pdcManager = PdcManager.get();
     }
     return pdcManager;
   }

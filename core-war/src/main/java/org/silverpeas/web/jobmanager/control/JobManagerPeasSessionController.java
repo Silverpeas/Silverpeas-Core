@@ -24,7 +24,7 @@
 package org.silverpeas.web.jobmanager.control;
 
 import org.silverpeas.core.pdc.pdc.model.PdcException;
-import org.silverpeas.core.pdc.pdc.service.GlobalPdcManager;
+import org.silverpeas.core.pdc.pdc.service.PdcManager;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -277,7 +277,7 @@ public class JobManagerPeasSessionController extends AbstractComponentSessionCon
     boolean isPDCManager = false;
 
     try {
-      isPDCManager = new GlobalPdcManager().isUserManager(getUserId());
+      isPDCManager = PdcManager.get().isUserManager(getUserId());
     } catch (PdcException e) {
       SilverLogger.getLogger(this).error(e);
     }

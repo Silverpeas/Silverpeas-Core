@@ -26,62 +26,24 @@
 
 package org.silverpeas.core.silverstatistics.access.model;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 /**
  * @see SilverpeasRuntimeException
  */
 public class StatisticRuntimeException extends SilverpeasRuntimeException {
 
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 2L;
 
-  public StatisticRuntimeException(String callingClass, int errorLevel, String message) {
-    super(callingClass, errorLevel, message);
+  public StatisticRuntimeException(final String message) {
+    super(message);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   */
-  public StatisticRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
+  public StatisticRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   */
-  public StatisticRuntimeException(String callingClass, int errorLevel, String message,
-      Exception nested) {
-    super(callingClass, errorLevel, message, nested);
+  public StatisticRuntimeException(final Throwable cause) {
+    super(cause);
   }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   */
-  public StatisticRuntimeException(String callingClass, int errorLevel, String message,
-      String extraParams, Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
-  }
-
-  /**
-   * Method declaration
-   * @return
-   */
-  public String getModule() {
-    return "statistic";
-  }
-
 }

@@ -24,18 +24,18 @@
 package org.silverpeas.core.silverstatistics.access.service;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.SilverpeasRuntimeException;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.model.SilverpeasContent;
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.access.dao.HistoryObjectDAO;
 import org.silverpeas.core.silverstatistics.access.model.HistoryByUser;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
@@ -50,17 +50,16 @@ import java.util.*;
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultStatisticService implements StatisticService, ComponentInstanceDeletion {
 
-  public final static int ACTION_ACCESS = 1;
+  public static final int ACTION_ACCESS = 1;
 
-  public DefaultStatisticService() {
+  protected DefaultStatisticService() {
   }
 
   private Connection getConnection() {
     try {
       return DBUtil.openConnection();
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().getConnection()",
-          SilverpeasRuntimeException.ERROR, "root.EX_CONNECTION_OPEN_FAILED", e);
+      throw new StatisticRuntimeException(e);
     }
   }
 
@@ -71,8 +70,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
     try {
       HistoryObjectDAO.add(con, userId, resourceReference, actionType, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().addStat()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_ADD_VISITE_NODE", e);
+      throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -89,9 +87,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
     try {
       return HistoryObjectDAO.getCount(con, resourceReferences, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().getCount()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
-          e);
+      throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -103,9 +99,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
     try {
       return HistoryObjectDAO.getCount(con, resourceReference, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().getCount()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
-          e);
+      throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -134,9 +128,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
     try {
       return HistoryObjectDAO.getHistoryDetailByObject(con, resourceReference, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().getHistoryByAction()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
-          e);
+      throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -150,9 +142,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
     try {
       return HistoryObjectDAO.getHistoryDetailByObjectAndUser(con, resourceReference, objectType, userId);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().getHistoryByObjectAndUser()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
-          e);
+      throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -179,79 +169,36 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
 
   private Collection<HistoryByUser> getHistoryByObject(ResourceReference resourceReference, int action,
       String objectType, UserDetail[] users) {
-    SilverTrace
-        .info("statistic", "DefaultStatisticService.getHistoryByObject()", "root.MSG_GEN_ENTER_METHOD");
-    Collection<HistoryObjectDetail> list;
-    try {
-      list = getHistoryByAction(resourceReference, action, objectType);
-    } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService.getHistoryByObject()",
-          SilverpeasRuntimeException.ERROR, "statistic.EX_IMPOSSIBLE_DOBTENIR_LETAT_DES_LECTURES",
-          e);
-    }
+    Collection<HistoryObjectDetail> list =
+        getHistoryByAction(resourceReference, action, objectType);
     String[] readerIds = new String[list.size()];
     Date[] date = new Date[list.size()];
-    Iterator<HistoryObjectDetail> it = list.iterator();
-    int i = 0;
-    while (it.hasNext()) {
-      HistoryObjectDetail historyObject = it.next();
-      readerIds[i] = historyObject.getUserId();
-      date[i] = historyObject.getDate();
-      i++;
-    }
-    UserDetail[] controlledUsers =
-        OrganizationControllerProvider.getOrganisationController().getUserDetails(readerIds);
+    getHistoryReadersAndDates(list, readerIds, date);
+    UserDetail[] controlledUsers = OrganizationControllerProvider.getOrganisationController().getUserDetails(readerIds);
 
     // ajouter à la liste "allUsers" (liste des users des rôles) les users ayant lu mais ne faisant
     // pas partis d'un rôle
-    int compteur = 0;
-    Collection<UserDetail> allUsers = new ArrayList<>(users.length + controlledUsers.length);
-    for (int j = 0; j < users.length; j++) {
-      allUsers.add(users[j]);
-      compteur = j + 1;
-    }
-    for (int j = compteur; j < controlledUsers.length; j++) {
-      if (!allUsers.contains(controlledUsers[j])) {
-        allUsers.add(controlledUsers[j]);
-      }
-    }
+    Collection<UserDetail> allUsers = getReadingUsersWithoutRoles(users, controlledUsers);
 
     // création de la liste de tous les utilisateur ayant le droit de lecture
-    Collection<HistoryByUser> statByUser = new ArrayList<>(allUsers.size());
-    for (UserDetail user : allUsers) {
-      if (user != null) {
-        HistoryByUser historyByUser = new HistoryByUser(user, null, 0);
-        statByUser.add(historyByUser);
-      }
-    }
+    Collection<HistoryByUser> statByUser = getUsersWithReadRights(allUsers);
 
     // création d'une liste des accès par utilisateur
     Map<UserDetail, Date> byUser = new HashMap<>(controlledUsers.length);
     Map<UserDetail, Integer> nbAccessbyUser = new HashMap<>(controlledUsers.length);
-    for (int j = 0; j < controlledUsers.length; j++) {
-      if (controlledUsers[j] != null) {
-        // regarder si la date en cours est > à la date enregistrée...
-        Object obj = byUser.get(controlledUsers[j]);
-        if (obj != null && !obj.toString().equals("Never")) {
-          Date dateTab = (Date) obj;
-          if (date[j].after(dateTab)) {
-            byUser.put(controlledUsers[j], date[j]);
-          }
-          Object objNb = nbAccessbyUser.get(controlledUsers[j]);
-          int nbAccess = 0;
-          if (objNb != null) {
-            nbAccess = (Integer) objNb;
-            nbAccess = nbAccess + 1;
-          }
-          nbAccessbyUser.put(controlledUsers[j], nbAccess);
-        } else {
-          byUser.put(controlledUsers[j], date[j]);
-          nbAccessbyUser.put(controlledUsers[j], 1);
-        }
-      }
-    }
+    getAccessRightsPerUser(date, controlledUsers, byUser, nbAccessbyUser);
 
     // mise à jour de la date de dernier accès et du nombre d'accès pour les utilisateurs ayant lu
+    updateAccessDateForReadingUsers(statByUser, byUser, nbAccessbyUser);
+
+    // Sort list to get readers first
+    LastAccessComparatorDesc comparator = new LastAccessComparatorDesc();
+    Collections.sort((List<HistoryByUser>) statByUser, comparator);
+    return statByUser;
+  }
+
+  private void updateAccessDateForReadingUsers(final Collection<HistoryByUser> statByUser,
+      final Map<UserDetail, Date> byUser, final Map<UserDetail, Integer> nbAccessbyUser) {
     for (final HistoryByUser historyByUser : statByUser) {
       UserDetail user = historyByUser.getUser();
       // recherche de la date de dernier accès
@@ -265,11 +212,71 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
         historyByUser.setNbAccess(nbAccess);
       }
     }
+  }
 
-    // Sort list to get readers first
-    LastAccessComparatorDesc comparator = new LastAccessComparatorDesc();
-    Collections.sort((List<HistoryByUser>) statByUser, comparator);
+  private void getAccessRightsPerUser(final Date[] date, final UserDetail[] controlledUsers,
+      final Map<UserDetail, Date> byUser, final Map<UserDetail, Integer> nbAccessbyUser) {
+    for (int j = 0; j < controlledUsers.length; j++) {
+      if (controlledUsers[j] == null) {
+        continue;
+      }
+      // regarder si la date en cours est > à la date enregistrée...
+      Object obj = byUser.get(controlledUsers[j]);
+      if (obj != null && !obj.toString().equals("Never")) {
+        Date dateTab = (Date) obj;
+        if (date[j].after(dateTab)) {
+          byUser.put(controlledUsers[j], date[j]);
+        }
+        Object objNb = nbAccessbyUser.get(controlledUsers[j]);
+        int nbAccess = 0;
+        if (objNb != null) {
+          nbAccess = (Integer) objNb;
+          nbAccess = nbAccess + 1;
+        }
+        nbAccessbyUser.put(controlledUsers[j], nbAccess);
+      } else {
+        byUser.put(controlledUsers[j], date[j]);
+        nbAccessbyUser.put(controlledUsers[j], 1);
+      }
+    }
+  }
+
+  private Collection<HistoryByUser> getUsersWithReadRights(final Collection<UserDetail> allUsers) {
+    Collection<HistoryByUser> statByUser = new ArrayList<>(allUsers.size());
+    for (UserDetail user : allUsers) {
+      if (user != null) {
+        HistoryByUser historyByUser = new HistoryByUser(user, null, 0);
+        statByUser.add(historyByUser);
+      }
+    }
     return statByUser;
+  }
+
+  private Collection<UserDetail> getReadingUsersWithoutRoles(final UserDetail[] users,
+      final UserDetail[] controlledUsers) {
+    int compteur = 0;
+    Collection<UserDetail> allUsers = new ArrayList<>(users.length + controlledUsers.length);
+    for (int j = 0; j < users.length; j++) {
+      allUsers.add(users[j]);
+      compteur = j + 1;
+    }
+    for (int j = compteur; j < controlledUsers.length; j++) {
+      if (!allUsers.contains(controlledUsers[j])) {
+        allUsers.add(controlledUsers[j]);
+      }
+    }
+    return allUsers;
+  }
+
+  private void getHistoryReadersAndDates(final Collection<HistoryObjectDetail> list,
+      final String[] readerIds, final Date[] date) {
+    Iterator<HistoryObjectDetail> iterator = list.iterator();
+    int i = 0;
+    while (iterator.hasNext()) {
+      HistoryObjectDetail historyObject = iterator.next();
+      readerIds[i] = historyObject.getUserId();
+      date[i++] = historyObject.getDate();
+    }
   }
 
   @Override
@@ -279,9 +286,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
     try {
       HistoryObjectDAO.deleteHistoryByObject(con, resourceReference, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().deleteHistoryByAction",
-          SilverpeasRuntimeException.ERROR,
-          "statistic.CANNOT_DELETE_HISTORY_STATISTICS_PUBLICATION", e);
+      throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -300,8 +305,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
     try {
       HistoryObjectDAO.move(con, toResourceReference, actionType, objectType);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().addObjectToHistory()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_ADD_VISITE_NODE", e);
+      throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -317,9 +321,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
         nb += HistoryObjectDAO.getCountByPeriod(con, primaryKey, objectType, startDate, endDate);
       }
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().getCountByPeriod()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
-          e);
+      throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -341,9 +343,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
         }
       }
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().getCountByPeriodAndUser()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
-          e);
+      throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -358,12 +358,10 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
     try {
       List<String> objectIds = HistoryObjectDAO
           .getListObjectAccessByPeriod(con, primaryKeys, objectType, startDate, endDate);
-      Set<String> distinctObjectIds = new HashSet<String>(objectIds);
+      Set<String> distinctObjectIds = new HashSet<>(objectIds);
       nb = distinctObjectIds.size();
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().getDistinctCountByPeriod()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
-          e);
+      throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -386,9 +384,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
         }
         nb = distinctObjectIds.size();
       } catch (Exception e) {
-        throw new StatisticRuntimeException("DefaultStatisticService().getDistinctCountByPeriod()",
-            SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
-            e);
+        throw new StatisticRuntimeException(e);
       } finally {
         DBUtil.close(con);
       }
@@ -406,9 +402,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
       return HistoryObjectDAO
           .getLastHistoryDetailOfObjectsForUser(con, userId, actionType, objectType, nbObjects);
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().getLastHistoryOfObjectsForUser()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
-          e);
+      throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -422,9 +416,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
               null, userId);
       return numberOfReading > 0;
     } catch (Exception e) {
-      throw new StatisticRuntimeException("DefaultStatisticService().isRead()",
-          SilverpeasRuntimeException.ERROR, "statistic.CANNOT_GET_HISTORY_STATISTICS_PUBLICATION",
-          e);
+      throw new StatisticRuntimeException(e);
     } finally {
       DBUtil.close(con);
     }
@@ -446,7 +438,7 @@ public class DefaultStatisticService implements StatisticService, ComponentInsta
     try {
       HistoryObjectDAO.deleteStatsOfComponent(con, componentInstanceId);
     } catch (Exception e) {
-      throw new RuntimeException(
+      throw new SilverpeasRuntimeException(
           "A failure occurred when deleting the statistics relative to the component instance " +
               componentInstanceId, e);
     } finally {
