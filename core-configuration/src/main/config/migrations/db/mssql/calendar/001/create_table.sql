@@ -58,7 +58,7 @@ CREATE TABLE SB_Cal_Components (
 
 CREATE TABLE SB_Cal_Event (
   id             VARCHAR(40)   NOT NULL,
-  externalId     VARCHAR(100)  NULL,
+  externalId     VARCHAR(255)  NULL,
   synchroDate    DATETIME,
   componentId    VARCHAR(40)   NOT NULL,
   visibility     VARCHAR(50)   NOT NULL,
