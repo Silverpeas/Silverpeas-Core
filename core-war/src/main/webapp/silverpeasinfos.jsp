@@ -49,15 +49,14 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
-<%
-  UserDetail currentUser = UserDetail.getCurrentRequester();
-  if (currentUser == null || !currentUser.isAccessAdmin()) {
-    request.getRequestDispatcher("../../Login.jsp").forward(request, response);
-  }
-%>
-<c:set var="currentUserId"     value="${sessionScope['SilverSessionController'].userId}"/>
+
+<c:set var="currentUserId" value="${sessionScope['SilverSessionController'].userId}"/>
+<c:if test="${currentUserId == null || currentUserId != 0}">
+  <c:redirect url="/Login.jsp"/>
+</c:if>
 
 <html>
 <head>
@@ -70,31 +69,36 @@
   </style>
 </head>
 <body>
+<c:set var="system" value="${System.getProperty('os.name')} ${System.getProperty('os.version')} ${System.getProperty('os.arch')}"/>
+<c:set var="java" value="${System.getProperty('java.vm.vendor')} ${System.getProperty('java.vm.name')} ${System.getProperty('java.vm.version')}"/>
+<cs:set var="javaOpts" value="${System.getenv('JAVA_OPTS')}"/>
 <div class="page">
-  <div class="titre">Information</div>
+  <div class="titre"><span>Information</span></div>
   <div id="background">
     <div class="cadre">
       <div id="header">
         <a href="http://www.silverpeas.com"><img src="<c:url value="/images/logo.jpg" />" class="logo" alt="logo"/></a>
-
-        <p class="information">Silverpeas version is
-          <b><c:out value="${initParam.SILVERPEAS_VERSION}"/></b></p>
+        <p class="information">Silverpeas version is <b><c:out value="${initParam.SILVERPEAS_VERSION}"/></b></p>
       </div>
-      <c:if test="${currentUserId != null && currentUserId >= 0}">
-      <p class="information">
-        Silverpeas is running on <b><c:out value="${pageContext.servletContext.serverInfo}"/></b>
-        with the version
-        <b><c:out value="${pageContext.servletContext.majorVersion}"/>.<c:out value="${pageContext.servletContext.minorVersion}"/></b>
-        of the Servlet API.<br/><br/>
-        The server is running on <b><%=System.getProperty("os.name") %><%=System
-          .getProperty("os.version")%> <%=System.getProperty("os.arch")%>
-      </b> with the version <b><%=System.getProperty("java.vm.name")%> <%=System
-          .getProperty("java.vm.version")%> by <%=System.getProperty("java.vm.vendor")%>
-      </b><br/><br/>
-        Silverpeas is running with the following configuration:<br/><i><%=System
-          .getenv("JAVA_OPTS")%>
-      </i></p>
-      </c:if>
+      <div class="information">
+        <p>
+          Silverpeas is running on <b>${pageContext.servletContext.serverInfo}</b>
+          with the Servlet API <b>${pageContext.servletContext.majorVersion}.${pageContext.servletContext.minorVersion}</b>
+        </p>
+      </div>
+      <div class="information">
+        <p>
+          The server is running on <b>${system}</b> with <b>${java}</b>
+        </p>
+      </div>
+        <c:if test="${javaOpts != null && fn:length(javaOpts) > 0}">
+      <div class="information">
+          <p>
+            Silverpeas is running with the following configuration: <b>${javaOpts}</b>
+          </p>
+      </div>
+        </c:if>
+      </div>
     </div>
   </div>
 </div>
