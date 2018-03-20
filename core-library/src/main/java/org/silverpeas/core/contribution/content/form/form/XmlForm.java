@@ -34,7 +34,6 @@ import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
-import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
@@ -167,7 +166,8 @@ public class XmlForm extends AbstractForm {
           displayField = StringUtil.isDefined(field.getStringValue());
           if (displayField && field.getStringValue().startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
             // special case about WYSIWYG field
-            displayField = isWYSIWYGFieldDefined(fieldName, pageContext);
+            String fileName = field.getStringValue().substring(WysiwygFCKFieldDisplayer.dbKey.length());
+            displayField = isWYSIWYGFieldDefined(fileName, pageContext);
           }
         }
 
@@ -312,10 +312,8 @@ public class XmlForm extends AbstractForm {
     return lastNotEmptyField;
   }
 
-  private boolean isWYSIWYGFieldDefined(String fieldName, PagesContext pc) {
-    String contentLanguage = I18NHelper.checkLanguage(pc.getContentLanguage());
-    String content = WysiwygFCKFieldDisplayer
-        .getContentFromFile(pc.getComponentId(), pc.getObjectId(), fieldName, contentLanguage);
+  private boolean isWYSIWYGFieldDefined(String fileName, PagesContext pc) {
+    String content = WysiwygFCKFieldDisplayer.getContentFromFile(pc.getComponentId(), fileName);
     return StringUtil.isDefined(content);
   }
 }

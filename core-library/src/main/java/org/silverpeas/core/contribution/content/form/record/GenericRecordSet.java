@@ -354,7 +354,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
         record.setId(toPK.getId());
 
         // replace files reference
-        replaceIds(ids, record, toPK.getId());
+        replaceIds(ids, record, fromPK.getId());
 
         // insert record itself in database
         getGenericRecordSetManager()
@@ -427,7 +427,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
       Map<String, String> videoIds = AttachmentServiceProvider.getAttachmentService().mergeDocuments(
           toPK, fromPK, DocumentType.video);
       ids.putAll(videoIds);
-      replaceIds(ids, fromRecord, toExternalId);
+      replaceIds(ids, fromRecord, fromExternalId);
     } catch (AttachmentException e) {
       throw new FormException("form", "", e);
     }

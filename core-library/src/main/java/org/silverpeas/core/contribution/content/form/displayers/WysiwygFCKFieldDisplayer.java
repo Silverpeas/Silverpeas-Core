@@ -152,20 +152,20 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String code = "";
     String fieldName = template.getFieldName();
     Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
-    if (!field.getTypeName().equals(TextField.TYPE)) {
-
-    }
-    if (!field.isNull()) {
-      code = field.getValue(pageContext.getLanguage());
-    }
 
     String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
 
-    code = getContent(pageContext.getComponentId(), pageContext.getObjectId(), template.
-        getFieldName(), code, contentLanguage);
+    String code = "";
+    String fieldValue = field.getValue();
+    if (StringUtil.isDefined(fieldValue)) {
+      String fileName = fieldValue.substring(dbKey.length());
+      code = getContentFromFile(pageContext.getComponentId(), fileName);
+    }
+    if (code == null) {
+      code = "";
+    }
 
     if (pageContext.isSharingContext()) {
       code = pageContext.getSharingContext().applyOn(code);
@@ -423,13 +423,17 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
     if (field.acceptValue(newValue, pageContext.getLanguage())) {
       try {
-        String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
-
-        String fileName =
-            setContentIntoFile(pageContext.getComponentId(), pageContext.getObjectId(),
-                template.getFieldName(), newValue, contentLanguage);
-
-        field.setValue(dbKey + fileName, contentLanguage);
+        String fieldValue = field.getValue();
+        if (StringUtil.isDefined(fieldValue)) {
+          String fileName = fieldValue.substring(dbKey.length());
+          setContentIntoFile(pageContext.getComponentId(), fileName, newValue);
+        } else {
+          String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
+          String fileName =
+              setContentIntoFile(pageContext.getComponentId(), pageContext.getObjectId(),
+                  template.getFieldName(), newValue, contentLanguage);
+          field.setValue(dbKey + fileName, contentLanguage);
+        }
       } catch (FormException e) {
         throw new FormException("WysiwygFCKFieldDisplayer.update", "form.EX_NOT_CORRECT_VALUE", e);
       }
@@ -488,8 +492,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
   public String duplicateContent(Field field, FieldTemplate template, ResourceReference from, ResourceReference to,
       String language) throws FormException {
-    String code = field.getStringValue();
-    code = getContent(from.getInstanceId(), from.getId(), template.getFieldName(), code, language);
+    String code = getContent(from.getInstanceId(), from.getId(), template.getFieldName(), language);
     String fileName = setContentIntoFile(to.getInstanceId(), to.getId(), template.
         getFieldName(), code, language);
     return dbKey + fileName;
@@ -500,57 +503,51 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
     String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
 
-    String code = field.getStringValue();
-    code = getContent(pageContext.getComponentId(), pageContext.getObjectId(),
-        template.getFieldName(), code, contentLanguage);
+    String code = getContent(pageContext.getComponentId(), pageContext.getObjectId(),
+        template.getFieldName(), contentLanguage);
     String fileName = setContentIntoFile(pageContext.getComponentId(), newObjectId, template.
         getFieldName(), code, contentLanguage);
     field.setValue(dbKey + fileName, pageContext.getLanguage());
   }
 
-  private String getContent(String componentId, String objectId, String fieldName, String code,
-      String language) throws
-      FormException {
-    if (!code.startsWith(dbKey)) {
-      setContentIntoFile(componentId, objectId, fieldName, code, language);
-    } else {
-      try {
-        code = getContentFromFile(componentId, objectId, fieldName, language);
-      } catch (UtilException e) {
-        throw new FormException("WysiwygFCKFieldDisplayer.getContent", e.getMessage(), e);
-      }
+  private String getContent(String componentId, String objectId, String fieldName,
+      String language) throws FormException {
+    try {
+      return getContentFromFile(componentId, objectId, fieldName, language);
+    } catch (UtilException e) {
+      throw new FormException("WysiwygFCKFieldDisplayer.getContent", e.getMessage(), e);
     }
-    return code;
   }
 
   private String setContentIntoFile(String componentId, String objectId, String fieldName,
       String code, String language) {
-    try {
-      FileRepositoryManager.createAbsolutePath(componentId, dir);
-    } catch (Exception ignored) {
-    }
-    String path = getPath(componentId);
     String fileName = getFileName(fieldName, objectId, language);
-
-    try {
-      FileFolderManager.createFile(path, fileName, code);
-    } catch (UtilException e) {
-      // do nothing
-    }
+    setContentIntoFile(componentId, fileName, code);
     return fileName;
   }
 
-  public static String getContentFromFile(String componentId, String objectId, String fieldName)
-      throws UtilException {
+  private void setContentIntoFile(String componentId, String fileName, String code) {
+    FileRepositoryManager.createAbsolutePath(componentId, dir);
+    String path = getPath(componentId);
+    FileFolderManager.createFile(path, fileName, code);
+  }
+
+  public static String getContentFromFile(String componentId, String objectId, String fieldName) {
     return getContentFromFile(componentId, objectId, fieldName, null);
   }
 
   public static String getContentFromFile(String componentId, String objectId, String fieldName,
-      String language) throws UtilException {
+      String language) {
     String fileName = getFileName(fieldName, objectId, language);
-    String path = getPath(componentId);
+    return getContentFromFile(componentId, fileName);
+  }
 
-    return FileFolderManager.getCode(path, fileName);
+  public static String getContentFromFile(String componentId, String fileName) {
+    if (StringUtil.isDefined(fileName) && isDirectoryExists(componentId)) {
+      String path = getPath(componentId);
+      return FileFolderManager.getCode(path, fileName);
+    }
+    return "";
   }
 
   private static String getFileName(String fieldName, String objectId) {
@@ -744,5 +741,11 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       configFile = URLUtil.getApplicationURL() + "/" + configFile;
     }
     return configFile;
+  }
+
+  private static boolean isDirectoryExists(String componentId) {
+    String path = getPath(componentId);
+    File directory = new File(path);
+    return directory.exists();
   }
 }
