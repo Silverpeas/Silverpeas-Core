@@ -117,7 +117,7 @@
 
     function editScheduledValue(id) {
       clearForm();
-      $("#dnForm #value").val($("#"+id+" .colValue").text());
+      $("#dnForm #value").val($("#"+id+" .colValue").html());
       $("#dnForm #startDate").val($("#"+id+" .colBegin").text());
       $("#dnForm #endDate").val($("#"+id+" .colEnd").text());
 
