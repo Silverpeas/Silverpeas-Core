@@ -674,7 +674,8 @@ public class CalendarResource extends AbstractCalendarResource {
     SimpleCache cache = CacheServiceProvider.getRequestCacheService().getCache();
     CalendarEventEntity entity = cache.get(event.getId(), CalendarEventEntity.class);
     if (entity == null) {
-      entity = CalendarEventEntity.fromEvent(event, getComponentId(), getZoneId())
+      entity = CalendarEventEntity
+          .fromEvent(event, getComponentId(), getZoneId(), isEditionMode())
           .withEventURI(uri().ofEvent(event))
           .withCalendarURI(uri().ofCalendar(event.getCalendar()));
       cache.put(event.getId(), entity);
@@ -703,13 +704,14 @@ public class CalendarResource extends AbstractCalendarResource {
   public CalendarEventOccurrenceEntity asOccurrenceWebEntity(
       CalendarEventOccurrence occurrence) {
     assertEntityIsDefined(occurrence.getCalendarEvent().asCalendarComponent());
-    List<CalendarEventAttendeeEntity> attendeeEntities = occurrence.getAttendees().stream()
+    final List<CalendarEventAttendeeEntity> attendeeEntities = occurrence.getAttendees().stream()
         .map(attendee -> asAttendeeWebEntity(occurrence, attendee))
         .collect(Collectors.toList());
-    List<CalendarEventAttributeEntity> attributeEntities = occurrence.getAttributes().stream()
+    final List<CalendarEventAttributeEntity> attributeEntities = occurrence.getAttributes().stream()
             .map(this::asAttributeWebEntity)
             .collect(Collectors.toList());
-    return CalendarEventOccurrenceEntity.fromOccurrence(occurrence, getComponentId(), getZoneId())
+    return CalendarEventOccurrenceEntity
+        .fromOccurrence(occurrence, getComponentId(), getZoneId(), isEditionMode())
         .withCalendarURI(uri().ofCalendar(occurrence.getCalendarEvent().getCalendar()))
         .withEventURI(uri().ofEvent(occurrence.getCalendarEvent()))
         .withOccurrenceURI(uri().ofOccurrence(occurrence))

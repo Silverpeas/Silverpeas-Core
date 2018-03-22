@@ -172,7 +172,6 @@
                   } else {
                     this.reminder = undefined;
                   }
-                  console.log(values)
                   $timeout(function() {
                     if (this.mode === 'DATETIME'
                         || this.reminder

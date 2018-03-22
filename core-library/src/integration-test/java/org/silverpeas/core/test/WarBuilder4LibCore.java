@@ -457,6 +457,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
     if (!contains(WysiwygManager.class)) {
       addClasses(ContributionIdentifier.class, ContributionContent.class);
       addPackages(true, "org.silverpeas.core.contribution.content.wysiwyg");
+      addPackages(true, "org.silverpeas.core.contribution.content.renderer");
       addMavenDependencies("net.htmlparser.jericho:jericho-html");
     }
     return this;

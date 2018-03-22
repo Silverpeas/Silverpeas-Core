@@ -122,7 +122,7 @@ __silverpeasAngularModule.filter('newlines', function () {
   return function(text) {
     return text ? text.convertNewLineAsHtml() : text;
   }
-})
+});
 
 /**
  * This filter permits to transform javascript newlines into html newlines.
@@ -131,7 +131,7 @@ __silverpeasAngularModule.filter('noHTML', function () {
   return function(text) {
     return text ? text.noHTML() : text;
   }
-})
+});
 
 /**
  * This filter permits to transform ISO String date into a readable date.
@@ -140,7 +140,7 @@ __silverpeasAngularModule.filter('displayAsDate', function () {
   return function(dateAsText) {
     return dateAsText ? sp.moment.displayAsDate(dateAsText) : dateAsText;
   }
-})
+});
 
 /**
  * This filter permits to transform ISO String date time into a readable time.
@@ -149,7 +149,7 @@ __silverpeasAngularModule.filter('displayAsTime', function () {
   return function(dateAsText) {
     return dateAsText ? sp.moment.displayAsTime(dateAsText) : dateAsText;
   }
-})
+});
 
 /**
  * This filter permits to transform ISO String date time into a readable one.
@@ -158,7 +158,16 @@ __silverpeasAngularModule.filter('displayAsDateTime', function () {
   return function(dateAsText) {
     return dateAsText ? sp.moment.displayAsDateTime(dateAsText) : dateAsText;
   }
-})
+});
+
+/**
+ * This filter permits to trust an HTML content.
+ */
+__silverpeasAngularModule.filter('trustedHTML', ['$sce', function($sce) {
+  return function(html) {
+    return $sce.trustAsHtml(html);
+  }
+}]);
 
 /**
  * Common directive to provide solution to update HTML DOM with partial HTML

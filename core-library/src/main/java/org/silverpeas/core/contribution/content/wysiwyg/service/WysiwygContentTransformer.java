@@ -80,12 +80,11 @@ public class WysiwygContentTransformer {
   /**
    * Applies all the transformation directives and finally processing the given treatment.
    * @param process the process to execute after all the directives.
-   * @param <TYPED_RESULT> the result type of the process.
+   * @param <R> the result type of the process.
    * @return the result of the process execution.
-   * @throws Exception
+   * @throws Exception on technical error.
    */
-  public <TYPED_RESULT> TYPED_RESULT transform(
-      WysiwygContentTransformerProcess<TYPED_RESULT> process) throws Exception {
+  public <R> R transform(WysiwygContentTransformerProcess<R> process) throws Exception {
     return process.execute(transform());
   }
 

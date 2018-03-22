@@ -43,6 +43,9 @@ public abstract class AbstractCalendarResource extends RESTWebService {
   @QueryParam("zoneid")
   private String zoneId;
 
+  @QueryParam("editionMode")
+  private Boolean editionMode;
+
   @Inject
   private CalendarResourceURIs uri;
 
@@ -66,5 +69,9 @@ public abstract class AbstractCalendarResource extends RESTWebService {
 
   public CalendarResourceURIs uri() {
     return uri;
+  }
+
+  boolean isEditionMode() {
+    return editionMode != null ? editionMode : false;
   }
 }
