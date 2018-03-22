@@ -415,8 +415,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       if (pubDetail.getKeywords() != null) {
         publi.setKeywords(pubDetail.getKeywords());
       }
-      if (pubDetail.getContent() != null) {
-        publi.setContent(pubDetail.getContent());
+      if (pubDetail.getContentPagePath() != null) {
+        publi.setContentPagePath(pubDetail.getContentPagePath());
       }
       if (pubDetail.getStatus() != null) {
         publi.setStatus(pubDetail.getStatus());
