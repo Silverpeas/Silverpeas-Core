@@ -878,7 +878,7 @@ public class ProcessInstanceImpl
 
       String[] fieldNames = form.toRecordTemplate(role, lang).getFieldNames();
       DataRecord data = form.getDefaultRecord(role, lang, getAllDataRecord(role, lang));
-      DataRecordUtil.updateFields(fieldNames, data, getFolder());
+      DataRecordUtil.updateFields(fieldNames, data, getFolder(), lang);
 
       return data;
     } catch (FormException e) {
@@ -894,7 +894,7 @@ public class ProcessInstanceImpl
    * @throws WorkflowException
    */
   @Override
-  public DataRecord getNewActionRecord(String actionName) throws WorkflowException {
+  public DataRecord getNewActionRecord(String actionName, String language) throws WorkflowException {
     try {
       Form form = getProcessModel().getActionForm(actionName);
       if (form == null) {
@@ -915,7 +915,7 @@ public class ProcessInstanceImpl
       } else {
         fNames = Collections.emptyList();
       }
-      DataRecordUtil.updateFields(fNames.toArray(new String[fNames.size()]), data, getFolder());
+      DataRecordUtil.updateFields(fNames.toArray(new String[fNames.size()]), data, getFolder(), language);
       return data;
     } catch (FormException e) {
       throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_FORM_CREATE_FAILED",
