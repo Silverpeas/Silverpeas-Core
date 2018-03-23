@@ -122,6 +122,9 @@ public class ExportServlet extends HttpServlet {
    * @return CSV cell
    */
   private String formatCSVCell(String cell) {
+    if (StringUtil.isNotDefined(cell)) {
+      return "";
+    }
     return cell.replaceAll("\"", "\"\"");
   }
 }
