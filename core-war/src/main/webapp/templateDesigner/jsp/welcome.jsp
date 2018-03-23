@@ -53,7 +53,7 @@ arrayColumn2.setSortable(false);
 for(PublicationTemplate template : templates) {
 	ArrayLine ligne = arrayPane.addArrayLine();
 
-	ligne.addArrayCellLink(template.getName(), "ViewTemplate?Template="+template.getFileName());
+	ligne.addArrayCellLink(template.getName(), "ViewTemplate?Template="+URLUtil.encodeURL(template.getFileName()));
 	ligne.addArrayCellText(template.getDescription());
 
 	IconPane icon = gef.getIconPane();
