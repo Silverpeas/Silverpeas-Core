@@ -44,7 +44,6 @@ import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
 
@@ -52,7 +51,8 @@ import java.util.List;
 @Transactional(Transactional.TxType.SUPPORTS)
 public class DefaultContactService implements ContactService, ComponentInstanceDeletion {
 
-  private SimpleDateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+  public DefaultContactService() {
+  }
 
   @Override
   public ContactDetail getDetail(ContactPK contactPK) {
@@ -412,8 +412,7 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public int getNbPubInFatherPKs(Collection<NodePK> fatherPKs) {
     Connection con = getConnection();
     try {
-      int result = ContactDAO.getNbPubInFatherPKs(con, fatherPKs);
-      return result;
+      return ContactDAO.getNbPubInFatherPKs(con, fatherPKs);
     } catch (Exception re) {
       throw new ContactRuntimeException("DefaultContactService.getNbPubInFatherPKs()",
           SilverpeasRuntimeException.ERROR, "contact.EX_GET_NB_CONTACTS_FAILED", re);
@@ -489,6 +488,8 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
         indexEntry.setLang(I18NHelper.defaultLanguage);
         indexEntry.setCreationDate(contact.getCreationDate());
         indexEntry.setCreationUser(contact.getCreatorId());
+        indexEntry.addTextContent(contact.getPhone());
+        indexEntry.addTextContent(contact.getEmail());
 
         if (contact instanceof CompleteContact) {
           CompleteContact completeContact = (CompleteContact) contact;
@@ -510,9 +511,6 @@ public class DefaultContactService implements ContactService, ComponentInstanceD
   public void deleteIndex(ContactPK contactPK) {
     IndexEntryKey indexEntry = new IndexEntryKey(contactPK.getComponentName(), "Contact", contactPK.getId());
     IndexEngineProxy.removeIndexEntry(indexEntry);
-  }
-
-  public DefaultContactService() {
   }
 
   /**
