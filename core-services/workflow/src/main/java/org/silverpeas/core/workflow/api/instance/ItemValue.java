@@ -28,10 +28,10 @@ public interface ItemValue {
   /**
    * @return String
    */
-  public String getName();
+  String getName();
 
   /**
    * @return Object
    */
-  public Object getValue();
+  Object getValue();
 }

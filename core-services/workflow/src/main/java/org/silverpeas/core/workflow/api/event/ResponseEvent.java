@@ -35,15 +35,15 @@ public interface ResponseEvent extends GenericEvent {
   /**
    * Returns the process model (peas).
    */
-  public ProcessModel getProcessModel();
+  ProcessModel getProcessModel();
 
   /**
    * Set the process instance.
    */
-  public void setProcessInstance(ProcessInstance instance);
+  void setProcessInstance(ProcessInstance instance);
 
   /**
    * Returns the id of question corresponding to this answer
    */
-  public String getQuestionId();
+  String getQuestionId();
 }

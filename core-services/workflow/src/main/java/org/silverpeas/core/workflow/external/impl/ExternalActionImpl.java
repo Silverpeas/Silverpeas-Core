@@ -59,6 +59,4 @@ public abstract class ExternalActionImpl implements ExternalAction {
     return event;
   }
 
-  public abstract void execute();
-
 }

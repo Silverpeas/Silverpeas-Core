@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,16 +16,16 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.workflow.api.model;
 
-import java.util.Iterator;
-
 import org.silverpeas.core.workflow.api.WorkflowException;
+
+import java.util.Iterator;
 
 /**
  * Interface describing a representation of the &lt;states&gt; element of a Process Model.
@@ -36,37 +36,37 @@ public interface States {
    * Iterate through the State objects
    * @return an iterator
    */
-  public Iterator<State> iterateState();
+  Iterator<State> iterateState();
 
   /**
    * Create an State
    * @return an object implementing State
    */
-  public State createState();
+  State createState();
 
   /**
    * Add an state to the collection
    * @param state to be added
    */
-  public void addState(State state);
+  void addState(State state);
 
   /**
    * Get the states defined for this process model
    * @return states defined for this process model
    */
-  public State[] getStates();
+  State[] getStates();
 
   /**
    * Get the state definition with given name
    * @param name state name
    * @return wanted state definition
    */
-  public State getState(String name);
+  State getState(String name);
 
   /**
    * Remove an state from the collection
    * @param strStateName the name of the state to be removed.
    * @throws WorkflowException when the state cannot be found
    */
-  public void removeState(String strStateName) throws WorkflowException;
+  void removeState(String strStateName) throws WorkflowException;
 }

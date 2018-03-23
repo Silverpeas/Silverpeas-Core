@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,9 +16,9 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.workflow.api.model;
@@ -32,24 +32,24 @@ public interface TimeOutAction {
    * Get timeoutAction order. As several timeout might be defined, an order is set.
    * @return timeout order
    */
-  public int getOrder();
+  int getOrder();
 
   /**
    * return the Action to be launch
    * @return the action
    */
-  public Action getAction();
+  Action getAction();
 
   /**
    * Get delay after which the action is launched. (format : #d delay in days, #h delay in hours)
    * @return delay as String
    */
-  public String getDelay();
+  String getDelay();
 
   /**
    * Get date item from data folder used to determine when the action is launched.
    * @return item
    */
-  public Item getDateItem();
+  Item getDateItem();
 
 }

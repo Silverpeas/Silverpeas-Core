@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,80 +16,79 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.workflow.api.instance;
 
-import java.util.*;
-
-import org.silverpeas.core.contribution.content.form.*;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.user.User;
+
+import java.util.Date;
 
 public interface HistoryStep extends Comparable<HistoryStep> {
   /**
    * @return ProcessInstance
    */
-  public ProcessInstance getProcessInstance();
+  ProcessInstance getProcessInstance();
 
   /**
    * @return the actor
    */
-  public User getUser() throws WorkflowException;
+  User getUser() throws WorkflowException;
 
   /**
    * Get the step id
    * @return the step id
    */
-  public String getId();
+  String getId();
 
   /**
    * Get the role under which the user did the action
    * @return the role's name
    */
-  public String getUserRoleName();
+  String getUserRoleName();
 
   /**
    * @return the action name
    */
-  public String getAction();
+  String getAction();
 
   /**
    * @return the action date
    */
-  public Date getActionDate();
+  Date getActionDate();
 
   /**
    * @return the resolved state name
    */
-  public String getResolvedState();
+  String getResolvedState();
 
   /**
    * @return the resulting state name
    */
-  public String getResultingState();
+  String getResultingState();
 
   /**
    * @return int
    */
-  public int getActionStatus();
+  ActionStatus getActionStatus();
 
   /**
    * Get the data filled at this step
    */
-  public DataRecord getActionRecord() throws WorkflowException;
+  DataRecord getActionRecord() throws WorkflowException;
 
   /**
    * Set the data filled at this step
    */
-  public void setActionRecord(DataRecord data) throws WorkflowException;
+  void setActionRecord(DataRecord data) throws WorkflowException;
 
   /**
    * Delete the data filled at this step
    */
-  public void deleteActionRecord() throws WorkflowException;
+  void deleteActionRecord() throws WorkflowException;
 }

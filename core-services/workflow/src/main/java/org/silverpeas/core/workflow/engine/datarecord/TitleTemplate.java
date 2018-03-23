@@ -26,14 +26,13 @@ package org.silverpeas.core.workflow.engine.datarecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
-import org.silverpeas.core.workflow.api.model.ProcessModel;
 
 /**
  * A TitleTemplate builds fields giving the title of a process instance.
  */
 public class TitleTemplate extends ProcessInstanceFieldTemplate {
-  public TitleTemplate(String fieldName, ProcessModel processModel,
-      String role, String lang) {
+
+  public TitleTemplate(String fieldName, String role, String lang) {
     super(fieldName, "text", "text", Workflow.getLabel("titleFieldLabel", lang));
     this.role = role;
     this.lang = lang;

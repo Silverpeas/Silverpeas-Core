@@ -36,52 +36,52 @@ public interface TaskManager {
   /**
    * Adds a new task in the user's todos.
    */
-  public void assignTask(Task task, User delegator) throws WorkflowException;
+  void assignTask(Task task, User delegator) throws WorkflowException;
 
   /**
    * Removes a task from the user's todos.
    */
-  public void unAssignTask(Task task) throws WorkflowException;
+  void unAssignTask(Task task) throws WorkflowException;
 
   /**
    * Builds a new task (assigned or assignable).
    */
-  public Task createTask(Actor actor, ProcessInstance processInstance)
+  Task createTask(Actor actor, ProcessInstance processInstance)
       throws WorkflowException;
 
   /**
    * Builds new tasks (assigned or assignable).
    */
-  public Task[] createTasks(Actor[] actors, ProcessInstance processInstance)
+  Task[] createTasks(Actor[] actors, ProcessInstance processInstance)
       throws WorkflowException;
 
   /**
    * Returns the tasks assigned to a user on a processInstance.
    */
-  public Task[] getTasks(User user, String roleName,
+  Task[] getTasks(User user, String roleName,
       ProcessInstance processInstance) throws WorkflowException;
 
   /**
    * Returns the creation task of a processModel or null if the user is not allowed to create a new
    * instance.
    */
-  public Task getCreationTask(User user, String roleName,
+  Task getCreationTask(User user, String roleName,
       ProcessModel processModel) throws WorkflowException;
 
   /**
-   * Get the process instance Id referred by the todo with the given todo id
+   * Get the process instance Id referred by the task to do with the given identifier.
    */
-  public String getProcessInstanceIdFromExternalTodoId(String externalTodoId)
+  String getProcessInstanceIdFromExternalTodoId(String externalTodoId)
       throws WorkflowException;
 
   /**
-   * Get the role name of task referred by the todo with the given todo id
+   * Get the role name of task referred by the task to do with the given identifier
    */
-  public String getRoleNameFromExternalTodoId(String externalTodoId)
+  String getRoleNameFromExternalTodoId(String externalTodoId)
       throws WorkflowException;
 
   /**
    * Notify user that an action has been done
    */
-  public void notifyActor(Task task, User sender, User user, String text, boolean linkDisabled) throws WorkflowException;
+  void notifyActor(Task task, User sender, User user, String text, boolean linkDisabled) throws WorkflowException;
 }

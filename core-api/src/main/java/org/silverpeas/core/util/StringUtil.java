@@ -441,6 +441,20 @@ public class StringUtil extends StringUtils {
     return res.toString();
   }
 
+  public static String requireDefined(final String object) {
+    if (isNotDefined(object)) {
+      throw new NullPointerException();
+    }
+    return object;
+  }
+
+  public static String requireDefined(final String object, final String message) {
+    if (isNotDefined(object)) {
+      throw new NullPointerException(message);
+    }
+    return object;
+  }
+
   public static boolean likeIgnoreCase(final String actualValue, String expectedValue) {
     return new Like(actualValue, expectedValue, true).test();
   }

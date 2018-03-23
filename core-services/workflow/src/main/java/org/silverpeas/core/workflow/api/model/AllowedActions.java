@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,9 +16,9 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.workflow.api.model;
@@ -33,31 +33,31 @@ public interface AllowedActions {
    * Iterate through the AllowedAction objects
    * @return an iterator
    */
-  public Iterator<AllowedAction> iterateAllowedAction();
+  Iterator<AllowedAction> iterateAllowedAction();
 
   /**
    * Create an AllowedAction
    * @return an object implementing AllowedAction
    */
-  public AllowedAction createAllowedAction();
+  AllowedAction createAllowedAction();
 
   /**
    * Add an allowedAction to the collection
    * @param allowedAction to be added
    */
-  public void addAllowedAction(AllowedAction allowedAction);
+  void addAllowedAction(AllowedAction allowedAction);
 
   /**
    * Get available actions
    * @return allowed actions in an array
    */
-  public Action[] getAllowedActions();
+  Action[] getAllowedActions();
 
   /**
    * Get allowed action by action name
    * @param strActionName the name of the action to find
    * @return allowed action or <code>null</code> if action not found
    */
-  public AllowedAction getAllowedAction(String strActionName);
+  AllowedAction getAllowedAction(String strActionName);
 
 }

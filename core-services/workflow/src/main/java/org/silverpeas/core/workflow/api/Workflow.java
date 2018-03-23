@@ -37,63 +37,60 @@ public final class Workflow {
 
   private static final HashMap<String, LocalizationBundle> localLabels = new HashMap<>();
 
+  private Workflow() {
+  }
+
   /**
    * @return the ProcessModelManager
    */
-  public static ProcessModelManager getProcessModelManager()
-      throws WorkflowException {
+  public static ProcessModelManager getProcessModelManager() {
     return WorkflowHub.getProcessModelManager();
   }
 
   /**
    * @return the ProcessInstanceManager
    */
-  public static ProcessInstanceManager getProcessInstanceManager()
-      throws WorkflowException {
+  public static ProcessInstanceManager getProcessInstanceManager() {
     return WorkflowHub.getProcessInstanceManager();
   }
 
   /**
    * @return the UserManager
    */
-  public static UserManager getUserManager() throws WorkflowException {
+  public static UserManager getUserManager() {
     return WorkflowHub.getUserManager();
   }
 
   /**
    * @return the WorkflowEngine
    */
-  public static WorkflowEngine getWorkflowEngine()
-      throws WorkflowException {
+  public static WorkflowEngine getWorkflowEngine() {
     return WorkflowHub.getWorkflowEngine();
   }
 
   /**
    * @return the TaskManager
    */
-  public static TaskManager getTaskManager() throws WorkflowException {
+  public static TaskManager getTaskManager() {
     return WorkflowHub.getTaskManager();
   }
 
   /**
    * @return the ErrorManager
    */
-  public static ErrorManager getErrorManager() throws WorkflowException {
+  public static ErrorManager getErrorManager() {
     return WorkflowHub.getErrorManager();
   }
 
   /**
-   * Returns the localized label.
+   * Returns the localized label in the specified language.
+   * @param labelName the name of a label to translate
+   * @param lang the ISO 639-1 code of a language.
    */
   public static String getLabel(String labelName, String lang) {
-    LocalizationBundle labels = localLabels.get(lang);
-    if (labels == null) {
-      labels = ResourceLocator.getLocalizationBundle(
-          "org.silverpeas.workflow.multilang.workflowEngineBundle", lang);
-
-      localLabels.put(lang, labels);
-    }
-
+    LocalizationBundle labels = localLabels.computeIfAbsent(lang, key ->
+      ResourceLocator.getLocalizationBundle(
+          "org.silverpeas.workflow.multilang.workflowEngineBundle", lang));
     return labels.getString(labelName);
   }
 

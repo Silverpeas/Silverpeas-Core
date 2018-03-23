@@ -23,30 +23,31 @@
  */
 package org.silverpeas.core.workflow.engine.task;
 
+import org.silverpeas.core.admin.component.model.ComponentInst;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.DataRecordUtil;
-import org.silverpeas.core.workflow.api.WorkflowException;
-import org.silverpeas.core.workflow.api.task.Task;
-import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.notification.NotificationException;
 import org.silverpeas.core.notification.user.client.NotificationMetaData;
 import org.silverpeas.core.notification.user.client.NotificationParameters;
 import org.silverpeas.core.notification.user.client.NotificationSender;
 import org.silverpeas.core.notification.user.client.UserRecipient;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.service.AdministrationServiceProvider;
-import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
-import org.silverpeas.core.personalorganizer.model.TodoDetail;
 import org.silverpeas.core.personalorganizer.model.Attendee;
+import org.silverpeas.core.personalorganizer.model.TodoDetail;
+import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.task.Task;
+import org.silverpeas.core.workflow.api.user.User;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -54,13 +55,15 @@ import java.util.stream.Collectors;
  */
 @Singleton
 public class TaskManagerImpl extends AbstractTaskManager {
-  static Hashtable<String, NotificationSender> notificationSenders = new Hashtable<>();
+
+  private static Map<String, NotificationSender> notificationSenders = new ConcurrentHashMap<>();
 
   @Inject
   private SilverpeasCalendar calendar;
 
   /**
-   * Adds a new task in the user's todos. Returns the external id given by the external todo system.
+   * Adds a new task in the user's todos. Returns the external id given by the external task to
+   * do system.
    */
   @Override
   public void assignTask(Task task, User delegator) throws WorkflowException {
@@ -88,7 +91,6 @@ public class TaskManagerImpl extends AbstractTaskManager {
 
     List<Attendee> attendees = new ArrayList<>();
     if (task.getUser() != null) {
-      // add todo to specified user
       attendees.add(new Attendee(task.getUser().getUserId()));
       todo.setAttendees(attendees);
       todo.setExternalId(getExternalId(task));
@@ -134,7 +136,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
   }
 
   /**
-   * Get the process instance Id referred by the todo with the given todo id
+   * Get the process instance Id referred by the task to do with the given identifier
    */
   @Override
   public String getProcessInstanceIdFromExternalTodoId(String externalTodoId)
@@ -143,7 +145,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
   }
 
   /**
-   * Get the role name of task referred by the todo with the given todo id
+   * Get the role name of task referred by the task to do with the given identifier
    */
   @Override
   public String getRoleNameFromExternalTodoId(String externalTodoId)
@@ -170,11 +172,8 @@ public class TaskManagerImpl extends AbstractTaskManager {
       userIds.addAll(usersInRole.stream().map(User::getUserId).collect(Collectors.toList()));
     }
 
-    NotificationSender notifSender = notificationSenders.get(componentId);
-    if (notifSender == null) {
-      notifSender = new NotificationSender(componentId);
-      notificationSenders.put(componentId, notifSender);
-    }
+    NotificationSender notifSender =
+        notificationSenders.computeIfAbsent(componentId, NotificationSender::new);
 
     for (String userId : userIds) {
       try {

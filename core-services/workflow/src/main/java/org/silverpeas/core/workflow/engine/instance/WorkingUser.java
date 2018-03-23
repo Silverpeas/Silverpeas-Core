@@ -67,12 +67,6 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
   private String groupId = null;
 
   /**
-   * Default Constructor
-   */
-  public WorkingUser() {
-  }
-
-  /**
    * Get state name for which user is affected
    * @return state name
    */
@@ -173,13 +167,13 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
    * @return an object implementing Actor interface
    */
   public Collection<Actor> toActors() throws WorkflowException {
-    State state = processInstance.getProcessModel().getState(this.state);
+    State actualState = processInstance.getProcessModel().getState(this.state);
     Collection<Actor> actors = new ArrayList<>();
 
     // first add user by id
     if (this.getUserId() != null) {
       User user = WorkflowHub.getUserManager().getUser(this.getUserId());
-      actors.add(new ActorImpl(user, role, state));
+      actors.add(new ActorImpl(user, role, actualState));
     }
 
     // then add users by group or role
@@ -187,7 +181,7 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
       User[] users =
           WorkflowHub.getUserManager().getUsersInGroup(getGroupId());
       for (User anUser : users) {
-        actors.add(new ActorImpl(anUser, role, state));
+        actors.add(new ActorImpl(anUser, role, actualState));
       }
     } else {
       // then add users by role
@@ -195,7 +189,7 @@ public class WorkingUser extends BasicJpaEntity<WorkingUser, UniqueIntegerIdenti
         User[] users =
             WorkflowHub.getUserManager().getUsersInRole(usersRole, processInstance.getModelId());
         for (User anUser : users) {
-          actors.add(new ActorImpl(anUser, role, state));
+          actors.add(new ActorImpl(anUser, role, actualState));
         }
       }
     }

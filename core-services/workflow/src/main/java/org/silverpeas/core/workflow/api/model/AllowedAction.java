@@ -32,11 +32,11 @@ public interface AllowedAction {
    * Get the allowed action
    * @return an Action object
    */
-  public Action getAction();
+  Action getAction();
 
   /**
    * Set the allowed action
    * @param action an action object
    */
-  public void setAction(Action action);
+  void setAction(Action action);
 }

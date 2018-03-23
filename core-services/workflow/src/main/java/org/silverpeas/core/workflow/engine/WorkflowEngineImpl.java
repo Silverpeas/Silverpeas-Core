@@ -35,6 +35,7 @@ import org.silverpeas.core.workflow.api.event.QuestionEvent;
 import org.silverpeas.core.workflow.api.event.ResponseEvent;
 import org.silverpeas.core.workflow.api.event.TaskDoneEvent;
 import org.silverpeas.core.workflow.api.event.TaskSavedEvent;
+import org.silverpeas.core.workflow.api.instance.ActionStatus;
 import org.silverpeas.core.workflow.api.instance.Actor;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
 import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;
@@ -104,7 +105,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
     WorkflowEngineTask.addTaskDoneRequest(event);
   }
 
-  private void processControls(GenericEvent event, String id, boolean creation) throws WorkflowException {
+  private void processControls(GenericEvent event, String id, boolean creation) {
     Transaction.performInOne(() -> {
       UpdatableProcessInstance instance = repository.getById(id);
 
@@ -204,7 +205,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       newStep.setUserRoleName("supervisor");
       newStep.setResolvedState("DummyStateFromReassignment");
       // To be processed
-      newStep.setActionStatus(0);
+      newStep.setActionStatus(ActionStatus.TO_BE_PROCESSED);
       newStep.setProcessInstance(processInstance);
 
       historyStepRepository.save((HistoryStepImpl) newStep);
@@ -229,7 +230,7 @@ public class WorkflowEngineImpl implements WorkflowEngine {
       assignTasksToWorkingUsers(assignedActors, user, processInstance);
       addWorkingUsersToProcessInstance(assignedActors, processInstance);
 
-      currentStep.setActionStatus(UpdatableHistoryStep.ACTION_STATUS_AFFECTATIONSDONE);
+      currentStep.setActionStatus(ActionStatus.AFFECTATIONS_DONE);
       processInstance.updateHistoryStep(currentStep);
 
       repository.save((ProcessInstanceImpl) processInstance);

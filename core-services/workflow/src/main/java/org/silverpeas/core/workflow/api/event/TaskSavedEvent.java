@@ -35,21 +35,21 @@ public interface TaskSavedEvent extends GenericEvent {
   /**
    * Returns the process model (peas).
    */
-  public ProcessModel getProcessModel();
+  ProcessModel getProcessModel();
 
   /**
    * Set the process instance.
    */
-  public void setProcessInstance(ProcessInstance instance);
+  void setProcessInstance(ProcessInstance instance);
 
   /**
    * Is first time saved ?
    */
-  public boolean isFirstTimeSaved();
+  boolean isFirstTimeSaved();
 
   /**
    * Set information to know if it is the first time the current task is saved.
    */
-  public void setFirstTimeSaved(boolean firstTimeSaved);
+  void setFirstTimeSaved(boolean firstTimeSaved);
 
 }

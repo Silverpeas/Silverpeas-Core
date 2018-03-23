@@ -8,6 +8,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.TaskManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.event.GenericEvent;
+import org.silverpeas.core.workflow.api.instance.ActionStatus;
 import org.silverpeas.core.workflow.api.instance.Actor;
 import org.silverpeas.core.workflow.api.instance.Question;
 import org.silverpeas.core.workflow.api.instance.UpdatableHistoryStep;
@@ -26,6 +27,7 @@ import org.silverpeas.core.workflow.external.ExternalAction;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * A TimeoutRequest indicates the workflow engine that an instance is in an active state since a
@@ -85,6 +87,7 @@ class WorkflowTools {
 
       // Find first consequence according to comparisons
       consequence = getFirstMatchingConsequence(instance, consequences);
+      Objects.requireNonNull(consequence);
 
       SilverLogger.getLogger(WorkflowTools.class)
           .info("Process action {0}: item = {1}, operator = {2}, value = {3}",
@@ -116,14 +119,14 @@ class WorkflowTools {
       notifyUsers(instance, event, taskManager, action, notifiedUsersList);
     } catch (Exception e) {
       // change the action status of the step : Process Failed
-      step.setActionStatus(-1);
+      step.setActionStatus(ActionStatus.PROCESS_FAILED);
       instance.updateHistoryStep(step);
       throw new WorkflowException("WorkflowEngineThread.process",
           "workflowEngine.EX_ERR_PROCESS_EVENT", e);
     }
 
     // change the action status of the step
-    step.setActionStatus(1); // Processed
+    step.setActionStatus(ActionStatus.PROCESS_FAILED); // Processed
     instance.updateHistoryStep(step);
 
     // Compute states and affectations
@@ -131,7 +134,7 @@ class WorkflowTools {
 
     // change the action status of the step
     // Affectations done
-    step.setActionStatus(UpdatableHistoryStep.ACTION_STATUS_AFFECTATIONSDONE);
+    step.setActionStatus(ActionStatus.AFFECTATIONS_DONE);
     instance.updateHistoryStep(step);
 
     // Process external actions

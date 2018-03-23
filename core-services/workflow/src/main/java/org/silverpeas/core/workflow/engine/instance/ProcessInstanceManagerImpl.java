@@ -34,6 +34,7 @@ import org.silverpeas.core.util.CollectionUtil.RuptureContext;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.workflow.api.UpdatableProcessInstanceManager;
 import org.silverpeas.core.workflow.api.WorkflowException;
+import org.silverpeas.core.workflow.api.instance.ActionStatus;
 import org.silverpeas.core.workflow.api.instance.Actor;
 import org.silverpeas.core.workflow.api.instance.HistoryStep;
 import org.silverpeas.core.workflow.api.instance.ProcessInstance;
@@ -176,7 +177,7 @@ public class ProcessInstanceManagerImpl implements UpdatableProcessInstanceManag
               historyStep.setActionDate(r.getDate(i++));
               historyStep.setResolvedState(r.getString(i++));
               historyStep.setResultingState(r.getString(i++));
-              historyStep.setActionStatus(r.getInt(i));
+              historyStep.setActionStatus(ActionStatus.from(r.getInt(i)));
               findNextRupture(ruptureContext, p -> p.getInstanceId().equals(instanceId))
                   .ifPresent(p -> p.addHistoryStep(historyStep));
               return null;

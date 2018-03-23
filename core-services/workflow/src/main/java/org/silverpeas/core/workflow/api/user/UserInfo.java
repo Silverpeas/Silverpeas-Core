@@ -29,12 +29,12 @@ public interface UserInfo {
    * Get the info name
    * @return info name
    */
-  public String getName();
+  String getName();
 
   /**
    * Get the info value
    * @return info value
    */
-  public String getValue();
+  String getValue();
 
 }

@@ -35,10 +35,10 @@ public interface StateSetter {
   /**
    * Get the state
    */
-  public State getState();
+  State getState();
 
   /**
    * Set the state
    */
-  public void setState(State state);
+  void setState(State state);
 }

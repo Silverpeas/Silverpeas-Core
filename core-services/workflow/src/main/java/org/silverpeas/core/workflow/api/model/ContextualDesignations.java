@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,16 +16,16 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.workflow.api.model;
 
-import java.util.Iterator;
-
 import org.silverpeas.core.workflow.api.WorkflowException;
+
+import java.util.Iterator;
 
 /**
  * Interface describing an object holding a collection of <code>ContextualDesignation</code>
@@ -37,19 +37,19 @@ public interface ContextualDesignations {
    * Iterate through the ContextualDesignation objects
    * @return an iterator
    */
-  public Iterator<ContextualDesignation> iterateContextualDesignation();
+  Iterator<ContextualDesignation> iterateContextualDesignation();
 
   /**
    * Create a ContextualDesignation
    * @return an object implementing ContextualDesignation
    */
-  public ContextualDesignation createContextualDesignation();
+  ContextualDesignation createContextualDesignation();
 
   /**
    * Add a contextualDesignation to the collection
    * @param contextualDesignation to be added
    */
-  public void addContextualDesignation(ContextualDesignation contextualDesignation);
+  void addContextualDesignation(ContextualDesignation contextualDesignation);
 
   /**
    * Remove a matching contextualDesignation from the collection. The collection shall be searched
@@ -57,7 +57,7 @@ public interface ContextualDesignations {
    * @param contextualDesignation a model of the contextualDesignation to be removed.
    * @throws WorkflowException when a matching contextualDescription could not be found.
    */
-  public void removeContextualDesignation(ContextualDesignation contextualDesignation) throws
+  void removeContextualDesignation(ContextualDesignation contextualDesignation) throws
       WorkflowException;
 
   /**
@@ -67,7 +67,7 @@ public interface ContextualDesignations {
    * @param language the code of the language
    * @return an object implementing ContextualDesignation or <code>null</code>
    */
-  public ContextualDesignation getSpecificLabel(String role, String language);
+  ContextualDesignation getSpecificLabel(String role, String language);
 
   /**
    * Get the designation for the given role and language; make the best match if the required
@@ -76,5 +76,5 @@ public interface ContextualDesignations {
    * @param language the code of the language
    * @return the label or an empty string if nothing found.
    */
-  public String getLabel(String role, String language);
+  String getLabel(String role, String language);
 }

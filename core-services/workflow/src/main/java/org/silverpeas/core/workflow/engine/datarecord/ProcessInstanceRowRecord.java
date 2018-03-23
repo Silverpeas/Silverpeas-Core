@@ -51,6 +51,7 @@ public class ProcessInstanceRowRecord extends AbstractProcessInstanceDataRecord 
   /**
    * Returns the data record id.
    */
+  @Override
   public String getId() {
     return instance.getInstanceId();
   }
@@ -101,6 +102,7 @@ public class ProcessInstanceRowRecord extends AbstractProcessInstanceDataRecord 
    * Returns the named field.
    * @throw FormException when the fieldName is unknown.
    */
+  @Override
   public Field getField(String fieldName) throws FormException {
     return getField(template.getFieldIndex(fieldName));
   }
@@ -109,6 +111,7 @@ public class ProcessInstanceRowRecord extends AbstractProcessInstanceDataRecord 
    * Returns the field at the index position in the record.
    * @throw FormException when the fieldIndex is unknown.
    */
+  @Override
   public Field getField(int fieldIndex) throws FormException {
     Field field = fields[fieldIndex];
     if (field == null) {
@@ -120,6 +123,7 @@ public class ProcessInstanceRowRecord extends AbstractProcessInstanceDataRecord 
     return field;
   }
 
+  @Override
   public String[] getFieldNames() {
     return template.getFieldNames();
   }

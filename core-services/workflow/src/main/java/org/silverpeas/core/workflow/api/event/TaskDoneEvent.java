@@ -34,20 +34,20 @@ public interface TaskDoneEvent extends GenericEvent {
   /**
    * Returns the process model (peas).
    */
-  public ProcessModel getProcessModel();
+  ProcessModel getProcessModel();
 
   /**
    * Set the process instance.
    */
-  public void setProcessInstance(ProcessInstance instance);
+  void setProcessInstance(ProcessInstance instance);
 
   /**
    * Set a flag to indicate if action comes from a resumed action.
    */
-  public void setResumingAction(boolean isResumingInstance);
+  void setResumingAction(boolean isResumingInstance);
 
   /**
    * Get the flag to indicate if action comes from a resumed action.
    */
-  public boolean isResumingAction();
+  boolean isResumingAction();
 }

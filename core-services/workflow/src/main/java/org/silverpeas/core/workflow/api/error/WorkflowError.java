@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,9 +16,9 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.workflow.api.error;
@@ -35,35 +35,35 @@ public interface WorkflowError {
   /**
    * @return ProcessInstance
    */
-  public ProcessInstance getProcessInstance() throws WorkflowException;
+  ProcessInstance getProcessInstance() throws WorkflowException;
 
   /**
    * @return error message
    */
-  public String getErrorMessage();
+  String getErrorMessage();
 
   /**
    * @return stack trace
    */
-  public String getStackTrace();
+  String getStackTrace();
 
   /**
    * @return user
    */
-  public User getUser() throws WorkflowException;
+  User getUser() throws WorkflowException;
 
   /**
    * @return action
    */
-  public Action getAction() throws WorkflowException;
+  Action getAction() throws WorkflowException;
 
   /**
    * @return action date
    */
-  public Date getActionDate();
+  Date getActionDate();
 
   /**
    * @return resolved state
    */
-  public State getResolvedState() throws WorkflowException;
+  State getResolvedState() throws WorkflowException;
 }

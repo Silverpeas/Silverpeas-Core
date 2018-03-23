@@ -43,10 +43,11 @@ import org.silverpeas.core.contribution.content.form.field.UserField;
 import org.silverpeas.core.persistence.datasource.model.identifier.UniqueIntegerIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.BasicJpaEntity;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.CollectionUtil;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.Workflow;
@@ -70,6 +71,10 @@ import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static org.silverpeas.core.workflow.api.instance.ActionStatus.SAVED;
 
 /**
  * This class is one implementation of interface UpdatableProcessInstance.
@@ -81,6 +86,19 @@ public class ProcessInstanceImpl
     extends BasicJpaEntity<ProcessInstanceImpl, UniqueIntegerIdentifier>
     implements UpdatableProcessInstance {
 
+  private static final String QUESTION_ACTION = "#question#";
+  private static final String ADD_ACTIVE_STATE = "addActiveState";
+  private static final String ADD_WORKING_USER = "addWorkingUser";
+  private static final String REMOVE_WORKING_USER = "removeWorkingUser";
+  private static final String ADD_INTERESTED_USER = "addInterestedUser";
+  private static final String REMOVE_INTERESTED_USER = "removeInterestedUser";
+  private static final String INSTANCEID_PARAM = "instanceid=";
+  private static final String PROCESS_INSTANCE_IMPL = "ProcessInstanceImpl";
+  private static final String DUMMY = "dummy";
+  private static final String FOLDER_PARAM = "folder=";
+  private static final String WORKFLOW_ENGINE_EX_ERR_ILLEGAL_PARAMETERS =
+      "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS";
+  private static final String INSTEAD_OF_2_OR_3 = " instead of 2 or 3";
   /**
    * Abstract process model
    */
@@ -248,49 +266,57 @@ public class ProcessInstanceImpl
     if (timeOutActions != null && timeOutActions.length > 0) {
       for (TimeOutAction timeOutAction : timeOutActions) {
         if (timeOutAction.getOrder() == order) {
-          Calendar now = Calendar.getInstance();
-
           // Check if an item has been mapped to timeoutdate
           Item dateItem = timeOutAction.getDateItem();
           if (dateItem != null) {
-            try {
-              DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
-              Field dateItemField = getField(dateItem.getName());
-              timeOutDate = formatter.parse(dateItemField.getValue());
-            } catch (Exception e) {
-              SilverTrace.warn("workflowEngine", "ProcessInstanceImpl.computeTimeOutDate",
-                  "root.ERR_BAD_DATE_ITEM",
-                  "instanceid:" + getId() + ", date item =" + dateItem.getName());
-            }
+            timeOutDate = parseTimeOutFromDateField(dateItem);
           } else {
-            // if no item set, then use delay to compute next timeout
-            String delay = timeOutAction.getDelay();
-            if (StringUtil.isDefined(delay) && delay.endsWith("m")) {
-              now.add(Calendar.MONTH,
-                  Integer.parseInt(delay.substring(0, delay.length() - 1)));
-              timeOutDate = now.getTime();
-            } else if (StringUtil.isDefined(delay) && delay.endsWith("d")) {
-              now.add(Calendar.DAY_OF_YEAR,
-                  Integer.parseInt(delay.substring(0, delay.length() - 1)));
-              timeOutDate = now.getTime();
-            } else if (StringUtil.isDefined(delay) && delay.endsWith("h")) {
-              now.add(Calendar.HOUR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
-              timeOutDate = now.getTime();
-            } else if (StringUtil.isDefined(delay) && StringUtils.isNumeric(delay)) {
-              // If no unit is specified, we consider the value as a number of minutes
-              now.add(Calendar.MINUTE, Integer.parseInt(delay));
-              timeOutDate = now.getTime();
-            } else {
-              SilverTrace.warn("workflowEngine", "ProcessInstanceImpl.computeTimeOutDate",
-                  "root.ERR_BAD_DELAY_FORMAT",
-                  "instanceid:" + getId() + ", delay =" + delay);
-            }
+            timeOutDate = computeNextTimeOutByDelay(timeOutAction);
           }
           break;
         }
       }
     }
 
+    return timeOutDate;
+  }
+
+  private Date parseTimeOutFromDateField(final Item dateItem) {
+    Date timeOutDate = null;
+    try {
+      DateFormat formatter = new SimpleDateFormat("yyyy/MM/dd");
+      Field dateItemField = getField(dateItem.getName());
+      timeOutDate = formatter.parse(dateItemField.getValue());
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).warn(e);
+    }
+    return timeOutDate;
+  }
+
+  private Date computeNextTimeOutByDelay(final TimeOutAction timeOutAction) {
+    // if no item set, then use delay to compute next timeout
+    Calendar now = Calendar.getInstance();
+    Date timeOutDate = null;
+    String delay = timeOutAction.getDelay();
+    if (StringUtil.isDefined(delay) && delay.endsWith("m")) {
+      now.add(Calendar.MONTH, Integer.parseInt(delay.substring(0, delay.length() - 1)));
+      timeOutDate = now.getTime();
+    } else if (StringUtil.isDefined(delay) && delay.endsWith("d")) {
+      now.add(Calendar.DAY_OF_YEAR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
+      timeOutDate = now.getTime();
+    } else if (StringUtil.isDefined(delay) && delay.endsWith("h")) {
+      now.add(Calendar.HOUR, Integer.parseInt(delay.substring(0, delay.length() - 1)));
+      timeOutDate = now.getTime();
+    } else if (StringUtil.isDefined(delay) && StringUtils.isNumeric(delay)) {
+      // If no unit is specified, we consider the value as a number of minutes
+      now.add(Calendar.MINUTE, Integer.parseInt(delay));
+      timeOutDate = now.getTime();
+    } else {
+      SilverLogger.getLogger(this)
+          .warn(
+              "Bad delay format {0} in the computation of the timout date for instance id" + " {1}",
+              delay, getId());
+    }
     return timeOutDate;
   }
 
@@ -305,7 +331,7 @@ public class ProcessInstanceImpl
 
     // if this active state is add in a "question" context, it must be marked as
     // in back status for a special treatment
-    if (this.currentStep != null && this.currentStep.getAction().equals("#question#")) {
+    if (this.currentStep != null && this.currentStep.getAction().equals(QUESTION_ACTION)) {
       activeState.setBackStatus(true);
     }
 
@@ -316,7 +342,7 @@ public class ProcessInstanceImpl
 
     // add this operation in undo history
     if (!inUndoProcess) {
-      this.addUndoHistoryStep("addActiveState", state);
+      this.addUndoHistoryStep(ADD_ACTIVE_STATE, state);
     }
   }
 
@@ -332,7 +358,7 @@ public class ProcessInstanceImpl
    * Set a state inactive for this instance
    * @param state The name of state to be desactivated
    */
-  private void removeActiveState(String state) throws WorkflowException {
+  private void removeActiveState(String state) {
     ActiveState activeState = new ActiveState(state);
 
     // try to find and delete the right active state
@@ -429,8 +455,7 @@ public class ProcessInstanceImpl
    * @param state name of state for which the user can make an action
    * @param role role name under which the user can make an action
    */
-  private void addWorkingUser(User user, String state, String role, String groupId)
-      throws WorkflowException {
+  private void addWorkingUser(User user, String state, String role, String groupId) {
     WorkingUser wkUser = new WorkingUser();
 
     /*
@@ -453,9 +478,9 @@ public class ProcessInstanceImpl
     // add this operation in undo history
     if (!inUndoProcess) {
       if (user != null) {
-        this.addUndoHistoryStep("addWorkingUser", user.getUserId() + "##" + state + "##" + role);
+        this.addUndoHistoryStep(ADD_WORKING_USER, user.getUserId() + "##" + state + "##" + role);
       } else {
-        this.addUndoHistoryStep("addWorkingUser", state + "##" + role);
+        this.addUndoHistoryStep(ADD_WORKING_USER, state + "##" + role);
       }
     }
   }
@@ -477,7 +502,7 @@ public class ProcessInstanceImpl
    * @param state name of state for which the user could make an action
    * @param role role name under which the user could make an action
    */
-  private void removeWorkingUser(User user, String state, String role) throws WorkflowException {
+  private void removeWorkingUser(User user, String state, String role) {
     WorkingUser userToDelete = null;
 
     // Build virtual working user to find the true one end delete it
@@ -496,9 +521,9 @@ public class ProcessInstanceImpl
     // add this operation in undo history
     if (!inUndoProcess) {
       if (user != null) {
-        this.addUndoHistoryStep("removeWorkingUser", user.getUserId() + "##" + state + "##" + role);
+        this.addUndoHistoryStep(REMOVE_WORKING_USER, user.getUserId() + "##" + state + "##" + role);
       } else {
-        this.addUndoHistoryStep("removeWorkingUser", state + "##" + role);
+        this.addUndoHistoryStep(REMOVE_WORKING_USER, state + "##" + role);
       }
     }
   }
@@ -526,8 +551,7 @@ public class ProcessInstanceImpl
    * @param state the name of state for which the user is interested
    * @param role role name under which the user is interested
    */
-  private void addInterestedUser(User user, String state, String role, String groupId)
-      throws WorkflowException {
+  private void addInterestedUser(User user, String state, String role, String groupId) {
 
     InterestedUser intUser = new InterestedUser();
     /*
@@ -550,9 +574,9 @@ public class ProcessInstanceImpl
     // add this operation in undo history
     if (!inUndoProcess) {
       if (user != null) {
-        this.addUndoHistoryStep("addInterestedUser", user.getUserId() + "##" + state + "##" + role);
+        this.addUndoHistoryStep(ADD_INTERESTED_USER, user.getUserId() + "##" + state + "##" + role);
       } else {
-        this.addUndoHistoryStep("addInterestedUser", state + "##" + role);
+        this.addUndoHistoryStep(ADD_INTERESTED_USER, state + "##" + role);
       }
     }
   }
@@ -574,7 +598,7 @@ public class ProcessInstanceImpl
    * @param state the name of state for which the user is interested
    * @param role role name under which the user is interested
    */
-  private void removeInterestedUser(User user, String state, String role) throws WorkflowException {
+  private void removeInterestedUser(User user, String state, String role) {
     InterestedUser userToDelete = null;
 
     // Build virtual interestedUser user to find the true one end delete it
@@ -593,10 +617,10 @@ public class ProcessInstanceImpl
     // add this operation in undo history
     if (!inUndoProcess) {
       if (user != null) {
-        this.addUndoHistoryStep("removeInterestedUser",
+        this.addUndoHistoryStep(REMOVE_INTERESTED_USER,
             user.getUserId() + "##" + state + "##" + role);
       } else {
-        this.addUndoHistoryStep("removeInterestedUser", state + "##" + role);
+        this.addUndoHistoryStep(REMOVE_INTERESTED_USER, state + "##" + role);
       }
     }
   }
@@ -606,7 +630,7 @@ public class ProcessInstanceImpl
    * @param question the question to add
    * @throws WorkflowException
    */
-  public void addQuestion(Question question) throws WorkflowException {
+  public void addQuestion(Question question) {
     questions.add((QuestionImpl) question);
   }
 
@@ -636,7 +660,7 @@ public class ProcessInstanceImpl
       Collections.sort(steps);
       return steps.toArray(new HistoryStep[steps.size()]);
     }
-    return null;
+    return new HistoryStep[0];
   }
 
   /**
@@ -650,7 +674,7 @@ public class ProcessInstanceImpl
       }
     }
     throw new WorkflowException("ProcessInstanceImpl.getHistoryStep",
-        "workflowEngine.EX_ERR_HISTORYSTEP_NOT_FOUND", "instanceid=" + getId());
+        "workflowEngine.EX_ERR_HISTORYSTEP_NOT_FOUND", INSTANCEID_PARAM + getId());
   }
 
   /**
@@ -720,8 +744,8 @@ public class ProcessInstanceImpl
           createFolder();
         }
       } catch (FormException e) {
-        throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_UNKNOWN_FOLDER",
-            "folder=" + folderId, e);
+        throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_UNKNOWN_FOLDER",
+            FOLDER_PARAM + folderId, e);
       }
     }
 
@@ -751,8 +775,8 @@ public class ProcessInstanceImpl
       folder = folderSet.getEmptyRecord();
       folder.setId(getId());
     } catch (FormException e) {
-      throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_FOLDER_CREATE_FAILED",
-          "folder=" + getId(), e);
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_FOLDER_CREATE_FAILED",
+          FOLDER_PARAM + getId(), e);
     }
   }
 
@@ -763,27 +787,28 @@ public class ProcessInstanceImpl
     try {
       RecordSet folderSet = getProcessModel().getFolderRecordSet();
 
-      String fieldNames[] = folderSet.getRecordTemplate().getFieldNames();
-      Field updatedField = null;
-
-      for (int i = 0; i < fieldNames.length; i++) {
-        try {
-          updatedField = actionData.getField(fieldNames[i]);
-          if (updatedField == null) {
-            continue;
-          }
-        } catch (FormException e) {
-          // the field i is not updated (unknown in the action context)
-          continue;
-        }
-
-        setField(fieldNames[i], updatedField);
-      }
+      String[] fieldNames = folderSet.getRecordTemplate().getFieldNames();
+      setUpdatedFields(actionData, fieldNames);
 
       folderSet.save(getFolder());
     } catch (FormException e) {
-      throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_FOLDER_UPDATE_FAILED",
-          "folder=" + getId(), e);
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_FOLDER_UPDATE_FAILED",
+          FOLDER_PARAM + getId(), e);
+    }
+  }
+
+  private void setUpdatedFields(final DataRecord actionData, final String[] fieldNames)
+      throws WorkflowException {
+    Field updatedField;
+    for (int i = 0; i < fieldNames.length; i++) {
+      try {
+        updatedField = actionData.getField(fieldNames[i]);
+        if (updatedField != null) {
+          setField(fieldNames[i], updatedField);
+        }
+      } catch (FormException e) {
+        // the field i is not updated (unknown in the action context)
+      }
     }
   }
 
@@ -792,23 +817,23 @@ public class ProcessInstanceImpl
    */
   @Override
   public Field getField(String fieldName) throws WorkflowException {
-    DataRecord folder = getFolder();
-    if (folder == null) {
-      throw new WorkflowException("ProcessInstanceImpl.getField",
-          "workflowEngine.EX_ERR_GET_FOLDER", "instanceid=" + getId());
+    DataRecord theFolder = getFolder();
+    if (theFolder == null) {
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EX_ERR_GET_FOLDER",
+          INSTANCEID_PARAM + getId());
     }
 
     try {
-      Field returnedField = folder.getField(fieldName);
+      Field returnedField = theFolder.getField(fieldName);
       if (returnedField == null) {
-        throw new WorkflowException("ProcessInstanceImpl.getField",
+        throw new WorkflowException(PROCESS_INSTANCE_IMPL,
             "workflowEngine.EXP_UNKNOWN_ITEM",
-            "instanceid=" + getId() + ", folder." + fieldName);
+            INSTANCEID_PARAM + getId() + ", folder." + fieldName);
       }
       return returnedField;
     } catch (FormException e) {
-      throw new WorkflowException("ProcessInstanceImpl.getField", "workflowEngine.EXP_UNKNOWN_ITEM",
-          "instanceid=" + getId() + "folder." + fieldName, e);
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_UNKNOWN_ITEM",
+          INSTANCEID_PARAM + getId() + "folder." + fieldName, e);
     }
   }
 
@@ -828,8 +853,8 @@ public class ProcessInstanceImpl
         updatedField.setValue(copiedField.getValue(""), "");
       }
     } catch (FormException e) {
-      throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_ITEM_UPDATE_FAILED",
-          "instanceid=" + getId() + "folder." + fieldName, e);
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_ITEM_UPDATE_FAILED",
+          INSTANCEID_PARAM + getId() + "folder." + fieldName, e);
     }
   }
 
@@ -882,8 +907,8 @@ public class ProcessInstanceImpl
 
       return data;
     } catch (FormException e) {
-      throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_FORM_READ_FAILED",
-          "instanceid=" + getId() + ",formname =" + formName, e);
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_FORM_READ_FAILED",
+          INSTANCEID_PARAM + getId() + ",formname =" + formName, e);
     }
   }
 
@@ -918,8 +943,8 @@ public class ProcessInstanceImpl
       DataRecordUtil.updateFields(fNames.toArray(new String[fNames.size()]), data, getFolder(), language);
       return data;
     } catch (FormException e) {
-      throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_FORM_CREATE_FAILED",
-          "instanceid=" + getId() + ", action=" + actionName, e);
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_FORM_CREATE_FAILED",
+          INSTANCEID_PARAM + getId() + ", action=" + actionName, e);
     }
   }
 
@@ -939,8 +964,8 @@ public class ProcessInstanceImpl
       updateWysiwygDataWithStepId(step, actionData);
       step.setActionRecord(actionData);
     } catch (FormException e) {
-      throw new WorkflowException("ProcessInstanceImpl", "workflowEngine.EXP_FORM_CREATE_FAILED",
-          "instanceid=" + getId(), e);
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_FORM_CREATE_FAILED",
+          INSTANCEID_PARAM + getId(), e);
     }
   }
 
@@ -963,22 +988,19 @@ public class ProcessInstanceImpl
     for (String fieldName : fieldNames) {
       Field updatedField = actionData.getField(fieldName);
       if (updatedField == null) {
-        SilverTrace.error("workflowEngine", "ProcessInstanceImpl.checkWysiwygData",
-            "root.MSG_GEN_ENTER_METHOD",
-            "instanceid=" + getId() + ", cannot retrieve field : " + fieldName);
+        SilverLogger.getLogger(this)
+            .error("Cannot retrieve field {0} for instance id {1}", fieldName, getId());
       }
       FieldTemplate tmpl = template.getFieldTemplate(fieldName);
 
-      if ("wysiwyg".equals(tmpl.getDisplayerName())) {
-        if ((!updatedField.isNull()) &&
-            (!updatedField.getStringValue().startsWith(WysiwygFCKFieldDisplayer.DB_KEY))) {
-          WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
-          PagesContext context =
-              new PagesContext("dummy", "0", actionData.getLanguage(), false, getModelId(),
-                  "dummy");
-          context.setObjectId(getId());
-          displayer.update(updatedField.getStringValue(), (TextField) updatedField, tmpl, context);
-        }
+      if ("wysiwyg".equals(tmpl.getDisplayerName()) && updatedField != null &&
+          !updatedField.isNull() &&
+          !updatedField.getStringValue().startsWith(WysiwygFCKFieldDisplayer.DB_KEY)) {
+        WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
+        PagesContext context =
+            new PagesContext(DUMMY, "0", actionData.getLanguage(), false, getModelId(), DUMMY);
+        context.setObjectId(getId());
+        displayer.update(updatedField.getStringValue(), (TextField) updatedField, tmpl, context);
       }
     }
   }
@@ -1007,7 +1029,7 @@ public class ProcessInstanceImpl
       if ("wysiwyg".equals(tmpl.getDisplayerName())) {
         WysiwygFCKFieldDisplayer displayer = new WysiwygFCKFieldDisplayer();
         PagesContext context =
-            new PagesContext("dummy", "0", actionData.getLanguage(), false, getModelId(), "dummy");
+            new PagesContext(DUMMY, "0", actionData.getLanguage(), false, getModelId(), DUMMY);
         context.setObjectId(getId());
         displayer.duplicateContent(updatedField, tmpl, context, "Step" + step.getId());
       }
@@ -1018,17 +1040,22 @@ public class ProcessInstanceImpl
           ResourceReference fromPK = new ResourceReference(getId(), modelId);
           ResourceReference toPK = new ResourceReference("Step" + step.getId(), modelId);
 
-          List<SimpleDocument> attachments = AttachmentServiceProvider
-              .getAttachmentService().listDocumentsByForeignKey(fromPK, null);
-          for (SimpleDocument attachment : attachments) {
-            if (attachmentId.equals(attachment.getId())) {
-              SimpleDocumentPK pk = AttachmentServiceProvider
-                  .getAttachmentService().copyDocument(attachment, toPK);
-              updatedField.setStringValue(pk.getId());
-              break;
-            }
-          }
+          updateFileField(updatedField, attachmentId, fromPK, toPK);
         }
+      }
+    }
+  }
+
+  private void updateFileField(final Field updatedField, final String attachmentId,
+      final ResourceReference fromPK, final ResourceReference toPK) throws FormException {
+    List<SimpleDocument> attachments =
+        AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKey(fromPK, null);
+    for (SimpleDocument attachment : attachments) {
+      if (attachmentId.equals(attachment.getId())) {
+        SimpleDocumentPK pk =
+            AttachmentServiceProvider.getAttachmentService().copyDocument(attachment, toPK);
+        updatedField.setStringValue(pk.getId());
+        break;
       }
     }
   }
@@ -1042,13 +1069,12 @@ public class ProcessInstanceImpl
 
     for (HistoryStep step : historySteps) {
       // if step matches the searched action, tests if the step is most recent
-      if (step.getAction().equals(actionName)) {
-        // choose this step, if no previous step found or action date is more
-        // recent
-        if (mostRecentStep == null || step.getActionDate().after(actionDate)) {
-          mostRecentStep = step;
-          actionDate = step.getActionDate();
-        }
+      // choose this step, if no previous step found or action date is more
+      // recent
+      if (step.getAction().equals(actionName) &&
+          (mostRecentStep == null || step.getActionDate().after(actionDate))) {
+        mostRecentStep = step;
+        actionDate = step.getActionDate();
       }
     }
 
@@ -1063,7 +1089,7 @@ public class ProcessInstanceImpl
     HistoryStep savedStep = null;
     for (HistoryStep step : historySteps) {
       // if step matches the searched action, tests if the step is most recent
-      if ((step.getActionStatus() == 3) && (step.getUser().getUserId().equals(userId))) {
+      if ((step.getActionStatus() == SAVED) && (step.getUser().getUserId().equals(userId))) {
         savedStep = step;
         break;
       }
@@ -1080,7 +1106,7 @@ public class ProcessInstanceImpl
   private HistoryStep getMostRecentStepOnState(String stateName) {
     HistoryStep mostRecentStep = null;
     Date actionDate = null;
-    boolean stepMatch = false;
+    boolean stepMatch;
 
     for (HistoryStep step : historySteps) {
       stepMatch = false;
@@ -1096,16 +1122,14 @@ public class ProcessInstanceImpl
       }
 
       // if step matches the searched state, tests if the step is most recent
-      if (stepMatch) {
-        // choose this step, if no previous step found or action date is more
-        // recent
-        if (mostRecentStep == null || step.getActionDate().after(actionDate)) {
-          mostRecentStep = step;
-          actionDate = step.getActionDate();
-        }
+      // choose this step, if no previous step found or action date is more
+      // recent
+      if (stepMatch && mostRecentStep == null || step.getActionDate().after(actionDate)) {
+        mostRecentStep = step;
+        actionDate = step.getActionDate();
       }
     }
-
+    Objects.requireNonNull(mostRecentStep);
     return mostRecentStep;
   }
 
@@ -1113,7 +1137,7 @@ public class ProcessInstanceImpl
     if (CollectionUtil.isEmpty(activeStates)) {
       return ArrayUtil.EMPTY_STRING_ARRAY;
     } else {
-      List<String> stateNames = new ArrayList<String>();
+      List<String> stateNames = new ArrayList<>();
       for (ActiveState state : activeStates) {
         stateNames.add(state.getState());
       }
@@ -1128,7 +1152,7 @@ public class ProcessInstanceImpl
    */
   public boolean isStateInBackStatus(String stateName) {
     for(ActiveState activeState : activeStates) {
-      if (activeState.getState().equals(stateName) && activeState.getBackStatus() == true) {
+      if (activeState.getState().equals(stateName) && activeState.getBackStatus()) {
         return true;
       }
     }
@@ -1169,10 +1193,10 @@ public class ProcessInstanceImpl
         // add this operation in undo history
         if (!inUndoProcess) {
           if (wkUser.getUserId() != null) {
-            this.addUndoHistoryStep("removeWorkingUser",
+            this.addUndoHistoryStep(REMOVE_WORKING_USER,
                 wkUser.getUserId() + "##" + state.getName() + "##" + wkUser.getRole());
           } else {
-            this.addUndoHistoryStep("removeWorkingUser", state.getName() + "##" + wkUser.getRole());
+            this.addUndoHistoryStep(REMOVE_WORKING_USER, state.getName() + "##" + wkUser.getRole());
           }
         }
 
@@ -1191,10 +1215,10 @@ public class ProcessInstanceImpl
         // add this operation in undo history
         if (!inUndoProcess) {
           if (intUser.getUserId() != null) {
-            this.addUndoHistoryStep("removeInterestedUser",
+            this.addUndoHistoryStep(REMOVE_INTERESTED_USER,
                 intUser.getUserId() + "##" + state.getName() + "##" + intUser.getRole());
           } else {
-            this.addUndoHistoryStep("removeInterestedUser",
+            this.addUndoHistoryStep(REMOVE_INTERESTED_USER,
                 state.getName() + "##" + intUser.getRole());
           }
         }
@@ -1231,19 +1255,16 @@ public class ProcessInstanceImpl
       boolean usersRoleMatch =
           wkUser.getUsersRole() != null && wkUser.getUsersRole().equals(roleName);
       boolean userGroupsMatch = false;
-      if (StringUtil.isDefined(wkUser.getGroupId())) {
+      if (StringUtil.isDefined(wkUser.getGroupId()) && user.getGroupIds() != null) {
         // check if one of userGroups matches with working group
-        if (user.getGroupIds() != null) {
-          userGroupsMatch = user.getGroupIds().contains(wkUser.getGroupId());
-        }
+        userGroupsMatch = user.getGroupIds().contains(wkUser.getGroupId());
       }
-      boolean wkUserMatch = userMatch || usersRoleMatch || userGroupsMatch;
-      if (wkUserMatch) {
-        for (String role : wkUser.getRole().split(",")) {
+      if (userMatch || usersRoleMatch || userGroupsMatch) {
+        Stream.of(wkUser.getRole().split(",")).forEach(role -> {
           if (role.equals(roleName)) {
             stateNames.add(wkUser.getState());
           }
-        }
+        });
       }
 
     }
@@ -1293,8 +1314,7 @@ public class ProcessInstanceImpl
       // test if user is the same as requested
       if (!foundUser.getUserId().equals(user.getUserId())) {
         throw new WorkflowException("ProcessInstanceImpl.lock",
-            "workflowEngine.EX_ERR_INSTANCE_LOCKED_BY_ANOTHER_PERSON",
-            "instanceid=" + getId());
+            "workflowEngine.EX_ERR_INSTANCE_LOCKED_BY_ANOTHER_PERSON", INSTANCEID_PARAM + getId());
       } else {
         // no need to lock, already done
         return;
@@ -1347,8 +1367,7 @@ public class ProcessInstanceImpl
     // test if user is the same as requested
     if (!foundUser.getUserId().equals(user.getUserId())) {
       throw new WorkflowException("ProcessInstanceImpl.unlock",
-          "workflowEngine.EX_ERR_INSTANCE_LOCKED_BY_ANOTHER_PERSON",
-          "instanceid=" + getId());
+          "workflowEngine.EX_ERR_INSTANCE_LOCKED_BY_ANOTHER_PERSON", INSTANCEID_PARAM + getId());
     }
 
     // Unlocks the previous one.
@@ -1366,7 +1385,7 @@ public class ProcessInstanceImpl
     // Test if lock already exists
     if (isLockedByAdmin()) {
       throw new WorkflowException("ProcessInstanceImpl.lock()",
-          "workflowEngine.EX_ERR_INSTANCE_ALREADY_LOCKED", "instanceid=" + getId());
+          "workflowEngine.EX_ERR_INSTANCE_ALREADY_LOCKED", INSTANCEID_PARAM + getId());
     }
     setLockedByAdmin(true);
   }
@@ -1456,85 +1475,99 @@ public class ProcessInstanceImpl
    * @return tuples role/user as an array of Actor objects
    */
   public Actor[] getActors(QualifiedUsers qualifiedUsers, State state) throws WorkflowException {
-    List<Actor> actors = new ArrayList<>();
-    UserManager userManager = WorkflowHub.getUserManager();
     UserInRole[] userInRoles = qualifiedUsers.getUserInRoles();
     RelatedUser[] relatedUsers = qualifiedUsers.getRelatedUsers();
     RelatedGroup[] relatedGroups = qualifiedUsers.getRelatedGroups();
 
     // Process first "user in Role"
-    for (UserInRole userInRole : userInRoles) {
-      actors.add(new ActorImpl(null, userInRole.getRoleName(), state));
-    }
+    List<Actor> actors = Stream.of(userInRoles)
+        .map(u -> new ActorImpl(null, u.getRoleName(), state))
+        .collect(Collectors.toList());
 
     // Then process related users
-    for (RelatedUser relatedUser : relatedUsers) {
-      User[] users = null;
-      String relation = relatedUser.getRelation();
+    setActorsFromRelatedUsers(qualifiedUsers, state, relatedUsers, actors);
 
-      if (relatedUser.getParticipant() != null) {
-        String resolvedState = relatedUser.getParticipant().getResolvedState();
+    if (relatedGroups != null) {
+      setActorsFromRelatedGroups(qualifiedUsers, state, relatedGroups, actors);
+    }
+    return actors.toArray(new Actor[actors.size()]);
+  }
 
-        Participant participant = this.getParticipant(resolvedState);
-        if (participant != null) {
-          users = ArrayUtil.add(users, participant.getUser());
-        }
-      } else if (relatedUser.getFolderItem() != null) {
-        String fieldName = relatedUser.getFolderItem().getName();
+  private void setActorsFromRelatedGroups(final QualifiedUsers qualifiedUsers, final State state,
+      final RelatedGroup[] relatedGroups, final List<Actor> actors) throws WorkflowException {
+      // Finally, process related groups
+    for (RelatedGroup relatedGroup : relatedGroups) {
+      if (relatedGroup != null && relatedGroup.getFolderItem() != null) {
+        String fieldName = relatedGroup.getFolderItem().getName();
         Field field = getField(fieldName);
-        if (field instanceof UserField) {
-          String userId = field.getStringValue();
-          if (StringUtil.isDefined(userId)) {
-            users = ArrayUtil.add(users, userManager.getUser(userId));
-          }
-        } else if (field instanceof MultipleUserField) {
-          MultipleUserField multipleUserField = (MultipleUserField) field;
-          String[] userIds = multipleUserField.getUserIds();
-          users = ArrayUtil.addAll(users, userManager.getUsers(userIds));
-        }
-      }
-
-      if (!ArrayUtil.isEmpty(users)) {
-        for (User user : users) {
-          if (relation != null && relation.length() != 0 && !relation.equals("itself")) {
-            user = userManager.getRelatedUser(user, relation, modelId);
-          }
-
-          // Get the role to which affect the user
-          // if no role defined in related user
+        String groupId = field.getStringValue();
+        if (StringUtil.isDefined(groupId)) {
+          // Get the role to which affect the group
+          // if no role defined in related group
           // then get the one defined in qualifiedUser
-          String role = relatedUser.getRole();
+          String role = relatedGroup.getRole();
           if (role == null) {
             role = qualifiedUsers.getRole();
           }
+          actors.add(new ActorImpl(null, role, state, groupId));
+        }
+      }
+    }
+  }
 
-          if (user != null) {
-            actors.add(new ActorImpl(user, role, state));
-          }
+  private void setActorsFromRelatedUsers(final QualifiedUsers qualifiedUsers, final State state,
+      final RelatedUser[] relatedUsers, final List<Actor> actors)
+      throws WorkflowException {
+    UserManager userManager = WorkflowHub.getUserManager();
+    for (RelatedUser relatedUser : relatedUsers) {
+      List<User> users = findUsersInRelation(userManager, relatedUser);
+
+      String relation = relatedUser.getRelation();
+      for (User user : users) {
+        if (relation != null && relation.length() != 0 && !relation.equals("itself")) {
+          user = userManager.getRelatedUser(user, relation, modelId);
+        }
+
+        // Get the role to which affect the user
+        // if no role defined in related user
+        // then get the one defined in qualifiedUser
+        String role = relatedUser.getRole();
+        if (role == null) {
+          role = qualifiedUsers.getRole();
+        }
+
+        if (user != null) {
+          actors.add(new ActorImpl(user, role, state));
         }
       }
     }
-    if (relatedGroups != null) {
-      // Finally, process related groups
-      for (RelatedGroup relatedGroup : relatedGroups) {
-        if (relatedGroup != null && relatedGroup.getFolderItem() != null) {
-          String fieldName = relatedGroup.getFolderItem().getName();
-          Field field = getField(fieldName);
-          String groupId = field.getStringValue();
-          if (StringUtil.isDefined(groupId)) {
-            // Get the role to which affect the group
-            // if no role defined in related group
-            // then get the one defined in qualifiedUser
-            String role = relatedGroup.getRole();
-            if (role == null) {
-              role = qualifiedUsers.getRole();
-            }
-            actors.add(new ActorImpl(null, role, state, groupId));
-          }
+  }
+
+  private List<User> findUsersInRelation(final UserManager userManager, final RelatedUser relatedUser)
+      throws WorkflowException {
+    List<User> users = new ArrayList<>();
+    if (relatedUser.getParticipant() != null) {
+      String resolvedState = relatedUser.getParticipant().getResolvedState();
+
+      Participant participant = this.getParticipant(resolvedState);
+      if (participant != null) {
+        users.add(participant.getUser());
+      }
+    } else if (relatedUser.getFolderItem() != null) {
+      String fieldName = relatedUser.getFolderItem().getName();
+      Field field = getField(fieldName);
+      if (field instanceof UserField) {
+        String userId = field.getStringValue();
+        if (StringUtil.isDefined(userId)) {
+          users.add(userManager.getUser(userId));
         }
+      } else if (field instanceof MultipleUserField) {
+        MultipleUserField multipleUserField = (MultipleUserField) field;
+        String[] userIds = multipleUserField.getUserIds();
+        users.addAll(Arrays.asList(userManager.getUsers(userIds)));
       }
     }
-    return actors.toArray(new Actor[actors.size()]);
+    return users;
   }
 
   /**
@@ -1580,81 +1613,99 @@ public class ProcessInstanceImpl
         final int maxParametersCount = 3;
         final int minParametersCount = 2;
 
-        if ("addActiveState".equals(action)) {
+        if (ADD_ACTIVE_STATE.equals(action)) {
           String state = undoStep.getParameters();
           this.removeActiveState(state);
         } else if ("removeActiveState".equals(action)) {
           String state = undoStep.getParameters();
           this.addActiveState(state, null);
-        } else if ("addWorkingUser".equals(action)) {
-          if (st.countTokens() != maxParametersCount && st.countTokens() != minParametersCount) {
-            throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-                "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getId() +
-                ", method addWorkingUser - found:" + st.countTokens() + " instead of 2 or 3");
-          }
-
-          String userId = (st.countTokens() == 3) ? st.nextToken() : null;
-          String state = st.nextToken();
-          String role = st.nextToken();
-          User user = WorkflowHub.getUserManager().getUser(userId);
-
-          this.removeWorkingUser(user, state, role);
-          this.unLock(state, user);
-        } else if ("removeWorkingUser".equals(action)) {
-          if (st.countTokens() != maxParametersCount && st.countTokens() != minParametersCount) {
-            throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-                "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getId() +
-                ", method addWorkingUser - found:" + st.countTokens() + " instead of 2 or 3");
-          }
-
-          String userId = (st.countTokens() == 3) ? st.nextToken() : null;
-          String state = st.nextToken();
-          String role = st.nextToken();
-          User user = WorkflowHub.getUserManager().getUser(userId);
-
-          this.addWorkingUser(user, state, role, null);
-        } else if ("addInterestedUser".equals(action)) {
+        } else if (ADD_WORKING_USER.equals(action)) {
+          undoAddWorkingUser(st, minParametersCount, maxParametersCount);
+        } else if (REMOVE_WORKING_USER.equals(action)) {
+          undoRemoveWorkingUser(st, minParametersCount, maxParametersCount);
+        } else if (ADD_INTERESTED_USER.equals(action)) {
           // The number of parameters must be : 3 or 2
-          if ((st.countTokens() != 3) && (st.countTokens() != 2)) {
-            throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-                "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getId() +
-                ", method addInterestedUser - found:" + st.countTokens() + " instead of 2 or 3");
-          }
-
-          String userId = (st.countTokens() == 3) ? st.nextToken() : null;
-          String state = st.nextToken();
-          String role = st.nextToken();
-          User user = WorkflowHub.getUserManager().getUser(userId);
-
-          this.removeInterestedUser(user, state, role);
-        } else if ("removeInterestedUser".equals(action)) {
+          undoAddInterestedUser(st);
+        } else if (REMOVE_INTERESTED_USER.equals(action)) {
           // The number of parameters must be : 3 or 2
-          if ((st.countTokens() != 3) && (st.countTokens() != 2)) {
-            throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-                "workflowEngine.EX_ERR_ILLEGAL_PARAMETERS", "instanceid=" + getId() +
-                ", method removeInterestedUser - found:" + st.countTokens() + " instead of 2 or 3");
-          }
-
-          String userId = (st.countTokens() == 3) ? st.nextToken() : null;
-          String state = st.nextToken();
-          String role = st.nextToken();
-          User user = WorkflowHub.getUserManager().getUser(userId);
-
-          this.addInterestedUser(user, state, role, null);
+          undoRemoveInterestedUser(st);
         } else {
-          throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-              "workflowEngine.EXP_UNKNOWN_ACTION", "instanceid=" + getId());
+          throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EXP_UNKNOWN_ACTION",
+              INSTANCEID_PARAM + getId());
         }
 
         // as the atomic operation has been undone, remove it from undoHistory
         undoSteps.remove(undoStep);
       }
     } catch (WorkflowException we) {
-      throw new WorkflowException("ProcessInstanceManagerImpl.undoStep",
-          "workflowEngine.EX_ERR_UNDO_STEP", "instanceid=" + getId(), we);
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, "workflowEngine.EX_ERR_UNDO_STEP",
+          INSTANCEID_PARAM + getId(), we);
     } finally {
       this.inUndoProcess = false;
     }
+  }
+
+  private void undoRemoveInterestedUser(final StringTokenizer st) throws WorkflowException {
+    if ((st.countTokens() != 3) && (st.countTokens() != 2)) {
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, WORKFLOW_ENGINE_EX_ERR_ILLEGAL_PARAMETERS,
+          INSTANCEID_PARAM + getId() + ", method removeInterestedUser - found:" + st.countTokens() +
+              INSTEAD_OF_2_OR_3);
+    }
+
+    String userId = (st.countTokens() == 3) ? st.nextToken() : null;
+    String state = st.nextToken();
+    String role = st.nextToken();
+    User user = WorkflowHub.getUserManager().getUser(userId);
+
+    this.addInterestedUser(user, state, role, null);
+  }
+
+  private void undoAddInterestedUser(final StringTokenizer st) throws WorkflowException {
+    if ((st.countTokens() != 3) && (st.countTokens() != 2)) {
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, WORKFLOW_ENGINE_EX_ERR_ILLEGAL_PARAMETERS,
+          INSTANCEID_PARAM + getId() + ", method addInterestedUser - found:" + st.countTokens() +
+              INSTEAD_OF_2_OR_3);
+    }
+
+    String userId = (st.countTokens() == 3) ? st.nextToken() : null;
+    String state = st.nextToken();
+    String role = st.nextToken();
+    User user = WorkflowHub.getUserManager().getUser(userId);
+
+    this.removeInterestedUser(user, state, role);
+  }
+
+  private void undoRemoveWorkingUser(final StringTokenizer st, int minParametersCount,
+      int maxParametersCount) throws WorkflowException {
+    if (st.countTokens() != maxParametersCount && st.countTokens() != minParametersCount) {
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, WORKFLOW_ENGINE_EX_ERR_ILLEGAL_PARAMETERS,
+          INSTANCEID_PARAM + getId() + ", method removeWorkingUser - found:" + st.countTokens() +
+              INSTEAD_OF_2_OR_3);
+    }
+
+    String userId = (st.countTokens() == 3) ? st.nextToken() : null;
+    String state = st.nextToken();
+    String role = st.nextToken();
+    User user = WorkflowHub.getUserManager().getUser(userId);
+
+    this.addWorkingUser(user, state, role, null);
+  }
+
+  private void undoAddWorkingUser(final StringTokenizer st, int minParametersCount,
+      int maxParametersCount) throws WorkflowException {
+    if (st.countTokens() != maxParametersCount && st.countTokens() != minParametersCount) {
+      throw new WorkflowException(PROCESS_INSTANCE_IMPL, WORKFLOW_ENGINE_EX_ERR_ILLEGAL_PARAMETERS,
+          INSTANCEID_PARAM + getId() + ", method addWorkingUser - found:" + st.countTokens() +
+              INSTEAD_OF_2_OR_3);
+    }
+
+    String userId = (st.countTokens() == 3) ? st.nextToken() : null;
+    String state = st.nextToken();
+    String role = st.nextToken();
+    User user = WorkflowHub.getUserManager().getUser(userId);
+
+    this.removeWorkingUser(user, state, role);
+    this.unLock(state, user);
   }
 
   /**
@@ -1678,7 +1729,7 @@ public class ProcessInstanceImpl
       } else if (started) {
         this.undoStep(steps[i]);
         if (steps[i].getResolvedState().equals(state) &&
-            (!steps[i].getAction().equals("#question#")) &&
+            (!steps[i].getAction().equals(QUESTION_ACTION)) &&
             (!steps[i].getAction().equals("#response#"))) {
           stop = true;
         }
@@ -1708,7 +1759,8 @@ public class ProcessInstanceImpl
       wkUser.setRole(roleName);
       if (workingUsers.contains(wkUser)) {
         JdbcSqlQuery query = JdbcSqlQuery.createSelect("stepid from sb_workflow_undo_step")
-            .where("instanceid = ? ", Integer.parseInt(getId())).and("action = ? ", "addActiveState")
+            .where("instanceid = ? ", Integer.parseInt(getId()))
+            .and("action = ? ", ADD_ACTIVE_STATE)
             .and("parameters = ? ", stateName);
         List<Integer> results = query.execute(row -> row.getInt(1));
         for (Integer result : results) {
@@ -1723,7 +1775,7 @@ public class ProcessInstanceImpl
       for (int i = 0; i < allSteps.length; i++) {
         ActiveState state = new ActiveState(allSteps[i].getResolvedState());
         if (stepIds.contains(allSteps[i].getId()) &&
-            (!allSteps[i].getAction().equals("#question#")) &&
+            (!allSteps[i].getAction().equals(QUESTION_ACTION)) &&
             (!allSteps[i].getAction().equals("#response#")) &&
             (allSteps[i].getResolvedState() != null) && (!activeStates.contains(state))) {
           steps.add(allSteps[i]);
@@ -1733,7 +1785,7 @@ public class ProcessInstanceImpl
       return steps.toArray(new HistoryStep[steps.size()]);
     } catch (SQLException e) {
       throw new WorkflowException("ProcessInstanceImpl.getBackSteps",
-          "workflowEngine.EX_ERR_GET_BACKSTEPS", "instanceid=" + getId(), e);
+          "workflowEngine.EX_ERR_GET_BACKSTEPS", INSTANCEID_PARAM + getId(), e);
     }
   }
 
@@ -1755,7 +1807,7 @@ public class ProcessInstanceImpl
     if (foundStep == null) {
       throw new WorkflowException("ProcessInstanceImpl.getStep",
           "workflowEngine.EX_ERR_HISTORYSTEP_NOT_FOUND",
-          "instanceid=" + getId() + ", stepid : " + stepId);
+          INSTANCEID_PARAM + getId() + ", stepid : " + stepId);
     }
 
     return foundStep;
@@ -1804,7 +1856,7 @@ public class ProcessInstanceImpl
     if (question == null) {
       throw new WorkflowException("ProcessInstanceImpl.answerQuestion",
           "workflowEngine.ERR_QUESTION_NOT_FOUND",
-          "instanceid=" + getId() + ", questionid : " + questionId);
+          INSTANCEID_PARAM + getId() + ", questionid : " + questionId);
     }
     // put the answer in question
     question.answer(content);
@@ -1835,7 +1887,7 @@ public class ProcessInstanceImpl
    * @return all the questions (not yet answered) asked from the given state
    */
   public Question[] getSentQuestions(String stateName) {
-    Vector<Question> questionsAsked = new Vector<>();
+    List<Question> questionsAsked = new ArrayList<>();
 
     for (Question question : questions) {
       if (question.getFromState().getName().equals(stateName) &&
@@ -1852,7 +1904,7 @@ public class ProcessInstanceImpl
    * @return all the answered questions asked from the given state
    */
   public Question[] getRelevantQuestions(String stateName) {
-    Vector<Question> questionsAsked = new Vector<>();
+    List<Question> questionsAsked = new ArrayList<>();
 
     for (Question question : questions) {
      if (question.getFromState().getName().equals(stateName) &&
@@ -1871,9 +1923,9 @@ public class ProcessInstanceImpl
    */
   public void cancelQuestion(Question question) throws WorkflowException {
     // 0 - recurse if necessary
-    Question[] questions = getSentQuestions(question.getTargetState().getName());
-    for (int i = 0; questions != null && i < questions.length; i++) {
-      cancelQuestion(questions[i]);
+    Question[] theQuestions = getSentQuestions(question.getTargetState().getName());
+    for (int i = 0; theQuestions != null && i < theQuestions.length; i++) {
+      cancelQuestion(theQuestions[i]);
     }
 
     // 1 - make a fictive answer
@@ -1884,6 +1936,7 @@ public class ProcessInstanceImpl
 
     // 3 - remove working user
     HistoryStep step = getMostRecentStepOnState(state.getName());
+    Objects.requireNonNull(step);
     removeWorkingUser(step.getUser(), state, step.getUserRoleName());
   }
 
@@ -1917,6 +1970,7 @@ public class ProcessInstanceImpl
     try {
       template = getProcessModel().getPresentation();
     } catch (WorkflowException e) {
+      SilverLogger.getLogger(this).warn(e);
     }
     if (template != null) {
       title = template.getTitle(role, lang);
@@ -1945,17 +1999,18 @@ public class ProcessInstanceImpl
         // Look for an active state with a timeoutDate in the past
         if (activeState.getTimeoutDate() != null && activeState.getTimeoutDate().before(dateRef)) {
           // found, now look which timeout is concerned
-          int timeoutStatus = activeState.getTimeoutStatus();
+          int theTimeoutStatus = activeState.getTimeoutStatus();
 
           // then parse all timeoutAction to return the right one (the one with order =
           // timeoutstatus+1)
           State state = getProcessModel().getState(activeState.getState());
           TimeOutAction[] actions = state.getTimeOutActions();
-          for (int i = 0; actions != null && i < actions.length; i++) {
-            if (actions[i].getOrder() == (timeoutStatus + 1)) {
-              return new ActionAndState(actions[i].getAction(), state);
-            }
-          }
+          Mutable<ActionAndState> foundActionAndState = Mutable.empty();
+          Stream.of(actions)
+              .filter(a -> a.getOrder() == theTimeoutStatus + 1)
+              .findFirst()
+              .ifPresent(a -> foundActionAndState.set(new ActionAndState(a.getAction(), state)));
+          return foundActionAndState.get();
         }
       }
     }

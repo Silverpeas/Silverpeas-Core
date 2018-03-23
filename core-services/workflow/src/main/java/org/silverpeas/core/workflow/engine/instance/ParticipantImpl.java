@@ -28,7 +28,8 @@ import org.silverpeas.core.workflow.api.model.State;
 import org.silverpeas.core.workflow.api.user.User;
 
 public class ParticipantImpl extends ActorImpl implements Participant {
-  final private String action;
+
+  private final String action;
 
   /**
    * Constructor Definitivly set the user, userRoleName, state and the action

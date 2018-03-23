@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -48,6 +49,7 @@ import java.util.stream.Collectors;
 public class NotificationSender implements java.io.Serializable {
 
   private static final long serialVersionUID = 4165938893905145809L;
+  private static final Pattern EXTRACTION_PATTERN = Pattern.compile("(.*\\D)?(\\d+)$");
 
   private NotificationManager notificationManager;
   private int instanceId;

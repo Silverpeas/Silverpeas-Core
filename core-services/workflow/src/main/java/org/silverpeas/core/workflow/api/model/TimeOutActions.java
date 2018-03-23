@@ -32,5 +32,5 @@ public interface TimeOutActions {
    * Get timeout actions
    * @return timeout actions in an array
    */
-  public TimeOutAction[] getTimeOutActions();
+  TimeOutAction[] getTimeOutActions();
 }

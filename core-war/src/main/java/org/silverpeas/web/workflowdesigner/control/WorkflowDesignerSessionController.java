@@ -69,6 +69,7 @@ import org.silverpeas.core.workflow.api.model.*;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.model.ProcessModelManagerImpl;
 import org.silverpeas.core.workflow.engine.model.SpecificLabel;
+import org.silverpeas.core.workflow.util.WorkflowUtil;
 import org.silverpeas.web.workflowdesigner.model.WorkflowDesignerException;
 
 import java.io.File;
@@ -2814,7 +2815,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         new ArrayList<org.silverpeas.core.admin.component.model.Parameter>();
     org.silverpeas.core.admin.component.model.Parameter spParameter =
         new org.silverpeas.core.admin.component.model.Parameter();
-    spParameter.setName(ProcessModelManager.PROCESS_XML_FILE_NAME);
+    spParameter.setName(WorkflowUtil.PROCESS_XML_FILE_NAME);
     spParameter.getLabel().put(I18NHelper.defaultLanguage, getSettings().getString(
         "componentDescriptor.parameterLabel"));
     spParameter.getHelp().put(I18NHelper.defaultLanguage, "");
@@ -2925,7 +2926,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
         if (waComponent.getParameters() != null) {
           for (org.silverpeas.core.admin.component.model.Parameter spParameter : waComponent
               .getParameters()) {
-            if (ProcessModelManager.PROCESS_XML_FILE_NAME.equals(spParameter.getName())
+            if (WorkflowUtil.PROCESS_XML_FILE_NAME.equals(spParameter.getName())
                 && strProcessModelFileName.equals(spParameter.getValue())) {
               return waComponent.getName();
             }

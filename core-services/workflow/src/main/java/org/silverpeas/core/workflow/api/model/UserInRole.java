@@ -30,11 +30,11 @@ public interface UserInRole {
   /**
    * Get name of the role
    */
-  public String getRoleName();
+  String getRoleName();
 
   /**
    * Set name of the role
    * @param roleName
    */
-  public void setRoleName(String roleName);
+  void setRoleName(String roleName);
 }

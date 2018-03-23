@@ -34,21 +34,21 @@ public interface UserManager {
    * @return the user with the given userId.
    * @throws WorkflowException if the userId is unknown.
    */
-  public User getUser(String userId) throws WorkflowException;
+  User getUser(String userId) throws WorkflowException;
 
   /**
    * Make a User[] from a userIds' String[].
    * @throws WorkflowException if a userId is unknown.
    */
-  public User[] getUsers(String[] userIds) throws WorkflowException;
+  User[] getUsers(String[] userIds) throws WorkflowException;
 
   /**
    * Returns all the users having a given role relative to a processModel.
    */
-  public User[] getUsersInRole(String roleName, String processModelId)
+  User[] getUsersInRole(String roleName, String processModelId)
       throws WorkflowException;
 
-  public User[] getUsersInGroup(String groupId);
+  User[] getUsersInGroup(String groupId);
 
   /**
    * Get a user from a given user and relation
@@ -57,5 +57,5 @@ public interface UserManager {
    * @param peasId the id of workflow peas associated to that information
    * @return the user that has the given relation with given user
    */
-  public User getRelatedUser(User user, String relation, String peasId) throws WorkflowException;
+  User getRelatedUser(User user, String relation, String peasId) throws WorkflowException;
 }

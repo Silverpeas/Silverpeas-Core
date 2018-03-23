@@ -2,7 +2,7 @@
  * Copyright (C) 2000 - 2018 Silverpeas
  *
  * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as
+ * it under the terms of the GNU Affero General License as
  * published by the Free Software Foundation, either version 3 of the
  * License, or (at your option) any later version.
  *
@@ -16,16 +16,16 @@
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
+ * GNU Affero General License for more details.
  *
- * You should have received a copy of the GNU Affero General Public License
+ * You should have received a copy of the GNU Affero General License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 package org.silverpeas.core.workflow.api.model;
 
-import java.util.Iterator;
-
 import org.silverpeas.core.workflow.api.WorkflowException;
+
+import java.util.Iterator;
 
 /**
  * Interface describing a representation of the &lt;forms&gt; element of a Process Model.
@@ -36,19 +36,19 @@ public interface Forms {
    * Iterate through the Form objects
    * @return an iterator
    */
-  public Iterator<Form> iterateForm();
+  Iterator<Form> iterateForm();
 
   /**
    * Add an form to the collection
    * @param form to be added
    */
-  public void addForm(Form form);
+  void addForm(Form form);
 
   /**
    * Create an Form
    * @return an object implementing Form
    */
-  public Form createForm();
+  Form createForm();
 
   /**
    * Get the form definition with given name. Works fine for forms other than 'presentationForm',
@@ -56,7 +56,7 @@ public interface Forms {
    * @param name action form
    * @return form definition
    */
-  public Form getForm(String name);
+  Form getForm(String name);
 
   /**
    * Get the form definition with given name for the given role, will return the form dedicated to
@@ -65,7 +65,7 @@ public interface Forms {
    * @param role role name
    * @return wanted form definition
    */
-  public Form getForm(String name, String role);
+  Form getForm(String name, String role);
 
   /**
    * Remove the form identified by name and role
@@ -73,5 +73,5 @@ public interface Forms {
    * @param strRole the name of the role, may be <code>null</code>
    * @throws WorkflowException if the role cannot be found
    */
-  public void removeForm(String strName, String strRole) throws WorkflowException;
+  void removeForm(String strName, String strRole) throws WorkflowException;
 }

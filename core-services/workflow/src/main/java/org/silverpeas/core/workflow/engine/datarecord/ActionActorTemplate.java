@@ -34,8 +34,7 @@ import org.silverpeas.core.workflow.api.model.Action;
  * A ActionActorTemplate builds fields giving the title of a process instance.
  */
 public class ActionActorTemplate extends ProcessInstanceFieldTemplate {
-  public ActionActorTemplate(String fieldName, Action action, String role,
-      String lang) {
+  public ActionActorTemplate(String fieldName, Action action, String lang) {
     super(fieldName, "text", "text", Workflow.getLabel("actionActorFieldLabel",
         lang));
     actionName = action.getName();

@@ -32,48 +32,52 @@ import org.silverpeas.core.workflow.api.UserManager;
 import org.silverpeas.core.workflow.api.WorkflowEngine;
 
 /**
- * The workflowHub manages all the workflow components implementations. This singleton builds the
- * several workflow components and exports them as services interfaces.
+ * The workflowHub manages all the workflow components implementations. This instance-orphan class
+ * gives a single point of access to the implementation of the different service interfaces without
+ * having any knowledge about them and about the life-cycle.
  */
 public class WorkflowHub {
 
+  private WorkflowHub() {
+  }
+
   /**
-   * @return the ProcessModelManager
+   * @return an instance of {@link ProcessModelManager}
    */
   public static ProcessModelManager getProcessModelManager() {
     return ServiceProvider.getService(ProcessModelManager.class);
   }
 
   /**
-   * @return the ProcessInstanceManager
+   * @return an instance of {@link ProcessInstanceManager}
    */
   public static ProcessInstanceManager getProcessInstanceManager() {
     return ServiceProvider.getService(ProcessInstanceManager.class);
   }
 
   /**
-   * @return the UserManager
+   * @return an instance of {@link UserManager}
    */
   public static UserManager getUserManager() {
     return ServiceProvider.getService(UserManager.class);
   }
 
   /**
-   * @return the WorkflowEngine
+   * @return an instance of {@link WorkflowEngine}
    */
   public static WorkflowEngine getWorkflowEngine() {
     return ServiceProvider.getService(WorkflowEngine.class);
   }
 
   /**
-   * @return the TaskManager
+   * @return an instance of {@link TaskManager}
    */
   public static TaskManager getTaskManager() {
     return ServiceProvider.getService(TaskManager.class);
   }
 
   /**
-   * @return the ErrorManager
+   * @return an instance of {@link ErrorManager}
    */
   public static ErrorManager getErrorManager() {
     return ServiceProvider.getService(ErrorManager.class);
