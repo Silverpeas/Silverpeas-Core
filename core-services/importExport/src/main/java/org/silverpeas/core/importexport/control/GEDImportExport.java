@@ -23,7 +23,13 @@
  */
 package org.silverpeas.core.importexport.control;
 
+import org.apache.commons.io.IOUtils;
+import org.silverpeas.core.ForeignPK;
 import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
@@ -31,52 +37,47 @@ import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.TypeManager;
-import org.silverpeas.core.contribution.content.form.field.FileField;
-import org.silverpeas.core.importexport.form.FormTemplateImportExport;
 import org.silverpeas.core.contribution.content.form.XMLField;
-import org.silverpeas.core.contribution.template.form.service.FormTemplateService;
-import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.core.importexport.model.ImportExportException;
-import org.silverpeas.core.importexport.model.PublicationType;
-import org.silverpeas.core.importexport.report.ImportReportManager;
-import org.silverpeas.core.importexport.report.MassiveReport;
-import org.silverpeas.core.importexport.report.UnitReport;
-import org.silverpeas.core.node.importexport.NodePositionType;
-import org.silverpeas.core.importexport.publication.PublicationContentType;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
-import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
-import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
-import org.silverpeas.core.importexport.wysiwyg.WysiwygContentType;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.coordinates.model.Coordinate;
-import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.content.form.field.FileField;
+import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.apache.commons.io.IOUtils;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.contribution.template.form.service.FormTemplateService;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
+import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.exception.UtilException;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
+import org.silverpeas.core.importexport.form.FormTemplateImportExport;
+import org.silverpeas.core.importexport.form.XMLModelContentType;
+import org.silverpeas.core.importexport.model.ImportExportException;
+import org.silverpeas.core.importexport.model.PublicationType;
+import org.silverpeas.core.importexport.publication.PublicationContentType;
+import org.silverpeas.core.importexport.report.ImportReportManager;
+import org.silverpeas.core.importexport.report.MassiveReport;
+import org.silverpeas.core.importexport.report.UnitReport;
+import org.silverpeas.core.importexport.wysiwyg.WysiwygContentType;
 import org.silverpeas.core.index.indexing.model.IndexManager;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.ForeignPK;
+import org.silverpeas.core.io.media.image.thumbnail.control.ThumbnailController;
+import org.silverpeas.core.io.media.image.thumbnail.model.ThumbnailDetail;
+import org.silverpeas.core.node.coordinates.model.Coordinate;
+import org.silverpeas.core.node.importexport.NodePositionType;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.util.file.FileFolderManager;
-import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.contribution.content.wysiwyg.WysiwygException;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.BufferedReader;
@@ -585,18 +586,18 @@ public abstract class GEDImportExport extends ComponentImportExport {
       String exportPublicationPath) {
     ForeignPK foreignKey = new ForeignPK(pubId, componentId);
     Collection<SimpleDocument> documents = AttachmentServiceProvider.getAttachmentService().
-        listDocumentsByForeignKey(foreignKey, null);
-    for (SimpleDocument attDetail : documents) {
-      try {
-        if (attDetail.isDownloadAllowedForRolesFrom(getCurrentUserDetail())) {
-          FileRepositoryManager.copyFile(attDetail.getAttachmentPath(),
-              exportPublicationPath + File.separator + attDetail.getFilename());
-        }
-      } catch (IOException ex) {
-        SilverTrace.error("importExport", "GEDImportExport",
-            "copyWysiwygImageForExport file exception", ex);
-      }
-    }
+        listAllDocumentsByForeignKey(foreignKey, null);
+    documents.stream()
+        .filter(a -> DocumentType.image == a.getDocumentType() || DocumentType.video == a.getDocumentType())
+        .filter(a -> a.isDownloadAllowedForRolesFrom(getCurrentUserDetail()))
+        .forEach(a -> {
+          try {
+            FileRepositoryManager.copyFile(a.getAttachmentPath(),
+                exportPublicationPath + File.separator + a.getFilename());
+          } catch (IOException ex) {
+            SilverLogger.getLogger(this).error(ex);
+          }
+        });
   }
 
   private List<NodePositionType> getExistingTopics(String userId, List<NodePositionType> nodeTypes,
