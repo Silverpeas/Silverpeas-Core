@@ -23,17 +23,19 @@
  */
 package org.silverpeas.core.pdc.subscription.service;
 
-import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
-import org.silverpeas.core.notification.user.model.NotificationResourceData;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.notification.user.UserSubscriptionNotificationBehavior;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
+import org.silverpeas.core.notification.user.model.NotificationResourceData;
+import org.silverpeas.core.pdc.subscription.model.PdcSubscription;
 import org.silverpeas.core.util.LocalizationBundle;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
 public class PdcResourceClassificationUserNotification
-    extends AbstractPdcSubscriptionUserNotification<SilverContentInterface> {
+    extends AbstractPdcSubscriptionUserNotification<SilverContentInterface>
+    implements UserSubscriptionNotificationBehavior {
 
   public PdcResourceClassificationUserNotification(PdcSubscription pdcSubscription,
       SilverContentInterface silverContent) {
