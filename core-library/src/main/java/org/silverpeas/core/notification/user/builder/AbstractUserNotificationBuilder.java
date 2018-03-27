@@ -151,7 +151,8 @@ public abstract class AbstractUserNotificationBuilder implements UserNotificatio
   public final UserNotification build() {
     final Mutable<String> userNote = Mutable.empty();
     try {
-      if (isUserSubscriptionNotification() && NotifAction.UPDATE == getAction()) {
+      if (isUserSubscriptionNotification() &&
+          (NotifAction.UPDATE == getAction() || NotifAction.CLASSIFIED == getAction())) {
         if (!isSubscriptionNotificationEnabledForCurrentRequest()) {
           // In that case, the user requested to not send subscription notification
           stop();
