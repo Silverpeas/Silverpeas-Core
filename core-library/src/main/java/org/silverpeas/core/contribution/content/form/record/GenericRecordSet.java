@@ -23,7 +23,13 @@
  */
 package org.silverpeas.core.contribution.content.form.record;
 
+import org.apache.commons.lang3.tuple.Pair;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.contribution.attachment.AttachmentException;
+import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
+import org.silverpeas.core.contribution.attachment.model.DocumentType;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
@@ -33,15 +39,11 @@ import org.silverpeas.core.contribution.content.form.RecordSet;
 import org.silverpeas.core.contribution.content.form.RecordTemplate;
 import org.silverpeas.core.contribution.content.form.TypeManager;
 import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.contribution.attachment.AttachmentException;
-import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
-import org.silverpeas.core.contribution.attachment.model.DocumentType;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.index.indexing.model.FullIndexEntry;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -49,6 +51,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 /**
@@ -354,7 +357,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
         record.setId(toPK.getId());
 
         // replace files reference
-        replaceIds(ids, record, toPK.getId());
+        replaceIds(ids, record);
 
         // insert record itself in database
         getGenericRecordSetManager()
@@ -393,7 +396,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
             original, cloneExternalId);
         ids.put(original.getId(), clonePk.getId());
       }
-      replaceIds(ids, record, originalExternalId);
+      replaceIds(ids, record);
     } catch (AttachmentException e) {
       throw new FormException("form", "", e);
     }
@@ -427,7 +430,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
       Map<String, String> videoIds = AttachmentServiceProvider.getAttachmentService().mergeDocuments(
           toPK, fromPK, DocumentType.video);
       ids.putAll(videoIds);
-      replaceIds(ids, fromRecord, toExternalId);
+      replaceIds(ids, fromRecord);
     } catch (AttachmentException e) {
       throw new FormException("form", "", e);
     }
@@ -435,42 +438,57 @@ public class GenericRecordSet implements RecordSet, Serializable {
     update(fromRecord);
   }
 
-  private void replaceIds(Map<String, String> ids, GenericDataRecord record, String recordIdFrom)
+  private void replaceIds(Map<String, String> ids, GenericDataRecord record)
       throws FormException {
-    String[] fieldNames = record.getFieldNames();
+    final String[] fieldNames = record.getFieldNames();
     for (String fieldName : fieldNames) {
-      Field field = record.getField(fieldName);
-      if (field != null) {
-        FieldTemplate fieldTemplate = recordTemplate.getFieldTemplate(fieldName);
-        if (fieldTemplate != null) {
-          String fieldType = fieldTemplate.getTypeName();
-          try {
-            if (Field.TYPE_FILE.equals(fieldType)) {
-              if (ids.containsKey(field.getStringValue())) {
-                field.setStringValue(ids.get(field.getStringValue()));
-              }
-            } else {
-              String oldValue = field.getStringValue();
-              if (oldValue != null && oldValue.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
-                // Wysiwyg case
-                String newValue = oldValue.replaceAll(recordIdFrom, record.getId());
-                field.setStringValue(newValue);
-              }
-            }
-          } catch (Exception e) {
-            SilverTrace.error("form", "AbstractForm.update",
-                "form.EXP_UNKNOWN_FIELD", null, e);
+      getRecordFieldAndTemplateByFieldName(record, fieldName).ifPresent(p -> {
+        final Field field = p.getKey();
+        final FieldTemplate fieldTemplate = p.getValue();
+        final String fieldType = fieldTemplate.getTypeName();
+        final String currentValue = field.getStringValue();
+        if (Field.TYPE_FILE.equals(fieldType)) {
+          if (ids.containsKey(currentValue)) {
+            setStringValueQuietly(field, ids.get(currentValue));
           }
+        } else {
+          Optional.ofNullable(currentValue)
+              .filter(o -> o.startsWith(WysiwygFCKFieldDisplayer.dbKey))
+              .ifPresent(o -> {
+                // Wysiwyg case
+                final String newValue = o.replaceFirst("[0-9]+", record.getId());
+                setStringValueQuietly(field, newValue);
+              });
         }
+      });
+    }
+  }
+
+  private void setStringValueQuietly(final Field field, final String value) {
+    try {
+      field.setStringValue(value);
+    } catch (FormException e) {
+      SilverLogger.getLogger(this).error(e);
+    }
+  }
+
+  private Optional<Pair<Field, FieldTemplate>> getRecordFieldAndTemplateByFieldName(
+      final GenericDataRecord record, final String fieldName) throws FormException {
+    final Field field = record.getField(fieldName);
+    if (field != null) {
+      final FieldTemplate fieldTemplate = recordTemplate.getFieldTemplate(fieldName);
+      if (fieldTemplate != null) {
+        return Optional.of(Pair.of(field, fieldTemplate));
       }
     }
+    return Optional.empty();
   }
 
   /**
    * Gets an instance of a GenericRecordSet objects manager.
    * @return a GenericRecordSetManager instance.
    */
-  protected GenericRecordSetManager getGenericRecordSetManager() {
+  private GenericRecordSetManager getGenericRecordSetManager() {
     return GenericRecordSetManager.getInstance();
   }
 
