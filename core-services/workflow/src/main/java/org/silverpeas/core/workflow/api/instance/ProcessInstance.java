@@ -76,7 +76,7 @@ public interface ProcessInstance {
    * Get a new data record associated to the given action
    * @param actionName action name
    */
-  public DataRecord getNewActionRecord(String actionName)
+  public DataRecord getNewActionRecord(String actionName, String language)
       throws WorkflowException;
 
   /**
