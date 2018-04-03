@@ -501,7 +501,7 @@ if (!window.SilverpeasPluginSettings) {
   };
 }
 
-if (typeof extendsObject === 'undefined') {
+if (typeof window.extendsObject === 'undefined') {
   /**
    * Merge the contents of two or more objects together into the first object.
    * By default it performs a deep copy (recursion). To perform light copy (no recursion), please
@@ -509,7 +509,7 @@ if (typeof extendsObject === 'undefined') {
    * deep copy.
    * @returns {*}
    */
-  function extendsObject() {
+  window.extendsObject = function() {
     var params = [];
     Array.prototype.push.apply(params, arguments);
     var firstArgumentType = params[0];
@@ -519,10 +519,10 @@ if (typeof extendsObject === 'undefined') {
       params.shift();
     }
     return jQuery.extend.apply(this, params);
-  }
+  };
 }
 
-if (typeof SilverpeasClass === 'undefined') {
+if (typeof window.SilverpeasClass === 'undefined') {
   window.SilverpeasClass = function() {
     this.initialize && this.initialize.apply(this, arguments);
   };
@@ -615,7 +615,7 @@ if (!window.SilverpeasCache) {
 }
 
 if (!window.SilverpeasAjaxConfig) {
-  SilverpeasRequestConfig = SilverpeasClass.extend({
+  window.SilverpeasRequestConfig = SilverpeasClass.extend({
     initialize : function(url) {
       this.url = url;
       this.method = 'GET';
@@ -656,7 +656,7 @@ if (!window.SilverpeasAjaxConfig) {
       return this.parameters;
     }
   });
-  SilverpeasFormConfig = SilverpeasRequestConfig.extend({
+  window.SilverpeasFormConfig = SilverpeasRequestConfig.extend({
     initialize : function(url) {
       this.target = '';
       var pivotIndex = url.indexOf("?");
@@ -690,7 +690,7 @@ if (!window.SilverpeasAjaxConfig) {
       return silverpeasFormSubmit(this);
     }
   });
-  SilverpeasAjaxConfig = SilverpeasRequestConfig.extend({
+  window.SilverpeasAjaxConfig = SilverpeasRequestConfig.extend({
     initialize : function(url) {
       this._super(url);
       this.headers = {};
@@ -750,7 +750,7 @@ if (typeof window.silverpeasAjax === 'undefined') {
       return typeof this.response === 'string' ? JSON.parse(this.response) : this.response;
     }
   }
-  function silverpeasAjax(options) {
+  window.silverpeasAjax = function(options) {
     if (typeof options === 'string') {
       options = {url : options};
     }
@@ -846,9 +846,9 @@ if (typeof window.silverpeasAjax === 'undefined') {
         jQuery.ajax(options);
       }
     });
-  }
+  };
 
-  function silverpeasFormSubmit(silverpeasFormConfig) {
+  window.silverpeasFormSubmit = function(silverpeasFormConfig) {
     if (!(silverpeasFormConfig instanceof SilverpeasFormConfig)) {
       sp.log.error(
           "silverpeasFormSubmit function need an instance of SilverpeasFormConfig as first parameter.");
@@ -884,11 +884,11 @@ if (typeof window.silverpeasAjax === 'undefined') {
       form.appendChild(paramInput);
     }
     form.submit();
-  }
+  };
 }
 
 if (!window.SilverpeasContributionIdentifier) {
-  SilverpeasContributionIdentifier = SilverpeasClass.extend({
+  window.SilverpeasContributionIdentifier = SilverpeasClass.extend({
     initialize : function(instanceId, type, localId) {
       this.instanceId = instanceId;
       this.type = type;
@@ -920,7 +920,7 @@ if (!window.SilverpeasContributionIdentifier) {
 
 if(typeof window.whenSilverpeasReady === 'undefined') {
   var whenSilverpeasReadyPromise = false;
-  function whenSilverpeasReady(callback) {
+  window.whenSilverpeasReady = function(callback) {
     if (!whenSilverpeasReadyPromise) {
       whenSilverpeasReadyPromise = Promise.resolve();
     }
@@ -945,7 +945,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
         }.bind(this));
       }
     }
-  }
+  };
 
   /**
    * Applies a "ready" behaviour on the given instance.
@@ -957,7 +957,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
    * @param instance
    * @returns {Promise}
    */
-  function applyReadyBehaviorOn(instance) {
+  window.applyReadyBehaviorOn = function(instance) {
     var promise = new Promise(function(resolve, reject) {
       this.notifyReady = resolve;
       this.notifyError = reject;
@@ -968,7 +968,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
       }.bind(instance));
     };
     return promise;
-  }
+  };
 
   /**
    * Applies an event dispatching behaviour on the given instance.
@@ -981,7 +981,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
    * @param instance
    * @param options
    */
-  function applyEventDispatchingBehaviorOn(instance, options) {
+  window.applyEventDispatchingBehaviorOn = function(instance, options) {
     var $document = window.document;
     var __id = $document['__sp_event_uuid'];
     if (typeof __id === 'undefined') {
@@ -1039,7 +1039,7 @@ if(typeof window.whenSilverpeasReady === 'undefined') {
         }
       }
     };
-  }
+  };
 }
 
 if (typeof window.sp === 'undefined') {
