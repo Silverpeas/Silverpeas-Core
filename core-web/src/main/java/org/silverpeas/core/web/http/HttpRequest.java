@@ -389,6 +389,24 @@ public class HttpRequest extends HttpServletRequestWrapper {
   }
 
   /**
+   * Is the specified parameter defined?
+   * @param name the name of the parameter.
+   * @return true if the value of the parameter isn't null and not empty.
+   */
+  public boolean isParameterDefined(final String name) {
+    return StringUtil.isDefined(super.getParameter(name));
+  }
+
+  /**
+   * Is the specified parameter not null?
+   * @param name the name of the parameter.
+   * @return true if the parameter is valued, even if this value is empty.
+   */
+  public boolean isParameterNotNull(final String name) {
+    return super.getParameter(name) != null;
+  }
+
+  /**
    * Get a parameter value as a {@link List} of string.
    *
    * @param parameterName the name of the parameter.
