@@ -96,13 +96,15 @@
           /**
            * Gets the occurrence by its uri.
            * @param occurrenceUri uri of occurrence to get.
+           * @param editionMode true if context is edition, false otherwise.
            * @returns {promise|a.fn.promise|*} a promise with the asked occurrence as callbck
            *     parameter.
            */
-          this.getEventOccurrenceByUri = function(occurrenceUri) {
+          this.getEventOccurrenceByUri = function(occurrenceUri, editionMode) {
             var adapter = RESTAdapter.get(occurrenceUri, CalendarEventOccurrence);
             var criteria = {
-              zoneid : context.zoneId
+              zoneid : context.zoneId,
+              editionMode : editionMode ? true : false
             }
             return adapter.find({
               url : adapter.url,
@@ -328,11 +330,12 @@
         /**
          * Gets the occurrence by its uri.
          * @param occurrenceUri uri of occurrence to get.
+         * @param editionMode true if context is edition, false otherwise.
          * @returns {promise|a.fn.promise|*} a promise with the asked occurrence as callback
          *     parameter.
          */
-        this.getEventOccurrenceByUri = function(occurrenceUri) {
-          return CalendarEventOccurrence.getEventOccurrenceByUri(occurrenceUri);
+        this.getEventOccurrenceByUri = function(occurrenceUri, editionMode) {
+          return CalendarEventOccurrence.getEventOccurrenceByUri(occurrenceUri, editionMode);
         };
 
         /**

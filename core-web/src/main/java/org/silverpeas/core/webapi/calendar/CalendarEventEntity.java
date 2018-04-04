@@ -32,9 +32,11 @@ import org.silverpeas.core.calendar.CalendarComponent;
 import org.silverpeas.core.calendar.CalendarEvent;
 import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.VisibilityLevel;
+import org.silverpeas.core.contribution.content.renderer.ContributionContentRenderer;
 import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.webapi.attachment.AttachmentParameterEntity;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.webapi.pdc.PdcClassificationEntity;
@@ -53,6 +55,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
@@ -106,8 +109,8 @@ public class CalendarEventEntity implements WebEntity {
   }
 
   public static CalendarEventEntity fromEvent(final CalendarEvent event,
-      final String componentInstanceId, final ZoneId zoneId) {
-    return new CalendarEventEntity().decorate(event, componentInstanceId, zoneId);
+      final String componentInstanceId, final ZoneId zoneId, final boolean isEditionMode) {
+    return new CalendarEventEntity().decorate(event, componentInstanceId, zoneId, isEditionMode);
   }
 
   /**
@@ -501,7 +504,7 @@ public class CalendarEventEntity implements WebEntity {
   }
 
   protected CalendarEventEntity decorate(final CalendarEvent calendarEvent,
-      final String componentInstanceId, final ZoneId zoneId) {
+      final String componentInstanceId, final ZoneId zoneId, final boolean isEditionMode) {
     User currentUser = User.getCurrentRequester();
     final Calendar calendar = calendarEvent.getCalendar();
     final CalendarComponent component = calendarEvent.asCalendarComponent();
@@ -520,8 +523,13 @@ public class CalendarEventEntity implements WebEntity {
     title = formatTitle(component, componentInstanceId, canBeAccessed);
     if (canBeAccessed) {
       description = calendarEvent.getDescription();
-      content =
-          calendarEvent.getContent().isPresent() ? calendarEvent.getContent().get().getData() : "";
+      final Optional<WysiwygContent> wysiwyg = calendarEvent.getContent();
+      if (wysiwyg.isPresent()) {
+        final ContributionContentRenderer wysiwygRenderer = wysiwyg.get().getRenderer();
+        content = isEditionMode ? wysiwygRenderer.renderEdition() : wysiwygRenderer.renderView();
+      } else {
+        content = StringUtil.EMPTY;
+      }
       location = calendarEvent.getLocation();
       visibility = calendarEvent.getVisibilityLevel();
       priority = calendarEvent.getPriority();

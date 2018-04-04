@@ -109,10 +109,10 @@
             });
           };
 
-          $scope.loadOccurrenceFromContext = function(creationMode) {
+          $scope.loadOccurrenceFromContext = function(editionMode) {
             $scope.loadCalendarsFromContext().then(function(calendars) {
               $scope.calendars = $scope.getVisibleCalendars(calendars);
-              return $scope.reloadEventOccurrence(context.occurrenceUri, creationMode).then(
+              return $scope.reloadEventOccurrence(context.occurrenceUri, editionMode).then(
                   function(reloadedOccurrence) {
                     if (!reloadedOccurrence.uri && context.occurrenceStartDate) {
                       reloadedOccurrence.startDate = context.occurrenceStartDate;
@@ -137,9 +137,10 @@
             });
           };
 
-          $scope.reloadEventOccurrence = function(occurrenceUri, creationMode) {
+          $scope.reloadEventOccurrence = function(occurrenceUri, editionMode) {
             if (occurrenceUri) {
-              return CalendarService.getEventOccurrenceByUri(occurrenceUri)
+              // Case or existing event occurrence
+              return CalendarService.getEventOccurrenceByUri(occurrenceUri, editionMode)
                   .then(function(reloadedOccurrence) {
                     return CalendarService.getByUri(reloadedOccurrence.calendarUri).then(
                         function(calendar) {
@@ -147,16 +148,16 @@
                           return reloadedOccurrence;
                         })
                   });
-            } else {
-              if (creationMode) {
-                return sp.volatileIdentifier.newOn(context.component).then(function(volatileId) {
-                  var newOccurrence = SilverpeasCalendarTools.newEventOccurrenceEntity();
-                  newOccurrence.eventId = volatileId;
-                  return newOccurrence;
-                });
-              }
-              return sp.promise.resolveDirectlyWith(SilverpeasCalendarTools.newEventOccurrenceEntity());
+            } else if (editionMode) {
+              // Case of creation
+              return sp.volatileIdentifier.newOn(context.component).then(function(volatileId) {
+                var newOccurrence = SilverpeasCalendarTools.newEventOccurrenceEntity();
+                newOccurrence.eventId = volatileId;
+                return newOccurrence;
+              });
             }
+            // Default case
+            return sp.promise.resolveDirectlyWith(SilverpeasCalendarTools.newEventOccurrenceEntity());
           };
         }]);
 })();
