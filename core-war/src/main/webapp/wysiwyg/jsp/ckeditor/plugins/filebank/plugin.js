@@ -31,7 +31,7 @@ CKEDITOR.plugins.add( 'filebank', {
 	  // as the name of the widget.
 	  icons: 'filebank',
 
-	  lang: 'en,fr',
+	  lang: 'de,en,fr',
 
 	  // The plugin initialization logic goes inside this method.
 	  init: function( editor ) {
@@ -43,7 +43,9 @@ CKEDITOR.plugins.add( 'filebank', {
         var apps;
         var url = webContext + "/services/components?filter=filebanks";
         $.ajax({
-          url : url, async : false
+          url : url,
+          cache: false,
+          async : false
         }).done(function(result) {
           apps = result;
         });

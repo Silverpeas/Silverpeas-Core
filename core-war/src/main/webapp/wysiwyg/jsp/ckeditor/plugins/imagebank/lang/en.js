@@ -24,6 +24,6 @@
 
 CKEDITOR.plugins.setLang( 'imagebank', 'en', {
   label: 'Image banks',
-  onceLabel: 'Image banks',
+  onceLabel: 'Image bank',
   title: 'Choose an image from the available image banks'
 } );

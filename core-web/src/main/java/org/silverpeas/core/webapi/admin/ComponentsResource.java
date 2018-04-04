@@ -40,6 +40,7 @@ import javax.ws.rs.core.UriInfo;
 import java.util.Collection;
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
+import static org.silverpeas.core.util.StringUtil.isDefined;
 import static org.silverpeas.core.webapi.admin.AdminResourceURIs.COMPONENTS_BASE_URI;
 
 /**
@@ -74,23 +75,20 @@ public class ComponentsResource extends AbstractAdminResource {
    */
   @GET
   @Produces(APPLICATION_JSON)
-  public Collection<ComponentEntity> getComponentsByFilter(@QueryParam("filter") final String filter) {
+  public Collection<ComponentEntity> getComponentsByFilterOrParameterValue(
+      @QueryParam("filter") final String filter, @QueryParam("param") final String param,
+      @QueryParam("value") final String value) {
     if ("imagebanks".equals(filter)) {
       return getByParameterValue("viewInWysiwyg", "yes");
     } else if ("filebanks".equals(filter)) {
       return getByParameterValue("publicFiles", "yes");
+    } else if (isDefined(param) && isDefined(value)) {
+      if (!getUser().isAccessAdmin()) {
+        throw new WebApplicationException(Status.FORBIDDEN);
+      }
+      return getByParameterValue(param, value);
     }
-    throw new WebApplicationException(Status.FORBIDDEN);
-  }
-
-  @GET
-  @Produces(APPLICATION_JSON)
-  public Collection<ComponentEntity> getComponentsByParameterValue(
-      @QueryParam("param") final String param, @QueryParam("value") final String value) {
-    if (!getUser().isAccessAdmin()) {
-      throw new WebApplicationException(Status.FORBIDDEN);
-    }
-    return getByParameterValue(param, value);
+    throw new WebApplicationException(Status.BAD_REQUEST);
   }
 
   private Collection<ComponentEntity> getByParameterValue(String param, String value) {

@@ -160,7 +160,7 @@
     }
   </script>
 </head>
-<body>
+<body class="page_content_admin">
 <view:browseBar extraInformations="${browseBarAll}"/>
 <view:operationPane>
   <view:operationOfCreation action="javascript:newVariable()" icon="${iconAdd}" altText="${addVal}" />

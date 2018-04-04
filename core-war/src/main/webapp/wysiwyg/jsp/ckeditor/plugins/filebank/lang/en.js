@@ -23,7 +23,7 @@
  */
 
 CKEDITOR.plugins.setLang( 'filebank', 'en', {
-  label: 'Banques de fichiers',
-  onceLabel: 'Banque de fichiers',
-  title: 'Choisissez un fichier parmi les banques de fichiers disponibles'
+  label: 'File stores',
+  onceLabel: 'File store',
+  title: 'Choose a file from the available file stores'
 } );

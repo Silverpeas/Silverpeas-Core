@@ -22,7 +22,7 @@
  *   along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-CKEDITOR.plugins.setLang( 'imagesofcontribution', 'fr', {
-	label: 'Images',
-  title: 'Choisissez une image'
+CKEDITOR.plugins.setLang( 'mediaofcontribution', 'fr', {
+	label: 'Médias',
+  title: 'Choisissez un média'
 } );

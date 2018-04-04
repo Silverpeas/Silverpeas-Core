@@ -23,11 +23,11 @@
  */
 
 // Register the plugin within the editor.
-CKEDITOR.plugins.add( 'imagesofcontribution', {
+CKEDITOR.plugins.add( 'mediaofcontribution', {
     // This plugin requires the Widgets System defined in the 'widget' plugin.
 	  requires: ['richcombo'],
 
-    lang: 'en,fr',
+    lang: 'de,en,fr',
 
 	  // The plugin initialization logic goes inside this method.
 	  init: function( editor ) {
@@ -35,13 +35,14 @@ CKEDITOR.plugins.add( 'imagesofcontribution', {
       var url = webContext + "/services/documents/"+editor.config.silverpeasComponentId+"/resource/"+editor.config.silverpeasObjectId+"/types/image/fr";
       $.ajax({
         url: url,
+        cache: false,
         async: false
       }).done(function(result) { images= result; });
 
       if (images && images.length > 0) {
-        editor.ui.addRichCombo('imagesofcontribution', {
-          label : editor.lang.imagesofcontribution.label,
-          title : editor.lang.imagesofcontribution.title,
+        editor.ui.addRichCombo('mediaofcontribution', {
+          label : editor.lang.mediaofcontribution.label,
+          title : editor.lang.mediaofcontribution.title,
           multiSelect : false,
           className : 'sp-richcombo',
           panel : {

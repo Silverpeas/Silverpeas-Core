@@ -333,7 +333,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   }
 
   public String duplicateContent(FieldTemplate template, ResourceReference from, ResourceReference to,
-      String language) throws FormException {
+      String language) {
     String code = getContent(from.getInstanceId(), from.getId(), template.getFieldName(), language);
     String fileName = setContentIntoFile(to.getInstanceId(), to.getId(), template.
         getFieldName(), code, language);
