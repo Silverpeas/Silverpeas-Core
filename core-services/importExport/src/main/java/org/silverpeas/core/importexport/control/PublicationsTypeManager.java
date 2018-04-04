@@ -23,32 +23,27 @@
  */
 package org.silverpeas.core.importexport.control;
 
+import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.contribution.content.form.XMLField;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
-import org.silverpeas.core.importexport.form.XMLModelContentType;
-import org.silverpeas.core.importexport.versioning.VersioningImport;
-import org.silverpeas.core.node.importexport.NodeImportExport;
-import org.silverpeas.core.node.importexport.NodePositionType;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.node.coordinates.model.Coordinate;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
-import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.contribution.attachment.util.AttachmentSettings;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.contribution.content.form.XMLField;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
+import org.silverpeas.core.contribution.publication.model.PublicationDetail;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
 import org.silverpeas.core.importexport.coordinates.CoordinateImportExport;
 import org.silverpeas.core.importexport.coordinates.CoordinatePointType;
 import org.silverpeas.core.importexport.coordinates.CoordinatesPositionsType;
+import org.silverpeas.core.importexport.form.XMLModelContentType;
 import org.silverpeas.core.importexport.model.ImportExportException;
 import org.silverpeas.core.importexport.model.PublicationType;
 import org.silverpeas.core.importexport.publication.PublicationContentType;
@@ -59,21 +54,26 @@ import org.silverpeas.core.importexport.report.ImportReportManager;
 import org.silverpeas.core.importexport.report.UnitReport;
 import org.silverpeas.core.importexport.versioning.Document;
 import org.silverpeas.core.importexport.versioning.DocumentVersion;
+import org.silverpeas.core.importexport.versioning.VersioningImport;
 import org.silverpeas.core.importexport.wysiwyg.WysiwygContentType;
+import org.silverpeas.core.io.media.MetaData;
+import org.silverpeas.core.io.media.MetadataExtractor;
+import org.silverpeas.core.node.coordinates.model.Coordinate;
+import org.silverpeas.core.node.importexport.NodeImportExport;
+import org.silverpeas.core.node.importexport.NodePositionType;
+import org.silverpeas.core.node.model.NodeDetail;
+import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.pdc.pdc.importexport.PdcImportExport;
 import org.silverpeas.core.pdc.pdc.model.ClassifyPosition;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.CollectionUtil;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.io.media.MetaData;
-import org.silverpeas.core.io.media.MetadataExtractor;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.WAAttributeValuePair;
 import org.silverpeas.core.util.error.SilverpeasTransverseErrorUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
 import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 
 import javax.inject.Inject;
 import java.io.File;
@@ -183,7 +183,7 @@ public class PublicationsTypeManager {
               exportPublicationRelativePath, exportPublicationPath, wysiwygContent, publicationType.
                   getPublicationDetail().getLanguage());
         } else if (xmlModel != null) {
-          exportXmlForm(new PublicationPK(pubId, publicationDetail.getInstanceId()),
+          exportXmlForm(new PublicationPK(pubId, publicationDetail.getInstanceId()), gedIE,
               exportPublicationRelativePath, exportPublicationPath, xmlModel);
         }
       }
@@ -275,7 +275,7 @@ public class PublicationsTypeManager {
     }
   }
 
-  private void exportXmlForm(PublicationPK publicationPk, String exportPublicationRelativePath,
+  private void exportXmlForm(PublicationPK publicationPk, GEDImportExport gedIE, String exportPublicationRelativePath,
       String exportPublicationPath, XMLModelContentType xmlModel) {
     List<XMLField> xmlFields = xmlModel.getFields();
     for (XMLField xmlField : xmlFields) {
@@ -288,6 +288,8 @@ public class PublicationsTypeManager {
                 "xmlWysiwyg" + separator + wysiwygFile;
             FileRepositoryManager
                 .copyFile(fromPath, exportPublicationPath + separator + wysiwygFile);
+            gedIE.copyWysiwygImageForExport(publicationPk.getId(), publicationPk.getInstanceId(),
+                exportPublicationPath);
           } catch (Exception e) {
             SilverLogger.getLogger(this)
                 .silent(e)
