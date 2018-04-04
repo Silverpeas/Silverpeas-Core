@@ -136,6 +136,8 @@ public interface OrganizationController extends java.io.Serializable {
 
   String getComponentParameterValue(String sComponentId, String parameterName);
 
+  List<ComponentInstLight> getComponentsWithParameterValue(String param, String value);
+
   /**
    * Gets the component instance related to the given identifier.<br>
    * In contrary to {@link #getComponentInst(String)}, {@link #getComponentInstLight(String)}

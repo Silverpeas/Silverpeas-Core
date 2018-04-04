@@ -1042,7 +1042,8 @@ Style Utilise par le ViewGenerator
 #directory form .sp_button,
 #directory #indexAndSearch .sp_button,
 #searchLine  .sp_button,
-.container-filter #search .sp_button {
+.container-filter #search .sp_button,
+#thumbnailInputs .sp_button {
 	 padding: 1px 10px;
 	 font-size:9pt !important;
 	 height:17px;
@@ -5584,6 +5585,11 @@ span.sp-variable.cke_widget_element {
   border: 2px dotted #F9E98E;
   padding: 0 3px;
   background-color: #faf8d3;
+}
+
+.sp-richcombo.cke_combo__imagebank .cke_combo_text,
+.sp-richcombo.cke_combo__filebank .cke_combo_text {
+  width: 100px !important;
 }
 
 .container-wysiwyg {

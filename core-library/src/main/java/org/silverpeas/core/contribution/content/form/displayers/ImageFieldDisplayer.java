@@ -33,6 +33,7 @@ import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RenderingContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.FileField;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
@@ -199,20 +200,30 @@ public class ImageFieldDisplayer extends AbstractFileFieldDisplayer {
       PrintWriter out) {
     String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
     List<ComponentInstLight> galleries = WysiwygController.getGalleries();
-    if (galleries != null && !galleries.isEmpty()) {
+    if (CollectionUtil.isNotEmpty(galleries)) {
       StringBuilder stringBuilder = new StringBuilder();
       stringBuilder.append(" ").append(Util.getString("GML.or", language)).append(" ");
-      stringBuilder.append("<select id=\"galleryFile_").append(fieldName).
-          append("\" name=\"galleryFile\" onchange=\"openGalleryFileManager").
-          append(fieldNameFunction).append("();this.selectedIndex=0\">");
-      stringBuilder.append("<option value=\"\">");
-      stringBuilder.append(Util.getString("GML.galleries", language));
-      stringBuilder.append("</option>");
-      for (ComponentInstLight component : galleries) {
-        stringBuilder.append("<option value=\"").append(component.getId()).append("\">").append(
-            component.getLabel(language)).append("</option>");
+      if (galleries.size() > 1) {
+        stringBuilder.append("<select id=\"galleryFile_").append(fieldName).
+            append("\" name=\"galleryFile\" onchange=\"openGalleryFileManager").
+            append(fieldNameFunction).append("();this.selectedIndex=0\">");
+        stringBuilder.append("<option value=\"\">");
+        stringBuilder.append(Util.getString("GML.thumbnail.galleries", language));
+        stringBuilder.append("</option>");
+        for (ComponentInstLight component : galleries) {
+          stringBuilder.append("<option value=\"").append(component.getId()).append("\">").append
+              (component.getLabel(language)).append("</option>");
+        }
+        stringBuilder.append("</select>");
+      } else {
+        ComponentInstLight component = galleries.get(0);
+        String title = Util.getString("GML.thumbnail.gallery.help", language);
+        String label = Util.getString("GML.thumbnail.gallery", language);
+        stringBuilder
+            .append("<a href=\"#\" class=\"button-imageBank\" onclick=\"openGalleryFileManager")
+            .append(fieldNameFunction).append("('").append(component.getId()).append("') title=\"")
+            .append(title).append("\">").append(label).append("</a>");
       }
-      stringBuilder.append("</select>");
       out.println(stringBuilder.toString());
 
       out.println("<script type=\"text/javascript\">");
