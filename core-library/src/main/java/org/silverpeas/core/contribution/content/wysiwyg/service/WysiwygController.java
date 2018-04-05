@@ -24,7 +24,6 @@
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -146,46 +145,46 @@ public class WysiwygController {
 
   /**
    * Creation of the file and its attachment.
-   * @param textHtml String : contains the text published by the wysiwyg.
-   * @param foreignKey the id of object to which is attached the wysiwyg.
+   * @param textHtml a {@link String} containing the text published by the wysiwyg.
+   * @param resource a reference to the resource to which is attached the wysiwyg.
    * @param context the context images/wysiwyg....
    * @param userId the user creating the wysiwyg.
    * @param contentLanguage the language of the content of the wysiwyg.
    */
-  public static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
+  public static void createFileAndAttachment(String textHtml, ResourceReference resource,
       String context, String userId, String contentLanguage) {
     WysiwygContent content = new WysiwygContent(
-        contributionFrom(foreignKey.getInstanceId(), foreignKey.getId(), contentLanguage), textHtml)
+        contributionFrom(resource.getInstanceId(), resource.getId(), contentLanguage), textHtml)
         .authoredBy(User.getById(userId));
     getManager().createFileAndAttachment(content, context);
   }
 
   /**
    * Method declaration creation of the file and its attachment.
-   * @param textHtml String : contains the text published by the wysiwyg
-   * @param foreignKey the id of object to which is attached the wysiwyg.
+   * @param textHtml a {@link String} containing the text published by the wysiwyg
+   * @param resource a reference to the resource to which is attached the wysiwyg.
    * @param userId the author of the content.
    * @param contentLanguage the language of the content.
    */
-  public static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
+  public static void createFileAndAttachment(String textHtml, ResourceReference resource,
       String userId, String contentLanguage) {
     WysiwygContent content = new WysiwygContent(
-        contributionFrom(foreignKey.getInstanceId(), foreignKey.getId(), contentLanguage), textHtml)
+        contributionFrom(resource.getInstanceId(), resource.getId(), contentLanguage), textHtml)
         .authoredBy(User.getById(userId));
     getManager().createFileAndAttachment(content);
   }
 
   /**
    * Method declaration creation of the file and its attachment.
-   * @param textHtml String : contains the text published by the wysiwyg
-   * @param foreignKey the id of object to which is attached the wysiwyg.
+   * @param textHtml a {@link String} containing the text published by the wysiwyg
+   * @param resource a reference to the resource to which is attached the wysiwyg.
    * @param userId the author of the content.
    * @param contentLanguage the language of the content.
    */
-  public static void createUnindexedFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
+  public static void createUnindexedFileAndAttachment(String textHtml, ResourceReference resource,
       String userId, String contentLanguage) {
     WysiwygContent content = new WysiwygContent(
-        contributionFrom(foreignKey.getInstanceId(), foreignKey.getId(), contentLanguage), textHtml)
+        contributionFrom(resource.getInstanceId(), resource.getId(), contentLanguage), textHtml)
         .authoredBy(User.getById(userId));
     getManager().createUnindexedFileAndAttachment(content);
   }
