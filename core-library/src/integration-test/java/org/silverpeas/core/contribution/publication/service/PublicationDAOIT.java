@@ -117,7 +117,7 @@ public class PublicationDAOIT {
       assertEquals(detail.getAuthor(), result.getAuthor());
       assertEquals(detail.getBeginDate(), result.getBeginDate());
       assertEquals(detail.getBeginHour(), result.getBeginHour());
-      assertEquals(detail.getContent(), result.getContent());
+      assertEquals(detail.getContentPagePath(), result.getContentPagePath());
       assertEquals(detail.getCreationDate(), result.getCreationDate());
       assertEquals(detail.getUpdateDate(), result.getCreationDate());
       assertEquals(detail.getCreatorId(), result.getCreatorId());
@@ -146,7 +146,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", result.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(result.getBeginDate()));
       assertEquals("00:00", result.getBeginHour());
-      assertEquals("Contenu de la publication 1", result.getContent());
+      assertEquals("Contenu de la publication 1", result.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
@@ -177,7 +177,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", result.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(result.getBeginDate()));
       assertEquals("00:00", result.getBeginHour());
-      assertEquals("Contenu de la publication 1", result.getContent());
+      assertEquals("Contenu de la publication 1", result.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
@@ -210,7 +210,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", result.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(result.getBeginDate()));
       assertEquals("00:00", result.getBeginHour());
-      assertEquals("Contenu de la publication 1", result.getContent());
+      assertEquals("Contenu de la publication 1", result.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
@@ -244,7 +244,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", detail.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
       assertEquals("00:00", detail.getBeginHour());
-      assertEquals("Contenu de la publication 1", detail.getContent());
+      assertEquals("Contenu de la publication 1", detail.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("100", detail.getCreatorId());
       assertEquals("Première publication de test", detail.getDescription());
@@ -265,7 +265,7 @@ public class PublicationDAOIT {
       assertEquals("Bart Simpson", detail.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
       assertEquals("01:10", detail.getBeginHour());
-      assertEquals("Contenu de la publication 2", detail.getContent());
+      assertEquals("Contenu de la publication 2", detail.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("101", detail.getCreatorId());
       assertEquals("2ème publication de test", detail.getDescription());
@@ -303,7 +303,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", detail.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
       assertEquals("00:00", detail.getBeginHour());
-      assertEquals("Contenu de la publication 1", detail.getContent());
+      assertEquals("Contenu de la publication 1", detail.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("100", detail.getCreatorId());
       assertEquals("Première publication de test", detail.getDescription());
@@ -330,7 +330,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", detail.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
       assertEquals("00:00", detail.getBeginHour());
-      assertEquals("Contenu de la publication 1", detail.getContent());
+      assertEquals("Contenu de la publication 1", detail.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("100", detail.getCreatorId());
       assertEquals("Première publication de test", detail.getDescription());
@@ -429,7 +429,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", result.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(result.getBeginDate()));
       assertEquals("00:00", result.getBeginHour());
-      assertEquals("Contenu de la publication 1", result.getContent());
+      assertEquals("Contenu de la publication 1", result.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
@@ -458,7 +458,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", result.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(result.getBeginDate()));
       assertEquals("00:00", result.getBeginHour());
-      assertEquals("Contenu de la publication 1", result.getContent());
+      assertEquals("Contenu de la publication 1", result.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
@@ -487,7 +487,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", detail.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
       assertEquals("00:00", detail.getBeginHour());
-      assertEquals("Contenu de la publication 1", detail.getContent());
+      assertEquals("Contenu de la publication 1", detail.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("100", detail.getCreatorId());
       assertEquals("Première publication de test", detail.getDescription());
@@ -509,7 +509,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", detail.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
       assertEquals("00:00", detail.getBeginHour());
-      assertEquals("Contenu de la publication 1", detail.getContent());
+      assertEquals("Contenu de la publication 1", detail.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("100", detail.getCreatorId());
       assertEquals("Première publication de test", detail.getDescription());
@@ -538,7 +538,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", detail.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(detail.getBeginDate()));
       assertEquals("00:00", detail.getBeginHour());
-      assertEquals("Contenu de la publication 1", detail.getContent());
+      assertEquals("Contenu de la publication 1", detail.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(detail.getCreationDate()));
       assertEquals("100", detail.getCreatorId());
       assertEquals("Première publication de test", detail.getDescription());
@@ -583,7 +583,7 @@ public class PublicationDAOIT {
       detail.setImportance(importance);
       detail.setVersion(version);
       detail.setKeywords(keywords);
-      detail.setContent(contenu);
+      detail.setContentPagePath(contenu);
       detail.setBeginHour(DateUtil.formatTime(beginDate));
       detail.setEndHour(DateUtil.formatTime(endDate));
       PublicationDAO.storeRow(con, detail);
@@ -595,7 +595,7 @@ public class PublicationDAOIT {
       assertEquals(detail.getAuthor(), result.getAuthor());
       assertEquals(detail.getBeginDate(), result.getBeginDate());
       assertEquals(detail.getBeginHour(), result.getBeginHour());
-      assertEquals(detail.getContent(), result.getContent());
+      assertEquals(detail.getContentPagePath(), result.getContentPagePath());
       assertEquals(detail.getCreationDate(), result.getCreationDate());
       assertEquals(detail.getUpdateDate(), result.getCreationDate());
       assertEquals(detail.getCreatorId(), result.getCreatorId());
@@ -626,7 +626,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", result.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(result.getBeginDate()));
       assertEquals("00:00", result.getBeginHour());
-      assertEquals("Contenu de la publication 1", result.getContent());
+      assertEquals("Contenu de la publication 1", result.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
@@ -657,7 +657,7 @@ public class PublicationDAOIT {
       assertEquals("Homer Simpson", result.getAuthor());
       assertEquals("2009/10/18", DateUtil.formatDate(result.getBeginDate()));
       assertEquals("00:00", result.getBeginHour());
-      assertEquals("Contenu de la publication 1", result.getContent());
+      assertEquals("Contenu de la publication 1", result.getContentPagePath());
       assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
       assertEquals("100", result.getCreatorId());
       assertEquals("Première publication de test", result.getDescription());
