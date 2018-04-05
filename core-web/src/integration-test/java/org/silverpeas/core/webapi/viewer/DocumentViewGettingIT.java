@@ -23,27 +23,28 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
-import org.silverpeas.web.ResourceGettingTest;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.contribution.attachment.SimpleDocumentService;
 import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.web.test.WarBuilder4WebCore;
-import org.silverpeas.core.viewer.service.DefaultViewService;
 import org.silverpeas.core.viewer.model.DocumentView;
+import org.silverpeas.core.viewer.service.DefaultViewService;
 import org.silverpeas.core.viewer.service.ViewerContext;
+import org.silverpeas.core.web.test.WarBuilder4WebCore;
+import org.silverpeas.web.ResourceGettingTest;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
 import javax.inject.Singleton;
 import java.io.File;
+import java.nio.file.Paths;
 
 import static javax.interceptor.Interceptor.Priority.APPLICATION;
 import static org.junit.Assert.assertNotNull;
@@ -62,7 +63,7 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
   private DocumentView expected;
   private ComponentInst component;
 
-  private static String ATTACHMENT_ID = "7";
+  static String ATTACHMENT_ID = "7";
   private static String ATTACHMENT_ID_DOESNT_EXISTS = "8";
 
   @Deployment
@@ -102,8 +103,11 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
       final String originalFileName = viewerContext.getOriginalFileName();
       final File physicalFile = viewerContext.getOriginalSourceFile();
       final DocumentView documentView = mock(DocumentView.class);
+      when(documentView.getDocumentId()).thenReturn(ATTACHMENT_ID);
       when(documentView.getOriginalFileName()).thenReturn(originalFileName);
       when(documentView.getURLAsString()).thenReturn("/URL/" + physicalFile.getName());
+      when(documentView.getServerFilePath()).thenReturn(Paths.get(originalFileName));
+      when(documentView.getLanguage()).thenReturn("fr");
       return documentView;
     }
   }

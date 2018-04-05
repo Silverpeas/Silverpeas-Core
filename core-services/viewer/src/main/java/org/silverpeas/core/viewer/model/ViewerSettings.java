@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.viewer.model;
 
+import org.silverpeas.core.io.temp.TemporaryDataManagementSetting;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
-import org.silverpeas.core.io.temp.TemporaryDataManagementSetting;
 import org.silverpeas.core.viewer.service.JsonPdfToolManager;
 
 /**
@@ -36,6 +36,10 @@ public class ViewerSettings {
 
   protected static SettingBundle settings =
       ResourceLocator.getSettingBundle("org.silverpeas.viewer.viewer");
+
+  private ViewerSettings() {
+    throw new IllegalStateException("Utility class");
+  }
 
   /**
    * Gets the maximum width the preview can be.
@@ -51,6 +55,14 @@ public class ViewerSettings {
    */
   public static int getPreviewMaxHeight() {
     return settings.getInteger("preview.height.max", 500);
+  }
+
+  /**
+   * indicates if pdf viewer is enabled.
+   * @return a string, empty if no licence key.
+   */
+  public static boolean pdfViewerEnabled() {
+    return settings.getBoolean("pdf.viewer.enabled", true);
   }
 
   /**

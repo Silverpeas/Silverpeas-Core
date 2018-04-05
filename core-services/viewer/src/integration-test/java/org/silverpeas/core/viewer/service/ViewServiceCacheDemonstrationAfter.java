@@ -32,11 +32,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.viewer.model.DocumentView;
-import org.silverpeas.core.viewer.model.ViewerSettings;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.util.SerializationUtil;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.viewer.model.DocumentView;
+import org.silverpeas.core.viewer.model.ViewerSettings;
 
 import javax.inject.Inject;
 import java.util.logging.Logger;

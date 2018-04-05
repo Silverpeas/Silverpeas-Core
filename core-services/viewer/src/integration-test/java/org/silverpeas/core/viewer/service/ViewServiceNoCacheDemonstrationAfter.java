@@ -32,11 +32,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.viewer.model.DocumentView;
-import org.silverpeas.core.viewer.model.ViewerSettings;
 import org.silverpeas.core.test.rule.MockByReflectionRule;
 import org.silverpeas.core.util.SerializationUtil;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.viewer.model.DocumentView;
+import org.silverpeas.core.viewer.model.ViewerSettings;
 
 import javax.inject.Inject;
 import java.util.logging.Logger;
@@ -57,7 +57,7 @@ public class ViewServiceNoCacheDemonstrationAfter extends AbstractViewerIT {
   private ViewService viewService;
 
   @Before
-  public void setup() throws Exception {
+  public void setup() {
     final SettingBundle mockedSettings =
         reflectionRule.mockField(ViewerSettings.class, SettingBundle.class, "settings");
     when(mockedSettings.getInteger(eq("preview.width.max"), anyInt())).thenReturn(1000);
@@ -70,7 +70,7 @@ public class ViewServiceNoCacheDemonstrationAfter extends AbstractViewerIT {
   }
 
   @After
-  public void tearDown() throws Exception {
+  public void tearDown() {
     FileUtils.deleteQuietly(getTemporaryPath());
   }
 

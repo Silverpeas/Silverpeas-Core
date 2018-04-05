@@ -52,8 +52,7 @@ public class DocumentViewEntityMatcher extends BaseMatcher<DocumentViewEntity> {
     boolean match = false;
     if (item instanceof DocumentViewEntity) {
       final DocumentViewEntity actual = (DocumentViewEntity) item;
-      match = expected.getURLAsString().equals(actual.getUrl().toString()) &&
-          expected.getOriginalFileName().equals(actual.getOriginalFileName())
+      match = expected.getOriginalFileName().equals(actual.getOriginalFileName())
           && actual.getURI().toString().endsWith("/view/dummyComponent0/attachment/7");
     }
     return match;

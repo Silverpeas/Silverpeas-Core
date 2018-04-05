@@ -24,6 +24,8 @@
 package org.silverpeas.core.webapi.viewer;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 import org.silverpeas.core.viewer.model.Preview;
 import org.silverpeas.core.viewer.service.ViewerException;
@@ -53,6 +55,21 @@ public class PreviewBuilder {
     public PreviewMock(final String uriId, final String fileName) {
       this.uriId = uriId;
       this.fileName = fileName;
+    }
+
+    @Override
+    public String getDocumentId() {
+      return "doc-id";
+    }
+
+    @Override
+    public String getLanguage() {
+      return "fr";
+    }
+
+    @Override
+    public Path getServerFilePath() {
+      return Paths.get(fileName);
     }
 
     /*

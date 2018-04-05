@@ -469,6 +469,13 @@ function getWindowScrollBarThicknessSize() {
 if (!window.SilverpeasPluginBundle) {
   SilverpeasPluginBundle = function(bundle) {
     var translations = bundle ? bundle : {};
+    this.getAsTextProperties = function() {
+      var text = '';
+      for(var key in translations) {
+        text = text + key + '=' + translations[key] + '\n';
+      }
+      return text;
+    };
     this.get = function() {
       var key = arguments[0];
       var translation = translations[key];
