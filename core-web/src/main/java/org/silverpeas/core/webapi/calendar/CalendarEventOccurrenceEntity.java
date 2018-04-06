@@ -71,8 +71,9 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
 
   public static CalendarEventOccurrenceEntity fromOccurrence(
       final CalendarEventOccurrence occurrence, final String componentInstanceId,
-      final ZoneId zoneId) {
-    return new CalendarEventOccurrenceEntity().decorate(occurrence, componentInstanceId, zoneId);
+      final ZoneId zoneId, final boolean isEditionMode) {
+    return new CalendarEventOccurrenceEntity()
+        .decorate(occurrence, componentInstanceId, zoneId, isEditionMode);
   }
 
   public static String decodeId(String occurrenceId) {
@@ -254,9 +255,9 @@ public class CalendarEventOccurrenceEntity extends CalendarEventEntity {
 
   protected CalendarEventOccurrenceEntity decorate(
       final CalendarEventOccurrence calendarEventOccurrence, final String componentInstanceId,
-      final ZoneId zoneId) {
+      final ZoneId zoneId, final boolean isEditionMode) {
     final CalendarEvent calEvent = calendarEventOccurrence.getCalendarEvent();
-    decorate(calEvent, calEvent.getCalendar().getComponentInstanceId(), zoneId);
+    decorate(calEvent, calEvent.getCalendar().getComponentInstanceId(), zoneId, isEditionMode);
     this.occurrenceId = StringUtil.asBase64(calendarEventOccurrence.getId().getBytes());
     this.originalStartDate = calendarEventOccurrence.getOriginalStartDate().toString();
     setFirstEventOccurrence(calendarEventOccurrence.getOriginalStartDate()

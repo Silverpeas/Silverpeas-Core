@@ -78,5 +78,5 @@
   <p ng-bind-html="$ctrl.ceo.description | noHTML | newlines"></p>
 </div>
 <div class="occurrence-content" ng-if="$ctrl.ceo.content">
-  <p ng-bind-html="$ctrl.ceo.content"></p>
+  <p ng-bind-html="$ctrl.ceo.content | trustedHTML"></p>
 </div>

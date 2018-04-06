@@ -143,7 +143,7 @@ public class PublicationImportExport {
       nomPub = settings.getPublicationForAllFiles().getName();
       description = settings.getPublicationForAllFiles().getDescription();
       motsClefs = settings.getPublicationForAllFiles().getKeywords();
-      content = settings.getPublicationForAllFiles().getContent();
+      content = settings.getPublicationForAllFiles().getContentPagePath();
     }
     PublicationDetail publication =
         new PublicationDetail("unknown", nomPub, description, creationDate, new Date(), null,

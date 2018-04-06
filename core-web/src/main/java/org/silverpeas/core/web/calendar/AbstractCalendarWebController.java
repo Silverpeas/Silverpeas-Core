@@ -208,7 +208,7 @@ public abstract class AbstractCalendarWebController<C extends AbstractCalendarWe
     if (occurrence != null) {
       CalendarEventOccurrenceEntity entity =
           CalendarEventOccurrenceEntity.fromOccurrence(occurrence, context.getComponentInstanceId(),
-              getCalendarTimeWindowContext().getZoneId()).withOccurrenceURI(
+              getCalendarTimeWindowContext().getZoneId(), false).withOccurrenceURI(
               context.uri().ofOccurrence(occurrence));
       context.getRequest().setAttribute("occurrence", entity);
 

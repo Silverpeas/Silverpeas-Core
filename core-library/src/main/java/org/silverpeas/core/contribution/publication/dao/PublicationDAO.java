@@ -465,7 +465,7 @@ public class PublicationDAO {
       prepStmt.setInt(9, detail.getImportance());
       prepStmt.setString(10, detail.getVersion());
       prepStmt.setString(11, detail.getKeywords());
-      prepStmt.setString(12, detail.getContent());
+      prepStmt.setString(12, detail.getContentPagePath());
       prepStmt.setString(13, detail.getStatus());
       if (detail.isUpdateDateMustBeSet() && detail.getUpdateDate() != null) {
         prepStmt.setString(14, DateUtil.formatDate(detail.getUpdateDate()));
@@ -1774,7 +1774,7 @@ public class PublicationDAO {
       prepStmt.setInt(8, detail.getImportance());
       prepStmt.setString(9, detail.getVersion());
       prepStmt.setString(10, detail.getKeywords());
-      prepStmt.setString(11, detail.getContent());
+      prepStmt.setString(11, detail.getContentPagePath());
       prepStmt.setString(12, detail.getStatus());
       if (detail.getUpdateDate() == null) {
         prepStmt.setString(13, DateUtil.formatDate(detail.getCreationDate()));

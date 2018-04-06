@@ -24,7 +24,6 @@
 package org.silverpeas.core.contribution.content.wysiwyg.service;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -136,46 +135,46 @@ public class WysiwygController {
 
   /**
    * Creation of the file and its attachment.
-   * @param textHtml String : contains the text published by the wysiwyg.
-   * @param foreignKey the id of object to which is attached the wysiwyg.
+   * @param textHtml a {@link String} containing the text published by the wysiwyg.
+   * @param resource a reference to the resource to which is attached the wysiwyg.
    * @param context the context images/wysiwyg....
    * @param userId the user creating the wysiwyg.
    * @param contentLanguage the language of the content of the wysiwyg.
    */
-  public static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
+  public static void createFileAndAttachment(String textHtml, ResourceReference resource,
       String context, String userId, String contentLanguage) {
     WysiwygContent content = new WysiwygContent(
-        contributionFrom(foreignKey.getInstanceId(), foreignKey.getId(), contentLanguage), textHtml)
+        contributionFrom(resource.getInstanceId(), resource.getId(), contentLanguage), textHtml)
         .authoredBy(User.getById(userId));
     getManager().createFileAndAttachment(content, context);
   }
 
   /**
    * Method declaration creation of the file and its attachment.
-   * @param textHtml String : contains the text published by the wysiwyg
-   * @param foreignKey the id of object to which is attached the wysiwyg.
+   * @param textHtml a {@link String} containing the text published by the wysiwyg
+   * @param resource a reference to the resource to which is attached the wysiwyg.
    * @param userId the author of the content.
    * @param contentLanguage the language of the content.
    */
-  public static void createFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
+  public static void createFileAndAttachment(String textHtml, ResourceReference resource,
       String userId, String contentLanguage) {
     WysiwygContent content = new WysiwygContent(
-        contributionFrom(foreignKey.getInstanceId(), foreignKey.getId(), contentLanguage), textHtml)
+        contributionFrom(resource.getInstanceId(), resource.getId(), contentLanguage), textHtml)
         .authoredBy(User.getById(userId));
     getManager().createFileAndAttachment(content);
   }
 
   /**
    * Method declaration creation of the file and its attachment.
-   * @param textHtml String : contains the text published by the wysiwyg
-   * @param foreignKey the id of object to which is attached the wysiwyg.
+   * @param textHtml a {@link String} containing the text published by the wysiwyg
+   * @param resource a reference to the resource to which is attached the wysiwyg.
    * @param userId the author of the content.
    * @param contentLanguage the language of the content.
    */
-  public static void createUnindexedFileAndAttachment(String textHtml, WAPrimaryKey foreignKey,
+  public static void createUnindexedFileAndAttachment(String textHtml, ResourceReference resource,
       String userId, String contentLanguage) {
     WysiwygContent content = new WysiwygContent(
-        contributionFrom(foreignKey.getInstanceId(), foreignKey.getId(), contentLanguage), textHtml)
+        contributionFrom(resource.getInstanceId(), resource.getId(), contentLanguage), textHtml)
         .authoredBy(User.getById(userId));
     getManager().createUnindexedFileAndAttachment(content);
   }
@@ -244,27 +243,38 @@ public class WysiwygController {
   }
 
   /**
-   * Loads wysiwyg content.
-   * @param contribution the localized contribution for which the WYSIWYG content has to be loaded.
-   * @return text the contents of the file attached.
+   * Gets representation of a wysiwyg content.
+   * @param contribution the localized contribution for which the WYSIWYG content has to be get.
+   * @return {@link WysiwygContent} instance.
    */
-  public static String load(final LocalizedContribution contribution) {
-    return getManager().getByContribution(contribution).getData();
+  public static WysiwygContent get(final LocalizedContribution contribution) {
+    return getManager().getByContribution(contribution);
   }
 
   /**
-   * Loads wysiwyg content.
+   * Gets representation of a wysiwyg content.
+   * @param componentId String : the id of component.
+   * @param objectId String : for example the id of the publication.
+   * @param language the language of the content.
+   * @return {@link WysiwygContent} instance.
+   */
+  public static WysiwygContent get(String componentId, String objectId, String language) {
+    return get(contributionFrom(componentId, objectId, language));
+  }
+
+  /**
+   * Loads wysiwyg content rendered for edition context.
    * @param componentId String : the id of component.
    * @param objectId String : for example the id of the publication.
    * @param language the language of the content.
    * @return text : the contents of the file attached.
    */
   public static String load(String componentId, String objectId, String language) {
-    return load(contributionFrom(componentId, objectId, language));
+    return get(componentId, objectId, language).getRenderer().renderEdition();
   }
 
   /**
-   * Loads wysiwyg content that will only be read and never updated.<br>
+   * Loads wysiwyg content that will only be read and never be updated.<br>
    * Indeed, this method will call standard WYSIWYG transformations that are necessary only in
    * readOnly mode. The resizing of image attachments for example.
    * @param componentId String : the id of component.
@@ -273,9 +283,7 @@ public class WysiwygController {
    * @return text : the contents of the file attached.
    */
   public static String loadForReadOnly(String componentId, String objectId, String language) {
-    String wysiwygContent = load(componentId, objectId, language);
-    return WysiwygContentTransformer.on(wysiwygContent).modifyImageUrlAccordingToHtmlSizeDirective()
-        .transform();
+    return get(componentId, objectId, language).getRenderer().renderView();
   }
 
   /**

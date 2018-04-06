@@ -95,7 +95,7 @@ public class PublicationSelection extends ClipboardSelection implements Serializ
     keyData.setAuthor(m_pub.getCreatorId());
     keyData.setCreationDate(m_pub.getCreationDate());
     keyData.setDesc(m_pub.getDescription());
-    keyData.setText(m_pub.getContent());
+    keyData.setText(m_pub.getContentPagePath());
     try {
       keyData.setProperty("BEGINDATE", m_pub.getBeginDate().toString());
       keyData.setProperty("ENDDATE", m_pub.getEndDate().toString());

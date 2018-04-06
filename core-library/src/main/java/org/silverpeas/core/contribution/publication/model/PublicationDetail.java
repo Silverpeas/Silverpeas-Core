@@ -42,9 +42,12 @@ import org.silverpeas.core.contribution.contentcontainer.content.ContentManager;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerException;
 import org.silverpeas.core.contribution.contentcontainer.content.ContentManagerProvider;
 import org.silverpeas.core.contribution.contentcontainer.content.SilverContentInterface;
+import org.silverpeas.core.contribution.model.ContributionContent;
 import org.silverpeas.core.contribution.model.ContributionIdentifier;
 import org.silverpeas.core.contribution.model.I18nContribution;
+import org.silverpeas.core.contribution.model.LocalizedContribution;
 import org.silverpeas.core.contribution.model.WithAttachment;
+import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.rating.model.ContributionRating;
 import org.silverpeas.core.contribution.rating.model.ContributionRatingPK;
@@ -559,7 +562,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     this.creatorId = creatorId;
   }
 
-  public void setContent(String content) {
+  public void setContentPagePath(String content) {
     this.content = content;
   }
 
@@ -627,7 +630,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     return getKeywords();
   }
 
-  public String getContent() {
+  public String getContentPagePath() {
     return content;
   }
 
@@ -700,7 +703,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     result.append(" getImportance() = ").append(getImportance()).append("\n");
     result.append(" getVersion() = ").append(getVersion()).append("\n");
     result.append(" getKeywords() = ").append(getKeywords()).append("\n");
-    result.append(" getContent() = ").append(getContent()).append("\n");
+    result.append(" getContent() = ").append(getContentPagePath()).append("\n");
     result.append(" getStatus() = ").append(getStatus()).append("\n");
     result.append(" getUpdateDate() = ").append(getUpdateDate()).append("\n");
     result.append(" getUpdaterId() = ").append(getUpdaterId()).append("\n");
@@ -961,18 +964,16 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     }
   }
 
-  public String getWysiwyg() {
-    String wysiwygContent;
+  public ContributionContent getContent() {
     try {
-      wysiwygContent =
-          WysiwygController.load(getPK().getComponentName(), getPK().getId(), getLanguage());
+      return WysiwygController.get(getPK().getComponentName(), getPK().getId(), getLanguage());
     } catch (Exception e) {
-      wysiwygContent = "Erreur lors du chargement du wysiwyg !";
       SilverLogger.getLogger(this)
           .warn("can not load wysiwyg of publication {0} into {1} language", getId(), getLanguage(),
               e);
     }
-    return wysiwygContent;
+    return new WysiwygContent(LocalizedContribution.from(this, getLanguage()),
+        "Erreur lors du chargement du wysiwyg !");
   }
 
   public void setImportance(int importance) {
@@ -1086,7 +1087,7 @@ public class PublicationDetail extends AbstractI18NBean<PublicationI18N>
     clone.setAuthor(author);
     clone.setBeginDate(beginDate);
     clone.setBeginHour(beginHour);
-    clone.setContent(content);
+    clone.setContentPagePath(content);
     clone.setCreationDate(creationDate);
     clone.setCreatorId(creatorId);
     clone.setDescription(getDescription());

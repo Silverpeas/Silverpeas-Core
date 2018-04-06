@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.contribution.model;
 
+import org.silverpeas.core.contribution.content.renderer.ContributionContentRenderer;
+import org.silverpeas.core.contribution.content.renderer.ContributionContentRendererProvider;
+
 import java.io.Serializable;
 
 /**
@@ -55,5 +58,13 @@ public interface ContributionContent<T> extends Serializable {
    */
   default boolean isEmpty() {
     return getData() != null;
+  }
+
+  /**
+   * Gets the renderer of the content.
+   * @return the {@link ContributionContentRenderer} instance.
+   */
+  default ContributionContentRenderer getRenderer() {
+    return ContributionContentRendererProvider.get().ofContent(this);
   }
 }
