@@ -47,7 +47,6 @@ import static org.silverpeas.core.contribution.model.CoreContributionType.WYSIWY
 public class WysiwygController {
 
   public static final String WYSIWYG_CONTEXT = WysiwygManager.WYSIWYG_CONTEXT;
-  public static final String WYSIWYG_IMAGES = WysiwygManager.WYSIWYG_IMAGES;
   public static final String WYSIWYG_WEBSITES = WysiwygManager.WYSIWYG_WEBSITES;
 
   /**
@@ -112,15 +111,6 @@ public class WysiwygController {
   public static String[][] getWebsitePages(String path, String componentId)
       throws WysiwygException {
     return getManager().getWebsitePages(path, componentId);
-  }
-
-  /**
-   * Build the name of the file to be attached.
-   * @param objectId: for example the id of the publication.
-   * @return the name of the file
-   */
-  public static String getOldWysiwygFileName(String objectId) {
-    return getManager().getOldWysiwygFileName(objectId);
   }
 
   public static String getWysiwygFileName(String objectId, String currentLanguage) {
@@ -367,15 +357,6 @@ public class WysiwygController {
   }
 
   /**
-   * Gets the components dedicated to file storage
-   *
-   * @return a components list
-   */
-  public static List<ComponentInstLight> getStorageFile() {
-    return getManager().getStorageFile();
-  }
-
-  /**
    * Index given embedded linked files
    * @param indexEntry index entry to update
    * @param embeddedAttachmentIds embedded linked files ids
@@ -383,16 +364,6 @@ public class WysiwygController {
   public static void indexEmbeddedLinkedFiles(FullIndexEntry indexEntry,
       List<String> embeddedAttachmentIds) {
     getManager().indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
-  }
-
-  /**
-   * To create path. Warning: the token separing the repertories is ",".
-   * @param componentId : the name of component
-   * @param context : string made up of the repertories separated by token ","
-   * @return the path.
-   */
-  public static String createPath(String componentId, String context) {
-    return getManager().createPath(componentId, context);
   }
 
   private static class WysiwygLocalizedContribution implements LocalizedContribution {

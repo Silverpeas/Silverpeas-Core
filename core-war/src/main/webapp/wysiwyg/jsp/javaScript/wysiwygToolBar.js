@@ -39,21 +39,17 @@ function getCKEditor() {
 	return CKEDITOR.instances[theEditorName];
 }
 
-function openStorageFileManager(editorName, context, nodeType) {
-	setEditorName(editorName);
-	var index = document.getElementById("storageFile").selectedIndex;
-	var componentId = document.getElementById("storageFile").options[index].value;
-	if (index != 0) {
-		var url = context+"/kmelia/jsp/attachmentLinkManagement.jsp?key="+componentId+"&ntype="+nodeType;
-		var windowName = "StorageFileWindow";
-		var width = "750";
-		var height = "580";
-		var windowParams = "scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised";
-		if (!storageFileWindow.closed && storageFileWindow.name==windowName) {
-			storageFileWindow.close();
-		}
-		storageFileWindow = SP_openWindow(url, windowName, width, height, windowParams);
-	}
+function openStorageFileManager(editorName, componentId) {
+  setEditorName(editorName);
+  if (componentId) {
+    var url = webContext+"/kmelia/jsp/attachmentLinkManagement.jsp?key="+componentId+"&ntype=COMPONENT";
+    var windowName = "StorageFileWindow";
+    var windowParams = "scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised";
+    if (!storageFileWindow.closed && storageFileWindow.name==windowName) {
+      storageFileWindow.close();
+    }
+    storageFileWindow = SP_openWindow(url, windowName, "750", "580", windowParams);
+  }
 }
 
 function insertAttachmentLink(url, img, label){
@@ -70,12 +66,14 @@ function choixImage(editorName) {
 	}
 }
 
-function openGalleryFileManager(editorName, context, language) {
+function openGalleryFileManager(editorName, componentId) {
 	setEditorName(editorName);
-	var index = document.getElementById("galleryFile").selectedIndex;
-	var componentId = document.getElementById("galleryFile").options[index].value;
-	if (index != 0) {
-		var url = context+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&amp;Language="+language;
+	if (!componentId) {
+    var index = document.getElementById("galleryFile").selectedIndex;
+    componentId = document.getElementById("galleryFile").options[index].value;
+  }
+	if (componentId) {
+		var url = webContext+"/gallery/jsp/wysiwygBrowser.jsp?ComponentId="+componentId+"&amp;Language="+getUserLanguage();
 		var windowName = "galleryWindow";
 		var larg = "820";
 		var haut = "600";

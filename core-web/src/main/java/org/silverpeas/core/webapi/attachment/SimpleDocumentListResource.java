@@ -37,6 +37,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -64,11 +65,41 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
   public List<SimpleDocumentEntity> getDocuments(@PathParam("lang") final String lang) {
     List<SimpleDocument> docs =
         AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
-            new ResourceReference(getResourceId(), getComponentId()), DocumentType.attachment, lang);
+            getResourceReference(), DocumentType.attachment, lang);
+    return asWebEntities(docs);
+  }
+
+  /**
+   * Returns documents of specified resource in the specified language
+   *
+   * @param lang the wanted language.
+   * @return documents of specified resource
+   */
+  @GET
+  @Path("types/{type}/{lang}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public List<SimpleDocumentEntity> getDocumentsByType(@PathParam("type") final String type,
+      @PathParam("lang") final String lang) {
+    DocumentType documentType = DocumentType.decode(type);
+    if (documentType == null) {
+      return Collections.emptyList();
+    }
+    List<SimpleDocument> docs =
+        AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
+            getResourceReference(), documentType, lang);
+    return asWebEntities(docs);
+  }
+
+  private ResourceReference getResourceReference() {
+    return new ResourceReference(getResourceId(), getComponentId());
+  }
+
+  private List<SimpleDocumentEntity> asWebEntities(List<SimpleDocument> docs) {
     List<SimpleDocumentEntity> entities = new ArrayList<>();
     for (SimpleDocument doc : docs) {
       entities.add(SimpleDocumentEntity.fromAttachment(doc));
     }
     return entities;
   }
+
 }

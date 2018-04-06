@@ -368,7 +368,7 @@
   </div>
 
   <div class="container-wysiwyg wysiwyg-area">
-    <textarea id="editor1" name="editor1" cols="10" rows="10"><c:out value="<%=wysiwygTextValue%>" escapeXml="true"/></textarea>
+    <textarea id="editor1" name="editor1" cols="10" rows="10" style="display: none"><c:out value="<%=wysiwygTextValue%>" escapeXml="true"/></textarea>
   </div>
 
   <input name="actionWysiwyg" type="hidden" value="SaveHtml"/>

@@ -58,6 +58,8 @@ public class WysiwygEditor {
       }
     }
     this.config = new WysiwygEditorConfig(componentName);
+    this.config.setComponentId(componentInstanceId);
+    this.config.setObjectId(resourceId);
   }
 
   /**

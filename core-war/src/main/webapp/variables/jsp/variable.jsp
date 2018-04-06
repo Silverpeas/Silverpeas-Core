@@ -174,7 +174,7 @@
     }
   </script>
 </head>
-<body>
+<body class="page_content_admin">
 <view:browseBar extraInformations="${variable.label}">
   <view:browseBarElt link="Main" label="${browseBarAll}"/>
 </view:browseBar>

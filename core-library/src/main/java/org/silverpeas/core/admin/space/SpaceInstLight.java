@@ -296,6 +296,10 @@ public class SpaceInstLight extends AbstractI18NBean<SpaceI18N>
     this.inheritanceBlocked = isInheritanceBlocked;
   }
 
+  public boolean isRemoved() {
+    return SpaceInst.STATUS_REMOVED.equals(getStatus());
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;

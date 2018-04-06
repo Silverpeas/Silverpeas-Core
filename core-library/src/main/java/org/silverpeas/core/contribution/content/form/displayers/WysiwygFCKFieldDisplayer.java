@@ -26,7 +26,6 @@ package org.silverpeas.core.contribution.content.form.displayers;
 import net.htmlparser.jericho.Source;
 import org.apache.commons.io.FileUtils;
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
@@ -36,26 +35,22 @@ import org.silverpeas.core.contribution.content.form.FieldDisplayer;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
-import org.silverpeas.core.contribution.content.form.GalleryHelper;
 import org.silverpeas.core.contribution.content.form.PagesContext;
 import org.silverpeas.core.contribution.content.form.RenderingContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.Charsets;
-import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -78,15 +73,12 @@ import java.util.Map;
 public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> {
 
   public static final String dbKey = "xmlWysiwygField_";
-  public static final String dir = "xmlWysiwyg";
+  private static final String DIRECTORYNAME = "xmlWysiwyg";
   private static final SettingBundle settings = ResourceLocator.getSettingBundle(
       "org.silverpeas.wysiwyg.settings.wysiwygSettings");
 
-  /**
-   * Constructeur
-   */
-  public WysiwygFCKFieldDisplayer() {
-  }
+  private static final int DEFAULT_WIDTH = 600;
+  private static final int DEFAULT_HEIGHT = 300;
 
   /**
    * Returns the name of the managed types.
@@ -107,23 +99,19 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
    * </UL>
    * @param out
    * @param template
-   * @param PagesContext
+   * @param pageContext
    * @throws java.io.IOException
    */
   @Override
-  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext PagesContext)
+  public void displayScripts(PrintWriter out, FieldTemplate template, PagesContext pageContext)
       throws IOException {
     String fieldName = template.getFieldName();
-    String language = PagesContext.getLanguage();
-
-    if (!TextField.TYPE.equals(template.getTypeName())) {
-
-    }
+    String language = pageContext.getLanguage();
 
     if (!template.isReadOnly()) {
       out.println("var oEditor = CKEDITOR.instances." + fieldName + ";");
       out.println("var thecode = oEditor.getData();");
-      if (template.isMandatory() && PagesContext.useMandatory()) {
+      if (template.isMandatory() && pageContext.useMandatory()) {
         out.println(
             " if (isWhitespace(stripInitialWhitespace(thecode)) || thecode == \"<P>&nbsp;</P>\") {");
         out.println(" errorMsg+=\" - '" + template.getLabel(language) + "' "
@@ -132,7 +120,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
         out.println(" }");
       }
 
-      Util.getJavascriptChecker(template.getFieldName(), PagesContext, out);
+      Util.getJavascriptChecker(template.getFieldName(), pageContext, out);
     }
   }
 
@@ -152,11 +140,6 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   @Override
   public void display(PrintWriter out, TextField field, FieldTemplate template,
       PagesContext pageContext) throws FormException {
-    String fieldName = template.getFieldName();
-    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
-
-    String contentLanguage = I18NHelper.checkLanguage(pageContext.getContentLanguage());
-
     String code = "";
     String fieldValue = field.getValue();
     if (StringUtil.isDefined(fieldValue)) {
@@ -172,237 +155,101 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
 
     if (template.isDisabled() || template.isReadOnly()) {
-      final WysiwygContentTransformer wysiwygContentTransformer =
-          WysiwygContentTransformer.on(code).modifyImageUrlAccordingToHtmlSizeDirective();
-
-      if (pageContext.getRenderingContext() == RenderingContext.EXPORT) {
-        // dynamic value functionality
-        wysiwygContentTransformer.resolveVariablesDirective();
-      }
-
-      code = wysiwygContentTransformer.transform();
-
-      out.println(code);
-
+      displayContent(out, code, pageContext);
     } else {
-      out.println("<table>");
-
-      String fieldNameFunction = FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'));
-
-      LocalizationBundle resources = ResourceLocator.getLocalizationBundle(
-          "org.silverpeas.wysiwyg.multilang.wysiwygBundle", contentLanguage);
-
-      // Storage file : HTML select building
-      List<ComponentInstLight> fileStorage = null;
-      boolean showFileStorages = true;
-      if (parameters.containsKey("fileStorages")) {
-        showFileStorages = StringUtil.getBooleanValue(parameters.get("fileStorages"));
-      }
-      if (showFileStorages) {
-        fileStorage = WysiwygController.getStorageFile();
-        if (!fileStorage.isEmpty()) {
-          out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
-          StringBuilder stringBuilder = new StringBuilder();
-          stringBuilder.append("<select id=\"storageFile_").append(fieldName).append(
-              "\" name=\"storageFile\" onchange=\"openStorageFileManager").append(
-              FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
-              "();this.selectedIndex=0\">");
-          stringBuilder.append("<option value=\"\">").append(
-              resources.getString("storageFile.select.title")).append("</option>");
-          for (ComponentInstLight component : fileStorage) {
-            stringBuilder.append("<option value=\"").append(component.getId()).append("\">")
-                .append(
-                    component.getLabel(contentLanguage)).append("</option>");
-          }
-          stringBuilder.append("</select>");
-          out.println(stringBuilder.toString());
-        }
-      }
-
-      // Images uploaded : HTML select building
-      List<SimpleDocument> listImages = null;
-      if(pageContext.getObjectId() != null &&
-          !"useless".equals(pageContext.getComponentId())) {
-        listImages = WysiwygController.getImages(pageContext.getObjectId(), pageContext.getComponentId());
-        if (!listImages.isEmpty()) {
-          if (fileStorage == null || fileStorage.isEmpty()) {
-            out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
-          }
-          StringBuilder stringBuilder = new StringBuilder();
-          stringBuilder.append("<select id=\"images_").append(fieldName).append(
-              "\" name=\"images\" onchange=\"choixImage").append(
-              FileServerUtils.replaceAccentChars(fieldName.replace(' ', '_'))).append(
-              "();this.selectedIndex=0\">");
-          stringBuilder.append("<option value=\"\">").append(
-              resources.getString("Image")).append("</option>");
-          for (SimpleDocument image : listImages) {
-            stringBuilder.append("<option value=\"").append(URLUtil.getApplicationURL()+image.getAttachmentURL()).append("\">")
-                .append(image.getFilename()).append("</option>");
-          }
-          stringBuilder.append("</select>");
-          out.println(stringBuilder.toString());
-        }
-      }
-
-      // Gallery file : HTML select building
-      List<ComponentInstLight> galleries = null;
-      boolean showGalleries = true;
-      if (parameters.containsKey("galleries")) {
-        showGalleries = StringUtil.getBooleanValue(parameters.get("galleries"));
-      }
-      if (showGalleries) {
-        galleries = WysiwygController.getGalleries();
-        if (!galleries.isEmpty()) {
-          if ((fileStorage == null || fileStorage.isEmpty()) &&
-              (listImages == null || listImages.isEmpty())) {
-            out.println("<tr class=\"TB_Expand\"><td class=\"TB_Expand\">");
-          }
-          StringBuilder stringBuilder = new StringBuilder();
-          stringBuilder.append("<select id=\"galleryFile_").append(fieldName).append(
-              "\" name=\"galleryFile\" onchange=\"openGalleryFileManager").append(
-              fieldNameFunction).append("();this.selectedIndex=0\">");
-          stringBuilder.append("<option value=\"\">").append(
-              Util.getString("GML.galleries", contentLanguage)).append("</option>");
-          for (ComponentInstLight component : galleries) {
-            stringBuilder.append("<option value=\"").append(component.getId()).append("\">")
-                .append(
-                    component.getLabel(contentLanguage)).append("</option>");
-          }
-          stringBuilder.append("</select>");
-          out.println(stringBuilder.toString());
-        }
-      }
-
-      if ((fileStorage != null && !fileStorage.isEmpty()) ||
-          (listImages != null && !listImages.isEmpty()) ||
-          (galleries != null && !galleries.
-          isEmpty())) {
-        out.println("</td></tr>");
-      }
-
-      out.println("<tr>");
-
-      // looks for size parameters
-      int editorWidth = 600;
-      int editorHeight = 300;
-      if (parameters.containsKey("width")) {
-        editorWidth = Integer.parseInt(parameters.get("width"));
-      }
-      if (parameters.containsKey("height")) {
-        editorHeight = Integer.parseInt(parameters.get("height"));
-      }
-
-      out.println("<td valign=\"top\">");
-      out.println("<textarea id=\"" + fieldName + "\" name=\"" + fieldName
-          + "\" rows=\"10\" cols=\"10\">" + code + "</textarea>");
-      out.println("<script type=\"text/javascript\">");
-
-
-      StringBuilder stringBuilder = new StringBuilder();
-      String configFile = getWysiwygConfigFile();
-
-      stringBuilder.append("CKEDITOR.replace('").append(fieldName).append("', {\n");
-      stringBuilder.append("width : '").append(editorWidth).append("',\n");
-      stringBuilder.append("height : ").append(editorHeight).append(",\n");
-      stringBuilder.append("language : '").append(pageContext.getLanguage()).append("',\n");
-      String basehref = settings.getString("baseHref", pageContext.getServerURL());
-      if (StringUtil.isDefined(basehref)) {
-        stringBuilder.append("baseHref : '").append(basehref).append("',\n");
-      }
-      String fileBrowserUrl =
-          Util.getPath() + "/wysiwyg/jsp/uploadFile.jsp?ComponentId=" +
-              pageContext.getComponentId() + "&ObjectId=" + pageContext.getObjectId() +
-              "&Context=" + fieldName;
-      stringBuilder.append("filebrowserImageBrowseUrl : '").append(fileBrowserUrl).append("',\n");
-      stringBuilder.append("filebrowserFlashBrowseUrl : '").append(fileBrowserUrl).append("',\n");
-      stringBuilder.append("filebrowserBrowseUrl : '").append(fileBrowserUrl).append("',\n");
-      stringBuilder.append("toolbarStartupExpanded : ").append("false").append(",\n");
-      stringBuilder.append("customConfig : '").append(configFile).append("',\n");
-      stringBuilder.append("toolbar : '").append("XMLForm").append("',\n");
-      String skin = settings.getString("skin", "");
-      if (StringUtil.isDefined(skin)) {
-        stringBuilder.append("skin : '").append(skin).append("'\n");
-      }
-      stringBuilder.append("});");
-
-      out.println(stringBuilder.toString());
-
-      // field name used to generate a javascript function name
-
-      // Storage file exists : javascript functions
-      if (fileStorage != null && !fileStorage.isEmpty()) {
-        out.println("var storageFileWindow=window;");
-        out.println("function openStorageFileManager" + fieldNameFunction + "(){");
-        out.println("index = document.getElementById(\"storageFile_" + fieldName
-            + "\").selectedIndex;");
-        out.println("var componentId = document.getElementById(\"storageFile_" + fieldName
-            + "\").options[index].value;");
-        out.println("if (index != 0){ ");
-        out.println("url = \""
-            + URLUtil.getApplicationURL()
-            +
-            "/kmelia/jsp/attachmentLinkManagement.jsp?key=\"+componentId+\"&ntype=COMPONENT&fieldname="
-            + fieldNameFunction + "\";");
-        out.println("windowName = \"StorageFileWindow\";");
-        out.println("width = \"750\";");
-        out.println("height = \"580\";");
-        out.
-            println("windowParams = \"scrollbars=1,directories=0,menubar=0,toolbar=0, alwaysRaised\";");
-        out.println("if (!storageFileWindow.closed && storageFileWindow.name==windowName)");
-        out.println("storageFileWindow.close();");
-        out.
-            println("storageFileWindow = SP_openWindow(url, windowName, width, height, windowParams);");
-        out.println("}}");
-
-        out.println("function insertAttachmentLink" + fieldNameFunction + "(url,img,label){");
-        out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
-        out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
-        out.println(" focusManager.focus();");
-        out.
-            println(
-            "oEditor.insertHtml('<a href=\"'+url+'\"> <img src=\"'+img+'\" width=\"20\" border=\"0\" alt=\"\"/> '+label+'</a> ');");
-        out.println("}");
-      }
-
-      // Images uploaded : javascript functions
-      if (listImages != null && !listImages.isEmpty()) {
-        out.println("function choixImage" + fieldNameFunction +"() {");
-        out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
-        out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
-        out.println(" focusManager.focus();");
-        out.println(" var index = document.getElementById(\"images_" + fieldName
-            + "\").selectedIndex;");
-        out.println(" var str = document.getElementById(\"images_" + fieldName
-            + "\").options[index].value;");
-        out.println(" if (index != 0 && str != null) {");
-        out.println("   oEditor.insertHtml('<img border=\"0\" src=\"'+str+'\" alt=\"\"/>');");
-        out.println(" }");
-        out.println("}");
-      }
-
-      // Gallery files exists : javascript functions
-      if (galleries != null && !galleries.isEmpty()) {
-        GalleryHelper.getJavaScript(fieldNameFunction, fieldName, contentLanguage, out);
-
-        out.println("function choixImageInGallery" + fieldNameFunction + "(url){");
-        out.println(" var oEditor = CKEDITOR.instances['" + fieldName + "'];");
-        out.println(" var focusManager = new CKEDITOR.focusManager( oEditor );");
-        out.println(" focusManager.focus();");
-        out.println("oEditor.insertHtml('<img src=\"'+url+'\" border=\"0\" alt=\"\"/>');");
-        out.println("}");
-      }
-
-      out.println("</script>");
-
-      if (template.isMandatory() && pageContext.useMandatory()) {
-        out.println(Util.getMandatorySnippet());
-      }
-
-      out.println("</td>");
-      out.println("</tr>");
-      out.println("</table>");
-
+      displayEditor(out, code, template, pageContext);
     }
+  }
+
+  private void displayContent(PrintWriter out, String code, PagesContext pageContext) {
+    final WysiwygContentTransformer wysiwygContentTransformer =
+        WysiwygContentTransformer.on(code).modifyImageUrlAccordingToHtmlSizeDirective();
+
+    if (pageContext.getRenderingContext() == RenderingContext.EXPORT) {
+      // dynamic value functionality
+      wysiwygContentTransformer.resolveVariablesDirective();
+    }
+
+    out.println(wysiwygContentTransformer.transform());
+  }
+
+  private void displayEditor(PrintWriter out, String code, FieldTemplate template,
+      PagesContext pageContext) {
+    String fieldName = template.getFieldName();
+    Map<String, String> parameters = template.getParameters(pageContext.getLanguage());
+
+    out.println("<table>");
+    out.println("<tr>");
+
+    // looks for size parameters
+    int editorWidth = DEFAULT_WIDTH;
+    int editorHeight = DEFAULT_HEIGHT;
+    if (parameters.containsKey("width")) {
+      editorWidth = Integer.parseInt(parameters.get("width"));
+    }
+    if (parameters.containsKey("height")) {
+      editorHeight = Integer.parseInt(parameters.get("height"));
+    }
+
+    boolean showFileStorages = true;
+    if (parameters.containsKey("fileStorages")) {
+      showFileStorages = StringUtil.getBooleanValue(parameters.get("fileStorages"));
+    }
+
+    boolean showGalleries = true;
+    if (parameters.containsKey("galleries")) {
+      showGalleries = StringUtil.getBooleanValue(parameters.get("galleries"));
+    }
+
+    String toolbarStartupExpanded = Util.getSetting("form.field.wysiwyg.toolbar.startupExpanded");
+
+    out.println("<td valign=\"top\">");
+    out.println("<textarea id=\"" + fieldName + "\" name=\"" + fieldName
+        + "\" rows=\"10\" cols=\"10\">" + code + "</textarea>");
+    out.println("<script type=\"text/javascript\">");
+
+    StringBuilder stringBuilder = new StringBuilder();
+    String configFile = getWysiwygConfigFile();
+
+    stringBuilder.append("CKEDITOR.replace('").append(fieldName).append("', {\n");
+    stringBuilder.append("width : '").append(editorWidth).append("',\n");
+    stringBuilder.append("height : ").append(editorHeight).append(",\n");
+    stringBuilder.append("language : '").append(pageContext.getLanguage()).append("',\n");
+    String basehref = settings.getString("baseHref", pageContext.getServerURL());
+    if (StringUtil.isDefined(basehref)) {
+      stringBuilder.append("baseHref : '").append(basehref).append("',\n");
+    }
+    String fileBrowserUrl =
+        Util.getPath() + "/wysiwyg/jsp/uploadFile.jsp?ComponentId=" +
+            pageContext.getComponentId() + "&ObjectId=" + pageContext.getObjectId() +
+            "&Context=" + fieldName;
+    stringBuilder.append("filebrowserImageBrowseUrl : '").append(fileBrowserUrl).append("',\n");
+    stringBuilder.append("filebrowserFlashBrowseUrl : '").append(fileBrowserUrl).append("',\n");
+    stringBuilder.append("filebrowserBrowseUrl : '").append(fileBrowserUrl).append("',\n");
+    stringBuilder.append("toolbarStartupExpanded : ").append(toolbarStartupExpanded).append(",\n");
+    stringBuilder.append("customConfig : '").append(configFile).append("',\n");
+    stringBuilder.append("toolbar : '").append("XMLForm").append("',\n");
+    String skin = settings.getString("skin", "");
+    if (StringUtil.isDefined(skin)) {
+      stringBuilder.append("skin : '").append(skin).append("',\n");
+    }
+    stringBuilder.append("filebank : ").append(showFileStorages).append(",\n");
+    stringBuilder.append("imagebank : ").append(showGalleries).append(",\n");
+    stringBuilder.append("silverpeasObjectId : '").append(pageContext.getObjectId()).append("',\n");
+    stringBuilder.append("silverpeasComponentId : '").append(pageContext.getComponentId()).append("'\n");
+    stringBuilder.append("});");
+
+    out.println(stringBuilder.toString());
+
+    out.println("</script>");
+
+    if (template.isMandatory() && pageContext.useMandatory()) {
+      out.println(Util.getMandatorySnippet());
+    }
+
+    out.println("</td>");
+    out.println("</tr>");
+    out.println("</table>");
   }
 
   /**
@@ -478,20 +325,15 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       indexEntry.addField(key, fieldValueIndex, language, false);
 
       // index embedded linked attachment (links presents in wysiwyg content)
-      try {
-        String content = getContentFromFile(indexEntry.getComponent(), indexEntry.getObjectId(),
-            fieldName, language);
-        List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds(content);
-        WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
-      } catch (UtilException e) {
-        SilverTrace.warn("form", "WysiwygFCKFieldDisplayer.index", "form.incorrect_data",
-            "Unable to extract linkes files from object" + indexEntry.getObjectId(), e);
-      }
+      String content = getContentFromFile(indexEntry.getComponent(), indexEntry.getObjectId(),
+          fieldName, language);
+      List<String> embeddedAttachmentIds = WysiwygController.getEmbeddedAttachmentIds(content);
+      WysiwygController.indexEmbeddedLinkedFiles(indexEntry, embeddedAttachmentIds);
     }
   }
 
   public String duplicateContent(FieldTemplate template, ResourceReference from, ResourceReference to,
-      String language) throws FormException {
+      String language) {
     String code = getContent(from.getInstanceId(), from.getId(), template.getFieldName(), language);
     String fileName = setContentIntoFile(to.getInstanceId(), to.getId(), template.
         getFieldName(), code, language);
@@ -511,12 +353,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   }
 
   private String getContent(String componentId, String objectId, String fieldName,
-      String language) throws FormException {
-    try {
-      return getContentFromFile(componentId, objectId, fieldName, language);
-    } catch (UtilException e) {
-      throw new FormException("WysiwygFCKFieldDisplayer.getContent", e.getMessage(), e);
-    }
+      String language) {
+    return getContentFromFile(componentId, objectId, fieldName, language);
   }
 
   private String setContentIntoFile(String componentId, String objectId, String fieldName,
@@ -527,7 +365,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   }
 
   private void setContentIntoFile(String componentId, String fileName, String code) {
-    FileRepositoryManager.createAbsolutePath(componentId, dir);
+    FileRepositoryManager.createAbsolutePath(componentId, DIRECTORYNAME);
     String path = getPath(componentId);
     FileFolderManager.createFile(path, fileName, code);
   }
@@ -580,38 +418,35 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           String fieldName = fileName.substring(fromPK.getId().length() + 1);
           File srcFile = new File(fromPath, file.getName());
           File destFile = new File(toPath, getFileName(fieldName, toPK.getId()));
-          if (copy) {
-            // copy file and change images path (instanceId and imageId) inside
-            FileUtils.copyFile(srcFile, destFile);
-            changeImagePath(destFile, fromPK.getInstanceId(), toPK.getInstanceId(),
-                oldAndNewFileIds);
-          } else {
-            // move file and change images path (instanceId only) inside
-            FileUtils.moveFile(srcFile, destFile);
-            changeInstanceId(destFile, fromPK.getInstanceId(), toPK.getInstanceId());
-          }
+          moveOrCopyFile(fromPK, toPK, srcFile, destFile, copy, oldAndNewFileIds);
+
           Iterator<String> languages = I18NHelper.getLanguages();
           while (languages.hasNext()) {
             String language = languages.next();
-
             if (fieldName.startsWith(language + "_")) {
-              fieldName = fieldName.substring(3); // skip en_
+              // skip en_
+              fieldName = fieldName.substring(3);
               srcFile = new File(fromPath, file.getName());
               destFile = new File(toPath, getFileName(fieldName, toPK.getId(), language));
-              if (copy) {
-                // copy file and change images path (instanceId and imageId) inside
-                FileUtils.copyFile(srcFile, destFile);
-                changeImagePath(destFile, fromPK.getInstanceId(), toPK.getInstanceId(),
-                    oldAndNewFileIds);
-              } else {
-                // move file and change images path (instanceId only) inside
-                FileUtils.moveFile(srcFile, destFile);
-                changeInstanceId(destFile, fromPK.getInstanceId(), toPK.getInstanceId());
-              }
+              moveOrCopyFile(fromPK, toPK, srcFile, destFile, copy, oldAndNewFileIds);
             }
           }
         }
       }
+    }
+  }
+
+  private void moveOrCopyFile(ResourceReference fromPK, ResourceReference toPK, File srcFile,
+      File destFile, boolean copy, Map<String, String> oldAndNewFileIds) throws IOException {
+    if (copy) {
+      // copy file and change images path (instanceId and imageId) inside
+      FileUtils.copyFile(srcFile, destFile);
+      changeImagePath(destFile, fromPK.getInstanceId(), toPK.getInstanceId(),
+          oldAndNewFileIds);
+    } else {
+      // move file and change images path (instanceId only) inside
+      FileUtils.moveFile(srcFile, destFile);
+      changeInstanceId(destFile, fromPK.getInstanceId(), toPK.getInstanceId());
     }
   }
 
@@ -659,17 +494,13 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   }
 
   public void mergeContents(String componentIdFrom, String objectIdFrom, String componentIdTo,
-      String objectIdTo) throws UtilException, IOException {
+      String objectIdTo) {
     String fromPath = getPath(componentIdFrom);
 
     File from = new File(fromPath);
     if (from.exists()) {
       // Verifie si le repertoire de destination existe
-      try {
-        FileRepositoryManager.createAbsolutePath(componentIdTo, dir);
-      } catch (Exception e) {
-        throw new IOException(e.getMessage());
-      }
+      FileRepositoryManager.createAbsolutePath(componentIdTo, DIRECTORYNAME);
 
       // Copier/coller de tous les fichiers wysiwyg de objectIdFrom vers objectIdTo
       List<File> files = (List<File>) FileFolderManager.getAllFile(fromPath);
@@ -687,7 +518,8 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
             String language = languages.next();
 
             if (fieldName.startsWith(language + "_")) {
-              fieldName = fieldName.substring(3); // skip en_
+              // skip en_
+              fieldName = fieldName.substring(3);
               fieldContent = getContentFromFile(componentIdFrom, objectIdFrom, fieldName, language);
               setContentIntoFile(componentIdTo, objectIdTo, fieldName, fieldContent, language);
             }
@@ -731,7 +563,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   }
 
   private static String getPath(String componentId) {
-    String[] dirs = { dir };
+    String[] dirs = {DIRECTORYNAME};
     return FileRepositoryManager.getAbsolutePath(componentId, dirs);
   }
 
