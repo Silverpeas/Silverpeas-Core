@@ -144,7 +144,7 @@ function stripInitialWhitespace (s) {
 
 //return true if length of s is < textFieldLength
 function isValidText(input, textFieldLength) {
-	var s = input.value;
+	var s = typeof input === 'string' ? input : input.value;
 	if (typeof s !== 'undefined') {
 		return s.length <= Number(textFieldLength);
 	}
@@ -171,7 +171,7 @@ function isValidTextArea(input) {
 //return true if length of s is < textMaxiLength
 function isValidTextMaxi(input) {
 	var textMaxiLength = 4000;
-	var s = input.value;
+  var s = typeof input === 'string' ? input : input.value;
 	if (typeof s !== 'undefined') {
 		return (s.length <= textMaxiLength);
 	}

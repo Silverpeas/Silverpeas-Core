@@ -123,8 +123,8 @@ public class ArrayPaneTag extends TagSupport {
     this.export = export;
   }
 
-  public void setExportDataURL(String exportDataURL) {
-    this.exportDataURL = exportDataURL;
+  public void setExportURL(String exportURL) {
+    this.exportDataURL = exportURL;
   }
 
   public void setSortableLines(boolean sortable) {

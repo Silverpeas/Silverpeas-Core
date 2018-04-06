@@ -654,7 +654,7 @@ if (!window.SilverpeasAjaxConfig) {
       return this;
     },
     getUrl : function() {
-      return (this.method !== 'POST') ? sp.formatUrl(this.url, this.parameters) : this.url;
+      return (this.method !== 'POST') ? sp.url.format(this.url, this.parameters) : this.url;
     },
     getMethod : function() {
       return this.method;
@@ -666,22 +666,9 @@ if (!window.SilverpeasAjaxConfig) {
   window.SilverpeasFormConfig = SilverpeasRequestConfig.extend({
     initialize : function(url) {
       this.target = '';
-      var pivotIndex = url.indexOf("?");
-      if (pivotIndex > 0) {
-        var splitParams = url.substring(pivotIndex + 1).split("&");
-        var urlWithoutParam = url.substring(0, pivotIndex);
-        this._super(urlWithoutParam);
-        splitParams.forEach(function(param) {
-          var splitParam = param.split("=");
-          if (splitParam.length === 2) {
-            var key = splitParam[0];
-            var value = splitParam[1];
-            this.withParam(key, value);
-          }
-        }.bind(this));
-      } else {
-        this._super(url);
-      }
+      var explodedUrl = sp.url.explode(url);
+      this._super(explodedUrl.base);
+      this.withParams(explodedUrl.parameters);
     },
     getUrl : function() {
       return this.url;
@@ -1279,25 +1266,47 @@ if (typeof window.sp === 'undefined') {
     ajaxRequest : function(url) {
       return new SilverpeasAjaxConfig(url);
     },
-    formatUrl : function(url, params) {
-      var paramPart = url.indexOf('?') > 0 ? '&' : '?';
-      if (params) {
-        for (var key in params) {
-          var paramList = params[key];
-          var typeOfParamList = typeof paramList;
-          if (!paramList && typeOfParamList !== 'boolean') {
-            continue;
-          }
-          if (typeOfParamList !== 'object') {
-            paramList = [paramList];
-          }
-          if (paramPart.length > 1) {
-            paramPart += '&';
-          }
-          paramPart += key + "=" + paramList.join("&" + key + "=");
+    url : {
+      explode : function(url) {
+        var pivotIndex = url.indexOf("?");
+        if (pivotIndex > 0) {
+          var splitParams = url.substring(pivotIndex + 1).split("&");
+          var urlWithoutParam = url.substring(0, pivotIndex);
+          var params = {};
+          splitParams.forEach(function(param) {
+            var splitParam = param.split("=");
+            if (splitParam.length === 2) {
+              params[splitParam[0]] = splitParam[1];
+            }
+          });
+          return {url : url, base : urlWithoutParam, parameters : params};
+        } else {
+          return {url : url, base : url};
         }
+      },
+      formatFromExploded : function(explodedUrl) {
+        return sp.url.format(explodedUrl.base, explodedUrl.parameters);
+      },
+      format : function(url, params) {
+        var paramPart = url.indexOf('?') > 0 ? '&' : '?';
+        if (params) {
+          for (var key in params) {
+            var paramList = params[key];
+            var typeOfParamList = typeof paramList;
+            if (!paramList && typeOfParamList !== 'boolean') {
+              continue;
+            }
+            if (typeOfParamList !== 'object') {
+              paramList = [paramList];
+            }
+            if (paramPart.length > 1) {
+              paramPart += '&';
+            }
+            paramPart += key + "=" + paramList.join("&" + key + "=");
+          }
+        }
+        return url + (paramPart.length === 1 ? '' : paramPart);
       }
-      return url + (paramPart.length === 1 ? '' : paramPart);
     },
     load : function(targetOrArrayOfTargets, ajaxConfig, isGettingFullHtmlContent) {
       return silverpeasAjax(ajaxConfig).then(function(request) {
@@ -1462,15 +1471,16 @@ if (typeof window.sp === 'undefined') {
           params = extendsObject(params, options);
         }
         var $container = jQuery(containerCssSelector);
-        var __ajaxRequest = function(url) {
-          var ajaxConfig = sp.ajaxConfig(url);
-          ajaxConfig.withParam("ajaxRequest", true);
-          if (typeof params.before === 'function') {
-            params.before(ajaxConfig);
+        var __ajaxRequest = function(url, forcedParams) {
+          var options = extendsObject({}, params, forcedParams);
+          var ajaxRequest = sp.ajaxRequest(url);
+          ajaxRequest.withParam("ajaxRequest", true);
+          if (typeof options.before === 'function') {
+            options.before(ajaxRequest);
           }
-          return silverpeasAjax(ajaxConfig).then(function(request) {
-            if (typeof params.success === 'function') {
-              var result = params.success(request);
+          return ajaxRequest.send().then(function(request) {
+            if (typeof options.success === 'function') {
+              var result = options.success(request);
               if (sp.promise.isOne(result)) {
                 return result;
               }
@@ -1478,9 +1488,16 @@ if (typeof window.sp === 'undefined') {
             return sp.promise.resolveDirectlyWith();
           });
         };
+        var __routingUrl;
         var __clickHandler = function(index, linkElement) {
           var url = linkElement.href;
           if (url && '#' !== url && !url.startsWith('javascript')) {
+            if (!__routingUrl) {
+              var explodedUrl = sp.url.explode(url);
+              delete explodedUrl.parameters['ArrayPaneTarget'];
+              delete explodedUrl.parameters['ArrayPaneAction'];
+              __routingUrl = sp.url.formatFromExploded(explodedUrl);
+            }
             linkElement.href = 'javascript:void(0)';
             linkElement.addEventListener('click', function() {
               __ajaxRequest(url);
@@ -1488,11 +1505,31 @@ if (typeof window.sp === 'undefined') {
           }
         };
         jQuery('thead a', $container).each(__clickHandler);
-        jQuery('tfoot a', $container).each(__clickHandler);
+        jQuery('tfoot .pageNav a', $container).each(__clickHandler);
         jQuery('.list-pane-nav a', $container).each(__clickHandler);
         jQuery('.pageJumper input', $container).each(function(index, jumperInput) {
           jumperInput.ajax = __ajaxRequest;
         });
+        if (__routingUrl) {
+          jQuery('.exportlinks a', $container).each(function(index, linkElement) {
+            var url = linkElement.href;
+            if (url.indexOf('/Export/ArrayPane?') < 0) {
+              return;
+            }
+            linkElement.href = 'javascript:void(0)';
+            linkElement.addEventListener('click', function() {
+              window.top.spProgressMessage.show();
+              var explodedUrl = sp.url.explode(__routingUrl);
+              explodedUrl.parameters['ArrayPaneAjaxExport'] = true;
+              __ajaxRequest(sp.url.formatFromExploded(explodedUrl), {
+                success : function() {
+                  sp.formRequest(url).submit();
+                  window.top.spProgressMessage.hide();
+                }
+              });
+            }, false);
+          });
+        }
         return {
           refreshFromRequestResponse : __refreshFromRequestResponse
         }

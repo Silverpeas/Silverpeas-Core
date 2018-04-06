@@ -23,12 +23,12 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
-import java.util.List;
-
-import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.i18n.I18NBean;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.SimpleGraphicElement;
+
+import java.util.List;
 
 /**
  * The Browse interface gives us the skeleton for all funtionnalities we need to display typical WA
@@ -43,14 +43,14 @@ public interface BrowseBar extends SimpleGraphicElement {
    * @param domainName
    *
    */
-  public void setDomainName(String domainName);
+  void setDomainName(String domainName);
 
   /**
    * Method declaration
    * @param componentName
    *
    */
-  public void setComponentName(String componentName);
+  void setComponentName(String componentName);
 
   /**
    * Method declaration
@@ -58,65 +58,65 @@ public interface BrowseBar extends SimpleGraphicElement {
    * @param link
    *
    */
-  public void setComponentName(String componentName, String link);
+  void setComponentName(String componentName, String link);
 
   /**
    * Method declaration
    * @param information
    *
    */
-  public void setExtraInformation(String information);
+  void setExtraInformation(String information);
 
   /**
    * Method declaration
    * @param path
    *
    */
-  public void setPath(String path);
+  void setPath(String path);
 
-  public void setI18N(I18NBean bean, String language);
+  void setI18N(I18NBean bean, String language);
 
-  public void setI18N(String url, String language);
+  void setI18N(String url, String language);
 
-  public void setI18N(List<String> languages, String language);
+  void setI18N(List<String> languages, String language);
 
-  public void setSpaceId(String spaceId);
+  void setSpaceId(String spaceId);
 
-  public void setComponentId(String componentId);
+  void setComponentId(String componentId);
 
-  public void setMainSessionController(MainSessionController mainSessionController);
+  void setMainSessionController(MainSessionController mainSessionController);
 
-  public void setLook(LookHelper look);
+  void setLook(LookHelper look);
 
   /**
    * Print the browseBar in an html format.
    * @return The html based line code
    */
   @Override
-  public String print();
+  String print();
 
-  public void addElement(BrowseBarElement element);
+  void addElement(BrowseBarElement element);
 
   /**
    * add given elements to existing elements
    * @param elements to add to breadscrumb
    */
-  public void addElements(List<BrowseBarElement> elements);
+  void addElements(List<BrowseBarElement> elements);
 
   /**
    * remove existing elements and add given elements
    * @param elements to add to breadscrumb
    */
-  public void setElements(List<BrowseBarElement> elements);
+  void setElements(List<BrowseBarElement> elements);
 
-  public String getBreadCrumb();
+  String getBreadCrumb();
 
-  public void setSpaceJavascriptCallback(String callback);
+  void setSpaceJavascriptCallback(String callback);
 
-  public void setComponentJavascriptCallback(String callback);
+  void setComponentJavascriptCallback(String callback);
 
-  public void setClickable(boolean clickable);
+  void setClickable(boolean clickable);
 
-  public void setIgnoreComponentLink(boolean ignore);
+  void setIgnoreComponentLink(boolean ignore);
 
 }

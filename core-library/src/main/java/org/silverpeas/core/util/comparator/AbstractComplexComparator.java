@@ -23,19 +23,29 @@
  */
 package org.silverpeas.core.util.comparator;
 
-import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.silverpeas.core.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
+ * This tool handles all the boilerplate of sort implementations of list of data.
+ * <p>
+ *   By default, the text comparison takes not care about accent and case.<br/>
+ *   To deactivate this behavior, please call from constructor {@link #strictComparisonOnText()}
+ *   method.
+ * </p>
  * @author Yohann Chastagnier
  * @param <C>
  */
-public abstract class AbstractComplexComparator<C> extends
-    AbstractComparator<C> {
+public abstract class AbstractComplexComparator<C> extends AbstractComparator<C> {
+  private static final long serialVersionUID = 735351151555082611L;
+
+  protected AbstractComplexComparator() {
+    super();
+  }
 
   /**
    * Value list to compare
@@ -169,7 +179,7 @@ public abstract class AbstractComplexComparator<C> extends
 
       // Value
       if (areInstancesComparable(string, o.string)) {
-        return string.compareTo(o.string);
+        return compare(string, o.string);
       }
 
       // Identical
@@ -182,17 +192,16 @@ public abstract class AbstractComplexComparator<C> extends
       if (this == o) {
         return true;
       }
-      if (o.getClass() == StringWrapper.class) {
+      if (o == null || getClass() != o.getClass()) {
         return false;
       }
-
       final StringWrapper that = (StringWrapper) o;
-      return compareTo(that) == 0;
+      return Objects.equals(string, that.string);
     }
 
     @Override
     public int hashCode() {
-      return new HashCodeBuilder().append(string).toHashCode();
+      return Objects.hash(string);
     }
   }
 }

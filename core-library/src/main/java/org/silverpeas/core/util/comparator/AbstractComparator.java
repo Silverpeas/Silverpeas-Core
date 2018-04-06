@@ -24,27 +24,50 @@
 package org.silverpeas.core.util.comparator;
 
 import java.io.Serializable;
+import java.text.Collator;
 import java.util.Comparator;
 
 /**
+ * This tool handles all the boilerplate of sort implementations of list of data.
+ * <p>
+ *   By default, the text comparison takes not care about accent and case.<br/>
+ *   To deactivate this behavior, please call from constructor {@link #strictComparisonOnText()}
+ *   method.
+ * </p>
  * @author yohann.chastagnier
  * @param <C>
  */
 public abstract class AbstractComparator<C> implements Comparator<C>, Serializable {
+  private static final long serialVersionUID = -4687855076462717763L;
+
+  private Collator collator;
+
+  AbstractComparator() {
+    this.collator = Collator.getInstance();
+    // This strategy means it'll ignore the accents and the case.
+    collator.setStrength(Collator.PRIMARY);
+  }
+
+  /**
+   * If called, then the text comparison will be strict.
+   */
+  protected void strictComparisonOnText() {
+    collator = null;
+  }
 
   /**
    * Centralizes bean comparison mechanism
-   * @return
+   * @return true if instances are comparable, false otherwise.
    */
-  protected static <T> boolean areInstancesComparable(final T comp1, final T comp2) {
+  <T> boolean areInstancesComparable(final T comp1, final T comp2) {
     return comp1 != null && comp2 != null;
   }
 
   /**
    * Centralizes bean comparison mechanism
-   * @return
+   * @return see {@link Comparator#compare(Object, Object)}.
    */
-  protected static <T> int compareInstance(final T comp1, final T comp2) {
+  <T> int compareInstance(final T comp1, final T comp2) {
     int result = 0;
     if (comp1 == null && comp2 != null) {
       result = -1;
@@ -56,15 +79,17 @@ public abstract class AbstractComparator<C> implements Comparator<C>, Serializab
 
   /**
    * Centralizes bean comparison mechanism
-   * @return
+   * @return see {@link Comparator#compare(Object, Object)}.
    */
-  protected static <T> int compare(final Comparable<? super T> comp1, final T comp2) {
+  protected <T> int compare(final Comparable<? super T> comp1, final T comp2) {
     int result = 0;
     if (comp1 == null && comp2 != null) {
       result = -1;
     } else if (comp1 != null && comp2 == null) {
       result = 1;
-    } else if (comp1 != null && comp2 != null) {
+    } else if (collator != null && comp1 instanceof String) {
+      result = collator.compare(comp1, comp2);
+    } else if (comp1 != null) {
       result = comp1.compareTo(comp2);
     }
     return result;

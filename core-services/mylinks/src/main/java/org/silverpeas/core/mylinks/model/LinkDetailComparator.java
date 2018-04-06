@@ -25,13 +25,13 @@ package org.silverpeas.core.mylinks.model;
 
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 
-import java.util.Collections;
 import java.util.List;
 
 /**
  * @author Yohann Chastagnier
  */
 public class LinkDetailComparator extends AbstractComplexComparator<LinkDetail> {
+  private static final long serialVersionUID = 2701981793234156272L;
 
   /**
    * Easy way to apply this comparator on a list of links.
@@ -39,14 +39,8 @@ public class LinkDetailComparator extends AbstractComplexComparator<LinkDetail> 
    * @return the given list.
    */
   public static List<LinkDetail> sort(List<LinkDetail> links) {
-    Collections.sort(links, new LinkDetailComparator());
+    links.sort(new LinkDetailComparator());
     return links;
-  }
-
-  /**
-   * Hidden constructor in order to force the call of static method(s).
-   */
-  private LinkDetailComparator() {
   }
 
   @Override

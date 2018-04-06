@@ -24,7 +24,6 @@
 package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.webcomponent.NavigationContext;
@@ -34,6 +33,8 @@ import org.silverpeas.core.web.util.viewgenerator.html.window.Window;
 import javax.servlet.jsp.JspException;
 import java.util.Optional;
 
+import static org.silverpeas.core.util.StringUtil.isDefined;
+
 public class BrowseBarTag extends NeedWindowTag {
 
   private static final long serialVersionUID = 2496136938371562945L;
@@ -42,6 +43,7 @@ public class BrowseBarTag extends NeedWindowTag {
   private Object path;
   private String spaceId;
   private String componentId;
+  private String componentJsCallback;
   private boolean ignoreComponentLink = true;
   private boolean clickable = true;
 
@@ -59,6 +61,10 @@ public class BrowseBarTag extends NeedWindowTag {
 
   public void setComponentId(String componentId) {
     this.componentId = componentId;
+  }
+
+  public void setComponentJsCallback(final String componentJsCallback) {
+    this.componentJsCallback = componentJsCallback;
   }
 
   public void setIgnoreComponentLink(boolean ignoreComponentLink) {
@@ -83,45 +89,70 @@ public class BrowseBarTag extends NeedWindowTag {
     Window window = getWindow();
     browseBar = window.getBrowseBar();
     browseBar.setLook((LookHelper) pageContext.getSession().getAttribute(LookHelper.SESSION_ATT));
-    if (extraInformations != null) {
-      browseBar.setExtraInformation(extraInformations);
+
+    applyExtraInformations();
+    applyPath();
+    applyComponentData();
+    applySpaceData();
+
+    browseBar.setIgnoreComponentLink(ignoreComponentLink);
+    browseBar.setClickable(clickable);
+
+    applyNavigationContextData();
+
+    return EVAL_BODY_INCLUDE;
+  }
+
+  private void applyNavigationContextData() {
+    if (path instanceof NavigationContext) {
+      NavigationContext.NavigationStep currentNavigationStep = ((NavigationContext) path)
+          .getBaseNavigationStep();
+      while (currentNavigationStep != null) {
+        if (isDefined(currentNavigationStep.getLabel())) {
+          String link = "#";
+          if (currentNavigationStep.isUriMustBeUsedByBrowseBar()) {
+            link = URLUtil.getApplicationURL() +
+                currentNavigationStep.getUri().toString().replaceAll("[&]ArrayPaneAction.*", "");
+          }
+          BrowseBarElement element = new BrowseBarElement(currentNavigationStep.getLabel(), link,
+              null);
+          browseBar.addElement(element);
+        }
+        currentNavigationStep = currentNavigationStep.getNext();
+      }
     }
-    if (path instanceof String && StringUtil.isDefined(path.toString())) {
-      browseBar.setPath(path.toString());
+  }
+
+  private void applySpaceData() {
+    if (isDefined(spaceId)) {
+      browseBar.setSpaceId(spaceId);
     }
-    if (StringUtil.isDefined(componentId)) {
-      Optional<SilverpeasComponentInstance> optionalComponentInstance =
+  }
+
+  private void applyComponentData() {
+    if (isDefined(componentId)) {
+      final Optional<SilverpeasComponentInstance> optionalComponentInstance =
           SilverpeasComponentInstance.getById(componentId);
       if (optionalComponentInstance.isPresent()) {
         browseBar.setComponentId(componentId);
       } else {
         browseBar.setComponentName(componentId);
       }
-    }
-    if (StringUtil.isDefined(spaceId)) {
-      browseBar.setSpaceId(spaceId);
-    }
-    browseBar.setIgnoreComponentLink(ignoreComponentLink);
-    browseBar.setClickable(clickable);
-
-    if (path instanceof NavigationContext) {
-      NavigationContext.NavigationStep currentNavigationStep =
-          ((NavigationContext) path).getBaseNavigationStep();
-      while (currentNavigationStep != null) {
-        if (StringUtil.isDefined(currentNavigationStep.getLabel())) {
-          String link = "#";
-          if (currentNavigationStep.isUriMustBeUsedByBrowseBar()) {
-            link = URLUtil.getApplicationURL() +
-                currentNavigationStep.getUri().toString().replaceAll("[&]ArrayPaneAction.*", "");
-          }
-          BrowseBarElement element =
-              new BrowseBarElement(currentNavigationStep.getLabel(), link, null);
-          browseBar.addElement(element);
-        }
-        currentNavigationStep = currentNavigationStep.getNext();
+      if (isDefined(componentJsCallback)) {
+        browseBar.setComponentJavascriptCallback(componentJsCallback);
       }
     }
+  }
 
-    return EVAL_BODY_INCLUDE;
+  private void applyPath() {
+    if (path instanceof String && isDefined(path.toString())) {
+      browseBar.setPath(path.toString());
+    }
+  }
+
+  private void applyExtraInformations() {
+    if (extraInformations != null) {
+      browseBar.setExtraInformation(extraInformations);
+    }
   }
 }
