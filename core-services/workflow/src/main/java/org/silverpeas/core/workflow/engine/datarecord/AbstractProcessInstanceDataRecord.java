@@ -26,6 +26,7 @@ package org.silverpeas.core.workflow.engine.datarecord;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
@@ -94,6 +95,11 @@ public class AbstractProcessInstanceDataRecord implements DataRecord {
   public Map<String, String> getValues(String language) {
     // no implemented yet !
     return new HashMap<>();
+  }
+
+  @Override
+  public ResourceReference getResourceReference() {
+    return null;
   }
 
 }

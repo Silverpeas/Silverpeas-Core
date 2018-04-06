@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
+import org.silverpeas.core.ResourceReference;
+
 import java.io.Serializable;
 import java.util.Map;
 
@@ -75,5 +77,7 @@ public interface DataRecord extends Serializable {
   public void setLanguage(String language);
 
   public Map<String, String> getValues(String language);
+
+  public ResourceReference getResourceReference();
 
 }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.workflow.engine.datarecord;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -96,6 +97,11 @@ public class ProcessInstanceDataRecord extends AbstractProcessInstanceDataRecord
 
   public String[] getFieldNames() {
     return template.getFieldNames();
+  }
+
+  @Override
+  public ResourceReference getResourceReference() {
+    return new ResourceReference(instance.getInstanceId(), instance.getModelId());
   }
 
   /**

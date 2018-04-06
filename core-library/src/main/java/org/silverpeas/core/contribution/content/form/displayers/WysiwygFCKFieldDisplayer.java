@@ -142,9 +142,12 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
       PagesContext pageContext) throws FormException {
     String code = "";
     String fieldValue = field.getValue();
-    if (StringUtil.isDefined(fieldValue)) {
+    if (StringUtil.isDefined(fieldValue) && fieldValue.startsWith(dbKey)) {
       String fileName = fieldValue.substring(dbKey.length());
       code = getContentFromFile(pageContext.getComponentId(), fileName);
+    } else {
+      // Case of field initialized with a content
+      code = fieldValue;
     }
     if (code == null) {
       code = "";
@@ -271,7 +274,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     if (field.acceptValue(newValue, pageContext.getLanguage())) {
       try {
         String fieldValue = field.getValue();
-        if (StringUtil.isDefined(fieldValue)) {
+        if (StringUtil.isDefined(fieldValue) && fieldValue.startsWith(dbKey)) {
           String fileName = fieldValue.substring(dbKey.length());
           setContentIntoFile(pageContext.getComponentId(), fileName, newValue);
         } else {
