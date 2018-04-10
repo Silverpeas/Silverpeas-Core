@@ -31,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.FieldDisplayer;
@@ -217,5 +218,14 @@ public class GenericDataRecord implements DataRecord, Serializable {
       }
     }
     return formValues;
+  }
+
+  @Override
+  public ResourceReference getResourceReference() {
+    String componentId = "unknown";
+    if (template instanceof IdentifiedRecordTemplate) {
+      componentId = ((IdentifiedRecordTemplate) template).getInstanceId();
+    }
+    return new ResourceReference(externalId, componentId);
   }
 }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.form;
 
+import org.silverpeas.core.contribution.content.form.displayers.WysiwygFCKFieldDisplayer;
 import org.silverpeas.core.contribution.content.form.field.DateField;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -129,6 +130,10 @@ public class DataRecordUtil {
         value = field.getValue(lang);
         if (DateField.TYPE.equals(field.getTypeName())) {
           value = getOutputDate(field, lang);
+        } else if (value.startsWith(WysiwygFCKFieldDisplayer.dbKey)) {
+          String fileName = value.substring(WysiwygFCKFieldDisplayer.dbKey.length());
+          value = WysiwygFCKFieldDisplayer
+              .getContentFromFile(data.getResourceReference().getComponentInstanceId(), fileName);
         }
       }
       if (value == null) {

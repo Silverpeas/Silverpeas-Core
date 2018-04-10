@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.contribution.content.form.dummy;
 
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.contribution.content.form.DataRecord;
 import org.silverpeas.core.contribution.content.form.Field;
 import org.silverpeas.core.contribution.content.form.field.TextFieldImpl;
@@ -108,5 +109,10 @@ public class DummyDataRecord implements DataRecord {
   @Override
   public Map<String, String> getValues(String language) {
     return new HashMap<>();
+  }
+
+  @Override
+  public ResourceReference getResourceReference() {
+    return null;
   }
 }
