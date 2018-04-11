@@ -157,7 +157,7 @@ public class TaskManagerImpl extends AbstractTaskManager {
    * @throws WorkflowException
    */
   @Override
-  public void notifyActor(Task task, User sender, User user, String text) throws WorkflowException {
+  public void notifyActor(Task task, User sender, User user, String text, boolean linkDisabled) throws WorkflowException {
     String componentId = task.getProcessInstance().getModelId();
     final List<String> userIds = new ArrayList<>();
     if (user != null) {
@@ -193,10 +193,12 @@ public class TaskManagerImpl extends AbstractTaskManager {
           notifMetaData.setSender(userId);
         }
         notifMetaData.addUserRecipient(new UserRecipient(userId));
-        String link = "/RprocessManager/" + componentId
-            + "/searchResult?Type=ProcessInstance&Id="
-            + task.getProcessInstance().getInstanceId() + "&role=" + task.getUserRoleName();
-        notifMetaData.setLink(link);
+        if (!linkDisabled) {
+            String link = "/RprocessManager/" + componentId
+                + "/searchResult?Type=ProcessInstance&Id="
+                + task.getProcessInstance().getInstanceId() + "&role=" + task.getUserRoleName();
+            notifMetaData.setLink(link);
+        }
         notifSender.notifyUser(notifMetaData);
       } catch (WorkflowException | NotificationManagerException e) {
         SilverLogger.getLogger(this).error(e.getMessage(), e);

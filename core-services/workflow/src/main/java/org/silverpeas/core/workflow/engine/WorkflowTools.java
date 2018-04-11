@@ -144,12 +144,16 @@ class WorkflowTools {
       Actor[] actors = instance.getActors(notifiedUsers, null);
       Task[] tasks = taskManager.createTasks(actors, instance);
       String message;
+      boolean linkDisabled;
 
       for (int i = 0; i < actors.length; i++) {
         message = notifiedUsers.getMessage();
         if (message == null || message.length() == 0) {
           message = action.getDescription("", "");
         }
+        
+        // check if link has been disabled in the model
+        linkDisabled = notifiedUsers.getLinkDisabled();
 
         // check if sender has been hardcoded in the model
         String senderId = notifiedUsers.getSenderId();
@@ -159,7 +163,7 @@ class WorkflowTools {
         }
 
         User sender = (forcedUser == null) ? event.getUser() : forcedUser;
-        taskManager.notifyActor(tasks[i], sender, actors[i].getUser(), message);
+        taskManager.notifyActor(tasks[i], sender, actors[i].getUser(), message, linkDisabled);
       }
     }
   }
