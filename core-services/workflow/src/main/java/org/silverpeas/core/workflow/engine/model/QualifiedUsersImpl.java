@@ -59,6 +59,8 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
   private String message;
   @XmlAttribute
   private String senderId;
+  @XmlAttribute
+  private boolean linkDisabled;
 
   /**
    * Constructor
@@ -243,4 +245,22 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
   public void setSenderId(String senderId) {
     this.senderId = senderId;
   }
+  
+
+  /**
+   * Get the linkDisabled status associated to the related users (only used for notification)
+   */
+  @Override
+  public boolean getLinkDisabled() {
+    return this.linkDisabled;
+  }
+
+  /**
+   * Set the linkDisabled status associated to the related users (only used for notification)
+   * @param linkDisabled status as a boolean
+   */
+  @Override
+  public void setLinkDisabled(boolean linkDisabled) {
+    this.linkDisabled = linkDisabled;
+  }  
 }
