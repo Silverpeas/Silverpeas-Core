@@ -45,8 +45,11 @@ public @interface WebComponentController {
 
   /**
    * Gets the web component controller bean identifier. This identifier will be put into each
-   * requests to a resource managed by the component.
-   * object. For example: for almanach, returns "almanach".
+   * requests to a resource managed by the component. The identifier is used both to check the
+   * identifier of the targeted application instance and as the base folder of the web pages (JSPs).
+   * For example: for an Almanach application instance, returns "almanach" and the identifier of
+   * the almanach applications have to be prefixed by "almanach" and the JSP have to be
+   * located into the folder <code>almanach/jsp</code>.
    * @return the web component identifier.
    */
   String value();

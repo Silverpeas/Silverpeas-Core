@@ -172,7 +172,7 @@
       } else if (mimeType.indexOf('mov') > 0 || mimeType.indexOf('quick') > 0) {
         __logDebug("getTranslatedConfig() - Changing '" + translatedSource.src +
             "' into default '" + DEFAULT_VIDEO_MIME_TYPE + "' mime-type");
-        translatedSource.src = sp.formatUrl(translatedSource.src, {
+        translatedSource.src = sp.url.format(translatedSource.src, {
           "forceMimeType" : DEFAULT_VIDEO_MIME_TYPE
         });
         translatedSource.type = DEFAULT_VIDEO_MIME_TYPE;

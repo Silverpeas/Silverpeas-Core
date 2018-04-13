@@ -26,6 +26,8 @@ package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 import org.apache.taglibs.standard.tag.rt.core.ForEachTag;
 import org.silverpeas.core.util.SilverpeasList;
 import org.silverpeas.core.util.comparator.AbstractComplexComparator;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.util.viewgenerator.html.pagination.Pagination;
 
 import javax.servlet.jsp.JspTagException;
@@ -40,6 +42,9 @@ import java.util.stream.Collectors;
  * @author Yohann Chastagnier
  */
 public class ArrayLinesTag extends ForEachTag {
+  private static final long serialVersionUID = 1621133978805756811L;
+
+  private static final String AJAX_EXPORT_PARAMETER_NAME = "ArrayPaneAjaxExport";
 
   @Override
   public void setItems(final Object items) throws JspTagException {
@@ -56,20 +61,37 @@ public class ArrayLinesTag extends ForEachTag {
   private void optimize(final ArrayPaneSilverpeasV5 spArrayPane, final List list)
       throws JspTagException {
     final SilverpeasList silverpeasList = SilverpeasList.wrap(list);
+    final HttpRequest httpRequest = HttpRequest.decorate(pageContext.getRequest());
+    final boolean isAjaxExportAction = httpRequest.getParameterAsBoolean(AJAX_EXPORT_PARAMETER_NAME);
     if (silverpeasList.isSlice()) {
+      if (isAjaxExportAction) {
+        SilverLogger.getLogger(this).warn(
+            "On URL ''{0}'' export is requested on optimized array by high performance loading " +
+                "(load linked to repository queries), the export action is extracting only the " +
+                "current displayed page... Please implement a special export to get an export of " +
+                "all data",
+            httpRequest.getRequestURL());
+      }
       // The list is already paginated
       spArrayPane.setPaginationList(silverpeasList);
       super.setItems(silverpeasList);
     } else {
       // Sort if necessary
       sort(spArrayPane, silverpeasList);
-      // Getting (and initializing) the pagination
-      final Pagination pagination = spArrayPane.getPagination(list.size());
-      // Computing the paginated list
-      final SilverpeasList paginatedList = pagination.getPaginatedListFrom(silverpeasList);
-      // Set the new paginated list as items provider
-      spArrayPane.setPaginationList(paginatedList);
-      super.setItems(paginatedList);
+      if (isAjaxExportAction) {
+        // Set the original list as items provider
+        spArrayPane.setPaginationList(silverpeasList);
+        // All the data are necessary for export
+        super.setItems(silverpeasList);
+      } else {
+        // Getting (and initializing) the pagination
+        final Pagination pagination = spArrayPane.getPagination(list.size());
+        // Computing the paginated list
+        final SilverpeasList paginatedList = pagination.getPaginatedListFrom(silverpeasList);
+        // Set the new paginated list as items provider
+        spArrayPane.setPaginationList(paginatedList);
+        super.setItems(paginatedList);
+      }
     }
   }
 
@@ -91,6 +113,8 @@ public class ArrayLinesTag extends ForEachTag {
   }
 
   private static class OptimizedLineComparator extends AbstractComplexComparator<Object> {
+    private static final long serialVersionUID = 8089102273880269806L;
+
     final int columnIndex;
     final List<BiFunction<Object, Integer, Comparable>> compareOnList;
     final boolean asc;
@@ -98,6 +122,7 @@ public class ArrayLinesTag extends ForEachTag {
     @SafeVarargs
     private OptimizedLineComparator(final int columnIndex, final boolean asc,
         final BiFunction<Object, Integer, Comparable>... compareOnList) {
+      super();
       this.columnIndex = columnIndex;
       this.compareOnList = Arrays.stream(compareOnList).collect(Collectors.toList());
       this.asc = asc;

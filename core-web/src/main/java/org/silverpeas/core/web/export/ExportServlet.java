@@ -43,65 +43,64 @@ public class ExportServlet extends HttpServlet {
 
   private static final String TYPE_ARRAYPANE = "ArrayPane";
   private static final String FIELD_SEPARATOR = ";";
-  // private static final String EXPORT_ENCODING_UNICODE = "UTF8";
   private static final String EXPORT_ENCODING_DEFAULT = "UTF8";
-  // private static final String EXPORT_ENCODING_ISO = "ISO-8859-1";
 
-  private static final String exportEncoding = ResourceLocator.getSettingBundle(
+  private static final String EXPORT_ENCODING = ResourceLocator.getSettingBundle(
       "org.silverpeas.util.viewGenerator.settings.graphicElementFactorySettings")
       .getString("gef.arraypane.export.encoding", EXPORT_ENCODING_DEFAULT);
 
-  private HtmlCleaner cleaner = new HtmlCleaner();
+  private final HtmlCleaner cleaner = new HtmlCleaner();
 
   @Override
   public void service(HttpServletRequest request, HttpServletResponse response) throws IOException {
     // Prepare response
     response.setContentType("text/csv");
-    response.setCharacterEncoding(exportEncoding);
+    response.setCharacterEncoding(EXPORT_ENCODING);
 
     response.setHeader("Content-Disposition", "attachment; fileName=export_data_" +
         System.currentTimeMillis() + ".csv");
-    PrintWriter out = response.getWriter();
+    final PrintWriter out = response.getWriter();
 
     // Get the session
-    HttpSession session = request.getSession(true);
-    // String action = request.getParameter("Action");
-    String type = request.getParameter("type");
-    String name = request.getParameter("name");
+    final HttpSession session = request.getSession(true);
+    final String type = request.getParameter("type");
+    final String name = request.getParameter("name");
 
     if (TYPE_ARRAYPANE.equals(type)) {
-      if (StringUtil.isDefined(name)) {
-        // Retrieve ArrayPane data in session
-        @SuppressWarnings("unchecked")
-        List<ArrayColumn> columns = (List<ArrayColumn>) session.getAttribute(name + "_columns");
+      exportArrayPane(name, session, out);
+    }
+  }
 
-        StringBuilder listColumns = new StringBuilder();
-        int lastIndex = columns.size() - 1;
+  @SuppressWarnings("unchecked")
+  private void exportArrayPane(final String name, final HttpSession session, final PrintWriter out)
+      throws IOException {
+    if (StringUtil.isDefined(name)) {
+      // Retrieve ArrayPane data in session
+      final List<ArrayColumn> columns = (List<ArrayColumn>) session.getAttribute(name + "_columns");
+
+      StringBuilder listColumns = new StringBuilder();
+      final int lastIndex = columns.size() - 1;
+      for (ArrayColumn curCol : columns) {
+        listColumns.append("\"").append(formatCSVCell(curCol.getTitle())).append("\"");
+        if (columns.indexOf(curCol) != lastIndex) {
+          listColumns.append(FIELD_SEPARATOR);
+        }
+      }
+      out.println(listColumns.toString());
+
+      final List<ArrayLine> lines = (List<ArrayLine>) session.getAttribute(name + "_lines");
+      for (ArrayLine curLine : lines) {
+        listColumns = new StringBuilder();
         for (ArrayColumn curCol : columns) {
-          String str = curCol.toString();
-          listColumns.append("\"").append(formatCSVCell(curCol.getTitle())).append("\"");
+          final String fullCell = curLine.getCellAt(curCol.getColumnNumber()).print();
+          String cleanCell = cleanHtmlCode(fullCell);
+          cleanCell = cleanCell.replaceAll("[\\r\\n]", "");
+          listColumns.append("\"").append(formatCSVCell(cleanCell)).append("\"");
           if (columns.indexOf(curCol) != lastIndex) {
             listColumns.append(FIELD_SEPARATOR);
           }
         }
         out.println(listColumns.toString());
-
-        @SuppressWarnings("unchecked")
-        List<ArrayLine> lines = (List<ArrayLine>) session.getAttribute(name + "_lines");
-        for (ArrayLine curLine : lines) {
-          // String str = curLine.toString();
-          listColumns = new StringBuilder();
-          for (ArrayColumn curCol : columns) {
-            String fullCell = curLine.getCellAt(curCol.getColumnNumber()).print();
-            String cleanCell = cleanHtmlCode(fullCell);
-            cleanCell = cleanCell.replaceAll("(\\r|\\n)", "");
-            listColumns.append("\"").append(formatCSVCell(cleanCell)).append("\"");
-            if (columns.indexOf(curCol) != lastIndex) {
-              listColumns.append(FIELD_SEPARATOR);
-            }
-          }
-          out.println(listColumns.toString());
-        }
       }
     }
   }

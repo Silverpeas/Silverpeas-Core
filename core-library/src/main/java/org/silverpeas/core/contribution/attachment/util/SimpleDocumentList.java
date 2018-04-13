@@ -159,6 +159,7 @@ public class SimpleDocumentList<SIMPLE_DOCUMENT extends SimpleDocument>
      */
     private LanguageAndLastUpdateComparator(final String[] languageOrderedByPriority,
         ORDER_BY... orderBies) {
+      super();
       this.orderBies = orderBies;
       if (ArrayUtil.contains(orderBies, ORDER_BY.LANGUAGE_PRIORITY_DESC)) {
         for (String language : ALL_LANGUAGES_BY_PRIORITY) {

@@ -28,15 +28,16 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
-import org.silverpeas.core.web.look.LookHelper;
-import org.silverpeas.core.util.StringUtil;
+import org.owasp.encoder.Encode;
 import org.silverpeas.core.i18n.I18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.look.LookHelper;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
+
 import java.util.ArrayList;
 import java.util.List;
-import org.owasp.encoder.Encode;
 
 /**
  * The default implementation of ArrayPane interface
@@ -58,7 +59,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   private String spaceId = null;
   private String componentId = null;
   private MainSessionController mainSessionController = null;
-  private final List<BrowseBarElement> elements = new ArrayList<BrowseBarElement>();
+  private final List<BrowseBarElement> elements = new ArrayList<>();
   private String spaceJavascriptCallback = null;
   private String componentJavascriptCallback = null;
   private boolean clickable = true;
@@ -165,10 +166,9 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   @Override
   public void setExtraInformation(String information) {
     this.information = information;
-    if (StringUtil.isDefined(information)) {
-      if (information.contains("<") || information.contains(">")) {
-        this.information = Encode.forHtml(information);
-      }
+    if (StringUtil.isDefined(information) &&
+        (information.contains("<") || information.contains(">"))) {
+      this.information = Encode.forHtml(information);
     }
   }
 
@@ -283,15 +283,6 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     return I18NHelper.getHTMLLinks(getLanguages(), getLanguage());
   }
 
-  /**
-   * Method declaration
-   *
-   * @return
-   * @see
-   */
-  @Override
-  public abstract String print();
-
   public String getSpaceId() {
     return spaceId;
   }
@@ -318,9 +309,6 @@ public abstract class AbstractBrowseBar implements BrowseBar {
   public void setMainSessionController(MainSessionController mainSessionController) {
     this.mainSessionController = mainSessionController;
   }
-
-  @Override
-  public abstract String getBreadCrumb();
 
   @Override
   public void setSpaceJavascriptCallback(String callback) {
@@ -354,7 +342,7 @@ public abstract class AbstractBrowseBar implements BrowseBar {
     ignoreComponentLink = ignore;
   }
 
-  public boolean ignoreComponentLink() {
+  boolean ignoreComponentLink() {
     return ignoreComponentLink;
   }
 

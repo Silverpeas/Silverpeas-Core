@@ -70,7 +70,7 @@
             if (fromSharedComponent && uri.indexOf('/' + context.component + '/') < 0) {
               params.previousPageFullUri = location.href;
             }
-            return sp.formatUrl(uri, params);
+            return sp.url.format(uri, params);
           }
 
           $scope.newEvent = function(startMoment) {

@@ -1063,6 +1063,17 @@
       <type>java.lang.String</type>
     </attribute>
     <attribute>
+      <description>
+        Defines a Javascript callback on component id element instead of having a
+        computed URL when clicking on component name part.
+        The component id is given as first and only one parameter.
+      </description>
+      <name>componentJsCallback</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
       <description>Permit to use component's link given by setComponentName(name, link) method</description>
       <name>ignoreComponentLink</name>
       <required>false</required>
@@ -1408,6 +1419,14 @@
     <attribute>
       <description>Permits to define css classes</description>
       <name>classes</name>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>
+        If the value given to text attribute is equals to the one here defined,
+        then it is displayed the value even if it represents a not defined value</description>
+      <name>nullStringValue</name>
       <rtexprvalue>true</rtexprvalue>
       <type>java.lang.String</type>
     </attribute>

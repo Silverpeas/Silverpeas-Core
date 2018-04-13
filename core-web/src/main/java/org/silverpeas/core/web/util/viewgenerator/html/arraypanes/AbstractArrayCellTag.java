@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.arraypanes;
 
-import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.BodyTagSupport;
 
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
 
@@ -34,11 +34,13 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
  * @author cdm
  */
 public abstract class AbstractArrayCellTag extends BodyTagSupport {
+  private static final long serialVersionUID = -2409388744815834712L;
 
   private String classes;
+  private String nullStringValue;
 
   @Override
-  public final int doEndTag() throws JspException {
+  public final int doEndTag() {
     ArrayCell cell = doCreateCell();
     if (isDefined(classes)) {
       cell.setStyleSheet(classes);
@@ -50,17 +52,25 @@ public abstract class AbstractArrayCellTag extends BodyTagSupport {
     this.classes = classes;
   }
 
+  public void setNullStringValue(final String nullStringValue) {
+    this.nullStringValue = nullStringValue;
+  }
+
   abstract ArrayCell doCreateCell();
 
-  protected String getContentValue(String valueIfNoBodyContent) {
-    String value = defaultStringIfNotDefined(valueIfNoBodyContent);
+  String getContentValue(String valueIfNoBodyContent) {
+    String value = valueIfNoBodyContent;
     if (bodyContent != null) {
       final String bodyContentString = bodyContent.getString();
       if (isDefined(bodyContentString)) {
         value = bodyContentString;
       }
     }
-    return value;
+    if (nullStringValue != null && !EMPTY.equals(nullStringValue.trim()) &&
+        (value == null || value.equals(nullStringValue))) {
+      return nullStringValue;
+    }
+    return defaultStringIfNotDefined(value);
   }
 
   protected ArrayLine getArrayLine() {

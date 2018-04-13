@@ -133,7 +133,7 @@ int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.min
   function executeSearchActionToBodyPartTarget(action, hasToSerializeForm) {
     var urlParameters = hasToSerializeForm ?
         jQuery(document.menuSearchForm).serializeFormJSON() : {};
-    var url = sp.formatUrl("<%=m_sContext%>/RpdcSearch/jsp/" + action, urlParameters);
+    var url = sp.url.format("<%=m_sContext%>/RpdcSearch/jsp/" + action, urlParameters);
     spLayout.getBody().getContent().load(url);
   }
 
