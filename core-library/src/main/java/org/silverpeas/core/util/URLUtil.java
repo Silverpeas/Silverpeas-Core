@@ -27,6 +27,7 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.AdministrationServiceProvider;
 import org.silverpeas.core.cache.model.Cache;
+import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.contribution.model.SilverpeasContent;
 import org.silverpeas.core.contribution.model.SilverpeasToolContent;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -37,6 +38,7 @@ import java.net.URLEncoder;
 import java.util.regex.Pattern;
 
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getApplicationCacheService;
+import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 import static org.silverpeas.core.util.ResourceLocator.getGeneralSettingBundle;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
 import static org.silverpeas.core.util.StringUtil.isDefined;
@@ -113,6 +115,10 @@ public class URLUtil {
     return getApplicationCacheService().getCache();
   }
 
+  private static SimpleCache getRequestCache() {
+    return getRequestCacheService().getCache();
+  }
+
   /**
    * @param sComponentName - the componentName (ie kmelia, bookmark...)
    * @param sSpace - the space id
@@ -180,7 +186,7 @@ public class URLUtil {
    * @return the absolute application URL as string.
    */
   public static String getAbsoluteApplicationURL() {
-    return defaultStringIfNotDefined(getCurrentServerURL(), getServerURL(null)) + getApplicationURL();
+    return getCurrentServerURL() + getApplicationURL();
   }
 
   /**
@@ -193,23 +199,29 @@ public class URLUtil {
   }
 
   public static void setCurrentServerUrl(HttpServletRequest request) {
+    final String serverUrl = defaultStringIfNotDefined(getServerURL(request), null);
+    final String localServerUrl = defaultStringIfNotDefined(getLocalServerURL(request), null);
+    getRequestCache().put(CURRENT_SERVER_URL_CACHE_KEY, serverUrl);
+    getRequestCache().put(CURRENT_LOCAL_SERVER_URL_CACHE_KEY, localServerUrl);
     getAppCache().computeIfAbsent(CURRENT_SERVER_URL_CACHE_KEY, String.class, 0, 0,
-      () -> {
-        final String serverUrl = getServerURL(request);
-        return isDefined(serverUrl) ? serverUrl : null;
-      });
+      () -> serverUrl);
     getAppCache().computeIfAbsent(CURRENT_LOCAL_SERVER_URL_CACHE_KEY, String.class, 0, 0,
-      () -> {
-        final String localServerUrl = getLocalServerURL(request);
-        return isDefined(localServerUrl) ? localServerUrl : null;
-      });
+      () -> localServerUrl);
   }
 
   public static String getCurrentServerURL() {
-    return getAppCache().get(CURRENT_SERVER_URL_CACHE_KEY, String.class);
+    final String serverUrl = getRequestCache().get(CURRENT_SERVER_URL_CACHE_KEY, String.class);
+    if (serverUrl != null) {
+      return serverUrl;
+    }
+    return defaultStringIfNotDefined(getServerURL(null), getAppCache().get(CURRENT_SERVER_URL_CACHE_KEY, String.class));
   }
 
   public static String getCurrentLocalServerURL() {
+    final String localServerUrl = getRequestCache().get(CURRENT_LOCAL_SERVER_URL_CACHE_KEY, String.class);
+    if (localServerUrl != null) {
+      return localServerUrl;
+    }
     return getAppCache().get(CURRENT_LOCAL_SERVER_URL_CACHE_KEY, String.class);
   }
 
