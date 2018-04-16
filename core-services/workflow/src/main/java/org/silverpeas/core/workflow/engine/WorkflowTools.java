@@ -153,7 +153,7 @@ class WorkflowTools {
         }
         
         // check if link has been disabled in the model
-        linkDisabled = notifiedUsers.getLinkDisabled();
+        linkDisabled = notifiedUsers.getLinkDisabled() != null && notifiedUsers.getLinkDisabled();
 
         // check if sender has been hardcoded in the model
         String senderId = notifiedUsers.getSenderId();

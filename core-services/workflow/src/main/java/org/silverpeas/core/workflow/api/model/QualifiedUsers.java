@@ -143,11 +143,11 @@ public interface QualifiedUsers {
    * Get the linkDisabled status associated to the related users (only used for notification)
    * @return the status of linkDisabled
    */
-  public boolean getLinkDisabled();
+  public Boolean getLinkDisabled();
 
   /**
    * Set the linkDisabled status associated to the related users (only used for notification)
    * @param linkDisabled status as a boolean
    */
-  public void setLinkDisabled(boolean linkDisabled);
+  public void setLinkDisabled(Boolean linkDisabled);
 }

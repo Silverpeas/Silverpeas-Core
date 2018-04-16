@@ -146,6 +146,13 @@
 
         cellInput = row.addArrayCellInputText( "message", qualifiedUsers.getMessage() );
         cellInput.setSize( "100" );
+
+        row = headerPane.addArrayLine();
+        cellText = row.addArrayCellText( resource.getString("workflowDesigner.linkDisabled") );
+        cellText.setStyleSheet( "txtlibform" );
+
+        final boolean checked = qualifiedUsers.getLinkDisabled() != null && qualifiedUsers.getLinkDisabled();
+        row.addArrayCellCheckbox( "linkDisabled", Boolean.TRUE.toString(), checked);
     }
 
     // User In Role - print a list of role names, based on the 'roles' element

@@ -23,11 +23,6 @@
  */
 package org.silverpeas.core.workflow.engine.model;
 
-import java.io.Serializable;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Vector;
-
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.QualifiedUsers;
 import org.silverpeas.core.workflow.api.model.RelatedGroup;
@@ -38,6 +33,10 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.io.Serializable;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
 
 /**
  * Class implementing the representation of the &lt;allowedUsers&gt;, &lt;workingUsers&gt;,
@@ -60,7 +59,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
   @XmlAttribute
   private String senderId;
   @XmlAttribute
-  private boolean linkDisabled;
+  private Boolean linkDisabled;
 
   /**
    * Constructor
@@ -251,7 +250,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * Get the linkDisabled status associated to the related users (only used for notification)
    */
   @Override
-  public boolean getLinkDisabled() {
+  public Boolean getLinkDisabled() {
     return this.linkDisabled;
   }
 
@@ -260,7 +259,7 @@ public class QualifiedUsersImpl implements QualifiedUsers, Serializable {
    * @param linkDisabled status as a boolean
    */
   @Override
-  public void setLinkDisabled(boolean linkDisabled) {
+  public void setLinkDisabled(Boolean linkDisabled) {
     this.linkDisabled = linkDisabled;
   }  
 }
