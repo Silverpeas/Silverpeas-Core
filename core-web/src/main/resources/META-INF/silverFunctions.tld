@@ -342,6 +342,14 @@
     </function-signature>
   </function>
   <function>
+    <description>Function that returns the current user.</description>
+    <name>currentUser</name>
+    <function-class>org.silverpeas.core.admin.user.model.User</function-class>
+    <function-signature>
+      org.silverpeas.core.admin.user.model.User getCurrentRequester()
+    </function-signature>
+  </function>
+  <function>
     <description>Gets the highest role on the component represented by the given identifier the current user has.</description>
     <name>getHighestRoleOfCurrentUserOn</name>
     <function-class>org.silverpeas.core.webapi.admin.component.SilverpeasComponentInstanceRoleProvider</function-class>

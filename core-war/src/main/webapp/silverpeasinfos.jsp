@@ -50,11 +50,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
 
-<c:set var="currentUserId" value="${sessionScope['SilverSessionController'].userId}"/>
-<c:if test="${currentUserId == null || currentUserId != 0}">
+<c:set var="currentUser" value="${silfn:currentUser()}"/>
+<c:if test="${currentUser == null or !currentUser.accessAdmin}">
   <c:redirect url="/Login.jsp"/>
 </c:if>
 
@@ -66,24 +67,43 @@
     .titre {
       left: 490px;
     }
+
+    .java-opts {
+      width: 100%;
+    }
+
+    .java-opts ul {
+      font-weight: bold;
+      font-size: smaller;
+      display:inline;
+      margin: 0;
+      padding: 0;
+      list-style-type: none;
+    }
+
+    .java-opts ul li {
+      float: left;
+    }
   </style>
 </head>
 <body>
 <c:set var="system" value="${System.getProperty('os.name')} ${System.getProperty('os.version')} ${System.getProperty('os.arch')}"/>
 <c:set var="java" value="${System.getProperty('java.vm.vendor')} ${System.getProperty('java.vm.name')} ${System.getProperty('java.vm.version')}"/>
-<cs:set var="javaOpts" value="${System.getenv('JAVA_OPTS')}"/>
+<c:set var="javaOpts" value="${System.getenv('JAVA_OPTS')}"/>
 <div class="page">
   <div class="titre"><span>Information</span></div>
   <div id="background">
     <div class="cadre">
       <div id="header">
         <a href="http://www.silverpeas.com"><img src="<c:url value="/images/logo.jpg" />" class="logo" alt="logo"/></a>
-        <p class="information">Silverpeas version is <b><c:out value="${initParam.SILVERPEAS_VERSION}"/></b></p>
+        <p class="information">Silverpeas version is
+          <b><c:out value="${initParam.SILVERPEAS_VERSION}"/></b></p>
       </div>
       <div class="information">
         <p>
           Silverpeas is running on <b>${pageContext.servletContext.serverInfo}</b>
-          with the Servlet API <b>${pageContext.servletContext.majorVersion}.${pageContext.servletContext.minorVersion}</b>
+          with the Servlet API
+          <b>${pageContext.servletContext.majorVersion}.${pageContext.servletContext.minorVersion}</b>
         </p>
       </div>
       <div class="information">
@@ -91,16 +111,19 @@
           The server is running on <b>${system}</b> with <b>${java}</b>
         </p>
       </div>
-        <c:if test="${javaOpts != null && fn:length(javaOpts) > 0}">
-      <div class="information">
+      <c:if test="${javaOpts != null && fn:length(javaOpts) > 0}">
+        <div class="information java-opts">
           <p>
-            Silverpeas is running with the following configuration: <b>${javaOpts}</b>
+            Silverpeas is running with the following configuration:
           </p>
-      </div>
-        </c:if>
-      </div>
+          <ul>
+          ${javaOpts.replaceAll('[ ]*([^ ]+)', '<li>&nbsp;$1</li>')}
+          </ul>
+        </div>
+      </c:if>
     </div>
   </div>
+</div>
 </div>
 </body>
 </html>
