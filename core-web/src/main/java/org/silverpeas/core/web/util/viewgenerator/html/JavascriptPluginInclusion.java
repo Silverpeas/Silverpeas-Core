@@ -327,6 +327,7 @@ public class JavascriptPluginInclusion {
   }
 
   static ElementContainer includePolyfills(final ElementContainer xhtml) {
+    xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/unorm.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/array.generics.min.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/es6-promise.min.js"));
     xhtml.addElement(script(JAVASCRIPT_PATH + "polyfill/classList.min.js"));
@@ -542,13 +543,15 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  static ElementContainer includeWysiwygEditor(final ElementContainer xhtml) {
+  static ElementContainer includeWysiwygEditor(final ElementContainer xhtml, final String language) {
     xhtml.addElement(link(WYSIWYG_PATH+CODE_HIGHLIGHTER_CSS));
     xhtml.addElement(script(WYSIWYG_PATH + JAVASCRIPT_CKEDITOR));
     xhtml.addElement(script(WYSIWYG_PATH + CODE_HIGHLIGHTER_JAVASCRIPT));
     xhtml.addElement(script(WYSIWYG_PATH + SILVERPEAS_WYSIWYG_TOOLBAR));
     xhtml.addElement(script(ANGULARJS_PATH + ANGULAR_CKEDITOR_JS));
     xhtml.addElement(scriptContent("hljs.initHighlightingOnLoad();"));
+    includeDragAndDropUpload(xhtml, language);
+    xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-ddUpload-ckeditor.js"));
     return xhtml;
   }
 
@@ -656,7 +659,7 @@ public class JavascriptPluginInclusion {
     includeDatePicker(xhtml, language);
     includeAttendeeWebComponent(xhtml);
     includeDragAndDropUpload(xhtml, language);
-    includeWysiwygEditor(xhtml);
+    includeWysiwygEditor(xhtml, language);
     includeContributionReminder(xhtml, language);
 
     SettingBundle calendarSettings = ResourceLocator

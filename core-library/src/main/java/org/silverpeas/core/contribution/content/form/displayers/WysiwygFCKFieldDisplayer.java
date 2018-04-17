@@ -62,6 +62,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static java.text.MessageFormat.format;
+
 /**
  * A WysiwygFieldDisplayer is an object which can display a TextField in HTML the content of a
  * TextField to a end user and can retrieve via HTTP any updated value.
@@ -79,6 +81,15 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
 
   private static final int DEFAULT_WIDTH = 600;
   private static final int DEFAULT_HEIGHT = 300;
+
+  private static final String DD_UPLOAD_TEMPLATE_SCRIPT =
+      "whenSilverpeasReady(function() '{'" +
+        "configureCkEditorDdUpload('{'" +
+          "componentInstanceId : ''{0}''," +
+          "resourceId : ''{1}'', " +
+          "indexIt : {2}" +
+        "'}');" +
+      "'}');\n";
 
   /**
    * Returns the name of the managed types.
@@ -229,6 +240,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     stringBuilder.append("filebrowserImageBrowseUrl : '").append(fileBrowserUrl).append("',\n");
     stringBuilder.append("filebrowserFlashBrowseUrl : '").append(fileBrowserUrl).append("',\n");
     stringBuilder.append("filebrowserBrowseUrl : '").append(fileBrowserUrl).append("',\n");
+    stringBuilder.append("imageUploadUrl : '").append("activated").append("',\n");
     stringBuilder.append("toolbarStartupExpanded : ").append(toolbarStartupExpanded).append(",\n");
     stringBuilder.append("customConfig : '").append(configFile).append("',\n");
     stringBuilder.append("toolbar : '").append("XMLForm").append("',\n");
@@ -240,7 +252,9 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     stringBuilder.append("imagebank : ").append(showGalleries).append(",\n");
     stringBuilder.append("silverpeasObjectId : '").append(pageContext.getObjectId()).append("',\n");
     stringBuilder.append("silverpeasComponentId : '").append(pageContext.getComponentId()).append("'\n");
-    stringBuilder.append("});");
+    stringBuilder.append("});\n");
+
+    stringBuilder.append(format(DD_UPLOAD_TEMPLATE_SCRIPT, pageContext.getComponentId(), pageContext.getObjectId(), false));
 
     out.println(stringBuilder.toString());
 

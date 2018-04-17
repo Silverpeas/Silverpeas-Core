@@ -53,7 +53,7 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     WebPluginConsumerRegistry.add(USERZOOM, JavascriptPluginInclusion::includeUserZoom);
     WebPluginConsumerRegistry.add(RELATIONSHIP, JavascriptPluginInclusion::includeRelationship);
     WebPluginConsumerRegistry.add(MESSAGEME, (xhtml, language) -> includeMessageMe(xhtml));
-    WebPluginConsumerRegistry.add(WYSIWYG, (xhtml, language) -> includeWysiwygEditor(xhtml));
+    WebPluginConsumerRegistry.add(WYSIWYG, JavascriptPluginInclusion::includeWysiwygEditor);
     WebPluginConsumerRegistry.add(RESPONSIBLES, JavascriptPluginInclusion::includeResponsibles);
     WebPluginConsumerRegistry.add(POPUP, (xhtml, language) -> includePopup(xhtml));
     WebPluginConsumerRegistry.add(CALENDAR, JavascriptPluginInclusion::includeCalendar);

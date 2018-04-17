@@ -10,6 +10,7 @@ CKEDITOR.editorConfig = function( config )
   config.filebrowserImageBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.filebrowserFlashBrowseUrl = config.baseHref+'uploadFile.jsp';
   config.filebrowserBrowseUrl = config.baseHref+'uploadFile.jsp';
+  config.imageUploadUrl = 'activated';
   config.extraPlugins = 'userzoom,identitycard,autolink,video,html5audio,imageresizerowandcolumn,variables,listblock,floatpanel,richcombo,mediaofcontribution,imagebank,filebank';
   config.allowedContent = true;
   config.toolbarCanCollapse = true;
