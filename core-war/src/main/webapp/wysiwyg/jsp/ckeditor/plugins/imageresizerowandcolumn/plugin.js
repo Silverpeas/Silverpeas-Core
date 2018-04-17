@@ -156,7 +156,13 @@
                 CKEDITOR.tools.setTimeout( function( leftCell, leftOldWidth ) {
                     // 1px is the minimum valid width (http://dev.ckeditor.com/ticket/11626).
 
-                     leftCell && leftCell.setStyle( 'width', pxUnit( Math.max( leftOldWidth + direction, 1 ) ) );
+                     if (leftCell) {
+                       leftCell.setStyle('width', pxUnit(Math.max(leftOldWidth + direction, 1)));
+                       leftCell.setStyle('height', 'auto');
+                       CKEDITOR.tools.setTimeout(function(leftCell) {
+                         leftCell.setStyle('height', pxUnit(leftCell.$.offsetHeight));
+                       }, 0, this, leftCell);
+                     }
 
                     // If we're in the last cell, we need to resize the table as well
 

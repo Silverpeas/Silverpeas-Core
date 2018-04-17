@@ -25,10 +25,12 @@ package org.silverpeas.core.web.util.viewgenerator.html.wysiwyg;
 
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.util.WysiwygEditorConfig;
 
+import static java.text.MessageFormat.format;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
     .getSessionVolatileResourceCacheService;
@@ -42,6 +44,14 @@ public class WysiwygEditor {
   private String componentInstanceId;
   private String resourceType;
   private String resourceId;
+  private static final String DD_UPLOAD_TEMPLATE_SCRIPT =
+      "whenSilverpeasReady(function() '{'" +
+        "configureCkEditorDdUpload('{'" +
+          "componentInstanceId : ''{0}''," +
+          "resourceId : ''{1}'', " +
+          "indexIt : {2}" +
+        "'}');" +
+      "'}');\n";
 
   public WysiwygEditor(final String componentInstanceId, final String resourceType,
       final String resourceId, final boolean activateWysiwygBackupManager) {
@@ -80,6 +90,10 @@ public class WysiwygEditor {
         o.put("resourceId", defaultStringIfNotDefined(notVolatileId ? resourceId : EMPTY));
         return o;
       }) + ");\n";
+    }
+    if (componentInstanceId != null &&
+        !componentInstanceId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
+      js += format(DD_UPLOAD_TEMPLATE_SCRIPT, componentInstanceId, resourceId, false);
     }
     return js;
   }
