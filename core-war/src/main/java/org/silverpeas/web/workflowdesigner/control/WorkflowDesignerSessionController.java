@@ -46,31 +46,30 @@
 */
 package org.silverpeas.web.workflowdesigner.control;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.admin.component.model.ComponentBehavior;
 import org.silverpeas.core.admin.component.model.ComponentBehaviors;
 import org.silverpeas.core.admin.component.model.Profile;
 import org.silverpeas.core.admin.component.model.WAComponent;
-import org.silverpeas.core.admin.component.WAComponentRegistry;
 import org.silverpeas.core.contribution.content.form.TypeManager;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.util.ArrayUtil;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.file.FileServerUtils;
+import org.silverpeas.core.util.file.FileUtil;
+import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.workflow.api.ProcessModelManager;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.*;
-import org.silverpeas.core.workflow.api.model.Parameter;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 import org.silverpeas.core.workflow.engine.model.ProcessModelManagerImpl;
 import org.silverpeas.core.workflow.engine.model.SpecificLabel;
 import org.silverpeas.web.workflowdesigner.model.WorkflowDesignerException;
-import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.util.ArrayUtil;
-import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.util.file.FileUtil;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.i18n.I18NHelper;
 
 import java.io.File;
 import java.util.*;
@@ -780,6 +779,7 @@ public class WorkflowDesignerSessionController extends AbstractComponentSessionC
       // Update the qualified users.
       qualifiedUsers.setRole(source.getRole());
       qualifiedUsers.setMessage(source.getMessage());
+      qualifiedUsers.setLinkDisabled(source.getLinkDisabled());
       qualifiedUsers.removeUserInRoles();
       Iterator<UserInRole> iter = source.iterateUserInRole();
 

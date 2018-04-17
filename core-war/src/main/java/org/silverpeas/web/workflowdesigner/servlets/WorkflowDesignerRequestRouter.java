@@ -23,6 +23,14 @@
  */
 package org.silverpeas.web.workflowdesigner.servlets;
 
+import org.apache.commons.fileupload.FileItem;
+import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
 import org.silverpeas.core.workflow.api.Workflow;
 import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.model.*;
@@ -31,14 +39,6 @@ import org.silverpeas.core.workflow.engine.model.SpecificLabel;
 import org.silverpeas.core.workflow.engine.model.StateRef;
 import org.silverpeas.web.workflowdesigner.control.WorkflowDesignerSessionController;
 import org.silverpeas.web.workflowdesigner.model.WorkflowDesignerException;
-import org.silverpeas.core.web.mvc.controller.ComponentContext;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.web.mvc.route.ComponentRequestRouter;
-import org.apache.commons.fileupload.FileItem;
-import org.silverpeas.core.web.http.HttpRequest;
-import org.silverpeas.core.util.ResourceLocator;
-import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.exception.SilverpeasException;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -714,8 +714,10 @@ public class WorkflowDesignerRequestRouter extends
    */
   private static FunctionHandler hndlUpdateQualifiedUsers =
       (function, workflowDesignerSC, request) -> {
-        String strRole = request.getParameter("role"), strContext = request.getParameter("context"),
-            strMessage = request.getParameter("message");
+        final String strRole = request.getParameter("role");
+        final String strContext = request.getParameter("context");
+        final String strMessage = request.getParameter("message");
+        final String linkDisabled = request.getParameter("linkDisabled");
         String[] astrUserInRole = request.getParameterValues("userInRole");
         QualifiedUsers qualifiedUsers = workflowDesignerSC.getProcessModel().createQualifiedUsers();
         UserInRole userInRole;
@@ -739,6 +741,7 @@ public class WorkflowDesignerRequestRouter extends
         // read the message.
         if (StringUtil.isDefined(strMessage)) {
           qualifiedUsers.setMessage(strMessage);
+          qualifiedUsers.setLinkDisabled(Boolean.valueOf(linkDisabled));
         }
 
         // call the update in session controller

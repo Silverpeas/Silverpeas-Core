@@ -138,4 +138,16 @@ public interface QualifiedUsers {
    * @return
    */
   public String getSenderId();
+
+  /**
+   * Get the linkDisabled status associated to the related users (only used for notification)
+   * @return the status of linkDisabled
+   */
+  public Boolean getLinkDisabled();
+
+  /**
+   * Set the linkDisabled status associated to the related users (only used for notification)
+   * @param linkDisabled status as a boolean
+   */
+  public void setLinkDisabled(Boolean linkDisabled);
 }
