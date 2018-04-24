@@ -33,8 +33,6 @@ import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.HistorisedDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.node.model.NodeDetail;
-import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
@@ -43,7 +41,6 @@ import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
-import java.rmi.RemoteException;
 import java.util.Collections;
 import java.util.List;
 
@@ -55,9 +52,7 @@ import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
  */
 public class VersioningSessionController extends AbstractComponentSessionController {
 
-  private SimpleDocument document;
   private String contentLanguage;
-  private String nodeId = null;
   private AdminController adminController = ServiceProvider.getService(AdminController.class);
   private String currentProfile = null;
   public static final String ADMIN = SilverpeasRole.admin.toString();
@@ -80,10 +75,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     if (StringUtil.isDefined(profile)) {
       this.currentProfile = profile;
     }
-  }
-
-  private boolean isTopicRightsEnabled() {
-    return false;
   }
 
   /**
@@ -136,16 +127,6 @@ public class VersioningSessionController extends AbstractComponentSessionControl
     return Collections.singletonList(currentDoc);
   }
 
-  /**
-   * Store in controller the current edited document.
-   *
-   * @param document
-   */
-  public void setEditingDocument(SimpleDocument document) {
-    this.document = document;
-    setComponentId(document.getInstanceId());
-  }
-
   public String getContentLanguage() {
     return contentLanguage;
   }
@@ -158,31 +139,18 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param document
    * @param userId
    * @return
-   * @throws RemoteException
    */
-  public boolean isReader(SimpleDocument document, String userId) throws RemoteException {
+  public boolean isReader(SimpleDocument document, String userId) {
     if (!useRights()) {
       return true;
     }
-    setEditingDocument(document);
+    setComponentId(document.getInstanceId());
     if (isWriter(document, userId)) {
       return true;
     }
-    // No specific rights activated on document
-    // Check rights according to rights of component (or topic)
-    if (isTopicRightsEnabled()) {
-      ProfileInst profile = getInheritedProfile(READER);
-      if (profile.getObjectId() != -1) {
-        // topic have no rights defined (on itself or by its fathers) check if user have access
-        // to this component
-        return isComponentAvailable(userId);
-      }
-      return false;
-    } else {
-      // check if user have access to this component
-      return isComponentAvailable(userId);
-    }
 
+    // check if user have access to this component
+    return isComponentAvailable(userId);
   }
 
   private boolean isComponentAvailable(String userId) {
@@ -212,10 +180,9 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param document
    * @param userId
    * @return
-   * @throws RemoteException
    */
-  public boolean isWriter(SimpleDocument document, String userId) throws RemoteException {
-    setEditingDocument(document);
+  public boolean isWriter(SimpleDocument document, String userId) {
+    setComponentId(document.getInstanceId());
     // check document profiles
     boolean isWriter = isUserInRole(userId, getCurrentProfile(WRITER));
     if (!isWriter) {
@@ -289,34 +256,14 @@ public class VersioningSessionController extends AbstractComponentSessionControl
    * @param role
    * @return
    */
-  public ProfileInst getCurrentProfile(String role) throws RemoteException {
-    // Rights of the node
-    if (isTopicRightsEnabled()) {
-      NodeDetail nodeDetail = getNodeBm().getDetail(new NodePK(nodeId, getComponentId()));
-      if (nodeDetail.haveRights()) {
-        return getTopicProfile(role, Integer.toString(nodeDetail.getRightsDependsOn()));
-      }
-    }
+  public ProfileInst getCurrentProfile(String role) {
     // Rights of the component
     return getComponentProfile(role);
   }
 
-  public ProfileInst getInheritedProfile(String role) throws RemoteException {
-    ProfileInst profileInst;
-    // Rights of the node
-    if (isTopicRightsEnabled()) {
-      NodeDetail nodeDetail = getNodeBm().getDetail(new NodePK(nodeId, getComponentId()));
-      if (nodeDetail.haveRights()) {
-        profileInst = getTopicProfile(role, Integer.toString(nodeDetail.getRightsDependsOn()));
-      } else {
-        // Rights of the component
-        profileInst = getComponentProfile(role);
-      }
-    } else {
-      // Rights of the component
-      profileInst = getComponentProfile(role);
-    }
-    return profileInst;
+  public ProfileInst getInheritedProfile(String role) {
+    // Rights of the component
+    return getComponentProfile(role);
   }
 
   /**
