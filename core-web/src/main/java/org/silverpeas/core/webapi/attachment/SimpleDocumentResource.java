@@ -76,6 +76,8 @@ import static org.silverpeas.core.web.util.IFrameAjaxTransportUtil.*;
 @Authorized
 public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
 
+  private static final String DOCUMENT_PATH_NODE = "document";
+
   @PathParam("id")
   private String simpleDocumentId;
 
@@ -94,7 +96,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   @Produces(MediaType.APPLICATION_JSON)
   public SimpleDocumentEntity getDocument(final @PathParam("lang") String lang) {
     SimpleDocument attachment = getSimpleDocument(lang);
-    URI attachmentUri = getUri().getRequestUriBuilder().path("document").path(attachment.
+    URI attachmentUri = getUri().getRequestUriBuilder().path(DOCUMENT_PATH_NODE).path(attachment.
         getLanguage()).build();
     return SimpleDocumentEntity.fromAttachment(attachment).withURI(attachmentUri);
   }
@@ -107,6 +109,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   public void deleteDocument() {
     UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
     SimpleDocument document = getSimpleDocument(null);
+    document.setUpdatedBy(getUser().getId());
     AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
   }
 
@@ -175,7 +178,6 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   protected SimpleDocumentEntity updateSimpleDocument(SimpleDocumentUploadData uploadData,
       String filename) throws IOException {
     try {
-
       UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
 
       SimpleDocument document = getSimpleDocument(uploadData.getLanguage());
@@ -198,26 +200,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
       if (uploadData.getRequestFile() != null &&
           (uploadedInputStream = uploadData.getRequestFile().getInputStream()) != null &&
           StringUtil.isDefined(uploadedFilename) && !"no_file".equalsIgnoreCase(uploadedFilename)) {
-        File tempFile = File.createTempFile("silverpeas_", uploadedFilename);
-        FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
-        document.setFilename(uploadedFilename);
-        document.setContentType(FileUtil.getMimeType(tempFile.getPath()));
-
-        //check the file
-        checkUploadedFile(tempFile);
-
-        document.setSize(tempFile.length());
-        InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
-        if (!StringUtil.isDefined(document.getEditedBy())) {
-          document.edit(getUser().getId());
-        }
-
-        AttachmentServiceProvider.getAttachmentService().updateAttachment(document, content, true,
-            true);
-        content.close();
-        FileUtils.deleteQuietly(tempFile);
-        // in the case the document is a CAD one, process it for Actify
-        ActifyDocumentProcessor.getProcessor().process(document);
+        uploadFileAndUpdate(document, uploadedFilename, uploadedInputStream);
       } else {
         // In case of update and if no content has been uploaded whereas the physical file does
         // not exist, sending HTTP error 412 because file is mandatory.
@@ -228,43 +211,76 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
               .entity(errorMessage).build());
         }
         isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
-        if (document.isVersioned()) {
-          isWebdav = document.isOpenOfficeCompatible() && document.isReadOnly();
-          File content = new File(document.getAttachmentPath());
-          AttachmentServiceProvider.getAttachmentService()
-              .lock(document.getId(), getUser().getId(), document.getLanguage());
-          AttachmentServiceProvider.getAttachmentService()
-              .updateAttachment(document, content, true, true);
-        } else {
-          if (isWebdav) {
-            WebdavServiceProvider.getWebdavService().updateDocumentContent(document);
-          }
-          AttachmentServiceProvider.getAttachmentService().updateAttachment(document, true, true);
-        }
+        updateWithAlreadyUploadedFile(document, isWebdav);
       }
       UnlockContext unlockContext =
           new UnlockContext(document.getId(), getUser().getId(), uploadData.getLanguage(),
               uploadData.getComment());
-      if (isWebdav) {
-        unlockContext.addOption(UnlockOption.WEBDAV);
-      } else {
-        unlockContext.addOption(UnlockOption.UPLOAD);
-      }
-      if (!isPublic) {
-        unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
-      }
-      AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
-      if (isWebdav) {
-        WebDavTokenProducer.deleteToken(getUser(), document.getId());
-      }
+      unlockDocument(document, isPublic, isWebdav, unlockContext);
       document = getSimpleDocument(uploadData.getLanguage());
-      URI attachmentUri = getUri().getRequestUriBuilder().path("document").path(document.
+      URI attachmentUri = getUri().getRequestUriBuilder().path(DOCUMENT_PATH_NODE).path(document.
           getLanguage()).build();
       return SimpleDocumentEntity.fromAttachment(document).withURI(attachmentUri);
     } catch (RuntimeException re) {
       performRuntimeException(re);
     }
     throw new WebApplicationException(Status.INTERNAL_SERVER_ERROR);
+  }
+
+  private void unlockDocument(final SimpleDocument document, final boolean isPublic,
+      final boolean isWebdav, final UnlockContext unlockContext) {
+    if (isWebdav) {
+      unlockContext.addOption(UnlockOption.WEBDAV);
+    } else {
+      unlockContext.addOption(UnlockOption.UPLOAD);
+    }
+    if (!isPublic) {
+      unlockContext.addOption(UnlockOption.PRIVATE_VERSION);
+    }
+    AttachmentServiceProvider.getAttachmentService().unlock(unlockContext);
+    if (isWebdav) {
+      WebDavTokenProducer.deleteToken(getUser(), document.getId());
+    }
+  }
+
+  private void updateWithAlreadyUploadedFile(final SimpleDocument document,
+      final boolean isWebdav) {
+    if (document.isVersioned()) {
+      File content = new File(document.getAttachmentPath());
+      AttachmentServiceProvider.getAttachmentService()
+          .lock(document.getId(), getUser().getId(), document.getLanguage());
+      AttachmentServiceProvider.getAttachmentService()
+          .updateAttachment(document, content, true, true);
+    } else {
+      if (isWebdav) {
+        WebdavServiceProvider.getWebdavService().updateDocumentContent(document);
+      }
+      AttachmentServiceProvider.getAttachmentService().updateAttachment(document, true, true);
+    }
+  }
+
+  private void uploadFileAndUpdate(final SimpleDocument document, final String uploadedFilename,
+      final InputStream uploadedInputStream) throws IOException {
+    File tempFile = File.createTempFile("silverpeas_", uploadedFilename);
+    FileUtils.copyInputStreamToFile(uploadedInputStream, tempFile);
+    document.setFilename(uploadedFilename);
+    document.setContentType(FileUtil.getMimeType(tempFile.getPath()));
+
+    //check the file
+    checkUploadedFile(tempFile);
+
+    document.setSize(tempFile.length());
+    InputStream content = new BufferedInputStream(new FileInputStream(tempFile));
+    if (!StringUtil.isDefined(document.getEditedBy())) {
+      document.edit(getUser().getId());
+    }
+
+    AttachmentServiceProvider.getAttachmentService().updateAttachment(document, content, true,
+        true);
+    content.close();
+    FileUtils.deleteQuietly(tempFile);
+    // in the case the document is a CAD one, process it for Actify
+    ActifyDocumentProcessor.getProcessor().process(document);
   }
 
   /**
@@ -280,7 +296,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     for (String lang : I18NHelper.getAllSupportedLanguages()) {
       SimpleDocument attachment = getSimpleDocument(lang);
       if (lang.equals(attachment.getLanguage())) {
-        URI attachmentUri = getUri().getRequestUriBuilder().path("document").path(lang).build();
+        URI attachmentUri = getUri().getRequestUriBuilder().path(DOCUMENT_PATH_NODE).path(lang).build();
         result.add(SimpleDocumentEntity.fromAttachment(attachment).withURI(attachmentUri));
       }
     }
@@ -302,8 +318,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * resource.
    */
   @Override
-  public void validateUserAuthorization(final UserPrivilegeValidation validation) throws
-      WebApplicationException {
+  public void validateUserAuthorization(final UserPrivilegeValidation validation) {
     validation.validateUserAuthorizationOnAttachment(getHttpServletRequest(), getUser(),
         getSimpleDocument(null));
   }
@@ -351,10 +366,9 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
    * @return
    */
   private List<SimpleDocument> getListDocuments(SimpleDocument document) {
-    List<SimpleDocument> docs =
+    return
         AttachmentServiceProvider.getAttachmentService().listDocumentsByForeignKeyAndType(
             new ResourceReference(document.getForeignId(), getComponentId()), document.getDocumentType(), defaultLanguage);
-    return docs;
   }
 
   /**
@@ -380,8 +394,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     List<SimpleDocument> docs = getListDocuments(document);
     int position = docs.indexOf(document);
     Collections.swap(docs, position, position - 1);
-    String message = reorderDocuments(docs);
-    return message;
+    return reorderDocuments(docs);
   }
 
   /**
@@ -398,8 +411,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
     List<SimpleDocument> docs = getListDocuments(document);
     int position = docs.indexOf(document);
     Collections.swap(docs, position, position + 1);
-    String message = reorderDocuments(docs);
-    return message;
+    return reorderDocuments(docs);
   }
 
   /**
