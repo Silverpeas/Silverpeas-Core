@@ -107,6 +107,7 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   public void deleteDocument() {
     UserSubscriptionNotificationSendingHandler.verifyRequest(getHttpRequest());
     SimpleDocument document = getSimpleDocument(null);
+    document.setUpdatedBy(getUser().getId());
     AttachmentServiceProvider.getAttachmentService().deleteAttachment(document);
   }
 
