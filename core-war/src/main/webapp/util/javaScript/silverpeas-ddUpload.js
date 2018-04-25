@@ -59,12 +59,14 @@ var dragAndDropUploadEnabled = window.File;
       mute : false,
       componentInstanceId : '',
       onAllFilesProcessed : [],
+      onFileSendError : [],
       beforeSend : function(fileUpload) {
         return Promise.resolve();
       },
       onCompletedUrl : null,
       onCompletedUrlHeaders : {},
       onCompletedUrlSuccess : null,
+      onCompletedUrlError : null,
       isFileApi : window.File,
       currentUploadSession : false,
       uploadSessionPerDrop : false,
@@ -79,30 +81,45 @@ var dragAndDropUploadEnabled = window.File;
         case 'allfilesprocessed':
           this.context.onAllFilesProcessed.push(callback);
           break;
+        case 'filesenderror':
+          this.context.onFileSendError.push(callback);
+          break;
       }
     };
 
     this.monitor = new DragAndDropUploadMonitor(this);
 
+    this.sendFilesManually = function(files) {
+      var fileList = Array.isArray(files) ? files : [files];
+      // Simulating a drop
+      dropHandler({
+        stopPropagation : function() {},
+        preventDefault : function() {},
+        files : fileList
+      })
+    };
+
+    var dropHandler = function(event) {
+      if (!this.context.mute) {
+        event.stopPropagation();
+        event.preventDefault();
+        this.container.hideOverlay();
+        var uploadSession;
+        if (this.context.uploadSessionPerDrop) {
+          uploadSession = new UploadSession(this);
+        } else {
+          if (!this.context.currentUploadSession) {
+            this.context.currentUploadSession = new UploadSession(this);
+          }
+          uploadSession = this.context.currentUploadSession;
+        }
+        __performSendFromEvent(event, uploadSession);
+      }
+    }.bind(this);
+
     whenSilverpeasReady(function() {
       this.container = __renderContainer(this);
-      this.container.addEventListener('drop', function(event) {
-        if (!this.context.mute) {
-          event.stopPropagation();
-          event.preventDefault();
-          this.container.hideOverlay();
-          var uploadSession;
-          if (this.context.uploadSessionPerDrop) {
-            uploadSession = new UploadSession(this);
-          } else {
-            if (!this.context.currentUploadSession) {
-              this.context.currentUploadSession = new UploadSession(this);
-            }
-            uploadSession = this.context.currentUploadSession;
-          }
-          __performSendFromEvent(event, uploadSession);
-        }
-      }.bind(this));
+      this.container.addEventListener('drop', dropHandler);
 
       if (!firstDropEventHandled) {
         firstDropEventHandled = true;
@@ -275,7 +292,8 @@ var dragAndDropUploadEnabled = window.File;
     this.onCompleted = extendsObject({}, {
       "url" : uploadInstance.context.onCompletedUrl,
       "urlHeaders" : uploadInstance.context.onCompletedUrlHeaders,
-      "urlSuccess" : uploadInstance.context.onCompletedUrlSuccess
+      "urlSuccess" : uploadInstance.context.onCompletedUrlSuccess,
+      "urlError" : uploadInstance.context.onCompletedUrlError
     });
     uploadInstance.monitor.reset();
 
@@ -359,13 +377,21 @@ var dragAndDropUploadEnabled = window.File;
           if (typeof this.onCompleted.urlSuccess === 'function') {
             __logDebug("performUploadEnd - calling onCompletedUrlSuccess callback");
             this.onCompleted.urlSuccess.call(this, request.response);
-            jQuery.closeProgressMessage();
+            if (typeof jQuery.closeProgressMessage === 'function') {
+              jQuery.closeProgressMessage();
+            }
           }
         }.bind(this), function(request) {
           __logDebug("performUploadEnd - error for session '" + this.id);
           console.log(Error(request.statusText));
           notySevere(request.responseText);
-          jQuery.closeProgressMessage();
+          if (typeof this.onCompleted.urlError === 'function') {
+            __logDebug("performUploadEnd - calling onCompletedUrlError callback");
+            this.onCompleted.urlError.call(this, request.response);
+          }
+          if (typeof jQuery.closeProgressMessage === 'function') {
+            jQuery.closeProgressMessage();
+          }
         }.bind(this));
 
       }
@@ -414,6 +440,15 @@ var dragAndDropUploadEnabled = window.File;
           }.bind(this));
 
         }.bind(this), function() {
+
+          try {
+            __logDebug("performUploadEnd - calling onFileSendError callback");
+            for (var i = 0; i < uploadInstance.context.onFileSendError.length; i++) {
+              uploadInstance.context.onFileSendError[i].call(this, file);
+            }
+          } catch (e) {
+            __logError(e);
+          }
 
           __logDebug("consume - first load rejected for '" + file.fullPath +
               "', so trying with a next one");
@@ -669,7 +704,7 @@ var dragAndDropUploadEnabled = window.File;
    * @private
    */
   function __performSendFromEvent(event, uploadSession) {
-    if (!event.target.files) {
+    if (!(event.target && event.target.files) && !event.files) {
       var items = (event.dataTransfer ? event.dataTransfer.items :
           event.originalEvent.dataTransfer.items);
 
@@ -704,7 +739,7 @@ var dragAndDropUploadEnabled = window.File;
             event.originalEvent.dataTransfer.files);
         __performFileFromOldWay(uploadSession, files)
       }
-    } else if (event.target.files) {
+    } else if (event.target && event.target.files) {
       __performFileFromOldWay(uploadSession, event.target.files)
     } else if (event.files) {
       __performFileFromOldWay(uploadSession, event.files)

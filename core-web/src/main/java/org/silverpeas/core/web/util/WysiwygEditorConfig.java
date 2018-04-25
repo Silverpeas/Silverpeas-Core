@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.web.util;
 
+import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.ResourceLocator;
@@ -121,7 +122,11 @@ public class WysiwygEditorConfig implements Cloneable {
     if (!isFileBrowserDisplayed()) {
       json = object.put("filebrowserImageBrowseUrl", "")
           .put("filebrowserFlashBrowseUrl", "")
-          .put("filebrowserBrowseUrl", "");
+          .put("filebrowserBrowseUrl", "")
+          .put("imageUploadUrl", "");
+    } else if (getComponentId() == null ||
+        getComponentId().startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
+      json = object.put("imageUploadUrl", "");
     }
     return json;
   }

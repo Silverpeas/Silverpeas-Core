@@ -95,9 +95,8 @@
                 });
               };
 
-              var editor =
-                  CKEDITOR.appendTo(elemEditor[0], (scope.ngConfig ? scope.ngConfig : config),
-                      '');
+              var finalConfig = scope.ngConfig ? scope.ngConfig : config;
+              var editor = CKEDITOR.appendTo(elemEditor[0], finalConfig, '');
               addEventListener(editor);
               editor.setData(scope.ngModel);
 
@@ -114,13 +113,19 @@
                   config.readOnly = false;
                 }
 
-                //editor = CKEDITOR.replace(elemEditor[0], (scope.ngConfig ? scope.ngConfig : config), '');
+                //editor = CKEDITOR.replace(elemEditor[0], finalConfig, '');
 
               });
 
               if (scope.backupManagerOptions) {
                 sp.editor.wysiwyg.backupManager(scope.backupManagerOptions);
               }
+
+              configureCkEditorDdUpload({
+                componentInstanceId : finalConfig.silverpeasComponentId,
+                resourceId : finalConfig.silverpeasObjectId,
+                indexIt : false
+              });
             });
           }
         }
