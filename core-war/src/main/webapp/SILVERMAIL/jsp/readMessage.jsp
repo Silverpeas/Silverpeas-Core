@@ -63,8 +63,9 @@
     }
 
     <c:if test="${!empty msg.url}">
+    <c:url value="${msg.url}" var="url"/>
     function goTo() {
-      window.opener.top.location = "<c:url value="${msg.url}" />";
+      window.opener.top.spWindow.loadLink('${silfn:escapeJs(url)}');
       window.close();
     }
     </c:if>

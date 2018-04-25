@@ -27,6 +27,7 @@
 <%@ page isELIgnored="false"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 <c:set var="sessionController" value="${requestScope.SILVERMAIL}" />
 <c:set var="from" value="${param.from}" />
@@ -34,6 +35,7 @@
 <view:setBundle bundle="${requestScope.resources.multilangBundle}" />
 <view:setBundle bundle="${requestScope.resources.iconsBundle}" var="icons" />
 <c:set var="notif" value="${requestScope.SentNotification}"/>
+<c:url var="notifLink" value="${notif.link}"/>
 <%
       response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
       response.setHeader("Pragma", "no-cache"); //HTTP 1.0
@@ -50,9 +52,9 @@
       window.close();
     }
 
-    <c:if test="${!empty notif.link}">
+    <c:if test="${!empty notifLink}">
     function goTo() {
-      window.opener.location = "<c:url value="${notif.link}"/>";
+      window.opener.top.spWindow.loadLink('${silfn:escapeJs(notifLink)}');
       window.close();
     }
     </c:if>

@@ -194,31 +194,6 @@ String facetToggleHide = resource.getString("pdcPeas.facet.toggle.hide");
 <view:includePlugin name="popup"/>
 <view:includePlugin name="preview"/>
 <script type="text/javascript">
-	function submitContent(cUrl, componentId) {
-
-		jumpToComponent(componentId);
-
-		document.AdvancedSearch.contentURL.value = cUrl;
-		document.AdvancedSearch.componentId.value = componentId;
-		document.AdvancedSearch.action = "GlobalContentForward";
-		document.AdvancedSearch.submit();
-	}
-
-  function jumpToComponent(componentId) {
-    if (<%=refreshEnabled.booleanValue()%>) {
-      //Reload menu and header
-      spLayout.loadBodyNavigationAndHeaderParts({
-        "component_id" : componentId
-      });
-    }
-  }
-
-  function goToSpace(spaceId) {
-    //Reload menu and header
-    spLayout.loadBodyNavigationAndHeaderParts({
-      "privateDomain" : spaceId
-    });
-  }
 
 	function getSelectedOjects()
 	{

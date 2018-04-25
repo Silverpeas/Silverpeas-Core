@@ -49,6 +49,9 @@
   var PDC_URL_BASE = $window.LayoutSettings.get("layout.pdc.baseUrl");
   var PDC_DEFAULT_ACTION = $window.LayoutSettings.get("layout.pdc.action.default");
 
+  var __eventManager = {};
+  applyEventDispatchingBehaviorOn(__eventManager);
+
   /**
    * Common behavior
    */
@@ -60,6 +63,7 @@
           selector.replace(/sp-layout-/g, "").replace(/part/g, "").replace(/layout/g, "").replace(
               /[ -\\#]/g, "");
       this.container = $window.document.querySelector(selector);
+      this.lastStartLoadTime = 0;
     },
     getMainLayout : function() {
       return this.mainLayout;
@@ -81,30 +85,29 @@
     normalizeEventName : function(eventName) {
       return this.eventNamePrefix + eventName;
     },
-    addEventListener : function(eventName, listener) {
+    addEventListener : function(eventName, listener, listenerId) {
       switch (eventName) {
         case 'start-load':
         case 'load':
         case 'show':
         case 'hide':
           var normalizedEventName = this.normalizeEventName(eventName);
-          $window.document.removeEventListener(normalizedEventName, listener);
-          $window.document.addEventListener(normalizedEventName, listener);
+          __eventManager.addEventListener(normalizedEventName, listener, listenerId);
           break;
         default:
           __logError("'" + eventName + "' is not handled on part represented by the selector '" +
               this.selector);
       }
     },
-    dispatchEvent : function(eventName) {
+    dispatchEvent : function(eventName, data) {
+      if (eventName === 'start-load') {
+        this.lastStartLoadTime = new Date().getTime();
+      }
       var normalizedEventName = this.normalizeEventName(eventName);
-      $window.document.body.dispatchEvent(new CustomEvent(normalizedEventName, {
-        detail : {
-          from : this
-        },
-        bubbles : true,
-        cancelable : true
-      }));
+      __eventManager.dispatchEvent(normalizedEventName, data);
+    },
+    getLastStartLoadTime : function() {
+      return this.lastStartLoadTime;
     }
   });
 
@@ -114,10 +117,10 @@
       __logDebug("loading header part");
       var headerPartURL = $window.LayoutSettings.get("layout.header.url");
       this.dispatchEvent("start-load");
-      return sp.load(this.getContainer(),
-          sp.ajaxConfig(headerPartURL).withParams(urlParameters)).then(function() {
-        this.dispatchEvent("load");
-      }.bind(this));
+      return sp.load(this.getContainer(), sp.ajaxRequest(headerPartURL).withParams(urlParameters))
+          .then(function() {
+            this.dispatchEvent("load");
+          }.bind(this));
     }
   });
 
@@ -144,38 +147,39 @@
       applyReadyBehaviorOn(this);
       var bodyPartURL = $window.LayoutSettings.get("layout.body.url");
       this.dispatchEvent("start-load");
-      return sp.load(this.getContainer(),
-          sp.ajaxConfig(bodyPartURL).withParams(urlParameters)).then(function() {
-          __logDebug("... initializing the context of body part instance");
-        this.rootLayout = $window.document.querySelector(this.partSelectors.bodyNavigationAndContentLayout);
-        this.resize();
-        this.togglePart = new BodyTogglePart(this.getMainLayout(), this.partSelectors.bodyToggles);
-        this.navigationPart = new BodyNavigationPart(this.getMainLayout(), this.partSelectors.bodyNavigation);
-        this.contentPart = new BodyContentPart(this.getMainLayout(), this.partSelectors.bodyContent);
-        this.contentFrame = this.getContent().getContainer().querySelector('iframe');
-        this.contentFrame.setAttribute('webkitallowfullscreen', 'true');
-        this.contentFrame.setAttribute('mozallowfullscreen', 'true');
-        this.contentFrame.setAttribute('allowfullscreen', 'true');
-        this.contentFrame.addEventListener("load", function() {
-          __logDebug("body content part loaded");
-          if (typeof this.getContent().notifyReady === 'function') {
-            __logDebug("resolving promise of body content load");
-            this.getContent().notifyReady();
-          } else {
-            __logDebug("no promise to resolve about the body content loading on body layout load");
-          }
+      var ajaxConfig = sp.ajaxRequest(bodyPartURL).withParams(urlParameters);
+      return sp.load(this.getContainer(), ajaxConfig)
+          .then(function() {
+              __logDebug("... initializing the context of body part instance");
+            this.rootLayout = $window.document.querySelector(this.partSelectors.bodyNavigationAndContentLayout);
+            this.resize();
+            this.togglePart = new BodyTogglePart(this.getMainLayout(), this.partSelectors.bodyToggles);
+            this.navigationPart = new BodyNavigationPart(this.getMainLayout(), this.partSelectors.bodyNavigation);
+            this.contentPart = new BodyContentPart(this.getMainLayout(), this.partSelectors.bodyContent);
+            this.contentFrame = this.getContent().getContainer().querySelector('iframe');
+            this.contentFrame.setAttribute('webkitallowfullscreen', 'true');
+            this.contentFrame.setAttribute('mozallowfullscreen', 'true');
+            this.contentFrame.setAttribute('allowfullscreen', 'true');
+            this.contentFrame.addEventListener("load", function() {
+              __logDebug("body content part loaded");
+              if (typeof this.getContent().notifyReady === 'function') {
+                __logDebug("resolving promise of body content load");
+                this.getContent().notifyReady();
+              } else {
+                __logDebug("no promise to resolve about the body content loading on body layout load");
+              }
 
-          var frameContentDocument = this.contentFrame.contentWindow.document;
-          frameContentDocument.body.setAttribute('tabindex', '-1');
-          frameContentDocument.body.focus();
+              var frameContentDocument = this.contentFrame.contentWindow.document;
+              frameContentDocument.body.setAttribute('tabindex', '-1');
+              frameContentDocument.body.focus();
 
-          this.getContent().dispatchEvent("load");
-          __hideProgressPopup();
-        }.bind(this));
-        __logDebug("resolving promise of body layout load");
-        this.dispatchEvent("load");
-        this.notifyReady();
-      }.bind(this));
+              this.getContent().dispatchEvent("load");
+              __hideProgressPopup();
+            }.bind(this));
+            __logDebug("resolving promise of body layout load");
+            this.dispatchEvent("load");
+            this.notifyReady();
+          }.bind(this));
     },
     getToggles : function() {
       return this.togglePart;
@@ -195,8 +199,8 @@
       this.headerToggle = $window.document.querySelector("#header-toggle");
       this.navigationToggle = $window.document.querySelector("#navigation-toggle");
 
-      this.headerToggle.addEventListener('click', this.toggleHeader.bind(this));
-      this.navigationToggle.addEventListener('click', this.toggleNavigation.bind(this));
+      this.headerToggle.addEventListener('click', this.toggleHeader.bind(this), '__click__BodyTogglePart');
+      this.navigationToggle.addEventListener('click', this.toggleNavigation.bind(this), '__click__BodyTogglePart');
     },
     toggleHeader : function() {
       var icon = this.headerToggle.querySelector('img');
@@ -221,6 +225,25 @@
       }
       icon.blur();
       this.getMainLayout().getBody().resize();
+    },
+    addEventListener : function(eventName, listener, listenerId) {
+      switch (eventName) {
+        case 'hide-navigation-toggle':
+        case 'show-navigation-toggle':
+          var normalizedEventName = this.normalizeEventName(eventName);
+          __eventManager.addEventListener(normalizedEventName, listener, listenerId);
+          break;
+        default:
+          this._super(eventName, listener);
+      }
+    },
+    hideNavigationToggle : function() {
+      this.navigationToggle.style.display = 'none';
+      this.dispatchEvent("hide-navigation-toggle");
+    },
+    showNavigationToggle : function() {
+      this.navigationToggle.style.display = '';
+      this.dispatchEvent("show-navigation-toggle");
     }
   });
 
@@ -230,10 +253,10 @@
       this._super(mainLayout, partSelector);
       this.addEventListener("start-load", function() {
         __showProgressPopup();
-      });
+      }, '__start-load__BodyNavigationPart');
       this.addEventListener("load", function() {
         setTimeout(__hideProgressPopup, 0);
-      });
+      }, '__load__BodyNavigationPart');
     },
     load : function(urlParameters) {
       __logDebug("loading body navigation part");
@@ -243,11 +266,31 @@
         "privateDomain" : "", "privateSubDomain" : "", "component_id" : ""
       }, urlParameters);
       var bodyNavigationPartURL = $window.LayoutSettings.get("layout.body.navigation.url");
-      var ajaxConfig = sp.ajaxConfig(bodyNavigationPartURL).withParams(parameters);
-      this.dispatchEvent("start-load");
-      return sp.load(this.getContainer(), ajaxConfig).then(function() {
-        this.getMainLayout().getBody().getToggles().show();
-      }.bind(this));
+      var ajaxConfig = sp.ajaxRequest(bodyNavigationPartURL).withParams(parameters);
+      return sp.load(this.getContainer(), ajaxConfig)
+          .then(function() {
+            this.getMainLayout().getBody().getToggles().show();
+          }.bind(this));
+    },
+    addEventListener : function(eventName, listener, listenerId) {
+      switch (eventName) {
+        case 'changeselected':
+          var normalizedEventName = this.normalizeEventName(eventName);
+          __eventManager.addEventListener(normalizedEventName, listener, listenerId);
+          break;
+        default:
+          this._super(eventName, listener);
+      }
+    },
+    hide : function(withToggle) {
+      if (withToggle) {
+        spLayout.getBody().getToggles().hideNavigationToggle();
+      }
+      this._super();
+    },
+    show : function() {
+      spLayout.getBody().getToggles().showNavigationToggle();
+      this._super();
     }
   });
 
@@ -307,7 +350,7 @@
         }, urlParameters);
         var action = parameters.action;
         delete parameters.action;
-        var ajaxConfig = sp.ajaxConfig(PDC_URL_BASE + action).withParams(parameters);
+        var ajaxConfig = sp.ajaxRequest(PDC_URL_BASE + action).withParams(parameters);
         return sp.load(this.getContainer(), ajaxConfig).then(function() {
           this.dispatchEvent("pdcload");
         }.bind(this));
@@ -329,18 +372,74 @@
         this.dispatchEvent("pdcshow");
       }
     },
-    addEventListener : function(eventName, listener) {
+    addEventListener : function(eventName, listener, listenerId) {
       switch (eventName) {
         case 'pdcload':
         case 'pdcshow':
         case 'pdchide':
           var normalizedEventName = this.normalizeEventName(eventName);
-          $window.document.removeEventListener(normalizedEventName, listener);
-          $window.document.addEventListener(normalizedEventName, listener);
+          __eventManager.addEventListener(normalizedEventName, listener, listenerId);
           break;
         default:
           this._super(eventName, listener);
       }
+    }
+  });
+
+  // Content Part
+  var SplashContentUrlPart = Part.extend({
+    initialize : function(mainLayout) {
+      var contentFrame = document.createElement('iframe');
+      contentFrame.setAttribute('name', 'SpLayoutSplashContentUrl');
+      contentFrame.setAttribute('marginheight', '0');
+      contentFrame.setAttribute('frameborder', '0');
+      contentFrame.setAttribute('scrolling', 'auto');
+      contentFrame.setAttribute('width', '100%');
+      contentFrame.setAttribute('height', '100%');
+      contentFrame.setAttribute('webkitallowfullscreen', 'true');
+      contentFrame.setAttribute('mozallowfullscreen', 'true');
+      contentFrame.setAttribute('allowfullscreen', 'true');
+      var container = document.createElement('div');
+      container.setAttribute('id', 'sp-layout-splash-content-url-part');
+      container.style.display = 'none';
+      container.appendChild(contentFrame);
+      document.body.appendChild(container);
+      contentFrame.addEventListener("load", function() {
+        __logDebug("splash content part loaded");
+        if (typeof this.notifyReady === 'function') {
+          __logDebug("resolving promise of splash content load");
+          this.notifyReady();
+        } else {
+          __logDebug("no promise to resolve about the splash content loading");
+        }
+        this.dispatchEvent("load");
+        __hideProgressPopup();
+      }.bind(this));
+
+      this._super(mainLayout, '#sp-layout-splash-content-url-part');
+      this.contentFrame = contentFrame;
+
+      this.addEventListener("start-load", function() {
+        __showProgressPopup();
+      }, '__start-load__SplashContentUrlPart');
+      this.addEventListener("load", function() {
+        setTimeout(__hideProgressPopup, 0);
+      }, '__load__SplashContentUrlPart');
+    },
+    load : function(url) {
+      __logDebug("loading splash content part");
+      var promise = applyReadyBehaviorOn(this);
+      this.dispatchEvent("start-load");
+      this.contentFrame.setAttribute('src', url);
+      promise.then(function() {
+        var maxWidth = $window.document.body.offsetWidth - 100;
+        var maxHeight = $window.document.body.offsetHeight - 100;
+        jQuery(this.getContainer()).popup('free', {
+          width : maxWidth,
+          height : maxHeight
+        });
+      }.bind(this));
+      return promise;
     }
   });
 
@@ -353,6 +452,7 @@
     var headerPart = new HeaderPart(this, partSelectors.header);
     var bodyPart = new BodyPart(this, partSelectors);
     var footerPart = new FooterPart(this, partSelectors.footer);
+    var splashContentUrlPart = new SplashContentUrlPart(this);
 
     this.getHeader = function() {
       return headerPart;
@@ -363,9 +463,8 @@
     this.getFooter = function() {
       return footerPart;
     };
-    this.loadBodyNavigationAndHeaderParts = function(urlParameters) {
-      this.getHeader().load();
-      return this.getBody().getNavigation().load(urlParameters);
+    this.getSplash = function() {
+      return splashContentUrlPart;
     };
 
     var timer_resize;
@@ -401,7 +500,10 @@
    */
   function __logDebug(message) {
     if (layoutDebug) {
+      var mainDebugStatus = sp.log.debugActivated;
+      sp.log.debugActivated = true;
       sp.log.debug("Layout - " + message);
+      sp.log.debugActivated = mainDebugStatus;
     }
   }
 
@@ -441,7 +543,8 @@ function initializeSilverpeasLayout(bodyLoadParameters) {
     };
     window.spLayout = new SilverpeasLayout(partSelectors);
     spLayout.getHeader().load();
-    return spLayout.getBody().load(bodyLoadParameters);
+    spLayout.getBody().load(bodyLoadParameters).then(function() {
+      window.spWindow = new SilverpeasWindow();
+    });
   }
-  return Promise.resolve();
 }

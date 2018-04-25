@@ -79,8 +79,7 @@ public class PersonalComponentEntity extends AbstractPersonnalEntity {
 
   private PersonalComponentEntity(final ComponentInst component) {
     super(TYPE, component.getId(), 0, component.getName(), component.getLabel(), component
-        .getDescription(), URLUtil.getURL(component.getName(), null, component.getName() +
-        component.getId()) +
+        .getDescription(), URLUtil.getURL(component.getName(), null, component.getId()) +
         "Main");
   }
 

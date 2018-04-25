@@ -155,14 +155,10 @@
       return ajaxRequest.send().then(arrayPaneAjaxControl.refreshFromRequestResponse);
     }
 
-    function goTo(baseURL, Id, Type, componentId) {
-      //Reload menu and header
-      spLayout.loadBodyNavigationAndHeaderParts({
-        "component_id" : componentId
-      }).then(function() {
-        sp.formRequest(baseURL + 'searchResult.jsp')
-            .withParam('Type', Type).withParam('Id', Id).submit();
-      });
+    function goTo(baseURL, Id, Type) {
+      spWindow.loadLink(sp.url.format(baseURL + 'searchResult.jsp', {
+        'Type' : Type, 'Id' : Id
+      }));
     }
 
     var percentCompletedWidget = function(target) {
@@ -251,7 +247,7 @@
             <%-- Trick for workflow --%>
             <c:set var="externalId" value="${fn:replace(todo.externalId, '#', '_')}"/>
             <c:url var="componentInstanceUrl" value="${silfn:componentURL(todo.componentId)}"/>
-            <c:set var="pathJsCall" value="goTo('${componentInstanceUrl}','${externalId}','TodoDetail','${todo.componentId}')"/>
+            <c:set var="pathJsCall" value="goTo('${componentInstanceUrl}','${externalId}','TodoDetail')"/>
           </c:if>
           <view:arrayLine classes="${hotClass}">
             <view:arrayCellText>

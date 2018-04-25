@@ -22,35 +22,32 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-function goToItem(spaceId, subSpaceId, componentId, url, itemId, reloadPage) {
-
-  spLayout.getBody().getNavigation().load({
-    "privateDomain" : spaceId,
-    "privateSubDomain" : subSpaceId,
-    "component_id" : componentId,
-    "FromTopBar" : '1'
-  });
-  spLayout.getBody().getContent().load(url);
-
-  if (reloadPage) {
-    spLayout.getHeader().load({
-      "ComponentId" : componentId,
-      "SpaceId" : spaceId
-    });
-  } else {
-    //unactivate all items
-    var tr = document.getElementById('item' + itemId).parentNode;
-    if (tr.hasChildNodes()) {
-      var children = tr.childNodes;
-      for (var i = 0; i < children.length; i++) {
-        var child = children[i];
-        if (child.id != null && (child.id.substring(0, 4) == "item")) {
-          child.className = "";
-        }
-      }
-    }
-
-    //activate item
-    document.getElementById('item' + itemId).className = "activeShortcut";
+var __topbar_updateSelectedItem = function(itemId) {
+  var $headerContainer = spLayout.getHeader().getContainer();
+  var $currentItem = $headerContainer.querySelector('.activeShortcut');
+  if ($currentItem) {
+    $currentItem.classList.remove('activeShortcut');
   }
+  if (itemId) {
+    $currentItem = $headerContainer.querySelector('#item' + itemId);
+    if ($currentItem) {
+      $currentItem.classList.add('activeShortcut');
+    }
+  }
+};
+
+function goToItem(url, itemId) {
+  spWindow.loadLink(url);
+  __topbar_updateSelectedItem(itemId);
 }
+
+(function() {
+  spLayout.getBody().ready(function() {
+    var selectedItemListener = function(event) {
+      __topbar_updateSelectedItem(event.detail.data.currentComponentId);
+    };
+    var $navigation = spLayout.getBody().getNavigation();
+    $navigation.addEventListener('load', selectedItemListener, '__id__silverpeas-header-part');
+    $navigation.addEventListener('changeselected', selectedItemListener, '__id__silverpeas-header-part');
+  });
+})();

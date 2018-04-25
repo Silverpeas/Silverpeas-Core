@@ -60,29 +60,22 @@
     <c:set var="popupMsgSource" value="${(popupMsg.source eq popupMsg.senderName) ? '' : popupMsg.source}"/>
     <c:set var="answerAllowed" value="${popupMsg.answerAllowed}"/>
 
-    <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-	<html xmlns="http://www.w3.org/1999/xhtml">
+  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+  <html xmlns="http://www.w3.org/1999/xhtml">
     <head>
       <title><fmt:message key="GML.popupTitle"/></title>
       <view:looknfeel/>
       <script type="text/javascript">
-        var actionWindow = window.opener.top;
         window.opener.location =
             "../../Rclipboard/jsp/Idle.jsp?message=DELMSG&messageTYPE=POPUP&messageID=${popupMsgId}";
-        function closeWindow() {
-          window.close();
-        }
 
         <c:if test="${!empty popupMsgUrl}">
+        <c:url value="${popupMsgUrl}" var="url" />
         function goTo() {
-          actionWindow.location = "<c:url value="${popupMsgUrl}" />";
+          window.opener.top.spWindow.loadLink('${silfn:escapeJs(url)}');
           window.close();
         }
         </c:if>
-
-        function answerMessage() {
-          document.popupForm.submit();
-        }
 
         $(document).ready(function() {
           $('#messageAux').focus();

@@ -75,7 +75,7 @@
 						title="<fmt:message key="ToContact" />"/>
 				</a>
 
-				<a href="javascript:SilverChat.gui.openChatWindow('${member.chatId}', '${member.displayedName}')" title="<fmt:message key="chat" />" class="accessTchat-user">
+				<a style="display: none;" href="javascript:SilverChat.gui.openChatWindow('${member.chatId}', '${member.displayedName}')" title="<fmt:message key="chat" />" class="accessTchat-user">
 					<img src="${context}/util/icons/talk2user.gif"
 						alt="<fmt:message key="chat" />"
 						title="<fmt:message key="chat" />"/>
@@ -107,3 +107,10 @@
 		</ul>
 		<br clear="all" />
 	</div>
+<script type="application/javascript">
+  if (typeof window.SilverChat !== 'undefined') {
+    sp.element.querySelectorAll('.accessTchat-user').forEach(function(link) {
+      link.style.display = '';
+    })
+  }
+</script>

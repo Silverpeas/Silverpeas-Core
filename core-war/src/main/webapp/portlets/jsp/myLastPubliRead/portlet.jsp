@@ -38,25 +38,8 @@
 <portlet:defineObjects/>
 
 <%
-    RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
-    List<PublicationDetail> publications = (List<PublicationDetail>) pReq.getAttribute("Publications");
-%>
-
-<script type="text/javascript">
-function goTo(cUrl, componentId)
-{
-	jumpToComponent(componentId);
-	location.href=cUrl;
-}
-
-function jumpToComponent(componentId) {
-	//Reload menu and header
-  spLayout.loadBodyNavigationAndHeaderParts({
-    "component_id" : componentId
-  });
-}
-</script>
-<%
+RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
+List<PublicationDetail> publications = (List<PublicationDetail>) pReq.getAttribute("Publications");
 
 if (publications.isEmpty()) { %>
 	<%=portletsBundle.getString("portlets.portlet.myLastPubliRead.none") %>
@@ -76,7 +59,7 @@ if (publications.isEmpty()) { %>
 			first = false;
 		}
 %>
-	<a href="javaScript:goTo('<%=url %>','<%=pub.getPK().getInstanceId() %>')"><b><%=WebEncodeHelper.convertHTMLEntities(pub.getName(language))%></b></a>
+	<a class="sp-link" href="<%=url %>"><b><%=WebEncodeHelper.convertHTMLEntities(pub.getName(language))%></b></a>
     <% if (pubUpdater != null && pub.getUpdateDate() != null) { %>
       <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=DateUtil
     .getOutputDate(pub.getUpdateDate(), language)%>

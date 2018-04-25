@@ -46,20 +46,23 @@ if (applications.isEmpty()) { %>
 	for (ComponentInstLight appli : applications) {
 		String url = "";
 		String target = "";
+		String linkClass = "";
 		if (URLUtil.displayUniversalLinks()) {
 	      url = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, appli.getId());
 	      target ="_top";
+	      linkClass ="sp-permalink";
 	    } else {
 	      url = m_sContext + URLUtil.getURL(appli.getName(), "useless", appli.getId()) + "Main";
 	      target ="MyMain";
+        linkClass ="sp-link";
 	    }
 %>
 		<li class="lineResult">
 			<div class="content">
 				<div class="applicationTitle">
 					<img src="<%=appli.getIcon(false)%>" class="iconComponent" />
-					<a class="" href="<%=url%>" target="<%=target%>">
-						<span class="" id="readSpanId_0"><%=WebEncodeHelper.convertHTMLEntities(appli.getLabel(language))%></span>
+					<a class="<%=linkClass%>" href="<%=url%>" target="<%=target%>">
+						<span id="readSpanId_0"><%=WebEncodeHelper.convertHTMLEntities(appli.getLabel(language))%></span>
 					</a>
 				</div>
 				<div class="location"><%=appli.getPath(" > ")%></div>

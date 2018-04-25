@@ -49,7 +49,7 @@
 	for (PublicationDetail pub : publications) {
 	    String url = URLUtil.getSimpleURL(URLUtil.URL_PUBLI, pub.getId());
 	%>
-	<li><a href="<%=url%>" target="_top"><%=WebEncodeHelper.convertHTMLEntities(pub.getName(language))%></a></li>
+	<li><a class="sp-permalink" href="<%=url%>" target="_top"><%=WebEncodeHelper.convertHTMLEntities(pub.getName(language))%></a></li>
 	<% } %>
 	</ul>
 <% } %>

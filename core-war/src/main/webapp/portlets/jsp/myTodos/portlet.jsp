@@ -46,7 +46,7 @@ if (!todos.hasNext()) {
 	while (todos.hasNext()) {
 		ToDoHeader todo = todos.next();
 		if (todo.getPercentCompleted() != 100) {
-			out.println("<li><a href=\""+m_sContext+URLUtil.getURL(URLUtil.CMP_TODO)+"todo.jsp\">" + WebEncodeHelper.convertHTMLEntities(todo.getName()) + "</a>");
+			out.println("<li><a class=\"sp-link\" href=\""+m_sContext+URLUtil.getURL(URLUtil.CMP_TODO)+"todo.jsp\">" + WebEncodeHelper.convertHTMLEntities(todo.getName()) + "</a>");
 			if (todo.getPercentCompleted() != -1) {
 				out.println(" <i>("+todo.getPercentCompleted()+"%)</i>");
 			} else {

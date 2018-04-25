@@ -78,19 +78,19 @@
     <div class="field" ng-if="$ctrl.calendar.isSynchronized">
       <label class="txtlibform">{{$ctrl.labels.externalUrl}}</label>
       <div class="champs">
-        <silverpeas-permalink link="$ctrl.calendar.externalUrl"></silverpeas-permalink>
+        <silverpeas-permalink link="$ctrl.calendar.externalUrl" no-href-hook="true"></silverpeas-permalink>
       </div>
     </div>
     <div class="field" ng-if="$ctrl.calendar.icalPublicUri">
       <label class="txtlibform">{{$ctrl.labels.icalPublicUri}}</label>
       <div class="champs">
-        <silverpeas-permalink link="$ctrl.calendar.icalPublicUri"></silverpeas-permalink>
+        <silverpeas-permalink link="$ctrl.calendar.icalPublicUri" no-href-hook="true"></silverpeas-permalink>
       </div>
     </div>
     <div class="field" ng-if="$ctrl.calendar.icalPrivateUri">
       <label class="txtlibform">{{$ctrl.labels.icalPrivateUri}}</label>
       <div class="champs">
-        <silverpeas-permalink link="$ctrl.calendar.icalPrivateUri"></silverpeas-permalink>
+        <silverpeas-permalink link="$ctrl.calendar.icalPrivateUri" no-href-hook="true"></silverpeas-permalink>
       </div>
     </div>
   </div>
@@ -113,13 +113,13 @@
     <div class="field" ng-if="$ctrl.calendar.icalPublicUri">
       <label class="txtlibform">{{$ctrl.labels.icalPublicUri}}</label>
       <div class="champs">
-        <silverpeas-permalink link="$ctrl.calendar.icalPublicUri"></silverpeas-permalink>
+        <silverpeas-permalink link="$ctrl.calendar.icalPublicUri" no-href-hook="true"></silverpeas-permalink>
       </div>
     </div>
     <div class="field" ng-if="$ctrl.calendar.icalPrivateUri">
       <label class="txtlibform">{{$ctrl.labels.icalPrivateUri}}</label>
       <div class="champs">
-        <silverpeas-permalink link="$ctrl.calendar.icalPrivateUri"></silverpeas-permalink>
+        <silverpeas-permalink link="$ctrl.calendar.icalPrivateUri" no-href-hook="true"></silverpeas-permalink>
       </div>
     </div>
 </div>

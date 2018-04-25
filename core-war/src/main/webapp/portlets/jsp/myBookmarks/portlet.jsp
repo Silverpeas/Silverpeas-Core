@@ -66,7 +66,7 @@ if (!links.hasNext()) {
 				target = "_blank";
 			}
 			%>
-			<li><a href="<%=lien%>" target="<%=target%>"><%=name%></a></li>
+			<li><a class="sp-link" href="<%=lien%>" target="<%=target%>"><%=name%></a></li>
 			<%
 		}
 	}

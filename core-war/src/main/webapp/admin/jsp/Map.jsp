@@ -28,6 +28,7 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view" %>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <%
   response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
@@ -65,16 +66,19 @@
     }
 
     function openClipboard() {
-      document.clipboardForm.submit();
+      sp.formRequest('${silfn:applicationURL()}<%=URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp')
+          .withParam('message','SHOWCLIPBOARD')
+          .toTarget('IdleFrame')
+          .submit();
     }
 
     function getTool(id, label, url, nb, target) {
       var res;
       if (url.substring(0, 11).toLowerCase() == "javascript:") {
-        res = "<a href=\"#\" onclick=\"" + url + "\">" + label + "</a>";
+        res = "<a href=\"javascript:void(0)\" onclick=\"" + url + "\">" + label + "</a>";
       }
       else {
-        res = "<a href=\"" + webContext + url + "\" target=\"" + target + "\">" + label + "</a>";
+        res = "<a class=\"sp-link\" href=\"" + webContext + url + "\" target=\"" + target + "\">" + label + "</a>";
       }
       return res;
     }
@@ -103,7 +107,7 @@
     }
 
     function getComponent(id, label, url, name, description) {
-      return "<a href=\"" + "<%=m_sContext%>" + url + "\" target=\"_self\">" + label + "</a>";
+      return "<a class=\"sp-link\" href=\"" + "<%=m_sContext%>" + url + "\" target=\"_self\">" + label + "</a>";
     }
 
     function getComponents() {
@@ -179,10 +183,5 @@
     </view:board>
   </view:frame>
 </view:window>
-<form name="clipboardForm"
-      action="<%=m_sContext+URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp" method="post"
-      target="IdleFrame">
-  <input type="hidden" name="message" value="SHOWCLIPBOARD"/>
-</form>
 </body>
 </html>

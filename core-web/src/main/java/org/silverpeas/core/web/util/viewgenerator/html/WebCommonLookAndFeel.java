@@ -28,6 +28,8 @@ import org.apache.ecs.ElementContainer;
 import org.apache.ecs.xhtml.script;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.util.JSONCodec;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
@@ -205,7 +207,6 @@ class WebCommonLookAndFeel {
 
     code.append(includeLayout(new ElementContainer(),
         LookHelper.getLookHelper(controller.getHttpSession())).toString()).append(STR_NEW_LINE);
-    code.append(getJavaScriptTag(contextPath + "/util/javaScript/silverpeas-user-navigation.js"));
 
     code.append(includeAngular(new ElementContainer(), language).toString()).append(STR_NEW_LINE);
     code.append(includeSecurityTokenizing(new ElementContainer()).toString()).append(STR_NEW_LINE);
@@ -299,6 +300,13 @@ class WebCommonLookAndFeel {
         .append(STR_NEW_LINE);
     globalJSVariableBuilder.append("var currentUserId = '").append(controller.getUserId())
         .append("';").append(STR_NEW_LINE);
+    globalJSVariableBuilder.append("var currentUser = ").append(JSONCodec.encodeObject(j -> {
+      final UserDetail currentUserDetail = controller.getCurrentUserDetail();
+      if (currentUserDetail != null) {
+        j.put("id", currentUserDetail.getId()).put("domainId", currentUserDetail.getDomainId());
+      }
+      return j;
+    })).append(";").append(STR_NEW_LINE);
     return globalJSVariableBuilder.toString();
   }
 

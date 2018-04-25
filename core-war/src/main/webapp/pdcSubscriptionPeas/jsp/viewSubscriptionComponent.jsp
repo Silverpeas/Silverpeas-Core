@@ -25,7 +25,7 @@
 --%>
 <%@ page import="org.silverpeas.core.subscription.constant.SubscriberType" %>
 <%@ page import="org.silverpeas.core.web.subscription.bean.ComponentSubscriptionBean" %>
-<%@ page import="org.silverpeas.core.admin.service.OrganizationController" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.arraypanes.ArrayCell" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 
@@ -124,7 +124,8 @@
         }
         line.addArrayCellText(subTypeLabel.toString());
         if (!isReadOnly) {
-          line.addArrayCellLink(subscription.getPath(), subscription.getLink());
+          final ArrayCell cellLink = line.addArrayCellLink(subscription.getPath(), subscription.getLink());
+          cellLink.setStyleSheet("sp-link");
         } else {
           line.addArrayCellText(subscription.getPath());
         }

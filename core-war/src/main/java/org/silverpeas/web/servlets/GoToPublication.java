@@ -23,14 +23,13 @@
  */
 package org.silverpeas.web.servlets;
 
-import org.silverpeas.core.web.util.servlet.GoTo;
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.util.servlet.GoTo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -44,7 +43,7 @@ public class GoToPublication extends GoTo {
   public String getDestination(String objectId, HttpServletRequest req, HttpServletResponse res)
       throws Exception {
     PublicationPK pubPK = new PublicationPK(objectId);
-    PublicationDetail pub = getPublicationBm().getDetail(pubPK);
+    PublicationDetail pub = PublicationService.get().getDetail(pubPK);
 
     String componentId = req.getParameter("ComponentId"); // in case of an
     // alias, componentId is given
@@ -55,15 +54,6 @@ public class GoToPublication extends GoTo {
     setGefSpaceId(req, componentId);
 
     String gotoURL = URLUtil.getURL(null, componentId) + pub.getURL();
-    return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);
-  }
-
-  private PublicationService getPublicationBm() {
-    try {
-      return ServiceProvider.getService(PublicationService.class);
-    } catch (Exception e) {
-      displayError(null);
-    }
-    return null;
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8.name());
   }
 }

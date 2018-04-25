@@ -202,8 +202,9 @@
 <script type="text/javascript">
   (function() {
     whenSilverpeasReady(function() {
-      if (!top.window.mainFrameOnLoad) {
-        top.window.mainFrameOnLoad = function(event) {
+      initializeSilverpeasLayout(<%=frameBottomParams.append('}')%>);
+      spLayout.getBody().ready(function() {
+        spLayout.getBody().getContent().addEventListener('load', function(event) {
           sp.log.debug(
               "This is just a demonstration: it is possible to listen to events ('load', 'show', 'hide') dispatched from each part of the layout");
           sp.log.debug(
@@ -213,12 +214,7 @@
           sp.log.debug(
               "Indeed, because of ajax reloading and according to the location of the event listener attachment, same treatment could be performed several times");
           // notySuccess("Body content event well performed!");
-        };
-      }
-      initializeSilverpeasLayout(<%=frameBottomParams.append('}')%>);
-
-      spLayout.getBody().ready(function() {
-        spLayout.getBody().getContent().addEventListener('load', top.window.mainFrameOnLoad);
+        }, 'silverpeas-main-ready');
       });
     });
   })();

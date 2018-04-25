@@ -60,7 +60,7 @@ function getFragment(socialInfo) {
   fragment += '<div class="txt">';
   fragment += '<p><a href="' + getApplicationContext() + '/Rprofil/jsp/Main?userId=' +
   socialInfo.author.id + '" class="name">' + socialInfo.author.displayedName + '</a> ' +
-  socialInfo.label + ' <a href="' + socialInfo.url + '" class="publicationName txtColor">' +
+  socialInfo.label + ' <a href="' + socialInfo.url + '" class="publicationName txtColor sp-link">' +
   socialInfo.title + '</a> ' + socialInfo.hour + '</p>';
   fragment += '<p class="detail decoration-' + socialInfo.type.toLowerCase() + '">' +
   socialInfo.description + '&nbsp;</p>';

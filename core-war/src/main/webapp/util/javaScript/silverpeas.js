@@ -246,6 +246,10 @@ if (!window.StringUtil) {
     this.isNotDefined = function(aString) {
       return !_self.isDefined(aString);
     };
+    this.defaultStringIfNotDefined = function(aString, aDefaultString) {
+      var defaultString = typeof aDefaultString === 'undefined' ? '' : aDefaultString;
+      return _self.isDefined(aString) ? aString : defaultString;
+    };
     this.nbChars = function(aString) {
       return (typeof aString === 'string') ? aString.nbChars() : 0;
     };
@@ -349,9 +353,9 @@ function SP_openWindow(page, name, width, height, options) {
       paramInput.value = paramValue;
       form.appendChild(paramInput);
     }
-    var spWindow = window.open('', name, features);
+    var __window = window.open('', name, features);
     form.submit();
-    return spWindow;
+    return __window;
   }
   return window.open(page, name, features);
 }
@@ -785,12 +789,12 @@ if (typeof window.silverpeasAjax === 'undefined') {
             resolve(xhr);
           } else {
             reject(xhr);
-            console.log("HTTP request error: " + xhr.status);
+            sp.log.error("HTTP request error: " + xhr.status);
           }
         };
 
         xhr.onerror = function() {
-          reject(Error("Network error..."));
+          reject(xhr);
         };
 
         if (typeof params.onprogress === 'function') {
@@ -824,7 +828,7 @@ if (typeof window.silverpeasAjax === 'undefined') {
             });
           },
           error : function(jqXHR, textStatus, errorThrown) {
-            reject(Error("Network error: " + errorThrown));
+            reject(jqXHR);
           }
         };
 
@@ -1046,7 +1050,7 @@ if (typeof window.sp === 'undefined') {
         var message = "";
         for (var i = 0; i < arguments.length; i++) {
           var item = arguments[i];
-          if (typeof item !== 'string') {
+          if (typeof item === 'object') {
             item = JSON.stringify(item);
           }
           if (i > 0) {
@@ -1319,7 +1323,7 @@ if (typeof window.sp === 'undefined') {
           });
           return {url : url, base : urlWithoutParam, parameters : params};
         } else {
-          return {url : url, base : url};
+          return {url : url, base : url, parameters : {}};
         }
       },
       formatFromExploded : function(explodedUrl) {
@@ -1348,9 +1352,11 @@ if (typeof window.sp === 'undefined') {
     },
     load : function(targetOrArrayOfTargets, ajaxConfig, isGettingFullHtmlContent) {
       return silverpeasAjax(ajaxConfig).then(function(request) {
-        return sp.updateTargetWithHtmlContent(targetOrArrayOfTargets, request.responseText, isGettingFullHtmlContent);
+        sp.updateTargetWithHtmlContent(targetOrArrayOfTargets, request.responseText, isGettingFullHtmlContent);
+        return request;
       }, function(request) {
         sp.log.error(request.status + " " + request.statusText);
+        return sp.promise.rejectDirectlyWith(request);
       });
     },
     updateTargetWithHtmlContent : function(targetOrArrayOfTargets, html, isGettingFullHtmlContent) {
@@ -1387,16 +1393,99 @@ if (typeof window.sp === 'undefined') {
       }
     },
     element : {
-      isInView: function (element, fullyInView, view) {
-        var viewTop = !view ? jQuery(window).scrollTop() : jQuery(view).offset().top;
-        var viewBottom = viewTop + jQuery(view).height();
-        var elementTop = jQuery(element).offset().top;
-        var elementBottom = elementTop + jQuery(element).height();
+      isVisible: function (element) {
+        return element === document.body || element.offsetParent !== null;
+      },
+      isHidden: function (element) {
+        return !sp.element.isVisible(element);
+      },
+      offset: function(elementOrCssSelector, intoElement) {
+        var result = {top : 0, left : 0};
+        var into = typeof intoElement !== 'undefined' ? intoElement : document.body;
+        var $jqIntoElement = jQuery(into);
+        var $jqElement = jQuery(elementOrCssSelector);
+        if ($jqElement.length) {
+          var $intoElement = $jqIntoElement[0];
+          var $currentElement = $jqElement[0];
+          result.top = $currentElement.offsetTop;
+          result.left = $currentElement.offsetLeft;
+          $currentElement = $currentElement.offsetParent;
+          while ($currentElement && $currentElement !== $intoElement) {
+            result.top = result.top + $currentElement.offsetTop;
+            result.left = result.left + $currentElement.offsetLeft;
+            $currentElement = $currentElement.offsetParent;
+          }
+        }
+        return result;
+      },
+      isInView: function (elementOrCssSelector, fullyInView, $view) {
+        var isInView = false;
+        var $jqElement = jQuery(elementOrCssSelector);
+        if (sp.element.isVisible($jqElement[0])) {
+          if (typeof $view === 'undefined') {
+            $view = document.body;
+          }
+          var $jqWindow = jQuery(window);
+          var $jqView = jQuery($view);
+          $view = $jqView[0];
+          var isWindow = $view === document.body;
+          var viewTop = isWindow ? $jqWindow.scrollTop() : $jqView.offset().top;
+          var viewBottom = viewTop + (isWindow ? $jqWindow.height() : $jqView.height());
+          var elementTop = $jqElement.offset().top;
+          var elementBottom = elementTop + $jqElement.height();
 
-        if (fullyInView === true) {
-          return ((viewTop < elementTop) && (viewBottom > elementBottom));
+          if (fullyInView === true) {
+            isInView = ((viewTop < elementTop) && (viewBottom > elementBottom));
+          } else {
+            isInView = ((elementTop <= viewBottom) && (elementBottom >= viewTop));
+          }
+        }
+        return isInView;
+      },
+      querySelector: function(cssSelector, fromElement) {
+        var from = typeof fromElement !== 'undefined' ? fromElement : document;
+        return from.querySelector(cssSelector);
+      },
+      querySelectorAll: function(cssSelector, fromElement) {
+        var from = typeof fromElement !== 'undefined' ? fromElement : document;
+        return [].slice.call(from.querySelectorAll(cssSelector), 0);
+      },
+      scrollTo: function(elementOrCssSelector, $view, options) {
+        options = extendsObject({
+          bottomOffset : 0
+        }, options);
+        if (typeof $view === 'undefined') {
+          $view = document.body;
+        }
+        var $jqWindow = jQuery(window);
+        var $jqView = jQuery($view);
+        var $jqItem = jQuery(elementOrCssSelector);
+        $view = $jqView[0];
+        var isWindow = $view === document.body;
+        if ($jqItem.length) {
+          var currentScrollTop = isWindow ? $jqWindow.scrollTop() : $view.scrollTop;
+          var viewHeight = isWindow ? $jqWindow.height() : $jqView.height();
+          var offsetHeight = viewHeight - ($jqItem.outerHeight(true) - options.bottomOffset);
+          var scrollTop = sp.element.offset($jqItem[0], $view).top;
+          if (currentScrollTop < scrollTop) {
+            scrollTop = scrollTop - offsetHeight;
+          }
+          if (!scrollTop || scrollTop < 0) {
+            scrollTop = 0;
+          }
+          sp.element.setScrollTo(scrollTop, $view);
+        }
+      },
+      setScrollTo: function(scrollTop, $view) {
+        if (typeof $view === 'undefined') {
+          $view = document.body;
+        }
+        var $jqView = jQuery($view);
+        var isWindow = $jqView[0] === document.body;
+        if (isWindow) {
+          jQuery(window).scrollTop(scrollTop);
         } else {
-          return ((elementTop <= viewBottom) && (elementBottom >= viewTop));
+          $jqView[0].scrollTop = scrollTop;
         }
       }
     },

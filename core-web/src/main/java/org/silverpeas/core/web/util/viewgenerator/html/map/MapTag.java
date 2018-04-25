@@ -184,7 +184,7 @@ public class MapTag extends TagSupport {
 
   private String getSpaceHREF(SpaceInstLight spaceInst) {
     String spaceHref =
-        "<a href=\"" + URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceInst.getId()) +
+        "<a class=\"sp-link\" href=\"" + URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceInst.getId()) +
             "\" target=\"_top\">";
     if (spaceInst.isRoot() && StringUtil.isDefined(getCallbackJSForMainSpace())) {
       spaceHref =
@@ -226,7 +226,7 @@ public class MapTag extends TagSupport {
         }
 
         String href =
-            "<a href=\"" + URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentInst.getId()) +
+            "<a class=\"sp-link\" href=\"" + URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentInst.getId()) +
                 "\" target=\"_top\">";
         if (StringUtil.isDefined(getCallbackJSForApps())) {
           href = "<a href=\"javascript:" + getCallbackJSForApps() + "('" + componentInst.getId() +

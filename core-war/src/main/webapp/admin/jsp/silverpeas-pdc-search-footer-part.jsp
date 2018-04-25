@@ -79,7 +79,7 @@ QueryParameters	 parameters			= (QueryParameters) request.getAttribute("QueryPar
 
   function executePdcActionToBodyPartTarget(baseUrl) {
     var url = sp.url.format(baseUrl, jQuery(document.PdcWidgetAdvancedSearch).serializeFormJSON());
-    spLayout.getBody().getContent().load(url);
+    spWindow.loadContent(url);
   }
 
   function getPDCSettings() {

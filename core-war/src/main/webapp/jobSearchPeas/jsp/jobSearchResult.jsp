@@ -83,16 +83,16 @@ function validateSearch() {
   });
 }
 
-var spWindow = window;
+var __window = window;
 function openWindow(url) {
-  windowName = "spWindow";
+  windowName = "__window";
   larg = "800";
   haut = "600";
   windowParams = "directories=0,menubar=0,toolbar=0,scrollbars=1,alwaysRaised";
-  if (!spWindow.closed && spWindow.name == "spWindow") {
-	spaceWindow.close();
+  if (!__window.closed && __window.name == "__window") {
+    __window.close();
   }
-  spWindow = SP_openWindow(url, windowName, larg, haut, windowParams);
+  __window = SP_openWindow(url, windowName, larg, haut, windowParams);
 }
 
 function openSpace(spaceId) {

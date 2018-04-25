@@ -197,7 +197,7 @@ Silverpeas plugin which handles the behaviour about the user notification.
      */
     this.view = function(id) {
       if (!id) {
-        spLayout.getBody().getContent().load(USER_NOTIFICATION_URL);
+        spWindow.loadLink(USER_NOTIFICATION_URL);
       } else {
         SP_openWindow(webContext + "/RSILVERMAIL/jsp/ReadMessage.jsp?ID=" + id, "readMessage",
             "600", "380", "scrollable=yes,scrollbars=yes");

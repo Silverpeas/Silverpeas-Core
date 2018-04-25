@@ -47,7 +47,7 @@
             if (context && context.startMoment) {
               ajaxConfig.withParam("occurrenceStartDate", encodeURIComponent(context.startMoment.format()))
             }
-            spLayout.getBody().getContent().load(ajaxConfig.getUrl());
+            spWindow.loadContent(ajaxConfig.getUrl());
           };
 
           $scope.openPage = function(uri) {
@@ -81,6 +81,9 @@
           $scope.notifyEventOccurrence = function(occurrence) {
             var uri = occurrence.occurrenceViewUrl + "/notify";
             $scope.openPage(uri);
+          };
+          $scope.gotToEventOccurrence = function(occurrence) {
+            spWindow.loadPermalink(occurrence.occurrencePermalinkUrl);
           };
           $scope.viewEventOccurrence = function(occurrence) {
             var uri = __getOccurrenceViewUrl(occurrence);
