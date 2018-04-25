@@ -437,12 +437,12 @@
         break;
       case $.datechecker.CODE_ERROR.IS_NOT_AFTER_NOW:
         error.message += __getFromBundleKey(
-                (dateContext.canBeEqualToAnother) ? 'GML.MustContainsPostOrEqualDate' :
+                (dateContext.canBeEqualToAnother) ? 'GML.MustContainsPostDate' :
                 'GML.MustContainsPostDate');
         break;
       case $.datechecker.CODE_ERROR.IS_NOT_AFTER_ANOTHER:
         error.message += __getFromBundleKey(
-                (dateContext.canBeEqualToAnother) ? 'GML.MustContainsPostOrEqualDateTo' :
+                (dateContext.canBeEqualToAnother) ? 'GML.MustContainsPostDateTo' :
                 'GML.MustContainsPostDateTo');
         if (anotherDateContext.label) {
           error.message += ' ' + anotherDateContext.label;
