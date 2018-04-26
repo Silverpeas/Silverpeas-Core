@@ -142,9 +142,9 @@
     var errors = __isDateValid(anotherDateContext).concat(__isDateValid(dateContext));
     if (!dateContext.isError && !anotherDateContext.isError && dateContext.parsedDate &&
             anotherDateContext.parsedDate) {
-      if (__compareDateToAnother(dateContext.parsedDate, anotherDateContext.parsedDate) < 0 ||
-              ((!dateContext.canBeEqualToAnother || !anotherDateContext.canBeEqualToAnother) &&
-                      __compareDateToAnother(anotherDateContext.parsedDate, dateContext.parsedDate) === 0)) {
+      var compareResult = __compareDateToAnother(dateContext.parsedDate, anotherDateContext.parsedDate);
+      var canBeEqualToAnother = dateContext.canBeEqualToAnother && anotherDateContext.canBeEqualToAnother;
+      if (compareResult < 0 || (!canBeEqualToAnother && compareResult === 0)) {
         errors.push(__buildError($.datechecker.CODE_ERROR.IS_NOT_AFTER_ANOTHER, dateContext,
                 anotherDateContext));
       }
@@ -159,8 +159,10 @@
    * @private
    */
   function __isDateAfterNow(dateContext) {
-    var errors = __isDateAfterAnother(dateContext,
-            {parsedDate: __getNow(!__isDefined(dateContext.hour))});
+    var errors = __isDateAfterAnother(dateContext, {
+      parsedDate: __getNow(!__isDefined(dateContext.hour)),
+      canBeEqualToAnother: dateContext.canBeEqualToAnother
+    });
     if (errors.length > 0 &&
             $.datechecker.CODE_ERROR.IS_NOT_AFTER_ANOTHER == errors[errors.length - 1].code) {
       errors.pop();
@@ -355,7 +357,7 @@
     }
 
     // Options
-    if (options && options !== null) {
+    if (options && options != null) {
       $.extend(dateContext, options);
     }
 
@@ -437,12 +439,12 @@
         break;
       case $.datechecker.CODE_ERROR.IS_NOT_AFTER_NOW:
         error.message += __getFromBundleKey(
-                (dateContext.canBeEqualToAnother) ? 'GML.MustContainsPostDate' :
+                (dateContext.canBeEqualToAnother) ? 'GML.MustContainsPostOrEqualDate' :
                 'GML.MustContainsPostDate');
         break;
       case $.datechecker.CODE_ERROR.IS_NOT_AFTER_ANOTHER:
         error.message += __getFromBundleKey(
-                (dateContext.canBeEqualToAnother) ? 'GML.MustContainsPostDateTo' :
+                (dateContext.canBeEqualToAnother) ? 'GML.MustContainsPostOrEqualDateTo' :
                 'GML.MustContainsPostDateTo');
         if (anotherDateContext.label) {
           error.message += ' ' + anotherDateContext.label;
