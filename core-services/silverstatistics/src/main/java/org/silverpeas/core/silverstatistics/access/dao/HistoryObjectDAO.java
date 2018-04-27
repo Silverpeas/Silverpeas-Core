@@ -92,7 +92,7 @@ public class HistoryObjectDAO {
             SilverpeasRuntimeException.ERROR, "statistic.INCORRECT_DATE", e);
       }
       userId = rs.getString(3);
-      foreignId = String.valueOf(rs.getInt(4));
+      foreignId = rs.getString(4);
       ForeignPK foreignPK = new ForeignPK(foreignId, componentName);
       HistoryObjectDetail detail = new HistoryObjectDetail(date, userId, foreignPK);
 
