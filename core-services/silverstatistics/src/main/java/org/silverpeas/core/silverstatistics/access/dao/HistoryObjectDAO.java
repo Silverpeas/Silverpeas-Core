@@ -25,11 +25,11 @@ package org.silverpeas.core.silverstatistics.access.dao;
 
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.silverstatistics.access.model.HistoryObjectDetail;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.StringUtil;
 
@@ -45,13 +45,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- *
- * @author
- */
 public class HistoryObjectDAO {
 
-  private final static String historyTableName = "SB_Statistic_History";
+  private static final String HISTORY_TABLE_NAME = "SB_Statistic_History";
 
   private static final String QUERY_STATISTIC_INSERT = "INSERT INTO SB_Statistic_History " +
       "(dateStat, heureStat, userId, resourceId, componentId, actionType, resourceType) " +
@@ -68,13 +64,24 @@ public class HistoryObjectDAO {
       "SELECT COUNT(resourceId) FROM SB_Statistic_History WHERE resourceId=? AND ComponentId =? " +
           "AND resourceType = ?";
 
+  private static final String QUERY_STATISTIC_COUNT_BY_PERIOD =
+      "SELECT COUNT(resourceId) FROM SB_Statistic_History WHERE resourceId=? AND ComponentId =? " +
+          "AND resourceType = ? AND datestat >= ? AND datestat <= ?";
+
+  private static final String QUERY_STATISTIC_COUNT_BY_PERIOD_AND_USER =
+      "SELECT COUNT(resourceId) FROM SB_Statistic_History WHERE resourceId=? AND ComponentId =? " +
+          "AND resourceType = ? AND datestat >= ? AND datestat <= ? AND userid = ?";
+
+  private HistoryObjectDAO() {
+  }
+
   /**
    * @param rs
    * @param componentName
    * @return
    * @throws SQLException
    */
-  public static Collection<HistoryObjectDetail> getHistoryDetails(ResultSet rs,
+  private static Collection<HistoryObjectDetail> getHistoryDetails(ResultSet rs,
       String componentName) throws SQLException {
     List<HistoryObjectDetail> list = new ArrayList<>();
     Date date;
@@ -91,19 +98,13 @@ public class HistoryObjectDAO {
         throw new StatisticRuntimeException(e);
       }
       userId = rs.getString(3);
-      foreignId = String.valueOf(rs.getInt(4));
+      foreignId = rs.getString(4);
       ResourceReference resourceReference = new ResourceReference(foreignId, componentName);
       HistoryObjectDetail detail = new HistoryObjectDetail(date, userId, resourceReference);
 
       list.add(detail);
     }
     return list;
-  }
-
-  /**
-   * Constructor declaration
-   */
-  private HistoryObjectDAO() {
   }
 
   /**
@@ -148,7 +149,7 @@ public class HistoryObjectDAO {
     String componentName = resourceReference.getComponentName();
     String selectStatement =
         "select dateStat, heureStat, userId, resourceId, componentId, actionType, resourceType " +
-        "from " + historyTableName
+        "from " + HISTORY_TABLE_NAME
         + " where resourceId=? and componentId=? and resourceType=?"
         + " order by datestat desc, heurestat desc";
 
@@ -172,7 +173,7 @@ public class HistoryObjectDAO {
 
     String componentName = resourceReference.getComponentName();
     String selectStatement =
-        "select * from " + historyTableName + " where resourceId='" + resourceReference.getId() +
+        "select * from " + HISTORY_TABLE_NAME + " where resourceId='" + resourceReference.getId() +
             "' and componentId='" + resourceReference.getInstanceId() + "'" + " and resourceType='" +
             objectType + "'" + " and userId ='" + userId + "'" +
             " order by dateStat desc, heureStat desc";
@@ -252,10 +253,6 @@ public class HistoryObjectDAO {
     }
   }
 
-  private static final String QUERY_STATISTIC_COUNT_BY_PERIOD =
-      "SELECT COUNT(resourceId) FROM SB_Statistic_History WHERE resourceId=? AND ComponentId =? " +
-          "AND resourceType = ? AND datestat >= ? AND datestat <= ?";
-
   public static int getCountByPeriod(Connection con, WAPrimaryKey primaryKey, String objectType,
       Date startDate, Date endDate) throws SQLException {
     int nb = 0;
@@ -278,10 +275,6 @@ public class HistoryObjectDAO {
       DBUtil.close(rs, prepStmt);
     }
   }
-
-  private static final String QUERY_STATISTIC_COUNT_BY_PERIOD_AND_USER =
-      "SELECT COUNT(resourceId) FROM SB_Statistic_History WHERE resourceId=? AND ComponentId =? " +
-          "AND resourceType = ? AND datestat >= ? AND datestat <= ? AND userid = ?";
 
   public static int getCountByPeriodAndUser(Connection con, WAPrimaryKey primaryKey,
       String objectType, Date startDate, Date endDate, String userId) throws SQLException {
@@ -318,7 +311,7 @@ public class HistoryObjectDAO {
       throws SQLException {
 
 
-    String insertStatement = "update " + historyTableName +
+    String insertStatement = "update " + HISTORY_TABLE_NAME +
         " set componentId = ? where resourceId = ? and actionType = ? and resourceType = ?";
     PreparedStatement prepStmt = null;
 
@@ -382,7 +375,7 @@ public class HistoryObjectDAO {
         "SELECT resourceId FROM SB_Statistic_History WHERE ComponentId =? AND resourceType = ? " +
             "AND datestat >= ? AND datestat <= ? ");
     String instanceId = null;
-    if (primaryKeys != null && primaryKeys.size() > 0) {
+    if (CollectionUtil.isNotEmpty(primaryKeys)) {
       query.append("AND resourceId IN (");
       for (WAPrimaryKey pk : primaryKeys) {
         if (primaryKeys.indexOf(pk) != 0) {
