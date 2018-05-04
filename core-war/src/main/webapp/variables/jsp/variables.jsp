@@ -160,7 +160,7 @@
     }
   </script>
 </head>
-<body class="page_content_admin">
+<body class="page_content_admin variables_admin">
 <view:browseBar extraInformations="${browseBarAll}"/>
 <view:operationPane>
   <view:operationOfCreation action="javascript:newVariable()" icon="${iconAdd}" altText="${addVal}" />
@@ -172,7 +172,7 @@
   <view:areaOfOperationOfCreation/>
   <div id="dynamic-container">
     <c:set var="valueItems" value="<%=VariableUIEntity.convertList(allVariables, selectedVariableIds)%>"/>
-    <view:arrayPane var="myForms" routingAddress="Main" numberLinesPerPage="25">
+    <view:arrayPane var="arrayOfVariables" routingAddress="Main" numberLinesPerPage="25">
       <view:arrayColumn width="10" sortable="false"/>
       <view:arrayColumn title="${colLabel}" compareOn="${r -> r.data.label}"/>
       <view:arrayColumn title="${colValue}" compareOn="${r -> r.refVariableValue.value}"/>
@@ -187,10 +187,10 @@
           <view:arrayCellText text="${variable.refVariableValue.valueForHTML}"/>
           <view:arrayCellText text="${silfn:formatDate(variable.refStartDate, lang)}"/>
           <view:arrayCellText text="${silfn:formatDate(variable.refEndDate, lang)}"/>
-          <view:arrayCellText>${variable.data.variableValues.size()}</view:arrayCellText>
+          <view:arrayCellText classes="variable-nb-values">${variable.data.variableValues.size()}</view:arrayCellText>
           <view:arrayCellText>
-            <a href="#" onclick="javascript:editVariable('${variable.id}'); return false;" title="${opUpdate}"><img src="${iconUpdate}" alt="${opUpdate}"/></a>
-            <a href="#" onclick="javascript:deleteVariable('${variable.id}'); return false;" title="${opDelete}"><img src="${iconDelete}" alt="${opDelete}"/></a>
+            <a href="#" onclick="javascript:editVariable('${variable.id}'); return false;" title="${opUpdate}" class="edit-variable"><img src="${iconUpdate}" alt="${opUpdate}"/></a>
+            <a href="#" onclick="javascript:deleteVariable('${variable.id}'); return false;" title="${opDelete}" class="delete-variable"><img src="${iconDelete}" alt="${opDelete}"/></a>
           </view:arrayCellText>
         </view:arrayLine>
       </view:arrayLines>

@@ -204,7 +204,7 @@
   <fieldset id="values" class="skinFieldset">
     <legend>${labelValues}</legend>
     <div id="dynamic-container">
-      <view:arrayPane var="myForms" routingAddress="EditVariable" numberLinesPerPage="1000">
+      <view:arrayPane var="arrayOfVariableValues" routingAddress="EditVariable" numberLinesPerPage="1000">
         <view:arrayColumn title="${colValue}" />
         <view:arrayColumn title="${colStart}"/>
         <view:arrayColumn title="${colEnd}"/>

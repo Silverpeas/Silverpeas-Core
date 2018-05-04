@@ -6883,3 +6883,12 @@ silverpeas-contribution-reminder a.add-action {
   margin:1em 0.5em;
   padding: 0.5em 1em;
 }
+
+/************ Variables ******************/
+.variables_admin .variable-nb-values {
+  text-align: center;
+}
+
+.variables_admin .edit-variable {
+  margin-right: 10px;
+}
