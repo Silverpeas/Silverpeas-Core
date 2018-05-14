@@ -30,7 +30,6 @@ import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.WarBuilder4LibCore;
@@ -83,20 +82,16 @@ public class DelegationIT {
   @Test
   public void saveNewDelegationsBetweenTwoUsersShouldPersistAllOfItsData() throws SQLException {
     OperationContext.fromUser("0");
-    DelegatedResponsibility
-        delegatedResponsibility = new DelegatedResponsibility(SilverpeasRole.publisher, "kmelia42");
-    Delegation savedDelegation =
-        Delegation.of(delegatedResponsibility).between(User.getById("0"), User.getById("1")).save();
+    Delegation savedDelegation = Delegation.ofRolesIn("kmelia42")
+            .between(User.getById("0"), User.getById("1"))
+            .save();
 
     Map<String, Object> actualDelegation =
         SQLRequester.findOne("select * from sb_delegations where id = ?", savedDelegation.getId());
     assertThat(actualDelegation.isEmpty(), is(false));
     assertThat(savedDelegation.getDelegator().getId(), is(actualDelegation.get("DELEGATORID")));
     assertThat(savedDelegation.getDelegate().getId(), is(actualDelegation.get("DELEGATEID")));
-    assertThat(savedDelegation.getResponsibility().getComponentInstanceId(),
-        is(actualDelegation.get("INSTANCEID")));
-    assertThat(savedDelegation.getResponsibility().getRole().toString(),
-        is(actualDelegation.get("ROLE")));
+    assertThat(savedDelegation.getComponentInstanceId(), is(actualDelegation.get("INSTANCEID")));
   }
 
   @Test
@@ -128,7 +123,7 @@ public class DelegationIT {
     assertThat(delegations.size(), is(2));
     assertThat(delegations.stream()
         .allMatch(d -> d.getDelegator().getId().equals(delegatorId) &&
-            d.getResponsibility().getComponentInstanceId().equals(componentId)), is(true));
+            d.getComponentInstanceId().equals(componentId)), is(true));
   }
 
   @Test
@@ -140,7 +135,7 @@ public class DelegationIT {
     assertThat(delegations.size(), is(1));
     assertThat(delegations.stream()
         .allMatch(d -> d.getDelegate().getId().equals(delegateId) &&
-            d.getResponsibility().getComponentInstanceId().equals(componentId)), is(true));
+            d.getComponentInstanceId().equals(componentId)), is(true));
   }
 }
   

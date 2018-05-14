@@ -31,7 +31,6 @@ import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.util.StringUtil;
 
 import javax.persistence.Column;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -54,10 +53,10 @@ import java.util.Objects;
         query = "select d from Delegation d where d.delegateId = :delegate"),
     @NamedQuery(name = "Delegation.findByDelegatorByComponentId",
         query = "select d from Delegation d where d.delegatorId = :delegator and " +
-            "d.responsibility.instanceId = :componentId"),
+            "d.instanceId = :componentId"),
     @NamedQuery(name = "Delegation.findByDelegateByComponentId",
         query = "select d from Delegation d where d.delegateId = :delegate and " +
-            "d.responsibility.instanceId = :componentId")})
+            "d.instanceId = :componentId")})
 public class Delegation extends SilverpeasJpaEntity<Delegation, UuidIdentifier> {
 
   @Column(nullable = false)
@@ -83,13 +82,9 @@ public class Delegation extends SilverpeasJpaEntity<Delegation, UuidIdentifier> 
    */
   public Delegation(final String instanceId, final User delegator,
       final User delegate) {
-    Objects.requireNonNull(instanceId, "The component instance must not be null");
-    Objects.requireNonNull(delegator, "The delegator must not be null");
-    Objects.requireNonNull(delegate, "The delegate must not be null");
-    requireDifferentUsers(delegator.getId(), delegate.getId());
-    this.delegatorId = delegator.getId();
-    this.delegateId = delegate.getId();
-    this.instanceId = instanceId;
+    setComponentInstanceId(instanceId);
+    setDelegator(delegator);
+    setDelegate(delegate);
   }
 
   /**
@@ -160,6 +155,24 @@ public class Delegation extends SilverpeasJpaEntity<Delegation, UuidIdentifier> 
     Objects.requireNonNull(delegate, "The delegate to set must not be null");
     requireDifferentUsers(this.delegatorId, delegate.getId());
     this.delegateId = delegate.getId();
+  }
+
+  /**
+   * Sets the delegator behind this delegation.
+   * @param delegator the delegator in this delegation.
+   */
+  protected final void setDelegator(final User delegator) {
+    Objects.requireNonNull(delegator, "The delegator to set must not be null");
+    this.delegatorId = delegator.getId();
+  }
+
+  /**
+   * Sets the component instance that is concerned by this delegation of roles.
+   * @param componentInstanceId the unique identifier of a component instance.
+   */
+  protected final void setComponentInstanceId(final String componentInstanceId) {
+    Objects.requireNonNull(instanceId, "The component instance to set must not be null");
+    this.instanceId = componentInstanceId;
   }
 
   /**

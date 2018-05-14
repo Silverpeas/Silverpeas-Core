@@ -45,7 +45,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import java.net.URI;
 import java.util.Collection;
 
 /**
@@ -328,5 +330,29 @@ public abstract class RESTWebService implements ProtectedWebResource {
   @FunctionalInterface
   protected interface WebTreatment<R> {
     R execute();
+  }
+
+  /**
+   * Convenient method to build an URI from the request's absolute path and the specified
+   * identifiers. Each identifier will be added to the absolute path as a path node in the
+   * returned URI.
+   * @param id one or more identifiers identifying uniquely the current requested web resource.
+   * @return an URI identifying uniquely in the Web the current requested resource.
+   */
+  protected final URI identifiedBy(final String... id) {
+    return identifiedBy(getUri().getAbsolutePathBuilder(), id);
+  }
+
+  /**
+   * Convenient method to build an URI from the a base URI represented by the specified
+   * {@link UriBuilder} and from the specified identifiers. Each identifier will be added to the
+   * base URI as a path node in the returned URI.
+   * @param base a {@link UriBuilder} instance representing the base URI from which the resulted
+   * URI will be computed.
+   * @param id one or more identifiers identifying the uniquely the current requested web resource.
+   * @return an URI identifying uniquely in the Web the current requested resource.
+   */
+  protected final URI identifiedBy(final UriBuilder base, final String... id) {
+    return base.build(id);
   }
 }
