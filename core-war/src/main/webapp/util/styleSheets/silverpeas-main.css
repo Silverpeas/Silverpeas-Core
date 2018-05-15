@@ -3452,7 +3452,6 @@ select.mandatoryField option.emphasis {
   margin: 1em;
   text-align: center;
   border: 2px solid;
-  border: 2px solid;
   display:block;
 }
 
@@ -3466,6 +3465,25 @@ select.mandatoryField option.emphasis {
 .inlineMessage {
   background-color: #FBF7AA;
   border-color: #F9E98E;
+}
+
+.componentInstanceIntro {
+  border-left: 6px solid #E4E4E4;
+  color: #666666;
+  padding: 8px;
+  max-height: 90px;
+  overflow: hidden;
+  margin-bottom: 1em;
+}
+
+.componentInstanceIntro a {
+  text-decoration: underline;
+}
+
+.componentInstanceIntro > ul:first-child,
+.componentInstanceIntro > p:first-child {
+  margin-top: 0;
+  padding-top: 0;
 }
 
 .inlineMessage-ok,
