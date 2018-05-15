@@ -23,9 +23,13 @@
  */
 package org.silverpeas.core.web.mvc.route;
 
+import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
+import org.silverpeas.core.contribution.model.ContributionIdentifier;
+import org.silverpeas.core.contribution.model.CoreContributionType;
 import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.notification.user.UserSubscriptionNotificationSendingHandler;
 import org.silverpeas.core.security.session.SessionManagement;
 import org.silverpeas.core.security.session.SessionManagementProvider;
@@ -44,6 +48,7 @@ import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.mvc.controller.PeasCoreException;
 import org.silverpeas.core.web.mvc.controller.SilverpeasWebUtil;
 import org.silverpeas.core.web.mvc.processor.UserAndGroupSelectionProcessor;
+import org.silverpeas.core.web.mvc.util.WysiwygRouting;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasAuthenticatedHttpServlet;
 import org.silverpeas.core.web.token.SynchronizerTokenService;
 import org.silverpeas.core.web.util.SilverpeasTransverseWebErrorUtil;
@@ -244,7 +249,11 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
     // retourne la page jsp de destination et place dans la request les objets
     // utilises par cette page
     if (checkUserAuthorization(function, component)) {
-      destination = getDestination(function, component, httpRequest);
+      if ("EditComponentInstanceIntro".equals(function)) {
+        destination = getComponentInstanceIntroDestination(component);
+      } else {
+        destination = getDestination(function, component, httpRequest);
+      }
     } else {
       SilverLogger.getLogger(this)
           .warn("User {0} not allowed to invoke {1} for application {2}",
@@ -402,6 +411,40 @@ public abstract class ComponentRequestRouter<T extends ComponentSessionControlle
         helper.setSpaceId(spaceId);
         gef.setSpaceIdForCurrentRequest(spaceId);
       }
+    }
+  }
+
+  private String getComponentInstanceIntroDestination(ComponentSessionController sc) {
+    String returnURL = URLUtil.getApplicationURL() +
+        URLUtil.getComponentInstanceURL(sc.getComponentId()) +
+        "Main";
+
+    ContributionIdentifier id = ContributionIdentifier
+        .from(sc.getComponentId(), "Intro", CoreContributionType.COMPONENT_INSTANCE);
+    if (sc.getComponentId().startsWith("classifieds")) {
+      id = ContributionIdentifier.from(sc.getComponentId(), "Node_0", CoreContributionType.NODE);
+    } else {
+      ComponentInstLight component =
+          OrganizationController.get().getComponentInstLight(sc.getComponentId());
+      if (component.isWorkflow()) {
+        id = ContributionIdentifier
+            .from(sc.getComponentId(), sc.getComponentId(), CoreContributionType.COMPONENT_INSTANCE);
+      }
+    }
+
+    WysiwygRouting routing = new WysiwygRouting();
+    WysiwygRouting.WysiwygRoutingContext context =
+        WysiwygRouting.WysiwygRoutingContext.fromComponentSessionController(sc)
+            .withContributionId(id)
+            .withLanguage(I18NHelper.defaultLanguage)
+            .withComeBackUrl(returnURL)
+            .withBrowseInfo(sc.getMultilang().getString("GML.operations.editComponentIntro"));
+
+    try {
+      return routing.getDestinationToWysiwygEditor(context);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+      return "#";
     }
   }
 }

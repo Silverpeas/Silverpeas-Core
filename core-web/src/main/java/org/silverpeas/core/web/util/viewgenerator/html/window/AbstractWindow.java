@@ -28,6 +28,7 @@ import org.silverpeas.core.admin.component.model.PersonalComponentInstance;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.cache.model.SimpleCache;
 import org.silverpeas.core.cache.service.CacheServiceProvider;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -102,10 +103,12 @@ public abstract class AbstractWindow implements Window {
   public OperationPane getOperationPane() {
     if (this.operationPane == null) {
       this.operationPane = getGEF().getOperationPane();
-      if (!isPopup() &&
-          ResourceLocator.getGeneralSettingBundle().getBoolean("AdminFromComponentEnable", true) &&
-          StringUtil.isDefined(getGEF().getComponentIdOfCurrentRequest())) {
-        addOperationToSetupComponent();
+      if (!isPopup() && StringUtil.isDefined(getGEF().getComponentIdOfCurrentRequest())) {
+        if (ResourceLocator.getGeneralSettingBundle()
+            .getBoolean("AdminFromComponentEnable", true)) {
+          addOperationToSetupComponent();
+        }
+        addOperationToEditComponentIntro();
       }
     }
     return this.operationPane;
@@ -127,7 +130,7 @@ public abstract class AbstractWindow implements Window {
           getGEF().getMultilang().getLocale().getLanguage())
               .getString("GML.operations.setupComponent");
       String url = "javascript:spWindow.setupComponent('" +  componentId +"\')";
-      this.operationPane.addOperation("useless", label, url);
+      this.operationPane.addOperation(null, label, url);
       this.operationPane.addLine();
     }
   }
@@ -141,9 +144,36 @@ public abstract class AbstractWindow implements Window {
           getGEF().getMultilang().getLocale().getLanguage())
           .getString("GML.operations.setupSpace");
       String url = "javascript:spWindow.setupSpace('" + currentSpaceId +"\')";
-      this.operationPane.addOperation("useless", label, url);
+      this.operationPane.addOperation(null, label, url);
       this.operationPane.addLine();
     }
+  }
+
+  private void addOperationToEditComponentIntro() {
+    String currentComponentId = getGEF().getComponentIdOfCurrentRequest();
+    if (!getGEF().isComponentMainPage() || currentComponentId.startsWith("kmelia")) {
+      return;
+    }
+    if (isUserAllowedToEditComponentIntro(currentComponentId)) {
+      String label = ResourceLocator.getGeneralLocalizationBundle(
+          getGEF().getMultilang().getLocale().getLanguage())
+          .getString("GML.operations.editComponentIntro");
+      String url = "EditComponentInstanceIntro";
+      this.operationPane.addOperation(null, label, url);
+      this.operationPane.addLine();
+    }
+  }
+
+  private boolean isUserAllowedToEditComponentIntro(String componentId) {
+    OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
+    MainSessionController msc = getGEF().getMainSessionController();
+    String[] profiles = organizationController.getUserProfiles(msc.getUserId(), componentId);
+    return ArrayUtil.contains(profiles, SilverpeasRole.admin.getName()) ||
+        ArrayUtil.contains(profiles, SilverpeasRole.supervisor.getName()) ||
+        ArrayUtil.contains(profiles, "Administrator") ||
+        ArrayUtil.contains(profiles, "Admin") ||
+        (componentId.startsWith("webPages") && ArrayUtil.contains(profiles, SilverpeasRole.publisher.getName()));
   }
 
   @Override

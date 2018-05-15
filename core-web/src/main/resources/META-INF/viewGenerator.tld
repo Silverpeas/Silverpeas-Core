@@ -2707,6 +2707,28 @@
       <type>java.lang.Boolean</type>
     </attribute>
   </tag>
+  <tag>
+    <description>Tag that display the intro of a component instance</description>
+    <name>componentInstanceIntro</name>
+    <tag-class>
+      org.silverpeas.core.web.util.viewgenerator.html.instanceintro.ComponentInstanceIntroTag
+    </tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <description>Id of component instance</description>
+      <name>componentId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+    <attribute>
+      <description>Language to be used</description>
+      <name>language</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+      <type>java.lang.String</type>
+    </attribute>
+  </tag>
   <function>
     <description>Function that returns the value of a class constant.</description>
     <name>constantValue</name>
