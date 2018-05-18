@@ -339,7 +339,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * @param id one or more identifiers identifying uniquely the current requested web resource.
    * @return an URI identifying uniquely in the Web the current requested resource.
    */
-  protected final URI identifiedBy(final String... id) {
+  protected URI identifiedBy(final String... id) {
     return identifiedBy(getUri().getAbsolutePathBuilder(), id);
   }
 
@@ -352,7 +352,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * @param id one or more identifiers identifying the uniquely the current requested web resource.
    * @return an URI identifying uniquely in the Web the current requested resource.
    */
-  protected final URI identifiedBy(final UriBuilder base, final String... id) {
+  protected URI identifiedBy(final UriBuilder base, final String... id) {
     return base.build(id);
   }
 }

@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.user;
 
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.persistence.EntityReference;
 
@@ -34,7 +35,7 @@ import org.silverpeas.core.persistence.EntityReference;
  */
 public class UserReference extends EntityReference<UserDetail> {
 
-  public static UserReference fromUser(final UserDetail user) {
+  public static UserReference fromUser(final User user) {
     return new UserReference(user.getId());
   }
 

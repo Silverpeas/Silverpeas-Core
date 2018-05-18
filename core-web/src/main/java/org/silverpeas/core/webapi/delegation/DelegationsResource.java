@@ -60,7 +60,8 @@ public class DelegationsResource extends RESTWebService {
   @GET
   public List<DelegationEntity> getAllDelegationsByDelegator(
       @PathParam("userId") final String userId) {
-    return Delegation.getAllFrom(User.getById(userId))
+    final User delegator = getUser(userId);
+    return Delegation.getAllFrom(delegator)
         .stream()
         .map(d -> asWebEntity(d, identifiedBy(d.getId())))
         .collect(Collectors.toList());
@@ -73,9 +74,10 @@ public class DelegationsResource extends RESTWebService {
    */
   @Path("delegates/{userId}")
   @GET
-  public List<DelegationEntity> getAllDelegationsToDelegates(
+  public List<DelegationEntity> getAllDelegationsToDelegate(
       @PathParam("userId") final String userId) {
-    return Delegation.getAllTo(User.getById(userId))
+    final User delegate = getUser(userId);
+    return Delegation.getAllTo(delegate)
         .stream()
         .map(d -> asWebEntity(d, identifiedBy(d.getId())))
         .collect(Collectors.toList());
@@ -89,10 +91,11 @@ public class DelegationsResource extends RESTWebService {
    */
   @Path("delegators/{userId}/{componentId}")
   @GET
-  public List<DelegationEntity> getAllDelegationsByDelegates(
+  public List<DelegationEntity> getAllDelegationsByDelegator(
       @PathParam("userId") final String userId,
       @PathParam("componentId") final String componentId) {
-    return Delegation.getAllFrom(User.getById(userId), componentId)
+    final User delegator = getUser(userId);
+    return Delegation.getAllFrom(delegator, componentId)
         .stream()
         .map(d -> asWebEntity(d, identifiedBy(d.getId())))
         .collect(Collectors.toList());
@@ -106,10 +109,11 @@ public class DelegationsResource extends RESTWebService {
    */
   @Path("delegates/{userId}/{componentId}")
   @GET
-  public List<DelegationEntity> getAllDelegationsToDelegates(
+  public List<DelegationEntity> getAllDelegationsToDelegate(
       @PathParam("userId") final String userId,
       @PathParam("componentId") final String componentId) {
-    return Delegation.getAllTo(User.getById(userId), componentId)
+    final User delegate = getUser(userId);
+    return Delegation.getAllTo(delegate, componentId)
         .stream()
         .map(d -> asWebEntity(d, identifiedBy(d.getId())))
         .collect(Collectors.toList());
@@ -123,6 +127,10 @@ public class DelegationsResource extends RESTWebService {
   @Override
   public String getComponentId() {
     return null;
+  }
+
+  private User getUser(final String userId) {
+    return "me".equals(userId) ? getUser() : User.getById(userId);
   }
 
 }

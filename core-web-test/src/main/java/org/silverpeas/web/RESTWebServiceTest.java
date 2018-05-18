@@ -28,7 +28,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.Administration;
-import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.test.rule.DbSetupRule;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.web.environment.SilverpeasEnvironmentTest;
@@ -55,8 +55,8 @@ public abstract class RESTWebServiceTest {
       "/org/silverpeas/web/environment/create-table-domain-user-group.sql",
       "/org/silverpeas/web/environment/create-table-space-component.sql",
       "/org/silverpeas/web/environment/create-table-profile.sql",
-      "/org/silverpeas/web/environment/create-table-token.sql",
-      getCreationTable());
+      "/org/silverpeas/web/environment/create-table-token.sql", getTableCreationScript())
+      .loadInitialDataSetFrom(getDataSetScript());
 
   @Before
   public void reloadAdminCaches() {
@@ -68,7 +68,16 @@ public abstract class RESTWebServiceTest {
    * specific to this test.
    * @return the path in the classpath of a SQL script file (or empty if no such SQL script).
    */
-  protected String getCreationTable() {
+  protected String getTableCreationScript() {
+    return StringUtil.EMPTY;
+  }
+
+  /**
+   * Gets the SQL script file in the classpath that contains statements to prepare the database used
+   * by this test with a data set.
+   * @return the path in the classpath of a SQL script file (or empty if no such SQL script)
+   */
+  protected String getDataSetScript() {
     return StringUtil.EMPTY;
   }
 
@@ -123,7 +132,7 @@ public abstract class RESTWebServiceTest {
    * @param theUser the user to authenticate.
    * @return the key of the opened session.
    */
-  public String getTokenKeyOf(final UserDetail theUser) {
+  public String getTokenKeyOf(final User theUser) {
     return getSilverpeasEnvironmentTest().getTokenOf(theUser);
   }
 

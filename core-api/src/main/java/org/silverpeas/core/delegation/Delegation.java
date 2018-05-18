@@ -171,7 +171,7 @@ public class Delegation extends SilverpeasJpaEntity<Delegation, UuidIdentifier> 
    * @param componentInstanceId the unique identifier of a component instance.
    */
   protected final void setComponentInstanceId(final String componentInstanceId) {
-    Objects.requireNonNull(instanceId, "The component instance to set must not be null");
+    StringUtil.requireDefined(componentInstanceId, "The component instance to set must be defined");
     this.instanceId = componentInstanceId;
   }
 

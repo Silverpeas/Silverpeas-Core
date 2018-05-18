@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.service.Administration;
 import org.silverpeas.core.admin.user.UserReference;
 import org.silverpeas.core.admin.user.constant.UserAccessLevel;
 import org.silverpeas.core.admin.user.constant.UserState;
+import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.token.exception.TokenException;
 import org.silverpeas.core.security.token.persistent.PersistentResourceToken;
@@ -62,7 +63,7 @@ public class SilverpeasEnvironmentTest {
    * Creates a default user to use in the test case.
    * @return the detail about the user in use in the current test case.
    */
-  public UserDetail createDefaultUser() {
+  public User createDefaultUser() {
     UserDetail user = new UserDetail();
     user.setLogin("toto");
     user.setFirstName("Toto");
@@ -92,7 +93,7 @@ public class SilverpeasEnvironmentTest {
    * @param userDetail the user details for which the token is needed.
    * @return the API token of the given user.
    */
-  public String getTokenOf(UserDetail userDetail) {
+  public String getTokenOf(final User userDetail) {
     try {
       return PersistentResourceToken.getOrCreateToken(UserReference.fromUser(userDetail))
           .getValue();

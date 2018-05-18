@@ -49,7 +49,7 @@ public interface Task {
   User getUser();
 
   /**
-   * Returns the name of the role which gived the responsability of this task to the user.
+   * Returns the name of the role required for the user to have the responsibility of this task.
    */
   String getUserRoleName();
 
