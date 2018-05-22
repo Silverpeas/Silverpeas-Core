@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -70,6 +71,9 @@ public class SimpleSearchEngine implements SearchEngine {
   private final boolean enableExternalSearch =
       pdcSettings.getBoolean("external.search.enable", false);
   private final String localServerName = pdcSettings.getString("server.name");
+
+  private static final String COMPONENT_KMELIA = "kmelia";
+  private static final String COMPONENT_FORMSONLINE = "formsOnline";
 
   /**
    * Hide constructor.
@@ -132,10 +136,10 @@ public class SimpleSearchEngine implements SearchEngine {
       return new ArrayList<>();
     }
     List<MatchingIndexEntry> results = new ArrayList<>(matchingIndexEntries.size());
-    ComponentAuthorization authorization = null;
+    HashMap<String, ComponentAuthorization> authorizations = null;
     try {
-      authorization = getSecurityIntf();
-      authorization.enableCache();
+      authorizations = getSecurityIntf();
+      enableCaches(authorizations);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
     }
@@ -151,19 +155,19 @@ public class SimpleSearchEngine implements SearchEngine {
     }
 
     for (MatchingIndexEntry result : matchingIndexEntries) {
-      if (!isMatchingIndexEntryAvailable(result, userId, authorization, allowedComponentIds)) {
+      if (!isMatchingIndexEntryAvailable(result, userId, authorizations, allowedComponentIds)) {
         continue;
       }
       results.add(result);
     }
 
-    authorization.disableCache();
+    disableCaches(authorizations);
 
     return results;
   }
 
   private boolean isMatchingIndexEntryAvailable(MatchingIndexEntry mie, String userId,
-      ComponentAuthorization authorization, List<String> allowedComponentIds) {
+      HashMap<String, ComponentAuthorization> authorizations, List<String> allowedComponentIds) {
     // Do not filter and check external components
     if (enableExternalSearch && isExternalComponent(mie.getServerName())) {
       mie.setExternalResult(true);
@@ -173,15 +177,25 @@ public class SimpleSearchEngine implements SearchEngine {
           || "Node".equals(objectType);
     }
 
-    // verify rights according to 'kmelia' rights
+    // verify rights according to component specific rights
     String componentId = mie.getComponent();
-    if (componentId.startsWith("kmelia")) {
-      return authorization
-          .isObjectAvailable(componentId, userId, mie.getObjectId(), mie.getObjectType());
+    ComponentAuthorization auth = getAuthorization(componentId, authorizations);
+    if (auth != null) {
+      return auth.isObjectAvailable(componentId, userId, mie.getObjectId(), mie.getObjectType());
     }
 
     // verify rights onto others items type
     return isOtherItemAvailable(mie, userId, allowedComponentIds);
+  }
+
+  private ComponentAuthorization getAuthorization(String componentId,
+      HashMap<String, ComponentAuthorization> auths) {
+    if (componentId.startsWith(COMPONENT_KMELIA)) {
+      return auths.get(COMPONENT_KMELIA);
+    } else if (componentId.startsWith(COMPONENT_FORMSONLINE)) {
+      return auths.get(COMPONENT_FORMSONLINE);
+    }
+    return null;
   }
 
   private boolean isOtherItemAvailable(MatchingIndexEntry mie, String userId,
@@ -242,9 +256,31 @@ public class SimpleSearchEngine implements SearchEngine {
     return StringUtil.isDefined(localServerName) && !localServerName.equalsIgnoreCase(serverName);
   }
 
-  private ComponentAuthorization getSecurityIntf()
+  private HashMap<String, ComponentAuthorization> getSecurityIntf()
       throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-    return (ComponentAuthorization) Class.forName(
-          "org.silverpeas.components.kmelia.KmeliaAuthorization").newInstance();
+    HashMap<String, ComponentAuthorization> authorizations = new HashMap<>();
+    ComponentAuthorization kmeliaAuth = (ComponentAuthorization) Class.forName(
+        "org.silverpeas.components.kmelia.KmeliaAuthorization").newInstance();
+    ComponentAuthorization formsOnlineAuth = (ComponentAuthorization) Class.forName(
+        "org.silverpeas.components.formsonline.FormsOnlineAuthorization").newInstance();
+    authorizations.put(COMPONENT_KMELIA, kmeliaAuth);
+    authorizations.put(COMPONENT_FORMSONLINE, formsOnlineAuth);
+    return authorizations;
+  }
+
+  private void enableCaches(HashMap<String, ComponentAuthorization> auths) {
+    if (auths != null) {
+      for (ComponentAuthorization auth : auths.values()) {
+        auth.enableCache();
+      }
+    }
+  }
+
+  private void disableCaches(HashMap<String, ComponentAuthorization> auths) {
+    if (auths != null) {
+      for (ComponentAuthorization auth : auths.values()) {
+        auth.disableCache();
+      }
+    }
   }
 }
