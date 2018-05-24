@@ -60,7 +60,7 @@ public class LogoutServlet extends HttpServlet {
     buffer.append(request.getServerPort()).append(request.getContextPath());
     SettingBundle resource = ResourceLocator.getSettingBundle(
         "org.silverpeas.authentication.settings.authenticationSettings");
-    String postLogoutPage = resource.getString("logout.page", "/Login?ErrorCode=4&logout=true");
+    String postLogoutPage = resource.getString("logout.page", "/Login?logout=true");
     if (postLogoutPage.startsWith("http")) {
       response.sendRedirect(postLogoutPage);
       return;

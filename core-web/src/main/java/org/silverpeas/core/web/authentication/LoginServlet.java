@@ -26,6 +26,7 @@ package org.silverpeas.core.web.authentication;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.webcomponent.SilverpeasHttpServlet;
 
@@ -35,6 +36,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.UriBuilder;
 import java.io.IOException;
 import java.util.Optional;
 
@@ -54,6 +56,7 @@ public class LoginServlet extends SilverpeasHttpServlet {
 
   private static final SettingBundle general =
       ResourceLocator.getSettingBundle("org.silverpeas.lookAndFeel.generalLook");
+  private static final String PARAM_DOMAINID = "DomainId";
 
   @Override
   protected void service(final HttpServletRequest request, final HttpServletResponse response)
@@ -142,25 +145,33 @@ public class LoginServlet extends SilverpeasHttpServlet {
 
       // first access to the platform
       UserDetail anonymousUser = UserDetail.getAnonymousUser();
-      loginPage = "/AuthenticationServlet?";
-      loginPage += "Login="+anonymousUser.getLogin();
-      loginPage += "&Password="+anonymousUser.getLogin();
-      loginPage += "&DomainId=0";
+      UriBuilder uriBuilder = UriBuilder.fromPath("/AuthenticationServlet");
+      addParameter(uriBuilder, "Login", anonymousUser.getLogin());
+      addParameter(uriBuilder, "Password", anonymousUser.getLogin());
+      addParameter(uriBuilder, PARAM_DOMAINID, "0");
 
-      RequestDispatcher dispatcher = request.getRequestDispatcher(loginPage);
+      RequestDispatcher dispatcher = request.getRequestDispatcher(uriBuilder.toTemplate());
       dispatcher.forward(request, response);
     } else {
       loginPage = general.getString("loginPage");
 
-      String domainId = getDomainId(request);
       if (!isDefined(loginPage)) {
         loginPage = request.getContextPath() + "/defaultLogin.jsp";
       } else if (!loginPage.startsWith(request.getContextPath())) {
         loginPage = request.getContextPath() + "/" + loginPage;
       }
-      loginPage += "?DomainId=" + domainId + "&ErrorCode=" + errorCode + "&logout=" +
-          request.getParameter("logout");
-      response.sendRedirect(response.encodeRedirectURL(loginPage));
+      UriBuilder uriBuilder = UriBuilder.fromPath(loginPage);
+      addParameter(uriBuilder, PARAM_DOMAINID, getDomainId(request));
+      addParameter(uriBuilder, "ErrorCode", errorCode);
+      addParameter(uriBuilder, "logout", request.getParameter("logout"));
+
+      response.sendRedirect(response.encodeRedirectURL(uriBuilder.toTemplate()));
+    }
+  }
+
+  private void addParameter(UriBuilder uriBuilder, String param, String value) {
+    if (StringUtil.isDefined(value)) {
+      uriBuilder.queryParam(param, value);
     }
   }
 
@@ -179,9 +190,9 @@ public class LoginServlet extends SilverpeasHttpServlet {
    * @return the identifier of the domain if any, null otherwise.
    */
   private String getDomainId(final HttpServletRequest request) {
-    String domainId = null;
-    if (isInteger(request.getParameter("DomainId"))) {
-      domainId = request.getParameter("DomainId");
+    String domainId = general.getString("loginPage.domainId.default");
+    if (isInteger(request.getParameter(PARAM_DOMAINID))) {
+      domainId = request.getParameter(PARAM_DOMAINID);
     }
     return domainId;
   }
