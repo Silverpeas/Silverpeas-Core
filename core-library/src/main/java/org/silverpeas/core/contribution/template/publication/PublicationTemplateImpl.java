@@ -650,6 +650,8 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     cloneTemplate.setApplications(getApplications());
     cloneTemplate.setInstances(getInstances());
     cloneTemplate.setDirectoryUsage(isDirectoryUsage());
+    cloneTemplate.setViewLayerFileName(getViewLayerFileName());
+    cloneTemplate.setUpdateLayerFileName(getUpdateLayerFileName());
     return cloneTemplate;
   }
 

@@ -28,7 +28,12 @@
 <%@page import="org.silverpeas.core.security.encryption.cipher.CryptoException"%>
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+
+<fmt:setLocale value="${requestScope.resources.language}"/>
+<view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
 
 <%@ include file="check.jsp" %>
 <%
@@ -148,6 +153,19 @@ function deleteLayer(id) {
 	$('#Existing'+id).hide();
 }
 
+function toDuplicate() {
+  $('#duplicateDialog').popup('validation', {
+    title : "<%=resource.getString("GML.action.duplicate")%>",
+    callback : function() {
+      if (StringUtil.isNotDefined($("#DuplicatedFormName").val())) {
+        jQuery.popup.error("'<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>");
+      } else {
+        return document.DuplicateForm.submit();
+      }
+    }
+  });
+}
+
 $(function () {
 
 	var tagTriggerKeys = ['enter', 'comma', 'tab', 'semicolon', 'space'];
@@ -170,6 +188,8 @@ $(function () {
 browseBar.setDomainName(resource.getString("templateDesigner.toolName"));
 browseBar.setComponentName(resource.getString("templateDesigner.templateList"), "Main");
 browseBar.setPath(resource.getString("templateDesigner.template"));
+
+operationPane.addOperation("useless", resource.getString("GML.action.duplicate"), "javascript:toDuplicate()");
 
 TabbedPane tabbedPane = gef.getTabbedPane();
 if (template != null) {
@@ -317,5 +337,22 @@ out.println("<br/>"+buttonPane.print());
 %>
 </view:frame>
 <% out.println(window.printAfter()); %>
+
+<div id="duplicateDialog" style="display:none">
+<form name="DuplicateForm" action="DuplicateForm" method="post">
+  <div class="table">
+    <label id="name_label" class="label-ui-dialog" for="DuplicatedFormName"><fmt:message key="GML.nom"/></label>
+    <div class="champ-ui-dialog">
+      <input id="DuplicatedFormName" name="DuplicatedFormName" size="60" maxlength="150" type="text"/>&nbsp;<img alt="obligatoire" src="<c:url value='/util/icons/mandatoryField.gif' />" height="5" width="5"/>
+    </div>
+  </div>
+
+  <div id="mandatory_label">
+    (<img border="0" src="<c:url value='/util/icons/mandatoryField.gif' />" width="5" height="5" alt=""/>
+    : <fmt:message key="GML.mandatory"/>)
+  </div>
+</form>
+</div>
+
 </body>
 </html>

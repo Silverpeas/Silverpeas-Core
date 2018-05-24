@@ -32,6 +32,9 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
 import org.silverpeas.web.templatedesigner.model.TemplateDesignerException;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.ServiceProvider;
@@ -48,6 +51,9 @@ import org.silverpeas.core.util.file.FileFolderManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -545,5 +551,62 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     ContentEncryptionService encryptionService =
         ContentEncryptionServiceProvider.getContentEncryptionService();
     return encryptionService.isCipherKeyDefined();
+  }
+
+  public void duplicateTemplate(String duplicatedFormName) {
+    PublicationTemplateImpl newTemplate = template.basicClone();
+    newTemplate.setName(duplicatedFormName);
+
+    String fileName = string2fileName(duplicatedFormName);
+    String templateDirPath =
+        PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir, fileName);
+    File templateDir = new File(templateDirPath);
+    if (templateDir.exists()) {
+      WebMessager.getInstance()
+          .addError(getString("templateDesigner.form.duplication.error.existingName"),
+              duplicatedFormName);
+      return;
+    }
+
+    try {
+      newTemplate.setTemplate(template.getDataTemplate());
+      newTemplate.setSearchResultTemplate(template.getSearchResultTemplate());
+      newTemplate.setSearchTemplate(template.getSearchTemplate());
+      newTemplate.setUpdateTemplate(template.getUpdateTemplate());
+      newTemplate.setViewTemplate(template.getViewTemplate());
+
+      // prepare copy of 'view' layer
+      copyLayer(newTemplate, template.getViewFileName(), true);
+
+      // prepare copy of 'update' layer
+      copyLayer(newTemplate, template.getUpdateFileName(), false);
+
+      createTemplate(newTemplate);
+    } catch (Exception e) {
+      WebMessager.getInstance()
+          .addSevere(getString("templateDesigner.form.duplication.error"));
+      SilverLogger.getLogger(this).error(e);
+    }
+    WebMessager.getInstance()
+        .addSuccess(getString("templateDesigner.form.duplication.success"));
+  }
+
+  private void copyLayer(PublicationTemplateImpl template, String layerFileName, boolean view)
+      throws IOException {
+    if (layerFileName != null && layerFileName.endsWith(".html")) {
+      Path layerPath = Paths.get(PublicationTemplateManager.templateDir, layerFileName);
+      File tempDir = new File(FileRepositoryManager.getTemporaryPath() + System.currentTimeMillis());
+      Files.createDirectory(tempDir.toPath());
+      Path copyPath = tempDir.toPath().resolve(layerPath.getFileName());
+      Files.copy(layerPath, copyPath);
+
+      if (view) {
+        template.setViewLayerFileName(copyPath.toString());
+        template.setViewLayerAction(PublicationTemplateImpl.LAYER_ACTION_ADD);
+      } else {
+        template.setUpdateLayerFileName(copyPath.toString());
+        template.setUpdateLayerAction(PublicationTemplateImpl.LAYER_ACTION_ADD);
+      }
+    }
   }
 }
