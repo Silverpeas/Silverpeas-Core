@@ -163,20 +163,13 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     userCanTryAgainToLoginVerifier.clearCache();
 
     if (authenticationParameters.getDomainId() != null) {
-      storeDomain(response, authenticationParameters.getDomainId(),
-          authenticationParameters.isSecuredAccess());
+      storeDomain(response, authenticationParameters);
     }
 
-    User anonymous = UserDetail.getAnonymousUser();
-    if (anonymous == null || !anonymous.getLogin().equals(authenticationParameters.getLogin())) {
-      storeLogin(response, authenticationParameters.isNewEncryptionMode(),
-          authenticationParameters.getLogin(), authenticationParameters.isSecuredAccess());
+    storeLogin(response, authenticationParameters);
 
-      // if required by user, store password in cookie
-      storePassword(response, authenticationParameters.getStoredPassword(),
-          authenticationParameters.isNewEncryptionMode(),
-          authenticationParameters.getClearPassword(), authenticationParameters.isSecuredAccess());
-    }
+    // if required by user, store password in cookie
+    storePassword(response, authenticationParameters);
 
     if (request.getAttribute("skipTermsOfServiceAcceptance") == null) {
       UserMustAcceptTermsOfServiceVerifier verifier = AuthenticationUserVerifierFactory.
@@ -234,10 +227,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
           .equals(errorCode)) {
         // User has been successfully authenticated, but he has to change his password on his
         // first login and login / domain id can be stored
-        storeLogin(response, authenticationParameters.isNewEncryptionMode(),
-            authenticationParameters.getLogin(), authenticationParameters.isSecuredAccess());
-        storeDomain(response, authenticationParameters.getDomainId(),
-            authenticationParameters.isSecuredAccess());
+        storeLogin(response, authenticationParameters);
+        storeDomain(response, authenticationParameters);
         url = AuthenticationUserVerifierFactory.getUserMustChangePasswordVerifier(
             authenticationParameters.getCredential()).getDestinationOnFirstLogin(request);
         forward(request, response, url);
@@ -245,11 +236,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
       } else if (authenticationParameters.isSsoMode()) {
         // User has been successfully authenticated on AD, but he has no user account on Silverpeas
         // -> login / domain id can be stored
-        storeDomain(response, authenticationParameters.getDomainId(),
-            authenticationParameters.isSecuredAccess());
-        storeLogin(response, authenticationParameters.isNewEncryptionMode(),
-            authenticationParameters.getLogin(),
-            authenticationParameters.isSecuredAccess());
+        storeDomain(response, authenticationParameters);
+        storeLogin(response, authenticationParameters);
         url = LOGIN_ERROR_PAGE + SSO_UNEXISTANT_USER_ACCOUNT;
       } else {
         url = LOGIN_ERROR_PAGE + TECHNICAL_ISSUE;
@@ -283,10 +271,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
         userCanTryAgainToLoginVerifier.getUser().getId())) {
       // If user can try again to login verifier is activated or if the user has been found
       // from credential, the login and the domain are stored
-      storeLogin(response, authenticationParameters.isNewEncryptionMode(),
-          authenticationParameters.getLogin(), authenticationParameters.isSecuredAccess());
-      storeDomain(response, authenticationParameters.getDomainId(),
-          authenticationParameters.isSecuredAccess());
+      storeLogin(response, authenticationParameters);
+      storeDomain(response, authenticationParameters);
       url = AuthenticationUserVerifierFactory
           .getUserCanLoginVerifier(userCanTryAgainToLoginVerifier.getUser())
           .getErrorDestination();
@@ -306,11 +292,8 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     String url = null;
     try {
       if (userCanTryAgainToLoginVerifier.isActivated()) {
-        storeLogin(response, authenticationParameters.isNewEncryptionMode(),
-            authenticationParameters.getLogin(),
-            authenticationParameters.isSecuredAccess());
-        storeDomain(response, authenticationParameters.getDomainId(),
-            authenticationParameters.isSecuredAccess());
+        storeLogin(response, authenticationParameters);
+        storeDomain(response, authenticationParameters);
       }
       if (AuthenticationService.ERROR_INCORRECT_LOGIN_PWD.equals(errorCode)) {
         url = userCanTryAgainToLoginVerifier.verify()
@@ -332,18 +315,21 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     dispatcher.forward(request, response);
   }
 
-  private void storePassword(HttpServletResponse response, String shoudStorePasword,
-      boolean newEncryptMode, String clearPassword, boolean secured) {
-    if (StringUtil.getBooleanValue(shoudStorePasword)) {
-      if (newEncryptMode) {
-        writeCookie(response, "var2", credentialEncryption.encode(clearPassword), -1, secured);
-        writeCookie(response, "var2", credentialEncryption.encode(clearPassword), COOKIE_TIMELIFE,
-            secured);
-      } else {
-        writeCookie(response, COOKIE_PASSWORD, credentialEncryption.encode(clearPassword), -1,
-            secured);
-        writeCookie(response, COOKIE_PASSWORD, credentialEncryption.encode(clearPassword), COOKIE_TIMELIFE,
-            secured);
+  private void storePassword(HttpServletResponse response, AuthenticationParameters params) {
+    if (!isAnonymousAuthentication(params)) {
+      String clearPassword = params.getClearPassword();
+      boolean secured = params.isSecuredAccess();
+      if (StringUtil.getBooleanValue(params.getStoredPassword())) {
+        if (params.isNewEncryptionMode()) {
+          writeCookie(response, "var2", credentialEncryption.encode(clearPassword), -1, secured);
+          writeCookie(response, "var2", credentialEncryption.encode(clearPassword), COOKIE_TIMELIFE,
+              secured);
+        } else {
+          writeCookie(response, COOKIE_PASSWORD, credentialEncryption.encode(clearPassword), -1,
+              secured);
+          writeCookie(response, COOKIE_PASSWORD, credentialEncryption.encode(clearPassword),
+              COOKIE_TIMELIFE, secured);
+        }
       }
     }
   }
@@ -353,22 +339,32 @@ public class AuthenticationServlet extends SilverpeasHttpServlet {
     writeCookie(response, COOKIE_PASSWORD, "", 0, secured);
   }
 
-  private void storeLogin(HttpServletResponse response, boolean newEncryptMode, String sLogin,
-      boolean secured) {
-    if (newEncryptMode) {
-      writeCookie(response, "var1", credentialEncryption.encode(sLogin),
-          -1, secured);
-      writeCookie(response, "var1", credentialEncryption.encode(sLogin),
-          COOKIE_TIMELIFE, secured);
-    } else {
-      writeCookie(response, "svpLogin", sLogin, -1, secured);
-      writeCookie(response, "svpLogin", sLogin, COOKIE_TIMELIFE, secured);
+  private void storeLogin(HttpServletResponse response, AuthenticationParameters params) {
+    if (!isAnonymousAuthentication(params)) {
+      String sLogin = params.getLogin();
+      boolean secured = params.isSecuredAccess();
+      if (params.isNewEncryptionMode()) {
+        writeCookie(response, "var1", credentialEncryption.encode(sLogin), -1, secured);
+        writeCookie(response, "var1", credentialEncryption.encode(sLogin), COOKIE_TIMELIFE, secured);
+      } else {
+        writeCookie(response, "svpLogin", sLogin, -1, secured);
+        writeCookie(response, "svpLogin", sLogin, COOKIE_TIMELIFE, secured);
+      }
     }
   }
 
-  private void storeDomain(HttpServletResponse response, String sDomainId, boolean secured) {
-    writeCookie(response, "defaultDomain", sDomainId, -1, secured);
-    writeCookie(response, "defaultDomain", sDomainId, COOKIE_TIMELIFE, secured);
+  private void storeDomain(HttpServletResponse response, AuthenticationParameters params) {
+    if (!isAnonymousAuthentication(params)) {
+      String sDomainId = params.getDomainId();
+      boolean secured = params.isSecuredAccess();
+      writeCookie(response, "defaultDomain", sDomainId, -1, secured);
+      writeCookie(response, "defaultDomain", sDomainId, COOKIE_TIMELIFE, secured);
+    }
+  }
+
+  private boolean isAnonymousAuthentication(AuthenticationParameters params) {
+    User anonymous = UserDetail.getAnonymousUser();
+    return anonymous != null && anonymous.getLogin().equals(params.getLogin());
   }
 
   private String authenticate(HttpServletRequest request,

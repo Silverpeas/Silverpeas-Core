@@ -301,7 +301,7 @@
   var domainId = <%=domainId%>;
 
   /* Si le domainId n'est pas dans la requete, alors recuperation depuis le cookie */
-  if (domainId === null && GetCookie("defaultDomain")) {
+  if (GetCookie("defaultDomain")) {
     <% for (int i = 0 ; i < listDomains.size() && listDomains.size() > 1; i++) { %>
     if (GetCookie("defaultDomain").toString() === "<%=(listDomains.get(i).getId())%>") {
       document.getElementById("DomainId").options[<%=i%>].selected = true;
