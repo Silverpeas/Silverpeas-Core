@@ -28,7 +28,7 @@ class TaskSavedRequest extends AbstractRequest {
     UpdatableProcessInstance instance = (UpdatableProcessInstance) event.getProcessInstance();
     String id = instance.getInstanceId();
 
-    UpdatableHistoryStep step = fetchHistoryStep(id, event.isFirstTimeSaved());
+    UpdatableHistoryStep step = fetchHistoryStep(id, !event.isFirstTimeSaved());
     processProcessInstance(id, event, step);
   }
 
