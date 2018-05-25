@@ -23,157 +23,152 @@
  */
 package org.silverpeas.web;
 
+import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.authorization.AccessControllerProvider;
 import org.silverpeas.core.security.authorization.ComponentAccessControl;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.JSONCodec;
+import org.silverpeas.core.util.Mutable;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.web.http.HttpRequest;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 
-import javax.inject.Inject;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.ws.rs.core.MediaType;
 import java.io.IOException;
-import java.io.PrintWriter;
+import java.io.Serializable;
 
 import static javax.servlet.http.HttpServletResponse.SC_CREATED;
 import static org.silverpeas.core.util.MimeTypes.SERVLET_HTML_CONTENT_TYPE;
+import static org.silverpeas.core.util.ResourceLocator.getGeneralLocalizationBundle;
+import static org.silverpeas.core.util.StringUtil.*;
 import static org.silverpeas.core.web.mvc.controller.MainSessionController
     .MAIN_SESSION_CONTROLLER_ATT;
+import static org.silverpeas.core.web.mvc.controller.MainSessionController.isAppInMaintenance;
 import static org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory
     .GE_FACTORY_SESSION_ATT;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion
+    .scriptContent;
 
 /**
  * @author ehugonnet
  */
 public class AutoRedirectServlet extends HttpServlet {
   private static final long serialVersionUID = -8962464286320797737L;
-
-  @Inject
-  private OrganizationController organizationController;
+  private static final String REDIRECT_TO_COMPONENT_ID_ATTR = "RedirectToComponentId";
+  private static final String REDIRECT_TO_SPACE_ID_ATTR = "RedirectToSpaceId";
+  private static final String GOTO_NEW_ATTR = "gotoNew";
 
   /**
    * Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
    * @param request servlet request
    * @param response servlet response
-   * @throws ServletException if a servlet-specific error occurs
    * @throws IOException if an I/O error occurs
    */
-  protected void processRequest(HttpServletRequest request, HttpServletResponse response)
-      throws ServletException, IOException {
+  private void processRequest(HttpServletRequest request, HttpServletResponse response)
+      throws IOException {
     prepareResponseHeader(response);
-    String strGoTo = request.getParameter("goto");
-    String componentGoTo = request.getParameter("ComponentId");
-    String spaceGoTo = request.getParameter("SpaceId");
-    String attachmentGoTo = request.getParameter("AttachmentId");
-    HttpSession session = request.getSession();
-    PrintWriter out = response.getWriter();
-    String mainFrameParams = "";
-    String componentId = null;
-    String spaceId = null;
-    try {
+    final HttpRequest httpRequest = HttpRequest.decorate(request);
+    final Context context = new Context(httpRequest, response).init();
+    final MainSessionController mainController = context.getMainSessionController();
+    final GraphicElementFactory gef = context.getGraphicElementFactory();
 
-      if (strGoTo != null) {
-        session.setAttribute("gotoNew", strGoTo);
-        String urlToParse = strGoTo;
-        if (strGoTo.startsWith("/RpdcSearch/")) {
-          int indexOf = urlToParse.indexOf("&componentId=");
-          componentId = urlToParse.substring(indexOf + 13, urlToParse.length());
+    // The user is either not connected or as the anonymous user. He comes back to the login page.
+    if (mainController == null ||
+        (gef != null && UserDetail.isAnonymousUser(mainController.getUserId()) && context.notExistsGoto())) {
+      loginPageRedirection(context);
+    } else {
+      if (isAccessComponentForbidden(context.getComponentId(), mainController) ||
+          isAccessSpaceForbidden(context.getSpaceId(), mainController)) {
+        if (httpRequest.isWithinAnonymousUserSession()) {
+          loginPageRedirection(context);
         } else {
-          urlToParse = urlToParse.substring(1);
-          int indexBegin = urlToParse.indexOf('/') + 1;
-          int indexEnd = urlToParse.indexOf('/', indexBegin);
-          componentId = urlToParse.substring(indexBegin, indexEnd);
-          // Agenda
-          if (strGoTo.startsWith("/Ragenda/")) {
-            componentId = null;
-          }
+          forbiddenPageRedirection(context);
         }
-        if (isSilverpeasIdValid(componentId)) {
-          mainFrameParams = "?ComponentIdFromRedirect=" + componentId;
-          session.setAttribute("RedirectToComponentId", componentId);
-        }
-      } else if (isSilverpeasIdValid(componentGoTo)) {
-        componentId = componentGoTo;
-        mainFrameParams = "?ComponentIdFromRedirect=" + componentId;
-        session.setAttribute("RedirectToComponentId", componentId);
-        String foreignId = request.getParameter("ForeignId");
-        if (StringUtil.isDefined(attachmentGoTo) && isSilverpeasIdValid(foreignId)) {
-          String type = request.getParameter("Mapping");
-          // Contruit l'url vers l'objet du composant contenant le fichier
-          strGoTo =
-              URLUtil.getURL(null, componentId) + "searchResult?Type=Publication&Id=" +
-                  foreignId;
-          session.setAttribute("gotoNew", strGoTo);
-          // Ajoute l'id de l'attachment pour ouverture automatique
-          session.setAttribute("RedirectToAttachmentId", attachmentGoTo);
-          session.setAttribute("RedirectToMapping", type);
-        }
-      } else if (isSilverpeasIdValid(spaceGoTo)) {
-        spaceId = spaceGoTo;
-        session.setAttribute("RedirectToSpaceId", spaceId);
-      }
-
-
-      MainSessionController mainController = (MainSessionController) session.getAttribute(
-          MAIN_SESSION_CONTROLLER_ATT);
-      GraphicElementFactory gef = (GraphicElementFactory) session.getAttribute(
-          GE_FACTORY_SESSION_ATT);
-
-      // The user is either not connector or as the anonymous user. He comes back to the login page.
-      if (mainController == null || (gef != null && UserDetail.isAnonymousUser(mainController.
-          getUserId()) && (strGoTo == null && componentGoTo == null && spaceGoTo == null))) {
-        String strDomainId = request.getParameter("domainId");
-        String loginUrl = URLUtil.getApplicationURL() + "/Login.jsp";
-        if (StringUtil.isInteger(strDomainId)) {
-          loginUrl += "?DomainId=" + strDomainId;
-        }
-        out.println("<script>");
-        out.print("top.location=\"");
-        out.print(response.encodeRedirectURL(loginUrl));
-        out.println("\";");
-        out.println("</script>");
+      } else if (isAppInMaintenance() && !mainController.getCurrentUserDetail().isAccessAdmin()) {
+        appInMaintenancePageRedirection(context);
+      } else if (gef != null) {
+        mainPageRedirection(context);
       } else {
-        if (isAccessComponentForbidden(componentId, mainController) ||
-            isAccessSpaceForbidden(spaceId, mainController)) {
-
-          HttpRequest spRequest = HttpRequest.decorate(request);
-          if (spRequest.isWithinAnonymousUserSession()) {
-            response.sendRedirect(
-                URLUtil.getFullApplicationURL(request) + "/Login.jsp");
-          } else {
-            response.sendRedirect(
-                URLUtil.getFullApplicationURL(request) + "/admin/jsp/accessForbidden.jsp");
-          }
-        } else if (mainController.isAppInMaintenance() && !mainController.getCurrentUserDetail().
-            isAccessAdmin()) {
-          out.println("<script>");
-          out.println("top.location=\"admin/jsp/appInMaintenance.jsp\";");
-          out.println("</script>");
-        } else {
-          out.println("<script>");
-          String mainFrame = gef.getLookFrame();
-          if (!mainFrame.startsWith("/")) {
-            mainFrame = "admin/jsp/" + mainFrame;
-          } else if (!mainFrame.startsWith(URLUtil.getApplicationURL())) {
-            mainFrame = URLUtil.getApplicationURL() + mainFrame;
-          }
-          out.print("top.location=\"");
-          out.print(mainFrame);
-          out.print(mainFrameParams);
-          out.println("\";");
-          out.println("</script>");
-        }
+        loginPageRedirection(context);
       }
-    } finally {
-      out.close();
     }
+  }
+
+  private void loginPageRedirection(final Context context) throws IOException {
+    final Integer domainId = context.getRequest().getParameterAsInteger("domainId");
+    final Mutable<String> loginUrl = Mutable.of(URLUtil.getApplicationURL() + "/Login.jsp");
+    if (domainId != null) {
+      loginUrl.set(loginUrl.get() + "?DomainId=" + domainId);
+    }
+    if (context.isFromResponsiveWindow()) {
+      context.getSession().setAttribute(GOTO_NEW_ATTR, context.getGotoUrl());
+      sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("mainUrl", loginUrl.get())));
+    } else {
+      sendHtmlRedirectResponse(context, loginUrl.get());
+    }
+  }
+
+  private void forbiddenPageRedirection(final Context context) throws IOException {
+    if (context.isFromResponsiveWindow()) {
+      sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("errorMessage",
+          getGeneralLocalizationBundle(context.getLanguage()).getString("GML.ForbiddenAccessContent"))));
+    } else {
+      context.getResponse().sendRedirect(URLUtil.getApplicationURL() + "/admin/jsp/accessForbidden.jsp");
+    }
+  }
+
+  private void appInMaintenancePageRedirection(final Context context) throws IOException {
+    final String url = URLUtil.getApplicationURL() + "/admin/jsp/appInMaintenance.jsp";
+    if (context.isFromResponsiveWindow()) {
+      sendJsonResponse(context, JSONCodec.encodeObject(o -> o.put("mainUrl", url)));
+    } else {
+      sendHtmlRedirectResponse(context, url);
+    }
+  }
+
+  private void mainPageRedirection(final Context context) throws IOException {
+    String mainFrame = context.getGraphicElementFactory().getLookFrame();
+    if (!mainFrame.startsWith("/")) {
+      mainFrame = "admin/jsp/" + mainFrame;
+    } else if (!mainFrame.startsWith(URLUtil.getApplicationURL())) {
+      mainFrame = URLUtil.getApplicationURL() + mainFrame;
+    }
+    final String componentId = defaultStringIfNotDefined(context.getComponentId());
+    final String spaceId = defaultStringIfNotDefined(context.getSpaceId());
+    final String url = mainFrame + "?ComponentIdFromRedirect=" + componentId;
+    if (context.isFromResponsiveWindow()) {
+      final Mutable<Boolean> isPersonalComponent = Mutable.of(false);
+      if (isDefined(componentId)) {
+        SilverpeasComponentInstance.getById(componentId)
+            .ifPresent(i -> isPersonalComponent.set(i.isPersonal()));
+      }
+      sendJsonResponse(context, JSONCodec.encodeObject(o ->
+          o.put("contentUrl", context.getGotoUrl())
+           .put(isPersonalComponent.get() ? "RedirectToPersonalComponentId" : REDIRECT_TO_COMPONENT_ID_ATTR, componentId)
+           .put(REDIRECT_TO_SPACE_ID_ATTR, spaceId)));
+    } else {
+      sendHtmlRedirectResponse(context, url);
+    }
+  }
+
+  private void sendHtmlRedirectResponse(final Context context, final String url) throws IOException {
+    context.getResponse().getWriter().print(
+        scriptContent("top.location=\"" + WebEncodeHelper.javaStringToJsString(url) + "\";"));
+  }
+
+  private void sendJsonResponse(final Context context, final String json) throws IOException {
+    context.getResponse().setContentType(MediaType.APPLICATION_JSON);
+    context.getResponse().getWriter().print(json);
   }
 
   private void prepareResponseHeader(HttpServletResponse response) {
@@ -186,25 +181,17 @@ public class AutoRedirectServlet extends HttpServlet {
   }
 
   private boolean isAccessSpaceForbidden(String spaceId, MainSessionController mainController) {
-    return StringUtil.isDefined(spaceId) &&
-        !organizationController.isSpaceAvailable(spaceId, mainController.getUserId());
+    return isDefined(spaceId) &&
+        !OrganizationController.get().isSpaceAvailable(spaceId, mainController.getUserId());
   }
 
   private boolean isAccessComponentForbidden(String componentId,
       MainSessionController mainController) {
-    return StringUtil.isDefined(componentId) &&
-        !StringUtil.isAlpha(componentId) &&
+    return isDefined(componentId) && !StringUtil.isAlpha(componentId) &&
         !AccessControllerProvider.getAccessController(ComponentAccessControl.class)
             .isUserAuthorized(mainController.getUserId(), componentId);
   }
 
-  private boolean isSilverpeasIdValid(String silverpeasId) {
-    return StringUtil.isDefined(silverpeasId) && !StringUtil.isAlpha(silverpeasId) && StringUtil.
-        isAlphanumeric(silverpeasId);
-  }
-
-  // <editor-fold defaultstate="collapsed"
-  // desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
   /**
    * Handles the HTTP <code>GET</code> method.
    * @param request servlet request
@@ -238,5 +225,137 @@ public class AutoRedirectServlet extends HttpServlet {
   @Override
   public String getServletInfo() {
     return "Short description";
+  }
+
+  private static class Context {
+    private final HttpRequest request;
+    private final HttpServletResponse response;
+    private final HttpSession session;
+    private final MainSessionController mainSessionController;
+    private final GraphicElementFactory graphicElementFactory;
+    private final String componentIdGoTo;
+    private final String spaceIdGoTo;
+    private final String attachmentIdGoTo;
+    private final boolean fromResponsiveWindow;
+    private String gotoUrl;
+    private String componentId = null;
+    private String spaceId = null;
+    private String language;
+
+    private Context(HttpRequest request, final HttpServletResponse response) {
+      this.request = request;
+      this.session = request.getSession();
+      this.response = response;
+      this.mainSessionController = (MainSessionController) session.getAttribute(MAIN_SESSION_CONTROLLER_ATT);
+      this.graphicElementFactory = (GraphicElementFactory) session.getAttribute(GE_FACTORY_SESSION_ATT);
+      this.componentIdGoTo = request.getParameter("ComponentId");
+      this.spaceIdGoTo = request.getParameter("SpaceId");
+      this.attachmentIdGoTo = request.getParameter("AttachmentId");
+      this.gotoUrl = request.getParameter("goto");
+      this.fromResponsiveWindow = request.getParameterAsBoolean("fromResponsiveWindow");
+      this.language = this.mainSessionController != null
+          ? this.mainSessionController.getFavoriteLanguage()
+          : DisplayI18NHelper.getDefaultLanguage();
+    }
+
+    private static boolean isSilverpeasIdValid(String silverpeasId) {
+      return isDefined(silverpeasId)
+          && !StringUtil.isAlpha(silverpeasId)
+          && StringUtil.isAlphanumeric(silverpeasId.replaceAll("[-_]",""));
+    }
+
+    private void setIntoSession(String name, Serializable value) {
+      if (!fromResponsiveWindow) {
+        session.setAttribute(name, value);
+      }
+    }
+
+    public Context init() {
+      session.removeAttribute(GOTO_NEW_ATTR);
+      session.removeAttribute(REDIRECT_TO_COMPONENT_ID_ATTR);
+      session.removeAttribute(REDIRECT_TO_SPACE_ID_ATTR);
+      session.removeAttribute("RedirectToAttachmentId");
+      session.removeAttribute("RedirectToMapping");
+      if (isDefined(gotoUrl)) {
+        setIntoSession(GOTO_NEW_ATTR, gotoUrl);
+        String urlToParse = gotoUrl;
+        final String extractedComponentId;
+        if (gotoUrl.startsWith("/RpdcSearch/")) {
+          int indexOf = urlToParse.indexOf("&componentId=");
+          extractedComponentId = urlToParse.substring(indexOf + 13, urlToParse.length());
+        } else {
+          urlToParse = urlToParse.substring(1);
+          int indexBegin = urlToParse.indexOf('/') + 1;
+          int indexEnd = urlToParse.indexOf('/', indexBegin);
+          extractedComponentId = urlToParse.substring(indexBegin, indexEnd);
+        }
+        if (isSilverpeasIdValid(extractedComponentId)) {
+          componentId = extractedComponentId;
+          setIntoSession(REDIRECT_TO_COMPONENT_ID_ATTR, componentId);
+        }
+      } else if (isSilverpeasIdValid(componentIdGoTo)) {
+        componentId = componentIdGoTo;
+        setIntoSession(REDIRECT_TO_COMPONENT_ID_ATTR, componentId);
+        final String foreignId = request.getParameter("ForeignId");
+        if (isDefined(attachmentIdGoTo) && isSilverpeasIdValid(foreignId)) {
+          final String type = request.getParameter("Mapping");
+          // Contruit l'url vers l'objet du composant contenant le fichier
+          gotoUrl = URLUtil.getURL(null, componentId) + "searchResult?Type=Publication&Id=" + foreignId;
+          setIntoSession(GOTO_NEW_ATTR, gotoUrl);
+          // Ajoute l'id de l'attachment pour ouverture automatique
+          setIntoSession("RedirectToAttachmentId", attachmentIdGoTo);
+          setIntoSession("RedirectToMapping", type);
+        }
+      } else if (isSilverpeasIdValid(spaceIdGoTo)) {
+        spaceId = spaceIdGoTo;
+        setIntoSession(REDIRECT_TO_SPACE_ID_ATTR, spaceId);
+      }
+
+      return this;
+    }
+
+    HttpSession getSession() {
+      return session;
+    }
+
+    HttpRequest getRequest() {
+      return request;
+    }
+
+    HttpServletResponse getResponse() {
+      return response;
+    }
+
+    MainSessionController getMainSessionController() {
+      return mainSessionController;
+    }
+
+    GraphicElementFactory getGraphicElementFactory() {
+      return graphicElementFactory;
+    }
+
+    boolean notExistsGoto() {
+      return isNotDefined(gotoUrl) && isNotDefined(componentIdGoTo) && isNotDefined(spaceIdGoTo);
+    }
+
+    public String getComponentId() {
+      return componentId;
+    }
+
+    public String getSpaceId() {
+      return spaceId;
+    }
+
+    boolean isFromResponsiveWindow() {
+      return fromResponsiveWindow;
+    }
+
+    String getGotoUrl() {
+      return gotoUrl;
+    }
+
+    String getLanguage() {
+      return language;
+    }
   }
 }

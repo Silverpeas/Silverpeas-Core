@@ -38,6 +38,9 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion
+    .scriptContent;
+
 /**
  * The default implementation of ArrayPane interface
  *
@@ -220,22 +223,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
   }
 
   private String printScript() {
-    String context = URLUtil.getApplicationURL();
-    StringBuilder script = new StringBuilder();
-    script.append("<script type=\"text/javascript\">");
-    script.append("function goSpace(spaceId) {");
-    String mainFrame = "/admin/jsp/silverpeas-main.jsp";
-    if (look != null && StringUtil.isDefined(look.getMainFrame())) {
-      mainFrame = look.getMainFrame();
-      if (!mainFrame.startsWith("/")) {
-        mainFrame = "/admin/jsp/" + mainFrame;
-      }
-    }
-    script.append(" top.location = \"").append(context).append(mainFrame)
-        .append("?RedirectToSpaceId=\"+spaceId;");
-    script.append("}");
-    script.append("</script>");
-    return script.toString();
+    return scriptContent("function goSpace(spaceId) {spWindow.loadSpace(spaceId);}").toString();
   }
 
   @Override

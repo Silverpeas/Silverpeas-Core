@@ -126,7 +126,7 @@ public abstract class AbstractWindow implements Window {
       String label = ResourceLocator.getGeneralLocalizationBundle(
           getGEF().getMultilang().getLocale().getLanguage())
               .getString("GML.operations.setupComponent");
-      String url = "javascript:spUserNavigation.setupComponent('" +  componentId +"\')";
+      String url = "javascript:spWindow.setupComponent('" +  componentId +"\')";
       this.operationPane.addOperation("useless", label, url);
       this.operationPane.addLine();
     }
@@ -140,7 +140,7 @@ public abstract class AbstractWindow implements Window {
       String label = ResourceLocator.getGeneralLocalizationBundle(
           getGEF().getMultilang().getLocale().getLanguage())
           .getString("GML.operations.setupSpace");
-      String url = "javascript:spUserNavigation.setupSpace('" + currentSpaceId +"\')";
+      String url = "javascript:spWindow.setupSpace('" + currentSpaceId +"\')";
       this.operationPane.addOperation("useless", label, url);
       this.operationPane.addLine();
     }

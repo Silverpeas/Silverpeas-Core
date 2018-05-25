@@ -23,13 +23,12 @@
  */
 package org.silverpeas.web.servlets;
 
-import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.web.util.servlet.GoTo;
-import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
-import org.apache.commons.lang3.CharEncoding;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.node.service.NodeService;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.URLUtil;
+import org.silverpeas.core.web.util.servlet.GoTo;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -37,8 +36,6 @@ import java.net.URLEncoder;
 
 /**
  * Class declaration
- *
- * @author
  */
 public class GoToTopic extends GoTo {
 
@@ -49,19 +46,10 @@ public class GoToTopic extends GoTo {
       HttpServletResponse res) throws Exception {
     String componentId = req.getParameter("ComponentId");
     NodePK pk = new NodePK(objectId, componentId);
-    NodeDetail node = getNodeBm().getHeader(pk);
+    NodeDetail node = NodeService.get().getHeader(pk);
 
     setGefSpaceId(req, componentId);
     String gotoURL = URLUtil.getURL(null, componentId) + node.getURL();
-    return "goto=" + URLEncoder.encode(gotoURL, CharEncoding.UTF_8);
-  }
-
-  public NodeService getNodeBm() {
-    try {
-      return ServiceProvider.getService(NodeService.class);
-    } catch (Exception e) {
-      displayError(null);
-    }
-    return null;
+    return "goto=" + URLEncoder.encode(gotoURL, Charsets.UTF_8.name());
   }
 }

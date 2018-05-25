@@ -28,9 +28,6 @@
 
 <%@ page import="org.silverpeas.core.contribution.publication.model.PublicationDetail" %>
 <%@ page import="org.silverpeas.core.util.WebEncodeHelper" %>
-<%@ page import="org.silverpeas.core.web.portlets.FormNames" %>
-<%@ page import="org.silverpeas.core.util.StringUtil" %>
-<%@ page import="org.silverpeas.core.util.DateUtil" %>
 
 <%@ include file="../portletImport.jsp"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -42,25 +39,8 @@
 
 <%
     RenderRequest pReq = (RenderRequest)request.getAttribute("javax.portlet.request");
-    RenderResponse rRes = (RenderResponse)request.getAttribute("javax.portlet.response");
     PortletPreferences pref = pReq.getPreferences();
-    String error = pReq.getParameter(FormNames.ERROR_BAD_VALUE);
 %>
-
-<script type="text/javascript">
-function goTo(cUrl, componentId)
-{
-	jumpToComponent(componentId);
-	location.href=cUrl;
-}
-
-function jumpToComponent(componentId) {
-	//Reload menu and header
-  spLayout.loadBodyNavigationAndHeaderParts({
-    "component_id" : componentId
-  });
-}
-</script>
 <%
 List<PublicationDetail> publications = (List<PublicationDetail>) pReq.getAttribute("Publications");
 boolean first = true;
@@ -73,7 +53,7 @@ for (PublicationDetail pub : publications) {
 <% } else {
     first = false;
   }%>
-  <a href="javaScript:goTo('<%=url %>','<%=pub.getPK().getInstanceId() %>')"><b><%=WebEncodeHelper.javaStringToHtmlString(pub.getName(language))%></b></a>
+  <a class="sp-link" href="<%=url %>"><b><%=WebEncodeHelper.javaStringToHtmlString(pub.getName(language))%></b></a>
     <% if (pubUpdater != null && pub.getUpdateDate() != null) { %>
       <br/><view:username userId="<%=pubUpdater.getId() %>"/> - <%=DateUtil
     .getOutputDate(pub.getUpdateDate(), language)%>

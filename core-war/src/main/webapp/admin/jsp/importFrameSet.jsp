@@ -50,7 +50,11 @@
   if (m_MainSessionCtrl == null) {
 %>
 <script>
-  top.location = "../../Login.jsp";
+  if (spUserSession) {
+    spUserSession.logout();
+  } else {
+    top.location = "../../Login.jsp";
+  }
 </script>
 <%  } else {
     organizationCtrl = OrganizationControllerProvider.getOrganisationController();

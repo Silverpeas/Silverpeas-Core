@@ -39,6 +39,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
+<%@ taglib uri="http://www.silverpeas.com/tld/silverFunctions" prefix="silfn" %>
 
 <c:url var="icon_px" value="/util/viewGenerator/icons/px.gif"/>
 <c:url var="urlLogin" value="/Login"/>
@@ -58,6 +59,7 @@ LookHelper  helper        = LookHelper.getLookHelper(session);
 String spaceId    	= request.getParameter("privateDomain");
 String subSpaceId   = request.getParameter("privateSubDomain");
 String componentId  = request.getParameter("component_id");
+boolean displayPersonalSpace = StringUtil.getBooleanValue(request.getParameter("FromMySpace"));
 
 if (!StringUtil.isDefined(spaceId) && StringUtil.isDefined(componentId)) {
   spaceId = helper.getSpaceId(componentId);
@@ -107,9 +109,11 @@ int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.min
       SP_openWindow('<%=m_sContext%>/RnotificationUser/jsp/Main?popupMode=Yes&editTargets=No&theTargetsUsers=Administrators', 'notifyUserPopup', '900', '400', 'menubar=no,scrollbars=no,statusbar=no');
   }
 
-    function openClipboard()
-  {
-      document.clipboardForm.submit();
+  function openClipboard() {
+    sp.formRequest('${silfn:applicationURL()}<%=URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp')
+        .withParam('message','SHOWCLIPBOARD')
+        .toTarget('IdleFrame')
+        .submit();
   }
 
   function goToLoginPage() {
@@ -134,7 +138,7 @@ int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.min
     var urlParameters = hasToSerializeForm ?
         jQuery(document.menuSearchForm).serializeFormJSON() : {};
     var url = sp.url.format("<%=m_sContext%>/RpdcSearch/jsp/" + action, urlParameters);
-    spLayout.getBody().getContent().load(url);
+    spWindow.loadContent(url);
   }
 
   // Callback methods to navigation.js
@@ -215,14 +219,19 @@ int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.min
    * javascript plugin.
    */
   //used by keyword autocompletion
-  <%  if(resourceSearchEngine.getBoolean("enableAutocompletion", false)){ %>
-  jQuery(document).ready(function() {
+  whenSilverpeasReady(function() {
+    <% if(resourceSearchEngine.getBoolean("enableAutocompletion", false)){ %>
     jQuery("#query").autocomplete({
       source: "<%=m_sContext%>/AutocompleteServlet",
       minLength : <%=autocompletionMinChars%>
     });
+    <%}%>
+    <% if(displayPersonalSpace){ %>
+    openMySpace({
+      itemIdToSelect : '<%=componentId%>'
+    });
+    <%}%>
   });
-  <%}%>
 
 </script>
 <div class="fondDomainsBar">
@@ -325,9 +334,6 @@ int autocompletionMinChars = resourceSearchEngine.getInteger("autocompletion.min
         </table>
     </div>
 </div>
-<form name="clipboardForm" action="<%=m_sContext+URLUtil.getURL(URLUtil.CMP_CLIPBOARD)%>Idle.jsp" method="post" target="IdleFrame">
-<input type="hidden" name="message" value="SHOWCLIPBOARD"/>
-</form>
 
 <!-- Custom domains bar javascript -->
 <view:loadScript src="/util/javaScript/lookV5/navigation.js"/>

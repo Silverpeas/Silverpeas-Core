@@ -61,6 +61,10 @@ import static org.silverpeas.core.notification.user.client.NotificationManagerSe
     .getUserNotificationDesktopIconUrl;
 import static org.silverpeas.core.reminder.ReminderSettings.getDefaultReminder;
 import static org.silverpeas.core.reminder.ReminderSettings.getPossibleReminders;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptBundleProducer
+    .bundleVariableName;
+import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptSettingProducer
+    .settingVariableName;
 
 /**
  * This class embeds the process of the inclusion of some Javascript plugins used in Silverpeas.
@@ -275,10 +279,10 @@ public class JavascriptPluginInclusion {
 
   /**
    * Centralization of script instantiation.
-   * @param content
-   * @return
+   * @param content the script content.
+   * @return the {@link Element} instance representing the script content.
    */
-  static Element scriptContent(String content) {
+  public static Element scriptContent(String content) {
     String key =
         "$jsPlugin$scriptContent$" + StringUtil.truncate(content, SCRIPT_CONTENT_KEY_LENGTH);
     SimpleCache cache = getRequestCacheService().getCache();
@@ -357,8 +361,7 @@ public class JavascriptPluginInclusion {
   }
 
   static ElementContainer includeMediaPlayer(final ElementContainer xhtml) {
-    xhtml.addElement(scriptContent(JavascriptSettingProducer
-        .settingVariableName("MediaPlayerSettings")
+    xhtml.addElement(scriptContent(settingVariableName("MediaPlayerSettings")
         .add("media.player.flowplayer.swf", FLASH_PATH + FLOWPLAYER_SWF)
         .add("media.player.flowplayer.swf.hls", FLASH_PATH + FLOWPLAYER_SWF_HLS)
         .produce()));
@@ -377,14 +380,13 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includePdc(final ElementContainer xhtml, final String language) {
     final JavascriptSettingProducer settingProducer =
-        JavascriptSettingProducer.settingVariableName("PdcSettings");
+        settingVariableName("PdcSettings");
     settingProducer.add("pdc.e.i", BaseClassificationPdCTag.PDC_CLASSIFICATION_WIDGET_TAG_ID);
     xhtml.addElement(scriptContent(settingProducer.produce()));
 
     LocalizationBundle bundle = ResourceLocator
         .getLocalizationBundle("org.silverpeas.pdcPeas.multilang.pdcBundle", language);
-    JavascriptBundleProducer bundleProducer =
-        JavascriptBundleProducer.bundleVariableName("PdcBundle");
+    JavascriptBundleProducer bundleProducer = bundleVariableName("PdcBundle");
     bundleProducer.add("pdc.e.ma", bundle.getString("pdcPeas.theContent") + " " +
         bundle.getString("pdcPeas.MustContainsMandatoryAxis"));
     xhtml.addElement(scriptContent(bundleProducer.produce()));
@@ -427,8 +429,7 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includeTicker(final ElementContainer xhtml, final String language) {
     xhtml.addElement(link(JQUERY_PATH + TICKER_CSS));
-    xhtml.addElement(scriptContent(JavascriptBundleProducer
-        .bundleVariableName("TickerBundle")
+    xhtml.addElement(scriptContent(bundleVariableName("TickerBundle")
         .add(ResourceLocator
                 .getLocalizationBundle("org.silverpeas.lookSilverpeasV5.multilang.lookBundle",
                     language),
@@ -443,8 +444,7 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includeUserSession(final ElementContainer xhtml,
       final LookHelper lookHelper) {
-    xhtml.addElement(scriptContent(JavascriptSettingProducer
-        .settingVariableName("UserSessionSettings")
+    xhtml.addElement(scriptContent(settingVariableName("UserSessionSettings")
         .add("us.cu.nb.i", lookHelper.getNBConnectedUsers())
         .add("us.cu.v.u", URLUtil.getApplicationURL() + "/Rdirectory/jsp/connected")
         .produce()));
@@ -455,8 +455,7 @@ public class JavascriptPluginInclusion {
 
   static ElementContainer includeUserNotification(final ElementContainer xhtml) {
     final String myNotificationUrl = URLUtil.getURL(URLUtil.CMP_SILVERMAIL, null, null) + "Main";
-    xhtml.addElement(scriptContent(JavascriptSettingProducer
-        .settingVariableName("UserNotificationSettings")
+    xhtml.addElement(scriptContent(settingVariableName("UserNotificationSettings")
         .add("un.nbu.i", getNbUnreadFor(User.getCurrentRequester().getId()))
         .add("un.v.u", URLUtil.getApplicationURL() + myNotificationUrl)
         .add("un.d.i.u", URLUtil.getApplicationURL() + getUserNotificationDesktopIconUrl())
@@ -510,7 +509,7 @@ public class JavascriptPluginInclusion {
   static ElementContainer includeRelationship(final ElementContainer xhtml, final String language) {
     LocalizationBundle bundle = ResourceLocator
         .getLocalizationBundle("org.silverpeas.social.multilang.socialNetworkBundle", language);
-    xhtml.addElement(scriptContent(JavascriptBundleProducer.bundleVariableName("RelationshipBundle")
+    xhtml.addElement(scriptContent(bundleVariableName("RelationshipBundle")
         .add(ResourceLocator.getGeneralLocalizationBundle(language),
             "GML.ok",
             "GML.cancel",
@@ -597,13 +596,13 @@ public class JavascriptPluginInclusion {
   }
 
   static ElementContainer includePdfViewer(final ElementContainer xhtml, final String language) {
-    xhtml.addElement(scriptContent(JavascriptSettingProducer.settingVariableName("PdfViewerSettings")
+    xhtml.addElement(scriptContent(settingVariableName("PdfViewerSettings")
         .add("p.i.p", PDF_VIEWER_BASE + "/images/")
         .add("p.w.f", PDF_VIEWER_BASE + "/core/pdf.worker.min.js")
         .add("p.c.p", PDF_VIEWER_BASE + "/cmaps/")
         .produce()));
     final LocalizationBundle viewerBundle = ResourceLocator.getLocalizationBundle("org.silverpeas.viewer.multilang.viewerBundle", language);
-    final JavascriptBundleProducer pdfViewerBundle = JavascriptBundleProducer.bundleVariableName("PdfViewerBundle");
+    final JavascriptBundleProducer pdfViewerBundle = bundleVariableName("PdfViewerBundle");
     final Set<String> keys = viewerBundle.specificKeySet();
     pdfViewerBundle.add(viewerBundle, keys.toArray(new String[keys.size()]));
     xhtml.addElement(scriptContent(pdfViewerBundle.produce()));
@@ -665,14 +664,13 @@ public class JavascriptPluginInclusion {
     SettingBundle calendarSettings = ResourceLocator
         .getSettingBundle("org.silverpeas.calendar.settings.calendar");
 
-    xhtml.addElement(scriptContent(JavascriptSettingProducer.settingVariableName("CalendarSettings")
+    xhtml.addElement(scriptContent(settingVariableName("CalendarSettings")
         .add("c.c", stream(calendarSettings.getString("calendar.ui.colors").split(",")), true)
         .produce()));
 
     LocalizationBundle bundle = ResourceLocator
         .getLocalizationBundle("org.silverpeas.calendar.multilang.calendarBundle", language);
-    JavascriptBundleProducer bundleProducer =
-        JavascriptBundleProducer.bundleVariableName("CalendarBundle");
+    JavascriptBundleProducer bundleProducer = bundleVariableName("CalendarBundle");
     for (int i = 0; i < NB_MONTHS; i++) {
       bundleProducer.add("c.m." + i, bundle.getString("GML.mois" + i));
     }
@@ -836,7 +834,7 @@ public class JavascriptPluginInclusion {
       xhtml.addElement(link(jsxcDir + "css/magnific-popup.css"));
       xhtml.addElement(link(chatDir + "css/silverchat.css"));
       xhtml.addElement(scriptContent(
-          JavascriptSettingProducer.settingVariableName("SilverChatSettings")
+          settingVariableName("SilverChatSettings")
               .add("un.d.i.u", URLUtil.getApplicationURL() + getUserNotificationDesktopIconUrl())
               .produce()));
     }
@@ -898,8 +896,7 @@ public class JavascriptPluginInclusion {
     if (lookHelper != null) {
       LayoutConfiguration layout = lookHelper.getLayoutConfiguration();
       includeQTip(xhtml);
-      xhtml.addElement(scriptContent(JavascriptSettingProducer
-          .settingVariableName("LayoutSettings")
+      xhtml.addElement(scriptContent(settingVariableName("LayoutSettings")
             .add("layout.header.url", URLUtil.getApplicationURL() + layout.getHeaderURL())
             .add("layout.body.url", URLUtil.getApplicationURL() + layout.getBodyURL())
             .add("layout.body.navigation.url", URLUtil.getApplicationURL() + layout.getBodyNavigationURL())
@@ -907,6 +904,12 @@ public class JavascriptPluginInclusion {
             .add("layout.pdc.baseUrl", URLUtil.getApplicationURL() + "/RpdcSearch/jsp/")
             .add("layout.pdc.action.default", "ChangeSearchTypeToExpert")
             .produce()));
+      final LocalizationBundle errorBundle = ResourceLocator
+          .getLocalizationBundle("org.silverpeas.common.multilang.errors",lookHelper.getLanguage());
+      xhtml.addElement(scriptContent(bundleVariableName("WindowBundle")
+            .add("e.t.r", errorBundle.getString("error.technical.responsive"))
+            .produce()));
+      xhtml.addElement(script(JAVASCRIPT_PATH + "silverpeas-window.js"));
       xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_LAYOUT));
     }
     return xhtml;
@@ -937,14 +940,12 @@ public class JavascriptPluginInclusion {
     includeSelectize(xhtml);
     includePopup(xhtml);
     includeQTip(xhtml);
-    xhtml.addElement(scriptContent(JavascriptSettingProducer
-        .settingVariableName("UserGroupListSettings")
+    xhtml.addElement(scriptContent(settingVariableName("UserGroupListSettings")
         .add("u.m.n.u.r.l.v", userManualNotificationUserReceiverLimitValue)
         .add("d.r", User.getCurrentRequester().isDomainRestricted())
         .add("d.nb", OrganizationController.get().getAllDomains().length)
         .produce()));
-    xhtml.addElement(scriptContent(JavascriptBundleProducer
-        .bundleVariableName("UserGroupListBundle")
+    xhtml.addElement(scriptContent(bundleVariableName("UserGroupListBundle")
         .add(ResourceLocator.getGeneralLocalizationBundle(language),
             "GML.user_s",
             "GML.delete",
@@ -981,8 +982,7 @@ public class JavascriptPluginInclusion {
         ResourceLocator.getLocalizationBundle("org.silverpeas.util.multilang.util", language);
     final String beforeLabel = " " + localizedUnits.getString("GML.before");
     final Pair<Integer, TimeUnit> defaultReminder = getDefaultReminder();
-    xhtml.addElement(scriptContent(JavascriptSettingProducer
-        .settingVariableName("ReminderSettings")
+    xhtml.addElement(scriptContent(settingVariableName("ReminderSettings")
         .add("r.p", getPossibleReminders()
             .map( r -> JSONCodec.encodeObject(o -> o
                 .put("label", localizedUnits.getStringWithParams(r.getRight() + ".precise", r.getLeft()) + beforeLabel)

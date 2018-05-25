@@ -104,7 +104,7 @@ var tickerNews = [];
             date.appendTo(li);
             var span = $("<span>").attr("title", item.description).text(item.title);
             if (${settings.linkOnItem}) {
-              var a = $("<a>").attr("href", item.permalink).attr("target", "_top");
+              var a = $("<a>").addClass("sp-permalink").attr("href", item.permalink).attr("target", "_top");
               span.appendTo(a);
               a.appendTo(li);
             } else {

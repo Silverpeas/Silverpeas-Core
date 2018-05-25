@@ -37,7 +37,8 @@
         label : '@',
         help : '@',
         iconUrl : '@',
-        simple : '=?'
+        simple : '=?',
+        noHrefHook : '=?'
       },
       controllerAs : '$ctrl',
       bindToController : true,

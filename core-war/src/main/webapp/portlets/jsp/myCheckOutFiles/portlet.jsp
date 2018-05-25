@@ -25,7 +25,6 @@
 --%>
 <%@page import="org.silverpeas.core.contribution.attachment.model.SimpleDocument"%>
 <%@page import="org.silverpeas.core.util.WebEncodeHelper"%>
-<%@ page import="org.silverpeas.core.util.*" %>
 
 <%@page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
@@ -35,21 +34,6 @@
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
 <portlet:defineObjects/>
-
-<script type="text/javascript">
-function goTo(cUrl, componentId)
-{
-	jumpToComponent(componentId);
-	location.href=cUrl;
-}
-
-function jumpToComponent(componentId) {
-	//Reload menu and header
-  spLayout.loadBodyNavigationAndHeaderParts({
-    "component_id" : componentId
-  });
-}
-</script>
 
 <%
 RenderRequest 	pReq 		= (RenderRequest)request.getAttribute("javax.portlet.request");
@@ -84,7 +68,7 @@ LocalizationBundle generalMessage = ResourceLocator.getGeneralLocalizationBundle
 				name = WebEncodeHelper.convertHTMLEntities(att.getFilename());
 			}
 
-			out.println("<li><a href=\"javaScript:goTo('"+url+"','"+att.getInstanceId()+"')\">"+name+"</a>");
+			out.println("<li><a class=\"sp-link\" href=\""+url+"\">"+name+"</a>");
 
 			if (att.getExpiry() != null) {
 	            // convertir la date de l'evenement

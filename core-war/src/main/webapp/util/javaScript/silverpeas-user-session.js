@@ -68,7 +68,7 @@ Silverpeas plugin which handles the behaviour about the connected users informat
      * Views the connected users.
      */
     this.viewConnectedUsers = function() {
-      spLayout.getBody().getContent().load(CONNECTED_USERS_URL);
+      spWindow.loadLink(CONNECTED_USERS_URL);
     };
 
     /**
@@ -80,7 +80,7 @@ Silverpeas plugin which handles the behaviour about the connected users informat
       }, options);
       spServerEventSource.close();
       __doLogout(function() {
-        silverpeasFormSubmit(sp.formConfig(params.logoutDestination));
+        sp.formRequest(params.logoutDestination).submit();
       });
     };
 

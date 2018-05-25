@@ -216,11 +216,11 @@ out.println(tabbedPane.print());
       <% if (!popupMode) { %>
         <% if (scope == JobStartPagePeasSessionController.SCOPE_FRONTOFFICE) { %>
           <div id="backToApplication">
-            <a class="navigation-button" href="<%=compoInst.getPermalink() %>"><span><%=resource.getString("JSPP.application.back")%></span></a>
+            <a class="navigation-button sp-permalink" href="<%=compoInst.getPermalink() %>"><span><%=resource.getString("JSPP.application.back")%></span></a>
           </div>
         <% } else { %>
           <div id="goToApplication">
-            <a class="navigation-button" href="<%=compoInst.getPermalink() %>"><span><%=resource.getString("JSPP.application.go")%></span></a>
+            <a class="navigation-button sp-permalink" href="<%=compoInst.getPermalink() %>"><span><%=resource.getString("JSPP.application.go")%></span></a>
           </div>
         <% } %>
       <% } %>

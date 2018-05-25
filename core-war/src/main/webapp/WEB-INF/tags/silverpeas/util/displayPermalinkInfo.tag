@@ -61,7 +61,7 @@
   <c:url value="/" var="applicationPrefix"/>
   <c:set value="/${fn:replace(link, applicationPrefix, '')}" var="permalink"/>
   <p id="permalinkInfo">
-    <a title="${help}" href="<c:url value="${permalink}"/>">
+    <a title="${help}" class="sp-permalink" href="<c:url value="${permalink}"/>">
       <img border="0" alt="${help}" title="${help}" src="${iconUrl}"/>
     </a> ${label}
     <input id="${__inputId}" type="text" value="${silfn:fullApplicationURL(pageContext.request)}${permalink}" onfocus="${__lastUserCrud}.select();" class="inputPermalink"/>

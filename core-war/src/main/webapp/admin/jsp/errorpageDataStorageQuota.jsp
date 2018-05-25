@@ -51,7 +51,7 @@
     </style>
     <script type="text/javascript">
       function dataStorageQuotaExceptionComponentLink() {
-        top.spLayout.getBody().getContent().load('${exception.fromComponentUrl}');
+        top.spWindow.loadContent('${exception.fromComponentUrl}');
       }
     </script>
   </head>

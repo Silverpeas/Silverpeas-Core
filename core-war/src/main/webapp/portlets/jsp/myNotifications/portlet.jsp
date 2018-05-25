@@ -86,7 +86,7 @@
         </view:arrayCellText>
         <view:arrayCellText>
           <c:if test="${not empty userNotification.url}">
-            <a href="${userNotification.url}" target="_top"><img src="<c:url value="${linkIconUrl}"/>" alt="" border="0"/></a>
+            <a href="${userNotification.url}" class="sp-permalink" target="_top"><img src="<c:url value="${linkIconUrl}"/>" alt="" border="0"/></a>
           </c:if>
         </view:arrayCellText>
         <view:arrayCellText compareOn="${fn:toLowerCase(userNotification.subject)}">

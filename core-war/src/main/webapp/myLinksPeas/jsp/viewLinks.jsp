@@ -263,6 +263,8 @@ function submitLink() {
        ArrayCellLink monLien = line.addArrayCellLink(WebEncodeHelper.javaStringToHtmlString(name), lien);
        if (link.isPopup()) {
          monLien.setTarget("_blank");
+       } else if (lien.startsWith(m_context)) {
+         monLien.setStyleSheet("sp-link");
        }
 
      line.addArrayCellText(WebEncodeHelper.javaStringToHtmlString(desc));

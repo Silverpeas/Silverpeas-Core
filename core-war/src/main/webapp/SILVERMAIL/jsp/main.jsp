@@ -190,7 +190,7 @@
             </view:arrayCellText>
             <view:arrayCellText>
               <c:if test="${not empty userNotification.data.url}">
-                <a href="${userNotification.data.url}" target="_top"><img src="<c:url value="${linkIconUrl}"/>" alt="" border="0"/></a>
+                <a href="${userNotification.data.url}" class="sp-permalink" target="_top"><img src="<c:url value="${linkIconUrl}"/>" alt="" border="0"/></a>
               </c:if>
             </view:arrayCellText>
             <view:arrayCellText>

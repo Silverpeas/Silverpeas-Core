@@ -32,7 +32,7 @@ var displayMySpace = "off";
 var displayComponentIcons = false;
 
 var currentLook = "none";
-var currentSpaceWithCSSApplied = "null";
+var currentSpaceWithCSSApplied = "";
 
 var notContextualPDCDisplayed = false;
 var notContextualPDCLoaded = false;
@@ -48,28 +48,39 @@ String.prototype.startsWith = function(str) {
 };
 
 
-function openMySpace() {
+function openMySpace(options) {
+  options = extendsObject({
+    itemIdToSelect : undefined
+  }, options);
   var mySpaceContainer = document.querySelector("#spacePerso");
   if (displayMySpace === "off") {
-    ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0', 'SpaceId=-10');
+    ajaxEngine.sendRequest('getSpaceInfo', 'ResponseId=spaceUpdater', 'Init=0', 'SpaceId=-10').then(function() {
+      if (options.itemIdToSelect) {
+        __selectComponentItem(options.itemIdToSelect);
+      }
+      refreshPDCFrame();
+    });
     displayMySpace = "on";
-    try {
-      homePage = getPersoHomepage();
-      if (homePage.indexOf('?', 0) > 0) {
-        homePage = homePage + '&SpaceId=-10';
-      } else {
-        homePage = homePage + '?SpaceId=-10';
+    var timeElapsedSinceContentStartLoadInMs = new Date().getTime() - spLayout.getBody().getContent().getLastStartLoadTime();
+    var isContentLoadedManually = timeElapsedSinceContentStartLoadInMs < 2000;
+    if (!isContentLoadedManually) {
+      try {
+        homePage = getPersoHomepage();
+        if (homePage.indexOf('?', 0) > 0) {
+          homePage = homePage + '&SpaceId=-10';
+        } else {
+          homePage = homePage + '?SpaceId=-10';
+        }
+        spWindow.loadContent(getContext() + homePage);
+      } catch (e) {
+        homePage = getHomepage();
+        if (homePage.indexOf('?', 0) > 0) {
+          homePage = homePage + '&SpaceId=-20';
+        } else {
+          homePage = homePage + '?SpaceId=-20';
+        }
+        spWindow.loadContent(getContext() + homePage);
       }
-      spLayout.getBody().getContent().load(getContext() + homePage);
-    }
-    catch (e) {
-      homePage = getHomepage();
-      if (homePage.indexOf('?', 0) > 0) {
-        homePage = homePage + '&SpaceId=-20';
-      } else {
-        homePage = homePage + '?SpaceId=-20';
-      }
-      spLayout.getBody().getContent().load(getContext() + homePage);
     }
 
     if (currentSpaceId !== "-1") {
@@ -102,7 +113,8 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWithCSSToApply) {
     mainFrame = "/admin/jsp/silverpeas-main.jsp";
   }
 
-  if (spaceLook !== currentLook || spaceWithCSSToApply !== currentSpaceWithCSSApplied) {
+  var safeSpaceCssToApply = StringUtil.defaultStringIfNotDefined(spaceWithCSSToApply);
+  if (spaceLook !== currentLook || safeSpaceCssToApply !== currentSpaceWithCSSApplied) {
     top.location = getContext() + mainFrame + "?RedirectToSpaceId=" + spaceId;
   }
 
@@ -156,10 +168,9 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWithCSSToApply) {
   currentSpaceId = spaceId;
   currentSpaceLevel = spaceLevel;
 
-  spLayout.getBody().getContent().load(getContext() + getHomepage() + "?SpaceId=" + spaceId);
+  spWindow.loadContent(getContext() + getHomepage() + "?SpaceId=" + spaceId);
 
   refreshPDCFrame();
-  refreshTopFrame();
 
   try {
     openSpecificLookSpace(spaceId, spaceLevel);
@@ -170,10 +181,6 @@ function openSpace(spaceId, spaceLevel, spaceLook, spaceWithCSSToApply) {
 
 function refreshPDCFrame() {
   displayPDCFrame(currentSpaceId, currentComponentId);
-}
-
-function refreshTopFrame() {
-  spLayout.getHeader().load();
 }
 
 function displayPDCFrame(spaceId, componentId) {
@@ -237,29 +244,40 @@ function closeSpace(spaceId, spaceLevel, closePDC) {
   currentSpaceId = "-1";
 }
 
-function openComponent(componentId, componentLevel, componentURL) {
-  document.getElementById("img" + componentId).src = getContext() + "/admin/jsp/icons/silverpeasV5/activComponent.gif";
-  document.getElementById("img" + componentId).width = "20";
-  document.getElementById("img" + componentId).height = "8";
-
-  var componentActiv = document.getElementById(componentId);
-  componentActiv.setAttribute("class", "browseComponentActiv");
-  componentActiv.setAttribute("className", "browseComponentActiv");
-
+var __selectComponentItem = function(componentId) {
   if (componentId !== currentComponentId) {
     closeCurrentComponent();
   }
-
-  //Remove active class on subtree
-  jQuery("#" + componentId).parent().find(".spaceOn").removeClass("spaceOn");
+  sp.element.querySelectorAll('#' + componentId, spLayout.getBody().getNavigation().getContainer())
+      .forEach(function($activeComponentItem) {
+        $activeComponentItem.setAttribute("class", "browseComponentActiv");
+        $activeComponentItem.setAttribute("className", "browseComponentActiv");
+        var $componentImg = $activeComponentItem.querySelector("img[id^='img']");
+        if ($componentImg) {
+          $componentImg.src = getContext() + "/admin/jsp/icons/silverpeasV5/activComponent.gif";
+          $componentImg.width = "20";
+          $componentImg.height = "8";
+        }
+      });
 
   currentAxisId = "-1";
   currentValuePath = "-1";
 
   currentComponentId = componentId;
+};
+
+function openComponent(componentId, componentLevel, componentURL) {
+  var timeElapsedSinceContentStartLoadInMs = new Date().getTime() - spLayout.getBody().getContent().getLastStartLoadTime();
+  var isContentLoadedManually = timeElapsedSinceContentStartLoadInMs < 200;
+  __selectComponentItem(componentId);
+
+  //Remove active class on subtree
+  jQuery("#" + componentId).parent().find(".spaceOn").removeClass("spaceOn");
 
   if (componentURL.substring(0, 11).toLowerCase() !== "javascript:") {
-    spLayout.getBody().getContent().load(getContext() + componentURL);
+    if (!isContentLoadedManually) {
+      spWindow.loadContent(getContext() + componentURL);
+    }
   }
   else {
     eval(componentURL);
@@ -270,7 +288,6 @@ function openComponent(componentId, componentLevel, componentURL) {
           'GetPDC=' + displayPDC(), 'ComponentId=' + currentComponentId).then(function() {
 
     refreshPDCFrame();
-    refreshTopFrame();
 
     try {
       openSpecificLookComponent(componentId, componentLevel);
@@ -281,22 +298,18 @@ function openComponent(componentId, componentLevel, componentURL) {
 }
 
 function closeCurrentComponent() {
-  if (currentComponentId !== "") {
-    try {
-      document.getElementById("img" + currentComponentId).src = "icons/1px.gif";
-      document.getElementById("img" + currentComponentId).width = "1";
-      document.getElementById("img" + currentComponentId).height = "1";
-
-      var componentActiv = document.getElementById(currentComponentId);
-      componentActiv.setAttribute("class", "browseComponent");
-      componentActiv.setAttribute("className", "browseComponent");
-    }
-    catch (e) {
-      //do nothing
-    }
-
-    currentComponentId = "";
-  }
+  sp.element.querySelectorAll('.browseComponentActiv', spLayout.getBody().getNavigation().getContainer())
+      .forEach(function($activeComponentItem) {
+        $activeComponentItem.setAttribute("class", "browseComponent");
+        $activeComponentItem.setAttribute("className", "browseComponent");
+        var $itemImg = $activeComponentItem.querySelector("img[id^='img']");
+        if ($itemImg) {
+          $itemImg.src = "icons/1px.gif";
+          $itemImg.width = "1";
+          $itemImg.height = "1";
+        }
+      });
+  currentComponentId = '';
 }
 
 function pdcAxisExpand(axisId) {
@@ -350,7 +363,7 @@ function pdcAxisSearch(axisId) {
     query += "&componentSearch=" + currentComponentId + "&spaces=" + currentSpaceId;
   }
 
-  spLayout.getBody().getContent().load(query);
+  spWindow.loadContent(query);
 }
 
 function pdcValueSearch(valuePath) {
@@ -359,7 +372,7 @@ function pdcValueSearch(valuePath) {
     query += "&componentSearch=" + currentComponentId + "&spaces=" + currentSpaceId;
   }
 
-  spLayout.getBody().getContent().load(query);
+  spWindow.loadContent(query);
 }
 
 function pdcValueExpand(valuePath) {
@@ -1324,7 +1337,7 @@ var AjaxEngine = function() {
 
     return queryList;
   };
-  var _processAjaxResponse = function( xmlResponseElements ) {
+  var _processAjaxResponse = function(sendParameters, xmlResponseElements ) {
     for ( var i = 0 ; i < xmlResponseElements.length ; i++ ) {
       var responseElement = xmlResponseElements[i];
 
@@ -1336,15 +1349,21 @@ var AjaxEngine = function() {
       var responseId   = responseElement.getAttribute("id");
 
       if ( responseType == "object" )
-        _processAjaxObjectUpdate( ajaxObjects[ responseId ], responseElement );
+        _processAjaxObjectUpdate(sendParameters, ajaxObjects[ responseId ], responseElement );
       else
         alert('unrecognized AjaxResponse type : ' + responseType );
     }
   };
 
-  var _processAjaxObjectUpdate = function( ajaxObject, responseElement ) {
+  var _processAjaxObjectUpdate = function(sendParameters, ajaxObject, responseElement ) {
     ajaxObject.ajaxUpdate( responseElement );
-    spLayout.getBody().getNavigation().dispatchEvent("load");
+    var eventData = {
+      currentSpaceId : StringUtil.defaultStringIfNotDefined(sendParameters['SpaceId']),
+      currentComponentId : StringUtil.defaultStringIfNotDefined(sendParameters['ComponentId'])
+    };
+    eventData.isPersonalSpace = eventData.currentSpaceId === '-10';
+    var eventName = sendParameters["Init"] === '1' ? 'load' : 'changeselected';
+    spLayout.getBody().getNavigation().dispatchEvent(eventName, eventData);
   };
   this.sendRequest = function(requestName, options) {
     var requestURL = requestURLS[requestName];
@@ -1357,14 +1376,20 @@ var AjaxEngine = function() {
       options = {parameters : _createQueryString(arguments, 1)};
     }
 
-    var ajaxConfig = sp.ajaxConfig(requestURL).withParams(options.parameters);
+    var ajaxConfig = sp.ajaxRequest(requestURL).withParams(options.parameters);
     if (options.parameters["Init"] === '1' || options.parameters["SpaceId"]) {
-      spLayout.getBody().getNavigation().dispatchEvent("start-load");
+      var eventData = {
+        src : options.parameters,
+        currentSpaceId : StringUtil.defaultStringIfNotDefined(options.parameters['SpaceId']),
+        currentComponentId : StringUtil.defaultStringIfNotDefined(options.parameters['ComponentId'])
+      };
+      eventData.isPersonalSpace = eventData.currentSpaceId === '-10';
+      spLayout.getBody().getNavigation().dispatchEvent("start-load", eventData);
     }
     return silverpeasAjax(ajaxConfig).then(function(request) {
       var response = request.responseXML.getElementsByTagName("ajax-response");
       if (response && response.length === 1) {
-        _processAjaxResponse(response[0].childNodes);
+        _processAjaxResponse(options.parameters, response[0].childNodes);
       }
     });
   }
@@ -1373,14 +1398,12 @@ var AjaxEngine = function() {
 var spaceUpdater;
 var ajaxEngine;
 
-//Event.observe(window, 'load', function(){
-jQuery(document).ready(function() {
-
+whenSilverpeasReady(function() {
   // Handler for .ready() called.
   currentLook = getLook();
   try {
-    currentSpaceWithCSSApplied = getSpaceWithCSSToApply();
-    //alert("set currentSpaceCSS to "+getSpaceWithCSSToApply());
+    currentSpaceWithCSSApplied = StringUtil.defaultStringIfNotDefined(getSpaceWithCSSToApply());
+    // alert("set currentSpaceCSS to '" + currentSpaceWithCSSApplied + "'");
   } catch (e) {
     // look do not provide getSpaceCSS() function
   }
@@ -1404,4 +1427,19 @@ jQuery(document).ready(function() {
   }
 
   displayPDCFrame(getSpaceIdToInit(), getComponentIdToInit());
+
+  var __scrollListener = function() {
+    var $activeComponentItem = currentComponentId && document.getElementById(currentComponentId);
+    if ($activeComponentItem) {
+      var $view = spLayout.getBody().getNavigation().getContainer();
+      if (!sp.element.isInView($activeComponentItem, true, $view)) {
+        sp.element.scrollTo($activeComponentItem, $view);
+      }
+    }
+  };
+  spLayout.getBody().getContent().addEventListener('load', __scrollListener, '__id__navigation-part');
+  spLayout.getBody().getNavigation().addEventListener('load', __scrollListener, '__id__navigation-part');
+  spLayout.getBody().getNavigation().addEventListener('changeselected', __scrollListener, '__id__navigation-part');
+  spLayout.getFooter().addEventListener('pdcshow', __scrollListener, '__id__navigation-part');
+  spLayout.getFooter().addEventListener('pdchide', __scrollListener, '__id__navigation-part');
 });

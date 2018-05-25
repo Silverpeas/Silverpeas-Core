@@ -94,12 +94,11 @@ body {
 <view:loadScript src="/util/javaScript/lookV5/topBar.js"/>
 <script type="text/javascript">
 function goToHome() {
-  var params = {};
-  params.FromTopBar = "1";
+  var params = {"FromTopBar" : '1'};
   <%if (goToFavoriteSpaceOnHomeLink) {%>
   params.SpaceId = "<%=m_MainSessionCtrl.getFavoriteSpace()%>";
   <%}%>
-  spLayout.getBody().load(params);
+  spWindow.loadHomePage(params);
 }
 
 function getContext() {
@@ -162,7 +161,7 @@ window.USERNOTIFICATION_PROMISE.then(function() {
         <span> | </span>
       </span>
       <span id="userNotifications">
-        <a href="#" onclick="javascript:onClick=spUserNotification.view();">${labelUserNotifications}</a>
+        <a href="javascript:void(0)" onclick="spUserNotification.view();">${labelUserNotifications}</a>
         <span> | </span>
       </span>
       </c:if>
@@ -215,7 +214,7 @@ window.USERNOTIFICATION_PROMISE.then(function() {
 			if (item.getId().equals(currentComponentId) || item.getId().equals(currentSpaceId))
 				cssStyle = "activeShortcut";
 		%>
-			<td nowrap="nowrap" align="center" id="item<%=item.getId()%>" class="<%=cssStyle%>"><nobr><a href="javaScript:goToItem('<%=item.getSpaceId()%>', '<%=item.getSubSpaceId()%>', '<%=item.getComponentId()%>', '<%=m_sContext%><%=item.getUrl()%>', '<%=item.getId()%>', false);"><%=item.getLabel()%></a></nobr></td>
+			<td nowrap="nowrap" align="center" id="item<%=item.getId()%>" class="<%=cssStyle%>"><nobr><a href="javaScript:goToItem('<%=m_sContext%><%=item.getUrl()%>', '<%=item.getId()%>');"><%=item.getLabel()%></a></nobr></td>
 			<td nowrap="nowrap" align="center"><img src="${icon_px}" width="40" height="1" border="0"/></td>
 		<% } %>
                 <td class="droiteShortcuts">&nbsp;</td>
