@@ -150,6 +150,119 @@
     }.bind(this));
   };
 
+  var __spWindowContext = {
+    queue : new function() {
+      this.__queue = undefined;
+      this.exists = function() {
+        return typeof this.__queue !== 'undefined';
+      };
+      this.init = function() {
+        __logDebug("queue init");
+        this.__queue = [];
+      };
+      this.clear = function() {
+        __logDebug("queue clear");
+        this.__queue = undefined;
+      };
+      this.insertAtBeginning = function() {
+        Array.prototype.unshift.apply(this.__queue, arguments)
+      };
+      this.push = function() {
+        Array.prototype.push.apply(this.__queue, arguments)
+      };
+      this.execute = function() {
+        __logDebug("queue execution start");
+        try {
+          this.__queue.forEach(function(fn) {
+            fn.call(undefined);
+          });
+        } finally {
+          this.clear();
+        }
+        __logDebug("queue execution end");
+      };
+    },
+    manualContentLoad : false
+  };
+  var __dispatchClickOn = function($link) {
+    if (__spWindowContext.queue.exists()) {
+      __spWindowContext.queue.push(function() {
+        __logDebug("click event on " + $link.href);
+        $link.click();
+      });
+    } else {
+      __logDebug("click event on " + $link.href);
+      $link.click();
+    }
+  };
+
+  var __showProgressMessage = function(hidePromise) {
+    if (__spWindowContext.queue.exists()) {
+      __spWindowContext.queue.insertAtBeginning(function() {
+        __logDebug("show progress message");
+        spLayout.getBody().showProgressMessage(hidePromise);
+      });
+    } else {
+      __logDebug("show progress message");
+      spLayout.getBody().showProgressMessage(hidePromise);
+    }
+  };
+
+  var __loadBody = function(params) {
+    if (__spWindowContext.queue.exists()) {
+      __spWindowContext.queue.push(function() {
+        __logDebug("load body with " + JSON.stringify(params));
+        spLayout.getBody().load(params)['catch'](__loadErrorListener);
+      });
+    } else {
+      __logDebug("load body with " + JSON.stringify(params));
+      spLayout.getBody().load(params)['catch'](__loadErrorListener);
+    }
+  };
+
+  var __loadNavigation = function(params) {
+    if (__spWindowContext.queue.exists()) {
+      var __deferred = sp.promise.deferred();
+      __spWindowContext.queue.push(function() {
+        __logDebug("load navigation with " + JSON.stringify(params));
+        spLayout.getBody().getNavigation().load(params).then(function(data) {
+          __deferred.resolve(data);
+        }, function(request) {
+          __loadErrorListener(request);
+          __deferred.reject(request);
+        });
+      });
+      return __deferred.promise;
+    } else {
+      __logDebug("load navigation with " + JSON.stringify(params));
+      return spLayout.getBody().getNavigation().load(params)['catch'](__loadErrorListener);
+    }
+  };
+
+  var __dispatchNavigationEvent = function(eventName, data) {
+    if (__spWindowContext.queue.exists()) {
+      __spWindowContext.queue.push(function() {
+        __logDebug("dispatch navigation event " + eventName + " with " + JSON.stringify(data));
+        spLayout.getBody().getNavigation().dispatchEvent(eventName, data);
+      });
+    } else {
+      __logDebug("dispatch navigation event " + eventName + " with " + JSON.stringify(data));
+      spLayout.getBody().getNavigation().dispatchEvent(eventName, data);
+    }
+  };
+
+  var __loadContent = function(url) {
+    if (__spWindowContext.queue.exists()) {
+      __spWindowContext.queue.push(function() {
+        __logDebug("load content with URL " + url);
+        spLayout.getBody().getContent().load(url);
+      });
+    } else {
+      __logDebug("load content with URL " + url);
+      spLayout.getBody().getContent().load(url);
+    }
+  };
+
   /**
    * Handling the rendering of the Silverpeas's window.
    * @constructor
@@ -169,23 +282,20 @@
     var __loadingWindowData = function(loadId, loadParams) {
       var $link = __getNavigationLink(loadId);
       if ($link) {
-        __logDebug("Link already available for " + loadId);
-        $link.click();
+        __dispatchClickOn($link);
         return;
       }
-      __logDebug("Loading data for " + loadId + " with " + JSON.stringify(loadParams));
-      spProgressMessage.show();
+      __showProgressMessage();
       var personalComponent = personalSpaceManager.getByComponentId(loadId);
       if (personalComponent && personalComponent.url.indexOf('javascript:') < 0) {
         var personalContentUrl = webContext + personalComponent.url;
-        __logDebug("Loading personal component with url " + personalContentUrl);
-        spLayout.getBody().getContent().load(personalContentUrl);
+        __loadContent(personalContentUrl);
         return spWindow.loadPersonalSpace({
           loadOnlyNavigation : true,
           componentId : personalComponent.id
         });
       }
-      return spLayout.getBody().load(loadParams)['catch'](__loadErrorListener);
+      return __loadBody(loadParams);
     };
 
     this.loadHomePage = function(params) {
@@ -206,19 +316,18 @@
         if (options.componentId) {
           var $link = __getNavigationLink(options.componentId);
           if ($link) {
-            __logDebug("Link already available for " + options.componentId);
-            $link.click();
+            __dispatchClickOn($link);
             return;
           }
         }
-        spProgressMessage.show();
-        return spLayout.getBody().getNavigation().load({
+        __showProgressMessage();
+        return __loadNavigation({
           "FromMySpace" : '1',
           "component_id" : options.componentId
-        })['catch'](__loadErrorListener);
+        });
       }
       __logDebug("Loading personal space navigation and content");
-      spProgressMessage.show();
+      __showProgressMessage();
       return __loadingWindowData('personalSpace', {
         "FromMySpace" : '1'
       });
@@ -240,7 +349,7 @@
 
     this.loadContent = function(url) {
       __logDebug("Loading content from url " + url);
-      return spLayout.getBody().getContent().load(url)
+      return __loadContent(url)
     };
 
     /**
@@ -287,35 +396,40 @@
                               || (!loadId && personalSpaceManager.getByUrl(contentUrl));
           }
           contentUrl = contentUrl + (elementIdToFocus ? ('#' + elementIdToFocus) : '');
-          spLayout.getBody().getContent().load(contentUrl);
-          if (loadId) {
-            var $link = __getNavigationLink(loadId);
-            if ($link) {
-              __logDebug("Link already available for " + loadId);
-              $link.click();
-              return;
-            }
-            if (personalSpace) {
+          __spWindowContext.manualContentLoad = true;
+          __spWindowContext.queue.init();
+          try {
+            __loadContent(contentUrl);
+            if (loadId) {
+              var $link = __getNavigationLink(loadId);
+              if ($link) {
+                __dispatchClickOn($link);
+                return;
+              }
+              if (personalSpace) {
+                spWindow.loadPersonalSpace({
+                  loadOnlyNavigation : true, componentId : loadId
+                });
+              } else {
+                __showProgressMessage();
+                __loadNavigation({
+                  "component_id" : context.RedirectToComponentId,
+                  "privateDomain" : context.RedirectToSpaceId
+                }).then(function() {
+                  spLayout.getBody().getNavigation().show();
+                });
+              }
+            } else if (personalSpace) {
               spWindow.loadPersonalSpace({
-                loadOnlyNavigation : true, componentId : loadId
+                loadOnlyNavigation : true, componentId : personalSpace.id
               });
             } else {
-              spProgressMessage.show();
-              spLayout.getBody().getNavigation().load({
-                "component_id" : context.RedirectToComponentId,
-                "privateDomain" : context.RedirectToSpaceId
-              }).then(function() {
-                spLayout.getBody().getNavigation().show();
+              __dispatchNavigationEvent('start-load', {
+                contentNotRelatedToSpaceOrPersonalSpace : true
               });
             }
-          } else if (personalSpace) {
-            spWindow.loadPersonalSpace({
-              loadOnlyNavigation:true, componentId : personalSpace.id
-            });
-          } else {
-            spLayout.getBody().getNavigation().dispatchEvent('start-load', {
-              contentNotRelatedToSpaceOrPersonalSpace : true
-            });
+          } finally {
+            __spWindowContext.queue.execute();
           }
         } else if (context.mainUrl) {
           __logDebug("reloading all the layout");
@@ -390,6 +504,20 @@
       }
       return $link;
     };
+    
+    spLayout.getBody().ready(function() {
+      spLayout.getBody().getContent().addEventListener('start-load', function() {
+        if (__spWindowContext.manualContentLoad) {
+          spLayout.getBody().getContent().hide();
+        }
+      }, '__id__spWindow');
+      spLayout.getBody().getContent().addEventListener('load', function() {
+        if (__spWindowContext.manualContentLoad) {
+          spLayout.getBody().getContent().show();
+        }
+        __spWindowContext.manualContentLoad = false;
+      }, '__id__spWindow');
+    });
 
     // Must be called at the end
     __notificationReady.resolve();

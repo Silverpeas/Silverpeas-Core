@@ -129,6 +129,9 @@
     initialize : function(mainLayout, partSelectors) {
       this._super(mainLayout, partSelectors.body);
       this.partSelectors = partSelectors;
+      this.__nb_subLoads = 0;
+      this.__hidePromise = undefined;
+      this.__hide_timeout = undefined;
     },
     resize : function() {
       var bodyLayoutHeight = $window.innerHeight -
@@ -142,10 +145,38 @@
       }
       __logDebug("resizing body height part to '" + bodyLayoutHeight + "px'");
     },
+    showProgressMessage : function(hidePromise) {
+      __showProgressPopup();
+      if (typeof this.__hidePromise === 'undefined' && sp.promise.isOne(hidePromise)) {
+        this.__hidePromise = hidePromise;
+      }
+      __logDebug('showPM - __nb_subLoads state ' + this.__nb_subLoads);
+    },
+    hideProgressMessage : function() {
+      this.__nb_subLoads -= 1;
+      var __hideProgressMessage = function() {
+        clearTimeout(this.__hide_timeout);
+        this.__hide_timeout = setTimeout(function() {
+          this.__nb_subLoads = 0;
+          setTimeout(__hideProgressPopup, 0);
+        }.bind(this), 250);
+        this.__hidePromise = undefined;
+      }.bind(this);
+      if (this.__nb_subLoads <= 0) {
+        this.__nb_subLoads = 0;
+        if (this.__hidePromise) {
+          this.__hidePromise.then(__hideProgressMessage,__hideProgressMessage);
+        } else {
+          __hideProgressMessage.call(this);
+        }
+      }
+      __logDebug('hidePM - __nb_subLoads state ' + this.__nb_subLoads);
+    },
     load : function(urlParameters) {
       __logDebug("loading body part");
       applyReadyBehaviorOn(this);
       var bodyPartURL = $window.LayoutSettings.get("layout.body.url");
+      this.__nb_subLoads = 0;
       this.dispatchEvent("start-load");
       var ajaxConfig = sp.ajaxRequest(bodyPartURL).withParams(urlParameters);
       return sp.load(this.getContainer(), ajaxConfig)
@@ -174,7 +205,7 @@
               frameContentDocument.body.focus();
 
               this.getContent().dispatchEvent("load");
-              __hideProgressPopup();
+              this.hideProgressMessage();
             }.bind(this));
             __logDebug("resolving promise of body layout load");
             this.dispatchEvent("load");
@@ -252,15 +283,16 @@
     initialize : function(mainLayout, partSelector) {
       this._super(mainLayout, partSelector);
       this.addEventListener("start-load", function() {
-        __showProgressPopup();
+        spLayout.getBody().showProgressMessage();
       }, '__start-load__BodyNavigationPart');
       this.addEventListener("load", function() {
-        setTimeout(__hideProgressPopup, 0);
+        spLayout.getBody().hideProgressMessage();
       }, '__load__BodyNavigationPart');
     },
     load : function(urlParameters) {
       __logDebug("loading body navigation part");
-      __showProgressPopup();
+      spLayout.getBody().__nb_subLoads += 1;
+      spLayout.getBody().showProgressMessage();
       this.getMainLayout().getBody().getToggles().hide();
       var parameters = extendsObject({
         "privateDomain" : "", "privateSubDomain" : "", "component_id" : ""
@@ -298,9 +330,10 @@
   var BodyContentPart = Part.extend({
     load : function(url) {
       __logDebug("loading body content part");
+      spLayout.getBody().__nb_subLoads += 1;
       var promise = applyReadyBehaviorOn(this);
+      $window.MyMain.location.assign(url);
       this.dispatchEvent("start-load");
-      $window.MyMain.location.href = url;
       return promise;
     },
     toggleFullscreen : function(fullscreen) {
@@ -413,18 +446,15 @@
           __logDebug("no promise to resolve about the splash content loading");
         }
         this.dispatchEvent("load");
-        __hideProgressPopup();
+        spLayout.getBody().hideProgressMessage();
       }.bind(this));
 
       this._super(mainLayout, '#sp-layout-splash-content-url-part');
       this.contentFrame = contentFrame;
 
       this.addEventListener("start-load", function() {
-        __showProgressPopup();
+        spLayout.getBody().showProgressMessage();
       }, '__start-load__SplashContentUrlPart');
-      this.addEventListener("load", function() {
-        setTimeout(__hideProgressPopup, 0);
-      }, '__load__SplashContentUrlPart');
     },
     load : function(url) {
       __logDebug("loading splash content part");
