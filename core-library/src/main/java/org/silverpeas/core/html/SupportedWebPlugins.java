@@ -150,6 +150,10 @@ public enum SupportedWebPlugins {
    */
   PDC,
   /**
+   * Same as PDC, but the sources are get dynamically.
+   */
+  PDCDYNAMICALLY,
+  /**
    * Javascript to update a web page by setting the security tokens for each link (anchor, form,
    * ...) and Ajax requests.
    */

@@ -28,6 +28,10 @@
  */
 (function($) {
 
+  if (!window.PdcBundle) {
+    window.PdcBundle = new SilverpeasPluginBundle();
+  }
+
   var pluginSettings = {
     context: webContext,
     workspace: null,
@@ -150,12 +154,6 @@
     if (parameters) {
       $.extend(true, settings, parameters);
     }
-    window.i18n.properties({
-      name: 'pdcBundle',
-      path: webContext + '/services/bundles/org/silverpeas/pdcPeas/multilang/',
-      language: '$$', /* take the user langage from its session */
-      mode: 'map'
-    });
     settings.selectorParameters = {
       title: "",
       positionError: "",
@@ -164,8 +162,8 @@
       mandatoryAxisLegend: "",
       invariantAxisLegend: "",
       anotherValueLegend: "",
-      labelOk: window.i18n.prop("GML.ok"),
-      labelCancel: window.i18n.prop("GML.cancel"),
+      labelOk: window.PdcBundle.get("pdc.l.o"),
+      labelCancel: window.PdcBundle.get("pdc.l.c"),
       multiValuation: false,
       dialogBox: false,
       classifiedContentCount: typeof settings.classifiedContentCount === 'undefined' ? true : settings.classifiedContentCount,

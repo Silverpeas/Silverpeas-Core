@@ -28,7 +28,7 @@
   if (!$window.PdcSettings) {
     $window.PdcSettings = new SilverpeasPluginSettings();
   }
-  if (!window.PdcBundle) {
+  if (!$window.PdcBundle) {
     $window.PdcBundle = new SilverpeasPluginBundle();
   }
 

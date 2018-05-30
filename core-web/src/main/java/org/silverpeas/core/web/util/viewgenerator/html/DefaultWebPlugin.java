@@ -66,7 +66,8 @@ public class DefaultWebPlugin implements WebPlugin, Initialization {
     WebPluginConsumerRegistry.add(GAUGE, (xhtml, language) -> includeGauge(xhtml));
     WebPluginConsumerRegistry.add(JQUERY, (xhtml, language) -> includeJQuery(xhtml));
     WebPluginConsumerRegistry.add(TAGS, (xhtml, language) -> includeTags(xhtml));
-    WebPluginConsumerRegistry.add(PDC, JavascriptPluginInclusion::includePdc);
+    WebPluginConsumerRegistry.add(PDC, (xhtml, language) -> JavascriptPluginInclusion.includePdc(xhtml, language, false));
+    WebPluginConsumerRegistry.add(PDCDYNAMICALLY, (xhtml, language) -> JavascriptPluginInclusion.includePdc(xhtml, language, true));
     WebPluginConsumerRegistry.add(TKN, (xhtml, language) -> includeSecurityTokenizing(xhtml));
     WebPluginConsumerRegistry.add(RATING, (xhtml, language) -> includeRating(xhtml));
     WebPluginConsumerRegistry.add(TOGGLE, (xhtml, language) -> includeToggle(xhtml));

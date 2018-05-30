@@ -51,7 +51,7 @@ String m_context = ResourceLocator.getGeneralSettingBundle().getString("Applicat
 QueryParameters	 parameters			= (QueryParameters) request.getAttribute("QueryParameters");
 %>
 <c:set var="searchLabel" value='<%=resource.getString("pdcPeas.search")%>'/>
-<view:includePlugin name="pdc" />
+<view:includePlugin name="pdcdynamically" />
 <script type="text/javascript">
   function sendQuery() {
     var values = $('#used_pdc').pdc('selectedValues');
@@ -107,7 +107,9 @@ QueryParameters	 parameters			= (QueryParameters) request.getAttribute("QueryPar
   }
 
   whenSilverpeasReady(function() {
-    $('#used_pdc').pdc('used', getPDCSettings());
+    window.PDC_PROMISE.then(function() {
+      $('#used_pdc').pdc('used', getPDCSettings());
+    });
   });
 </script>
 <div id="pdcFrame">

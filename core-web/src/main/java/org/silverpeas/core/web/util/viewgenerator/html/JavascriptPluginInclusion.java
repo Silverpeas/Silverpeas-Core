@@ -378,22 +378,30 @@ public class JavascriptPluginInclusion {
     return xhtml;
   }
 
-  static ElementContainer includePdc(final ElementContainer xhtml, final String language) {
-    final JavascriptSettingProducer settingProducer =
-        settingVariableName("PdcSettings");
+  static ElementContainer includePdc(final ElementContainer xhtml, final String language, final boolean dynamically) {
+    final JavascriptSettingProducer settingProducer = settingVariableName("PdcSettings");
     settingProducer.add("pdc.e.i", BaseClassificationPdCTag.PDC_CLASSIFICATION_WIDGET_TAG_ID);
     xhtml.addElement(scriptContent(settingProducer.produce()));
 
-    LocalizationBundle bundle = ResourceLocator
+    final LocalizationBundle bundle = ResourceLocator
         .getLocalizationBundle("org.silverpeas.pdcPeas.multilang.pdcBundle", language);
-    JavascriptBundleProducer bundleProducer = bundleVariableName("PdcBundle");
-    bundleProducer.add("pdc.e.ma", bundle.getString("pdcPeas.theContent") + " " +
-        bundle.getString("pdcPeas.MustContainsMandatoryAxis"));
+    final JavascriptBundleProducer bundleProducer = bundleVariableName("PdcBundle");
+    bundleProducer.add("pdc.l.o", bundle.getString("GML.ok"));
+    bundleProducer.add("pdc.l.c", bundle.getString("GML.cancel"));
+    bundleProducer.add("pdc.e.ma", bundle.getString("pdcPeas.theContent") + " " + bundle.getString("pdcPeas.MustContainsMandatoryAxis"));
     xhtml.addElement(scriptContent(bundleProducer.produce()));
 
-    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PDC_WIDGET));
-    xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PDC));
-    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-pdc.js"));
+    if (!dynamically) {
+      xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PDC_WIDGET));
+      xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_PDC));
+      xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-pdc.js"));
+    } else {
+      xhtml.addElement(scriptContent(generatePromise(PDC,
+          generateDynamicPluginLoading(JAVASCRIPT_PATH + SILVERPEAS_PDC_WIDGET,
+              PDC.name().toLowerCase() + "Plugin",
+              generateDynamicPluginLoading(JAVASCRIPT_PATH + SILVERPEAS_PDC, "__pdcDynLoad",
+                  "resolve();", null), null))));
+    }
     return xhtml;
   }
 
@@ -648,7 +656,7 @@ public class JavascriptPluginInclusion {
   }
 
   static ElementContainer includeCalendar(final ElementContainer xhtml, final String language) {
-    includePdc(xhtml, language);
+    includePdc(xhtml, language, false);
     includePanes(xhtml);
     includeCrud(xhtml);
     includeAttachment(xhtml);
