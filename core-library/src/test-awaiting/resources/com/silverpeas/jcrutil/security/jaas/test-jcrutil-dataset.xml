@@ -97,8 +97,6 @@
   <st_instance_data id="442" componentid="60" name="tabContent" label="Contenu" value="yes" />
   <st_instance_data id="443" componentid="60" name="exportComponent" label="Exportation du composant"
     value="no" />
-  <st_instance_data id="444" componentid="60" name="wizardEnabled" label="Assistant de publication"
-    value="no" />
   <st_instance_data id="445" componentid="60" name="rightsOnTopics" label="Droits sur les thèmes"
     value="no" />
 

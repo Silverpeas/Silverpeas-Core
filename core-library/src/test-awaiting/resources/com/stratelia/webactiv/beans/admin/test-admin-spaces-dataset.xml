@@ -101,7 +101,6 @@
   <st_instance_data id="35" componentid="1" name="targetValidation" label="Validation de publication" value="0"/>
   <st_instance_data id="36" componentid="1" name="updateChain" label="Modifications enchainées" value="no"/>
   <st_instance_data id="37" componentid="1" name="wysiwygOnTopics" label="Description riche" value="no"/>
-  <st_instance_data id="38" componentid="1" name="wizardEnabled" label="Assistant de publication" value="no"/>
   <st_instance_data id="39" componentid="1" name="delegatedTopicManagement" label="Gestion déléguée des thèmes" value="no"/>
   <st_instance_data id="118" componentid="4" name="XMLFormName" label="Formulaire XML" value=""/>
   <st_instance_data id="119" componentid="4" name="basket" label="Panier" value="no"/>
@@ -159,7 +158,6 @@
   <st_instance_data id="171" componentid="5" name="targetValidation" label="Validation de publication" value="0"/>
   <st_instance_data id="172" componentid="5" name="updateChain" label="Modifications enchainées" value="no"/>
   <st_instance_data id="173" componentid="5" name="wysiwygOnTopics" label="Description riche" value="no"/>
-  <st_instance_data id="174" componentid="5" name="wizardEnabled" label="Assistant de publication" value="no"/>
   <st_instance_data id="175" componentid="5" name="delegatedTopicManagement" label="Gestion déléguée des thèmes" value="no"/>
   <st_instance_data id="176" componentid="6" name="isTree" label="Gestion arborescente" value="yes"/>
   <st_instance_data id="177" componentid="6" name="openSingleAttachment" label="Ouverture directe fichier joint" value="no"/>
@@ -198,7 +196,6 @@
   <st_instance_data id="210" componentid="6" name="targetValidation" label="Validation de publication" value="0"/>
   <st_instance_data id="211" componentid="6" name="updateChain" label="Modifications enchainées" value="no"/>
   <st_instance_data id="212" componentid="6" name="wysiwygOnTopics" label="Description riche" value="no"/>
-  <st_instance_data id="213" componentid="6" name="wizardEnabled" label="Assistant de publication" value="no"/>
   <st_instance_data id="214" componentid="6" name="delegatedTopicManagement" label="Gestion déléguée des thèmes" value="no"/>
   <st_instance_data id="215" componentid="7" name="isValidationActive" label="Validation" value="no"/>
   <st_instance_data id="216" componentid="7" name="usePdc" label="Classification PDC" value="yes"/>
@@ -246,7 +243,6 @@
   <st_instance_data id="258" componentid="9" name="targetValidation" label="Validation de publication" value="0"/>
   <st_instance_data id="259" componentid="9" name="updateChain" label="Modifications enchainées" value="no"/>
   <st_instance_data id="260" componentid="9" name="wysiwygOnTopics" label="Description riche" value="no"/>
-  <st_instance_data id="261" componentid="9" name="wizardEnabled" label="Assistant de publication" value="no"/>
   <st_instance_data id="262" componentid="9" name="delegatedTopicManagement" label="Gestion déléguée des thèmes" value="no"/>
   <st_instance_data id="263" componentid="10" name="usePdc" label="Classification PDC" value="no"/>
   <st_instance_data id="264" componentid="10" name="draftVisible" label="Brouillon visible" value="no"/>
@@ -288,7 +284,6 @@
   <st_instance_data id="300" componentid="11" name="targetValidation" label="Validation de publication" value="0"/>
   <st_instance_data id="301" componentid="11" name="updateChain" label="Modifications enchainées" value="no"/>
   <st_instance_data id="302" componentid="11" name="wysiwygOnTopics" label="Description riche" value="no"/>
-  <st_instance_data id="303" componentid="11" name="wizardEnabled" label="Assistant de publication" value="no"/>
   <st_instance_data id="304" componentid="11" name="delegatedTopicManagement" label="Gestion déléguée des thèmes" value="no"/>
   <st_instance_data id="305" componentid="12" name="privateRepliesUsed" label="Utilisation des réponses privées" value="no"/>
   <st_instance_data id="306" componentid="12" name="sortable" label="Questions triées par ordre" value="yes"/>
