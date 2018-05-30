@@ -1093,6 +1093,47 @@ if (typeof window.sp === 'undefined') {
         return window.atob(str);
       }
     },
+    object : new function() {
+      this.normalizeExistingValuesOf = function(value, level) {
+        level = typeof level === 'undefined' ?  0 : level + 1;
+        if (level >= 10) {
+          return value;
+        }
+        var __value = value;
+        if (typeof value === 'object') {
+          if (Array.isArray(value)) {
+            __value = [];
+            value.forEach(function(v) {
+              __value.push(this.normalizeExistingValuesOf(v, level));
+            }.bind(this));
+          } else {
+            __value = {};
+            var __keyValueMap = [];
+            for (var attrName in value) {
+              if (value.hasOwnProperty(attrName)) {
+                var attrValue = value[attrName];
+                if (attrValue) {
+                  __keyValueMap.push(attrName);
+                  __keyValueMap[attrName] = this.normalizeExistingValuesOf(attrValue, level);
+                }
+              }
+            }
+            __keyValueMap.sort(function(a, b) {
+              return ((a < b) ? -1 : ((a > b) ? 1 : 0));
+            });
+            __keyValueMap.forEach(function(attrName) {
+              __value[attrName] = __keyValueMap[attrName];
+            });
+          }
+        }
+        return level === 0 ? JSON.stringify(__value) : __value;
+      };
+      this.compareExistingValuesBetween = function(a, b) {
+        var typeOfA = typeof a;
+        var typeOfB = typeof b;
+        return ((typeOfA !== typeOfB) || this.normalizeExistingValuesOf(a) !== this.normalizeExistingValuesOf(b));
+      };
+    },
     promise : {
       deferred : function() {
         var deferred = {};

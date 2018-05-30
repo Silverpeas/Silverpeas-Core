@@ -57,6 +57,14 @@
     </function-signature>
   </function>
   <function>
+    <description>Function that indicates if the value is a long.</description>
+    <name>isLongValue</name>
+    <function-class>org.silverpeas.core.util.StringUtil</function-class>
+    <function-signature>
+      boolean isLong(java.lang.String)
+    </function-signature>
+  </function>
+  <function>
     <description>Function that repeat x times a string to obtain the final string.</description>
     <name>repeat</name>
     <function-class>org.apache.commons.lang3.StringUtils</function-class>

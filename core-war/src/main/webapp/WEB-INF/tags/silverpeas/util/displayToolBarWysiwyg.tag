@@ -50,7 +50,7 @@
 <c:set var="_context" value="${silfn:applicationURL()}"/>
 <c:set var="_webSites" value="<%=WysiwygController.WYSIWYG_WEBSITES%>"/>
 
-<c:if test="${fn:startsWith(componentId, _webSites)}">
+<c:if test="${fn:startsWith(componentId, _webSites) and silfn:isLongValue(objectId)}">
 
   <c:set var="_specificURL">/website/${componentId}/${objectId}/</c:set>
   <c:set var="_tabImages" value="${silfn:webSiteImages(path, componentId)}"/>

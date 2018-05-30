@@ -64,6 +64,7 @@
   String path = "";
   String[][] collectionPages = null;
   String specificURL = "";    //For Websites only
+  boolean isWebSiteCase = false;    //For Websites only
 
   String wysiwygTextValue = "";
   String context = URLUtil.getApplicationURL();
@@ -94,13 +95,14 @@
     path = (String) session.getAttribute("WYSIWYG_Path");
     specificURL = (String) session.getAttribute("WYSIWYG_SpecificURL");
     indexIt = (String) session.getAttribute("WYSIWYG_IndexIt");
+    isWebSiteCase = StringUtil.defaultStringIfNotDefined(componentId).startsWith(WysiwygController.WYSIWYG_WEBSITES) && StringUtil.isLong(objectId);
 
     if ("SaveHtmlAndExit".equals(actionWysiwyg) || "SaveHtml".equals(actionWysiwyg)) {
       //For parsing absolute url (Bug FCKEditor)
       String server = request.getRequestURL()
           .substring(0, request.getRequestURL().toString().lastIndexOf(context));
       int serverPort = request.getServerPort();
-      if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
+      if (isWebSiteCase) {
         codeWysiwyg = codeWysiwyg.replaceAll("../../../../../", "/");
         codeWysiwyg = codeWysiwyg.replaceAll(server + ":" + serverPort, "");
         codeWysiwyg = codeWysiwyg.replaceAll(server + "/", "/");
@@ -110,7 +112,7 @@
         codeWysiwyg = codeWysiwyg.replaceAll(server + "/", "/");
       }
 
-      if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
+      if (isWebSiteCase) {
         WysiwygController.updateWebsite(path, fileName, codeWysiwyg);
       } else {
         boolean bIndexIt = (!StringUtil.isDefined(indexIt) || !"false".equalsIgnoreCase(indexIt));
@@ -126,7 +128,7 @@
     }
     if ("Refresh".equals(actionWysiwyg)) {
       wysiwygTextValue = codeWysiwyg;
-      if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
+      if (isWebSiteCase) {
         collectionPages = WysiwygController.getWebsitePages(path, componentId);
         SilverTrace.info("wysiwyg", "Wysiwyg.htmlEditorJSP", "root.MSG_GEN_PARAM_VALUE",
             "nb collectionPages = " + collectionPages.length);
@@ -173,6 +175,8 @@
       browseInformation = (String) request.getAttribute("BrowseInfo");
     }
 
+    isWebSiteCase = StringUtil.defaultStringIfNotDefined(componentId).startsWith(WysiwygController.WYSIWYG_WEBSITES) && StringUtil.isLong(objectId);
+
     userId = ((MainSessionController) session
         .getAttribute(MainSessionController.MAIN_SESSION_CONTROLLER_ATT)).getUserId();
     session.setAttribute("WYSIWYG_UserId", userId);
@@ -212,7 +216,7 @@
     }
     session.setAttribute("WYSIWYG_IndexIt", indexIt);
 
-    if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
+    if (isWebSiteCase) {
       collectionPages = WysiwygController.getWebsitePages(path, componentId);
       SilverTrace.info("wysiwyg", "Wysiwyg.htmlEditorJSP", "root.MSG_GEN_PARAM_VALUE",
           "nb collectionPages = " + collectionPages.length);
@@ -223,7 +227,7 @@
     session.setAttribute("WYSIWYG_SpecificURL", specificURL);
 
     try {
-      if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
+      if (isWebSiteCase) {
         wysiwygTextValue = WysiwygController.loadFileWebsite(path, fileName);
       } else {
         wysiwygTextValue = WysiwygController.load(componentId, objectId, contentLanguage);
