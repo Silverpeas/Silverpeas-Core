@@ -82,7 +82,6 @@
   <st_instance_data id="33" componentid="1" name="updateChain" label="Modifications enchainées" value="no"/>
   <st_instance_data id="34" componentid="1" name="useTreeview" label="Explorateur de thèmes" value="yes"/>
   <st_instance_data id="35" componentid="1" name="wysiwygOnTopics" label="Description riche" value="yes"/>
-  <st_instance_data id="36" componentid="1" name="wizardEnabled" label="Assistant de publication" value="no"/>
   <st_instance_data id="37" componentid="1" name="delegatedTopicManagement" label="Gestion déléguée des thèmes" value="no"/>
   <st_instance_data id="38" componentid="3" name="useAnonymousMode" label="Mode anonyme" value="no"/>
   <st_instance_data id="39" componentid="3" name="usePdc" label="Classification PDC" value="yes"/>
@@ -140,7 +139,6 @@
   <st_instance_data id="91" componentid="17" name="updateChain" label="Modifications enchainées" value="no"/>
   <st_instance_data id="92" componentid="17" name="useTreeview" label="Explorateur de thèmes" value="yes"/>
   <st_instance_data id="93" componentid="17" name="wysiwygOnTopics" label="Description riche" value="yes"/>
-  <st_instance_data id="94" componentid="17" name="wizardEnabled" label="Assistant de publication" value="no"/>
   <st_instance_data id="95" componentid="17" name="delegatedTopicManagement" label="Gestion déléguée des thèmes" value="no"/>
   <st_instance_data id="96" componentid="18" name="draft" label="Mode brouillon" value="no"/>
   <st_instance_data id="97" componentid="18" name="XMLFormName" label="Formulaire XML" value=""/>
