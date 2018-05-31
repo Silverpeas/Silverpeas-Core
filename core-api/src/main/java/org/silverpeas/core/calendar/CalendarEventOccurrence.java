@@ -170,33 +170,37 @@ public class CalendarEventOccurrence
    * @return an optional calendar event occurrence.
    */
   public static Optional<CalendarEventOccurrence> getById(final String id) {
-    CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
-    Mutable<CalendarEventOccurrence> occurrence = Mutable.ofNullable(repository.getById(id));
+    final CalendarEventOccurrenceRepository repository = CalendarEventOccurrenceRepository.get();
+    final Mutable<CalendarEventOccurrence> occurrence = Mutable.ofNullable(repository.getById(id));
     if (!occurrence.isPresent()) {
-      Pair<String, Temporal> explodedId = explodeId(id);
+      final Pair<String, Temporal> explodedId = explodeId(id);
       final String eventId = explodedId.getLeft();
       final Temporal startDate = explodedId.getRight();
-      CalendarEvent event = CalendarEvent.getById(eventId);
-      if (event != null) {
-        final LocalDate occStartDate;
-        final LocalDate occEndDate;
-        if (startDate instanceof LocalDate) {
-          LocalDate date = (LocalDate) startDate;
-          occStartDate = date.minusDays(1);
-          occEndDate = date.plusDays(1);
+      final Optional<CalendarEvent> event = Optional.ofNullable(CalendarEvent.getById(eventId));
+      event.ifPresent(e -> {
+        if (e.isRecurrent()) {
+          final LocalDate occStartDate;
+          final LocalDate occEndDate;
+          if (startDate instanceof LocalDate) {
+            final LocalDate date = (LocalDate) startDate;
+            occStartDate = date.minusDays(1);
+            occEndDate = date.plusDays(1);
+          } else {
+            final OffsetDateTime dateTime = (OffsetDateTime) startDate;
+            occStartDate = dateTime.minusDays(1).toLocalDate();
+            occEndDate = dateTime.plusDays(1).toLocalDate();
+          }
+          final List<CalendarEventOccurrence> occurrences =
+              e.getCalendar().between(occStartDate, occEndDate).getEventOccurrences();
+          occurrences.removeIf(o -> !o.getCalendarEvent().getId().equals(eventId) ||
+              (!o.getStartDate().equals(startDate)));
+          if (occurrences.size() == 1) {
+            occurrence.set(occurrences.get(0));
+          }
         } else {
-          OffsetDateTime dateTime = (OffsetDateTime) startDate;
-          occStartDate = dateTime.minusDays(1).toLocalDate();
-          occEndDate = dateTime.plusDays(1).toLocalDate();
+          occurrence.set(new CalendarEventOccurrence(e, e.getStartDate(), e.getEndDate()));
         }
-        List<CalendarEventOccurrence> occurrences =
-            event.getCalendar().between(occStartDate, occEndDate).getEventOccurrences();
-        occurrences.removeIf(o -> !o.getCalendarEvent().getId().equals(eventId) ||
-            (!o.getStartDate().equals(startDate)));
-        if (occurrences.size() == 1) {
-          occurrence.set(occurrences.get(0));
-        }
-      }
+      });
     }
     return Optional.ofNullable(occurrence.orElse(null));
   }

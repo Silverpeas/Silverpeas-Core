@@ -36,6 +36,8 @@ import org.silverpeas.core.web.util.viewgenerator.html.GraphicElementFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+import static org.silverpeas.core.util.StringUtil.isLong;
+
 /**
  * Configuration of the WYSIWYG editor. It depends on the implementation of such an editor.
  * Currently it depends on the CKEditor.
@@ -125,7 +127,7 @@ public class WysiwygEditorConfig implements Cloneable {
           .put("filebrowserBrowseUrl", "")
           .put("imageUploadUrl", "");
     } else if (getComponentId() == null ||
-        getComponentId().startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
+        (getComponentId().startsWith(WysiwygController.WYSIWYG_WEBSITES) && isLong(objectId))) {
       json = object.put("imageUploadUrl", "");
     }
     return json;

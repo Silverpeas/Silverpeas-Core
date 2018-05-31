@@ -35,6 +35,7 @@ import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.silverpeas.core.cache.service.VolatileCacheServiceProvider
     .getSessionVolatileResourceCacheService;
 import static org.silverpeas.core.util.StringUtil.defaultStringIfNotDefined;
+import static org.silverpeas.core.util.StringUtil.isLong;
 
 public class WysiwygEditor {
 
@@ -92,7 +93,7 @@ public class WysiwygEditor {
       }) + ");\n";
     }
     if (componentInstanceId != null &&
-        !componentInstanceId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
+        !(componentInstanceId.startsWith(WysiwygController.WYSIWYG_WEBSITES) && isLong(resourceId))) {
       js += format(DD_UPLOAD_TEMPLATE_SCRIPT, componentInstanceId, resourceId, false);
     }
     return js;

@@ -277,22 +277,13 @@
               {a : occurrence.recurrence, b : other.recurrence}];
             for (var i = 0; i < dataToCompare.length; i++) {
               var comparison = dataToCompare[i];
-              var typeOfA = typeof comparison.a;
-              var typeOfB = typeof comparison.b;
-              if ((typeOfA !== typeOfB)
-                  || __normalizeValue(comparison.a) !== __normalizeValue(comparison.b)) {
+              if (sp.object.compareExistingValuesBetween(comparison.a, comparison.b)) {
                 return true;
               }
             }
             return false;
           };
         }
-      }
-
-      var __normalizeValue = function(value) {
-        return JSON.stringify(value)
-            .replaceAll(/[:](0|null),/g, ':"",')
-            .replaceAll(/[:](0|null)[}]/g, ':""}');
       }
     };
 

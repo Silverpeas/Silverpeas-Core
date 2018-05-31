@@ -87,6 +87,8 @@ if (StringUtil.isDefined(request.getParameter("ComponentId"))) {
   url += EncodeURL("?ComponentId="+componentId+"&ObjectId="+objectId+"&Context="+context);
 }
 
+boolean isWebSiteCase = componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES) && StringUtil.isLong(objectId);
+
 LocalizationBundle message = ResourceLocator.getLocalizationBundle("org.silverpeas.wysiwyg.multilang.wysiwygBundle", language);
 %>
 
@@ -125,7 +127,7 @@ function returnHtmlEditor() {
 	buttonPane.addButton(button);
 	out.println(frame.printBefore());
 	out.flush();
-	if (componentId.startsWith(WysiwygController.WYSIWYG_WEBSITES)) {
+	if (isWebSiteCase) {
 		getServletConfig().getServletContext().getRequestDispatcher("/wysiwyg/jsp/uploadWebsiteFile.jsp?Path="+path+"&Language="+language).include(request, response);
 	} else {
 		getServletConfig().getServletContext().getRequestDispatcher("/attachment/jsp/editAttachedFiles.jsp?Id="+objectId+"&ComponentId="+componentId+"&Context="+imagesContext+"&Url="+url+"&OriginWysiwyg=true&SimpleReload=true").include(request, response);
