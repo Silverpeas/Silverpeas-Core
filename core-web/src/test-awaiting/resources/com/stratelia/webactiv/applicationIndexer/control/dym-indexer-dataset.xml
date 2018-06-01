@@ -79,7 +79,6 @@
   <st_instance_data id="30" componentid="1" name="privateSearch" label="Exclu de la recherche" value="no"/>
   <st_instance_data id="31" componentid="1" name="attachmentsInPubList" label="Fichiers joints listés" value="no"/>
   <st_instance_data id="32" componentid="1" name="targetValidation" label="Validation de publication" value="0"/>
-  <st_instance_data id="33" componentid="1" name="updateChain" label="Modifications enchainées" value="no"/>
   <st_instance_data id="34" componentid="1" name="useTreeview" label="Explorateur de thèmes" value="yes"/>
   <st_instance_data id="35" componentid="1" name="wysiwygOnTopics" label="Description riche" value="yes"/>
   <st_instance_data id="37" componentid="1" name="delegatedTopicManagement" label="Gestion déléguée des thèmes" value="no"/>
@@ -136,7 +135,6 @@
   <st_instance_data id="88" componentid="17" name="privateSearch" label="Exclu de la recherche" value="no"/>
   <st_instance_data id="89" componentid="17" name="attachmentsInPubList" label="Fichiers joints listés" value="no"/>
   <st_instance_data id="90" componentid="17" name="targetValidation" label="Validation de publication" value="0"/>
-  <st_instance_data id="91" componentid="17" name="updateChain" label="Modifications enchainées" value="no"/>
   <st_instance_data id="92" componentid="17" name="useTreeview" label="Explorateur de thèmes" value="yes"/>
   <st_instance_data id="93" componentid="17" name="wysiwygOnTopics" label="Description riche" value="yes"/>
   <st_instance_data id="95" componentid="17" name="delegatedTopicManagement" label="Gestion déléguée des thèmes" value="no"/>

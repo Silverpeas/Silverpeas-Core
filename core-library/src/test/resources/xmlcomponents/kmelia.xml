@@ -699,22 +699,6 @@
       </help>
     </parameter>
     <parameter>
-      <name>updateChain</name>
-      <label>
-        <message lang="fr">Modifications en chaine</message>
-        <message lang="en">Modifications in a row</message>
-      </label>
-      <order>32</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">Possibilité d'effectuer des modifications enchainées sur certains thèmes (possédant un descripteur).</message>
-        <message lang="en">Provides the possibility of making successive modifications on certains topics (having a descriptor).</message>
-      </help>
-    </parameter>
-    <parameter>
       <name>XmlFormForFiles</name>
       <label>
         <message lang="fr">Formulaire XML pour fichiers</message>
