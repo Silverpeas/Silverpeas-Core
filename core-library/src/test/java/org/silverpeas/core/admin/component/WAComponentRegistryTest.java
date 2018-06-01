@@ -141,7 +141,7 @@ public class WAComponentRegistryTest {
     assertThat(kmelia.isVisible(), is(true));
     assertThat(kmelia.isVisibleInPersonalSpace(), is(true));
     assertThat(kmelia.getSuite().get("fr"), is("01 Gestion Documentaire"));
-    assertThat(kmelia.getParameters().size(), is(41));
+    assertThat(kmelia.getParameters().size(), is(40));
     Parameter paramWithXMLTemplate = null;
     for (Parameter parameter : kmelia.getParameters()) {
       if ("XmlFormForFiles".equals(parameter.getName())) {
