@@ -60,6 +60,7 @@ import static org.apache.lucene.document.Field.Index.NOT_ANALYZED;
 import static org.apache.lucene.document.Field.Store.NO;
 import static org.apache.lucene.document.Field.Store.YES;
 import static org.apache.lucene.util.Version.LUCENE_36;
+import static org.silverpeas.search.indexEngine.model.IndexProcessor.doFlush;
 
 /**
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
@@ -135,28 +136,7 @@ public class IndexManager {
    * Optimize all the modified index.
    */
   public void flush() {
-    final Iterator<Map.Entry<String, IndexWriter>> it = indexWriters.entrySet().iterator();
-    SilverTrace.debug("searchEngine", "IndexManager.getIndexReader()", MessageFormat
-        .format("flushing manager of indexation about {0} writer(s)", indexWriters.size()));
-    while (it.hasNext()) {
-      final Map.Entry<String, IndexWriter> entry = it.next();
-      final String path = entry.getKey();
-      final IndexWriter writer = entry.getValue();
-      SilverTrace.debug("searchEngine", "IndexManager.getIndexReader()",
-          MessageFormat.format("\t- closing writer of path {0}", path));
-      try {
-        writer.close();
-      } catch (IOException e) {
-        SilverTrace
-            .error("searchEngine", "IndexManager.getIndexReader()", "Cannot close index " + path,
-                e);
-      }
-      // update the spelling index
-      if (enableDymIndexing) {
-        DidYouMeanIndexer.createSpellIndexForAllLanguage(CONTENT, path);
-      }
-      it.remove();
-    }
+    doFlush(new FlushIndexProcess());
   }
 
   private void removeIndexEntry(IndexWriter writer, IndexEntryPK indexEntry) {
@@ -164,8 +144,6 @@ public class IndexManager {
     try {
       // removing document according to indexEntryPK
       writer.deleteDocuments(term);
-      // closing associated index searcher and removing it from cache
-      IndexReadersCache.removeIndexReader(getIndexDirectoryPath(indexEntry));
     } catch (IOException e) {
       SilverTrace.error("indexEngine", "IndexManager", "indexEngine.MSG_REMOVE_REQUEST_FAILED",
           indexEntry.toString(), e);
@@ -195,8 +173,6 @@ public class IndexManager {
     try {
       // removing documents according to SCOPE term
       writer.deleteDocuments(term);
-      // closing associated index searcher and removing it from cache
-      IndexReadersCache.removeIndexReader(getIndexDirectoryPath("useless", scope));
     } catch (IOException e) {
       SilverTrace.error("indexEngine", "IndexManager", "indexEngine.MSG_UNKNOWN_INDEX_FILE",
           "scope = "+scope, e);
@@ -597,6 +573,37 @@ public class IndexManager {
     return "Wysiwyg".equals(indexEntry.getObjectType())
         && (indexEntry.getComponent().startsWith("kmelia")
         || indexEntry.getComponent().startsWith("kmax"));
+  }
+
+  private class FlushIndexProcess implements IndexProcessor.FlushIndexProcess {
+    @Override
+    public List<String> process() {
+      final List<String> pathProcessed = new ArrayList<String>(indexWriters.size());
+      final Iterator<Map.Entry<String, IndexWriter>> it = indexWriters.entrySet().iterator();
+      SilverTrace.debug("searchEngine", "IndexManager.getIndexReader()", MessageFormat
+          .format("flushing manager of indexation about {0} writer(s)", indexWriters.size()));
+      while (it.hasNext()) {
+        final Map.Entry<String, IndexWriter> entry = it.next();
+        final String path = entry.getKey();
+        final IndexWriter writer = entry.getValue();
+        pathProcessed.add(path);
+        SilverTrace.debug("searchEngine", "IndexManager.getIndexReader()",
+            MessageFormat.format("\t- closing writer of path {0}", path));
+        try {
+          writer.close();
+        } catch (IOException e) {
+          SilverTrace
+              .error("searchEngine", "IndexManager.getIndexReader()", "Cannot close index " + path,
+                  e);
+        }
+        // update the spelling index
+        if (enableDymIndexing) {
+          DidYouMeanIndexer.createSpellIndexForAllLanguage(CONTENT, path);
+        }
+        it.remove();
+      }
+      return pathProcessed;
+    }
   }
 
   /*
