@@ -34,40 +34,55 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IndexReadersCache {
-  private static final IndexReadersCache instance = new IndexReadersCache();
-  private Map<String, IndexReader> indexReaders;
+  private static final Object READER_MUTEX = new Object();
+  private static final Map<String, IndexReader> INDEX_READERS = new HashMap<String, IndexReader>();
 
+  /**
+   * Hidden constructor
+   */
   private IndexReadersCache() {
-    indexReaders = new HashMap<String, IndexReader>();
   }
 
-  private static IndexReadersCache getInstance() {
-    return instance;
-  }
-
-  public static synchronized IndexReader getIndexReader(String path) {
-    IndexReader indexReader = getInstance().indexReaders.get(path);
-    if (indexReader == null) {
-      try {
-        indexReader = IndexReader.open(FSDirectory.open(new File(path)));
-      } catch (Exception e) {
+  /**
+   * This method must be called only within a
+   * {@link IndexProcessor.SearchIndexProcess#process()} implementation in order to get a
+   * right behavior against the concurrent accesses.
+   * @param path the index root path.
+   * @return the {@link IndexReader} well initialized if necessary.
+   */
+  public static IndexReader getIndexReader(String path) {
+    synchronized (READER_MUTEX) {
+      final File rootPath = new File(path);
+      IndexReader indexReader = INDEX_READERS.get(path);
+      if (indexReader == null && rootPath.exists()) {
+        try {
+          indexReader = IndexReader.open(FSDirectory.open(rootPath));
+          INDEX_READERS.put(path, indexReader);
+        } catch (Exception e) {
+          SilverTrace.warn("searchEngine", "IndexManager.getIndexReader()",
+              "searchEngine.MSG_CANT_OPEN_INDEX_SEARCHER", e);
+        }
+      } else if (indexReader != null && !rootPath.exists()) {
         SilverTrace.warn("searchEngine", "IndexManager.getIndexReader()",
-            "searchEngine.MSG_CANT_OPEN_INDEX_SEARCHER", e);
-        return null;
+            "searchEngine.MSG_CANT_OPEN_INDEX_SEARCHER",
+            "index reader exists in cache but no index path is existing! (" + path + ")");
+        closeIndexReader(path);
+        indexReader = null;
       }
-      getInstance().indexReaders.put(path, indexReader);
+      return indexReader;
     }
-    return indexReader;
   }
 
-  public static synchronized void removeIndexReader(String path) {
-    final IndexReader indexReader = getInstance().indexReaders.remove(path);
-    if (indexReader != null) {
-      try {
-        indexReader.close();
-      } catch (IOException e) {
-        SilverTrace.warn("indexEngine", "IndexManager.removeIndexReader",
-            "indexEngine.MSG_CANT_CLOSE_INDEX_SEARCHER", path, e);
+  static void closeIndexReader(String path) {
+    synchronized (READER_MUTEX) {
+      final IndexReader indexReader = INDEX_READERS.remove(path);
+      if (indexReader != null) {
+        try {
+          indexReader.close();
+        } catch (IOException e) {
+          SilverTrace.warn("indexEngine", "IndexManager.removeIndexReader",
+              "indexEngine.MSG_CANT_CLOSE_INDEX_SEARCHER", path, e);
+        }
       }
     }
   }

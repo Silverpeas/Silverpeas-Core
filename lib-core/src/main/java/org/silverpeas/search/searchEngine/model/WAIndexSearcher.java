@@ -42,6 +42,7 @@ import org.silverpeas.search.indexEngine.model.IndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEntryPK;
 import org.silverpeas.search.indexEngine.model.IndexManager;
 import org.silverpeas.search.indexEngine.model.IndexReadersCache;
+import org.silverpeas.search.indexEngine.model.IndexProcessor;
 import org.silverpeas.search.indexEngine.model.SpaceComponentPair;
 import org.silverpeas.search.util.SearchEnginePropertiesManager;
 
@@ -58,6 +59,7 @@ import java.util.Set;
 import java.util.StringTokenizer;
 
 import static java.util.Collections.singleton;
+import static org.silverpeas.search.indexEngine.model.IndexProcessor.doSearch;
 
 /**
  * The WAIndexSearcher class implements search over all the WebActiv's index. A WAIndexSearcher
@@ -128,29 +130,12 @@ public class WAIndexSearcher {
    * @return MatchingIndexEntry wrapping the result, else null
    */
   public MatchingIndexEntry search(String component, String objectId, String objectType) {
-    SpaceComponentPair pair = new SpaceComponentPair(null, component);
-    Set<SpaceComponentPair> set = new HashSet<SpaceComponentPair>(1);
-    set.add(pair);
-
-    IndexEntryPK indexEntryPK = new IndexEntryPK(component, objectType, objectId);
-    MatchingIndexEntry matchingIndexEntry = null;
-    IndexSearcher searcher = getSearcher(set);
     try {
-      TopDocs topDocs;
-      Term term = new Term(IndexManager.KEY, indexEntryPK.toString());
-
-      TermQuery query = new TermQuery(term);
-      topDocs = searcher.search(query, maxNumberResult);
-      ScoreDoc scoreDoc = topDocs.scoreDocs[0];
-
-      matchingIndexEntry = createMatchingIndexEntry(singleton(component), scoreDoc, "*", searcher);
-    } catch (IOException ioe) {
-      SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
-          "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
-    } finally {
-      IOUtils.closeQuietly(searcher);
+      return doSearch(new SpecificObjectSearchIndexProcess(component, objectType, objectId));
+    } catch (org.silverpeas.search.searchEngine.model.ParseException e) {
+      SilverTrace.error("searchEngine", "WAIndexSearcher.search", "root.MSG_GEN_PARAM_VALUE", e);
+      return null;
     }
-    return matchingIndexEntry;
   }
 
   /**
@@ -163,79 +148,7 @@ public class WAIndexSearcher {
    */
   public MatchingIndexEntry[] search(QueryDescription query)
       throws org.silverpeas.search.searchEngine.model.ParseException {
-    long startTime = System.nanoTime();
-    List<MatchingIndexEntry> results;
-
-    IndexSearcher searcher = getSearcher(query);
-
-    try {
-      TopDocs topDocs;
-      BooleanQuery booleanQuery = new BooleanQuery();
-      BooleanQuery rangeClauses = new BooleanQuery();
-      rangeClauses.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
-      rangeClauses.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
-
-      if (query.getXmlQuery() != null) {
-        booleanQuery.add(getXMLQuery(query), BooleanClause.Occur.MUST);
-      } else {
-        if (query.getMultiFieldQuery() != null) {
-          booleanQuery.add(getMultiFieldQuery(query), BooleanClause.Occur.MUST);
-        } else {
-          TermRangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
-          if (!StringUtil.isDefined(query.getQuery()) && (query.isSearchBySpace() || query.
-              isSearchByComponentType()) && !query.isPeriodDefined()) {
-            rangeQuery = new TermRangeQuery(IndexManager.CREATIONDATE, "1900/01/01", "2200/01/01",
-                true, true);
-          }
-          if (rangeQuery != null) {
-            rangeClauses.add(rangeQuery, BooleanClause.Occur.MUST);
-          }
-          TermRangeQuery rangeQueryOnLastUpdateDate = getRangeQueryOnLastUpdateDate(query);
-          if (rangeQueryOnLastUpdateDate != null) {
-            rangeClauses.add(rangeQueryOnLastUpdateDate, BooleanClause.Occur.MUST);
-          }
-          TermQuery termQueryOnAuthor = getTermQueryOnAuthor(query);
-          if (termQueryOnAuthor != null) {
-            booleanQuery.add(termQueryOnAuthor, BooleanClause.Occur.MUST);
-          }
-          PrefixQuery termQueryOnFolder = getTermQueryOnFolder(query);
-          if (termQueryOnFolder != null) {
-            booleanQuery.add(termQueryOnFolder, BooleanClause.Occur.MUST);
-          }
-
-          try {
-            Query plainTextQuery = getPlainTextQuery(query, IndexManager.CONTENT);
-            if (plainTextQuery != null) {
-              booleanQuery.add(plainTextQuery, BooleanClause.Occur.MUST);
-            }
-          } catch (ParseException e) {
-            throw new org.silverpeas.search.searchEngine.model.ParseException("WAIndexSearcher", e);
-          }
-        }
-      }
-      SilverTrace.info("searchEngine", "WAIndexSearcher.search()", "root.MSG_GEN_PARAM_VALUE",
-          "Query = " + booleanQuery.toString());
-
-      // date range clauses are passed in the filter to optimize search performances
-      // but the query cannot be empty : if so, then pass date range in the query
-      if (booleanQuery.getClauses().length == 0) {
-        topDocs = searcher.search(rangeClauses, null, maxNumberResult);
-      } else {
-        QueryWrapperFilter wrappedFilter = new QueryWrapperFilter(rangeClauses);
-        topDocs = searcher.search(booleanQuery, wrappedFilter, maxNumberResult);
-      }
-
-      results = makeList(topDocs, query, searcher);
-    } catch (IOException ioe) {
-      SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
-          "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
-      results = new ArrayList<MatchingIndexEntry>();
-    }
-    long endTime = System.nanoTime();
-
-    SilverTrace.debug("searchEngine", WAIndexSearcher.class.toString(), " search duration in ms "
-        + (endTime - startTime) / 1000000);
-    return results.toArray(new MatchingIndexEntry[results.size()]);
+    return doSearch(new QuerySearchIndexProcess(query));
   }
 
   private TermRangeQuery getVisibilityStartQuery() {
@@ -364,8 +277,8 @@ public class WAIndexSearcher {
     }
     Query query =
         MultiFieldQueryParser.parse(Version.LUCENE_36, queryStr,
-            fieldNames.keySet().toArray(new String[fieldNames.size()]), fieldNames.values()
-                .toArray(new BooleanClause.Occur[fieldNames.size()]), analyzer);
+            fieldNames.keySet().toArray(new String[0]), fieldNames.values()
+                .toArray(new BooleanClause.Occur[0]), analyzer);
     return query;
   }
 
@@ -500,7 +413,7 @@ public class WAIndexSearcher {
         readers.add(indexReader);
       }
     }
-    return new IndexSearcher(new MultiReader(readers.toArray(new IndexReader[readers.size()])));
+    return new IndexSearcher(new MultiReader(readers.toArray(new IndexReader[0])));
   }
 
   /**
@@ -525,7 +438,7 @@ public class WAIndexSearcher {
         readers.add(searcher);
       }
     }
-    return new IndexSearcher(new MultiReader(readers.toArray(new IndexReader[readers.size()])));
+    return new IndexSearcher(new MultiReader(readers.toArray(new IndexReader[0])));
   }
 
   private String getExternalComponentPath(ExternalComponent extComp) {
@@ -614,5 +527,134 @@ public class WAIndexSearcher {
     }
     Term term = new Term(IndexManager.PATH, query.getRequestedFolder());
     return new PrefixQuery(term);
+  }
+
+  private class SpecificObjectSearchIndexProcess
+      implements IndexProcessor.SearchIndexProcess<MatchingIndexEntry> {
+
+    private final String component;
+    private final String objectType;
+    private final String objectId;
+
+    SpecificObjectSearchIndexProcess(final String component, final String objectType,
+        final String objectId) {
+      this.component = component;
+      this.objectType = objectType;
+      this.objectId = objectId;
+    }
+
+    @Override
+    public MatchingIndexEntry process() {
+      SpaceComponentPair pair = new SpaceComponentPair(null, component);
+      Set<SpaceComponentPair> set = new HashSet<SpaceComponentPair>(1);
+      set.add(pair);
+
+      IndexEntryPK indexEntryPK = new IndexEntryPK(component, objectType, objectId);
+      MatchingIndexEntry matchingIndexEntry = null;
+      IndexSearcher searcher = getSearcher(set);
+      try {
+        TopDocs topDocs;
+        Term term = new Term(IndexManager.KEY, indexEntryPK.toString());
+
+        TermQuery query = new TermQuery(term);
+        topDocs = searcher.search(query, maxNumberResult);
+        ScoreDoc scoreDoc = topDocs.scoreDocs[0];
+
+        matchingIndexEntry = createMatchingIndexEntry(singleton(component), scoreDoc, "*", searcher);
+      } catch (IOException ioe) {
+        SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
+            "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
+      } finally {
+        IOUtils.closeQuietly(searcher);
+      }
+      return matchingIndexEntry;
+    }
+  }
+
+  private class QuerySearchIndexProcess
+      implements IndexProcessor.SearchIndexProcess<MatchingIndexEntry[]> {
+    private final QueryDescription query;
+
+    QuerySearchIndexProcess(final QueryDescription query) {
+      this.query = query;
+    }
+
+    @Override
+    public MatchingIndexEntry[] process()
+        throws org.silverpeas.search.searchEngine.model.ParseException {
+      long startTime = System.nanoTime();
+      List<MatchingIndexEntry> results;
+
+      IndexSearcher searcher = getSearcher(query);
+
+      try {
+        TopDocs topDocs;
+        BooleanQuery booleanQuery = new BooleanQuery();
+        BooleanQuery rangeClauses = new BooleanQuery();
+        rangeClauses.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
+        rangeClauses.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
+
+        if (query.getXmlQuery() != null) {
+          booleanQuery.add(getXMLQuery(query), BooleanClause.Occur.MUST);
+        } else {
+          if (query.getMultiFieldQuery() != null) {
+            booleanQuery.add(getMultiFieldQuery(query), BooleanClause.Occur.MUST);
+          } else {
+            TermRangeQuery rangeQuery = getRangeQueryOnCreationDate(query);
+            if (!StringUtil.isDefined(query.getQuery()) && (query.isSearchBySpace() || query.
+                isSearchByComponentType()) && !query.isPeriodDefined()) {
+              rangeQuery = new TermRangeQuery(IndexManager.CREATIONDATE, "1900/01/01", "2200/01/01",
+                  true, true);
+            }
+            if (rangeQuery != null) {
+              rangeClauses.add(rangeQuery, BooleanClause.Occur.MUST);
+            }
+            TermRangeQuery rangeQueryOnLastUpdateDate = getRangeQueryOnLastUpdateDate(query);
+            if (rangeQueryOnLastUpdateDate != null) {
+              rangeClauses.add(rangeQueryOnLastUpdateDate, BooleanClause.Occur.MUST);
+            }
+            TermQuery termQueryOnAuthor = getTermQueryOnAuthor(query);
+            if (termQueryOnAuthor != null) {
+              booleanQuery.add(termQueryOnAuthor, BooleanClause.Occur.MUST);
+            }
+            PrefixQuery termQueryOnFolder = getTermQueryOnFolder(query);
+            if (termQueryOnFolder != null) {
+              booleanQuery.add(termQueryOnFolder, BooleanClause.Occur.MUST);
+            }
+
+            try {
+              Query plainTextQuery = getPlainTextQuery(query, IndexManager.CONTENT);
+              if (plainTextQuery != null) {
+                booleanQuery.add(plainTextQuery, BooleanClause.Occur.MUST);
+              }
+            } catch (ParseException e) {
+              throw new org.silverpeas.search.searchEngine.model.ParseException("WAIndexSearcher", e);
+            }
+          }
+        }
+        SilverTrace.info("searchEngine", "WAIndexSearcher.search()", "root.MSG_GEN_PARAM_VALUE",
+            "Query = " + booleanQuery.toString());
+
+        // date range clauses are passed in the filter to optimize search performances
+        // but the query cannot be empty : if so, then pass date range in the query
+        if (booleanQuery.getClauses().length == 0) {
+          topDocs = searcher.search(rangeClauses, null, maxNumberResult);
+        } else {
+          QueryWrapperFilter wrappedFilter = new QueryWrapperFilter(rangeClauses);
+          topDocs = searcher.search(booleanQuery, wrappedFilter, maxNumberResult);
+        }
+
+        results = makeList(topDocs, query, searcher);
+      } catch (IOException ioe) {
+        SilverTrace.fatal("searchEngine", "WAIndexSearcher.search()",
+            "searchEngine.MSG_CORRUPTED_INDEX_FILE", ioe);
+        results = new ArrayList<MatchingIndexEntry>();
+      }
+      long endTime = System.nanoTime();
+
+      SilverTrace.debug("searchEngine", WAIndexSearcher.class.toString(), " search duration in ms "
+          + (endTime - startTime) / 1000000);
+      return results.toArray(new MatchingIndexEntry[0]);
+    }
   }
 }
