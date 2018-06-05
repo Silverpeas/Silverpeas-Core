@@ -60,6 +60,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.silverpeas.core.i18n.I18NHelper.defaultLocale;
+import static org.silverpeas.core.index.indexing.model.IndexProcessor.doFlush;
 
 /**
  * An IndexManager manage all the web'activ's index. An IndexManager is NOT thread safe : to share
@@ -166,25 +167,30 @@ public class IndexManager {
    * Optimize all the modified index.
    */
   public void flush() {
-    final SilverLogger logger = SilverLogger.getLogger(this);
-    final Iterator<Map.Entry<String, IndexWriter>> it = indexWriters.entrySet().iterator();
-    logger.debug("flushing manager of indexation about {0} writer(s)", indexWriters.size());
-    while(it.hasNext()) {
-      final Map.Entry<String, IndexWriter> entry = it.next();
-      final String path = entry.getKey();
-      final IndexWriter writer = entry.getValue();
-      logger.debug("\t- closing writer of path {0}", path);
-      try {
-        writer.close();
-      } catch (IOException e) {
-        SilverLogger.getLogger(this).error("Cannot close index " + path, e);
+    doFlush(() -> {
+      final SilverLogger logger = SilverLogger.getLogger(this);
+      final List<String> pathProcessed = new ArrayList<>(indexWriters.size());
+      final Iterator<Map.Entry<String, IndexWriter>> it = indexWriters.entrySet().iterator();
+      logger.debug("flushing manager of indexation about {0} writer(s)", indexWriters.size());
+      while(it.hasNext()) {
+        final Map.Entry<String, IndexWriter> entry = it.next();
+        final String path = entry.getKey();
+        final IndexWriter writer = entry.getValue();
+        pathProcessed.add(path);
+        logger.debug("\t- closing writer of path {0}", path);
+        try {
+          writer.close();
+        } catch (IOException e) {
+          SilverLogger.getLogger(this).error("Cannot close index " + path, e);
+        }
+        // update the spelling index
+        if (enableDymIndexing) {
+          DidYouMeanIndexer.createSpellIndexForAllLanguage(CONTENT, path);
+        }
+        it.remove();
       }
-      // update the spelling index
-      if (enableDymIndexing) {
-        DidYouMeanIndexer.createSpellIndexForAllLanguage(CONTENT, path);
-      }
-      it.remove();
-    }
+      return pathProcessed;
+    });
   }
 
   private void removeIndexEntry(IndexWriter writer, IndexEntryKey indexEntry) {
@@ -192,8 +198,6 @@ public class IndexManager {
     try {
       // removing document according to indexEntryPK
       writer.deleteDocuments(term);
-      // closing associated index searcher and removing it from cache
-      IndexReadersCache.removeIndexReader(getIndexDirectoryPath(indexEntry));
     } catch (IOException e) {
       SilverLogger.getLogger(this).error("Index deletion failure: " + indexEntry.toString(), e);
     }
@@ -217,8 +221,6 @@ public class IndexManager {
     try {
       // removing documents according to SCOPE term
       writer.deleteDocuments(term);
-      // closing associated index searcher and removing it from cache
-      IndexReadersCache.removeIndexReader(getIndexDirectoryPath(scope));
     } catch (IOException e) {
       SilverLogger.getLogger(this).error("Index deletion failure for scope : " + scope, e);
     }

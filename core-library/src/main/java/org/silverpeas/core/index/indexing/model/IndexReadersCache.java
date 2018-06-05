@@ -26,7 +26,6 @@ package org.silverpeas.core.index.indexing.model;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.store.FSDirectory;
-import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
@@ -35,42 +34,55 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class IndexReadersCache {
-  private static final IndexReadersCache instance = new IndexReadersCache();
-  private Map<String, IndexReader> indexReaders;
+  private static final Object READER_MUTEX = new Object();
+  private static final Map<String, IndexReader> INDEX_READERS = new HashMap<>();
 
+  /**
+   * Hidden constructor
+   */
   private IndexReadersCache() {
-    indexReaders = new HashMap<>();
   }
 
-  private static IndexReadersCache getInstance() {
-    return instance;
-  }
-
-  public static synchronized IndexReader getIndexReader(String path) {
-    return getInstance().indexReaders.computeIfAbsent(path, p -> {
-      try {
-        final File directory = new File(p);
-        if (ArrayUtil.isNotEmpty(directory.list())) {
-          return DirectoryReader.open(FSDirectory.open(directory.toPath()));
-        } else {
-          SilverLogger.getLogger(IndexReadersCache.class)
-              .debug("index reader for path {0} can not be open as there is no index data", p);
+  /**
+   * This method must be called only within a
+   * {@link IndexProcessor.SearchIndexProcess#process()} implementation in order to get a
+   * right behavior against the concurrent accesses.
+   * @param path the index root path.
+   * @return the {@link IndexReader} well initialized if necessary.
+   */
+  public static IndexReader getIndexReader(String path) {
+    synchronized (READER_MUTEX) {
+      final File rootPath = new File(path);
+      IndexReader indexReader = INDEX_READERS.get(path);
+      if (indexReader == null && rootPath.exists()) {
+        try {
+          indexReader = DirectoryReader.open(FSDirectory.open(rootPath.toPath()));
+          INDEX_READERS.put(path, indexReader);
+        } catch (Exception e) {
+          SilverLogger.getLogger(IndexReadersCache.class).warn(e);
         }
-      } catch (Exception e) {
-        SilverLogger.getLogger(IndexReadersCache.class).error(e);
+      } else if (indexReader != null && !rootPath.exists()) {
+        SilverLogger.getLogger(IndexReadersCache.class).warn(
+            "index reader exists in cache but no index path is existing! ({0})", path);
+        closeIndexReader(path);
+        indexReader = null;
       }
-      return null;
-    });
+      return indexReader;
+    }
   }
 
-  public static synchronized void removeIndexReader(String path) {
-    getInstance().indexReaders.computeIfPresent(path, (p, r) -> {
-      try {
-        r.close();
-      } catch (IOException e) {
-        SilverLogger.getLogger(IndexReadersCache.class).error(e);
+  static void closeIndexReader(String path) {
+    synchronized (READER_MUTEX) {
+      final IndexReader indexReader = INDEX_READERS.remove(path);
+      if (indexReader != null) {
+        final SilverLogger logger = SilverLogger.getLogger(IndexReadersCache.class);
+        try {
+            logger.debug("closing reader of path {0}", path);
+          indexReader.close();
+        } catch (IOException e) {
+          logger.warn(e);
+        }
       }
-      return null;
-    });
+    }
   }
 }
