@@ -35,6 +35,7 @@ import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.LogDocMergePolicy;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.FSDirectory;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.IndexFileManager;
 import org.silverpeas.core.index.indexing.parser.Parser;
@@ -51,6 +52,8 @@ import javax.inject.Singleton;
 import java.io.File;
 import java.io.IOException;
 import java.io.Reader;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -60,6 +63,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static org.silverpeas.core.i18n.I18NHelper.defaultLocale;
+import static org.silverpeas.core.index.indexing.model.IndexProcessor.doRemoveAll;
 import static org.silverpeas.core.index.indexing.model.IndexProcessor.doFlush;
 
 /**
@@ -232,6 +236,18 @@ public class IndexManager {
     if (writer != null) {
       removeIndexEntries(writer, scope);
     }
+  }
+
+  void removeAllIndexEntries() {
+    doRemoveAll(() -> {
+      flush();
+      final File indexRepository = Paths.get(IndexFileManager.getIndexUpLoadPath()).toFile();
+      final File savedIndexRepository = Paths.get(indexRepository.getAbsolutePath() + "_" +
+          LocalDateTime.now().toString().replaceAll("[:']", "")).toFile();
+      if(!indexRepository.renameTo(savedIndexRepository)) {
+        throw new SilverpeasRuntimeException("index repository folder can not be renamed, please shutdown the server in order to rename it manually");
+      }
+    });
   }
 
   /**

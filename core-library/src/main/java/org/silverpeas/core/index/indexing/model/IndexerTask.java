@@ -25,7 +25,6 @@ package org.silverpeas.core.index.indexing.model;
 
 import org.silverpeas.core.thread.task.AbstractRequestTask;
 import org.silverpeas.core.thread.task.RequestTaskManager;
-import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Inject;
 
@@ -42,10 +41,6 @@ public class IndexerTask extends AbstractRequestTask<IndexerTask.IndexerProcessC
    */
   @Inject
   private IndexManager indexManager;
-
-  private static SilverLogger getLogger() {
-    return SilverLogger.getLogger(IndexerTask.class);
-  }
 
   /**
    * Add a request 'add entry index'.
@@ -69,6 +64,13 @@ public class IndexerTask extends AbstractRequestTask<IndexerTask.IndexerProcessC
    */
   public static void removeIndexEntriesByScope(String scope) {
     RequestTaskManager.push(IndexerTask.class, new RemoveScopedIndexEntriesRequest(scope));
+  }
+
+  /**
+   * Add a request 'remove all index entries'.
+   */
+  public static void removeAllIndexEntries() {
+    RequestTaskManager.push(IndexerTask.class, new RemoveAllIndexEntriesRequest());
   }
 
   @Override
@@ -164,6 +166,21 @@ public class IndexerTask extends AbstractRequestTask<IndexerTask.IndexerProcessC
     @Override
     public void process(IndexerProcessContext context) {
       context.getIndexManager().removeIndexEntries(scope);
+    }
+  }
+
+  /**
+   * A RemoveAllIndexEntriesRequest remove all entry indexes.
+   */
+  static class RemoveAllIndexEntriesRequest
+      implements AbstractRequestTask.Request<IndexerProcessContext> {
+
+    /**
+     * @param context process context.
+     */
+    @Override
+    public void process(IndexerProcessContext context) {
+      context.getIndexManager().removeAllIndexEntries();
     }
   }
 }

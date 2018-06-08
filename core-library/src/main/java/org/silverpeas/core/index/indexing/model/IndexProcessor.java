@@ -24,20 +24,27 @@
 package org.silverpeas.core.index.indexing.model;
 
 import org.silverpeas.core.index.search.model.ParseException;
+import org.silverpeas.core.util.ResourceLocator;
+import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.logging.SilverLogger;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.locks.StampedLock;
+import java.util.function.Supplier;
 
 /**
  * @author silveryocha
  */
 public class IndexProcessor {
+  private static final SettingBundle searchSettings =
+      ResourceLocator.getSettingBundle("org.silverpeas.index.search.searchEngineSettings");
+  private static final StampedLock SEARCH_LOCK = new StampedLock();
   private static final Object UPDATED_MUTEX = new Object();
   private static final Object MUTEX = new Object();
   private static final List<String> UPDATED_INDEXES = new ArrayList<>();
-  private static int currentSearchProcessing = 0;
 
   /**
    * Hidden constructor.
@@ -45,22 +52,30 @@ public class IndexProcessor {
   private IndexProcessor() {
   }
 
-  public static <R> R doSearch(SearchIndexProcess<R> searchIndexProcess) throws ParseException {
+  public static <R> R doSearch(SearchIndexProcess<R> searchIndexProcess, Supplier<R> defaultReturn) throws ParseException {
     final SilverLogger logger = SilverLogger.getLogger(IndexProcessor.class);
-    try {
-      synchronized (MUTEX) {
-        currentSearchProcessing += 1;
+    final long stamp;
+    synchronized (MUTEX) {
+      stamp = SEARCH_LOCK.tryReadLock();
+      if (stamp == 0) {
+        logger.debug("starting and ending directly search processing because of index removing");
+      } else {
         logger.debug(
-            "starts search processing and there are currently {0} search process(es) performing",
-            currentSearchProcessing);
+            "starting search processing and there are currently {0} search process(es) performing",
+            SEARCH_LOCK.getReadLockCount());
       }
+    }
+    if (stamp == 0) {
+      return defaultReturn.get();
+    }
+    try {
       return searchIndexProcess.process();
     } finally {
       synchronized (MUTEX) {
-        currentSearchProcessing -= 1;
+        SEARCH_LOCK.unlockRead(stamp);
         logger.debug(
-            "ends search processing and there are currently {0} search process(es) performing",
-            currentSearchProcessing);
+            "ending search processing and there are currently {0} search process(es) performing",
+            SEARCH_LOCK.getReadLockCount());
         closeIndexReaders();
       }
     }
@@ -76,21 +91,43 @@ public class IndexProcessor {
     }
   }
 
+  static void doRemoveAll(RemoveAllIndexesProcess removeAllIndexesProcess) {
+    final long stamp = SEARCH_LOCK.writeLock();
+    final SilverLogger logger = SilverLogger.getLogger(IndexProcessor.class);
+    logger.debug("starting remove of all index entries");
+    try {
+      logger.debug("closing all index readers");
+      IndexReadersCache.closeAllIndexReaders();
+      logger.debug("removing indexes");
+      removeAllIndexesProcess.process();
+    } catch (IOException e) {
+      logger.error(e);
+    } finally {
+      SEARCH_LOCK.unlockWrite(stamp);
+    }
+  }
+
   private static void closeIndexReaders() {
     final SilverLogger logger = SilverLogger.getLogger(IndexProcessor.class);
-    if (currentSearchProcessing == 0) {
+    if (SEARCH_LOCK.getReadLockCount() == 0) {
       synchronized (UPDATED_MUTEX) {
-        logger.debug("no search is currently being performed, so closing readers if any");
-        final Iterator<String> it = UPDATED_INDEXES.iterator();
-        while (it.hasNext()) {
-          final String path = it.next();
-          IndexReadersCache.closeIndexReader(path);
-          it.remove();
+        if (searchSettings.getBoolean("index.reader.closeAfterLastSearch", false)) {
+          logger.debug("no search is currently being performed, so closing all readers");
+          IndexReadersCache.closeAllIndexReaders();
+          UPDATED_INDEXES.clear();
+        } else {
+          logger.debug("no search is currently being performed, so closing readers if any");
+          final Iterator<String> it = UPDATED_INDEXES.iterator();
+          while (it.hasNext()) {
+            final String path = it.next();
+            IndexReadersCache.closeIndexReader(path);
+            it.remove();
+          }
         }
       }
     } else {
       logger.debug("no reader close is performed as {0} search process(es) are currently performed",
-          currentSearchProcessing);
+          SEARCH_LOCK.getReadLockCount());
     }
   }
 
@@ -107,5 +144,12 @@ public class IndexProcessor {
    */
   public interface FlushIndexProcess {
     List<String> process();
+  }
+
+  /**
+   * A flush process.
+   */
+  public interface RemoveAllIndexesProcess {
+    void process() throws IOException;
   }
 }

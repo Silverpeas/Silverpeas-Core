@@ -334,6 +334,10 @@ public class AdminController implements java.io.Serializable {
     admin.createSpaceIndex(spaceId);
   }
 
+  public void deleteAllSpaceIndexes() {
+    admin.deleteAllSpaceIndexes();
+  }
+
   /** Move space in the given space with the given fatherId */
   public void moveSpace(String spaceId, String fatherId) throws AdminException {
 
@@ -494,6 +498,10 @@ public class AdminController implements java.io.Serializable {
 
   public void indexComponent(String componentId) {
     admin.createComponentIndex(componentId);
+  }
+
+  public void deleteAllComponentIndexes() {
+    admin.deleteAllComponentIndexes();
   }
 
   // ----------------------------------------------

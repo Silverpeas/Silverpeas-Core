@@ -26,6 +26,7 @@ package org.silverpeas.core.web.index;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.index.indexing.model.IndexEngineProxy;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -36,8 +37,21 @@ import org.silverpeas.core.util.logging.SilverLogger;
 public abstract class AbstractIndexer {
 
   protected final AdminController admin = ServiceProvider.getService(AdminController.class);
+  private boolean indexAllProcess = false;
 
-  public void indexAllSpaces() {
+  public final void indexAll() {
+    indexAllProcess = true;
+    IndexEngineProxy.removeAllIndexEntries();
+    indexAllData();
+  }
+
+  protected abstract void indexAllData();
+
+  public final void indexAllSpaces() {
+    if (!isIndexAllProcess()) {
+      admin.deleteAllSpaceIndexes();
+      admin.deleteAllComponentIndexes();
+    }
     index(null, null);
   }
 
@@ -101,8 +115,11 @@ public abstract class AbstractIndexer {
   }
 
   protected void indexPersonalComponents() {
-    indexPersonalComponent("Agenda");
     indexPersonalComponent("Todo");
+  }
+
+  protected boolean isIndexAllProcess() {
+    return indexAllProcess;
   }
 
   public abstract void indexComponent(String spaceId, String componentId);

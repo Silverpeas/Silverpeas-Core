@@ -26,9 +26,9 @@
 
 package org.silverpeas.web.todo;
 
-import org.silverpeas.core.web.index.tools.PersonalToolIndexation;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
-import org.silverpeas.web.todo.control.TodoException;
+import org.silverpeas.core.web.index.tools.PersonalToolIndexation;
 
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -42,7 +42,7 @@ public class TodoIndexer implements PersonalToolIndexation {
   private SilverpeasCalendar calendar;
 
   @Override
-  public void index() throws TodoException {
+  public void index() throws SilverpeasException {
     calendar.indexAllTodo();
   }
 

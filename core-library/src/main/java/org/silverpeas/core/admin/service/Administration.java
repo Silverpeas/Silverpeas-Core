@@ -79,6 +79,8 @@ public interface Administration {
 
   void deleteSpaceIndex(SpaceInst spaceInst);
 
+  void deleteAllSpaceIndexes();
+
   /**
    * add a space instance in database
    * @param userId Id of user who add the space
@@ -270,6 +272,8 @@ public interface Administration {
    * @param componentInst
    */
   void createComponentIndex(ComponentInstLight componentInst);
+
+  void deleteAllComponentIndexes();
 
   String addComponentInst(String sUserId, ComponentInst componentInst)
       throws AdminException, QuotaException;

@@ -49,7 +49,8 @@ public class ApplicationDYMIndexer extends AbstractIndexer {
    * Indexes all spelling indexes
    * @throws Exception whether an exception occurred
    */
-  public void indexAll() {
+  @Override
+  protected void indexAllData() {
     indexAllSpaces();
     indexPersonalComponents();
     indexPdc();

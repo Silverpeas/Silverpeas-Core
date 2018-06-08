@@ -42,7 +42,8 @@ public class ApplicationIndexer extends AbstractIndexer {
     return ServiceProvider.getService(ApplicationIndexer.class);
   }
 
-  public void indexAll() {
+  @Override
+  protected void indexAllData() {
     indexAllSpaces();
     indexPersonalComponents();
     indexPdc();
@@ -72,7 +73,7 @@ public class ApplicationIndexer extends AbstractIndexer {
         if (!spaceId.equals(compoInst.getSpaceId()) && !compoInst.isPersonal()) {
           ((ComponentInstLight) compoInst).setDomainFatherId(spaceId);
         }
-        componentIndexer.index(compoInst);
+        componentIndexer.index(compoInst, !isIndexAllProcess());
       } catch (Exception e) {
         SilverLogger.getLogger(this)
             .error("failure while indexing component ''{0}'' with id ''{1}''",

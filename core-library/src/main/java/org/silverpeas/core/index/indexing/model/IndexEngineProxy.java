@@ -64,6 +64,13 @@ public final class IndexEngineProxy {
     IndexerTask.removeIndexEntriesByScope(scope);
   }
 
+  /**
+   * Removes all the index entries.
+   */
+  public void deleteAll() {
+    IndexerTask.removeAllIndexEntries();
+  }
+
   public static IndexEngineProxy get() {
     return ServiceProvider.getService(IndexEngineProxy.class);
   }
@@ -89,4 +96,10 @@ public final class IndexEngineProxy {
     get().deleteByScope(scope);
   }
 
+  /**
+   * Removes all entry indexes.
+   */
+  public static void removeAllIndexEntries() {
+    get().deleteAll();
+  }
 }

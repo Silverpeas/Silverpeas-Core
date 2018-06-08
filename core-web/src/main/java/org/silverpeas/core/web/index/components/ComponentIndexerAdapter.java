@@ -36,7 +36,12 @@ import static org.silverpeas.core.util.logging.SilverLogger.getLogger;
 public class ComponentIndexerAdapter implements ComponentIndexation {
 
   @Override
-  public void index(SilverpeasComponentInstance componentInst) throws Exception {
+  public void index(SilverpeasComponentInstance componentInst) {
     getLogger(this).debug("No indexer for component instance {0}", componentInst.getId());
+  }
+
+  @Override
+  public void index(final SilverpeasComponentInstance componentInst, final boolean deleteAllBefore) {
+    index(componentInst);
   }
 }

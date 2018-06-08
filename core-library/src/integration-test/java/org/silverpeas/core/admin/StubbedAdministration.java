@@ -93,6 +93,11 @@ public class StubbedAdministration implements Administration {
   }
 
   @Override
+  public void deleteAllSpaceIndexes() {
+
+  }
+
+  @Override
   public String addSpaceInst(final String userId, final SpaceInst spaceInst) throws AdminException {
     return null;
   }
@@ -224,6 +229,11 @@ public class StubbedAdministration implements Administration {
   @Override
   public void createComponentIndex(final ComponentInstLight componentInst) {
 
+  }
+
+  @Override
+  public void deleteAllComponentIndexes() {
+    
   }
 
   @Override

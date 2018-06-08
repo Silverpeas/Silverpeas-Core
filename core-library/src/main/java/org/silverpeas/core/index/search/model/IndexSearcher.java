@@ -175,7 +175,7 @@ public class IndexSearcher {
         SilverLogger.getLogger(this).error("Index file corrupted", ioe);
       }
       return matchingIndexEntry;
-    });
+    }, () -> null);
   }
 
   /**
@@ -226,7 +226,7 @@ public class IndexSearcher {
       SilverLogger.getLogger(this).debug(
           () -> MessageFormat.format(" search duration in {0}ms", (endTime - startTime) / 1000000));
       return results.toArray(new MatchingIndexEntry[0]);
-    });
+    }, () -> new MatchingIndexEntry[0]);
   }
 
   private void parseQuery(final QueryDescription query,
