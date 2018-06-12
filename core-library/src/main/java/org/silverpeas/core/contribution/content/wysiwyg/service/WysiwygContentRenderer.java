@@ -46,6 +46,7 @@ public class WysiwygContentRenderer extends AbstractContributionRenderer<Wysiwyg
     return WysiwygContentTransformer
         .on(getContent().getData())
         .modifyImageUrlAccordingToHtmlSizeDirective()
+        .resolveVariablesDirective()
         .transform();
   }
 

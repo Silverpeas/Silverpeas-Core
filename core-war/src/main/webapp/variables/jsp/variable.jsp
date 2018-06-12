@@ -174,7 +174,7 @@
     }
   </script>
 </head>
-<body class="page_content_admin">
+<body class="page_content_admin variable_admin">
 <view:browseBar extraInformations="${variable.label}">
   <view:browseBarElt link="Main" label="${browseBarAll}"/>
 </view:browseBar>
@@ -216,8 +216,8 @@
           <view:arrayCellText text="${silfn:formatDate(silfn:toDate(value.period.startDate), lang)}" compareOn="${value.period.startDate}" classes="ArrayCell colBegin"/>
           <view:arrayCellText text="${silfn:formatDate(silfn:toDate(value.period.endDate), lang)}" compareOn="${value.period.endDate}" classes="ArrayCell colEnd"/>
           <view:arrayCellText>
-            <a href="#" onclick="editScheduledValue('${value.id}')" title="${opUpdate}"><img src="${iconUpdate}" alt="${opUpdate}"/></a>
-            <a href="#" onclick="deleteScheduledValue('${value.id}')" title="${opDelete}"><img src="${iconDelete}" alt="${opDelete}"/></a>
+            <a href="#" onclick="editScheduledValue('${value.id}')" title="${opUpdate}" class="edit-value"><img src="${iconUpdate}" alt="${opUpdate}"/></a>
+            <a href="#" onclick="deleteScheduledValue('${value.id}')" title="${opDelete}" class="delete-value"><img src="${iconDelete}" alt="${opDelete}"/></a>
           </view:arrayCellText>
         </view:arrayLine>
         </c:forEach>

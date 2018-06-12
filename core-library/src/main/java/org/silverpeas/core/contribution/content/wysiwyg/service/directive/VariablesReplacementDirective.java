@@ -27,6 +27,7 @@ import net.htmlparser.jericho.Element;
 import net.htmlparser.jericho.HTMLElementName;
 import net.htmlparser.jericho.Source;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformerDirective;
+import org.silverpeas.core.util.WebEncodeHelper;
 import org.silverpeas.core.variables.Variable;
 
 import java.util.HashMap;
@@ -57,7 +58,8 @@ public class VariablesReplacementDirective implements WysiwygContentTransformerD
           Variable variable = Variable.getById(valueId);
           if (variable != null) {
             variable.getVariableValues().getCurrent().ifPresent(v -> {
-              String newSpanTag = currentSpan.getStartTag().toString() + v.getValue() +
+              String newSpanTag = currentSpan.getStartTag().toString() +
+                  WebEncodeHelper.javaStringToHtmlParagraphe(v.getValue()) +
                   currentSpan.getEndTag().toString();
               replacements.put(spanTag, newSpanTag);
             });
@@ -68,8 +70,8 @@ public class VariablesReplacementDirective implements WysiwygContentTransformerD
 
     String transformedWysiwygContent = wysiwygToTransform;
     for (Map.Entry<String, String> replacement : replacements.entrySet()) {
-      transformedWysiwygContent =
-          transformedWysiwygContent.replace(replacement.getKey(), replacement.getValue());
+      transformedWysiwygContent = transformedWysiwygContent.replace(replacement.getKey(),
+          replacement.getValue());
     }
 
     // Returning the transformed WYSIWYG.

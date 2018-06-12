@@ -6907,6 +6907,7 @@ silverpeas-contribution-reminder a.add-action {
   text-align: center;
 }
 
-.variables_admin .edit-variable {
+.variables_admin .edit-variable,
+.variable_admin .edit-value {
   margin-right: 10px;
 }

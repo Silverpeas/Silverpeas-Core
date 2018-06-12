@@ -138,6 +138,14 @@ public class Variable extends SilverpeasJpaEntity<Variable, UuidIdentifier> impl
     return new VariableValueSet(this);
   }
 
+  /*
+   * Gets this variable's number of values
+   * @return the number of values
+   */
+  public int getNumberOfValues() {
+    return values().size();
+  }
+
   /**
    * Merges the attributes of this variable with the ones from the specified variable.
    * Only the title and the description are merged. For the different values, please see the
