@@ -175,12 +175,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     try {
       int indexOperation = detail.getIndexOperation();
       int id;
-      try {
-        id = DBUtil.getNextId(detail.getPK().getTableName(), "pubId");
-      } catch (SQLException ex) {
-        throw new PublicationRuntimeException("PublicationEJB.ejbCreate()",
-            SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", ex);
-      }
+      id = DBUtil.getNextId(detail.getPK().getTableName(), "pubId");
       detail.getPK().setId(String.valueOf(id));
       try {
         PublicationDAO.insertRow(con, detail);

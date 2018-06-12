@@ -39,7 +39,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -293,29 +292,24 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
   @Override
   @Transactional(Transactional.TxType.MANDATORY)
   public String createGroup(GroupDetail group) {
-    try {
-      SPGroup spGroup = new SPGroup();
-      int id = DBUtil.getNextId("domainsp_group", "id");
-      spGroup.setId(id);
-      group.setId(String.valueOf(id));
-      spGroup.setDescription(group.getDescription());
-      spGroup.setName(group.getName());
-      if (StringUtil.isInteger(group.getSuperGroupId())) {
-        SPGroup parent = spGroupRepository.getById(group.getSuperGroupId());
-        spGroup.setParent(parent);
-      }
-      String[] userIds = group.getUserIds();
-      for (String userId : userIds) {
-        SPUser user = spUserRepository.getById(userId);
-        spGroup.getUsers().add(user);
-        user.getGroups().add(spGroup);
-      }
-      spGroup = spGroupRepository.saveAndFlush(spGroup);
-      return String.valueOf(spGroup.getId());
-    } catch (SQLException ex) {
-      SilverLogger.getLogger(this).error(ex.getMessage(), ex);
+    SPGroup spGroup = new SPGroup();
+    int id = DBUtil.getNextId("domainsp_group", "id");
+    spGroup.setId(id);
+    group.setId(String.valueOf(id));
+    spGroup.setDescription(group.getDescription());
+    spGroup.setName(group.getName());
+    if (StringUtil.isInteger(group.getSuperGroupId())) {
+      SPGroup parent = spGroupRepository.getById(group.getSuperGroupId());
+      spGroup.setParent(parent);
     }
-    return "";
+    String[] userIds = group.getUserIds();
+    for (String userId : userIds) {
+      SPUser user = spUserRepository.getById(userId);
+      spGroup.getUsers().add(user);
+      user.getGroups().add(spGroup);
+    }
+    spGroup = spGroupRepository.saveAndFlush(spGroup);
+    return String.valueOf(spGroup.getId());
   }
 
   @Override

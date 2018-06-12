@@ -30,7 +30,6 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
-import java.sql.SQLException;
 
 /**
  * @author ebonnet
@@ -77,13 +76,9 @@ public class UniqueIntegerIdentifier implements EntityIdentifier {
    */
   @Override
   public UniqueIntegerIdentifier generateNewId(String ... parameters) {
-    try {
-      final String tableName = parameters[0];
-      final String tableColumnIdName = parameters[1];
-      this.id = DBUtil.getNextId(tableName, tableColumnIdName);
-    } catch (SQLException e) {
-      throw new RuntimeException(e.getMessage(), e);
-    }
+    final String tableName = parameters[0];
+    final String tableColumnIdName = parameters[1];
+    this.id = DBUtil.getNextId(tableName, tableColumnIdName);
     return this;
   }
 

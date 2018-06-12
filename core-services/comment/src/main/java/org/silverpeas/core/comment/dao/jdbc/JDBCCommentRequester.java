@@ -23,18 +23,18 @@
  */
 package org.silverpeas.core.comment.dao.jdbc;
 
+import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.comment.model.Comment;
 import org.silverpeas.core.comment.model.CommentPK;
 import org.silverpeas.core.comment.model.CommentedPublicationInfo;
 import org.silverpeas.core.comment.socialnetwork.SocialInformationComment;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.apache.commons.lang3.StringUtils;
 import org.silverpeas.core.date.period.Period;
-import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.WAPrimaryKey;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -76,13 +76,7 @@ public class JDBCCommentRequester {
         + "VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
     PreparedStatement prep_stmt = null;
     int newId;
-    try {
-      newId = DBUtil.getNextId(cmt.getCommentPK().getTableName(), "commentId");
-    } catch (SQLException e) {
-      SilverTrace.warn("comments", getClass().getSimpleName() + ".createComment",
-          "root.EX_PK_GENERATION_FAILED", e);
-      return null;
-    }
+    newId = DBUtil.getNextId(cmt.getCommentPK().getTableName(), "commentId");
     try {
       prep_stmt = con.prepareStatement(insert_query);
       prep_stmt.setInt(1, newId);

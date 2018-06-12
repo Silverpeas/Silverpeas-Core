@@ -28,7 +28,6 @@ import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.answer.model.AnswerPK;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResult;
 import org.silverpeas.core.questioncontainer.result.model.QuestionResultPK;
-import org.silverpeas.core.questioncontainer.result.model.QuestionResultRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -235,12 +234,8 @@ public class QuestionResultDAO {
     int elapsedTime = result.getElapsedTime();
     int participationId = result.getParticipationId();
 
-    try {
-      // get new identifier
-      newId = DBUtil.getNextId("sb_question_questionresult", "qrId");
-    } catch (SQLException ue) {
-      throw new QuestionResultRuntimeException(ue);
-    }
+    // get new identifier
+    newId = DBUtil.getNextId("sb_question_questionresult", "qrId");
 
     String selectStatement =
         "INSERT INTO sb_question_questionresult VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
