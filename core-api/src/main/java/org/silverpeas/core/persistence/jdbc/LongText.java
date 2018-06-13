@@ -104,7 +104,7 @@ public class LongText {
     try {
       final int idIndex = 1;
       final int contentIndex = idIndex + 1;
-      final Mutable<Integer> previousId = Mutable.of(-1);
+      final Mutable<Integer> previousId = Mutable.empty();
       final StringBuilder content = new StringBuilder();
       final Map<Integer, String> result = new HashMap<>();
       JdbcSqlQuery.createSelect("id, bodyContent from ST_LongText")
@@ -112,17 +112,15 @@ public class LongText {
           .addSqlPart("order by id, orderNum")
           .execute(row -> {
             final int id = row.getInt(idIndex);
-            if (!row.isFirst() && !previousId.is(id)) {
-              result.put(previousId.get(), content.toString());
+            previousId.filter(i-> i != id).ifPresent(i -> {
+              result.put(i, content.toString());
               content.setLength(0);
-            }
+            });
             previousId.set(id);
             content.append(row.getString(contentIndex));
-            if (row.isLast()) {
-              result.put(id, content.toString());
-            }
             return null;
           });
+      previousId.ifPresent(i -> result.put(i, content.toString()));
       return result;
     } catch (Exception e) {
       throw new SilverpeasRuntimeException(e);
