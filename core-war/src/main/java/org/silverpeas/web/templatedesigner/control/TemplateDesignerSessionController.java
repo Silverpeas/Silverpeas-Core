@@ -23,8 +23,11 @@
  */
 package org.silverpeas.web.templatedesigner.control;
 
-import org.silverpeas.core.admin.component.model.WAComponent;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.silverpeas.core.admin.component.model.LocalizedComponent;
+import org.silverpeas.core.admin.component.model.WAComponent;
+import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
@@ -32,22 +35,20 @@ import org.silverpeas.core.contribution.template.publication.PublicationTemplate
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateImpl;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.logging.SilverLogger;
-import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
-import org.silverpeas.web.templatedesigner.model.TemplateDesignerException;
-import org.silverpeas.core.ui.DisplayI18NHelper;
-import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.security.encryption.ContentEncryptionService;
 import org.silverpeas.core.security.encryption.ContentEncryptionServiceProvider;
+import org.silverpeas.core.security.encryption.cipher.CryptoException;
+import org.silverpeas.core.ui.DisplayI18NHelper;
+import org.silverpeas.core.util.ServiceProvider;
+import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
 import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminController;
-import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.web.mvc.webcomponent.WebMessager;
+import org.silverpeas.web.templatedesigner.model.TemplateDesignerException;
 
 import java.io.File;
 import java.io.IOException;
@@ -61,10 +62,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
-import org.silverpeas.core.security.encryption.cipher.CryptoException;
 
 public class TemplateDesignerSessionController extends AbstractComponentSessionController {
 
@@ -151,7 +148,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     if (!templateDir.exists()) {
       try {
         FileFolderManager.createFolder(templateDir);
-      } catch (UtilException e) {
+      } catch (org.silverpeas.core.util.UtilException e) {
         throw new TemplateDesignerException(getClass().getSimpleName() + ".createTemplate",
             SilverpeasException.ERROR, "root.EX_NO_MESSAGE", e);
       }
@@ -374,8 +371,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       }
     } catch (PublicationTemplateException e) {
       // Do nothing
-      SilverTrace.error("templateDesigner", "TemplateDesignerSessionController.getRecordTemplate()",
-          "root.EX_NO_MESSAGE", e);
+      SilverLogger.getLogger(this).error(e);
     }
     return recordTemplate;
   }

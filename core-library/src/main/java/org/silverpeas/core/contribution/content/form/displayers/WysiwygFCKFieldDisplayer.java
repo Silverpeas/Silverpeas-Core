@@ -43,7 +43,6 @@ import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTr
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygController;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
@@ -51,6 +50,7 @@ import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -103,7 +103,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
    * Prints the javascripts which will be used to control the new value given to the named field.
    * The error messages may be adapted to a local language. The FieldTemplate gives the field type
    * and constraints. The FieldTemplate gives the local labeld too. Never throws an Exception but
-   * log a silvertrace and writes an empty string when :
+   * log a message and writes an empty string when :
    * <UL>
    * <LI>the fieldName is unknown by the template.
    * <LI>the field type is not a managed type.
@@ -138,7 +138,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   /**
    * Prints the HTML value of the field. The displayed value must be updatable by the end user. The
    * value format may be adapted to a local language. The fieldName must be used to name the html
-   * form input. Never throws an Exception but log a silvertrace and writes an empty string when :
+   * form input. Never throws an Exception but log a message and writes an empty string when :
    * <UL>
    * <LI>the field type is not a managed type.
    * </UL>
@@ -331,8 +331,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
           Source source = new Source(new FileInputStream(file));
           fieldValueIndex = source.getTextExtractor().toString();
         } catch (IOException ioex) {
-          SilverTrace.warn("form", "WysiwygFCKFieldDisplayer.index", "form.incorrect_data",
-              "File not found " + file + " " + ioex.getMessage(), ioex);
+          SilverLogger.getLogger(this).warn(ioex);
         }
         indexEntry.addTextContent(fieldValueIndex, language);
       } else {
@@ -400,7 +399,7 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
   public static String getContentFromFile(String componentId, String fileName) {
     if (StringUtil.isDefined(fileName) && isDirectoryExists(componentId)) {
       String path = getPath(componentId);
-      return FileFolderManager.getCode(path, fileName);
+      return FileFolderManager.getFileContent(path, fileName);
     }
     return "";
   }

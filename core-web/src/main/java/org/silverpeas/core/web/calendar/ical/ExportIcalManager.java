@@ -30,22 +30,21 @@ import org.silverpeas.core.calendar.Priority;
 import org.silverpeas.core.calendar.VisibilityLevel;
 import org.silverpeas.core.date.Period;
 import org.silverpeas.core.exception.SilverpeasException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.importexport.ExportDescriptor;
 import org.silverpeas.core.importexport.Exporter;
-import org.silverpeas.core.importexport.ical.ICalExporterProvider;
 import org.silverpeas.core.importexport.ical.ExportableCalendar;
+import org.silverpeas.core.importexport.ical.ICalExporterProvider;
 import org.silverpeas.core.personalorganizer.model.Attendee;
 import org.silverpeas.core.personalorganizer.model.Category;
 import org.silverpeas.core.personalorganizer.model.JournalHeader;
 import org.silverpeas.core.personalorganizer.model.ParticipationStatus;
 import org.silverpeas.core.personalorganizer.service.SilverpeasCalendar;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.web.tools.agenda.control.AgendaException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaRuntimeException;
 import org.silverpeas.core.web.tools.agenda.control.AgendaSessionController;
@@ -132,12 +131,10 @@ public class ExportIcalManager {
       }
     } catch (Exception ex) {
       try {
-        SilverTrace.error("agenda", getClass().getSimpleName() + ".exportIcalAgenda()",
-            "root.EX_NO_MESSAGE", ex);
+        SilverLogger.getLogger(this).error(ex);
         FileFolderManager.deleteFile(filePath);
-      } catch (UtilException ex1) {
-        SilverTrace.error("agenda", getClass().getSimpleName() + ".exportIcalAgenda()",
-            "root.EX_NO_MESSAGE", ex1);
+      } catch (org.silverpeas.core.util.UtilException ex1) {
+        SilverLogger.getLogger(this).error(ex1);
       }
       throw new AgendaException("ExportIcalManager.exportIcalAgenda()",
           SilverpeasException.ERROR, "agenda.EXPORT_ICAL_FAILED", ex);
@@ -182,12 +179,10 @@ public class ExportIcalManager {
       }
     } catch (Exception ex) {
       try {
-        SilverTrace.error("agenda", getClass().getSimpleName() + ".exportIcalAgenda()",
-            "root.EX_NO_MESSAGE", ex);
+        SilverLogger.getLogger(this).error(ex);
         FileFolderManager.deleteFile(filePath);
-      } catch (UtilException ex1) {
-        SilverTrace.error("agenda", getClass().getSimpleName() + ".exportIcalAgenda()",
-            "root.EX_NO_MESSAGE", ex1);
+      } catch (org.silverpeas.core.util.UtilException ex1) {
+        SilverLogger.getLogger(this).error(ex1);
       }
       throw new AgendaException("ExportIcalManager.exportIcalAgendaForSynchro()",
           SilverpeasException.ERROR, "agenda.EXPORT_ICAL_FAILED", ex);

@@ -23,6 +23,11 @@
  */
 package org.silverpeas.core.security.encryption;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.security.encryption.cipher.Cipher;
@@ -31,23 +36,20 @@ import org.silverpeas.core.security.encryption.cipher.CipherKey;
 import org.silverpeas.core.security.encryption.cipher.CryptographicAlgorithmName;
 import org.silverpeas.core.test.rule.CommonAPI4Test;
 import org.silverpeas.core.util.EncodingUtil;
-import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.RandomStringUtils;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.junit.After;
-import org.junit.Before;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.io.StringReader;
+import java.nio.file.Files;
 import java.security.Security;
 import java.text.ParseException;
 import java.util.Random;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * The base class of all tests on the services provided by the DefaultContentEncryptionService instances.
@@ -169,7 +171,8 @@ public abstract class ContentEncryptionServiceTest {
     }
     String encryptedKey = encryptKey(key);
     String encryptedContent = StringUtil.asBase64(CIPHER_KEY.getRawKey()) + " " + encryptedKey;
-    FileUtil.writeFile(keyFile, new StringReader(encryptedContent));
+    Files.copy(new ByteArrayInputStream(encryptedContent.getBytes()), keyFile.toPath(),
+        REPLACE_EXISTING);
     keyFile.setReadOnly();
   }
 
@@ -185,7 +188,8 @@ public abstract class ContentEncryptionServiceTest {
     }
     String encryptedKey = encryptKey(key);
     String encryptedContent = StringUtil.asBase64(CIPHER_KEY.getRawKey()) + " " + encryptedKey;
-    FileUtil.writeFile(keyFile, new StringReader(encryptedContent));
+    Files.copy(new ByteArrayInputStream(encryptedContent.getBytes()), keyFile.toPath(),
+        REPLACE_EXISTING);
     keyFile.setReadOnly();
   }
 

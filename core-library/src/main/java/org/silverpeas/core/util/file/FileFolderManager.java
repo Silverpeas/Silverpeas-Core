@@ -23,320 +23,294 @@
  */
 package org.silverpeas.core.util.file;
 
-/**
- *
- * @author  cbonin
- * @version
- */
-
-import org.silverpeas.core.util.ImageUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.exception.UtilException;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOCase;
 import org.apache.commons.io.comparator.NameFileComparator;
+import org.silverpeas.core.util.Charsets;
+import org.silverpeas.core.util.ImageUtil;
+import org.silverpeas.core.util.UtilException;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class FileFolderManager {
 
+  private static final String NOT_A_DIRECTORY_MSG = " isn't a directory";
+
   /**
-   * retourne une Collection d'objets File qui representent les repertoires (et seulement les
-   * repertoires, pas les fichiers) contenus dans le repertoire passe en parametre
-   * @param chemin le chemin du repertoire
-   * @return une Collection d'objets File qui representent les repertoires (et seulement les
-   * repertoires, pas les fichiers) contenus dans le repertoire passe en parametre
-   * @throws UtilException
+   * Gets all the folders (an only the folders, not the files) that are directly inside the
+   * specified directory. Throws an {@link UtilException} if the
+   * specified path doesn't denote a directory or if the listing of all of its directories fails.
+   * @param path the path of the directory.
+   * @return a collection of folders.
    */
-  public static Collection<File> getAllSubFolder(String chemin) throws UtilException {
-    List<File> resultat = new ArrayList<File>();
-    File directory = new File(chemin);
-    if (directory.isDirectory()) {
-      File[] list = directory.listFiles();
-      for (File file : list) {
-        if (file.isDirectory()) {
-          resultat.add(file);
-        }
+  public static Collection<File> getAllSubFolder(final String path) {
+    final List<File> result;
+    final Path directory = Paths.get(path);
+    if (directory.toFile().isDirectory()) {
+      try (final Stream<Path> folders = Files.list(directory)) {
+        result = folders.filter(p -> p.toFile().isDirectory())
+            .map(Path::toFile)
+            .collect(Collectors.toList());
+      } catch (IOException e) {
+        throw new UtilException(e);
       }
     } else {
-      SilverTrace.error("util", "FileFolderManager.getAllSubFolder", "util.EX_NO_CHEMIN_REPOS",
-          chemin);
-      throw new UtilException("FileFolderManager.getAllSubFolder", "util.EX_NO_CHEMIN_REPOS",
-          chemin);
+      throw new UtilException(path + NOT_A_DIRECTORY_MSG);
     }
-    return resultat;
+    return result;
   }
 
   /**
-   * Returns all the files (and only the files, no directory) inside the given directory.
-   * @param chemin
-   * @return
-   * @throws UtilException
+   * Returns all the files (and only the files, not the directories) that are directly inside the
+   * given directory. Throws an {@link UtilException} if the
+   * specified path doesn't denote a directory or if the listing of all of its files fails.
+   * @param path the path of the directory
+   * @return a collection of files
    */
-  public static Collection<File> getAllFile(String chemin) throws UtilException {
-    List<File> resultat = new ArrayList<File>();
-    File directory = new File(chemin);
-    if (directory.isDirectory()) {
-       resultat = new ArrayList<File>(FileUtils.listFiles(directory, null, false));
-       Collections.sort(resultat, new NameFileComparator(IOCase.INSENSITIVE));
-    } else {
-      SilverTrace.error("util", "FileFolderManager.getAllFile", "util.EX_NO_CHEMIN_REPOS", chemin);
-      throw new UtilException("FileFolderManager.getAllFile", "util.EX_NO_CHEMIN_REPOS", chemin);
-    }
-    return resultat;
-  }
-
-  /**
-   * Returns all the image files (and only the files, no directory) inside the given directory.
-   * @param chemin
-   * @return
-   * @throws UtilException
-   */
-  public static Collection<File> getAllImages(String chemin) throws UtilException {
-
-    File directory = new File(chemin);
-    if (directory.isDirectory()) {
-      return FileUtil.listFiles(directory, ImageUtil.IMAGE_EXTENTIONS, false, true);
-    } else {
-      SilverTrace
-          .error("util", "FileFolderManager.getAllImages", "util.EX_NO_CHEMIN_REPOS", chemin);
-      throw new UtilException("FileFolderManager.getAllImages", "util.EX_NO_CHEMIN_REPOS", chemin);
-    }
-  }
-
-  /**
-   * Retourne une Collection d'objets File qui representent les fichiers du site web contenus dans
-   * le repertoire passe en parametre et ses sous repertoires
-   * @param chemin le chemin du repertoire du site
-   * @return une Collection d'objets File qui representent les fichiers du site web contenus dans le
-   * repertoire passe en parametre et ses sous repertoires
-   * @throws UtilException
-   */
-  public static Collection<File> getAllWebPages(String chemin) throws UtilException {
-    List<File> resultat = new ArrayList<File>();
-
-    File directory = new File(chemin);
-    if (directory.isDirectory()) {
-      File[] list = directory.listFiles();
-      for (File file : list) {
-        if (file.isFile()) {
-          resultat.add(file);
-        } else if (file.isDirectory()) {
-          String cheminRep = file.getAbsolutePath();
-          Collection<File> fich = getAllWebPages(cheminRep);
-          for (File page : fich) {
-            resultat.add(page);
-          }
-        }
+  public static Collection<File> getAllFile(final String path) {
+    final List<File> result;
+    final Path directory = Paths.get(path);
+    if (directory.toFile().isDirectory()) {
+      try (final Stream<Path> folders = Files.list(directory)) {
+        result = folders.filter(p -> p.toFile().isFile())
+            .map(Path::toFile)
+            .sorted(new NameFileComparator(IOCase.INSENSITIVE))
+            .collect(Collectors.toList());
+      } catch (IOException e) {
+        throw new UtilException(e);
       }
     } else {
-      SilverTrace.error("util", "FileFolderManager.getAllWebPages",
-          "util.EX_NO_CHEMIN_REPOS", chemin);
-      throw new UtilException("FileFolderManager.getAllWebPages",
-          "util.EX_NO_CHEMIN_REPOS", chemin);
+      throw new UtilException(path + NOT_A_DIRECTORY_MSG);
     }
-    return resultat;
+    return result;
   }
 
   /**
-   * getAllWebPages2 : retourne une Collection d'objets File qui representent les fichiers web (type
-   * HTML) contenus dans le repertoire passe en parametre et seulement dans ce repertoire Param =
-   * chemin du repertoire du site
+   * Returns all the images that are inside the given directory and its subdirectories.
+   * Throws an {@link UtilException} if the specified path doesn't
+   * denote a directory or if the recursive listing of all of the images fails.
+   * @param path the path of the directory.
+   * @return a collection of image files.
    */
-  public static Collection<File> getAllWebPages2(String chemin) throws Exception {
-    List<File> resultat = new ArrayList<File>();
-
-    File directory = new File(chemin);
-    if (directory.isDirectory()) {
-      File[] list = directory.listFiles();
-      for (File file : list) {
-        if (file.isFile()) {
-          String fichier = file.getName();
-          int indexPoint = fichier.lastIndexOf(".");
-          String type = fichier.substring(indexPoint + 1);
-          if ("htm".equals(type.toLowerCase()) || "html".equals(type.toLowerCase())) {
-            resultat.add(file);
-          }
-        }
+  public static Collection<File> getAllImages(final String path) {
+    final List<File> result;
+    final Path directory = Paths.get(path);
+    if (directory.toFile().isDirectory()) {
+      try (final Stream<Path> files = Files.walk(directory)) {
+        result = files.filter(p -> Stream.of(ImageUtil.IMAGE_EXTENTIONS)
+            .anyMatch(e -> p.toFile().getName().toLowerCase().endsWith(e.toLowerCase())))
+            .map(Path::toFile)
+            .collect(Collectors.toList());
+      } catch (IOException e) {
+        throw new UtilException(e);
       }
     } else {
-      SilverTrace.error("util", "FileFolderManager.getAllWebPages2",
-          "util.EX_NO_CHEMIN_REPOS", chemin);
-      throw new UtilException("FileFolderManager.getAllWebPages2",
-          "util.EX_NO_CHEMIN_REPOS", chemin);
+      throw new UtilException(path + NOT_A_DIRECTORY_MSG);
     }
-    return resultat;
+    return result;
   }
 
   /**
-   * creation d'un repertoire
-   * @param chemin le chemin du repertoire
-   * @throws UtilException
+   * Gets all the web pages that are inside the specified directory and its subdirectories,
+   * whatever their type (HTML, ...).
+   * Throws an {@link UtilException} if the specified path doesn't
+   * denote a directory or if the recursive listing of all of the web pages fails.
+   * @param path the path of the directory containing web pages.
+   * @return a collection of web pages.
    */
-  public static void createFolder(String chemin) throws UtilException {
+  public static Collection<File> getAllWebPages(final String path) {
+    final List<File> result;
+    final Path directory = Paths.get(path);
+    if (directory.toFile().isDirectory()) {
+      try (final Stream<Path> files = Files.walk(directory)) {
+        result = files.map(Path::toFile).filter(File::isFile).collect(Collectors.toList());
+      } catch (IOException e) {
+        throw new UtilException(e);
+      }
+    } else {
+      throw new UtilException(path + NOT_A_DIRECTORY_MSG);
+    }
+    return result;
+  }
 
-    File directory = new File(chemin);
-    if (directory == null || !directory.exists() || directory.isDirectory()) {
+  /**
+   * Gets all the HTML web pages that are inside the specified directory and its subdirectories.
+   * Throws an {@link UtilException} if the specified path doesn't
+   * denote a directory or if the recursive listing of all of the HTML web pages fails.
+   * @param path the path of the directory containing web pages.
+   * @return a collection of HTML pages.
+   */
+  public static Collection<File> getAllHTMLWebPages(final String path) {
+    final List<File> result;
+    final Path directory = Paths.get(path);
+    if (directory.toFile().isDirectory()) {
+      try (final Stream<Path> files = Files.walk(directory)) {
+        result = files.map(Path::toFile)
+            .filter(File::isFile)
+            .filter(f -> f.getName().toLowerCase().endsWith(".html") ||
+                f.getName().toLowerCase().endsWith(".htm"))
+            .collect(Collectors.toList());
+      } catch (IOException e) {
+        throw new UtilException(e);
+      }
+    } else {
+      throw new UtilException(path + NOT_A_DIRECTORY_MSG);
+    }
+    return result;
+  }
+
+  /**
+   * Creates the specified folder.
+   * If the specified path doesn't denote a directory, does nothing.
+   * Throws an {@link UtilException} if the folder creation fails.
+   * @param path the path of the folder to create.
+   */
+  public static void createFolder(final String path) {
+    final File directory = new File(path);
+    if (!directory.exists() || directory.isDirectory()) {
       createFolder(directory);
     }
   }
 
-  public static void createFolder(File directory) throws UtilException {
+  /**
+   * Creates the specified folder.
+   * Throws an {@link UtilException} if the folder creation fails.
+   * @param directory the folder.
+   */
+  public static void createFolder(final File directory) {
     try {
-      FileUtils.forceMkdir(directory);
+      Files.createDirectories(directory.toPath());
     } catch (IOException ioex) {
-      SilverTrace.error("util", "FileFolderManager.createFolder",
-          "util.EX_REPOSITORY_CREATION", directory.getPath(), ioex);
-      throw new UtilException("FileFolderManager.createFolder",
-          "util.EX_REPOSITORY_CREATION", directory.getPath(), ioex);
+      throw new UtilException(ioex);
     }
   }
 
   /**
-   * renameFolder : modification du nom d'un repertoire Param = chemin du repertoire
+   * Moves or rename the specified folder to the new one. If the path and the new path denote the
+   * same parent directory, then it means the folder will be renamed to the name ending the
+   * specified <code>newPath</code>. Otherwise the folder located by the given path will be move
+   * to the new path and will be renamed accordingly the name ending the <code>newPath</code>
+   * parameter.
+   * Throws an {@link UtilException} if the specified path doesn't
+   * denote a directory or if the folder moving/renaming fails.
+   * @param path the path of the folder to rename or to move.
+   * @param newPath the new path of the folder.
    */
-  public static void renameFolder(String cheminRep, String newCheminRep)
-      throws UtilException {
-    /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite */
-
-    File directory = new File(cheminRep);
-
-    if (directory.isDirectory()) {
-      File newDirectory = new File(newCheminRep);
-      if (!directory.renameTo(newDirectory)) {
-        SilverTrace.error("util", "FileFolderManager.renameFolder",
-            "util.EX_REPOSITORY_RENAME", cheminRep + " en "
-            + newCheminRep);
-        throw new UtilException("FileFolderManager.renameFolder",
-            "util.EX_REPOSITORY_RENAME", cheminRep + " en "
-            + newCheminRep);
+  public static void moveFolder(final String path, final String newPath) {
+    final Path source = Paths.get(path);
+    if (source.toFile().isDirectory()) {
+      try {
+        Files.move(source, Paths.get(newPath));
+      } catch (IOException e) {
+        throw new UtilException(e);
       }
     } else {
-      SilverTrace.error("util", "FileFolderManager.renameFolder",
-          "util.EX_NO_CHEMIN_REPOS", cheminRep);
-      throw new UtilException("FileFolderManager.renameFolder",
-          "util.EX_NO_CHEMIN_REPOS", cheminRep);
+      throw new UtilException(path + NOT_A_DIRECTORY_MSG);
     }
   }
 
   /**
    * Deletes the specified directory recursively and quietly.
-   * @param chemin the specified directory
+   * @param path the path of a directory
    */
-  public static void deleteFolder(String chemin) {
-    File directory = new File(chemin);
-    FileUtils.deleteQuietly(directory);
-  }
-
-  /**
-   * Deletes the specified directory recursively.
-   * @param chemin the specified directory
-   * @param throwException set to false if you want to delete quietly - false otherwise.
-   * @throws UtilException
-   */
-  public static void deleteFolder(String chemin, boolean throwException) throws UtilException {
-    File directory = new File(chemin);
-    boolean result = FileUtils.deleteQuietly(directory);
-    if (!result) {
-
-      if (throwException) {
-        throw new UtilException("FileFolderManager.deleteFolder", "util.EX_REPOSITORY_DELETE",
-            chemin);
-      }
+  public static void deleteFolder(final String path) {
+    try (final Stream<Path> paths = Files.walk(Paths.get(path))) {
+      paths.sorted(Comparator.reverseOrder()).map(Path::toFile).forEach(File::delete);
+    } catch (IOException e) {
+      SilverLogger.getLogger(FileFolderManager.class).warn(e);
     }
   }
 
   /**
-   * createFile : creation d'un fichier Param = cheminFichier =
-   * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep1\\rep2 nomFichier = index.html
-   * contenuFichier = code du fichier : "<HTML><TITLE>...."
+   * Creates the specified file into the given directory with the specified content.
+   * Throws an {@link UtilException} if the specified path doesn't
+   * denote a directory or if file creation fails.
+   * @param directoryPath the path of the directory into which the file will be created.
+   * @param fileName the name of the file to create.
+   * @param fileContent the content of the file. The content is expected to be encoded in UTF-8.
    */
-  public static void createFile(String cheminFichier, String nomFichier,
-      String contenuFichier) throws UtilException {
-    File directory = new File(cheminFichier);
-    if (directory.isDirectory()) {
+  public static void createFile(final String directoryPath, final String fileName,
+      final String fileContent) {
+    final Path folder = Paths.get(directoryPath);
+    if (folder.toFile().isDirectory()) {
       try {
-        /* Création d'un nouveau fichier sous la bonne arborescence */
-        File file = new File(directory, nomFichier);
-        FileUtils.writeStringToFile(file, contenuFichier, "UTF-8");
+        Files.write(folder.resolve(fileName), fileContent.getBytes(Charsets.UTF_8));
       } catch (IOException e) {
-        throw new UtilException("FileFolderManager.createFile",
-            "util.EX_CREATE_FILE_ERROR", e);
+        throw new UtilException(e);
       }
     } else {
-      SilverTrace.error("util", "FileFolderManager.createFile",
-          "util.EX_CREATE_FILE_ERROR", cheminFichier);
-      throw new UtilException("FileFolderManager.createFile",
-          "util.EX_CREATE_FILE_ERROR");
+      throw new UtilException(directoryPath + NOT_A_DIRECTORY_MSG);
     }
   }
 
   /**
-   * renameFile : modification du nom d'un fichier Param = chemin du fichier
+   * Renames the specified file in the given directory with the new specified name.
+   * Throws an {@link UtilException} if the specified path doesn't
+   * denote a directory or if the file in this directory isn't a file or if the renaming fails.
+   * @param directoryPath the path of the directory containing the file to rename.
+   * @param name the name of the file.
+   * @param newName the new name of the file.
    */
-  public static void renameFile(String cheminRep, String name, String newName)
-      throws UtilException {
-    /* ex chemin = c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite */
-
-    File file = new File(cheminRep, name);
-
-    if (file.isFile()) {
-
-      File newFile = new File(cheminRep, newName);
-      if (!file.renameTo(newFile)) {
-        SilverTrace.error("util", "FileFolderManager.renameFile",
-            "util.EX_RENAME_FILE_ERROR", name + " en " + cheminRep + "\\"
-            + newName);
-        throw new UtilException("FileFolderManager.renameFile",
-            "util.EX_RENAME_FILE_ERROR", name + " en " + cheminRep + "\\"
-            + newName);
+  public static void renameFile(final String directoryPath, final String name,
+      final String newName) {
+    final Path directory = Paths.get(directoryPath);
+    if (directory.toFile().isDirectory()) {
+      final Path fileToRename = directory.resolve(name);
+      if (fileToRename.toFile().isFile()) {
+        try {
+          Files.move(directory, directory.resolve(newName));
+        } catch (IOException e) {
+          throw new UtilException(e);
+        }
+      } else {
+        throw new UtilException(fileToRename + " isn't a file");
       }
     } else {
-      SilverTrace.error("util", "FileFolderManager.renameFile",
-          "util.EX_NO_CHEMIN_FINCHER", cheminRep + "\\" + name);
-      throw new UtilException("fileFolderManager.renameFile",
-          "util.EX_NO_CHEMIN_FINCHER", cheminRep + "\\" + name);
+      throw new UtilException(directoryPath + NOT_A_DIRECTORY_MSG);
     }
   }
 
   /**
-   * Deletes a file.
-   * @Param chemin : path to the file
+   * Deletes the specified file.
+   * Throws an {@link UtilException} if the deletion fails.
+   * @param path the path of the file to delete.
    */
-  public static void deleteFile(String chemin) throws UtilException {
-    File directory = new File(chemin);
-    boolean result = FileUtils.deleteQuietly(directory);
-    if (!result) {
-      SilverTrace
-          .error("util", "FileFolderManager.deleteFile", "util.EX_DELETE_FILE_ERROR", chemin);
-      throw new UtilException("fileFolderManager.deleteFile", "util.EX_DELETE_FILE_ERROR", chemin);
+  public static void deleteFile(final String path) {
+    try {
+      Files.delete(Paths.get(path));
+    } catch (IOException e) {
+      throw new UtilException(e);
     }
   }
 
   /**
-   * getCode : Récupération du contenu d'un fichier Param = cheminFichier =
-   * c:\\j2sdk\\public_html\\WAUploads\\WA0webSite10\\nomSite\\rep1\\rep2 nomFichier = index.html
+   * Gets the content of the specified file.
+   * Throws an {@link UtilException} if the specified path doesn't
+   * denote a directory or if the reading of the file content fails.
+   * @param directoryPath the path of the directory containing the file to read.
+   * @param fileName the name of the file.
+   * @return the content of the whole file as a String instance. The content is expected to be
+   * encoded in UTF-8.
    */
-  public static String getCode(String cheminFichier, String nomFichier)
-      throws UtilException {
-    File directory = new File(cheminFichier);
-    if (directory.isDirectory()) {
+  public static String getFileContent(final String directoryPath, final String fileName) {
+    final Path directory = Paths.get(directoryPath);
+    if (directory.toFile().isDirectory()) {
       try {
-        File file = new File(directory, nomFichier);
-        return FileUtils.readFileToString(file, "UTF-8");
+        return new String(Files.readAllBytes(directory.resolve(fileName)), Charsets.UTF_8);
       } catch (IOException e) {
-        return null;
+        throw new UtilException(e);
       }
     } else {
-      SilverTrace.error("util", "FileFolderManager.deleteFile",
-          "util.util.EX_WRONG_CHEMLIN_SPEC", cheminFichier);
-      throw new UtilException("fileFolderManager.getCode",
-          "util.util.EX_WRONG_CHEMLIN_SPEC", cheminFichier);
+      throw new UtilException(directoryPath + NOT_A_DIRECTORY_MSG);
     }
   }
 

@@ -35,7 +35,6 @@ import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.importexport.admin.AdminImportExport;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.coordinates.CoordinateImportExport;
@@ -300,7 +299,7 @@ public class ImportExport extends AbstractExportProcess {
       if (!fileExportDir.exists()) {
         try {
           FileFolderManager.createFolder(fileExportDir);
-        } catch (UtilException ex) {
+        } catch (org.silverpeas.core.util.UtilException ex) {
           throw new ImportExportException("ImportExport", "importExport.EX_CANT_CREATE_FOLDER", ex);
         }
       }
@@ -514,7 +513,7 @@ public class ImportExport extends AbstractExportProcess {
     if (!fileExportDir.exists()) {
       try {
         FileFolderManager.createFolder(fileExportDir);
-      } catch (UtilException ex) {
+      } catch (org.silverpeas.core.util.UtilException ex) {
         throw new ImportExportException("ImportExport", "importExport.EX_CANT_CREATE_FOLDER", ex);
       }
     }
@@ -642,7 +641,7 @@ public class ImportExport extends AbstractExportProcess {
       if (!fileExportDir.exists()) {
         try {
           FileFolderManager.createFolder(fileExportDir);
-        } catch (UtilException ex) {
+        } catch (org.silverpeas.core.util.UtilException ex) {
           throw new ImportExportException("ImportExport", "importExport.EX_CANT_CREATE_FOLDER", ex);
         }
       }

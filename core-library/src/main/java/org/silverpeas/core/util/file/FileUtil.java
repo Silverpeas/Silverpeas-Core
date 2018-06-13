@@ -26,13 +26,7 @@ package org.silverpeas.core.util.file;
 import org.apache.commons.exec.util.StringUtils;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOCase;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.FileFilterUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
-import org.apache.commons.io.filefilter.SuffixFileFilter;
-import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.silverpeas.core.SilverpeasExceptionMessages;
 import org.silverpeas.core.exception.RelativeFileAccessException;
 import org.silverpeas.core.io.media.MetadataExtractor;
@@ -48,19 +42,24 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.activation.MimetypesFileTypeMap;
 import java.io.File;
 import java.io.FileFilter;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.Reader;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.MissingResourceException;
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import static org.silverpeas.core.cache.service.CacheServiceProvider.getRequestCacheService;
 
+/**
+ * Util class to perform file system operations.
+ * All file operations wil be removed in the future in profit of the new Files class in the JDK.
+ */
 public class FileUtil implements MimeTypes {
 
   private static final SettingBundle MIME_TYPES_EXTENSIONS =
@@ -159,60 +158,16 @@ public class FileUtil implements MimeTypes {
   }
 
   /**
-   * Read the content of a file in a byte array.
-   *
-   * @param file the file to be read.
-   * @return the bytes array containing the content of the file.
-   * @throws IOException
-   */
-  public static byte[] readFile(final File file) throws IOException {
-    return FileUtils.readFileToByteArray(file);
-  }
-
-  /**
    * Read the content of a file as text (the text is supposed to be in the UTF-8 charset).
+   * Instead of using this method, prefer to use the following Java > 7 statement:<br/>
+   * <pre>{@code new String(Files.readAllBytes(file.toPath()), Charset.defaultCharset());}</pre>
    *
    * @param file the file to read.
    * @return the file content as a String.
    * @throws IOException if an error occurs while reading the file.
    */
   public static String readFileToString(final File file) throws IOException {
-    return FileUtils.readFileToString(file);
-  }
-
-  /**
-   * Write a stream into a file.
-   *
-   * @param file the file to be written.
-   * @param data the data to be written.
-   * @throws IOException
-   */
-  public static void writeFile(final File file, final InputStream data) throws IOException {
-    FileOutputStream out = null;
-    try {
-      out = new FileOutputStream(file);
-      IOUtils.copy(data, out);
-    } finally {
-      if (out != null) {
-        out.close();
-      }
-    }
-  }
-
-  /**
-   * Write a stream into a file.
-   *
-   * @param file the file to be written.
-   * @param data the data to be written.
-   * @throws IOException
-   */
-  public static void writeFile(final File file, final Reader data) throws IOException {
-    FileWriter out = new FileWriter(file);
-    try {
-      IOUtils.copy(data, out);
-    } finally {
-      IOUtils.closeQuietly(out);
-    }
+    return new String(Files.readAllBytes(file.toPath()), Charset.defaultCharset());
   }
 
   /**
@@ -304,29 +259,6 @@ public class FileUtil implements MimeTypes {
     }
   }
 
-  public static Collection<File> listFiles(File directory, String[] extensions, boolean recursive) {
-    return FileUtils.listFiles(directory, extensions, recursive);
-  }
-
-  public static Collection<File> listFiles(File directory, String[] extensions,
-      boolean caseSensitive, boolean recursive) {
-    if (caseSensitive) {
-      return listFiles(directory, extensions, recursive);
-    }
-    IOFileFilter filter;
-    if (extensions == null) {
-      filter = TrueFileFilter.INSTANCE;
-    } else {
-      String[] suffixes = new String[extensions.length];
-      for (int i = 0; i < extensions.length; i++) {
-        suffixes[i] = "." + extensions[i];
-      }
-      filter = new SuffixFileFilter(suffixes, IOCase.INSENSITIVE);
-    }
-    return FileUtils.listFiles(directory, filter,
-        recursive ? TrueFileFilter.INSTANCE : FalseFileFilter.INSTANCE);
-  }
-
   /**
    * Forces the deletion of the specified file. If the write property of the file to delete isn't
    * set, this property is then set before deleting.
@@ -338,7 +270,11 @@ public class FileUtil implements MimeTypes {
     if (fileToDelete.exists() && !fileToDelete.canWrite()) {
       fileToDelete.setWritable(true);
     }
-    FileUtils.forceDelete(fileToDelete);
+    try(Stream<Path> paths = Files.walk(fileToDelete.toPath())) {
+      paths.sorted(Comparator.reverseOrder())
+          .map(Path::toFile)
+          .forEach(File::delete);
+    }
   }
 
   /**
@@ -353,9 +289,9 @@ public class FileUtil implements MimeTypes {
    */
   public static void moveFile(File source, File destination) throws IOException {
     if (destination.exists()) {
-      FileUtils.forceDelete(destination);
+      forceDeletion(destination);
     }
-    FileUtils.moveFile(source, destination);
+    Files.move(source.toPath(), destination.toPath());
   }
 
   /**
@@ -372,7 +308,7 @@ public class FileUtil implements MimeTypes {
     if (destination.exists() && !destination.canWrite()) {
       destination.setWritable(true);
     }
-    FileUtils.copyFile(source, destination);
+    Files.copy(source.toPath(), destination.toPath(), REPLACE_EXISTING);
   }
 
   /*
@@ -428,7 +364,13 @@ public class FileUtil implements MimeTypes {
   public static boolean deleteEmptyDir(File directory) {
     if (directory.exists() && directory.isDirectory() && directory.list() != null && directory.
         list().length == 0) {
-      return directory.delete();
+      try {
+        Files.delete(directory.toPath());
+        return true;
+      } catch (IOException e) {
+        SilverLogger.getLogger(FileUtil.class).warn(e);
+        return false;
+      }
     }
     return false;
   }

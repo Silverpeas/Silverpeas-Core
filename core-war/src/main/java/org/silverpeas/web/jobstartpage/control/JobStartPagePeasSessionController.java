@@ -52,9 +52,7 @@ import org.silverpeas.core.clipboard.ClipboardSelection;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateException;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.i18n.I18NHelper;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
@@ -68,6 +66,7 @@ import org.silverpeas.core.util.UnitUtil;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.file.FileUploadUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.memory.MemoryUnit;
 import org.silverpeas.core.web.look.SilverpeasLook;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
@@ -483,11 +482,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     spaceInst.setCreatorUserId(getUserId());
     String sSpaceInstId = addSpaceInst(spaceInst);
     if (sSpaceInstId != null && sSpaceInstId.length() > 0) {
-      SilverTrace.spy("jobStartPagePeas",
-          "JobStartPagePeasSessionController.createSpace()",
-          sSpaceInstId, "SP", spaceInst.getName(),
-          getUserDetail().getId(), SilverTrace.SPY_ACTION_CREATE);
-
       if (m_ssEspace != null && m_ssEspace.equals("SousEspace")) { // on est en creation de
         // sous-espace
         setSubSpaceId(sSpaceInstId);
@@ -522,9 +516,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public String updateSpaceInst(SpaceInst spaceInst) {
-    SilverTrace.spy("jobStartPagePeas", "JobStartPagePeasSessionController.updateSpaceInst()",
-        spaceInst.getId(), "SP", spaceInst.getName(), getUserId(), SilverTrace.SPY_ACTION_UPDATE);
-
     spaceInst.setUpdaterUserId(getUserId());
     String res = adminController.updateSpaceInst(spaceInst);
     initializeComponentSpaceQuota(spaceInst);
@@ -536,7 +527,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
     List<File> files;
     try {
       files = (List<File>) FileFolderManager.getAllFile(getSpaceLookBasePath());
-    } catch (UtilException e) {
+    } catch (org.silverpeas.core.util.UtilException e) {
       files = new ArrayList<File>();
     }
 
@@ -689,18 +680,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   public String deleteSpace(String spaceId) {
 
     if (!isRemovingSpaceAllowed(spaceId)) {
-      SilverTrace.error("jobStartPagePeas",
-          "JobStartPagePeasSessionController.deleteSpace()",
-          "root.MSG_GEN_PARAM_VALUE", "user #" + getUserId() + " is not allowed to delete space #"
-          + spaceId);
+      SilverLogger.getLogger(this)
+          .error("User " + getUserId() + " isn't allowed to delete space " + spaceId);
       return "";
     } else {
       SpaceInst spaceint1 = adminController.getSpaceInstById(spaceId);
-      SilverTrace.spy("jobStartPagePeas",
-          "JobStartPagePeasSessionController.deleteSpace()",
-          spaceint1.getId(), "SP", spaceint1.getName(),
-          getUserDetail().getId(), SilverTrace.SPY_ACTION_DELETE);
-
       boolean definitiveDelete = !JobStartPagePeasSettings.isBasketEnable;
       if (JobStartPagePeasSettings.isBasketEnable && isUserAdmin()) {
         definitiveDelete = !JobStartPagePeasSettings.useBasketWhenAdmin;
@@ -782,9 +766,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
   public void updateSpaceRole(String role, List<String> userIds, List<String> groupIds) {
     // Update the profile
-
-    String spyAction = SilverTrace.SPY_ACTION_UPDATE;
-
     SpaceInst spaceint1 = getSpaceInstById();
     SpaceProfileInst spaceProfileInst = spaceint1.getSpaceProfileInst(role);
     if (spaceProfileInst == null) {
@@ -796,9 +777,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       spaceProfileInst.setSpaceFatherId(spaceint1.getId());
       spaceProfileInst.setUsers(userIds);
       spaceProfileInst.setGroups(groupIds);
-
-      spyAction = SilverTrace.SPY_ACTION_CREATE;
-
       // Add the profile
       adminController.addSpaceProfileInst(spaceProfileInst, getUserId());
     } else {
@@ -808,9 +786,6 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       // Update the profile
       adminController.updateSpaceProfileInst(spaceProfileInst, getUserId());
     }
-
-    SilverTrace.spy("jobStartPagePeas", "JobStartPagePeasSC.updateSpaceRole", spaceProfileInst.
-        getSpaceFatherId(), "N/A", spaceProfileInst.getName(), getUserId(), spyAction);
   }
 
   /**
@@ -1087,20 +1062,13 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
           visibleOptions.add(option);
         }
       } catch (PublicationTemplateException e) {
-        SilverTrace.error("jobStartPagePeas",
-            "JobStartPagePeasSessionController.getVisibleParameters",
-            "ERR_CANT_LOAD_TEMPLATE", "templateName = " + templateName);
+        SilverLogger.getLogger(this).error(e);
       }
     }
     return visibleOptions;
   }
 
   public String addComponentInst(ComponentInst componentInst) throws QuotaException {
-    SilverTrace.spy("jobStartPagePeas",
-        "JobStartPagePeasSessionController.addComponentInst()",
-        componentInst.getDomainFatherId(), "CMP", componentInst.getLabel(),
-        getUserDetail().getId(), SilverTrace.SPY_ACTION_CREATE);
-
     componentInst.setCreatorUserId(getUserId());
     return adminController.addComponentInst(componentInst);
   }
@@ -1110,21 +1078,11 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
   }
 
   public String updateComponentInst(ComponentInst componentInst) {
-    SilverTrace.spy("jobStartPagePeas",
-        "JobStartPagePeasSessionController.updateComponentInst()",
-        componentInst.getDomainFatherId(), componentInst.getId(), componentInst.getLabel(),
-        getUserDetail().getId(), SilverTrace.SPY_ACTION_UPDATE);
-
     componentInst.setUpdaterUserId(getUserId());
     return adminController.updateComponentInst(componentInst);
   }
 
   public String deleteComponentInst(String sInstanceId) {
-    SilverTrace.spy("jobStartPagePeas",
-        "JobStartPagePeasSessionController.deleteComponentInst()",
-        "CMP", sInstanceId, "",
-        getUserDetail().getId(), SilverTrace.SPY_ACTION_DELETE);
-
     boolean definitiveDelete = !JobStartPagePeasSettings.isBasketEnable;
     if (JobStartPagePeasSettings.isBasketEnable && isUserAdmin()) {
       definitiveDelete = !JobStartPagePeasSettings.useBasketWhenAdmin;
@@ -1280,19 +1238,10 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
 
     if (!StringUtil.isDefined(profile.getId())) {
       profile.setComponentFatherId(getManagedInstanceId());
-
-      SilverTrace.spy("jobStartPagePeas",
-          "JobStartPagePeasSC.createInstanceProfile", "unknown", profile.getComponentFatherId(),
-          profile.getName(), getUserId(), SilverTrace.SPY_ACTION_CREATE);
-
       // Add the profile
       adminController.addProfileInst(profile, getUserId());
 
     } else {
-      SilverTrace.spy("jobStartPagePeas", "JobStartPagePeasSC.updateInstanceProfile", "unknown",
-          profile.getComponentFatherId(), profile.getName(), getUserId(),
-          SilverTrace.SPY_ACTION_UPDATE);
-
       // Update the profile
       adminController.updateProfileInst(profile, getUserId());
     }

@@ -23,19 +23,18 @@
  */
 package org.silverpeas.core.importexport.control;
 
+import org.silverpeas.core.admin.user.model.UserDetail;
+import org.silverpeas.core.importexport.model.ImportExportException;
+import org.silverpeas.core.importexport.report.ExportReport;
+import org.silverpeas.core.util.ZipUtil;
+import org.silverpeas.core.util.file.FileFolderManager;
+import org.silverpeas.core.util.file.FileRepositoryManager;
+import org.silverpeas.core.util.file.FileServerUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import org.silverpeas.core.importexport.model.ImportExportException;
-import org.silverpeas.core.importexport.report.ExportReport;
-import org.silverpeas.core.util.ZipUtil;
-import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.util.file.FileRepositoryManager;
-import org.silverpeas.core.util.file.FileServerUtils;
-import org.silverpeas.core.exception.UtilException;
-import org.silverpeas.core.util.file.FileFolderManager;
 
 public abstract class AbstractExportProcess {
 
@@ -50,7 +49,7 @@ public abstract class AbstractExportProcess {
     if (!fileExportDir.exists()) {
       try {
         FileFolderManager.createFolder(fileExportDir);
-      } catch (UtilException ex) {
+      } catch (org.silverpeas.core.util.UtilException ex) {
         throw new ImportExportException("ImportExport", "importExport.EX_CANT_CREATE_FOLDER", ex);
       }
     }

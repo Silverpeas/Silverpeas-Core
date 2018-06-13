@@ -49,7 +49,6 @@ import org.silverpeas.core.contribution.publication.service.PublicationService;
 import org.silverpeas.core.contribution.template.form.service.FormTemplateService;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplateManager;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.importexport.attachment.AttachmentDetail;
 import org.silverpeas.core.importexport.attachment.AttachmentImportExport;
@@ -70,7 +69,6 @@ import org.silverpeas.core.node.importexport.NodePositionType;
 import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
@@ -399,8 +397,8 @@ public abstract class GEDImportExport extends ComponentImportExport {
         wysiwygFile = new File(
             FileUtil.convertPathToServerOS(baseDir + File.separatorChar + wysiwygType.getPath()));
       }
-      wysiwygText = FileFolderManager.getCode(wysiwygFile.getParent(), wysiwygFile.getName());
-    } catch (UtilException ex) {
+      wysiwygText = FileFolderManager.getFileContent(wysiwygFile.getParent(), wysiwygFile.getName());
+    } catch (org.silverpeas.core.util.UtilException ex) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_OR_INACCESSIBLE_FILE_FOR_CONTENT);
       if (wysiwygFile != null) {
         throw new ImportExportException("GEDImportExport.createPublicationContent()",
@@ -486,8 +484,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             reportManager.addImportedFileSize(attDetail.getSize(), getCurrentComponentId());
             //TODO FEATURE 82 newWysiwygText.append(webContext).append(attDetail.getAttachmentURL
           } catch (Exception e) {
-            SilverTrace.error("importExport", "GEDImportExport.replaceWysiwygImagesPathForImport()",
-                "importExport.CANNOT_FIND_FILE", e);
+            SilverLogger.getLogger(this).error(e);
             newWysiwygText.append(imageSrc);
           }
         } else {
@@ -620,9 +617,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             existingNode = getNodeService()
                 .getDetailByNameAndFatherId(nodePK, name, Integer.parseInt(parentId));
           } catch (Exception e) {
-            SilverTrace.warn("importExport", "GEDImportExport.getExistingTopics",
-                "root.MSG_GEN_PARAM_VALUE", "node named '" + name + "' in path '" + node.
-                    getExplicitPath() + "' does not exist");
+            SilverLogger.getLogger(this).warn(e);
           }
           if (existingNode != null) {
             // topic exists
@@ -638,10 +633,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
             try {
               newNodePK = getNodeService().createNode(newNode);
             } catch (Exception e) {
-              SilverTrace.error("importExport", "GEDImportExport.getExistingTopics",
-                  "root.MSG_GEN_PARAM_VALUE",
-                  "Can't create node named '" + name + "' in path '" + node.getExplicitPath() + "'",
-                  e);
+              SilverLogger.getLogger(this).error(e);
               return new ArrayList<>();
             }
             parentId = newNodePK.getId();
@@ -710,9 +702,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       return getNodeService().getDetail(nodePk);
     } catch (Exception ex) {
       unitReport.setError(UnitReport.ERROR_NOT_EXISTS_TOPIC);
-      SilverTrace
-          .error("importExport", "GEDImportExport.createTopicForUnitImport()", "root.EX_NO_MESSAGE",
-              ex);
+      SilverLogger.getLogger(this).error(ex);
       throw new ImportExportException("GEDImportExport.createTopicForUnitImport",
           "importExport.EX_NODE_CREATE", ex);
     }
@@ -901,9 +891,7 @@ public abstract class GEDImportExport extends ComponentImportExport {
       try {
         FileRepositoryManager.copyFile(filePath, dest);
       } catch (Exception e) {
-        SilverTrace
-            .error("importExport", "GEDImportExport.processThumbnail()", "root.MSG_GEN_PARAM_VALUE",
-                "filePath = " + filePath, e);
+        SilverLogger.getLogger(this).error(e);
       }
       ThumbnailDetail thumbnailDetail = new ThumbnailDetail(pubDetail.getPK().getComponentName(),
           Integer.valueOf(pubDetail.getPK().getId()),

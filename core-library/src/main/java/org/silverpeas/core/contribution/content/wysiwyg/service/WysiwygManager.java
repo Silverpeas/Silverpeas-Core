@@ -47,7 +47,6 @@ import org.silverpeas.core.contribution.model.WysiwygContent;
 import org.silverpeas.core.contribution.service.WysiwygContentRepository;
 import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.notification.system.ResourceEvent;
@@ -176,7 +175,7 @@ public class WysiwygManager implements WysiwygContentRepository {
         images[j][1] = image.getName();
       }
       return images;
-    } catch (UtilException e) {
+    } catch (Exception e) {
       throw new WysiwygException("WebSiteSessionController.getWebsiteImages()",
           SilverpeasException.ERROR, "wysisyg.EX_GET_ALL_IMAGES_FAIL", e);
     }
@@ -205,7 +204,7 @@ public class WysiwygManager implements WysiwygContentRepository {
         pages[j][1] = page.getName();
       }
       return pages;
-    } catch (UtilException e) {
+    } catch (org.silverpeas.core.util.UtilException e) {
       throw new WysiwygException("WebSiteSessionController.getWebsitePages()",
           SilverpeasException.ERROR, "wysisyg.EX_GET_ALL_PAGES_FAIL", e);
     }
@@ -669,8 +668,8 @@ public class WysiwygManager implements WysiwygContentRepository {
   public String loadFileWebsite(String path, String fileName) throws WysiwygException {
     checkPath(path);
     try {
-      return FileFolderManager.getCode(path, fileName);
-    } catch (UtilException e) {
+      return FileFolderManager.getFileContent(path, fileName);
+    } catch (org.silverpeas.core.util.UtilException e) {
       // There is no document
       throw new WysiwygException("WysiwygController.loadFileWebsite()", SilverpeasException.WARNING,
           "wysiwyg.NO_WYSIWYG_DOCUMENT_ASSOCIATED");
@@ -998,7 +997,7 @@ public class WysiwygManager implements WysiwygContentRepository {
         FileFolderManager.createFolder(path);
       }
       return path;
-    } catch (UtilException e) {
+    } catch (org.silverpeas.core.util.UtilException e) {
       throw new AttachmentException("Wysiwyg.createPath(spaceId, componentId, context)",
           SilverpeasRuntimeException.ERROR, "root.EX_CANT_CREATE_FILE", e);
     }

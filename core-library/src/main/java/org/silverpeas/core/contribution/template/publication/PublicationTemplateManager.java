@@ -41,17 +41,16 @@ import org.silverpeas.core.contribution.content.form.record.FormEncryptionConten
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSet;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordSetManager;
 import org.silverpeas.core.contribution.content.form.record.IdentifiedRecordTemplate;
-import org.silverpeas.core.exception.UtilException;
 import org.silverpeas.core.index.indexing.model.FullIndexEntry;
 import org.silverpeas.core.security.encryption.ContentEncryptionServiceProvider;
 import org.silverpeas.core.security.encryption.EncryptionContentIterator;
 import org.silverpeas.core.security.encryption.cipher.CryptoException;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.CollectionUtil;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.ServiceProvider;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.UtilException;
 import org.silverpeas.core.util.file.FileFolderManager;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.lang.SystemWrapper;
@@ -329,8 +328,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
           }
         }
       } catch (Exception e) {
-        SilverTrace.error("form", "PublicationTemplateManager.getPublicationTemplates",
-            "form.EX_ERR_LOAD_PUBLICATION_TEMPLATE", "fileName = " + fileName);
+        SilverLogger.getLogger(this).error(e);
       }
     }
 
@@ -472,8 +470,7 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
       } catch (PublicationTemplateException e) {
         // Catch exception here in case of one of searchable form is malformed
         // Valid forms must be displayed in search screen
-        SilverTrace.warn("form", "PublicationTemplateManager.getSearchablePublicationTemplates",
-            "form.ERROR_ONE_ILL_FORM", template.getName() + " is malformed");
+        SilverLogger.getLogger(this).warn(e);
       }
     }
 

@@ -35,15 +35,18 @@ import org.silverpeas.core.util.file.FileUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import javax.inject.Named;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
+import java.nio.file.Files;
 import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 /**
  * It is the default implementation of the {@link ContentEncryptionService} interface in Silverpeas.
@@ -541,7 +544,8 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
         byte[] encryptedKey = cipher.encrypt(key, encryptionKey);
         String encryptedContent = StringUtil.asBase64(encryptionKey.getRawKey()) + KEY_SEP
             + StringUtil.asBase64(encryptedKey);
-        FileUtil.writeFile(keyFile, new StringReader(encryptedContent));
+        Files.copy(new ByteArrayInputStream(encryptedContent.getBytes()), keyFile.toPath(),
+            REPLACE_EXISTING);
         keyFile.setReadOnly();
         setHidden(ACTUAL_KEY_FILE_PATH);
 
@@ -571,7 +575,7 @@ public class DefaultContentEncryptionService implements ContentEncryptionService
           if (backupedDeprecatedKeyFile != null) {
             if (restore) {
               File keyFile = new File(DEPRECATED_KEY_FILE_PATH);
-              keyFile.delete();
+              Files.delete(keyFile.toPath());
               FileUtil.copyFile(backupedDeprecatedKeyFile, keyFile);
               keyFile.setReadOnly();
               setHidden(DEPRECATED_KEY_FILE_PATH);
