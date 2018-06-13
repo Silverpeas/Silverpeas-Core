@@ -23,8 +23,8 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.override;
 
-import org.silverpeas.core.util.URLUtil;
 import org.apache.ecs.ElementContainer;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginInclusion;
 
 import javax.servlet.jsp.JspException;
@@ -35,6 +35,7 @@ public class LinkTag extends TagSupport {
 
   private String webContext = URLUtil.getApplicationURL();
   private String href;
+  private boolean print = false;
 
   public void setWebContext(final String webContext) {
     this.webContext = webContext;
@@ -52,11 +53,23 @@ public class LinkTag extends TagSupport {
     return href;
   }
 
+  public boolean isPrint() {
+    return print;
+  }
+
+  public void setPrint(final boolean print) {
+    this.print = print;
+  }
+
   @Override
   public int doEndTag() throws JspException {
     ElementContainer script = new ElementContainer();
     String source = href.startsWith("/") && !href.startsWith(webContext) ? webContext + href : href;
-    script.addElement(JavascriptPluginInclusion.link(source));
+    if (isPrint()) {
+      script.addElement(JavascriptPluginInclusion.print(source));
+    } else {
+      script.addElement(JavascriptPluginInclusion.link(source));
+    }
     script.output(pageContext.getOut());
     return EVAL_PAGE;
   }

@@ -258,7 +258,7 @@ public class SimpleSearchEngine implements SearchEngine {
 
   private HashMap<String, ComponentAuthorization> getSecurityIntf()
       throws ClassNotFoundException, IllegalAccessException, InstantiationException {
-    HashMap<String, ComponentAuthorization> authorizations = new HashMap<>();
+    final HashMap<String, ComponentAuthorization> authorizations = new HashMap<>();
     ComponentAuthorization kmeliaAuth = (ComponentAuthorization) Class.forName(
         "org.silverpeas.components.kmelia.KmeliaAuthorization").newInstance();
     ComponentAuthorization formsOnlineAuth = (ComponentAuthorization) Class.forName(
