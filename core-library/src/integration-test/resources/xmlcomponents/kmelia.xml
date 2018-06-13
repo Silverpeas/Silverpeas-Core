@@ -614,22 +614,6 @@
       </help>
     </parameter>
     <parameter>
-      <name>wizardEnabled</name>
-      <label>
-        <message lang="fr">Assistant de publication</message>
-        <message lang="en">Wizard for creating a publication</message>
-      </label>
-      <order>25</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>always</updatable>
-      <help>
-        <message lang="fr">Dédié aux utilisateurs débutants, cet assistant permet de créer une publication pas à pas.</message>
-        <message lang="en">For beginners only. This wizard allows the user to create a publication step by step.</message>
-      </help>
-    </parameter>
-    <parameter>
       <name>displayNB</name>
       <label>
         <message lang="fr">Affichage nombre de publications</message>
@@ -712,22 +696,6 @@
       <help>
         <message lang="fr">Seuls les gestionnaires du composant peuvent supprimer une publication et d'accéder à la corbeille de publications.</message>
         <message lang="en">Only administrators of this component are be able to remove publications and to access to publications bin.</message>
-      </help>
-    </parameter>
-    <parameter>
-      <name>updateChain</name>
-      <label>
-        <message lang="fr">Modifications en chaine</message>
-        <message lang="en">Modifications in a row</message>
-      </label>
-      <order>32</order>
-      <mandatory>true</mandatory>
-      <value>no</value>
-      <type>checkbox</type>
-      <updatable>never</updatable>
-      <help>
-        <message lang="fr">Possibilité d'effectuer des modifications enchainées sur certains thèmes (possédant un descripteur).</message>
-        <message lang="en">Provides the possibility of making successive modifications on certains topics (having a descriptor).</message>
       </help>
     </parameter>
     <parameter>
