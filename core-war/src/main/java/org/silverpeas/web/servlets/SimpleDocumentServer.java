@@ -23,27 +23,23 @@
  */
 package org.silverpeas.web.servlets;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.codec.CharEncoding;
-
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-
-import org.silverpeas.core.web.util.servlet.GoTo;
-import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.security.authorization.ComponentAuthorization;
-
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
+import org.silverpeas.core.util.logging.SilverLogger;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 import org.silverpeas.core.web.util.ClientBrowserUtil;
+import org.silverpeas.core.web.util.servlet.GoTo;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 
 /**
  * Servlet to access a simple document directly.
@@ -53,11 +49,11 @@ import org.silverpeas.core.web.util.ClientBrowserUtil;
 public class SimpleDocumentServer extends GoTo {
 
   private static final long serialVersionUID = 1L;
-  public static final String KMELIA_SECURITY_CLASS = "org.silverpeas.components.kmelia.KmeliaAuthorization";
+  private static final String KMELIA_SECURITY_CLASS = "org.silverpeas.components.kmelia.KmeliaAuthorization";
 
   @Override
   public String getDestination(String objectId, HttpServletRequest req,
-      HttpServletResponse res) throws Exception {
+      HttpServletResponse res) {
     MainSessionController mainSessionCtrl = util.getMainSessionController(req);
     String language = I18NHelper.defaultLanguage;
     if (mainSessionCtrl != null) {
@@ -84,8 +80,7 @@ public class SimpleDocumentServer extends GoTo {
               security = (ComponentAuthorization) Class.forName(KMELIA_SECURITY_CLASS).newInstance();
           isAccessAuthorized = security.isAccessAuthorized(componentId, getUserId(req), foreignId);
         } catch (Exception e) {
-          SilverTrace.error("util", "GoToFile.doPost", "root.EX_CLASS_NOT_INITIALIZED",
-              "org.silverpeas.components.kmelia.KmeliaAuthorization", e);
+          SilverLogger.getLogger(this).error(e);
           return null;
         }
       }
