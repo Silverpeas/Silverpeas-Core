@@ -210,6 +210,9 @@ public class TemplateDesignerRequestRouter extends
         templateDesignerSC.saveTemplate();
 
         destination = getDestination("ViewTemplate", templateDesignerSC, request);
+      } else if ("DuplicateForm".equals(function)) {
+        templateDesignerSC.duplicateTemplate(request.getParameter("DuplicatedFormName"));
+        destination = getDestination("Main", templateDesignerSC, request);
       }
     } catch (Exception e) {
       request.setAttribute("javax.servlet.jsp.jspException", e);
