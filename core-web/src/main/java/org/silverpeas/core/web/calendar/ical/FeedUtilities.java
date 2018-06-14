@@ -40,15 +40,17 @@ import net.fortuna.ical4j.model.property.ProdId;
 import net.fortuna.ical4j.model.property.Uid;
 import net.fortuna.ical4j.model.property.Url;
 import net.fortuna.ical4j.model.property.Version;
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.MultiThreadedHttpConnectionManager;
-import org.apache.commons.httpclient.methods.GetMethod;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
 import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.util.Charsets;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Date;
@@ -70,30 +72,26 @@ public final class FeedUtilities {
   private static final int MAX_ATTEMPTS = 5;
 
   // --- HTTP CONNECTION HANDLER ---
-  private static final MultiThreadedHttpConnectionManager connectionManager =
-      new MultiThreadedHttpConnectionManager();
-  private static final HttpClient httpClient = new HttpClient(connectionManager);
+  private static final CloseableHttpClient httpClient = HttpClients.createDefault();
 
   private FeedUtilities() {
   }
 
-  public static final byte[] loadFeed(String feedURL) throws SilverpeasException {
+  public static byte[] loadFeed(String feedURL) throws SilverpeasException {
     return loadFeed(feedURL, null, null);
   }
 
-  public static final byte[] loadFeed(String feedURL, String username, String password)
+  static byte[] loadFeed(String feedURL, String username, String password)
       throws SilverpeasException {
     try {
       // Load feed
-      GetMethod get = new GetMethod(feedURL);
-      get.addRequestHeader("User-Agent", USER_AGENT);
-      get.setFollowRedirects(true);
-
+      HttpGet get = new HttpGet(feedURL);
+      get.setHeader("User-Agent", USER_AGENT);
       if (StringUtil.isDefined(username)) {
         // Set username/password
         byte[] auth =
             StringUtils.encodeString(username + ':' + StringUtils.decodePassword(password), Charsets.UTF_8);
-        get.addRequestHeader("Authorization", "Basic " + StringUtils.encodeBASE64(auth));
+        get.setHeader("Authorization", "Basic " + StringUtils.encodeBASE64(auth));
 
       }
       return loadFeedBody(get);
@@ -102,13 +100,16 @@ public final class FeedUtilities {
     }
   }
 
-  private static byte[] loadFeedBody(final GetMethod get) throws InterruptedException {
+  private static byte[] loadFeedBody(final HttpGet get) throws InterruptedException {
     byte[] bytes = null;
     for (int tries = 0; tries < MAX_ATTEMPTS; tries++) {
-      try {
-        int status = httpClient.executeMethod(get);
+      try(CloseableHttpResponse response = httpClient.execute(get)) {
+        int status = response.getStatusLine().getStatusCode();
         if (status == REMOTE_CALENDAR_RETURNCODE_OK) {
-          bytes = get.getResponseBody();
+          ByteArrayOutputStream output = new ByteArrayOutputStream(
+              (int) response.getEntity().getContentLength());
+          response.getEntity().writeTo(output);
+          bytes = output.toByteArray();
         } else {
           SilverLogger.getLogger(FeedUtilities.class)
               .warn("Feed loading failed with Http status code {0}. Actual content fetched: {1}",
@@ -118,19 +119,20 @@ public final class FeedUtilities {
       } catch (Exception loadError) {
         SilverLogger.getLogger(FeedUtilities.class)
             .warn("Feed loading failure after {0} attempts. {1}", tries, loadError.getMessage());
-        if (tries == MAX_ATTEMPTS) {
+        if (tries == MAX_ATTEMPTS - 1) {
           bytes = null;
           SilverLogger.getLogger(FeedUtilities.class).error(loadError);
         }
         Thread.sleep(FEED_RETRY_MILLIS);
       } finally {
-        get.releaseConnection();
+        get.reset();
       }
     }
     return bytes;
   }
 
-  public static Calendar convertFeedToCalendar(SyndFeed feed, long eventLength) {
+  @SuppressWarnings("unchecked")
+  static Calendar convertFeedToCalendar(SyndFeed feed, long eventLength) {
 
     // Create new calendar
     Calendar calendar = new Calendar();
