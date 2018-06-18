@@ -42,7 +42,7 @@ import static org.silverpeas.core.thread.ManagedThreadPool.ExecutionConfig.defau
  */
 @Singleton
 public class IndexationProcessExecutor {
-  private final static String INDEXATION_PROCESS_EXECUTOR_KEY = "INDEXATION_PROCESS_EXECUTOR_KEY";
+  private static final String INDEXATION_PROCESS_EXECUTOR_KEY = "INDEXATION_PROCESS_EXECUTOR_KEY";
 
   /**
    * Hidden constructor.
@@ -110,7 +110,7 @@ public class IndexationProcessExecutor {
     }
   }
 
-  public static abstract class IndexationProcess implements Callable<Void> {
+  public abstract static class IndexationProcess implements Callable<Void> {
 
     public abstract void perform();
 

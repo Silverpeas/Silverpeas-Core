@@ -114,7 +114,9 @@ class Admin implements Administration {
    * Silverpeas.
    */
   private static final String ADMIN_ID = "0";
-  public static final String REMOVE_OF = "Suppression de ";
+  private static final String REMOVE_OF = "Suppression de ";
+  private static final String INDEX_SPACE_SCOPE = "Spaces";
+  private static final String INDEX_COMPONENT_SCOPE = "Components";
 
   // Divers
   private final Object semaphore = new Object();
@@ -288,7 +290,7 @@ class Admin implements Administration {
   public void createSpaceIndex(SpaceInstLight spaceInst) {
     // Index the space
     String spaceId = spaceInst.getId();
-    FullIndexEntry indexEntry = new FullIndexEntry("Spaces", "Space", spaceId);
+    FullIndexEntry indexEntry = new FullIndexEntry(INDEX_SPACE_SCOPE, "Space", spaceId);
     indexEntry.setTitle(spaceInst.getName());
     indexEntry.setPreview(spaceInst.getDescription());
     indexEntry.setCreationUser(String.valueOf(spaceInst.getCreatedBy()));
@@ -301,8 +303,13 @@ class Admin implements Administration {
   @Override
   public void deleteSpaceIndex(SpaceInst spaceInst) {
     String spaceId = spaceInst.getId();
-    FullIndexEntry indexEntry = new FullIndexEntry("Spaces", "Space", spaceId);
+    FullIndexEntry indexEntry = new FullIndexEntry(INDEX_SPACE_SCOPE, "Space", spaceId);
     IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
+  }
+
+  @Override
+  public void deleteAllSpaceIndexes() {
+    IndexEngineProxy.removeScopedIndexEntries(INDEX_SPACE_SCOPE);
   }
 
   @Override
@@ -859,7 +866,7 @@ class Admin implements Administration {
     if (componentInst != null) {
       // Index the component
       String componentId = componentInst.getId();
-      FullIndexEntry indexEntry = new FullIndexEntry("Components", "Component", componentId);
+      FullIndexEntry indexEntry = new FullIndexEntry(INDEX_COMPONENT_SCOPE, "Component", componentId);
       indexEntry.setTitle(componentInst.getLabel());
       indexEntry.setPreview(componentInst.getDescription());
       indexEntry.setCreationUser(Integer.toString(componentInst.getCreatedBy()));
@@ -876,7 +883,7 @@ class Admin implements Administration {
    * @param componentId
    */
   private void deleteComponentIndex(String componentId) {
-    FullIndexEntry indexEntry = new FullIndexEntry("Components", "Component", componentId);
+    FullIndexEntry indexEntry = new FullIndexEntry(INDEX_COMPONENT_SCOPE, "Component", componentId);
     IndexEngineProxy.removeIndexEntry(indexEntry.getPK());
   }
 
@@ -886,6 +893,11 @@ class Admin implements Administration {
 
     // deleting index files
     IndexEngineProxy.removeScopedIndexEntries(componentId);
+  }
+
+  @Override
+  public void deleteAllComponentIndexes() {
+    IndexEngineProxy.removeScopedIndexEntries(INDEX_COMPONENT_SCOPE);
   }
 
   @Override

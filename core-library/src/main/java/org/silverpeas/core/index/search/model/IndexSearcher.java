@@ -47,7 +47,6 @@ import org.silverpeas.core.index.indexing.model.FieldDescription;
 import org.silverpeas.core.index.indexing.model.IndexEntry;
 import org.silverpeas.core.index.indexing.model.IndexEntryKey;
 import org.silverpeas.core.index.indexing.model.IndexManager;
-import org.silverpeas.core.index.indexing.model.IndexReadersCache;
 import org.silverpeas.core.index.search.SearchEnginePropertiesManager;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.util.ResourceLocator;
@@ -64,6 +63,9 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.time.LocalDate;
 import java.util.*;
+
+import static org.silverpeas.core.index.indexing.model.IndexProcessor.doSearch;
+import static org.silverpeas.core.index.indexing.model.IndexReadersCache.getIndexReader;
 
 /**
  * The IndexSearcher class implements search over all the indexes. A IndexSearcher
@@ -157,74 +159,74 @@ public class IndexSearcher {
    * @return MatchingIndexEntry wrapping the result, else null
    */
   public MatchingIndexEntry search(String component, String objectId, String objectType)
-      throws IOException {
-    final Set<String> set = Collections.singleton(component);
-
-    IndexEntryKey indexEntryKey = new IndexEntryKey(component, objectType, objectId);
-    MatchingIndexEntry matchingIndexEntry = null;
-    org.apache.lucene.search.IndexSearcher searcher = getSearcher(set);
-    try {
-      Term term = new Term(IndexManager.KEY, indexEntryKey.toString());
-
-      TermQuery query = new TermQuery(term);
-      TopDocs topDocs = searcher.search(query, maxNumberResult);
-      ScoreDoc scoreDoc = topDocs.scoreDocs[0];
-
-      matchingIndexEntry = createMatchingIndexEntry(scoreDoc, "*", searcher);
-    } catch (IOException ioe) {
-      SilverLogger.getLogger(this).error("Index file corrupted", ioe);
-    }
-    return matchingIndexEntry;
+      throws ParseException {
+    return doSearch(() -> {
+      final Set<String> set = Collections.singleton(component);
+      IndexEntryKey indexEntryKey = new IndexEntryKey(component, objectType, objectId);
+      MatchingIndexEntry matchingIndexEntry = null;
+      org.apache.lucene.search.IndexSearcher searcher = getSearcher(set);
+      try {
+        Term term = new Term(IndexManager.KEY, indexEntryKey.toString());
+        TermQuery query = new TermQuery(term);
+        TopDocs topDocs = searcher.search(query, maxNumberResult);
+        ScoreDoc scoreDoc = topDocs.scoreDocs[0];
+        matchingIndexEntry = createMatchingIndexEntry(scoreDoc, "*", searcher);
+      } catch (IOException ioe) {
+        SilverLogger.getLogger(this).error("Index file corrupted", ioe);
+      }
+      return matchingIndexEntry;
+    }, () -> null);
   }
 
   /**
    * Search the documents of the given component's set. All entries found whose startDate is not
    * reached or whose endDate is passed are pruned from the results set.
-   *
-   * @param query the
-   * @return
-   * @throws org.silverpeas.core.index.search.model.ParseException
+   * @param query the query.
+   * @return an array of index entries.
+   * @throws org.silverpeas.core.index.search.model.ParseException on parse error
    */
   public MatchingIndexEntry[] search(QueryDescription query)
       throws org.silverpeas.core.index.search.model.ParseException {
-    long startTime = System.nanoTime();
-    List<MatchingIndexEntry> results;
+    return doSearch(() -> {
+      long startTime = System.nanoTime();
+      List<MatchingIndexEntry> results;
 
-    org.apache.lucene.search.IndexSearcher searcher = getSearcher(query);
+      org.apache.lucene.search.IndexSearcher searcher = getSearcher(query);
 
-    try {
-      BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
-      BooleanQuery.Builder rangeClausesBuilder = new BooleanQuery.Builder();
-      rangeClausesBuilder.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
-      rangeClausesBuilder.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
-      // filtering on searched scopes
-      booleanQueryBuilder.add(getScopeQuery(query), BooleanClause.Occur.FILTER);
+      try {
+        BooleanQuery.Builder booleanQueryBuilder = new BooleanQuery.Builder();
+        BooleanQuery.Builder rangeClausesBuilder = new BooleanQuery.Builder();
+        rangeClausesBuilder.add(getVisibilityStartQuery(), BooleanClause.Occur.MUST);
+        rangeClausesBuilder.add(getVisibilityEndQuery(), BooleanClause.Occur.MUST);
+        // filtering on searched scopes
+        booleanQueryBuilder.add(getScopeQuery(query), BooleanClause.Occur.FILTER);
 
-      parseQuery(query, booleanQueryBuilder, rangeClausesBuilder);
+        parseQuery(query, booleanQueryBuilder, rangeClausesBuilder);
 
-      // date range clauses are passed in the filter to optimize search performances
-      // but the query cannot be empty : if so, then pass date range in the query
-      BooleanQuery booleanQuery = booleanQueryBuilder.build();
-      BooleanQuery rangeClauses = rangeClausesBuilder.build();
-      TopDocs topDocs;
-      if (booleanQuery.clauses().isEmpty()) {
-        topDocs = searcher.search(rangeClauses, maxNumberResult);
-      } else {
-        booleanQueryBuilder.add(rangeClauses, BooleanClause.Occur.FILTER);
-        booleanQuery = booleanQueryBuilder.build();
-        topDocs = searcher.search(booleanQuery, maxNumberResult);
+        // date range clauses are passed in the filter to optimize search performances
+        // but the query cannot be empty : if so, then pass date range in the query
+        BooleanQuery booleanQuery = booleanQueryBuilder.build();
+        BooleanQuery rangeClauses = rangeClausesBuilder.build();
+        TopDocs topDocs;
+        if (booleanQuery.clauses().isEmpty()) {
+          topDocs = searcher.search(rangeClauses, maxNumberResult);
+        } else {
+          booleanQueryBuilder.add(rangeClauses, BooleanClause.Occur.FILTER);
+          booleanQuery = booleanQueryBuilder.build();
+          topDocs = searcher.search(booleanQuery, maxNumberResult);
+        }
+
+        results = makeList(topDocs, query, searcher);
+      } catch (IOException ioe) {
+        SilverLogger.getLogger(this).error("Index file corrupted", ioe);
+        results = new ArrayList<>();
       }
+      long endTime = System.nanoTime();
 
-      results = makeList(topDocs, query, searcher);
-    } catch (IOException ioe) {
-      SilverLogger.getLogger(this).error("Index file corrupted", ioe);
-      results = new ArrayList<>();
-    }
-    long endTime = System.nanoTime();
-
-    SilverLogger.getLogger(this).debug(
-        () -> MessageFormat.format(" search duration in {0}ms", (endTime - startTime) / 1000000));
-    return results.toArray(new MatchingIndexEntry[results.size()]);
+      SilverLogger.getLogger(this).debug(
+          () -> MessageFormat.format(" search duration in {0}ms", (endTime - startTime) / 1000000));
+      return results.toArray(new MatchingIndexEntry[0]);
+    }, () -> new MatchingIndexEntry[0]);
   }
 
   private void parseQuery(final QueryDescription query,
@@ -373,8 +375,8 @@ public class IndexSearcher {
     }
     Query query;
     try {
-      query = MultiFieldQueryParser.parse(queryStr, fieldNames.keySet().toArray(new String[fieldNames.size()]),
-          fieldNames.values().toArray(new BooleanClause.Occur[fieldNames.size()]), analyzer);
+      query = MultiFieldQueryParser.parse(queryStr, fieldNames.keySet().toArray(new String[0]),
+          fieldNames.values().toArray(new BooleanClause.Occur[0]), analyzer);
     } catch (org.apache.lucene.queryparser.classic.ParseException e) {
       throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
     }
@@ -495,18 +497,22 @@ public class IndexSearcher {
    * Return a multi-searcher built on the searchers list matching the (space, component) pair set.
    */
   private org.apache.lucene.search.IndexSearcher getSearcher(Set<String> componentIds)
-      throws IOException {
+      throws ParseException {
     Set<String> indexPathSet = getIndexPathSet(componentIds);
 
     List<IndexReader> readers = new ArrayList<>();
     for (String path : indexPathSet) {
-      IndexReader indexReader = getIndexReader(path);
+      final IndexReader indexReader = getIndexReader(path);
       if (indexReader != null) {
         readers.add(indexReader);
       }
     }
-    return new org.apache.lucene.search.IndexSearcher(
-        new MultiReader(readers.toArray(new IndexReader[readers.size()])));
+    try {
+      return new org.apache.lucene.search.IndexSearcher(
+          new MultiReader(readers.toArray(new IndexReader[0])));
+    } catch (IOException e) {
+      throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, e);
+    }
   }
 
   /**
@@ -534,7 +540,7 @@ public class IndexSearcher {
     }
     try {
       return new org.apache.lucene.search.IndexSearcher(
-          new MultiReader(readers.toArray(new IndexReader[readers.size()])));
+          new MultiReader(readers.toArray(new IndexReader[0])));
     } catch (IOException ioe) {
       throw new org.silverpeas.core.index.search.model.ParseException(INDEX_SEARCH_ERROR, ioe);
     }
@@ -551,23 +557,12 @@ public class IndexSearcher {
    * Build the set of all the path to the directories index corresponding the given (space,
    * component) pairs.
    */
-  public Set<String> getIndexPathSet(Set<String> componentIds) {
+  Set<String> getIndexPathSet(Set<String> componentIds) {
     Set<String> pathSet = new HashSet<>();
     for (String componentId : componentIds) {
       pathSet.add(indexManager.getIndexDirectoryPath(componentId));
     }
     return pathSet;
-  }
-
-  /**
-   * Retrieve the index searcher over the specified index directory. The index readers are cached in
-   * a Map (path -> (timestamp, reader)). If a reader is found in the cache but appear to be too old
-   * (according to the timestamp) then it is re-open. If the index files are not found, null is
-   * returned without any error (as this case comes each time a request is made on a space/component
-   * without any indexed documents).
-   */
-  private IndexReader getIndexReader(String path) {
-    return IndexReadersCache.getIndexReader(path);
   }
 
   private TermRangeQuery getRangeQueryOnCreationDate(QueryDescription query) {

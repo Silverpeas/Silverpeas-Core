@@ -23,6 +23,8 @@
  */
 package org.silverpeas.core.web.index.tools;
 
+import org.silverpeas.core.SilverpeasException;
+
 /**
  * Indexation of the data managed in a given personal tool.
  * @author mmoquillon
@@ -33,7 +35,7 @@ public interface PersonalToolIndexation {
 
   /**
    * Indexes all the data managed by this personal tool.
-   * @throws Exception if an error occurs during the indexation.
+   * @throws SilverpeasException if an error occurs during the indexation.
    */
-  void index() throws Exception;
+  void index() throws SilverpeasException;
 }

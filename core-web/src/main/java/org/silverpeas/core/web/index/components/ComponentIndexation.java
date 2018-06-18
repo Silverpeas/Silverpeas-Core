@@ -23,13 +23,16 @@
  */
 package org.silverpeas.core.web.index.components;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
+
+import static org.silverpeas.core.index.indexing.model.IndexEngineProxy.removeScopedIndexEntries;
 
 /**
  * Indexation of the data managed by a given component instance. Each Application in Silverpeas
  * should provide an implementation of this interface as it knows how to index it own data. This
  * implementation must be qualified by a unique name starting by the application name and ending by
- * the <code>QUALIFIER_SUFFIX</code> constant value (aka annotated by {@kink javax.inject.Named}).
+ * the <code>QUALIFIER_SUFFIX</code> constant value (aka annotated by {@link javax.inject.Named}).
  * The implementation will be then lookable by the index engine by their qualification name.
  */
 public interface ComponentIndexation {
@@ -39,7 +42,22 @@ public interface ComponentIndexation {
   /**
    * Indexes the data managed by the specified component instance.
    * @param componentInst the instance of the component managing the data to index or to reindex.
-   * @throws Exception if an error occurs during the indexation.
+   * @throws SilverpeasException if an error occurs during the indexation.
    */
-  void index(SilverpeasComponentInstance componentInst) throws Exception;
+  void index(SilverpeasComponentInstance componentInst) throws SilverpeasException;
+
+  /**
+   * Indexes the data managed by the specified component instance.
+   * @param componentInst the instance of the component managing the data to index or to reindex.
+   * @param deleteAllBefore true to delete all indexes linked to the content of a component.
+   * instance, otherwise nothing is deleted.
+   * @throws SilverpeasException if an error occurs during the indexation.
+   */
+  default void index(SilverpeasComponentInstance componentInst, boolean deleteAllBefore)
+      throws SilverpeasException {
+    if (deleteAllBefore) {
+      removeScopedIndexEntries(componentInst.getId());
+    }
+    index(componentInst);
+  }
 }
