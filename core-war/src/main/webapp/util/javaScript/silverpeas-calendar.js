@@ -277,7 +277,7 @@
               {a : occurrence.recurrence, b : other.recurrence}];
             for (var i = 0; i < dataToCompare.length; i++) {
               var comparison = dataToCompare[i];
-              if (sp.object.compareExistingValuesBetween(comparison.a, comparison.b)) {
+              if (!sp.object.areExistingValuesEqual(comparison.a, comparison.b)) {
                 return true;
               }
             }

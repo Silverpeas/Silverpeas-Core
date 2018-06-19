@@ -37,7 +37,7 @@ import java.util.Set;
 import static org.silverpeas.core.SilverpeasExceptionMessages.unknown;
 
 public enum SilverpeasRole {
-  admin, Manager, publisher, writer, privilegedUser, user, reader, supervisor;
+  admin, supervisor, Manager, publisher, writer, privilegedUser, user, reader;
 
   // Unfortunately, several codes of role can define the same role nature in Silverpeas ...
   public static final Set<SilverpeasRole> READER_ROLES = EnumSet.of(user, reader);

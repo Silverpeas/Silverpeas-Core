@@ -158,6 +158,21 @@
 }
 
 .silverpeas-selectize.selectize-control .selectize-input.has-items {
-  padding: 2px 0 ;
+  padding: 2px 0;
   width: 100%;
+}
+
+.champ-ui-dialog .select-user-group-container, .champ-ui-dialog .select-user-group-container .search-input-container {
+  width: 100%;
+  margin: 0;
+}
+
+.champ-ui-dialog .select-user-group-container .search-input-container .selectize-control {
+  width: 95%;
+  background: #FFF;
+}
+
+.champ-ui-dialog .select-user-group-container a.user-panel-button, .champ-ui-dialog .select-user-group-container .remove-button {
+  right: 6%;
+  top: 4px
 }

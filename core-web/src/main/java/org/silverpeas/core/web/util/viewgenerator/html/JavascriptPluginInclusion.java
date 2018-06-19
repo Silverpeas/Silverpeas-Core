@@ -98,7 +98,10 @@ public class JavascriptPluginInclusion {
   private static final String SILVERPEAS_ANGULAR_JS = "silverpeas-angular.js";
   private static final String ANGULAR_CKEDITOR_JS = "ng-ckeditor.js";
   private static final String SILVERPEAS_ADAPTERS_ANGULAR_JS = "silverpeas-adapters.js";
-  private static final String SILVERPEAS_BUTTON_ANGULAR_JS = "silverpeas-button.js";
+  private static final String VUE_JS = "vue.js";
+  private static final String VUEJS_PATH = JAVASCRIPT_PATH + "vuejs/";
+  private static final String VUEJS_COMPONENT_PATH = VUEJS_PATH + "components/";
+  private static final String SILVERPEAS_VUE_JS = "silverpeas-vuejs.js";
   private static final String SILVERPEAS_EMBED_PLAYER = "silverpeas-embed-player.js";
   private static final String SILVERPEAS_MEDIA_PLAYER = "silverpeas-media-player.js";
   private static final String FLOWPLAYER_CSS = "flowplayer-7.0.2/skin/skin.css";
@@ -355,8 +358,15 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(ANGULARJS_PATH + ANGULAR_SANITIZE_JS));
     xhtml.addElement(script(ANGULARJS_PATH + SILVERPEAS_ANGULAR_JS));
     xhtml.addElement(script(ANGULARJS_PATH + SILVERPEAS_ADAPTERS_ANGULAR_JS));
-    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + SILVERPEAS_BUTTON_ANGULAR_JS));
+    xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "silverpeas-button.js"));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "silverpeas-permalink.js"));
+    return xhtml;
+  }
+
+  static ElementContainer includeVueJs(final ElementContainer xhtml, String language) {
+    xhtml.addElement(script(VUEJS_PATH + VUE_JS));
+    xhtml.addElement(script(VUEJS_PATH + SILVERPEAS_VUE_JS));
+    xhtml.addElement(script(VUEJS_COMPONENT_PATH + "silverpeas-commons.js"));
     return xhtml;
   }
 
@@ -500,6 +510,7 @@ public class JavascriptPluginInclusion {
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_DATECHECKER));
     xhtml.addElement(scriptContent("jQuery.datechecker.settings.language = '" + language + "';"));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-date-picker.js"));
+    xhtml.addElement(script(VUEJS_COMPONENT_PATH + "silverpeas-date-picker.js"));
     xhtml.addElement(script(ANGULARJS_DIRECTIVES_PATH + "util/silverpeas-time-picker.js"));
     return xhtml;
   }
@@ -1041,6 +1052,7 @@ public class JavascriptPluginInclusion {
                 userManualNotificationUserReceiverLimitValue))
         .produce()));
     xhtml.addElement(script(JAVASCRIPT_PATH + SILVERPEAS_LIST_OF_USERS_AND_GROUPS_JS));
+    xhtml.addElement(script(VUEJS_COMPONENT_PATH + "silverpeas-user-group-select.js"));
     return xhtml;
   }
 

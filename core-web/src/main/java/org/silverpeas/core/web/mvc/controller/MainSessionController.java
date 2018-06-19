@@ -53,6 +53,7 @@ import org.silverpeas.core.web.subscription.SubscriptionContext;
 import javax.enterprise.util.AnnotationLiteral;
 import javax.servlet.http.HttpSession;
 import java.io.Serializable;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -79,6 +80,7 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
   private String userId = null;
   private transient OrganizationController organizationController = null;
   private String userLanguage = null;
+  private ZoneId userZoneId = null;
   private transient Selection selection = null;
   private String userSpace = null;
   private String serverName = null;
@@ -240,6 +242,16 @@ public class MainSessionController implements Clipboard, SessionCloseable, Seria
       userLanguage = userPreferences.getLanguage();
     }
     return userLanguage;
+  }
+
+  /**
+   * Return the user's favorite zone identifier
+   */
+  public ZoneId getFavoriteZoneId() {
+    if (userZoneId== null) {
+      userZoneId = userPreferences.getZoneId();
+    }
+    return userZoneId;
   }
 
   /**

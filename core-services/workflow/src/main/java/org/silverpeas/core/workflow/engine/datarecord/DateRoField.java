@@ -25,6 +25,8 @@ package org.silverpeas.core.workflow.engine.datarecord;
 
 import org.silverpeas.core.contribution.content.form.field.DateField;
 
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -36,7 +38,7 @@ public class DateRoField extends DateField {
 
   public DateRoField(Date value) {
     if (value != null) {
-      this.value = formatterBD.format(value.toInstant());
+      this.value = formatterBD.format(LocalDateTime.ofInstant(value.toInstant(), ZoneId.systemDefault()));
     } else {
       this.value = null;
     }

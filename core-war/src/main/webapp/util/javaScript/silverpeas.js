@@ -1155,10 +1155,10 @@ if (typeof window.sp === 'undefined') {
         }
         return level === 0 ? JSON.stringify(__value) : __value;
       };
-      this.compareExistingValuesBetween = function(a, b) {
+      this.areExistingValuesEqual = function(a, b) {
         var typeOfA = typeof a;
         var typeOfB = typeof b;
-        return ((typeOfA !== typeOfB) || this.normalizeExistingValuesOf(a) !== this.normalizeExistingValuesOf(b));
+        return typeOfA === typeOfB && this.normalizeExistingValuesOf(a) === this.normalizeExistingValuesOf(b);
       };
     },
     promise : {
@@ -1327,6 +1327,14 @@ if (typeof window.sp === 'undefined') {
        */
       displayAsDateTime : function(date) {
         return sp.moment.displayAsDate(date) + sp.moment.make(date).format('LT');
+      },
+      /**
+       * Formats the given UI date in order to get ISO representation of LocalDate as string.
+       * @param date an UI date.
+       * @private
+       */
+      formatAsLocalDate : function(date) {
+        return sp.moment.make(date).format().split('T')[0];
       },
       /**
        * Formats the given UI date in order to get ISO representation of LocalDate as string.

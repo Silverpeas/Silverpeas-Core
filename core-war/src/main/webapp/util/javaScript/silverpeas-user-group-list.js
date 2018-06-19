@@ -246,7 +246,7 @@
             this.getTotalOfSelectedUsers() > USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_VALUE) {
           __selectize.removeItem(id, true);
           __selectize.refreshOptions(true);
-          userGroupSelectInstance.showUserManuelNotificationUserReceiverLimitMessage();
+          userGroupSelectInstance.showUserManualNotificationUserReceiverLimitMessage();
           return;
         }
         if (!idContainer.updateElement(normalizedId)) {
@@ -288,7 +288,7 @@
                   USER_MANUAL_NOTIFICATION_USER_RECEIVER_LIMIT_VALUE) {
                 all.push(item);
               } else {
-                userGroupSelectInstance.showUserManuelNotificationUserReceiverLimitMessage();
+                userGroupSelectInstance.showUserManualNotificationUserReceiverLimitMessage();
               }
             }
 
@@ -493,7 +493,7 @@
       return this.getSelectedUserIds().length > 0 || this.getSelectedGroupIds().length > 0;
     };
     
-    this.showUserManuelNotificationUserReceiverLimitMessage = function() {
+    this.showUserManualNotificationUserReceiverLimitMessage = function() {
       this.context.userManualNotificationUserReceiverLimitMessageTip.show();
     };
 

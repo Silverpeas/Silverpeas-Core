@@ -2298,7 +2298,7 @@ div.silverpeas-toggle {
 .ui-datepicker-trigger {
   margin-left: 5px;
   cursor: pointer;
-  vertical-align: bottom;
+  vertical-align: sub;
 }
 
 caption {
@@ -6973,6 +6973,25 @@ silverpeas-contribution-reminder a.add-action {
   display:inline-block;
   margin:1em 0.5em;
   padding: 0.5em 1em;
+}
+
+/**
+ * VueJS components.
+ */
+
+.silverpeas-form-pane .legend{
+  clear: both;
+  display: block;
+}
+
+.ui-dialog .silverpeas-form-pane {
+  overflow:hidden;
+}
+
+input.dateToPick,
+.ui-dialog .champ-ui-dialog input.dateToPick {
+  width:68px;
+  margin:0;
 }
 
 /************ Variables ******************/

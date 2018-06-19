@@ -580,6 +580,8 @@
       buttonTextYes: '',
       buttonTextNo: '',
       isMaxWidth: false,
+      minWidth: undefined,
+      maxWidth: undefined,
       width: 570,
       height: 'auto',
       dialogClass: ''
@@ -696,7 +698,7 @@
 
       // Width
       var width = "" + options.width;
-      width = (width !== 'auto') ? width.replace(/px/, '') + 'px' : width;
+      maxWidth = (width !== 'auto') ? width.replace(/px/, '') + 'px' : width;
       if (options.isMaxWidth) {
         $_this.dialog("option", "width", "auto");
       } else {
@@ -717,7 +719,7 @@
         // This below code handles the width of the dialog after it has been displayed.
         if (options.isMaxWidth) {
           // If max width is required, resizing and repositioning after the dialog open
-          $_this.dialog("widget").css('max-width', width);
+          $_this.dialog("widget").css('max-width', maxWidth);
           $_this.dialog({position : $_this.dialog('option', 'position')});
         }
       };
@@ -725,6 +727,20 @@
         options.openPromise.then(__openPopup);
       } else {
         __openPopup();
+      }
+
+      // Min Width
+      if (options.minWidth) {
+        var _minWidth = "" + options.minWidth;
+        _minWidth = (_minWidth !== 'auto') ? _minWidth.replace(/px/, '') + 'px' : _minWidth;
+        $_this.dialog("widget").css('min-width', _minWidth);
+      }
+
+      // Max Width
+      if (options.maxWidth) {
+        var _maxWidth = "" + options.maxWidth;
+        _maxWidth = (_maxWidth !== 'auto') ? _maxWidth.replace(/px/, '') + 'px' : _maxWidth;
+        $_this.dialog("widget").css('max-width', _maxWidth);
       }
     });
   }
