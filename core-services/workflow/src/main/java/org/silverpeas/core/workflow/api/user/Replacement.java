@@ -90,8 +90,9 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
   User getSubstitute();
 
   /**
-   * Gets the period over which this replacement is enabled.
-   * @return a period of time
+   * Gets the period in days over which this replacement is enabled. The start and end dates of the
+   * period are {@link java.time.LocalDate} instances.
+   * @return a period in days.
    */
   Period getPeriod();
 
@@ -147,7 +148,8 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
     Constructor inWorkflow(final String workflowInstanceId);
 
     /**
-     * Sets the period of time the replacement will be performed and constructs it.
+     * Sets the period of time the replacement will be performed and constructs it. The period is
+     * expressed in days; the start and end date are then {@link java.time.LocalDate} instances.
      * @param period a period of time.
      * @return the constructed replacement.
      */

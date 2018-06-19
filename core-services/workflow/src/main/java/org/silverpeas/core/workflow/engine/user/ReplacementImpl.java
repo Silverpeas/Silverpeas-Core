@@ -26,6 +26,7 @@ package org.silverpeas.core.workflow.engine.user;
 
 import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.date.Period;
+import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifier;
 import org.silverpeas.core.persistence.datasource.model.jpa.SilverpeasJpaEntity;
 import org.silverpeas.core.util.StringUtil;
@@ -121,7 +122,8 @@ public class ReplacementImpl extends SilverpeasJpaEntity<ReplacementImpl, UuidId
   ReplacementImpl setPeriod(final Period period) {
     Objects.requireNonNull(period,
         "The period during which the replacement is enabled must be non-null");
-    this.period = period;
+    this.period = Period.between(TemporalConverter.asLocalDate(period.getStartDate()),
+        TemporalConverter.asLocalDate(period.getEndDate()));
     return this;
   }
 
