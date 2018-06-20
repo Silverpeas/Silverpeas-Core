@@ -25,14 +25,13 @@ package org.silverpeas.web;
 
 import org.junit.Test;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 /**
  * Unit tests on the deletion of a resource in Silverpeas through a REST web service.
@@ -46,9 +45,10 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest
    * Requests a delete of the web resource identified at the specified URI.
    * If an error occurs, then an UniformInterfaceException exception is thrown.
    * @param uri the uri of the resource to delete.
+   * @return the {@link Response} of the deletion.
    */
-  public void deleteAt(String uri) {
-    resource().path(uri).request(MediaType.APPLICATION_JSON).
+  public Response deleteAt(String uri) {
+    return resource().path(uri).request(MediaType.APPLICATION_JSON).
         header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(getAPITokenValue())).
         delete();
   }
@@ -66,55 +66,36 @@ public abstract class ResourceDeletionTest extends RESTWebServiceTest
   }
 
   @Test
-  public void deletionOfAResourceByANonAuthenticatedUser() throws Exception {
-    try {
-      resource().path(aResourceURI()).
-          request(MediaType.APPLICATION_JSON).
-          delete();
-      fail("A non authenticated user shouldn't delete a resource");
-    } catch (WebApplicationException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-      assertThat(receivedStatus, is(unauthorized));
-    }
+  public void deletionOfAResourceByANonAuthenticatedUser() {
+    final int Unauthorized = Status.UNAUTHORIZED.getStatusCode();
+    Response response = resource().path(aResourceURI()).
+        request(MediaType.APPLICATION_JSON).
+        delete();
+    assertThat(response.getStatus(), is(Unauthorized));
   }
 
   @Test
   public void deletionOfAResourceWithADeprecatedSession() throws Exception {
-    try {
-      resource().path(aResourceURI()).
-          request(MediaType.APPLICATION_JSON).
-          header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(UUID.randomUUID().toString())).
-          delete();
-      fail("A user with a deprecated session shouldn't delete a resource");
-    } catch (WebApplicationException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-      assertThat(receivedStatus, is(unauthorized));
-    }
+    final int Unauthorized = Status.UNAUTHORIZED.getStatusCode();
+    Response response = resource().path(aResourceURI()).
+        request(MediaType.APPLICATION_JSON).
+        header(API_TOKEN_HTTP_HEADER, encodesAPITokenValue(UUID.randomUUID().toString())).
+        delete();
+    assertThat(response.getStatus(), is(Unauthorized));
   }
 
   @Test
   public void deletionOfAResourceByANonAuthorizedUser() throws Exception {
-    denieAuthorizationToUsers();
-    try {
-      deleteAt(aResourceURI());
-      fail("An unauthorized user shouldn't delete a resource");
-    } catch (WebApplicationException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int forbidden = Status.FORBIDDEN.getStatusCode();
-      assertThat(receivedStatus, is(forbidden));
-    }
+    denyAuthorizationToUsers();
+    final int Forbidden = Status.FORBIDDEN.getStatusCode();
+    Response response = deleteAt(aResourceURI());
+    assertThat(response.getStatus(), is(Forbidden));
   }
 
   @Test
   public void deletionOfAnUnexistingResource() throws Exception {
-    try {
-      deleteAt(anUnexistingResourceURI());
-    } catch (WebApplicationException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int notFound = Status.NOT_FOUND.getStatusCode();
-      assertThat(receivedStatus, is(notFound));
-    }
+    final int NotFound = Status.NOT_FOUND.getStatusCode();
+    Response response = deleteAt(anUnexistingResourceURI());
+    assertThat(response.getStatus(), is(NotFound));
   }
 }

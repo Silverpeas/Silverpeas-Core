@@ -50,7 +50,8 @@ import java.util.Objects;
     query = "select r from ReplacementImpl r where r.incumbentId = :incumbent and r.workflowId = " +
         ":workflow"), @NamedQuery(name = "Replacement.findAllBySubstituteAndByWorkflow",
     query = "select r from ReplacementImpl r where r.substituteId = :substitute and " +
-        "r.workflowId = :workflow")})
+        "r.workflowId = :workflow"), @NamedQuery(name = "Replacement.findAllByWorkflow",
+    query = "select r from ReplacementImpl r where r.workflowId = :workflow")})
 @Entity
 @Table(name = "sb_workflow_replacements")
 public class ReplacementImpl extends SilverpeasJpaEntity<ReplacementImpl, UuidIdentifier>

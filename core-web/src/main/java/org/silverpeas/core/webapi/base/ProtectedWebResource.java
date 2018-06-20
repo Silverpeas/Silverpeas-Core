@@ -52,10 +52,10 @@ public interface ProtectedWebResource extends SilverpeasWebResource {
    * Validates the authentication of the user requesting this web service. If no session was opened
    * for the user, then open a new one. The validation is actually delegated to the validation
    * service by passing it the required information.
-   *
+   * <p>
    * This method should be invoked for web service requiring an authenticated user. Otherwise, the
    * annotation Authenticated can be also used instead at class level.
-   *
+   * </p>
    * @see UserPrivilegeValidator
    * @param validation the validation instance to use.
    * @throws WebApplicationException if the authentication isn't valid (no authentication and
@@ -78,13 +78,14 @@ public interface ProtectedWebResource extends SilverpeasWebResource {
 
   /**
    * Validates the authorization of the user to request this web service. For doing, the user must
-   * have the rights to access the component instance that manages this web resource. The validation
-   * is actually delegated to the validation service by passing it the required information.
-   *
+   * have the rights to access the component instance that manages this web resource. If no such
+   * component instance exists, a Not Found HTTP error is thrown (status code 404). Otherwise the
+   * validation is delegated to the validation service by passing it the required information.
+   * <p>
    * This method should be invoked for web service requiring an authorized access. For doing, the
    * authentication of the user must be first valdiated. Otherwise, the annotation Authorized can be
    * also used instead at class level for both authentication and authorization.
-   *
+   * </p>
    * @see UserPrivilegeValidator
    * @param validation the validation instance to use.
    * @throws WebApplicationException if the rights of the user are not enough to access this web

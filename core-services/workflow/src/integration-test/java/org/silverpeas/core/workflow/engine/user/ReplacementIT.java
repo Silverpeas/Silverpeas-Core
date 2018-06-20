@@ -131,7 +131,7 @@ public class ReplacementIT {
     assertThat(replacements.size(), is(2));
     assertThat(replacements.stream()
                            .allMatch(
-                               d -> d.getIncumbent().getUserId().equals(incumbent.getUserId())),
+                               r -> r.getIncumbent().getUserId().equals(incumbent.getUserId())),
         is(true));
   }
 
@@ -143,7 +143,17 @@ public class ReplacementIT {
     assertThat(replacements.size(), is(2));
     assertThat(replacements.stream()
                            .allMatch(
-                               d -> d.getSubstitute().getUserId().equals(substitute.getUserId())),
+                               r -> r.getSubstitute().getUserId().equals(substitute.getUserId())),
+        is(true));
+  }
+
+  @Test
+  public void getAllReplacementsInAWorkflowInstanceShouldReturnAllOfThem() {
+    List<Replacement> replacements = Replacement.getAll(WORKFLOW_INSTANCE_ID);
+    assertThat(replacements.isEmpty(), is(false));
+    assertThat(replacements.size(), is(4));
+    assertThat(
+        replacements.stream().allMatch(r -> r.getWorkflowInstanceId().equals(WORKFLOW_INSTANCE_ID)),
         is(true));
   }
 

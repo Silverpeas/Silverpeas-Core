@@ -26,16 +26,15 @@ package org.silverpeas.web;
 import org.junit.Test;
 import org.silverpeas.core.util.StringUtil;
 
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.client.Invocation;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import java.util.UUID;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 
 /**
  * Unit tests on the getting of a resource in Silverpeas through a REST web service. This class is
@@ -83,53 +82,34 @@ public abstract class ResourceGettingTest extends RESTWebServiceTest implements 
 
   @Test
   public void gettingAResourceByANonAuthenticatedUser() {
-    try {
-      getAt(aResourceURI(), withAsApiToken(null), asMediaType(MediaType.APPLICATION_JSON_TYPE),
-          getWebEntityClass());
-      fail("A non authenticated user shouldn't access the resource");
-    } catch (WebApplicationException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-      assertThat(receivedStatus, is(unauthorized));
-    }
+    final int Unauthorized = Status.UNAUTHORIZED.getStatusCode();
+    Response response =
+        getAt(aResourceURI(), withAsApiToken(null), asMediaType(MediaType.APPLICATION_JSON_TYPE),
+            Response.class);
+    assertThat(response.getStatus(), is(Unauthorized));
   }
 
   @Test
   public void gettingAResourceWithAnExpiredSession() {
-    try {
-      getAt(aResourceURI(), withAsApiToken(UUID.randomUUID().toString()),
-          asMediaType(MediaType.APPLICATION_JSON_TYPE), getWebEntityClass());
-      fail("A non authenticated user shouldn't access the resource");
-    } catch (WebApplicationException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int unauthorized = Status.UNAUTHORIZED.getStatusCode();
-      assertThat(receivedStatus, is(unauthorized));
-    }
+    final int Unauthorized = Status.UNAUTHORIZED.getStatusCode();
+    Response response = getAt(aResourceURI(), withAsApiToken(UUID.randomUUID().toString()),
+        asMediaType(MediaType.APPLICATION_JSON_TYPE), Response.class);
+    assertThat(response.getStatus(), is(Unauthorized));
   }
 
   @Test
   public void gettingAResourceByAnUnauthorizedUser() {
-    denieAuthorizationToUsers();
-    try {
-      getAt(aResourceURI(), getWebEntityClass());
-      fail("An unauthorized user shouldn't access the resource");
-    } catch (WebApplicationException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int forbidden = Status.FORBIDDEN.getStatusCode();
-      assertThat(receivedStatus, is(forbidden));
-    }
+    denyAuthorizationToUsers();
+    final int Forbidden = Status.FORBIDDEN.getStatusCode();
+    Response response = getAt(aResourceURI(), Response.class);
+    assertThat(response.getStatus(), is(Forbidden));
   }
 
   @Test
   public void gettingAnUnexistingResource() {
-    try {
-      getAt(anUnexistingResourceURI(), getWebEntityClass());
-      fail("A user shouldn't get an unexisting resource");
-    } catch (WebApplicationException ex) {
-      int receivedStatus = ex.getResponse().getStatus();
-      int notFound = Status.NOT_FOUND.getStatusCode();
-      assertThat(receivedStatus, is(notFound));
-    }
+    final int NotFound = Status.NOT_FOUND.getStatusCode();
+    Response response = getAt(anUnexistingResourceURI(), Response.class);
+    assertThat(response.getStatus(), is(NotFound));
   }
 
   private <C> C getAt(String uri, String apiToken, MediaType mediaType, Class<C> c) {

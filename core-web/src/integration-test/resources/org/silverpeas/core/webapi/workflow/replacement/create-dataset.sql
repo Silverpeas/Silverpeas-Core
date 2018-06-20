@@ -11,6 +11,16 @@ VALUES
   (42, 0, 'Workflow 42', 'workflow', '', 0, 1,
        '1433237280246', '1443424995948', null, null, 1, null, 1, 0, 'fr', 0);
 
+INSERT INTO ST_UserRole(id, instanceId, rolename, name, description, isInherited)
+VALUES
+  (1, 24, 'supervisor', '', '', 1),
+  (2, 42, 'supervisor', '', '', 1);
+
+INSERT INTO ST_UserRole_User_Rel(userroleid, userId)
+VALUES
+  (1, 0),
+  (2, 0);
+
 INSERT INTO DomainSP_User (id, firstName, lastName, login)
 VALUES
   (1, 'John', 'Anderton', 'john'),

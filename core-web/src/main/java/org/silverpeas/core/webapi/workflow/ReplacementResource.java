@@ -24,6 +24,7 @@
 
 package org.silverpeas.core.webapi.workflow;
 
+import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.webapi.base.RESTWebService;
@@ -40,8 +41,11 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.text.MessageFormat;
+import java.util.Collection;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.webapi.workflow.ReplacementEntity.asWebEntity;
 
@@ -68,37 +72,50 @@ public class ReplacementResource extends RESTWebService {
 
   /**
    * Gets all the replacements of the specified user in the given underlying workflow.
+   * Only the replacements into which the requester is concerned are returned unless he plays the
+   * role of supervisor in the given underlying workflow.
    * @return a list of all the replacements of the given user. If no replacements exist, then an
    * empty list is returned.
    */
   @Path("incumbents/{userId}")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<ReplacementEntity> getAllDelegationsByDelegator(
+  public Collection<ReplacementEntity> getAllReplacementsOfUser(
       @PathParam("userId") final String userId) throws WorkflowException {
     final User incumbent = getUser(userId);
-    return Replacement.getAllOf(incumbent, workflowId)
-        .stream()
-        .map(r -> asWebEntity(r, identifiedBy(r.getId())))
-        .collect(Collectors.toList());
+    final Stream<Replacement> replacements = Replacement.getAllOf(incumbent, workflowId).stream();
+    return filterAndEncode(replacements);
   }
 
   /**
-   * Gets all the replacements that are accomplished by the specified of user in the given
-   * underlying workflow.
+   * Gets all the replacements that are being accomplished by the specified of user in the given
+   * underlying workflow. Only the replacements into which the requester is concerned are
+   * returned unless he plays the role of supervisor in the given underlying workflow.
    * @return a list of all the replacements accomplished by the given user. If no replacements
    * exist, then an empty list is returned.
    */
   @Path("substitutes/{userId}")
   @GET
   @Produces(MediaType.APPLICATION_JSON)
-  public List<ReplacementEntity> getAllDelegationsToDelegate(
+  public Collection<ReplacementEntity> getAllReplacementsByUser(
       @PathParam("userId") final String userId) throws WorkflowException {
     final User substitute = getUser(userId);
-    return Replacement.getAllBy(substitute, workflowId)
-        .stream()
-        .map(r -> asWebEntity(r, identifiedBy(r.getId())))
-        .collect(Collectors.toList());
+    final Stream<Replacement> replacements = Replacement.getAllBy(substitute, workflowId).stream();
+    return filterAndEncode(replacements);
+  }
+
+  /**
+   * Gets all the replacements that were created in the underlying workflow. Only the workflow
+   * supervisor can invoke this method.
+   * @return a list of all replacements that are defined for the underlying workflow.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  public Collection<ReplacementEntity> getAllReplacements() {
+    return process(() -> {
+      final Stream<Replacement> replacements = Replacement.getAll(workflowId).stream();
+      return encode(replacements);
+    }).lowestAccessRole(SilverpeasRole.supervisor).execute();
   }
 
   @Override
@@ -113,6 +130,35 @@ public class ReplacementResource extends RESTWebService {
 
   private User getUser(final String userId) throws WorkflowException {
     return userManager.getUser("me".equals(userId) ? getUser().getId() : userId);
+  }
+
+  private boolean isRequesterSupervisor() {
+    boolean isSupervisor;
+    try {
+      isSupervisor =
+          Stream.of(userManager.getUsersInRole(SilverpeasRole.supervisor.name(), workflowId))
+          .anyMatch(u -> u.getUserId().equals(getUser().getId()));
+    } catch (WorkflowException e) {
+      isSupervisor = false;
+    }
+    return isSupervisor;
+  }
+
+  private Predicate<Replacement> onTheRequester =
+      r -> r.getSubstitute().getUserId().equals(getUser().getId()) ||
+          r.getIncumbent().getUserId().equals(getUser().getId());
+
+  private List<ReplacementEntity> filterAndEncode(final Stream<Replacement> replacements) {
+    Stream<Replacement> stream = replacements;
+    if (!isRequesterSupervisor()) {
+      stream = replacements.filter(onTheRequester);
+    }
+    return encode(stream);
+  }
+
+  private List<ReplacementEntity> encode(final Stream<Replacement> replacements) {
+    return replacements.map(r -> asWebEntity(r, identifiedBy(r.getId())))
+        .collect(Collectors.toList());
   }
 
 }

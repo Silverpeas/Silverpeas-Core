@@ -38,7 +38,9 @@
     <configuration>
       <property name="serverConfig">standalone-full.xml</property>
       <!-- uncomment it for debugging integration test -->
+      <!--
       <property name="javaVmArguments">-agentlib:jdwp=transport=dt_socket,address=5005,server=y,suspend=y</property>
+      -->
     </configuration>
   </container>
 </arquillian>

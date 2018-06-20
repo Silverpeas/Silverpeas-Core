@@ -67,6 +67,17 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
   }
 
   /**
+   * Gets all the replacements that are defined in the specified workflow instance.
+   * @param workflowInstanceId the unique identifier of a workflow instance.
+   * @return a list of all the replacements in the specified workflow instance. If no
+   * replacements exist, then an empty list is returned.
+   */
+  static List<Replacement> getAll(final String workflowInstanceId) {
+    Repository repository = ServiceProvider.getService(Repository.class);
+    return repository.findAllByWorkflow(workflowInstanceId);
+  }
+
+  /**
    * Prepares the construction of a replacement between the two specified users.
    * @param incumbent the user that have to be replaced.
    * @param substitute the user that will replace the former.
@@ -182,6 +193,7 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
      * identifier.
      * @param user a user in the workflow instance.
      * @param workflowInstanceId the unique identifier of a workflow instance.
+     * @param <T> the class implementing the {@link Replacement} interface.
      * @return a list of all persisted replacements of the specified user. If no
      * replacements were set for the specified user in the given workflow instance, then an empty
      * list is returned.
@@ -193,10 +205,21 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
      * identifier.
      * @param user a user in the workflow instance.
      * @param workflowInstanceId the unique identifier of a workflow instance.
+     * @param <T> the class implementing the {@link Replacement} interface.
      * @return a list of all persisted replacements that will be done by the specified user. If no
      * replacements were set with the specified user in the given workflow instance, then an empty
      * list is returned.
      */
     <T extends Replacement> List<T> findAllBySubstituteAndByWorkflow(final User user, final String workflowInstanceId);
+
+    /**
+     * Finds all the replacements created in the specified workflow instance.
+     * @param workflowInstanceId the unique identifier of a workflow instance.
+     * @param <T> the class implementing the {@link Replacement} interface.
+     * @return a list of all persisted replacements that were created in the specified workflow
+     * instance. If no replacements were set in the given workflow instance, then an empty list
+     * is returned.
+     */
+    <T extends Replacement> List<T> findAllByWorkflow(final String workflowInstanceId);
   }
 }

@@ -25,7 +25,6 @@
 package org.silverpeas.core.webapi.workflow;
 
 import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.date.Period;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.webapi.util.UserEntity;
@@ -36,7 +35,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
-import java.time.LocalDate;
+import java.util.Date;
 
 /**
  * The web entity that is carried by an HTTP request or an HTTP response between a web client and
@@ -56,9 +55,9 @@ public class ReplacementEntity implements WebEntity {
   @XmlElement(required = true)
   private UserEntity substitute;
   @XmlElement(required = true)
-  private LocalDate startDate;
+  private Date startDate;
   @XmlElement(required = true)
-  private LocalDate endDate;
+  private Date endDate;
   @XmlElement(required = true)
   private String workflowId;
 
@@ -66,8 +65,8 @@ public class ReplacementEntity implements WebEntity {
   ReplacementEntity(final Replacement replacement) {
     this.incumbent = new UserEntity(User.getById(replacement.getIncumbent().getUserId()));
     this.substitute = new UserEntity(User.getById(replacement.getSubstitute().getUserId()));
-    this.startDate = TemporalConverter.asLocalDate(replacement.getPeriod().getStartDate());
-    this.endDate = TemporalConverter.asLocalDate(replacement.getPeriod().getEndDate());
+    this.startDate = TemporalConverter.asDate(replacement.getPeriod().getStartDate());
+    this.endDate = TemporalConverter.asDate(replacement.getPeriod().getEndDate());
     this.workflowId = replacement.getWorkflowInstanceId();
   }
 
@@ -94,8 +93,12 @@ public class ReplacementEntity implements WebEntity {
     return substitute;
   }
 
-  public Period getPeriod() {
-    return Period.between(this.startDate, this.endDate);
+  public Date getStartDate() {
+    return this.startDate;
+  }
+
+  public Date getEndDate() {
+    return this.endDate;
   }
 
   public String getWorkflowInstanceId() {

@@ -122,7 +122,7 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
 
   @Test
   public void updateOfResourceByANonAuthorizedUser() {
-    denieAuthorizationToUsers();
+    denyAuthorizationToUsers();
     try {
       putAt(aResourceURI(), aResource());
       fail("An unauthorized user shouldn't update a resource");
@@ -162,9 +162,9 @@ public abstract class ResourceUpdateTest extends RESTWebServiceTest implements W
     try {
       putAt(aResourceURI(), "{\"uri\": \"http://toto.chez-les-papoos.com/invalid/resource\"}");
     } catch (WebApplicationException ex) {
-      int recievedStatus = ex.getResponse().getStatus();
+      int receivedStatus = ex.getResponse().getStatus();
       int badRequest = Status.BAD_REQUEST.getStatusCode();
-      assertThat(recievedStatus, is(badRequest));
+      assertThat(receivedStatus, is(badRequest));
     }
   }
 

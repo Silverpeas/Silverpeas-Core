@@ -27,6 +27,9 @@ import org.silverpeas.core.test.BasicCoreWarBuilder;
 import org.silverpeas.core.test.WarBuilder;
 import org.silverpeas.core.web.authentication.SilverpeasSessionOpener;
 import org.silverpeas.core.web.http.HttpRequest;
+import org.silverpeas.core.web.mvc.controller.ComponentContext;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
+import org.silverpeas.core.web.mvc.util.AlertUser;
 
 /**
  * This builder extends the {@link WarBuilder} in order to centralize the
@@ -45,7 +48,8 @@ public class WarBuilder4WebCore extends BasicCoreWarBuilder {
     addMavenDependencies("org.silverpeas.core:silverpeas-core-web-test");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-silverstatistics");
     addMavenDependencies("org.silverpeas.core.services:silverpeas-core-viewer");
-    addClasses(SilverpeasSessionOpener.class);
+    addClasses(SilverpeasSessionOpener.class, MainSessionController.class, AlertUser.class,
+        ComponentContext.class);
     addPackages(true, "org.silverpeas.core.web.http");
     addPackages(true, "org.silverpeas.core.web.panel");
     addPackages(true, "org.silverpeas.core.web.selection");
