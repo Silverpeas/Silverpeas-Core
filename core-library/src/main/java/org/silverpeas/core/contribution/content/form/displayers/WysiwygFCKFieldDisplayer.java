@@ -36,7 +36,6 @@ import org.silverpeas.core.contribution.content.form.FieldTemplate;
 import org.silverpeas.core.contribution.content.form.Form;
 import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.PagesContext;
-import org.silverpeas.core.contribution.content.form.RenderingContext;
 import org.silverpeas.core.contribution.content.form.Util;
 import org.silverpeas.core.contribution.content.form.field.TextField;
 import org.silverpeas.core.contribution.content.wysiwyg.service.WysiwygContentTransformer;
@@ -169,20 +168,17 @@ public class WysiwygFCKFieldDisplayer extends AbstractFieldDisplayer<TextField> 
     }
 
     if (template.isDisabled() || template.isReadOnly()) {
-      displayContent(out, code, pageContext);
+      displayContent(out, code);
     } else {
       displayEditor(out, code, template, pageContext);
     }
   }
 
-  private void displayContent(PrintWriter out, String code, PagesContext pageContext) {
+  private void displayContent(PrintWriter out, String code) {
     final WysiwygContentTransformer wysiwygContentTransformer =
-        WysiwygContentTransformer.on(code).modifyImageUrlAccordingToHtmlSizeDirective();
-
-    if (pageContext.getRenderingContext() == RenderingContext.EXPORT) {
-      // dynamic value functionality
-      wysiwygContentTransformer.resolveVariablesDirective();
-    }
+        WysiwygContentTransformer.on(code)
+            .modifyImageUrlAccordingToHtmlSizeDirective()
+            .resolveVariablesDirective();
 
     out.println(wysiwygContentTransformer.transform());
   }

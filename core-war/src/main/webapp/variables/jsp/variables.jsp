@@ -178,19 +178,19 @@
       <view:arrayColumn title="${colValue}" compareOn="${r -> r.refVariableValue.value}"/>
       <view:arrayColumn title="${colStart}" compareOn="${r -> r.refStartDate}"/>
       <view:arrayColumn title="${colEnd}" compareOn="${r -> r.refEndDate}"/>
-      <view:arrayColumn title="${colPeriods}" sortable="false"/>
+      <view:arrayColumn title="${colPeriods}" compareOn="${r -> r.data.numberOfValues}"/>
       <view:arrayColumn title="${colOperations}" sortable="false"/>
       <view:arrayLines var="variable" items="${valueItems}">
         <view:arrayLine>
           <view:arrayCellCheckbox name="selection" checked="${variable.selected}" value="${variable.id}"/>
-          <view:arrayCellText>${variable.data.label}</view:arrayCellText>
+          <view:arrayCellText><a href="javascript:editVariable('${variable.id}')">${variable.data.label}</a></view:arrayCellText>
           <view:arrayCellText text="${variable.refVariableValue.valueForHTML}"/>
           <view:arrayCellText text="${silfn:formatDate(variable.refStartDate, lang)}"/>
           <view:arrayCellText text="${silfn:formatDate(variable.refEndDate, lang)}"/>
-          <view:arrayCellText classes="variable-nb-values">${variable.data.variableValues.size()}</view:arrayCellText>
+          <view:arrayCellText classes="variable-nb-values">${variable.data.numberOfValues}</view:arrayCellText>
           <view:arrayCellText>
-            <a href="#" onclick="javascript:editVariable('${variable.id}'); return false;" title="${opUpdate}" class="edit-variable"><img src="${iconUpdate}" alt="${opUpdate}"/></a>
-            <a href="#" onclick="javascript:deleteVariable('${variable.id}'); return false;" title="${opDelete}" class="delete-variable"><img src="${iconDelete}" alt="${opDelete}"/></a>
+            <a href="#" onclick="editVariable('${variable.id}'); return false;" title="${opUpdate}" class="edit-variable"><img src="${iconUpdate}" alt="${opUpdate}"/></a>
+            <a href="#" onclick="deleteVariable('${variable.id}'); return false;" title="${opDelete}" class="delete-variable"><img src="${iconDelete}" alt="${opDelete}"/></a>
           </view:arrayCellText>
         </view:arrayLine>
       </view:arrayLines>
