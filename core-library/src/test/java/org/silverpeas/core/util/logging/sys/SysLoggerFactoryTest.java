@@ -76,14 +76,14 @@ public class SysLoggerFactoryTest {
 
   @Test
   public void getDifferentLoggersFromDifferentThreads() throws Exception {
-    final int maxThreads = Runtime.getRuntime().availableProcessors() + 1;
+    final int maxThreads = Runtime.getRuntime().availableProcessors();
     ExecutorService executor = Executors.newFixedThreadPool(maxThreads);
     SilverLoggerFactory loggerFactory = new SysLoggerFactory();
     Map<String, SilverLogger> cachedLoggers = getCachedLoggers(loggerFactory);
 
     // explicit garbage collecting to avoid its running while performing the core of this test.
     System.gc();
-    await().atMost(10, TimeUnit.SECONDS).until(() -> cachedLoggers.isEmpty());
+    await().atMost(1, TimeUnit.SECONDS).until(cachedLoggers::isEmpty);
 
     for (int i = 0; i < maxThreads; i++) {
       final int nb = i;
@@ -105,7 +105,7 @@ public class SysLoggerFactoryTest {
 
     // explicit garbage collecting to avoid its running while performing the core of this test.
     System.gc();
-    await().atMost(10, TimeUnit.SECONDS).until(() -> cachedLoggers.isEmpty());
+    await().atMost(10, TimeUnit.SECONDS).until(cachedLoggers::isEmpty);
 
     for (int i = 0; i < maxThreads; i++) {
       executor.execute(() -> loggerFactory.getLogger(LOGGER_NAMESPACE));
@@ -124,19 +124,20 @@ public class SysLoggerFactoryTest {
 
     // explicit garbage collecting to avoid its running while performing the core of this test.
     System.gc();
-    await().atMost(10, TimeUnit.SECONDS).until(() -> cachedLoggers.isEmpty());
+    await().atMost(10, TimeUnit.SECONDS).until(cachedLoggers::isEmpty);
 
     SilverLogger logger1 = loggerFactory.getLogger(LOGGER_NAMESPACE);
     assertThat(cachedLoggers.size(), is(1));
 
     System.gc();
-    await().atMost(10, TimeUnit.SECONDS).until(() -> cachedLoggers.isEmpty());
+    await().atMost(10, TimeUnit.SECONDS).until(cachedLoggers::isEmpty);
 
     SilverLogger logger2 = loggerFactory.getLogger(LOGGER_NAMESPACE);
     assertThat(cachedLoggers.size(), is(1));
     assertThat(logger1, not(logger2));
   }
 
+  @SuppressWarnings("unchecked")
   private Map<String, SilverLogger> getCachedLoggers(final SilverLoggerFactory loggerFactory)
       throws NoSuchFieldException, IllegalAccessException {
     Field loggers = loggerFactory.getClass().getDeclaredField("loggers");
