@@ -35,6 +35,7 @@ import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 
+import javax.inject.Named;
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -46,12 +47,18 @@ import java.util.Objects;
  * Implementation of the replacement business object by using JPA for the persistence.
  * @author mmoquillon
  */
-@NamedQueries({@NamedQuery(name = "Replacement.findAllByIncumbentAndByWorkflow",
-    query = "select r from ReplacementImpl r where r.incumbentId = :incumbent and r.workflowId = " +
-        ":workflow"), @NamedQuery(name = "Replacement.findAllBySubstituteAndByWorkflow",
-    query = "select r from ReplacementImpl r where r.substituteId = :substitute and " +
-        "r.workflowId = :workflow"), @NamedQuery(name = "Replacement.findAllByWorkflow",
-    query = "select r from ReplacementImpl r where r.workflowId = :workflow")})
+@NamedQueries({
+    @NamedQuery(name = "Replacement.findAllByIncumbentAndByWorkflow",
+        query = "select r from ReplacementImpl r where r.incumbentId = :incumbent and " +
+            "r.workflowId = :workflow"),
+    @NamedQuery(name = "Replacement.findAllBySubstituteAndByWorkflow",
+        query = "select r from ReplacementImpl r where r.substituteId = :substitute and " +
+            "r.workflowId = :workflow"),
+    @NamedQuery(name = "Replacement.findAllByWorkflow",
+        query = "select r from ReplacementImpl r where r.workflowId = :workflow"),
+    @NamedQuery(name = "Replacement.findAllByUsersAndByWorkflow",
+        query = "select r from ReplacementImpl r where r.incumbentId = :incumbent and r" +
+            ".substituteId = :substitute and r.workflowId = :workflow")})
 @Entity
 @Table(name = "sb_workflow_replacements")
 public class ReplacementImpl extends SilverpeasJpaEntity<ReplacementImpl, UuidIdentifier>

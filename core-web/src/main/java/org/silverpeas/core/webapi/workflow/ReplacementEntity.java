@@ -24,17 +24,21 @@
 
 package org.silverpeas.core.webapi.workflow;
 
-import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.webapi.util.UserEntity;
 import org.silverpeas.core.workflow.api.user.Replacement;
+import org.silverpeas.core.workflow.api.user.User;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 
 /**
@@ -63,8 +67,8 @@ public class ReplacementEntity implements WebEntity {
 
 
   ReplacementEntity(final Replacement replacement) {
-    this.incumbent = new UserEntity(User.getById(replacement.getIncumbent().getUserId()));
-    this.substitute = new UserEntity(User.getById(replacement.getSubstitute().getUserId()));
+    this.incumbent = new UserEntity(asUserDetail(replacement.getIncumbent()));
+    this.substitute = new UserEntity(asUserDetail(replacement.getSubstitute()));
     this.startDate = TemporalConverter.asDate(replacement.getPeriod().getStartDate());
     this.endDate = TemporalConverter.asDate(replacement.getPeriod().getEndDate());
     this.workflowId = replacement.getWorkflowInstanceId();
@@ -93,16 +97,22 @@ public class ReplacementEntity implements WebEntity {
     return substitute;
   }
 
-  public Date getStartDate() {
-    return this.startDate;
+  public LocalDate getStartDate() {
+    return LocalDateTime.ofInstant(this.startDate.toInstant(), ZoneId.systemDefault())
+        .toLocalDate();
   }
 
-  public Date getEndDate() {
-    return this.endDate;
+  public LocalDate getEndDate() {
+    return LocalDateTime.ofInstant(this.endDate.toInstant(), ZoneId.systemDefault()).toLocalDate();
   }
 
   public String getWorkflowInstanceId() {
     return this.workflowId;
   }
+
+  private UserDetail asUserDetail(final User user) {
+    return UserDetail.getById(user.getUserId());
+  }
+
 }
   

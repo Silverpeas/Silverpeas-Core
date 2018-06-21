@@ -157,6 +157,20 @@ public class ReplacementIT {
         is(true));
   }
 
+  @Test
+  public void getAllReplacementsWithGivenUsersInAWorkflowInstanceShouldReturnAllOfThem() {
+    final User incumbent = aUser("1");
+    final User substitute = aUser("2");
+    List<Replacement> replacements =
+        Replacement.getAllWith(incumbent, substitute, WORKFLOW_INSTANCE_ID);
+    assertThat(replacements.isEmpty(), is(false));
+    assertThat(replacements.size(), is(1));
+    assertThat(replacements.stream()
+        .allMatch(r -> r.getWorkflowInstanceId().equals(WORKFLOW_INSTANCE_ID) &&
+            r.getSubstitute().getUserId().equals(substitute.getUserId()) &&
+            r.getIncumbent().getUserId().equals(incumbent.getUserId())), is(true));
+  }
+
   private User aUser(final String userId) {
     try {
       return WorkflowHub.getUserManager().getUser(userId);

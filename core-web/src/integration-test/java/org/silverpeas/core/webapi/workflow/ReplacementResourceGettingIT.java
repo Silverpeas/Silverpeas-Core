@@ -57,6 +57,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
       "/org/silverpeas/core/webapi/workflow/replacement/create-table.sql";
   private static final String DATA_SET_SCRIPT =
       "/org/silverpeas/core/webapi/workflow/replacement/create-dataset.sql";
+  private static final String SUPERVISOR_ID = "0";
   private static final int STATUS_OK = Response.Status.OK.getStatusCode();
 
   @Inject
@@ -64,7 +65,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
 
   private String authToken;
   private User user;
-  private Replacement resource;
+  private ReplacementEntity resource;
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -86,7 +87,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
     List<Replacement> replacements =
         Replacement.getAllOf(userManager.getUser("1"), getExistingComponentInstances()[0]);
     assertThat(replacements.isEmpty(), is(false));
-    resource = replacements.get(0);
+    resource = new ReplacementEntity(replacements.get(0));
   }
 
   @Override
@@ -102,7 +103,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
   @Test
   public void getAllReplacementsByAnAuthorizedUser() {
     final String aWorkflowId = getExistingComponentInstances()[0];
-    Response response = getAt(aSubstituteURI(aWorkflowId, "2"), Response.class);
+    Response response = getAt(uriWithSubstitute(replacementsUri(aWorkflowId), "2"), Response.class);
     assertThat(response.getStatus(), is(STATUS_OK));
 
     ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
@@ -115,7 +116,22 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
   @Test
   public void getAllReplacementsOfAnAuthorizedUser() {
     final String aWorkflowId = getExistingComponentInstances()[0];
-    Response response = getAt(anIncumbentURI(aWorkflowId, "1"), Response.class);
+    Response response = getAt(uriWithIncumbent(replacementsUri(aWorkflowId), "1"), Response.class);
+    assertThat(response.getStatus(), is(STATUS_OK));
+
+    ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
+    assertThat(replacements.length, is(1));
+    assertThat(replacements[0].getIncumbent().getId(), is("1"));
+    assertThat(replacements[0].getSubstitute().getId(), is("2"));
+    assertThat(replacements[0].getWorkflowInstanceId(), is(aWorkflowId));
+  }
+
+  @Test
+  public void getAllReplacementsWithConcernedUsers() {
+    final String aWorkflowId = getExistingComponentInstances()[0];
+    Response response =
+        getAt(uriWithSubstitute(uriWithIncumbent(replacementsUri(aWorkflowId), "1"), "2"),
+            Response.class);
     assertThat(response.getStatus(), is(STATUS_OK));
 
     ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
@@ -131,7 +147,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
     authToken = getTokenKeyOf(user);
 
     final String aWorkflowId = getExistingComponentInstances()[0];
-    Response response = getAt(aSubstituteURI(aWorkflowId, "2"), Response.class);
+    Response response = getAt(uriWithSubstitute(replacementsUri(aWorkflowId), "2"), Response.class);
     assertThat(response.getStatus(), is(STATUS_OK));
 
     ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
@@ -144,7 +160,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
     authToken = getTokenKeyOf(user);
 
     final String aWorkflowId = getExistingComponentInstances()[0];
-    Response response = getAt(anIncumbentURI(aWorkflowId, "1"), Response.class);
+    Response response = getAt(uriWithIncumbent(replacementsUri(aWorkflowId), "1"), Response.class);
     assertThat(response.getStatus(), is(STATUS_OK));
 
     ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
@@ -153,11 +169,11 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
 
   @Test
   public void aSupervisorAsksForAllReplacementsByASubstitute() {
-    user = User.getById("0");
+    user = User.getById(SUPERVISOR_ID);
     authToken = getTokenKeyOf(user);
 
     final String aWorkflowId = getExistingComponentInstances()[0];
-    Response response = getAt(aSubstituteURI(aWorkflowId, "2"), Response.class);
+    Response response = getAt(uriWithSubstitute(replacementsUri(aWorkflowId), "2"), Response.class);
     assertThat(response.getStatus(), is(STATUS_OK));
 
     ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
@@ -169,11 +185,11 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
 
   @Test
   public void aSupervisorAsksForAllReplacementsOfAnIncumbent() {
-    user = User.getById("0");
+    user = User.getById(SUPERVISOR_ID);
     authToken = getTokenKeyOf(user);
 
     final String aWorkflowId = getExistingComponentInstances()[0];
-    Response response = getAt(anIncumbentURI(aWorkflowId, "1"), Response.class);
+    Response response = getAt(uriWithIncumbent(replacementsUri(aWorkflowId), "1"), Response.class);
     assertThat(response.getStatus(), is(STATUS_OK));
 
     ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
@@ -185,11 +201,11 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
 
   @Test
   public void aSupervisorAsksForAllReplacementsInAWorkflow() {
-    user = User.getById("0");
+    user = User.getById(SUPERVISOR_ID);
     authToken = getTokenKeyOf(user);
 
     final String aWorkflowId = getExistingComponentInstances()[1];
-    Response response = getAt(aWorkflowReplacementsUri(aWorkflowId), Response.class);
+    Response response = getAt(replacementsUri(aWorkflowId), Response.class);
     assertThat(response.getStatus(), is(STATUS_OK));
 
     ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
@@ -202,7 +218,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
   public void aNonSupervisorAsksForAllReplacementsInAWorkflow() {
     final String aWorkflowId = getExistingComponentInstances()[1];
     final int Forbidden = Response.Status.FORBIDDEN.getStatusCode();
-    Response response = getAt(aWorkflowReplacementsUri(aWorkflowId), Response.class);
+    Response response = getAt(replacementsUri(aWorkflowId), Response.class);
     assertThat(response.getStatus(), is(Forbidden));
   }
 
@@ -213,16 +229,16 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
 
   @Override
   public String aResourceURI() {
-    return anIncumbentURI(getExistingComponentInstances()[0], "1");
+    return uriWithIncumbent(replacementsUri(getExistingComponentInstances()[0]), "1");
   }
 
   @Override
   public String anUnexistingResourceURI() {
-    return anIncumbentURI("workflow32", "1");
+    return uriWithIncumbent(replacementsUri("workflow32"), "1");
   }
 
   @Override
-  public Replacement aResource() {
+  public ReplacementEntity aResource() {
     return resource;
   }
 
@@ -236,15 +252,17 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
     return ReplacementEntity.class;
   }
 
-  private String anIncumbentURI(final String workflowId, final String incumbentId) {
-    return aWorkflowReplacementsUri(workflowId) + "/incumbents/" + incumbentId;
+  private String uriWithIncumbent(final String replacementsUri, final String incumbentId) {
+    final String sep = replacementsUri.contains("?") ? "&" : "?";
+    return replacementsUri + sep + "incumbent=" + incumbentId;
   }
 
-  private String aSubstituteURI(final String workflowId, final String substituteId) {
-    return aWorkflowReplacementsUri(workflowId) + "/substitutes/" + substituteId;
+  private String uriWithSubstitute(final String replacementsUri, final String substituteId) {
+    final String sep = replacementsUri.contains("?") ? "&" : "?";
+    return replacementsUri + sep + "substitute=" + substituteId;
   }
 
-  private String aWorkflowReplacementsUri(final String workflowId) {
+  private String replacementsUri(final String workflowId) {
     return "workflow/" + workflowId + "/replacements";
   }
 }

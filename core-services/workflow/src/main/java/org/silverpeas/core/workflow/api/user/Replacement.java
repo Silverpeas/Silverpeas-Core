@@ -67,6 +67,20 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
   }
 
   /**
+   * Gets all the replacements in which the specified users are implied and that are defined in the
+   * specified workflow instance.
+   * @param incumbent the user to replace.
+   * @param substitute the user exercising the replacements.
+   * @param workflowInstanceId the unique identifier of a workflow instance.
+   * @return a list of replacements. If no such replacements exist, then an empty list is returned.
+   */
+  static List<Replacement> getAllWith(final User incumbent, final User substitute,
+      final String workflowInstanceId) {
+    Repository repository = ServiceProvider.getService(Repository.class);
+    return repository.findAllByUsersAndByWorkflow(incumbent, substitute, workflowInstanceId);
+  }
+
+  /**
    * Gets all the replacements that are defined in the specified workflow instance.
    * @param workflowInstanceId the unique identifier of a workflow instance.
    * @return a list of all the replacements in the specified workflow instance. If no
@@ -221,5 +235,19 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
      * is returned.
      */
     <T extends Replacement> List<T> findAllByWorkflow(final String workflowInstanceId);
+
+    /**
+     * Finds all the replacements between the two specified users and created in the specified
+     * workflow instance.
+     * @param incumbent the incumbent in the replacements to get.
+     * @param substitute the substitute in the replacements to get.
+     * @param workflowInstanceId the unique identifier of a workflow instance.
+     * @param <T> the class implementing the {@link Replacement} interface.
+     * @return a list of all persisted replacements that were created in the specified workflow
+     * instance. If no replacements were set in the given workflow instance, then an empty list
+     * is returned.
+     */
+    <T extends Replacement> List<T> findAllByUsersAndByWorkflow(final User incumbent,
+        final User substitute, final String workflowInstanceId);
   }
 }

@@ -79,5 +79,16 @@ public class ReplacementRepository extends SilverpeasJpaEntityRepository<Replace
         .add("workflow", workflowInstanceId);
     return findByNamedQuery("Replacement.findAllByWorkflow", parameters);
   }
+
+  @Override
+  @SuppressWarnings("unchecked")
+  public List<ReplacementImpl> findAllByUsersAndByWorkflow(final User incumbent,
+      final User substitute, final String workflowInstanceId) {
+    NamedParameters parameters = newNamedParameters()
+        .add("incumbent", incumbent.getUserId())
+        .add("substitute", substitute.getUserId())
+        .add("workflow", workflowInstanceId);
+    return findByNamedQuery("Replacement.findAllByUsersAndByWorkflow", parameters);
+  }
 }
   
