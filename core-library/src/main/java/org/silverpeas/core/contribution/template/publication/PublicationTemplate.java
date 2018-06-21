@@ -98,6 +98,12 @@ public interface PublicationTemplate {
   public boolean isVisible();
 
   /**
+   * Is this publication template is provided by Silverpeas
+   * @return true if it is provided by Silverpeas built-in, false otherwise.
+   */
+  public boolean isProvided();
+
+  /**
    * Is the publication records described by this template can be searchable?
    * @return true if the records are searchable, false othersise.
    */
