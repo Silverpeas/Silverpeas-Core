@@ -65,6 +65,8 @@ public class GenericRecordSetManager {
 
   private static final GenericRecordSetManager instance = new GenericRecordSetManager();
   private static final String SEPARATOR = "|";
+  private static final String INSERT_INTO = "insert into ";
+  private static final String DELETE_FROM = "delete from ";
 
   private final Map<String, GenericRecordSet> cache = new HashMap<>();
 
@@ -98,9 +100,6 @@ public class GenericRecordSetManager {
       RecordTemplate template) throws FormException {
     return createRecordSet(externalId, template, null, false);
   }
-
-  // public GenericRecordSet createRecordSet(String externalId, RecordTemplate
-  // template, String templateName, boolean migration) throws FormException {
 
   public GenericRecordSet createRecordSet(String externalId,
       RecordTemplate template, String templateName, boolean encrypted) throws FormException {
@@ -216,8 +215,6 @@ public class GenericRecordSetManager {
       con = getConnection();
       template = selectTemplateRow(con, externalId);
       if (template == null) {
-        // throw new FormException("GenericRecordSetManager",
-        // "form.EXP_UNKNOWN_TEMPLATE", externalId);
         SilverTrace.error("form", "GenericRecordSetManager.removeRecordSet",
             "form.EXP_UNKNOWN_TEMPLATE", "externalId = " + externalId);
       } else {
@@ -449,20 +446,18 @@ public class GenericRecordSetManager {
 
   /**
    * Delete the DataRecord registered by the pair (templateId, recordId).
-   * @param template
    * @param deletedRecord
    * @throws FormException when the (templateId, recordId) pair is unknown.
    */
-  public void deleteRecord(IdentifiedRecordTemplate template,
-      DataRecord deletedRecord) throws FormException {
+  public void deleteRecord(DataRecord deletedRecord) throws FormException {
     Connection con = null;
 
     try {
       GenericDataRecord record = (GenericDataRecord) deletedRecord;
 
       con = getConnection();
-      deleteFieldRows(con, template, record);
-      deleteRecordRows(con, template, record);
+      deleteFieldRows(con, record);
+      deleteRecordRows(con, record);
 
     } catch (ClassCastException e) {
       throw new FormException("GenericRecordSetManager",
@@ -494,6 +489,35 @@ public class GenericRecordSetManager {
     } finally {
       closeConnection(con);
     }
+  }
+
+  public Map<String, Integer> getNumberOfRecordsByTemplateAndComponents(String templateName)
+      throws FormException {
+    Map<String, Integer> result = new HashMap<>();
+    PreparedStatement select = null;
+    ResultSet rs = null;
+    Connection con = null;
+
+    try {
+      con = getConnection();
+      select = con.prepareStatement(SELECT_NUMBER_OF_RECORDS_BY_TEMPLATE_AND_COMPONENTS);
+      select.setString(1, templateName);
+
+      rs = select.executeQuery();
+
+      while (rs.next()) {
+        String externalId = rs.getString(1);
+        int count = rs.getInt(2);
+        result.put(externalId.substring(0, externalId.indexOf(':')), count);
+      }
+    } catch (SQLException e) {
+      throw new FormException("GenericRecordSetManager.getNumberOfRecordsByTemplateAndComponents",
+          "form.EXP_SELECT_FAILED", e);
+    } finally {
+      DBUtil.close(rs, select);
+      closeConnection(con);
+    }
+    return result;
   }
 
   private List<DataRecord> selectRecords(Connection con, IdentifiedRecordTemplate template,
@@ -802,9 +826,7 @@ public class GenericRecordSetManager {
       boolean isReadOnly;
       boolean isHidden;
       while (rs.next()) {
-        // templateId = rs.getInt(1);
         fieldName = rs.getString(2);
-        // fieldIndex = rs.getInt(3);
         fieldType = rs.getString(4);
         isMandatory = rs.getBoolean(5);
         isReadOnly = rs.getBoolean(6);
@@ -1127,8 +1149,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes the record fields.
    */
-  private void deleteFieldRows(Connection con,
-      IdentifiedRecordTemplate template, GenericDataRecord record)
+  private void deleteFieldRows(Connection con, GenericDataRecord record)
       throws SQLException {
     PreparedStatement delete = null;
 
@@ -1145,8 +1166,7 @@ public class GenericRecordSetManager {
   /**
    * Deletes the record.
    */
-  private void deleteRecordRows(Connection con,
-      IdentifiedRecordTemplate template, GenericDataRecord record)
+  private void deleteRecordRows(Connection con, GenericDataRecord record)
       throws SQLException {
     PreparedStatement delete = null;
 
@@ -1181,82 +1201,82 @@ public class GenericRecordSetManager {
 
   /* Template table */
 
-  static final private String TEMPLATE_TABLE = "SB_FormTemplate_Template";
+  private static final String TEMPLATE_TABLE = "SB_FormTemplate_Template";
 
-  static final private String TEMPLATE_COLUMNS = "templateId,externalId,templateName";
+  private static final String TEMPLATE_COLUMNS = "templateId,externalId,templateName";
 
-  static final private String SELECT_TEMPLATE = "select " + TEMPLATE_COLUMNS
+  private static final String SELECT_TEMPLATE = "select " + TEMPLATE_COLUMNS
       + " from " + TEMPLATE_TABLE + " where externalId=?";
 
-  static final private String INSERT_TEMPLATE = "insert into " + TEMPLATE_TABLE
+  private static final String INSERT_TEMPLATE = INSERT_INTO + TEMPLATE_TABLE
       + "(" + TEMPLATE_COLUMNS + ")" + " values (?,?,?)";
 
-  static final private String DELETE_TEMPLATE = "delete from " + TEMPLATE_TABLE
+  private static final String DELETE_TEMPLATE = DELETE_FROM + TEMPLATE_TABLE
       + " where templateId=?";
 
   /* Template fields table */
 
-  static final private String TEMPLATE_FIELDS_TABLE = "SB_FormTemplate_TemplateField";
+  private static final String TEMPLATE_FIELDS_TABLE = "SB_FormTemplate_TemplateField";
 
-  static final private String TEMPLATE_FIELDS_COLUMNS =
+  private static final String TEMPLATE_FIELDS_COLUMNS =
       "templateId,fieldName,fieldIndex,fieldType,isMandatory,isReadOnly,isHidden";
 
-  static final private String SELECT_TEMPLATE_FIELDS = "select "
+  private static final String SELECT_TEMPLATE_FIELDS = "select "
       + TEMPLATE_FIELDS_COLUMNS + " from " + TEMPLATE_FIELDS_TABLE
       + " where templateId=?" + " order by fieldIndex";
 
-  static final private String INSERT_TEMPLATE_FIELD = "insert into "
+  private static final String INSERT_TEMPLATE_FIELD = INSERT_INTO
       + TEMPLATE_FIELDS_TABLE + "(" + TEMPLATE_FIELDS_COLUMNS + ")"
       + " values (?,?,?,?,?,?,?)";
 
-  static final private String DELETE_TEMPLATE_FIELDS = "delete from "
+  private static final String DELETE_TEMPLATE_FIELDS = DELETE_FROM
       + TEMPLATE_FIELDS_TABLE + " where templateId=?";
 
   /* Record table */
 
-  static final private String RECORD_TABLE = "SB_FormTemplate_Record";
+  private static final String RECORD_TABLE = "SB_FormTemplate_Record";
 
-  static final private String RECORD_COLUMNS = "recordId,templateId,externalId,lang";
+  private static final String RECORD_COLUMNS = "recordId,templateId,externalId,lang";
 
-  static final private String SELECT_RECORD =
+  private static final String SELECT_RECORD =
       "SELECT recordId, templateId, externalId, lang FROM " +
       "sb_formtemplate_record WHERE templateId=? AND externalId=?";
 
-  static final private String INSERT_RECORD = "insert into " + RECORD_TABLE
+  private static final String INSERT_RECORD = INSERT_INTO + RECORD_TABLE
       + "(" + RECORD_COLUMNS + ")" + " values (?,?,?,?)";
 
-  static final private String DELETE_TEMPLATE_RECORDS = "delete from "
+  private static final String DELETE_TEMPLATE_RECORDS = DELETE_FROM
       + RECORD_TABLE + " where templateId=?";
 
-  static final private String DELETE_RECORD = "delete from " + RECORD_TABLE
+  private static final String DELETE_RECORD = DELETE_FROM + RECORD_TABLE
       + " where recordId=?";
 
-  static final private String MOVE_RECORD =
+  private static final String MOVE_RECORD =
       "update " + RECORD_TABLE + " set templateId = ? where recordId = ? ";
 
   /* Record fields table */
 
-  static final private String FIELDS_TABLE = "SB_FormTemplate_TextField";
+  private static final String FIELDS_TABLE = "SB_FormTemplate_TextField";
 
-  static final private String FIELDS_COLUMNS = "recordId,fieldName,fieldValue,fieldValueIndex";
+  private static final String FIELDS_COLUMNS = "recordId,fieldName,fieldValue,fieldValueIndex";
 
-  static final private String SELECT_FIELDS = "SELECT recordId, fieldName, fieldValue, fieldValueIndex FROM " +
+  private static final String SELECT_FIELDS = "SELECT recordId, fieldName, fieldValue, fieldValueIndex FROM " +
       "sb_formtemplate_textfield WHERE recordId=? order by fieldName, fieldValueIndex";
 
-  static final private String INSERT_FIELD = "insert into " + FIELDS_TABLE
+  private static final String INSERT_FIELD = INSERT_INTO + FIELDS_TABLE
       + "(" + FIELDS_COLUMNS + ")" + " values (?,?,?,?)";
 
-  static final private String UPDATE_FIELD = "update " + FIELDS_TABLE
+  private static final String UPDATE_FIELD = "update " + FIELDS_TABLE
       + " set fieldValue=? where recordId=? and fieldName=? and fieldValueIndex=?";
 
-  static final private String DELETE_TEMPLATE_RECORDS_FIELDS = "delete from "
+  private static final String DELETE_TEMPLATE_RECORDS_FIELDS = DELETE_FROM
       + FIELDS_TABLE + " where recordId in"
       + " (select recordId from SB_FormTemplate_Record where templateId=?)";
 
-  static final private String DELETE_RECORD_FIELDS = "delete from "
+  private static final String DELETE_RECORD_FIELDS = DELETE_FROM
       + FIELDS_TABLE + " where recordId=?";
 
-  static final private String SELECT_TEMPLATE_RECORD_VALUES =
+  private static final String SELECT_TEMPLATE_RECORD_VALUES =
       "select fieldValue from "
           +
           FIELDS_TABLE +
@@ -1268,7 +1288,7 @@ public class GenericRecordSetManager {
           TEMPLATE_TABLE +
           " tpl where tf.fieldName= ? and tf.recordId = rec.recordId and rec.externalId = ? and rec.templateId = tpl.templateId and tpl.externalId = ?";
 
-  static final private String SELECT_TEMPLATE_RECORD_ENTRIES =
+  private static final String SELECT_TEMPLATE_RECORD_ENTRIES =
       "SELECT * FROM " +
           FIELDS_TABLE +
           " tf, " +
@@ -1286,4 +1306,10 @@ public class GenericRecordSetManager {
           TEMPLATE_TABLE +
           " tpl WHERE tpl.templateid = ? AND rec.templateId = tpl.templateId AND tf.recordId = rec.recordId" +
           " AND tf.fieldName = ? AND (tf.fieldvalue = ? OR tf.fieldvalue like ? OR tf.fieldvalue like ? OR tf.fieldvalue like ?)";
+
+  private static final String SELECT_NUMBER_OF_RECORDS_BY_TEMPLATE_AND_COMPONENTS =
+      "select t.externalid, count(r.recordid) from " +
+          TEMPLATE_TABLE + " t, "+ RECORD_TABLE +" r " +
+          "where r.templateid = t.templateid and t.templatename = ? " +
+          "GROUP BY t.externalid";
 }

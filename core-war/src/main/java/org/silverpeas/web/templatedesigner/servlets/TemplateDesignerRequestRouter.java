@@ -120,7 +120,9 @@ public class TemplateDesignerRequestRouter extends
         PagesContext context = new PagesContext("myForm", "2", templateDesignerSC.getLanguage(),
             false, "useless", templateDesignerSC.getUserId());
         context.setBorderPrinted(false);
-        context.setDesignMode(true);
+        if (!template.isProvided()) {
+          context.setDesignMode(true);
+        }
         request.setAttribute("context", context);
         destination = root + "template.jsp";
       } else if (function.equals("NewTemplate")) {
@@ -139,6 +141,7 @@ public class TemplateDesignerRequestRouter extends
       } else if ("GoToTemplateHeader".equals(function)) {
         request.setAttribute("ComponentsUsingForms", templateDesignerSC.getComponentsUsingForms());
         request.setAttribute("EncryptionAvailable", templateDesignerSC.isEncryptionAvailable());
+        request.setAttribute("Utilization", templateDesignerSC.getNumberOfRecordsByTemplateAndComponents());
         destination = root + "templateHeader.jsp";
       } else if (function.equals("AddTemplate")) {
         PublicationTemplate template = request2Template(request);
@@ -212,6 +215,9 @@ public class TemplateDesignerRequestRouter extends
         destination = getDestination("ViewTemplate", templateDesignerSC, request);
       } else if ("DuplicateForm".equals(function)) {
         templateDesignerSC.duplicateTemplate(request.getParameter("DuplicatedFormName"));
+        destination = getDestination("Main", templateDesignerSC, request);
+      } else if ("RemoveTemplate".equals(function)) {
+        templateDesignerSC.deleteTemplate();
         destination = getDestination("Main", templateDesignerSC, request);
       }
     } catch (Exception e) {

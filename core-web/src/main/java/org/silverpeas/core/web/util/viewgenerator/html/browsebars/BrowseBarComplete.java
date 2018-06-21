@@ -23,6 +23,9 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html.browsebars;
 
+import org.apache.ecs.xhtml.a;
+import org.apache.ecs.xhtml.div;
+import org.apache.ecs.xhtml.span;
 import org.owasp.encoder.Encode;
 import org.silverpeas.core.admin.component.model.SilverpeasComponentInstance;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -50,6 +53,7 @@ import static org.silverpeas.core.web.util.viewgenerator.html.JavascriptPluginIn
 public class BrowseBarComplete extends AbstractBrowseBar {
 
   private static final String CONNECTOR = "<span class=\"connector\"> > </span>";
+  private String userLanguage = null;
 
   /**
    * Constructor declaration
@@ -72,10 +76,9 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     result.append("<div id=\"browseBar\">");
     result.append(printBreadCrumb());
     if (isI18N()) {
-      result.append("<div id=\"i18n\">");
-      result.append(getI18NHTMLLinks());
-      result.append("&nbsp;|&nbsp;");
-      result.append("</div>");
+      div div = new div(getI18NHTMLLinks() + "&nbsp;|&nbsp;");
+      div.setID("i18n");
+      result.append(div.toString());
     }
     result.append("</div>");
     return result.toString();
@@ -85,8 +88,6 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     OrganizationController organizationController =
         OrganizationControllerProvider.getOrganisationController();
     StringBuilder result = new StringBuilder();
-    String information = getExtraInformation();
-    String path = getPath();
     // print javascript to go to spaces in displayed path
     result.append(printScript());
     if (!StringUtil.isDefined(getSpaceJavascriptCallback())) {
@@ -94,7 +95,7 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     }
     result.append("<div id=\"breadCrumb\">");
 
-    boolean emptyBreadCrumb = true;
+    StringBuilder breadcrumb = new StringBuilder();
 
     SilverpeasComponentInstance componentInst = null;
     if (StringUtil.isDefined(getComponentId())) {
@@ -102,124 +103,161 @@ public class BrowseBarComplete extends AbstractBrowseBar {
     }
 
     // Display spaces path from root to component
-    String language = (getMainSessionController() == null) ? "" : getMainSessionController()
-        .getFavoriteLanguage();
     if (componentInst != null || StringUtil.isDefined(getSpaceId())) {
-      List<SpaceInstLight> spaces = Collections.emptyList();
-
-      if (componentInst != null && !componentInst.isPersonal()) {
-        spaces = organizationController.getPathToComponent(getComponentId());
-      } else if (componentInst == null) {
-        spaces = organizationController.getPathToSpace(getSpaceId());
-      }
-      boolean firstSpace = true;
-      for (SpaceInstLight spaceInst : spaces) {
-        String spaceId = spaceInst.getId();
-        String href = "javascript:" + getSpaceJavascriptCallback() + "('" + spaceId + "')";
-        if (!isClickable()) {
-          href = "#";
-        }
-
-        if (!firstSpace) {
-          result.append(CONNECTOR);
-        }
-        result.append("<a href=\"").append(href).append("\"");
-        result.append(" class=\"space\"");
-        result.append(" id=\"space").append(spaceId).append("\"");
-        result.append(">");
-        result.append(Encode.forHtml(spaceInst.getName(language)));
-        result.append("</a>");
-
-        firstSpace = false;
-        emptyBreadCrumb = false;
-      }
-
-      if (componentInst != null) {
-        // Display component's label
-        if (!componentInst.isPersonal()) {
-          result.append(CONNECTOR);
-        }
-        result.append("<a href=\"");
-        if (!isClickable()) {
-          result.append("#");
-        } else if (StringUtil.isDefined(getComponentJavascriptCallback())) {
-          result.append("javascript:").append(getComponentJavascriptCallback()).append("('")
-              .append(getComponentId()).append("')");
-        } else {
-          result.append(URLUtil.getApplicationURL()).append(URLUtil.getURL(getSpaceId(),
-              getComponentId()));
-          if (ignoreComponentLink()) {
-            result.append("Main");
-          } else {
-            result.append(getComponentLink());
-          }
-        }
-        result.append("\"");
-        result.append(" class=\"component\"");
-        result.append(" id=\"bc_").append(componentInst.getId()).append("\"");
-        result.append(">");
-        result.append(Encode.forHtml(componentInst.getLabel(language)));
-        result.append("</a>");
-        emptyBreadCrumb = false;
-      }
+      breadcrumb.append(getSpacePath(componentInst));
+      breadcrumb.append(getComponent(componentInst));
     } else {
-      if (getDomainName() != null) {
-        result.append(getDomainName());
-        emptyBreadCrumb = false;
-      }
-      if (getComponentName() != null) {
-        if (getDomainName() != null) {
-          result.append(CONNECTOR);
-        }
-        if (getComponentLink() != null) {
-          result.append("<a href=\"").append(getComponentLink()).append("\">").append(
-              getComponentName()).append("</a>");
-        } else {
-          result.append(getComponentName());
-        }
-        emptyBreadCrumb = false;
-      }
+      appendExplicitSpaceAndComponent(breadcrumb);
     }
 
     // Display path
-    List<BrowseBarElement> elements = getElements();
-    if (!elements.isEmpty()) {
-      for (BrowseBarElement element : elements) {
-        if (!emptyBreadCrumb) {
-          result.append(CONNECTOR);
-        }
-        result.append("<a href=\"").append(element.getLink()).append("\"");
-        result.append(" class=\"element\"");
-        if (StringUtil.isDefined(element.getId())) {
-          result.append(" id=\"").append(element.getId()).append("\"");
-        }
-        result.append(">");
-        result.append(WebEncodeHelper.javaStringToHtmlString(element.getLabel()));
-        result.append("</a>");
-        emptyBreadCrumb = false;
-      }
-    } else if (StringUtil.isDefined(path)) {
-      if (!emptyBreadCrumb) {
-        result.append(CONNECTOR);
-      }
-      result.append("<span class=\"path\">");
-      result.append(path);
-      result.append("</span>");
-    }
+    appendPath(breadcrumb);
 
     // Display extra information
-    if (StringUtil.isDefined(information)) {
-      if (!emptyBreadCrumb) {
-        result.append(CONNECTOR);
-      }
-      result.append("<span class=\"information\">");
-      result.append(information);
-      result.append("</span>");
-    }
+    appendExtraInformation(breadcrumb);
+
+    result.append(breadcrumb);
 
     result.append("</div>");
 
     return result.toString();
+  }
+
+  private void appendExplicitSpaceAndComponent(StringBuilder breadcrumb) {
+    if (getDomainName() != null) {
+      breadcrumb.append(getDomainName());
+    }
+    if (getComponentName() != null) {
+      if (getDomainName() != null) {
+        breadcrumb.append(CONNECTOR);
+      }
+      if (getComponentLink() != null) {
+        a href = new a(getComponentLink());
+        href.addElement(getComponentName());
+        breadcrumb.append(href.toString());
+      } else {
+        breadcrumb.append(getComponentName());
+      }
+    }
+  }
+
+  private String getUserLanguage() {
+    if (userLanguage == null) {
+      userLanguage = (getMainSessionController() == null) ? "" : getMainSessionController()
+          .getFavoriteLanguage();
+    }
+    return userLanguage;
+  }
+
+  private String getSpacePath(SilverpeasComponentInstance componentInst) {
+    List<SpaceInstLight> spaces = Collections.emptyList();
+    OrganizationController organizationController =
+        OrganizationControllerProvider.getOrganisationController();
+    if (componentInst != null && !componentInst.isPersonal()) {
+      spaces = organizationController.getPathToComponent(getComponentId());
+    } else if (componentInst == null) {
+      spaces = organizationController.getPathToSpace(getSpaceId());
+    }
+    StringBuilder breadcrumb = new StringBuilder();
+    for (SpaceInstLight spaceInst : spaces) {
+      String spaceId = spaceInst.getId();
+      String href = "javascript:" + getSpaceJavascriptCallback() + "('" + spaceId + "')";
+      if (!isClickable()) {
+        href = "#";
+      }
+
+      if (breadcrumb.length() > 0) {
+        breadcrumb.append(CONNECTOR);
+      }
+      a link = new a(href);
+      link.addElement(Encode.forHtml(spaceInst.getName(getUserLanguage())));
+      link.setClass("space");
+      link.setID("space"+spaceId);
+      breadcrumb.append(link.toString());
+    }
+    return breadcrumb.toString();
+  }
+
+  private String getComponent(SilverpeasComponentInstance componentInst) {
+    StringBuilder breadcrumb = new StringBuilder();
+    if (componentInst != null) {
+      // Display component's label
+      if (!componentInst.isPersonal()) {
+        breadcrumb.append(CONNECTOR);
+      }
+      breadcrumb.append("<a href=\"");
+      if (!isClickable()) {
+        breadcrumb.append("#");
+      } else if (StringUtil.isDefined(getComponentJavascriptCallback())) {
+        breadcrumb.append("javascript:").append(getComponentJavascriptCallback()).append("('")
+            .append(getComponentId()).append("')");
+      } else {
+        breadcrumb.append(URLUtil.getApplicationURL()).append(URLUtil.getURL(getSpaceId(),
+            getComponentId()));
+        if (ignoreComponentLink()) {
+          breadcrumb.append("Main");
+        } else {
+          breadcrumb.append(getComponentLink());
+        }
+      }
+      breadcrumb.append("\"");
+      breadcrumb.append(" class=\"component\"");
+      breadcrumb.append(" id=\"bc_").append(componentInst.getId()).append("\"");
+      breadcrumb.append(">");
+      breadcrumb.append(Encode.forHtml(componentInst.getLabel(getUserLanguage())));
+      breadcrumb.append("</a>");
+    }
+    return breadcrumb.toString();
+  }
+
+  private void appendPath(StringBuilder breadcrumb) {
+    List<BrowseBarElement> elements = getElements();
+    if (!elements.isEmpty()) {
+      for (BrowseBarElement element : elements) {
+        appendElement(breadcrumb, element);
+      }
+    } else if (StringUtil.isDefined(getPath())) {
+      if (breadcrumb.length() > 0) {
+        breadcrumb.append(CONNECTOR);
+      }
+      span span = new span(getPath());
+      span.setClass("path");
+
+      breadcrumb.append(span.toString());
+    }
+  }
+
+  private void appendElement(StringBuilder breadcrumb, BrowseBarElement element) {
+    if (breadcrumb.length() > 0) {
+      breadcrumb.append(CONNECTOR);
+    }
+    if (StringUtil.isDefined(element.getLink())) {
+      breadcrumb.append("<a href=\"").append(element.getLink()).append("\"");
+    } else {
+      breadcrumb.append("<span");
+    }
+    breadcrumb.append(" class=\"element\"");
+    if (StringUtil.isDefined(element.getId())) {
+      breadcrumb.append(" id=\"").append(element.getId()).append("\"");
+    }
+    breadcrumb.append(">");
+    breadcrumb.append(WebEncodeHelper.javaStringToHtmlString(element.getLabel()));
+    if (StringUtil.isDefined(element.getLink())) {
+      breadcrumb.append("</a>");
+    } else {
+      breadcrumb.append("</span>");
+    }
+  }
+
+  private void appendExtraInformation(StringBuilder breadcrumb) {
+    if (StringUtil.isDefined(getExtraInformation())) {
+      if (breadcrumb.length() > 0) {
+        breadcrumb.append(CONNECTOR);
+      }
+      breadcrumb.append("<span class=\"information\">");
+      breadcrumb.append(getExtraInformation());
+      breadcrumb.append("</span>");
+    }
   }
 
   private String printScript() {
