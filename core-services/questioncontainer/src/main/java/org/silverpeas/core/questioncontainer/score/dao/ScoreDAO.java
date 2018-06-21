@@ -23,11 +23,9 @@
  */
 package org.silverpeas.core.questioncontainer.score.dao;
 
+import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.questioncontainer.score.model.ScoreDetail;
 import org.silverpeas.core.questioncontainer.score.model.ScorePK;
-import org.silverpeas.core.questioncontainer.score.model.ScoreRuntimeException;
-import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -94,13 +92,8 @@ public class ScoreDAO {
   public static void addScore(Connection con, ScoreDetail scoreDetail) throws SQLException {
     int newId;
 
-    try {
-      // get new score identifier
-      newId = DBUtil.getNextId(scoreDetail.getScorePK().getTableName(), "scoreId");
-    } catch (SQLException ue) {
-      throw new ScoreRuntimeException("ScoreDAO.addScore()", SilverpeasRuntimeException.ERROR,
-          "score.EX_RECORD_GETNEXTID_FAILED", "id = " + scoreDetail.getScorePK().getId());
-    }
+    // get new score identifier
+    newId = DBUtil.getNextId(scoreDetail.getScorePK().getTableName(), "scoreId");
 
     ScorePK scorePK = scoreDetail.getScorePK();
 

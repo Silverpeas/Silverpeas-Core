@@ -42,55 +42,42 @@ import java.util.UUID;
 
 public class DBUtil {
 
+  private static final Object MUTEX = new Object();
   private static final int MAX_NB_ATTEMPT = 100;
 
   /**
    * @return the DateFieldLength
    */
   public static int getDateFieldLength() {
-    return dateFieldLength;
-  }
-
-  /**
-   * @return the TextMaxiLength
-   */
-  public static int getTextMaxiLength() {
-    return textMaxiLength;
+    return DATE_FIELD_LENGTH;
   }
 
   /**
    * @return the TextAreaLength
    */
   public static int getTextAreaLength() {
-    return textAreaLength;
+    return TEXT_AREA_LENGTH;
   }
 
   /**
    * @return the TextFieldLength
    */
   public static int getTextFieldLength() {
-    return textFieldLength;
+    return TEXT_FIELD_LENGTH;
   }
 
   /**
    * TextFieldLength is the maximum length to store an html textfield input in db.
    */
-  private static final int textFieldLength = 1000;
+  private static final int TEXT_FIELD_LENGTH = 1000;
   /**
    * TextAreaLength is the maximum length to store an html textarea input in db.
    */
-  private static final int textAreaLength = 2000;
-  /**
-   * TextMaxiLength is the maximum length to store in db. This length is to use with fields that
-   * can
-   * contain a lot of information. This is the case of publication's model for exemple. TODO : In
-   * the near future, these fields will have to be put in BLOB (Binary Large OBject).
-   */
-  private static final int textMaxiLength = 4000;
+  private static final int TEXT_AREA_LENGTH = 2000;
   /**
    * DateFieldLength is the length to use for date storage.
    */
-  private static final int dateFieldLength = 10;
+  private static final int DATE_FIELD_LENGTH = 10;
 
   @Override
   public String toString() {
@@ -119,10 +106,9 @@ public class DBUtil {
    * @param identifierName a name that does not correspond to something into persistence, but the
    * caller needs to handle unique identifiers for a resource.
    * @return a unique id.
-   * @throws java.sql.SQLException on SQL error.
    */
   @SuppressWarnings("ThrowableResultOfMethodCallIgnored")
-  public static int getNextId(final String identifierName) throws SQLException {
+  public static int getNextId(final String identifierName) {
     return getNextId(identifierName, null);
   }
 
@@ -136,26 +122,21 @@ public class DBUtil {
    * the table in case of it is not yet referenced into the uniqueId table. If this value is not
    * defined, the identifierName parameter is not considered as a table name.
    * @return a unique id.
-   * @throws java.sql.SQLException on SQL error.
    */
   @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-  public static int getNextId(final String identifierName, final String tableFieldIdentifierName)
-      throws SQLException {
+  public static int getNextId(final String identifierName, final String tableFieldIdentifierName) {
     final String identifierNameLowerCase = identifierName.toLowerCase(Locale.ROOT);
     for (int nbAttempts = 0; nbAttempts < MAX_NB_ATTEMPT; nbAttempts++) {
-
-      // Getting the next unique identifier value from uniqueId table
-      Integer nextUniqueMaxId = nextUniqueIdentifierValue(identifierNameLowerCase);
-
-      if (nextUniqueMaxId == null) {
-
-        // The identifier is not yet registered into uniqueId table
-        registeringIdentifierName(identifierNameLowerCase, tableFieldIdentifierName);
-
-      } else if (nextUniqueMaxId != -1) {
-
-        // The next identifier value has been well computed
-        return nextUniqueMaxId;
+      synchronized (MUTEX) {
+        // Getting the next unique identifier value from uniqueId table
+        Integer nextUniqueMaxId = nextUniqueIdentifierValue(identifierNameLowerCase);
+        if (nextUniqueMaxId == null) {
+          // The identifier is not yet registered into uniqueId table
+          registeringIdentifierName(identifierNameLowerCase, tableFieldIdentifierName);
+        } else if (nextUniqueMaxId != -1) {
+          // The next identifier value has been well computed
+          return nextUniqueMaxId;
+        }
       }
     }
     throw new SilverpeasRuntimeException(
@@ -171,10 +152,8 @@ public class DBUtil {
    * table, -1 if identifier name is already registered into uniqueId table but a concurrent server
    * process has just performed an update too (so caller has just to retry to call the method),
    * null if the identifier name is not yet registered into uniqueId table.
-   * @throws SQLException on SQL error.
    */
-  private static Integer nextUniqueIdentifierValue(String identifierNameLowerCase)
-      throws SQLException {
+  private static Integer nextUniqueIdentifierValue(String identifierNameLowerCase) {
 
     return Transaction.performInNew(() -> {
 
@@ -239,26 +218,23 @@ public class DBUtil {
    * identifierName parameter that permits to initialize the first value of unique identifier for
    * the table in case of it is not yet referenced into the uniqueId table. If this value is not
    * defined, the identifierName parameter is not considered as a table name.
-   * @throws SQLException on SQL error.
    */
   private static void registeringIdentifierName(String identifierNameLowerCase,
-      String tableFieldIdentifierName) throws SQLException {
+      String tableFieldIdentifierName) {
     try {
       Transaction.performInNew(() -> {
 
         int currentUniqueValue = 0;
         try (Connection connection = openConnection()) {
 
-          if (StringUtil.isDefined(tableFieldIdentifierName)) {
-            if (getAllTableNames(connection).contains(identifierNameLowerCase.toLowerCase())) {
-              // Getting the maximum value of the field identifier of the table
-              try (PreparedStatement selectTableCurrentUniqueValueStmt = connection
-                  .prepareStatement("SELECT MAX(" + tableFieldIdentifierName + ") " + "FROM " +
-                      identifierNameLowerCase)) {
-                try (ResultSet rs = selectTableCurrentUniqueValueStmt.executeQuery()) {
-                  if (rs.next()) {
-                    currentUniqueValue = rs.getInt(1);
-                  }
+          if (StringUtil.isDefined(tableFieldIdentifierName) &&
+              getAllTableNames(connection).contains(identifierNameLowerCase.toLowerCase())) {
+            // Getting the maximum value of the field identifier of the table
+            try (PreparedStatement selectTableCurrentUniqueValueStmt = connection.prepareStatement(
+                String.format("SELECT MAX(%s) FROM %s", tableFieldIdentifierName, identifierNameLowerCase))) {
+              try (ResultSet rs = selectTableCurrentUniqueValueStmt.executeQuery()) {
+                if (rs.next()) {
+                  currentUniqueValue = rs.getInt(1);
                 }
               }
             }
@@ -281,8 +257,7 @@ public class DBUtil {
       SilverLogger.getLogger(DBUtil.class)
           .warn("The unique identifier '" + identifierNameLowerCase +
               "' has not been registered because another server process has just done the " +
-              "same " +
-              "operation for the same resource.");
+              "same operation for the same resource.");
     }
   }
 
@@ -336,7 +311,7 @@ public class DBUtil {
     }
   }
 
-  private final static String TABLE_NAME = "TABLE_NAME";
+  private static final String TABLE_NAME = "TABLE_NAME";
 
   /**
    * Gets all table names.
@@ -347,10 +322,10 @@ public class DBUtil {
   private static Set<String> getAllTableNames(Connection connection) throws SQLException {
     Set<String> tableNames = new LinkedHashSet<>();
     DatabaseMetaData dbMetaData = connection.getMetaData();
-    try (ResultSet tables_rs = dbMetaData.getTables(null, null, null, null)) {
-      tables_rs.getMetaData();
-      while (tables_rs.next()) {
-        tableNames.add(tables_rs.getString(TABLE_NAME).toLowerCase());
+    try (ResultSet tablesRs = dbMetaData.getTables(null, null, null, null)) {
+      tablesRs.getMetaData();
+      while (tablesRs.next()) {
+        tableNames.add(tablesRs.getString(TABLE_NAME).toLowerCase());
       }
     }
     return tableNames;
@@ -365,7 +340,7 @@ public class DBUtil {
     try (Connection connection = openConnection()) {
       return getAllTableNames(connection);
     } catch (Exception ignore) {
-      return Collections.EMPTY_SET;
+      return Collections.emptySet();
     }
   }
 }

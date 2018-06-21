@@ -28,7 +28,6 @@ import com.ninja_squad.dbsetup.operation.Operation;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -188,7 +187,7 @@ public class DBUtilIT {
           Logger.getAnonymousLogger()
               .info("Next id is " + nextId + " at " + System.currentTimeMillis());
           Thread.sleep(10);
-        } catch (InterruptedException | SQLException e) {
+        } catch (InterruptedException e) {
           throw new RuntimeException(e);
         }
       });

@@ -23,7 +23,6 @@
  */
 package org.silverpeas.core.contribution.attachment.model;
 
-import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.admin.user.model.User;
@@ -49,7 +48,6 @@ import org.silverpeas.core.util.file.FileUtil;
 
 import javax.ws.rs.core.UriBuilder;
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.time.Instant;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -558,11 +556,7 @@ public class SimpleDocument implements Serializable {
   public String computeNodeName() {
     if (!StringUtil.isDefined(getNodeName())) {
       if (getOldSilverpeasId() <= 0L) {
-        try {
-          setOldSilverpeasId(DBUtil.getNextId("sb_simple_document", "id"));
-        } catch (SQLException e) {
-          throw new SilverpeasRuntimeException(e.getMessage(), e);
-        }
+        setOldSilverpeasId(DBUtil.getNextId("sb_simple_document", "id"));
       }
       setNodeName(DOCUMENT_PREFIX + getOldSilverpeasId());
       return getNodeName();
