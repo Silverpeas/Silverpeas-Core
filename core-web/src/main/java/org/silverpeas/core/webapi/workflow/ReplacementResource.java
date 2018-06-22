@@ -38,6 +38,7 @@ import org.silverpeas.core.workflow.api.user.User;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -51,6 +52,7 @@ import java.net.URI;
 import java.text.MessageFormat;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -125,6 +127,26 @@ public class ReplacementResource extends RESTWebService {
   }
 
   /**
+   * Gets the replacement with the specified unique identifier in the requested workflow.
+   * If no such replacement exists in the given workflow, then an HTTP error
+   * {@link Response.Status#NOT_FOUND} is sent back.
+   * <p>
+   * For security reason, unless the requester is a supervisor in the requested workflow, only
+   * the users concerned by the asked replacement (either as incumbent or as substitute) can
+   * ask for the targeted replacement.
+   * </p>
+   * @param replacementId the unique identifier of a replacement in the requested workflow.
+   * @return ReplacementEntity representation of the replacement.
+   */
+  @GET
+  @Produces(MediaType.APPLICATION_JSON)
+  @Path("{id}")
+  public ReplacementEntity getReplacement(@PathParam("id") final String replacementId) {
+    final Replacement replacement = getReplacementById(replacementId);
+    return asWebEntity(replacement, identifiedBy(replacementId));
+  }
+
+  /**
    * Creates a new replacement in the given requested workflow from the specified entity embodied
    * in the incoming request. Be caution: the workflow identifier in the entity must match the
    * requested workflow instance otherwise an HTTP error {@link Response.Status#BAD_REQUEST} is
@@ -152,7 +174,28 @@ public class ReplacementResource extends RESTWebService {
         .during(Period.between(entity.getStartDate(), entity.getEndDate()))
         .save();
     final URI resourceURI = identifiedBy(replacement.getId());
-    return Response.created(resourceURI).entity(asWebEntity(replacement, resourceURI)).build();
+    return Response.created(resourceURI)
+        .entity(asWebEntity(replacement, resourceURI))
+        .build();
+  }
+
+  /**
+   * Deletes the replacement identified by the specified unique identifier. If no such replacement
+   * exists in the requested workflow, then an HTTP error {@link Response.Status#NOT_FOUND} is sent
+   * back.
+   * <p>
+   * For security reason, unless the requester plays the role of supervisor in the requested
+   * workflow, only the incumbent of the tasks concerned by the replacement or the substitute can
+   * delete a replacement. Otherwise, an HTTP error {@link Response.Status#FORBIDDEN} is sent back.
+   * </p>
+   * @param replacementId the unique identifier of a replacement in the requested workflow.
+   */
+  @DELETE
+  @Path("{id}")
+  @Transactional
+  public void deleteReplacement(@PathParam("id") final String replacementId) {
+    final Replacement replacement = getReplacementById(replacementId);
+    replacement.delete();
   }
 
   @Override
@@ -172,6 +215,14 @@ public class ReplacementResource extends RESTWebService {
       throw new WebApplicationException("User " + userId + " doesn't exist",
           Response.Status.NOT_FOUND);
     }
+  }
+
+  private Replacement getReplacementById(final String id) {
+    Optional<Replacement> optionalReplacement = Replacement.get(id);
+    Replacement replacement = optionalReplacement.orElseThrow(
+        () -> new WebApplicationException(Response.Status.NOT_FOUND));
+    assertIsValid(replacement);
+    return replacement;
   }
 
   private boolean isRequesterSupervisor() {
@@ -206,6 +257,15 @@ public class ReplacementResource extends RESTWebService {
       throw new WebApplicationException(Response.Status.BAD_REQUEST);
     } else if (!isRequesterSupervisor() &&
         !entity.getIncumbent().getId().equals(getUser().getId())) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+  }
+
+  private void assertIsValid(final Replacement replacement) {
+    if (!workflowId.equals(replacement.getWorkflowInstanceId())) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+    if (!onTheRequester.test(replacement) && !isRequesterSupervisor()) {
       throw new WebApplicationException(Response.Status.FORBIDDEN);
     }
   }

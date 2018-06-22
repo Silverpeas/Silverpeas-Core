@@ -33,14 +33,11 @@ import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.user.model.User;
 import org.silverpeas.core.web.test.WarBuilder4WebCore;
 import org.silverpeas.core.webapi.util.UserEntity;
-import org.silverpeas.core.workflow.api.UserManager;
-import org.silverpeas.core.workflow.api.WorkflowException;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.web.ResourceGettingTest;
 
-import javax.inject.Inject;
 import javax.ws.rs.core.Response;
-import java.util.List;
+import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import static org.hamcrest.Matchers.is;
@@ -60,9 +57,6 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
   private static final String SUPERVISOR_ID = "0";
   private static final int STATUS_OK = Response.Status.OK.getStatusCode();
 
-  @Inject
-  private UserManager userManager;
-
   private String authToken;
   private User user;
   private ReplacementEntity resource;
@@ -81,13 +75,13 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
   }
 
   @Before
-  public void prepareTests() throws WorkflowException {
+  public void prepareTests() {
     user = User.getById("1");
     authToken = getTokenKeyOf(user);
-    List<Replacement> replacements =
-        Replacement.getAllOf(userManager.getUser("1"), getExistingComponentInstances()[0]);
-    assertThat(replacements.isEmpty(), is(false));
-    resource = new ReplacementEntity(replacements.get(0));
+    final String replacementId = "92b0fa2f-3287-4f99-a9b7-16424f82d607";
+    Replacement replacement = Replacement.get(replacementId)
+        .orElseThrow(() -> new AssertionError("No replacement with id " + replacementId));
+    resource = new ReplacementEntity(replacement);
   }
 
   @Override
@@ -222,6 +216,85 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
     assertThat(response.getStatus(), is(Forbidden));
   }
 
+  @Test
+  public void aSupervisorAsksForAGivenReplacement() {
+    user = User.getById(SUPERVISOR_ID);
+    authToken = getTokenKeyOf(user);
+
+    final String aWorkflowId = getExistingComponentInstances()[1];
+    final String replacementId = "64c8e712-e48a-4c63-b768-a5385f30a1ae";
+    Response response =
+        getAt(uriOfReplacement(replacementsUri(aWorkflowId), replacementId), Response.class);
+    assertThat(response.getStatus(), is(STATUS_OK));
+
+    ReplacementEntity replacement = response.readEntity(ReplacementEntity.class);
+    assertThat(replacement.getURI()
+        .toString()
+        .endsWith(uriOfReplacement(replacementsUri(aWorkflowId), replacementId)), is(true));
+    assertThat(replacement.getIncumbent().getId(), is("1"));
+    assertThat(replacement.getSubstitute().getId(), is("3"));
+    assertThat(replacement.getWorkflowInstanceId(), is(aWorkflowId));
+    assertThat(replacement.getStartDate(), is(LocalDate.parse("2018-04-09")));
+    assertThat(replacement.getEndDate(), is(LocalDate.parse("2018-04-13")));
+  }
+
+  @Test
+  public void anIncumbentAsksForOneOfHisReplacement() {
+    user = User.getById("1");
+    authToken = getTokenKeyOf(user);
+
+    final String aWorkflowId = getExistingComponentInstances()[1];
+    final String replacementId = "64c8e712-e48a-4c63-b768-a5385f30a1ae";
+    Response response =
+        getAt(uriOfReplacement(replacementsUri(aWorkflowId), replacementId), Response.class);
+    assertThat(response.getStatus(), is(STATUS_OK));
+
+    ReplacementEntity replacement = response.readEntity(ReplacementEntity.class);
+    assertThat(replacement.getURI()
+        .toString()
+        .endsWith(uriOfReplacement(replacementsUri(aWorkflowId), replacementId)), is(true));
+    assertThat(replacement.getIncumbent().getId(), is("1"));
+    assertThat(replacement.getSubstitute().getId(), is("3"));
+    assertThat(replacement.getWorkflowInstanceId(), is(aWorkflowId));
+    assertThat(replacement.getStartDate(), is(LocalDate.parse("2018-04-09")));
+    assertThat(replacement.getEndDate(), is(LocalDate.parse("2018-04-13")));
+  }
+
+  @Test
+  public void aSubstituteAsksForOneOfHisReplacement() {
+    user = User.getById("3");
+    authToken = getTokenKeyOf(user);
+
+    final String aWorkflowId = getExistingComponentInstances()[1];
+    final String replacementId = "64c8e712-e48a-4c63-b768-a5385f30a1ae";
+    Response response =
+        getAt(uriOfReplacement(replacementsUri(aWorkflowId), replacementId), Response.class);
+    assertThat(response.getStatus(), is(STATUS_OK));
+
+    ReplacementEntity replacement = response.readEntity(ReplacementEntity.class);
+    assertThat(replacement.getURI()
+        .toString()
+        .endsWith(uriOfReplacement(replacementsUri(aWorkflowId), replacementId)), is(true));
+    assertThat(replacement.getIncumbent().getId(), is("1"));
+    assertThat(replacement.getSubstitute().getId(), is("3"));
+    assertThat(replacement.getWorkflowInstanceId(), is(aWorkflowId));
+    assertThat(replacement.getStartDate(), is(LocalDate.parse("2018-04-09")));
+    assertThat(replacement.getEndDate(), is(LocalDate.parse("2018-04-13")));
+  }
+
+  @Test
+  public void aNonSupervisorAsksForAReplacementForWhichHeIsNotConcerned() {
+    user = User.getById("2");
+    authToken = getTokenKeyOf(user);
+
+    final String aWorkflowId = getExistingComponentInstances()[1];
+    final int Forbidden = Response.Status.FORBIDDEN.getStatusCode();
+    final String replacementId = "64c8e712-e48a-4c63-b768-a5385f30a1ae";
+    Response response =
+        getAt(uriOfReplacement(replacementsUri(aWorkflowId), replacementId), Response.class);
+    assertThat(response.getStatus(), is(Forbidden));
+  }
+
   @Override
   public String[] getExistingComponentInstances() {
     return new String[]{"workflow24", "workflow42"};
@@ -264,6 +337,10 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
 
   private String replacementsUri(final String workflowId) {
     return "workflow/" + workflowId + "/replacements";
+  }
+
+  private String uriOfReplacement(final String replacementsUri, final String replacementId) {
+    return replacementsUri + "/" + replacementId;
   }
 }
   

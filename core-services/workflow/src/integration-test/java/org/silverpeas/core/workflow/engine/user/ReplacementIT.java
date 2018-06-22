@@ -48,6 +48,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -169,6 +170,22 @@ public class ReplacementIT {
         .allMatch(r -> r.getWorkflowInstanceId().equals(WORKFLOW_INSTANCE_ID) &&
             r.getSubstitute().getUserId().equals(substitute.getUserId()) &&
             r.getIncumbent().getUserId().equals(incumbent.getUserId())), is(true));
+  }
+
+  @Test
+  public void getAReplacementByItsId() {
+    final String id = "c550ffb1-6e76-4947-9fe3-b69777d758b6";
+    Optional<Replacement> replacement = Replacement.get(id);
+    assertThat(replacement.isPresent(), is(true));
+
+    replacement.ifPresent(r -> {
+      assertThat(r.getId(), is(id));
+      assertThat(r.getWorkflowInstanceId(), is(WORKFLOW_INSTANCE_ID));
+      assertThat(r.getIncumbent().getUserId(), is("1"));
+      assertThat(r.getSubstitute().getUserId(), is("2"));
+      assertThat(r.getPeriod().getStartDate(), is(LocalDate.parse("2018-04-09")));
+      assertThat(r.getPeriod().getEndDate(), is(LocalDate.parse("2018-04-13")));
+    });
   }
 
   private User aUser(final String userId) {

@@ -31,6 +31,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * A replacement of a user by another one in a given period of time to exercise the
@@ -41,6 +42,18 @@ import java.util.List;
  * @author mmoquillon
  */
 public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIdentifier> {
+
+  /**
+   * Gets the replacement with the specified unique identifier. Each replacement is unique, whatever
+   * the workflow in which they were created.
+   * @param replacementId the unique identifier of a replacement.
+   * @return optionally the replacement with the specified identifier. Nothing if no such
+   * replacement exists.
+   */
+  static Optional<Replacement> get(final String replacementId) {
+    Repository repository = ServiceProvider.getService(Repository.class);
+    return Optional.ofNullable(repository.getById(replacementId));
+  }
 
   /**
    * Gets all the replacements of the specified user in the specified workflow instance.
@@ -249,5 +262,15 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
      */
     <T extends Replacement> List<T> findAllByUsersAndByWorkflow(final User incumbent,
         final User substitute, final String workflowInstanceId);
+
+    /**
+     * Gets the replacement with the specified unique identifier. The identifier of a replacement
+     * is unique among all over the workflow instances.
+     * @param replacementId the unique identifier of a replacement among all of the available
+     * workflow instances.
+     * @return a {@link Replacement} object or null if no such replacement exists with the specified
+     * unique identifier.
+     */
+    Replacement getById(final String replacementId);
   }
 }
