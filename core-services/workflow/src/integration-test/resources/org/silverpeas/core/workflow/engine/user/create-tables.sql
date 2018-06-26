@@ -21,6 +21,50 @@ CREATE TABLE ST_Space
   isPersonal            smallint
 );
 
+CREATE TABLE ST_SpaceI18N (
+  id          INT          NOT NULL,
+  spaceId     INT          NOT NULL,
+  lang        CHAR(2)      NOT NULL,
+  name        VARCHAR(100) NOT NULL,
+  description VARCHAR(400)
+);
+
+CREATE TABLE ST_ComponentInstance (
+  id                   INT              NOT NULL,
+  spaceId              INT              NOT NULL,
+  name                 VARCHAR(100)     NOT NULL,
+  componentName        VARCHAR(100)     NOT NULL,
+  description          VARCHAR(400),
+  createdBy            INT,
+  orderNum             INT DEFAULT (0)  NOT NULL,
+  createTime           VARCHAR(20),
+  updateTime           VARCHAR(20),
+  removeTime           VARCHAR(20),
+  componentStatus      CHAR(1),
+  updatedBy            INT,
+  removedBy            INT,
+  isPublic             INT DEFAULT (0)  NOT NULL,
+  isHidden             INT DEFAULT (0)  NOT NULL,
+  lang                 CHAR(2),
+  isInheritanceBlocked INT DEFAULT (0)  NOT NULL
+);
+
+CREATE TABLE ST_ComponentInstanceI18N (
+  id          INT          NOT NULL,
+  componentId INT          NOT NULL,
+  lang        CHAR(2)      NOT NULL,
+  name        VARCHAR(100) NOT NULL,
+  description VARCHAR(400)
+);
+
+CREATE TABLE ST_Instance_Data (
+  id          INT          NOT NULL,
+  componentId INT          NOT NULL,
+  name        VARCHAR(100) NOT NULL,
+  label       VARCHAR(100) NOT NULL,
+  value       VARCHAR(400)
+);
+
 CREATE TABLE SB_ContentManager_Instance
 (
   instanceId    int NOT NULL ,
@@ -88,13 +132,35 @@ CREATE TABLE ST_Group_User_Rel (
   CONSTRAINT FK_Group_User_Rel_2 FOREIGN KEY (userId) REFERENCES ST_User (id)
 );
 
+CREATE TABLE ST_UserRole (
+  id          INT             NOT NULL,
+  instanceId  INT             NOT NULL,
+  name        VARCHAR(100)    NULL,
+  roleName    VARCHAR(100)    NOT NULL,
+  description VARCHAR(400),
+  isInherited INT DEFAULT (0) NOT NULL,
+  objectId    INT,
+  objectType  VARCHAR(50),
+  CONSTRAINT PK_UserRole PRIMARY KEY (id),
+  CONSTRAINT UN_UserRole_1 UNIQUE (instanceId, roleName, isInherited, objectId, objectType),
+  CONSTRAINT FK_UserRole_1 FOREIGN KEY (instanceId) REFERENCES ST_ComponentInstance (id)
+);
+
+CREATE TABLE ST_UserRole_User_Rel (
+  userRoleId INT NOT NULL,
+  userId     INT NOT NULL,
+  CONSTRAINT PK_UserRole_User_Rel PRIMARY KEY (userRoleId, userId),
+  CONSTRAINT FK_UserRole_User_Rel_1 FOREIGN KEY (userRoleId) REFERENCES ST_UserRole (id),
+  CONSTRAINT FK_UserRole_User_Rel_2 FOREIGN KEY (userId) REFERENCES ST_User (id)
+);
+
 CREATE TABLE IF NOT EXISTS SB_Workflow_Replacements (
   id             VARCHAR(40)   NOT NULL,
   incumbentId    VARCHAR(40)   NOT NULL,
   substituteId   VARCHAR(40)   NOT NULL,
   workflowId     VARCHAR(40)   NOT NULL,
-  startDate      TIMESTAMP     NOT NULL,
-  endDate        TIMESTAMP     NOT NULL,
+  startDate      DATE          NOT NULL,
+  endDate        DATE          NOT NULL,
   inDays         BOOLEAN       NOT NULL,
   createDate     TIMESTAMP     NOT NULL,
   createdBy      VARCHAR(40)   NOT NULL,

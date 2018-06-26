@@ -1,0 +1,1 @@
+The replacement between $incumbent$ and $substitute$ that was set for the period from $startDate$ to $endDate$ in the workflow $workflow$ was removed by $sender$.

@@ -59,10 +59,11 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    * Gets all the replacements of the specified user in the specified workflow instance.
    * @param incumbent the user for which the replacements were constructed and persisted.
    * @param workflowInstanceId the unique identifier of a workflow instance.
+   * @param <T> the class implementing the {@link Replacement} interface.
    * @return a list of replacements. If no such replacements exist, then an empty list is returned.
    */
-  @SuppressWarnings("unchecked")
-  static List<Replacement> getAllOf(final User incumbent, final String workflowInstanceId) {
+  static <T extends Replacement> List<T> getAllOf(final User incumbent,
+      final String workflowInstanceId) {
     Repository repository = ServiceProvider.getService(Repository.class);
     return repository.findAllByIncumbentAndByWorkflow(incumbent, workflowInstanceId);
   }
@@ -71,10 +72,11 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    * Gets all the replacements exercised by the specified user in the specified workflow instance.
    * @param substitute the user exercising the replacements.
    * @param workflowInstanceId the unique identifier of a workflow instance.
+   * @param <T> the class implementing the {@link Replacement} interface.
    * @return a list of replacements. If no such replacements exist, then an empty list is returned.
    */
-  @SuppressWarnings("unchecked")
-  static List<Replacement> getAllBy(final User substitute, final String workflowInstanceId) {
+  static <T extends Replacement> List<T> getAllBy(final User substitute,
+      final String workflowInstanceId) {
     Repository repository = ServiceProvider.getService(Repository.class);
     return repository.findAllBySubstituteAndByWorkflow(substitute, workflowInstanceId);
   }
@@ -85,9 +87,10 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
    * @param incumbent the user to replace.
    * @param substitute the user exercising the replacements.
    * @param workflowInstanceId the unique identifier of a workflow instance.
+   * @param <T> the class implementing the {@link Replacement} interface.
    * @return a list of replacements. If no such replacements exist, then an empty list is returned.
    */
-  static List<Replacement> getAllWith(final User incumbent, final User substitute,
+  static <T extends Replacement> List<T> getAllWith(final User incumbent, final User substitute,
       final String workflowInstanceId) {
     Repository repository = ServiceProvider.getService(Repository.class);
     return repository.findAllByUsersAndByWorkflow(incumbent, substitute, workflowInstanceId);
@@ -96,10 +99,11 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
   /**
    * Gets all the replacements that are defined in the specified workflow instance.
    * @param workflowInstanceId the unique identifier of a workflow instance.
+   * @param <T> the class implementing the {@link Replacement} interface.
    * @return a list of all the replacements in the specified workflow instance. If no
    * replacements exist, then an empty list is returned.
    */
-  static List<Replacement> getAll(final String workflowInstanceId) {
+  static <T extends Replacement> List<T> getAll(final String workflowInstanceId) {
     Repository repository = ServiceProvider.getService(Repository.class);
     return repository.findAllByWorkflow(workflowInstanceId);
   }
@@ -141,7 +145,9 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
   String getWorkflowInstanceId();
 
   /**
-   * Saves or updates this replacement within the persistence context.
+   * Saves or updates this replacement within the persistence context. A unique identifier aver
+   * all of the workflow instances will be attributed to the newly saved replacement. This
+   * identifier can then be used to retrieve later this replacement among its counterparts.
    * @return the saved or updated replacement.
    */
   @SuppressWarnings("unchecked")

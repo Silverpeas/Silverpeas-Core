@@ -25,16 +25,21 @@
 package org.silverpeas.core.workflow.engine.user;
 
 import org.silverpeas.core.annotation.Repository;
+import org.silverpeas.core.notification.system.ResourceEvent;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.List;
 
 /**
  * Implementation of the business replacement repository by using JPA.
+ * This repository fires events at each modification (saving, deletion, ...) operated on the
+ * replacements so that services can be hooks on such events to perform additional treatments.
  * @author mmoquillon
  */
 @Singleton
@@ -42,14 +47,20 @@ import java.util.List;
 public class ReplacementRepository extends SilverpeasJpaEntityRepository<ReplacementImpl>
     implements Replacement.Repository {
 
+  @Inject
+  private ReplacementEventNotifier notifier;
+
   @Override
   public Replacement save(final Replacement replacement) {
-    return save((ReplacementImpl) replacement);
+    Replacement saved = save((ReplacementImpl) replacement);
+    notifyUsers(ResourceEvent.Type.CREATION, saved);
+    return saved;
   }
 
   @Override
   public void delete(final Replacement replacement) {
     super.delete((ReplacementImpl) replacement);
+    notifyUsers(ResourceEvent.Type.DELETION, replacement);
   }
 
   @Override
@@ -89,6 +100,14 @@ public class ReplacementRepository extends SilverpeasJpaEntityRepository<Replace
         .add("substitute", substitute.getUserId())
         .add("workflow", workflowInstanceId);
     return findByNamedQuery("Replacement.findAllByUsersAndByWorkflow", parameters);
+  }
+
+  private void notifyUsers(final ResourceEvent.Type cause, final Replacement replacement) {
+    try {
+      notifier.notifyEventOn(cause, replacement);
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e);
+    }
   }
 }
   

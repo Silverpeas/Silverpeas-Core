@@ -14,6 +14,19 @@ VALUES
   (2, 0, '2', 'Gustave', 'Eiffel', 'gustave', 'U', 'VALID', '2012-01-01 00:00:00.000', 0),
   (3, 0, '3', 'Bart', 'Simpson', 'bart', 'U', 'VALID', '2012-01-01 00:00:00.000', 0);
 
+INSERT INTO st_space
+(id, domainfatherid, name, description, createdby, firstpagetype, firstpageextraparam, ordernum, createtime, updatetime, removetime, spacestatus, updatedby, removedby, lang, isinheritanceblocked, look, displayspacefirst, ispersonal)
+VALUES
+  (0, null, 'Space for Integration Tests', '', 0, 0, '', 0, '1433237260318', '1443423990640', null, null, 0, null, 'fr', 0 , null, 1, null);
+
+INSERT INTO st_componentinstance
+(id, spaceid, name, componentname, description, createdby, ordernum, createtime, updatetime, removetime, componentstatus, updatedby, removedby, ispublic, ishidden, lang, isinheritanceblocked)
+VALUES
+  (24, 0, 'Workflow 24', 'workflow', '', 0, 1,
+       '1433237280246', '1443424995948', null, null, 1, null, 1, 0, 'fr', 0),
+  (42, 0, 'Workflow 42', 'workflow', '', 0, 1,
+       '1433237280246', '1443424995948', null, null, 1, null, 1, 0, 'fr', 0);
+
 INSERT INTO SB_Workflow_Replacements
 (id, incumbentId, substituteId, workflowId, startDate, endDate, inDays, createDate, createdBy, lastUpdateDate, lastUpdatedBy, version)
 VALUES

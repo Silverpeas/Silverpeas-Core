@@ -41,11 +41,9 @@ import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.api.user.User;
 import org.silverpeas.core.workflow.engine.WorkflowHub;
 
+import java.sql.Date;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -73,17 +71,15 @@ public class ReplacementIT {
   @Deployment
   public static Archive<?> createTestArchive() {
     return BasicWarBuilder.onWarForTestClass(ReplacementIT.class)
-                          .addMavenDependenciesWithPersistence(
-                              "org.silverpeas.core:silverpeas-core")
-                          .createMavenDependenciesWithPersistence(
-                              "org.silverpeas.core.services:silverpeas-core-pdc")
-                          .createMavenDependencies(
-                              "org.silverpeas.core.services:silverpeas-core-tagcloud")
-                          .createMavenDependencies(
-                              "org.silverpeas.core.services:silverpeas-core-personalorganizer")
-                          .testFocusedOn(
-                              war -> war.addPackages(true, "org.silverpeas.core.workflow"))
-                          .build();
+        .addMavenDependenciesWithPersistence("org.silverpeas.core:silverpeas-core")
+        .createMavenDependenciesWithPersistence("org.silverpeas.core.services:silverpeas-core-pdc")
+        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-tagcloud")
+        .createMavenDependencies("org.silverpeas.core.services:silverpeas-core-personalorganizer")
+        .addAsResource("org/silverpeas/lookAndFeel")
+        .addAsResource("org/silverpeas/util")
+        .testFocusedOn(war -> war.addPackages(true, "org.silverpeas.core.workflow")
+            .addAsResource("org/silverpeas/workflow/multilang"))
+        .build();
   }
 
   @Test
@@ -196,12 +192,11 @@ public class ReplacementIT {
     }
   }
 
-  private LocalDate toLocalDate(final Object timestamp) {
-    if (timestamp instanceof Timestamp) {
-      Timestamp tp = (Timestamp) timestamp;
-      return LocalDateTime.ofInstant(tp.toInstant(), ZoneId.systemDefault()).toLocalDate();
+  private LocalDate toLocalDate(final Object date) {
+    if (date instanceof Date) {
+      return ((Date) date).toLocalDate();
     }
-    throw new IllegalArgumentException("Not a Timestamp");
+    throw new IllegalArgumentException("Not a Date");
   }
 }
   

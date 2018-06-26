@@ -25,7 +25,6 @@
 package org.silverpeas.core.webapi.workflow;
 
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.date.TemporalConverter;
 import org.silverpeas.core.webapi.base.WebEntity;
 import org.silverpeas.core.webapi.util.UserEntity;
 import org.silverpeas.core.workflow.api.user.Replacement;
@@ -37,9 +36,6 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.net.URI;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
 /**
  * The web entity that is carried by an HTTP request or an HTTP response between a web client and
@@ -59,9 +55,9 @@ public class ReplacementEntity implements WebEntity {
   @XmlElement(required = true)
   private UserEntity substitute;
   @XmlElement(required = true)
-  private Date startDate;
+  private String startDate;
   @XmlElement(required = true)
-  private Date endDate;
+  private String endDate;
   @XmlElement(required = true)
   private String workflowId;
 
@@ -69,8 +65,8 @@ public class ReplacementEntity implements WebEntity {
   ReplacementEntity(final Replacement replacement) {
     this.incumbent = new UserEntity(asUserDetail(replacement.getIncumbent()));
     this.substitute = new UserEntity(asUserDetail(replacement.getSubstitute()));
-    this.startDate = TemporalConverter.asDate(replacement.getPeriod().getStartDate());
-    this.endDate = TemporalConverter.asDate(replacement.getPeriod().getEndDate());
+    this.startDate = replacement.getPeriod().getStartDate().toString();
+    this.endDate = replacement.getPeriod().getEndDate().toString();
     this.workflowId = replacement.getWorkflowInstanceId();
   }
 
@@ -98,12 +94,11 @@ public class ReplacementEntity implements WebEntity {
   }
 
   public LocalDate getStartDate() {
-    return LocalDateTime.ofInstant(this.startDate.toInstant(), ZoneId.systemDefault())
-        .toLocalDate();
+    return LocalDate.parse(this.startDate);
   }
 
   public LocalDate getEndDate() {
-    return LocalDateTime.ofInstant(this.endDate.toInstant(), ZoneId.systemDefault()).toLocalDate();
+    return LocalDate.parse(this.endDate);
   }
 
   public String getWorkflowInstanceId() {
