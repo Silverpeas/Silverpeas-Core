@@ -121,6 +121,30 @@ public class ReplacementIT {
   }
 
   @Test
+  public void updateAReplacement() throws SQLException {
+    final String id = "c550ffb1-6e76-4947-9fe3-b69777d758b6";
+    OperationContext.fromUser("0");
+    final Replacement replacement =
+        Replacement.get(id).orElseThrow(() -> new AssertionError("No replacement of id " + id));
+    final Replacement expected = replacement.setSubstitute(aUser("3"))
+        .setPeriod(Period.between(LocalDate.now().plusDays(1), LocalDate.now().plusMonths(1)))
+        .save();
+    Map<String, Object> actual =
+        SQLRequester.findOne("select * from sb_workflow_replacements where id = ?",
+            replacement.getId());
+    assertThat(actual.isEmpty(), is(false));
+    assertThat(expected.getIncumbent().getUserId(),
+        is(actual.get("INCUMBENTID")));
+    assertThat(expected.getSubstitute().getUserId(),
+        is(actual.get("SUBSTITUTEID")));
+    assertThat(expected.getWorkflowInstanceId(), is(actual.get("WORKFLOWID")));
+    assertThat(expected.getPeriod().getStartDate(),
+        is(toLocalDate(actual.get("STARTDATE"))));
+    assertThat(expected.getPeriod().getEndDate(),
+        is(toLocalDate(actual.get("ENDDATE"))));
+  }
+
+  @Test
   public void getReplacementsOfAReplacedUserShouldReturnAllOfThem() {
     final User incumbent = aUser("1");
     List<Replacement> replacements = Replacement.getAllOf(incumbent, WORKFLOW_INSTANCE_ID);

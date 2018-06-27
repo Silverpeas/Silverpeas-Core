@@ -109,5 +109,17 @@ public class ReplacementEntity implements WebEntity {
     return UserDetail.getById(user.getUserId());
   }
 
+  public void setSubstitute(final User substitute) {
+    this.substitute = new UserEntity(asUserDetail(substitute));
+  }
+
+  public void setStartDate(final LocalDate date) {
+    this.startDate = date.toString();
+  }
+
+  public void setEndDate(final LocalDate date) {
+    this.endDate = date.toString();
+  }
+
 }
   

@@ -110,7 +110,6 @@ public class TestContext extends CommonAPI4Test {
         invocation -> computeReplacementsFor(invocation, aSubstitute));
     when(repository.findAllBySubstituteAndByWorkflow(any(User.class), anyString())).thenAnswer(
         invocation -> computeReplacementsFor(invocation, anIncumbent));
-
     injectIntoMockedBeanContainer(repository);
   }
 

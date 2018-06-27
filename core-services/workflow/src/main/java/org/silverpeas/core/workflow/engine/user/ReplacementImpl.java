@@ -113,7 +113,8 @@ public class ReplacementImpl extends SilverpeasJpaEntity<ReplacementImpl, UuidId
     return this;
   }
 
-  ReplacementImpl setSubstitute(final User substitute) {
+  @Override
+  public ReplacementImpl setSubstitute(final User substitute) {
     Objects.requireNonNull(substitute, "The user who replaces the incumbent must be non-null");
     requireDifferentUsers(incumbentId, substitute.getUserId());
     this.substituteId = substitute.getUserId();
@@ -127,7 +128,7 @@ public class ReplacementImpl extends SilverpeasJpaEntity<ReplacementImpl, UuidId
     return this;
   }
 
-  ReplacementImpl setPeriod(final Period period) {
+  public ReplacementImpl setPeriod(final Period period) {
     Objects.requireNonNull(period,
         "The period during which the replacement is enabled must be non-null");
     this.period = Period.between(TemporalConverter.asLocalDate(period.getStartDate()),

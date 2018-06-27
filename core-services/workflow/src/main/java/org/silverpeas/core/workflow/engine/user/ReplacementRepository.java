@@ -102,7 +102,7 @@ public class ReplacementRepository extends SilverpeasJpaEntityRepository<Replace
     return findByNamedQuery("Replacement.findAllByUsersAndByWorkflow", parameters);
   }
 
-  private void notifyUsers(final ResourceEvent.Type cause, final Replacement replacement) {
+  protected void notifyUsers(final ResourceEvent.Type cause, final Replacement replacement) {
     try {
       notifier.notifyEventOn(cause, replacement);
     } catch (Exception e) {

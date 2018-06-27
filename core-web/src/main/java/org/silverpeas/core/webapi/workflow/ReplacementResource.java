@@ -37,15 +37,7 @@ import org.silverpeas.core.workflow.api.user.User;
 
 import javax.inject.Inject;
 import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.URI;
@@ -177,6 +169,43 @@ public class ReplacementResource extends RESTWebService {
     return Response.created(resourceURI)
         .entity(asWebEntity(replacement, resourceURI))
         .build();
+  }
+
+  /**
+   * Updates the replacement identified by the specified unique identifier with the given
+   * replacement entity. If no such replacement exists in the requested workflow, then an HTTP
+   * error {@link Response.Status#NOT_FOUND} is sent back.
+   * <p>
+   * Only the period over which the replacement will occur and the substitute can be updated.
+   * If any other properties (the incumbent) are modified, an HTTP error
+   * {@link Response.Status#BAD_REQUEST} is sent back.
+   * </p>
+   * <p>
+   * For security reason, unless the requester plays the role of supervisor in the requested
+   * workflow, only the incumbent of the tasks concerned by the replacement can update a
+   * replacement. Otherwise, an HTTP error {@link Response.Status#FORBIDDEN} is sent back.
+   * </p>
+   * @param id the unique identifier of the a replacement in the requested workflow.
+   * @param entity the new state of the replacement.
+   * @return the updated replacement.
+   */
+  @PUT
+  @Path("{id}")
+  @Consumes(MediaType.APPLICATION_JSON)
+  @Produces(MediaType.APPLICATION_JSON)
+  @Transactional
+  public ReplacementEntity updateReplacement(@PathParam("id") final String id,
+      final ReplacementEntity entity) {
+    assertIsValid(entity);
+    final Replacement replacement = getReplacementById(id);
+    if (!replacement.getIncumbent().getUserId().equals(entity.getIncumbent().getId())) {
+      throw new WebApplicationException(Response.Status.BAD_REQUEST);
+    }
+    final Replacement updatedReplacement =
+        replacement.setSubstitute(getUser(entity.getSubstitute().getId()))
+            .setPeriod(Period.between(entity.getStartDate(), entity.getEndDate()))
+            .save();
+    return asWebEntity(updatedReplacement, identifiedBy(id));
   }
 
   /**

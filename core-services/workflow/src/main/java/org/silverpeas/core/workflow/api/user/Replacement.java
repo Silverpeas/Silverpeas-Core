@@ -132,11 +132,26 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
   User getSubstitute();
 
   /**
+   * Sets a new substitute to this replacement.
+   * @param user the user that will replace the incumbent of some tasks
+   * @return itself.
+   */
+  Replacement setSubstitute(final User user);
+
+  /**
    * Gets the period in days over which this replacement is enabled. The start and end dates of the
    * period are {@link java.time.LocalDate} instances.
    * @return a period in days.
    */
   Period getPeriod();
+
+  /**
+   * Sets a new period in days over which this replacement will be enabled. The start date and end
+   * date of the period should be {@link java.time.LocalDate} instances.
+   * @param period the new period of this replacement.
+   * @return itself.
+   */
+  Replacement setPeriod(final Period period);
 
   /**
    * Gets the unique identifier of the instance of the workflow in which this replacement is done.
