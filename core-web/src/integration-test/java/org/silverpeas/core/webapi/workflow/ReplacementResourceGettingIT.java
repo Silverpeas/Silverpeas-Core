@@ -102,6 +102,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
 
     ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
     assertThat(replacements.length, is(1));
+    assertThat(replacements[0].getURI().isAbsolute(), is(true));
     assertThat(replacements[0].getIncumbent().getId(), is("1"));
     assertThat(replacements[0].getSubstitute().getId(), is("2"));
     assertThat(replacements[0].getWorkflowInstanceId(), is(aWorkflowId));
@@ -115,6 +116,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
 
     ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
     assertThat(replacements.length, is(1));
+    assertThat(replacements[0].getURI().isAbsolute(), is(true));
     assertThat(replacements[0].getIncumbent().getId(), is("1"));
     assertThat(replacements[0].getSubstitute().getId(), is("2"));
     assertThat(replacements[0].getWorkflowInstanceId(), is(aWorkflowId));
@@ -130,6 +132,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
 
     ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
     assertThat(replacements.length, is(1));
+    assertThat(replacements[0].getURI().isAbsolute(), is(true));
     assertThat(replacements[0].getIncumbent().getId(), is("1"));
     assertThat(replacements[0].getSubstitute().getId(), is("2"));
     assertThat(replacements[0].getWorkflowInstanceId(), is(aWorkflowId));
@@ -172,6 +175,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
 
     ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
     assertThat(replacements.length, is(1));
+    assertThat(replacements[0].getURI().isAbsolute(), is(true));
     assertThat(replacements[0].getIncumbent().getId(), is("1"));
     assertThat(replacements[0].getSubstitute().getId(), is("2"));
     assertThat(replacements[0].getWorkflowInstanceId(), is(aWorkflowId));
@@ -188,6 +192,7 @@ public class ReplacementResourceGettingIT extends ResourceGettingTest {
 
     ReplacementEntity[] replacements = response.readEntity(ReplacementEntity[].class);
     assertThat(replacements.length, is(1));
+    assertThat(replacements[0].getURI().isAbsolute(), is(true));
     assertThat(replacements[0].getIncumbent().getId(), is("1"));
     assertThat(replacements[0].getSubstitute().getId(), is("2"));
     assertThat(replacements[0].getWorkflowInstanceId(), is(aWorkflowId));

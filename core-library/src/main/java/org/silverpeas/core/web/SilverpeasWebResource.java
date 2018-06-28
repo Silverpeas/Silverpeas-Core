@@ -101,7 +101,7 @@ public interface SilverpeasWebResource {
    * @return the base path from which all the web resources are defined as a string.
    */
   static String getBasePath() {
-    return getBasePathBuilder().toString();
+    return getBasePathBuilder().build().toString();
   }
 
   /**
@@ -111,7 +111,10 @@ public interface SilverpeasWebResource {
    * @return the absolute base path from which all the web resources are defined as a string.
    */
   static String getAbsoluteBasePath() {
-    return UriBuilder.fromUri(URLUtil.getAbsoluteApplicationURL()).path(BASE_PATH).toString();
+    return UriBuilder.fromUri(URLUtil.getAbsoluteApplicationURL())
+        .path(BASE_PATH)
+        .build()
+        .toString();
   }
 
   /**

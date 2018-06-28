@@ -49,6 +49,7 @@ import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import java.net.URI;
 import java.util.Collection;
+import java.util.stream.Stream;
 
 /**
  * The class of the Silverpeas REST web services. It provides all of the common features required by
@@ -353,6 +354,7 @@ public abstract class RESTWebService implements ProtectedWebResource {
    * @return an URI identifying uniquely in the Web the current requested resource.
    */
   protected URI identifiedBy(final UriBuilder base, final String... id) {
-    return base.build(id);
+    Stream.of(id).forEach(base::path);
+    return base.build();
   }
 }

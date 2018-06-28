@@ -135,7 +135,7 @@ public class ReplacementResource extends RESTWebService {
   @Path("{id}")
   public ReplacementEntity getReplacement(@PathParam("id") final String replacementId) {
     final Replacement replacement = getReplacementById(replacementId);
-    return asWebEntity(replacement, identifiedBy(replacementId));
+    return asWebEntity(replacement, getUri().getAbsolutePath());
   }
 
   /**
@@ -205,7 +205,7 @@ public class ReplacementResource extends RESTWebService {
         replacement.setSubstitute(getUser(entity.getSubstitute().getId()))
             .setPeriod(Period.between(entity.getStartDate(), entity.getEndDate()))
             .save();
-    return asWebEntity(updatedReplacement, identifiedBy(id));
+    return asWebEntity(updatedReplacement, getUri().getAbsolutePath());
   }
 
   /**

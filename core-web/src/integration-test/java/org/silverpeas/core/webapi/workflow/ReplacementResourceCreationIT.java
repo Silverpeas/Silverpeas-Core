@@ -42,6 +42,7 @@ import org.silverpeas.web.ResourceCreationTest;
 import javax.inject.Inject;
 import javax.ws.rs.core.Response;
 import java.time.LocalDate;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.notNullValue;
@@ -96,12 +97,16 @@ public class ReplacementResourceCreationIT extends ResourceCreationTest {
 
   @Test
   public void aUserCreateANewReplacementOfHim() {
+    final Pattern uriPattern = Pattern.compile(
+        "^http://localhost:8080/silverpeas/services/" + aResourceURI() + "/[a-z0-9\\-]+$");
     final ReplacementEntity expected = aResource();
     Response response = post(expected, aResourceURI());
     assertThat(response.getStatus(), is(STATUS_CREATED));
+    ;
     ReplacementEntity createdEntity = response.readEntity(ReplacementEntity.class);
     assertThat(createdEntity, notNullValue());
-    assertThat(createdEntity.getURI(), notNullValue());
+    assertThat(createdEntity.getURI(), is(response.getLocation()));
+    assertThat(uriPattern.matcher(createdEntity.getURI().toString()).matches(), is(true));
     assertThat(createdEntity.getIncumbent().getId(), is(expected.getIncumbent().getId()));
     assertThat(createdEntity.getSubstitute().getId(), is(expected.getSubstitute().getId()));
     assertThat(createdEntity.getWorkflowInstanceId(), is(expected.getWorkflowInstanceId()));
@@ -113,12 +118,15 @@ public class ReplacementResourceCreationIT extends ResourceCreationTest {
   public void aSupervisorCreateANewReplacementOfAUser() {
     user = User.getById(SUPERVISOR_ID);
     authToken = getTokenKeyOf(user);
+    final Pattern uriPattern = Pattern.compile(
+        "^http://localhost:8080/silverpeas/services/" + aResourceURI() + "/[a-z0-9\\-]+$");
     final ReplacementEntity expected = aResource();
     Response response = post(expected, aResourceURI());
     assertThat(response.getStatus(), is(STATUS_CREATED));
     ReplacementEntity createdEntity = response.readEntity(ReplacementEntity.class);
     assertThat(createdEntity, notNullValue());
-    assertThat(createdEntity.getURI(), notNullValue());
+    assertThat(createdEntity.getURI(), is(response.getLocation()));
+    assertThat(uriPattern.matcher(createdEntity.getURI().toString()).matches(), is(true));
     assertThat(createdEntity.getIncumbent().getId(), is(expected.getIncumbent().getId()));
     assertThat(createdEntity.getSubstitute().getId(), is(expected.getSubstitute().getId()));
     assertThat(createdEntity.getWorkflowInstanceId(), is(expected.getWorkflowInstanceId()));
