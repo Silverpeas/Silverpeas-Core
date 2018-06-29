@@ -22,6 +22,37 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+(function() {
+  window.VueJsAsyncComponentTemplateRepository = function(src) {
+    var templatePromise = sp.ajaxRequest(src).send().then(function(request) {
+      return request.responseText
+    });
+    this.get = function(name, componentConfiguration) {
+      return function(resolve) {
+        var templateIdentifier = '<silverpeas-component-template name="' + name + '">';
+        return templatePromise.then(function(templates) {
+          var msg;
+          var start = templates.indexOf(templateIdentifier);
+          if (start < 0) {
+            msg = "template '" + name + "' does not exist from repository '" + src + "'";
+            sp.log.error("TemplateRepository - " + msg);
+            return "<div>" + msg + "</div>";
+          }
+          start = start + templateIdentifier.length;
+          var end = templates.indexOf('</silverpeas-component-template>', start);
+          if (end < 0) {
+            msg = "template '" + name + "' is not well defined into repository '" + src + "'";
+            sp.log.error("TemplateRepository - " + msg);
+            return "<div>" + msg + "</div>";
+          }
+          componentConfiguration.template = templates.substring(start, end);
+          resolve(componentConfiguration);
+        });
+      };
+    };
+  }
+})();
+
 /**
  * This directive permits to initialize some data from the template by using mustache notations.
  * The HTML element holding the directive is removed from the DOM after the interpretations.
@@ -98,6 +129,9 @@ window.VuejsI18nTemplateMixin = {
   },
   methods : {
     formatMessage: function(message, params, options) {
+      if (typeof params === 'string') {
+        params = [params];
+      }
       options = extendsObject(false, {
         styles : {
           classes : undefined,
@@ -112,13 +146,13 @@ window.VuejsI18nTemplateMixin = {
         __valid = false;
         sp.log.error("Vuejsi18nTemplateMixin - formatMessage - message is not defined");
       }
-      if (typeof params === 'object') {
+      if (!Array.isArray(params)) {
         __valid = false;
-        sp.log.error("Vuejsi18nTemplateMixin - formatMessage - params must be an object");
+        sp.log.error("Vuejsi18nTemplateMixin - formatMessage - params must be an array");
       }
       if (__valid) {
-        for (var key in params) {
-          var value = params[key];
+        for (var i=0; i < params.length ; i++) {
+          var value = params[i];
           var styles = extendsObject(false, options);
           if (typeof value === 'function') {
             value = value.call(this);
@@ -138,7 +172,7 @@ window.VuejsI18nTemplateMixin = {
           if (styles.underline) {
             value = '<u>' + value + '</u>'
           }
-          result = result.replace(key, value);
+          result = result.replaceAll('[{]' + i + '[}]', value);
         }
       }
       return result;
@@ -226,15 +260,47 @@ window.VuejsFormApiMixin = {
       },
       validate : function() {
         sp.log.error('VuejsFormApiMixin - Validation is not implemented!!! Please implement api.validate method');
-        return false;
+        return !this.api.errorMessage().existsAtLeastOne();
       },
       updateData : function(dataToUpdate) {
         sp.log.error('VuejsFormApiMixin - Data update is not implemented!!! Please implement api.updateData method');
         return false;
+      },
+      errorMessage : function() {
+        return {
+          add : function(message) {
+            SilverpeasError.add(message);
+          },
+          none : function() {
+            return !SilverpeasError.existsAtLeastOne();
+          },
+          show : function() {
+            return SilverpeasError.show();
+          }
+        }
       }
     });
   },
   mounted : function() {
     this.rootFormApi.handleFormApi(this.api);
+  }
+};
+
+/**
+ * Common implementation for components which have to show or hide progress message.
+ *
+ * @example:
+ * Vue.component('my-form', {
+ *   mixins : [VuejsProgressMessageMixin]
+ * });
+ */
+window.VuejsProgressMessageMixin = {
+  methods : {
+    showProgressMessage : function() {
+      spProgressMessage.show();
+    },
+    hideProgressMessage : function() {
+      spProgressMessage.hide();
+    }
   }
 };

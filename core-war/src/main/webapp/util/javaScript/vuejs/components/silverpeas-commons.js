@@ -24,6 +24,9 @@
 
 (function() {
 
+  var commonAsyncComponentRepository = new VueJsAsyncComponentTemplateRepository(webContext +
+      '/util/javaScript/vuejs/components/silverpeas-common-templates.jsp');
+
   /**
    * silverpeas-operation-creation-area is an HTML element which is built to provide the equivalent
    * to <view:areaOfOperationOfCreation/>.
@@ -88,30 +91,24 @@
    * @example 1 <silverpeas-button v-bind:click.native="methodOfVue()">OK<silverpeas-button>
    * @example 2 <silverpeas-button onclick="methodOfVanillaJs">Cancel<silverpeas-button>
    */
-  Vue.component('silverpeas-button', {
-    template : '<a class="silverpeas-button" ' +
-                  'v-bind:class="{\'sp_button\':!isIconBehavior,\'sp_icon\':isIconBehavior}" ' +
-                  'v-bind:title="title" ' +
-                  'href="javascript:void(0)">' +
-                    '<slot v-if="!isIconBehavior"></slot>' +
-                    '<img v-else v-bind:src="iconUrl" alt="" />' +
-               '</a>',
-    props : {
-      title : {
-        'type' : String,
-        'default' : ''
+  Vue.component('silverpeas-button',
+    commonAsyncComponentRepository.get('button', {
+      props : {
+        title : {
+          'type' : String,
+          'default' : ''
+        },
+        iconUrl : {
+          'type' : String,
+          'default' : undefined
+        }
       },
-      iconUrl : {
-        'type' : String,
-        'default' : undefined
+      computed : {
+        isIconBehavior : function() {
+          return !!this.iconUrl;
+        }
       }
-    },
-    computed : {
-      isIconBehavior : function() {
-        return !!this.iconUrl;
-      }
-    }
-  });
+    }));
 
   /**
    * silverpeas-list is an HTML element to render a common list in a Silverpeas way by using the
@@ -132,32 +129,28 @@
    *            <silverpeas-list-item v-for="item in items">{{item}}</silverpeas-list-item>
    *          <silverpeas-list>
    */
-  Vue.component('silverpeas-list', function(resolve) {
-    sp.ajaxRequest(webContext + '/util/javaScript/vuejs/components/silverpeas-list.jsp').send().then(function(request) {
-      resolve({
-        mixins : [VuejsI18nTemplateMixin],
-        template: request.responseText,
-        props : {
-          items : {
-            'type' : Array,
-            'required' : true
-          },
-          noItemLabel : {
-            'type' : String,
-            'default' : 'N/A'
-          }
+  Vue.component('silverpeas-list',
+    commonAsyncComponentRepository.get('list', {
+      mixins : [VuejsI18nTemplateMixin],
+      props : {
+        items : {
+          'type' : Array,
+          'required' : true
         },
-        computed : {
-          isData : function() {
-            return this.items.length > 0;
-          },
-          noItemMessage : function() {
-            return this.noItemLabel !== 'N/A' ? this.noItemLabel : this.messages.noItemLabel;
-          }
+        noItemLabel : {
+          'type' : String,
+          'default' : 'N/A'
         }
-      });
-    });
-  });
+      },
+      computed : {
+        isData : function() {
+          return this.items.length > 0;
+        },
+        noItemMessage : function() {
+          return this.noItemLabel !== 'N/A' ? this.noItemLabel : this.messages.noItemLabel;
+        }
+      }
+    }));
 
   /**
    * silverpeas-list is an HTML element to render a common list in a Silverpeas way by using the
@@ -183,77 +176,69 @@
    *              <span slot="footer">An footer</span>
    *            <silverpeas-list-item>
    */
-  Vue.component('silverpeas-list-item', function(resolve) {
-    sp.ajaxRequest(webContext + '/util/javaScript/vuejs/components/silverpeas-list-item.jsp').send().then(function(request) {
-      resolve({
-        template: request.responseText,
-        computed : {
-          isActions : function() {
-            return !!this.$slots.actions;
-          }
+  Vue.component('silverpeas-list-item',
+    commonAsyncComponentRepository.get('list-item', {
+      computed : {
+        isActions : function() {
+          return !!this.$slots.actions;
         }
-      });
-    });
-  });
+      }
+    }));
 
   /**
    */
-  Vue.component('silverpeas-popin', function(resolve) {
-    sp.ajaxRequest(webContext + '/util/javaScript/vuejs/components/silverpeas-popin.jsp').send().then(function(request) {
-      resolve({
-        mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
-        template : request.responseText,
-        props : {
-          'type' : {
-            'type' : String,
-            'default' : 'validation'
-          },
-          'title' : {
-            'type' : String,
-            'default' : ''
-          },
-          'minWidth' : {
-            'type' : String,
-            'default' : '500px'
-          },
-          'maxWidth' : {
-            'type' : String,
-            'default' : '800px'
-          }
+  Vue.component('silverpeas-popin',
+    commonAsyncComponentRepository.get('popin', {
+      mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
+      props : {
+        'type' : {
+          'type' : String,
+          'default' : 'validation'
         },
-        data : function() {
-          return {
-            jqDialog : undefined
-          };
+        'title' : {
+          'type' : String,
+          'default' : ''
         },
-        created : function() {
-          this.extendApiWith({
-            open : function(options) {
-              this.open(options);
-            },
-            close : function() {
-              this.close();
-            }
-          });
+        'minWidth' : {
+          'type' : String,
+          'default' : '500px'
         },
-        methods : {
+        'maxWidth' : {
+          'type' : String,
+          'default' : '800px'
+        }
+      },
+      data : function() {
+        return {
+          jqDialog : undefined
+        };
+      },
+      created : function() {
+        this.extendApiWith({
           open : function(options) {
-            Vue.nextTick(function() {
-              this.jqDialog = jQuery(this.$refs.container);
-              this.jqDialog.popup(this.type, extendsObject({
-                title : this.title,
-                minWidth : this.minWidth,
-                maxWidth : this.maxWidth
-              }, options));
-            }.bind(this));
+            this.open(options);
           },
           close : function() {
-            this.jqDialog.popup('close');
+            this.close();
           }
+        });
+      },
+      methods : {
+        open : function(options) {
+          Vue.nextTick(function() {
+            this.jqDialog = jQuery(this.$refs.container);
+            this.jqDialog.popup(this.type, extendsObject({
+              title : this.title,
+              minWidth : this.minWidth,
+              maxWidth : this.maxWidth
+            }, options));
+          }.bind(this));
+        },
+        close : function() {
+          this.jqDialog.popup('close');
         }
-      });
-    });
-  });
+      }
+    }));
 
   /**
    * silverpeas-permalink is an HTML element to render a permalink in a Silverpeas's way by using
@@ -274,64 +259,60 @@
    * @example <silverpeas-permalink link="/Publication/3"
    *     v-bind:simple="false"></silverpeas-permalink>
    */
-  Vue.component('silverpeas-permalink', function(resolve) {
-    sp.ajaxRequest(webContext + '/util/javaScript/vuejs/components/silverpeas-permalink.jsp').send().then(function(request) {
-      resolve({
-        mixins : [VuejsI18nTemplateMixin],
-        template: request.responseText,
-        props : {
-          link : String,
-          label : String,
-          help : String,
-          iconUrl : String,
-          simple : {
-            'type' : Boolean,
-            'default' : true
-          },
-          noHrefHook : {
-            'type' : Boolean,
-            'default' : false
-          }
+  Vue.component('silverpeas-permalink',
+    commonAsyncComponentRepository.get('permalink', {
+      mixins : [VuejsI18nTemplateMixin],
+      props : {
+        link : String,
+        label : String,
+        help : String,
+        iconUrl : String,
+        simple : {
+          'type' : Boolean,
+          'default' : true
         },
-        methods : {
-          renderFullTemplateUrl : function() {
-            sp.ajaxRequest(webContext +
-                '/util/javaScript/vuejs/components/silverpeas-permalink-wrapper.jsp')
-                .withParam('link', encodeURIComponent(this.getFormattedPermalinkForWrapper()))
-                .withParam('label', this.label ? encodeURIComponent(this.label) : this.label)
-                .withParam('help', this.help ? encodeURIComponent(this.help) : this.help)
-                .withParam('iconUrl', this.iconUrl)
-                .send().then(function(request) {
-              sp.updateTargetWithHtmlContent(this.$refs.fullContainer, request.responseText);
-            }.bind(this));
-          },
-          getFormattedPermalinkForWrapper : function() {
-            var result = this.link;
-            if (this.link.startsWith(silverpeasUrl)) {
-              result = this.link.replace(silverpeasUrl, webContext);
-            } else if (!this.link.startsWith(webContext)) {
-              result = webContext + this.link;
-            }
-            return result;
-          },
-          copyLink : function() {
-            var $input = this.$el.querySelector('input');
-            $input.select();
-            document.execCommand('copy');
-            notyInfo(this.messages.copyOk);
-          }
-        },
-        computed : {
-          isFull : function() {
-            if (!this.simple) {
-              this.renderFullTemplateUrl();
-            }
-            return !this.simple;
-          }
+        noHrefHook : {
+          'type' : Boolean,
+          'default' : false
         }
-      });
-    });
-  });
+      },
+      methods : {
+        renderFullTemplateUrl : function() {
+          sp.ajaxRequest(webContext +
+              '/util/javaScript/vuejs/components/silverpeas-permalink-wrapper.jsp')
+              .withParam('link', encodeURIComponent(this.getFormattedPermalinkForWrapper()))
+              .withParam('label', this.label ? encodeURIComponent(this.label) : this.label)
+              .withParam('help', this.help ? encodeURIComponent(this.help) : this.help)
+              .withParam('iconUrl', this.iconUrl)
+              .send().then(function(request) {
+            sp.updateTargetWithHtmlContent(this.$refs.fullContainer, request.responseText);
+          }.bind(this));
+        },
+        getFormattedPermalinkForWrapper : function() {
+          var result = this.link;
+          if (this.link.startsWith(silverpeasUrl)) {
+            result = this.link.replace(silverpeasUrl, webContext);
+          } else if (!this.link.startsWith(webContext)) {
+            result = webContext + this.link;
+          }
+          return result;
+        },
+        copyLink : function() {
+          var $input = this.$el.querySelector('input');
+          $input.select();
+          document.execCommand('copy');
+          notyInfo(this.messages.copyOk);
+        }
+      },
+      computed : {
+        isFull : function() {
+          if (!this.simple) {
+            this.renderFullTemplateUrl();
+          }
+          return !this.simple;
+        }
+      }
+    }));
 
   /**
    * silverpeas-form-pane is an HTML element to render a form in a Silverpeas's way by using
@@ -357,122 +338,119 @@
    * @event validation-fail when validation of data has failed.
    * @event cancel when validation has been cancelled.
    */
-  Vue.component('silverpeas-form-pane', function(resolve) {
-    sp.ajaxRequest(webContext + '/util/javaScript/vuejs/components/silverpeas-form-pane.jsp').send().then(function(request) {
-      resolve({
-        mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
-        provide : function() {
-          return {
-            rootFormApi : this.api
-          };
+  Vue.component('silverpeas-form-pane',
+    commonAsyncComponentRepository.get('form-pane', {
+      mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
+      provide : function() {
+        return {
+          rootFormApi : this.api,
+          rootFormMessages : this.messages
+        };
+      },
+      props : {
+        mandatoryLegend : {
+          "type" : Boolean,
+          "default" : true
         },
-        template : request.responseText,
-        props : {
-          mandatoryLegend : {
-            "type" : Boolean,
-            "default" : true
-          },
-          manualActions : {
-            "type" : Boolean,
-            "default" : false
-          }
-        },
-        created : function() {
-          function __sortFormsByPriority(formA, formB) {
-            return formA.getFormPriority() - formB.getFormPriority();
-          }
+        manualActions : {
+          "type" : Boolean,
+          "default" : false
+        }
+      },
+      created : function() {
+        function __sortFormsByPriority(formA, formB) {
+          return formA.getFormPriority() - formB.getFormPriority();
+        }
 
-          var formValidationRegistry = [];
+        var formValidationRegistry = [];
 
-          /**
-           * Performs validation on all linked forms
-           */
-          var _validate = function() {
-            var __validationPromises = [];
-            for (var i = 0; i < formValidationRegistry.length; i++) {
-              var validation = formValidationRegistry[i].validate();
-              var validationType = typeof validation;
-              var isPromiseValidation = !sp.promise.isOne(validation);
-              if (validationType === 'undefined' || !isPromiseValidation) {
-                sp.log.error('VuejsFormApiMixin - validate method must return a promise or a boolean value');
-                return sp.promise.rejectDirectlyWith();
-              }
-              __validationPromises.push(isPromiseValidation ? validation : sp.promise.resolveDirectlyWith(validation));
+        /**
+         * Performs validation on all linked forms
+         */
+        var _validate = function() {
+          var __validationPromises = [];
+          for (var i = 0; i < formValidationRegistry.length; i++) {
+            var validation = formValidationRegistry[i].validate();
+            var validationType = typeof validation;
+            var isPromiseValidation = !sp.promise.isOne(validation);
+            if (validationType === 'undefined' || !isPromiseValidation) {
+              sp.log.error('VuejsFormApiMixin - validate method must return a promise or a boolean value');
+              return sp.promise.rejectDirectlyWith();
             }
-            var existsAtLeastOneError = false;
-            return sp.promise.whenAllResolved(__validationPromises).then(function(validationResults) {
-              validationResults.forEach(function(validationResult) {
-                validationResult = typeof validationResult !== 'undefined' ? validationResult : true;
-                existsAtLeastOneError = !validationResult || existsAtLeastOneError;
-              });
-              return (!SilverpeasError.show() && !existsAtLeastOneError)
-                  ? sp.promise.resolveDirectlyWith()
-                  : sp.promise.rejectDirectlyWith();
+            __validationPromises.push(isPromiseValidation ? validation : sp.promise.resolveDirectlyWith(validation));
+          }
+          var existsAtLeastOneError = false;
+          return sp.promise.whenAllResolved(__validationPromises).then(function(validationResults) {
+            validationResults.forEach(function(validationResult) {
+              validationResult = typeof validationResult !== 'undefined' ? validationResult : true;
+              existsAtLeastOneError = !validationResult || existsAtLeastOneError;
             });
-          }.bind(this);
+            return (!SilverpeasError.show() && !existsAtLeastOneError)
+                ? sp.promise.resolveDirectlyWith()
+                : sp.promise.rejectDirectlyWith();
+          });
+        }.bind(this);
 
-          /**
-           * Performs updating of source data from internal one.
-           */
-          var _updateData = function() {
-            var data = {};
-            formValidationRegistry.forEach(function(form) {
-              var result = form.updateData(data);
-              if (result) {
-                data = result;
-              }
-            });
-            return data;
-          }.bind(this);
-
-          this.extendApiWith({
-            handleFormApi : function(formApi) {
-              formValidationRegistry.push(formApi);
-              formValidationRegistry.sort(__sortFormsByPriority);
-            },
-            validate : function() {
-              notyReset();
-              return _validate().then(function() {
-                var data = _updateData();
-                if (data) {
-                  this.$emit('data-update', data);
-                  return data;
-                } else {
-                  sp.log.error("silverpeas-form - no data updated...");
-                  return sp.promise.rejectDirectlyWith();
-                }
-              }.bind(this))['catch'](function() {
-                sp.log.debug("silverpeas-form - validation failed...");
-                this.$emit('validation-fail');
-                return sp.promise.rejectDirectlyWith();
-              }.bind(this));
-            },
-            cancel : function() {
-              notyReset();
-              this.$emit('cancel');
+        /**
+         * Performs updating of source data from internal one.
+         */
+        var _updateData = function() {
+          var data = {};
+          formValidationRegistry.forEach(function(form) {
+            var result = form.updateData(data);
+            if (result) {
+              data = result;
             }
           });
-        },
-        computed : {
-          isHeader : function() {
-            return !!this.$slots.header;
+          return data;
+        }.bind(this);
+
+        this.extendApiWith({
+          handleFormApi : function(formApi) {
+            formValidationRegistry.push(formApi);
+            formValidationRegistry.sort(__sortFormsByPriority);
           },
-          isBody : function() {
-            return !!this.$slots.default;
+          validate : function() {
+            notyReset();
+            return _validate().then(function() {
+              var data = _updateData();
+              if (data) {
+                this.$emit('data-update', data);
+                return data;
+              } else {
+                sp.log.error("silverpeas-form - no data updated...");
+                return sp.promise.rejectDirectlyWith();
+              }
+            }.bind(this))['catch'](function() {
+              sp.log.debug("silverpeas-form - validation failed...");
+              this.$emit('validation-fail');
+              return sp.promise.rejectDirectlyWith();
+            }.bind(this));
           },
-          isFooter : function() {
-            return !!this.$slots.footer;
-          },
-          isLegend : function() {
-            return !!this.$slots.legend || this.mandatoryLegend;
-          },
-          isManualActions : function() {
-            return this.manualActions;
+          cancel : function() {
+            notyReset();
+            this.$emit('cancel');
           }
+        });
+      },
+      computed : {
+        isHeader : function() {
+          return !!this.$slots.header;
+        },
+        isBody : function() {
+          return !!this.$slots.default;
+        },
+        isFooter : function() {
+          return !!this.$slots.footer;
+        },
+        isLegend : function() {
+          return !!this.$slots.legend || this.mandatoryLegend;
+        },
+        isManualActions : function() {
+          return this.manualActions;
         }
-      });
-    });
-  });
+      }
+    }));
 
   /**
    * silverpeas-mandatory-indicator is an HTML element which display an indicator of mandatory form

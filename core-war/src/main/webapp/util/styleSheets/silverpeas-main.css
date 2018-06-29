@@ -6984,10 +6984,6 @@ silverpeas-contribution-reminder a.add-action {
   display: block;
 }
 
-.ui-dialog .silverpeas-form-pane {
-  overflow:hidden;
-}
-
 input.dateToPick,
 .ui-dialog .champ-ui-dialog input.dateToPick {
   width:68px;

@@ -233,10 +233,6 @@
       item.score = score;
     };
     var __updateIdContainers = function(id, isAdd) {
-      if (!userGroupSelectInstance.options.multiple) {
-        userGroupSelectInstance.context.currentUserIds = [];
-        userGroupSelectInstance.context.currentGroupIds = [];
-      }
       var idContainer = id.startsWith("user-") ?
           userGroupSelectInstance.context.currentUserIds :
           userGroupSelectInstance.context.currentGroupIds;
@@ -251,13 +247,11 @@
         }
         if (!idContainer.updateElement(normalizedId)) {
           idContainer.addElement(normalizedId);
-          __onChange();
         }
       } else {
-        if (idContainer.removeElement(normalizedId)) {
-          __onChange();
-        }
+        idContainer.removeElement(normalizedId);
       }
+      __onChange();
       userGroupSelectInstance.refreshCommons();
     }.bind(this);
 
@@ -353,19 +347,33 @@
       }
     })[0].selectize;
     function __onChange() {
-      if (typeof userGroupSelectInstance.options.onChange === 'function') {
-        setTimeout(function() {
-          try {
-            userGroupSelectInstance.options.onChange(userGroupSelectInstance);
-          } finally {
-            if (userGroupSelectInstance.options.navigationalBehavior) {
-              userGroupSelectInstance.removeAll();
+      var c = userGroupSelectInstance.context;
+      var forceChangeTrigger = false;
+      if (!c._last_currentUserIds) {
+        c._last_currentUserIds = [];
+        c._last_currentGroupIds = [];
+        forceChangeTrigger = true;
+      }
+      var userIdsChange = !sp.object.areExistingValuesEqual(c._last_currentUserIds.sort(), c.currentUserIds.sort());
+      var groupIdsChange = !sp.object.areExistingValuesEqual(c._last_currentGroupIds.sort(), c.currentGroupIds.sort());
+      c._last_currentUserIds = [].concat(c.currentUserIds);
+      c._last_currentGroupIds = [].concat(c.currentGroupIds);
+      if (forceChangeTrigger || userIdsChange || groupIdsChange) {
+        if (typeof userGroupSelectInstance.options.onChange === 'function') {
+          var o = userGroupSelectInstance.options;
+          setTimeout(function() {
+            try {
+              o.onChange(userGroupSelectInstance);
+            } finally {
+              if (o.navigationalBehavior) {
+                userGroupSelectInstance.removeAll();
+              }
             }
+          }, 0);
+        } else {
+          if (o.navigationalBehavior) {
+            userGroupSelectInstance.removeAll();
           }
-        }, 0);
-      } else {
-        if (userGroupSelectInstance.options.navigationalBehavior) {
-          userGroupSelectInstance.removeAll();
         }
       }
     }
