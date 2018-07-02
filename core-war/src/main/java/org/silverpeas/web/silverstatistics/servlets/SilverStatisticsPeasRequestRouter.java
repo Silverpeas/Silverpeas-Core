@@ -197,7 +197,7 @@ public class SilverStatisticsPeasRequestRouter extends
             request.setAttribute("ConnectionsChart", userChart);
           } else if ("1".equals(filterType)) // filter user
           {
-            request.setAttribute("ResultData", statsSC.getStatsConnexionAllUser(hostDateBegin,
+            request.setAttribute("ResultData", statsSC.getStatsConnexionUser(hostDateBegin,
                 hostDateEnd, filterId));
 
             // graphiques
@@ -253,7 +253,7 @@ public class SilverStatisticsPeasRequestRouter extends
             request.setAttribute("ConnectionsChart", userChart);
           } else if (filterType.equals("1")) // filter user
           {
-            request.setAttribute("ResultData", statsSC.getStatsConnexionUserUser(hostDateBegin,
+            request.setAttribute("ResultData", statsSC.getStatsConnexionUser(hostDateBegin,
                 hostDateEnd, filterId));
 
             // graphiques
@@ -287,7 +287,7 @@ public class SilverStatisticsPeasRequestRouter extends
                 hostDateEnd, filterId));
 
           } else if ("1".equals(filterType)) { // filter user
-            request.setAttribute("ResultData", statsSC.getStatsConnexionAllUser(hostDateBegin,
+            request.setAttribute("ResultData", statsSC.getStatsConnexionUser(hostDateBegin,
                 hostDateEnd, filterId));
           }
         } else if ("1".equals(hostStatDetail)) { // Groups
@@ -304,7 +304,7 @@ public class SilverStatisticsPeasRequestRouter extends
                 .getStatsConnexionUserAll(hostDateBegin, hostDateEnd));
           } else if ("1".equals(filterType)) { // filter user
             request.setAttribute("ResultData",
-                statsSC.getStatsConnexionUserUser(hostDateBegin, hostDateEnd, filterId));
+                statsSC.getStatsConnexionUser(hostDateBegin, hostDateEnd, filterId));
           }
         }
 

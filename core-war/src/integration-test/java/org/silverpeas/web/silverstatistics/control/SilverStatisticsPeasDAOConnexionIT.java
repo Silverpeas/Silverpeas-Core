@@ -123,22 +123,6 @@ public class SilverStatisticsPeasDAOConnexionIT {
   }
 
   /**
-   * Test of getStatsConnexionAllUser method, of class SilverStatisticsPeasDAOConnexion.
-   */
-  @Test
-  public void testGetStatsConnexionAllUser() throws Exception {
-    int idUser = 2;
-    Collection<String[]> result =
-        SilverStatisticsPeasDAOConnexion.getStatsConnexionAllUser(dateBegin, dateEnd, idUser);
-    assertThat(result, is(notNullValue()));
-    assertThat(result.size(), is(1));
-    String[] aggregate = result.iterator().next();
-    assertThat(aggregate, is(notNullValue()));
-    assertThat(aggregate.length, is(4));
-    assertThat(aggregate, arrayContaining("Simpson", "147", "7008283", String.valueOf(idUser)));
-  }
-
-  /**
    * Test of getStatsUserConnexion method, of class SilverStatisticsPeasDAOConnexion.
    */
   @Test
@@ -301,10 +285,10 @@ public class SilverStatisticsPeasDAOConnexionIT {
    * Test of getStatsConnexionUserUser method, of class SilverStatisticsPeasDAOConnexion.
    */
   @Test
-  public void testGetStatsConnexionUserUser() throws Exception {
+  public void testGetStatsConnexionUser() throws Exception {
     int idUser = 2;
     Collection<String[]> result =
-        SilverStatisticsPeasDAOConnexion.getStatsConnexionUserUser(dateBegin, dateEnd, idUser);
+        SilverStatisticsPeasDAOConnexion.getStatsConnexionUser(dateBegin, dateEnd, idUser);
     assertThat(result, is(notNullValue()));
     assertThat(result.size(), is(1));
     for (String[] aggregate : result) {

@@ -42,8 +42,8 @@ import java.util.StringTokenizer;
 @Singleton
 public class PdcUtilizationDAO {
 
-  private static String PdcUtilizationTable = "SB_Pdc_Utilization";
-  private static String TreeTable = "SB_Tree_Tree";
+  private static final String PDC_UTILIZATION_TABLE = "SB_Pdc_Utilization";
+  private static final String TREE_TABLE = "SB_Tree_Tree";
 
   /**
    * Constructor
@@ -114,7 +114,7 @@ public class PdcUtilizationDAO {
    */
   public int updateBaseValue(Connection con, int oldBaseValue, int newBaseValue, int axisId,
       String treeId, String instanceId) throws SQLException {
-    String updateQuery = " update " + PdcUtilizationTable +
+    String updateQuery = " update " + PDC_UTILIZATION_TABLE +
         " set baseValue = ? where instanceId = ? and axisId = ? and baseValue = ? ";
 
     PreparedStatement prepStmt = null;
@@ -151,47 +151,41 @@ public class PdcUtilizationDAO {
     boolean canUpdate = true;
     // recherche des valeurs soeurs ou nieces qui sont utilisées
     // recherche du chemin de la mere de cette valeur de base et construction de son chemin complet
-    String selectQuery =
-        " select path from " + TreeTable + " where treeId = " + treeId + " and id = " + baseValue;
-    Statement stmt = null;
-    ResultSet rs = null;
     String motherPath = "";
     String valuePath = "";
-    try {
-      stmt = con.createStatement();
-
-      rs = stmt.executeQuery(selectQuery);
-
-      if (rs.next()) {
-        motherPath = rs.getString(1);
+    final String findSiblingValues = "select path from SB_Tree_Tree where treeId = ? and id = ?";
+    try (PreparedStatement stmt = con.prepareStatement(findSiblingValues)) {
+      stmt.setInt(1, Integer.valueOf(treeId));
+      stmt.setInt(2, baseValue);
+      try (ResultSet rs = stmt.executeQuery()) {
+        if (rs.next()) {
+          motherPath = rs.getString(1);
+        }
+        valuePath = motherPath + baseValue + "/";
       }
-
-      valuePath = motherPath + baseValue + "/";
-    } finally {
-      DBUtil.close(stmt);
     }
 
     // recherche des valeurs de base utilisées qui sont en fait soit des soeurs soit des nieces
     // de la valeur que l'on veut effacer
-    selectQuery =
-        " select baseValue from " + PdcUtilizationTable + " where instanceId = '" + instanceId +
-            "' and axisId = " + axisId + " and baseValue in " + " ( " + "	select id from " +
-            TreeTable + " where treeId = " + treeId + " and path like '" + motherPath +
-            "%' and path not like '" + valuePath + "%' and id <> " + baseValue + " ) " +
-            " and baseValue <> " + baseValue;
+    final String findBaseValues =
+        "select baseValue from SB_Pdc_Utilization where instanceId = ? and axisId = ? and " +
+            "baseValue in (select id from  SB_Tree_Tree where treeId = ? and path like ? and path" +
+            " not like ? and id <> ?) and baseValue <> ?";
+    try (PreparedStatement stmt = con.prepareStatement(findBaseValues)) {
+      stmt.setString(1, instanceId);
+      stmt.setInt(2, Integer.valueOf(axisId));
+      stmt.setInt(3, Integer.valueOf(treeId));
+      stmt.setString(4, motherPath + "%");
+      stmt.setString(5, valuePath + "%");
+      stmt.setInt(6, baseValue);
+      try (ResultSet rs = stmt.executeQuery()) {
+        if (rs.next()) {
+          // on a donc une soeur ou une niece, on ne peut donc pas remplacer la basevalue par sa
+          // mere
 
-    try {
-      stmt = con.createStatement();
-
-      rs = stmt.executeQuery(selectQuery);
-
-      if (rs.next()) {
-        // on a donc une soeur ou une niece, on ne peut donc pas remplacer la basevalue par sa mere
-        canUpdate = false;
+          canUpdate = false;
+        }
       }
-
-    } finally {
-      DBUtil.close(stmt);
     }
 
     return canUpdate;
@@ -208,13 +202,13 @@ public class PdcUtilizationDAO {
    */
   public boolean isAlreadyAdded(Connection con, String instanceId, int usedAxisId, int axisId,
       int baseValue, String treeId) throws SQLException {
-    List<String> forbiddenValues = new ArrayList<String>();
+    List<String> forbiddenValues = new ArrayList<>();
     boolean isAdded = false;
 
     // Récupération dans un 1er temps de toutes les valeurs de base
     // qui sont contenues dans l'axe -axisId- du composant -instanceId-
     List<Integer> allBaseValues = getAllBaseValues(con, usedAxisId, instanceId, axisId);
-    isAdded = allBaseValues.contains(new Integer(baseValue));
+    isAdded = allBaseValues.contains(baseValue);
 
     // ensuite, pour chaque valeur de base récupérée, on cherche toute la filiation
     // de celle-ci. Si le vecteur est vide ou si la valeur que l'on reçoit est
@@ -227,7 +221,7 @@ public class PdcUtilizationDAO {
         whereClause.append(" or id = ").append(value.toString());
       }
       String selectQuery =
-          " select path, id from " + TreeTable + " " + whereClause.toString() + ")";
+          " select path, id from " + TREE_TABLE + " " + whereClause.toString() + ")";
 
 
 
@@ -263,7 +257,7 @@ public class PdcUtilizationDAO {
 
       // maintenant on prepare la requete SQL qui va récupérer toutes les valeurs filles
       // et on va les mettre dans le vecteur de valeurs interdites
-      forbiddenValues = getAllDaughterValues(con, forbiddenValues, whereClause.toString());
+      setAllForbiddenValues(con, forbiddenValues, whereClause.toString());
 
       // on détermine si la valeur que l'on reçoit appartient au vecteur
       isAdded = forbiddenValues.contains(Integer.toString(baseValue));
@@ -277,7 +271,7 @@ public class PdcUtilizationDAO {
    * @param usedAxis the new or modified used axis.
    */
   public void updateAllUsedAxis(Connection con, UsedAxis usedAxis) throws SQLException {
-    String updateQuery = " update " + PdcUtilizationTable +
+    String updateQuery = " update " + PDC_UTILIZATION_TABLE +
         " set mandatory = ?, variant = ? where instanceId = ? and axisId = ? ";
     PreparedStatement prepStmt = null;
 
@@ -294,7 +288,7 @@ public class PdcUtilizationDAO {
   }
 
   public void deleteAllAxisUsedByInstanceId(Connection con, String instanceId) throws SQLException {
-    final String sqlDeletion = "DELETE FROM " + PdcUtilizationTable + " WHERE instanceId = ?";
+    final String sqlDeletion = "DELETE FROM " + PDC_UTILIZATION_TABLE + " WHERE instanceId = ?";
     try (PreparedStatement deletion = con.prepareStatement(sqlDeletion)) {
       deletion.setString(1, instanceId);
       deletion.execute();
@@ -312,7 +306,7 @@ public class PdcUtilizationDAO {
   private List<Integer> getAllBaseValues(Connection con, int usedAxisId, String instanceId,
       int axisId) throws SQLException {
 
-    String selectQuery = "select baseValue from " + PdcUtilizationTable +
+    String selectQuery = "select baseValue from " + PDC_UTILIZATION_TABLE +
         " where instanceId = ? and axisId = ? and id <> ? ";
 
     List<Integer> allBaseValues = new ArrayList<>();
@@ -337,15 +331,14 @@ public class PdcUtilizationDAO {
   }
 
   /**
-   * Returns all daughter values of the selected values
+   * Set all forbidden values that matches the specified clause.
    * @param con - the connection to the database
-   * @param forbiddenValues - The vector which contains the values that can't be used
+   * @param forbiddenValues - The list which contains the values that can't be used
    * @param whereClause - the string of the SQL WHERE clause
-   * @return the forbiddenValues updated
    */
-  private List<String> getAllDaughterValues(Connection con, List<String> forbiddenValues,
+  private void setAllForbiddenValues(Connection con, List<String> forbiddenValues,
       String whereClause) throws SQLException {
-    String selectQuery = "select id from " + TreeTable + " " + whereClause;
+    final String selectQuery = "select id from SB_Tree_Tree " + whereClause;
 
     Statement stmt = null;
     ResultSet rs = null;
@@ -359,7 +352,5 @@ public class PdcUtilizationDAO {
     } finally {
       DBUtil.close(rs, stmt);
     }
-
-    return forbiddenValues;
   }
 }

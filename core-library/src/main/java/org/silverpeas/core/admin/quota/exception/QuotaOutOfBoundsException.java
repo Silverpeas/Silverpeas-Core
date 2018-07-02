@@ -36,6 +36,6 @@ public class QuotaOutOfBoundsException extends QuotaException {
    * @param quota
    */
   public QuotaOutOfBoundsException(final Quota quota) {
-    super(quota, "EX_COUNT_IS_OUT_OF_BOUNDS");
+    super(quota, "Count is out of bound");
   }
 }

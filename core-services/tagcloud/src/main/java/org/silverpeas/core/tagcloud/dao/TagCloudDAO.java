@@ -33,8 +33,8 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import org.silverpeas.core.tagcloud.model.TagCloud;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 public class TagCloudDAO {
   private static final int INITIAL_CAPACITY = 100;
@@ -67,8 +67,7 @@ public class TagCloudDAO {
     try {
       newId = DBUtil.getNextId(TABLE_NAME, COLUMN_ID);
     } catch (Exception e) {
-      SilverTrace.warn("tagcloud", "TagCloudDAO.createTagCloud",
-          "root.EX_PK_GENERATION_FAILED", e);
+      SilverLogger.getLogger(TagCloudDAO.class).error(e);
     }
 
     PreparedStatement prepStmt = con.prepareStatement(query);
@@ -135,18 +134,14 @@ public class TagCloudDAO {
         COLUMN_INSTANCEID).append(" = ?").append(" ORDER BY ").append(
         COLUMN_TAG).append(" ASC").toString();
 
-    PreparedStatement prepStmt = con.prepareStatement(query);
-    prepStmt.setString(1, instanceId);
-    ResultSet rs = null;
-
-    List<TagCloud> tagClouds = new ArrayList<TagCloud>(INITIAL_CAPACITY);
-    try {
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        tagClouds.add(resultSet2TagCloud(rs));
+    List<TagCloud> tagClouds = new ArrayList<>(INITIAL_CAPACITY);
+    try (final PreparedStatement prepStmt = con.prepareStatement(query)) {
+      prepStmt.setString(1, instanceId);
+      try (ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          tagClouds.add(resultSet2TagCloud(rs));
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return tagClouds;
   }
@@ -166,20 +161,16 @@ public class TagCloudDAO {
         COLUMN_EXTERNALTYPE).append(" = ?").append(" ORDER BY ").append(
         COLUMN_TAG).append(" ASC").toString();
 
-    PreparedStatement prepStmt = con.prepareStatement(query);
-    prepStmt.setString(1, pk.getInstanceId());
-    prepStmt.setString(2, pk.getId());
-    prepStmt.setInt(3, pk.getType());
-    ResultSet rs = null;
-
-    List<TagCloud> tagClouds = new ArrayList<TagCloud>(INITIAL_CAPACITY);
-    try {
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        tagClouds.add(resultSet2TagCloud(rs));
+    List<TagCloud> tagClouds = new ArrayList<>(INITIAL_CAPACITY);
+    try(PreparedStatement prepStmt = con.prepareStatement(query)) {
+      prepStmt.setString(1, pk.getInstanceId());
+      prepStmt.setString(2, pk.getId());
+      prepStmt.setInt(3, pk.getType());
+      try(final ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          tagClouds.add(resultSet2TagCloud(rs));
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return tagClouds;
   }
@@ -197,7 +188,7 @@ public class TagCloudDAO {
     StringTokenizer st = new StringTokenizer(tags);
     int tagCount = st.countTokens();
     boolean isInstanceIdFilter = (instanceId != null && instanceId.length() > 0);
-    StringBuffer querySb = new StringBuffer(100).append("SELECT ").append(
+    final StringBuilder querySb = new StringBuilder(100).append("SELECT ").append(
         ALL_COLUMNS).append(" FROM ").append(TABLE_NAME).append(" WHERE (");
     for (int i = 0; i < tagCount; i++) {
       if (i > 0) {
@@ -212,25 +203,22 @@ public class TagCloudDAO {
     querySb.append(" ORDER BY ").append(COLUMN_INSTANCEID).append(" ASC, ")
         .append(COLUMN_EXTERNALID).append(" ASC");
 
-    PreparedStatement prepStmt = con.prepareStatement(querySb.toString());
-    int index = 1;
-    while (st.hasMoreTokens()) {
-      prepStmt.setString(index++, st.nextToken());
-    }
-    prepStmt.setInt(index++, type);
-    if (isInstanceIdFilter) {
-      prepStmt.setString(index++, instanceId);
-    }
-
-    List<TagCloud> tagClouds = new ArrayList<TagCloud>(INITIAL_CAPACITY);
-    ResultSet rs = null;
-    try {
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        tagClouds.add(resultSet2TagCloud(rs));
+    List<TagCloud> tagClouds = new ArrayList<>(INITIAL_CAPACITY);
+    try(final PreparedStatement prepStmt = con.prepareStatement(querySb.toString())) {
+      int index = 1;
+      while (st.hasMoreTokens()) {
+        prepStmt.setString(index++, st.nextToken());
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
+      prepStmt.setInt(index++, type);
+      if (isInstanceIdFilter) {
+        prepStmt.setString(index++, instanceId);
+      }
+
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          tagClouds.add(resultSet2TagCloud(rs));
+        }
+      }
     }
     return tagClouds;
   }
@@ -244,57 +232,51 @@ public class TagCloudDAO {
    */
   public static Collection<TagCloud> getTagCloudsByElement(Connection con,
       String instanceId, String externalId, int type) throws SQLException {
-    StringBuffer querySb = new StringBuffer(100).append("SELECT ").append(
+    final StringBuilder querySb = new StringBuilder(100).append("SELECT ").append(
         ALL_COLUMNS).append(" FROM ").append(TABLE_NAME).append(" WHERE ")
         .append(COLUMN_INSTANCEID).append(" = ?").append(" AND ").append(
         COLUMN_EXTERNALID).append(" = ?").append(" AND ").append(
         COLUMN_EXTERNALTYPE).append(" = ?").append(" ORDER BY ").append(
         COLUMN_TAG).append(" ASC");
 
-    PreparedStatement prepStmt = con.prepareStatement(querySb.toString());
-    prepStmt.setString(1, instanceId);
-    prepStmt.setString(2, externalId);
-    prepStmt.setInt(3, type);
-    ResultSet rs = null;
+    List<TagCloud> tagClouds = new ArrayList<>(INITIAL_CAPACITY);
+    try(final PreparedStatement prepStmt = con.prepareStatement(querySb.toString())) {
+      prepStmt.setString(1, instanceId);
+      prepStmt.setString(2, externalId);
+      prepStmt.setInt(3, type);
 
-    List<TagCloud> tagClouds = new ArrayList<TagCloud>(INITIAL_CAPACITY);
-    try {
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        tagClouds.add(resultSet2TagCloud(rs));
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          tagClouds.add(resultSet2TagCloud(rs));
+        }
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return tagClouds;
   }
 
   public static String getTagsByElement(Connection con, TagCloudPK pk)
       throws SQLException {
-    StringBuffer querySb = new StringBuffer(100).append("SELECT ").append(
+    final StringBuilder querySb = new StringBuilder(100).append("SELECT ").append(
         COLUMN_TAG).append(" FROM ").append(TABLE_NAME).append(" WHERE ")
         .append(COLUMN_INSTANCEID).append(" = ?").append(" AND ").append(
         COLUMN_EXTERNALID).append(" = ?").append(" AND ").append(
         COLUMN_EXTERNALTYPE).append(" = ?").append(" ORDER BY ").append(
         COLUMN_TAG).append(" ASC");
 
-    PreparedStatement prepStmt = con.prepareStatement(querySb.toString());
-    prepStmt.setString(1, pk.getInstanceId());
-    prepStmt.setString(2, pk.getId());
-    prepStmt.setInt(3, pk.getType());
-    ResultSet rs = null;
+    StringBuilder tags = new StringBuilder();
+    try(final PreparedStatement prepStmt = con.prepareStatement(querySb.toString())) {
+      prepStmt.setString(1, pk.getInstanceId());
+      prepStmt.setString(2, pk.getId());
+      prepStmt.setInt(3, pk.getType());
 
-    StringBuffer tags = new StringBuffer();
-    try {
-      rs = prepStmt.executeQuery();
-      while (rs.next()) {
-        if (tags.length() > 0) {
-          tags.append(" ");
+      try (final ResultSet rs = prepStmt.executeQuery()) {
+        while (rs.next()) {
+          if (tags.length() > 0) {
+            tags.append(" ");
+          }
+          tags.append(rs.getString(1));
         }
-        tags.append(rs.getString(1));
       }
-    } finally {
-      DBUtil.close(rs, prepStmt);
     }
     return tags.toString();
   }

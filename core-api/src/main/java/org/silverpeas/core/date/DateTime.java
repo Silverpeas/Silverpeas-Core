@@ -182,7 +182,7 @@ public class DateTime extends AbstractDateTemporal<DateTime> {
       return false;
     }
     DateTime other;
-    if (obj.getClass().getName().equals("java.util.Date")) {
+    if (obj instanceof java.util.Date) {
       other = new DateTime((java.util.Date) obj);
     } else if (getClass() != obj.getClass()) {
       return false;
