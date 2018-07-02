@@ -23,19 +23,18 @@
  */
 package org.silverpeas.core.admin.domain.model;
 
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.silverpeas.core.admin.domain.DomainServiceProvider;
 import org.silverpeas.core.admin.domain.quota.UserDomainQuotaKey;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.exception.QuotaRuntimeException;
 import org.silverpeas.core.admin.quota.model.Quota;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -43,8 +42,8 @@ import java.util.List;
 public class Domain implements Serializable {
 
   private static final long serialVersionUID = 7451639218436788229L;
-  private static final SimpleDateFormat TIMESTAMP_FORMATTER =
-      new SimpleDateFormat("yyyyMMddHHmmss");
+  private static final FastDateFormat TIMESTAMP_FORMATTER =
+      FastDateFormat.getInstance("yyyyMMddHHmmss");
   private static final int TIMESTAMP_PATTERN_LENGTH = 14;
 
   public static final String MIXED_DOMAIN_ID = "-1";
@@ -186,8 +185,7 @@ public class Domain implements Serializable {
       userDomainQuota =
           DomainServiceProvider.getUserDomainQuotaService().get(UserDomainQuotaKey.from(this));
     } catch (final QuotaException qe) {
-      throw new QuotaRuntimeException("Domain", SilverpeasException.ERROR, "root.EX_CANT_GET_QUOTA",
-          qe);
+      throw new QuotaRuntimeException("Cannot get quota for user domain", qe);
     }
   }
 

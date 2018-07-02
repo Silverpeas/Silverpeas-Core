@@ -57,6 +57,7 @@ import org.silverpeas.core.util.SettingBundle;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.util.UnitUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 import org.silverpeas.core.util.memory.MemoryUnit;
 import org.silverpeas.core.web.mvc.controller.AbstractComponentSessionController;
 import org.silverpeas.core.web.mvc.controller.ComponentContext;
@@ -318,20 +319,6 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
     return axisChart;
   }
 
-  public Collection<String[]> getStatsConnexionAllUser(String dateBegin, String dateEnd,
-      String idUser) {
-    Collection<String[]> c = null;
-    try {
-      c = SilverStatisticsPeasDAOConnexion
-          .getStatsConnexionAllUser(dateBegin, dateEnd, Integer.parseInt(idUser));
-    } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas",
-          "SilverStatisticsPeasDAOConnexion.getStatsConnexionAllUser", "root.EX_SQL_QUERY_FAILED",
-          e);
-    }
-    return c;
-  }
-
   /**
    * @return
    */
@@ -489,16 +476,14 @@ public class SilverStatisticsPeasSessionController extends AbstractComponentSess
 
   // donne pour chaque user d'un groupe ses stats, cad 3 infos, la collection
   // contient autant d'elements que de users dans le groupe
-  public Collection<String[]> getStatsConnexionUserUser(String dateBegin, String dateEnd,
+  public Collection<String[]> getStatsConnexionUser(String dateBegin, String dateEnd,
       String idUser) {
     Collection<String[]> c = null;
     try {
       c = SilverStatisticsPeasDAOConnexion
-          .getStatsConnexionUserUser(dateBegin, dateEnd, Integer.parseInt(idUser));
+          .getStatsConnexionUser(dateBegin, dateEnd, Integer.parseInt(idUser));
     } catch (Exception e) {
-      SilverTrace.error("silverStatisticsPeas",
-          "SilverStatisticsPeasDAOConnexion.getStatsConnexionUserUser", "root.EX_SQL_QUERY_FAILED",
-          e);
+      SilverLogger.getLogger(this).error(e);
     }
     return c;
   }

@@ -38,6 +38,7 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.silverpeas.core.util.file.ReversedFileLineReader.readLastLines;
 
@@ -67,10 +68,12 @@ public class LogsAccessor {
    */
   public Set<String> getAllLogs() throws IOException {
     String logPath = SystemWrapper.get().getProperty(SILVERPEAS_LOG_DIR);
-    return Files.list(Paths.get(logPath))
-        .filter(path -> "log".equalsIgnoreCase(FilenameUtils.getExtension(path.toString())))
-        .map(path -> path.getFileName().toString())
-        .collect(Collectors.toSet());
+    try (final Stream<Path> paths = Files.list(Paths.get(logPath))) {
+      return paths.filter(
+          path -> "log".equalsIgnoreCase(FilenameUtils.getExtension(path.toString())))
+          .map(path -> path.getFileName().toString())
+          .collect(Collectors.toSet());
+    }
   }
 
   /**
