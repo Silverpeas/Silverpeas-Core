@@ -63,7 +63,6 @@ import org.silverpeas.admin.user.constant.UserAccessLevel;
 import org.silverpeas.admin.user.constant.UserState;
 import org.silverpeas.quota.exception.QuotaException;
 import org.silverpeas.quota.model.Quota;
-import org.silverpeas.search.indexEngine.IndexFileManager;
 import org.silverpeas.search.indexEngine.model.FullIndexEntry;
 import org.silverpeas.search.indexEngine.model.IndexEngineProxy;
 import org.silverpeas.util.ListSlice;
@@ -413,6 +412,14 @@ public class Admin {
    */
   public String deleteSpaceInstById(String userId, String spaceId, boolean startNewTransaction,
       boolean definitive) throws AdminException {
+
+    if (startNewTransaction && !isSpaceManageable(spaceId, userId)) {
+      SilverTrace.error(MODULE_ADMIN, "Admin.deleteSpaceInstById", "admin.USER_NOT_ALLOWED",
+          "User " + userId + " not allowed to delete space " + spaceId);
+      throw new AdminException("Admin.deleteSpaceInstById", SilverpeasException.ERROR,
+          "admin.USER_NOT_ALLOWED");
+    }
+
     SilverTrace.spy(MODULE_ADMIN, "Admin.deleteSpaceInstById()", spaceId, "ASP", "", userId,
         SilverTrace.SPY_ACTION_DELETE);
 
@@ -697,6 +704,15 @@ public class Admin {
    * @throws com.stratelia.webactiv.beans.admin.AdminException
    */
   public String updateSpaceInst(SpaceInst spaceInstNew) throws AdminException {
+
+    if (!isSpaceManageable(spaceInstNew.getId(), spaceInstNew.getUpdaterUserId())) {
+      SilverTrace.error(MODULE_ADMIN, "Admin.updateSpaceInst", "admin.USER_NOT_ALLOWED",
+          "User " + spaceInstNew.getUpdaterUserId() + " not allowed to update space " +
+              spaceInstNew.getId());
+      throw new AdminException("Admin.updateSpaceInst", SilverpeasException.ERROR,
+          "admin.USER_NOT_ALLOWED");
+    }
+
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.getFactory()
         .getDomainDriverManager();
 
@@ -1400,6 +1416,14 @@ public class Admin {
    */
   private String deleteComponentInst(String userId, String componentId, boolean definitive,
       boolean startNewTransaction) throws AdminException {
+
+    if (startNewTransaction && !isComponentManageable(componentId, userId)) {
+      SilverTrace.error(MODULE_ADMIN, "Admin.deleteComponentInst", "admin.USER_NOT_ALLOWED",
+          "User "+userId+" not allowed to delete component "+componentId);
+      throw new AdminException("Admin.deleteComponentInst", SilverpeasException.ERROR,
+          "admin.USER_NOT_ALLOWED");
+    }
+
     Connection connectionProd = null;
     SilverTrace.spy(MODULE_ADMIN, "Admin.deleteComponentInst()", "ACP", componentId, "", userId,
         SilverTrace.SPY_ACTION_DELETE);
@@ -1545,6 +1569,15 @@ public class Admin {
    * @throws com.stratelia.webactiv.beans.admin.AdminException
    */
   public String updateComponentInst(ComponentInst component) throws AdminException {
+
+    if (!isComponentManageable(component.getId(), component.getUpdaterUserId())) {
+      SilverTrace.error(MODULE_ADMIN, "Admin.updateComponentInst", "admin.USER_NOT_ALLOWED",
+          "User " + component.getUpdaterUserId() + " not allowed to update component " +
+              component.getId());
+      throw new AdminException("Admin.updateComponentInst", SilverpeasException.ERROR,
+          "admin.USER_NOT_ALLOWED");
+    }
+
     DomainDriverManager domainDriverManager = DomainDriverManagerFactory.getFactory()
         .getDomainDriverManager();
     try {
@@ -4990,6 +5023,22 @@ public class Admin {
       // check if user is manager of at least one space parent
       List<String> toCheck = Arrays.asList(getUserManageableSpaceIds(userId));
       List<SpaceInstLight> path = getPathToComponent(componentId);
+      for (SpaceInstLight space : path) {
+        if (toCheck.contains(space.getShortId())) {
+          manageable = true;
+          break;
+        }
+      }
+    }
+    return manageable;
+  }
+
+  private boolean isSpaceManageable(String spaceId, String userId) throws AdminException {
+    boolean manageable = getUserDetail(userId).isAccessAdmin();
+    if (!manageable) {
+      // check if user is manager of at least one space parent
+      List<String> toCheck = Arrays.asList(getUserManageableSpaceIds(userId));
+      List<SpaceInstLight> path = getPathToSpace(spaceId, true);
       for (SpaceInstLight space : path) {
         if (toCheck.contains(space.getShortId())) {
           manageable = true;
