@@ -45,6 +45,7 @@
   Vue.component('silverpeas-date-picker', function(resolve) {
     sp.ajaxRequest(webContext + '/util/javaScript/vuejs/components/silverpeas-date-picker.jsp').send().then(function(request) {
       resolve({
+        mixins : [VuejsFormInputMixin],
         model : {
           prop : 'date',
           event : 'change'
@@ -87,6 +88,21 @@
           };
         },
         created : function() {
+          this.extendApiWith({
+            validateFormInput : function() {
+              if (this.rootFormApi && !this.status.valid) {
+                if (this.mandatory && this.status.empty) {
+                  this.rootFormApi.errorMessage().add(this.formatMessage(this.rootFormMessages.mandatory,
+                      this.getLabelByForAttribute(this.id)));
+                } else if (this.status.unknown) {
+                  this.rootFormApi.errorMessage().add(this.formatMessage(this.rootFormMessages.correctDate,
+                      this.getLabelByForAttribute(this.id)));
+                }
+              }
+              return (this.mandatory && this.status.valid) ||
+                  (!this.mandatory && (this.status.valid || this.status.empty));
+            }
+          });
           this.valueChanged(this.formatDate(this.date));
           whenSilverpeasReady(function() {
             this.$jqi = jQuery(this.$refs.datePickerInput);
@@ -112,7 +128,7 @@
               date : formattedDate, isMandatory : this.mandatory
             });
             var status = {
-              valid : errors.length === 0,
+              valid : StringUtil.isDefined(formattedDate) && errors.length === 0,
               empty : false,
               unknown : false
             };

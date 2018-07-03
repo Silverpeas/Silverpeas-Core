@@ -33,14 +33,15 @@
 
 <fmt:message var="validateLabel" key="GML.validate"/>
 <fmt:message var="cancelLabel" key="GML.cancel"/>
-<c:set var="mandatoryMessage">{0} <fmt:message key='GML.MustBeFilled'/></c:set>
-<c:set var="mustBeDifferentFromMessage">{0} <fmt:message key='GML.MustBeDifferentFrom'/> {1}</c:set>
-<c:set var="mustBePositiveIntegerMessage">{0} <fmt:message key='GML.MustContainsPositiveNumber'/></c:set>
-<c:set var="nbMaxMessage">{0} <fmt:message key='GML.data.error.message.string.limit'><fmt:param value="{1}"/></fmt:message></c:set>
-<c:set var="correctDateMessage">{0} <fmt:message key='GML.MustContainsCorrectDate'/></c:set>
-<c:set var="correctHourMessage">{0} <fmt:message key='GML.MustContainsCorrectHour'/></c:set>
-<c:set var="correctPeriodMessage">{1} <fmt:message key='GML.MustContainsPostDateTo'/> {0}</c:set>
-<c:set var="correctEndDateIncludedPeriodMessage">{1} <fmt:message key='GML.MustContainsPostOrEqualDateTo'/> {0}</c:set>
+<c:set var="theFieldLabel"><fmt:message key='GML.thefield'/></c:set>
+<c:set var="mandatoryMessage">${theFieldLabel} {0} <fmt:message key='GML.MustBeFilled'/></c:set>
+<c:set var="mustBeDifferentFromMessage">${theFieldLabel} {0} <fmt:message key='GML.MustBeDifferentFrom'/> {1}</c:set>
+<c:set var="mustBePositiveIntegerMessage">${theFieldLabel} {0} <fmt:message key='GML.MustContainsPositiveNumber'/></c:set>
+<c:set var="nbMaxMessage">${theFieldLabel} {0} <fmt:message key='GML.data.error.message.string.limit'><fmt:param value="{1}"/></fmt:message></c:set>
+<c:set var="correctDateMessage">${theFieldLabel} {0} <fmt:message key='GML.MustContainsCorrectDate'/></c:set>
+<c:set var="correctHourMessage">${theFieldLabel} {0} <fmt:message key='GML.MustContainsCorrectHour'/></c:set>
+<c:set var="correctPeriodMessage">${theFieldLabel} {1} <fmt:message key='GML.MustContainsPostDateTo'/> {0}</c:set>
+<c:set var="correctEndDateIncludedPeriodMessage">${theFieldLabel} {1} <fmt:message key='GML.MustContainsPostOrEqualDateTo'/> {0}</c:set>
 
 <!-- ########################################################################################### -->
 <silverpeas-component-template name="form-pane">
@@ -164,5 +165,28 @@
     <div class="silverpeas-popin" style="display: none" ref="container">
       <slot></slot>
     </div>
+  </div>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="text-input">
+  <div>
+    <input type="text" class="silverpeas-text-input"
+           v-bind:id="id" v-bind:name="name" v-bind:class="inputClass" v-bind:size="size"
+           v-bind:maxlength="maxlength" v-bind:disabled="disabled"
+           v-bind:value="value" v-on:input="$emit('input', $event.target.value)"/>
+    <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
+  </div>
+</silverpeas-component-template>
+
+<!-- ########################################################################################### -->
+<silverpeas-component-template name="multiline-text-input">
+  <div>
+    <textarea class="silverpeas-multiline-text-input"
+              v-bind:cols="cols" v-bind:rows="rows"
+              v-bind:id="id" v-bind:name="name" v-bind:class="inputClass"
+              v-bind:maxlength="maxlength" v-bind:disabled="disabled"
+              v-bind:value="value" v-on:input="$emit('input', $event.target.value)"></textarea>
+    <silverpeas-mandatory-indicator v-if="mandatory"></silverpeas-mandatory-indicator>
   </div>
 </silverpeas-component-template>

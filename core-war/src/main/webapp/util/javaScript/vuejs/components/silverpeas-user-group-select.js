@@ -37,8 +37,8 @@
    * silverpeas-user-group-select handles a complex input of users and/or groups.
    */
   Vue.component('silverpeas-user-group-select', {
-    mixins : [VuejsApiMixin],
-    template : '<div v-bind:id="rootContainerId"><span>cerljfle</span></div>',
+    mixins : [VuejsFormInputMixin],
+    template : '<div v-bind:id="rootContainerId"><span></span></div>',
     props : {
       id : {
         'type' : String,
@@ -219,6 +219,17 @@
           this.extendApiWith({
             refresh : function() {
               this.initialize();
+            },
+            validateFormInput : function() {
+              var isNotValid = this.mandatory
+                  && this.selectionApi.getSelectedUserIds().length === 0
+                  && this.selectionApi.getSelectedGroupIds().length === 0;
+              if (isNotValid && this.rootFormApi) {
+                this.rootFormApi.errorMessage().add(
+                    this.formatMessage(this.rootFormMessages.mandatory,
+                        this.getLabelByForAttribute(this.id)));
+              }
+              return !isNotValid;
             }
           });
         }.bind(this));

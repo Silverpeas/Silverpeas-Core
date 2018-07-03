@@ -116,6 +116,28 @@ Vue.filter('displayAsDateTime', function(dateAsText) {
  * Common implementation for components which have to handle i18n by template.
  * Add it to a component or a vue instance by attribute mixins.
  *
+ * Provide following methods:
+ * - formatMessage(message[, params[, options]]), format a given message:
+ * -- message: the message '{0} as more than {1} digits' for example
+ * -- params : an array of message parameters. If one parameter into the message, it is possible to
+ * give a string instead of an array.
+ * -- options: permits to specify the style of the parameters (bold, italic,...). Bold by default.
+ * For example, italic underlined : {
+ *   bold: false,
+ *   italic: true,
+ *   underline: true
+ * }
+ * - addMessages(messages): set messages to this.messages. Typically used from template definition
+ * with Silverpeas's v-init directive. For example:
+ * <div v-init>
+ *   {{addMessages({
+ *   incumbentLabel : '${silfn:escapeJs(incumbentLabel)}',
+ *   substituteLabel : '${silfn:escapeJs(substituteLabel)}',
+ *   startDateLabel : '${silfn:escapeJs(startDateLabel)}',
+ *   endDateLabel : '${silfn:escapeJs(endDateLabel)}'
+ *   })}}
+ * </div>
+ *
  * @example:
  * Vue.component('my-component', {
  *   mixins : [VuejsI18nTemplateMixin]
@@ -153,7 +175,7 @@ window.VuejsI18nTemplateMixin = {
       if (__valid) {
         for (var i=0; i < params.length ; i++) {
           var value = params[i];
-          var styles = extendsObject(false, options);
+          var styles = extendsObject(false, {}, options.styles);
           if (typeof value === 'function') {
             value = value.call(this);
           } else if (typeof value === 'object') {
@@ -228,61 +250,106 @@ window.VuejsApiMixin = {
 };
 
 /**
- * Common implementation for components which have to provide an API in context of silverpeas form.
- * Add it to a component or a vue instance by attribute mixins.
+ * Common implementation for components which have to provide an API in context of silverpeas form
+ * pane. Add it to a component or a vue instance by attribute mixins.
+ *
+ * The component using this mixin must implement its api with the following methods at least:
+ * - getFormPriority: returning 0 as default, permits to validate form by priority
+ * - validateForm: called on silverpeas-form-pane validation (use rootFormApi.errorMessage in order
+ * to register errors)
+ * - updateFormData: called after a successful silverpeas-form-pane validation. The data handled by
+ * the form part must be set on given data. If the data is returned by the method, is is given to
+ * the next form validate method call if any.
  *
  * @example:
  * Vue.component('my-form', {
  *   mixins : [VuejsFormApiMixin]
  * });
  *
- * The component using the mixin must be included at least into a silverpeas-form one or an
+ * The component using the mixin must be included at least into a silverpeas-form-pane one or an
  *     extension of it. This is this component which is providing the 'rootFormApi' injection.
  *
  * @example:
- * <silverpeas-form>
+ * <silverpeas-form-pane>
  *   <my-form></my-form>
- * </silverpeas-form>
+ * </silverpeas-form-pane>
  */
 window.VuejsFormApiMixin = {
   inject : ['rootFormApi'],
   mixins : [VuejsApiMixin],
-  props : {
-    formPriority : {
-      "type" : Number,
-      "default" : 0
-    }
-  },
   created : function() {
     this.extendApiWith({
-      getFormPriority : function() {
-        return this.formValidationPriority
-      },
-      validate : function() {
+      validateForm : function() {
         sp.log.error('VuejsFormApiMixin - Validation is not implemented!!! Please implement api.validate method');
         return !this.api.errorMessage().existsAtLeastOne();
       },
-      updateData : function(dataToUpdate) {
+      updateFormData : function(dataToUpdate) {
         sp.log.error('VuejsFormApiMixin - Data update is not implemented!!! Please implement api.updateData method');
         return false;
-      },
-      errorMessage : function() {
-        return {
-          add : function(message) {
-            SilverpeasError.add(message);
-          },
-          none : function() {
-            return !SilverpeasError.existsAtLeastOne();
-          },
-          show : function() {
-            return SilverpeasError.show();
-          }
-        }
       }
     });
   },
   mounted : function() {
-    this.rootFormApi.handleFormApi(this.api);
+    this.rootFormApi.handleFormComponent(this);
+  }
+};
+
+/**
+ * Common implementation for components which provide user input handled by a silverpeas-form-pane
+ * component.
+ * Add it to a component by attribute mixins.
+ *
+ * The component using this mixin must implement its api with the following methods at least:
+ * - validate: called on silverpeas-form-pane validation (use rootFormApi.errorMessage in order to
+ * register errors, rootFormMessages for common message repository and formatMessage method of
+ * VuejsI18nTemplateMixin for message formatting)
+ *
+ * Provide following methods:
+ * - getLabelByForAttribute(id): retrieve the inner text of HTML element with for attribute equal to
+ * the given identifier.
+ *
+ * @example:
+ * Vue.component('my-form-input', {
+ *   mixins : [VuejsFormInputMixin]
+ * });
+ *
+ * The component using the mixin must be included at least into a silverpeas-form-pane one or an
+ *     extension of it. This is this component which is providing the 'rootFormApi' injection.
+ *
+ * If not included into silverpeas-form-pane, nothing is plugged and the component works anyway.
+ *
+ * @example:
+ * <silverpeas-form>
+ *   <my-form-input></my-form-input>
+ * </silverpeas-form>
+ */
+window.VuejsFormInputMixin = {
+  mixins : [VuejsApiMixin, VuejsI18nTemplateMixin],
+  inject : {
+    rootFormApi : {
+      'default' : undefined
+    },
+    rootFormMessages : {
+      'default' : undefined
+    }
+  },
+  created : function() {
+    this.extendApiWith({
+      validateFormInput : function() {
+        sp.log.error(
+            'VuejsFormInputMixin - Validation is not implemented!!! Please implement api.validate method');
+        return false;
+      }
+    });
+  },
+  methods : {
+    getLabelByForAttribute : function(id) {
+      var $label = sp.element.querySelector("[for='" + id + "']");
+      return $label ? $label.innerText : '';
+    }
+  },
+  mounted : function() {
+    this.rootFormApi.handleFormInputComponent(this);
   }
 };
 

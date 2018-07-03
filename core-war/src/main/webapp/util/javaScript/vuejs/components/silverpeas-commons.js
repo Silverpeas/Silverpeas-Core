@@ -358,22 +358,56 @@
         }
       },
       created : function() {
-        function __sortFormsByPriority(formA, formB) {
-          return formA.getFormPriority() - formB.getFormPriority();
+        function __sortComponentsByOffsets(compA, compB) {
+          var result = compA.$el.offsetTop - compB.$el.offsetTop;
+          if (result === 0) {
+            result = compA.$el.offsetLeft - compB.$el.offsetLeft;
+          }
+          return result;
         }
 
+        var formInputValidationRegistry = [];
         var formValidationRegistry = [];
+
+        /**
+         * Performs validation input on all linked forms
+         */
+        var _validateInputs = function() {
+          var __validationPromises = [];
+          formInputValidationRegistry.sort(__sortComponentsByOffsets);
+          for (var i = 0; i < formInputValidationRegistry.length; i++) {
+            var validation = formInputValidationRegistry[i].api.validateFormInput();
+            var validationType = typeof validation;
+            var isPromiseValidation = sp.promise.isOne(validation);
+            if (!isPromiseValidation && validationType === 'undefined') {
+              sp.log.error('VuejsFormInputMixin - validate method must return a promise or a boolean value');
+              return sp.promise.rejectDirectlyWith();
+            }
+            __validationPromises.push(isPromiseValidation ? validation : sp.promise.resolveDirectlyWith(validation));
+          }
+          var existsAtLeastOneError = false;
+          return sp.promise.whenAllResolved(__validationPromises).then(function(validationResults) {
+            validationResults.forEach(function(validationResult) {
+              validationResult = typeof validationResult !== 'undefined' ? validationResult : true;
+              existsAtLeastOneError = !validationResult || existsAtLeastOneError;
+            });
+            return (!SilverpeasError.show() && !existsAtLeastOneError)
+                ? sp.promise.resolveDirectlyWith()
+                : sp.promise.rejectDirectlyWith();
+          });
+        }.bind(this);
 
         /**
          * Performs validation on all linked forms
          */
         var _validate = function() {
           var __validationPromises = [];
+          formValidationRegistry.sort(__sortComponentsByOffsets);
           for (var i = 0; i < formValidationRegistry.length; i++) {
-            var validation = formValidationRegistry[i].validate();
+            var validation = formValidationRegistry[i].api.validateForm();
             var validationType = typeof validation;
-            var isPromiseValidation = !sp.promise.isOne(validation);
-            if (validationType === 'undefined' || !isPromiseValidation) {
+            var isPromiseValidation = sp.promise.isOne(validation);
+            if (!isPromiseValidation && validationType === 'undefined') {
               sp.log.error('VuejsFormApiMixin - validate method must return a promise or a boolean value');
               return sp.promise.rejectDirectlyWith();
             }
@@ -396,8 +430,8 @@
          */
         var _updateData = function() {
           var data = {};
-          formValidationRegistry.forEach(function(form) {
-            var result = form.updateData(data);
+          formValidationRegistry.forEach(function(formComp) {
+            var result = formComp.api.updateFormData(data);
             if (result) {
               data = result;
             }
@@ -406,30 +440,57 @@
         }.bind(this);
 
         this.extendApiWith({
-          handleFormApi : function(formApi) {
-            formValidationRegistry.push(formApi);
-            formValidationRegistry.sort(__sortFormsByPriority);
+          handleFormInputComponent : function(formInputComponent) {
+            formInputValidationRegistry.push(formInputComponent);
+          },
+          handleFormComponent : function(formComp) {
+            formValidationRegistry.push(formComp);
           },
           validate : function() {
             notyReset();
-            return _validate().then(function() {
-              var data = _updateData();
-              if (data) {
-                this.$emit('data-update', data);
-                return data;
-              } else {
-                sp.log.error("silverpeas-form - no data updated...");
+            return _validateInputs().then(function() {
+              return _validate().then(function() {
+                var data = _updateData();
+                if (data) {
+                  this.$emit('data-update', data);
+                  return data;
+                } else {
+                  sp.log.error("silverpeas-form - no data updated...");
+                  return sp.promise.rejectDirectlyWith();
+                }
+              }.bind(this))['catch'](function() {
+                sp.log.debug("silverpeas-form - form validation failed...");
+                this.$emit('validation-fail', {
+                  failOnInputValidation : false,
+                  failOnFormValidation : true
+                });
                 return sp.promise.rejectDirectlyWith();
-              }
+              }.bind(this));
             }.bind(this))['catch'](function() {
-              sp.log.debug("silverpeas-form - validation failed...");
-              this.$emit('validation-fail');
+              sp.log.debug("silverpeas-form-pane - input validation failed...");
+              this.$emit('validation-fail', {
+                failOnInputValidation : true,
+                failOnFormValidation : false
+              });
               return sp.promise.rejectDirectlyWith();
             }.bind(this));
           },
           cancel : function() {
             notyReset();
             this.$emit('cancel');
+          },
+          errorMessage : function() {
+            return {
+              add : function(message) {
+                SilverpeasError.add(message);
+              },
+              none : function() {
+                return !SilverpeasError.existsAtLeastOne();
+              },
+              show : function() {
+                return SilverpeasError.show();
+              }
+            }
           }
         });
       },
@@ -438,7 +499,7 @@
           return !!this.$slots.header;
         },
         isBody : function() {
-          return !!this.$slots.default;
+          return !!this.$slots['default'];
         },
         isFooter : function() {
           return !!this.$slots.footer;
@@ -469,4 +530,128 @@
       }
     }
   });
+
+  Vue.component('silverpeas-text-input',
+      commonAsyncComponentRepository.get('text-input', {
+        mixins : [VuejsFormInputMixin],
+        model : {
+          prop : 'value',
+          event : 'input'
+        },
+        props : {
+          id: {
+            'type': String,
+            'required': true
+          },
+          name: {
+            'type': String,
+            'default': ''
+          },
+          inputClass: {
+            'type': String,
+            'default': ''
+          },
+          size: {
+            'type': Number,
+            'default': 60
+          },
+          maxlength: {
+            'type': Number,
+            'default': 150
+          },
+          disabled: {
+            'type': Boolean,
+            'default': false
+          },
+          mandatory : {
+            'type': Boolean,
+            'default': false
+          },
+          value : {
+            'type': String
+          }
+        },
+        created : function() {
+          this.extendApiWith({
+            validateFormInput : function() {
+              var mandatoryError = this.mandatory && StringUtil.isNotDefined(this.value);
+              if (this.rootFormApi) {
+                if (mandatoryError) {
+                  this.rootFormApi.errorMessage().add(
+                      this.formatMessage(this.rootFormMessages.mandatory,
+                          this.getLabelByForAttribute(this.id)));
+                }
+              }
+              return !mandatoryError;
+            }
+          });
+        }
+      }));
+
+  Vue.component('silverpeas-multiline-text-input',
+      commonAsyncComponentRepository.get('multiline-text-input', {
+        mixins : [VuejsFormInputMixin],
+        model : {
+          prop : 'value',
+          event : 'input'
+        },
+        props : {
+          id: {
+            'type': String,
+            'required': true
+          },
+          name: {
+            'type': String,
+            'default': ''
+          },
+          inputClass: {
+            'type': String,
+            'default': ''
+          },
+          cols: {
+            'type': Number,
+            'default': 60
+          },
+          rows: {
+            'type': Number,
+            'default': 7
+          },
+          maxlength: {
+            'type': Number,
+            'default': 2000
+          },
+          disabled: {
+            'type': Boolean,
+            'default': false
+          },
+          mandatory : {
+            'type': Boolean,
+            'default': false
+          },
+          value : {
+            'type': String
+          }
+        },
+        created : function() {
+          this.extendApiWith({
+            validateFormInput : function() {
+              var mandatoryError = this.mandatory && StringUtil.isNotDefined(this.value);
+              var maxLengthError = this.value && this.value.nbChars() > this.maxlength;
+              if (this.rootFormApi) {
+                if (mandatoryError) {
+                  this.rootFormApi.errorMessage().add(
+                      this.formatMessage(this.rootFormMessages.mandatory,
+                          this.getLabelByForAttribute(this.id)));
+                }
+                if (maxLengthError) {
+                  this.rootFormApi.errorMessage().add(
+                      this.formatMessage(this.rootFormMessages.nbMax,
+                          [this.getLabelByForAttribute(this.id), this.maxlength]));
+                }
+              }
+              return !mandatoryError && !maxLengthError;
+            }
+          });
+        }
+      }));
 })();
