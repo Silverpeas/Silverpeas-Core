@@ -38,7 +38,6 @@ import org.silverpeas.core.personalorganizer.model.ParticipationStatus;
 import org.silverpeas.core.personalorganizer.model.SchedulableCount;
 import org.silverpeas.core.personalorganizer.socialnetwork.SocialInformationEvent;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
 import org.silverpeas.core.util.DateUtil;
 import org.silverpeas.core.exception.SilverpeasException;
@@ -58,6 +57,7 @@ public class JournalDAO {
       + "delegatorId = ?, description = ?, priority = ?, classification = ?, "
       + "startDay = ?, startHour = ?, endDay = ?, endHour = ?, externalId = ? WHERE id = ?";
   private static final String DELETE_JOURNAL = "DELETE FROM CalendarJournal WHERE id = ?";
+  private static final String SELECT_DISTINCT = "select distinct ";
 
   public String addJournal(Connection con, JournalHeader journal)
       throws SQLException, UtilException, CalendarException {
@@ -155,7 +155,7 @@ public class JournalDAO {
 
   private PreparedStatement getTentativePreparedStatement(
       Connection con, String userId) throws SQLException {
-    final String selectStatement = "select distinct " + JournalDAO.JOURNALCOLUMNNAMES
+    final String selectStatement = SELECT_DISTINCT + JournalDAO.JOURNALCOLUMNNAMES
         + " from CalendarJournal, CalendarJournalAttendee "
         + " WHERE (CalendarJournal.id = CalendarJournalAttendee.journalId) "
         + " and (CalendarJournalAttendee.participationStatus = ?) "
@@ -170,7 +170,7 @@ public class JournalDAO {
       String day, String userId, String categoryId, String participation,
       String comparator) throws SQLException, java.text.ParseException {
     StringBuilder selectStatement = new StringBuilder();
-    selectStatement.append("select distinct ").append(
+    selectStatement.append(SELECT_DISTINCT).append(
         JournalDAO.JOURNALCOLUMNNAMES).append(
         " from CalendarJournal, CalendarJournalAttendee ");
     if (categoryId != null) {
@@ -191,7 +191,7 @@ public class JournalDAO {
         "' and endDay >= '").append(day).append("')) ");
 
     if (participation.equals(ParticipationStatus.ACCEPTED)) {
-      selectStatement.append("union ").append("select distinct ").append(
+      selectStatement.append("union ").append(SELECT_DISTINCT).append(
           JournalDAO.JOURNALCOLUMNNAMES).append(" from CalendarJournal ");
       if (categoryId != null) {
         selectStatement.append(", CalendarJournalCategory ");
@@ -264,7 +264,7 @@ public class JournalDAO {
       throws SQLException, java.text.ParseException {
 
     String selectNextEvents =
-        "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
+        SELECT_DISTINCT + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
         + " where  delegatorId = ? and endDay >= ? ";
     int classificationIndex = 2;
     int limitIndex = 3;
@@ -382,7 +382,7 @@ public class JournalDAO {
       String participation) throws SQLException, java.text.ParseException {
 
     StringBuilder selectStatement = new StringBuilder(200);
-    selectStatement.append("select distinct ").append(JournalDAO.COLUMNNAMES).append(
+    selectStatement.append(SELECT_DISTINCT).append(JournalDAO.COLUMNNAMES).append(
         " from CalendarJournal, CalendarJournalAttendee ");
     if (categoryId != null) {
       selectStatement.append(", CalendarJournalCategory ");
@@ -595,7 +595,7 @@ public class JournalDAO {
       String myId, List<String> myContactsIds, Date begin, Date end) throws SQLException,
       ParseException {
     String selectNextEvents =
-        "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
+        SELECT_DISTINCT + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
         + " where endDay >= ? and delegatorId in(" + toSqlString(myContactsIds) + ") "
         + " and startDay >= ? and startDay <= ? "
         + " order by startDay ASC, startHour ASC";
@@ -652,7 +652,7 @@ public class JournalDAO {
       String myId, List<String> myContactsIds, Date begin, Date end) throws SQLException,
       ParseException {
     String selectNextEvents =
-        "select distinct " + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
+        SELECT_DISTINCT + JournalDAO.JOURNALCOLUMNNAMES + " from CalendarJournal "
         + " where endDay < ? and delegatorId in(" + toSqlString(myContactsIds) + ") "
         + " and startDay >= ? and startDay <= ? "
         + " order by startDay desc, startHour desc";
@@ -694,7 +694,7 @@ public class JournalDAO {
       Date begin, Date end) throws SQLException,
       ParseException {
     String selectNextEvents =
-        "select distinct " + JournalDAO.JOURNALCOLUMNNAMES
+        SELECT_DISTINCT + JournalDAO.JOURNALCOLUMNNAMES
         + " from CalendarJournal " + " where endDay < ? and delegatorId = ? "
         + " and startDay >= ? and startDay <= ? "
         + " order by startDay desc, startHour desc ";
@@ -737,7 +737,7 @@ public class JournalDAO {
       SQLException, java.text.ParseException {
 
     String selectNextEvents =
-        "select distinct " + JournalDAO.JOURNALCOLUMNNAMES
+        SELECT_DISTINCT + JournalDAO.JOURNALCOLUMNNAMES
         + " from CalendarJournal "
         + " where endDay < ? and delegatorId = ? "
         + " and startDay >= ? and startDay <= ? "

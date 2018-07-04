@@ -38,6 +38,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 
 public class Domain implements Serializable {
 
@@ -273,56 +274,27 @@ public class Domain implements Serializable {
   }
 
   @Override
-  public boolean equals(Object obj) {
-    if (obj == null) {
+  public boolean equals(final Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (!(o instanceof Domain)) {
       return false;
     }
-    if (getClass() != obj.getClass()) {
-      return false;
-    }
-    final Domain other = (Domain) obj;
-    if ((this.id == null) ? (other.id != null) : !this.id.equals(other.id)) {
-      return false;
-    }
-    if ((this.name == null) ? (other.name != null) : !this.name.equals(other.name)) {
-      return false;
-    }
-    if ((this.description == null) ? (other.description != null) : !this.description
-        .equals(other.description)) {
-      return false;
-    }
-    if ((this.driverClassName == null) ? (other.driverClassName != null) : !this.driverClassName
-        .equals(other.driverClassName)) {
-      return false;
-    }
-    if ((this.propFileName == null) ? (other.propFileName != null) : !this.propFileName
-        .equals(other.propFileName)) {
-      return false;
-    }
-    if ((this.authenticationServer == null) ? (other.authenticationServer != null)
-        : !this.authenticationServer.equals(other.authenticationServer)) {
-      return false;
-    }
-    if ((this.theTimeStamp == null) ? (other.theTimeStamp != null) : !this.theTimeStamp
-        .equals(other.theTimeStamp)) {
-      return false;
-    }
-    return this.silverpeasServerURL == null ? other.silverpeasServerURL == null
-        : this.silverpeasServerURL.equals(other.silverpeasServerURL);
+    final Domain domain = (Domain) o;
+    return Objects.equals(id, domain.id) && Objects.equals(name, domain.name) &&
+        Objects.equals(description, domain.description) &&
+        Objects.equals(driverClassName, domain.driverClassName) &&
+        Objects.equals(propFileName, domain.propFileName) &&
+        Objects.equals(authenticationServer, domain.authenticationServer) &&
+        Objects.equals(theTimeStamp, domain.theTimeStamp) &&
+        Objects.equals(silverpeasServerURL, domain.silverpeasServerURL) &&
+        Objects.equals(userDomainQuota, domain.userDomainQuota);
   }
 
   @Override
   public int hashCode() {
-    int hash = 5;
-    hash = 73 * hash + (this.id != null ? this.id.hashCode() : 0);
-    hash = 73 * hash + (this.name != null ? this.name.hashCode() : 0);
-    hash = 73 * hash + (this.description != null ? this.description.hashCode() : 0);
-    hash = 73 * hash + (this.driverClassName != null ? this.driverClassName.hashCode() : 0);
-    hash = 73 * hash + (this.propFileName != null ? this.propFileName.hashCode() : 0);
-    hash =
-        73 * hash + (this.authenticationServer != null ? this.authenticationServer.hashCode() : 0);
-    hash = 73 * hash + (this.theTimeStamp != null ? this.theTimeStamp.hashCode() : 0);
-    hash = 73 * hash + (this.silverpeasServerURL != null ? this.silverpeasServerURL.hashCode() : 0);
-    return hash;
+    return Objects.hash(id, name, description, driverClassName, propFileName, authenticationServer,
+        theTimeStamp, silverpeasServerURL, userDomainQuota);
   }
 }
