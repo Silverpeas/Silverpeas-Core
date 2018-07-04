@@ -38,10 +38,10 @@ public class SynchroGroupReport {
   private static final String LOG_FORMAT = "[{0}] {1}: {2}";
 
   // synchronization states
-  public static final int STATE_NOSYNC = 0x00000000;
-  public static final int STATE_WAITSTART = 0x00000001;
-  public static final int STATE_STARTED = 0x00000002;
-  public static final int STATE_ENDED = 0x00000003;
+  private static final int STATE_NOSYNC = 0x00000000;
+  private static final int STATE_WAITSTART = 0x00000001;
+  private static final int STATE_STARTED = 0x00000002;
+  private static final int STATE_ENDED = 0x00000003;
 
   private static Level level;
   private static List<String> messages = Collections.synchronizedList(new ArrayList<>());
@@ -80,7 +80,7 @@ public class SynchroGroupReport {
    * Gets the current state of the report.
    * @return the state of the report.
    */
-  public static int getState() {
+  public static synchronized int getState() {
     return state;
   }
 
@@ -164,33 +164,8 @@ public class SynchroGroupReport {
     return state == STATE_STARTED;
   }
 
-  protected static String msgFormat(Level level, String from,
+  static String msgFormat(Level level, String from,
       String msgToTrace, Throwable ex) {
-    StringBuilder sb = new StringBuilder();
-    switch(level) {
-      case DEBUG:
-        sb.append("[DEBUG] ");
-        break;
-      case INFO:
-        sb.append("[INFO] ");
-        break;
-      case WARNING:
-        sb.append("[WARN] ");
-        break;
-      case ERROR:
-        sb.append("[ERROR] ");
-        break;
-      default:
-        sb.append("[UNKNOWN] ");
-        break;
-    }
-    sb.append(msgToTrace);
-    if ((from != null) && (from.length() > 0)) {
-      sb.append(" | From: ").append(from);
-    }
-    if (ex != null) {
-      sb.append(" | !!! EXCEPTION !!! : ").append(ex.getMessage());
-    }
-    return sb.toString();
+    return SynchroDomainReport.msgFormat(level, from, msgToTrace, ex);
   }
 }

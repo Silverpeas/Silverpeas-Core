@@ -24,11 +24,12 @@
 package org.silverpeas.core.test;
 
 import org.silverpeas.core.ActionType;
-import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.IdentifiableResource;
+import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.admin.ObjectType;
 import org.silverpeas.core.admin.PaginationPage;
+import org.silverpeas.core.admin.RightProfile;
 import org.silverpeas.core.admin.StubbedAdministration;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.model.CompoSpace;
@@ -510,7 +511,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(StubbedAdministration.class);
       addCommonUserBeans();
       addClasses(AdministrationServiceProvider.class, Administration.class, Parameter.class,
-          PasteDetail.class, WAComponent.class, ComponentInst.class,
+          PasteDetail.class, WAComponent.class, ComponentInst.class, RightProfile.class,
           ComponentInstLight.class, SpaceInst.class, SpaceInstLight.class, CompoSpace.class,
           QuotaException.class, ProfileInst.class, SpaceAndChildren.class, SpaceProfileInst.class,
           Group.class, GroupProfileInst.class, SearchCriteria.class,
@@ -636,6 +637,7 @@ public class WarBuilder4LibCore extends WarBuilder<WarBuilder4LibCore> {
       addClasses(DriverSettings.class);
       addClasses(ObjectType.class);
       addClasses(PaginationPage.class);
+      addClasses(RightProfile.class);
       addPackages(true, "org.silverpeas.core.i18n");
       addPackages(true, "org.silverpeas.core.admin.component");
       addPackages(true, "org.silverpeas.core.admin.space");
