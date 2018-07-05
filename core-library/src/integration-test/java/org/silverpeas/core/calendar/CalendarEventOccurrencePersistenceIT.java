@@ -39,7 +39,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.util.SQLRequester;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
@@ -110,7 +110,7 @@ public class CalendarEventOccurrencePersistenceIT extends BaseCalendarTest {
 
     expectedOccurrences.forEach(o -> {
       try {
-        DbSetupRule.TableLine component =
+        SQLRequester.ResultLine component =
             getCalendarComponentTableLineById(o.asCalendarComponent().getId());
         assertThat(component, notNullValue());
       } catch (Exception e) {
@@ -130,13 +130,13 @@ public class CalendarEventOccurrencePersistenceIT extends BaseCalendarTest {
 
     assertThat(count, is((long) expectedOccurrences.size()));
 
-    List<DbSetupRule.TableLine> occurrences =
+    List<SQLRequester.ResultLine> occurrences =
         getCalendarOccurrencesTableLineByEventId(event.getId());
     assertThat(occurrences.isEmpty(), is(true));
 
     expectedOccurrences.forEach(o -> {
       try {
-        DbSetupRule.TableLine component =
+        SQLRequester.ResultLine component =
             getCalendarComponentTableLineById(o.asCalendarComponent().getId());
         assertThat(component, nullValue());
       } catch (Exception e) {
@@ -156,14 +156,14 @@ public class CalendarEventOccurrencePersistenceIT extends BaseCalendarTest {
 
     assertThat(count, is((long) 2));
 
-    List<DbSetupRule.TableLine> occurrences =
+    List<SQLRequester.ResultLine> occurrences =
         getCalendarOccurrencesTableLineByEventId(event.getId());
     assertThat(occurrences.size(), is(1));
     assertThat(occurrences.get(0).get("id"), is(expectedOccurrences.get(0).getId()));
 
     Arrays.asList(expectedOccurrences.get(1), expectedOccurrences.get(2)).forEach(o -> {
       try {
-        DbSetupRule.TableLine component =
+        SQLRequester.ResultLine component =
             getCalendarComponentTableLineById(o.asCalendarComponent().getId());
         assertThat(component, nullValue());
       } catch (Exception e) {

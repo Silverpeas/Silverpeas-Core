@@ -39,7 +39,7 @@ public class ReplacementConstructor implements Replacement.Constructor {
 
   private ReplacementImpl replacement;
 
-  protected ReplacementConstructor() {
+  public ReplacementConstructor() {
     // for bean injection engine
   }
 

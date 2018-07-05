@@ -33,24 +33,18 @@ import org.silverpeas.core.notification.user.RemoveSenderRecipientBehavior;
 import org.silverpeas.core.notification.user.builder.AbstractTemplateUserNotificationBuilder;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.notification.user.model.NotificationResourceData;
-import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.template.SilverpeasTemplate;
+import org.silverpeas.core.util.Link;
+import org.silverpeas.core.util.URLUtil;
 import org.silverpeas.core.workflow.api.user.Replacement;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.Temporal;
-import java.util.Collection;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
-import static org.silverpeas.core.util.DateUtil.getDateOutputFormat;
+import static org.silverpeas.core.util.URLUtil.Permalink.COMPONENT;
 
 /**
  * A builder of notifications about a replacement between two users in a given workflow instance.
  * @author mmoquillon
  */
-public class ReplacementNotificationBuilder
+public abstract class AbstractReplacementNotificationBuilder
     extends AbstractTemplateUserNotificationBuilder<Replacement>
     implements RemoveSenderRecipientBehavior, FallbackToCoreTemplatePathBehavior {
 
@@ -58,44 +52,48 @@ public class ReplacementNotificationBuilder
       "org.silverpeas.workflow.multilang.usernotification";
 
   private final NotifAction action;
+  private final ComponentInst workflow;
 
   /**
    * Default constructor
    * @param resource the resource which is the object of the notification.
    */
-  public ReplacementNotificationBuilder(final Replacement resource, final NotifAction action) {
+  AbstractReplacementNotificationBuilder(final Replacement resource, final NotifAction action) {
     super(resource);
     this.action = action;
+    this.workflow = OrganizationController.get().getComponentInst(resource.getWorkflowInstanceId());
   }
 
   @Override
   protected String getBundleSubjectKey() {
-    return "notification.subject";
-  }
-
-  @Override
-  protected String getTemplateFileName() {
-    return action.name().toLowerCase() + "Replacement";
+    return "notification.subject." + action.name().toLowerCase();
   }
 
   @Override
   protected void performTemplateData(final String language, final Replacement resource,
       final SilverpeasTemplate template) {
-    final String senderId = getSender();
-    if (!resource.getIncumbent().getUserId().equals(senderId)) {
-      template.setAttribute("incumbent", resource.getIncumbent().getFullName());
-    }
-    if (!resource.getSubstitute().getUserId().equals(senderId)) {
-      template.setAttribute("substitute", resource.getSubstitute().getFullName());
-    }
 
-    final ComponentInst workflow =
-        OrganizationController.get().getComponentInst(resource.getWorkflowInstanceId());
-    template.setAttribute("workflow", workflow.getName(language));
-    template.setAttribute("startDate",
-        toLocalizedDateText(resource.getPeriod().getStartDate(), language));
-    template.setAttribute("endDate",
-        toLocalizedDateText(resource.getPeriod().getEndDate(), language));
+    getNotificationMetaData().addLanguage(language,
+        getBundle(language).getStringWithParams(getBundleSubjectKey(), workflow.getName(language)),
+        null);
+
+    final String linkUrl = URLUtil.getCurrentServerURL() +
+        URLUtil.getPermalink(COMPONENT, resource.getWorkflowInstanceId());
+    final String linkLabel = getBundle(language)
+        .getStringWithParams("replacement.notifLinkLabel", workflow.getName(language));
+    getNotificationMetaData().setLink(new Link(linkUrl, linkLabel), language);
+
+    template.setAttribute("incumbent", resource.getIncumbent().getFullName());
+    template.setAttribute("substitute", resource.getSubstitute().getFullName());
+    final NotificationTemporal startDate = new NotificationTemporal(
+        resource.getPeriod().getStartDate(), null, language);
+    final NotificationTemporal endDate = new NotificationTemporal(
+        TemporalConverter.asLocalDate(resource.getPeriod().getEndDate()).minusDays(1), null,
+        language);
+    template.setAttribute("start", startDate);
+    if (!startDate.getDayDate().equals(endDate.getDayDate())) {
+      template.setAttribute("end", endDate);
+    }
   }
 
   @Override
@@ -103,12 +101,16 @@ public class ReplacementNotificationBuilder
       final NotificationResourceData notificationResourceData) {
     notificationResourceData.setComponentInstanceId(resource.getWorkflowInstanceId());
     notificationResourceData.setResourceId(resource.getId());
-    notificationResourceData.setResourceType(resource.getClass().getSimpleName());
   }
 
   @Override
   protected String getTemplatePath() {
     return "workflow";
+  }
+
+  @Override
+  protected String getTemplateFileName() {
+    return action.name().toLowerCase() + "Replacement";
   }
 
   @Override
@@ -123,7 +125,7 @@ public class ReplacementNotificationBuilder
 
   @Override
   protected String getSender() {
-    User sender = OperationContext.fromCurrentRequester().getUser();
+    User sender = User.getCurrentRequester();
     if (sender == null) {
       sender = User.getMainAdministrator();
     }
@@ -131,20 +133,8 @@ public class ReplacementNotificationBuilder
   }
 
   @Override
-  protected Collection<String> getUserIdsToNotify() {
-    final String incumbentId = getResource().getIncumbent().getUserId();
-    final String substituteId = getResource().getSubstitute().getUserId();
-    return Stream.of(incumbentId, substituteId).collect(Collectors.toSet());
-  }
-
-  @Override
-  protected String getMultilangPropertyFile() {
+  protected String getLocalizationBundlePath() {
     return MULTILANG_BUNDLE;
-  }
-
-  private String toLocalizedDateText(final Temporal temporal, final String language) {
-    final LocalDate date = TemporalConverter.asLocalDate(temporal);
-    return date.format(DateTimeFormatter.ofPattern(getDateOutputFormat(language).getPattern()));
   }
 }
   

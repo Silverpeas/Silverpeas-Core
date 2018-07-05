@@ -1,1 +1,0 @@
-Un remplacement entre $incumbent$ et $substitute$ a été mis en place pour la période du $startDate$ au $endDate$ dans le workflow $workflow$ par $sender$.

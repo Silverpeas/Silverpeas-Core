@@ -31,7 +31,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
-import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
+import org.silverpeas.core.test.util.SQLRequester.ResultLine;
 
 import javax.inject.Inject;
 import java.io.BufferedReader;
@@ -85,7 +85,7 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
 
   @Before
   public void calendarShouldBeEmpty() throws Exception {
-    List<TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
+    List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.isEmpty(), is(true));
 
     OperationContext.fromUser("0");
@@ -101,7 +101,7 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
     assertThat(result.added(), is(addedEvents));
     assertThat(result.updated(), is(0));
 
-    List<TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
+    List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.size(), is(addedEvents));
     CalendarEvent event = calendar.externalEvent(events.get(0).get("externalId")).get();
     assertThat(event.getExternalId(), is("cc412802-843c-43bb-8249-7f626ba608cb"));
@@ -126,7 +126,7 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
     assertThat(result.added(), is(addedEvents));
     assertThat(result.updated(), is(0));
 
-    List<TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
+    List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     CalendarEvent addedEvent = calendar.externalEvent(events.get(0).get("externalId")).get();
 
     result = importProcessor.importInto(calendar, iCalEventsFrom(ics));
@@ -153,7 +153,7 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
     assertThat(result.added(), is(0));
     assertThat(result.updated(), is(updatedEvents));
 
-    List<TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
+    List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.size(), is(addedEvents));
     CalendarEvent event = calendar.externalEvent(events.get(0).get("externalId")).get();
     assertThat(event.getTitle(), is("Déjeuner avec Fanny"));
@@ -168,7 +168,7 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
     assertThat(result.added(), is(addedEvents));
     assertThat(result.updated(), is(0));
 
-    List<TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
+    List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.size(), is(addedEvents));
   }
 
@@ -181,7 +181,7 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
     assertThat(result.added(), is(addedEvents));
     assertThat(result.updated(), is(0));
 
-    List<TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
+    List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.size(), is(addedEvents));
 
     CalendarEvent event = calendar.externalEvent("9588c7b0-62af-45bd-a8c8-c8e8eab27c52")
@@ -220,7 +220,7 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
     assertThat(result.added(), is(addedEvents));
     assertThat(result.updated(), is(0));
 
-    List<TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
+    List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.size(), is(addedEvents));
   }
 
@@ -246,7 +246,7 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
     assertThat(result.added(), is(addedEvents));
     assertThat(result.updated(), is(0));
 
-    List<TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
+    List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.size(), is(addedEvents));
   }
 
@@ -260,7 +260,7 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
     assertThat(result.added(), is(addedEvents));
     assertThat(result.updated(), is(0));
 
-    List<TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
+    List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.size(), is(addedEvents));
   }
 
@@ -274,7 +274,7 @@ public class ICalendarEventImportProcessorIT extends BaseCalendarTest {
     assertThat(result.added(), is(addedEvents));
     assertThat(result.updated(), is(0));
 
-    List<TableLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
+    List<ResultLine> events = getCalendarEventTableLinesByCalendarId(CALENDAR_ID);
     assertThat(events.size(), is(addedEvents));
   }
 

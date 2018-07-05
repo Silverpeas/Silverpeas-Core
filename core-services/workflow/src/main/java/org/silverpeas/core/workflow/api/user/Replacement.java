@@ -31,6 +31,7 @@ import org.silverpeas.core.persistence.datasource.model.identifier.UuidIdentifie
 import org.silverpeas.core.util.ServiceProvider;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -184,6 +185,26 @@ public interface Replacement<T extends Replacement<T>> extends Entity<T, UuidIde
       repository.delete(this);
       return null;
     });
+  }
+
+  /**
+   * Is this replacement same as the specified one?
+   * <p>
+   * This method differs from equality as they don't compare the same thing: the {@code equals}
+   * method in Java is a comparator by identity, meaning two objects are compared by their unique
+   * identifier (either by their OID for non-persistent object or by their persistence identifier
+   * for persistent object). The {@code isSameAs} method is a comparator by value, meaning two
+   * objects are compared by their state; so two equal objects (that is referring to a same
+   * object) can be different by their state: one representing a given state of the referred object
+   * whereas the other represents another state of the referred object.
+   * </p>
+   * @param replacement the attendees to compare with.
+   * @return true if the given replacement is the same has the current one.
+   */
+  default boolean isSameAs(Replacement replacement) {
+    return Objects.equals(getIncumbent().getUserId(), replacement.getIncumbent().getUserId()) &&
+        Objects.equals(getSubstitute().getUserId(), replacement.getSubstitute().getUserId()) &&
+        Objects.equals(getPeriod(), replacement.getPeriod());
   }
 
   /**

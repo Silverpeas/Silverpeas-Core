@@ -33,7 +33,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
-import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
+import org.silverpeas.core.test.util.SQLRequester.ResultLine;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -136,9 +136,9 @@ public class CalendarManagementIT extends BaseCalendarTest {
     assertThat(newCalendar.isEmpty(), is(true));
 
     // Verifying the data
-    List<TableLine> persistedCalendars = getCalendarTableLines();
+    List<ResultLine> persistedCalendars = getCalendarTableLines();
     assertThat(persistedCalendars, hasSize(6));
-    TableLine persistedCalendar = getCalendarTableLineById(newCalendar.getId());
+    ResultLine persistedCalendar = getCalendarTableLineById(newCalendar.getId());
 
     assertThat(persistedCalendar.get("instanceId"), is(INSTANCE_ID));
     assertThat(persistedCalendar.get("title"), is("a title"));
@@ -154,7 +154,7 @@ public class CalendarManagementIT extends BaseCalendarTest {
 
   @Test
   public void modifyCalendarShouldWork() throws Exception {
-    TableLine beforeModify = getCalendarTableLineById("ID_3");
+    ResultLine beforeModify = getCalendarTableLineById("ID_3");
     assertThat(beforeModify, notNullValue());
     assertThat(beforeModify.get("title"), is("title 3"));
 
@@ -163,14 +163,14 @@ public class CalendarManagementIT extends BaseCalendarTest {
     calendarToModify.setTitle(modifiedTitle);
     calendarToModify.save();
 
-    TableLine afterModify = getCalendarTableLineById("ID_3");
+    ResultLine afterModify = getCalendarTableLineById("ID_3");
     assertThat(afterModify.get("title"), is(modifiedTitle));
   }
 
   @Test
   public void deleteCalendarShouldWork() throws Exception {
-    TableLine beforeDeletion = getCalendarTableLineById("ID_3");
-    List<TableLine> eventsBeforeDeletion = getCalendarEventTableLines();
+    ResultLine beforeDeletion = getCalendarTableLineById("ID_3");
+    List<ResultLine> eventsBeforeDeletion = getCalendarEventTableLines();
     assertThat(beforeDeletion, notNullValue());
     assertThat(eventsBeforeDeletion, hasSize(6));
 
@@ -180,8 +180,8 @@ public class CalendarManagementIT extends BaseCalendarTest {
     assertThat(getCalendarTableLines(), hasSize(4));
 
 
-    TableLine afterDeletion = getCalendarTableLineById("ID_3");
-    List<TableLine> eventsAfterDeletion = getCalendarEventTableLines();
+    ResultLine afterDeletion = getCalendarTableLineById("ID_3");
+    List<ResultLine> eventsAfterDeletion = getCalendarEventTableLines();
     assertThat(afterDeletion, nullValue());
     assertThat(eventsAfterDeletion, hasSize(4));
 
@@ -200,7 +200,7 @@ public class CalendarManagementIT extends BaseCalendarTest {
     event.planOn(calendar);
 
     assertThat(event.isPersisted(), is(true));
-    TableLine afterAdd = getCalendarEventTableLineById(event.getId());
+    ResultLine afterAdd = getCalendarEventTableLineById(event.getId());
     assertThat(afterAdd, notNullValue());
     assertThat(afterAdd.get("title"), is("a title"));
     assertThat(afterAdd.get("description"), is("a description"));

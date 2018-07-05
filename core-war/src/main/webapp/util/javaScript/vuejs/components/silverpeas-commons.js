@@ -206,6 +206,10 @@
         'maxWidth' : {
           'type' : String,
           'default' : '800px'
+        },
+        'openPromise' : {
+          'type' : Promise,
+          'default' : undefined
         }
       },
       data : function() {
@@ -230,7 +234,8 @@
             this.jqDialog.popup(this.type, extendsObject({
               title : this.title,
               minWidth : this.minWidth,
-              maxWidth : this.maxWidth
+              maxWidth : this.maxWidth,
+              openPromise : this.openPromise
             }, options));
           }.bind(this));
         },

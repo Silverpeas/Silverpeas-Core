@@ -63,6 +63,7 @@ public class DelegationIT {
     return WarBuilder4LibCore.onWarForTestClass(DelegationIT.class)
         .addAdministrationFeatures()
         .addJpaPersistenceFeatures()
+        .addPublicationTemplateFeatures()
         .addPackages(true, "org.silverpeas.core.delegation")
         .build();
   }

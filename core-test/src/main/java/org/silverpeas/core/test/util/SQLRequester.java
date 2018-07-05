@@ -24,6 +24,8 @@
 
 package org.silverpeas.core.test.util;
 
+import org.apache.commons.lang3.tuple.Pair;
+import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.DataSourceProvider;
 
 import java.sql.Connection;
@@ -31,7 +33,11 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
+import java.sql.Types;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +47,10 @@ import java.util.Map;
  * @author mmoquillon
  */
 public class SQLRequester {
+
+  private SQLRequester() {
+    throw new IllegalStateException("Utility class");
+  }
 
   /**
    * Finds one and only one entity by executing the specified SQL query with the given parameters.
@@ -72,6 +82,74 @@ public class SQLRequester {
       }
     }
     return results;
+  }
+
+  /**
+   * Lists entities by executing the specified SQL query with the given parameters.
+   * @param jdbcSqlQuery the {@link JdbcSqlQuery} instance.
+   * @return a {@link List} of {@link ResultLine} instances.
+   * @throws SQLException if an error occurs while executing the given {@link JdbcSqlQuery}.
+   */
+  public static List<ResultLine> list(JdbcSqlQuery jdbcSqlQuery) throws SQLException {
+    final List<Pair<String, Integer>> metaData = new ArrayList<>();
+    return jdbcSqlQuery.execute(row -> {
+      if (metaData.isEmpty()) {
+        ResultSetMetaData rowMetaData = row.getMetaData();
+        for (int i = 1; i <= rowMetaData.getColumnCount(); i++) {
+          metaData.add(Pair.of(rowMetaData.getColumnName(i), rowMetaData.getColumnType(i)));
+        }
+      }
+      SQLRequester.ResultLine line = new SQLRequester.ResultLine();
+      for (int i = 1; i <= metaData.size(); i++) {
+        Pair<String, Integer> columnNameAndType = metaData.get(i - 1);
+        String name = columnNameAndType.getLeft().toUpperCase();
+        final Object value;
+        int sqlType = columnNameAndType.getRight();
+        switch (sqlType) {
+          case Types.BIGINT:
+            value = row.getLong(i);
+            break;
+          case Types.DECIMAL:
+            value = row.getBigDecimal(i);
+            break;
+          case Types.INTEGER:
+            value = row.getInt(i);
+            break;
+          case Types.TIMESTAMP:
+            value = row.getTimestamp(i);
+            break;
+          case Types.DATE:
+            value = row.getDate(i);
+            break;
+          case Types.BOOLEAN:
+            value = row.getBoolean(i);
+            break;
+          default:
+            value = row.getString(i);
+        }
+        line.set(name, value);
+      }
+      return line;
+    });
+  }
+
+  /**
+   * Represents a line of a SQL result execution.
+   * <p>
+   * The name of the attributes are all in uppercase.
+   * </p>
+   */
+  public static class ResultLine {
+    private Map<String, Object> values = new LinkedHashMap<>();
+
+    public void set(final String columnName, final Object value) {
+      values.put(columnName.toLowerCase(), value);
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T get(String columnName) {
+      return (T) values.get(columnName.toLowerCase());
+    }
   }
 }
   

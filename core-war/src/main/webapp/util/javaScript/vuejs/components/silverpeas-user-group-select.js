@@ -152,7 +152,8 @@
     },
     data : function() {
       return {
-        selectionApi : undefined
+        selectionApi : undefined,
+        readyPromise : sp.promise.deferred().promise
       };
     },
     mounted : function() {
@@ -160,79 +161,88 @@
     },
     methods : {
       initialize : function() {
-        this.$el.innerHTML = '';
-        var domainIdFilter = Array.isArray(this.domainFilter)
-            ? this.domainFilter
-            : [this.domainFilter];
-        var roleFilter = Array.isArray(this.roleFilter)
-            ? this.roleFilter
-            : [this.roleFilter];
-        var groupFilter = Array.isArray(this.groupFilter)
-            ? this.groupFilter
-            : [this.groupFilter];
-        var initialUserIds = Array.isArray(this.initialUserIds)
-            ? this.initialUserIds
-            : [this.initialUserIds];
-        var initialGroupIds = Array.isArray(this.initialGroupIds)
-            ? this.initialGroupIds
-            : [this.initialGroupIds];
-        var options = {
-          rootContainerId : this.rootContainerId,
-          hideDeactivatedState : this.hideDeactivatedState,
-          domainIdFilter : domainIdFilter,
-          componentIdFilter : this.componentIdFilter,
-          roleFilter : roleFilter,
-          groupFilter : groupFilter,
-          initialQuery : this.initialQuery,
-          navigationalBehavior : this.navigationalBehavior,
-          doNotSelectAutomaticallyOnDropDownOpen : this.doNotSelectAutomaticallyOnDropDownOpen,
-          noUserPanel : this.noUserPanel,
-          noSelectionClear : this.noSelectionClear,
-          queryInputName : this.queryInputName,
-          userInputName : this.userInputName,
-          groupInputName : this.groupInputName,
-          currentUserId : this.currentUserIdentifier,
-          initialUserIds : initialUserIds,
-          initialGroupIds : initialGroupIds,
-          displayUserZoom : this.displayUserZoom,
-          displayAvatar : this.displayAvatar,
-          multiple : this.multiple,
-          selectionType : this.selectionType,
-          readOnly : this.readOnly,
-          mandatory : this.mandatory,
-          userManualNotificationUserReceiverLimit : this.userManualNotificationUserReceiverLimit,
-          onChange : function(selectionAPI) {
-            this.$emit('selection-change', {
-              selectedUserIds : selectionAPI.getSelectedUserIds(),
-              selectedGroupIds : selectionAPI.getSelectedGroupIds()
-            });
-          }.bind(this)
-        };
-        if (StringUtil.isDefined(this.userPanelButtonLabel)) {
-          options.userPanelButtonLabel = this.userPanelButtonLabel;
-        }
-        if (StringUtil.isDefined(this.removeButtonLabel)) {
-          options.removeButtonLabel = this.removeButtonLabel;
-        }
-        this.selectionApi = new UserGroupSelect(options);
-        this.selectionApi.ready(function() {
-          this.extendApiWith({
-            refresh : function() {
-              this.initialize();
-            },
-            validateFormInput : function() {
-              var isNotValid = this.mandatory
-                  && this.selectionApi.getSelectedUserIds().length === 0
-                  && this.selectionApi.getSelectedGroupIds().length === 0;
-              if (isNotValid && this.rootFormApi) {
-                this.rootFormApi.errorMessage().add(
-                    this.formatMessage(this.rootFormMessages.mandatory,
-                        this.getLabelByForAttribute(this.id)));
+        this.readyPromise = new Promise(function(resolve) {
+          this.$el.innerHTML = '';
+          var domainIdFilter = Array.isArray(this.domainFilter)
+              ? this.domainFilter
+              : [this.domainFilter];
+          var roleFilter = Array.isArray(this.roleFilter)
+              ? this.roleFilter
+              : [this.roleFilter];
+          var groupFilter = Array.isArray(this.groupFilter)
+              ? this.groupFilter
+              : [this.groupFilter];
+          var initialUserIds = Array.isArray(this.initialUserIds)
+              ? this.initialUserIds
+              : [this.initialUserIds];
+          var initialGroupIds = Array.isArray(this.initialGroupIds)
+              ? this.initialGroupIds
+              : [this.initialGroupIds];
+          var options = {
+            rootContainerId : this.rootContainerId,
+            hideDeactivatedState : this.hideDeactivatedState,
+            domainIdFilter : domainIdFilter,
+            componentIdFilter : this.componentIdFilter,
+            roleFilter : roleFilter,
+            groupFilter : groupFilter,
+            initialQuery : this.initialQuery,
+            navigationalBehavior : this.navigationalBehavior,
+            doNotSelectAutomaticallyOnDropDownOpen : this.doNotSelectAutomaticallyOnDropDownOpen,
+            noUserPanel : this.noUserPanel,
+            noSelectionClear : this.noSelectionClear,
+            queryInputName : this.queryInputName,
+            userInputName : this.userInputName,
+            groupInputName : this.groupInputName,
+            currentUserId : this.currentUserIdentifier,
+            initialUserIds : initialUserIds,
+            initialGroupIds : initialGroupIds,
+            displayUserZoom : this.displayUserZoom,
+            displayAvatar : this.displayAvatar,
+            multiple : this.multiple,
+            selectionType : this.selectionType,
+            readOnly : this.readOnly,
+            mandatory : this.mandatory,
+            userManualNotificationUserReceiverLimit : this.userManualNotificationUserReceiverLimit,
+            onChange : function(selectionAPI) {
+              this.$emit('selection-change', {
+                selectedUserIds : selectionAPI.getSelectedUserIds(),
+                selectedGroupIds : selectionAPI.getSelectedGroupIds()
+              });
+            }.bind(this)
+          };
+          if (StringUtil.isDefined(this.userPanelButtonLabel)) {
+            options.userPanelButtonLabel = this.userPanelButtonLabel;
+          }
+          if (StringUtil.isDefined(this.removeButtonLabel)) {
+            options.removeButtonLabel = this.removeButtonLabel;
+          }
+          this.selectionApi = new UserGroupSelect(options);
+          this.selectionApi.ready(function() {
+            this.extendApiWith({
+              focus : function() {
+                return this.readyPromise.then(function() {
+                  this.$el.querySelector('input').focus();
+                }.bind(this));
+              },
+              refresh : function() {
+                return this.initialize();
+              },
+              validateFormInput : function() {
+                var isNotValid = this.mandatory
+                    && this.selectionApi.getSelectedUserIds().length === 0
+                    && this.selectionApi.getSelectedGroupIds().length === 0;
+                if (isNotValid && this.rootFormApi) {
+                  this.rootFormApi.errorMessage().add(
+                      this.formatMessage(this.rootFormMessages.mandatory,
+                          this.getLabelByForAttribute(this.id)));
+                }
+                return !isNotValid;
               }
-              return !isNotValid;
-            }
-          });
+            });
+            resolve()
+          }.bind(this));
         }.bind(this));
+        return this.readyPromise;
       }
     },
     computed : {

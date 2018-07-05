@@ -73,7 +73,7 @@ public class DelegationTest {
     new Delegation(COMPONENT_ID, aDelegator, null);
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test(expected = AssertionError.class)
   public void createBadlyADelegationForNoComponentInstance() {
     new Delegation(null, aUser("3"), aUser("5"));
   }

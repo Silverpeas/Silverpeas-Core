@@ -149,7 +149,7 @@ public class SilverpeasRoleTest {
     }
     sb.append(roles[roles.length - 1]);
     assertThat(sb.toString(),
-        is("admin, Manager, publisher, writer, privilegedUser, user, reader, supervisor"));
+        is("admin, supervisor, Manager, publisher, writer, privilegedUser, user, reader"));
 
     assertThat(SilverpeasRole.publisher.isGreaterThan(SilverpeasRole.writer), is(true));
     assertThat(SilverpeasRole.publisher.isGreaterThan(SilverpeasRole.publisher), is(false));

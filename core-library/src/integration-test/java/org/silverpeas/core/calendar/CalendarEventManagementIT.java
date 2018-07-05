@@ -34,7 +34,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.test.CalendarWarBuilder;
-import org.silverpeas.core.test.rule.DbSetupRule.TableLine;
+import org.silverpeas.core.test.util.SQLRequester.ResultLine;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -344,7 +344,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
 
   @Test
   public void deleteAllExistingEventOfACalendar() throws Exception {
-    List<TableLine> beforeDeletion = getCalendarEventTableLines();
+    List<ResultLine> beforeDeletion = getCalendarEventTableLines();
 
     assertThat(beforeDeletion, hasSize(6));
     Calendar calendar = Calendar.getById(CALENDAR_ID);
@@ -355,7 +355,7 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
 
     calendar.clear();
 
-    List<TableLine> afterDeletion = getCalendarEventTableLines();
+    List<ResultLine> afterDeletion = getCalendarEventTableLines();
     assertThat(afterDeletion, hasSize(3));
     assertThat(calendar.event("ID_E_5").isPresent(), is(false));
     assertThat(calendar.isEmpty(), is(true));
@@ -397,15 +397,15 @@ public class CalendarEventManagementIT extends BaseCalendarTest {
     assertThat(calendar.in(YearMonth.of(2016, 1)).getEventOccurrences().isEmpty(),
         is(true));
 
-    TableLine component =
+    ResultLine component =
         getCalendarComponentTableLineById(event.asCalendarComponent().getId());
     assertThat(component, nullValue());
   }
 
   @Test
   public void deleteAnEventShouldDeleteAllItsAttributesAndAttendees() throws Exception {
-    List<TableLine> allAttributes = getAttributesTableLinesByEventId("ID_C_1");
-    List<TableLine> allAttendees = getAttendeesTableLines();
+    List<ResultLine> allAttributes = getAttributesTableLinesByEventId("ID_C_1");
+    List<ResultLine> allAttendees = getAttendeesTableLines();
     assertThat(allAttributes, hasSize(1));
     assertThat(allAttendees, hasSize(3));
 

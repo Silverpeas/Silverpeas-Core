@@ -24,32 +24,68 @@
 
 package org.silverpeas.core.workflow.engine.notification;
 
-import org.silverpeas.core.notification.system.CDIResourceEventListener;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.date.TemporalConverter;
+import org.silverpeas.core.notification.system.CDIAfterSuccessfulTransactionResourceEventListener;
 import org.silverpeas.core.notification.user.client.constant.NotifAction;
 import org.silverpeas.core.workflow.api.user.Replacement;
 import org.silverpeas.core.workflow.engine.user.ReplacementEvent;
+
+import java.time.LocalDate;
 
 /**
  * Notifier to the concerned users about an event occurring on a replacement. For example, about
  * the creation of a replacement between them or the deletion of an existing replacement.
  * @author mmoquillon
  */
-public class ReplacementNotifier extends CDIResourceEventListener<ReplacementEvent> {
+public class ReplacementNotifier
+    extends CDIAfterSuccessfulTransactionResourceEventListener<ReplacementEvent> {
 
   @Override
   public void onDeletion(final ReplacementEvent event) {
     Replacement replacement = event.getTransition().getBefore();
-    notifyUsers(NotifAction.DELETE, replacement);
+    notifyUsersIfEndInFuture(NotifAction.DELETE, replacement);
+  }
+
+  @Override
+  public void onUpdate(final ReplacementEvent event) {
+    Replacement previous = event.getTransition().getBefore();
+    Replacement replacement = event.getTransition().getAfter();
+    if (!previous.isSameAs(replacement)) {
+      if (!replacement.getIncumbent().getUserId().equals(previous.getIncumbent().getUserId()) &&
+          !replacement.getSubstitute().getUserId().equals(previous.getSubstitute().getUserId())) {
+        notifyUsersIfEndInFuture(NotifAction.DELETE, previous);
+        notifyUsersIfEndInFuture(NotifAction.CREATE, replacement);
+      } else {
+        notifyUsers(NotifAction.UPDATE, replacement);
+      }
+    }
   }
 
   @Override
   public void onCreation(final ReplacementEvent event) {
     Replacement replacement = event.getTransition().getAfter();
-    notifyUsers(NotifAction.CREATE, replacement);
+    notifyUsersIfEndInFuture(NotifAction.CREATE, replacement);
+  }
+
+  private void notifyUsersIfEndInFuture(final NotifAction action, final Replacement replacement) {
+    final LocalDate now = LocalDate.now();
+    final LocalDate endDate = TemporalConverter
+        .asLocalDate(replacement.getPeriod().getEndDate())
+        .minusDays(1);
+    if (now.isBefore(endDate) || now.equals(endDate)) {
+      notifyUsers(action, replacement);
+    }
   }
 
   private void notifyUsers(final NotifAction action, final Replacement replacement) {
-    new ReplacementNotificationBuilder(replacement, action).build().send();
+    final User currentRequester = User.getCurrentRequester();
+    if (!currentRequester.getId().equals(replacement.getIncumbent().getUserId())) {
+      new ToIncumbentReplacementNotificationBuilder(replacement, action).build().send();
+    }
+    if (!currentRequester.getId().equals(replacement.getSubstitute().getUserId())) {
+      new ToSubstituteReplacementNotificationBuilder(replacement, action).build().send();
+    }
   }
 }
   

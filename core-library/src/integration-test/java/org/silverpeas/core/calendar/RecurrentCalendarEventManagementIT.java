@@ -34,7 +34,7 @@ import org.silverpeas.core.date.Period;
 import org.silverpeas.core.persistence.datasource.OperationContext;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.CalendarWarBuilder;
-import org.silverpeas.core.test.rule.DbSetupRule;
+import org.silverpeas.core.test.util.SQLRequester;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -352,10 +352,10 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
 
   @Test
   public void deleteAnEventShouldDeleteItsRecurrenceRule() throws Exception {
-    List<DbSetupRule.TableLine> allRecurrences = getRecurrenceTableLines();
-    List<DbSetupRule.TableLine> allRecurrenceDayOfWeeks = getRecurrenceDayOfWeekTableLines();
-    List<DbSetupRule.TableLine> allRecurrenceExceptions = getRecurrenceExceptionTableLines();
-    List<DbSetupRule.TableLine> allOccurrences = getOccurrenceTableLines();
+    List<SQLRequester.ResultLine> allRecurrences = getRecurrenceTableLines();
+    List<SQLRequester.ResultLine> allRecurrenceDayOfWeeks = getRecurrenceDayOfWeekTableLines();
+    List<SQLRequester.ResultLine> allRecurrenceExceptions = getRecurrenceExceptionTableLines();
+    List<SQLRequester.ResultLine> allOccurrences = getOccurrenceTableLines();
 
     assertThat(allRecurrences, hasSize(2));
     assertThat(allRecurrenceDayOfWeeks.isEmpty(), is(false));
@@ -381,10 +381,10 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
   public void
   deleteAnEventWithPersistedOccurrenceShouldDeleteItsRecurrenceRuleAndPersistedOccurrence()
       throws Exception {
-    List<DbSetupRule.TableLine> allRecurrences = getRecurrenceTableLines();
-    List<DbSetupRule.TableLine> allRecurrenceDayOfWeeks = getRecurrenceDayOfWeekTableLines();
-    List<DbSetupRule.TableLine> allRecurrenceExceptions = getRecurrenceExceptionTableLines();
-    List<DbSetupRule.TableLine> allOccurrences = getOccurrenceTableLines();
+    List<SQLRequester.ResultLine> allRecurrences = getRecurrenceTableLines();
+    List<SQLRequester.ResultLine> allRecurrenceDayOfWeeks = getRecurrenceDayOfWeekTableLines();
+    List<SQLRequester.ResultLine> allRecurrenceExceptions = getRecurrenceExceptionTableLines();
+    List<SQLRequester.ResultLine> allOccurrences = getOccurrenceTableLines();
 
     assertThat(allRecurrences, hasSize(2));
     assertThat(allRecurrenceDayOfWeeks.isEmpty(), is(false));
@@ -564,22 +564,22 @@ public class RecurrentCalendarEventManagementIT extends BaseCalendarTest {
     assertThat(actual.getRecurrence(), is(expected.getRecurrence()));
   }
 
-  protected List<DbSetupRule.TableLine> getRecurrenceTableLines() throws Exception {
+  protected List<SQLRequester.ResultLine> getRecurrenceTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("* from SB_Cal_Recurrence"));
   }
 
-  protected List<DbSetupRule.TableLine> getOccurrenceTableLines() throws Exception {
+  protected List<SQLRequester.ResultLine> getOccurrenceTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("* from SB_Cal_Occurrences"));
   }
 
-  protected List<DbSetupRule.TableLine> getRecurrenceDayOfWeekTableLines() throws Exception {
+  protected List<SQLRequester.ResultLine> getRecurrenceDayOfWeekTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("* from SB_Cal_Recurrence_DayOfWeek"));
   }
 
-  protected List<DbSetupRule.TableLine> getRecurrenceExceptionTableLines() throws Exception {
+  protected List<SQLRequester.ResultLine> getRecurrenceExceptionTableLines() throws Exception {
     return getDbSetupRule().mapJdbcSqlQueryResultAsListOfMappedValues(
         JdbcSqlQuery.createSelect("* from SB_Cal_Recurrence_Exception"));
   }

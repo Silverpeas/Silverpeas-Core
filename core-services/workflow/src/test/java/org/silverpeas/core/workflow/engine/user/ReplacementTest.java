@@ -76,14 +76,14 @@ public class ReplacementTest {
         .during(aPeriod);
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test(expected = AssertionError.class)
   public void createBadlyAReplacementWithAnNullWorkflowId() {
     Replacement.between(anIncumbent, aSubstitute)
         .inWorkflow(null)
         .during(aPeriod);
   }
 
-  @Test(expected = NullPointerException.class)
+  @Test(expected = AssertionError.class)
   public void createBadlyAReplacementByMissingAWorkflowId() {
     Replacement.between(anIncumbent, aSubstitute)
         .during(aPeriod);

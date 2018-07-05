@@ -698,7 +698,7 @@
 
       // Width
       var width = "" + options.width;
-      maxWidth = (width !== 'auto') ? width.replace(/px/, '') + 'px' : width;
+      var maxWidth = (width !== 'auto') ? width.replace(/px/, '') + 'px' : width;
       if (options.isMaxWidth) {
         $_this.dialog("option", "width", "auto");
       } else {
@@ -722,25 +722,25 @@
           $_this.dialog("widget").css('max-width', maxWidth);
           $_this.dialog({position : $_this.dialog('option', 'position')});
         }
+
+        // Min Width
+        if (options.minWidth) {
+          var _minWidth = "" + options.minWidth;
+          _minWidth = (_minWidth !== 'auto') ? _minWidth.replace(/px/, '') + 'px' : _minWidth;
+          $_this.dialog("widget").css('min-width', _minWidth);
+        }
+
+        // Max Width
+        if (options.maxWidth) {
+          var _maxWidth = "" + options.maxWidth;
+          _maxWidth = (_maxWidth !== 'auto') ? _maxWidth.replace(/px/, '') + 'px' : _maxWidth;
+          $_this.dialog("widget").css('max-width', _maxWidth);
+        }
       };
       if (sp.promise.isOne(options.openPromise)) {
         options.openPromise.then(__openPopup);
       } else {
         __openPopup();
-      }
-
-      // Min Width
-      if (options.minWidth) {
-        var _minWidth = "" + options.minWidth;
-        _minWidth = (_minWidth !== 'auto') ? _minWidth.replace(/px/, '') + 'px' : _minWidth;
-        $_this.dialog("widget").css('min-width', _minWidth);
-      }
-
-      // Max Width
-      if (options.maxWidth) {
-        var _maxWidth = "" + options.maxWidth;
-        _maxWidth = (_maxWidth !== 'auto') ? _maxWidth.replace(/px/, '') + 'px' : _maxWidth;
-        $_this.dialog("widget").css('max-width', _maxWidth);
       }
     });
   }

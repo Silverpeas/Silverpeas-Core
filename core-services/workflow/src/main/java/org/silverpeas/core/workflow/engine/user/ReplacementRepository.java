@@ -26,6 +26,7 @@ package org.silverpeas.core.workflow.engine.user;
 
 import org.silverpeas.core.annotation.Repository;
 import org.silverpeas.core.notification.system.ResourceEvent;
+import org.silverpeas.core.persistence.Transaction;
 import org.silverpeas.core.persistence.datasource.repository.jpa.NamedParameters;
 import org.silverpeas.core.persistence.datasource.repository.jpa.SilverpeasJpaEntityRepository;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -52,8 +53,18 @@ public class ReplacementRepository extends SilverpeasJpaEntityRepository<Replace
 
   @Override
   public Replacement save(final Replacement replacement) {
-    Replacement saved = save((ReplacementImpl) replacement);
-    notifyUsers(ResourceEvent.Type.CREATION, saved);
+    final Replacement previous = Transaction.performInNew(() -> {
+      if (replacement.getId() != null) {
+        return getById(replacement.getId());
+      }
+      return null;
+    });
+    final Replacement saved = save((ReplacementImpl) replacement);
+    if (previous != null) {
+      notifyUsers(ResourceEvent.Type.UPDATE, previous, saved);
+    } else {
+      notifyUsers(ResourceEvent.Type.CREATION, saved);
+    }
     return saved;
   }
 
@@ -102,9 +113,9 @@ public class ReplacementRepository extends SilverpeasJpaEntityRepository<Replace
     return findByNamedQuery("Replacement.findAllByUsersAndByWorkflow", parameters);
   }
 
-  protected void notifyUsers(final ResourceEvent.Type cause, final Replacement replacement) {
+  private void notifyUsers(final ResourceEvent.Type cause, final Replacement... replacements) {
     try {
-      notifier.notifyEventOn(cause, replacement);
+      notifier.notifyEventOn(cause, replacements);
     } catch (Exception e) {
       SilverLogger.getLogger(this).error(e);
     }

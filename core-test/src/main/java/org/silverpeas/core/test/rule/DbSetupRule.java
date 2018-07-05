@@ -41,6 +41,7 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.test.DataSourceProvider;
+import org.silverpeas.core.test.util.SQLRequester;
 
 import javax.sql.DataSource;
 import java.io.IOException;
@@ -56,9 +57,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -470,60 +469,9 @@ public class DbSetupRule implements TestRule {
     }
   }
 
-  public List<TableLine> mapJdbcSqlQueryResultAsListOfMappedValues(JdbcSqlQuery jdbcSqlQuery)
+  public List<SQLRequester.ResultLine> mapJdbcSqlQueryResultAsListOfMappedValues(JdbcSqlQuery jdbcSqlQuery)
       throws SQLException {
-    final List<Pair<String, Integer>> metaData = new ArrayList<>();
-    return jdbcSqlQuery.execute(row -> {
-      if (metaData.isEmpty()) {
-        ResultSetMetaData rowMetaData = row.getMetaData();
-        for (int i = 1; i <= rowMetaData.getColumnCount(); i++) {
-          metaData.add(Pair.of(rowMetaData.getColumnName(i), rowMetaData.getColumnType(i)));
-        }
-      }
-      TableLine line = new TableLine();
-      for (int i = 1; i <= metaData.size(); i++) {
-        Pair<String, Integer> columnNameAndType = metaData.get(i - 1);
-        String name = columnNameAndType.getLeft();
-        final Object value;
-        int sqlType = columnNameAndType.getRight();
-        switch (sqlType) {
-          case Types.BIGINT:
-            value = row.getLong(i);
-            break;
-          case Types.DECIMAL:
-            value = row.getBigDecimal(i);
-            break;
-          case Types.INTEGER:
-            value = row.getInt(i);
-            break;
-          case Types.TIMESTAMP:
-            value = row.getTimestamp(i);
-            break;
-          case Types.DATE:
-            value = row.getDate(i);
-            break;
-          case Types.BOOLEAN:
-            value = row.getBoolean(i);
-            break;
-          default:
-            value = row.getString(i);
-        }
-        line.set(name, value);
-      }
-      return line;
-    });
+    return SQLRequester.list(jdbcSqlQuery);
   }
 
-  public static class TableLine {
-    private Map<String, Object> values = new LinkedHashMap<>();
-
-    public void set(final String columnName, final Object value) {
-      values.put(columnName.toLowerCase(), value);
-    }
-
-    @SuppressWarnings("unchecked")
-    public <T> T get(String columnName) {
-      return (T) values.get(columnName.toLowerCase());
-    }
-  }
 }
