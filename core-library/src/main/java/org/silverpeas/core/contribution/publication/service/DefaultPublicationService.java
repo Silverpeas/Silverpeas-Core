@@ -40,6 +40,7 @@ import org.silverpeas.core.contribution.publication.dao.SeeAlsoDAO;
 import org.silverpeas.core.contribution.publication.dao.ValidationStepsDAO;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.Link;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
 import org.silverpeas.core.contribution.publication.model.PublicationI18N;
 import org.silverpeas.core.contribution.publication.model.PublicationPK;
@@ -310,7 +311,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       PublicationDetail publi = PublicationDAO.loadRow(con, pk);
       // delete links from another publication to removed publication
       SeeAlsoDAO.deleteLinksByObjectId(con, pk);
-      SeeAlsoDAO.deleteLinksByTargetId(con, pk);
+      SeeAlsoDAO.deleteLinksByTargetId(con, new ResourceReference(pk.getId(), pk.getInstanceId()));
       // delete translations
       PublicationI18NDAO.removeTranslations(con, pk);
 
@@ -598,22 +599,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public void removeFather(NodePK fatherPK) {
-    Connection con = getConnection();
-    try {
-      PublicationPK pubPK = new PublicationPK("useless", fatherPK);
-      PublicationFatherDAO.removeFatherToPublications(con, pubPK, fatherPK);
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("DefaultPublicationService.removeFather()",
-          SilverpeasRuntimeException.ERROR,
-          "publication.REMOVING_FATHER_TO_ALL_PUBLICATIONS_FAILED",
-          "fatherId = " + fatherPK.getId(), e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
   public void removeFathers(PublicationPK pubPK, Collection<String> fatherIds) {
     Connection con = getConnection();
     try {
@@ -657,39 +642,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     } catch (SQLException e) {
       throw new PublicationRuntimeException("DefaultPublicationService.getOrphanPublications()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
-  public Collection<PublicationDetail> getNotOrphanPublications(PublicationPK pubPK) {
-    Connection con = getConnection();
-    try {
-      Collection<PublicationDetail> pubDetails =
-          PublicationDAO.getNotOrphanPublications(con, pubPK);
-      if (I18NHelper.isI18nContentActivated) {
-        setTranslations(con, pubDetails);
-      }
-      return pubDetails;
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("DefaultPublicationService.getNotOrphanPublications()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED", e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
-  public void deleteOrphanPublicationsByCreatorId(PublicationPK pubPK, String creatorId) {
-    Connection con = getConnection();
-    try {
-      PublicationDAO.deleteOrphanPublicationsByCreatorId(con, pubPK, creatorId);
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException(
-          "DefaultPublicationService.deleteOrphanPublicationsByCreatorId()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
-          "creatorId = " + creatorId, e);
     } finally {
       DBUtil.close(con);
     }
@@ -960,28 +912,13 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     }
   }
 
-  /**
-   * Removes links between publications and the specified publication
-   * @param pubPK a publication identifier
-   * @param links list of links to remove
-   */
   @Override
-  public void deleteInfoLinks(PublicationPK pubPK, List<ResourceReference> links) {
-    Connection con = getConnection();
+  @Transactional
+  public void deleteLink(String id) {
     try {
-      for (ResourceReference link : links) {
-        PublicationPK targetPK = new PublicationPK(link.getId(), link.getInstanceId());
-        SeeAlsoDAO.deleteLink(con, pubPK, targetPK);
-      }
-      PublicationDetail detail = PublicationDAO.loadRow(con, pubPK);
-      detail.setUpdateDate(new Date());
-      PublicationDAO.storeRow(con, detail);
+      SeeAlsoDAO.deleteLink(id);
     } catch (Exception e) {
-      throw new PublicationRuntimeException("DefaultPublicationService.deleteInfoLinks()",
-          SilverpeasRuntimeException.ERROR, "publication.UPDATING_INFO_DETAIL_FAILED",
-          "pubId = " + pubPK.getId(), e);
-    } finally {
-      DBUtil.close(con);
+      throw new org.silverpeas.core.SilverpeasRuntimeException("Can't delete seeAlso "+id, e);
     }
   }
 
@@ -993,8 +930,8 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       if (I18NHelper.isI18nContentActivated) {
         setTranslations(con, detail);
       }
-      List<ResourceReference> links = SeeAlsoDAO.getLinks(con, pubPK);
-      List<ResourceReference> reverseLinks = SeeAlsoDAO.getReverseLinks(con, pubPK);
+      List<Link> links = SeeAlsoDAO.getLinks(con, pubPK);
+      List<Link> reverseLinks = SeeAlsoDAO.getReverseLinks(con, pubPK);
       CompletePublication cp = new CompletePublication(detail, links, reverseLinks);
       cp.setValidationSteps(getValidationSteps(pubPK));
       return cp;
@@ -1005,25 +942,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
     } finally {
       DBUtil.close(con);
     }
-  }
-
-  @Override
-  public Collection<PublicationDetail> searchByKeywords(String query, PublicationPK pubPK) {
-    Connection con = getConnection();
-    try {
-      Collection<PublicationDetail> resultList = PublicationDAO.searchByKeywords(con, query, pubPK);
-      if (I18NHelper.isI18nContentActivated) {
-        setTranslations(con, resultList);
-      }
-      return resultList;
-    } catch (Exception e) {
-      throw new PublicationRuntimeException("DefaultPublicationService.searchByKeywords()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
-          "query = " + query, e);
-    } finally {
-      DBUtil.close(con);
-    }
-
   }
 
   @Override
@@ -1101,20 +1019,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   @Override
-  public int getNbPubInFatherPKs(Collection<NodePK> fatherPKs) {
-    Connection con = getConnection();
-    try {
-      return PublicationDAO.getNbPubInFatherPKs(con, fatherPKs);
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("DefaultPublicationService.getNbPubInFatherPKs()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_NUMBER_OF_PUBLICATIONS_FAILED",
-          "fatherPKs = " + fatherPKs, e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
   public Map<String, Integer> getDistributionTree(String instanceId, String statusSubQuery,
       boolean checkVisibility) {
     Connection con = getConnection();
@@ -1148,12 +1052,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
       PublicationPK pubPK, boolean filterOnVisibilityPeriod) {
     return getDetailsByFatherIdsAndStatusList(fatherIds, pubPK, null, null,
         filterOnVisibilityPeriod);
-  }
-
-  @Override
-  public Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
-      PublicationPK pubPK) {
-    return getDetailsByFatherIdsAndStatus(fatherIds, pubPK, null, null);
   }
 
   @Override
@@ -1195,20 +1093,6 @@ public class DefaultPublicationService implements PublicationService, ComponentI
           "DefaultPublicationService.getDetailsByFatherIdsAndStatus()",
           SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_FAILED",
           "fatherIds = " + fatherIds, e);
-    } finally {
-      DBUtil.close(con);
-    }
-  }
-
-  @Override
-  public Collection<PublicationPK> getPubPKsInFatherPKs(Collection<WAPrimaryKey> fatherPKs) {
-    Connection con = getConnection();
-    try {
-      return PublicationFatherDAO.getPubPKsInFatherPKs(con, fatherPKs);
-    } catch (SQLException e) {
-      throw new PublicationRuntimeException("DefaultPublicationService.getPubPKsInFatherPKs()",
-          SilverpeasRuntimeException.ERROR, "publication.GETTING_PUBLICATIONS_PK_FAILED",
-          "fatherPKs = " + fatherPKs, e);
     } finally {
       DBUtil.close(con);
     }
@@ -1685,8 +1569,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         // deletes existing links
         SeeAlsoDAO.deleteLinksByObjectId(con, pubPK);
         for (ResourceReference link : links) {
-          PublicationPK targetPK = new PublicationPK(link.getId(), link.getInstanceId());
-          SeeAlsoDAO.addLink(con, pubPK, targetPK);
+          SeeAlsoDAO.addLink(con, pubPK, link);
         }
       }
     } catch (SQLException e) {

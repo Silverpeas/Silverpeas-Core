@@ -23,6 +23,12 @@
  */
 package org.silverpeas.core.webapi.publication;
 
+import org.silverpeas.core.contribution.publication.model.CompletePublication;
+import org.silverpeas.core.contribution.publication.model.Link;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
+import org.silverpeas.core.security.authorization.AccessControlContext;
+import org.silverpeas.core.security.authorization.AccessControlOperation;
+import org.silverpeas.core.security.authorization.PublicationAccessController;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 import org.silverpeas.core.annotation.RequestScoped;
 import org.silverpeas.core.annotation.Service;
@@ -31,12 +37,15 @@ import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.security.authorization.NodeAccessController;
 
 import javax.inject.Inject;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.net.URI;
 import java.util.List;
 
@@ -67,6 +76,9 @@ public class PublicationResource extends AbstractPublicationResource {
   @Inject
   private NodeAccessController nodeAccessController;
 
+  @Inject
+  private PublicationAccessController publicationAccessController;
+
   @GET
   @Produces(MediaType.APPLICATION_JSON)
   public List<PublicationEntity> getPublications(@QueryParam("node") String nodeId,
@@ -74,6 +86,36 @@ public class PublicationResource extends AbstractPublicationResource {
     List<PublicationEntity> publications = super.getPublications(nodeId, withAttachments);
     setURIToAttachments(publications);
     return publications;
+  }
+
+  @DELETE
+  @Path("{pubId}/links/{linkId}")
+  @Produces(MediaType.APPLICATION_JSON)
+  public Response deleteLink(@PathParam("pubId") String pubId, @PathParam("linkId") String linkId) {
+
+    PublicationPK pk = new PublicationPK(pubId, componentId);
+
+    //Checking publication exists
+    CompletePublication publication = getPublicationService().getCompletePublication(pk);
+    if (publication == null) {
+      throw new WebApplicationException(Response.Status.NOT_FOUND);
+    }
+
+    //Checking publication is modified by user
+    if (!publicationAccessController.isUserAuthorized(getUser().getId(), pk, AccessControlContext
+        .init().onOperationsOf(AccessControlOperation.modification))) {
+      throw new WebApplicationException(Response.Status.FORBIDDEN);
+    }
+
+    List<Link> links = publication.getLinkList();
+    for (Link link : links) {
+      if (link.getId().equals(linkId)) {
+        getPublicationService().deleteLink(linkId);
+        return Response.ok().build();
+      }
+    }
+
+    throw new WebApplicationException(Response.Status.NOT_FOUND);
   }
 
   private void setURIToAttachments(List<PublicationEntity> publications) {

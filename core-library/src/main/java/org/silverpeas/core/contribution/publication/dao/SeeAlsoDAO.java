@@ -30,25 +30,21 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.silverpeas.core.contribution.publication.model.Link;
+import org.silverpeas.core.contribution.publication.model.PublicationPK;
 import org.silverpeas.core.persistence.jdbc.sql.JdbcSqlQuery;
 import org.silverpeas.core.ResourceReference;
 import org.silverpeas.core.persistence.jdbc.DBUtil;
-import org.silverpeas.core.WAPrimaryKey;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
-import org.silverpeas.core.contribution.publication.model.PublicationRuntimeException;
 
 /**
  * Class declaration
  * @author
  */
 public class SeeAlsoDAO {
-  private static String SEEALSO_TABLENAME = "SB_SeeAlso_Link";
+  private static final String SEEALSO_TABLENAME = "SB_SeeAlso_Link";
 
-  /**
-   * Constructor declaration
-   *
-   */
-  public SeeAlsoDAO() {
+  private SeeAlsoDAO() {
+
   }
 
   /**
@@ -67,22 +63,14 @@ public class SeeAlsoDAO {
   /**
    * Method declaration
    * @param con
-   * @param infoPK
-   * @param infoLink
+   * @param objectPK
+   * @param targetPK
    * @throws SQLException
    *
    */
-  public static void addLink(Connection con, WAPrimaryKey objectPK,
-      WAPrimaryKey targetPK) throws SQLException {
-    int newId = -1;
-
-    try {
-      /* Recherche de la nouvelle PK de la table */
-      newId = DBUtil.getNextId(SEEALSO_TABLENAME, "id");
-    } catch (Exception ex) {
-      throw new PublicationRuntimeException("SeeAlsoDAO.addLink()",
-          SilverpeasRuntimeException.ERROR, "root.EX_GET_NEXTID_FAILED", ex);
-    }
+  public static void addLink(Connection con, PublicationPK objectPK,
+      ResourceReference targetPK) throws SQLException {
+    int newId = DBUtil.getNextId(SEEALSO_TABLENAME, "id");
 
     String insertStatement = "insert into " + SEEALSO_TABLENAME
         + " values ( ? , ? , ? , ? , ? )";
@@ -102,25 +90,11 @@ public class SeeAlsoDAO {
     }
   }
 
-  public static void deleteLink(Connection con, WAPrimaryKey objectPK,
-      WAPrimaryKey targetPK) throws SQLException {
-    String deleteStatement = "delete from "
-        + SEEALSO_TABLENAME
-        + " where objectId = ? AND objectInstanceId = ? AND targetId = ? AND targetInstanceId = ? ";
-    PreparedStatement prepStmt = con.prepareStatement(deleteStatement);
-
-    try {
-      prepStmt.setInt(1, Integer.parseInt(objectPK.getId()));
-      prepStmt.setString(2, objectPK.getInstanceId());
-      prepStmt.setInt(3, Integer.parseInt(targetPK.getId()));
-      prepStmt.setString(4, targetPK.getInstanceId());
-      prepStmt.executeUpdate();
-    } finally {
-      DBUtil.close(prepStmt);
-    }
+  public static void deleteLink(String id) throws SQLException {
+    JdbcSqlQuery.createDeleteFor(SEEALSO_TABLENAME).where("id = ?", Integer.parseInt(id)).execute();
   }
 
-  public static void deleteLinksByObjectId(Connection con, WAPrimaryKey objectPK)
+  public static void deleteLinksByObjectId(Connection con, PublicationPK objectPK)
       throws SQLException {
     String deleteStatement = "delete from " + SEEALSO_TABLENAME
         + " where objectId = ? AND objectInstanceId = ? ";
@@ -135,7 +109,7 @@ public class SeeAlsoDAO {
     }
   }
 
-  public static void deleteLinksByTargetId(Connection con, WAPrimaryKey targetPK)
+  public static void deleteLinksByTargetId(Connection con, ResourceReference targetPK)
       throws SQLException {
     String deleteStatement = "delete from " + SEEALSO_TABLENAME
         + " where targetId = ? AND targetInstanceId = ? ";
@@ -153,32 +127,25 @@ public class SeeAlsoDAO {
   /**
    * Method declaration
    * @param con
-   * @param infoPK
+   * @param pubPK
    * @return
    * @throws SQLException
    *
    */
-  public static List<ResourceReference> getLinks(Connection con, WAPrimaryKey objectPK)
-      throws SQLException {
+  public static List<Link> getLinks(Connection con, PublicationPK pubPK) throws SQLException {
     ResultSet rs = null;
-    String selectStatement = "select targetId, targetInstanceId from "
+    String selectStatement = "select id, targetId, targetInstanceId from "
         + SEEALSO_TABLENAME + " where objectId  = ? AND objectInstanceId = ? ";
     PreparedStatement prepStmt = con.prepareStatement(selectStatement);
 
     try {
-      prepStmt.setInt(1, Integer.parseInt(objectPK.getId()));
-      prepStmt.setString(2, objectPK.getInstanceId());
+      prepStmt.setInt(1, Integer.parseInt(pubPK.getId()));
+      prepStmt.setString(2, pubPK.getInstanceId());
       rs = prepStmt.executeQuery();
 
-      String targetId = "";
-      String targetInstanceId = "";
-      List<ResourceReference> list = new ArrayList<ResourceReference>();
+      List<Link> list = new ArrayList<>();
       while (rs.next()) {
-        targetId = Integer.toString(rs.getInt(1));
-        targetInstanceId = rs.getString(2);
-        ResourceReference targetPK = new ResourceReference(targetId, targetInstanceId);
-
-        list.add(targetPK);
+        list.add(getLink(pubPK, rs));
       }
       return list;
     } finally {
@@ -189,36 +156,40 @@ public class SeeAlsoDAO {
   /**
    * gets the publication identifiers which reference given publication
    * @param con SQL connection
-   * @param objectPK publication identifier which are searching referencer
+   * @param pubPK publication identifier which are searching referencer
    * @return a list of publication identifier
    * @throws SQLException
    */
-  public static List<ResourceReference> getReverseLinks(Connection con, WAPrimaryKey objectPK)
+  public static List<Link> getReverseLinks(Connection con, PublicationPK pubPK)
       throws SQLException {
     ResultSet rs = null;
-    String selectStatement = "select objectId, objectInstanceId  from "
+    String selectStatement = "select id, objectId, objectInstanceId  from "
         + SEEALSO_TABLENAME + " where targetId   = ? AND targetInstanceId = ? ";
     PreparedStatement prepStmt = con.prepareStatement(selectStatement);
 
     try {
-      prepStmt.setInt(1, Integer.parseInt(objectPK.getId()));
-      prepStmt.setString(2, objectPK.getInstanceId());
+      prepStmt.setInt(1, Integer.parseInt(pubPK.getId()));
+      prepStmt.setString(2, pubPK.getInstanceId());
       rs = prepStmt.executeQuery();
 
-      String objectId = "";
-      String objectInstanceId = "";
-      List<ResourceReference> list = new ArrayList<ResourceReference>();
+      List<Link> list = new ArrayList<>();
       while (rs.next()) {
-        objectId = Integer.toString(rs.getInt(1));
-        objectInstanceId = rs.getString(2);
-        ResourceReference targetPK = new ResourceReference(objectId, objectInstanceId);
-
-        list.add(targetPK);
+        Link link = getLink(pubPK, rs);
+        link.setReverse(true);
+        list.add(link);
       }
       return list;
     } finally {
       DBUtil.close(rs, prepStmt);
     }
+  }
 
+  private static Link getLink(PublicationPK pubPK, ResultSet rs) throws SQLException {
+    String id = Integer.toString(rs.getInt(1));
+    String targetId = Integer.toString(rs.getInt(2));
+    String targetInstanceId = rs.getString(3);
+    ResourceReference targetPK = new ResourceReference(targetId, targetInstanceId);
+
+    return new Link(id, pubPK, targetPK);
   }
 }
