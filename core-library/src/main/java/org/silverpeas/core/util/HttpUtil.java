@@ -21,39 +21,35 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.io.media.image.option;
 
-import java.util.stream.Stream;
+package org.silverpeas.core.util;
+
+import org.apache.http.HttpHost;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.HttpClients;
+import org.silverpeas.core.util.lang.SystemWrapper;
 
 /**
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-public enum AnchoringPosition {
-  NORTH_WEST("NorthWest"),
-  NORTH("North"),
-  NORTH_EAST("NorthEast"),
-  WEST("West"),
-  CENTER("Center"),
-  EAST("East"),
-  SOUTH_WEST("SouthWest"),
-  SOUTH("South"),
-  SOUTH_EAST("SouthEast"),
-  TILE("tile");
+public class HttpUtil {
 
-  private final String toolName;
-
-  AnchoringPosition(final String toolName) {
-    this.toolName = toolName;
+  private HttpUtil() {
+    throw new IllegalStateException("Utility class");
   }
 
-  public static AnchoringPosition decode(final String anchoringPosition) {
-    return Stream.of(values())
-        .filter(v -> v.toolName.equalsIgnoreCase(anchoringPosition))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public String getToolName() {
-    return toolName;
+  /**
+   * Centralizing the getting of HTTP client configured with proxy host and proxy port if any.
+   * @return a {@link CloseableHttpClient} instance.
+   */
+  public static CloseableHttpClient httpClient() {
+    final HttpClientBuilder builder = HttpClients.custom();
+    final String proxyHost = SystemWrapper.get().getProperty("http.proxyHost");
+    final String proxyPort = SystemWrapper.get().getProperty("http.proxyPort");
+    if (StringUtil.isDefined(proxyHost) && StringUtil.isInteger(proxyPort)) {
+      builder.setProxy(new HttpHost(proxyHost, Integer.parseInt(proxyPort)));
+    }
+    return builder.build();
   }
 }

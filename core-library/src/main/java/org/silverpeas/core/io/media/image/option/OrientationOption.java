@@ -23,37 +23,30 @@
  */
 package org.silverpeas.core.io.media.image.option;
 
-import java.util.stream.Stream;
 
 /**
  * @author Yohann Chastagnier
  */
-public enum AnchoringPosition {
-  NORTH_WEST("NorthWest"),
-  NORTH("North"),
-  NORTH_EAST("NorthEast"),
-  WEST("West"),
-  CENTER("Center"),
-  EAST("East"),
-  SOUTH_WEST("SouthWest"),
-  SOUTH("South"),
-  SOUTH_EAST("SouthEast"),
-  TILE("tile");
+public class OrientationOption extends AbstractImageToolOption {
 
-  private final String toolName;
+  private Orientation orientation = Orientation.AUTO;
 
-  AnchoringPosition(final String toolName) {
-    this.toolName = toolName;
+  /**
+   * Default constructor
+   */
+  private OrientationOption() {
   }
 
-  public static AnchoringPosition decode(final String anchoringPosition) {
-    return Stream.of(values())
-        .filter(v -> v.toolName.equalsIgnoreCase(anchoringPosition))
-        .findFirst()
-        .orElse(null);
+  public static OrientationOption auto() {
+    return new OrientationOption();
   }
 
-  public String getToolName() {
-    return toolName;
+  public Orientation getOrientation() {
+    return orientation;
+  }
+
+  public OrientationOption withOrientation(final Orientation orientation) {
+    this.orientation = orientation;
+    return this;
   }
 }

@@ -24,50 +24,43 @@
 package org.silverpeas.core.io.media.image.option;
 
 
+import java.io.File;
+
 /**
  * @author Yohann Chastagnier
  */
-public class WatermarkTextOption extends AbstractImageToolOption implements Margins {
+public class WatermarkImageOption extends AbstractImageToolOption implements Margins {
 
-  private final String text;
-  private String font = "Arial";
+  private final File image;
+  private CompositionOperation compositionOperation = CompositionOperation.OVER;
   private AnchoringPosition anchoringPosition = AnchoringPosition.SOUTH_EAST;
   private Integer marginX = null;
   private Integer marginY = null;
 
   /**
    * Default constructor
-   * @param text
+   * @param image
    */
-  private WatermarkTextOption(final String text) {
-    this.text = text;
+  private WatermarkImageOption(final File image) {
+    this.image = image;
   }
 
-  public static WatermarkTextOption text(final String text) {
-    return new WatermarkTextOption(text);
+  public static WatermarkImageOption image(final File image) {
+    return new WatermarkImageOption(image);
   }
 
   /**
    * @return the value
    */
-  public String getText() {
-    return text;
-  }
-
-  public String getFont() {
-    return font;
-  }
-
-  public WatermarkTextOption withFont(final String font) {
-    this.font = font;
-    return this;
+  public File getImage() {
+    return image;
   }
 
   public AnchoringPosition getAnchoringPosition() {
     return anchoringPosition;
   }
 
-  public WatermarkTextOption withAnchoringPosition(final AnchoringPosition anchoringPosition) {
+  public WatermarkImageOption withAnchoringPosition(final AnchoringPosition anchoringPosition) {
     this.anchoringPosition = anchoringPosition;
     return this;
   }
@@ -83,9 +76,18 @@ public class WatermarkTextOption extends AbstractImageToolOption implements Marg
   }
 
   @Override
-  public WatermarkTextOption withMargins(final int x, final int y) {
+  public WatermarkImageOption withMargins(final int x, final int y) {
     this.marginX = x;
     this.marginY = y;
+    return this;
+  }
+
+  public CompositionOperation getCompositionOperation() {
+    return compositionOperation;
+  }
+
+  public WatermarkImageOption withCompositionOperation(final CompositionOperation compositionOperation) {
+    this.compositionOperation = compositionOperation;
     return this;
   }
 }
