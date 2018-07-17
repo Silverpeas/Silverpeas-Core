@@ -120,7 +120,7 @@ public class TemplateDesignerRequestRouter extends
         PagesContext context = new PagesContext("myForm", "2", templateDesignerSC.getLanguage(),
             false, "useless", templateDesignerSC.getUserId());
         context.setBorderPrinted(false);
-        if (!template.isProvided()) {
+        if (!template.isLocked()) {
           context.setDesignMode(true);
         }
         request.setAttribute("context", context);
@@ -145,8 +145,11 @@ public class TemplateDesignerRequestRouter extends
         destination = root + "templateHeader.jsp";
       } else if (function.equals("AddTemplate")) {
         PublicationTemplate template = request2Template(request);
-        templateDesignerSC.createTemplate(template);
-        destination = getDestination("ViewTemplate", templateDesignerSC, request);
+        if (templateDesignerSC.createTemplate(template)) {
+          destination = getDestination("ViewTemplate", templateDesignerSC, request);
+        } else {
+          destination = getDestination("Main", templateDesignerSC, request);
+        }
       } else if ("UpdateTemplate".equals(function)) {
         PublicationTemplate template = request2Template(request);
         try {

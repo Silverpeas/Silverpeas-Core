@@ -85,7 +85,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   @XmlElement(required = true, defaultValue = "false")
   private boolean visible = false;
   @XmlElement(defaultValue = "false")
-  private boolean provided = false;
+  private boolean locked = false;
   @XmlElement(required = true, defaultValue = "false")
   private boolean dataEncrypted = false;
   @XmlElementWrapper(name = "spaces")
@@ -564,12 +564,12 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   }
 
   @Override
-  public boolean isProvided() {
-    return provided;
+  public boolean isLocked() {
+    return locked;
   }
 
-  public void setProvided(final boolean provided) {
-    this.provided = provided;
+  public void setLocked(final boolean locked) {
+    this.locked = locked;
   }
 
   @Override
@@ -648,7 +648,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     cloneTemplate.setThumbnail(getThumbnail());
     cloneTemplate.setFileName(getFileName());
     cloneTemplate.setVisible(isVisible());
-    cloneTemplate.setProvided(isProvided());
+    cloneTemplate.setLocked(isLocked());
     cloneTemplate.setDataEncrypted(isDataEncrypted());
     cloneTemplate.setViewFileName(getViewFileName());
     cloneTemplate.setUpdateFileName(getUpdateFileName());

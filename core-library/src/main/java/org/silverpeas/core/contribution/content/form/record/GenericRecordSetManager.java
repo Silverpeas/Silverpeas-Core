@@ -493,29 +493,20 @@ public class GenericRecordSetManager {
 
   public Map<String, Integer> getNumberOfRecordsByTemplateAndComponents(String templateName)
       throws FormException {
-    Map<String, Integer> result = new HashMap<>();
-    PreparedStatement select = null;
-    ResultSet rs = null;
-    Connection con = null;
-
-    try {
-      con = getConnection();
-      select = con.prepareStatement(SELECT_NUMBER_OF_RECORDS_BY_TEMPLATE_AND_COMPONENTS);
+    final Map<String, Integer> result = new HashMap<>();
+    try (final Connection con = getConnection();
+         final PreparedStatement select = con.prepareStatement(SELECT_NUMBER_OF_RECORDS_BY_TEMPLATE_AND_COMPONENTS)) {
       select.setString(1, templateName);
-
-      rs = select.executeQuery();
-
-      while (rs.next()) {
-        String externalId = rs.getString(1);
-        int count = rs.getInt(2);
-        result.put(externalId.substring(0, externalId.indexOf(':')), count);
+      try (final ResultSet rs = select.executeQuery()){
+        while (rs.next()) {
+          final String externalId = rs.getString(1);
+          final int count = rs.getInt(2);
+          result.put(externalId.split(":")[0], count);
+        }
       }
     } catch (SQLException e) {
       throw new FormException("GenericRecordSetManager.getNumberOfRecordsByTemplateAndComponents",
           "form.EXP_SELECT_FAILED", e);
-    } finally {
-      DBUtil.close(rs, select);
-      closeConnection(con);
     }
     return result;
   }

@@ -111,7 +111,7 @@ $(document).ready(function(){
 <%
 browseBar.setDomainName(resource.getString("templateDesigner.toolName"));
 browseBar.setComponentName(resource.getString("templateDesigner.templateList"), "Main");
-browseBar.setPath(resource.getString("templateDesigner.template"));
+browseBar.setPath(formUpdate.getTitle());
 
 if (context.isDesignMode()) {
   operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldText"), "javascript:openWindow('text')");
@@ -149,7 +149,7 @@ out.println(window.printBefore());
 
 if (!context.isDesignMode()) { %>
 <div class="inlineMessage">
-  <%=resource.getString("templateDesigner.form.provided.help")%>
+  <%=resource.getString("templateDesigner.form.locked.help")%>
 </div>
 <% }
 out.println(tabbedPane.print());

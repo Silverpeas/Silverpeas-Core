@@ -138,7 +138,14 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     }
   }
 
-  public void createTemplate(PublicationTemplate template)
+  /**
+   * Creates the given template into repositories.
+   * @param template the template to create.
+   * @return true if well created, false on functional error.
+   * @throws TemplateDesignerException on technical error.
+   * @throws CryptoException on crypto error.
+   */
+  public boolean createTemplate(PublicationTemplate template)
       throws TemplateDesignerException, CryptoException {
     this.template = (PublicationTemplateImpl) template;
     String fileName = string2fileName(template.getName());
@@ -146,13 +153,18 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     String templateDirPath =
         PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir, fileName);
     File templateDir = new File(templateDirPath);
-    if (!templateDir.exists()) {
-      try {
-        FileFolderManager.createFolder(templateDir);
-      } catch (org.silverpeas.core.util.UtilException e) {
-        throw new TemplateDesignerException(getClass().getSimpleName() + ".createTemplate",
-            SilverpeasException.ERROR, "root.EX_NO_MESSAGE", e);
-      }
+    if (templateDir.exists()) {
+      WebMessager.getInstance()
+          .addError(getString("templateDesigner.form.creation.error.existingName"),
+              template.getName());
+      return false;
+    }
+
+    try {
+      FileFolderManager.createFolder(templateDir);
+    } catch (org.silverpeas.core.util.UtilException e) {
+      throw new TemplateDesignerException(getClass().getSimpleName() + ".createTemplate",
+          SilverpeasException.ERROR, "root.EX_NO_MESSAGE", e);
     }
 
     this.template.setFileName(fileName + ".xml");
@@ -182,6 +194,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     updateInProgress = true;
 
     saveTemplate();
+    return true;
   }
 
   private static String string2fileName(String text) {
@@ -566,6 +579,7 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     }
 
     try {
+      newTemplate.setLocked(false);
       newTemplate.setTemplate(template.getDataTemplate());
       newTemplate.setSearchResultTemplate(template.getSearchResultTemplate());
       newTemplate.setSearchTemplate(template.getSearchTemplate());
@@ -579,13 +593,13 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
       copyLayer(newTemplate, template.getUpdateFileName(), false);
 
       createTemplate(newTemplate);
+      WebMessager.getInstance()
+          .addSuccess(getString("templateDesigner.form.duplication.success"));
     } catch (Exception e) {
       WebMessager.getInstance()
           .addSevere(getString("templateDesigner.form.duplication.error"));
       SilverLogger.getLogger(this).error(e);
     }
-    WebMessager.getInstance()
-        .addSuccess(getString("templateDesigner.form.duplication.success"));
   }
 
   private void copyLayer(PublicationTemplateImpl template, String layerFileName, boolean view)
@@ -608,8 +622,12 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
   }
 
   public Map<String, Integer> getNumberOfRecordsByTemplateAndComponents() throws FormException {
-    return getPublicationTemplateManager()
-        .getNumberOfRecordsByTemplateAndComponents(getCurrentTemplate().getFileName());
+    Map<String, Integer> result = Collections.emptyMap();
+    if (getCurrentTemplate() != null) {
+      result = getPublicationTemplateManager()
+          .getNumberOfRecordsByTemplateAndComponents(getCurrentTemplate().getFileName());
+    }
+    return result;
   }
 
   public void deleteTemplate() {
@@ -627,13 +645,12 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
     try {
       FileUtils.deleteDirectory(templateDir);
       FileUtils.forceDelete(templateFile);
+      WebMessager.getInstance()
+          .addSuccess(getString("templateDesigner.form.delete.success"));
     } catch (Exception e) {
       WebMessager.getInstance()
           .addSevere(getString("templateDesigner.form.delete.error"));
       SilverLogger.getLogger(this).error(e);
     }
-
-    WebMessager.getInstance()
-        .addSuccess(getString("templateDesigner.form.delete.success"));
   }
 }

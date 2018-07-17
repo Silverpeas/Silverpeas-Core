@@ -40,6 +40,10 @@
 
 <c:set var="utilization" value="${requestScope.Utilization}"/>
 <c:set var="template" value="${requestScope.Template}"/>
+<c:set var="creationMode" value="${template == null}"/>
+<c:if test="${not creationMode}">
+  <jsp:useBean id="template" type="org.silverpeas.core.contribution.template.publication.PublicationTemplate"/>
+</c:if>
 
 <%@ include file="check.jsp" %>
 <%
@@ -193,10 +197,11 @@ $(function () {
     $(".notApplicableToDirectory").toggle();
   });
 
-  <% if (template.isProvided()) { %>
+  <c:if test="${not creationMode and template.locked}">
     $("input").attr("disabled", true);
+    $("input", $(document.DuplicateForm)).attr("disabled", false);
     $(".layer-delete").css("display", "none");
-  <% } %>
+  </c:if>
 
 });
 </script>
@@ -206,34 +211,40 @@ $(function () {
 <fmt:message var="toolName" key="templateDesigner.toolName"/>
 <fmt:message var="list" key="templateDesigner.templateList"/>
 <fmt:message var="labelTemplate" key="templateDesigner.template"/>
+<c:if test="${not creationMode}">
+  <c:set var="labelTemplate" value="${template.name}"/>
+</c:if>
 <view:browseBar>
   <view:browseBarElt label="${toolName}"/>
   <view:browseBarElt link="Main" label="${list}"/>
   <view:browseBarElt label="${labelTemplate}"/>
 </view:browseBar>
 
-<view:operationPane>
-  <fmt:message var="labelDuplicate" key="GML.action.duplicate"/>
-  <view:operation action="javascript:toDuplicate()" altText="${labelDuplicate}"/>
-  <c:if test="${empty utilization && !template.provided}">
-    <view:operation action="javascript:deleteForm()" altText="${labelDelete}"/>
-  </c:if>
-</view:operationPane>
+<c:if test="${not creationMode}">
+  <view:operationPane>
+    <fmt:message var="labelDuplicate" key="GML.action.duplicate"/>
+    <view:operation action="javascript:toDuplicate()" altText="${labelDuplicate}"/>
+    <c:if test="${empty utilization && !template.locked}">
+      <view:operation action="javascript:deleteForm()" altText="${labelDelete}"/>
+    </c:if>
+  </view:operationPane>
+</c:if>
 
 <view:window>
 
-  <c:if test="${template.provided}">
-    <div class="inlineMessage">
-      <fmt:message key="templateDesigner.form.provided.help"/>
-    </div>
+  <c:if test="${not creationMode}">
+    <c:if test="${template.locked}">
+      <div class="inlineMessage">
+        <fmt:message key="templateDesigner.form.locked.help"/>
+      </div>
+    </c:if>
+    <view:tabs>
+      <fmt:message key="templateDesigner.fields" var="labelTabFields"/>
+      <fmt:message key="templateDesigner.template.specifications" var="labelTabSpec"/>
+        <view:tab label="${labelTabFields}" action="ViewTemplate" selected="false"/>
+      <view:tab label="${labelTabSpec}" action="#" selected="true"/>
+    </view:tabs>
   </c:if>
-
-  <view:tabs>
-    <fmt:message key="templateDesigner.fields" var="labelTabFields"/>
-    <fmt:message key="templateDesigner.template.specifications" var="labelTabSpec"/>
-    <view:tab label="${labelTabFields}" action="ViewTemplate" selected="false"/>
-    <view:tab label="${labelTabSpec}" action="#" selected="true"/>
-  </view:tabs>
 
 <view:frame>
 <% if (cryptoException != null) { %>
@@ -326,37 +337,39 @@ $(function () {
 </div>
 </fieldset>
 
-<fieldset id="utilization" class="skinFieldset">
-  <legend><fmt:message key="templateDesigner.form.utilization"/></legend>
-  <c:choose>
-    <c:when test="${empty utilization}">
-      <div class="inlineMessage"><fmt:message key="templateDesigner.form.utilization.none"/></div>
-    </c:when>
-    <c:otherwise>
-      <fmt:message var="utilApp" key="GML.component"/>
-      <fmt:message var="utilNb" key="templateDesigner.form.utilization.nb"/>
-      <view:arrayPane var="form-utilization" numberLinesPerPage="1000">
-        <view:arrayColumn title="${utilApp}" sortable="false"/>
-        <view:arrayColumn title="${utilNb}" sortable="false"/>
-        <c:forEach var="appId" items="${utilization.keySet()}">
-          <view:arrayLine>
-            <view:arrayCellText>
-              <c:choose>
-                <c:when test="${appId == 'directory'}">
-                  <fmt:message key="templateDesigner.header.directory"/>
-                </c:when>
-                <c:otherwise>
-                  <view:componentPath componentId="${appId}" language="${language}" link="true"/>
-                </c:otherwise>
-              </c:choose>
-            </view:arrayCellText>
-            <view:arrayCellText>${utilization.get(appId)}</view:arrayCellText>
-          </view:arrayLine>
-        </c:forEach>
-      </view:arrayPane>
-    </c:otherwise>
-  </c:choose>
-</fieldset>
+  <c:if test="${not creationMode}">
+    <fieldset id="utilization" class="skinFieldset">
+      <legend><fmt:message key="templateDesigner.form.utilization"/></legend>
+      <c:choose>
+        <c:when test="${empty utilization}">
+          <div class="inlineMessage"><fmt:message key="templateDesigner.form.utilization.none"/></div>
+        </c:when>
+        <c:otherwise>
+          <fmt:message var="utilApp" key="GML.component"/>
+          <fmt:message var="utilNb" key="templateDesigner.form.utilization.nb"/>
+          <view:arrayPane var="form-utilization" numberLinesPerPage="1000">
+            <view:arrayColumn title="${utilApp}" sortable="false"/>
+            <view:arrayColumn title="${utilNb}" sortable="false"/>
+            <c:forEach var="appId" items="${utilization.keySet()}">
+              <view:arrayLine>
+                <view:arrayCellText>
+                  <c:choose>
+                    <c:when test="${appId == 'directory'}">
+                      <fmt:message key="templateDesigner.header.directory"/>
+                    </c:when>
+                    <c:otherwise>
+                      <view:componentPath componentId="${appId}" language="${language}" link="true"/>
+                    </c:otherwise>
+                  </c:choose>
+                </view:arrayCellText>
+                <view:arrayCellText>${utilization.get(appId)}</view:arrayCellText>
+              </view:arrayLine>
+            </c:forEach>
+          </view:arrayPane>
+        </c:otherwise>
+      </c:choose>
+    </fieldset>
+  </c:if>
 
 <fieldset id="customization" class="skinFieldset">
 <legend><fmt:message key="templateDesigner.header.fieldset.customization"/></legend>
@@ -396,14 +409,14 @@ $(function () {
 
 </form>
 
-<% if (!template.isProvided()) { %>
-<view:buttonPane>
-  <fmt:message var="labelButtonValidate" key="GML.validate"/>
-  <fmt:message var="labelButtonCancel" key="GML.cancel"/>
-  <view:button label="${labelButtonValidate}" action="javascript:onclick=sendData();"/>
-  <view:button label="${labelButtonCancel}" action="Main"/>
-</view:buttonPane>
-<% } %>
+  <c:if test="${creationMode or not template.locked}">
+    <view:buttonPane>
+      <fmt:message var="labelButtonValidate" key="GML.validate"/>
+      <fmt:message var="labelButtonCancel" key="GML.cancel"/>
+      <view:button label="${labelButtonValidate}" action="javascript:onclick=sendData();"/>
+      <view:button label="${labelButtonCancel}" action="Main"/>
+    </view:buttonPane>
+  </c:if>
 
 </view:frame>
 </view:window>

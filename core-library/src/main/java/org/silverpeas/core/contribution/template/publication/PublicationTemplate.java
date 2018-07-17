@@ -44,22 +44,22 @@ import org.silverpeas.core.contribution.content.form.form.XmlForm;
  */
 public interface PublicationTemplate {
 
-  public static final String DEFAULT_THUMBNAIL = "/weblib/xmlForms/model1.gif";
+  String DEFAULT_THUMBNAIL = "/weblib/xmlForms/model1.gif";
 
   /**
    * Returns the RecordTemplate of the publication data item.
    */
-  public RecordTemplate getRecordTemplate() throws PublicationTemplateException;
+  RecordTemplate getRecordTemplate() throws PublicationTemplateException;
 
   /**
    * Returns the RecordSet of all the records built from this template.
    */
-  public RecordSet getRecordSet() throws PublicationTemplateException;
+  RecordSet getRecordSet() throws PublicationTemplateException;
 
   /**
    * Returns the Form used to create and update the records built from this template.
    */
-  public Form getUpdateForm() throws PublicationTemplateException;
+  Form getUpdateForm() throws PublicationTemplateException;
 
   /**
    * Returns the XML Form used to create and update the records built from this template.
@@ -67,79 +67,78 @@ public interface PublicationTemplate {
    * @return the XMLForm
    * @throws PublicationTemplateException
    */
-  public XmlForm getUpdateFormAsXMLOne() throws PublicationTemplateException;
+  XmlForm getUpdateFormAsXMLOne() throws PublicationTemplateException;
 
   /**
    * Returns the Form used to view the records built from this template.
    */
-  public Form getViewForm() throws PublicationTemplateException;
+  Form getViewForm() throws PublicationTemplateException;
 
   /**
    * Returns the Form used to search the records built from this template.
    */
-  public Form getSearchForm() throws PublicationTemplateException;
+  Form getSearchForm() throws PublicationTemplateException;
 
-  public void setExternalId(String externalId);
+  void setExternalId(String externalId);
 
-  public String getExternalId();
+  String getExternalId();
 
-  public String getName();
+  String getName();
 
-  public String getDescription();
+  String getDescription();
 
-  public String getThumbnail();
+  String getThumbnail();
 
-  public String getFileName();
+  String getFileName();
 
   /**
-   * Is this publication template is visible to others?
+   * Is this publication template visible to others?
    * @return true if it is visible, false otherwise.
    */
-  public boolean isVisible();
+  boolean isVisible();
 
   /**
-   * Is this publication template is provided by Silverpeas
-   * @return true if it is provided by Silverpeas built-in, false otherwise.
+   * Is this publication template locked, and so not modifiable or deletable?
+   * @return true if it is locked, false otherwise.
    */
-  public boolean isProvided();
+  boolean isLocked();
 
   /**
    * Is the publication records described by this template can be searchable?
    * @return true if the records are searchable, false othersise.
    */
-  public boolean isSearchable();
+  boolean isSearchable();
 
   /**
    * Returns the Form used to view the search result records built from this template.
    */
-  public Form getSearchResultForm() throws PublicationTemplateException;
+  Form getSearchResultForm() throws PublicationTemplateException;
 
   /**
    * Returns all field names which can generate a search facet
    * @return a List of field name
    */
-  public List<String> getFieldsForFacets();
+  List<String> getFieldsForFacets();
 
-  public boolean isRestrictedVisibility();
+  boolean isRestrictedVisibility();
 
-  public List<String> getSpaces();
+  List<String> getSpaces();
 
-  public boolean isRestrictedVisibilityToSpace();
+  boolean isRestrictedVisibilityToSpace();
 
-  public List<String> getApplications();
+  List<String> getApplications();
 
-  public boolean isRestrictedVisibilityToApplication();
+  boolean isRestrictedVisibilityToApplication();
 
-  public List<String> getInstances();
+  List<String> getInstances();
 
-  public boolean isRestrictedVisibilityToInstance();
+  boolean isRestrictedVisibilityToInstance();
 
-  public boolean isDataEncrypted();
+  boolean isDataEncrypted();
 
-  public boolean isViewLayerExist();
+  boolean isViewLayerExist();
 
-  public boolean isUpdateLayerExist();
+  boolean isUpdateLayerExist();
 
-  public boolean isDirectoryUsage();
-
+  boolean isDirectoryUsage();
 }
