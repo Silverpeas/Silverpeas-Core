@@ -31,21 +31,17 @@ import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.io.media.image.AbstractImageTool;
 import org.silverpeas.core.io.media.image.ImageInfoType;
 import org.silverpeas.core.io.media.image.ImageToolDirective;
-import org.silverpeas.core.io.media.image.option.AbstractImageToolOption;
-import org.silverpeas.core.io.media.image.option.AnchoringPosition;
-import org.silverpeas.core.io.media.image.option.BackgroundOption;
-import org.silverpeas.core.io.media.image.option.DimensionOption;
-import org.silverpeas.core.io.media.image.option.TransparencyColorOption;
-import org.silverpeas.core.io.media.image.option.WatermarkTextOption;
+import org.silverpeas.core.io.media.image.option.*;
 
 import javax.inject.Singleton;
 import java.io.File;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Stream;
 
-import static org.silverpeas.core.io.media.image.ImageInfoType.HEIGHT_IN_PIXEL;
-import static org.silverpeas.core.io.media.image.ImageInfoType.WIDTH_IN_PIXEL;
+import static org.silverpeas.core.io.media.image.ImageInfoType.*;
 
 /**
  * @author Yohann Chastagnier
@@ -104,13 +100,15 @@ public class Im4javaImageTool extends AbstractImageTool {
     setSource(op, source, directives);
 
     // Additional options
+    orientation(op, options);
     transparencyColor(op, options);
     background(op, options);
     resize(op, options, directives);
     watermarkText(op, source, options);
+    watermarkImage(op, source, options);
 
     // Destination file
-    setDestination(op, destination, directives);
+    setDestination(op, destination);
 
     // Executing command
     try {
@@ -138,8 +136,7 @@ public class Im4javaImageTool extends AbstractImageTool {
     op.addImage(sb.toString());
   }
 
-  private void setDestination(final IMOperation op, final File destination,
-      final Set<ImageToolDirective> directives) {
+  private void setDestination(final IMOperation op, final File destination) {
     op.addImage(destination.getPath());
   }
 
@@ -160,6 +157,25 @@ public class Im4javaImageTool extends AbstractImageTool {
   }
 
   /**
+   * Centralizes orientation handling
+   * @param op
+   * @param options
+   */
+  private void orientation(final IMOperation op,
+      final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options) {
+
+    // Getting orientation option
+    final OrientationOption option = getOption(options, OrientationOption.class);
+    if (option != null) {
+      if (option.getOrientation() == Orientation.AUTO) {
+        op.autoOrient();
+      } else {
+        op.orient(option.getOrientation().getToolName());
+      }
+    }
+  }
+
+  /**
    * Centralizes background handling
    * @param op
    * @param options
@@ -168,8 +184,8 @@ public class Im4javaImageTool extends AbstractImageTool {
       final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options) {
 
     // Getting transparencyColor option
-    final TransparencyColorOption transparencyColor =
-        getOption(options, TransparencyColorOption.class);
+    final TransparencyColorOption transparencyColor = getOption(options,
+        TransparencyColorOption.class);
     if (transparencyColor != null) {
       op.transparentColor(transparencyColor.getColor());
     }
@@ -217,25 +233,16 @@ public class Im4javaImageTool extends AbstractImageTool {
       throws SilverpeasException {
     WatermarkTextOption watermarkText = getOption(options, WatermarkTextOption.class);
     if (watermarkText != null) {
-      final String[] imageInfo;
-      DimensionOption dimension = getOption(options, DimensionOption.class);
-      if (dimension != null) {
-        imageInfo = new String[2];
-        imageInfo[0] = dimension.getWidth() != null ? String.valueOf(dimension.getWidth()) :
-            getImageInfo(source, WIDTH_IN_PIXEL)[0];
-        imageInfo[1] = dimension.getHeight() != null ? String.valueOf(dimension.getHeight()) :
-            getImageInfo(source, HEIGHT_IN_PIXEL)[0];
-      } else {
-        imageInfo = getImageInfo(source, WIDTH_IN_PIXEL, HEIGHT_IN_PIXEL);
-      }
-      int width = Integer.valueOf(imageInfo[0]);
-      int height = Integer.valueOf(imageInfo[1]);
+      final Integer[] imageInfo = getWidthAndHeight(source, options, false);
+      int width = imageInfo[0];
+      int height = imageInfo[1];
+      int[] margins = computeMargins(width, 0.01, height, 0.1, watermarkText);
 
       int pointSize = (int) Math.rint((width * 0.02) + Math.log(width));
       pointSize = Math.min((int) (height * 0.2), pointSize);
 
-      int minX = (int) Math.max(1, (height * 0.015));
-      int minY = (int) Math.max(1, (height * 0.025));
+      int minX = margins[0];
+      int minY = margins[1];
       int x = (int) (minX + Math.max(1, (pointSize / 2.5)));
       int y = (int) (minY + Math.max(1, (pointSize / 1.75)));
 
@@ -255,8 +262,114 @@ public class Im4javaImageTool extends AbstractImageTool {
   private void drawText(final IMOperation op, final String color, final String text,
       final AnchoringPosition anchoringPosition, final int x, final int y) {
     final String drawSb =
-        "gravity " + anchoringPosition.name() + " fill " + color + " text " + x + "," + y + " '" +
-            text.replace("'", "\\\'") + "'";
+        "gravity " + anchoringPosition.getToolName() + " fill " + color + " text " + x + "," + y +
+            " '" + text.replace("'", "\\\'") + "'";
     op.draw(drawSb);
+  }
+
+  /**
+   * Centralizes image watermarking operation.
+   * @param op the IM operations.
+   * @param source the image source.
+   * @param options the image options.
+   */
+  private void watermarkImage(final IMOperation op, final File source,
+      final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options)
+      throws SilverpeasException {
+    WatermarkImageOption watermarkImage = getOption(options, WatermarkImageOption.class);
+    if (watermarkImage != null) {
+      final Integer[] srcInfo = getWidthAndHeight(source, options, false);
+      int srcWidth = srcInfo[0];
+      int srcHeight = srcInfo[1];
+      int[] margins = computeMargins(srcWidth, 0.01, srcHeight, 0.1, watermarkImage);
+      int marginX = margins[0];
+      int marginY = margins[1];
+      srcWidth -= (marginX * 2);
+      srcHeight -= (marginY * 2);
+
+      final File watermark = watermarkImage.getImage();
+      final Integer[] wInfo = getWidthAndHeight(watermark, options, true);
+      float wWidth = (float) wInfo[0];
+      float wHeight = (float) wInfo[1];
+
+      int width = 0;
+      int height = 0;
+      if (srcWidth < wWidth) {
+        width = srcWidth;
+        height = Math.round(((float) srcWidth) / (wWidth / wHeight));
+      }
+      if (srcHeight < wHeight) {
+        final int widthFromHeight = Math.round(((float) srcHeight) * (wWidth / wHeight));
+        if (widthFromHeight < srcWidth) {
+          width = widthFromHeight;
+          height = srcHeight;
+        }
+      }
+
+      final AnchoringPosition anchoringPosition = watermarkImage.getAnchoringPosition();
+      if (anchoringPosition == AnchoringPosition.TILE) {
+        op.tile();
+      } else {
+        op.gravity(anchoringPosition.getToolName());
+      }
+      op.draw(MessageFormat
+          .format("image {0} {1},{2} {3},{4} ''{5}''",
+              watermarkImage.getCompositionOperation().getToolName(),
+              String.valueOf(marginX),
+              String.valueOf(marginY),
+              String.valueOf(width),
+              String.valueOf(height),
+              watermark.getPath()));
+    }
+  }
+
+  private int[] computeMargins(final int width, final double wFactor, final int height,
+      final double hFactor, final Margins margins) {
+    int marginOffset = (int) Math.rint((width * wFactor) + Math.log(width));
+    marginOffset = Math.min((int) (height * hFactor), marginOffset);
+    int marginX = margins.getMarginX() != null ? margins.getMarginX() : marginOffset;
+    int marginY = margins.getMarginY() != null ? margins.getMarginY() : marginOffset;
+    return new int[]{marginX, marginY};
+  }
+
+  /**
+   * Gets width and height of the source by taking care about dimension and orientation options.
+   * @param source the source.
+   * @param options the options.
+   * @param skipOptions true to skip the options.
+   * @return array containing width and height.
+   * @throws SilverpeasException in case of technical error.
+   */
+  private Integer[] getWidthAndHeight(final File source,
+      final Map<Class<AbstractImageToolOption>, AbstractImageToolOption> options,
+      final boolean skipOptions)
+      throws SilverpeasException {
+    final Orientation orientation = Orientation.decode(getImageInfo(source, ORIENTATION)[0]);
+    final ImageInfoType[] imageInfoTypes =
+        (skipOptions || orientation == null || orientation.ordinal() <= 3)
+        ? new ImageInfoType[]{WIDTH_IN_PIXEL, HEIGHT_IN_PIXEL}
+        : new ImageInfoType[]{HEIGHT_IN_PIXEL, WIDTH_IN_PIXEL};
+    final Integer[] imageInfo = Stream.of(getImageInfo(source, imageInfoTypes))
+                                      .map(Integer::parseInt)
+                                      .toArray(Integer[]::new);
+    final DimensionOption dimension = skipOptions
+        ? null
+        : getOption(options, DimensionOption.class);
+    if (dimension != null) {
+      int width = imageInfo[0];
+      int height = imageInfo[1];
+      float ratio = ((float) width) / ((float) height);
+      if (dimension.getWidth() != null && dimension.getWidth() < width) {
+        width = dimension.getWidth();
+        height = Math.round(((float) dimension.getWidth()) / ratio);
+      }
+      if (dimension.getHeight() != null && dimension.getHeight() < height) {
+        width = Math.round(((float) dimension.getHeight()) * ratio);
+        height = dimension.getHeight();
+      }
+      imageInfo[0] = width;
+      imageInfo[1] = height;
+    }
+    return imageInfo;
   }
 }

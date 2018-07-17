@@ -25,30 +25,32 @@ package org.silverpeas.core.io.media.image.option;
 
 import java.util.stream.Stream;
 
+import static org.silverpeas.core.util.StringUtil.isInteger;
+
 /**
  * @author Yohann Chastagnier
  */
-public enum AnchoringPosition {
-  NORTH_WEST("NorthWest"),
-  NORTH("North"),
-  NORTH_EAST("NorthEast"),
-  WEST("West"),
-  CENTER("Center"),
-  EAST("East"),
-  SOUTH_WEST("SouthWest"),
-  SOUTH("South"),
-  SOUTH_EAST("SouthEast"),
-  TILE("tile");
+public enum Orientation {
+  TOP_LEFT("TopLeft"),
+  TOP_RIGHT("TopRight"),
+  BOTTOM_RIGHT("BottomRight"),
+  BOTTOM_LEFT("BottomLeft"),
+  LEFT_TOP("LeftTop"),
+  RIGHT_TOP("RightTop"),
+  RIGHT_BOTTOM("RightBottom"),
+  LEFT_BOTTOM("LeftBottom"),
+  AUTO("auto");
 
   private final String toolName;
 
-  AnchoringPosition(final String toolName) {
+  Orientation(final String toolName) {
     this.toolName = toolName;
   }
 
-  public static AnchoringPosition decode(final String anchoringPosition) {
+  public static Orientation decode(final String orientation) {
     return Stream.of(values())
-        .filter(v -> v.toolName.equalsIgnoreCase(anchoringPosition))
+        .filter(v -> v.toolName.equalsIgnoreCase(orientation) ||
+            (isInteger(orientation) && (v.ordinal() + 1) == Integer.parseInt(orientation)))
         .findFirst()
         .orElse(null);
   }

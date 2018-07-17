@@ -27,6 +27,8 @@ package org.silverpeas.core.io.media.image;
  * @author Yohann Chastagnier
  */
 public enum ImageInfoType {
+  /** Orientation Tag */
+  ORIENTATION("%[orientation]"),
   /** file size of image read in */
   FILE_SIZE("%b"),
   /** comment meta-data property */

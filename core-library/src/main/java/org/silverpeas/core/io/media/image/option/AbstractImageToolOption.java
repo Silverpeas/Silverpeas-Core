@@ -36,7 +36,7 @@ public abstract class AbstractImageToolOption {
    * @see java.lang.Object#hashCode()
    */
   @Override
-  public int hashCode() {
+  public final int hashCode() {
     return new HashCodeBuilder().append(getClass()).toHashCode();
   }
 
@@ -45,14 +45,14 @@ public abstract class AbstractImageToolOption {
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
-  public boolean equals(final Object obj) {
+  public final boolean equals(final Object obj) {
     if (obj == null) {
       return false;
     }
     if (obj == this) {
       return true;
     }
-    if (obj instanceof AbstractImageToolOption) {
+    if (!(obj instanceof AbstractImageToolOption)) {
       return false;
     }
     final AbstractImageToolOption rhs = (AbstractImageToolOption) obj;

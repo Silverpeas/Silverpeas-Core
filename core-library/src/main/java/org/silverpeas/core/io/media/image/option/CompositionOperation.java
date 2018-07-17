@@ -28,27 +28,20 @@ import java.util.stream.Stream;
 /**
  * @author Yohann Chastagnier
  */
-public enum AnchoringPosition {
-  NORTH_WEST("NorthWest"),
-  NORTH("North"),
-  NORTH_EAST("NorthEast"),
-  WEST("West"),
-  CENTER("Center"),
-  EAST("East"),
-  SOUTH_WEST("SouthWest"),
-  SOUTH("South"),
-  SOUTH_EAST("SouthEast"),
-  TILE("tile");
+public enum CompositionOperation {
+  OVER("Over"),
+  BUMPMAP("Bumpmap"),
+  MULTIPLY("Multiply");
 
   private final String toolName;
 
-  AnchoringPosition(final String toolName) {
+  CompositionOperation(final String toolName) {
     this.toolName = toolName;
   }
 
-  public static AnchoringPosition decode(final String anchoringPosition) {
+  public static CompositionOperation decode(final String compositionOperation) {
     return Stream.of(values())
-        .filter(v -> v.toolName.equalsIgnoreCase(anchoringPosition))
+        .filter(v -> v.toolName.equalsIgnoreCase(compositionOperation))
         .findFirst()
         .orElse(null);
   }

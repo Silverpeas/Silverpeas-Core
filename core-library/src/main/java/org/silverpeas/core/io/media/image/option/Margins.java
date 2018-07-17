@@ -21,39 +21,14 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+
 package org.silverpeas.core.io.media.image.option;
 
-import java.util.stream.Stream;
-
 /**
- * @author Yohann Chastagnier
+ * @author silveryocha
  */
-public enum AnchoringPosition {
-  NORTH_WEST("NorthWest"),
-  NORTH("North"),
-  NORTH_EAST("NorthEast"),
-  WEST("West"),
-  CENTER("Center"),
-  EAST("East"),
-  SOUTH_WEST("SouthWest"),
-  SOUTH("South"),
-  SOUTH_EAST("SouthEast"),
-  TILE("tile");
-
-  private final String toolName;
-
-  AnchoringPosition(final String toolName) {
-    this.toolName = toolName;
-  }
-
-  public static AnchoringPosition decode(final String anchoringPosition) {
-    return Stream.of(values())
-        .filter(v -> v.toolName.equalsIgnoreCase(anchoringPosition))
-        .findFirst()
-        .orElse(null);
-  }
-
-  public String getToolName() {
-    return toolName;
-  }
+public interface Margins {
+  Integer getMarginX();
+  Integer getMarginY();
+  AbstractImageToolOption withMargins(int x, int y);
 }
