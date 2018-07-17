@@ -77,6 +77,7 @@ function openFieldWindow(url, displayer) {
 	}
 }
 
+<% if (context.isDesignMode()) { %>
 $(document).ready(function(){
 	$(".fields").sortable({
 		opacity: 0.4,
@@ -103,43 +104,54 @@ $(document).ready(function(){
 		}
 	});
 });
+<% } %>
 </script>
 </head>
 <body class="yui-skin-sam page_content_admin">
 <%
 browseBar.setDomainName(resource.getString("templateDesigner.toolName"));
 browseBar.setComponentName(resource.getString("templateDesigner.templateList"), "Main");
-browseBar.setPath(resource.getString("templateDesigner.template"));
+browseBar.setPath(formUpdate.getTitle());
 
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldText"), "javascript:openWindow('text')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldTextarea"), resource.getString("templateDesigner.newFieldTextarea"), "javascript:openWindow('textarea')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldURL"), resource.getString("templateDesigner.newFieldURL"), "javascript:openWindow('url')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldEmail"), resource.getString("templateDesigner.newFieldEmail"), "javascript:openWindow('email')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldWysiwyg"), resource.getString("templateDesigner.newFieldWysiwyg"), "javascript:openWindow('wysiwyg')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldRadio"), resource.getString("templateDesigner.newFieldRadio"), "javascript:openWindow('radio')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldCheckbox"), resource.getString("templateDesigner.newFieldCheckbox"), "javascript:openWindow('checkbox')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldList"), "javascript:openWindow('listbox')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldDate"), resource.getString("templateDesigner.newFieldDate"), "javascript:openWindow('date')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldTime"), resource.getString("templateDesigner.newFieldTime"), "javascript:openWindow('time')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldFile"), resource.getString("templateDesigner.newFieldFile"), "javascript:openWindow('file')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldImage"), resource.getString("templateDesigner.newFieldImage"), "javascript:openWindow('image')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldVideo"), resource.getString("templateDesigner.newFieldVideo"), "javascript:openWindow('video')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldMap"), resource.getString("templateDesigner.newFieldMap"), "javascript:openWindow('map')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldUser"), resource.getString("templateDesigner.newFieldUser"), "javascript:openWindow('user')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldMultipleUsers"), resource.getString("templateDesigner.newFieldMultipleUsers"), "javascript:openWindow('multipleUser')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldGroup"), resource.getString("templateDesigner.newFieldGroup"), "javascript:openWindow('group')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldAccessPath"), "javascript:openWindow('accessPath')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldExplorer"), "javascript:openWindow('explorer')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldLdap"), "javascript:openWindow('ldap')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldJdbc"), "javascript:openWindow('jdbc')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldPdc"), "javascript:openWindow('pdc')");
-operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldSequence"), "javascript:openWindow('sequence')");
+if (context.isDesignMode()) {
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldText"), "javascript:openWindow('text')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldTextarea"), resource.getString("templateDesigner.newFieldTextarea"), "javascript:openWindow('textarea')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldURL"), resource.getString("templateDesigner.newFieldURL"), "javascript:openWindow('url')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldEmail"), resource.getString("templateDesigner.newFieldEmail"), "javascript:openWindow('email')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldWysiwyg"), resource.getString("templateDesigner.newFieldWysiwyg"), "javascript:openWindow('wysiwyg')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldRadio"), resource.getString("templateDesigner.newFieldRadio"), "javascript:openWindow('radio')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldCheckbox"), resource.getString("templateDesigner.newFieldCheckbox"), "javascript:openWindow('checkbox')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldList"), "javascript:openWindow('listbox')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldDate"), resource.getString("templateDesigner.newFieldDate"), "javascript:openWindow('date')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldTime"), resource.getString("templateDesigner.newFieldTime"), "javascript:openWindow('time')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldFile"), resource.getString("templateDesigner.newFieldFile"), "javascript:openWindow('file')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldImage"), resource.getString("templateDesigner.newFieldImage"), "javascript:openWindow('image')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldVideo"), resource.getString("templateDesigner.newFieldVideo"), "javascript:openWindow('video')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldMap"), resource.getString("templateDesigner.newFieldMap"), "javascript:openWindow('map')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldUser"), resource.getString("templateDesigner.newFieldUser"), "javascript:openWindow('user')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldMultipleUsers"), resource.getString("templateDesigner.newFieldMultipleUsers"),
+      "javascript:openWindow('multipleUser')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldGroup"), resource.getString("templateDesigner.newFieldGroup"), "javascript:openWindow('group')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldAccessPath"),
+      "javascript:openWindow('accessPath')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldExplorer"), "javascript:openWindow('explorer')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldLdap"), "javascript:openWindow('ldap')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldJdbc"), "javascript:openWindow('jdbc')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldList"), resource.getString("templateDesigner.newFieldPdc"), "javascript:openWindow('pdc')");
+  operationPane.addOperation(resource.getIcon("templateDesigner.newFieldText"), resource.getString("templateDesigner.newFieldSequence"), "javascript:openWindow('sequence')");
+}
 
 TabbedPane tabbedPane = gef.getTabbedPane();
 tabbedPane.addTab(resource.getString("templateDesigner.fields"), "#", true);
 tabbedPane.addTab(resource.getString("templateDesigner.template.specifications"), "EditTemplate", false);
 
 out.println(window.printBefore());
+
+if (!context.isDesignMode()) { %>
+<div class="inlineMessage">
+  <%=resource.getString("templateDesigner.form.locked.help")%>
+</div>
+<% }
 out.println(tabbedPane.print());
 %>
 <view:frame>

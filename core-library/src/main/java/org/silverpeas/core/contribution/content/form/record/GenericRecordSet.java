@@ -240,7 +240,7 @@ public class GenericRecordSet implements RecordSet, Serializable {
 
       // remove data in database
       // the record is associated to one language
-      getGenericRecordSetManager().deleteRecord(recordTemplate, record);
+      getGenericRecordSetManager().deleteRecord(record);
     }
   }
 

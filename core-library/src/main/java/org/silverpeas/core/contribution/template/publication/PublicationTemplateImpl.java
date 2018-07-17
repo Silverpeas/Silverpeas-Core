@@ -84,6 +84,8 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   private boolean directoryUsage = false;
   @XmlElement(required = true, defaultValue = "false")
   private boolean visible = false;
+  @XmlElement(defaultValue = "false")
+  private boolean locked = false;
   @XmlElement(required = true, defaultValue = "false")
   private boolean dataEncrypted = false;
   @XmlElementWrapper(name = "spaces")
@@ -562,6 +564,15 @@ public class PublicationTemplateImpl implements PublicationTemplate {
   }
 
   @Override
+  public boolean isLocked() {
+    return locked;
+  }
+
+  public void setLocked(final boolean locked) {
+    this.locked = locked;
+  }
+
+  @Override
   public boolean isDirectoryUsage() {
     return directoryUsage;
   }
@@ -637,6 +648,7 @@ public class PublicationTemplateImpl implements PublicationTemplate {
     cloneTemplate.setThumbnail(getThumbnail());
     cloneTemplate.setFileName(getFileName());
     cloneTemplate.setVisible(isVisible());
+    cloneTemplate.setLocked(isLocked());
     cloneTemplate.setDataEncrypted(isDataEncrypted());
     cloneTemplate.setViewFileName(getViewFileName());
     cloneTemplate.setUpdateFileName(getUpdateFileName());

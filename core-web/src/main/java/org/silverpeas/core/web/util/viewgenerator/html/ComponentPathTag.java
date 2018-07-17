@@ -23,7 +23,7 @@
  */
 package org.silverpeas.core.web.util.viewgenerator.html;
 
-import org.apache.ecs.ElementContainer;
+import org.apache.ecs.xhtml.a;
 import org.apache.ecs.xhtml.span;
 import org.silverpeas.core.admin.component.model.ComponentInstLight;
 import org.silverpeas.core.admin.service.OrganizationController;
@@ -33,6 +33,7 @@ import org.silverpeas.core.node.model.NodeDetail;
 import org.silverpeas.core.node.model.NodePK;
 import org.silverpeas.core.node.service.NodeService;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.URLUtil;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
@@ -54,6 +55,7 @@ public class ComponentPathTag extends SimpleTagSupport {
   private String separator = " > ";
   private boolean includeComponent = true;
   private String language;
+  private boolean link = false;
 
   public String getComponentId() {
     return componentId;
@@ -95,9 +97,23 @@ public class ComponentPathTag extends SimpleTagSupport {
     this.language = language;
   }
 
+  public boolean isLink() {
+    return link;
+  }
+
+  public void setLink(final boolean link) {
+    this.link = link;
+  }
+
   @Override
   public void doTag() throws JspException, IOException {
     OrganizationController oc = OrganizationControllerProvider.getOrganisationController();
+
+    ComponentInstLight app = oc.getComponentInstLight(componentId);
+    if (app == null) {
+      getOut().print(componentId);
+      return;
+    }
 
     span path = new span();
     path.setClass("sp-path");
@@ -105,8 +121,10 @@ public class ComponentPathTag extends SimpleTagSupport {
     spacePath.setClass("sp-path-spaces");
     path.addElement(spacePath);
     Iterator<SpaceInstLight> spaces = oc.getPathToComponent(componentId).iterator();
+    String spaceId = "";
     while (spaces.hasNext()) {
       SpaceInstLight space = spaces.next();
+      spaceId = space.getId();
       span span = new span(space.getName(language));
       span.setClass("sp-path-space");
       spacePath.addElement(span);
@@ -116,14 +134,33 @@ public class ComponentPathTag extends SimpleTagSupport {
     }
 
     if (includeComponent) {
-      ComponentInstLight app = oc.getComponentInstLight(componentId);
-      span span = new span(app.getLabel(language));
+      String appLabel = app.getLabel(language);
+      span span = new span(appLabel);
       span.setClass("sp-path-app");
 
       path.addElement(getSpanSeparator());
       path.addElement(span);
     }
 
+    appendPathOfNode(path);
+
+    if (link) {
+      a linkElement = new a();
+      String href = URLUtil.getSimpleURL(URLUtil.URL_SPACE, spaceId);
+      if (includeComponent && StringUtil.isDefined(getNodeId())) {
+        href = URLUtil.getSimpleURL(URLUtil.URL_TOPIC, getNodeId(), componentId);
+      } else if (includeComponent) {
+        href = URLUtil.getSimpleURL(URLUtil.URL_COMPONENT, componentId);
+      }
+      linkElement.setHref(href);
+      linkElement.addElement(path);
+      linkElement.output(getOut());
+    } else {
+      path.output(getOut());
+    }
+  }
+
+  private void appendPathOfNode(span path) {
     if (StringUtil.isDefined(getNodeId()) && !NodePK.ROOT_NODE_ID.equals(getNodeId())) {
       span nodePath = new span();
       nodePath.setClass("sp-path-nodes");
@@ -146,10 +183,6 @@ public class ComponentPathTag extends SimpleTagSupport {
       path.addElement(getSpanSeparator());
       path.addElement(nodePath);
     }
-
-    ElementContainer container = new ElementContainer();
-    container.addElement(path);
-    container.output(getOut());
   }
 
   private span getSpanSeparator() {
