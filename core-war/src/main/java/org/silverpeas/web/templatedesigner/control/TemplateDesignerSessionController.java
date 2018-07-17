@@ -29,6 +29,7 @@ import org.silverpeas.core.admin.component.model.LocalizedComponent;
 import org.silverpeas.core.admin.component.model.WAComponent;
 import org.silverpeas.core.admin.service.AdminController;
 import org.silverpeas.core.contribution.content.form.FieldTemplate;
+import org.silverpeas.core.contribution.content.form.FormException;
 import org.silverpeas.core.contribution.content.form.record.GenericFieldTemplate;
 import org.silverpeas.core.contribution.content.form.record.GenericRecordTemplate;
 import org.silverpeas.core.contribution.template.publication.PublicationTemplate;
@@ -604,5 +605,35 @@ public class TemplateDesignerSessionController extends AbstractComponentSessionC
         template.setUpdateLayerAction(PublicationTemplateImpl.LAYER_ACTION_ADD);
       }
     }
+  }
+
+  public Map<String, Integer> getNumberOfRecordsByTemplateAndComponents() throws FormException {
+    return getPublicationTemplateManager()
+        .getNumberOfRecordsByTemplateAndComponents(getCurrentTemplate().getFileName());
+  }
+
+  public void deleteTemplate() {
+    String name = string2fileName(template.getName());
+    String fileName = template.getFileName();
+
+    String templateDirPath =
+        PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir, name);
+    File templateDir = new File(templateDirPath);
+
+    String templateFilePath =
+        PublicationTemplateManager.makePath(PublicationTemplateManager.templateDir, fileName);
+    File templateFile = new File(templateFilePath);
+
+    try {
+      FileUtils.deleteDirectory(templateDir);
+      FileUtils.forceDelete(templateFile);
+    } catch (Exception e) {
+      WebMessager.getInstance()
+          .addSevere(getString("templateDesigner.form.delete.error"));
+      SilverLogger.getLogger(this).error(e);
+    }
+
+    WebMessager.getInstance()
+        .addSuccess(getString("templateDesigner.form.delete.success"));
   }
 }

@@ -32,8 +32,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
 
-<fmt:setLocale value="${requestScope.resources.language}"/>
+<c:set var="language" value="${requestScope.resources.language}"/>
+<fmt:setLocale value="${language}"/>
 <view:setBundle bundle="${requestScope.resources.multilangBundle}"/>
+
+<fmt:message key="GML.delete" var="labelDelete"/>
+
+<c:set var="utilization" value="${requestScope.Utilization}"/>
+<c:set var="template" value="${requestScope.Template}"/>
 
 <%@ include file="check.jsp" %>
 <%
@@ -78,8 +84,6 @@ if (template != null) {
 	action = "UpdateTemplate";
 }
 
-Button validateButton 	= gef.getFormButton(resource.getString("GML.validate"), "javascript:onclick=sendData();", false);
-Button cancelButton 	= gef.getFormButton(resource.getString("GML.cancel"), "Main", false);
 %>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -121,7 +125,7 @@ function sendData() {
 	var errorNb = 0;
 	var title = stripInitialWhitespace(document.templateForm.Name.value);
 	if (title == "") {
-         errorMsg+=" - '<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>\n";
+         errorMsg+=" - '<fmt:message key="GML.name"/>' <fmt:message key="GML.MustBeFilled"/>\n";
          errorNb++;
 	}
 	$("#Visibility_Spaces").val(getTags($("#template-spaces-visibility").tagit("tags")));
@@ -131,11 +135,11 @@ function sendData() {
       document.templateForm.submit();
 		  break;
 	  case 1 :
-		  errorMsg = "<%=resource.getString("GML.ThisFormContains")%> 1 <%=resource.getString("GML.error")%> : \n" + errorMsg;
+		  errorMsg = "<fmt:message key="GML.ThisFormContains"/> 1 <fmt:message key="GML.error"/> : \n" + errorMsg;
       jQuery.popup.error(errorMsg);
 		  break;
 	  default :
-		  errorMsg = "<%=resource.getString("GML.ThisFormContains")%> " + errorNb + " <%=resource.getString("GML.errors")%> :\n" + errorMsg;
+		  errorMsg = "<fmt:message key="GML.ThisFormContains"/> " + errorNb + " <fmt:message key="GML.errors"/> :\n" + errorMsg;
       jQuery.popup.error(errorMsg);
 	}
 }
@@ -155,13 +159,22 @@ function deleteLayer(id) {
 
 function toDuplicate() {
   $('#duplicateDialog').popup('validation', {
-    title : "<%=resource.getString("GML.action.duplicate")%>",
+    title : "<fmt:message key="GML.action.duplicate"/>",
     callback : function() {
       if (StringUtil.isNotDefined($("#DuplicatedFormName").val())) {
-        jQuery.popup.error("'<%=resource.getString("GML.name")%>' <%=resource.getString("GML.MustBeFilled")%>");
+        jQuery.popup.error("'<fmt:message key="GML.name"/>' <fmt:message key="GML.MustBeFilled"/>");
       } else {
         return document.DuplicateForm.submit();
       }
+    }
+  });
+}
+
+function deleteForm() {
+  $('#deleteDialog').popup('validation', {
+    title : "${labelDelete}",
+    callback : function() {
+      return document.DeletionForm.submit();
     }
   });
 }
@@ -180,56 +193,77 @@ $(function () {
     $(".notApplicableToDirectory").toggle();
   });
 
+  <% if (template.isProvided()) { %>
+    $("input").attr("disabled", true);
+    $(".layer-delete").css("display", "none");
+  <% } %>
+
 });
 </script>
 </head>
 <body id="template-header" class="page_content_admin">
-<%
-browseBar.setDomainName(resource.getString("templateDesigner.toolName"));
-browseBar.setComponentName(resource.getString("templateDesigner.templateList"), "Main");
-browseBar.setPath(resource.getString("templateDesigner.template"));
 
-operationPane.addOperation("useless", resource.getString("GML.action.duplicate"), "javascript:toDuplicate()");
+<fmt:message var="toolName" key="templateDesigner.toolName"/>
+<fmt:message var="list" key="templateDesigner.templateList"/>
+<fmt:message var="labelTemplate" key="templateDesigner.template"/>
+<view:browseBar>
+  <view:browseBarElt label="${toolName}"/>
+  <view:browseBarElt link="Main" label="${list}"/>
+  <view:browseBarElt label="${labelTemplate}"/>
+</view:browseBar>
 
-TabbedPane tabbedPane = gef.getTabbedPane();
-if (template != null) {
-	tabbedPane.addTab(resource.getString("templateDesigner.fields"), "ViewTemplate", false);
-}
-tabbedPane.addTab(resource.getString("templateDesigner.template.specifications"), "#", true);
+<view:operationPane>
+  <fmt:message var="labelDuplicate" key="GML.action.duplicate"/>
+  <view:operation action="javascript:toDuplicate()" altText="${labelDuplicate}"/>
+  <c:if test="${empty utilization && !template.provided}">
+    <view:operation action="javascript:deleteForm()" altText="${labelDelete}"/>
+  </c:if>
+</view:operationPane>
 
-out.println(window.printBefore());
+<view:window>
 
-out.println(tabbedPane.print());
-%>
+  <c:if test="${template.provided}">
+    <div class="inlineMessage">
+      <fmt:message key="templateDesigner.form.provided.help"/>
+    </div>
+  </c:if>
+
+  <view:tabs>
+    <fmt:message key="templateDesigner.fields" var="labelTabFields"/>
+    <fmt:message key="templateDesigner.template.specifications" var="labelTabSpec"/>
+    <view:tab label="${labelTabFields}" action="ViewTemplate" selected="false"/>
+    <view:tab label="${labelTabSpec}" action="#" selected="true"/>
+  </view:tabs>
+
 <view:frame>
 <% if (cryptoException != null) { %>
 <div class="inlineMessage-nok"><%=cryptoException.getMessage()%></div>
 <% } %>
 <form name="templateForm" action="<%=action%>" method="post" enctype="multipart/form-data">
 <fieldset id="main" class="skinFieldset">
-<legend><%=resource.getString("templateDesigner.header.fieldset.main") %></legend>
+<legend><fmt:message key="templateDesigner.header.fieldset.main"/></legend>
 <div class="fields">
 <table cellpadding="5" width="100%">
 <tr>
-<td class="txtlibform"><%=resource.getString("GML.name")%> :</td><td><input type="text" name="Name" value="<%=name%>" size="60"/><input type="hidden" name="Scope" value="0"/>&nbsp;<img border="0" src="<%=resource.getIcon("templateDesigner.mandatory")%>" width="5" height="5"/></td>
+<td class="txtlibform"><fmt:message key="GML.name"/> </td><td><input type="text" name="Name" value="<%=name%>" size="60"/><input type="hidden" name="Scope" value="0"/>&nbsp;<img border="0" src="<%=resource.getIcon("templateDesigner.mandatory")%>" width="5" height="5"/></td>
 </tr>
 <% if (template != null) { %>
 <tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.file")%> :</td><td><%=fileName%></td>
+<td class="txtlibform"><fmt:message key="templateDesigner.file"/> </td><td><%=fileName%></td>
 </tr>
 <% } %>
 <tr>
-<td class="txtlibform"><%=resource.getString("GML.description")%> :</td><td><input type="text" name="Description" value="<%=description%>" size="60"/></td>
+<td class="txtlibform"><fmt:message key="GML.description"/> </td><td><input type="text" name="Description" value="<%=description%>" size="60"/></td>
 </tr>
 <tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.searchable")%> :</td><td><input type="checkbox" name="Searchable" value="true" <%=searchable%>/></td>
+<td class="txtlibform"><fmt:message key="templateDesigner.searchable"/> </td><td><input type="checkbox" name="Searchable" value="true" <%=searchable%>/></td>
 </tr>
 <tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.image")%> :</td><td><input type="text" name="Image" value="<%=thumbnail%>" size="60"/></td>
+<td class="txtlibform"><fmt:message key="templateDesigner.image"/> </td><td><input type="text" name="Image" value="<%=thumbnail%>" size="60"/></td>
 </tr>
 <% if (encryptionAvailable) { %>
 <tr>
-  <td class="txtlibform"><%=resource.getString("templateDesigner.header.encrypted")%> :</td>
+  <td class="txtlibform"><fmt:message key="templateDesigner.header.encrypted"/> </td>
   <td><input type="checkbox" name="Encrypted" value="true" <%=encrypted%>/></td>
 </tr>
 <% } %>
@@ -238,18 +272,18 @@ out.println(tabbedPane.print());
 </fieldset>
 
 <fieldset id="visibility" class="skinFieldset">
-<legend><%=resource.getString("templateDesigner.visibility") %></legend>
+<legend><fmt:message key="templateDesigner.visibility"/></legend>
 <div class="fields">
 <table cellpadding="5" width="100%">
 <tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.visible")%> :</td><td><input type="checkbox" name="Visible" value="true" <%=visible%>/></td>
+<td class="txtlibform"><fmt:message key="templateDesigner.visible"/> </td><td><input type="checkbox" name="Visible" value="true" <%=visible%>/></td>
 </tr>
 <tr>
-  <td class="txtlibform"><%=resource.getString("templateDesigner.header.directory")%></td>
+  <td class="txtlibform"><fmt:message key="templateDesigner.header.directory"/></td>
   <td><input type="checkbox" name="DirectoryUsage" id="DirectoryUsage" value="true" <%=directoryUsage%>/></td>
 </tr>
 <tr id="spaces-visibility" class="notApplicableToDirectory">
-	<td class="txtlibform"><%=resource.getString("templateDesigner.header.visible.spaces")%> :</td>
+	<td class="txtlibform"><fmt:message key="templateDesigner.header.visible.spaces"/> </td>
 	<td>
 		<ul id="template-spaces-visibility">
 		<% if (visibilitySpaces != null)  { %>
@@ -262,7 +296,7 @@ out.println(tabbedPane.print());
 	</td>
 </tr>
 <tr id="applications-visibility" class="notApplicableToDirectory">
-	<td class="txtlibform"><%=resource.getString("templateDesigner.header.visible.applications")%> :</td>
+	<td class="txtlibform"><fmt:message key="templateDesigner.header.visible.applications"/> </td>
 	<td><ul id="template-apps-visibility">
 		<% for (LocalizedComponent component : components) {
 			String checked = "";
@@ -276,7 +310,7 @@ out.println(tabbedPane.print());
 	</td>
 </tr>
 <tr id="instances-visibility" class="notApplicableToDirectory">
-	<td class="txtlibform"><%=resource.getString("templateDesigner.header.visible.instances")%> :</td>
+	<td class="txtlibform"><fmt:message key="templateDesigner.header.visible.instances"/> </td>
 	<td>
 		<ul id="template-instances-visibility">
 			<% if (visibilityInstances != null)  { %>
@@ -292,33 +326,65 @@ out.println(tabbedPane.print());
 </div>
 </fieldset>
 
+<fieldset id="utilization" class="skinFieldset">
+  <legend><fmt:message key="templateDesigner.form.utilization"/></legend>
+  <c:choose>
+    <c:when test="${empty utilization}">
+      <div class="inlineMessage"><fmt:message key="templateDesigner.form.utilization.none"/></div>
+    </c:when>
+    <c:otherwise>
+      <fmt:message var="utilApp" key="GML.component"/>
+      <fmt:message var="utilNb" key="templateDesigner.form.utilization.nb"/>
+      <view:arrayPane var="form-utilization" numberLinesPerPage="1000">
+        <view:arrayColumn title="${utilApp}" sortable="false"/>
+        <view:arrayColumn title="${utilNb}" sortable="false"/>
+        <c:forEach var="appId" items="${utilization.keySet()}">
+          <view:arrayLine>
+            <view:arrayCellText>
+              <c:choose>
+                <c:when test="${appId == 'directory'}">
+                  <fmt:message key="templateDesigner.header.directory"/>
+                </c:when>
+                <c:otherwise>
+                  <view:componentPath componentId="${appId}" language="${language}" link="true"/>
+                </c:otherwise>
+              </c:choose>
+            </view:arrayCellText>
+            <view:arrayCellText>${utilization.get(appId)}</view:arrayCellText>
+          </view:arrayLine>
+        </c:forEach>
+      </view:arrayPane>
+    </c:otherwise>
+  </c:choose>
+</fieldset>
+
 <fieldset id="customization" class="skinFieldset">
-<legend><%=resource.getString("templateDesigner.header.fieldset.customization") %></legend>
+<legend><fmt:message key="templateDesigner.header.fieldset.customization"/></legend>
 <div class="inlineMessage">
-<%=resource.getString("templateDesigner.header.customization.overview") %><br/>
-<%=resource.getString("templateDesigner.header.customization.help") %>
+  <fmt:message key="templateDesigner.header.customization.overview"/><br/>
+  <fmt:message key="templateDesigner.header.customization.help"/>
 </div>
 <div class="fields">
 <table cellpadding="5" width="100%">
 <tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.header.customization.view")%> :</td>
+<td class="txtlibform"><fmt:message key="templateDesigner.header.customization.view"/> </td>
 <td>
 	<% if (template != null && template.isViewLayerExist()) { %>
 		<div id="ExistingViewLayer">
 			<a href="<%=URLUtil.getApplicationURL()%>/FormLayer/<%=FilenameUtils.getBaseName(template.getFileName())%>?Layer=view.html" target="_blank">view.html</a>
-			<a href="javascript:deleteLayer('ViewLayer')" title="<%=resource.getString("GML.delete")%>"><img src="../../util/icons/delete.gif" alt="<%=resource.getString("GML.delete")%>" /></a><br/>
+			<a href="javascript:deleteLayer('ViewLayer')" title="${labelDelete}" class="layer-delete"><img src="../../util/icons/delete.gif" alt="${labelDelete}" /></a><br/>
 		</div>
 	<% } %>
 	<input type="file" name="ViewLayer" /><input type="hidden" id="DeleteViewLayer" name="DeleteViewLayer" value="false"/>
 </td>
 </tr>
 <tr>
-<td class="txtlibform"><%=resource.getString("templateDesigner.header.customization.update")%> :</td>
+<td class="txtlibform"><fmt:message key="templateDesigner.header.customization.update"/> </td>
 <td>
 	<% if (template != null && template.isUpdateLayerExist()) { %>
 		<div id="ExistingUpdateLayer">
 			<a href="<%=URLUtil.getApplicationURL()%>/FormLayer/<%=FilenameUtils.getBaseName(template.getFileName())%>?Layer=update.html" target="_blank">update.html</a>
-			<a href="javascript:deleteLayer('UpdateLayer')" title="<%=resource.getString("GML.delete")%>"><img src="../../util/icons/delete.gif" alt="<%=resource.getString("GML.delete")%>" /></a><br/>
+			<a href="javascript:deleteLayer('UpdateLayer')" title="${labelDelete}" class="layer-delete"><img src="../../util/icons/delete.gif" alt="${labelDelete}" /></a><br/>
 		</div>
 	<% } %>
 	<input type="file" name="UpdateLayer" /><input type="hidden" id="DeleteUpdateLayer" name="DeleteUpdateLayer" value="false"/>
@@ -329,14 +395,18 @@ out.println(tabbedPane.print());
 </fieldset>
 
 </form>
-<%
-ButtonPane buttonPane = gef.getButtonPane();
-buttonPane.addButton(validateButton);
-buttonPane.addButton(cancelButton);
-out.println("<br/>"+buttonPane.print());
-%>
+
+<% if (!template.isProvided()) { %>
+<view:buttonPane>
+  <fmt:message var="labelButtonValidate" key="GML.validate"/>
+  <fmt:message var="labelButtonCancel" key="GML.cancel"/>
+  <view:button label="${labelButtonValidate}" action="javascript:onclick=sendData();"/>
+  <view:button label="${labelButtonCancel}" action="Main"/>
+</view:buttonPane>
+<% } %>
+
 </view:frame>
-<% out.println(window.printAfter()); %>
+</view:window>
 
 <div id="duplicateDialog" style="display:none">
 <form name="DuplicateForm" action="DuplicateForm" method="post">
@@ -352,6 +422,12 @@ out.println("<br/>"+buttonPane.print());
     : <fmt:message key="GML.mandatory"/>)
   </div>
 </form>
+</div>
+
+<div id="deleteDialog" style="display: none">
+  <form name="DeletionForm" action="RemoveTemplate" method="post">
+    <fmt:message key="templateDesigner.form.delete.confirm"/>
+  </form>
 </div>
 
 </body>

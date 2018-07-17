@@ -678,4 +678,9 @@ public class PublicationTemplateManager implements ComponentInstanceDeletion {
     return Collections.emptyMap();
   }
 
+  public Map<String, Integer> getNumberOfRecordsByTemplateAndComponents(String templateName)
+      throws FormException {
+    return getGenericRecordSetManager().getNumberOfRecordsByTemplateAndComponents(templateName);
+  }
+
 }
