@@ -72,11 +72,11 @@ public class SPGroup extends BasicJpaEntity<SPGroup, UniqueIntegerIdentifier>
   }
 
   public SPGroup(Integer id) {
-    setId(id);
+    this(id, "");
   }
 
   public SPGroup(Integer id, String name) {
-    this(id);
+    setId(id);
     this.name = name;
   }
 
@@ -127,5 +127,15 @@ public class SPGroup extends BasicJpaEntity<SPGroup, UniqueIntegerIdentifier>
   @Override
   public String toString() {
     return "org.silverpeas.core.admin.domain.driver.SPGroup[ id=" + getId() + " ]";
+  }
+
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return super.equals(obj);
   }
 }

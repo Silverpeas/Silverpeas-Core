@@ -23,14 +23,14 @@
  */
 package org.silverpeas.core.admin.space.quota;
 
-import org.silverpeas.core.silvertrace.SilverTrace;
-import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.admin.space.SpaceInst;
-import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.quota.exception.QuotaException;
 import org.silverpeas.core.admin.quota.model.Quota;
 import org.silverpeas.core.admin.quota.offset.AbstractQuotaCountingOffset;
 import org.silverpeas.core.admin.quota.service.AbstractQuotaService;
+import org.silverpeas.core.admin.service.AdminException;
+import org.silverpeas.core.admin.service.OrganizationControllerProvider;
+import org.silverpeas.core.admin.space.SpaceInst;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
 
@@ -72,11 +72,9 @@ public abstract class AbstractSpaceQuotaService<T extends AbstractSpaceQuotaKey>
           spaceQuotaReached = get(createKeyFrom(fromSpaceTheQuotaIsReached));
         }
       } catch (final AdminException e) {
-        SilverTrace.error("quota", "AbstractSpaceQuotaService.getQuotaReachedFromSpacePath",
-            "quota.MSG_ERR_GET_SPACE", e);
+        SilverLogger.getLogger(this).error(e);
       } catch (final QuotaException qe) {
-        SilverTrace.error("quota", "AbstractSpaceQuotaService.getQuotaReachedFromSpacePath",
-            "quota.EX_CANT_GET_SPACE_QUOTA", qe);
+        SilverLogger.getLogger(this).error(qe);
       }
 
       if (!spaceQuotaReached.isReached()) {

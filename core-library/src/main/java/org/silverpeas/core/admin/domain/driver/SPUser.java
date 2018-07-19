@@ -157,9 +157,12 @@ public class SPUser extends BasicJpaEntity<SPUser, UniqueIntegerIdentifier>
     this.loginmail = "";
     this.password = "";
     this.passwordvalid = 'N';
+    this.lastname = "";
+    this.login = "";
   }
 
   public SPUser(Integer id) {
+    this();
     setId(id);
   }
 
@@ -319,4 +322,13 @@ public class SPUser extends BasicJpaEntity<SPUser, UniqueIntegerIdentifier>
     return "org.silverpeas.core.admin.domain.driver.SPUser[ id=" + getId() + " ]";
   }
 
+  @Override
+  public int hashCode() {
+    return super.hashCode();
+  }
+
+  @Override
+  public boolean equals(final Object obj) {
+    return super.equals(obj);
+  }
 }

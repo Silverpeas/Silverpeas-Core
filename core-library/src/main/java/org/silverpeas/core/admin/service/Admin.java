@@ -23,6 +23,7 @@
  */
 package org.silverpeas.core.admin.service;
 
+import org.silverpeas.core.admin.RightProfile;
 import org.silverpeas.core.admin.component.ApplicationResourcePasting;
 import org.silverpeas.core.admin.component.ComponentInstanceDeletion;
 import org.silverpeas.core.admin.component.ComponentInstancePostConstruction;
@@ -114,9 +115,33 @@ class Admin implements Administration {
    * Silverpeas.
    */
   private static final String ADMIN_ID = "0";
+
+  /**
+   * Text to pass in the exception's messages
+   */
   private static final String REMOVE_OF = "Suppression de ";
   private static final String INDEX_SPACE_SCOPE = "Spaces";
   private static final String INDEX_COMPONENT_SCOPE = "Components";
+  private static final String SPACE = "space";
+  private static final String SUBSPACES_OF_SPACE = "subspaces of space ";
+  private static final String COMPONENT = "component";
+  private static final String PROFILE = "profile";
+  private static final String SPACE_PROFILE = "space profile";
+  private static final String GROUP = "group";
+  private static final String ACCESSIBLE_BY_USER = "accessible by user ";
+  private static final String USER = "user ";
+  private static final String IN_GROUP = "in group ";
+  private static final String GROUP_PROFILE = "group profile";
+  private static final String DOMAIN_ID_PARAM = "domainId";
+  private static final String LOGIN_PARAM = "login";
+  private static final String DOMAIN = "domain";
+  private static final String COMPONENTS_IN_SPACE = "components in space ";
+  private static final String AVAILABLE_TO_USER = "available to user ";
+  private static final String ADMIN_SYNCHRONIZE_GROUP = "admin.synchronizeGroup";
+  private static final String ADMIN_SYNCHRONIZE_DOMAIN = "admin.synchronizeSilverpeasWithDomain";
+  private static final String ADMIN_SYNCHRONIZE_USERS = "admin.synchronizeUsers";
+  private static final String ADMIN_SYNCHRONIZE_GROUPS = "admin.synchronizeGroups";
+  private static final String ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS = "admin.checkOutGroups";
 
   // Divers
   private final Object semaphore = new Object();
@@ -250,7 +275,7 @@ class Admin implements Administration {
   }
 
   private void addSpaceInTreeCache(SpaceInstLight space, boolean addSpaceToSuperSpace)
-      throws NumberFormatException, AdminException {
+      throws AdminException {
     Space spaceInCache = new Space();
     spaceInCache.setSpace(space);
     List<ComponentInstLight> components = componentManager.getComponentsInSpace(space.getLocalId());
@@ -354,7 +379,7 @@ class Admin implements Administration {
       } catch (Exception e1) {
         SilverLogger.getLogger(this).error(e1);
       }
-      throw new AdminException(failureOnAdding("space", spaceInst.getName()), e);
+      throw new AdminException(failureOnAdding(SPACE, spaceInst.getName()), e);
     }
   }
 
@@ -422,7 +447,7 @@ class Admin implements Administration {
       deleteSpaceIndex(spaceInst);
       return spaceId;
     } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("space", spaceId), e);
+      throw new AdminException(failureOnDeleting(SPACE, spaceId), e);
     }
   }
 
@@ -485,7 +510,7 @@ class Admin implements Administration {
       cache.opAddSpace(spaceInst);
       addSpaceInTreeCache(getSpaceInstLight(driverSpaceId), true);
     } catch (Exception e) {
-      throw new AdminException(failureOnRestoring("space", spaceId), e);
+      throw new AdminException(failureOnRestoring(SPACE, spaceId), e);
     }
   }
 
@@ -494,7 +519,7 @@ class Admin implements Administration {
     try {
       return getSpaceInstById(getDriverSpaceId(spaceId));
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("space", spaceId), e);
+      throw new AdminException(failureOnGetting(SPACE, spaceId), e);
     }
   }
 
@@ -517,7 +542,7 @@ class Admin implements Administration {
       }
       return spaceManager.copy(spaceInst);
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("space", String.valueOf(spaceId)), e);
+      throw new AdminException(failureOnGetting(SPACE, String.valueOf(spaceId)), e);
     }
   }
 
@@ -536,7 +561,7 @@ class Admin implements Administration {
 
       return asDriverSpaceIds;
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("subspaces of space ", domainFatherId), e);
+      throw new AdminException(failureOnGetting(SUBSPACES_OF_SPACE, domainFatherId), e);
     }
   }
 
@@ -566,7 +591,7 @@ class Admin implements Administration {
       createSpaceIndex(spaceLight);
       return spaceInstNew.getId();
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("space", spaceInstNew.getId()), e);
+      throw new AdminException(failureOnUpdate(SPACE, spaceInstNew.getId()), e);
     }
   }
 
@@ -591,7 +616,7 @@ class Admin implements Administration {
         }
       }
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("space", spaceId), e);
+      throw new AdminException(failureOnUpdate(SPACE, spaceId), e);
     }
   }
 
@@ -628,7 +653,7 @@ class Admin implements Administration {
         }
       }
     } catch (AdminException e) {
-      throw new AdminException(failureOnUpdate("space", space.getId()), e);
+      throw new AdminException(failureOnUpdate(SPACE, space.getId()), e);
     }
   }
 
@@ -766,7 +791,7 @@ class Admin implements Administration {
       componentInst.setDomainFatherId(getClientSpaceId(componentInst.getDomainFatherId()));
       return componentInst;
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("component", sClientComponentId), e);
+      throw new AdminException(failureOnGetting(COMPONENT, sClientComponentId), e);
     }
   }
 
@@ -776,7 +801,7 @@ class Admin implements Administration {
       int driverComponentId = getDriverComponentId(componentId);
       return componentManager.getComponentInstLight(driverComponentId);
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("component", componentId), e);
+      throw new AdminException(failureOnGetting(COMPONENT, componentId), e);
     }
   }
 
@@ -802,7 +827,7 @@ class Admin implements Administration {
       }
       return componentManager.copy(componentInst);
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("component", String.valueOf(componentId)), e);
+      throw new AdminException(failureOnGetting(COMPONENT, String.valueOf(componentId)), e);
     }
   }
 
@@ -845,7 +870,7 @@ class Admin implements Administration {
       TreeCache.addComponent(component, getDriverSpaceId(component.getDomainFatherId()));
       createComponentIndex(component);
     } catch (Exception e) {
-      throw new AdminException(failureOnRestoring("component", componentId));
+      throw new AdminException(failureOnRestoring(COMPONENT, componentId));
     }
   }
 
@@ -947,7 +972,7 @@ class Admin implements Administration {
     } catch (QuotaException e) {
       throw e;
     } catch (Exception e) {
-      throw new AdminException(failureOnAdding("component", componentInst.getName()), e);
+      throw new AdminException(failureOnAdding(COMPONENT, componentInst.getName()), e);
     }
   }
 
@@ -1042,7 +1067,7 @@ class Admin implements Administration {
 
       return componentId;
     } catch (SQLException|ContentManagerException e) {
-      throw new AdminException(failureOnDeleting("component", componentId), e);
+      throw new AdminException(failureOnDeleting(COMPONENT, componentId), e);
     }
   }
 
@@ -1054,7 +1079,7 @@ class Admin implements Administration {
       componentManager.updateComponentOrder(driverComponentId, orderNum);
       cache.opUpdateComponent(componentManager.getComponentInst(driverComponentId, null));
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("component", componentId), e);
+      throw new AdminException(failureOnUpdate(COMPONENT, componentId), e);
     }
   }
 
@@ -1081,7 +1106,7 @@ class Admin implements Administration {
 
       return componentClientId;
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("component", component.getId()), e);
+      throw new AdminException(failureOnUpdate(COMPONENT, component.getId()), e);
     }
   }
 
@@ -1113,7 +1138,7 @@ class Admin implements Administration {
         setSpaceProfilesToComponent(component, null);
       }
     } catch (AdminException e) {
-      throw new AdminException(failureOnUpdate("component", component.getId()), e);
+      throw new AdminException(failureOnUpdate(COMPONENT, component.getId()), e);
     }
   }
 
@@ -1195,7 +1220,9 @@ class Admin implements Administration {
   @Override
   public void setSpaceProfilesToComponent(ComponentInst component, SpaceInst space)
       throws AdminException {
-    WAComponent waComponent = componentRegistry.getWAComponent(component.getName()).get();
+    WAComponent waComponent = componentRegistry.getWAComponent(component.getName())
+        .orElseThrow(
+            () -> new AdminException("No such component with name " + component.getName()));
     List<Profile> componentRoles = waComponent.getProfiles();
 
     if (space == null) {
@@ -1262,8 +1289,8 @@ class Admin implements Administration {
     }
     for (ProfileInst objectProfile : objectsProfiles) {
       try {
-        List<String> groupIdsToRemove = new ArrayList<String>();
-        List<String> userIdsToRemove = new ArrayList<String>();
+        List<String> groupIdsToRemove = new ArrayList<>();
+        List<String> userIdsToRemove = new ArrayList<>();
         List<String> groupIds = objectProfile.getAllGroups();
         for (String groupId : groupIds) {
           if (!isComponentAvailableByGroup(componentId, groupId)) {
@@ -1440,20 +1467,20 @@ class Admin implements Administration {
 
   @Override
   public void setComponentPlace(String componentId, String idComponentBefore,
-      ComponentInst[] m_BrothersComponents) throws AdminException {
+      ComponentInst[] brothersComponents) throws AdminException {
     int orderNum = 0;
     int i;
     ComponentInst theComponent = getComponentInst(componentId);
 
-    for (i = 0; i < m_BrothersComponents.length; i++) {
-      if (idComponentBefore.equals(m_BrothersComponents[i].getId())) {
+    for (i = 0; i < brothersComponents.length; i++) {
+      if (idComponentBefore.equals(brothersComponents[i].getId())) {
         theComponent.setOrderNum(orderNum);
         updateComponentOrderNum(theComponent.getId(), orderNum);
         orderNum++;
       }
-      if (m_BrothersComponents[i].getOrderNum() != orderNum) {
-        m_BrothersComponents[i].setOrderNum(orderNum);
-        updateComponentOrderNum(m_BrothersComponents[i].getId(), orderNum);
+      if (brothersComponents[i].getOrderNum() != orderNum) {
+        brothersComponents[i].setOrderNum(orderNum);
+        updateComponentOrderNum(brothersComponents[i].getId(), orderNum);
       }
       orderNum++;
     }
@@ -1571,7 +1598,7 @@ class Admin implements Administration {
       }
       return sProfileId;
     } catch (Exception e) {
-      throw new AdminException(failureOnAdding("profile", profileInst.getName()), e);
+      throw new AdminException(failureOnAdding(PROFILE, profileInst.getName()), e);
     }
   }
 
@@ -1609,7 +1636,7 @@ class Admin implements Administration {
 
       return profileId;
     } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("profile", profileId), e);
+      throw new AdminException(failureOnDeleting(PROFILE, profileId), e);
     }
   }
 
@@ -1652,7 +1679,7 @@ class Admin implements Administration {
 
       return newProfile.getId();
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("profile", newProfile.getId()), e);
+      throw new AdminException(failureOnUpdate(PROFILE, newProfile.getId()), e);
     }
   }
 
@@ -1701,7 +1728,7 @@ class Admin implements Administration {
       cache.opAddSpaceProfile(spaceProfile);
       return sSpaceProfileId;
     } catch (Exception e) {
-      throw new AdminException(failureOnAdding("space profile", spaceProfile.getName()), e);
+      throw new AdminException(failureOnAdding(SPACE_PROFILE, spaceProfile.getName()), e);
     }
   }
 
@@ -1743,7 +1770,7 @@ class Admin implements Administration {
 
       return sSpaceProfileId;
     } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("space profile", sSpaceProfileId), e);
+      throw new AdminException(failureOnDeleting(SPACE_PROFILE, sSpaceProfileId), e);
     }
   }
 
@@ -1797,7 +1824,7 @@ class Admin implements Administration {
 
       return spaceProfileNewId;
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("space profile", newSpaceProfile.getId()), e);
+      throw new AdminException(failureOnUpdate(SPACE_PROFILE, newSpaceProfile.getId()), e);
     }
   }
 
@@ -1960,7 +1987,7 @@ class Admin implements Administration {
     try {
       return addGroup(group, false);
     } catch (Exception e) {
-      throw new AdminException(failureOnAdding("group", group.getName()), e);
+      throw new AdminException(failureOnAdding(GROUP, group.getName()), e);
     }
   }
 
@@ -1975,7 +2002,7 @@ class Admin implements Administration {
       cache.opAddGroup(group);
       return sGroupId;
     } catch (Exception e) {
-      throw new AdminException(failureOnAdding("group", group.getName()), e);
+      throw new AdminException(failureOnAdding(GROUP, group.getName()), e);
     }
   }
 
@@ -1984,7 +2011,7 @@ class Admin implements Administration {
     try {
       return deleteGroupById(sGroupId, false);
     } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("group", sGroupId), e);
+      throw new AdminException(failureOnDeleting(GROUP, sGroupId), e);
     }
   }
 
@@ -1993,7 +2020,7 @@ class Admin implements Administration {
     // Get group information
     GroupDetail  group = getGroup(sGroupId);
     if (group == null) {
-      throw new AdminException(unknown("group", sGroupId));
+      throw new AdminException(unknown(GROUP, sGroupId));
     }
     try {
 
@@ -2017,7 +2044,7 @@ class Admin implements Administration {
       });
       return sReturnGroupId;
     } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("group", group.getId()), e);
+      throw new AdminException(failureOnDeleting(GROUP, group.getId()), e);
     }
   }
 
@@ -2026,7 +2053,7 @@ class Admin implements Administration {
     try {
       return updateGroup(group, false);
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("group", group.getId()), e);
+      throw new AdminException(failureOnUpdate(GROUP, group.getId()), e);
     }
   }
 
@@ -2037,7 +2064,7 @@ class Admin implements Administration {
       cache.opUpdateGroup(getGroup(sGroupId));
       return sGroupId;
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("group", group.getId()), e);
+      throw new AdminException(failureOnUpdate(GROUP, group.getId()), e);
     }
   }
 
@@ -2050,7 +2077,7 @@ class Admin implements Administration {
       cache.opUpdateGroup(getGroup(sGroupId));
 
     } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("user " + sUserId, "in group " + sGroupId), e);
+      throw new AdminException(failureOnDeleting(USER + sUserId, IN_GROUP + sGroupId), e);
     }
   }
 
@@ -2061,7 +2088,7 @@ class Admin implements Administration {
       groupManager.addUserInGroup(sUserId, sGroupId);
       cache.opUpdateGroup(getGroup(sGroupId));
     } catch (Exception e) {
-      throw new AdminException(failureOnAdding("user " + sUserId, "in group " + sGroupId), e);
+      throw new AdminException(failureOnAdding(USER + sUserId, IN_GROUP + sGroupId), e);
     }
   }
 
@@ -2093,7 +2120,7 @@ class Admin implements Administration {
       // sSpaceProfileId, null));
       return sProfileId;
     } catch (Exception e) {
-      throw new AdminException(failureOnAdding("group profile", groupProfileInst.getName()), e);
+      throw new AdminException(failureOnAdding(GROUP_PROFILE, groupProfileInst.getName()), e);
     }
   }
 
@@ -2109,7 +2136,7 @@ class Admin implements Administration {
       groupProfileManager.deleteGroupProfileInst(groupProfileInst);
       return groupId;
     } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("group profile", groupId), e);
+      throw new AdminException(failureOnDeleting(GROUP_PROFILE, groupId), e);
     }
   }
 
@@ -2126,7 +2153,7 @@ class Admin implements Administration {
         // Update the group profile in tables
         groupProfileManager.updateGroupProfileInst(oldSpaceProfile, groupProfileInstNew);
       } catch (Exception e) {
-        throw new AdminException(failureOnUpdate("group profile", groupProfileInstNew.getId()), e);
+        throw new AdminException(failureOnUpdate(GROUP_PROFILE, groupProfileInstNew.getId()), e);
       }
     }
     return sSpaceProfileNewId;
@@ -2249,8 +2276,8 @@ class Admin implements Administration {
   @Override
   public String getUserIdByAuthenticationKey(String authenticationKey) throws AdminException {
     Map<String, String> userParameters = domainDriverManager.authenticate(authenticationKey);
-    String login = userParameters.get("login");
-    String domainId = userParameters.get("domainId");
+    String login = userParameters.get(LOGIN_PARAM);
+    String domainId = userParameters.get(DOMAIN_ID_PARAM);
     return userManager.getUserIdByLoginAndDomain(login, domainId);
   }
 
@@ -2295,7 +2322,7 @@ class Admin implements Administration {
       cache.opUpdateUser(userDetail);
     } catch (Exception e) {
       throw new AdminException(
-          failureOnAdding("user " + userDetail.getId(), "in domain " + targetDomainId), e);
+          failureOnAdding(USER + userDetail.getId(), "in domain " + targetDomainId), e);
     }
   }
 
@@ -2533,7 +2560,7 @@ class Admin implements Administration {
 
       return id;
     } catch (Exception e) {
-      throw new AdminException(failureOnAdding("domain", theDomain.getName()), e);
+      throw new AdminException(failureOnAdding(DOMAIN, theDomain.getName()), e);
     }
   }
 
@@ -2543,7 +2570,7 @@ class Admin implements Administration {
       DomainCache.removeDomain(domain.getId());
       return domainDriverManager.updateDomain(domain);
     } catch (Exception e) {
-      throw new AdminException(failureOnUpdate("domain", domain.getId()), e);
+      throw new AdminException(failureOnUpdate(DOMAIN, domain.getId()), e);
     }
   }
 
@@ -2577,7 +2604,7 @@ class Admin implements Administration {
 
       return domainId;
     } catch (Exception e) {
-      throw new AdminException(failureOnDeleting("domain", domainId), e);
+      throw new AdminException(failureOnDeleting(DOMAIN, domainId), e);
     }
   }
 
@@ -2608,7 +2635,7 @@ class Admin implements Administration {
       }
       return domain;
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("domain", domainId), e);
+      throw new AdminException(failureOnGetting(DOMAIN, domainId), e);
     }
   }
 
@@ -2707,13 +2734,13 @@ class Admin implements Administration {
     try {
       // Authenticate the given user
       Map<String, String> loginDomain = domainDriverManager.authenticate(sKey, removeKey);
-      if ((!loginDomain.containsKey("login")) || (!loginDomain.containsKey("domainId"))) {
+      if ((!loginDomain.containsKey(LOGIN_PARAM)) || (!loginDomain.containsKey(DOMAIN_ID_PARAM))) {
         throw new AdminException(undefined("domain for authentication key " + sKey));
       }
 
       // Get the Silverpeas userId
-      String sLogin = loginDomain.get("login");
-      String sDomainId = loginDomain.get("domainId");
+      String sLogin = loginDomain.get(LOGIN_PARAM);
+      String sDomainId = loginDomain.get(DOMAIN_ID_PARAM);
 
       DomainDriver synchroDomain = domainDriverManager.getDomainDriver(sDomainId);
       // Get the user Id or import it if the domain accept it
@@ -2811,7 +2838,7 @@ class Admin implements Administration {
   }
 
   private String[] getUserRootSpaceIds(List<String> componentIds) throws AdminException {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     // getting all root spaces (sorted)
     String[] rootSpaceIds = getAllRootSpaceIds();
     // retain only allowed root spaces
@@ -2831,12 +2858,12 @@ class Admin implements Administration {
       return getUserSubSpaceIds(componentIds, spaceId);
     } catch (Exception e) {
       throw new AdminException(
-          failureOnGetting("subspaces of space " + spaceId, "accessible by user " + sUserId), e);
+          failureOnGetting(SUBSPACES_OF_SPACE + spaceId, ACCESSIBLE_BY_USER + sUserId), e);
     }
   }
 
   private String[] getUserSubSpaceIds(List<String> componentIds, String spaceId) {
-    List<String> result = new ArrayList<String>();
+    List<String> result = new ArrayList<>();
     // getting all subspaces
     List<SpaceInstLight> subspaces = TreeCache.getSubSpaces(getDriverSpaceId(spaceId));
     for (SpaceInstLight subspace : subspaces) {
@@ -2904,7 +2931,7 @@ class Admin implements Administration {
       return result;
     } catch (Exception e) {
       throw new AdminException(
-          failureOnGetting("subspaces of space " + spaceId, "accessible by user " + userId), e);
+          failureOnGetting(SUBSPACES_OF_SPACE + spaceId, ACCESSIBLE_BY_USER + userId), e);
     }
   }
 
@@ -2932,7 +2959,7 @@ class Admin implements Administration {
       return allowedComponents;
     } catch (Exception e) {
       throw new AdminException(
-          failureOnGetting("components in space " + spaceId, "accessible by user " + userId), e);
+          failureOnGetting(COMPONENTS_IN_SPACE + spaceId, ACCESSIBLE_BY_USER + userId), e);
     }
   }
 
@@ -2958,6 +2985,9 @@ class Admin implements Administration {
 
     // Step 3 - add root space to hashtable
     SpaceInstLight rootSpace = getSpaceInstLight(driverSpaceId);
+    if (rootSpace == null) {
+      throw new AdminException("No such space " + spaceId);
+    }
     spaceTrees.put(rootSpace.getId(), new SpaceAndChildren(rootSpace));
 
     // Step 4 - build dependances
@@ -3054,7 +3084,7 @@ class Admin implements Administration {
         new SpaceWithSubSpacesAndComponents(new SpaceInstLight());
     List<String> componentIds = getAllowedComponentIds(userId);
     String[] spaceIds = getUserRootSpaceIds(componentIds);
-    List<SpaceWithSubSpacesAndComponents> spaces = new ArrayList<SpaceWithSubSpacesAndComponents>();
+    List<SpaceWithSubSpacesAndComponents> spaces = new ArrayList<>();
     for (String spaceId : spaceIds) {
       SpaceWithSubSpacesAndComponents space = getAllowedTreeview(componentIds, spaceId);
       spaces.add(space);
@@ -3076,14 +3106,14 @@ class Admin implements Administration {
 
     // process subspaces
     List<SpaceWithSubSpacesAndComponents> subSpaces =
-        new ArrayList<SpaceWithSubSpacesAndComponents>();
+        new ArrayList<>();
     for (String subSpaceId : getUserSubSpaceIds(componentIds, spaceId)) {
       subSpaces.add(getAllowedTreeview(componentIds, subSpaceId));
     }
     space.setSubSpaces(subSpaces);
 
     // process components
-    List<ComponentInstLight> allowedComponents = new ArrayList<ComponentInstLight>();
+    List<ComponentInstLight> allowedComponents = new ArrayList<>();
     List<ComponentInstLight> allComponents = TreeCache.getComponents(getDriverSpaceId(spaceId));
     for (ComponentInstLight component : allComponents) {
       if (componentIds.contains(component.getId())) {
@@ -3125,7 +3155,7 @@ class Admin implements Administration {
     try {
       return getSpaceInstLight(getDriverSpaceId(sClientSpaceId));
     } catch (Exception e) {
-      throw new AdminException(failureOnGetting("space", sClientSpaceId), e);
+      throw new AdminException(failureOnGetting(SPACE, sClientSpaceId), e);
     }
   }
 
@@ -3276,7 +3306,7 @@ class Admin implements Administration {
       return manageableRootSpaceIds.toArray(new String[manageableRootSpaceIds.size()]);
     } catch (Exception e) {
       throw new AdminException(
-          failureOnGetting("subspaces of space " + sParentSpaceId,
+          failureOnGetting(SUBSPACES_OF_SPACE + sParentSpaceId,
               "that are manageable by user" + sUserId), e);
     }
   }
@@ -3354,8 +3384,8 @@ class Admin implements Administration {
       // return getClientComponentIds(asAvailCompoIds);
     } catch (Exception e) {
       throw new AdminException(
-          failureOnGetting("components in space " + sClientSpaceId,
-              "available to user " + sUserId), e);
+          failureOnGetting(COMPONENTS_IN_SPACE + sClientSpaceId,
+              AVAILABLE_TO_USER + sUserId), e);
     }
   }
 
@@ -3382,7 +3412,7 @@ class Admin implements Administration {
       List<String> toCheck = Arrays.asList(getUserManageableSpaceIds(userId));
       List<SpaceInstLight> path = getPathToComponent(componentId);
       for (SpaceInstLight space : path) {
-        if (toCheck.contains(space.getLocalId())) {
+        if (toCheck.contains(String.valueOf(space.getLocalId()))) {
           manageable = true;
           break;
         }
@@ -3405,7 +3435,7 @@ class Admin implements Administration {
     } catch (Exception e) {
       throw new AdminException(
           failureOnGetting("root components in space " + sClientSpaceId,
-              "available to user " + sUserId), e);
+              AVAILABLE_TO_USER + sUserId), e);
     }
   }
 
@@ -3432,7 +3462,7 @@ class Admin implements Administration {
       return result;
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("root components in space " + sClientSpaceId,
-          "available to user " + sUserId), e);
+          AVAILABLE_TO_USER + sUserId), e);
     }
   }
 
@@ -3462,8 +3492,8 @@ class Admin implements Administration {
       return componentIds.toArray(new String[componentIds.size()]);
     } catch (Exception e) {
       throw new AdminException(
-          failureOnGetting("components in space " + sClientSpaceId,
-              "available to user " + sUserId), e);
+          failureOnGetting(COMPONENTS_IN_SPACE + sClientSpaceId,
+              AVAILABLE_TO_USER + sUserId), e);
     }
   }
 
@@ -3520,10 +3550,8 @@ class Admin implements Administration {
     for (ComponentInstLight component : components) {
       List<SpaceInstLight> path = TreeCache.getComponentPath(component.getId());
       for (SpaceInstLight space : path) {
-        if (getDriverSpaceId(space.getFatherId()) == driverSpaceId) {
-          if (!spaces.contains(space)) {
-            spaces.add(space);
-          }
+        if (getDriverSpaceId(space.getFatherId()) == driverSpaceId && !spaces.contains(space)) {
+          spaces.add(space);
         }
       }
     }
@@ -3561,7 +3589,7 @@ class Admin implements Administration {
     } catch (Exception e) {
       throw new AdminException(
           failureOnGetting("instances of component " + sComponentName,
-              "available to user " + sUserId), e);
+              AVAILABLE_TO_USER + sUserId), e);
     }
   }
 
@@ -3676,22 +3704,20 @@ class Admin implements Administration {
           getDriverComponentId(sClientComponentId), getDriverSpaceId(sClientSpaceId));
 
       for (ProfileInst profile : componentInst.getAllProfilesInst()) {
-        if (profile != null) {
-          if (profile.getName().equals(sProfile) || bAllProfiles) {
-            // add direct users
-            alUserIds.addAll(profile.getAllUsers());
+        if (profile != null && (profile.getName().equals(sProfile) || bAllProfiles)) {
+          // add direct users
+          alUserIds.addAll(profile.getAllUsers());
 
-            // add users of groups
-            List<String> groupIds = profile.getAllGroups();
-            for (String groupId : groupIds) {
-              List<String> subGroupIds = groupManager.getAllSubGroupIdsRecursively(groupId);
-              // add current group
-              subGroupIds.add(groupId);
-              if (subGroupIds != null && subGroupIds.size() > 0) {
-                UserDetail[] users = userManager.getAllUsersInGroups(subGroupIds);
-                for (UserDetail user : users) {
-                  alUserIds.add(user.getId());
-                }
+          // add users of groups
+          List<String> groupIds = profile.getAllGroups();
+          for (String groupId : groupIds) {
+            List<String> subGroupIds = groupManager.getAllSubGroupIdsRecursively(groupId);
+            // add current group
+            subGroupIds.add(groupId);
+            if (subGroupIds != null && !subGroupIds.isEmpty()) {
+              UserDetail[] users = userManager.getAllUsersInGroups(subGroupIds);
+              for (UserDetail user : users) {
+                alUserIds.add(user.getId());
               }
             }
           }
@@ -3959,7 +3985,7 @@ class Admin implements Administration {
           SynchroGroupReport.setReportLevel(Level.DEBUG);
           SynchroGroupReport.startSynchro();
         }
-        SynchroGroupReport.warn("admin.synchronizeGroup", "Synchronisation du groupe '" + group.
+        SynchroGroupReport.warn(ADMIN_SYNCHRONIZE_GROUP, "Synchronisation du groupe '" + group.
             getName() + "' - Regle de synchronisation = \"" + rule + "\"");
         List<String> actualUserIds = Arrays.asList(group.getUserIds());
         // Getting users according to rule
@@ -3972,11 +3998,11 @@ class Admin implements Administration {
             if (!actualUserIds.contains(userId)) {
               newUsers.add(userId);
               SynchroGroupReport
-                  .info("admin.synchronizeGroup", "Ajout de l'utilisateur " + userId);
+                  .info(ADMIN_SYNCHRONIZE_GROUP, "Ajout de l'utilisateur " + userId);
             }
           }
         }
-        SynchroGroupReport.warn("admin.synchronizeGroup",
+        SynchroGroupReport.warn(ADMIN_SYNCHRONIZE_GROUP,
             "Ajout de " + newUsers.size() + " utilisateur(s)");
         if (!newUsers.isEmpty()) {
           SynchroGroupReport.debug("admin.synchronizeGroup()",
@@ -3992,16 +4018,16 @@ class Admin implements Administration {
           if (userIds == null || !userIds.contains(actualUserId)) {
             removedUsers.add(actualUserId);
             SynchroGroupReport
-                .info("admin.synchronizeGroup", "Suppression de l'utilisateur " + actualUserId);
+                .info(ADMIN_SYNCHRONIZE_GROUP, "Suppression de l'utilisateur " + actualUserId);
           }
         }
-        SynchroGroupReport.warn("admin.synchronizeGroup", REMOVE_OF + removedUsers.size()
+        SynchroGroupReport.warn(ADMIN_SYNCHRONIZE_GROUP, REMOVE_OF + removedUsers.size()
             + " utilisateur(s)");
         if (!removedUsers.isEmpty()) {
           groupManager.removeUsersFromGroup(removedUsers, groupId);
         }
       } catch (Exception e) {
-        SynchroGroupReport.error("admin.synchronizeGroup",
+        SynchroGroupReport.error(ADMIN_SYNCHRONIZE_GROUP,
             "Error during the processing of synchronization rule of group '" + groupId + "': " +
                 e.getMessage(), null);
         throw new AdminException("Fail to synchronize group " + groupId, e);
@@ -4307,7 +4333,7 @@ class Admin implements Administration {
       }
       SynchroDomainReport.startSynchro();
       try {
-        SynchroDomainReport.warn("admin.synchronizeSilverpeasWithDomain",
+        SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_DOMAIN,
             "Domain '" + domainDriverManager.getDomain(sDomainId).getName() + "', Id : "
             + sDomainId);
         // Start synchronization
@@ -4335,7 +4361,7 @@ class Admin implements Administration {
 
         // End synchronization
         String sDomainSpecificErrors = domainDriverManager.endSynchronization(sDomainId, false);
-        SynchroDomainReport.warn("admin.synchronizeSilverpeasWithDomain", "----------------"
+        SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_DOMAIN, "----------------"
             + sDomainSpecificErrors);
         return sReport + "\n----------------\n" + sDomainSpecificErrors;
       } catch (Exception e) {
@@ -4345,7 +4371,7 @@ class Admin implements Administration {
         } catch (Exception e1) {
           SilverLogger.getLogger(this).error(e1);
         }
-        SynchroDomainReport.error("admin.synchronizeSilverpeasWithDomain",
+        SynchroDomainReport.error(ADMIN_SYNCHRONIZE_DOMAIN,
             "Problème lors de la synchronisation : " + e.getMessage(), null);
         throw new AdminException(
             "Fail to synchronize domain " + sDomainId + ". Report: " + sReport, e);
@@ -4370,13 +4396,13 @@ class Admin implements Administration {
     silverpeasUser.setLastName(distantUser.getLastName());
     silverpeasUser.seteMail(distantUser.geteMail());
     silverpeasUser.setLogin(distantUser.getLogin());
-    if (distantUser.isDeactivatedState()) {
-      // In this case, the user account is deactivated from the LDAP
-      silverpeasUser.setState(distantUser.getState());
-    } else if (distantUser.isValidState() && silverpeasUser.isDeactivatedState()) {
-      // In this case, the user account is activated from the LDAP, so the Silverpeas user
-      // account is again activated only if it was deactivated. Indeed, if it was blocked for
-      // example, it is still blocked after a synchronization
+    if (distantUser.isDeactivatedState() ||
+        (distantUser.isValidState() && silverpeasUser.isDeactivatedState())) {
+      // The user account is deactivated from the LDAP
+      // or
+      // The user account is activated from the LDAP, so the Silverpeas user
+      // account is again activated only if it was deactivated. Indeed, if it was blocked
+      // for example, it is still blocked after a synchronization
       silverpeasUser.setState(distantUser.getState());
     }
   }
@@ -4393,7 +4419,7 @@ class Admin implements Administration {
     Collection<UserDetail> updateUsers = new ArrayList<>();
     Collection<UserDetail> removedUsers = new ArrayList<>();
 
-    SynchroDomainReport.warn("admin.synchronizeUsers", "Starting users synchronization...");
+    SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, "Starting users synchronization...");
     try {
       // Get all users of the domain from distant datasource
       DomainDriver domainDriver = domainDriverManager.getDomainDriver(domainId);
@@ -4402,11 +4428,11 @@ class Admin implements Administration {
       message = distantUDs.length
           + " user(s) have been changed in LDAP since the last synchronization";
       sReport.append(message).append("\n");
-      SynchroDomainReport.info("admin.synchronizeUsers", message);
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, message);
 
       // Get all users of the domain from Silverpeas
       UserDetail[] silverpeasUDs = userManager.getAllUsersInDomain(domainId);
-      SynchroDomainReport.info("admin.synchronizeUsers", "Adding or updating users in database...");
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, "Adding or updating users in database...");
 
       // Add new users or update existing ones from distant datasource
       for (UserDetail distantUD : distantUDs) {
@@ -4436,7 +4462,7 @@ class Admin implements Administration {
 
       if (!threaded || (threaded && delUsersOnDiffSynchro)) {
         // Delete obsolete users from Silverpeas
-        SynchroDomainReport.info("admin.synchronizeUsers", "Removing users from database...");
+        SynchroDomainReport.info(ADMIN_SYNCHRONIZE_USERS, "Removing users from database...");
         distantUDs = domainDriverManager.getAllUsers(domainId);
         for (UserDetail silverpeasUD : silverpeasUDs) {
           boolean bFound = false;
@@ -4464,14 +4490,14 @@ class Admin implements Administration {
 
       message = "Users synchronization terminated";
       sReport.append(message).append("\n");
-      SynchroDomainReport.warn("admin.synchronizeUsers", message);
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
       message = "# of updated users : " + updateUsers.size() + ", added : " + addedUsers.size()
           + ", removed : " + removedUsers.size();
       sReport.append(message).append("\n");
-      SynchroDomainReport.warn("admin.synchronizeUsers", message);
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
       return sReport.toString();
     } catch (Exception e) {
-      SynchroDomainReport.error("admin.synchronizeUsers", "Problem during synchronization of users : "
+      SynchroDomainReport.error(ADMIN_SYNCHRONIZE_USERS, "Problem during synchronization of users : "
           + e.getMessage(), null);
       throw new AdminException("Fail to synchronize domain " + domainId
           + ". Report: " + sReport, e);
@@ -4496,9 +4522,9 @@ class Admin implements Administration {
     try {
       String silverpeasId = userManager.updateUser(distantUD);
       updatedUsers.add(distantUD);
-      String message = "user " + distantUD.getDisplayedName() + " updated (id:" + silverpeasId
+      String message = USER + distantUD.getDisplayedName() + " updated (id:" + silverpeasId
           + " / specificId:" + specificId + ")";
-      SynchroDomainReport.warn("admin.synchronizeUsers", message);
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
       sReport.append(message).append("\n");
     } catch (AdminException aeMaj) {
       SilverLogger.getLogger(this).error("Full synchro: error while updating user " + specificId,
@@ -4506,7 +4532,7 @@ class Admin implements Administration {
       String errorMessage = "problem updating user " + distantUD.getDisplayedName() + " (specificId:"
           + specificId + ") - " + aeMaj.getMessage();
       sReport.append(errorMessage).append("\n");
-      SynchroDomainReport.warn("admin.synchronizeUsers", errorMessage);
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, errorMessage);
       sReport.append("user hasn't been updated\n");
     }
   }
@@ -4520,21 +4546,21 @@ class Admin implements Administration {
         String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:"
             + specificId + ") - Login and LastName must be set !!!";
         sReport.append(message).append("\n");
-        SynchroDomainReport.warn("admin.synchronizeUsers", message);
+        SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
         sReport.append("user has not been added\n");
       } else {
 
         addedUsers.add(distantUD);
-        String message = "user " + distantUD.getDisplayedName() + " added (id:" + silverpeasId
+        String message = USER + distantUD.getDisplayedName() + " added (id:" + silverpeasId
             + " / specificId:" + specificId + ")";
         sReport.append(message).append("\n");
-        SynchroDomainReport.warn("admin.synchronizeUsers", message);
+        SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
       }
     } catch (AdminException ae) {
       SilverLogger.getLogger(this).error("Full synchro: error while adding user " + specificId, ae);
       String message = "problem adding user " + distantUD.getDisplayedName() + "(specificId:"
           + specificId + ") - " + ae.getMessage();
-      SynchroDomainReport.warn("admin.synchronizeUsers", message);
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
       sReport.append(message).append("\n");
       sReport.append("user has not been added\n");
     }
@@ -4546,17 +4572,17 @@ class Admin implements Administration {
     try {
       userManager.deleteUser(silverpeasUD, true);
       deletedUsers.add(silverpeasUD);
-      String message = "user " + silverpeasUD.getDisplayedName() + " deleted (id:" + specificId
+      String message = USER + silverpeasUD.getDisplayedName() + " deleted (id:" + specificId
           + ")";
       sReport.append(message).append("\n");
-      SynchroDomainReport.warn("admin.synchronizeUsers", message);
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
     } catch (AdminException aeDel) {
       SilverLogger.getLogger(this).error("Full synchro: error while deleting user " + specificId,
           aeDel);
       String message = "problem deleting user " + silverpeasUD.getDisplayedName() + " (specificId:"
           + specificId + ") - " + aeDel.getMessage();
       sReport.append(message).append("\n");
-      SynchroDomainReport.warn("admin.synchronizeUsers", message);
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_USERS, message);
       sReport.append("user has not been deleted\n");
     }
   }
@@ -4604,20 +4630,20 @@ class Admin implements Administration {
     int iNbGroupsAdded = 0;
     int iNbGroupsMaj = 0;
     int iNbGroupsDeleted = 0;
-    SynchroDomainReport.warn("admin.synchronizeGroups", "Starting groups synchronization...");
+    SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_GROUPS, "Starting groups synchronization...");
     try {
       // Get all root groups of the domain from distant datasource
       GroupDetail[] distantRootGroups = domainDriverManager.getAllRootGroups(domainId);
       // Get all groups of the domain from Silverpeas
       GroupDetail[] silverpeasGroups = groupManager.getGroupsOfDomain(domainId);
 
-      SynchroDomainReport.info("admin.synchronizeGroups", "Adding or updating groups in database...");
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, "Adding or updating groups in database...");
       // Check for new groups resursively
       sReport += checkOutGroups(domainId, silverpeasGroups, distantRootGroups, allDistantGroups,
           userIds, null, iNbGroupsAdded, iNbGroupsMaj);
 
       // Delete obsolete groups
-      SynchroDomainReport.info("admin.synchronizeGroups", "Removing groups from database...");
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, "Removing groups from database...");
       GroupDetail[] distantGroups = allDistantGroups.values().toArray(
           new GroupDetail[allDistantGroups.size()]);
       for (GroupDetail silverpeasGroup : silverpeasGroups) {
@@ -4626,9 +4652,8 @@ class Admin implements Administration {
 
         // search for group in distant datasource
         for (int nJ = 0; nJ < distantGroups.length && !bFound; nJ++) {
-          if (distantGroups[nJ].getSpecificId().equals(specificId)) {
-            bFound = true;
-          } else if (shouldFallbackGroupNames && distantGroups[nJ].getName().equals(specificId)) {
+          if (distantGroups[nJ].getSpecificId().equals(specificId) ||
+              shouldFallbackGroupNames && distantGroups[nJ].getName().equals(specificId)) {
             bFound = true;
           }
         }
@@ -4639,7 +4664,7 @@ class Admin implements Administration {
             groupManager.deleteGroup(silverpeasGroup, true);
             iNbGroupsDeleted++;
             sReport += "deleting group " + silverpeasGroup.getName() + "(id:" + specificId + ")\n";
-            SynchroDomainReport.warn("admin.synchronizeGroups", "GroupDetail " + silverpeasGroup.getName()
+            SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_GROUPS, "GroupDetail " + silverpeasGroup.getName()
                 + " deleted (SpecificId:" + specificId + ")");
           } catch (AdminException aeDel) {
             SilverLogger.getLogger(this).error("Full synchro: error while deleting group " +
@@ -4651,13 +4676,13 @@ class Admin implements Administration {
         }
       }
       sReport += "Groups synchronization terminated\n";
-      SynchroDomainReport.info("admin.synchronizeGroups",
+      SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS,
           "# of groups updated : " + iNbGroupsMaj + ", added : " + iNbGroupsAdded
           + ", deleted : " + iNbGroupsDeleted);
-      SynchroDomainReport.warn("admin.synchronizeGroups", "Groups synchronization terminated");
+      SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_GROUPS, "Groups synchronization terminated");
       return sReport;
     } catch (Exception e) {
-      SynchroDomainReport.error("admin.synchronizeGroups",
+      SynchroDomainReport.error(ADMIN_SYNCHRONIZE_GROUPS,
           "Problème lors de la synchronisation des groupes : " + e.getMessage(), null);
       throw new AdminException("Fails to synchronize groups in domain " + domainId
           + ".Report: " + sReport, e);
@@ -4692,11 +4717,8 @@ class Admin implements Administration {
       for (int nJ = 0;
            nJ < existingGroups.length && !bFound;
            nJ++) {
-        if (existingGroups[nJ].getSpecificId().equals(specificId)) {
-          bFound = true;
-          testedGroup.setId(existingGroups[nJ].getId());
-        } else if (shouldFallbackGroupNames && existingGroups[nJ].getSpecificId().equals(
-            testedGroup.getName())) {
+        if (existingGroups[nJ].getSpecificId().equals(specificId) || (shouldFallbackGroupNames &&
+            existingGroups[nJ].getSpecificId().equals(testedGroup.getName()))) {
           bFound = true;
           testedGroup.setId(existingGroups[nJ].getId());
         }
@@ -4706,22 +4728,25 @@ class Admin implements Administration {
 
       // Set the Parent Id
       if (bFound) {
-        SynchroDomainReport.debug("admin.checkOutGroups", "avant maj du groupe " + specificId
+        SynchroDomainReport.debug(
+            ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS, "avant maj du groupe " + specificId
             + ", recherche de ses groupes parents");
       } else {
-        SynchroDomainReport.debug("admin.checkOutGroups", "avant ajout du groupe " + specificId
+        SynchroDomainReport.debug(
+            ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS, "avant ajout du groupe " + specificId
             + ", recherche de ses groupes parents");
       }
       String[] groupParentsIds = domainDriverManager.getGroupMemberGroupIds(domainId, testedGroup.
           getSpecificId());
       if ((groupParentsIds == null) || (groupParentsIds.length == 0)) {
         testedGroup.setSuperGroupId(null);
-        SynchroDomainReport.debug("admin.checkOutGroups", "le groupe " + specificId + " n'a pas de père");
+        SynchroDomainReport.debug(
+            ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS, "le groupe " + specificId + " n'a pas de père");
       } else {
         testedGroup.setSuperGroupId(superGroupId);
         if (superGroupId != null)// sécurité
         {
-          SynchroDomainReport.debug("admin.checkOutGroups",
+          SynchroDomainReport.debug(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
               "le groupe " + specificId + " a pour père le groupe " + domainDriverManager.getGroup(
                   superGroupId).getSpecificId() + " d'Id base " + superGroupId);
         }
@@ -4746,7 +4771,7 @@ class Admin implements Administration {
             iNbGroupsMaj++;
             silverpeasId = testedGroup.getId();
             report += "updating group " + testedGroup.getName() + "(id:" + specificId + ")\n";
-            SynchroDomainReport.warn("admin.checkOutGroups", "maj groupe " + testedGroup.getName()
+            SynchroDomainReport.warn(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS, "maj groupe " + testedGroup.getName()
                 + " (id:" + silverpeasId + ") OK");
           } else// le name groupe non renseigné
           {
@@ -4768,7 +4793,8 @@ class Admin implements Administration {
             iNbGroupsAdded++;
 
             report += "adding group " + testedGroup.getName() + "(id:" + specificId + ")\n";
-            SynchroDomainReport.warn("admin.checkOutGroups", "ajout groupe " + testedGroup.getName()
+            SynchroDomainReport.warn(
+                ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS, "ajout groupe " + testedGroup.getName()
                 + " (id:" + silverpeasId + ") OK");
           } else { // le name groupe non renseigné
 
@@ -4788,7 +4814,7 @@ class Admin implements Administration {
           GroupDetail[] cleanSubGroups = removeCrossReferences(subGroups,
               allIncluededGroups, specificId);
           if (cleanSubGroups != null && cleanSubGroups.length > 0) {
-            SynchroDomainReport.info("admin.checkOutGroups",
+            SynchroDomainReport.info(ADMIN_SYNCHRONIZE_CHECK_OUT_GROUPS,
                 "Ajout ou mise à jour de " + cleanSubGroups.length + " groupes fils du groupe "
                 + specificId + "...");
             report += checkOutGroups(domainId, existingGroups, cleanSubGroups,
@@ -5318,7 +5344,7 @@ class Admin implements Administration {
   @SuppressWarnings("unchecked")
   private String[] getDirectComponentProfileIdsOfUser(String sUserId) throws AdminException {
     try {
-      return profileManager.getProfileIdsOfUser(sUserId, Collections.EMPTY_LIST);
+      return profileManager.getProfileIdsOfUser(sUserId, Collections.emptyList());
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("component profiles of user", sUserId), e);
     }
@@ -5345,7 +5371,7 @@ class Admin implements Administration {
   private String[] getComponentObjectProfileIdsOfUserType(String userId) throws AdminException {
     try {
       // retrieve value from database
-      return profileManager.getAllComponentObjectProfileIdsOfUser(userId, Collections.EMPTY_LIST);
+      return profileManager.getAllComponentObjectProfileIdsOfUser(userId, Collections.emptyList());
     } catch (Exception e) {
       throw new AdminException(failureOnGetting("component profiles of user", userId), e);
     }
@@ -5376,62 +5402,44 @@ class Admin implements Administration {
       if (currentSourceSpaceProfile != null) {
         SpaceInstLight spaceInst =
             getSpaceInstLight(getDriverSpaceId(currentSourceSpaceProfile.getSpaceFatherId()));
-        if (!spaceInst.isPersonalSpace()) {// do not treat the personal space
-          switch (context.getTargetType()) {
-            case USER:
-              currentSourceSpaceProfile.addUser(context.getTargetId());
-              break;
-            case GROUP:
-              currentSourceSpaceProfile.addGroup(context.getTargetId());
-              break;
-          }
+        if (spaceInst != null && !spaceInst.isPersonalSpace()) {
+          // do not treat the personal space
+          addInRightProfile(context, currentSourceSpaceProfile);
           updateSpaceProfileInst(currentSourceSpaceProfile, context.getAuthor());
         }
       }
     }
 
     //Add component rights
+    addComponentRights(context, sourceComponentProfileIds);
+
+    //Add nodes rights
+    addComponentRights(context, sourceNodeProfileIds);
+  }
+
+  private void addComponentRights(final RightAssignationContext context,
+      final String[] sourceComponentProfileIds) throws AdminException {
     for (String profileId : sourceComponentProfileIds) {
       ProfileInst currentSourceProfile = getProfileInst(profileId);
       ComponentInst currentComponent =
           getComponentInst(currentSourceProfile.getComponentFatherId());
       String spaceId = currentComponent.getDomainFatherId();
       SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
-
-      if (currentComponent.getStatus() == null &&
-          !spaceInst.isPersonalSpace()) {// do not treat the personal space
-        switch (context.getTargetType()) {
-          case USER:
-            currentSourceProfile.addUser(context.getTargetId());
-            break;
-          case GROUP:
-            currentSourceProfile.addGroup(context.getTargetId());
-            break;
-        }
+      if (currentComponent.getStatus() == null && spaceInst != null &&
+          !spaceInst.isPersonalSpace()) {
+        // do not treat the personal space
+        addInRightProfile(context, currentSourceProfile);
         updateProfileInst(currentSourceProfile, context.getAuthor(), context.getMode());
       }
     }
+  }
 
-    //Add nodes rights
-    for (String profileId : sourceNodeProfileIds) {
-      ProfileInst currentSourceProfile = getProfileInst(profileId);
-      ComponentInst currentComponent =
-          getComponentInst(currentSourceProfile.getComponentFatherId());
-      String spaceId = currentComponent.getDomainFatherId();
-      SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
-
-      if (currentComponent.getStatus() == null &&
-          !spaceInst.isPersonalSpace()) {// do not treat the personal space
-        switch (context.getTargetType()) {
-          case USER:
-            currentSourceProfile.addUser(context.getTargetId());
-            break;
-          case GROUP:
-            currentSourceProfile.addGroup(context.getTargetId());
-            break;
-        }
-        updateProfileInst(currentSourceProfile, context.getAuthor(), context.getMode());
-      }
+  private void addInRightProfile(final RightAssignationContext context,
+      final RightProfile rightProfile) {
+    if (context.getTargetType() == RightAssignationContext.RESOURCE_TYPE.USER) {
+      rightProfile.addUser(context.getTargetId());
+    } else if (context.getTargetType() == RightAssignationContext.RESOURCE_TYPE.GROUP) {
+      rightProfile.addGroup(context.getTargetId());
     }
   }
 
@@ -5447,15 +5455,8 @@ class Admin implements Administration {
       SpaceProfileInst currentTargetSpaceProfile = getSpaceProfileInst(spaceProfileId);
       SpaceInstLight spaceInst =
           getSpaceInstLight(getDriverSpaceId(currentTargetSpaceProfile.getSpaceFatherId()));
-      if (!spaceInst.isPersonalSpace()) {// do not treat the personal space
-        switch (context.getTargetType()) {
-          case USER:
-            currentTargetSpaceProfile.removeUser(context.getTargetId());
-            break;
-          case GROUP:
-            currentTargetSpaceProfile.removeGroup(context.getTargetId());
-            break;
-        }
+      if (spaceInst != null && !spaceInst.isPersonalSpace()) {// do not treat the personal space
+        removeFromRightProfile(context, currentTargetSpaceProfile);
         updateSpaceProfileInst(currentTargetSpaceProfile, context.getAuthor());
       }
     }
@@ -5469,18 +5470,20 @@ class Admin implements Administration {
       String spaceId = currentComponent.getDomainFatherId();
       SpaceInstLight spaceInst = getSpaceInstLight(getDriverSpaceId(spaceId));
 
-      if (currentComponent.getStatus() == null &&
+      if (currentComponent.getStatus() == null && spaceInst != null &&
           !spaceInst.isPersonalSpace()) {// do not treat the personal space
-        switch (context.getTargetType()) {
-          case USER:
-            currentTargetProfile.removeUser(context.getTargetId());
-            break;
-          case GROUP:
-            currentTargetProfile.removeGroup(context.getTargetId());
-            break;
-        }
+        removeFromRightProfile(context, currentTargetProfile);
         updateProfileInst(currentTargetProfile, context.getAuthor(), context.getMode());
       }
+    }
+  }
+
+  private void removeFromRightProfile(final RightAssignationContext context,
+      final RightProfile rightProfile) {
+    if (context.getTargetType() == RightAssignationContext.RESOURCE_TYPE.USER) {
+      rightProfile.removeUser(context.getTargetId());
+    } else if (context.getTargetType() == RightAssignationContext.RESOURCE_TYPE.GROUP) {
+      rightProfile.removeGroup(context.getTargetId());
     }
   }
 
@@ -5504,37 +5507,33 @@ class Admin implements Administration {
       String[] componentProfileIdsToReplace = new String[0];
 
       // Loading existing source profile data identifiers
-      switch (context.getSourceType()) {
-        case USER:
-          spaceProfileIdsToCopy = getDirectSpaceProfileIdsOfUser(context.getSourceId());
-          componentProfileIdsToCopy = getDirectComponentProfileIdsOfUser(context.getSourceId());
-          if (context.isAssignObjectRights()) {
-            componentObjectProfileIdsToCopy =
-                getComponentObjectProfileIdsOfUserType(context.getSourceId());
-          }
-          break;
-        case GROUP:
-          spaceProfileIdsToCopy = getDirectSpaceProfileIdsOfGroup(context.getSourceId());
-          componentProfileIdsToCopy = getDirectComponentProfileIdsOfGroup(context.getSourceId());
-          if (context.isAssignObjectRights()) {
-            componentObjectProfileIdsToCopy =
-                getComponentObjectProfileIdsOfGroupType(context.getSourceId());
-          }
-          break;
+      if (context.getSourceType() == RightAssignationContext.RESOURCE_TYPE.USER) {
+        spaceProfileIdsToCopy = getDirectSpaceProfileIdsOfUser(context.getSourceId());
+        componentProfileIdsToCopy = getDirectComponentProfileIdsOfUser(context.getSourceId());
+        if (context.isAssignObjectRights()) {
+          componentObjectProfileIdsToCopy =
+              getComponentObjectProfileIdsOfUserType(context.getSourceId());
+        }
+
+      } else if (context.getSourceType() == RightAssignationContext.RESOURCE_TYPE.GROUP) {
+        spaceProfileIdsToCopy = getDirectSpaceProfileIdsOfGroup(context.getSourceId());
+        componentProfileIdsToCopy = getDirectComponentProfileIdsOfGroup(context.getSourceId());
+        if (context.isAssignObjectRights()) {
+          componentObjectProfileIdsToCopy =
+              getComponentObjectProfileIdsOfGroupType(context.getSourceId());
+        }
+
       }
       // Loading existing target profile data identifiers
       if (RightAssignationContext.MODE.REPLACE.equals(context.getMode())) {
-        switch (context.getTargetType()) {
-          case USER:
-            spaceProfileIdsToReplace = getDirectSpaceProfileIdsOfUser(context.getTargetId());
-            componentProfileIdsToReplace =
-                getDirectComponentProfileIdsOfUser(context.getTargetId());
-            break;
-          case GROUP:
-            spaceProfileIdsToReplace = getDirectSpaceProfileIdsOfGroup(context.getTargetId());
-            componentProfileIdsToReplace =
-                getDirectComponentProfileIdsOfGroup(context.getTargetId());
-            break;
+        if (context.getTargetType() == RightAssignationContext.RESOURCE_TYPE.USER) {
+          spaceProfileIdsToReplace = getDirectSpaceProfileIdsOfUser(context.getTargetId());
+          componentProfileIdsToReplace = getDirectComponentProfileIdsOfUser(context.getTargetId());
+
+        } else if (context.getTargetType() == RightAssignationContext.RESOURCE_TYPE.GROUP) {
+          spaceProfileIdsToReplace = getDirectSpaceProfileIdsOfGroup(context.getTargetId());
+          componentProfileIdsToReplace = getDirectComponentProfileIdsOfGroup(context.getTargetId());
+
         }
       }
 
@@ -5602,14 +5601,10 @@ class Admin implements Administration {
   private RightAssignationContext initializeRightAssignationContext(
       RightAssignationContext.MODE operationMode, boolean nodeAssignRights, String authorId) {
     final RightAssignationContext context;
-    switch (operationMode) {
-      case COPY:
-      default:
-        context = RightAssignationContext.copy();
-        break;
-      case REPLACE:
-        context = RightAssignationContext.replace();
-        break;
+    if (operationMode == RightAssignationContext.MODE.REPLACE) {
+      context = RightAssignationContext.replace();
+    } else {
+      context = RightAssignationContext.copy();
     }
     if (!nodeAssignRights) {
       context.withoutAssigningComponentObjectRights();

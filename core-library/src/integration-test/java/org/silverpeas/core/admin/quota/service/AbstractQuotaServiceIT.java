@@ -38,7 +38,7 @@ import org.silverpeas.core.admin.quota.exception.QuotaFullException;
 import org.silverpeas.core.admin.quota.exception.QuotaNotEnoughException;
 import org.silverpeas.core.admin.quota.exception.QuotaOutOfBoundsException;
 import org.silverpeas.core.admin.quota.model.Quota;
-import org.silverpeas.core.exception.SilverpeasException;
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.test.WarBuilder4LibCore;
 import org.silverpeas.core.test.rule.DbSetupRule;
 

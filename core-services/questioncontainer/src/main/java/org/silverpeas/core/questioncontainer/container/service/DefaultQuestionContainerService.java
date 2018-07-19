@@ -61,7 +61,6 @@ import org.silverpeas.core.util.logging.SilverLogger;
 import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.io.FileOutputStream;
-import java.io.IOException;
 import java.sql.Connection;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -83,10 +82,6 @@ import static org.silverpeas.core.util.StringUtil.isDefined;
 public class DefaultQuestionContainerService
     implements QuestionContainerService, ComponentInstanceDeletion {
 
-  // if beginDate is null, it will be replace in database with it
-  private static final String NULL_BEGIN_DATE = "0000/00/00";
-  // if endDate is null, it will be replace in database with it
-  private static final String NULL_END_DATE = "9999/99/99";
   private static final String PENALTY_CLUE = "PC";
   private static final String OPENED_ANSWER = "OA";
   private static final float PERCENT_MULTIPLICATOR = 100f;
@@ -457,19 +452,15 @@ public class DefaultQuestionContainerService
     int questionUserScore;
     int userScore = 0;
 
-    for (String questionId : reply.keySet()) {
+    for (Map.Entry<String, List<String>> entry: reply.entrySet()) {
       questionUserScore = 0;
 
-      questionPK = new QuestionPK(questionId, questionContainerPK);
+      questionPK = new QuestionPK(entry.getKey(), questionContainerPK);
       Question question;
 
-      try {
-        question = questionService.getQuestion(questionPK);
-      } catch (Exception e) {
-        throw new QuestionContainerRuntimeException(e);
-      }
+      question = getQuestion(questionPK);
 
-      List<String> answers = reply.get(questionId);
+      List<String> answers = entry.getValue();
       String answerId;
       int vectorSize = answers.size();
       int newVectorSize = vectorSize;
@@ -504,17 +495,8 @@ public class DefaultQuestionContainerService
             new QuestionResult(null, new ResourceReference(questionPK), answerPK, userId, openedAnswer);
         result.setParticipationId(participationId);
         result.setNbPoints(answer.getNbPoints() - penaltyValue);
-        try {
-          questionResultService.setQuestionResultToUser(result);
-        } catch (Exception e) {
-          throw new QuestionContainerRuntimeException(e);
-        }
-        try {
-          // Add this vote to the corresponding answer
-          answerService.recordThisAnswerAsVote(new ResourceReference(questionPK), answerPK);
-        } catch (Exception e) {
-          throw new QuestionContainerRuntimeException(e);
-        }
+        saveQuestionResult(result);
+        saveAnswerAsVote(questionPK, answerPK);
       }
 
       for (int i = vectorBegin; i < newVectorSize; i++) {
@@ -525,17 +507,8 @@ public class DefaultQuestionContainerService
         result = new QuestionResult(null, new ResourceReference(questionPK), answerPK, userId, null);
         result.setParticipationId(participationId);
         result.setNbPoints(answer.getNbPoints() - penaltyValue);
-        try {
-          questionResultService.setQuestionResultToUser(result);
-        } catch (Exception e) {
-          throw new QuestionContainerRuntimeException(e);
-        }
-        try {
-          // Add this vote to the corresponding answer
-          answerService.recordThisAnswerAsVote(new ResourceReference(questionPK), answerPK);
-        } catch (Exception e) {
-          throw new QuestionContainerRuntimeException(e);
-        }
+        saveQuestionResult(result);
+        saveAnswerAsVote(questionPK, answerPK);
       }
       if (question.getNbPointsMax() < questionUserScore) {
         questionUserScore = question.getNbPointsMax();
@@ -551,13 +524,43 @@ public class DefaultQuestionContainerService
             formatterDB.format(new java.util.Date()), userScore, 0, "");
 
     scoreService.addScore(scoreDetail);
+    addVoter(questionContainerPK);
+  }
 
+  private void addVoter(final QuestionContainerPK questionContainerPK) {
     try (Connection con = getConnection()) {
       // Increment the number of voters
       QuestionContainerDAO.addAVoter(con, questionContainerPK);
     } catch (Exception e) {
       throw new QuestionContainerRuntimeException(e);
     }
+  }
+
+  private void saveAnswerAsVote(final QuestionPK questionPK, final AnswerPK answerPK) {
+    try {
+      // Add this vote to the corresponding answer
+      answerService.recordThisAnswerAsVote(new ResourceReference(questionPK), answerPK);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(e);
+    }
+  }
+
+  private void saveQuestionResult(final QuestionResult result) {
+    try {
+      questionResultService.setQuestionResultToUser(result);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(e);
+    }
+  }
+
+  private Question getQuestion(final QuestionPK questionPK) {
+    final Question question;
+    try {
+      question = questionService.getQuestion(questionPK);
+    } catch (Exception e) {
+      throw new QuestionContainerRuntimeException(e);
+    }
+    return question;
   }
 
   @Transactional(Transactional.TxType.REQUIRED)
@@ -1016,10 +1019,9 @@ public class DefaultQuestionContainerService
   }
 
   private String writeCSVFile(List<StringBuilder> csvRows) {
-    FileOutputStream fileOutput = null;
     String csvFilename = new Date().getTime() + ".csv";
-    try {
-      fileOutput = new FileOutputStream(FileRepositoryManager.getTemporaryPath() + csvFilename);
+    try (FileOutputStream fileOutput = new FileOutputStream(
+        FileRepositoryManager.getTemporaryPath() + csvFilename)) {
       for (StringBuilder csvRow : csvRows) {
         fileOutput.write(csvRow.toString().getBytes());
         fileOutput.write("\n".getBytes());
@@ -1027,16 +1029,6 @@ public class DefaultQuestionContainerService
     } catch (Exception e) {
       csvFilename = null;
       SilverLogger.getLogger(this).error(e);
-    } finally {
-      if (fileOutput != null) {
-        try {
-          fileOutput.flush();
-          fileOutput.close();
-        } catch (IOException e) {
-          csvFilename = null;
-          SilverLogger.getLogger(this).error(e);
-        }
-      }
     }
     return csvFilename;
   }

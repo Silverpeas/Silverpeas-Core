@@ -459,8 +459,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
       try {
         spaceInst.setComponentSpaceQuotaMaxCount(Integer.valueOf(m_componentSpaceQuotaMaxCount));
       } catch (QuotaException qe) {
-        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
-            qe);
+        throw new QuotaRuntimeException(qe.getMessage(), qe);
       }
     }
 
@@ -471,8 +470,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
             Long.valueOf(m_dataStorageQuotaMaxCount), MemoryUnit.MB, MemoryUnit.B));
       } catch (QuotaException qe) {
-        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
-            qe);
+        throw new QuotaRuntimeException(qe.getMessage(), qe);
       }
     }
 
@@ -632,8 +630,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         SpaceServiceProvider.getComponentSpaceQuotaService().initialize(
             ComponentSpaceQuotaKey.from(space), space.getComponentSpaceQuota().getMaxCount());
       } catch (QuotaException qe) {
-        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
-            qe);
+        throw new QuotaRuntimeException(qe.getMessage(), qe);
       }
     }
   }
@@ -649,8 +646,7 @@ public class JobStartPagePeasSessionController extends AbstractComponentSessionC
         SpaceServiceProvider.getDataStorageSpaceQuotaService().initialize(
             DataStorageSpaceQuotaKey.from(space), space.getDataStorageQuota().getMaxCount());
       } catch (QuotaException qe) {
-        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
-            qe);
+        throw new QuotaRuntimeException(qe.getMessage(), qe);
       }
     }
   }

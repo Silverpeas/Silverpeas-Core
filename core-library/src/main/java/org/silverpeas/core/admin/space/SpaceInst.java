@@ -38,7 +38,6 @@ import org.silverpeas.core.admin.service.OrganizationControllerProvider;
 import org.silverpeas.core.admin.space.quota.ComponentSpaceQuotaKey;
 import org.silverpeas.core.admin.space.quota.DataStorageSpaceQuotaKey;
 import org.silverpeas.core.admin.user.model.UserDetail;
-import org.silverpeas.core.exception.SilverpeasException;
 import org.silverpeas.core.i18n.AbstractI18NBean;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
@@ -653,8 +652,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
       componentSpaceQuota = SpaceServiceProvider.getComponentSpaceQuotaService()
           .get(ComponentSpaceQuotaKey.from(this));
     } catch (final QuotaException qe) {
-      throw new QuotaRuntimeException("Space", SilverpeasException.ERROR,
-          "root.EX_CANT_GET_COMPONENT_SPACE_QUOTA", qe);
+      throw new QuotaRuntimeException("Cannot get quota for space", qe);
     }
   }
 
@@ -707,8 +705,7 @@ public class SpaceInst extends AbstractI18NBean<SpaceI18N>
       dataStorageQuota = SpaceServiceProvider.getDataStorageSpaceQuotaService().get(
           DataStorageSpaceQuotaKey.from(this));
     } catch (final QuotaException qe) {
-      throw new QuotaRuntimeException("Space", SilverpeasException.ERROR,
-          "root.EX_CANT_GET_DATA_STORAGE_QUOTA", qe);
+      throw new QuotaRuntimeException("Cannot get quota for data storage", qe);
     }
   }
 

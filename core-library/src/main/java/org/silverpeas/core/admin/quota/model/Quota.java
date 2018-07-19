@@ -103,7 +103,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
    */
   public void validate() throws QuotaException {
     if (getType() == null || !isDefined(getResourceId())) {
-      throw new QuotaException(this, "HAS_BAD_DATA");
+      throw new QuotaException(this, "Bad data");
     }
     validateBounds();
   }
@@ -114,7 +114,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
    */
   public void validateBounds() throws QuotaException {
     if (getMinCount() < 0 || getMaxCount() < 0 || getMinCount() > getMaxCount()) {
-      throw new QuotaException(this, "HAS_BAD_DATA");
+      throw new QuotaException(this, "Bad data");
     }
   }
 
@@ -245,7 +245,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
     try {
       setMinCount(Long.valueOf(minCount));
     } catch (final NumberFormatException nfe) {
-      throw new QuotaException(this, "BAD_MIN_COUNT");
+      throw new QuotaException(this, "Invalid minimal count");
     }
   }
 
@@ -270,7 +270,7 @@ public class Quota extends BasicJpaEntity<Quota, UniqueLongIdentifier>
     try {
       setMaxCount(Long.valueOf(maxCount));
     } catch (final NumberFormatException nfe) {
-      throw new QuotaException(this, "BAD_MAX_COUNT");
+      throw new QuotaException(this, "Invalid maximal count");
     }
   }
 

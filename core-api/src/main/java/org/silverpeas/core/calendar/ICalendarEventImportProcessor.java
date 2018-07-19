@@ -255,7 +255,7 @@ public class ICalendarEventImportProcessor {
   }
 
   private EventOperationResult importOccurrencesOnly(final CalendarEvent event,
-      final List<CalendarEventOccurrence> occurrencesToImport) throws ImportException {
+      final List<CalendarEventOccurrence> occurrencesToImport) {
     final Mutable<EventOperationResult> result = Mutable.of(new EventOperationResult());
     final Map<String, CalendarEventOccurrence> existingOccurrences = new HashMap<>();
 

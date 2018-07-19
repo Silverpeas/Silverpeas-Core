@@ -26,6 +26,7 @@ package org.silverpeas.core.security.encryption.cipher;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
 
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -75,8 +76,8 @@ public class PKS12KeyStore {
     ks = KeyStore.getInstance("PKCS12");
     // Password pour le fichier filep12
     if (p12FilePath != null) {
-      try {
-        ks.load(new FileInputStream(p12FilePath), password.toCharArray());
+      try(final InputStream input = new FileInputStream(p12FilePath)) {
+        ks.load(input, password.toCharArray());
       } catch (Exception ex) {
         throw new CryptoException(LOAD_FAILURE, ex);
       }
@@ -86,7 +87,7 @@ public class PKS12KeyStore {
     try {
       Enumeration<String> en = ks.aliases();
       String alias = "";
-      List<String> vectaliases = new ArrayList<String>();
+      List<String> vectaliases = new ArrayList<>();
 
       while (en.hasMoreElements()) {
         vectaliases.add(en.nextElement());
@@ -101,9 +102,7 @@ public class PKS12KeyStore {
       privatekey = (PrivateKey) ks.getKey(alias, password.toCharArray());
       cert = (X509Certificate) ks.getCertificate(alias);
       publickey = ks.getCertificate(alias).getPublicKey();
-    } catch (NoSuchAlgorithmException ex) {
-      throw new CryptoException(LOAD_FAILURE, ex);
-    } catch (UnrecoverableEntryException ex) {
+    } catch (NoSuchAlgorithmException | UnrecoverableEntryException ex) {
       throw new CryptoException(LOAD_FAILURE, ex);
     }
   }

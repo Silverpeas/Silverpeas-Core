@@ -112,11 +112,10 @@ public class UserRegistrationServiceLegacy implements UserRegistrationService {
       if (!StringUtil.isDefined(userId)) {
         throw new AdminException(failureOnAdding("user", firstName + " " + lastName));
       }
+      // Send credentials to user
+      Domain domain = admin.getDomain(domainId);
+      sendCredentialsToUser(uf, password, domain.getSilverpeasServerURL());
     }
-
-    // Send credentials to user
-    Domain domain = admin.getDomain(domainId);
-    sendCredentialsToUser(uf, password, domain.getSilverpeasServerURL());
 
     return userId;
   }

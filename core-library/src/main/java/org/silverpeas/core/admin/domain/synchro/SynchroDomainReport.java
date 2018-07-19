@@ -46,7 +46,11 @@ public class SynchroDomainReport {
   private static List<String> messages = Collections.synchronizedList(new ArrayList<>());
   private static int state = STATE_NOSYNC;
 
-  static public String getReportName() {
+  private SynchroDomainReport() {
+
+  }
+
+  public static String getReportName() {
     return REPORT_NAME;
   }
 
@@ -54,7 +58,7 @@ public class SynchroDomainReport {
    * Sets the level from which the messages will be reported. This level doesn't apply on the level
    * of the logs in the report file.
    */
-  static public void setReportLevel(Level reportLevel) {
+  public static void setReportLevel(Level reportLevel) {
     level = reportLevel;
   }
 
@@ -65,7 +69,7 @@ public class SynchroDomainReport {
   /**
    * Sets the state of the synchronization.
    */
-  static synchronized private void setState(int iStateCours) {
+  private static synchronized void setState(int iStateCours) {
     if ((state < STATE_WAITSTART) || (iStateCours != STATE_WAITSTART)) {
       state = iStateCours;
     }
@@ -75,21 +79,21 @@ public class SynchroDomainReport {
    * Gets the current state of the report.
    * @return the state of the report.
    */
-  public static int getState() {
+  public static synchronized int getState() {
     return state;
   }
 
-  static public String getMessages() {
-    String Message = null;
+  public static String getMessages() {
+    String message = null;
     synchronized (messages) {
-      if (messages.size() > 0) {
-        Message = messages.remove(0);
+      if (!messages.isEmpty()) {
+        message = messages.remove(0);
       }
     }
-    return Message;
+    return message;
   }
 
-  static public void startSynchro() {
+  public static void startSynchro() {
     synchronized (messages) {
       messages.clear();
     }
@@ -97,7 +101,7 @@ public class SynchroDomainReport {
     warn("SynchroDomainReport.startSynchro", "Synchronisation Start");
   }
 
-  static public void stopSynchro() {
+  public static void stopSynchro() {
     warn("SynchroDomainReport.stopSynchro", "Synchronisation End");
     setState(STATE_ENDED);
   }
@@ -110,28 +114,28 @@ public class SynchroDomainReport {
     setState(STATE_WAITSTART);
   }
 
-  static public void debug(String classe, String message) {
+  public static void debug(String classe, String message) {
     if (isSynchroActive()) {
       addMessage(Level.DEBUG, msgFormat(Level.DEBUG, classe, message, null));
       SilverLogger.getLogger(REPORT_NAMESPACE).debug(LOG_FORMAT, getReportName(), classe, message);
     }
   }
 
-  static public void info(String classe, String message) {
+  public static void info(String classe, String message) {
     if (isSynchroActive()) {
       addMessage(Level.INFO, msgFormat(Level.INFO, classe, message, null));
       SilverLogger.getLogger(REPORT_NAMESPACE).info(LOG_FORMAT, getReportName(), classe, message);
     }
   }
 
-  static public void warn(String classe, String message) {
+  public static void warn(String classe, String message) {
     if (isSynchroActive()) {
       addMessage(Level.WARNING, msgFormat(Level.WARNING, classe, message, null));
       SilverLogger.getLogger(REPORT_NAMESPACE).warn(LOG_FORMAT, getReportName(), classe, message);
     }
   }
 
-  static public void error(String classe, String message, Throwable ex) {
+  public static void error(String classe, String message, Throwable ex) {
     if (isSynchroActive()) {
       addMessage(Level.ERROR, msgFormat(Level.ERROR, classe, message, ex));
       SilverLogger.getLogger(REPORT_NAMESPACE)
@@ -139,7 +143,7 @@ public class SynchroDomainReport {
     }
   }
 
-  static protected void addMessage(Level msgLevel, String msg) {
+  protected static void addMessage(Level msgLevel, String msg) {
     if (msgLevel.value() >= level.value()) {
       synchronized (messages) {
         messages.add(msg);
@@ -147,11 +151,11 @@ public class SynchroDomainReport {
     }
   }
 
-  static public boolean isSynchroActive() {
+  public static boolean isSynchroActive() {
     return (state == STATE_STARTED);
   }
 
-  static protected String msgFormat(Level level, String from, String msgToTrace, Throwable ex) {
+  static String msgFormat(Level level, String from, String msgToTrace, Throwable ex) {
     StringBuilder sb = new StringBuilder();
     switch (level) {
       case DEBUG:
@@ -177,6 +181,6 @@ public class SynchroDomainReport {
     if (ex != null) {
       sb.append(" | !!! EXCEPTION !!! : ").append(ex.getMessage());
     }
-    return (sb.toString());
+    return sb.toString();
   }
 }

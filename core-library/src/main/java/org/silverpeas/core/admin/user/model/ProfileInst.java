@@ -29,11 +29,12 @@
 
 package org.silverpeas.core.admin.user.model;
 
-import java.io.Serializable;
+import org.silverpeas.core.admin.RightProfile;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class ProfileInst implements Serializable, Cloneable {
+public class ProfileInst implements RightProfile, Cloneable {
 
   private static final long serialVersionUID = 3092416162986110340L;
   private String m_sId;
@@ -125,12 +126,14 @@ public class ProfileInst implements Serializable, Cloneable {
     return m_alGroups.get(nIndex);
   }
 
+  @Override
   public void addGroup(String sGroupId) {
     if (!m_alGroups.contains(sGroupId)) {
       m_alGroups.add(sGroupId);
     }
   }
 
+  @Override
   public void removeGroup(String sGroupId) {
     m_alGroups.remove(sGroupId);
   }
@@ -151,12 +154,14 @@ public class ProfileInst implements Serializable, Cloneable {
     return m_alUsers.get(nIndex);
   }
 
+  @Override
   public void addUser(String sUserId) {
     if (!m_alUsers.contains(sUserId)) {
       m_alUsers.add(sUserId);
     }
   }
 
+  @Override
   public void removeUser(String sUserId) {
     m_alUsers.remove(sUserId);
   }

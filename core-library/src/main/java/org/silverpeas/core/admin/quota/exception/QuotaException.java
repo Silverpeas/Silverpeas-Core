@@ -23,9 +23,9 @@
  */
 package org.silverpeas.core.admin.quota.exception;
 
+import org.silverpeas.core.SilverpeasException;
 import org.silverpeas.core.admin.quota.model.Quota;
 
-import org.silverpeas.core.exception.SilverpeasException;
 
 /**
  * @author Yohann Chastagnier
@@ -35,50 +35,23 @@ public class QuotaException extends SilverpeasException {
 
   private final Quota quota;
 
-  /**
-   * Default constructor
-   * @param quota
-   * @param messageSuffix
-   */
-  public QuotaException(final Quota quota, final String messageSuffix) {
-    this(quota, messageSuffix, null);
+  public QuotaException(final Quota quota, final String message, final String... parameters) {
+    super(message, parameters);
+    this.quota = quota;
   }
 
-  /**
-   * Default constructor
-   * @param quota
-   * @param messageSuffix
-   * @param exception
-   */
-  public QuotaException(final Quota quota, final String messageSuffix, final Exception exception) {
-    super("AbstractQuotaService", SilverpeasException.ERROR, "quota." + messageSuffix,
-        "quotaType=" + quota.getType() + ", resourceId=" + quota.getResourceId() + ", minCount=" +
-            quota.getMinCount() + ", maxCount=" + quota.getMaxCount() + ", count=" +
-            quota.getCount(), exception);
+  public QuotaException(final Quota quota, final String message, final Throwable cause) {
+    super(message, cause);
+    this.quota = quota;
+  }
+
+  public QuotaException(final Quota quota, final Throwable cause) {
+    super(cause);
     this.quota = quota;
   }
 
   /**
-   * Default constructor
-   * @param quota
-   * @param messageSuffix
-   */
-  public QuotaException(final Exception exception) {
-    super("NoClass", SilverpeasException.ERROR, "", exception);
-    quota = null;
-  }
-
-  /*
-   * (non-Javadoc)
-   * @see org.silverpeas.core.exception.SilverpeasException#getModule()
-   */
-  @Override
-  public String getModule() {
-    return "quota";
-  }
-
-  /**
-   * @return the quota
+   * @return the quota concerned by the thrown of this exception.
    */
   public Quota getQuota() {
     return quota;

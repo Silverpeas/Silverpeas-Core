@@ -31,67 +31,23 @@
  */
 package org.silverpeas.core.admin.quota.exception;
 
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
+import org.silverpeas.core.SilverpeasRuntimeException;
 
 /**
  * @author Yohann Chastagnier
  */
 public class QuotaRuntimeException extends SilverpeasRuntimeException {
-  private static final long serialVersionUID = -1317096817496411225L;
+  private static final long serialVersionUID = 1317096817496411228L;
 
-  /**
-   * method of interface FromModule
-   */
-  @Override
-  public String getModule() {
-    return "quota";
+  public QuotaRuntimeException(final String message) {
+    super(message);
   }
 
-  /**
-   * constructors
-   */
-
-  public QuotaRuntimeException(final String callingClass, final int errorLevel, final String message) {
-    super(callingClass, errorLevel, message);
+  public QuotaRuntimeException(final String message, final Throwable cause) {
+    super(message, cause);
   }
 
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   *
-   */
-  public QuotaRuntimeException(final String callingClass, final int errorLevel,
-      final String message, final String extraParams) {
-    super(callingClass, errorLevel, message, extraParams);
-  }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param nested
-   *
-   */
-  public QuotaRuntimeException(final String callingClass, final int errorLevel,
-      final String message, final Exception nested) {
-    super(callingClass, errorLevel, message, nested);
-  }
-
-  /**
-   * Constructor declaration
-   * @param callingClass
-   * @param errorLevel
-   * @param message
-   * @param extraParams
-   * @param nested
-   *
-   */
-  public QuotaRuntimeException(final String callingClass, final int errorLevel,
-      final String message, final String extraParams, final Exception nested) {
-    super(callingClass, errorLevel, message, extraParams, nested);
+  public QuotaRuntimeException(final Throwable cause) {
+    super(cause);
   }
 }
