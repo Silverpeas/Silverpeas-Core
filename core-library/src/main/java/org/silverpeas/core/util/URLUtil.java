@@ -86,6 +86,7 @@ public class URLUtil {
   public static final int URL_DOCUMENT = 8;
   public static final int URL_VERSION = 9;
   public static final int URL_MEDIA = 10;
+  public static final int URL_NEWSLETTER = 11;
   private static final String CURRENT_SERVER_URL_CACHE_KEY =
       URLUtil.class.getSimpleName() + ".currentServerURL";
   private static final String CURRENT_LOCAL_SERVER_URL_CACHE_KEY =
@@ -268,7 +269,7 @@ public class URLUtil {
     }
     Permalink permalink = Permalink.fromType(type);
     switch (permalink) {
-      case ForumMessage:
+      case FORUM_MESSAGE:
         url += permalink.getURLPrefix() + id + "?ForumId=" + forumId;
         break;
     }
@@ -287,16 +288,11 @@ public class URLUtil {
     }
     Permalink permalink = Permalink.fromType(type);
     switch (permalink) {
-      case Space:
+      case SPACE:
         url += permalink.getURLPrefix() + id;
         break;
-      case Publication:
-        url += permalink.getURLPrefix() + id;
-        if (isDefined(componentId)) {
-          url += "?ComponentId=" + componentId;
-        }
-        break;
-      case Folder:
+      case PUBLICATION:
+      case FOLDER:
         url += permalink.getURLPrefix() + id;
         if (isDefined(componentId)) {
           url += "?ComponentId=" + componentId;
@@ -401,11 +397,12 @@ public class URLUtil {
   }
 
   public enum Permalink {
-    Publication(URL_PUBLI, "/Publication/"), Space(URL_SPACE, "/Space/"),
-    Component(URL_COMPONENT, "/Component/"), Folder(URL_TOPIC, "/Topic/"), File(URL_FILE, "/File/"),
-    Document(URL_DOCUMENT, "/Document/"), Version(URL_VERSION, "/Version/"),
-    Survey(URL_SURVEY, "/Survey/"), Question(URL_QUESTION, "/Question/"),
-    ForumMessage(URL_MESSAGE, "/ForumsMessage/"), Media(URL_MEDIA, "/Media/");
+    PUBLICATION(URL_PUBLI, "/Publication/"), SPACE(URL_SPACE, "/Space/"),
+    COMPONENT(URL_COMPONENT, "/Component/"), FOLDER(URL_TOPIC, "/Topic/"), FILE(URL_FILE, "/File/"),
+    DOCUMENT(URL_DOCUMENT, "/Document/"), VERSION(URL_VERSION, "/Version/"),
+    SURVEY(URL_SURVEY, "/Survey/"), QUESTION(URL_QUESTION, "/Question/"),
+    FORUM_MESSAGE(URL_MESSAGE, "/ForumsMessage/"), MEDIA(URL_MEDIA, "/Media/"),
+    NEWSLETTER(URL_NEWSLETTER, "/Newsletter/");
     private int type;
     private String urlPrefix;
 
