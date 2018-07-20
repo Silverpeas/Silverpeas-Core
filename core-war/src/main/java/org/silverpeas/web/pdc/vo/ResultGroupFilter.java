@@ -110,6 +110,29 @@ public class ResultGroupFilter {
     this.lastUpdateFacet = lastUpdateFacet;
   }
 
+  public void checkSelectedFacetsEntries(ResultFilterVO selectedFacetEntries) {
+    if (selectedFacetEntries != null && !selectedFacetEntries.isEmpty()) {
+      checkSelectedFacetEntries(authorFacet, selectedFacetEntries.getAuthorId());
+      checkSelectedFacetEntries(lastUpdateFacet, selectedFacetEntries.getLastUpdate());
+      checkSelectedFacetEntries(filetypeFacet, selectedFacetEntries.getFiletype());
+      checkSelectedFacetEntries(datatypeFacet, selectedFacetEntries.getDatatype());
+      checkSelectedFacetEntries(componentFacet, selectedFacetEntries.getComponentId());
+
+      for (Facet facet : formfieldFacets) {
+        checkSelectedFacetEntries(facet,
+            selectedFacetEntries.getFormFieldSelectedFacetEntry(facet.getId()));
+      }
+    }
+  }
+
+  private void checkSelectedFacetEntries(Facet facet, String selectedFacetEntry) {
+    for (FacetEntryVO entry : facet.getEntries()) {
+      if (entry.getId().equals(selectedFacetEntry)) {
+        entry.setSelected(true);
+      }
+    }
+  }
+
   private class EntryComparator implements Comparator<FacetEntryVO>{
     @Override
     public int compare(FacetEntryVO o1, FacetEntryVO o2) {
