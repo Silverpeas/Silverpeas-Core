@@ -21,21 +21,21 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.silverpeas.core.admin.quota.exception;
 
-import org.silverpeas.core.admin.quota.model.Quota;
+package org.silverpeas.core.admin;
+
+import java.io.Serializable;
 
 /**
- * @author Yohann Chastagnier
+ * @author mmoquillon
  */
-public class QuotaNotEnoughException extends QuotaException {
-  private static final long serialVersionUID = 5239722256092865697L;
+public interface RightProfile extends Serializable {
 
-  /**
-   * Default constructor
-   * @param quota
-   */
-  public QuotaNotEnoughException(final Quota quota) {
-    super(quota, "count isn't enough");
-  }
+  void addGroup(final String id);
+
+  void addUser(final String id);
+
+  void removeGroup(final String id);
+
+  void removeUser(final String id);
 }

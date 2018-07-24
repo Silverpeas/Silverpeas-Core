@@ -83,7 +83,7 @@ public class TreeCache {
     if (space != null) {
       return space.getComponents();
     }
-    return new ArrayList<ComponentInstLight>();
+    return new ArrayList<>();
   }
 
   public static List<String> getComponentIds(int spaceId) {
@@ -91,7 +91,7 @@ public class TreeCache {
     if (space != null) {
       return space.getComponentIds();
     }
-    return new ArrayList<String>();
+    return new ArrayList<>();
   }
 
   public static List<SpaceInstLight> getSubSpaces(int spaceId) {
@@ -99,7 +99,7 @@ public class TreeCache {
     if (space != null) {
       return space.getSubspaces();
     }
-    return new ArrayList<SpaceInstLight>();
+    return new ArrayList<>();
   }
 
   public static boolean isSpaceContainsComponent(int spaceId, String componentId) {
@@ -150,7 +150,7 @@ public class TreeCache {
   }
 
   public static List<ComponentInstLight> getComponentsInSpaceAndSubspaces(int spaceId) {
-    List<ComponentInstLight> components = new ArrayList<ComponentInstLight>();
+    List<ComponentInstLight> components = new ArrayList<>();
     // add components of space
     components.addAll(getComponents(spaceId));
     // add components of subspaces
@@ -161,11 +161,11 @@ public class TreeCache {
   }
 
   public static List<SpaceInstLight> getSpacePath(int spaceId) {
-    List<SpaceInstLight> path = new ArrayList<SpaceInstLight>();
+    List<SpaceInstLight> path = new ArrayList<>();
     SpaceInstLight space = getSpaceInstLight(spaceId);
     if (space != null) {
       path.add(0, space);
-      while (!space.isRoot()) {
+      while (space != null && !space.isRoot()) {
         space = getSpaceInstLight(Integer.parseInt(space.getFatherId()));
         if (space != null) {
           path.add(0, space);

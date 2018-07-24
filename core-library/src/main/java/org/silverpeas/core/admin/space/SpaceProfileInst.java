@@ -23,11 +23,12 @@
  */
 package org.silverpeas.core.admin.space;
 
-import java.io.Serializable;
+import org.silverpeas.core.admin.RightProfile;
+
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpaceProfileInst implements Serializable {
+public class SpaceProfileInst implements RightProfile {
 
   public static final String SPACE_MANAGER = "Manager";
 
@@ -101,12 +102,14 @@ public class SpaceProfileInst implements Serializable {
     return groups.get(nIndex);
   }
 
+  @Override
   public void addGroup(String sGroupId) {
     if (!groups.contains(sGroupId)) {
       groups.add(sGroupId);
     }
   }
 
+  @Override
   public void removeGroup(String sGroupId) {
     groups.remove(sGroupId);
   }
@@ -127,12 +130,14 @@ public class SpaceProfileInst implements Serializable {
     return users.get(nIndex);
   }
 
+  @Override
   public void addUser(String sUserId) {
     if (!users.contains(sUserId)) {
       users.add(sUserId);
     }
   }
 
+  @Override
   public void removeUser(String sUserId) {
     users.remove(sUserId);
   }

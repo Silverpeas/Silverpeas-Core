@@ -109,8 +109,12 @@ public class ICal4JCalendarEventOccurrenceGenerator implements CalendarEventOccu
     Date periodStartDate = TemporalConverter.applyByType(
         inPeriod == null ? event.getStartDate() : inPeriod.getStartDate(), iCal4JDateCodec::encode,
         iCal4JDateCodec::encode);
+    Temporal endDate = event.getRecurrence()
+        .getEndDate()
+        .orElseThrow(
+            () -> new NotSupportedException("Endless period of recurrent event not supported!"));
     Date periodEndDate = TemporalConverter.applyByType(
-        inPeriod == null ? event.getRecurrence().getEndDate().get().plus(1, ChronoUnit.DAYS) :
+        inPeriod == null ? endDate.plus(1, ChronoUnit.DAYS) :
             inPeriod.getEndDate(),
         iCal4JDateCodec::encode, iCal4JDateCodec::encode);
 

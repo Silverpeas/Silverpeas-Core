@@ -37,7 +37,6 @@ import org.silverpeas.core.admin.space.SpaceInst;
 import org.silverpeas.core.admin.user.model.ProfileInst;
 import org.silverpeas.core.admin.user.model.SilverpeasRole;
 import org.silverpeas.core.clipboard.ClipboardException;
-import org.silverpeas.core.exception.SilverpeasRuntimeException;
 import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.util.StringUtil;
@@ -852,8 +851,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
       try {
         spaceInst.setComponentSpaceQuotaMaxCount(Integer.valueOf(componentSpaceQuotaMaxCount));
       } catch (QuotaException qe) {
-        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
-            qe);
+        throw new QuotaRuntimeException(qe.getMessage(), qe);
       }
     }
 
@@ -864,8 +862,7 @@ public class JobStartPagePeasRequestRouter extends ComponentRequestRouter<JobSta
         spaceInst.setDataStorageQuotaMaxCount(UnitUtil.convertTo(
             Long.valueOf(dataStorageQuotaMaxCount), MemoryUnit.MB, MemoryUnit.B));
       } catch (QuotaException qe) {
-        throw new QuotaRuntimeException("Space", SilverpeasRuntimeException.ERROR, qe.getMessage(),
-            qe);
+        throw new QuotaRuntimeException(qe.getMessage(), qe);
       }
     }
   }

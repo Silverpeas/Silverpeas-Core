@@ -254,7 +254,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   @Override
   public String getSpaceId() {
-    return domainFatherId;
+    return getDomainFatherId();
   }
 
   public void deleteProfileInst(ProfileInst profileInst) {
@@ -319,7 +319,7 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   public List<Parameter> getParameters() {
     if (parameters == null) {
-      parameters = new ArrayList<Parameter>();
+      parameters = new ArrayList<>();
     }
     return parameters;
   }
@@ -419,12 +419,16 @@ public class ComponentInst extends AbstractI18NBean<ComponentI18N>
 
   @Override
   public boolean isWorkflow() {
-    return WAComponent.getByName(getName()).get().isWorkflow();
+    return WAComponent.getByName(getName())
+        .orElseThrow(() -> new SilverpeasRuntimeException("No Such WAComponent " + getName()))
+        .isWorkflow();
   }
 
   @Override
   public boolean isTopicTracker() {
-    return WAComponent.getByName(getName()).get().isTopicTracker();
+    return WAComponent.getByName(getName())
+        .orElseThrow(() -> new SilverpeasRuntimeException("No Such WAComponent " + getName()))
+        .isTopicTracker();
   }
 
   public String getPermalink() {

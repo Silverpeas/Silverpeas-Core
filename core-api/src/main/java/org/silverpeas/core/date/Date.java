@@ -223,7 +223,7 @@ public class Date extends AbstractDateTemporal<Date> {
       return false;
     }
     Date other;
-    if (obj.getClass().getName().equals("java.util.Date")) {
+    if (obj instanceof java.util.Date) {
       other = new Date((java.util.Date) obj);
     } else if (getClass() != obj.getClass()) {
       return false;

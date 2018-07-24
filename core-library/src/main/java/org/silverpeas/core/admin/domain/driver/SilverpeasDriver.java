@@ -52,15 +52,16 @@ import static org.silverpeas.core.SilverpeasExceptionMessages.undefined;
 @Singleton
 public class SilverpeasDriver extends AbstractDomainDriver implements SilverpeasDomainDriver {
 
-  public static final String TITLE = "title";
-  public static final String COMPANY = "company";
-  public static final String POSITION = "position";
-  public static final String BOSS = "boss";
-  public static final String PHONE = "phone";
-  public static final String HOME_PHONE = "homePhone";
-  public static final String FAX = "fax";
-  public static final String CELLULAR_PHONE = "cellularPhone";
-  public static final String ADDRESS = "address";
+  private static final String TITLE = "title";
+  private static final String COMPANY = "company";
+  private static final String POSITION = "position";
+  private static final String BOSS = "boss";
+  private static final String PHONE = "phone";
+  private static final String HOME_PHONE = "homePhone";
+  private static final String FAX = "fax";
+  private static final String CELLULAR_PHONE = "cellularPhone";
+  private static final String ADDRESS = "address";
+
   @Inject
   private SPUserRepository spUserRepository;
 
@@ -344,8 +345,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     }
 
     // Update the group node
-    SPGroup gr = spGroupRepository.getById(group.getSpecificId());
-    gr = convertToSPGroup(group, gr);
+    final SPGroup gr = convertToSPGroup(group, spGroupRepository.getById(group.getSpecificId()));
     Set<SPUser> users = gr.getUsers();
     Map<String, SPUser> existingUsers = new HashMap<>(users.size());
     for (SPUser user : users) {

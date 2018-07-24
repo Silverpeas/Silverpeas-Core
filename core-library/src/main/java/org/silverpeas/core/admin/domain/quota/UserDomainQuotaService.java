@@ -55,7 +55,7 @@ public class UserDomainQuotaService extends AbstractQuotaService<UserDomainQuota
     try {
       return domainDriverManager.getAllUsers(key.getResourceId()).length;
     } catch (final Exception e) {
-      throw new QuotaException(e);
+      throw new QuotaException(null, e);
     }
   }
 

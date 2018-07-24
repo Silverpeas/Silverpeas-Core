@@ -65,20 +65,16 @@ public class StatusDao {
 
   public Status getLastStatus(Connection connection, int userid) throws SQLException {
     Status status = new Status();
-    ResultSet rs = null;
-    PreparedStatement pstmt = null;
-    try {
-      pstmt = connection.prepareStatement(SELECT_LAST_STATUS_BY_USERID);
+    try(PreparedStatement pstmt = connection.prepareStatement(SELECT_LAST_STATUS_BY_USERID)) {
       pstmt.setInt(1, userid);
-      rs = pstmt.executeQuery();
-      if (rs.next()) {
-        status.setId(rs.getInt(1));
-        status.setUserId(rs.getInt(2));
-        status.setCreationDate(new Date(rs.getTimestamp(3).getTime()));
-        status.setDescription(rs.getString(4));
+      try(ResultSet rs = pstmt.executeQuery()) {
+        if (rs.next()) {
+          status.setId(rs.getInt(1));
+          status.setUserId(rs.getInt(2));
+          status.setCreationDate(new Date(rs.getTimestamp(3).getTime()));
+          status.setDescription(rs.getString(4));
+        }
       }
-    } finally {
-      DBUtil.close(pstmt);
     }
     return status;
   }
@@ -126,7 +122,7 @@ public class StatusDao {
   }
 
   private List<SocialInformation> getSocialInformationList(ResultSet rs) throws SQLException {
-    List<SocialInformation> status_list = new ArrayList<SocialInformation>();
+    List<SocialInformation> statusList = new ArrayList<>();
     while (rs.next()) {
       Status status = new Status();
       status.setId(rs.getInt(1));
@@ -134,10 +130,10 @@ public class StatusDao {
       status.setCreationDate(new Date(rs.getTimestamp(3).getTime()));
       status.setDescription(rs.getString(4));
       if (StringUtil.isDefined(status.getDescription())) {
-        status_list.add(new SocialInformationStatus(status));
+        statusList.add(new SocialInformationStatus(status));
       }
     }
-    return status_list;
+    return statusList;
   }
 
   private static String toSqlString(List<String> list) {

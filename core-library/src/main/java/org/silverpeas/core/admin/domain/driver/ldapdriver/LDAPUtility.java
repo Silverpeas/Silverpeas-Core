@@ -35,9 +35,9 @@ import com.novell.ldap.controls.LDAPSortControl;
 import com.novell.ldap.controls.LDAPSortKey;
 import org.silverpeas.core.admin.domain.synchro.SynchroDomainReport;
 import org.silverpeas.core.admin.service.AdminException;
-import org.silverpeas.core.silvertrace.SilverTrace;
 import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.StringUtil;
+import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -53,15 +53,19 @@ import java.util.StringTokenizer;
  */
 public class LDAPUtility {
 
-  public static final MessageFormat LDAP_ERROR = new MessageFormat("LDAP Error #{0}: {1}");
+  private static final MessageFormat LDAP_ERROR = new MessageFormat("LDAP Error #{0}: {1}");
 
-  public static final int MAX_NB_RETRY_CONNECT = 10;
-  public static final int MAX_NB_RETRY_TIMELIMIT = 5;
-  public static final String BASEDN_SEPARATOR = ";;";
-  static final Map<String, LDAPConnectInfos> connectInfos = new HashMap<String, LDAPConnectInfos>();
-  static int connexionsLastId = 0;
+  private static final int MAX_NB_RETRY_CONNECT = 10;
+  private static final String BASEDN_SEPARATOR = ";;";
+  private static final Map<String, LDAPConnectInfo> connectInfos = new HashMap<>();
+  private static final String LDAPUTILITY_SEARCH1000_PLUS = "LDAPUtility.search1000Plus()";
+  private static int connexionsLastId = 0;
 
-  static public String openConnection(LDAPSettings driverSettings) throws AdminException {
+  private LDAPUtility() {
+
+  }
+
+  public static String openConnection(LDAPSettings driverSettings) throws AdminException {
     String newId;
     synchronized (connectInfos) {
       newId = Integer.toString(connexionsLastId);
@@ -70,57 +74,57 @@ public class LDAPUtility {
         connexionsLastId = 0;
       }
     }
-    connectInfos.put(newId, new LDAPConnectInfos(driverSettings));
-    InternalOpenConnection(newId);
+    connectInfos.put(newId, new LDAPConnectInfo(driverSettings));
+    internalOpenConnection(newId);
     return newId;
   }
 
-  static public LDAPConnection getConnection(String connectionId) {
-    return (connectInfos.get(connectionId)).connection;
+  public static LDAPConnection getConnection(String connectionId) {
+    return connectInfos.get(connectionId).getConnection();
   }
 
-  static public boolean recoverConnection(String connectionId, LDAPException ex) {
+  private static boolean recoverConnection(String connectionId, LDAPException ex) {
     int nbRetry = 0;
     boolean reOpened = false;
 
-    if (ex.getResultCode() == LDAPException.CONNECT_ERROR) {
-      if ((connectInfos.get(connectionId)).incErrorCpt()) {
-        SilverTrace.warn("admin", "LDAPUtility.recoverConnection",
-            "admin.EX_ERR_LDAP_CONNECTION_LOST",
-            "ConnectionId=" + connectionId, ex);
+    if (ex.getResultCode() == LDAPException.CONNECT_ERROR &&
+        connectInfos.get(connectionId).incErrorCpt()) {
+      SilverLogger.getLogger(LDAPUtility.class).warn("LDAP connection {0} lost", connectionId);
+      try {
+        internalCloseConnection(connectionId);
+      } catch (AdminException e) {
+        SilverLogger.getLogger(LDAPUtility.class).warn(e);
+      }
+      while (!reOpened && nbRetry < MAX_NB_RETRY_CONNECT) {
         try {
-          InternalCloseConnection(connectionId);
+          sleepCurrentThread();
+          internalOpenConnection(connectionId);
+          reOpened = true;
         } catch (AdminException e) {
-          SilverTrace.warn("admin", "LDAPUtility.recoverConnection",
-              "admin.EX_ERR_LDAP_GENERAL", e);
-        }
-        while ((reOpened == false) && (nbRetry < MAX_NB_RETRY_CONNECT)) {
-          try {
-            try {
-              Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
-            InternalOpenConnection(connectionId);
-            reOpened = true;
-          } catch (AdminException e) {
-            nbRetry++;
-            SilverTrace.warn("admin", "LDAPUtility.recoverConnection",
-                "admin.EX_ERR_LDAP_GENERAL", "Retry#="
-                + Integer.toString(nbRetry), e);
-          }
+          nbRetry++;
+          SilverLogger.getLogger(LDAPUtility.class)
+              .warn("Error in retry " + nbRetry + ": " + e.getMessage());
         }
       }
     }
     return reOpened;
   }
 
-  static public void closeConnection(String connectionId) throws AdminException {
-    InternalCloseConnection(connectionId);
+  private static void sleepCurrentThread() {
+    try {
+      Thread.sleep(1000);
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+    }
+  }
+
+  public static void closeConnection(String connectionId) throws AdminException {
+    internalCloseConnection(connectionId);
     connectInfos.remove(connectionId);
   }
 
-  static private void InternalOpenConnection(String connectionId) throws AdminException {
-    LDAPSettings driverSettings = (connectInfos.get(connectionId)).driverSettings;
+  private static void internalOpenConnection(String connectionId) throws AdminException {
+    LDAPSettings driverSettings = connectInfos.get(connectionId).getSettings();
     LDAPConnection valret;
     if (driverSettings.isLDAPSecured()) {
       valret = new LDAPConnection(new LDAPJSSESecureSocketFactory());
@@ -133,16 +137,14 @@ public class LDAPUtility {
       valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(),
           passwd);
       valret.setConstraints(driverSettings.getSearchConstraints(false));
-      (connectInfos.get(connectionId)).connection = valret;
+      connectInfos.get(connectionId).setConnection(valret);
     } catch (LDAPException e) {
       try {
-        if (valret != null) {
-          valret.disconnect();
-        }
+        valret.disconnect();
       } catch (LDAPException ee) {
-        SilverTrace.error("admin", "LDAPUtility.openConnection", "admin.EX_ERR_LDAP_GENERAL",
-            "ERROR CLOSING CONNECTION : ConnectionId=" + connectionId + " Error LDAP #"
-            + e.getResultCode() + " " + e.getLDAPErrorMessage(), ee);
+        SilverLogger.getLogger(LDAPUtility.class)
+            .error("Error while closing connection " + connectionId + ". Error LDAP #" +
+                e.getResultCode() + " " + e.getLDAPErrorMessage(), ee);
       }
       throw new AdminException("Connection error with Host : "
           + driverSettings.getLDAPHost() + " Port : " + driverSettings.getLDAPPort()
@@ -151,11 +153,11 @@ public class LDAPUtility {
     }
   }
 
-  static private void InternalCloseConnection(String connectionId)
+  private static void internalCloseConnection(String connectionId)
       throws AdminException {
     LDAPConnection toClose = getConnection(connectionId);
 
-    if ((toClose != null) && (toClose.isConnected())) {
+    if (toClose != null && toClose.isConnected()) {
       try {
         toClose.disconnect();
       } catch (LDAPException e) {
@@ -174,7 +176,7 @@ public class LDAPUtility {
    * @param attributeName the name of the attribute to retreive
    * @return the first value as a string
    */
-  static public String getFirstAttributeValue(LDAPEntry theEntry, String attributeName) {
+  public static String getFirstAttributeValue(LDAPEntry theEntry, String attributeName) {
     String[] stringVals = getAttributeValues(theEntry, attributeName);
     if (stringVals != null && stringVals.length > 0) {
       return stringVals[0];
@@ -194,7 +196,7 @@ public class LDAPUtility {
    * @return the first entry found
    * @throws AdminException if a problem occur
    */
-  static public LDAPEntry getFirstEntryFromSearch(String lds, String baseDN,
+  public static LDAPEntry getFirstEntryFromSearch(String lds, String baseDN,
       int scope, String filter, String[] attrs) throws AdminException {
     LDAPConnection connection = getConnection(lds);
     String sureFilter;
@@ -209,8 +211,6 @@ public class LDAPUtility {
     LDAPSearchConstraints sc = connection.getSearchConstraints();
     sc.setBatchSize(1);
     sc.setMaxResults(1);
-    // SynchroDomainReport.debug("LDAPUtility.getFirstEntryFromSearch()",
-    // "Requête LDAP : BaseDN="+baseDN+" scope="+Integer.toString(scope)+" Filter="+sureFilter,null);
     // Modif LBE : as more than on baseDN can be set, iterate on all baseDNs
     // and stop when first entry is found
     String[] baseDNs = extractBaseDNs(baseDN);
@@ -229,16 +229,15 @@ public class LDAPUtility {
         if (LDAPUtility.recoverConnection(lds, e)) {
           return getFirstEntryFromSearch(lds, baseDN, scope, filter, attrs);
         } else {
-          SilverTrace.error("admin", "LDAPUtility.getFirstEntryFromSearch()",
-              "admin.EX_ERR_LDAP_GENERAL", "#" + Integer.toString(e.getResultCode())
-              + " " + e.getLDAPErrorMessage(), e);
+          SilverLogger.getLogger(LDAPUtility.class)
+              .error("Error LDAP #" + e.getResultCode() + " " + e.getLDAPErrorMessage(), e);
         }
       }
     }
     return theEntry;
   }
 
-  static public boolean isAGuid(String attName) {
+  static boolean isAGuid(String attName) {
     return "objectGUID".equalsIgnoreCase(attName) || "GUID".equalsIgnoreCase(attName);
   }
 
@@ -249,45 +248,46 @@ public class LDAPUtility {
    * @param theAttributeName name of the attribute to retreive
    * @return the attribute's values as string
    */
-  static public String[] getAttributeValues(LDAPEntry theEntry, String theAttributeName) {
-    LDAPAttribute theAttr;
-
+  static String[] getAttributeValues(LDAPEntry theEntry, String theAttributeName) {
     if (theEntry == null || !StringUtil.isDefined(theAttributeName)) {
       return ArrayUtil.EMPTY_STRING_ARRAY;
-    } else {
-      theAttr = theEntry.getAttribute(theAttributeName);
-      if (theAttr == null) {
-        return ArrayUtil.EMPTY_STRING_ARRAY;
-      } else {
-        if (isAGuid(theAttributeName)) {
-          byte[][] allBytes = theAttr.getByteValueArray();
-          byte[] asBytes;
-          String asString;
-          StringBuffer theStr;
-          String[] valret = new String[theAttr.size()];
+    }
 
-          for (int j = 0; j < theAttr.size(); j++) {
-            theStr = new StringBuffer(50);
-            asBytes = allBytes[j];
-            for (byte asByte : asBytes) {
-              asString = Integer.toHexString(asByte);
-              if (asString.length() > 3) {
-                theStr.append("\\\\").append(asString.substring(6));
-              } else {
-                if (asString.length() == 0) {
-                  theStr.append("\\\\").append("00");
-                } else if (asString.length() == 1) {
-                  theStr.append("\\\\0").append(asString);
-                } else {
-                  theStr.append("\\\\").append(asString);
-                }
-              }
-            }
-            valret[j] = theStr.toString();
-          }
-          return valret;
+    LDAPAttribute theAttr = theEntry.getAttribute(theAttributeName);
+    if (theAttr == null) {
+      return ArrayUtil.EMPTY_STRING_ARRAY;
+    }
+
+    if (isAGuid(theAttributeName)) {
+      byte[][] allBytes = theAttr.getByteValueArray();
+      byte[] asBytes;
+      StringBuilder theStr;
+      String[] valret = new String[theAttr.size()];
+
+      for (int j = 0; j < theAttr.size(); j++) {
+        theStr = new StringBuilder(50);
+        asBytes = allBytes[j];
+        decodeBytesAttributeValue(asBytes, theStr);
+        valret[j] = theStr.toString();
+      }
+      return valret;
+    } else {
+      return theAttr.getStringValueArray();
+    }
+  }
+
+  private static void decodeBytesAttributeValue(final byte[] asBytes, final StringBuilder theStr) {
+    for (byte asByte : asBytes) {
+      final String asString = Integer.toHexString(asByte);
+      if (asString.length() > 3) {
+        theStr.append("\\\\").append(asString.substring(6));
+      } else {
+        if (asString.length() == 0) {
+          theStr.append("\\\\").append("00");
+        } else if (asString.length() == 1) {
+          theStr.append("\\\\0").append(asString);
         } else {
-          return theAttr.getStringValueArray();
+          theStr.append("\\\\").append(asString);
         }
       }
     }
@@ -297,7 +297,7 @@ public class LDAPUtility {
     return escapeDN(theDN);
   }
 
-  static public String normalizeFilterValue(String theFilter) {
+  public static String normalizeFilterValue(String theFilter) {
     return escapeLDAPSearchFilter(theFilter);
   }
 
@@ -308,9 +308,9 @@ public class LDAPUtility {
    * @param name the DN to be espaced.
    * @return the escaped DN.
    */
-  public static String escapeDN(String name) {
+  static String escapeDN(String name) {
     StringBuilder sb = new StringBuilder();
-    if ((name.length() > 0) && ((name.charAt(0) == ' ') || (name.charAt(0) == '#'))) {
+    if (name.length() > 0 && (name.charAt(0) == ' ' || name.charAt(0) == '#')) {
       sb.append('\\'); // add the leading backslash if needed
     }
     for (int i = 0; i < name.length(); i++) {
@@ -341,7 +341,7 @@ public class LDAPUtility {
           sb.append(curChar);
       }
     }
-    if ((name.length() > 1) && (name.charAt(name.length() - 1) == ' ')) {
+    if (name.length() > 1 && name.charAt(name.length() - 1) == ' ') {
       sb.insert(sb.length() - 1, '\\'); // add the trailing backslash if needed
     }
     return sb.toString();
@@ -399,100 +399,53 @@ public class LDAPUtility {
     return unescapedFilter;
   }
 
-  static public LDAPEntry[] search1000Plus(String lds, String baseDN, int scope, String filter,
+  static LDAPEntry[] search1000Plus(String lds, String baseDN, int scope, String filter,
       String varToSort, String[] args) throws AdminException {
 
     LDAPConnection ld = getConnection(lds);
-    List<LDAPEntry> entriesVector = new ArrayList<LDAPEntry>();
-    int nbReaded = 0;
-    LDAPSearchConstraints cons = null;
+    List<LDAPEntry> ldapEntries = new ArrayList<>();
     LDAPSortKey[] keys = new LDAPSortKey[1];
-    String theFullFilter = filter;
-    boolean notTheFirst = false;
-    LDAPException lastException = null;
-
     try {
-      LDAPSettings driverSettings = (connectInfos.get(lds)).driverSettings;
-
-      if (args != null) {
-
-      }
+      LDAPSettings driverSettings = connectInfos.get(lds).getSettings();
+      LDAPSearchConstraints constraints;
       if (!driverSettings.isSortControlSupported()) {
         // OpenLDAP doesn't support sorts during search. RFC 2891 not supported.
-        cons = null;
+        constraints = null;
       } else {
         keys[0] = new LDAPSortKey(varToSort);
         // Create a LDAPSortControl object - Fail if cannot sort
         LDAPSortControl sort = new LDAPSortControl(keys, true);
         // Set sorted request on server
-        cons = ld.getSearchConstraints();
-        cons.setControls(sort);
+        constraints = ld.getSearchConstraints();
+        constraints.setControls(sort);
       }
 
-      boolean sizeLimitReached = false;
-      boolean timeLimitReached = false;
-      int nbRetryTimeLimit = 0;
-      String[] baseDNs = extractBaseDNs(baseDN);
-      LDAPEntry entry = null;
-      for (String baseDN1 : baseDNs) {
-        theFullFilter = filter;
-        while (theFullFilter != null) {
-          SynchroDomainReport.debug("LDAPUtility.search1000Plus()",
-              "Requête sur le domaine LDAP distant (protocole v" + ld.getProtocolVersion()
-              + "), BaseDN=" + baseDN1 + " scope=" + Integer.toString(scope) + " Filter="
-              + theFullFilter);
+      LDAPSearchContext context = new LDAPSearchContext().setVarToSort(varToSort);
+      LDAPSearchQuery query = new LDAPSearchQuery().setScope(scope)
+          .setAttrs(args)
+          .setConstraints(constraints)
+          .setFilter(filter);
 
-          try {
-            LDAPSearchResults res = ld.search(baseDN1, scope, theFullFilter, args, false, cons);
-            while (res.hasMore()) {
-              entry = res.next();
-              if (notTheFirst) {
-                // res.next();
-                notTheFirst = false;
-              } else {
-                SynchroDomainReport.debug("LDAPUtility.search1000Plus()", "élément #" + nbReaded + " : "
-                    + entry.getDN());
-                entriesVector.add(entry);
-                nbReaded++;
-              }
-            }
-          } catch (LDAPException le) {
-            if (le.getResultCode() == LDAPException.SIZE_LIMIT_EXCEEDED) {
-              sizeLimitReached = true;
-              SynchroDomainReport.debug("LDAPUtility.search1000Plus()", "Size Limit Reached...");
-            } else if (le.getResultCode() == LDAPException.TIME_LIMIT_EXCEEDED) {
-              timeLimitReached = true;
-              nbRetryTimeLimit++;
-              lastException = le;
-              SynchroDomainReport.debug("LDAPUtility.search1000Plus()", "Time Limit Reached (#"
-                  + nbRetryTimeLimit + ")");
-            } else {
-              SilverTrace.error("admin", "LDAPUtility.search1000Plus", "admin.EX_ERR_LDAP_REFERRAL",
-                  "#" + Integer.toString(le.getResultCode()) + " " + le.getLDAPErrorMessage(), le);
-              throw le;
-            }
-          }
-          if (sizeLimitReached || (timeLimitReached && nbRetryTimeLimit <= MAX_NB_RETRY_TIMELIMIT)) {
-            notTheFirst = true;
-            sizeLimitReached = false;
-            timeLimitReached = false;
-            theFullFilter = "(&" + filter + "(" + varToSort + ">="
-                + LDAPUtility.getFirstAttributeValue(entry, varToSort) + "))";
-          } else if (timeLimitReached
-              && (nbRetryTimeLimit > MAX_NB_RETRY_TIMELIMIT)) {
-            throw lastException;
-          } else {
-            theFullFilter = null;
-          }
+      String[] baseDNs = extractBaseDNs(baseDN);
+      for (String baseDN1 : baseDNs) {
+        query.setBaseDN(baseDN1);
+
+        while (query.getFilter() != null) {
+          SynchroDomainReport.debug(LDAPUTILITY_SEARCH1000_PLUS,
+              "Requête sur le domaine LDAP distant (protocole v" + ld.getProtocolVersion() +
+                  "), BaseDN=" + baseDN1 + " scope=" + Integer.toString(scope) + " Filter=" +
+                  query.getFilter());
+
+          internalLdapSearch(ld, query, context, ldapEntries);
         }
       }
     } catch (LDAPReferralException re) {
-      SynchroDomainReport.error("LDAPUtility.search1000Plus()",
+      SynchroDomainReport.error(LDAPUTILITY_SEARCH1000_PLUS,
           "Référence (referral) retournée mais pas suivie !", re);
       throw new AdminException(LDAP_ERROR.format(
           new Object[]{Integer.toString(re.getResultCode()), re.getLDAPErrorMessage()}), re);
     } catch (LDAPException e) {
-      SynchroDomainReport.debug("LDAPUtility.search1000Plus()",
+      SynchroDomainReport.debug(LDAPUTILITY_SEARCH1000_PLUS,
           "Une exception générale est survenue : #" + e.getResultCode() + " "
           + e.getLDAPErrorMessage());
       if (LDAPUtility.recoverConnection(lds, e)) {
@@ -502,14 +455,58 @@ public class LDAPUtility {
             new Object[]{Integer.toString(e.getResultCode()), e.getLDAPErrorMessage()}), e);
       }
     }
-    return entriesVector.toArray(new LDAPEntry[entriesVector.size()]);
+    return ldapEntries.toArray(new LDAPEntry[0]);
   }
 
-  static public AbstractLDAPTimeStamp getTimeStamp(String lds, String baseDN,
+  private static void internalLdapSearch(final LDAPConnection ld, final LDAPSearchQuery query,
+      final LDAPSearchContext context, final List<LDAPEntry> results) throws LDAPException {
+    LDAPEntry entry = null;
+    try {
+      LDAPSearchResults res =
+          ld.search(query.getBaseDN(), query.getScope(), query.getFilter(), query.getAttrs(), false,
+              query.getConstraints());
+      while (res.hasMore()) {
+        entry = res.next();
+        if (context.isNotTheFirst()) {
+          context.setNotTheFirst(false);
+        } else {
+          SynchroDomainReport.debug(LDAPUTILITY_SEARCH1000_PLUS,
+              "élément #" + context.getNbReaded() + " : " + entry.getDN());
+          results.add(entry);
+          context.incNbReaded();
+        }
+      }
+    } catch (LDAPException le) {
+      if (le.getResultCode() == LDAPException.SIZE_LIMIT_EXCEEDED) {
+        context.setSizeLimitReached(true);
+        SynchroDomainReport.debug(LDAPUTILITY_SEARCH1000_PLUS, "Size Limit Reached...");
+      } else if (le.getResultCode() == LDAPException.TIME_LIMIT_EXCEEDED) {
+        context.setTimeLimitReached(true).incNbRetryTimeLimit().setLastException(le);
+        SynchroDomainReport.debug(LDAPUTILITY_SEARCH1000_PLUS,
+            "Time Limit Reached (#" + context.getNbRetryLimit() + ")");
+      } else {
+        SilverLogger.getLogger(LDAPUtility.class)
+            .error("Error LDAP #" + le.getResultCode() + " " + le.getLDAPErrorMessage(), le);
+        throw le;
+      }
+    }
+    if (context.isSizeLimitReached() ||
+        (context.isTimeLimitReached() && context.isNotMaxNbRetryTimeLimitReached())) {
+      context.setNotTheFirst(true).setSizeLimitReached(false).setTimeLimitReached(false);
+      query.setFilter("(&" + query.getFilter() + "(" + context.getVarToSort() + ">=" +
+          LDAPUtility.getFirstAttributeValue(entry, context.getVarToSort()) + "))");
+    } else if (context.isTimeLimitReached() && context.isMaxNbRetryTimeLimitReached()) {
+      throw context.getLastException();
+    } else {
+      query.setFilter(null);
+    }
+  }
+
+  public static AbstractLDAPTimeStamp getTimeStamp(String lds, String baseDN,
       int scope, String filter, String timeStampVar, String minTimeStamp)
       throws AdminException {
 
-    LDAPSettings driverSettings = (connectInfos.get(lds)).driverSettings;
+    LDAPSettings driverSettings = connectInfos.get(lds).getSettings();
     LDAPEntry[] theEntries = search1000Plus(lds, baseDN, scope, "(&("
         + timeStampVar + ">=" + minTimeStamp + ")" + filter + ")",
         timeStampVar, null);
@@ -545,22 +542,22 @@ public class LDAPUtility {
     }
 
     StringTokenizer st = new StringTokenizer(baseDN, BASEDN_SEPARATOR);
-    List<String> baseDNs = new ArrayList<String>();
+    List<String> baseDNs = new ArrayList<>();
     while (st.hasMoreTokens()) {
       baseDNs.add(st.nextToken());
     }
-    return (baseDNs.toArray(new String[baseDNs.size()]));
+    return baseDNs.toArray(new String[0]);
   }
 }
 
-class LDAPConnectInfos {
+class LDAPConnectInfo {
 
-  public final static int MAX_NB_ERROR_CONNECT = 20;
-  public LDAPSettings driverSettings = null;
-  public LDAPConnection connection = null;
-  public int errorCpt = 0;
+  public static final int MAX_NB_ERROR_CONNECT = 20;
+  private LDAPSettings driverSettings;
+  private LDAPConnection connection;
+  private int errorCpt;
 
-  public LDAPConnectInfos(LDAPSettings driverSettings) {
+  public LDAPConnectInfo(LDAPSettings driverSettings) {
     this.driverSettings = driverSettings;
     this.connection = null;
     this.errorCpt = 0;
@@ -568,6 +565,155 @@ class LDAPConnectInfos {
 
   public boolean incErrorCpt() {
     errorCpt = errorCpt + 1;
-    return (errorCpt < MAX_NB_ERROR_CONNECT);
+    return errorCpt < MAX_NB_ERROR_CONNECT;
+  }
+
+  public LDAPConnection getConnection() {
+    return this.connection;
+  }
+
+  public void setConnection(final LDAPConnection connection) {
+    this.connection = connection;
+  }
+
+  public LDAPSettings getSettings() {
+    return driverSettings;
+  }
+}
+
+class LDAPSearchQuery {
+  private String baseDN;
+  private int scope;
+  private String filter;
+  private String[] attrs;
+  private LDAPSearchConstraints constraints;
+
+  public String getBaseDN() {
+    return baseDN;
+  }
+
+  public LDAPSearchQuery setBaseDN(final String baseDN) {
+    this.baseDN = baseDN;
+    return this;
+  }
+
+  public int getScope() {
+    return scope;
+  }
+
+  public LDAPSearchQuery setScope(final int scope) {
+    this.scope = scope;
+    return this;
+  }
+
+  public String getFilter() {
+    return filter;
+  }
+
+  public LDAPSearchQuery setFilter(final String filter) {
+    this.filter = filter;
+    return this;
+  }
+
+  public String[] getAttrs() {
+    return attrs;
+  }
+
+  public LDAPSearchQuery setAttrs(final String[] attrs) {
+    this.attrs = attrs;
+    return this;
+  }
+
+  public LDAPSearchConstraints getConstraints() {
+    return constraints;
+  }
+
+  public LDAPSearchQuery setConstraints(final LDAPSearchConstraints constraints) {
+    this.constraints = constraints;
+    return this;
+  }
+}
+
+class LDAPSearchContext {
+
+  private static final int MAX_NB_RETRY_TIME_LIMIT = 5;
+
+  private boolean sizeLimitReached = false;
+  private boolean timeLimitReached = false;
+  private int nbRetryTimeLimit = 0;
+  private LDAPException lastException = null;
+  private int nbReaded = 0;
+  private boolean notTheFirst = false;
+  private String varToSort = "";
+
+  public boolean isMaxNbRetryTimeLimitReached() {
+    return nbRetryTimeLimit > MAX_NB_RETRY_TIME_LIMIT;
+  }
+
+  public boolean isNotMaxNbRetryTimeLimitReached() {
+    return nbRetryTimeLimit <= MAX_NB_RETRY_TIME_LIMIT;
+  }
+
+  public boolean isSizeLimitReached() {
+    return sizeLimitReached;
+  }
+
+  public LDAPSearchContext setSizeLimitReached(final boolean sizeLimitReached) {
+    this.sizeLimitReached = sizeLimitReached;
+    return this;
+  }
+
+  public boolean isTimeLimitReached() {
+    return timeLimitReached;
+  }
+
+  public LDAPSearchContext setTimeLimitReached(final boolean timeLimitReached) {
+    this.timeLimitReached = timeLimitReached;
+    return this;
+  }
+
+  public int getNbRetryLimit() {
+    return nbRetryTimeLimit;
+  }
+
+  public LDAPSearchContext incNbRetryTimeLimit() {
+    this.nbRetryTimeLimit++;
+    return this;
+  }
+
+  public LDAPException getLastException() {
+    return lastException;
+  }
+
+  public LDAPSearchContext setLastException(final LDAPException lastException) {
+    this.lastException = lastException;
+    return this;
+  }
+
+  public int getNbReaded() {
+    return nbReaded;
+  }
+
+  public LDAPSearchContext incNbReaded() {
+    this.nbReaded++;
+    return this;
+  }
+
+  public boolean isNotTheFirst() {
+    return notTheFirst;
+  }
+
+  public LDAPSearchContext setNotTheFirst(final boolean notTheFirst) {
+    this.notTheFirst = notTheFirst;
+    return this;
+  }
+
+  public String getVarToSort() {
+    return varToSort;
+  }
+
+  public LDAPSearchContext setVarToSort(final String varToSort) {
+    this.varToSort = varToSort;
+    return this;
   }
 }

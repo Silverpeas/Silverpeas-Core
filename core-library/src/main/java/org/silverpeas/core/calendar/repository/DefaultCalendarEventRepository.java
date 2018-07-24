@@ -45,7 +45,8 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
     implements CalendarEventRepository {
 
   private static final String CALENDARS_PARAMETER = "calendars";
-  private static final String CALENDAR_PARAMETER = "calendar";
+  private static final String CALENDAR_PARAM = "calendar";
+  private static final String CALENDAR_PARAMETER = CALENDAR_PARAM;
 
   @Override
   public CalendarEvent getByExternalId(final Calendar calendar, final String externalId) {
@@ -56,6 +57,7 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
 
   @Override
   public Stream<CalendarEvent> streamAll(final CalendarEventFilter filter) {
+    final String byParticipants = "ByParticipants";
     String namedQuery = "calendarEvents";
     NamedParameters parameters = newNamedParameters();
     if (!filter.getCalendars().isEmpty()) {
@@ -65,11 +67,11 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
     if (!filter.getParticipants().isEmpty()) {
       parameters.add("participantIds",
           filter.getParticipants().stream().map(User::getId).collect(Collectors.toList()));
-      namedQuery += "ByParticipants";
+      namedQuery += byParticipants;
     }
     if (filter.getSynchronizationDateLimit().isPresent()) {
       parameters.add("synchronizationDateLimit", filter.getSynchronizationDateLimit().get());
-      if (namedQuery.contains("ByParticipants")) {
+      if (namedQuery.contains(byParticipants)) {
         throw new UnsupportedOperationException(
             "The filter on both participants and synchronization date isn't yet supported!");
       }
@@ -81,7 +83,7 @@ public class DefaultCalendarEventRepository extends BasicJpaEntityRepository<Cal
 
   @Override
   public long size(final Calendar calendar) {
-    NamedParameters params = newNamedParameters().add("calendar", calendar);
+    NamedParameters params = newNamedParameters().add(CALENDAR_PARAM, calendar);
     return getFromNamedQuery("calendarEventCount", params, Long.class);
   }
 

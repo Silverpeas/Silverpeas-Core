@@ -61,6 +61,7 @@
 <body class="page_content_admin">
 <NOBR>
   <%
+    Thread.sleep(100);
     String toDisp = SynchroDomainReport.getMessages();
     boolean isActive = true;
 

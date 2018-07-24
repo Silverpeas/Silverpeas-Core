@@ -71,6 +71,7 @@ import org.silverpeas.core.template.SilverpeasTemplate;
 import org.silverpeas.core.template.SilverpeasTemplateFactory;
 import org.silverpeas.core.ui.DisplayI18NHelper;
 import org.silverpeas.core.util.*;
+import org.silverpeas.core.util.comparator.AbstractComplexComparator;
 import org.silverpeas.core.util.csv.CSVReader;
 import org.silverpeas.core.util.csv.Variant;
 import org.silverpeas.core.util.logging.Level;
@@ -2197,6 +2198,14 @@ public class JobDomainPeasSessionController extends AbstractComponentSessionCont
       }
       componentProfiles.addProfile(currentProfile);
     }
+    allProfiles.sort(new AbstractComplexComparator<ComponentProfiles>() {
+      private static final long serialVersionUID = 6776408278128213038L;
+      @Override
+      protected ValueBuffer getValuesToCompare(final ComponentProfiles object) {
+        return new ValueBuffer().append(object.getSpace().getName(getLanguage()))
+            .append(object.getComponent().getName(getLanguage()));
+      }
+    });
     return allProfiles;
   }
 
