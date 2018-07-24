@@ -345,8 +345,7 @@ public class SilverpeasDriver extends AbstractDomainDriver implements Silverpeas
     }
 
     // Update the group node
-    SPGroup gr = spGroupRepository.getById(group.getSpecificId());
-    convertToSPGroup(group, gr);
+    final SPGroup gr = convertToSPGroup(group, spGroupRepository.getById(group.getSpecificId()));
     Set<SPUser> users = gr.getUsers();
     Map<String, SPUser> existingUsers = new HashMap<>(users.size());
     for (SPUser user : users) {

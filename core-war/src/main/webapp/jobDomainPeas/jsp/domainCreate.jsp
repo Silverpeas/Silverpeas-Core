@@ -165,7 +165,7 @@
           </td>
         </tr>
         <c:choose>
-          <c:when test="${domain.id != null and not domain.id eq '0'}">
+          <c:when test="${domain.id != null and not (domain.id eq '0')}">
             <tr>
               <td class="txtlibform">${serverTimeStampLabel} :</td>
               <td>

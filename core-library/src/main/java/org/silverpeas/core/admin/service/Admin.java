@@ -4644,8 +4644,7 @@ class Admin implements Administration {
 
       // Delete obsolete groups
       SynchroDomainReport.info(ADMIN_SYNCHRONIZE_GROUPS, "Removing groups from database...");
-      GroupDetail[] distantGroups = allDistantGroups.values().toArray(
-          new GroupDetail[allDistantGroups.size()]);
+      GroupDetail[] distantGroups = allDistantGroups.values().toArray(new GroupDetail[0]);
       for (GroupDetail silverpeasGroup : silverpeasGroups) {
         bFound = false;
         specificId = silverpeasGroup.getSpecificId();
@@ -4653,7 +4652,7 @@ class Admin implements Administration {
         // search for group in distant datasource
         for (int nJ = 0; nJ < distantGroups.length && !bFound; nJ++) {
           if (distantGroups[nJ].getSpecificId().equals(specificId) ||
-              shouldFallbackGroupNames && distantGroups[nJ].getName().equals(specificId)) {
+              (shouldFallbackGroupNames && distantGroups[nJ].getName().equals(specificId))) {
             bFound = true;
           }
         }
@@ -4717,8 +4716,8 @@ class Admin implements Administration {
       for (int nJ = 0;
            nJ < existingGroups.length && !bFound;
            nJ++) {
-        if (existingGroups[nJ].getSpecificId().equals(specificId) || (shouldFallbackGroupNames &&
-            existingGroups[nJ].getSpecificId().equals(testedGroup.getName()))) {
+        if (existingGroups[nJ].getSpecificId().equals(specificId) ||
+            (shouldFallbackGroupNames && existingGroups[nJ].getSpecificId().equals(testedGroup.getName()))) {
           bFound = true;
           testedGroup.setId(existingGroups[nJ].getId());
         }

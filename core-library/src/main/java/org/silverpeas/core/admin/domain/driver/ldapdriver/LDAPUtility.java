@@ -80,7 +80,7 @@ public class LDAPUtility {
   }
 
   public static LDAPConnection getConnection(String connectionId) {
-    return (connectInfos.get(connectionId)).getConnection();
+    return connectInfos.get(connectionId).getConnection();
   }
 
   private static boolean recoverConnection(String connectionId, LDAPException ex) {
@@ -88,14 +88,14 @@ public class LDAPUtility {
     boolean reOpened = false;
 
     if (ex.getResultCode() == LDAPException.CONNECT_ERROR &&
-        (connectInfos.get(connectionId)).incErrorCpt()) {
+        connectInfos.get(connectionId).incErrorCpt()) {
       SilverLogger.getLogger(LDAPUtility.class).warn("LDAP connection {0} lost", connectionId);
       try {
         internalCloseConnection(connectionId);
       } catch (AdminException e) {
         SilverLogger.getLogger(LDAPUtility.class).warn(e);
       }
-      while (!reOpened && (nbRetry < MAX_NB_RETRY_CONNECT)) {
+      while (!reOpened && nbRetry < MAX_NB_RETRY_CONNECT) {
         try {
           sleepCurrentThread();
           internalOpenConnection(connectionId);
@@ -124,7 +124,7 @@ public class LDAPUtility {
   }
 
   private static void internalOpenConnection(String connectionId) throws AdminException {
-    LDAPSettings driverSettings = (connectInfos.get(connectionId)).getSettings();
+    LDAPSettings driverSettings = connectInfos.get(connectionId).getSettings();
     LDAPConnection valret;
     if (driverSettings.isLDAPSecured()) {
       valret = new LDAPConnection(new LDAPJSSESecureSocketFactory());
@@ -137,7 +137,7 @@ public class LDAPUtility {
       valret.bind(driverSettings.getLDAPProtocolVer(), driverSettings.getLDAPAccessLoginDN(),
           passwd);
       valret.setConstraints(driverSettings.getSearchConstraints(false));
-      (connectInfos.get(connectionId)).setConnection(valret);
+      connectInfos.get(connectionId).setConnection(valret);
     } catch (LDAPException e) {
       try {
         valret.disconnect();
@@ -157,7 +157,7 @@ public class LDAPUtility {
       throws AdminException {
     LDAPConnection toClose = getConnection(connectionId);
 
-    if ((toClose != null) && (toClose.isConnected())) {
+    if (toClose != null && toClose.isConnected()) {
       try {
         toClose.disconnect();
       } catch (LDAPException e) {
@@ -310,7 +310,7 @@ public class LDAPUtility {
    */
   static String escapeDN(String name) {
     StringBuilder sb = new StringBuilder();
-    if ((name.length() > 0) && ((name.charAt(0) == ' ') || (name.charAt(0) == '#'))) {
+    if (name.length() > 0 && (name.charAt(0) == ' ' || name.charAt(0) == '#')) {
       sb.append('\\'); // add the leading backslash if needed
     }
     for (int i = 0; i < name.length(); i++) {
@@ -341,7 +341,7 @@ public class LDAPUtility {
           sb.append(curChar);
       }
     }
-    if ((name.length() > 1) && (name.charAt(name.length() - 1) == ' ')) {
+    if (name.length() > 1 && name.charAt(name.length() - 1) == ' ') {
       sb.insert(sb.length() - 1, '\\'); // add the trailing backslash if needed
     }
     return sb.toString();
@@ -406,7 +406,7 @@ public class LDAPUtility {
     List<LDAPEntry> ldapEntries = new ArrayList<>();
     LDAPSortKey[] keys = new LDAPSortKey[1];
     try {
-      LDAPSettings driverSettings = (connectInfos.get(lds)).getSettings();
+      LDAPSettings driverSettings = connectInfos.get(lds).getSettings();
       LDAPSearchConstraints constraints;
       if (!driverSettings.isSortControlSupported()) {
         // OpenLDAP doesn't support sorts during search. RFC 2891 not supported.
@@ -506,7 +506,7 @@ public class LDAPUtility {
       int scope, String filter, String timeStampVar, String minTimeStamp)
       throws AdminException {
 
-    LDAPSettings driverSettings = (connectInfos.get(lds)).getSettings();
+    LDAPSettings driverSettings = connectInfos.get(lds).getSettings();
     LDAPEntry[] theEntries = search1000Plus(lds, baseDN, scope, "(&("
         + timeStampVar + ">=" + minTimeStamp + ")" + filter + ")",
         timeStampVar, null);
@@ -546,7 +546,7 @@ public class LDAPUtility {
     while (st.hasMoreTokens()) {
       baseDNs.add(st.nextToken());
     }
-    return (baseDNs.toArray(new String[baseDNs.size()]));
+    return baseDNs.toArray(new String[0]);
   }
 }
 
@@ -565,7 +565,7 @@ class LDAPConnectInfo {
 
   public boolean incErrorCpt() {
     errorCpt = errorCpt + 1;
-    return (errorCpt < MAX_NB_ERROR_CONNECT);
+    return errorCpt < MAX_NB_ERROR_CONNECT;
   }
 
   public LDAPConnection getConnection() {

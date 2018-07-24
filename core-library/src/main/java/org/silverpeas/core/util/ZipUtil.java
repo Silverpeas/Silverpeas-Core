@@ -153,8 +153,8 @@ public class ZipUtil {
   private static ArchiveInputStream openArchive(final String archive, final InputStream in)
       throws IOException {
     ArchiveInputStream archiveStream;
-    try (ArchiveInputStream stream = new ArchiveStreamFactory().createArchiveInputStream(in)) {
-      archiveStream = stream;
+    try {
+      archiveStream = new ArchiveStreamFactory().createArchiveInputStream(in);
     } catch (ArchiveException aex) {
       if (FilenameUtils.getExtension(archive).toLowerCase().endsWith("gz")) {
         archiveStream = new TarArchiveInputStream(new GzipCompressorInputStream(in));
@@ -195,10 +195,9 @@ public class ZipUtil {
       if (archiveEntry.isDirectory()) {
         currentFile.mkdirs();
       } else {
-        currentFile.getParentFile().mkdirs();
-        FileOutputStream fos = new FileOutputStream(currentFile);
-        IOUtils.copy(archiveStream, fos);
-        IOUtils.closeQuietly(fos);
+        try (final FileOutputStream fos = new FileOutputStream(currentFile)) {
+          IOUtils.copy(archiveStream, fos);
+        }
       }
     } catch (FileNotFoundException ex) {
       SilverLogger.getLogger(ZipUtil.class).error("File not found " + currentFile.getPath(), ex);
