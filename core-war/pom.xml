@@ -81,6 +81,10 @@
       <artifactId>jackrabbit-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.silverpeas.core.services</groupId>
       <artifactId>silverpeas-core-comment</artifactId>
       <version>${project.version}</version>
