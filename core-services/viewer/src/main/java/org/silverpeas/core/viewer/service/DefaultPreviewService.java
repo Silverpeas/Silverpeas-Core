@@ -139,7 +139,7 @@ public class DefaultPreviewService extends AbstractViewerService implements Prev
           ManagedThreadPool.getPool().invoke(() -> {
             ViewService.get().getDocumentView(viewerContext.clone());
           });
-        return super.performAfterSuccess(result);
+        return ViewerTreatment.super.performAfterSuccess(result);
       }
     }).execute(viewerContext);
   }

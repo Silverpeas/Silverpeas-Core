@@ -6574,6 +6574,26 @@ THESE TWO NEXT CLASSES ARE USED BY RESIZE WINDOW MECHANISM
   height: auto;
 }
 
+.attachments-as-content .attachment-container {
+  margin-bottom: 2em;
+}
+
+.attachments-as-content .content {
+  text-align: center;
+}
+
+.attachments-as-content .simple-text .content {
+  text-align: inherit;
+  white-space: pre-wrap;
+  padding: 10px;
+  margin: 0 20px 0 20px;
+  border: 2px solid #717171;
+}
+
+.attachments-as-content .content img {
+  max-width: 100%;
+}
+
 /**
  * JSP fragments : confirmation of wysiwyg backup manager
  */

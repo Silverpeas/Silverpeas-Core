@@ -656,6 +656,21 @@
       });
     }
 
+    function switchDisplayAsContentEnabled(attachmentId, enabled) {
+      $.progressMessage();
+      $.ajax({
+        url : '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
+            attachmentId + '/switchDisplayAsContentEnabled',
+        type : "POST",
+        cache : false,
+        dataType : "json",
+        data : {"enabled" : (enabled) ? enabled : false},
+        success : function(data) {
+          reloadIncludingPage();
+        }
+      });
+    }
+
     <c:if test="${useXMLForm}">
       function EditXmlForm(id, lang) {
         var url = '<c:url value="/RformTemplate/jsp/Edit"><c:param name="IndexIt" value="${indexIt}" /><c:param name="ComponentId" value="${param.ComponentId}" /><c:param name="type" value="Attachment" /><c:param name="ObjectType" value="Attachment" /><c:param name="XMLFormName" value="${xmlForm}" /></c:url>&ReloadOpener=true&ObjectLanguage=' + lang + '&ObjectId=' + id;

@@ -126,7 +126,7 @@ public class DefaultViewService extends AbstractViewerService implements ViewSer
             PreviewService.get().getPreview(viewerContext.clone());
           });
         }
-        return super.performAfterSuccess(result);
+        return ViewerTreatment.super.performAfterSuccess(result);
       }
     }).execute(viewerContext);
   }

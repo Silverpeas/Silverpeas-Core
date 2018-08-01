@@ -488,4 +488,11 @@ public interface AttachmentService extends DocumentIndexing {
    * versioned attachments become simple attachments.
    */
   void switchAllowingDownloadForReaders(SimpleDocumentPK pk, boolean allowing);
+
+  /**
+   * Enables or not the display of the content of an attachment.
+   * @param pk the id of the document.
+   * @param enable enable the display if true
+   */
+  void switchEnableDisplayAsContent(SimpleDocumentPK pk, boolean enable);
 }

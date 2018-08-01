@@ -604,6 +604,67 @@ public class HistorisedAttachmentServiceIT extends JcrIntegrationIT {
   }
 
   /**
+   * Test of switchAllowingDownloadForReaders method, of class AttachmentService.
+   *
+   * @throws LoginException
+   * @throws RepositoryException
+   * @throws IOException
+   */
+  @Test
+  public void testSwitchDisplayableAsContent() throws RepositoryException, IOException {
+    WAPrimaryKey foreignKey = new ResourceReference("node36", instanceId);
+    SimpleDocumentPK documentPK;
+    try (JcrSession session = openSystemSession()) {
+      Date creationDate = RandomGenerator.getRandomCalendar().getTime();
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      String foreignId = foreignKey.getId();
+      SimpleDocument document = new HistorisedDocument(emptyId, foreignId, 10,
+          new SimpleAttachment("test.odp", "fr", "Mon document de test 1",
+              "Ceci est un document de test", "Ceci est un test".getBytes(Charsets.UTF_8).length,
+              MimeTypes.MIME_TYPE_OO_PRESENTATION, "10", creationDate, "5"));
+      InputStream content = new ByteArrayInputStream("Ceci est un test".getBytes(Charsets.UTF_8));
+      documentPK = instance.createAttachment(document, content).getPk();
+      session.save();
+
+    }
+    // Simulate an other call ... closing old session and opening a new one
+    try (JcrSession session = openSystemSession()) {
+
+      // Verifying document is created.
+      List<SimpleDocument> result = instance.listDocumentsByForeignKey(foreignKey, "fr");
+      assertThat(result, notNullValue());
+      assertThat(result, hasSize(1));
+      SimpleDocument documentOfResult = result.get(0);
+      assertThat(documentOfResult.isDisplayableAsContent(), is(true));
+
+      // Disable
+      instance.switchEnableDisplayAsContent(documentPK, false);
+      documentOfResult = instance.searchDocumentById(documentPK, "fr");
+      assertThat(documentOfResult, notNullValue());
+      assertThat(documentOfResult.isDisplayableAsContent(), is(false));
+
+      // Enable
+      instance.switchEnableDisplayAsContent(documentPK, true);
+      documentOfResult = instance.searchDocumentById(documentPK, "fr");
+      assertThat(documentOfResult, notNullValue());
+      assertThat(documentOfResult.isDisplayableAsContent(), is(true));
+
+      // Enable again
+      instance.switchEnableDisplayAsContent(documentPK, true);
+      documentOfResult = instance.searchDocumentById(documentPK, "fr");
+      assertThat(documentOfResult, notNullValue());
+      assertThat(documentOfResult.isDisplayableAsContent(), is(true));
+
+      // Disable
+      instance.switchEnableDisplayAsContent(documentPK, false);
+      documentOfResult = instance.searchDocumentById(documentPK, "fr");
+      assertThat(documentOfResult, notNullValue());
+      assertThat(documentOfResult.isDisplayableAsContent(), is(false));
+
+    }
+  }
+
+  /**
    * Test of searchDocumentById method, of class AttachmentService.
    */
   @Test

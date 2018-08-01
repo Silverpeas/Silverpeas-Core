@@ -238,16 +238,18 @@ public abstract class AbstractJcrConverter {
    *
    * @param node the node whose property is required.
    * @param propertyName the name of the property required.
+   * @param defaultValueIfNull the default value of the value does not exist
    * @return the boolean value of the property - false if the property doesn't exist.
    * @throws RepositoryException on error
    * @throws ValueFormatException on error
    */
-  protected boolean getBooleanProperty(Node node, String propertyName) throws ValueFormatException,
-      RepositoryException {
+  protected boolean getBooleanProperty(Node node, String propertyName,
+      final boolean defaultValueIfNull) throws ValueFormatException,
+                                               RepositoryException {
     if (node.hasProperty(propertyName)) {
       return node.getProperty(propertyName).getBoolean();
     }
-    return false;
+    return defaultValueIfNull;
   }
 
   /**

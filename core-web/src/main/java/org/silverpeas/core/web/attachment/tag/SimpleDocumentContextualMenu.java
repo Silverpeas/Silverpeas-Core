@@ -23,15 +23,15 @@
  */
 package org.silverpeas.core.web.attachment.tag;
 
-import org.silverpeas.core.admin.user.model.User;
-import org.silverpeas.core.web.mvc.controller.MainSessionController;
-import org.silverpeas.core.admin.user.model.UserDetail;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.silverpeas.core.admin.user.model.User;
+import org.silverpeas.core.admin.user.model.UserDetail;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.i18n.I18NHelper;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.ResourceLocator;
 import org.silverpeas.core.util.StringUtil;
-import org.silverpeas.core.i18n.I18NHelper;
+import org.silverpeas.core.web.mvc.controller.MainSessionController;
 
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
@@ -39,6 +39,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import static org.silverpeas.core.admin.service.AdministrationServiceProvider.getAdminService;
+import static org.silverpeas.core.contribution.attachment.util.AttachmentSettings
+    .isDisplayableAsContentForComponentInstanceId;
 import static org.silverpeas.core.util.StringUtil.newline;
 
 /**
@@ -168,6 +170,15 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     }
     prepareMenuItem(builder, "switchDownloadAllowedForReaders('" + attachment.getId() + "', " +
         !isDownloadAllowedForReaders + ");", message);
+    if (isDisplayableAsContentForComponentInstanceId(attachment.getInstanceId())) {
+      message = resources.getString("attachment.displayAsContent.enable");
+      boolean isDisplayAsContentEnabled = attachment.isDisplayableAsContent();
+      if (isDisplayAsContentEnabled) {
+        message = resources.getString("attachment.displayAsContent.disable");
+      }
+      prepareMenuItem(builder, "switchDisplayAsContentEnabled('" + attachment.getId() + "', " +
+          !isDisplayAsContentEnabled + ");", message);
+    }
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "ShareAttachment('" + attachmentId + "');", resources.getString(
