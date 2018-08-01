@@ -23,22 +23,18 @@
  */
 package org.silverpeas.core.webapi.viewer;
 
-import org.silverpeas.web.ResourceGettingTest;
-import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.junit.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.silverpeas.core.contribution.attachment.SimpleDocumentService;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
-import org.silverpeas.core.web.test.WarBuilder4WebCore;
-import org.silverpeas.core.viewer.service.DefaultPreviewService;
+import org.silverpeas.core.admin.component.model.ComponentInst;
 import org.silverpeas.core.viewer.model.Preview;
+import org.silverpeas.core.viewer.service.DefaultPreviewService;
 import org.silverpeas.core.viewer.service.ViewerContext;
+import org.silverpeas.core.web.test.WarBuilder4WebCore;
+import org.silverpeas.web.ResourceGettingTest;
 
 import javax.annotation.Priority;
 import javax.enterprise.inject.Alternative;
@@ -64,7 +60,6 @@ public class PreviewGettingIT extends ResourceGettingTest {
   private ComponentInst component;
 
   private static String ATTACHMENT_ID = "7";
-  private static String ATTACHMENT_ID_DOESNT_EXISTS = "8";
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -73,25 +68,6 @@ public class PreviewGettingIT extends ResourceGettingTest {
           warBuilder.addPackages(true, "org.silverpeas.core.webapi.viewer");
           warBuilder.addAsResource("org/silverpeas/viewer/viewer.properties");
         }).build();
-  }
-
-  @Singleton
-  @Alternative
-  @Priority(APPLICATION + 10)
-  public static class StubbedAttachmentService extends SimpleDocumentService {
-    @Override
-    public SimpleDocument searchDocumentById(final SimpleDocumentPK attachmentPK,
-        final String lang) {
-      SimpleDocument attachmentDetail = null;
-      if (!ATTACHMENT_ID_DOESNT_EXISTS.equals(attachmentPK.getId())) {
-        attachmentDetail = new SimpleDocument();
-        attachmentDetail.setPK(attachmentPK);
-        attachmentDetail.setOldSilverpeasId(Long.parseLong(attachmentPK.getId()));
-        attachmentDetail.setAttachment(new SimpleAttachment());
-        attachmentDetail.setFilename("originalFileName" + attachmentPK.getId());
-      }
-      return attachmentDetail;
-    }
   }
 
   @Singleton
@@ -134,7 +110,7 @@ public class PreviewGettingIT extends ResourceGettingTest {
 
   @Override
   public String anUnexistingResourceURI() {
-    return aResourceURI(ATTACHMENT_ID_DOESNT_EXISTS);
+    return aResourceURI(StubbedAttachmentService.ATTACHMENT_ID_DOESNT_EXISTS);
   }
 
   @Override

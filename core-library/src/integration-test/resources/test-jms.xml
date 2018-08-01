@@ -34,13 +34,17 @@
       <jms-topic name="ResourceEvent">
         <entry name="jms/topic/resource"/>
       </jms-topic>
-      <!-- JMS destinations used in Silverpeas -->
+      <!-- JMS destinations used in Silverpeas
+      It is now defined directly in the WIldfly distribution used for integration tests
+      We keep it for information
+
       <jms-queue name="notifications">
         <entry name="jms/queue/notificationsQueue"/>
       </jms-queue>
       <jms-queue name="statistics">
         <entry name="jms/queue/statisticsQueue"/>
       </jms-queue>
+      -->
     </jms-destinations>
   </server>
 </messaging-deployment>

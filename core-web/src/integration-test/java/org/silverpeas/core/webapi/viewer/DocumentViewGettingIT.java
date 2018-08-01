@@ -30,10 +30,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.silverpeas.core.admin.component.model.ComponentInst;
-import org.silverpeas.core.contribution.attachment.SimpleDocumentService;
-import org.silverpeas.core.contribution.attachment.model.SimpleAttachment;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
-import org.silverpeas.core.contribution.attachment.model.SimpleDocumentPK;
 import org.silverpeas.core.viewer.model.DocumentView;
 import org.silverpeas.core.viewer.service.DefaultViewService;
 import org.silverpeas.core.viewer.service.ViewerContext;
@@ -64,7 +60,6 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
   private ComponentInst component;
 
   static String ATTACHMENT_ID = "7";
-  private static String ATTACHMENT_ID_DOESNT_EXISTS = "8";
 
   @Deployment
   public static Archive<?> createTestArchive() {
@@ -73,25 +68,6 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
           warBuilder.addPackages(true, "org.silverpeas.core.webapi.viewer");
           warBuilder.addAsResource("org/silverpeas/viewer/viewer.properties");
         }).build();
-  }
-
-  @Singleton
-  @Alternative
-  @Priority(APPLICATION + 10)
-  public static class StubbedAttachmentService extends SimpleDocumentService {
-    @Override
-    public SimpleDocument searchDocumentById(final SimpleDocumentPK attachmentPK,
-        final String lang) {
-      SimpleDocument attachmentDetail = null;
-      if (!ATTACHMENT_ID_DOESNT_EXISTS.equals(attachmentPK.getId())) {
-        attachmentDetail = new SimpleDocument();
-        attachmentDetail.setPK(attachmentPK);
-        attachmentDetail.setOldSilverpeasId(Long.parseLong(attachmentPK.getId()));
-        attachmentDetail.setAttachment(new SimpleAttachment());
-        attachmentDetail.setFilename("originalFileName" + attachmentPK.getId());
-      }
-      return attachmentDetail;
-    }
   }
 
   @Singleton
@@ -138,7 +114,7 @@ public class DocumentViewGettingIT extends ResourceGettingTest {
 
   @Override
   public String anUnexistingResourceURI() {
-    return aResourceURI(ATTACHMENT_ID_DOESNT_EXISTS);
+    return aResourceURI(StubbedAttachmentService.ATTACHMENT_ID_DOESNT_EXISTS);
   }
 
   @Override
