@@ -189,6 +189,21 @@
     });
   }
 
+  function switchDisplayAsContentEnabled(attachmentId, enabled) {
+    $.progressMessage();
+    $.ajax({
+      url : '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' +
+          attachmentId + '/switchDisplayAsContentEnabled',
+      type : "POST",
+      cache : false,
+      dataType : "json",
+      data : {"enabled" : (enabled) ? enabled : false},
+      success : function(data) {
+        reloadPage();
+      }
+    });
+  }
+
   function loadAttachment(id, lang) {
     translationsUrl = '<c:url value="/services/documents/${sessionScope.Silverpeas_Attachment_ComponentId}/document/"/>' + id + '/translations';
     $.ajax({

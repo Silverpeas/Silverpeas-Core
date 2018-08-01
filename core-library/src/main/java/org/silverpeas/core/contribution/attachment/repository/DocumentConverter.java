@@ -188,7 +188,7 @@ class DocumentConverter extends AbstractJcrConverter {
       }
     }
     SimpleDocument doc = new SimpleDocument(pk, getStringProperty(node, SLV_PROPERTY_FOREIGN_KEY),
-        getIntProperty(node, SLV_PROPERTY_ORDER), getBooleanProperty(node, SLV_PROPERTY_VERSIONED),
+        getIntProperty(node, SLV_PROPERTY_ORDER), getBooleanProperty(node, SLV_PROPERTY_VERSIONED, false),
         getStringProperty(node, SLV_PROPERTY_OWNER), getDateProperty(node,
         SLV_PROPERTY_RESERVATION_DATE), getDateProperty(node, SLV_PROPERTY_ALERT_DATE),
         getDateProperty(node, SLV_PROPERTY_EXPIRY_DATE),
@@ -215,6 +215,9 @@ class DocumentConverter extends AbstractJcrConverter {
     if (StringUtil.isDefined(forbiddenDownloadForRoles)) {
       doc.addRolesForWhichDownloadIsForbidden(SilverpeasRole.listFrom(forbiddenDownloadForRoles));
     }
+    // Displayable as content
+    doc.setDisplayableAsContent(
+        getBooleanProperty(node, SLV_PROPERTY_DISPLAYABLE_AS_CONTENT, true));
     return doc;
   }
 
@@ -255,6 +258,8 @@ class DocumentConverter extends AbstractJcrConverter {
     addStringProperty(documentNode, SLV_PROPERTY_CLONE, document.getCloneId());
     // Optional downloadable mixin
     setForbiddenDownloadForRolesOptionalNodeProperty(document, documentNode);
+    // Optional viewable mixin
+    setDisplayableAsContentOptionalNodeProperty(document, documentNode);
   }
 
   /**
@@ -263,8 +268,8 @@ class DocumentConverter extends AbstractJcrConverter {
    * @param documentNode
    * @throws RepositoryException
    */
-  protected void setForbiddenDownloadForRolesOptionalNodeProperty(SimpleDocument document,
-      Node documentNode) throws RepositoryException {
+  void setForbiddenDownloadForRolesOptionalNodeProperty(SimpleDocument document, Node
+      documentNode) throws RepositoryException {
 
     if (CollectionUtil.isNotEmpty(document.getForbiddenDownloadForRoles())) {
       // Adding the mixin (no impact when it is already existing)
@@ -275,6 +280,26 @@ class DocumentConverter extends AbstractJcrConverter {
       // Removing the mixin
       if (documentNode.hasProperty(SLV_PROPERTY_FORBIDDEN_DOWNLOAD_FOR_ROLES)) {
         documentNode.removeMixin(SLV_DOWNLOADABLE_MIXIN);
+      }
+    }
+  }
+
+  /**
+   * Adding or removing the [slv:forbiddenDownloadForRoles] optional property.
+   * @param document
+   * @param documentNode
+   * @throws RepositoryException
+   */
+  void setDisplayableAsContentOptionalNodeProperty(SimpleDocument document, Node
+      documentNode) throws RepositoryException {
+    if (!document.isDisplayableAsContent()) {
+      // Adding the mixin (no impact when it is already existing)
+      documentNode.addMixin(SLV_VIEWABLE_MIXIN);
+      documentNode.setProperty(SLV_PROPERTY_DISPLAYABLE_AS_CONTENT, document.isDisplayableAsContent());
+    } else {
+      // Removing the mixin
+      if (documentNode.hasProperty(SLV_PROPERTY_DISPLAYABLE_AS_CONTENT)) {
+        documentNode.removeMixin(SLV_VIEWABLE_MIXIN);
       }
     }
   }
@@ -308,7 +333,7 @@ class DocumentConverter extends AbstractJcrConverter {
   }
 
   public boolean isVersionedMaster(Node node) throws RepositoryException {
-    return getBooleanProperty(node, SLV_PROPERTY_VERSIONED) && !node.hasProperty(
+    return getBooleanProperty(node, SLV_PROPERTY_VERSIONED, false) && !node.hasProperty(
         JCR_FROZEN_PRIMARY_TYPE) && isMixinApplied(node, MIX_SIMPLE_VERSIONABLE);
   }
 

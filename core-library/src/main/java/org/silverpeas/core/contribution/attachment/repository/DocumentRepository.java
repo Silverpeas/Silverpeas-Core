@@ -349,6 +349,32 @@ public class DocumentRepository {
   }
 
   /**
+   * Save the optional slv:displayableAsContent simple document property (MIXIN).
+   * This saving works with versionable documents without changing the major and minor version.
+   * This property is transverse between all versions.
+   *
+   * @param session
+   * @param document
+   * @throws RepositoryException
+   */
+  public void saveDisplayableAsContent(Session session, SimpleDocument document)
+      throws RepositoryException {
+    Node documentNode = session.getNodeByIdentifier(document.getVersionMaster().getPk().getId());
+    boolean checkedin = !documentNode.isCheckedOut();
+    if (checkedin) {
+      session.getWorkspace().getVersionManager().checkout(documentNode.getPath());
+    }
+
+    // Optional viewable mixin
+    converter.setDisplayableAsContentOptionalNodeProperty(document, documentNode);
+
+    if (checkedin) {
+      session.save();
+      session.getWorkspace().getVersionManager().checkin(documentNode.getPath());
+    }
+  }
+
+  /**
    * Add the document's clone id to the document even if it is locked.
    *
    * @param session the JCR session.

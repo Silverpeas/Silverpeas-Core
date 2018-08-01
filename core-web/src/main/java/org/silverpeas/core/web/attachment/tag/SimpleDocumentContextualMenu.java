@@ -168,6 +168,13 @@ public class SimpleDocumentContextualMenu extends TagSupport {
     }
     prepareMenuItem(builder, "switchDownloadAllowedForReaders('" + attachment.getId() + "', " +
         !isDownloadAllowedForReaders + ");", message);
+    message = resources.getString("attachment.displayAsContent.enable");
+    boolean isDisplayAsContentEnabled = attachment.isDisplayableAsContent();
+    if (isDisplayAsContentEnabled) {
+      message = resources.getString("attachment.displayAsContent.disable");
+    }
+    prepareMenuItem(builder, "switchDisplayAsContentEnabled('" + attachment.getId() + "', " +
+        !isDisplayAsContentEnabled + ");", message);
     builder.append("</ul>").append(newline);
     builder.append("<ul>").append(newline);
     prepareMenuItem(builder, "ShareAttachment('" + attachmentId + "');", resources.getString(

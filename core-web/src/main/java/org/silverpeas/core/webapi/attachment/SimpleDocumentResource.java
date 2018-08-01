@@ -502,6 +502,26 @@ public class SimpleDocumentResource extends AbstractSimpleDocumentResource {
   }
 
   /**
+   * Enable or not the display as content of an attachment.
+   * @return JSON display as content state. displayableAsContent = true or false.
+   */
+  @POST
+  @Path("switchDisplayAsContentEnabled")
+  @Produces(MediaType.APPLICATION_JSON)
+  public String switchDisplayAsContentEnabled(@FormParam("enabled") final boolean enabled) {
+
+    // Performing the request
+    SimpleDocument document = getSimpleDocument(null);
+    AttachmentServiceProvider.getAttachmentService()
+        .switchEnableDisplayAsContent(document.getPk(), enabled);
+
+    // JSON Response.
+    return MessageFormat.format(
+        "'{'\"displayableAsContent\":{0}, \"id\":{1,number,#}, \"attachmentId\":\"{2}\"}",
+        enabled, document.getOldSilverpeasId(), document.getId());
+  }
+
+  /**
    * Return the current document
    * @param lang
    * @return SimpleDocument

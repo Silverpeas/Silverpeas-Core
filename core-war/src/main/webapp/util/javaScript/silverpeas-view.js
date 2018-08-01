@@ -99,7 +99,12 @@
       var $_this = $(this);
 
       // Waiting animation
-      $.popup.showWaiting();
+      if (!options.insertMode) {
+        $.popup.showWaiting();
+      } else {
+        var imageUrl = popupViewGeneratorIconPath + '/inProgress.gif';
+        $_this.html($('<img>').attr('src', imageUrl).attr('width', '32').attr('height', '32'));
+      }
 
       // Getting view
       var url = $.view.webServiceContext;
@@ -114,15 +119,49 @@
         dataType : 'json',
         cache : false,
         success : function(data, status, jqXHR) {
-          __openDialogView($_this, data);
+          if (options.insertMode) {
+            __insertView($_this, data);
+          } else {
+            __openDialogView($_this, data);
+          }
           $.popup.hideWaiting();
         },
         error : function(jqXHR, textStatus, errorThrown) {
           $.popup.hideWaiting();
-          alert(errorThrown);
+          sp.log.error("view", "technical error for", JSON.stringify(options), errorThrown);
         }
       });
     })
+  }
+
+  /**
+   * Private function that centralizes the dialog view construction.
+   */
+  function __insertView($this, view) {
+    __adjustViewSize(view);
+
+    // Initializing the resulting html container
+    var $baseContainer = $("<div>")
+                      .css('display', 'block')
+                      .css('border', '0px')
+                      .css('padding', '0px')
+                      .css('margin', '0px auto')
+                      .css('text-align', 'center')
+                      .css('background-color', 'white');
+    $this.html($baseContainer);
+
+    // Popup
+    var $documentViewer = __setView($baseContainer, view, true);
+
+    // Player
+    $documentViewer.embedPlayer({
+      url : sp.ajaxRequest(view.viewerUri)
+              .withParam('documentId', view.documentId)
+              .withParam('language', view.language)
+              .getUrl(),
+      width : view.width,
+      height : view.height
+    });
   }
 
   /**
@@ -159,10 +198,10 @@
     };
 
     // Popup
-    __setView($baseContainer, view);
+    var $documentViewer = __setView($baseContainer, view);
 
     // Player
-    $('#documentViewer').embedPlayer({
+    $documentViewer.embedPlayer({
       url : sp.ajaxRequest(view.viewerUri)
               .withParam('documentId', view.documentId)
               .withParam('language', view.language)
@@ -212,22 +251,146 @@
   /**
    * Private function that sets the view container.
    */
-  function __setView($baseContainer, view) {
-    $baseContainer.html($('<div>')
+  function __setView($baseContainer, view, insertMode) {
+    var documentViewer = $('<div>')
+        .css('display', 'block')
+        .css('margin', '0px')
+        .css('padding', '0px');
+    var $viewerContainer = $('<div>')
         .attr('id','viewercontainer')
         .css('display', 'block')
         .css('margin', '0px')
         .css('padding', '0px')
-        .css('width', view.width + 'px')
-        .css('height', view.height + 'px')
         .css('text-align', 'center')
-        .append($('<div>')
-            .attr('id','documentViewer')
-            .css('display', 'block')
-            .css('margin', '0px')
-            .css('padding', '0px')
-            .css('width', view.width + 'px')
-            .css('height', view.height + 'px')
-            .css('background-color', '#222222')));
+        .append(documentViewer);
+    $baseContainer.html($viewerContainer);
+    if (!insertMode) {
+      $viewerContainer.css('width', view.width + 'px')
+          .css('height', view.height + 'px');
+      documentViewer.css('width', view.width + 'px')
+          .css('height', view.height + 'px')
+          .css('background-color', '#222222');
+    }
+    return documentViewer;
+  }
+
+
+  /*
+  ATTACHMENT VIEWER AS CONTENT
+   */
+
+  window.AttachmentAsContentViewer = function(options) {
+    var __context = {
+      options : extendsObject({
+        domSelector : undefined,
+        componentInstanceId : undefined,
+        resourceId : undefined,
+        resourceType : undefined,
+        contentLanguage : 'fr',
+        documentType : 'attachment',
+        enableImage : true,
+        enableVideo : true,
+        enableAudio : true,
+        enableViewable : true,
+        enableSimpleText : true
+      }, options)
+    };
+    if (!__context.options.domSelector || !__context.options.componentInstanceId ||
+        !__context.options.resourceId || !__context.options.resourceType) {
+      sp.log.error("domSelector, componentInstanceId, resourceId or resourceType is missing");
+      return;
+    }
+
+    var __loadAttachments = function() {
+      return sp.ajaxRequest(webContext + "/services/documents/" +
+          __context.options.componentInstanceId + "/resource/" + __context.options.resourceId +
+          "/types/" + __context.options.documentType + "/" +
+          __context.options.contentLanguage).withParam("viewIndicators",
+          true).sendAndPromiseJsonResponse();
+    };
+    var __initPromise = __loadAttachments();
+
+    var __renderContainer = function(attachment, __renderCallback) {
+      var $attContainer = document.createElement('div');
+      $attContainer.classList.add('attachment-container');
+      var $title = document.createElement('h3');
+      $title.classList.add('title');
+      $title.innerText = attachment.title ? attachment.title : attachment.fileName;
+      var $description = document.createElement('p');
+      $description.classList.add('description');
+      $description.innerText = attachment.description;
+      $attContainer.appendChild($title);
+      if (StringUtil.isDefined(attachment.description)) {
+        $attContainer.appendChild($description);
+      }
+      var $renderedContent = __renderCallback(attachment);
+      $renderedContent.classList.add('content');
+      $attContainer.appendChild($renderedContent);
+      return $attContainer;
+    };
+
+    var __renderSimpleText = function(attachment) {
+      var $simpleText = document.createElement("div");
+      sp.ajaxRequest(webContext + attachment.downloadUrl).send().then(function(request) {
+        $simpleText.innerText = request.responseText;
+      });
+      return $simpleText;
+    };
+    var __renderImage = function(attachment) {
+      var $imageContainer = document.createElement("div");
+      var $img = document.createElement("img");
+      $img.src = webContext + attachment.downloadUrl.replace(/(\/lang\/[a-z]+\/)(name\/)/g, '$1size/600x/$2');
+      $imageContainer.appendChild($img);
+      return $imageContainer;
+    };
+    var __renderMedia = function(attachment) {
+      var $mediaContainer = document.createElement("div");
+      jQuery($mediaContainer).embedPlayer({
+        url : webContext + attachment.downloadUrl
+      });
+      return $mediaContainer;
+    };
+    var __renderViewable = function(attachment) {
+      var $viewableContainer = document.createElement("div");
+      jQuery($viewableContainer).view("viewAttachment", {
+        componentInstanceId: attachment.instanceId,
+        attachmentId: attachment.id,
+        lang: attachment.lang,
+        insertMode : true
+      });
+      return $viewableContainer;
+    };
+    whenSilverpeasReady(function() {
+      this.$rootContainer = document.querySelector(__context.options.domSelector);
+      __initPromise.then(function(attachments) {
+        attachments.forEach(function(attachment) {
+          if (!attachment.displayAsContent) {
+            return;
+          }
+          var $renderedContainer;
+          if (__context.options.enableViewable && attachment.viewable) {
+            $renderedContainer = __renderContainer(attachment, __renderViewable);
+            $renderedContainer.classList.add('viewable');
+          } else if (__context.options.enableAudio && attachment.contentType.startsWith('audio')) {
+            $renderedContainer = __renderContainer(attachment, __renderMedia);
+            $renderedContainer.classList.add('audio');
+          } else if (__context.options.enableVideo && attachment.contentType.startsWith('video')) {
+            $renderedContainer = __renderContainer(attachment, __renderMedia);
+            $renderedContainer.classList.add('video');
+          } else if (__context.options.enableImage && attachment.contentType.startsWith('image')) {
+            $renderedContainer = __renderContainer(attachment, __renderImage);
+            $renderedContainer.classList.add('image');
+          } else if (__context.options.enableSimpleText && attachment.contentType.startsWith('text')) {
+            $renderedContainer = __renderContainer(attachment, __renderSimpleText);
+            $renderedContainer.classList.add('simple-text');
+          } else {
+            sp.log.debug("AttachmentAsContentViewer - no renderer for " + JSON.stringify(attachment));
+          }
+          if ($renderedContainer) {
+            this.$rootContainer.appendChild($renderedContainer);
+          }
+        }.bind(this));
+      }.bind(this));
+    });
   }
 })(jQuery);

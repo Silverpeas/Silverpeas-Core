@@ -113,4 +113,12 @@ public class ViewerSettings {
         TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeleted() >= 0 &&
         settings.getBoolean("viewer.cache.timeToLive.enabled", true);
   }
+
+  /**
+   * Maximum number of conversions at a same instant.
+   * @return a primitive integer.
+   */
+  public static int nbMaxConversionsAtSameInstant() {
+    return settings.getInteger("viewer.conversion.nb.max", 3);
+  }
 }

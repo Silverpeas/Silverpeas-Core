@@ -312,4 +312,8 @@ public class AttachmentServiceMockWrapper implements AttachmentService {
     mock.switchAllowingDownloadForReaders(pk, allowing);
   }
 
+  @Override
+  public void switchEnableDisplayAsContent(final SimpleDocumentPK pk, final boolean enable) {
+    mock.switchEnableDisplayAsContent(pk, enable);
+  }
 }

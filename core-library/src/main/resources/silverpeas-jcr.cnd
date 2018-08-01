@@ -19,6 +19,11 @@
   mixin
   - slv:forbiddenDownloadForRoles (STRING) IGNORE
 
+/* Mixin viewable */
+[slv:viewable]
+  mixin
+  - slv:displayableAsContent (BOOLEAN) IGNORE
+
 [slv:simpleDocument] >  nt:folder, mix:referenceable, slv:ownable, slv:commentable
   - slv:foreignKey (STRING)
   - slv:instanceId (STRING) MANDATORY
