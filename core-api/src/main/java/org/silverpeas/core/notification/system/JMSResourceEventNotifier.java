@@ -59,7 +59,7 @@ public abstract class JMSResourceEventNotifier<R extends Serializable, T extends
   protected abstract T createResourceEventFrom(final ResourceEvent.Type type, final R... resource);
 
   @Override
-  public final void notify(final T event) {
+  public void notify(final T event) {
     JMSOperation.realize(context -> {
       JMSProducer producer = context.createProducer();
       // TODO the event has to be sent in a text representation. For doing, use JSONCodec to encode the event in JSON.
@@ -68,7 +68,7 @@ public abstract class JMSResourceEventNotifier<R extends Serializable, T extends
   }
 
   @Override
-  public final void notifyEventOn(final ResourceEvent.Type type, final R... resource) {
+  public void notifyEventOn(final ResourceEvent.Type type, final R... resource) {
     notify(createResourceEventFrom(type, resource));
   }
 }
