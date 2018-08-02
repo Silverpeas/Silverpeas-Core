@@ -65,6 +65,8 @@ public class NodeAttrEntity {
   private String description;
   @XmlElement(defaultValue = "")
   private Date creationDate;
+  @XmlElement
+  private boolean specificRights;
 
   public NodeAttrEntity() {
   }
@@ -101,6 +103,9 @@ public class NodeAttrEntity {
     try {
       this.creationDate = DateUtil.parse(node.getCreationDate());
     } catch (ParseException e) {
+    }
+    if (!this.id.equalsIgnoreCase("tovalidate")) {
+      this.specificRights = node.haveLocalRights();
     }
   }
 
@@ -207,5 +212,13 @@ public class NodeAttrEntity {
 
   public Date getCreationDate() {
     return creationDate;
+  }
+
+  public boolean isSpecificRights() {
+    return specificRights;
+  }
+
+  public void setSpecificRights(final boolean specificRights) {
+    this.specificRights = specificRights;
   }
 }
