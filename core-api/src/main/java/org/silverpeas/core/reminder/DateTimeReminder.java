@@ -87,12 +87,13 @@ public class DateTimeReminder extends Reminder {
   }
 
   /**
-   * This reminder is schedulable if the triggering date is after now.
+   * This reminder is schedulable if the triggering date is defined and is after now.
    * @return true if the triggering date is after now, false otherwise.
    */
   @Override
   public boolean isSchedulable() {
-    return !this.dateTime.isBefore(OffsetDateTime.now());
+    final OffsetDateTime triggeringDate = getDateTime();
+    return triggeringDate != null && !triggeringDate.isBefore(OffsetDateTime.now());
   }
 
   @Override

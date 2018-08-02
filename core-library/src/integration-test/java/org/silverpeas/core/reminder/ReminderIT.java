@@ -296,6 +296,7 @@ public class ReminderIT {
     final String reminderText = "Remind me!";
     final OffsetDateTime triggerDate = OffsetDateTime.now().plusSeconds(30);
     DateTimeReminder reminder = getAReminderScheduledInOneDay();
+    assertThat(reminder.isScheduled(), is(true));
     reminder.withText(reminderText).triggerAt(triggerDate).schedule();
 
     DateTimeReminder actualReminder = (DateTimeReminder) Reminder.getById(reminder.getId());
