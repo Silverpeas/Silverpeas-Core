@@ -24,6 +24,8 @@
 
 --%>
 <%@ page import="org.silverpeas.core.util.Pair" %>
+<%@ page import="java.util.List" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarElement" %>
 
 <%@ page pageEncoding="UTF-8" contentType="text/html; charset=UTF-8" %>
 <%@ taglib uri="http://www.silverpeas.com/tld/viewGenerator" prefix="view"%>
@@ -44,6 +46,7 @@
         Pair<String, String> hostComponentNameObject = (Pair<String, String>) request.getAttribute("HostComponentName");
         String hostSpaceName = (String) request.getAttribute("HostSpaceName");
         String hostComponentName = hostComponentNameObject.getFirst();
+        List<String> hostPath = (List<String>) request.getAttribute("HostPath");
   %>
 
   <body>
@@ -51,6 +54,9 @@
     <%
           browseBar.setDomainName(hostSpaceName);
           browseBar.setComponentName(hostComponentName);
+          for (String pathItem : hostPath) {
+            browseBar.addElement(new BrowseBarElement(pathItem, null));
+          }
 
           out.println(window.printBefore());
           out.println(frame.printBefore());

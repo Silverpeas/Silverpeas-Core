@@ -35,6 +35,8 @@
 <%@ page import="org.silverpeas.core.util.Pair" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttonpanes.ButtonPane" %>
 <%@ page import="org.silverpeas.core.web.util.viewgenerator.html.buttons.Button" %>
+<%@ page import="java.util.List" %>
+<%@ page import="org.silverpeas.core.web.util.viewgenerator.html.browsebars.BrowseBarElement" %>
 
 <%@ include file="check.jsp" %>
 
@@ -56,6 +58,7 @@
         Pair<String, String> hostComponentNameObject = (Pair<String, String>) request.getAttribute("HostComponentName");
         String hostSpaceName = (String) request.getAttribute("HostSpaceName");
         String hostComponentName = hostComponentNameObject.getFirst();
+        List<String> hostPath = (List<String>) request.getAttribute("HostPath");
   %>
 
   <body>
@@ -63,13 +66,16 @@
     <%
           browseBar.setDomainName(hostSpaceName);
           browseBar.setComponentName(hostComponentName);
+          for (String pathItem : hostPath) {
+            browseBar.addElement(new BrowseBarElement(pathItem, null));
+          }
 
           out.println(window.printBefore());
           out.println(frame.printBefore());
 
           //button
-          Button cancelButton = (Button) gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=window.close();", false);
-          Button validateButton = (Button) gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=validateUsers();", false);
+          Button cancelButton = gef.getFormButton(resource.getString("GML.cancel"), "javascript:onClick=window.close();", false);
+          Button validateButton = gef.getFormButton(resource.getString("GML.validate"), "javascript:onClick=validateUsers();", false);
 
 
           //Icons
