@@ -51,9 +51,9 @@ import java.util.List;
 
 /**
  * A reminder. A reminder is a notification that is sent to a given user at a specific datetime.
- * The accuracy of the reminding triggering is about 5mn meaning a reminder shouldn't be lesser
+ * The accuracy of the reminding triggering is about 10mn meaning a reminder shouldn't be lesser
  * than this value. Nevertheless we recommend strongly to set a reminder at a time far greater than
- * 30mn otherwise you may expect undesired behaviour (this isn't constrained by the reminder).
+ * 30mn otherwise expecting behaviour might occurred (this isn't constrained by the reminder).
  * A reminder can be automatically rescheduled, meaning that it is rescheduled at another datetime
  * at each of its triggering until that another datetime isn't defined. This capability depends on
  * the concrete type of the used reminder and it is based upon the return of the
