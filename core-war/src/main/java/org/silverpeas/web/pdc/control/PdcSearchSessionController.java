@@ -66,6 +66,7 @@ import org.silverpeas.core.pdc.thesaurus.service.ThesaurusManager;
 import org.silverpeas.core.search.SearchService;
 import org.silverpeas.core.silverstatistics.access.model.StatisticRuntimeException;
 import org.silverpeas.core.silverstatistics.access.service.StatisticService;
+import org.silverpeas.core.util.ArrayUtil;
 import org.silverpeas.core.util.LocalizationBundle;
 import org.silverpeas.core.util.MimeTypes;
 import org.silverpeas.core.util.Mutable;
@@ -87,6 +88,7 @@ import org.silverpeas.web.pdc.QueryParameters;
 import org.silverpeas.web.pdc.vo.ExternalSPConfigVO;
 import org.silverpeas.web.pdc.vo.Facet;
 import org.silverpeas.web.pdc.vo.FacetEntryVO;
+import org.silverpeas.web.pdc.vo.FacetOnCheckboxes;
 import org.silverpeas.web.pdc.vo.FacetOnDates;
 import org.silverpeas.web.pdc.vo.ResultFilterVO;
 import org.silverpeas.web.pdc.vo.ResultGroupFilter;
@@ -476,6 +478,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     // sort facets entries descending
     res.sortFacetsEntries();
 
+    res.checkSelectedFacetsEntries(getSelectedFacetEntries());
+
     this.fieldFacets = fieldFacetsMap;
 
     return res;
@@ -484,13 +488,7 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
   private void processFacetLastUpdate(Facet facet, GlobalSilverResult result) {
     LocalDate lastUpdate = result.getLastUpdateDate();
     if (lastUpdate != null) {
-      FacetEntryVO facetEntry = ((FacetOnDates) facet).addEntry(lastUpdate);
-      if (getSelectedFacetEntries() != null) {
-        String year = String.valueOf(lastUpdate.getYear());
-        if (year.equals(getSelectedFacetEntries().getLastUpdate())) {
-          facetEntry.setSelected(true);
-        }
-      }
+      ((FacetOnDates) facet).addEntry(lastUpdate);
     }
   }
 
@@ -500,10 +498,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     String authorName = userNames.computeIfAbsent(authorId, k -> result.getCreatorName());
     if (StringUtil.isDefined(authorId) && StringUtil.isDefined(authorName)) {
       FacetEntryVO facetEntry = new FacetEntryVO(authorName, authorId);
-      if (getSelectedFacetEntries() != null &&
-          authorId.equals(getSelectedFacetEntries().getAuthorId())) {
-        facetEntry.setSelected(true);
-      }
       facet.addEntry(facetEntry);
     }
   }
@@ -517,11 +511,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       if (theSearchType != null) {
         FacetEntryVO facetEntry = new FacetEntryVO(theSearchType.getName(), String.valueOf(
             theSearchType.getConfigId()));
-        if (getSelectedFacetEntries() != null &&
-            String.valueOf(theSearchType.getConfigId()).equals(getSelectedFacetEntries().
-                getDatatype())) {
-          facetEntry.setSelected(true);
-        }
         facet.addEntry(facetEntry);
       }
     }
@@ -533,10 +522,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       String extension = FileRepositoryManager.getFileExtension(filename).toLowerCase();
       if (StringUtil.isDefined(extension)) {
         FacetEntryVO facetEntry = new FacetEntryVO(extension, extension);
-        if (getSelectedFacetEntries() != null &&
-            extension.equals(getSelectedFacetEntries().getFiletype())) {
-          facetEntry.setSelected(true);
-        }
         facet.addEntry(facetEntry);
       }
     }
@@ -564,11 +549,6 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
       }
       if (StringUtil.isDefined(appLocation)) {
         facetEntry = new FacetEntryVO(appLocation, instanceId);
-
-        if (getSelectedFacetEntries() != null &&
-            instanceId.equals(getSelectedFacetEntries().getComponentId())) {
-          facetEntry.setSelected(true);
-        }
       }
     }
     facet.addEntry(facetEntry);
@@ -594,6 +574,8 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
             FieldTemplate fieldTemplate = getFieldTemplate(formName, fieldName);
             if (fieldTemplate.getTypeName().equals(DateField.TYPE)) {
               facet = new FacetOnDates(facetId, fieldTemplate.getLabel(getLanguage()));
+            } else if (fieldTemplate.getDisplayerName().equals("checkbox")) {
+              facet = new FacetOnCheckboxes(facetId, fieldTemplate.getLabel(getLanguage()));
             } else {
               facet = new Facet(facetId, fieldTemplate.getLabel(getLanguage()));
             }
@@ -606,31 +588,17 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
           facet = fieldFacetsMap.get(facetId);
         }
         if (facet != null) {
-          FacetEntryVO entry = null;
+          FacetEntryVO entry;
           String fieldValueKey = fieldsForFacets.get(facetId);
           if (facet instanceof FacetOnDates) {
-            entry = ((FacetOnDates) facet).addEntry(fieldValueKey);
+            ((FacetOnDates) facet).addEntry(fieldValueKey);
+          } else if (facet instanceof FacetOnCheckboxes) {
+            ((FacetOnCheckboxes) facet)
+                .addEntries(getFieldValues(formName, fieldName, fieldValueKey));
           } else {
-            String fieldValueLabel = fieldValueKey;
-            try {
-              fieldValueLabel = getFieldValue(formName, fieldName, fieldValueKey);
-            } catch (Exception e) {
-              SilverLogger.getLogger(this).error(e.getMessage(), e);
-            }
+            String fieldValueLabel = getFieldValue(formName, fieldName, fieldValueKey);
             entry = new FacetEntryVO(fieldValueLabel, fieldValueKey);
             facet.addEntry(entry);
-          }
-          // check if this entry have been selected
-          if (getSelectedFacetEntries() != null) {
-            String selectedEntry =
-                getSelectedFacetEntries().getFormFieldSelectedFacetEntry(facet.getId());
-            boolean selected = false;
-            if (facet instanceof FacetOnDates) {
-              selected = StringUtil.startsWith(fieldValueKey, selectedEntry);
-            } else {
-              selected = selectedEntry != null && selectedEntry.equals(fieldValueKey);
-            }
-            entry.setSelected(selected);
           }
         }
       }
@@ -648,19 +616,46 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
     return form.getRecordTemplate().getFieldTemplate(fieldName);
   }
 
-  private String getFieldValue(String formName, String fieldName, String fieldValue)
-      throws PublicationTemplateException, FormException {
-    FieldTemplate fieldTemplate = getFieldTemplate(formName, fieldName);
-    FieldDisplayer fieldDisplayer =
-        TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
-    StringWriter sw = new StringWriter();
-    PrintWriter out = new PrintWriter(sw);
-    PagesContext pageContext = new PagesContext();
-    pageContext.setLanguage(getLanguage());
-    Field field = new TextFieldImpl();
-    field.setValue(fieldValue);
-    fieldDisplayer.display(out, field, fieldTemplate, pageContext);
-    return sw.toString();
+  private String getFieldValue(String formName, String fieldName, String fieldValue) {
+    try {
+      FieldTemplate fieldTemplate = getFieldTemplate(formName, fieldName);
+      FieldDisplayer fieldDisplayer =
+          TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
+      StringWriter sw = new StringWriter();
+      PrintWriter out = new PrintWriter(sw);
+      PagesContext pageContext = new PagesContext();
+      pageContext.setLanguage(getLanguage());
+      Field field = new TextFieldImpl();
+      field.setValue(fieldValue);
+      fieldDisplayer.display(out, field, fieldTemplate, pageContext);
+      return sw.toString();
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+    return fieldValue;
+  }
+
+  private Map<String, String> getFieldValues(String formName, String fieldName, String fieldValue) {
+    Map<String, String> values = new HashMap<>();
+    try {
+      String[] keys = fieldValue.split(" ");
+      FieldTemplate fieldTemplate = getFieldTemplate(formName, fieldName);
+      FieldDisplayer fieldDisplayer =
+          TypeManager.getInstance().getDisplayer(fieldTemplate.getTypeName(), "simpletext");
+      PagesContext pageContext = new PagesContext();
+      pageContext.setLanguage(getLanguage());
+      Field field = new TextFieldImpl();
+      for (String key : keys) {
+        StringWriter sw = new StringWriter();
+        PrintWriter out = new PrintWriter(sw);
+        field.setValue(key);
+        fieldDisplayer.display(out, field, fieldTemplate, pageContext);
+        values.put(key, sw.toString());
+      }
+    } catch (Exception e) {
+      SilverLogger.getLogger(this).error(e.getMessage(), e);
+    }
+    return values;
   }
 
   private String[] getFormNameAndFieldName(String compressedFieldName) {
@@ -837,6 +832,9 @@ public class PdcSearchSessionController extends AbstractComponentSessionControll
                 if (uiFacet instanceof FacetOnDates) {
                   visible =
                       resultFieldValue != null && resultFieldValue.startsWith(facet.getValue());
+                } else if (uiFacet instanceof FacetOnCheckboxes) {
+                  String[] resultValues = resultFieldValue.split(" ");
+                  visible = ArrayUtil.contains(resultValues, facet.getValue());
                 } else {
                   // visible if stored value is equals to selected facet entry
                   visible = facet.getValue().equalsIgnoreCase(resultFieldValue);
