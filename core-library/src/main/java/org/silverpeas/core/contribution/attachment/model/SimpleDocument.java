@@ -98,6 +98,7 @@ public class SimpleDocument implements Serializable {
   private DocumentType documentType = DocumentType.attachment;
   private Set<SilverpeasRole> forbiddenDownloadForRoles = null;
   private SimpleAttachment attachment;
+  private boolean displayableAsContent = true;
 
   public SimpleDocument(SimpleDocumentPK pk, String foreignId, int order, boolean versioned,
       SimpleAttachment attachment) {
@@ -176,6 +177,7 @@ public class SimpleDocument implements Serializable {
     this.documentType = simpleDocument.getDocumentType();
     this.forbiddenDownloadForRoles = simpleDocument.forbiddenDownloadForRoles;
     this.attachment = simpleDocument.getAttachment();
+    this.displayableAsContent = simpleDocument.displayableAsContent;
   }
 
   public void setDocumentType(DocumentType documentType) {
@@ -1000,5 +1002,17 @@ public class SimpleDocument implements Serializable {
    */
   public boolean isContentPdf() {
     return FileUtil.isPdf(getAttachmentPath());
+  }
+
+  /**
+   * Indicates if the attachment content can be displayed as a contribution content.
+   * @return true to display as content, false otherwise.
+   */
+  public boolean isDisplayableAsContent() {
+    return getVersionMaster().displayableAsContent;
+  }
+
+  public void setDisplayableAsContent(final boolean displayableAsContent) {
+    this.displayableAsContent = displayableAsContent;
   }
 }

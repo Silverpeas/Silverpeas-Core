@@ -24,10 +24,11 @@
 package org.silverpeas.core.viewer.service;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.silverpeas.core.viewer.model.ViewerSettings;
-import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.io.temp.TemporaryDataManagementSetting;
 import org.silverpeas.core.io.temp.TemporaryWorkspaceTranslation;
+import org.silverpeas.core.util.DateUtil;
+import org.silverpeas.core.viewer.model.ViewerSettings;
 
 import java.io.File;
 import java.io.Serializable;
@@ -35,19 +36,26 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Semaphore;
 
+import static java.text.MessageFormat.format;
 import static org.apache.commons.io.FilenameUtils.getBaseName;
 import static org.apache.commons.io.FilenameUtils.getFullPath;
+import static org.silverpeas.core.util.logging.SilverLogger.getLogger;
+import static org.silverpeas.core.viewer.model.ViewerSettings.nbMaxConversionsAtSameInstant;
 
 /**
  * @author Yohann Chastagnier
  */
 public abstract class AbstractViewerService {
 
+  // Extension of pdf document file
+  public static final String PDF_DOCUMENT_EXTENSION = "pdf";
+
   private static final Object OBJECT_FOR_SYNC = new Object();
   private static final ConcurrentMap<String, Object> cache = new ConcurrentHashMap<>();
 
-  // Extension of pdf document file
-  public static final String PDF_DOCUMENT_EXTENSION = "pdf";
+  private static final Object EXECUTION_SEM_MUTEX = new Object();
+  private static int executionSemCount = nbMaxConversionsAtSameInstant();
+  private static final Semaphore EXECUTION_SEM = new Semaphore(executionSemCount);
 
   /**
    * Generate a tmp file
@@ -79,25 +87,39 @@ public abstract class AbstractViewerService {
    * and also in order to preserve memory space of filesystem.
    * @param processName the name of the process (preview for example).
    * @param viewerTreatment the treatment to perform.
-   * @param <RETURN_VALUE>
+   * @param <R>
    * @return
    */
-  protected <RETURN_VALUE extends Serializable> ViewerProcess<RETURN_VALUE> process(
-      String processName, ViewerTreatment<RETURN_VALUE> viewerTreatment) {
+  protected <R extends Serializable> ViewerProcess<R> process(
+      String processName, ViewerTreatment<R> viewerTreatment) {
     return new ViewerProcess<>(processName, viewerTreatment);
+  }
+
+  protected interface ViewerTreatment<R> {
+
+    R execute();
+
+    /**
+     * This method is called after a successful execution of {@link #execute()} method.
+     * @param result the result obtained with {@link #execute()}.
+     * @return the result.
+     */
+    default R performAfterSuccess(R result) {
+      return result;
+    }
   }
 
   /**
    * This class handles the execution of a {@link ViewerTreatment}.
    * It provides the centralization of caching synchronization.
-   * @param <RETURN_VALUE> the type of the value returned by the viewer treatment.
+   * @param <R> the type of the value returned by the viewer treatment.
    * @return the value computed by the specified viewer treatment.
    */
-  protected final class ViewerProcess<RETURN_VALUE extends Serializable> {
-    private final static String CACHE_WORKSPACE_KEY_PREFIX = "workspace_viewer_services_";
-    private final static String CACHE_RESULT_KEY = "cache_result";
+  protected final class ViewerProcess<R extends Serializable> {
+    private static final String CACHE_WORKSPACE_KEY_PREFIX = "workspace_viewer_services_";
+    private static final String CACHE_RESULT_KEY = "cache_result";
     private final String processName;
-    private final ViewerTreatment<RETURN_VALUE> viewerTreatment;
+    private final ViewerTreatment<R> viewerTreatment;
 
     /**
      * Default constructor.
@@ -105,7 +127,7 @@ public abstract class AbstractViewerService {
      * @param viewerTreatment
      */
     protected ViewerProcess(final String processName,
-        final ViewerTreatment<RETURN_VALUE> viewerTreatment) {
+        final ViewerTreatment<R> viewerTreatment) {
       this.processName = processName;
       this.viewerTreatment = viewerTreatment;
     }
@@ -118,24 +140,26 @@ public abstract class AbstractViewerService {
      */
     private Pair<TemporaryWorkspaceTranslation, Semaphore> initialize(ViewerContext viewerContext) {
       synchronized (OBJECT_FOR_SYNC) {
-        String workspaceCacheKey = CACHE_WORKSPACE_KEY_PREFIX + viewerContext.getViewId();
-        TemporaryWorkspaceTranslation workspace =
-            (TemporaryWorkspaceTranslation) cache.get(workspaceCacheKey);
-        if (workspace == null) {
-          workspace = viewerContext.getWorkspace();
-          cache.put(workspaceCacheKey, workspace);
-        }
+        final String workspaceCacheKey = CACHE_WORKSPACE_KEY_PREFIX + viewerContext.getViewId();
+        getLogger(this).debug(
+            () -> format("initializing workspace of view context {0}", viewerContext.getViewId()));
+        final TemporaryWorkspaceTranslation workspace = (TemporaryWorkspaceTranslation) cache
+            .computeIfAbsent(workspaceCacheKey, k -> viewerContext.getWorkspace());
 
         // If the workspace already exists, then retrieving the semaphore of a working process if
         // any, creating a new one otherwise (in the second case and for a same resource, a request
         // will never wait for the end of an other).
         if (workspace.exists()) {
+          getLogger(this).debug(() -> format("workspace of view context {0} exists already",
+              viewerContext.getViewId()));
 
           // If the original resource has not changed since the last conversion, then getting the
           // converted data that exist already.
           if (workspace.lastModified() >= viewerContext.getOriginalSourceFile().lastModified()) {
             Semaphore currentProcessing = (Semaphore) cache.get(workspace.getRootPath().getPath());
             if (currentProcessing != null) {
+              getLogger(this).debug(() -> format("semaphore exists already for view context {0}",
+                  viewerContext.getViewId()));
               return Pair.of(workspace, currentProcessing);
             }
 
@@ -143,27 +167,26 @@ public abstract class AbstractViewerService {
             // exception has been thrown in a previous conversion treatment.
             // So, trying again...
             if (workspace.get(CACHE_RESULT_KEY) == null) {
+              getLogger(this).debug(() -> format(
+                  "no conversion result in cache, removing workspace of view context {0} for new " +
+                      "creation", viewerContext.getViewId()));
               workspace.remove();
             } else {
-              // Handle time to live in cache if necessary
-              if (ViewerSettings.isTimeToLiveEnabled()) {
-                long fileAgeThreshold = DateUtil.getNow().getTime() -
-                    ((long) (TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeleted() *
-                        0.25));
-                if (workspace.lastModified() < fileAgeThreshold) {
-                  workspace.updateLastModifiedDate();
-                }
-              }
-              // Data exists in cache, returning a new Semaphore
-              return Pair.of(workspace, new Semaphore(1));
+              return renewSemaphore(workspaceCacheKey, workspace);
             }
           } else {
             // Source file has been modified, the conversion processes must be performed again.
+            getLogger(this).debug(() -> format(
+                "remove workspace of view context {0} because file {1} has been modified",
+                viewerContext.getViewId(), viewerContext.getOriginalSourceFile().getName()));
             workspace.remove();
           }
         }
 
         // The workspace does not exist, it must be created and put into application cache.
+        getLogger(this).debug(
+            () -> format("creating workspace of view context {0} with its semaphore",
+                viewerContext.getViewId()));
         viewerContext.processingCache();
         workspace.create();
         Semaphore newSemaphore = new Semaphore(1);
@@ -172,18 +195,37 @@ public abstract class AbstractViewerService {
       }
     }
 
+    private Pair<TemporaryWorkspaceTranslation, Semaphore> renewSemaphore(
+        final String workspaceCacheKey, final TemporaryWorkspaceTranslation workspace) {
+      // Handle time to live in cache if necessary
+      if (ViewerSettings.isTimeToLiveEnabled()) {
+        long fileAgeThreshold = DateUtil.getNow().getTime() -
+            ((long) (TemporaryDataManagementSetting.getTimeAfterThatFilesMustBeDeleted() * 0.25));
+        if (workspace.lastModified() < fileAgeThreshold) {
+          workspace.updateLastModifiedDate();
+        }
+      }
+      // Data exists in cache, returning a new Semaphore
+      getLogger(this)
+          .debug(() -> format("creating semaphore for workspace {0}", workspaceCacheKey));
+      return Pair.of(workspace, new Semaphore(1));
+    }
+
     /**
      * Finalizes the treatment according to the context.
      * @param viewerContext the context of current view processing.
      * @param init the one obtained with {@link #initialize(ViewerContext)}.
      */
-    private void finalize(ViewerContext viewerContext,
+    private void performAtExecutionEnd(ViewerContext viewerContext,
         Pair<TemporaryWorkspaceTranslation, Semaphore> init) {
       synchronized (OBJECT_FOR_SYNC) {
         String workspaceCacheKey = CACHE_WORKSPACE_KEY_PREFIX + viewerContext.getViewId();
         cache.remove(workspaceCacheKey);
         cache.remove(viewerContext.getWorkspace().getRootPath().getPath());
       }
+      getLogger(this).debug(
+          () -> format("releasing semaphore dedicated to workspace of view context {0}",
+              viewerContext.getViewId()));
       init.getValue().release();
     }
 
@@ -192,62 +234,76 @@ public abstract class AbstractViewerService {
      * One of the aim of this mechanism is to centralize tha management of caching.
      * @return the value computed by the specified viewer treatment.
      */
-    @SuppressWarnings("unchecked")
-    public RETURN_VALUE execute(ViewerContext viewerContext) {
+    public R execute(ViewerContext viewerContext) {
       viewerContext.fromInitializerProcessName(processName);
       if (!viewerContext.isCacheRequired()) {
-        RETURN_VALUE returnValue = viewerTreatment.execute();
+        getLogger(this).debug(() -> "no cache required, performing document conversion");
+        final R returnValue = doConversion();
         return viewerTreatment.performAfterSuccess(returnValue);
       }
 
       // Acquiring a semaphore and acquiring it
-      Pair<TemporaryWorkspaceTranslation, Semaphore> init = initialize(viewerContext);
-      TemporaryWorkspaceTranslation workspace = init.getKey();
-      Semaphore semaphore = init.getValue();
+      final Pair<TemporaryWorkspaceTranslation, Semaphore> init = initialize(viewerContext);
+      final TemporaryWorkspaceTranslation workspace = init.getKey();
+      final Semaphore semaphore = init.getValue();
       try {
+        getLogger(this).debug(
+            () -> format("acquiring semaphore dedicated to workspace of view context {0}",
+                viewerContext.getViewId()));
         semaphore.acquire();
-      } catch (InterruptedException e) {
-        throw new RuntimeException(e);
+      } catch (Exception e) {
+        throw new SilverpeasRuntimeException(e);
       }
 
       // Dealing with the cache mechanism
-      final RETURN_VALUE returnValue;
+      final R returnValue;
       try {
         if (viewerContext.isProcessingCache()) {
           // The current process is the one in charge of processing the data
-          returnValue = viewerTreatment.execute();
+          getLogger(this).debug(
+              () -> format("performing document conversion into workspace of view context {0}",
+                  viewerContext.getViewId()));
+          returnValue = doConversion();
           workspace.put(CACHE_RESULT_KEY, returnValue);
         } else {
           // The data have been processed by an other process
+          getLogger(this).debug(
+              () -> format("getting document conversion from workspace cache of view context {0}",
+                  viewerContext.getViewId()));
           returnValue = workspace.get(CACHE_RESULT_KEY);
         }
       } catch (RuntimeException re) {
+        getLogger(this).error(re);
         workspace.put(CACHE_RESULT_KEY, null);
         throw re;
       } finally {
-        finalize(viewerContext, init);
+        performAtExecutionEnd(viewerContext, init);
       }
 
       // After successful dealing with cache, then performing a other treatment if any implemented.
       return viewerTreatment.performAfterSuccess(returnValue);
     }
-  }
 
-  /**
-   * Inner class handled by
-   * @param <RETURN_VALUE>
-   */
-  protected abstract class ViewerTreatment<RETURN_VALUE> {
-
-    public abstract RETURN_VALUE execute();
-
-    /**
-     * This method is called after a successful execution of {@link #execute()} method.
-     * @param result the result obtained with {@link #execute()}.
-     * @return the result.
-     */
-    public RETURN_VALUE performAfterSuccess(RETURN_VALUE result) {
-      return result;
+    private R doConversion() {
+      // The current process is the one in charge of processing the data
+      try {
+        EXECUTION_SEM.acquire();
+        synchronized (EXECUTION_SEM_MUTEX) {
+          executionSemCount = executionSemCount - 1;
+          getLogger(this)
+              .debug(() -> format("acquiring access (new count of {0})", executionSemCount));
+        }
+        return viewerTreatment.execute();
+      } catch (Exception e) {
+        throw new SilverpeasRuntimeException(e);
+      } finally {
+        EXECUTION_SEM.release();
+        synchronized (EXECUTION_SEM_MUTEX) {
+          executionSemCount = executionSemCount + 1;
+          getLogger(this)
+              .debug(() -> format("releasing access (new count of {0})", executionSemCount));
+        }
+      }
     }
   }
 }

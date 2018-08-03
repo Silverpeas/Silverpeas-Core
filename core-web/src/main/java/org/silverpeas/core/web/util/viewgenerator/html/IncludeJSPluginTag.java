@@ -73,7 +73,7 @@ public class IncludeJSPluginTag extends SimpleTagSupport {
   }
 
   protected LookHelper getLookHelper() {
-    return (LookHelper) getSessionAttribute(LookHelper.SESSION_ATT);
+    return getSessionAttribute(LookHelper.SESSION_ATT);
   }
 
   protected String getLanguage() {

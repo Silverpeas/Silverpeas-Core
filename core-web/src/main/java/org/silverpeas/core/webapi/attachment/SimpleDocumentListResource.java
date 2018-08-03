@@ -29,13 +29,17 @@ import org.silverpeas.core.annotation.Service;
 import org.silverpeas.core.contribution.attachment.AttachmentServiceProvider;
 import org.silverpeas.core.contribution.attachment.model.DocumentType;
 import org.silverpeas.core.contribution.attachment.model.SimpleDocument;
+import org.silverpeas.core.viewer.service.PreviewService;
+import org.silverpeas.core.viewer.service.ViewService;
 import org.silverpeas.core.webapi.base.annotation.Authorized;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -48,6 +52,9 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
 
   @PathParam("id")
   private String resourceId;
+
+  @QueryParam("viewIndicators")
+  private boolean viewIndicators = false;
 
   public String getResourceId() {
     return resourceId;
@@ -96,9 +103,15 @@ public class SimpleDocumentListResource extends AbstractSimpleDocumentResource {
 
   private List<SimpleDocumentEntity> asWebEntities(List<SimpleDocument> docs) {
     List<SimpleDocumentEntity> entities = new ArrayList<>();
-    for (SimpleDocument doc : docs) {
-      entities.add(SimpleDocumentEntity.fromAttachment(doc));
-    }
+    docs.forEach(d -> {
+      final SimpleDocumentEntity entity = SimpleDocumentEntity.fromAttachment(d);
+      entities.add(entity);
+      if (viewIndicators) {
+        entity.prewiewable(PreviewService.get().isPreviewable(new File(d.getAttachmentPath())))
+              .viewable(ViewService.get().isViewable(new File(d.getAttachmentPath())))
+              .displayAsContent(d.isDisplayableAsContent());
+      }
+    });
     return entities;
   }
 

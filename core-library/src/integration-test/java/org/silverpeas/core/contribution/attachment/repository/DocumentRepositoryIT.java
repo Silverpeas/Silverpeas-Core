@@ -313,7 +313,33 @@ public class DocumentRepositoryIT extends JcrIntegrationIT {
       session.save();
       SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
       assertThat(doc.getForbiddenDownloadForRoles(), contains(SilverpeasRole.reader));
+    }
+  }
 
+  /**
+   * Test of saveDisplayableAsContent method, of class DocumentRepository.
+   */
+  @Test
+  public void testSaveDisplayableAsContent() throws Exception {
+    try (JcrSession session = openSystemSession()) {
+      SimpleDocumentPK emptyId = new SimpleDocumentPK("-1", instanceId);
+      ByteArrayInputStream content = new ByteArrayInputStream("This is a test".getBytes(
+          Charsets.UTF_8));
+      SimpleAttachment attachment = createEnglishSimpleAttachment();
+      String foreignId = "node18";
+      SimpleDocument document = new SimpleDocument(emptyId, foreignId, 10, false, attachment);
+      SimpleDocumentPK result = documentRepository.createDocument(session, document);
+      documentRepository.storeContent(document, content);
+      SimpleDocumentPK expResult = new SimpleDocumentPK(result.getId(), instanceId);
+      assertThat(result, is(expResult));
+      assertThat(document.isDisplayableAsContent(), is(true));
+      attachment = createFrenchSimpleAttachment();
+      document = new SimpleDocument(emptyId, foreignId, 15, false, attachment);
+      document.setDisplayableAsContent(false);
+      documentRepository.saveDisplayableAsContent(session, document);
+      session.save();
+      SimpleDocument doc = documentRepository.findDocumentById(session, result, "fr");
+      assertThat(doc.isDisplayableAsContent(), is(false));
     }
   }
 

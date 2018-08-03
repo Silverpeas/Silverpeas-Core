@@ -1042,6 +1042,23 @@ public class SimpleDocumentService
     }
   }
 
+  @Override
+  public void switchEnableDisplayAsContent(final SimpleDocumentPK pk, final boolean enable) {
+    SimpleDocument document = searchDocumentById(pk, null);
+    final boolean documentUpdateRequired = enable != document.isDisplayableAsContent();
+
+    // Updating JCR if required
+    if (documentUpdateRequired) {
+      document.setDisplayableAsContent(enable);
+      try (JcrSession session = openSystemSession()) {
+        repository.saveDisplayableAsContent(session, document);
+        session.save();
+      } catch (RepositoryException ex) {
+        throw new AttachmentException(this.getClass().getName(), SilverpeasException.ERROR, "", ex);
+      }
+    }
+  }
+
   /**
    * Check if notification must be really performed
    */

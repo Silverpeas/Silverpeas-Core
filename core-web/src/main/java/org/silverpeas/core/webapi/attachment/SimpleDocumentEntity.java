@@ -77,6 +77,12 @@ public class SimpleDocumentEntity implements WebEntity {
   private String comment;
   @XmlElement(defaultValue = "false")
   private String versioned;
+  @XmlElement
+  private Boolean prewiewable;
+  @XmlElement
+  private Boolean viewable;
+  @XmlElement
+  private Boolean displayAsContent;
 
   public static SimpleDocumentEntity fromAttachment(SimpleDocument document) {
     SimpleDocumentEntity entity = new SimpleDocumentEntity();
@@ -192,4 +198,30 @@ public class SimpleDocumentEntity implements WebEntity {
     return versioned;
   }
 
+  public Boolean getPrewiewable() {
+    return prewiewable;
+  }
+
+  public SimpleDocumentEntity prewiewable(final boolean prewiewable) {
+    this.prewiewable = prewiewable;
+    return this;
+  }
+
+  public Boolean getViewable() {
+    return viewable;
+  }
+
+  public SimpleDocumentEntity viewable(final boolean viewable) {
+    this.viewable = viewable;
+    return this;
+  }
+
+  public Boolean getDisplayAsContent() {
+    return displayAsContent;
+  }
+
+  public SimpleDocumentEntity displayAsContent(final boolean displayAsContent) {
+    this.displayAsContent = displayAsContent;
+    return this;
+  }
 }
