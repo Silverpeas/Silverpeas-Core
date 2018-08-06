@@ -54,7 +54,7 @@ public class ContactDAO {
    * This class must not be instanciated
    * @since 1.0
    */
-  public ContactDAO() {
+  private ContactDAO() {
   }
 
   /**
@@ -216,7 +216,6 @@ public class ContactDAO {
     String nodeId = null;
 
     if (fatherPKs.isEmpty()) {
-      // Debug.println("ContactDAO : getNbPubInFatherPKs : collection fatherPKs is empty");
       return 0;
     } else {
       Iterator<NodePK> iterator = fatherPKs.iterator();
@@ -224,31 +223,31 @@ public class ContactDAO {
         NodePK nodePK = iterator.next();
         pubPK = new ContactPK("unknown", nodePK);
         nodeId = nodePK.getId();
-      }
 
-      StringBuilder selectStatement =
-          new StringBuilder("select count(contactId) from ").append(pubPK.getTableName())
-              .append("Father")
-              .append(" where nodeId = ")
-              .append(nodeId);
+        StringBuilder selectStatement =
+            new StringBuilder("select count(contactId) from ").append(pubPK.getTableName())
+                .append("Father")
+                .append(" where nodeId = ")
+                .append(nodeId);
 
-      while (iterator.hasNext()) {
-        NodePK nodePK = iterator.next();
-        nodeId = nodePK.getId();
-        selectStatement.append(" or nodeId = ").append(nodeId);
-      }
-      selectStatement.append(" )");
-
-      PreparedStatement prepStmt = null;
-
-      try {
-        prepStmt = con.prepareStatement(selectStatement.toString());
-        rs = prepStmt.executeQuery();
-        if (rs.next()) {
-          result = rs.getInt(1);
+        while (iterator.hasNext()) {
+          nodePK = iterator.next();
+          nodeId = nodePK.getId();
+          selectStatement.append(" or nodeId = ").append(nodeId);
         }
-      } finally {
-        DBUtil.close(rs, prepStmt);
+        selectStatement.append(" )");
+
+        PreparedStatement prepStmt = null;
+
+        try {
+          prepStmt = con.prepareStatement(selectStatement.toString());
+          rs = prepStmt.executeQuery();
+          if (rs.next()) {
+            result = rs.getInt(1);
+          }
+        } finally {
+          DBUtil.close(rs, prepStmt);
+        }
       }
 
       return result;
@@ -544,7 +543,6 @@ public class ContactDAO {
 
   public static ContactDetail loadRow(Connection con, ContactPK pk)
       throws SQLException, ParseException {
-    // Debug.println("ContactDAO : loadRow()");
     ResultSet rs = null;
     ContactDetail pub;
     String selectStatement =

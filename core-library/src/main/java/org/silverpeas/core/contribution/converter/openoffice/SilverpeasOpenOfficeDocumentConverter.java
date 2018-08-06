@@ -63,7 +63,7 @@ public class SilverpeasOpenOfficeDocumentConverter extends OpenOfficeDocumentCon
   /**
    * Optional filter data option
    */
-  private final List<FilterOption> filterData = new ArrayList<FilterOption>();
+  private final List<FilterOption> filterData = new ArrayList<>();
 
   /**
    * Default constructor
@@ -87,7 +87,7 @@ public class SilverpeasOpenOfficeDocumentConverter extends OpenOfficeDocumentCon
   @Override
   protected void convertInternal(final File inputFile, final DocumentFormat inputFormat,
       final File outputFile, final DocumentFormat outputFormat) {
-    final Map<String, Object> loadProperties = new HashMap<String, Object>();
+    final Map<String, Object> loadProperties = new HashMap<>();
     loadProperties.putAll(getDefaultLoadProperties());
     loadProperties.putAll(inputFormat.getImportOptions());
 
@@ -96,7 +96,7 @@ public class SilverpeasOpenOfficeDocumentConverter extends OpenOfficeDocumentCon
 
     // Filter Data options
     if (!filterData.isEmpty()) {
-      final List<PropertyValue> propertyValues = new ArrayList<PropertyValue>();
+      final List<PropertyValue> propertyValues = new ArrayList<>();
       for (final FilterOption option : filterData) {
         propertyValues.add(property(option.getName(), option.getValue()));
       }
@@ -113,19 +113,18 @@ public class SilverpeasOpenOfficeDocumentConverter extends OpenOfficeDocumentCon
       final String outputUrl =
           fileContentProvider.getFileURLFromSystemPath("", outputFile.getAbsolutePath());
 
-      loadAndExport(inputUrl, loadProperties, outputUrl, storeProperties);
+      loadAndExportFromUrl(inputUrl, loadProperties, outputUrl, storeProperties);
     }
   }
 
   /**
-   * Same function as that of OpenOfficeDocumentConverter
+   * @see OpenOfficeDocumentConverter#loadAndExport(String, Map, String, Map)
    */
-  private void loadAndExport(final String inputUrl, final Map<String, Object> loadProperties,
-      final String outputUrl, final Map<String, Object> storeProperties)
-      throws OpenOfficeException {
+  private void loadAndExportFromUrl(final String inputUrl, final Map<String, Object> loadProperties,
+      final String outputUrl, final Map<String, Object> storeProperties) {
     XComponent document;
     try {
-      document = loadDocument(inputUrl, loadProperties);
+      document = loadOpenDocument(inputUrl, loadProperties);
     } catch (final ErrorCodeIOException errorCodeIOException) {
       throw new OpenOfficeException(
           "conversion failed: could not load input document; OOo errorCode: " +
@@ -141,7 +140,7 @@ public class SilverpeasOpenOfficeDocumentConverter extends OpenOfficeDocumentCon
     refreshDocument(document);
 
     try {
-      storeDocument(document, outputUrl, storeProperties);
+      storeOpenDocument(document, outputUrl, storeProperties);
     } catch (final ErrorCodeIOException errorCodeIOException) {
       throw new OpenOfficeException(
           "conversion failed: could not save output document; OOo errorCode: " +
@@ -153,18 +152,18 @@ public class SilverpeasOpenOfficeDocumentConverter extends OpenOfficeDocumentCon
   }
 
   /**
-   * Same function as that of OpenOfficeDocumentConverter
+   * @see OpenOfficeDocumentConverter#loadDocument(String, Map)
    */
-  private XComponent loadDocument(final String inputUrl, final Map<String, Object> loadProperties)
+  private XComponent loadOpenDocument(final String inputUrl, final Map<String, Object> loadProperties)
       throws com.sun.star.io.IOException, IllegalArgumentException {
     final XComponentLoader desktop = openOfficeConnection.getDesktop();
     return desktop.loadComponentFromURL(inputUrl, "_blank", 0, toPropertyValues(loadProperties));
   }
 
   /**
-   * Same function as that of OpenOfficeDocumentConverter
+   * @see OpenOfficeDocumentConverter#storeDocument(XComponent, String, Map)
    */
-  private void storeDocument(final XComponent document, final String outputUrl,
+  private void storeOpenDocument(final XComponent document, final String outputUrl,
       final Map<String, Object> storeProperties) throws com.sun.star.io.IOException {
     try {
       final XStorable storable = (XStorable) UnoRuntime.queryInterface(XStorable.class, document);

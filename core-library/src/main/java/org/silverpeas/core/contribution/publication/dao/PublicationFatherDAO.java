@@ -54,7 +54,7 @@ public class PublicationFatherDAO {
    * This class must not be instanciated
    * @since 1.0
    */
-  public PublicationFatherDAO() {
+  private PublicationFatherDAO() {
   }
 
   /**
@@ -66,7 +66,7 @@ public class PublicationFatherDAO {
    */
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
     JdbcSqlQuery.createDeleteFor(publicationFatherTableName).where("pubId in (" +
-        JdbcSqlQuery.createSelect("pubId from " + PublicationDAO.publicationTableName)
+        JdbcSqlQuery.createSelect("pubId from " + PublicationDAO.PUBLICATION_TABLE_NAME)
             .where("instanceId = ?").getSqlQuery() + ")", componentInstanceId).execute();
     JdbcSqlQuery.createDeleteFor(publicationFatherTableName)
         .where("instanceId = ?", componentInstanceId).execute();
@@ -183,7 +183,7 @@ public class PublicationFatherDAO {
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectQuery.toString());
-      List<Alias>  list = new ArrayList<Alias>();
+      List<Alias>  list = new ArrayList<>();
 
       while (rs.next()) {
         String id = Integer.toString(rs.getInt(1));
@@ -344,7 +344,7 @@ public class PublicationFatherDAO {
     try {
       stmt = con.createStatement();
       rs = stmt.executeQuery(selectQuery.toString());
-      List<NodePK> list = new ArrayList<NodePK>();
+      List<NodePK> list = new ArrayList<>();
       while (rs.next()) {
         String id = Integer.toString(rs.getInt(1));
         NodePK nodePK = new NodePK(id, pubPK);
@@ -366,10 +366,10 @@ public class PublicationFatherDAO {
    */
   public static Collection<PublicationPK> getPubPKsInFatherPKs(Connection con,
       Collection<WAPrimaryKey> fatherPKs) throws SQLException {
-    WAPrimaryKey fatherPK = null;
-    PublicationPK pubPK = null;
-    String fatherId = null;
-    ArrayList<PublicationPK> list = new ArrayList<PublicationPK>();
+    WAPrimaryKey fatherPK;
+    PublicationPK pubPK;
+    String fatherId;
+    ArrayList<PublicationPK> list = new ArrayList<>();
 
     if (fatherPKs.isEmpty()) {
       return list;
@@ -380,39 +380,39 @@ public class PublicationFatherDAO {
         fatherPK = iterator.next();
         pubPK = new PublicationPK("unknown", fatherPK);
         fatherId = fatherPK.getId();
-      }
 
-      StringBuilder selectStatement = new StringBuilder(128);
-      selectStatement.append("select F.pubId from ").append(
-          publicationFatherTableName).append(" F, ").append(
-          pubPK.getTableName()).append(" P ");
-      selectStatement.append(" where F.pubId = P.pubId ");
-      selectStatement.append(" and ( F.nodeId = ").append(fatherId);
+        StringBuilder selectStatement = new StringBuilder(128);
+        selectStatement.append("select F.pubId from ").append(
+            publicationFatherTableName).append(" F, ").append(
+            pubPK.getTableName()).append(" P ");
+        selectStatement.append(" where F.pubId = P.pubId ");
+        selectStatement.append(" and ( F.nodeId = ").append(fatherId);
 
-      while (iterator.hasNext()) {
-        fatherPK = (WAPrimaryKey) iterator.next();
-        fatherId = fatherPK.getId();
-        selectStatement.append(" or F.nodeId = ").append(fatherId);
-      }
-      selectStatement.append(" )");
-
-      Statement stmt = null;
-      ResultSet rs = null;
-
-      try {
-        stmt = con.createStatement();
-        rs = stmt.executeQuery(selectStatement.toString());
-        String id = "";
-
-        while (rs.next()) {
-          id = Integer.toString(rs.getInt(1));
-          pubPK = new PublicationPK(id, fatherPK);
-          list.add(pubPK);
+        while (iterator.hasNext()) {
+          fatherPK = iterator.next();
+          fatherId = fatherPK.getId();
+          selectStatement.append(" or F.nodeId = ").append(fatherId);
         }
-        return list;
-      } finally {
-        DBUtil.close(rs, stmt);
+        selectStatement.append(" )");
+
+        Statement stmt = null;
+        ResultSet rs = null;
+
+        try {
+          stmt = con.createStatement();
+          rs = stmt.executeQuery(selectStatement.toString());
+          String id;
+
+          while (rs.next()) {
+            id = Integer.toString(rs.getInt(1));
+            pubPK = new PublicationPK(id, fatherPK);
+            list.add(pubPK);
+          }
+        } finally {
+          DBUtil.close(rs, stmt);
+        }
       }
+      return list;
     }
   }
 
@@ -438,7 +438,7 @@ public class PublicationFatherDAO {
     PreparedStatement stmt = null;
     ResultSet rs = null;
     try {
-      ArrayList<PublicationPK> list = new ArrayList<PublicationPK>();
+      ArrayList<PublicationPK> list = new ArrayList<>();
       stmt = con.prepareStatement(selectStatement.toString());
 
       stmt.setString(1, fatherPK.getInstanceId());

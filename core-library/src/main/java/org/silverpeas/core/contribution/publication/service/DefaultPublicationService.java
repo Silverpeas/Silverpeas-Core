@@ -84,15 +84,7 @@ import javax.inject.Singleton;
 import javax.transaction.Transactional;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Default implementation of {@code PublicationService} to manage the publications in Silverpeas.
@@ -1460,11 +1452,13 @@ public class DefaultPublicationService implements PublicationService, ComponentI
   }
 
   private void indexAliases(PublicationPK pubPK, FullIndexEntry indexEntry) {
+    Objects.requireNonNull(pubPK);
     if (indexEntry == null) {
       PublicationDetail publi = getDetail(pubPK);
       indexEntry = getFullIndexEntry(publi, true);
     }
 
+    Objects.requireNonNull(indexEntry);
     Collection<Alias> aliases = getAlias(pubPK);
     Map<IndexEntryKey, List<String>> pathsByIndex = new HashMap<>();
     for (Alias alias : aliases) {
@@ -1472,7 +1466,7 @@ public class DefaultPublicationService implements PublicationService, ComponentI
         //it's a true alias
         IndexEntryKey pk = getIndexEntryPK(alias.getInstanceId(), pubPK.getId());
         if (pathsByIndex.get(pk) == null) {
-          pathsByIndex.put(pk, new ArrayList<String>());
+          pathsByIndex.put(pk, new ArrayList<>());
         }
         try {
           NodeDetail node = nodeService.getDetail(new NodePK(alias.getId(), alias.getInstanceId()));

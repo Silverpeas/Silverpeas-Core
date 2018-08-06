@@ -53,7 +53,7 @@ public class PublicationI18NDAO {
    */
   public static void deleteComponentInstanceData(String componentInstanceId) throws SQLException {
     JdbcSqlQuery.createDeleteFor(TABLENAME).where("pubId in (" +
-        JdbcSqlQuery.createSelect("pubId from " + PublicationDAO.publicationTableName)
+        JdbcSqlQuery.createSelect("pubId from " + PublicationDAO.PUBLICATION_TABLE_NAME)
             .where("instanceId = ?").getSqlQuery() + ")", componentInstanceId).execute();
   }
 

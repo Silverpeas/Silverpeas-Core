@@ -78,6 +78,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -511,6 +512,9 @@ public class RepositoriesTypeManager {
     Arrays.sort(listContenuStringPath);
 
     List<File> listcontenuPath = convertListStringToListFile(listContenuStringPath, path.getPath());
+    if (listcontenuPath == null) {
+      listcontenuPath = Collections.emptyList();
+    }
 
     return listcontenuPath.iterator();
   }

@@ -30,15 +30,20 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author inra
  */
 public class PdcRightsDAO {
 
-  public static ArrayList<String> getUserIds(Connection con, String axisId,
+  private PdcRightsDAO() {
+
+  }
+
+  public static List<String> getUserIds(Connection con, String axisId,
       String valueId) throws SQLException {
-    ArrayList<String> listUsersIds = new ArrayList<String>();
+    ArrayList<String> listUsersIds = new ArrayList<>();
     String query = "select userId from sb_pdc_user_rights where valueid = ? and axisId = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;
@@ -83,10 +88,9 @@ public class PdcRightsDAO {
     for (String groupId : groupIds) {
       if (!firstGroup) {
         clauseIN.append(",");
-        firstGroup = false;
       }
-
       clauseIN.append(groupId);
+      firstGroup = false;
     }
     clauseIN.append(")");
 
@@ -105,9 +109,9 @@ public class PdcRightsDAO {
     }
   }
 
-  public static ArrayList<String> getGroupIds(Connection con, String axisId,
+  public static List<String> getGroupIds(Connection con, String axisId,
       String valueId) throws SQLException {
-    ArrayList<String> listGroupsIds = new ArrayList<String>();
+    ArrayList<String> listGroupsIds = new ArrayList<>();
     String query = "select groupid from sb_pdc_group_rights where valueid = ? and axisId = ?";
     PreparedStatement prepStmt = null;
     ResultSet rs = null;

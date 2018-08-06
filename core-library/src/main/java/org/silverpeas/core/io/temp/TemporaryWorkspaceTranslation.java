@@ -25,6 +25,7 @@ package org.silverpeas.core.io.temp;
 
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
+import org.silverpeas.core.SilverpeasRuntimeException;
 import org.silverpeas.core.util.file.FileRepositoryManager;
 import org.silverpeas.core.util.StringUtil;
 import org.silverpeas.core.util.logging.SilverLogger;
@@ -54,6 +55,7 @@ public class TemporaryWorkspaceTranslation {
   private final File descriptor;
   private File workspace;
   private Map<String, String> descriptorContent = new HashMap<>();
+  private Object lock = new Object();
 
   /**
    * Indicates if the given path corresponds to a temporary workspace translation.
@@ -84,17 +86,17 @@ public class TemporaryWorkspaceTranslation {
    * Centralizes the initialization.
    */
   private void initialize() {
-    synchronized (SILVERPEAS_TRANSLATION_PREFIX) {
+    synchronized (lock) {
       if (descriptor.isFile() && descriptor.length() > 30) {
         try {
           for (String line : FileUtils.readLines(this.descriptor, Charsets.UTF_8)) {
-            int splitIndex = line.indexOf("=");
+            int splitIndex = line.indexOf('=');
             if (splitIndex > 0) {
               descriptorContent.put(line.substring(0, splitIndex), line.substring(splitIndex + 1));
             }
           }
         } catch (IOException e) {
-          throw new RuntimeException(e);
+          throw new SilverpeasRuntimeException(e);
         }
       } else {
         descriptorContent.put(TRANSLATION_ID, UUID.randomUUID().toString());
@@ -109,7 +111,7 @@ public class TemporaryWorkspaceTranslation {
    * @return true if deletion is completely effective, false otherwise.
    */
   public boolean remove() {
-    synchronized (SILVERPEAS_TRANSLATION_PREFIX) {
+    synchronized (lock) {
       boolean result = FileUtils.deleteQuietly(workspace) && FileUtils.deleteQuietly(descriptor);
       initialize();
       return result;
@@ -121,7 +123,7 @@ public class TemporaryWorkspaceTranslation {
    * @return true if it exists, false otherwise.
    */
   public boolean exists() {
-    synchronized (SILVERPEAS_TRANSLATION_PREFIX) {
+    synchronized (lock) {
       return descriptor.isFile() && descriptor.length() > 30 && workspace.exists();
     }
   }
@@ -131,7 +133,7 @@ public class TemporaryWorkspaceTranslation {
    * @return
    */
   public long lastModified() {
-    synchronized (SILVERPEAS_TRANSLATION_PREFIX) {
+    synchronized (lock) {
       return exists() ? descriptor.lastModified() : 0;
     }
   }
@@ -156,7 +158,7 @@ public class TemporaryWorkspaceTranslation {
    * Create the workspace.
    */
   public void create() {
-    synchronized (SILVERPEAS_TRANSLATION_PREFIX) {
+    synchronized (lock) {
       if (!exists()) {
         workspace.mkdirs();
         saveDescriptor();
@@ -168,7 +170,7 @@ public class TemporaryWorkspaceTranslation {
    * Saves on filesystem the descriptor content.
    */
   private void saveDescriptor() {
-    synchronized (SILVERPEAS_TRANSLATION_PREFIX) {
+    synchronized (lock) {
       try {
         if (descriptorContent.containsKey(TRANSLATION_ID)) {
           StringBuilder content = new StringBuilder();
@@ -181,6 +183,7 @@ public class TemporaryWorkspaceTranslation {
           FileUtils.writeStringToFile(descriptor, content.toString(), Charsets.UTF_8);
         }
       } catch (IOException ignore) {
+        SilverLogger.getLogger(this).silent(ignore);
       }
     }
   }
@@ -216,7 +219,7 @@ public class TemporaryWorkspaceTranslation {
       if (value == null) {
         return null;
       }
-      return (T) deserializeFromString(descriptorContent.get(key));
+      return deserializeFromString(descriptorContent.get(key));
     } catch (RuntimeException e) {
       SilverLogger.getLogger(this).error(e.getMessage(), e);
       return null;
