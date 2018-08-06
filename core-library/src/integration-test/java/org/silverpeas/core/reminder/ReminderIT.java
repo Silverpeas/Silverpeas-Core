@@ -306,7 +306,7 @@ public class ReminderIT {
     assertThat(actualReminder.getText(), is(reminderText));
     assertThat(actualReminder.getDateTime(), is(triggerDate.withOffsetSameInstant(ZoneOffset.UTC)));
 
-    await().pollInterval(5, SECONDS).timeout(10, MINUTES).until(isTriggered(reminder));
+    await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
     assertThat(reminder.isScheduled(), is(false));
   }
 
@@ -320,7 +320,7 @@ public class ReminderIT {
     assertThat(reminder.isSchedulable(), is(true));
     assertThat(reminder.isTriggered(), is(false));
 
-    await().pollInterval(5, SECONDS).timeout(10, MINUTES).until(isTriggered(reminder));
+    await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
     assertThat(reminder.isScheduled(), is(false));
     assertThat(reminder.isSchedulable(), is(false));
   }
@@ -335,7 +335,7 @@ public class ReminderIT {
     assertThat(reminder.isSchedulable(), is(true));
     assertThat(reminder.isTriggered(), is(false));
 
-    await().pollInterval(5, SECONDS).timeout(10, MINUTES).until(isTriggered(reminder));
+    await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
 
     reminder = Reminder.getById(reminder.getId());
     assertThat(reminder.isScheduled(), is(false));
@@ -352,11 +352,11 @@ public class ReminderIT {
     assertThat(reminder.isSchedulable(), is(true));
     assertThat(reminder.isTriggered(), is(false));
 
-    await().pollInterval(5, SECONDS).timeout(10, MINUTES).until(isTriggered(reminder));
+    await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
     assertThat(reminder.isSchedulable(), is(true));
     assertThat(reminder.isScheduled(), is(true));
 
-    await().pollInterval(5, SECONDS).timeout(10, MINUTES).until(isTriggered(reminder));
+    await().pollInterval(5, SECONDS).timeout(5, MINUTES).until(isTriggered(reminder));
     assertThat(reminder.isSchedulable(), is(true));
     assertThat(reminder.isScheduled(), is(true));
 

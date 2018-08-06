@@ -45,6 +45,7 @@ import org.silverpeas.core.util.logging.SilverLogger;
 
 import java.time.OffsetDateTime;
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 
 import static org.silverpeas.core.util.ArgumentAssertion.assertDefined;
@@ -229,9 +230,16 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
   public boolean isJobScheduled(String jobName) {
     checkJobName(jobName);
     try {
+      JobKey jobKey = JobKey.jobKey(jobName);
       JobDetail jobDetail = this.quartz.getJobDetail(JobKey.jobKey(jobName));
-      return jobDetail != null;
-    } catch (org.quartz.SchedulerException ex) {
+      boolean isScheduled = false;
+      if (jobDetail != null) {
+        List<? extends Trigger> triggers = this.quartz.getTriggersOfJob(jobKey);
+        isScheduled = !triggers.isEmpty();
+      }
+      return isScheduled;
+    } catch (org.quartz.SchedulerException e) {
+      SilverLogger.getLogger(this).warn(e);
       return false;
     }
   }
@@ -242,6 +250,7 @@ public abstract class QuartzScheduler implements Scheduler, Initialization {
       Trigger trigger = this.quartz.getTrigger(TriggerKey.triggerKey(jobName));
       return Optional.of(new QuartzScheduledJob(trigger));
     } catch (org.quartz.SchedulerException e) {
+      SilverLogger.getLogger(this).warn(e);
       return Optional.empty();
     }
   }

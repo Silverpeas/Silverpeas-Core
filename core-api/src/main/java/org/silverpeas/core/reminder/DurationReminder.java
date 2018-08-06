@@ -206,7 +206,7 @@ public class DurationReminder extends Reminder {
           applyFilterOnTemporalType(model.filterByType(getContributionProperty()), userZoneId);
     }
     return
-        propertyDateTime != null && !propertyDateTime.isBefore(sinceDateTime.toOffsetDateTime()) ?
+        !propertyDateTime.isBefore(sinceDateTime.toOffsetDateTime()) ?
             propertyDateTime.minus(this.duration, requireNonNull(this.timeUnit.toChronoUnit())) :
             null;
   }
