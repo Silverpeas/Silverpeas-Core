@@ -245,7 +245,7 @@ public class PublicationFatherDAO {
    * @throws SQLException
    *
    */
-  public static void removeFatherToPublications(Connection con,
+  private static void removeFatherToPublications(Connection con,
       PublicationPK pubPK, NodePK fatherPK) throws SQLException {
     // get all publications linked to fatherPK
     List<PublicationPK> pubPKs = (List<PublicationPK>) getPubPKsInFatherPK(con, fatherPK);

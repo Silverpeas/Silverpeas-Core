@@ -24,9 +24,12 @@
 package org.silverpeas.core.contribution.publication.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-import org.silverpeas.core.ResourceReference;
+import org.silverpeas.core.contribution.publication.service.PublicationService;
+import org.silverpeas.core.security.authorization.PublicationAccessController;
+import org.silverpeas.core.util.ServiceProvider;
 
 /**
  * This object contains the description of a complete publication (publication parameter, info)
@@ -42,27 +45,22 @@ public class CompletePublication implements Serializable {
   /**
    * The publications linked to the current publication
    */
-  private List<ResourceReference> linkList = null;
+  private List<Link> linkList;
 
   /**
    * The publications which are a reference to the current publication
    */
-  private List<ResourceReference> reverseLinkList = null;
+  private List<Link> reverseLinkList;
 
   private List<ValidationStep> validationSteps = null;
 
   /**
-   * @param pubDetail
-   * @param modelDetail
-   * @param infoDetail
+   * @param pubDetail The main information of the publication
    * @param linkList The publications linked to the current publication
    * @param reverseLinkList The publications which are a reference to the current publication
-   * @see org.silverpeas.core.contribution.publication.model.PulicationDetail
-   * @see org.silverpeas.core.contribution.publication.info.model.ModelDetail
-   * @see org.silverpeas.core.contribution.publication.info.model.InfoDetail
    */
-  public CompletePublication(PublicationDetail pubDetail, List<ResourceReference> linkList,
-      List<ResourceReference> reverseLinkList) {
+  public CompletePublication(PublicationDetail pubDetail, List<Link> linkList,
+      List<Link> reverseLinkList) {
     this.pubDetail = pubDetail;
     this.linkList = linkList;
     this.reverseLinkList = reverseLinkList;
@@ -71,7 +69,6 @@ public class CompletePublication implements Serializable {
   /**
    * Get the publication parameters
    * @return a PublicationDetail - the publication parameters
-   * @see org.silverpeas.core.contribution.publication.model.PulicationDetail
    * @since 1.0
    */
   public PublicationDetail getPublicationDetail() {
@@ -81,29 +78,15 @@ public class CompletePublication implements Serializable {
   /**
    * @return the linkList
    */
-  public List<ResourceReference> getLinkList() {
+  public List<Link> getLinkList() {
     return linkList;
-  }
-
-  /**
-   * @param linkList the linkList to set
-   */
-  public void setLinkList(List<ResourceReference> linkList) {
-    this.linkList = linkList;
   }
 
   /**
    * @return the reverseLinkList
    */
-  public List<ResourceReference> getReverseLinkList() {
+  public List<Link> getReverseLinkList() {
     return reverseLinkList;
-  }
-
-  /**
-   * @param reverseLinkList the reverseLinkList to set
-   */
-  public void setReverseLinkList(List<ResourceReference> reverseLinkList) {
-    this.reverseLinkList = reverseLinkList;
   }
 
   public void setValidationSteps(List<ValidationStep> validationSteps) {
@@ -112,5 +95,30 @@ public class CompletePublication implements Serializable {
 
   public List<ValidationStep> getValidationSteps() {
     return validationSteps;
+  }
+
+  public List<Link> getLinkedPublications(String userId) {
+    List<Link> publications = getAuthorizedLinks(userId, linkList);
+    publications.addAll(getAuthorizedLinks(userId, reverseLinkList));
+    return publications;
+  }
+
+  private List<Link> getAuthorizedLinks(String userId, List<Link> links) {
+    PublicationService publicationService = PublicationService.get();
+    PublicationAccessController accessController =
+        ServiceProvider.getService(PublicationAccessController.class);
+    List<Link> authorizedLinks = new ArrayList<>();
+    for (Link link : links) {
+      PublicationPK pk = new PublicationPK(link.getTarget().getLocalId(),
+          link.getTarget().getComponentInstanceId());
+      if (accessController.isUserAuthorized(userId, pk)) {
+        PublicationDetail publi = publicationService.getDetail(pk);
+        if (publi != null) {
+          link.setPub(publi);
+          authorizedLinks.add(link);
+        }
+      }
+    }
+    return authorizedLinks;
   }
 }

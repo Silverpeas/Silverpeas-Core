@@ -24,7 +24,6 @@
 package org.silverpeas.core.contribution.publication.service;
 
 import org.silverpeas.core.ResourceReference;
-import org.silverpeas.core.WAPrimaryKey;
 import org.silverpeas.core.contribution.publication.model.Alias;
 import org.silverpeas.core.contribution.publication.model.CompletePublication;
 import org.silverpeas.core.contribution.publication.model.PublicationDetail;
@@ -104,12 +103,6 @@ public interface PublicationService {
    * remove a father (designed by "fatherPK") from a publication ("pubPK") The publication won't be
    * visible from its old father node.
    */
-  void removeFather(NodePK fatherPK);
-
-  /**
-   * remove a father (designed by "fatherPK") from a publication ("pubPK") The publication won't be
-   * visible from its old father node.
-   */
   void removeFathers(PublicationPK pubPK, Collection<String> fatherIds);
 
   /**
@@ -121,21 +114,6 @@ public interface PublicationService {
    * return the Detail of publication which are not linked to a father
    */
   Collection<PublicationDetail> getOrphanPublications(PublicationPK pubPK);
-
-  /**
-   * return the Detail of publication which are linked to at least one father
-   */
-  Collection<PublicationDetail> getNotOrphanPublications(PublicationPK pubPK);
-
-  /**
-   * Method declaration
-   *
-   * @param pubPK
-   * @param creatorId
-   * @
-   *
-   */
-  void deleteOrphanPublicationsByCreatorId(PublicationPK pubPK, String creatorId);
 
   /**
    * return the publications : - which take place in the basket - which are out of the visibility
@@ -207,7 +185,7 @@ public interface PublicationService {
   Collection<PublicationDetail> getDetailsByBeginDateDescAndStatusAndNotLinkedToFatherId(
       PublicationPK pk, String status, int nbPubs, String fatherId);
 
-  void deleteInfoLinks(PublicationPK pubPK, List<ResourceReference> links);
+  void deleteLink(String id);
 
   /**
    * @param pubPK
@@ -257,27 +235,6 @@ public interface PublicationService {
   /**
    * Method declaration
    *
-   * @param query
-   * @param pubPK
-   * @return
-   * @
-   *
-   */
-  Collection<PublicationDetail> searchByKeywords(String query, PublicationPK pubPK);
-
-  /**
-   * Method declaration
-   *
-   * @param fatherPKs
-   * @return
-   * @
-   *
-   */
-  int getNbPubInFatherPKs(Collection<NodePK> fatherPKs);
-
-  /**
-   * Method declaration
-   *
    * @param fatherPK
    * @param fatherPath
    * @return
@@ -298,18 +255,6 @@ public interface PublicationService {
   Map<String, Integer> getDistributionTree(String instanceId, String statusSubQuery,
       boolean checkVisibility);
 
-  /**
-   * Method declaration
-   *
-   * @param fatherIds
-   * @param pubPK
-   * @return
-   * @
-   *
-   */
-  Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
-      PublicationPK pubPK);
-
   Collection<PublicationDetail> getDetailsByFatherIds(List<String> fatherIds,
       PublicationPK pubPK, boolean filterOnVisibilityPeriod);
 
@@ -324,16 +269,6 @@ public interface PublicationService {
 
   Collection<PublicationDetail> getDetailsByFatherIdsAndStatusList(List<String> fatherIds,
       PublicationPK pubPK, String sorting, List<String> status, boolean filterOnVisibilityPeriod);
-
-  /**
-   * Method declaration
-   *
-   * @param fatherPKs
-   * @return
-   * @
-   *
-   */
-  Collection<PublicationPK> getPubPKsInFatherPKs(Collection<WAPrimaryKey> fatherPKs);
 
   /**
    * Method declaration

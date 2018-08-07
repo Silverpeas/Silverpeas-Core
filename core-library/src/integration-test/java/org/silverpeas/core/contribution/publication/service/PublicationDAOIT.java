@@ -418,35 +418,6 @@ public class PublicationDAOIT {
   }
 
   /**
-   * Test of searchByKeywords method, of class PublicationDAO.
-   */
-  @Test
-  public void testSearchByKeywords() throws Exception {
-    try (Connection con = getSafeConnection()) {
-      PublicationPK pk = new PublicationPK("100", "kmelia200");
-      PublicationDetail result = PublicationDAO.loadRow(con, pk);
-      assertEquals(pk, result.getPK());
-      assertEquals("Homer Simpson", result.getAuthor());
-      assertEquals("2009/10/18", DateUtil.formatDate(result.getBeginDate()));
-      assertEquals("00:00", result.getBeginHour());
-      assertEquals("Contenu de la publication 1", result.getContentPagePath());
-      assertEquals("2008/11/18", DateUtil.formatDate(result.getCreationDate()));
-      assertEquals("100", result.getCreatorId());
-      assertEquals("Première publication de test", result.getDescription());
-      assertEquals("2020/12/18", DateUtil.formatDate(result.getEndDate()));
-      assertEquals("23:59", result.getEndHour());
-      assertEquals(1, result.getImportance());
-      assertEquals("0", result.getInfoId());
-      assertEquals("kmelia200", result.getInstanceId());
-      assertEquals("test", result.getKeywords());
-      assertEquals("Publication 1", result.getName());
-      assertEquals("Valid", result.getStatus());
-      assertEquals("300", result.getValidatorId());
-      assertEquals("Publication 1", result.getTitle());
-    }
-  }
-
-  /**
    * Test of loadRow method, of class PublicationDAO.
    */
   @Test
