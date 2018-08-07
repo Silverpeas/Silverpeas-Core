@@ -109,10 +109,13 @@ public class NodeEntity implements WebEntity {
     this.uri = uri;
     this.id = node.getNodePK().getId();
     this.attr = NodeAttrEntity.fromNodeDetail(node, uri, lang);
+    if (this.getAttr().isSpecificRights()) {
+      this.type = NodeType.FOLDER_WITH_RIGHTS;
+    }
 
     // set translations
     Map<String, NodeI18NDetail> theTranslations = node.getTranslations();
-    List<NodeTranslationEntity> translationEntities = new ArrayList<NodeTranslationEntity>();
+    List<NodeTranslationEntity> translationEntities = new ArrayList<>();
     for (BeanTranslation translation : theTranslations.values()) {
       NodeTranslationEntity translationEntity =
           new NodeTranslationEntity(translation.getId(), translation.getLanguage(), node);
@@ -123,7 +126,7 @@ public class NodeEntity implements WebEntity {
     // set children data
     setChildrenURI(getChildrenURI(uri));
     if (node.getChildrenDetails() != null) {
-      List<NodeEntity> entities = new ArrayList<NodeEntity>();
+      List<NodeEntity> entities = new ArrayList<>();
       for (NodeDetail child : node.getChildrenDetails()) {
         URI childURI = getChildURI(uri, child.getNodePK().getId());
         NodeEntity childEntity = fromNodeDetail(child, childURI, lang);

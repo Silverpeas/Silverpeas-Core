@@ -42,6 +42,8 @@ public enum NodeType {
   ROOT("root"),
   @XmlEnumValue("folder")
   FOLDER("folder"),
+  @XmlEnumValue("folder-with-rights")
+  FOLDER_WITH_RIGHTS("folder-with-rights"),
   @XmlEnumValue("bin")
   BIN("bin"),
   @XmlEnumValue("tovalidate")
